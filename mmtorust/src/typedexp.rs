@@ -1737,6 +1737,18 @@ pub fn infer_exp<'a>(
                 Some((_, node)) => node.ty.clone(),
                 None => builtin_function_ty(&func).unwrap_or_else(|| lookup_ty_in_hierarchy(&func, top_level)),
             };
+            // `function f = g;` declares `f` as an alias of `g` — its node
+            // carries `Ty::FunctionAlias`, not `Ty::Function`, so the formal
+            // list needed to lower a partial application of `f` lives on the
+            // base `g`. Resolve the base to its `Ty::Function` (the base name
+            // is found by the same outward scope-walk a normal call uses).
+            let sig_ty = if let Ty::FunctionAlias { base, .. } = &sig_ty {
+                resolve_call_node(base, top_level, pkg_prefix)
+                    .map(|(_, n)| n.ty.clone())
+                    .unwrap_or_else(|| lookup_ty_in_hierarchy(base, top_level))
+            } else {
+                sig_ty
+            };
             let ty = match &sig_ty {
                 Ty::Function { type_vars: tvs, inputs, output, .. } => {
                     let bound_pos = args.len();

@@ -714,7 +714,7 @@ fn checkLinearity(mut full: Arc<Adjacency::Matrix::Matrix>, mut v: Arc<Unordered
     }
 
     fn eqnIsLinear(mut i: i32, mut occ: metamodelica::Array<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>>, mut sol: metamodelica::Array<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Solvability::Solvability>>>>, mut v: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>) -> bool {
-        let mut b: bool = UnorderedSet::all(occ.borrow()[(i.clone()-1) as usize].clone(), Arc::new(todo!("PARTEVALFUNCTION of varIsLinear: function signature not resolved")));
+        let mut b: bool = UnorderedSet::all(occ.borrow()[(i.clone()-1) as usize].clone(), Arc::new({ let __pe_b1 = v.clone(); let __pe_b2 = sol.borrow()[(i.clone()-1) as usize].clone(); move |__pe_a0| Ok(varIsLinear(__pe_a0, __pe_b1.clone(), __pe_b2.clone())) }));
         b
     }
 

@@ -1431,7 +1431,7 @@ fn solveUniqueExpressionNoCref(mut exp: Arc<Expression::NFExpression>, mut cref:
             Pointer::update(res.clone(), ComponentRef::isEqual(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), cref.clone())?);
             exp.clone()
         },
-        _ => Expression::mapShallow(exp.clone(), Arc::new(todo!("PARTEVALFUNCTION of solveUniqueExpressionNoCrefTraverse: function signature not resolved")))?,
+        _ => Expression::mapShallow(exp.clone(), Arc::new({ let __pe_b1 = cref.clone(); let __pe_b2 = res.clone(); move |__pe_a0| solveUniqueExpressionNoCrefTraverse(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }))?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         }

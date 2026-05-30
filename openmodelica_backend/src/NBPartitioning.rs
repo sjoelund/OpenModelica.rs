@@ -729,7 +729,7 @@ pub mod Cluster {
             exp.clone()
         },
         (Deref @ Expression::CALL { .. }, _) if (Expression::isClockOrSampleFunction(exp.clone())?) => exp.clone(),
-        _ => Expression::mapShallow(exp.clone(), Arc::new(todo!("PARTEVALFUNCTION of findClock: function signature not resolved")))?,
+        _ => Expression::mapShallow(exp.clone(), Arc::new({ let __pe_b1 = info.clone(); let __pe_b2 = clock_ptr.clone(); move |__pe_a0| findClock(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }))?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             Ok(exp)

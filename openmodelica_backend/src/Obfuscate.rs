@@ -807,7 +807,7 @@ pub fn obfuscateForIterator(mut iterator: Arc<Absyn::ForIterator>, mut env: Env)
 
 pub fn obfuscateArrayDimsOpt(mut dims: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>, mut env: Env) -> Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>> {
     let mut dims: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>> = dims;
-    dims = Util::applyOption(dims.clone(), Arc::new(todo!("PARTEVALFUNCTION of obfuscateArrayDims: function signature not resolved")));
+    dims = Util::applyOption(dims.clone(), Arc::new({ let __pe_b1 = env.clone(); move |__pe_a0| obfuscateArrayDims(__pe_a0, __pe_b1.clone()) }));
     dims
 }
 

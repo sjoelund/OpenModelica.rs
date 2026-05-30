@@ -7361,6 +7361,29 @@ fn emit_parteval<'a>(
     // would fail with `expected Arc<dyn Fn>, found closure` (see e.g.
     // `findIteratorIndexedCrefs` in `AbsynUtil.mo`, which partial-applies
     // `List.unionEltOnTrue(inCompFunc = iteratorIndexedCrefsEqual)`).
+    // typedexp computes `sig_ty` from the parteval node using the lexical
+    // `pkg_prefix`. For a nested function whose post-hoist prefix no longer
+    // matches its hierarchy qname, that resolution can miss, leaving `sig_ty`
+    // non-functional. Re-resolve here with codegen's scope-aware
+    // `resolve_call_qname` (which also consults `ctx.current_fn_qname` and the
+    // enclosing-scope walk), then follow a `function f = g;` alias to its base.
+    let mut effective_sig: Ty = sig_ty.clone();
+    if !matches!(effective_sig, Ty::Function { .. } | Ty::FunctionAlias { .. }) {
+        if let Some(q) = resolve_call_qname(func, ctx, top_level)
+            && let Some(node) = lookup_node(&q, top_level)
+        {
+            effective_sig = node.ty.clone();
+        }
+    }
+    if let Ty::FunctionAlias { base, .. } = &effective_sig {
+        let base_q = resolve_call_qname(base, ctx, top_level).unwrap_or_else(|| base.clone());
+        if let Some(node) = lookup_node(&base_q, top_level)
+            && matches!(node.ty, Ty::Function { .. })
+        {
+            effective_sig = node.ty.clone();
+        }
+    }
+    let sig_ty = &effective_sig;
     let (formal_names, formal_tys): (Vec<String>, Vec<Ty>) = match sig_ty {
         Ty::Function { inputs, .. } => (
             inputs.iter().map(|i| i.name.clone()).collect(),
