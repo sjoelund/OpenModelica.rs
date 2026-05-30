@@ -4597,10 +4597,25 @@ fn emit_function<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::
         let dotted = absyn_path_to_dotted(&ext.path);
         let base_node = lookup_node(&dotted, top_level)
             .or_else(|| {
-                if enclosing_pkg.is_empty() {
-                    None
-                } else {
-                    lookup_node(&format!("{enclosing_pkg}.{dotted}"), top_level)
+                // Walk enclosing scopes outward: a bare `extends checkEqn;` may
+                // name a function declared in an *ancestor* package, not just the
+                // immediately enclosing one — e.g. `function isResidual extends
+                // checkEqn;` inside `uniontype Equation` inherits the sibling-of-
+                // parent `NBEquation.checkEqn`. Trying only `enclosing_pkg`
+                // (`NBEquation.Equation`) misses it, so the inherited output
+                // component is never merged and the function returns `()` instead
+                // of its output. Mirrors the outward bare-name walk in
+                // `hierarchy::resolve_function_type` (`sk_lookup_bare`).
+                let mut scope = enclosing_pkg.as_str();
+                loop {
+                    if !scope.is_empty()
+                        && let Some(n) = lookup_node(&format!("{scope}.{dotted}"), top_level) {
+                        break Some(n);
+                    }
+                    match scope.rsplit_once('.') {
+                        Some((parent, _)) => scope = parent,
+                        None => break None,
+                    }
                 }
             })
             .or_else(|| {
