@@ -18017,6 +18017,12 @@ fn ty_default_init(ty: &Ty) -> Option<String> {
         Ty::Str => Some("arcstr::literal!(\"\")".to_owned()),
         Ty::Option(_) => Some("None".to_owned()),
         Ty::List(_) => Some("metamodelica::nil()".to_owned()),
+        // `metamodelica::Array<T>` is `Rc<RefCell<Vec<T>>>`; its `Default` is the
+        // empty array. MetaModelica array locals are created (`arrayCreate`)
+        // before real use, so an implicit empty default is only ever read on the
+        // unreachable branches that drive the E0381 false positives. Every
+        // call site annotates the binding type, so `Default::default()` infers.
+        Ty::Array(_) => Some("Default::default()".to_owned()),
         _ => None,
     }
 }
