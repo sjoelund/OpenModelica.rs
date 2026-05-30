@@ -666,6 +666,18 @@ impl GenCtx {
             }
         };
 
+        // Function-local item: a node whose qname lives under the current
+        // function (e.g. `NBFunctionAlias.introduceFunctionAliasEquation.Depth`,
+        // a function-local `type Depth = enumeration(...)`). It is emitted as a
+        // plain item directly in the function body (see `emit_function`), so it
+        // is reachable by its simple name. Strip the function prefix first since
+        // it is longer (and more specific) than the module `cur_prefix`.
+        if !self.current_fn_qname.is_empty()
+            && let Some(rest) = dotted.strip_prefix(&format!("{}.", self.current_fn_qname))
+        {
+            return rest.replace('.', "::");
+        }
+
         // Exact same-module item: strip the current prefix (longest match first).
         if let Some(rest) = dotted.strip_prefix(&format!("{cur_prefix}.")) {
             return rest.replace('.', "::");
@@ -5239,6 +5251,23 @@ fn emit_function<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::
                                 emit_function(out, &cdm.class_def.name, child_node, child_class, &body_indent, ctx, top_level);
                             }
                         }
+            // Function-local type declarations (`type Depth = enumeration(...)`,
+            // local type aliases) are children of the function node but are not
+            // emitted anywhere else (the module/class member pass only sees the
+            // module's own direct members). Emit them as plain items at the top
+            // of the function body, so a reference like `Depth.FULL` (which
+            // `shorten` renders as `Depth::FULL`, and `fmt_ty` renders the
+            // declared type as the bare `Depth`) resolves to the body-local
+            // item. MetaModelica local types do not capture the parent's type
+            // parameters, matching Rust's fn-body item scoping.
+            if let MM::ClassMember::ClassDef(cdm) = member
+                && matches!(&cdm.class_def.restriction,
+                            Absyn::Restriction::R_TYPE | Absyn::Restriction::R_ENUMERATION)
+                && let Some(child_node) = node.children.get(&cdm.class_def.name)
+                && let NodeKind::Class(child_class) = &child_node.kind
+            {
+                emit_type_item(out, &cdm.class_def.name, child_node, child_class, &body_indent, ctx);
+            }
         }
         ctx.fn_env_vars = saved_fn_env_vars;
         ctx.fn_input_names = saved_fn_input_names;
@@ -8990,6 +9019,18 @@ fn resolve_fully_qualified<'a>(prefix_dotted: &str, ctx: &GenCtx, top_level: &'a
                 return Some(n);
             }
             scope_parts.pop();
+        }
+    }
+    // 2-fn. Function-local types: a `type Depth = enumeration(...)` declared
+    // inside a function body is a child of the *function* node, whose full
+    // qname is in `current_fn_qname` (the module-path scope walk above does
+    // not include function scopes). Resolve relative to it so an enum-literal
+    // access like `Depth.FULL` finds the local enum and is split as an enum
+    // path (`Depth::FULL`) rather than a field access (`Depth.FULL`).
+    if !ctx.current_fn_qname.is_empty() {
+        let path = format!("{}.{}", ctx.current_fn_qname, prefix_dotted);
+        if let Some(n) = lookup_node(&path, top_level) {
+            return Some(n);
         }
     }
     // 2b. Relative to top_name
