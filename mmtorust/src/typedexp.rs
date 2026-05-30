@@ -219,6 +219,12 @@ pub fn cref_to_dotted(cref: &Absyn::ComponentRef) -> String {
         // and is dropped at codegen time).
         "MetaModelica.Dangerous.arrayCreateNoInit" | "Dangerous.arrayCreateNoInit" => "arrayCreateNoInit".to_owned(),
         "MetaModelica.Dangerous.listArrayLiteral" | "Dangerous.listArrayLiteral" | "listArrayLiteral" => "listArray".to_owned(),
+        // `listAppendDestroy(first, second)` destructively splices `second` onto
+        // the end of `first` with no allocation. Kept distinct from `listAppend`
+        // (like `arrayCreateNoInit` vs `arrayCreate`) so codegen routes it to the
+        // runtime's in-place implementation; only the qualified spelling is
+        // normalised to the bare builtin name here.
+        "MetaModelica.Dangerous.listAppendDestroy" | "Dangerous.listAppendDestroy" | "listAppendDestroy" => "listAppendDestroy".to_owned(),
         // OpenModelica scripting builtins. These live in `package OpenModelica
         // package Scripting ... function uriToFilename ... external "builtin"
         // ... end uriToFilename;` in NFModelicaBuiltin.mo, which the codegen
@@ -1015,7 +1021,7 @@ fn call_ty(func: &str, args: &[TypedExp], top_level: &BTreeMap<String, NameNode<
                 _ => Ty::Unknown,
             }
         }
-        "listRest" | "listTail" | "listReverse" | "listAppend" | "listReverseInPlace" => {
+        "listRest" | "listTail" | "listReverse" | "listAppend" | "listReverseInPlace" | "listAppendDestroy" => {
             args.first().map(|a| a.ty()).unwrap_or(Ty::Unknown)
         }
         "arrayGet" => {

@@ -1780,6 +1780,40 @@ pub mod Dangerous {
         }
         prev
     }
+    /// Destructively appends `second` onto the end of `first`: walks to the last
+    /// cons cell of `first` and repoints its `tail` at `second`. Allocates
+    /// nothing. Mirrors the MetaModelica runtime's `listAppendDestroy`
+    /// (`SimulationRuntime/c/meta/meta_modelica_builtin.c`).
+    ///
+    /// SAFETY: mutates `first`'s last cell through a raw pointer (the same
+    /// mechanism as [`listSetRest`]), so every holder of a clone of that cell
+    /// observes the splice. The MetaModelica contract is that `first` is
+    /// "destroyed" — the caller must not keep using it as its original sequence,
+    /// and the cells must not be read concurrently.
+    pub fn listAppendDestroy<T: Clone>(first: Arc<List<T>>, second: Arc<List<T>>) -> Arc<List<T>> {
+        // An empty first list has no cell to repoint; the result is `second`.
+        if matches!(&*first, List::Nil) {
+            return second;
+        }
+        // Walk to the last cons cell (the one whose tail is Nil).
+        let mut lst = first.clone();
+        loop {
+            let next = match &*lst {
+                List::Cons { tail, .. } if !matches!(&**tail, List::Nil) => tail.clone(),
+                _ => break,
+            };
+            lst = next;
+        }
+        // SAFETY: see the doc comment — `first`'s cells are destroyed/uniquely
+        // held by the caller and not read concurrently.
+        unsafe {
+            let p = Arc::as_ptr(&lst) as *mut List<T>;
+            if let List::Cons { tail, .. } = &mut *p {
+                *tail = second;
+            }
+        }
+        first
+    }
     /// Overwrites the `tail` field of the given Cons cell.
     ///
     /// SAFETY: Mutates the cell behind the `Arc` through a raw pointer, so all
@@ -2834,6 +2868,43 @@ mod tests {
             assert_eq!((&*listReverseInPlace(nil::<i32>())).into_iter().count(), 0);
             let single = listReverseInPlace(cons(42, nil()));
             assert_eq!((&*single).into_iter().cloned().collect::<Vec<_>>(), vec![42]);
+        }
+
+        #[test]
+        fn test_list_append_destroy() {
+            use super::{cons, nil};
+            let collect = |l: &super::List<i32>| (&*l).into_iter().cloned().collect::<Vec<_>>();
+
+            // Normal append: first ++ second.
+            let first = cons(1, cons(2, cons(3, nil())));
+            let second = cons(4, cons(5, nil()));
+            let r = listAppendDestroy(first, second);
+            assert_eq!(collect(&r), vec![1, 2, 3, 4, 5]);
+
+            // Empty first → result is second (no cell to repoint).
+            let r = listAppendDestroy(nil::<i32>(), cons(7, cons(8, nil())));
+            assert_eq!(collect(&r), vec![7, 8]);
+
+            // Empty second → first unchanged.
+            let r = listAppendDestroy(cons(1, cons(2, nil())), nil::<i32>());
+            assert_eq!(collect(&r), vec![1, 2]);
+
+            // Both empty.
+            assert_eq!((&*listAppendDestroy(nil::<i32>(), nil::<i32>())).into_iter().count(), 0);
+
+            // Singleton first.
+            let r = listAppendDestroy(cons(1, nil()), cons(2, cons(3, nil())));
+            assert_eq!(collect(&r), vec![1, 2, 3]);
+
+            // Destructive / zero-alloc: the splice mutates the last cell of
+            // `first` in place, so a clone of `first`'s head taken *before* the
+            // call observes the appended tail afterwards (the cells are shared,
+            // not copied).
+            let first = cons(1, cons(2, nil()));
+            let alias = first.clone();
+            let r = listAppendDestroy(first, cons(3, cons(4, nil())));
+            assert_eq!(collect(&r), vec![1, 2, 3, 4]);
+            assert_eq!(collect(&alias), vec![1, 2, 3, 4]);
         }
     }
 }

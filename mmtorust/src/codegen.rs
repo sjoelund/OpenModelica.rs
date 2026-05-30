@@ -8430,6 +8430,16 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
             let arg = args.first().map(|a| emit_builtin_call_arg_raw(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();
             Ok(format!("metamodelica::Dangerous::listReverseInPlace({})", arg))
         },
+        "listAppendDestroy" => {
+            // Destructive append: splice the second list onto the end of the
+            // first by repointing its last cons cell — no allocation. Route to
+            // the runtime's in-place implementation rather than the allocating
+            // `listAppend`; the MetaModelica `Dangerous.listAppendDestroy` is
+            // chosen precisely when the caller wants the zero-alloc splice.
+            let arg1 = args.first().map(|a| emit_builtin_call_arg_raw(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();
+            let arg2 = args.get(1).map(|a| emit_builtin_call_arg_raw(func, 1, a, is_const, ctx, top_level)).unwrap_or_default();
+            Ok(format!("metamodelica::Dangerous::listAppendDestroy({}, {})", arg1, arg2))
+        },
         "arrayCopy" => {
             // Deep (by-element) copy: a fresh Array not aliasing the source.
             let arg = args.first().map(|a| emit_builtin_call_arg(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();

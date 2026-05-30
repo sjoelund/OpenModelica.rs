@@ -1995,6 +1995,9 @@ fn fmt_cref(cref: &Absyn::ComponentRef) -> String {
         // dummy type-witness argument).
         "MetaModelica.Dangerous.arrayCreateNoInit" | "Dangerous.arrayCreateNoInit" | ".MetaModelica.Dangerous.arrayCreateNoInit" => "arrayCreateNoInit".to_owned(),
         "MetaModelica.Dangerous.listArrayLiteral" | "Dangerous.listArrayLiteral" | ".MetaModelica.Dangerous.listArrayLiteral" | "listArrayLiteral" => "listArray".to_owned(),
+        // Destructive append: kept distinct from `listAppend` so codegen routes
+        // it to the runtime's in-place implementation (see typedexp::cref_to_dotted).
+        "MetaModelica.Dangerous.listAppendDestroy" | "Dangerous.listAppendDestroy" | ".MetaModelica.Dangerous.listAppendDestroy" | "listAppendDestroy" => "listAppendDestroy".to_owned(),
         _ => raw,
     }
 }
