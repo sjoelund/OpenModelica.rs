@@ -15349,6 +15349,85 @@ fn stmts_flow(stmts: &[typedexp::TypedStmt]) -> FlowResult {
     FlowResult::FallsThrough(acc)
 }
 
+/// Enumeration literal names of `qname`, in declaration order (the 1-based
+/// position is the literal's MetaModelica ordinal value). `None` if `qname`
+/// does not name an enumeration.
+fn enum_literal_names(qname: &str, top_level: &BTreeMap<String, NameNode<'_>>) -> Option<Vec<String>> {
+    let node = lookup_node(qname, top_level)?;
+    let NodeKind::Class(c) = &node.kind else { return None };
+    let MM::ClassDef::Enumeration { enum_literals, .. } = &c.body else { return None };
+    let Absyn::EnumDef::ENUMLITERALS { enumLiterals } = &**enum_literals else { return None };
+    Some((&**enumLiterals).into_iter().map(|l| l.literal.to_string()).collect())
+}
+
+/// Lower a `for v in <enum>` loop. MetaModelica iterates an enumeration —
+/// either the whole type (`for v in Enum`) or a sub-range (`for v in Enum.a :
+/// Enum.b`) — yielding enum values, where `Integer(v)` is the 1-based ordinal.
+/// Rust enums don't implement the unstable `Step` trait, so a direct
+/// `Enum::a..=Enum::b` range is not iterable. Instead iterate an ordinal `i32`
+/// range and convert each ordinal back to the enum via an inline match; the
+/// loop variable stays a real enum value, so body uses like `(v as i32)` and
+/// `Integer(v)` keep working. Returns `true` when the loop was an enumeration
+/// iteration and has been emitted; `false` to let the caller emit the generic
+/// list/array/integer-range path.
+#[allow(clippy::too_many_arguments)]
+fn try_emit_enum_for<'a>(
+    out: &mut String,
+    indent: &str,
+    var: &str,
+    range: &TypedExp,
+    body: &[typedexp::TypedStmt],
+    fail_mode: &FailureMode,
+    ctx: &mut GenCtx,
+    env: &LocalEnv,
+    top_level: &'a BTreeMap<String, NameNode<'a>>,
+    fresh: &mut u32,
+) -> bool {
+    // Determine the enum's qname and the inclusive ordinal bounds.
+    let (enum_qname, lo, hi): (String, String, String) =
+        if let TypedExp::Range { start, stop, elem_ty: Ty::Enumeration(q), step: None } = range {
+            let lo = format!("(({}) as i32)", emit_exp(start, false, ctx, top_level));
+            let hi = format!("(({}) as i32)", emit_exp(stop, false, ctx, top_level));
+            (q.clone(), lo, hi)
+        } else if let Ty::Enumeration(q) = range.ty() {
+            let Some(lits) = enum_literal_names(&q, top_level) else { return false };
+            (q, "1".to_owned(), lits.len().to_string())
+        } else {
+            return false;
+        };
+    let Some(lits) = enum_literal_names(&enum_qname, top_level) else { return false };
+    if lits.is_empty() {
+        return false;
+    }
+    let enum_path = ctx.shorten(&enum_qname);
+    let arms: String = lits.iter().enumerate()
+        .map(|(i, lit)| format!("{} => {}::{}, ", i + 1, enum_path, escape_ident(lit)))
+        .collect();
+    let n = *fresh;
+    *fresh += 1;
+    writeln!(out, "{indent}for __ord{n} in ({lo})..=({hi}) {{").unwrap();
+    writeln!(
+        out,
+        "{indent}    let mut {} = match __ord{n} {{ {arms}_ => unreachable!(\"enum ordinal out of range\") }};",
+        escape_ident(var)
+    ).unwrap();
+    let elem_ty = Ty::Enumeration(enum_qname);
+    let mut inner = env.clone();
+    inner.vars.insert(var.to_owned(), elem_ty.clone());
+    let saved_arg_ty = ctx.fn_env_vars.insert(var.to_owned(), elem_ty);
+    let iter_newly_init = ctx.fn_initialized_vars.insert(var.to_owned());
+    emit_stmts(out, &format!("{indent}    "), body, fail_mode.clone(), ctx, &mut inner, top_level, fresh);
+    if iter_newly_init {
+        ctx.fn_initialized_vars.remove(var);
+    }
+    match saved_arg_ty {
+        Some(t) => { ctx.fn_env_vars.insert(var.to_owned(), t); }
+        None => { ctx.fn_env_vars.remove(var); }
+    }
+    writeln!(out, "{indent}}}").unwrap();
+    true
+}
+
 fn emit_stmt<'a>(
     out: &mut String,
     indent: &str,
@@ -15674,6 +15753,12 @@ fn emit_stmt<'a>(
             writeln!(out, "{indent}}}").unwrap();
         }
         S::For { var, range, body } => {
+            // Enumeration iteration is lowered separately (Rust enums aren't
+            // `Step`-iterable); see `try_emit_enum_for`. Falls through to the
+            // generic list/array/integer-range path below for everything else.
+            if try_emit_enum_for(out, indent, var, range, body, &fail_mode, ctx, env, top_level, fresh) {
+                return;
+            }
             let r = emit_exp(range, false, ctx, top_level);
             // List<T> behind `Arc` → iterate via `&*lst` (Deref<Target=List>).
             // Array<T> = `Rc<RefCell<Vec<T>>>` → iterate via `arr.borrow().iter()`
