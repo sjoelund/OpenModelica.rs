@@ -137,7 +137,7 @@ fn simplifyWithOptions(mut inExp: Arc<DAE::Exp>, mut options: ExpressionSimplify
         let __mc_input = (inExp.clone(), options.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (e, ExpressionSimplifyTypes::Evaluate::DO_EVAL) => {
+                (e, ExpressionSimplifyTypes::Evaluate::DO_EVAL { .. }) => {
                     let mut eNew: Arc<DAE::Exp>;
                     let mut b: bool = false;
                     (eNew, _) = simplify1WithOptions(e.clone(), options.clone())?;
@@ -1159,7 +1159,7 @@ fn simplifyMatch(mut exp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
             e = Arc::new(DAE::Exp::IFEXP { expCond: e.clone(), expThen: e1_1.clone(), expElse: e2_1.clone() });
             e.clone()
         },
-        Deref @ DAE::Exp::MATCHEXPRESSION { cases: Deref @ metamodelica::List::Cons { head: Deref @ DAE::MatchCase { result: Some(e1), body: Deref @ metamodelica::List::Nil, localDecls: Deref @ metamodelica::List::Nil, patterns: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Pattern::PAT_CONSTANT { exp: Deref @ DAE::Exp::BCONST { bool: b1 }, .. }, tail: Deref @ metamodelica::List::Nil }, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::MatchCase { result: Some(e2), body: Deref @ metamodelica::List::Nil, localDecls: Deref @ metamodelica::List::Nil, patterns: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Pattern::PAT_WILD, tail: Deref @ metamodelica::List::Nil }, .. }, tail: Deref @ metamodelica::List::Nil } }, localDecls: Deref @ metamodelica::List::Nil, inputs: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, et: ty, matchType: DAE::MatchType::MATCH { .. }, .. } if (!(Types::isTuple(ty.clone()))) => {
+        Deref @ DAE::Exp::MATCHEXPRESSION { cases: Deref @ metamodelica::List::Cons { head: Deref @ DAE::MatchCase { result: Some(e1), body: Deref @ metamodelica::List::Nil, localDecls: Deref @ metamodelica::List::Nil, patterns: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Pattern::PAT_CONSTANT { exp: Deref @ DAE::Exp::BCONST { bool: b1 }, .. }, tail: Deref @ metamodelica::List::Nil }, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::MatchCase { result: Some(e2), body: Deref @ metamodelica::List::Nil, localDecls: Deref @ metamodelica::List::Nil, patterns: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Pattern::PAT_WILD { .. }, tail: Deref @ metamodelica::List::Nil }, .. }, tail: Deref @ metamodelica::List::Nil } }, localDecls: Deref @ metamodelica::List::Nil, inputs: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, et: ty, matchType: DAE::MatchType::MATCH { .. }, .. } if (!(Types::isTuple(ty.clone()))) => {
             let mut e1_1: Arc<DAE::Exp>;
             let mut e2_1: Arc<DAE::Exp>;
             let mut e = (*e).clone();
@@ -3742,7 +3742,7 @@ fn simplifyAddJoinTerms(mut inTplExpRealLst: Arc<metamodelica::List<(Arc<DAE::Ex
         _ => {
             let mut exp1: Arc<DAE::Exp>;
             let mut coeff1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut coeff_map: Arc<UnorderedMap::UnorderedMap<Arc<DAE::Exp>, metamodelica::Real>>;
+            let mut coeff_map: Arc<UnorderedMap::UnorderedMap<Arc<DAE::Exp>, metamodelica::Real>> = <Arc<UnorderedMap::UnorderedMap<Arc<DAE::Exp>, metamodelica::Real>> as ::std::default::Default>::default();
             coeff_map = UnorderedMap::new((std::sync::Arc::new(Expression::hashExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>), (std::sync::Arc::new(ExpressionBasics::expEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>), (inTplExpRealLst.clone().len() as i32));
             for mut tpl in &*inTplExpRealLst.clone() {
                 let mut tpl = tpl.clone();
@@ -4364,7 +4364,7 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::REDUCTION { reductionInfo: Deref @ DAE::ReductionInfo { iterType: Absyn::ReductionIterType::THREAD, path: Deref @ Absyn::Path::IDENT { name: Deref @ "array" }, .. }, expr: exp, iterators: iters }, sub) => {
+                (Deref @ DAE::Exp::REDUCTION { reductionInfo: Deref @ DAE::ReductionInfo { iterType: Absyn::ReductionIterType::THREAD { .. }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "array" }, .. }, expr: exp, iterators: iters }, sub) => {
                     let mut exp = (*exp).clone();
                     exp = List::fold1(iters.clone(), (std::sync::Arc::new(simplifyAsubArrayReduction) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ReductionIterator>, Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>), sub.clone(), exp.clone());
                     Ok(exp.clone())
@@ -4374,7 +4374,7 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::REDUCTION { reductionInfo: Deref @ DAE::ReductionInfo { iterType: Absyn::ReductionIterType::COMBINE, path: Deref @ Absyn::Path::IDENT { name: Deref @ "array" }, .. }, expr: exp, iterators: Deref @ metamodelica::List::Cons { head: iter, tail: Deref @ metamodelica::List::Nil } }, sub) => {
+                (Deref @ DAE::Exp::REDUCTION { reductionInfo: Deref @ DAE::ReductionInfo { iterType: Absyn::ReductionIterType::COMBINE { .. }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "array" }, .. }, expr: exp, iterators: Deref @ metamodelica::List::Cons { head: iter, tail: Deref @ metamodelica::List::Nil } }, sub) => {
                     let mut exp = (*exp).clone();
                     exp = simplifyAsubArrayReduction(iter.clone(), sub.clone(), exp.clone())?;
                     Ok(exp.clone())
@@ -4640,7 +4640,7 @@ fn simplifyRelationConst(mut op: Operator, mut e1: Arc<DAE::Exp>, mut e2: Arc<DA
 pub fn safeIntOp(mut val1: i32, mut val2: i32, mut op: ExpressionSimplifyTypes::IntOp) -> Result<Arc<DAE::Exp>> {
     let mut outv: Arc<DAE::Exp>;
     outv = (match op.clone() {
-        ExpressionSimplifyTypes::IntOp::MULOP => {
+        ExpressionSimplifyTypes::IntOp::MULOP { .. } => {
             let mut rv1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
             let mut rv2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
             let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
@@ -4650,12 +4650,12 @@ pub fn safeIntOp(mut val1: i32, mut val2: i32, mut op: ExpressionSimplifyTypes::
             outv = Expression::realToIntIfPossible(rv3.clone());
             outv.clone()
         },
-        ExpressionSimplifyTypes::IntOp::DIVOP => {
+        ExpressionSimplifyTypes::IntOp::DIVOP { .. } => {
             let mut ires: i32 = 0;
             ires = intDiv(val1.clone(), val2.clone());
             Arc::new(DAE::Exp::ICONST { integer: ires.clone() })
         },
-        ExpressionSimplifyTypes::IntOp::SUBOP => {
+        ExpressionSimplifyTypes::IntOp::SUBOP { .. } => {
             let mut rv1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
             let mut rv2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
             let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
@@ -4665,7 +4665,7 @@ pub fn safeIntOp(mut val1: i32, mut val2: i32, mut op: ExpressionSimplifyTypes::
             outv = Expression::realToIntIfPossible(rv3.clone());
             outv.clone()
         },
-        ExpressionSimplifyTypes::IntOp::ADDOP => {
+        ExpressionSimplifyTypes::IntOp::ADDOP { .. } => {
             let mut rv1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
             let mut rv2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
             let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
@@ -4675,7 +4675,7 @@ pub fn safeIntOp(mut val1: i32, mut val2: i32, mut op: ExpressionSimplifyTypes::
             outv = Expression::realToIntIfPossible(rv3.clone());
             outv.clone()
         },
-        ExpressionSimplifyTypes::IntOp::POWOP => {
+        ExpressionSimplifyTypes::IntOp::POWOP { .. } => {
             let mut rv1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
             let mut rv2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
             let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
@@ -4685,7 +4685,6 @@ pub fn safeIntOp(mut val1: i32, mut val2: i32, mut op: ExpressionSimplifyTypes::
             outv = Expression::realToIntIfPossible(rv3.clone());
             outv.clone()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(outv)
 }
@@ -6576,7 +6575,7 @@ fn simplifyReduction(mut inReduction: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::REDUCTION { iterators, expr, reductionInfo: Deref @ DAE::ReductionInfo { defaultValue, foldExp, exprType: ty, resultName, foldName, iterType: Absyn::ReductionIterType::THREAD, path } } => {
+                Deref @ DAE::Exp::REDUCTION { iterators, expr, reductionInfo: Deref @ DAE::ReductionInfo { defaultValue, foldExp, exprType: ty, resultName, foldName, iterType: Absyn::ReductionIterType::THREAD { .. }, path } } => {
                     let mut range: Arc<DAE::Exp>;
                     let mut iter_name: ArcStr = arcstr::literal!("");
                     let mut values: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -6602,7 +6601,7 @@ fn simplifyReduction(mut inReduction: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::REDUCTION { iterators: Deref @ metamodelica::List::Cons { head: iter, tail: iterators @ Deref @ metamodelica::List::Cons { head: _, tail: _ } }, expr, reductionInfo: Deref @ DAE::ReductionInfo { exprType: ty, resultName, foldName, iterType: Absyn::ReductionIterType::COMBINE, path: path @ Deref @ Absyn::Path::IDENT { name: Deref @ "array" }, .. } } => {
+                Deref @ DAE::Exp::REDUCTION { iterators: Deref @ metamodelica::List::Cons { head: iter, tail: iterators @ Deref @ metamodelica::List::Cons { head: _, tail: _ } }, expr, reductionInfo: Deref @ DAE::ReductionInfo { exprType: ty, resultName, foldName, iterType: Absyn::ReductionIterType::COMBINE { .. }, path: path @ Deref @ Absyn::Path::IDENT { name: Deref @ "array" }, .. } } => {
                     let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut foldName2: ArcStr = arcstr::literal!("");
                     let mut resultName2: ArcStr = arcstr::literal!("");
@@ -6619,7 +6618,7 @@ fn simplifyReduction(mut inReduction: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::REDUCTION { iterators: Deref @ metamodelica::List::Cons { head: iter, tail: iterators @ Deref @ metamodelica::List::Cons { head: _, tail: _ } }, expr, reductionInfo: Deref @ DAE::ReductionInfo { defaultValue, foldExp: None, exprType: ty, resultName, foldName, iterType: Absyn::ReductionIterType::COMBINE, path } } => {
+                Deref @ DAE::Exp::REDUCTION { iterators: Deref @ metamodelica::List::Cons { head: iter, tail: iterators @ Deref @ metamodelica::List::Cons { head: _, tail: _ } }, expr, reductionInfo: Deref @ DAE::ReductionInfo { defaultValue, foldExp: None, exprType: ty, resultName, foldName, iterType: Absyn::ReductionIterType::COMBINE { .. }, path } } => {
                     let mut foldName2: ArcStr = arcstr::literal!("");
                     let mut resultName2: ArcStr = arcstr::literal!("");
                     let mut expr = (*expr).clone();
@@ -6634,7 +6633,7 @@ fn simplifyReduction(mut inReduction: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::REDUCTION { iterators: Deref @ metamodelica::List::Cons { head: iter, tail: iterators @ Deref @ metamodelica::List::Cons { head: _, tail: _ } }, expr, reductionInfo: Deref @ DAE::ReductionInfo { defaultValue, foldExp: Some(foldExpr), exprType: ty, resultName, foldName, iterType: Absyn::ReductionIterType::COMBINE, path } } => {
+                Deref @ DAE::Exp::REDUCTION { iterators: Deref @ metamodelica::List::Cons { head: iter, tail: iterators @ Deref @ metamodelica::List::Cons { head: _, tail: _ } }, expr, reductionInfo: Deref @ DAE::ReductionInfo { defaultValue, foldExp: Some(foldExpr), exprType: ty, resultName, foldName, iterType: Absyn::ReductionIterType::COMBINE { .. }, path } } => {
                     let mut foldExpr2: Arc<DAE::Exp>;
                     let mut foldName2: ArcStr = arcstr::literal!("");
                     let mut resultName2: ArcStr = arcstr::literal!("");

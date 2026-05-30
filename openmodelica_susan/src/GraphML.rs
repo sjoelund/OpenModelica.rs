@@ -680,7 +680,6 @@ fn compareAttributeTarget0(mut iTarget: AttributeTarget) -> Result<i32> {
         AttributeTarget::TARGET_NODE { .. } => 0,
         AttributeTarget::TARGET_EDGE { .. } => 1,
         AttributeTarget::TARGET_GRAPH { .. } => 1,
-        _ => bail!("match: no arm matched"),
     });
     Ok(oCodec)
 }

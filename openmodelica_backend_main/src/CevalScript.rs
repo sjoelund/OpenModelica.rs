@@ -203,7 +203,7 @@ pub fn isCompleteFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, fpath) => {
                     ::match_deref::match_deref! { match &(Lookup::lookupClass(cache.clone(), env.clone(), fpath.clone(), None)?) {
-                        (_, Deref @ SCode::Element::CLASS { partialPrefix: SCode::Partial::PARTIAL, .. }, _) => (),
+                        (_, Deref @ SCode::Element::CLASS { partialPrefix: SCode::Partial::PARTIAL { .. }, .. }, _) => (),
                         _ => bail!("pattern mismatch"),
                     } };
                     Ok(false)
@@ -365,7 +365,7 @@ fn checkDuplicateTopLevelClasses(mut program: Absyn::Program) -> Result<bool> {
     let mut hasDuplicates: bool = false;
     let mut skip: bool = false;
     let mut infos: Arc<metamodelica::List<SourceInfo>> = metamodelica::nil();
-    let mut classInfoMap: Arc<UnorderedMap::UnorderedMap<ArcStr, SourceInfo>>;
+    let mut classInfoMap: Arc<UnorderedMap::UnorderedMap<ArcStr, SourceInfo>> = <Arc<UnorderedMap::UnorderedMap<ArcStr, SourceInfo>> as ::std::default::Default>::default();
     let mut optClassInfo: Option<SourceInfo> = None;
     if (program.classes.clone().len() as i32) < 2 {
         return Ok(hasDuplicates.clone());
@@ -1618,10 +1618,10 @@ pub fn cevalInteractiveFunctions2(mut cache: FCore::Cache, mut env: FCore::Graph
         let __mc_input = elt.clone();
         if let Ok(__v) = (|| -> Result<_> {
                     ::match_deref::match_deref! { match &__mc_input {
-                        Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { .. } }, partialPrefix: SCode::Partial::NOT_PARTIAL, .. } => {
-                            let mut ty: Arc<DAE::Type>;
-                            let mut outCache: FCore::Cache = outCache.clone();
+                        Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { .. } }, partialPrefix: SCode::Partial::NOT_PARTIAL { .. }, .. } => {
                             let mut tys: Arc<metamodelica::List<Arc<DAE::Type>>> = tys.clone();
+                            let mut outCache: FCore::Cache = outCache.clone();
+                            let mut ty: Arc<DAE::Type>;
                             (outCache, ty, _) = Lookup::lookupType(outCache.clone(), env.clone(), AbsynUtil::suffixPath(className.clone(), (var_field!((*elt).name, SCode::Element::CLASS).clone()).clone())?, None)?;
                             if isSimpleAPIFunction(ty.clone())? {
                                         tys = cons(ty.clone(), tys.clone());
@@ -2374,12 +2374,12 @@ fn makeErrorEnumLiteral(mut enumName: ArcStr, mut enumField: ArcStr, mut index: 
 fn errorTypeToValue(mut ty: ErrorTypes::MessageType) -> Result<Arc<Values::Value>> {
     let mut val: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
     val = (match ty.clone() {
-        ErrorTypes::MessageType::SYNTAX => makeErrorEnumLiteral((literal!("ErrorKind")).clone(), (literal!("syntax")).clone(), 1),
-        ErrorTypes::MessageType::GRAMMAR => makeErrorEnumLiteral((literal!("ErrorKind")).clone(), (literal!("grammar")).clone(), 2),
-        ErrorTypes::MessageType::TRANSLATION => makeErrorEnumLiteral((literal!("ErrorKind")).clone(), (literal!("translation")).clone(), 3),
-        ErrorTypes::MessageType::SYMBOLIC => makeErrorEnumLiteral((literal!("ErrorKind")).clone(), (literal!("symbolic")).clone(), 4),
-        ErrorTypes::MessageType::SIMULATION => makeErrorEnumLiteral((literal!("ErrorKind")).clone(), (literal!("runtime")).clone(), 5),
-        ErrorTypes::MessageType::SCRIPTING => makeErrorEnumLiteral((literal!("ErrorKind")).clone(), (literal!("scripting")).clone(), 6),
+        ErrorTypes::MessageType::SYNTAX { .. } => makeErrorEnumLiteral((literal!("ErrorKind")).clone(), (literal!("syntax")).clone(), 1),
+        ErrorTypes::MessageType::GRAMMAR { .. } => makeErrorEnumLiteral((literal!("ErrorKind")).clone(), (literal!("grammar")).clone(), 2),
+        ErrorTypes::MessageType::TRANSLATION { .. } => makeErrorEnumLiteral((literal!("ErrorKind")).clone(), (literal!("translation")).clone(), 3),
+        ErrorTypes::MessageType::SYMBOLIC { .. } => makeErrorEnumLiteral((literal!("ErrorKind")).clone(), (literal!("symbolic")).clone(), 4),
+        ErrorTypes::MessageType::SIMULATION { .. } => makeErrorEnumLiteral((literal!("ErrorKind")).clone(), (literal!("runtime")).clone(), 5),
+        ErrorTypes::MessageType::SCRIPTING { .. } => makeErrorEnumLiteral((literal!("ErrorKind")).clone(), (literal!("scripting")).clone(), 6),
         _ => {
             println!("{}", (literal!("errorTypeToValue failed\n")).clone());
             bail!("fail")
@@ -2391,10 +2391,10 @@ fn errorTypeToValue(mut ty: ErrorTypes::MessageType) -> Result<Arc<Values::Value
 fn errorLevelToValue(mut severity: ErrorTypes::Severity) -> Result<Arc<Values::Value>> {
     let mut val: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
     val = (match severity.clone() {
-        ErrorTypes::Severity::INTERNAL => makeErrorEnumLiteral((literal!("ErrorLevel")).clone(), (literal!("internal")).clone(), 1),
-        ErrorTypes::Severity::ERROR => makeErrorEnumLiteral((literal!("ErrorLevel")).clone(), (literal!("error")).clone(), 2),
-        ErrorTypes::Severity::WARNING => makeErrorEnumLiteral((literal!("ErrorLevel")).clone(), (literal!("warning")).clone(), 3),
-        ErrorTypes::Severity::NOTIFICATION => makeErrorEnumLiteral((literal!("ErrorLevel")).clone(), (literal!("notification")).clone(), 4),
+        ErrorTypes::Severity::INTERNAL { .. } => makeErrorEnumLiteral((literal!("ErrorLevel")).clone(), (literal!("internal")).clone(), 1),
+        ErrorTypes::Severity::ERROR { .. } => makeErrorEnumLiteral((literal!("ErrorLevel")).clone(), (literal!("error")).clone(), 2),
+        ErrorTypes::Severity::WARNING { .. } => makeErrorEnumLiteral((literal!("ErrorLevel")).clone(), (literal!("warning")).clone(), 3),
+        ErrorTypes::Severity::NOTIFICATION { .. } => makeErrorEnumLiteral((literal!("ErrorLevel")).clone(), (literal!("notification")).clone(), 4),
         _ => {
             println!("{}", (literal!("errorLevelToValue failed\n")).clone());
             bail!("fail")
@@ -2468,7 +2468,6 @@ pub fn cevalGenerateFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph,
                     (cache, mainFunction, dependencies, metarecordTypes) = collectDependencies(cache.clone(), env.clone(), path.clone())?;
                     pathstr = (generateFunctionName(path.clone())?).clone();
                     fileName = (generateFunctionFileName(path.clone())?).clone();
-                    FCore::getFunctionTree(cache.clone());
                     translateFunctions(program.clone(), (fileName.clone()).clone(), Some(mainFunction.clone()), dependencies.clone(), metarecordTypes.clone(), metamodelica::nil())?;
                     compileModel((fileName.clone()).clone(), metamodelica::nil(), (literal!("")).clone(), metamodelica::nil())?;
                     Ok((cache.clone(), pathstr.clone(), fileName.clone()))
@@ -2567,11 +2566,11 @@ fn generateFunctions(mut icache: FCore::Cache, mut ienv: FCore::Graph, mut p: Ab
         (cache, env, Deref @ metamodelica::List::Nil) => {
             (cache.clone(), env.clone())
         },
-        (cache, env, Deref @ metamodelica::List::Cons { head: cl @ Deref @ SCode::Element::CLASS { info, restriction: restr, encapsulatedPrefix: SCode::Encapsulated::ENCAPSULATED, name, .. }, tail: sp }) => {
+        (cache, env, Deref @ metamodelica::List::Cons { head: cl @ Deref @ SCode::Element::CLASS { info, restriction: restr, encapsulatedPrefix: SCode::Encapsulated::ENCAPSULATED { .. }, name, .. }, tail: sp }) => {
             let mut cache = (*cache).clone();
             let mut env = (*env).clone();
             let () = (match restr.clone() {
-        SCode::Restriction::R_PACKAGE => (),
+        SCode::Restriction::R_PACKAGE { .. } => (),
         SCode::Restriction::R_UNIONTYPE { .. } => (),
         _ => {
             Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Only package and uniontype is supported as top-level classes in OpenModelica.")).clone()], info.clone())?;
@@ -2582,7 +2581,7 @@ fn generateFunctions(mut icache: FCore::Cache, mut ienv: FCore::Graph, mut p: Ab
             (cache, env) = generateFunctions(cache.clone(), env.clone(), p.clone(), fullScodeProgram.clone(), sp.clone(), cleanCache.clone())?;
             (cache.clone(), env.clone())
         },
-        (_, _, Deref @ metamodelica::List::Cons { head: Deref @ SCode::Element::CLASS { info: info @ SourceInfo { fileName: file, .. }, name, encapsulatedPrefix: SCode::Encapsulated::NOT_ENCAPSULATED, .. }, tail: _ }) => {
+        (_, _, Deref @ metamodelica::List::Cons { head: Deref @ SCode::Element::CLASS { info: info @ SourceInfo { fileName: file, .. }, name, encapsulatedPrefix: SCode::Encapsulated::NOT_ENCAPSULATED { .. }, .. }, tail: _ }) => {
             let mut n: i32 = 0;
             (n, _) = System::regex((file.clone()).clone(), (literal!("ModelicaBuiltin.mo$")).clone(), 1, false, false);
             Error::assertion(n.clone() > 0, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Not an encapsulated class (required for separate compilation): ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), info.clone())?;
@@ -2730,7 +2729,7 @@ fn addNonPartialClassRef(mut name: ArcStr, mut r#ref: metamodelica::Array<FCore:
     let mut classes: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     let mut e: Arc<SCode::Element>;
     classes = (::match_deref::match_deref! { match &(FNode::fromRef(r#ref.clone())?) {
-        FCore::Node { data: FCore::Data::CL { e: e @ Deref @ SCode::Element::CLASS { partialPrefix: SCode::Partial::NOT_PARTIAL, .. }, .. }, .. } => cons(e.clone(), accum.clone()),
+        FCore::Node { data: FCore::Data::CL { e: e @ Deref @ SCode::Element::CLASS { partialPrefix: SCode::Partial::NOT_PARTIAL { .. }, .. }, .. }, .. } => cons(e.clone(), accum.clone()),
         _ => accum.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2910,7 +2909,7 @@ fn cevalCallFunctionEvaluateOrGenerate2(mut inCache: FCore::Cache, mut inEnv: FC
                         }
                         Err(_) => {
                             let (__pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(Lookup::lookupClass(cache.clone(), env.clone(), funcpath.clone(), None)?) {
-                                        (__pa2, __pa3 @ Deref @ SCode::Element::CLASS { partialPrefix: SCode::Partial::NOT_PARTIAL, .. }, __pa4) => (__pa2.clone(), __pa3.clone(), __pa4.clone()),
+                                        (__pa2, __pa3 @ Deref @ SCode::Element::CLASS { partialPrefix: SCode::Partial::NOT_PARTIAL { .. }, .. }, __pa4) => (__pa2.clone(), __pa3.clone(), __pa4.clone()),
                                         _ => bail!("pattern mismatch"),
                             } };
                             cache = __pa2.clone();
@@ -2966,7 +2965,6 @@ fn cevalCallFunctionEvaluateOrGenerate2(mut inCache: FCore::Cache, mut inEnv: FC
                     if Flags::isSet(Flags::DYN_LOAD.clone())? {
                         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[dynload]: Updating build time for function path: ")); __mm_s.push_str(&*AbsynUtil::pathString(funcpath.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" within: ")); __mm_s.push_str(&*Dump::unparseWithin(w.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     }
-                    AbsynUtil::getFileNameFromInfo(info.clone())?;
                     if Flags::isSet(Flags::DYN_LOAD.clone())? {
                         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[dynload]: [SOME SYMTAB] not in in CF list [finished]: ")); __mm_s.push_str(&*AbsynUtil::pathString(funcpath.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     }
@@ -2999,8 +2997,8 @@ fn cevalIsExternalObjectConstructor(mut cache: FCore::Cache, mut funcpath: Arc<A
     let mut tp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut info: Option<SourceInfo> = None;
     let () = (match (env.clone(), msg.clone()) {
-        (FCore::Graph::EG { name: _ }, Absyn::Msg::NO_MSG) => bail!("fail"),
-        (_, Absyn::Msg::NO_MSG) => {
+        (FCore::Graph::EG { name: _ }, Absyn::Msg::NO_MSG { .. }) => bail!("fail"),
+        (_, Absyn::Msg::NO_MSG { .. }) => {
             let __pa0 = ::match_deref::match_deref! { match &(AbsynUtil::splitQualAndIdentPath(funcpath.clone())?) {
                 (__pa0, Deref @ Absyn::Path::IDENT { name: Deref @ "constructor" }) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
@@ -3081,7 +3079,7 @@ fn isSimpleAPIFunction(mut ty: Arc<DAE::Type>) -> Result<bool> {
         for mut fa in (var_field!((*ty).funcArg, DAE::Type::T_FUNCTION).clone()).into_iter().cloned() {
             let __x = (::match_deref::match_deref! { match &(fa.clone()) {
         Deref @ DAE::FuncArg { .. } => isSimpleAPIFunctionArg(fa.ty.clone()),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             __acc = Some(match __acc { None => __x, Some(__cur) => if __x < __cur { __x } else { __cur } });
         }
@@ -3102,9 +3100,9 @@ fn isSimpleAPIFunctionArg(mut ty: Arc<DAE::Type>) -> bool {
         Deref @ DAE::Type::T_REAL { .. } => true,
         Deref @ DAE::Type::T_BOOL { .. } => true,
         Deref @ DAE::Type::T_STRING { .. } => true,
-        Deref @ DAE::Type::T_NORETCALL => true,
+        Deref @ DAE::Type::T_NORETCALL { .. } => true,
         Deref @ DAE::Type::T_ARRAY { .. } => isSimpleAPIFunctionArg(var_field!((*ty).ty, DAE::Type::T_ARRAY).clone()),
-        Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME } => true,
+        Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } } => true,
         Deref @ DAE::Type::T_TUPLE { .. } => ({
         let mut __acc: Option<bool> = None;
         for mut t in (var_field!((*ty).types, DAE::Type::T_TUPLE).clone()).into_iter().cloned() {
@@ -3353,7 +3351,7 @@ fn transitiveDependencyString(mut deps: (ArcStr, Arc<metamodelica::List<ArcStr>>
 fn containsPublicInterface(mut elt: Arc<SCode::Element>) -> Result<bool> {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(elt.clone()) {
-        Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { elementLst: elts, .. }, encapsulatedPrefix: SCode::Encapsulated::ENCAPSULATED, restriction: SCode::Restriction::R_PACKAGE, .. } => {
+        Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { elementLst: elts, .. }, encapsulatedPrefix: SCode::Encapsulated::ENCAPSULATED { .. }, restriction: SCode::Restriction::R_PACKAGE { .. }, .. } => {
             List::any(elts.clone(), (std::sync::Arc::new(fnptr!(containsPublicInterface2, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>))
         },
         _ => {
@@ -3374,8 +3372,8 @@ fn containsPublicInterface2(mut elt: Arc<SCode::Element>) -> bool {
         Deref @ SCode::Element::IMPORT { .. } => false,
         Deref @ SCode::Element::EXTENDS { .. } => false,
         Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_FUNCTION { functionRestriction: _ }, .. } => false,
-        Deref @ SCode::Element::COMPONENT { prefixes: Deref @ SCode::Prefixes { visibility: SCode::Visibility::PUBLIC, .. }, .. } => true,
-        Deref @ SCode::Element::CLASS { prefixes: Deref @ SCode::Prefixes { visibility: SCode::Visibility::PUBLIC, .. }, .. } => true,
+        Deref @ SCode::Element::COMPONENT { prefixes: Deref @ SCode::Prefixes { visibility: SCode::Visibility::PUBLIC { .. }, .. }, .. } => true,
+        Deref @ SCode::Element::CLASS { prefixes: Deref @ SCode::Prefixes { visibility: SCode::Visibility::PUBLIC { .. }, .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -3385,7 +3383,7 @@ fn containsPublicInterface2(mut elt: Arc<SCode::Element>) -> bool {
 fn containsImport(mut elt: Arc<SCode::Element>, mut visibility: SCode::Visibility) -> Result<bool> {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(elt.clone()) {
-        Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { elementLst: elts, .. }, encapsulatedPrefix: SCode::Encapsulated::ENCAPSULATED, restriction: SCode::Restriction::R_PACKAGE, .. } => {
+        Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { elementLst: elts, .. }, encapsulatedPrefix: SCode::Encapsulated::ENCAPSULATED { .. }, restriction: SCode::Restriction::R_PACKAGE { .. }, .. } => {
             List::exist1(elts.clone(), (std::sync::Arc::new(fnptr!(containsImport2, Arc<SCode::Element>, SCode::Visibility)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, SCode::Visibility) -> Result<bool> + 'static>), visibility.clone())
         },
         _ => {
@@ -3403,8 +3401,8 @@ fn containsImport(mut elt: Arc<SCode::Element>, mut visibility: SCode::Visibilit
 fn containsImport2(mut elt: Arc<SCode::Element>, mut visibility: SCode::Visibility) -> bool {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &((elt.clone(), visibility.clone())) {
-        (Deref @ SCode::Element::IMPORT { visibility: SCode::Visibility::PUBLIC, .. }, SCode::Visibility::PUBLIC) => true,
-        (Deref @ SCode::Element::IMPORT { visibility: SCode::Visibility::PROTECTED, .. }, SCode::Visibility::PROTECTED) => true,
+        (Deref @ SCode::Element::IMPORT { visibility: SCode::Visibility::PUBLIC { .. }, .. }, SCode::Visibility::PUBLIC { .. }) => true,
+        (Deref @ SCode::Element::IMPORT { visibility: SCode::Visibility::PROTECTED { .. }, .. }, SCode::Visibility::PROTECTED { .. }) => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -3860,11 +3858,11 @@ fn listFile(mut args: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: className } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: nested }, tail: Deref @ metamodelica::List::Nil } } => {
-                    let mut access: Access = access.clone();
-                    let mut r#str: ArcStr = r#str.clone();
-                    let mut absynClass: Arc<Absyn::Class> = absynClass.clone();
                     let mut path: Arc<Absyn::Path>;
+                    let mut absynClass: Arc<Absyn::Class> = absynClass.clone();
+                    let mut r#str: ArcStr = r#str.clone();
                     let mut restriction: Absyn::Restriction = restriction.clone();
+                    let mut access: Access = access.clone();
                     path = (::match_deref::match_deref! { match &(className.clone()) {
         Deref @ Absyn::Path::FULLYQUALIFIED { .. } => var_field!((**className).path, Absyn::Path::FULLYQUALIFIED).clone(),
         _ => className.clone(),
@@ -3937,14 +3935,14 @@ fn getClassNames(mut args: Arc<metamodelica::List<Arc<Values::Value>>>) -> Resul
     if AbsynUtil::pathEqual(path.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("AllLoadedClasses")).clone() })) {
         if recursive.clone() {
             (_, paths) = ProgramUtil::getClassNamesRecursive(None, p.clone(), protects.clone(), constants.clone(), metamodelica::nil())?;
-            paths = paths.clone().reverse();
+            paths = metamodelica::Dangerous::listReverseInPlace(paths.clone());
         } else {
             paths = Interactive::getTopClassnames(p.clone())?;
         }
     } else {
         if recursive.clone() {
             (_, paths) = ProgramUtil::getClassNamesRecursive(Some(path.clone()), p.clone(), protects.clone(), constants.clone(), metamodelica::nil())?;
-            paths = paths.clone().reverse();
+            paths = metamodelica::Dangerous::listReverseInPlace(paths.clone());
         } else {
             paths = Interactive::getClassnamesInPath(path.clone(), p.clone(), protects.clone(), constants.clone())?;
             if qualified.clone() {
@@ -4088,7 +4086,10 @@ fn generateSeparateCodeDependencies(mut args: Arc<metamodelica::List<Arc<Values:
         depschanged = List::select1(depsmerged.clone(), (std::sync::Arc::new(fnptr!(isChanged, (ArcStr, Arc<metamodelica::List<ArcStr>>), (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<ArcStr>>), i32, i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>)))) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, Arc<metamodelica::List<ArcStr>>), (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<ArcStr>>), i32, i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))) -> Result<bool> + 'static>), hashSetString.clone());
         names = List::map(depschanged.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)));
         fileNames = List::map1(names.clone(), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (suffix.clone()).clone());
-        List::map(fileNames.clone(), (std::sync::Arc::new(fnptr!(System::removeFile, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>));
+        for mut f in &*fileNames.clone() {
+            let mut f = f.clone();
+            System::removeFile((f.clone()).clone());
+        }
         res = unwrap_break_err!(ValuesMake::makeArray(List::map(names.clone(), (std::sync::Arc::new(fnptr!(ValuesMake::makeString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Values::Value>> + 'static>))), '__try0);
         Ok::<_, anyhow::Error>((res.clone(),))
     } {
@@ -4116,11 +4117,11 @@ fn generateSeparateCode(mut args: Arc<metamodelica::List<Arc<Values::Value>>>, m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: v, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: b }, tail: Deref @ metamodelica::List::Nil } } => {
-                    let mut p: Absyn::Program = p.clone();
-                    let mut sp: Arc<metamodelica::List<Arc<SCode::Element>>> = sp.clone();
                     let mut name: ArcStr = name.clone();
                     let mut cl: Arc<SCode::Element>;
                     let mut outCache: FCore::Cache = outCache.clone();
+                    let mut p: Absyn::Program = p.clone();
+                    let mut sp: Arc<metamodelica::List<Arc<SCode::Element>>> = sp.clone();
                     p = SymbolTable::getAbsyn();
                     sp = SymbolTable::getSCode()?;
                     name = (getTypeNameIdent(v.clone())?).clone();
@@ -4136,8 +4137,8 @@ fn generateSeparateCode(mut args: Arc<metamodelica::List<Arc<Values::Value>>>, m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: v, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: _ }, tail: Deref @ metamodelica::List::Nil } } => {
-                    let mut sp: Arc<metamodelica::List<Arc<SCode::Element>>> = sp.clone();
                     let mut name: ArcStr = name.clone();
+                    let mut sp: Arc<metamodelica::List<Arc<SCode::Element>>> = sp.clone();
                     sp = SymbolTable::getSCode()?;
                     name = (getTypeNameIdent(v.clone())?).clone();
                     let false = (List::isMemberOnTrue((name.clone()).clone(), sp.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::isClassNamed, ArcStr, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<SCode::Element>) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
@@ -4194,8 +4195,8 @@ pub fn getImportList(mut inClass: Arc<Absyn::Class>, mut pub_imports_list: Arc<m
         let mut part = part.clone();
         (pub_imports_list, pro_imports_list) = getImportsInClassPart(part.clone(), pub_imports_list.clone(), pro_imports_list.clone());
     }
-    pub_imports_list = pub_imports_list.clone().reverse();
-    pro_imports_list = pro_imports_list.clone().reverse();
+    pub_imports_list = metamodelica::Dangerous::listReverseInPlace(pub_imports_list.clone());
+    pro_imports_list = metamodelica::Dangerous::listReverseInPlace(pro_imports_list.clone());
     (pub_imports_list, pro_imports_list)
 }
 

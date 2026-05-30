@@ -94,7 +94,7 @@ pub fn generateEquations(mut sets: metamodelica::Array<Arc<metamodelica::List<Ar
     type potFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Connector::NFConnector>>>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<(Arc<metamodelica::List<Arc<Equation::NFEquation>>>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>)> + 'static>;
 
     let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
-    let mut connectedLocalIOs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+    let mut connectedLocalIOs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
     let mut unhandledStreamSets: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Connector::NFConnector>>>>> = metamodelica::nil();
     let mut set_eql: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
     let mut potfunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Connector::NFConnector>>>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<(Arc<metamodelica::List<Arc<Equation::NFEquation>>>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>)> + 'static>;
@@ -125,7 +125,7 @@ pub fn generateEquations(mut sets: metamodelica::Array<Arc<metamodelica::List<Ar
         }
         equations = listAppend(set_eql.clone(), equations.clone());
     }
-    unhandledStreamSets = unhandledStreamSets.clone().reverse();
+    unhandledStreamSets = metamodelica::Dangerous::listReverseInPlace(unhandledStreamSets.clone());
     Ok((equations, connectedLocalIOs, unhandledStreamSets))
 }
 
@@ -274,7 +274,7 @@ fn makeEqualityAssert(mut lhsCref: Arc<ComponentRef::NFComponentRef>, mut lhsSou
     ty = ComponentRef::getSubscriptedType(lhsCref.clone(), false)?;
     if Type::isArray(ty.clone()) {
         (iterators, ranges, subs) = Flatten::makeIterators(lhsCref.clone(), Type::arrayDims(ty.clone()))?;
-        subs = subs.clone().reverse();
+        subs = metamodelica::Dangerous::listReverseInPlace(subs.clone());
         lhs_exp = Expression::fromCref(ComponentRef::mergeSubscripts(subs.clone(), lhsCref.clone(), false, false, false)?, false)?;
         rhs_exp = Expression::fromCref(ComponentRef::mergeSubscripts(subs.clone(), rhsCref.clone(), false, false, false)?, false)?;
     } else {
@@ -336,7 +336,7 @@ fn generateFlowEquations(mut elements: Arc<metamodelica::List<Arc<Connector::NFC
     src = c.source.clone();
     if Connector::isArray(c.clone()) {
         (iterators, ranges, subs) = Flatten::makeIterators(c.name.clone(), Type::arrayDims(c.ty.clone()))?;
-        subs = subs.clone().reverse();
+        subs = metamodelica::Dangerous::listReverseInPlace(subs.clone());
         let (__pa2, __pa3) = ::match_deref::match_deref! { match &(({
         let mut __acc: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
         for mut e in (elements.clone()).into_iter().cloned() {
@@ -647,7 +647,7 @@ fn evaluateOperatorReductionExp(mut exp: Arc<Expression::NFExpression>, mut sets
                 ty = Type::liftArrayLeftList(ty.clone(), Type::arrayDims(Expression::typeOf(iter_exp.clone())));
                 iters = cons((iter_node.clone(), iter_exp.clone()), iters.clone());
             }
-            iters = iters.clone().reverse();
+            iters = metamodelica::Dangerous::listReverseInPlace(iters.clone());
             (arg, _) = ExpandExp::expandArrayConstructor(var_field!((**call).exp, Call::NFCall::TYPED_REDUCTION).clone(), ty.clone(), iters.clone())?;
             Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(var_field!((**call).r#fn, Call::NFCall::TYPED_REDUCTION).clone(), list![arg.clone()], var_field!((**call).var, Call::NFCall::TYPED_REDUCTION).clone(), Purity::PURE.clone(), var_field!((**call).ty, Call::NFCall::TYPED_REDUCTION).clone()) })
         },

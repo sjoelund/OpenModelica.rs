@@ -891,7 +891,7 @@ pub fn scalarVariableAttributeXML(mut txt: Tpl::Text, mut a_simVar: SimCodeVar::
 pub fn getAliasAttribute(mut in_txt: Tpl::Text, mut in_a_aliasvar: SimCodeVar::AliasVariable) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_aliasvar.clone()) {
-        (mut txt, SimCodeVar::AliasVariable::NOALIAS) => {
+        (mut txt, SimCodeVar::AliasVariable::NOALIAS { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("noAlias")).clone() }))?;
             txt.clone()
         },
@@ -966,7 +966,7 @@ fn fun_89(mut in_txt: Tpl::Text, mut in_a_type__: Arc<DAE::Type>, mut in_a_simCo
             l_fixed__ = Tpl::popBlock(l_fixed__.clone())?;
             l_nom__ = Tpl::pushBlock(Tpl::emptyTxt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
             l_nom__ = Tpl::writeTok(l_nom__.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("useNominal=\"")).clone() }))?;
-            ret_7 = Util::isSome(a_nominalValue.clone());
+            ret_7 = isSome(a_nominalValue.clone());
             l_nom__ = Tpl::writeStr(l_nom__.clone(), (Tpl::booleanString(ret_7.clone())).clone())?;
             l_nom__ = Tpl::writeTok(l_nom__.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
             l_nom__ = attributeOptionString(l_nom__.clone(), a_nominalValue.clone(), (literal!("nominal")).clone())?;
@@ -1270,7 +1270,7 @@ fn fun_97(mut in_txt: Tpl::Text, mut in_a_simVarAlias: SimCodeVar::AliasVariable
     let mut out_a_complexStartExpressions: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
     (out_txt, out_a_complexStartExpressions, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_simVarAlias.clone(), in_a_type.clone(), in_a_complexStartExpressions.clone(), in_a_exp.clone(), in_a_stateDerVectorName.clone(), in_a_simCode.clone(), in_a_simVarCref.clone())) {
-        (txt, SimCodeVar::AliasVariable::NOALIAS, a_type, a_complexStartExpressions, a_exp, a_stateDerVectorName, a_simCode, a_simVarCref) => {
+        (txt, SimCodeVar::AliasVariable::NOALIAS { .. }, a_type, a_complexStartExpressions, a_exp, a_stateDerVectorName, a_simCode, a_simVarCref) => {
             let mut l_expression: Tpl::Text;
             let mut l_crefStr: Tpl::Text;
             let mut l_extraFuncsDecl: Tpl::Text;

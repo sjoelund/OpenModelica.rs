@@ -396,7 +396,7 @@ pub fn matchesFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inUnifyWith: Arc<Absyn::E
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Absyn::Exp::END, Deref @ Absyn::Exp::END) => {
+                (Deref @ Absyn::Exp::END { .. }, Deref @ Absyn::Exp::END { .. }) => {
                     Ok(inAcc.clone())
                 }
                 _ => bail!("nomatch"),

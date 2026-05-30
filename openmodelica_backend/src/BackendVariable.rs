@@ -128,10 +128,10 @@ pub fn varFixed(mut inVar: BackendDAE::Var) -> bool {
         BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_ENUMERATION { fixed: Some(Deref @ DAE::Exp::BCONST { bool: fixed }), .. }), .. } => {
             fixed.clone()
         },
-        BackendDAE::Var { varKind: BackendDAE::VarKind::PARAM, .. } => {
+        BackendDAE::Var { varKind: BackendDAE::VarKind::PARAM { .. }, .. } => {
             true
         },
-        BackendDAE::Var { bindExp: Some(_), varKind: BackendDAE::VarKind::CONST, .. } => {
+        BackendDAE::Var { bindExp: Some(_), varKind: BackendDAE::VarKind::CONST { .. }, .. } => {
             true
         },
         _ => {
@@ -406,7 +406,7 @@ pub fn varHasStateSelect(mut inVar: BackendDAE::Var) -> bool {
 pub fn varStateSelectAlways(mut v: BackendDAE::Var) -> bool {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(v.clone()) {
-        BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { stateSelectOption: Some(DAE::StateSelect::ALWAYS), .. }), varKind: BackendDAE::VarKind::STATE { .. }, .. } => true,
+        BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { stateSelectOption: Some(DAE::StateSelect::ALWAYS { .. }), .. }), varKind: BackendDAE::VarKind::STATE { .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -429,7 +429,7 @@ pub fn notVarStateSelectAlways(mut v: BackendDAE::Var, mut level: i32) -> bool {
 pub fn varStateSelectNever(mut inVar: BackendDAE::Var) -> bool {
     let mut isNever: bool = false;
     isNever = (match varStateSelect(inVar.clone()) {
-        DAE::StateSelect::NEVER => true,
+        DAE::StateSelect::NEVER { .. } => true,
         _ => false,
     });
     isNever
@@ -438,7 +438,7 @@ pub fn varStateSelectNever(mut inVar: BackendDAE::Var) -> bool {
 pub fn varStateSelectAvoid(mut inVar: BackendDAE::Var) -> bool {
     let mut isAvoid: bool = false;
     isAvoid = (match varStateSelect(inVar.clone()) {
-        DAE::StateSelect::AVOID => true,
+        DAE::StateSelect::AVOID { .. } => true,
         _ => false,
     });
     isAvoid
@@ -447,7 +447,7 @@ pub fn varStateSelectAvoid(mut inVar: BackendDAE::Var) -> bool {
 pub fn varStateSelectPrefer(mut inVar: BackendDAE::Var) -> bool {
     let mut isPrefer: bool = false;
     isPrefer = (match varStateSelect(inVar.clone()) {
-        DAE::StateSelect::PREFER => true,
+        DAE::StateSelect::PREFER { .. } => true,
         _ => false,
     });
     isPrefer
@@ -464,8 +464,8 @@ pub fn setVarStateSelect(mut inVar: BackendDAE::Var, mut stateSelect: DAE::State
 pub fn varStateSelectForced(mut inVar: BackendDAE::Var) -> bool {
     let mut isForced: bool = false;
     isForced = (::match_deref::match_deref! { match &(inVar.clone()) {
-        BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { stateSelectOption: Some(DAE::StateSelect::ALWAYS), .. }), .. } => true,
-        BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { stateSelectOption: Some(DAE::StateSelect::PREFER), .. }), .. } => true,
+        BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { stateSelectOption: Some(DAE::StateSelect::ALWAYS { .. }), .. }), .. } => true,
+        BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { stateSelectOption: Some(DAE::StateSelect::PREFER { .. }), .. }), .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -668,20 +668,20 @@ pub fn isState(mut inCref: Arc<DAE::ComponentRef>, mut inVars: BackendDAE::Varia
 pub fn isNonStateVar(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool = false;
     outBoolean = (match inVar.clone() {
-        BackendDAE::Var { varKind: BackendDAE::VarKind::VARIABLE, .. } => true,
-        BackendDAE::Var { varKind: BackendDAE::VarKind::DUMMY_DER, .. } => true,
-        BackendDAE::Var { varKind: BackendDAE::VarKind::DUMMY_STATE, .. } => true,
-        BackendDAE::Var { varKind: BackendDAE::VarKind::DISCRETE, .. } => true,
-        BackendDAE::Var { varKind: BackendDAE::VarKind::STATE_DER, .. } => true,
-        BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_CONSTR, .. } => true,
-        BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_FCONSTR, .. } => true,
-        BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_INPUT_WITH_DER, .. } => true,
-        BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_INPUT_DER, .. } => true,
-        BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_TGRID, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::VARIABLE { .. }, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::DUMMY_DER { .. }, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::DUMMY_STATE { .. }, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::DISCRETE { .. }, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::STATE_DER { .. }, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_CONSTR { .. }, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_FCONSTR { .. }, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_INPUT_WITH_DER { .. }, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_INPUT_DER { .. }, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_TGRID { .. }, .. } => true,
         BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_LOOP_INPUT { .. }, .. } => true,
-        BackendDAE::Var { varKind: BackendDAE::VarKind::ALG_STATE, .. } => true,
-        BackendDAE::Var { varKind: BackendDAE::VarKind::LOOP_ITERATION, .. } => true,
-        BackendDAE::Var { varKind: BackendDAE::VarKind::LOOP_SOLVED, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::ALG_STATE { .. }, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::LOOP_ITERATION { .. }, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::LOOP_SOLVED { .. }, .. } => true,
         _ => false,
     });
     outBoolean
@@ -720,8 +720,8 @@ pub fn isClockedState(mut inCref: Arc<DAE::ComponentRef>, mut inVars: BackendDAE
 pub fn varHasUncertainValueRefine(mut var: BackendDAE::Var) -> bool {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(var.clone()) {
-        BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { uncertainOption: Some(DAE::Uncertainty::REFINE), .. }), .. } => true,
-        BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_INT { uncertainOption: Some(DAE::Uncertainty::REFINE), .. }), .. } => true,
+        BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { uncertainOption: Some(DAE::Uncertainty::REFINE { .. }), .. }), .. } => true,
+        BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_INT { uncertainOption: Some(DAE::Uncertainty::REFINE { .. }), .. }), .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -731,7 +731,7 @@ pub fn varHasUncertainValueRefine(mut var: BackendDAE::Var) -> bool {
 pub fn varHasUncertainValuePropagate(mut var: BackendDAE::Var) -> bool {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(var.clone()) {
-        BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { uncertainOption: Some(DAE::Uncertainty::PROPAGATE), .. }), .. } => true,
+        BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { uncertainOption: Some(DAE::Uncertainty::PROPAGATE { .. }), .. }), .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -795,7 +795,7 @@ pub fn varHasUncertaintyAttribute(mut var: BackendDAE::Var) -> bool {
 pub fn isDummyStateVar(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool = false;
     outBoolean = (match inVar.clone() {
-        BackendDAE::Var { varKind: BackendDAE::VarKind::DUMMY_STATE, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::DUMMY_STATE { .. }, .. } => true,
         _ => false,
     });
     outBoolean
@@ -804,7 +804,7 @@ pub fn isDummyStateVar(mut inVar: BackendDAE::Var) -> bool {
 pub fn isDummyDerVar(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool = false;
     outBoolean = (match inVar.clone() {
-        BackendDAE::Var { varKind: BackendDAE::VarKind::DUMMY_DER, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::DUMMY_DER { .. }, .. } => true,
         _ => false,
     });
     outBoolean
@@ -813,7 +813,7 @@ pub fn isDummyDerVar(mut inVar: BackendDAE::Var) -> bool {
 pub fn isStateDerVar(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool = false;
     outBoolean = (match inVar.clone() {
-        BackendDAE::Var { varKind: BackendDAE::VarKind::STATE_DER, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::STATE_DER { .. }, .. } => true,
         _ => false,
     });
     outBoolean
@@ -823,7 +823,7 @@ pub fn isStateorStateDerVar(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool = false;
     outBoolean = (match inVar.clone() {
         BackendDAE::Var { varKind: BackendDAE::VarKind::STATE { .. }, .. } => true,
-        BackendDAE::Var { varKind: BackendDAE::VarKind::STATE_DER, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::STATE_DER { .. }, .. } => true,
         _ => false,
     });
     outBoolean
@@ -832,9 +832,9 @@ pub fn isStateorStateDerVar(mut inVar: BackendDAE::Var) -> bool {
 pub fn isVarDiscrete(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool = false;
     outBoolean = (::match_deref::match_deref! { match &(inVar.clone()) {
-        BackendDAE::Var { varKind: BackendDAE::VarKind::DISCRETE, .. } => true,
-        BackendDAE::Var { varKind: BackendDAE::VarKind::PARAM, .. } => true,
-        BackendDAE::Var { varKind: BackendDAE::VarKind::CONST, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::DISCRETE { .. }, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::PARAM { .. }, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::CONST { .. }, .. } => true,
         BackendDAE::Var { varType: Deref @ DAE::Type::T_INTEGER { .. }, .. } => true,
         BackendDAE::Var { varType: Deref @ DAE::Type::T_BOOL { .. }, .. } => true,
         BackendDAE::Var { varType: Deref @ DAE::Type::T_ENUMERATION { .. }, .. } => true,
@@ -847,7 +847,7 @@ pub fn isVarDiscrete(mut inVar: BackendDAE::Var) -> bool {
 pub fn isVarNonDifferentiable(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool = false;
     outBoolean = (::match_deref::match_deref! { match &(inVar.clone()) {
-        BackendDAE::Var { varKind: BackendDAE::VarKind::DISCRETE, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::DISCRETE { .. }, .. } => true,
         BackendDAE::Var { varType: Deref @ DAE::Type::T_INTEGER { .. }, .. } => true,
         BackendDAE::Var { varType: Deref @ DAE::Type::T_BOOL { .. }, .. } => true,
         BackendDAE::Var { varType: Deref @ DAE::Type::T_ENUMERATION { .. }, .. } => true,
@@ -899,43 +899,43 @@ pub fn hasDiscreteVar(mut inBackendDAEVarLst: Arc<metamodelica::List<BackendDAE:
 pub fn hasContinuousVar(mut inBackendDAEVarLst: Arc<metamodelica::List<BackendDAE::Var>>) -> bool {
     let mut outBoolean: bool = false;
     outBoolean = (::match_deref::match_deref! { match &(inBackendDAEVarLst.clone()) {
-        Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varType: Deref @ DAE::Type::T_REAL { .. }, varKind: BackendDAE::VarKind::VARIABLE, .. }, tail: _ } => {
+        Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varType: Deref @ DAE::Type::T_REAL { .. }, varKind: BackendDAE::VarKind::VARIABLE { .. }, .. }, tail: _ } => {
             true
         },
-        Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varType: Deref @ DAE::Type::T_ARRAY { ty: Deref @ DAE::Type::T_REAL { .. }, .. }, varKind: BackendDAE::VarKind::VARIABLE, .. }, tail: _ } => {
+        Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varType: Deref @ DAE::Type::T_ARRAY { ty: Deref @ DAE::Type::T_REAL { .. }, .. }, varKind: BackendDAE::VarKind::VARIABLE { .. }, .. }, tail: _ } => {
             true
         },
         Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::STATE { .. }, .. }, tail: _ } => {
             true
         },
-        Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::STATE_DER, .. }, tail: _ } => {
+        Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::STATE_DER { .. }, .. }, tail: _ } => {
             true
         },
-        Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::DUMMY_DER, .. }, tail: _ } => {
+        Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::DUMMY_DER { .. }, .. }, tail: _ } => {
             true
         },
-        Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::DUMMY_STATE, .. }, tail: _ } => {
+        Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::DUMMY_STATE { .. }, .. }, tail: _ } => {
             true
         },
-        Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_CONSTR, .. }, tail: _ } => {
+        Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_CONSTR { .. }, .. }, tail: _ } => {
             true
         },
-        Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_FCONSTR, .. }, tail: _ } => {
+        Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_FCONSTR { .. }, .. }, tail: _ } => {
             true
         },
-        Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_INPUT_WITH_DER, .. }, tail: _ } => {
+        Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_INPUT_WITH_DER { .. }, .. }, tail: _ } => {
             true
         },
-        Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_INPUT_DER, .. }, tail: _ } => {
+        Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_INPUT_DER { .. }, .. }, tail: _ } => {
             true
         },
-        Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_TGRID, .. }, tail: _ } => {
+        Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_TGRID { .. }, .. }, tail: _ } => {
             true
         },
         Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_LOOP_INPUT { .. }, .. }, tail: _ } => {
             true
         },
-        Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::ALG_STATE, .. }, tail: _ } => {
+        Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::ALG_STATE { .. }, .. }, tail: _ } => {
             true
         },
         Deref @ metamodelica::List::Cons { head: _, tail: vs } => {
@@ -963,8 +963,8 @@ pub fn isOptInputVar(mut var: BackendDAE::Var) -> bool {
     let mut b: bool = false;
     b = (match var.varKind.clone() {
         BackendDAE::VarKind::OPT_LOOP_INPUT { .. } => true,
-        BackendDAE::VarKind::OPT_INPUT_WITH_DER => true,
-        BackendDAE::VarKind::OPT_INPUT_DER => true,
+        BackendDAE::VarKind::OPT_INPUT_WITH_DER { .. } => true,
+        BackendDAE::VarKind::OPT_INPUT_DER { .. } => true,
         _ => false,
     });
     b
@@ -973,7 +973,7 @@ pub fn isOptInputVar(mut var: BackendDAE::Var) -> bool {
 pub fn isVarDiscreteRealAlg(mut var: BackendDAE::Var) -> bool {
     let mut result: bool = false;
     result = (::match_deref::match_deref! { match &(var.clone()) {
-        BackendDAE::Var { varType: Deref @ DAE::Type::T_REAL { .. }, varKind: BackendDAE::VarKind::DISCRETE, .. } => true,
+        BackendDAE::Var { varType: Deref @ DAE::Type::T_REAL { .. }, varKind: BackendDAE::VarKind::DISCRETE { .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -983,10 +983,10 @@ pub fn isVarDiscreteRealAlg(mut var: BackendDAE::Var) -> bool {
 pub fn isVarAlg(mut var: BackendDAE::Var) -> bool {
     let mut result: bool = false;
     result = (match var.varKind.clone() {
-        BackendDAE::VarKind::VARIABLE => true,
-        BackendDAE::VarKind::DISCRETE => true,
-        BackendDAE::VarKind::DUMMY_DER => true,
-        BackendDAE::VarKind::DUMMY_STATE => true,
+        BackendDAE::VarKind::VARIABLE { .. } => true,
+        BackendDAE::VarKind::DISCRETE { .. } => true,
+        BackendDAE::VarKind::DUMMY_DER { .. } => true,
+        BackendDAE::VarKind::DUMMY_STATE { .. } => true,
         BackendDAE::VarKind::CLOCKED_STATE { .. } => true,
         _ => false,
     });
@@ -1087,7 +1087,7 @@ pub fn isVarBoolParam(mut var: BackendDAE::Var) -> bool {
 pub fn isVarConnector(mut var: BackendDAE::Var) -> bool {
     let mut result: bool = false;
     result = (::match_deref::match_deref! { match &(var.clone()) {
-        BackendDAE::Var { connectorType: Deref @ DAE::ConnectorType::NON_CONNECTOR, .. } => false,
+        BackendDAE::Var { connectorType: Deref @ DAE::ConnectorType::NON_CONNECTOR { .. }, .. } => false,
         _ => true,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1097,7 +1097,7 @@ pub fn isVarConnector(mut var: BackendDAE::Var) -> bool {
 pub fn isFlowVar(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool = false;
     outBoolean = (::match_deref::match_deref! { match &(inVar.clone()) {
-        BackendDAE::Var { connectorType: Deref @ DAE::ConnectorType::FLOW, .. } => true,
+        BackendDAE::Var { connectorType: Deref @ DAE::ConnectorType::FLOW { .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1107,7 +1107,7 @@ pub fn isFlowVar(mut inVar: BackendDAE::Var) -> bool {
 pub fn isConst(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool = false;
     outBoolean = (match inVar.clone() {
-        BackendDAE::Var { varKind: BackendDAE::VarKind::CONST, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::CONST { .. }, .. } => true,
         _ => false,
     });
     outBoolean
@@ -1116,8 +1116,8 @@ pub fn isConst(mut inVar: BackendDAE::Var) -> bool {
 pub fn isParam(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool = false;
     outBoolean = (match inVar.clone() {
-        BackendDAE::Var { varKind: BackendDAE::VarKind::PARAM, .. } => true,
-        BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_TGRID, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::PARAM { .. }, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_TGRID { .. }, .. } => true,
         _ => false,
     });
     outBoolean
@@ -1150,8 +1150,8 @@ pub fn isParamOrConstant(mut invar: BackendDAE::Var) -> bool {
 pub fn isIntParam(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool = false;
     outBoolean = (::match_deref::match_deref! { match &(inVar.clone()) {
-        BackendDAE::Var { varType: Deref @ DAE::Type::T_INTEGER { .. }, varKind: BackendDAE::VarKind::PARAM, .. } => true,
-        BackendDAE::Var { varType: Deref @ DAE::Type::T_ENUMERATION { .. }, varKind: BackendDAE::VarKind::PARAM, .. } => true,
+        BackendDAE::Var { varType: Deref @ DAE::Type::T_INTEGER { .. }, varKind: BackendDAE::VarKind::PARAM { .. }, .. } => true,
+        BackendDAE::Var { varType: Deref @ DAE::Type::T_ENUMERATION { .. }, varKind: BackendDAE::VarKind::PARAM { .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1161,7 +1161,7 @@ pub fn isIntParam(mut inVar: BackendDAE::Var) -> bool {
 pub fn isBoolParam(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool = false;
     outBoolean = (::match_deref::match_deref! { match &(inVar.clone()) {
-        BackendDAE::Var { varType: Deref @ DAE::Type::T_BOOL { .. }, varKind: BackendDAE::VarKind::PARAM, .. } => true,
+        BackendDAE::Var { varType: Deref @ DAE::Type::T_BOOL { .. }, varKind: BackendDAE::VarKind::PARAM { .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1171,7 +1171,7 @@ pub fn isBoolParam(mut inVar: BackendDAE::Var) -> bool {
 pub fn isStringParam(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool = false;
     outBoolean = (::match_deref::match_deref! { match &(inVar.clone()) {
-        BackendDAE::Var { varType: Deref @ DAE::Type::T_STRING { .. }, varKind: BackendDAE::VarKind::PARAM, .. } => true,
+        BackendDAE::Var { varType: Deref @ DAE::Type::T_STRING { .. }, varKind: BackendDAE::VarKind::PARAM { .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1190,7 +1190,7 @@ pub fn isExtObj(mut inVar: BackendDAE::Var) -> bool {
 pub fn isAlgState(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool = false;
     outBoolean = (match inVar.clone() {
-        BackendDAE::Var { varKind: BackendDAE::VarKind::ALG_STATE, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::ALG_STATE { .. }, .. } => true,
         _ => false,
     });
     outBoolean
@@ -1199,7 +1199,7 @@ pub fn isAlgState(mut inVar: BackendDAE::Var) -> bool {
 pub fn isRealParam(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool = false;
     outBoolean = (::match_deref::match_deref! { match &(inVar.clone()) {
-        BackendDAE::Var { varType: Deref @ DAE::Type::T_REAL { .. }, varKind: BackendDAE::VarKind::PARAM, .. } => true,
+        BackendDAE::Var { varType: Deref @ DAE::Type::T_REAL { .. }, varKind: BackendDAE::VarKind::PARAM { .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1209,7 +1209,7 @@ pub fn isRealParam(mut inVar: BackendDAE::Var) -> bool {
 pub fn isRealOptimizeConstraintsVars(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool = false;
     outBoolean = (match inVar.clone() {
-        BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_CONSTR, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_CONSTR { .. }, .. } => true,
         _ => false,
     });
     outBoolean
@@ -1218,8 +1218,8 @@ pub fn isRealOptimizeConstraintsVars(mut inVar: BackendDAE::Var) -> bool {
 pub fn isDAEmodeVar(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool = false;
     outBoolean = (match inVar.clone() {
-        BackendDAE::Var { varKind: BackendDAE::VarKind::DAE_RESIDUAL_VAR, .. } => true,
-        BackendDAE::Var { varKind: BackendDAE::VarKind::DAE_AUX_VAR, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::DAE_RESIDUAL_VAR { .. }, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::DAE_AUX_VAR { .. }, .. } => true,
         _ => false,
     });
     outBoolean
@@ -1228,7 +1228,7 @@ pub fn isDAEmodeVar(mut inVar: BackendDAE::Var) -> bool {
 pub fn isDAEmodeResVar(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool = false;
     outBoolean = (match inVar.clone() {
-        BackendDAE::Var { varKind: BackendDAE::VarKind::DAE_RESIDUAL_VAR, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::DAE_RESIDUAL_VAR { .. }, .. } => true,
         _ => false,
     });
     outBoolean
@@ -1237,7 +1237,7 @@ pub fn isDAEmodeResVar(mut inVar: BackendDAE::Var) -> bool {
 pub fn isDAEmodeAuxVar(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool = false;
     outBoolean = (match inVar.clone() {
-        BackendDAE::Var { varKind: BackendDAE::VarKind::DAE_AUX_VAR, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::DAE_AUX_VAR { .. }, .. } => true,
         _ => false,
     });
     outBoolean
@@ -1246,7 +1246,7 @@ pub fn isDAEmodeAuxVar(mut inVar: BackendDAE::Var) -> bool {
 pub fn isRealOptimizeFinalConstraintsVars(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool = false;
     outBoolean = (match inVar.clone() {
-        BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_FCONSTR, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_FCONSTR { .. }, .. } => true,
         _ => false,
     });
     outBoolean
@@ -1255,7 +1255,7 @@ pub fn isRealOptimizeFinalConstraintsVars(mut inVar: BackendDAE::Var) -> bool {
 pub fn isRealOptimizeDerInput(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool = false;
     outBoolean = (match inVar.clone() {
-        BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_INPUT_DER, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::OPT_INPUT_DER { .. }, .. } => true,
         _ => false,
     });
     outBoolean
@@ -1264,7 +1264,7 @@ pub fn isRealOptimizeDerInput(mut inVar: BackendDAE::Var) -> bool {
 pub fn isAlgebraicOldState(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool = false;
     outBoolean = (match inVar.clone() {
-        BackendDAE::Var { varKind: BackendDAE::VarKind::ALG_STATE_OLD, .. } => true,
+        BackendDAE::Var { varKind: BackendDAE::VarKind::ALG_STATE_OLD { .. }, .. } => true,
         _ => false,
     });
     outBoolean
@@ -1389,7 +1389,7 @@ pub fn isNonRealParam(mut inVar: BackendDAE::Var) -> bool {
 pub fn isInput(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool = false;
     outBoolean = (match inVar.clone() {
-        BackendDAE::Var { varDirection: DAE::VarDirection::INPUT, .. } => true,
+        BackendDAE::Var { varDirection: DAE::VarDirection::INPUT { .. }, .. } => true,
         _ => false,
     });
     outBoolean
@@ -1398,7 +1398,7 @@ pub fn isInput(mut inVar: BackendDAE::Var) -> bool {
 pub fn isOutputVar(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool = false;
     outBoolean = (match inVar.clone() {
-        BackendDAE::Var { varDirection: DAE::VarDirection::OUTPUT, .. } => true,
+        BackendDAE::Var { varDirection: DAE::VarDirection::OUTPUT { .. }, .. } => true,
         _ => false,
     });
     outBoolean
@@ -1428,7 +1428,7 @@ pub fn isRealVar(mut inVar: BackendDAE::Var) -> bool {
 pub fn isRealOutputVar(mut inVar: BackendDAE::Var) -> bool {
     let mut outBoolean: bool = false;
     outBoolean = (::match_deref::match_deref! { match &(inVar.clone()) {
-        BackendDAE::Var { varType: Deref @ DAE::Type::T_REAL { .. }, varDirection: DAE::VarDirection::OUTPUT, .. } => true,
+        BackendDAE::Var { varType: Deref @ DAE::Type::T_REAL { .. }, varDirection: DAE::VarDirection::OUTPUT { .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1442,7 +1442,7 @@ pub fn isOutput(mut inCref: Arc<DAE::ComponentRef>, mut inVars: BackendDAE::Vari
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             ::match_deref::match_deref! { match &(getVar(inCref.clone(), inVars.clone())?) {
-                (Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varDirection: DAE::VarDirection::OUTPUT, .. }, tail: _ }, _) => (),
+                (Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varDirection: DAE::VarDirection::OUTPUT { .. }, .. }, tail: _ }, _) => (),
                 _ => bail!("pattern mismatch"),
             } };
             Ok(true)
@@ -1860,7 +1860,7 @@ pub fn getMinMaxAsserts(mut inVar: BackendDAE::Var, mut inAsserts: Arc<metamodel
     outAsserts = 'mc: {
         let __mc_input = inVar.clone();
         if let Ok(__v) = (|| -> Result<_> {
-            let BackendDAE::Var { varKind: BackendDAE::VarKind::CONST, .. } = __mc_input.clone() else { bail!("nomatch") };
+            let BackendDAE::Var { varKind: BackendDAE::VarKind::CONST { .. }, .. } = __mc_input.clone() else { bail!("nomatch") };
             Ok(inAsserts.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -2002,12 +2002,12 @@ fn getAlias1(mut inExp: Arc<DAE::Exp>) -> Result<(Arc<DAE::ComponentRef>, bool)>
     Ok((outCr, negated))
 }
 
-pub fn daenumVariables(mut syst: Arc<BackendDAE::EqSystem>) -> Result<i32> {
+pub fn daenumVariables(mut syst: Arc<BackendDAE::EqSystem>) -> i32 {
     let mut n: i32 = 0;
     let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     vars = daeVars(syst.clone());
-    n = varsSize(vars.clone())?;
-    Ok(n)
+    n = varsSize(vars.clone());
+    n
 }
 
 /* =======================================================
@@ -2238,11 +2238,9 @@ pub fn daeAliasVars(mut inShared: Arc<BackendDAE::Shared>) -> BackendDAE::Variab
     outAliasVars
 }
 
-pub fn varsSize(mut inVariables: BackendDAE::Variables) -> Result<i32> {
-    let mut outNumVariables: i32 = 0;
-    let BackendDAE::VARIABLES { varArr: BackendDAE::VARIABLE_ARRAY { numberOfElements: __pa0, .. }, .. } = (inVariables.clone()) else { bail!("pattern mismatch") };
-    outNumVariables = __pa0.clone();
-    Ok(outNumVariables)
+pub fn varsSize(mut inVariables: BackendDAE::Variables) -> i32 {
+    let mut outNumVariables: i32 = inVariables.varArr.numberOfElements.clone();
+    outNumVariables
 }
 
 /*
@@ -2309,11 +2307,11 @@ pub fn isVariable(mut inComponentRef1: Arc<DAE::ComponentRef>, mut inVariables2:
 
 pub fn isVarKindVariable(mut inVarKind: BackendDAE::VarKind) -> Result<()> {
     let () = (match inVarKind.clone() {
-        BackendDAE::VarKind::VARIABLE => (),
+        BackendDAE::VarKind::VARIABLE { .. } => (),
         BackendDAE::VarKind::STATE { .. } => (),
-        BackendDAE::VarKind::DUMMY_STATE => (),
-        BackendDAE::VarKind::DUMMY_DER => (),
-        BackendDAE::VarKind::DISCRETE => (),
+        BackendDAE::VarKind::DUMMY_STATE { .. } => (),
+        BackendDAE::VarKind::DUMMY_DER { .. } => (),
+        BackendDAE::VarKind::DISCRETE { .. } => (),
         _ => bail!("match: no arm matched"),
     });
     Ok(())
@@ -2387,7 +2385,7 @@ pub fn deleteVars(mut inDelVars: BackendDAE::Variables, mut inVariables: Backend
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut newvars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
-            let true = (intGt(varsSize(inDelVars.clone())?, 0)) else { bail!("pattern mismatch") };
+            let true = (intGt(varsSize(inDelVars.clone()), 0)) else { bail!("pattern mismatch") };
             newvars = traverseBackendDAEVars(inDelVars.clone(), (std::sync::Arc::new(deleteVars1) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::Variables) -> Result<(BackendDAE::Var, BackendDAE::Variables)> + 'static>), inVariables.clone())?;
             newvars = listVar1(varList(newvars.clone())?);
             Ok(newvars.clone())
@@ -3029,7 +3027,7 @@ fn replaceVarWithWholeDim(mut inCref: Arc<DAE::ComponentRef>, mut iPerformed: bo
         Deref @ DAE::ComponentRef::OPTIMICA_ATTR_INST_CREF { .. } => {
             (inCref.clone(), iPerformed.clone())
         },
-        Deref @ DAE::ComponentRef::WILD => {
+        Deref @ DAE::ComponentRef::WILD { .. } => {
             (inCref.clone(), iPerformed.clone())
         },
         _ => {
@@ -3048,7 +3046,7 @@ fn replaceVarWithWholeDimSubs(mut inSubscript: Arc<metamodelica::List<Arc<DAE::S
         Deref @ metamodelica::List::Nil => {
             (inSubscript.clone(), iPerformed.clone())
         },
-        Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM, tail: rest } => {
+        Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM { .. }, tail: rest } => {
             let mut b: bool = false;
             (_, b) = replaceVarWithWholeDimSubs(rest.clone(), iPerformed.clone())?;
             (cons(Arc::new(openmodelica_frontend_types::DAE::Subscript::WHOLEDIM), rest.clone()), b.clone())
@@ -3238,9 +3236,9 @@ fn traversingVarIndexInFirstSetFinder(mut var: BackendDAE::Var, mut data: (Backe
 pub fn mergeVariables(mut inVariables1: BackendDAE::Variables, mut inVariables2: BackendDAE::Variables, mut copy: bool) -> Result<BackendDAE::Variables> {
     let mut outVariables: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     let mut num_vars: i32 = 0;
-    num_vars = varsSize(inVariables2.clone())?;
+    num_vars = varsSize(inVariables2.clone());
     if varsLoadFactor(inVariables1.clone(), num_vars.clone()) > metamodelica::OrderedFloat((1) as f64) {
-        outVariables = emptyVarsSized(varsSize(inVariables1.clone())? + num_vars.clone());
+        outVariables = emptyVarsSized(varsSize(inVariables1.clone()) + num_vars.clone());
         outVariables = addVariables(inVariables1.clone(), outVariables.clone())?;
     } else if copy.clone() {
         outVariables = copyVariables(inVariables1.clone());
@@ -3255,7 +3253,7 @@ pub fn rehashVariables(mut inVariables: BackendDAE::Variables) -> Result<Backend
     let mut outVariables: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     let mut load: metamodelica::Real = varsLoadFactor(inVariables.clone(), 0);
     if load.clone() < metamodelica::OrderedFloat(0.5_f64) || load.clone() > metamodelica::OrderedFloat(1.0_f64) {
-        outVariables = emptyVarsSized(varsSize(inVariables.clone())?);
+        outVariables = emptyVarsSized(varsSize(inVariables.clone()));
         outVariables = addVariables(inVariables.clone(), outVariables.clone())?;
     } else {
         outVariables = inVariables.clone();
@@ -3824,7 +3822,7 @@ fn replaceCrefWithBindExp(mut inExp: Arc<DAE::Exp>, mut inTuple: (BackendDAE::Va
                     } };
                     e = __pa0.clone();
                     hs = BaseHashSet::add(cr.clone(), hs.clone())?;
-                    let (__pa1, (_, _, __pa2)) = Expression::traverseExpBottomUp(e.clone(), (std::sync::Arc::new(replaceCrefWithBindExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, bool, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr)))) -> Result<(Arc<DAE::Exp>, (BackendDAE::Variables, bool, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr))))> + 'static>), (vars.clone(), false, hs.clone()))?;
+                    let (__pa1, (_, _, __pa2)) = Expression::traverseExpBottomUp(e.clone(), (std::sync::Arc::new(replaceCrefWithBindExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, bool, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))) -> Result<(Arc<DAE::Exp>, (BackendDAE::Variables, bool, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))))> + 'static>), (vars.clone(), false, hs.clone()))?;
                     e = __pa1.clone();
                     hs = __pa2.clone();
                     Ok((e.clone(), (vars.clone(), true, hs.clone())))
@@ -3890,10 +3888,10 @@ fn getNonZeroStart(mut mustBeEqual: bool, mut exp1: Arc<DAE::Exp>, mut so: Optio
             let mut b1: bool = false;
             let mut b2: bool = false;
             let mut origin: Option<Arc<DAE::Exp>> = None;
-            let (__pa0, (_, __pa1, _)) = Expression::traverseExpBottomUp(exp1.clone(), (std::sync::Arc::new(replaceCrefWithBindExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, bool, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr)))) -> Result<(Arc<DAE::Exp>, (BackendDAE::Variables, bool, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr))))> + 'static>), (globalKnownVars.clone(), false, HashSet::emptyHashSet()))?;
+            let (__pa0, (_, __pa1, _)) = Expression::traverseExpBottomUp(exp1.clone(), (std::sync::Arc::new(replaceCrefWithBindExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, bool, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))) -> Result<(Arc<DAE::Exp>, (BackendDAE::Variables, bool, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))))> + 'static>), (globalKnownVars.clone(), false, HashSet::emptyHashSet()))?;
             exp1_1 = __pa0.clone();
             b1 = __pa1.clone();
-            let (__pa2, (_, __pa3, _)) = Expression::traverseExpBottomUp(exp2.clone(), (std::sync::Arc::new(replaceCrefWithBindExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, bool, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr)))) -> Result<(Arc<DAE::Exp>, (BackendDAE::Variables, bool, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr))))> + 'static>), (globalKnownVars.clone(), false, HashSet::emptyHashSet()))?;
+            let (__pa2, (_, __pa3, _)) = Expression::traverseExpBottomUp(exp2.clone(), (std::sync::Arc::new(replaceCrefWithBindExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, bool, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))) -> Result<(Arc<DAE::Exp>, (BackendDAE::Variables, bool, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))))> + 'static>), (globalKnownVars.clone(), false, HashSet::emptyHashSet()))?;
             exp2_1 = __pa2.clone();
             b2 = __pa3.clone();
             (exp1_1, _) = ExpressionSimplify::condsimplify(b1.clone(), exp1_1.clone())?;
@@ -4139,12 +4137,11 @@ pub fn varStateSelectPrioAlias(mut v: BackendDAE::Var) -> Result<i32> {
 pub fn stateSelectToInteger(mut inStateSelect: DAE::StateSelect) -> Result<i32> {
     let mut prio: i32 = 0;
     prio = (match inStateSelect.clone() {
-        DAE::StateSelect::NEVER => -1,
-        DAE::StateSelect::AVOID => 0,
-        DAE::StateSelect::DEFAULT => 1,
-        DAE::StateSelect::PREFER => 2,
-        DAE::StateSelect::ALWAYS => 3,
-        _ => bail!("match: no arm matched"),
+        DAE::StateSelect::NEVER { .. } => -1,
+        DAE::StateSelect::AVOID { .. } => 0,
+        DAE::StateSelect::DEFAULT { .. } => 1,
+        DAE::StateSelect::PREFER { .. } => 2,
+        DAE::StateSelect::ALWAYS { .. } => 3,
     });
     Ok(prio)
 }

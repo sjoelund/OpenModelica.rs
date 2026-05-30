@@ -152,7 +152,7 @@ pub mod ModTable {
             }
             if (key_comp.clone() == 0) {outTree.clone()} else {balance(outTree.clone())?}
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(tree)
     }
@@ -218,7 +218,7 @@ pub mod ModTable {
             }
             if (key_comp.clone() == 0) {new_tree.clone()} else {balance(new_tree.clone())?}
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(tree)
     }
@@ -352,7 +352,7 @@ pub mod ModTable {
             ()
         },
         Deref @ Tree::EMPTY { .. } => (),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(())
     }
@@ -409,6 +409,8 @@ pub mod ModTable {
         value
     }
 
+    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
+    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
     pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
         let mut comp: bool = false;
         let mut key: Key = arcstr::literal!("");
@@ -421,7 +423,7 @@ pub mod ModTable {
             return Ok(comp.clone());
             bail!("fail")
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
         key_comp = keyCompare((inKey.clone()).clone(), (key.clone()).clone());
         comp = (::match_deref::match_deref! { match &((key_comp.clone(), inTree.clone())) {
@@ -471,7 +473,7 @@ pub mod ModTable {
             tree.clone()
         },
         Deref @ Tree::LEAF { .. } => add(tree.clone(), (var_field!((*treeToJoin).key, Tree::LEAF).clone()).clone(), var_field!((*treeToJoin).value, Tree::LEAF).clone(), conflictFunc.clone())?,
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(tree)
     }
@@ -622,7 +624,7 @@ pub mod ModTable {
         Deref @ Tree::EMPTY { .. } => literal!("EMPTY()"),
         Deref @ Tree::LEAF { .. } => printNodeStr(inTree.clone())?,
         Deref @ Tree::NODE { right, left, .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
         Ok(outString)
     }
@@ -777,7 +779,7 @@ pub mod ModifierScope {
         Deref @ COMPONENT { .. } => var_field!((*scope).name, ModifierScope::COMPONENT).clone(),
         Deref @ CLASS { .. } => var_field!((*scope).name, ModifierScope::CLASS).clone(),
         Deref @ EXTENDS { .. } => AbsynUtil::pathString(var_field!((*scope).path, ModifierScope::EXTENDS).clone(), (literal!(".")).clone(), true, false)?,
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
         Ok(name)
     }
@@ -798,7 +800,7 @@ pub mod ModifierScope {
         Deref @ COMPONENT { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("component ")); __mm_s.push_str(&*var_field!((*scope).name, ModifierScope::COMPONENT).clone()); ArcStr::from(__mm_s) },
         Deref @ CLASS { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("class ")); __mm_s.push_str(&*var_field!((*scope).name, ModifierScope::CLASS).clone()); ArcStr::from(__mm_s) },
         Deref @ EXTENDS { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("extends ")); __mm_s.push_str(&*AbsynUtil::pathString(var_field!((*scope).path, ModifierScope::EXTENDS).clone(), (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
         Ok(string)
     }
@@ -832,7 +834,7 @@ pub mod Modifier {
     pub fn create(mut r#mod: Arc<SCode::Mod>, mut name: ArcStr, mut modScope: Arc<ModifierScope::ModifierScope>, mut scope: Arc<InstNode::InstNode>, mut confidence: i32) -> Result<Arc<Modifier>> {
         let mut newMod: Arc<Modifier> = Arc::new(Modifier::NOMOD);
         newMod = (::match_deref::match_deref! { match &(r#mod.clone()) {
-        Deref @ SCode::Mod::NOMOD => {
+        Deref @ SCode::Mod::NOMOD { .. } => {
             Arc::new(crate::NFModifier::Modifier::NOMOD)
         },
         Deref @ SCode::Mod::MOD { .. } => {
@@ -1108,14 +1110,14 @@ pub mod Modifier {
     pub fn propagateSubMod(mut name: ArcStr, mut submod: Arc<Modifier>, mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>) -> Arc<Modifier> {
         let mut submod: Arc<Modifier> = submod;
         let () = (::match_deref::match_deref! { match &(submod.clone()) {
-        Deref @ MODIFIER { eachPrefix: SCode::Each::NOT_EACH, .. } => {
+        Deref @ MODIFIER { eachPrefix: SCode::Each::NOT_EACH { .. }, .. } => {
             assign_variant_field!(submod => Modifier::MODIFIER;
                 binding = Binding::propagate(var_field!((*submod).binding, Modifier::MODIFIER).clone(), subs.clone()),
                 subModifiers = ModTable::map(var_field!((*submod).subModifiers, Modifier::MODIFIER).clone(), Arc::new({ let __pe_b2 = subs.clone(); move |__pe_a0, __pe_a1| Ok(propagateSubMod(__pe_a0, __pe_a1, __pe_b2.clone())) }))
             );
             ()
         },
-        Deref @ REDECLARE { eachPrefix: SCode::Each::NOT_EACH, .. } => {
+        Deref @ REDECLARE { eachPrefix: SCode::Each::NOT_EACH { .. }, .. } => {
             assign_variant_field!(submod => Modifier::REDECLARE;
                 innerMod = propagateSubMod((name.clone()).clone(), var_field!((*submod).innerMod, Modifier::REDECLARE).clone(), subs.clone()),
                 propagatedSubs = listAppend(subs.clone(), var_field!((*submod).propagatedSubs, Modifier::REDECLARE).clone())
@@ -1161,7 +1163,7 @@ pub mod Modifier {
     pub fn isEach(mut r#mod: Arc<Modifier>) -> bool {
         let mut isEach: bool = false;
         isEach = (::match_deref::match_deref! { match &(r#mod.clone()) {
-        Deref @ MODIFIER { eachPrefix: SCode::Each::EACH, .. } => true,
+        Deref @ MODIFIER { eachPrefix: SCode::Each::EACH { .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1171,7 +1173,7 @@ pub mod Modifier {
     pub fn isFinal(mut r#mod: Arc<Modifier>) -> bool {
         let mut isFinal: bool = false;
         isFinal = (::match_deref::match_deref! { match &(r#mod.clone()) {
-        Deref @ MODIFIER { finalPrefix: SCode::Final::FINAL, .. } => true,
+        Deref @ MODIFIER { finalPrefix: SCode::Final::FINAL { .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1292,7 +1294,7 @@ pub mod Modifier {
 
     fn checkFinalOverride(mut innerFinal: SCode::Final, mut outerMod: Arc<Modifier>, mut innerInfo: SourceInfo) -> Result<()> {
         let () = (match innerFinal.clone() {
-        SCode::Final::FINAL => {
+        SCode::Final::FINAL { .. } => {
             Error::addMultiSourceMessage(Error::FINAL_COMPONENT_OVERRIDE.clone(), list![(name(outerMod.clone())?).clone(), (toString(outerMod.clone(), false)?).clone()], list![info(outerMod.clone())?, innerInfo.clone()])?;
             bail!("fail")
         },

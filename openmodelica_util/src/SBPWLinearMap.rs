@@ -358,7 +358,7 @@ pub fn atomize(mut map: Arc<SBPWLinearMap>) -> Result<Arc<SBPWLinearMap>> {
             lres = cons(l.clone(), lres.clone());
         }
     }
-    outMap = new(metamodelica::arrayFromVec(dres.clone().reverse().into_iter().cloned().collect()), metamodelica::arrayFromVec(lres.clone().reverse().into_iter().cloned().collect()));
+    outMap = new(metamodelica::arrayFromVec(metamodelica::Dangerous::listReverseInPlace(dres.clone()).into_iter().cloned().collect()), metamodelica::arrayFromVec(metamodelica::Dangerous::listReverseInPlace(lres.clone()).into_iter().cloned().collect()));
     Ok(outMap)
 }
 

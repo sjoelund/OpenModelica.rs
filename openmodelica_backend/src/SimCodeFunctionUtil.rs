@@ -109,7 +109,7 @@ fn subsToScalar(mut inExpSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::SLICE { .. }, tail: _ } => {
             false
         },
-        Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM, tail: _ } => {
+        Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM { .. }, tail: _ } => {
             false
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { .. }, tail: r } => {
@@ -244,7 +244,7 @@ pub fn makeCrefRecordExp(mut inCRefRecord: Arc<DAE::ComponentRef>, mut inVar: Ar
             outExp = Expression::makeCrefExp(cr1.clone(), tp.clone())?;
             outExp.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outExp)
 }
@@ -535,7 +535,7 @@ pub fn elaborateFunctions(mut program: Absyn::Program, mut daeElements: Arc<meta
     let mut libpaths: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut ht: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (HashTableStringToPath::FuncHashCref, HashTableStringToPath::FuncCrefEqual, HashTableStringToPath::FuncCrefStr, HashTableStringToPath::FuncExpStr));
     let mut g: Arc<metamodelica::List<(SimCodeFunction::RecordDeclaration, Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>>)>> = metamodelica::nil();
-    let mut recDeclsMap: Arc<UnorderedMap::UnorderedMap<ArcStr, SimCodeFunction::RecordDeclaration>>;
+    let mut recDeclsMap: Arc<UnorderedMap::UnorderedMap<ArcStr, SimCodeFunction::RecordDeclaration>> = <Arc<UnorderedMap::UnorderedMap<ArcStr, SimCodeFunction::RecordDeclaration>> as ::std::default::Default>::default();
     recDeclsMap = UnorderedMap::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), 1);
     (functions, outIncludes, includeDirs, libs, libpaths) = elaborateFunctions2(program.clone(), daeElements.clone(), metamodelica::nil(), includes.clone(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), recDeclsMap.clone())?;
     collectRecDeclsFromMetaRecCallExps(literals.clone(), recDeclsMap.clone())?;
@@ -543,7 +543,7 @@ pub fn elaborateFunctions(mut program: Absyn::Program, mut daeElements: Arc<meta
     recordDecls = UnorderedMap::valueList(recDeclsMap.clone());
     recordDecls = List::sort(recordDecls.clone(), (std::sync::Arc::new(orderRecordDecls) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeFunction::RecordDeclaration, SimCodeFunction::RecordDeclaration) -> Result<bool> + 'static>))?;
     ht = HashTableStringToPath::emptyHashTableSized(BaseHashTable::lowBucketSize.clone());
-    (recordDecls, _) = List::mapFold(recordDecls.clone(), (std::sync::Arc::new(aliasRecordDeclarations) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeFunction::RecordDeclaration, (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (HashTableStringToPath::FuncHashCref, HashTableStringToPath::FuncCrefEqual, HashTableStringToPath::FuncCrefStr, HashTableStringToPath::FuncExpStr))) -> Result<(SimCodeFunction::RecordDeclaration, (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (HashTableStringToPath::FuncHashCref, HashTableStringToPath::FuncCrefEqual, HashTableStringToPath::FuncCrefStr, HashTableStringToPath::FuncExpStr)))> + 'static>), ht.clone());
+    (recordDecls, _) = List::mapFold(recordDecls.clone(), (std::sync::Arc::new(aliasRecordDeclarations) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeFunction::RecordDeclaration, (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>))) -> Result<(SimCodeFunction::RecordDeclaration, (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>)))> + 'static>), ht.clone());
     g = Graph::buildGraph(recordDecls.clone(), (std::sync::Arc::new(fnptr!(getRecordDependencies, SimCodeFunction::RecordDeclaration, Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>>)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeFunction::RecordDeclaration, Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>>) -> Result<Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>>> + 'static>), recordDecls.clone());
     let __pa0 = ::match_deref::match_deref! { match &(Graph::topologicalSort(g.clone(), (std::sync::Arc::new(fnptr!(isRecordDeclEqual, SimCodeFunction::RecordDeclaration, SimCodeFunction::RecordDeclaration)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeFunction::RecordDeclaration, SimCodeFunction::RecordDeclaration) -> Result<bool> + 'static>))?) {
         (__pa0, Deref @ metamodelica::List::Nil) => __pa0.clone(),
@@ -638,7 +638,7 @@ fn elaborateFunctions2(mut program: Absyn::Program, mut daeElements: Arc<metamod
         (Deref @ metamodelica::List::Nil, accfns, includes, includeDirs, libs, libPaths) => {
             (accfns.clone().reverse(), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone())
         },
-        (Deref @ metamodelica::List::Cons { head: DAE::Function::FUNCTION { type_: Deref @ DAE::Type::T_FUNCTION { functionAttributes: DAE::FunctionAttributes { isBuiltin: DAE::FunctionBuiltin::FUNCTION_BUILTIN_PTR, .. }, .. }, .. }, tail: rest }, accfns, includes, includeDirs, libs, libPaths) => {
+        (Deref @ metamodelica::List::Cons { head: DAE::Function::FUNCTION { type_: Deref @ DAE::Type::T_FUNCTION { functionAttributes: DAE::FunctionAttributes { isBuiltin: DAE::FunctionBuiltin::FUNCTION_BUILTIN_PTR { .. }, .. }, .. }, .. }, tail: rest }, accfns, includes, includeDirs, libs, libPaths) => {
             let mut fns: Arc<metamodelica::List<Arc<SimCodeFunction::Function::Function>>> = metamodelica::nil();
             let mut includes = (*includes).clone();
             let mut includeDirs = (*includeDirs).clone();
@@ -915,7 +915,7 @@ fn typesSimFunctionArg(mut inFuncArg: Arc<DAE::FuncArg>, mut binding: Option<Arc
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::FuncArg { ty: Deref @ DAE::Type::T_FUNCTION { funcResultType: Deref @ DAE::Type::T_NORETCALL, funcArg: args, .. }, name, .. } => {
+                Deref @ DAE::FuncArg { ty: Deref @ DAE::Type::T_FUNCTION { funcResultType: Deref @ DAE::Type::T_NORETCALL { .. }, funcArg: args, .. }, name, .. } => {
                     let mut var_args: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>> = metamodelica::nil();
                     var_args = List::map1(args.clone(), (std::sync::Arc::new(typesSimFunctionArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>, Option<Arc<DAE::Exp>>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>), None);
                     Ok(Arc::new(SimCodeFunction::Variable::Variable::FUNCTION_PTR { name: (name.clone()).clone(), tys: metamodelica::nil(), args: var_args.clone(), defaultValue: binding.clone() }))
@@ -1018,10 +1018,9 @@ fn extArgsToSimExtArgs(mut extArg: DAE::ExtArg) -> Result<Arc<SimCodeFunction::S
             type_ = Types::simplifyType(type_.clone())?;
             Arc::new(SimCodeFunction::SimExtArg::SimExtArg::SIMEXTARGSIZE { cref: componentRef.clone(), isInput: true, outputIndex: 0, type_: type_.clone(), exp: exp_.clone() })
         },
-        DAE::ExtArg::NOEXTARG => {
+        DAE::ExtArg::NOEXTARG { .. } => {
             Arc::new(crate::SimCodeFunction::SimExtArg::SIMNOEXTARG)
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(simExtArg)
 }
@@ -1293,8 +1292,8 @@ pub fn funcHasParallelInOutArrays(mut r#fn: Arc<SimCodeFunction::Function::Funct
 fn isParallelArrayVar(mut var: Arc<SimCodeFunction::Variable::Variable>) -> bool {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(var.clone()) {
-        Deref @ SimCodeFunction::Variable::VARIABLE { parallelism: DAE::VarParallelism::PARGLOBAL, ty: Deref @ DAE::Type::T_ARRAY { .. }, .. } => true,
-        Deref @ SimCodeFunction::Variable::VARIABLE { parallelism: DAE::VarParallelism::PARLOCAL, ty: Deref @ DAE::Type::T_ARRAY { .. }, .. } => true,
+        Deref @ SimCodeFunction::Variable::VARIABLE { parallelism: DAE::VarParallelism::PARGLOBAL { .. }, ty: Deref @ DAE::Type::T_ARRAY { .. }, .. } => true,
+        Deref @ SimCodeFunction::Variable::VARIABLE { parallelism: DAE::VarParallelism::PARLOCAL { .. }, ty: Deref @ DAE::Type::T_ARRAY { .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1304,7 +1303,7 @@ fn isParallelArrayVar(mut var: Arc<SimCodeFunction::Variable::Variable>) -> bool
 pub fn findLiterals(mut fns: Arc<metamodelica::List<DAE::Function>>) -> (Arc<metamodelica::List<DAE::Function>>, Arc<metamodelica::List<Arc<DAE::Exp>>>) {
     let mut ofns: Arc<metamodelica::List<DAE::Function>> = metamodelica::nil();
     let mut literals: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-    let (__pa0, (_, _, __pa1)) = DAEUtil::traverseDAEFunctions(fns.clone(), (std::sync::Arc::new(findLiteralsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (HashTableExpToIndex::FuncHashCref, HashTableExpToIndex::FuncCrefEqual, HashTableExpToIndex::FuncCrefStr, HashTableExpToIndex::FuncExpStr)), Arc<metamodelica::List<Arc<DAE::Exp>>>)) -> Result<(Arc<DAE::Exp>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (HashTableExpToIndex::FuncHashCref, HashTableExpToIndex::FuncCrefEqual, HashTableExpToIndex::FuncCrefStr, HashTableExpToIndex::FuncExpStr)), Arc<metamodelica::List<Arc<DAE::Exp>>>))> + 'static>), (0, HashTableExpToIndex::emptyHashTableSized(BaseHashTable::bigBucketSize.clone()), metamodelica::nil()));
+    let (__pa0, (_, _, __pa1)) = DAEUtil::traverseDAEFunctions(fns.clone(), (std::sync::Arc::new(findLiteralsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::Exp>>>)) -> Result<(Arc<DAE::Exp>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::Exp>>>))> + 'static>), (0, HashTableExpToIndex::emptyHashTableSized(BaseHashTable::bigBucketSize.clone()), metamodelica::nil()));
     ofns = __pa0.clone();
     literals = __pa1.clone();
     literals = literals.clone().reverse();
@@ -1316,7 +1315,7 @@ pub fn findLiteralsHelper(mut inExp: Arc<DAE::Exp>, mut inTpl: (i32, (metamodeli
     let mut tpl: (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (HashTableExpToIndex::FuncHashCref, HashTableExpToIndex::FuncCrefEqual, HashTableExpToIndex::FuncCrefStr, HashTableExpToIndex::FuncExpStr)), Arc<metamodelica::List<Arc<DAE::Exp>>>);
     exp = inExp.clone();
     tpl = inTpl.clone();
-    (exp, tpl) = Expression::traverseExpBottomUp(exp.clone(), Arc::new({ let __pe_b2: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static> = (std::sync::Arc::new(replaceLiteralExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (HashTableExpToIndex::FuncHashCref, HashTableExpToIndex::FuncCrefEqual, HashTableExpToIndex::FuncCrefStr, HashTableExpToIndex::FuncExpStr)), Arc<metamodelica::List<Arc<DAE::Exp>>>)) -> Result<(Arc<DAE::Exp>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (HashTableExpToIndex::FuncHashCref, HashTableExpToIndex::FuncCrefEqual, HashTableExpToIndex::FuncCrefStr, HashTableExpToIndex::FuncExpStr)), Arc<metamodelica::List<Arc<DAE::Exp>>>))> + 'static>); move |__pe_a0, __pe_a1| Patternm::traverseConstantPatternsHelper(__pe_a0, __pe_a1, __pe_b2.clone()) }), tpl.clone())?;
+    (exp, tpl) = Expression::traverseExpBottomUp(exp.clone(), Arc::new({ let __pe_b2: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static> = (std::sync::Arc::new(replaceLiteralExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::Exp>>>)) -> Result<(Arc<DAE::Exp>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::Exp>>>))> + 'static>); move |__pe_a0, __pe_a1| Patternm::traverseConstantPatternsHelper(__pe_a0, __pe_a1, __pe_b2.clone()) }), tpl.clone())?;
     (exp, tpl) = Expression::traverseExpTopDown(exp.clone(), (std::sync::Arc::new(fnptr!(replaceLiteralArrayExp, Arc<DAE::Exp>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::Exp>>>))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::Exp>>>)) -> Result<(Arc<DAE::Exp>, bool, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::Exp>>>))> + 'static>), tpl.clone())?;
     Ok((exp, tpl))
 }
@@ -1414,7 +1413,7 @@ fn replaceLiteralExp(mut inExp: Arc<DAE::Exp>, mut inTpl: (i32, (metamodelica::A
                     let mut exp = (*exp).clone();
                     let mut t = (*t).clone();
                     exp = listToCons(exp.clone())?;
-                    (exp, t) = Expression::traverseExpBottomUp(exp.clone(), (std::sync::Arc::new(replaceLiteralExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (HashTableExpToIndex::FuncHashCref, HashTableExpToIndex::FuncCrefEqual, HashTableExpToIndex::FuncCrefStr, HashTableExpToIndex::FuncExpStr)), Arc<metamodelica::List<Arc<DAE::Exp>>>)) -> Result<(Arc<DAE::Exp>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (HashTableExpToIndex::FuncHashCref, HashTableExpToIndex::FuncCrefEqual, HashTableExpToIndex::FuncCrefStr, HashTableExpToIndex::FuncExpStr)), Arc<metamodelica::List<Arc<DAE::Exp>>>))> + 'static>), t.clone())?;
+                    (exp, t) = Expression::traverseExpBottomUp(exp.clone(), (std::sync::Arc::new(replaceLiteralExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::Exp>>>)) -> Result<(Arc<DAE::Exp>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::Exp>>>))> + 'static>), t.clone())?;
                     Ok((exp.clone(), t.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1717,9 +1716,9 @@ fn isVarNotInputNotOutput(mut inElement: Arc<DAE::Element>) -> bool {
 fn isVarKindVarOrParameter(mut inVarKind: DAE::VarKind) -> bool {
     let mut outB: bool = false;
     outB = (match inVarKind.clone() {
-        DAE::VarKind::VARIABLE => true,
-        DAE::VarKind::PARAM => true,
-        DAE::VarKind::CONST => true,
+        DAE::VarKind::VARIABLE { .. } => true,
+        DAE::VarKind::PARAM { .. } => true,
+        DAE::VarKind::CONST { .. } => true,
         _ => false,
     });
     outB
@@ -1728,8 +1727,8 @@ fn isVarKindVarOrParameter(mut inVarKind: DAE::VarKind) -> bool {
 fn isDirectionNotInput(mut inVarDirection: DAE::VarDirection) -> bool {
     let mut outB: bool = false;
     outB = (match inVarDirection.clone() {
-        DAE::VarDirection::OUTPUT => true,
-        DAE::VarDirection::BIDIR => true,
+        DAE::VarDirection::OUTPUT { .. } => true,
+        DAE::VarDirection::BIDIR { .. } => true,
         _ => false,
     });
     outB
@@ -1738,7 +1737,7 @@ fn isDirectionNotInput(mut inVarDirection: DAE::VarDirection) -> bool {
 fn isDirectionNotInputNotOutput(mut inVarDirection: DAE::VarDirection) -> bool {
     let mut outB: bool = false;
     outB = (match inVarDirection.clone() {
-        DAE::VarDirection::BIDIR => true,
+        DAE::VarDirection::BIDIR { .. } => true,
         _ => false,
     });
     outB
@@ -1854,7 +1853,7 @@ fn typesVarNoBinding(mut inTypesVar: Arc<DAE::Var>) -> Result<Arc<SimCodeFunctio
             prl = scodeParallelismToDAEParallelism(scPrl.clone())?;
             Arc::new(SimCodeFunction::Variable::Variable::VARIABLE { name: cref_.clone(), ty: ty.clone(), value: None, instDims: metamodelica::nil(), parallelism: prl.clone(), kind: openmodelica_frontend_types::DAE::VarKind::VARIABLE, bind_from_outside: false })
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outVar)
 }
@@ -1879,7 +1878,7 @@ fn typesVar(mut inTypesVar: Arc<DAE::Var>) -> Result<Arc<SimCodeFunction::Variab
             bindExp = checkSourceAndGetBindingExp(inTypesVar.binding.clone());
             Arc::new(SimCodeFunction::Variable::Variable::VARIABLE { name: cref_.clone(), ty: ty.clone(), value: bindExp.clone(), instDims: metamodelica::nil(), parallelism: prl.clone(), kind: openmodelica_frontend_types::DAE::VarKind::VARIABLE, bind_from_outside: inTypesVar.bind_from_outside.clone() })
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outVar)
 }
@@ -1905,7 +1904,7 @@ fn checkBindingsandGetConstructorName(mut rec_name: ArcStr, mut vars: Arc<metamo
 fn isBindingFromDerivedRecordDeclaration(mut bind: Arc<DAE::Binding>) -> bool {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(bind.clone()) {
-        Deref @ DAE::Binding::EQBOUND { source: DAE::BindingSource::BINDING_FROM_DERIVED_RECORD_DECL, .. } => true,
+        Deref @ DAE::Binding::EQBOUND { source: DAE::BindingSource::BINDING_FROM_DERIVED_RECORD_DECL { .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1915,7 +1914,7 @@ fn isBindingFromDerivedRecordDeclaration(mut bind: Arc<DAE::Binding>) -> bool {
 fn checkSourceAndGetBindingExp(mut inBinding: Arc<DAE::Binding>) -> Option<Arc<DAE::Exp>> {
     let mut bindExp: Option<Arc<DAE::Exp>> = None;
     bindExp = (::match_deref::match_deref! { match &(inBinding.clone()) {
-        Deref @ DAE::Binding::EQBOUND { source: DAE::BindingSource::BINDING_FROM_RECORD_SUBMODS, .. } => None,
+        Deref @ DAE::Binding::EQBOUND { source: DAE::BindingSource::BINDING_FROM_RECORD_SUBMODS { .. }, .. } => None,
         Deref @ DAE::Binding::EQBOUND { .. } => Some(var_field!((*inBinding).exp, DAE::Binding::EQBOUND).clone()),
         _ => None,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1926,10 +1925,9 @@ fn checkSourceAndGetBindingExp(mut inBinding: Arc<DAE::Binding>) -> Option<Arc<D
 fn scodeParallelismToDAEParallelism(mut inParallelism: SCode::Parallelism) -> Result<DAE::VarParallelism> {
     let mut outParallelism: DAE::VarParallelism = DAE::VarParallelism::NON_PARALLEL;
     outParallelism = (match inParallelism.clone() {
-        SCode::Parallelism::PARGLOBAL => openmodelica_frontend_types::DAE::VarParallelism::PARGLOBAL,
-        SCode::Parallelism::PARLOCAL => openmodelica_frontend_types::DAE::VarParallelism::PARLOCAL,
-        SCode::Parallelism::NON_PARALLEL => openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL,
-        _ => bail!("match: no arm matched"),
+        SCode::Parallelism::PARGLOBAL { .. } => openmodelica_frontend_types::DAE::VarParallelism::PARGLOBAL,
+        SCode::Parallelism::PARLOCAL { .. } => openmodelica_frontend_types::DAE::VarParallelism::PARLOCAL,
+        SCode::Parallelism::NON_PARALLEL { .. } => openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL,
     });
     Ok(outParallelism)
 }
@@ -2632,8 +2630,8 @@ fn getLibraryStringInGccFormat(mut exp: Arc<Absyn::Exp>) -> Result<(Arc<metamode
                     let mut names1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut names2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut names3: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut strs: Arc<metamodelica::List<ArcStr>> = strs.clone();
                     let mut names: Arc<metamodelica::List<ArcStr>> = names.clone();
+                    let mut strs: Arc<metamodelica::List<ArcStr>> = strs.clone();
                     if r#str.clone() == literal!("ModelicaStandardTables") {
                         (strs1, names1) = getLibraryStringInGccFormat(Arc::new(Absyn::Exp::STRING { value: (literal!("ModelicaIO")).clone() }))?;
                         (strs2, names2) = getLibraryStringInGccFormat(Arc::new(Absyn::Exp::STRING { value: (literal!("ModelicaMatIO")).clone() }))?;
@@ -3083,7 +3081,7 @@ fn variableString(mut var: Arc<SimCodeFunction::Variable::Variable>) -> Result<A
         Deref @ SimCodeFunction::Variable::FUNCTION_PTR { name: r#str, .. } => {
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("modelica_fnptr ")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(r#str)
 }

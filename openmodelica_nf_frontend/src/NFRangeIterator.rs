@@ -209,7 +209,7 @@ pub fn next(mut iterator: Arc<NFRangeIterator>) -> Result<(Arc<NFRangeIterator>,
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFRangeIterator.next")); __mm_s.push_str(&*literal!(" got invalid range ")); __mm_s.push_str(&*Expression::toString(var_field!((*iterator).exp, NFRangeIterator::INVALID_RANGE).clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
             bail!("fail")
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((iterator, nextExp))
 }
@@ -225,7 +225,7 @@ pub fn hasNext(mut iterator: Arc<NFRangeIterator>) -> Result<bool> {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFRangeIterator.hasNext")); __mm_s.push_str(&*literal!(" got invalid range ")); __mm_s.push_str(&*Expression::toString(var_field!((*iterator).exp, NFRangeIterator::INVALID_RANGE).clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
             bail!("fail")
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(hasNext)
 }

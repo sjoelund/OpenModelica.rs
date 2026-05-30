@@ -279,7 +279,6 @@ pub fn tokenSourceInfo(mut token: Token) -> Result<SourceInfo> {
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     info = { let mut t = token.clone(); (match t.clone() {
         Token { .. } => SourceInfo { fileName: (t.fileName.clone()).clone(), isReadOnly: false, lineNumberStart: t.lineNumberStart.clone(), columnNumberStart: t.columnNumberStart.clone(), lineNumberEnd: t.lineNumberEnd.clone(), columnNumberEnd: t.columnNumberEnd.clone(), lastModification: metamodelica::OrderedFloat(0.0_f64) },
-        _ => bail!("match: no arm matched"),
     }) };
     Ok(info)
 }
@@ -324,8 +323,8 @@ fn lex(mut fileName: ArcStr, mut contents: ArcStr) -> Result<(Arc<metamodelica::
         (tokens, numBacktrack, startSt, currSt, pos, sPos, ePos, linenr, lineNrStart, buffer, states, errorTokens) = consume(cTok.clone(), tokens.clone(), (contents.clone()).clone(), startSt.clone(), currSt.clone(), pos.clone(), sPos.clone(), ePos.clone(), linenr.clone(), lineNrStart.clone(), buffer.clone(), states.clone(), (fileName.clone()).clone(), errorTokens.clone())?;
         i = i.clone() - numBacktrack.clone() + 1;
     }
-    tokens = tokens.clone().reverse();
-    errorTokens = errorTokens.clone().reverse();
+    tokens = metamodelica::Dangerous::listReverseInPlace(tokens.clone());
+    errorTokens = metamodelica::Dangerous::listReverseInPlace(errorTokens.clone());
     Ok((tokens, errorTokens))
 }
 

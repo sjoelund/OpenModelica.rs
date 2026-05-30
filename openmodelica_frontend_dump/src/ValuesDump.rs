@@ -299,7 +299,7 @@ pub fn valString2(mut inValue: Arc<Values::Value>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Values::Value::NORETCALL => {
+                Deref @ Values::Value::NORETCALL { .. } => {
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -307,7 +307,7 @@ pub fn valString2(mut inValue: Arc<Values::Value>) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Values::Value::META_FAIL => {
+                Deref @ Values::Value::META_FAIL { .. } => {
                     Print::printBuf((literal!("fail()")).clone())?;
                     Ok(())
                 }

@@ -439,7 +439,7 @@ pub fn unelabDimension(mut inDim: Arc<DAE::Dimension>) -> Result<Arc<Absyn::Subs
         Deref @ DAE::Dimension::DIM_INTEGER { integer: i } => {
             Arc::new(Absyn::Subscript::SUBSCRIPT { subscript: Arc::new(Absyn::Exp::INTEGER { value: i.clone() }) })
         },
-        Deref @ DAE::Dimension::DIM_BOOLEAN => {
+        Deref @ DAE::Dimension::DIM_BOOLEAN { .. } => {
             Arc::new(Absyn::Subscript::SUBSCRIPT { subscript: Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("Boolean")).clone(), subscripts: metamodelica::nil() }) }) })
         },
         Deref @ DAE::Dimension::DIM_ENUM { enumTypeName: p, .. } => {
@@ -452,10 +452,10 @@ pub fn unelabDimension(mut inDim: Arc<DAE::Dimension>) -> Result<Arc<Absyn::Subs
             ae = unelabExp(e.clone())?;
             Arc::new(Absyn::Subscript::SUBSCRIPT { subscript: ae.clone() })
         },
-        Deref @ DAE::Dimension::DIM_UNKNOWN => {
+        Deref @ DAE::Dimension::DIM_UNKNOWN { .. } => {
             Arc::new(openmodelica_ast::Absyn::Subscript::NOSUB)
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outDim)
 }
@@ -467,7 +467,7 @@ fn unleabZeroExpFromType(mut ty: Arc<DAE::Type>) -> Result<Arc<Absyn::Exp>> {
         Deref @ DAE::Type::T_STRING { .. } => Arc::new(Absyn::Exp::STRING { value: (literal!("")).clone() }),
         Deref @ DAE::Type::T_INTEGER { .. } => Arc::new(Absyn::Exp::INTEGER { value: 0 }),
         Deref @ DAE::Type::T_REAL { .. } => Arc::new(Absyn::Exp::REAL { value: (literal!("0.0")).clone() }),
-        Deref @ DAE::Type::T_UNKNOWN => Arc::new(Absyn::Exp::REAL { value: (literal!("0.0")).clone() }),
+        Deref @ DAE::Type::T_UNKNOWN { .. } => Arc::new(Absyn::Exp::REAL { value: (literal!("0.0")).clone() }),
         _ => bail!("match: no arm matched"),
     } });
     Ok(outExp)
@@ -500,7 +500,7 @@ fn unelabReductionIterator(mut riter: Arc<DAE::ReductionIterator>) -> Result<Arc
             agexp = Util::applyOption(gexp.clone(), (std::sync::Arc::new(unelabExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<Absyn::Exp>> + 'static>));
             Arc::new(Absyn::ForIterator { name: (id.clone()).clone(), guardExp: agexp.clone(), range: Some(aexp.clone()) })
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(aiter)
 }
@@ -635,7 +635,7 @@ pub fn dimensionSizeConstantExp(mut dim: Arc<DAE::Dimension>) -> Result<Arc<DAE:
         Deref @ DAE::Dimension::DIM_ENUM { size: i, .. } => {
             Arc::new(DAE::Exp::ICONST { integer: i.clone() })
         },
-        Deref @ DAE::Dimension::DIM_BOOLEAN => {
+        Deref @ DAE::Dimension::DIM_BOOLEAN { .. } => {
             Arc::new(DAE::Exp::ICONST { integer: 2 })
         },
         _ => bail!("match: no arm matched"),
@@ -652,7 +652,7 @@ pub fn dimensionSizeExp(mut dim: Arc<DAE::Dimension>) -> Result<Arc<DAE::Exp>> {
         Deref @ DAE::Dimension::DIM_ENUM { size: i, .. } => {
             Arc::new(DAE::Exp::ICONST { integer: i.clone() })
         },
-        Deref @ DAE::Dimension::DIM_BOOLEAN => {
+        Deref @ DAE::Dimension::DIM_BOOLEAN { .. } => {
             Arc::new(DAE::Exp::ICONST { integer: 2 })
         },
         Deref @ DAE::Dimension::DIM_EXP { exp: e } => {
@@ -666,7 +666,7 @@ pub fn dimensionSizeExp(mut dim: Arc<DAE::Dimension>) -> Result<Arc<DAE::Exp>> {
 pub fn dimensionSizeExpHandleUnkown(mut dim: Arc<DAE::Dimension>) -> Result<Arc<DAE::Exp>> {
     let mut exp: Arc<DAE::Exp>;
     exp = (::match_deref::match_deref! { match &(dim.clone()) {
-        Deref @ DAE::Dimension::DIM_UNKNOWN => Arc::new(DAE::Exp::ICONST { integer: -1 }),
+        Deref @ DAE::Dimension::DIM_UNKNOWN { .. } => Arc::new(DAE::Exp::ICONST { integer: -1 }),
         _ => dimensionSizeExp(dim.clone())?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -688,10 +688,10 @@ pub fn dimensionSubscript(mut dim: Arc<DAE::Dimension>) -> Result<Arc<DAE::Subsc
         Deref @ DAE::Dimension::DIM_ENUM { size: i, .. } => {
             Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: i.clone() }) })
         },
-        Deref @ DAE::Dimension::DIM_BOOLEAN => {
+        Deref @ DAE::Dimension::DIM_BOOLEAN { .. } => {
             Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: 2 }) })
         },
-        Deref @ DAE::Dimension::DIM_UNKNOWN => {
+        Deref @ DAE::Dimension::DIM_UNKNOWN { .. } => {
             Arc::new(openmodelica_frontend_types::DAE::Subscript::WHOLEDIM)
         },
         _ => bail!("match: no arm matched"),
@@ -1299,7 +1299,7 @@ pub fn subscriptsAppend(mut inSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subs
         Deref @ metamodelica::List::Nil => {
             list![Arc::new(DAE::Subscript::INDEX { exp: inSubscript.clone() })]
         },
-        Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM, tail: ss } => {
+        Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM { .. }, tail: ss } => {
             cons(Arc::new(DAE::Subscript::INDEX { exp: inSubscript.clone() }), ss.clone())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::SLICE { exp: e }, tail: Deref @ metamodelica::List::Nil } => {
@@ -1323,7 +1323,7 @@ pub fn subscriptsAppend(mut inSubscriptLst: Arc<metamodelica::List<Arc<DAE::Subs
 pub fn subscriptsReplaceSlice(mut inSubscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut inSubscript: Arc<DAE::Subscript>) -> Result<Arc<metamodelica::List<Arc<DAE::Subscript>>>> {
     let mut outSubscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
     outSubscripts = (::match_deref::match_deref! { match &(inSubscripts.clone()) {
-        Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM, tail: rest_subs } => {
+        Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM { .. }, tail: rest_subs } => {
             cons(inSubscript.clone(), rest_subs.clone())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::SLICE { .. }, tail: rest_subs } => {
@@ -1492,7 +1492,7 @@ pub fn varName(mut v: Arc<DAE::Var>) -> Result<ArcStr> {
     let mut name: ArcStr = arcstr::literal!("");
     name = ((::match_deref::match_deref! { match &(v.clone()) {
         Deref @ DAE::Var { name, .. } => name.clone(),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(name)
 }
@@ -1501,7 +1501,7 @@ pub fn varType(mut v: Arc<DAE::Var>) -> Result<Arc<DAE::Type>> {
     let mut tp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     tp = (::match_deref::match_deref! { match &(v.clone()) {
         Deref @ DAE::Var { ty: tp, .. } => tp.clone(),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(tp)
 }
@@ -2036,7 +2036,7 @@ pub fn subscriptDimension(mut inSubscript: Arc<DAE::Subscript>) -> Result<Arc<DA
         Deref @ DAE::Subscript::INDEX { exp: e } => {
             Arc::new(DAE::Dimension::DIM_EXP { exp: e.clone() })
         },
-        Deref @ DAE::Subscript::WHOLEDIM => {
+        Deref @ DAE::Subscript::WHOLEDIM { .. } => {
             Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN)
         },
         Deref @ DAE::Subscript::WHOLE_NONEXP { exp: Deref @ DAE::Exp::ICONST { integer: x } } if (!(Config::splitArrays()?)) => {
@@ -2150,7 +2150,7 @@ pub fn sizeOf(mut inType: Arc<DAE::Type>) -> Result<i32> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_UNKNOWN => {
+                Deref @ DAE::Type::T_UNKNOWN { .. } => {
                     Ok(0)
                 }
                 _ => bail!("nomatch"),
@@ -2178,7 +2178,7 @@ pub fn dimensionSize(mut dim: Arc<DAE::Dimension>) -> Result<i32> {
         Deref @ DAE::Dimension::DIM_ENUM { size: i, .. } => {
             i.clone()
         },
-        Deref @ DAE::Dimension::DIM_BOOLEAN => {
+        Deref @ DAE::Dimension::DIM_BOOLEAN { .. } => {
             2
         },
         Deref @ DAE::Dimension::DIM_EXP { exp: Deref @ DAE::Exp::ICONST { integer: i } } => {
@@ -2241,7 +2241,7 @@ pub fn dimensionSizeAll(mut dim: Arc<DAE::Dimension>) -> Result<i32> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Dimension::DIM_BOOLEAN => {
+                Deref @ DAE::Dimension::DIM_BOOLEAN { .. } => {
                     Ok(2)
                 }
                 _ => bail!("nomatch"),
@@ -2266,7 +2266,7 @@ pub fn dimensionSizeAll(mut dim: Arc<DAE::Dimension>) -> Result<i32> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Dimension::DIM_UNKNOWN => {
+                Deref @ DAE::Dimension::DIM_UNKNOWN { .. } => {
                     let true = (Flags::getConfigBool(Flags::CHECK_MODEL.clone())?) else { bail!("pattern mismatch") };
                     Ok(0)
                 }
@@ -2782,7 +2782,6 @@ pub fn typeofOp(mut inOperator: DAE::Operator) -> Result<Arc<DAE::Type>> {
         DAE::Operator::USERDEFINED { .. } => {
             DAE::T_UNKNOWN_DEFAULT().clone()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(outType)
 }
@@ -3988,7 +3987,7 @@ pub fn crefToExp(mut cr: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> {
 pub fn crefExp(mut cr: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> {
     let mut cref: Arc<DAE::Exp>;
     cref = (::match_deref::match_deref! { match &(cr.clone()) {
-        Deref @ DAE::ComponentRef::WILD => {
+        Deref @ DAE::ComponentRef::WILD { .. } => {
             Arc::new(DAE::Exp::CREF { componentRef: cr.clone(), ty: Arc::new(openmodelica_frontend_types::DAE::Type::T_UNKNOWN) })
         },
         _ => {
@@ -4072,7 +4071,7 @@ pub fn generateCrefsExpFromExpVar(mut inVar: Arc<DAE::Var>, mut inCrefPrefix: Ar
             e = makeCrefExp(cr.clone(), ty.clone())?;
             e.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outCrefExp)
 }
@@ -4085,7 +4084,7 @@ pub fn generateCrefsFromExpVar(mut inVar: Arc<DAE::Var>, mut inCrefPrefix: Arc<D
             cr = ComponentReference::crefPrependIdent(inCrefPrefix.clone(), (name.clone()).clone(), metamodelica::nil(), ty.clone())?;
             cr.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outCref)
 }
@@ -4093,7 +4092,7 @@ pub fn generateCrefsFromExpVar(mut inVar: Arc<DAE::Var>, mut inCrefPrefix: Arc<D
 pub fn generateCrefsExpFromExp(mut inExp: Arc<DAE::Exp>, mut inCrefPrefix: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> {
     let mut outCrefExp: Arc<DAE::Exp>;
     outCrefExp = (::match_deref::match_deref! { match &(inExp.clone()) {
-        Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD, .. } => {
+        Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD { .. }, .. } => {
             inExp.clone()
         },
         Deref @ DAE::Exp::ARRAY { array: explst, scalar: b, ty } => {
@@ -4974,7 +4973,7 @@ pub fn makeProductLst(mut inExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> R
 fn checkIfOther(mut inTp: Arc<DAE::Type>) -> Arc<DAE::Type> {
     let mut outTp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     outTp = (::match_deref::match_deref! { match &(inTp.clone()) {
-        Deref @ DAE::Type::T_UNKNOWN => DAE::T_REAL_DEFAULT().clone(),
+        Deref @ DAE::Type::T_UNKNOWN { .. } => DAE::T_REAL_DEFAULT().clone(),
         _ => inTp.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -5874,7 +5873,7 @@ pub fn traverseExpDummyHelper(mut inExp: Arc<DAE::Exp>, mut func: Arc<dyn ::std:
     (outExp, outFunc)
 }
 
-pub fn traverseSubexpressionsHelper<Type_a: Clone + 'static + PartialEq>(mut inExp: Arc<DAE::Exp>, mut itpl: (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, Type_a)) -> Result<(Arc<DAE::Exp>, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, Type_a))> {
+pub fn traverseSubexpressionsHelper<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut itpl: (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, Type_a)) -> Result<(Arc<DAE::Exp>, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>, Type_a))> {
     pub type FuncExpType<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, Type_a)> + 'static>;
 
     let mut outExp: Arc<DAE::Exp>;
@@ -5906,7 +5905,7 @@ pub fn traverseSubexpressionsDummyHelper(mut inExp: Arc<DAE::Exp>, mut inFunc: A
     Ok((outExp, outFunc))
 }
 
-pub fn traverseSubexpressionsTopDownHelper<Type_a: Clone + 'static + PartialEq>(mut inExp: Arc<DAE::Exp>, mut itpl: (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, Type_a)) -> Result<(Arc<DAE::Exp>, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, Type_a))> {
+pub fn traverseSubexpressionsTopDownHelper<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut itpl: (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, Type_a)) -> Result<(Arc<DAE::Exp>, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>, Type_a))> {
     pub type FuncExpType2<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Type_a) -> Result<(Arc<DAE::Exp>, bool, Type_a)> + 'static>;
 
     let mut outExp: Arc<DAE::Exp>;
@@ -5948,7 +5947,7 @@ pub fn traverseExpList<ArgT: Clone + 'static>(mut inExpl: Arc<metamodelica::List
     let mut ext_arg: ArgT = iext_arg.clone();
     let mut e1: Arc<DAE::Exp>;
     let mut allEq: bool = true;
-    let mut delst: DoubleEnded::MutableList<Arc<DAE::Exp>>;
+    let mut delst: DoubleEnded::MutableList<Arc<DAE::Exp>> = <DoubleEnded::MutableList<Arc<DAE::Exp>> as ::std::default::Default>::default();
     let mut nEq: i32 = 0;
     for mut e in &*inExpl.clone() {
         let mut e = e.clone();
@@ -7165,7 +7164,7 @@ fn expHasCrefInSmoothZeroWork(mut exp: Arc<DAE::Exp>, mut tpl: (Arc<DAE::Compone
     Ok((exp, tpl))
 }
 
-pub fn traverseCrefsFromExp<Type_a: Clone + 'static + PartialEq>(mut inExp: Arc<DAE::Exp>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<Type_a> + 'static>, mut inArg: Type_a) -> Result<Type_a> {
+pub fn traverseCrefsFromExp<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<Type_a> + 'static>, mut inArg: Type_a) -> Result<Type_a> {
     pub type FuncCrefTypeA<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<Type_a> + 'static>;
 
     let mut outArg: Type_a;
@@ -7180,7 +7179,7 @@ pub fn traverseCrefsFromExp<Type_a: Clone + 'static + PartialEq>(mut inExp: Arc<
     Ok(outArg)
 }
 
-fn traversingCrefFinder<Type_a: Clone + 'static + PartialEq>(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<Type_a> + 'static>, Type_a)) -> (Arc<DAE::Exp>, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<Type_a> + 'static>, Type_a)) {
+fn traversingCrefFinder<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<Type_a> + 'static>, Type_a)) -> (Arc<DAE::Exp>, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<Type_a> + 'static>, Type_a)) {
     pub type FuncCrefTypeA<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Type_a) -> Result<Type_a> + 'static>;
 
     let mut outExp: Arc<DAE::Exp>;
@@ -7236,7 +7235,7 @@ pub fn traverseExpListBidir<ArgT: Clone + 'static>(mut inExpl: Arc<metamodelica:
     let mut outArg: ArgT = inArg.clone();
     let mut e1: Arc<DAE::Exp>;
     let mut allEq: bool = true;
-    let mut delst: DoubleEnded::MutableList<Arc<DAE::Exp>>;
+    let mut delst: DoubleEnded::MutableList<Arc<DAE::Exp>> = <DoubleEnded::MutableList<Arc<DAE::Exp>> as ::std::default::Default>::default();
     let mut nEq: i32 = 0;
     for mut e in &*inExpl.clone() {
         let mut e = e.clone();
@@ -7606,7 +7605,7 @@ pub fn traverseExpCref<Type_a: Clone + 'static>(mut inCref: Arc<DAE::ComponentRe
             cr = if (referenceEq(&cr.clone(),&cr_1.clone())) {inCref.clone()} else {Arc::new(DAE::ComponentRef::OPTIMICA_ATTR_INST_CREF { componentRef: cr_1.clone(), instant: (instant.clone()).clone() })};
             (cr.clone(), arg.clone())
         },
-        (Deref @ DAE::ComponentRef::WILD, arg) => {
+        (Deref @ DAE::ComponentRef::WILD { .. }, arg) => {
             (inCref.clone(), arg.clone())
         },
         _ => {
@@ -7627,7 +7626,7 @@ fn traverseExpSubs<Type_a: Clone + 'static>(mut inSubscript: Arc<metamodelica::L
         (Deref @ metamodelica::List::Nil, arg) => {
             (inSubscript.clone(), arg.clone())
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM, tail: rest }, arg) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM { .. }, tail: rest }, arg) => {
             let mut res: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
             let mut arg = (*arg).clone();
             (res, arg) = traverseExpSubs(rest.clone(), rel.clone(), arg.clone())?;
@@ -7686,7 +7685,7 @@ pub fn traverseExpTopDownCrefHelper<Argument: Clone + 'static>(mut inCref: Arc<D
             (subs_1, arg) = traverseExpTopDownSubs(subs.clone(), rel.clone(), arg.clone())?;
             (if (referenceEq(&subs.clone(),&subs_1.clone())) {inCref.clone()} else {Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name.clone()).clone(), identType: ty.clone(), subscriptLst: subs_1.clone() })}, arg.clone())
         },
-        (Deref @ DAE::ComponentRef::WILD, arg) => {
+        (Deref @ DAE::ComponentRef::WILD { .. }, arg) => {
             (inCref.clone(), arg.clone())
         },
         _ => bail!("match: no arm matched"),
@@ -7700,7 +7699,7 @@ fn traverseExpBidirSubs<ArgT: Clone + 'static>(mut inSubscript: Arc<DAE::Subscri
     let mut outSubscript: Arc<DAE::Subscript> = Arc::new(DAE::Subscript::WHOLEDIM);
     let mut outArg: ArgT;
     (outSubscript, outArg) = (::match_deref::match_deref! { match &(inSubscript.clone()) {
-        Deref @ DAE::Subscript::WHOLEDIM => {
+        Deref @ DAE::Subscript::WHOLEDIM { .. } => {
             (inSubscript.clone(), inArg.clone())
         },
         Deref @ DAE::Subscript::SLICE { exp: sub_exp } => {
@@ -7721,7 +7720,7 @@ fn traverseExpBidirSubs<ArgT: Clone + 'static>(mut inSubscript: Arc<DAE::Subscri
             (sub_exp, arg) = traverseExpBidir(sub_exp.clone(), inEnterFunc.clone(), inExitFunc.clone(), inArg.clone())?;
             (Arc::new(DAE::Subscript::WHOLE_NONEXP { exp: sub_exp.clone() }), arg.clone())
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((outSubscript, outArg))
 }
@@ -7734,12 +7733,12 @@ pub fn traverseExpTopDownSubs<Argument: Clone + 'static>(mut inSubscript: Arc<me
     let mut exp: Arc<DAE::Exp>;
     let mut nsub: Arc<DAE::Subscript> = Arc::new(DAE::Subscript::WHOLEDIM);
     let mut allEq: bool = true;
-    let mut delst: DoubleEnded::MutableList<Arc<DAE::Subscript>>;
+    let mut delst: DoubleEnded::MutableList<Arc<DAE::Subscript>> = <DoubleEnded::MutableList<Arc<DAE::Subscript>> as ::std::default::Default>::default();
     let mut nEq: i32 = 0;
     for mut sub in &*inSubscript.clone() {
         let mut sub = sub.clone();
         nsub = (::match_deref::match_deref! { match &(sub.clone()) {
-        Deref @ DAE::Subscript::WHOLEDIM => sub.clone(),
+        Deref @ DAE::Subscript::WHOLEDIM { .. } => sub.clone(),
         Deref @ DAE::Subscript::SLICE { .. } => {
             (exp, arg) = traverseExpTopDown(var_field!((*sub).exp, DAE::Subscript::SLICE).clone(), rel.clone(), arg.clone())?;
             if (referenceEq(&var_field!((*sub).exp, DAE::Subscript::SLICE).clone(),&exp.clone())) {sub.clone()} else {Arc::new(DAE::Subscript::SLICE { exp: exp.clone() })}
@@ -7752,7 +7751,7 @@ pub fn traverseExpTopDownSubs<Argument: Clone + 'static>(mut inSubscript: Arc<me
             (exp, arg) = traverseExpTopDown(var_field!((*sub).exp, DAE::Subscript::WHOLE_NONEXP).clone(), rel.clone(), arg.clone())?;
             if (referenceEq(&var_field!((*sub).exp, DAE::Subscript::WHOLE_NONEXP).clone(),&exp.clone())) {sub.clone()} else {Arc::new(DAE::Subscript::WHOLE_NONEXP { exp: exp.clone() })}
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         if if (allEq.clone()) {!(referenceEq(&nsub.clone(),&sub.clone()))} else {false} {
             allEq = false;
@@ -8845,7 +8844,7 @@ pub fn typeBuiltin(mut inType: Arc<DAE::Type>) -> bool {
 pub fn isWholeDim(mut s: Arc<DAE::Subscript>) -> bool {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(s.clone()) {
-        Deref @ DAE::Subscript::WHOLEDIM => true,
+        Deref @ DAE::Subscript::WHOLEDIM { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -10097,7 +10096,7 @@ pub fn arrayContainZeroDimension(mut inDimensions: Arc<metamodelica::List<Arc<DA
 pub fn arrayContainWholeDimension(mut inDim: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> bool {
     let mut wholedim: bool = false;
     wholedim = (::match_deref::match_deref! { match &(inDim.clone()) {
-        Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_UNKNOWN, tail: _ } => {
+        Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_UNKNOWN { .. }, tail: _ } => {
             true
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest_dims } => {
@@ -10171,10 +10170,10 @@ pub fn isRealType(mut inType: Arc<DAE::Type>) -> bool {
 pub fn dimensionsEqual(mut dim1: Arc<DAE::Dimension>, mut dim2: Arc<DAE::Dimension>) -> Result<bool> {
     let mut res: bool = false;
     res = (::match_deref::match_deref! { match &((dim1.clone(), dim2.clone())) {
-        (Deref @ DAE::Dimension::DIM_UNKNOWN, _) => {
+        (Deref @ DAE::Dimension::DIM_UNKNOWN { .. }, _) => {
             true
         },
-        (_, Deref @ DAE::Dimension::DIM_UNKNOWN) => {
+        (_, Deref @ DAE::Dimension::DIM_UNKNOWN { .. }) => {
             true
         },
         (Deref @ DAE::Dimension::DIM_EXP { .. }, _) => {
@@ -10234,10 +10233,10 @@ pub fn dimsEqualAllowZero(mut dims1: Arc<metamodelica::List<Arc<DAE::Dimension>>
 pub fn dimensionsEqualAllowZero(mut dim1: Arc<DAE::Dimension>, mut dim2: Arc<DAE::Dimension>) -> Result<bool> {
     let mut res: bool = false;
     res = (::match_deref::match_deref! { match &((dim1.clone(), dim2.clone())) {
-        (Deref @ DAE::Dimension::DIM_UNKNOWN, _) => {
+        (Deref @ DAE::Dimension::DIM_UNKNOWN { .. }, _) => {
             true
         },
-        (_, Deref @ DAE::Dimension::DIM_UNKNOWN) => {
+        (_, Deref @ DAE::Dimension::DIM_UNKNOWN { .. }) => {
             true
         },
         (Deref @ DAE::Dimension::DIM_EXP { .. }, _) => {
@@ -10263,8 +10262,8 @@ pub fn dimensionsEqualAllowZero(mut dim1: Arc<DAE::Dimension>, mut dim2: Arc<DAE
 pub fn dimensionsKnownAndEqual(mut dim1: Arc<DAE::Dimension>, mut dim2: Arc<DAE::Dimension>) -> Result<bool> {
     let mut res: bool = false;
     res = (::match_deref::match_deref! { match &((dim1.clone(), dim2.clone())) {
-        (Deref @ DAE::Dimension::DIM_UNKNOWN, _) => false,
-        (_, Deref @ DAE::Dimension::DIM_UNKNOWN) => false,
+        (Deref @ DAE::Dimension::DIM_UNKNOWN { .. }, _) => false,
+        (_, Deref @ DAE::Dimension::DIM_UNKNOWN { .. }) => false,
         _ => ExpressionBasics::expEqual(dimensionSizeExp(dim1.clone())?, dimensionSizeExp(dim2.clone())?)?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -10274,7 +10273,7 @@ pub fn dimensionsKnownAndEqual(mut dim1: Arc<DAE::Dimension>, mut dim2: Arc<DAE:
 pub fn dimensionKnown(mut dim: Arc<DAE::Dimension>) -> bool {
     let mut known: bool = false;
     known = (::match_deref::match_deref! { match &(dim.clone()) {
-        Deref @ DAE::Dimension::DIM_UNKNOWN => false,
+        Deref @ DAE::Dimension::DIM_UNKNOWN { .. } => false,
         Deref @ DAE::Dimension::DIM_EXP { exp: Deref @ DAE::Exp::ICONST { .. } } => true,
         Deref @ DAE::Dimension::DIM_EXP { exp: Deref @ DAE::Exp::BCONST { .. } } => true,
         Deref @ DAE::Dimension::DIM_EXP { exp: Deref @ DAE::Exp::ENUM_LITERAL { .. } } => true,
@@ -10305,7 +10304,7 @@ pub fn dimensionsKnownAndNonZero(mut dims: Arc<metamodelica::List<Arc<DAE::Dimen
 pub fn dimensionUnknownOrExp(mut dim: Arc<DAE::Dimension>) -> bool {
     let mut known: bool = false;
     known = (::match_deref::match_deref! { match &(dim.clone()) {
-        Deref @ DAE::Dimension::DIM_UNKNOWN => true,
+        Deref @ DAE::Dimension::DIM_UNKNOWN { .. } => true,
         Deref @ DAE::Dimension::DIM_EXP { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -10316,7 +10315,7 @@ pub fn dimensionUnknownOrExp(mut dim: Arc<DAE::Dimension>) -> bool {
 pub fn dimensionUnknown(mut inDimension: Arc<DAE::Dimension>) -> bool {
     let mut outUnknown: bool = false;
     outUnknown = (::match_deref::match_deref! { match &(inDimension.clone()) {
-        Deref @ DAE::Dimension::DIM_UNKNOWN => true,
+        Deref @ DAE::Dimension::DIM_UNKNOWN { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -10373,7 +10372,7 @@ pub fn subscriptContain(mut issl1: Arc<metamodelica::List<Arc<DAE::Subscript>>>,
         (Deref @ metamodelica::List::Nil, _) => {
             true
         },
-        (Deref @ metamodelica::List::Cons { head: _, tail: ssl1 }, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM, tail: ssl2 }) => {
+        (Deref @ metamodelica::List::Cons { head: _, tail: ssl1 }, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM { .. }, tail: ssl2 }) => {
             let mut b: bool = false;
             b = subscriptContain(ssl1.clone(), ssl2.clone())?;
             b.clone()
@@ -10499,7 +10498,7 @@ fn traverseReductionIteratorBidir<ArgT: Clone + 'static>(mut inIter: Arc<DAE::Re
             (gexp, arg) = traverseExpOptBidir(gexp.clone(), inEnterFunc.clone(), inExitFunc.clone(), arg.clone())?;
             (Arc::new(DAE::ReductionIterator { id: (id.clone()).clone(), exp: exp.clone(), guardExp: gexp.clone(), ty: ty.clone() }), arg.clone())
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((outIter, outArg))
 }
@@ -10518,7 +10517,7 @@ fn traverseReductionIteratorTopDown<Type_a: Clone + 'static>(mut iter: Arc<DAE::
             (gexp, arg) = traverseExpOptTopDown(gexp.clone(), func.clone(), arg.clone())?;
             (Arc::new(DAE::ReductionIterator { id: (id.clone()).clone(), exp: exp.clone(), guardExp: gexp.clone(), ty: ty.clone() }), arg.clone())
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((outIter, outArg))
 }
@@ -10560,7 +10559,7 @@ fn traverseReductionIterator<Type_a: Clone + 'static>(mut iter: Arc<DAE::Reducti
             outIter = if (referenceEq(&exp.clone(),&exp1.clone()) && referenceEq(&gexp.clone(),&gexp1.clone())) {iter.clone()} else {Arc::new(DAE::ReductionIterator { id: (id.clone()).clone(), exp: exp1.clone(), guardExp: gexp1.clone(), ty: ty.clone() })};
             (outIter.clone(), arg.clone())
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((outIter, outArg))
 }
@@ -10874,7 +10873,7 @@ pub fn dimComplexity(mut dim: Arc<DAE::Dimension>) -> i32 {
     i = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ DAE::Dimension::DIM_INTEGER { integer: i } => i.clone(),
         Deref @ DAE::Dimension::DIM_ENUM { size: i, .. } => i.clone(),
-        Deref @ DAE::Dimension::DIM_BOOLEAN => 2,
+        Deref @ DAE::Dimension::DIM_BOOLEAN { .. } => 2,
         _ => complexityDimLarge.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -11011,7 +11010,7 @@ fn makeEnumLiteral(mut name: Arc<Absyn::Path>, mut index: i32) -> (Arc<DAE::Exp>
 pub fn isWild(mut exp: Arc<DAE::Exp>) -> bool {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD, .. } => true,
+        Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD { .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -11021,7 +11020,7 @@ pub fn isWild(mut exp: Arc<DAE::Exp>) -> bool {
 pub fn isNotWild(mut exp: Arc<DAE::Exp>) -> bool {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD, .. } => false,
+        Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD { .. }, .. } => false,
         _ => true,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -11474,7 +11473,7 @@ fn hashReductionInfo(mut info: Arc<DAE::ReductionInfo>) -> Result<i32> {
         Deref @ DAE::ReductionInfo { path, .. } => {
             22 + stringHashDjb2((AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone())
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(hash)
 }
@@ -11592,7 +11591,6 @@ fn hashOp(mut op: DAE::Operator) -> Result<i32> {
         DAE::Operator::USERDEFINED { fqName: ref path } => {
             56 + stringHashDjb2((AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone())
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(hash)
 }
@@ -11897,21 +11895,21 @@ fn fromAbsynExpOpt(mut aoe: Option<Arc<Absyn::Exp>>) -> Result<Option<Arc<DAE::E
 fn fromAbsynOperator(mut aop: Absyn::Operator, mut ty: Arc<DAE::Type>) -> Result<DAE::Operator> {
     let mut op: DAE::Operator;
     op = (match aop.clone() {
-        Absyn::Operator::ADD => DAE::Operator::ADD { ty: ty.clone() },
-        Absyn::Operator::SUB => DAE::Operator::SUB { ty: ty.clone() },
-        Absyn::Operator::MUL => DAE::Operator::MUL { ty: ty.clone() },
-        Absyn::Operator::DIV => DAE::Operator::DIV { ty: ty.clone() },
-        Absyn::Operator::POW => DAE::Operator::POW { ty: ty.clone() },
-        Absyn::Operator::UMINUS => DAE::Operator::UMINUS { ty: ty.clone() },
-        Absyn::Operator::AND => DAE::Operator::AND { ty: ty.clone() },
-        Absyn::Operator::OR => DAE::Operator::OR { ty: ty.clone() },
-        Absyn::Operator::NOT => DAE::Operator::NOT { ty: ty.clone() },
-        Absyn::Operator::LESS => DAE::Operator::LESS { ty: ty.clone() },
-        Absyn::Operator::LESSEQ => DAE::Operator::LESSEQ { ty: ty.clone() },
-        Absyn::Operator::GREATER => DAE::Operator::GREATER { ty: ty.clone() },
-        Absyn::Operator::GREATEREQ => DAE::Operator::GREATEREQ { ty: ty.clone() },
-        Absyn::Operator::EQUAL => DAE::Operator::EQUAL { ty: ty.clone() },
-        Absyn::Operator::NEQUAL => DAE::Operator::NEQUAL { ty: ty.clone() },
+        Absyn::Operator::ADD { .. } => DAE::Operator::ADD { ty: ty.clone() },
+        Absyn::Operator::SUB { .. } => DAE::Operator::SUB { ty: ty.clone() },
+        Absyn::Operator::MUL { .. } => DAE::Operator::MUL { ty: ty.clone() },
+        Absyn::Operator::DIV { .. } => DAE::Operator::DIV { ty: ty.clone() },
+        Absyn::Operator::POW { .. } => DAE::Operator::POW { ty: ty.clone() },
+        Absyn::Operator::UMINUS { .. } => DAE::Operator::UMINUS { ty: ty.clone() },
+        Absyn::Operator::AND { .. } => DAE::Operator::AND { ty: ty.clone() },
+        Absyn::Operator::OR { .. } => DAE::Operator::OR { ty: ty.clone() },
+        Absyn::Operator::NOT { .. } => DAE::Operator::NOT { ty: ty.clone() },
+        Absyn::Operator::LESS { .. } => DAE::Operator::LESS { ty: ty.clone() },
+        Absyn::Operator::LESSEQ { .. } => DAE::Operator::LESSEQ { ty: ty.clone() },
+        Absyn::Operator::GREATER { .. } => DAE::Operator::GREATER { ty: ty.clone() },
+        Absyn::Operator::GREATEREQ { .. } => DAE::Operator::GREATEREQ { ty: ty.clone() },
+        Absyn::Operator::EQUAL { .. } => DAE::Operator::EQUAL { ty: ty.clone() },
+        Absyn::Operator::NEQUAL { .. } => DAE::Operator::NEQUAL { ty: ty.clone() },
         _ => {
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expression.fromAbsynOperator: Unhandled operator: ")); __mm_s.push_str(&*Dump::opSymbol(aop.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             bail!("fail")
@@ -11997,10 +11995,10 @@ pub fn checkDimensionSizes(mut dim: Arc<DAE::Dimension>) -> Result<bool> {
     value = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ DAE::Dimension::DIM_INTEGER { .. } => true,
         Deref @ DAE::Dimension::DIM_ENUM { .. } => true,
-        Deref @ DAE::Dimension::DIM_BOOLEAN => true,
+        Deref @ DAE::Dimension::DIM_BOOLEAN { .. } => true,
         Deref @ DAE::Dimension::DIM_EXP { .. } => true,
-        Deref @ DAE::Dimension::DIM_UNKNOWN => false,
-        _ => bail!("match: no arm matched"),
+        Deref @ DAE::Dimension::DIM_UNKNOWN { .. } => false,
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(value)
 }
@@ -12093,8 +12091,8 @@ pub fn isCrefListWithEqualIdents(mut iExpressions: Arc<metamodelica::List<Arc<DA
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: head, tail: _ } => {
                     let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = crefs.clone();
-                    let mut tmpCrefWithEqualIdents: bool = tmpCrefWithEqualIdents.clone();
                     let mut headCref: Arc<DAE::ComponentRef> = headCref.clone();
+                    let mut tmpCrefWithEqualIdents: bool = tmpCrefWithEqualIdents.clone();
                     let true = (List::all(iExpressions.clone(), (std::sync::Arc::new(fnptr!(isCref, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
                     crefs = List::map(iExpressions.clone(), (std::sync::Arc::new(expCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::ComponentRef>> + 'static>));
                     headCref = expCref(head.clone())?;
@@ -12369,7 +12367,7 @@ pub fn expandSubscript(mut inSubscript: Arc<DAE::Subscript>, mut inDimension: Ar
         Deref @ DAE::Subscript::INDEX { .. } => {
             list![inSubscript.clone()]
         },
-        Deref @ DAE::Subscript::WHOLEDIM => {
+        Deref @ DAE::Subscript::WHOLEDIM { .. } => {
             expandDimension(inDimension.clone())
         },
         Deref @ DAE::Subscript::SLICE { .. } => {
@@ -12391,7 +12389,7 @@ pub fn expandDimension(mut inDimension: Arc<DAE::Dimension>) -> Arc<metamodelica
             enum_expl = makeEnumLiterals(enum_ty.clone(), enum_lits.clone());
             List::map(enum_expl.clone(), (std::sync::Arc::new(fnptr!(makeIndexSubscript, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Subscript>> + 'static>))
         },
-        Deref @ DAE::Dimension::DIM_BOOLEAN => {
+        Deref @ DAE::Dimension::DIM_BOOLEAN { .. } => {
             cons(Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::BCONST { bool: false }) }), cons(Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::BCONST { bool: true }) }), metamodelica::nil()))
         },
         _ => {
@@ -13140,7 +13138,7 @@ pub fn findCallIsInlineAfterIndexReduction(mut e: Arc<DAE::Exp>, mut res: bool) 
     let mut res: bool = res;
     if !(res.clone()) {
         res = (::match_deref::match_deref! { match &(e.clone()) {
-        Deref @ DAE::Exp::CALL { attr: Deref @ DAE::CallAttributes { inlineType: DAE::InlineType::AFTER_INDEX_RED_INLINE, .. }, .. } => true,
+        Deref @ DAE::Exp::CALL { attr: Deref @ DAE::CallAttributes { inlineType: DAE::InlineType::AFTER_INDEX_RED_INLINE { .. }, .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

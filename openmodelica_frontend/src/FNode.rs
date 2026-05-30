@@ -437,7 +437,6 @@ pub fn name(mut n: Node) -> Result<ArcStr> {
         FCore::Node { name: mut s, .. } => {
             s.clone()
         },
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(name)
 }
@@ -452,7 +451,6 @@ pub fn data(mut n: Node) -> Result<Data> {
     let mut d: Data = FCore::Data::TOP;
     d = (match n.clone() {
         FCore::Node { data: mut d, .. } => d.clone(),
-        _ => bail!("match: no arm matched"),
     });
     Ok(d)
 }
@@ -568,7 +566,7 @@ pub fn element2Data(mut inElement: Arc<SCode::Element>, mut inKind: Kind) -> Res
 pub fn dataStr(mut inData: Data) -> ArcStr {
     let mut outStr: ArcStr = arcstr::literal!("");
     outStr = ((::match_deref::match_deref! { match &(inData.clone()) {
-        FCore::Data::TOP => {
+        FCore::Data::TOP { .. } => {
             literal!("TOP")
         },
         FCore::Data::IT { i: _ } => {
@@ -726,7 +724,7 @@ pub fn scopeStr(mut sc: Scope) -> ArcStr {
 pub fn isImplicitScope(mut inNode: Node) -> bool {
     let mut b: bool = false;
     b = (match inNode.clone() {
-        FCore::Node { data: FCore::Data::TOP, .. } => false,
+        FCore::Node { data: FCore::Data::TOP { .. }, .. } => false,
         FCore::Node { data: FCore::Data::CL { .. }, .. } => false,
         FCore::Node { data: FCore::Data::CO { .. }, .. } => false,
         FCore::Node { data: FCore::Data::CC { .. }, .. } => false,
@@ -747,7 +745,7 @@ pub fn isRefImplicitScope(mut inRef: Ref) -> Result<bool> {
 pub fn isEncapsulated(mut inNode: Node) -> Result<bool> {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(inNode.clone()) {
-        FCore::Node { data: FCore::Data::CL { e: Deref @ SCode::Element::CLASS { encapsulatedPrefix: SCode::Encapsulated::ENCAPSULATED, .. }, .. }, .. } => true,
+        FCore::Node { data: FCore::Data::CL { e: Deref @ SCode::Element::CLASS { encapsulatedPrefix: SCode::Encapsulated::ENCAPSULATED { .. }, .. }, .. }, .. } => true,
         FCore::Node { data: FCore::Data::CO { .. }, .. } if (boolEq(Config::acceptMetaModelicaGrammar()?, false) && boolNot(Flags::isSet(Flags::GRAPH_INST.clone())?)) => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -767,10 +765,10 @@ pub fn isReference(mut inNode: Node) -> bool {
 pub fn isUserDefined(mut inNode: Node) -> Result<bool> {
     let mut b: bool = false;
     b = (match inNode.clone() {
-        FCore::Node { data: FCore::Data::CL { kind: FCore::Kind::USERDEFINED, .. }, .. } => {
+        FCore::Node { data: FCore::Data::CL { kind: FCore::Kind::USERDEFINED { .. }, .. }, .. } => {
             true
         },
-        FCore::Node { data: FCore::Data::CO { kind: FCore::Kind::USERDEFINED, .. }, .. } => {
+        FCore::Node { data: FCore::Data::CO { kind: FCore::Kind::USERDEFINED { .. }, .. }, .. } => {
             true
         },
         _ if (hasParents(inNode.clone())?) => {
@@ -793,7 +791,7 @@ pub fn isUserDefined(mut inNode: Node) -> Result<bool> {
 pub fn isTop(mut inNode: Node) -> bool {
     let mut b: bool = false;
     b = (match inNode.clone() {
-        FCore::Node { data: FCore::Data::TOP, .. } => true,
+        FCore::Node { data: FCore::Data::TOP { .. }, .. } => true,
         _ => false,
     });
     b
@@ -842,8 +840,8 @@ pub fn isInstance(mut inNode: Node) -> bool {
 pub fn isRedeclare(mut inNode: Node) -> bool {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(inNode.clone()) {
-        FCore::Node { data: FCore::Data::CL { e: Deref @ SCode::Element::CLASS { prefixes: Deref @ SCode::Prefixes { redeclarePrefix: SCode::Redeclare::REDECLARE, .. }, .. }, .. }, .. } => true,
-        FCore::Node { data: FCore::Data::CO { e: Deref @ SCode::Element::COMPONENT { prefixes: Deref @ SCode::Prefixes { redeclarePrefix: SCode::Redeclare::REDECLARE, .. }, .. }, .. }, .. } => true,
+        FCore::Node { data: FCore::Data::CL { e: Deref @ SCode::Element::CLASS { prefixes: Deref @ SCode::Prefixes { redeclarePrefix: SCode::Redeclare::REDECLARE { .. }, .. }, .. }, .. }, .. } => true,
+        FCore::Node { data: FCore::Data::CO { e: Deref @ SCode::Element::COMPONENT { prefixes: Deref @ SCode::Prefixes { redeclarePrefix: SCode::Redeclare::REDECLARE { .. }, .. }, .. }, .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -890,7 +888,7 @@ pub fn isCref(mut inNode: Node) -> bool {
 pub fn isBasicType(mut inNode: Node) -> bool {
     let mut b: bool = false;
     b = (match inNode.clone() {
-        FCore::Node { data: FCore::Data::CL { kind: FCore::Kind::BASIC_TYPE, .. }, .. } => true,
+        FCore::Node { data: FCore::Data::CL { kind: FCore::Kind::BASIC_TYPE { .. }, .. }, .. } => true,
         _ => false,
     });
     b
@@ -899,8 +897,8 @@ pub fn isBasicType(mut inNode: Node) -> bool {
 pub fn isBuiltin(mut inNode: Node) -> bool {
     let mut b: bool = false;
     b = (match inNode.clone() {
-        FCore::Node { data: FCore::Data::CL { kind: FCore::Kind::BUILTIN, .. }, .. } => true,
-        FCore::Node { data: FCore::Data::CO { kind: FCore::Kind::BUILTIN, .. }, .. } => true,
+        FCore::Node { data: FCore::Data::CL { kind: FCore::Kind::BUILTIN { .. }, .. }, .. } => true,
+        FCore::Node { data: FCore::Data::CO { kind: FCore::Kind::BUILTIN { .. }, .. }, .. } => true,
         _ => false,
     });
     b
@@ -1442,7 +1440,7 @@ pub fn extendsRefs(mut inRef: Ref) -> Result<Refs> {
             let mut rd: Refs = metamodelica::nil();
             rd = derivedRef(inRef.clone())?;
             refs = filter(inRef.clone(), (std::sync::Arc::new(isRefExtends) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<bool> + 'static>))?;
-            refs = List::flatten(List::map1(refs.clone(), (std::sync::Arc::new(filter) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>, fn(metamodelica::Array<FCore::Node>) -> Result<bool>) -> Result<Arc<metamodelica::List<metamodelica::Array<FCore::Node>>>> + 'static>), (std::sync::Arc::new(isRefReference) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<bool> + 'static>)));
+            refs = List::flatten(List::map1(refs.clone(), (std::sync::Arc::new(filter) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>, Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<bool> + 'static>) -> Result<Arc<metamodelica::List<metamodelica::Array<FCore::Node>>>> + 'static>), (std::sync::Arc::new(isRefReference) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<bool> + 'static>)));
             refs = listAppend(rd.clone(), refs.clone());
             refs.clone()
         },
@@ -1489,7 +1487,6 @@ pub fn clone(mut inNode: Node, mut inParentRef: Ref, mut inGraph: Graph) -> Resu
             r = updateRef(r.clone(), FCore::Node { name: (name.clone()).clone(), id: id.clone(), parents: parents.clone(), children: children.clone(), data: data.clone() })?;
             (g.clone(), r.clone())
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok((outGraph, outRef))
 }
@@ -1601,7 +1598,6 @@ fn copy(mut inNode: Node) -> Result<Ref> {
             node.children = FCore::RefTree::map(node.children.clone(), (std::sync::Arc::new(fnptr!(copyChild, ArcStr, metamodelica::Array<FCore::Node>)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>) -> Result<metamodelica::Array<FCore::Node>> + 'static>));
             toRef(node.clone())
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(outRef)
 }

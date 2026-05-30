@@ -573,7 +573,7 @@ fn fun_28(mut in_txt: Tpl::Text, mut in_a_enum__def: Arc<Absyn::EnumDef>, mut in
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("))")).clone() }))?;
             (txt.clone(), a_preText.clone())
         },
-        (txt, Deref @ Absyn::EnumDef::ENUM_COLON, a_preText) => {
+        (txt, Deref @ Absyn::EnumDef::ENUM_COLON { .. }, a_preText) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("ENUM_COLON()")).clone() }))?;
             (txt.clone(), a_preText.clone())
@@ -627,27 +627,27 @@ pub fn dumpEnumLiteral(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_lit: 
 fn fun_32(mut in_txt: Tpl::Text, mut in_a_functionRestriction: Absyn::FunctionRestriction) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_functionRestriction.clone()) {
-        (mut txt, Absyn::FunctionRestriction::FR_NORMAL_FUNCTION { purity: Absyn::FunctionPurity::IMPURE }) => {
+        (mut txt, Absyn::FunctionRestriction::FR_NORMAL_FUNCTION { purity: Absyn::FunctionPurity::IMPURE { .. } }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("FR_NORMAL_FUNCTION(IMPURE())")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::FunctionRestriction::FR_NORMAL_FUNCTION { purity: Absyn::FunctionPurity::PURE }) => {
+        (mut txt, Absyn::FunctionRestriction::FR_NORMAL_FUNCTION { purity: Absyn::FunctionPurity::PURE { .. } }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("FR_NORMAL_FUNCTION(PURE())")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::FunctionRestriction::FR_NORMAL_FUNCTION { purity: Absyn::FunctionPurity::NO_PURITY }) => {
+        (mut txt, Absyn::FunctionRestriction::FR_NORMAL_FUNCTION { purity: Absyn::FunctionPurity::NO_PURITY { .. } }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("FR_NORMAL_FUNCTION(NO_PURITY())")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::FunctionRestriction::FR_OPERATOR_FUNCTION) => {
+        (mut txt, Absyn::FunctionRestriction::FR_OPERATOR_FUNCTION { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("FR_OPERATOR_FUNCTION()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::FunctionRestriction::FR_PARALLEL_FUNCTION) => {
+        (mut txt, Absyn::FunctionRestriction::FR_PARALLEL_FUNCTION { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("FR_PARALLEL_FUNCTION()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::FunctionRestriction::FR_KERNEL_FUNCTION) => {
+        (mut txt, Absyn::FunctionRestriction::FR_KERNEL_FUNCTION { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("FR_KERNEL_FUNCTION()")).clone() }))?;
             txt.clone()
         },
@@ -661,39 +661,39 @@ fn fun_32(mut in_txt: Tpl::Text, mut in_a_functionRestriction: Absyn::FunctionRe
 pub fn dumpRestriction(mut in_txt: Tpl::Text, mut in_a_restriction: Absyn::Restriction) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_restriction.clone()) {
-        (mut txt, Absyn::Restriction::R_CLASS) => {
+        (mut txt, Absyn::Restriction::R_CLASS { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("R_CLASS()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Restriction::R_OPTIMIZATION) => {
+        (mut txt, Absyn::Restriction::R_OPTIMIZATION { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("R_OPTIMIZATION()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Restriction::R_MODEL) => {
+        (mut txt, Absyn::Restriction::R_MODEL { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("R_MODEL()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Restriction::R_RECORD) => {
+        (mut txt, Absyn::Restriction::R_RECORD { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("R_RECORD()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Restriction::R_BLOCK) => {
+        (mut txt, Absyn::Restriction::R_BLOCK { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("R_BLOCK()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Restriction::R_CONNECTOR) => {
+        (mut txt, Absyn::Restriction::R_CONNECTOR { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("R_CONNECTOR()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Restriction::R_EXP_CONNECTOR) => {
+        (mut txt, Absyn::Restriction::R_EXP_CONNECTOR { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("R_EXP_CONNECTOR()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Restriction::R_TYPE) => {
+        (mut txt, Absyn::Restriction::R_TYPE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("R_TYPE()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Restriction::R_PACKAGE) => {
+        (mut txt, Absyn::Restriction::R_PACKAGE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("R_PACKAGE()")).clone() }))?;
             txt.clone()
         },
@@ -705,39 +705,39 @@ pub fn dumpRestriction(mut in_txt: Tpl::Text, mut in_a_restriction: Absyn::Restr
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Restriction::R_OPERATOR) => {
+        (mut txt, Absyn::Restriction::R_OPERATOR { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("R_OPERATOR()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Restriction::R_OPERATOR_RECORD) => {
+        (mut txt, Absyn::Restriction::R_OPERATOR_RECORD { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("R_OPERATOR_RECORD()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Restriction::R_ENUMERATION) => {
+        (mut txt, Absyn::Restriction::R_ENUMERATION { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("R_ENUMERATION()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Restriction::R_PREDEFINED_INTEGER) => {
+        (mut txt, Absyn::Restriction::R_PREDEFINED_INTEGER { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("R_PREDEFINED_INTEGER()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Restriction::R_PREDEFINED_REAL) => {
+        (mut txt, Absyn::Restriction::R_PREDEFINED_REAL { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("R_PREDEFINED_REAL()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Restriction::R_PREDEFINED_STRING) => {
+        (mut txt, Absyn::Restriction::R_PREDEFINED_STRING { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("R_PREDEFINED_STRING()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Restriction::R_PREDEFINED_BOOLEAN) => {
+        (mut txt, Absyn::Restriction::R_PREDEFINED_BOOLEAN { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("R_PREDEFINED_BOOLEAN()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Restriction::R_PREDEFINED_ENUMERATION) => {
+        (mut txt, Absyn::Restriction::R_PREDEFINED_ENUMERATION { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("R_PREDEFINED_ENUMERATION()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Restriction::R_UNIONTYPE) => {
+        (mut txt, Absyn::Restriction::R_UNIONTYPE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("R_UNIONTYPE()")).clone() }))?;
             txt.clone()
         },
@@ -745,7 +745,7 @@ pub fn dumpRestriction(mut in_txt: Tpl::Text, mut in_a_restriction: Absyn::Restr
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("MR: Does not work")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Restriction::R_UNKNOWN) => {
+        (mut txt, Absyn::Restriction::R_UNKNOWN { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("R_UNKNOWN()")).clone() }))?;
             txt.clone()
         },
@@ -1150,7 +1150,7 @@ pub fn dumpClassPart(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_class__
 pub fn dumpWithin(mut in_txt: Tpl::Text, mut in_a_within: Absyn::Within) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_within.clone()) {
-        (mut txt, Absyn::Within::TOP) => {
+        (mut txt, Absyn::Within::TOP { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("TOP()")).clone() }))?;
             txt.clone()
         },
@@ -1506,7 +1506,7 @@ pub fn dumpElementArg(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_earg: 
 pub fn dumpEach(mut in_txt: Tpl::Text, mut in_a_each: Absyn::Each) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_each.clone()) {
-        (mut txt, Absyn::Each::EACH) => {
+        (mut txt, Absyn::Each::EACH { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("EACH()")).clone() }))?;
             txt.clone()
         },
@@ -1536,7 +1536,7 @@ pub fn dumpFinal(mut in_txt: Tpl::Text, mut in_a_final: bool) -> Result<Tpl::Tex
 pub fn dumpRedeclare(mut in_txt: Tpl::Text, mut in_a_redecl: Absyn::RedeclareKeywords) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_redecl.clone()) {
-        (mut txt, Absyn::RedeclareKeywords::REDECLARE) => {
+        (mut txt, Absyn::RedeclareKeywords::REDECLARE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("REDECLARE()")).clone() }))?;
             txt.clone()
         },
@@ -1544,7 +1544,7 @@ pub fn dumpRedeclare(mut in_txt: Tpl::Text, mut in_a_redecl: Absyn::RedeclareKey
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("REPLACEABLE()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::RedeclareKeywords::REDECLARE_REPLACEABLE) => {
+        (mut txt, Absyn::RedeclareKeywords::REDECLARE_REPLACEABLE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("REDECLARE_REPLACEABLE()")).clone() }))?;
             txt.clone()
         },
@@ -1555,11 +1555,11 @@ pub fn dumpRedeclare(mut in_txt: Tpl::Text, mut in_a_redecl: Absyn::RedeclareKey
 pub fn dumpReplaceable(mut in_txt: Tpl::Text, mut in_a_repl: Absyn::RedeclareKeywords) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_repl.clone()) {
-        (mut txt, Absyn::RedeclareKeywords::REPLACEABLE) => {
+        (mut txt, Absyn::RedeclareKeywords::REPLACEABLE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("REPLACEABLE()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::RedeclareKeywords::REDECLARE_REPLACEABLE) => {
+        (mut txt, Absyn::RedeclareKeywords::REDECLARE_REPLACEABLE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("REDECLARE_REPLACEABLE()")).clone() }))?;
             txt.clone()
         },
@@ -1573,19 +1573,19 @@ pub fn dumpReplaceable(mut in_txt: Tpl::Text, mut in_a_repl: Absyn::RedeclareKey
 pub fn dumpInnerOuter(mut in_txt: Tpl::Text, mut in_a_io: Absyn::InnerOuter) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_io.clone()) {
-        (mut txt, Absyn::InnerOuter::INNER) => {
+        (mut txt, Absyn::InnerOuter::INNER { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("INNER()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::InnerOuter::OUTER) => {
+        (mut txt, Absyn::InnerOuter::OUTER { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("OUTER()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::InnerOuter::INNER_OUTER) => {
+        (mut txt, Absyn::InnerOuter::INNER_OUTER { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("INNER_OUTER()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::InnerOuter::NOT_INNER_OUTER) => {
+        (mut txt, Absyn::InnerOuter::NOT_INNER_OUTER { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("NOT_INNER_OUTER()")).clone() }))?;
             txt.clone()
         },
@@ -1669,7 +1669,7 @@ fn fun_75(mut in_txt: Tpl::Text, mut in_a_eqmod: Arc<Absyn::EqMod>, mut in_a_pre
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
             (txt.clone(), a_preText.clone())
         },
-        (txt, Deref @ Absyn::EqMod::NOMOD, a_preText) => {
+        (txt, Deref @ Absyn::EqMod::NOMOD { .. }, a_preText) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("NOMOD()")).clone() }))?;
             (txt.clone(), a_preText.clone())
@@ -1897,15 +1897,15 @@ pub fn dumpElementAttr(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_attr:
 pub fn dumpParallelism(mut in_txt: Tpl::Text, mut in_a_par: Absyn::Parallelism) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_par.clone()) {
-        (mut txt, Absyn::Parallelism::PARGLOBAL) => {
+        (mut txt, Absyn::Parallelism::PARGLOBAL { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("PARGLOBAL()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Parallelism::PARLOCAL) => {
+        (mut txt, Absyn::Parallelism::PARLOCAL { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("PARGLOBAL()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Parallelism::NON_PARALLEL) => {
+        (mut txt, Absyn::Parallelism::NON_PARALLEL { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("NON_PARALLEL()")).clone() }))?;
             txt.clone()
         },
@@ -1919,11 +1919,11 @@ pub fn dumpParallelism(mut in_txt: Tpl::Text, mut in_a_par: Absyn::Parallelism) 
 pub fn dumpIsField(mut in_txt: Tpl::Text, mut in_a_isField: Absyn::IsField) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_isField.clone()) {
-        (mut txt, Absyn::IsField::NONFIELD) => {
+        (mut txt, Absyn::IsField::NONFIELD { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("NONFIELD()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::IsField::FIELD) => {
+        (mut txt, Absyn::IsField::FIELD { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("FIELD()")).clone() }))?;
             txt.clone()
         },
@@ -1937,19 +1937,19 @@ pub fn dumpIsField(mut in_txt: Tpl::Text, mut in_a_isField: Absyn::IsField) -> R
 pub fn dumpVariability(mut in_txt: Tpl::Text, mut in_a_var: Absyn::Variability) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_var.clone()) {
-        (mut txt, Absyn::Variability::VAR) => {
+        (mut txt, Absyn::Variability::VAR { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("VAR()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Variability::DISCRETE) => {
+        (mut txt, Absyn::Variability::DISCRETE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("DISCRETE()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Variability::PARAM) => {
+        (mut txt, Absyn::Variability::PARAM { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("PARAM()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Variability::CONST) => {
+        (mut txt, Absyn::Variability::CONST { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("CONST()")).clone() }))?;
             txt.clone()
         },
@@ -1963,19 +1963,19 @@ pub fn dumpVariability(mut in_txt: Tpl::Text, mut in_a_var: Absyn::Variability) 
 pub fn dumpDirection(mut in_txt: Tpl::Text, mut in_a_dir: Absyn::Direction) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_dir.clone()) {
-        (mut txt, Absyn::Direction::BIDIR) => {
+        (mut txt, Absyn::Direction::BIDIR { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("BIDIR()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Direction::INPUT) => {
+        (mut txt, Absyn::Direction::INPUT { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("INPUT()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Direction::OUTPUT) => {
+        (mut txt, Absyn::Direction::OUTPUT { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("OUTPUT()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Direction::INPUT_OUTPUT) => {
+        (mut txt, Absyn::Direction::INPUT_OUTPUT { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("INPUT_OUTPUT()")).clone() }))?;
             txt.clone()
         },
@@ -3070,12 +3070,12 @@ fn fun_130(mut in_txt: Tpl::Text, mut in_a_alg: Arc<Absyn::Algorithm>, mut in_a_
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
             (txt.clone(), a_preText.clone())
         },
-        (txt, Deref @ Absyn::Algorithm::ALG_RETURN, a_preText) => {
+        (txt, Deref @ Absyn::Algorithm::ALG_RETURN { .. }, a_preText) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("ALG_RETURN()")).clone() }))?;
             (txt.clone(), a_preText.clone())
         },
-        (txt, Deref @ Absyn::Algorithm::ALG_BREAK, a_preText) => {
+        (txt, Deref @ Absyn::Algorithm::ALG_BREAK { .. }, a_preText) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("ALG_BREAK()")).clone() }))?;
             (txt.clone(), a_preText.clone())
@@ -3100,7 +3100,7 @@ fn fun_130(mut in_txt: Tpl::Text, mut in_a_alg: Arc<Absyn::Algorithm>, mut in_a_
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
             (txt.clone(), a_preText.clone())
         },
-        (txt, Deref @ Absyn::Algorithm::ALG_CONTINUE, a_preText) => {
+        (txt, Deref @ Absyn::Algorithm::ALG_CONTINUE { .. }, a_preText) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("ALG_CONTINUE()")).clone() }))?;
             (txt.clone(), a_preText.clone())
@@ -3367,7 +3367,7 @@ fn fun_144(mut in_txt: Tpl::Text, mut in_a_subscript: Arc<Absyn::Subscript>, mut
     let mut out_txt: Tpl::Text;
     let mut out_a_preText: Tpl::Text;
     (out_txt, out_a_preText) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_subscript.clone(), in_a_preText.clone())) {
-        (txt, Deref @ Absyn::Subscript::NOSUB, a_preText) => {
+        (txt, Deref @ Absyn::Subscript::NOSUB { .. }, a_preText) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("NOSUB()")).clone() }))?;
             (txt.clone(), a_preText.clone())
@@ -3739,7 +3739,7 @@ fn fun_151(mut in_txt: Tpl::Text, mut in_a_exp: Arc<Absyn::Exp>, mut in_a_preTex
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("))")).clone() }))?;
             (txt.clone(), a_preText.clone())
         },
-        (txt, Deref @ Absyn::Exp::END, a_preText) => {
+        (txt, Deref @ Absyn::Exp::END { .. }, a_preText) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("END()")).clone() }))?;
             (txt.clone(), a_preText.clone())
@@ -4153,11 +4153,11 @@ pub fn dumpMatchExp(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_match__e
 pub fn dumpMatchType(mut in_txt: Tpl::Text, mut in_a_match__type: Absyn::MatchType) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_match__type.clone()) {
-        (mut txt, Absyn::MatchType::MATCH) => {
+        (mut txt, Absyn::MatchType::MATCH { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("MATCH()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::MatchType::MATCHCONTINUE) => {
+        (mut txt, Absyn::MatchType::MATCHCONTINUE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("MATCHCONTINUE()")).clone() }))?;
             txt.clone()
         },
@@ -4466,95 +4466,95 @@ pub fn dumpMatchCase(mut txt: Tpl::Text, mut a_preText: Tpl::Text, mut a_c: Arc<
 pub fn dumpOperator(mut in_txt: Tpl::Text, mut in_a_op: Absyn::Operator) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_op.clone()) {
-        (mut txt, Absyn::Operator::ADD) => {
+        (mut txt, Absyn::Operator::ADD { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("ADD()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Operator::ADD_EW) => {
+        (mut txt, Absyn::Operator::ADD_EW { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("ADD_EW()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Operator::AND) => {
+        (mut txt, Absyn::Operator::AND { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("AND()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Operator::DIV) => {
+        (mut txt, Absyn::Operator::DIV { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("DIV()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Operator::DIV_EW) => {
+        (mut txt, Absyn::Operator::DIV_EW { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("DIV_EW()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Operator::EQUAL) => {
+        (mut txt, Absyn::Operator::EQUAL { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("EQUAL()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Operator::GREATER) => {
+        (mut txt, Absyn::Operator::GREATER { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("GREATER()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Operator::GREATEREQ) => {
+        (mut txt, Absyn::Operator::GREATEREQ { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("GREATEREQ()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Operator::LESS) => {
+        (mut txt, Absyn::Operator::LESS { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("LESS()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Operator::LESSEQ) => {
+        (mut txt, Absyn::Operator::LESSEQ { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("LESSEQ()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Operator::MUL) => {
+        (mut txt, Absyn::Operator::MUL { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("MUL()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Operator::MUL_EW) => {
+        (mut txt, Absyn::Operator::MUL_EW { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("MUL_EW()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Operator::NEQUAL) => {
+        (mut txt, Absyn::Operator::NEQUAL { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("NEQUAL()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Operator::NOT) => {
+        (mut txt, Absyn::Operator::NOT { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("NOT()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Operator::OR) => {
+        (mut txt, Absyn::Operator::OR { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("OR()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Operator::POW) => {
+        (mut txt, Absyn::Operator::POW { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("POW()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Operator::POW_EW) => {
+        (mut txt, Absyn::Operator::POW_EW { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("POW_EW()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Operator::SUB) => {
+        (mut txt, Absyn::Operator::SUB { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("SUB()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Operator::SUB_EW) => {
+        (mut txt, Absyn::Operator::SUB_EW { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("SUB_EW()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Operator::UMINUS) => {
+        (mut txt, Absyn::Operator::UMINUS { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("UMINUS()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Operator::UMINUS_EW) => {
+        (mut txt, Absyn::Operator::UMINUS_EW { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("UMINUS_EW()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Operator::UPLUS) => {
+        (mut txt, Absyn::Operator::UPLUS { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("UPLUS()")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Operator::UPLUS_EW) => {
+        (mut txt, Absyn::Operator::UPLUS_EW { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("UPLUS_EW()")).clone() }))?;
             txt.clone()
         },
@@ -4618,14 +4618,14 @@ fn fun_183(mut in_txt: Tpl::Text, mut in_a_cref: Arc<Absyn::ComponentRef>, mut i
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
             (txt.clone(), a_preText.clone())
         },
-        (txt, Deref @ Absyn::ComponentRef::WILD, a_preText) => {
+        (txt, Deref @ Absyn::ComponentRef::WILD { .. }, a_preText) => {
             let mut ret_2: bool = false;
             let mut txt = (*txt).clone();
             ret_2 = Config::acceptMetaModelicaGrammar()?;
             txt = fun_182(txt.clone(), ret_2.clone())?;
             (txt.clone(), a_preText.clone())
         },
-        (txt, Deref @ Absyn::ComponentRef::ALLWILD, a_preText) => {
+        (txt, Deref @ Absyn::ComponentRef::ALLWILD { .. }, a_preText) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("ALLWILD()")).clone() }))?;
             (txt.clone(), a_preText.clone())
@@ -4708,7 +4708,7 @@ fn lm_187(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Absyn:
 fn fun_188(mut in_txt: Tpl::Text, mut in_a_iterType: Absyn::ReductionIterType) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_iterType.clone()) {
-        (mut txt, Absyn::ReductionIterType::THREAD) => {
+        (mut txt, Absyn::ReductionIterType::THREAD { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("THREAD()")).clone() }))?;
             txt.clone()
         },

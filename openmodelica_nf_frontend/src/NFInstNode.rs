@@ -556,7 +556,7 @@ pub mod InstNode {
         Deref @ IMPLICIT_SCOPE { .. } => literal!("$IMPLICIT"),
         Deref @ ITERATOR_NODE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$ITERATOR(")); __mm_s.push_str(&*Expression::toString(var_field!((*node).exp, InstNode::ITERATOR_NODE).clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) },
         Deref @ EMPTY_NODE { .. } => literal!("$EMPTY"),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
         Ok(name)
     }
@@ -2217,7 +2217,7 @@ pub mod InstNode {
     }
 
     pub fn clearGeneratedInners(mut node: Arc<InstNode>) -> Result<()> {
-        let mut inners: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<InstNode>>>;
+        let mut inners: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<InstNode>>> = <Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<InstNode>>> as ::std::default::Default>::default();
         let __pa0 = ::match_deref::match_deref! { match &(nodeType(topScope(node.clone()))?) {
             Deref @ InstNodeType::TOP_SCOPE { generatedInners: __pa0, .. } => __pa0.clone(),
             _ => bail!("pattern mismatch"),

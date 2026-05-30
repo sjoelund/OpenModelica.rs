@@ -263,7 +263,6 @@ pub fn unit2string(mut inUnit: Unit) -> Result<ArcStr> {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("UNKOWN(")); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
             r#str.clone()
         },
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(outString)
 }

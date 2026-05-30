@@ -128,11 +128,46 @@ use openmodelica_util_datatypes_basic::Pointer;
 // ==========================================================================
 pub const NOMINAL_THRESHOLD: metamodelica::Real = metamodelica::OrderedFloat(1000.0_f64);
 
+pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut kind: Partition::Kind) -> Result<Arc<BackendDAE::NBackendDAE>> {
+    let mut bdae: Arc<BackendDAE::NBackendDAE> = bdae;
+    let mut func: Module::aliasInterface;
+    func = getModule()?;
+    bdae = (::match_deref::match_deref! { match &(bdae.clone()) {
+        Deref @ BackendDAE::MAIN { eqData, varData, .. } => {
+            let mut eqData = (*eqData).clone();
+            let mut varData = (*varData).clone();
+            (varData, eqData) = func(varData.clone(), eqData.clone(), kind.clone())?;
+            (varData, eqData) = aliasClocks(varData.clone(), eqData.clone(), kind.clone())?;
+            assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN;
+                varData = varData.clone(),
+                eqData = eqData.clone()
+            );
+            bdae.clone()
+        },
+        Deref @ BackendDAE::HESSIAN { eqData, varData } => {
+            let mut eqData = (*eqData).clone();
+            let mut varData = (*varData).clone();
+            (varData, eqData) = func(varData.clone(), eqData.clone(), kind.clone())?;
+            assign_variant_field!(bdae => BackendDAE::NBackendDAE::HESSIAN;
+                varData = varData.clone(),
+                eqData = eqData.clone()
+            );
+            bdae.clone()
+        },
+        _ => {
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBAlias.main")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
+            bail!("fail")
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    Ok(bdae)
+}
+
 pub fn getModule() -> Result<Arc<dyn ::std::ops::Fn(Arc<VarData::VarData>, Arc<EqData::EqData>, Partition::Kind) -> Result<(Arc<VarData::VarData>, Arc<EqData::EqData>)> + 'static>> {
     let mut func: Module::aliasInterface;
     let mut flag: ArcStr = literal!("default");
     func = (::match_deref::match_deref! { match &(flag.clone()) {
-        Deref @ "default" => aliasDefault.clone(),
+        Deref @ "default" => (std::sync::Arc::new(aliasDefault) as std::sync::Arc<dyn ::std::ops::Fn(Arc<VarData::VarData>, Arc<EqData::EqData>, Partition::Kind) -> Result<(Arc<VarData::VarData>, Arc<EqData::EqData>)> + 'static>),
         _ => bail!("fail"),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -224,6 +259,80 @@ pub fn EMPTY_CREF_TPL() -> CrefTpl { __EMPTY_CREF_TPL_TLS.with(|__t| __t.clone()
 thread_local! { static __FAILED_CREF_TPL_TLS: CrefTpl = CrefTpl { cont: false, varCount: 0, paramCount: 0, cr_lst: metamodelica::nil() }; }
 pub fn FAILED_CREF_TPL() -> CrefTpl { __FAILED_CREF_TPL_TLS.with(|__t| __t.clone()) }
 
+fn aliasDefault(mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>, mut kind: Partition::Kind) -> Result<(Arc<VarData::VarData>, Arc<EqData::EqData>)> {
+    let mut varData: Arc<VarData::VarData> = varData;
+    let mut eqData: Arc<EqData::EqData> = eqData;
+    (varData, eqData) = ({
+        let mut new_iters: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>> = UnorderedSet::new((std::sync::Arc::new(fnptr!(BVariable::hash, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(BVariable::equalName, Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 13);
+        (::match_deref::match_deref! { match &((varData.clone(), eqData.clone())) {
+        (Deref @ BVariable::VarData::VAR_DATA_SIM { .. }, Deref @ BEquation::EqData::EQ_DATA_SIM { .. }) => {
+            let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
+            let mut newEquations: Arc<EquationPointers::EquationPointers> = Arc::new(<EquationPointers::EquationPointers as ::std::default::Default>::default());
+            let mut alias_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+            let mut const_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+            let mut non_trivial_alias: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+            let mut non_trivial_eqs: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+            let mut auxEquations: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+            (replacements, newEquations) = aliasCausalize(var_field!((*varData).unknowns, VarData::VarData::VAR_DATA_SIM).clone(), var_field!((*eqData).simulation, EqData::EqData::EQ_DATA_SIM).clone(), kind.clone(), (literal!("Simulation")).clone())?;
+            (replacements, auxEquations) = checkReplacements(replacements.clone(), eqData.clone())?;
+            (eqData, varData) = Replacements::applySimple(eqData.clone(), varData.clone(), replacements.clone())?;
+            alias_vars = ({
+        let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+        for mut cref in (UnorderedMap::keyList(replacements.clone())).into_iter().cloned() {
+            let __x = BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!())?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    });
+            assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM;
+                simulation = BEquation::EquationPointers::compress(newEquations.clone())?,
+                equations = BEquation::EquationPointers::compress(var_field!((*eqData).equations, EqData::EqData::EQ_DATA_SIM).clone())?,
+                continuous = BEquation::EquationPointers::compress(var_field!((*eqData).continuous, EqData::EqData::EQ_DATA_SIM).clone())?,
+                discretes = BEquation::EquationPointers::compress(var_field!((*eqData).discretes, EqData::EqData::EQ_DATA_SIM).clone())?
+            );
+            assign_variant_field!(varData => VarData::VarData::VAR_DATA_SIM;
+                unknowns = BVariable::VariablePointers::removeList(alias_vars.clone(), var_field!((*varData).unknowns, VarData::VarData::VAR_DATA_SIM).clone())?,
+                algebraics = BVariable::VariablePointers::removeList(alias_vars.clone(), var_field!((*varData).algebraics, VarData::VarData::VAR_DATA_SIM).clone())?,
+                states = BVariable::VariablePointers::removeList(alias_vars.clone(), var_field!((*varData).states, VarData::VarData::VAR_DATA_SIM).clone())?,
+                discretes = BVariable::VariablePointers::removeList(alias_vars.clone(), var_field!((*varData).discretes, VarData::VarData::VAR_DATA_SIM).clone())?,
+                clocks = BVariable::VariablePointers::removeList(alias_vars.clone(), var_field!((*varData).clocks, VarData::VarData::VAR_DATA_SIM).clone())?,
+                initials = BVariable::VariablePointers::removeList(alias_vars.clone(), var_field!((*varData).initials, VarData::VarData::VAR_DATA_SIM).clone())?
+            );
+            (non_trivial_alias, alias_vars) = List::splitOnTrue(alias_vars.clone(), (std::sync::Arc::new(BVariable::hasNonTrivialAliasBinding) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>));
+            assign_variant_field!(varData => VarData::VarData::VAR_DATA_SIM; variables = BVariable::VariablePointers::removeList(alias_vars.clone(), var_field!((*varData).variables, VarData::VarData::VAR_DATA_SIM).clone())?);
+            (const_vars, alias_vars) = List::splitOnTrue(alias_vars.clone(), (std::sync::Arc::new(BVariable::hasConstOrParamAliasBinding) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>));
+            for mut var in &*const_vars.clone() {
+                let mut var = var.clone();
+                BVariable::setVarKind(var.clone(), Arc::new(VariableKind::VariableKind::PARAMETER { resize_value: None }));
+                BVariable::setBindingAsStartAndFix(var.clone(), true, false)?;
+            }
+            assign_variant_field!(varData => VarData::VarData::VAR_DATA_SIM;
+                parameters = BVariable::VariablePointers::addList(const_vars.clone(), var_field!((*varData).parameters, VarData::VarData::VAR_DATA_SIM).clone()),
+                knowns = BVariable::VariablePointers::addList(const_vars.clone(), var_field!((*varData).knowns, VarData::VarData::VAR_DATA_SIM).clone()),
+                aliasVars = BVariable::VariablePointers::addList(alias_vars.clone(), var_field!((*varData).aliasVars, VarData::VarData::VAR_DATA_SIM).clone()),
+                nonTrivialAlias = BVariable::VariablePointers::addList(non_trivial_alias.clone(), var_field!((*varData).nonTrivialAlias, VarData::VarData::VAR_DATA_SIM).clone())
+            );
+            non_trivial_eqs = ({
+        let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+        for mut var in (non_trivial_alias.clone()).into_iter().cloned() {
+            let __x = BEquation::Equation::generateBindingEquation(var.clone(), var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(), false, new_iters.clone())?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    });
+            assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM; removed = BEquation::EquationPointers::addList(non_trivial_eqs.clone(), var_field!((*eqData).removed, EqData::EqData::EQ_DATA_SIM).clone()));
+            (BVariable::VarData::addTypedList(varData.clone(), UnorderedSet::toList(new_iters.clone()), BVariable::VarData::VarType::ITERATOR.clone())?, BEquation::EqData::addUntypedList(eqData.clone(), auxEquations.clone(), false)?)
+        },
+        _ => {
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBAlias.aliasDefault")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
+            bail!("fail")
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } })
+    });
+    Ok((varData, eqData))
+}
+
 fn checkReplacements(mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>, mut eqData: Arc<EqData::EqData>) -> Result<(Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>)> {
     let mut newReplacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = UnorderedMap::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
     let mut auxEquations: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
@@ -291,7 +400,7 @@ fn filterExceptionsEquation(mut eqn: Arc<Equation::Equation>, mut acc: Arc<Unord
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    BEquation::Equation::map(eqn.clone(), Arc::new({ let __pe_b1 = acc.clone(); move |__pe_a0| filterExceptions(__pe_a0, __pe_b1.clone()) }), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+    BEquation::Equation::map(eqn.clone(), Arc::new({ let __pe_b1 = acc.clone(); move |__pe_a0| filterExceptions(__pe_a0, __pe_b1.clone()) }), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     Ok(eqn)
 }
 
@@ -340,12 +449,48 @@ fn dumpReplacements(mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<Compone
     Ok(())
 }
 
+fn aliasClocks(mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>, mut kind: Partition::Kind) -> Result<(Arc<VarData::VarData>, Arc<EqData::EqData>)> {
+    let mut varData: Arc<VarData::VarData> = varData;
+    let mut eqData: Arc<EqData::EqData> = eqData;
+    (varData, eqData) = (::match_deref::match_deref! { match &((varData.clone(), eqData.clone())) {
+        (Deref @ BVariable::VarData::VAR_DATA_SIM { .. }, Deref @ BEquation::EqData::EQ_DATA_SIM { .. }) => {
+            let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
+            let mut newEquations: Arc<EquationPointers::EquationPointers> = Arc::new(<EquationPointers::EquationPointers as ::std::default::Default>::default());
+            let mut alias_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+            let mut auxEquations: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+            (replacements, newEquations) = aliasCausalize(var_field!((*varData).clocks, VarData::VarData::VAR_DATA_SIM).clone(), var_field!((*eqData).clocked, EqData::EqData::EQ_DATA_SIM).clone(), kind.clone(), (literal!("Clocked")).clone())?;
+            (replacements, auxEquations) = checkReplacements(replacements.clone(), eqData.clone())?;
+            (eqData, varData) = Replacements::applySimple(eqData.clone(), varData.clone(), replacements.clone())?;
+            alias_vars = ({
+        let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+        for mut cref in (UnorderedMap::keyList(replacements.clone())).into_iter().cloned() {
+            let __x = BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!())?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    });
+            assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM; clocked = BEquation::EquationPointers::compress(newEquations.clone())?);
+            assign_variant_field!(varData => VarData::VarData::VAR_DATA_SIM;
+                clocks = BVariable::VariablePointers::removeList(alias_vars.clone(), var_field!((*varData).clocks, VarData::VarData::VAR_DATA_SIM).clone())?,
+                aliasVars = BVariable::VariablePointers::addList(alias_vars.clone(), var_field!((*varData).aliasVars, VarData::VarData::VAR_DATA_SIM).clone())
+            );
+            (varData.clone(), BEquation::EqData::addUntypedList(eqData.clone(), auxEquations.clone(), false)?)
+        },
+        _ => {
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBAlias.aliasClocks")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
+            bail!("fail")
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    Ok((varData, eqData))
+}
+
 fn aliasCausalize(mut variables: Arc<VariablePointers::VariablePointers>, mut equations: Arc<EquationPointers::EquationPointers>, mut kind: Partition::Kind, mut context: ArcStr) -> Result<(Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>, Arc<EquationPointers::EquationPointers>)> {
-    let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>;
+    let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
     let mut newEquations: Arc<EquationPointers::EquationPointers> = Arc::new(<EquationPointers::EquationPointers as ::std::default::Default>::default());
     let mut size: i32 = 0;
     let mut setIdx: i32 = 1;
-    let mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<AliasSet::AliasSet>>>>;
+    let mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<AliasSet::AliasSet>>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Pointer::Pointer<Arc<AliasSet::AliasSet>>>> as ::std::default::Default>::default();
     let mut sets: Arc<metamodelica::List<Arc<AliasSet::AliasSet>>> = metamodelica::nil();
     size = BVariable::VariablePointers::size(variables.clone());
     map = UnorderedMap::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), size.clone());
@@ -502,7 +647,7 @@ fn findCrefs(mut exp: Arc<Expression::NFExpression>, mut tpl: CrefTpl) -> Result
     tpl = (::match_deref::match_deref! { match &(exp.clone()) {
         _ if (!(tpl.cont.clone())) => FAILED_CREF_TPL().clone(),
         Deref @ Expression::CREF { .. } if (BVariable::isParamOrConst(BVariable::getVarPointer(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!())?) || ComponentRef::isTime(var_field!((*exp).cref, Expression::NFExpression::CREF).clone())) => tpl.clone(),
-        Deref @ Expression::CREF { .. } if (Util::isSome(BVariable::getParent(BVariable::getVarPointer(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!())?))) => FAILED_CREF_TPL().clone(),
+        Deref @ Expression::CREF { .. } if (isSome(BVariable::getParent(BVariable::getVarPointer(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), metamodelica::sourceInfo!())?))) => FAILED_CREF_TPL().clone(),
         Deref @ Expression::CREF { .. } if (tpl.varCount.clone() < 2 && !(ComponentRef::hasSubscripts(var_field!((*exp).cref, Expression::NFExpression::CREF).clone()))) => {
             tpl.cr_lst = cons(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), tpl.cr_lst.clone());
             tpl.varCount = tpl.varCount.clone() + 1;
@@ -744,14 +889,14 @@ fn setNewAttributes(mut var_to_keep_ptr: Pointer::Pointer<Pointer::Pointer<Arc<V
     let mut new_tearingSelect: Option<TearingSelect> = None;
     let mut fixed_var: Pointer::Pointer<Arc<Variable::NFVariable>>;
     let mut var_to_keep: Pointer::Pointer<Arc<Variable::NFVariable>> = Pointer::access(var_to_keep_ptr.clone());
-    let mut fixed_start_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>;
+    let mut fixed_start_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
     new_min = getMaximum(attrcollector.min_val_map.clone())?;
-    if Util::isSome(new_min.clone()) {
+    if isSome(new_min.clone()) {
         Pointer::update(var_to_keep.clone(), BVariable::setMin(Pointer::access(var_to_keep.clone()), new_min.clone(), true)?);
         UnorderedMap::add(BVariable::getVarName(var_to_keep.clone()), Util::getOption(new_min.clone())?, attrcollector.min_val_map.clone())?;
     }
     new_max = getMinimum(attrcollector.max_val_map.clone())?;
-    if Util::isSome(new_max.clone()) {
+    if isSome(new_max.clone()) {
         Pointer::update(var_to_keep.clone(), BVariable::setMax(Pointer::access(var_to_keep.clone()), new_max.clone(), true)?);
         UnorderedMap::add(BVariable::getVarName(var_to_keep.clone()), Util::getOption(new_max.clone())?, attrcollector.max_val_map.clone())?;
     }
@@ -767,7 +912,7 @@ fn setNewAttributes(mut var_to_keep_ptr: Pointer::Pointer<Pointer::Pointer<Arc<V
         UnorderedMap::add(BVariable::getVarName(var_to_keep.clone()), Util::getOption(new_start.clone())?, attrcollector.start_map.clone())?;
     }
     (new_cref, new_stateSelect) = chooseStateSelect(attrcollector.stateSelect_map.clone())?;
-    if Util::isSome(new_stateSelect.clone()) && Util::isSome(UnorderedMap::get(BVariable::getVarName(var_to_keep.clone()), attrcollector.stateSelect_map.clone())) {
+    if isSome(new_stateSelect.clone()) && isSome(UnorderedMap::get(BVariable::getVarName(var_to_keep.clone()), attrcollector.stateSelect_map.clone())) {
         Pointer::update(var_to_keep.clone(), BVariable::setStateSelect(Pointer::access(var_to_keep.clone()), Util::getOption(new_stateSelect.clone())?, true)?);
         UnorderedMap::add(BVariable::getVarName(var_to_keep.clone()), Util::getOption(new_stateSelect.clone())?, attrcollector.stateSelect_map.clone())?;
         if Util::getOption(new_stateSelect.clone())? == StateSelect::ALWAYS.clone() {
@@ -777,7 +922,7 @@ fn setNewAttributes(mut var_to_keep_ptr: Pointer::Pointer<Pointer::Pointer<Arc<V
         }
     }
     new_tearingSelect = chooseTearingSelect(attrcollector.tearingSelect_map.clone())?;
-    if Util::isSome(new_tearingSelect.clone()) && Util::isSome(UnorderedMap::get(BVariable::getVarName(var_to_keep.clone()), attrcollector.tearingSelect_map.clone())) {
+    if isSome(new_tearingSelect.clone()) && isSome(UnorderedMap::get(BVariable::getVarName(var_to_keep.clone()), attrcollector.tearingSelect_map.clone())) {
         Pointer::update(var_to_keep.clone(), BVariable::setTearingSelect(Pointer::access(var_to_keep.clone()), Util::getOption(new_tearingSelect.clone())?, true));
         UnorderedMap::add(BVariable::getVarName(var_to_keep.clone()), Util::getOption(new_tearingSelect.clone())?, attrcollector.tearingSelect_map.clone())?;
     }
@@ -1136,11 +1281,11 @@ fn optionMinMax(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut at
     let mut attrcollector: Arc<AttributeCollector::AttributeCollector> = attrcollector;
     let mut min_val: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut max_val: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    if Util::isSome(attr_min.clone()) {
+    if isSome(attr_min.clone()) {
         min_val = Util::getOption(attr_min.clone())?;
         UnorderedMap::add(BVariable::getVarName(var_ptr.clone()), min_val.clone(), attrcollector.min_val_map.clone())?;
     }
-    if Util::isSome(attr_max.clone()) {
+    if isSome(attr_max.clone()) {
         max_val = Util::getOption(attr_max.clone())?;
         UnorderedMap::add(BVariable::getVarName(var_ptr.clone()), max_val.clone(), attrcollector.max_val_map.clone())?;
     }
@@ -1151,11 +1296,11 @@ fn optionStartFixed(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mu
     let mut attrcollector: Arc<AttributeCollector::AttributeCollector> = attrcollector;
     let mut start_val: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut fixed_val: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    if Util::isSome(attr_start.clone()) {
+    if isSome(attr_start.clone()) {
         start_val = Util::getOption(attr_start.clone())?;
         UnorderedMap::add(BVariable::getVarName(var_ptr.clone()), start_val.clone(), attrcollector.start_map.clone())?;
     }
-    if Util::isSome(attr_fixed.clone()) {
+    if isSome(attr_fixed.clone()) {
         fixed_val = Util::getOption(attr_fixed.clone())?;
         UnorderedMap::add(BVariable::getVarName(var_ptr.clone()), fixed_val.clone(), attrcollector.fixed_map.clone())?;
     }
@@ -1179,18 +1324,18 @@ fn rateVar(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut attrcol
         Deref @ Variable::VARIABLE { backendinfo: Deref @ BackendExtension::BackendInfo::BACKEND_INFO { attributes: attr @ Deref @ BackendExtension::VariableAttributes::VAR_ATTR_REAL { .. }, .. }, .. } => {
             attrcollector = optionMinMax(var_ptr.clone(), var_field!((**attr).min, BackendExtension::VariableAttributes::VariableAttributes::VAR_ATTR_REAL).clone(), var_field!((**attr).max, BackendExtension::VariableAttributes::VariableAttributes::VAR_ATTR_REAL).clone(), attrcollector.clone())?;
             attrcollector = optionStartFixed(var_ptr.clone(), var_field!((**attr).start, BackendExtension::VariableAttributes::VariableAttributes::VAR_ATTR_REAL).clone(), var_field!((**attr).fixed, BackendExtension::VariableAttributes::VariableAttributes::VAR_ATTR_REAL).clone(), attrcollector.clone())?;
-            if Util::isSome(var_field!((**attr).nominal, BackendExtension::VariableAttributes::VariableAttributes::VAR_ATTR_REAL).clone()) {
+            if isSome(var_field!((**attr).nominal, BackendExtension::VariableAttributes::VariableAttributes::VAR_ATTR_REAL).clone()) {
                 nominal_val = Util::getOption(var_field!((**attr).nominal, BackendExtension::VariableAttributes::VariableAttributes::VAR_ATTR_REAL).clone())?;
                 UnorderedMap::add(BVariable::getVarName(var_ptr.clone()), nominal_val.clone(), attrcollector.nominal_map.clone())?;
             }
-            if Util::isSome(var_field!((**attr).stateSelect, BackendExtension::VariableAttributes::VariableAttributes::VAR_ATTR_REAL).clone()) {
+            if isSome(var_field!((**attr).stateSelect, BackendExtension::VariableAttributes::VariableAttributes::VAR_ATTR_REAL).clone()) {
                 stateSelect_val = Util::getOption(var_field!((**attr).stateSelect, BackendExtension::VariableAttributes::VariableAttributes::VAR_ATTR_REAL).clone())?;
                 if stateSelect_val.clone() == StateSelect::ALWAYS.clone() {
                     rating = rating.clone() + 100;
                 }
                 UnorderedMap::add(BVariable::getVarName(var_ptr.clone()), stateSelect_val.clone(), attrcollector.stateSelect_map.clone())?;
             }
-            if Util::isSome(var_field!((**attr).tearingSelect, BackendExtension::VariableAttributes::VariableAttributes::VAR_ATTR_REAL).clone()) {
+            if isSome(var_field!((**attr).tearingSelect, BackendExtension::VariableAttributes::VariableAttributes::VAR_ATTR_REAL).clone()) {
                 tearingSelect_val = Util::getOption(var_field!((**attr).tearingSelect, BackendExtension::VariableAttributes::VariableAttributes::VAR_ATTR_REAL).clone())?;
                 UnorderedMap::add(BVariable::getVarName(var_ptr.clone()), tearingSelect_val.clone(), attrcollector.tearingSelect_map.clone())?;
             }
@@ -1288,14 +1433,14 @@ pub mod AttributeCollector {
             _ => bail!("pattern mismatch"),
         } };
         rhs = __pa0.clone();
-        if Util::isSome(min_val_opt.clone()) {
+        if isSome(min_val_opt.clone()) {
             UnorderedMap::add(var_cref.clone(), Util::getOption(min_val_opt.clone())?, repl.clone())?;
             new_rhs = Expression::map(rhs.clone(), Arc::new({ let __pe_b1 = repl.clone(); move |__pe_a0| Replacements::applySimpleExp(__pe_a0, __pe_b1.clone()) }))?;
             new_rhs = SimplifyExp::simplify(new_rhs.clone(), false)?;
             UnorderedMap::add(var_cref.clone(), new_rhs.clone(), attrcollector.min_val_map.clone())?;
             min_val_opt = UnorderedMap::get(var_cref.clone(), attrcollector.min_val_map.clone());
         }
-        if Util::isSome(max_val_opt.clone()) {
+        if isSome(max_val_opt.clone()) {
             UnorderedMap::add(var_cref.clone(), Util::getOption(max_val_opt.clone())?, repl.clone())?;
             new_rhs = Expression::map(rhs.clone(), Arc::new({ let __pe_b1 = repl.clone(); move |__pe_a0| Replacements::applySimpleExp(__pe_a0, __pe_b1.clone()) }))?;
             new_rhs = SimplifyExp::simplify(new_rhs.clone(), false)?;
@@ -1312,17 +1457,17 @@ pub mod AttributeCollector {
         } else {
             swap_min_max = false;
         }
-        if swap_min_max.clone() && Util::isSome(min_val_opt.clone()) && Util::isSome(max_val_opt.clone()) {
+        if swap_min_max.clone() && isSome(min_val_opt.clone()) && isSome(max_val_opt.clone()) {
             UnorderedMap::add(var_cref.clone(), Util::getOption(max_val_opt.clone())?, attrcollector.min_val_map.clone())?;
             UnorderedMap::add(var_cref.clone(), Util::getOption(min_val_opt.clone())?, attrcollector.max_val_map.clone())?;
         }
-        if Util::isSome(start_opt.clone()) {
+        if isSome(start_opt.clone()) {
             UnorderedMap::add(var_cref.clone(), Util::getOption(start_opt.clone())?, repl.clone())?;
             new_rhs = Expression::map(rhs.clone(), Arc::new({ let __pe_b1 = repl.clone(); move |__pe_a0| Replacements::applySimpleExp(__pe_a0, __pe_b1.clone()) }))?;
             new_rhs = SimplifyExp::simplify(new_rhs.clone(), false)?;
             UnorderedMap::add(var_cref.clone(), new_rhs.clone(), attrcollector.start_map.clone())?;
         }
-        if Util::isSome(nominal_opt.clone()) {
+        if isSome(nominal_opt.clone()) {
             UnorderedMap::add(var_cref.clone(), Util::getOption(nominal_opt.clone())?, repl.clone())?;
             new_rhs = Expression::map(rhs.clone(), Arc::new({ let __pe_b1 = repl.clone(); move |__pe_a0| Replacements::applySimpleExp(__pe_a0, __pe_b1.clone()) }))?;
             new_rhs = Expression::getNominal(new_rhs.clone())?;

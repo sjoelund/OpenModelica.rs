@@ -397,7 +397,6 @@ pub fn newLine(mut inText: Text) -> Result<Text> {
             newlineFile(inText.clone())?;
             inText.clone()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(outText)
 }

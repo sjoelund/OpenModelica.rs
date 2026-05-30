@@ -104,8 +104,8 @@ pub fn intersection(mut set1: Arc<SBAtomicSet>, mut set2: Arc<SBAtomicSet>) -> R
 }
 
 pub fn complement(mut set1: Arc<SBAtomicSet>, mut set2: Arc<SBAtomicSet>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet>>>> {
-    let mut res: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet>>>;
-    let mut diff: Arc<UnorderedSet::UnorderedSet<Arc<SBMultiInterval::SBMultiInterval>>>;
+    let mut res: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet>>> = <Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet>>> as ::std::default::Default>::default();
+    let mut diff: Arc<UnorderedSet::UnorderedSet<Arc<SBMultiInterval::SBMultiInterval>>> = <Arc<UnorderedSet::UnorderedSet<Arc<SBMultiInterval::SBMultiInterval>>> as ::std::default::Default>::default();
     diff = SBMultiInterval::complement(set1.aset.clone(), set2.aset.clone())?;
     res = UnorderedSet::new((std::sync::Arc::new(fnptr!(hash, Arc<SBAtomicSet>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(isEqual, Arc<SBAtomicSet>, Arc<SBAtomicSet>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet>, Arc<SBAtomicSet>) -> Result<bool> + 'static>), UnorderedSet::bucketCount(diff.clone()));
     if !(UnorderedSet::isEmpty(diff.clone())) {

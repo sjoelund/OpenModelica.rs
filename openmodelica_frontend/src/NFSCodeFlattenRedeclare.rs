@@ -277,11 +277,11 @@ pub fn replaceRedeclares(mut inRedeclares: Arc<metamodelica::List<Arc<NFSCodeEnv
     (outItem, outEnv) = 'mc: {
         let __mc_input = inReplaceRedeclares.clone();
         if let Ok(__v) = (|| -> Result<_> {
-            let NFSCodeLookup::RedeclareReplaceStrategy::IGNORE_REDECLARES = __mc_input.clone() else { bail!("nomatch") };
+            let NFSCodeLookup::RedeclareReplaceStrategy::IGNORE_REDECLARES { .. } = __mc_input.clone() else { bail!("nomatch") };
             Ok((Some(inClassItem.clone()), Some(inClassEnv.clone())))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
-            let NFSCodeLookup::RedeclareReplaceStrategy::INSERT_REDECLARES = __mc_input.clone() else { bail!("nomatch") };
+            let NFSCodeLookup::RedeclareReplaceStrategy::INSERT_REDECLARES { .. } = __mc_input.clone() else { bail!("nomatch") };
             let mut item: Item;
             let mut env: Env = metamodelica::nil();
             (item, env, _) = replaceRedeclaredElementsInEnv(inRedeclares.clone(), inClassItem.clone(), inClassEnv.clone(), inElementEnv.clone(), NFInstPrefix::emptyPrefix().clone())?;
@@ -703,7 +703,7 @@ fn propagatePrefixes(mut inOriginalPrefixes: Arc<SCode::Prefixes>, mut inNewPref
 fn propagatePrefixInnerOuter(mut inOriginalIO: Absyn::InnerOuter, mut inIO: Absyn::InnerOuter) -> Absyn::InnerOuter {
     let mut outIO: Absyn::InnerOuter = Absyn::InnerOuter::INNER;
     outIO = (match inIO.clone() {
-        Absyn::InnerOuter::NOT_INNER_OUTER => inOriginalIO.clone(),
+        Absyn::InnerOuter::NOT_INNER_OUTER { .. } => inOriginalIO.clone(),
         _ => inIO.clone(),
     });
     outIO
@@ -760,7 +760,7 @@ fn propagateArrayDimensions(mut inOriginalDims: Arc<metamodelica::List<Arc<Absyn
 fn propagateConnectorType(mut inOriginalConnectorType: SCode::ConnectorType, mut inNewConnectorType: SCode::ConnectorType) -> SCode::ConnectorType {
     let mut outNewConnectorType: SCode::ConnectorType = SCode::ConnectorType::FLOW;
     outNewConnectorType = (match inNewConnectorType.clone() {
-        SCode::ConnectorType::POTENTIAL => inOriginalConnectorType.clone(),
+        SCode::ConnectorType::POTENTIAL { .. } => inOriginalConnectorType.clone(),
         _ => inNewConnectorType.clone(),
     });
     outNewConnectorType
@@ -769,7 +769,7 @@ fn propagateConnectorType(mut inOriginalConnectorType: SCode::ConnectorType, mut
 fn propagateParallelism(mut inOriginalParallelism: SCode::Parallelism, mut inNewParallelism: SCode::Parallelism) -> SCode::Parallelism {
     let mut outNewParallelism: SCode::Parallelism = SCode::Parallelism::NON_PARALLEL;
     outNewParallelism = (match inNewParallelism.clone() {
-        SCode::Parallelism::NON_PARALLEL => inOriginalParallelism.clone(),
+        SCode::Parallelism::NON_PARALLEL { .. } => inOriginalParallelism.clone(),
         _ => inNewParallelism.clone(),
     });
     outNewParallelism
@@ -778,7 +778,7 @@ fn propagateParallelism(mut inOriginalParallelism: SCode::Parallelism, mut inNew
 fn propagateVariability(mut inOriginalVariability: SCode::Variability, mut inNewVariability: SCode::Variability) -> SCode::Variability {
     let mut outNewVariability: SCode::Variability = SCode::Variability::CONST;
     outNewVariability = (match inNewVariability.clone() {
-        SCode::Variability::VAR => inOriginalVariability.clone(),
+        SCode::Variability::VAR { .. } => inOriginalVariability.clone(),
         _ => inNewVariability.clone(),
     });
     outNewVariability
@@ -787,7 +787,7 @@ fn propagateVariability(mut inOriginalVariability: SCode::Variability, mut inNew
 fn propagateDirection(mut inOriginalDirection: Absyn::Direction, mut inNewDirection: Absyn::Direction) -> Absyn::Direction {
     let mut outNewDirection: Absyn::Direction = Absyn::Direction::BIDIR;
     outNewDirection = (match inNewDirection.clone() {
-        Absyn::Direction::BIDIR => inOriginalDirection.clone(),
+        Absyn::Direction::BIDIR { .. } => inOriginalDirection.clone(),
         _ => inNewDirection.clone(),
     });
     outNewDirection
@@ -796,7 +796,7 @@ fn propagateDirection(mut inOriginalDirection: Absyn::Direction, mut inNewDirect
 fn propagateIsField(mut inOriginalIsField: Absyn::IsField, mut inNewIsField: Absyn::IsField) -> Absyn::IsField {
     let mut outNewIsField: Absyn::IsField = Absyn::IsField::FIELD;
     outNewIsField = (match inNewIsField.clone() {
-        Absyn::IsField::NONFIELD => inOriginalIsField.clone(),
+        Absyn::IsField::NONFIELD { .. } => inOriginalIsField.clone(),
         _ => inNewIsField.clone(),
     });
     outNewIsField

@@ -174,7 +174,7 @@ pub fn expandList(mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>
         }
         outExpl = cons(exp.clone(), outExpl.clone());
     }
-    outExpl = outExpl.clone().reverse();
+    outExpl = metamodelica::Dangerous::listReverseInPlace(outExpl.clone());
     Ok((outExpl, expanded))
 }
 
@@ -517,7 +517,7 @@ pub fn expandArrayConstructor2(mut exp: Arc<Expression::NFExpression>, mut ty: A
             Mutable::update(iter.clone(), value.clone());
             expl = cons(expandArrayConstructor2(exp.clone(), el_ty.clone(), ranges_rest.clone(), iters_rest.clone())?, expl.clone());
         }
-        result = Expression::makeArray(ty.clone(), metamodelica::arrayFromVec(expl.clone().reverse().into_iter().cloned().collect()), false);
+        result = Expression::makeArray(ty.clone(), metamodelica::arrayFromVec(metamodelica::Dangerous::listReverseInPlace(expl.clone()).into_iter().cloned().collect()), false);
     }
     Ok(result)
 }

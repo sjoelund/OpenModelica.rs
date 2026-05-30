@@ -130,7 +130,7 @@ pub fn addSet(mut parentSets: Sets, mut childSets: Sets) -> Result<Sets> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Sets { sets: Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { cref: Deref @ DAE::ComponentRef::WILD, .. }, .. }, Sets { sets: Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { cref: Deref @ DAE::ComponentRef::WILD, .. }, .. }) => {
+                (Sets { sets: Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { cref: Deref @ DAE::ComponentRef::WILD { .. }, .. }, .. }, Sets { sets: Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { cref: Deref @ DAE::ComponentRef::WILD { .. }, .. }, .. }) => {
                     Ok(childSets.clone())
                 }
                 _ => bail!("nomatch"),
@@ -139,7 +139,7 @@ pub fn addSet(mut parentSets: Sets, mut childSets: Sets) -> Result<Sets> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Sets { sets: node @ Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { .. }, .. }, Sets { .. }) => {
-                    setTrieGetNode((setTrieNodeName(childSets.sets.clone())?).clone(), var_field!((*node).nodes, SetTrieNode::SET_TRIE_NODE).clone())?;
+                    setTrieGetNode((setTrieNodeName(childSets.sets.clone())?).clone(), var_field!((**node).nodes, SetTrieNode::SET_TRIE_NODE).clone())?;
                     Ok(parentSets.clone())
                 }
                 _ => bail!("nomatch"),
@@ -194,7 +194,7 @@ fn getConnectCount(mut cref: Arc<DAE::ComponentRef>, mut trie: Arc<SetTrieNode>)
         count = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { .. } => var_field!((*node).connectCount, SetTrieNode::SET_TRIE_NODE).clone(),
         Deref @ DAE::Connect::SetTrieNode::SET_TRIE_LEAF { .. } => var_field!((*node).connectCount, SetTrieNode::SET_TRIE_LEAF).clone(),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok::<_, anyhow::Error>((count.clone(),))
     } {
@@ -232,10 +232,10 @@ fn makeConnectorType(mut connectorType: Arc<DAE::ConnectorType>) -> Result<Conne
     let mut ty: ConnectorType = ConnectorType::EQU;
     let mut flowName: Option<Arc<DAE::ComponentRef>> = None;
     ty = (::match_deref::match_deref! { match &(connectorType.clone()) {
-        Deref @ DAE::ConnectorType::POTENTIAL => openmodelica_frontend_types::DAE::Connect::ConnectorType::EQU,
-        Deref @ DAE::ConnectorType::FLOW => openmodelica_frontend_types::DAE::Connect::ConnectorType::FLOW,
+        Deref @ DAE::ConnectorType::POTENTIAL { .. } => openmodelica_frontend_types::DAE::Connect::ConnectorType::EQU,
+        Deref @ DAE::ConnectorType::FLOW { .. } => openmodelica_frontend_types::DAE::Connect::ConnectorType::FLOW,
         Deref @ DAE::ConnectorType::STREAM { associatedFlow: flowName } => ConnectorType::STREAM { associatedFlow: flowName.clone() },
-        Deref @ DAE::ConnectorType::NON_CONNECTOR => openmodelica_frontend_types::DAE::Connect::ConnectorType::NO_TYPE,
+        Deref @ DAE::ConnectorType::NON_CONNECTOR { .. } => openmodelica_frontend_types::DAE::Connect::ConnectorType::NO_TYPE,
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("ConnectUtil.makeConnectorType: invalid connector type.")).clone()])?;
             bail!("fail")
@@ -336,7 +336,7 @@ fn getStreamAndFlowVariables(mut variables: Arc<metamodelica::List<Arc<DAE::Var>
     for mut var in &*variables.clone() {
         let mut var = var.clone();
         let () = (::match_deref::match_deref! { match &(var.clone()) {
-        Deref @ DAE::Var { attributes: Deref @ DAE::Attributes { connectorType: Deref @ DAE::ConnectorType::FLOW, .. }, .. } => {
+        Deref @ DAE::Var { attributes: Deref @ DAE::Attributes { connectorType: Deref @ DAE::ConnectorType::FLOW { .. }, .. }, .. } => {
             flows = cons(var.clone(), flows.clone());
             ()
         },
@@ -569,7 +569,6 @@ fn outerConnectionMatches(mut oc: OuterConnect, mut cr1: Arc<DAE::ComponentRef>,
     let mut matches: bool = false;
     matches = (match oc.clone() {
         OuterConnect { .. } => ComponentReferenceBasics::crefEqual(oc.cr1.clone(), cr1.clone())? && ComponentReferenceBasics::crefEqual(oc.cr2.clone(), cr2.clone())? || ComponentReferenceBasics::crefEqual(oc.cr1.clone(), cr2.clone())? && ComponentReferenceBasics::crefEqual(oc.cr2.clone(), cr1.clone())?,
-        _ => bail!("match: no arm matched"),
     });
     Ok(matches)
 }
@@ -665,7 +664,7 @@ fn collectOuterElements2(mut node: Arc<SetTrieNode>, mut face: Face, mut prefix:
             e = setElementName(e.clone(), optPrefixCref(prefix.clone(), cr.clone())?);
             list![e.clone()]
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outerElements)
 }
@@ -798,7 +797,7 @@ fn setTrieNodeName(mut node: Arc<SetTrieNode>) -> Result<ArcStr> {
     name = ((::match_deref::match_deref! { match &(node.clone()) {
         Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { .. } => var_field!((*node).name, SetTrieNode::SET_TRIE_NODE).clone(),
         Deref @ DAE::Connect::SetTrieNode::SET_TRIE_LEAF { .. } => var_field!((*node).name, SetTrieNode::SET_TRIE_LEAF).clone(),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(name)
 }
@@ -1040,7 +1039,7 @@ fn setTrieTraverseLeaves<Arg: Clone + 'static>(mut node: Arc<SetTrieNode>, mut u
             (node, arg) = updateFunc(node.clone(), arg.clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((node, arg))
 }
@@ -1318,7 +1317,6 @@ fn setArrayAddConnection2(mut setPointer: i32, mut setPointee: i32, mut sets: me
     sets = (match set.clone() {
         DAE::Connect::Set::SET { .. } => {let _arr = sets.clone(); _arr.borrow_mut()[(setPointer.clone()-1) as usize] = Set::SET_POINTER { index: setPointee.clone() }; _arr},
         DAE::Connect::Set::SET_POINTER { .. } => setArrayAddConnection2(setPointer.clone(), var_field!(set.index, Set::SET_POINTER).clone(), sets.clone())?,
-        _ => bail!("match: no arm matched"),
     });
     Ok(sets)
 }
@@ -1326,7 +1324,7 @@ fn setArrayAddConnection2(mut setPointer: i32, mut setPointee: i32, mut sets: me
 fn generateSetArray2(mut sets: Arc<SetTrieNode>, mut prefix: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut setArray: metamodelica::Array<Set>) -> Result<metamodelica::Array<Set>> {
     let mut setArray: metamodelica::Array<Set> = setArray;
     setArray = (::match_deref::match_deref! { match &(sets.clone()) {
-        Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { cref: Deref @ DAE::ComponentRef::WILD, .. } => {
+        Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { cref: Deref @ DAE::ComponentRef::WILD { .. }, .. } => {
             List::fold1(var_field!((*sets).nodes, SetTrieNode::SET_TRIE_NODE).clone(), (std::sync::Arc::new(generateSetArray2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetTrieNode>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, metamodelica::Array<Set>) -> Result<metamodelica::Array<Set>> + 'static>), prefix.clone(), setArray.clone())
         },
         Deref @ DAE::Connect::SetTrieNode::SET_TRIE_NODE { .. } => {
@@ -1447,7 +1445,6 @@ fn setArrayGet(mut setArray: metamodelica::Array<Set>, mut index: i32) -> Result
     set = (match set.clone() {
         DAE::Connect::Set::SET { .. } => set.clone(),
         DAE::Connect::Set::SET_POINTER { .. } => setArrayGet(setArray.clone(), var_field!(set.index, Set::SET_POINTER).clone())?,
-        _ => bail!("match: no arm matched"),
     });
     Ok(set)
 }
@@ -1586,7 +1583,7 @@ fn increaseRefCount(mut amount: i32, mut node: Arc<SetTrieNode>) -> Result<Arc<S
             assign_variant_field!(node => SetTrieNode::SET_TRIE_LEAF; connectCount = var_field!((*node).connectCount, SetTrieNode::SET_TRIE_LEAF).clone() + amount.clone());
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(node)
 }
@@ -2235,7 +2232,7 @@ fn countConnectorVars(mut vars: Arc<metamodelica::List<Arc<DAE::Var>>>) -> Resul
             streamVars = streamVars.clone() + s.clone() * n.clone();
         } else {
             let () = (::match_deref::match_deref! { match &(attr.clone()) {
-        Deref @ DAE::Attributes { connectorType: Deref @ DAE::ConnectorType::FLOW, .. } => {
+        Deref @ DAE::Attributes { connectorType: Deref @ DAE::ConnectorType::FLOW { .. }, .. } => {
             flowVars = flowVars.clone() + sizeOfType(var.ty.clone())?;
             ()
         },
@@ -2243,7 +2240,7 @@ fn countConnectorVars(mut vars: Arc<metamodelica::List<Arc<DAE::Var>>>) -> Resul
             streamVars = streamVars.clone() + sizeOfType(var.ty.clone())?;
             ()
         },
-        Deref @ DAE::Attributes { variability: SCode::Variability::VAR, direction: Absyn::Direction::BIDIR, .. } => {
+        Deref @ DAE::Attributes { variability: SCode::Variability::VAR { .. }, direction: Absyn::Direction::BIDIR { .. }, .. } => {
             potentialVars = potentialVars.clone() + sizeOfType(var.ty.clone())?;
             ()
         },
@@ -2285,7 +2282,14 @@ fn sizeOfType(mut ty: Arc<DAE::Type>) -> Result<i32> {
             1
         },
         Deref @ DAE::Type::T_ARRAY { .. } => {
-            todo!("reduction intMul: cannot resolve default value") * sizeOfType(var_field!((*ty).ty, DAE::Type::T_ARRAY).clone())?
+            ({
+        let mut __acc: i32 = 1;
+        for mut dim in (var_field!((*ty).dims, DAE::Type::T_ARRAY).clone()).into_iter().cloned() {
+            let __x = Expression::dimensionSize(dim.clone())?;
+            __acc *= __x;
+        }
+        __acc
+    }) * sizeOfType(var_field!((*ty).ty, DAE::Type::T_ARRAY).clone())?
         },
         Deref @ DAE::Type::T_COMPLEX { equalityConstraint: None, varLst: v, .. } => {
             sizeOfVariableList(v.clone())?
@@ -2316,7 +2320,7 @@ pub fn checkShortConnectorDef(mut state: ClassInf::State, mut attributes: SCode:
         let mut fv: i32 = 0;
         let mut sv: i32 = 0;
         (match (state.clone(), attributes.clone()) {
-        (ClassInf::State::CONNECTOR { .. }, SCode::Attributes { direction: Absyn::Direction::BIDIR, connectorType: mut ct, .. }) => {
+        (ClassInf::State::CONNECTOR { .. }, SCode::Attributes { direction: Absyn::Direction::BIDIR { .. }, connectorType: mut ct, .. }) => {
             if SCodeUtil::flowBool(ct.clone()) {
                 fv = 1;
             } else if SCodeUtil::streamBool(ct.clone()) {
@@ -2391,7 +2395,7 @@ fn printSetTrieStr(mut trie: Arc<SetTrieNode>, mut accumName: ArcStr) -> Result<
             res = stringAppendList(List::map1(var_field!((*trie).nodes, SetTrieNode::SET_TRIE_NODE).clone(), (std::sync::Arc::new(printSetTrieStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetTrieNode>, ArcStr) -> Result<ArcStr> + 'static>), (name.clone()).clone()));
             res.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(string)
 }
@@ -2426,7 +2430,6 @@ pub fn printFaceStr(mut face: Face) -> Result<ArcStr> {
         DAE::Connect::Face::INSIDE => literal!("inside"),
         DAE::Connect::Face::OUTSIDE => literal!("outside"),
         DAE::Connect::Face::NO_FACE => literal!("unknown"),
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(string)
 }
@@ -2476,7 +2479,6 @@ fn printSetStr(mut set: Set) -> Result<ArcStr> {
     string = ((match set.clone() {
         DAE::Connect::Set::SET { .. } => stringDelimitList(List::map(var_field!(set.elements, Set::SET).clone(), (std::sync::Arc::new(printElementStr) as std::sync::Arc<dyn ::std::ops::Fn(ConnectorElement) -> Result<ArcStr> + 'static>)), (literal!(", ")).clone()),
         DAE::Connect::Set::SET_POINTER { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("pointer to set ")); __mm_s.push_str(&*intString(var_field!(set.index, Set::SET_POINTER).clone())); ArcStr::from(__mm_s) },
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(string)
 }

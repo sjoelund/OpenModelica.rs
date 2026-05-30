@@ -54,13 +54,13 @@ use openmodelica_util::Util;
 pub type Table = Arc<UnorderedMap::UnorderedMap<ArcStr, i32>>;
 
 pub fn emptyCardinalityTable(mut size: i32) -> Table {
-    let mut table: Table;
+    let mut table: Table = <Arc<UnorderedMap::UnorderedMap<ArcStr, i32>> as ::std::default::Default>::default();
     table = UnorderedMap::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), size.clone());
     table
 }
 
 pub fn fromConnections(mut conns: Arc<Connections::NFConnections>) -> Result<Table> {
-    let mut table: Table;
+    let mut table: Table = <Arc<UnorderedMap::UnorderedMap<ArcStr, i32>> as ::std::default::Default>::default();
     if System::getUsesCardinality() {
         table = emptyCardinalityTable(std::cmp::max(1, Util::nextPrime((conns.connections.clone().len() as i32))));
         for mut conn in &*conns.connections.clone() {

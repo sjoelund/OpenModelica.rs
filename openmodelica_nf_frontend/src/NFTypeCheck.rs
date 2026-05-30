@@ -679,7 +679,7 @@ fn checkOverloadedBinaryArrayEW2(mut exp1: Arc<Expression::NFExpression>, mut ty
             }
         }
         outType = Type::setArrayElementType(type1.clone(), ty.clone());
-        outExp = Expression::makeArray(outType.clone(), metamodelica::arrayFromVec(expl.clone().reverse().into_iter().cloned().collect()), false);
+        outExp = Expression::makeArray(outType.clone(), metamodelica::arrayFromVec(metamodelica::Dangerous::listReverseInPlace(expl.clone()).into_iter().cloned().collect()), false);
     } else {
         (outExp, outType) = matchOverloadedBinaryOperator(exp1.clone(), type1.clone(), var1.clone(), op.clone(), exp2.clone(), type2.clone(), var2.clone(), candidates.clone(), context.clone(), info.clone(), true)?;
     }
@@ -1508,7 +1508,7 @@ pub fn matchComplexComponents(mut actualComponents: metamodelica::Array<Arc<Inst
             break;
         }
     }
-    matchedExpressions = matchedExpressions.clone().reverse();
+    matchedExpressions = metamodelica::Dangerous::listReverseInPlace(matchedExpressions.clone());
     Ok((matchedExpressions, matchKind))
 }
 
@@ -1791,7 +1791,7 @@ pub fn matchArrayDims(mut dims1: Arc<metamodelica::List<Arc<Dimension::NFDimensi
         }
         cdims = cons(dim1.clone(), cdims.clone());
     }
-    ty = Arc::new(Type::NFType::ARRAY { elementType: ty.clone(), dimensions: cdims.clone().reverse() });
+    ty = Arc::new(Type::NFType::ARRAY { elementType: ty.clone(), dimensions: metamodelica::Dangerous::listReverseInPlace(cdims.clone()) });
     Ok((ty, matchKind))
 }
 
@@ -2386,7 +2386,7 @@ pub fn elaborateBindingType(mut bindingExp: Arc<Expression::NFExpression>, mut c
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             }
-            dims = dims.clone().reverse();
+            dims = metamodelica::Dangerous::listReverseInPlace(dims.clone());
             componentType = Type::liftArrayLeftList(componentType.clone(), dims.clone());
             ()
         },
@@ -2406,7 +2406,7 @@ pub fn elaborateBindingType(mut bindingExp: Arc<Expression::NFExpression>, mut c
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             }
-            dims = dims.clone().reverse();
+            dims = metamodelica::Dangerous::listReverseInPlace(dims.clone());
             componentType = Type::liftArrayLeftList(componentType.clone(), dims.clone());
             ()
         },

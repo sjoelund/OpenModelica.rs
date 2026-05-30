@@ -252,7 +252,7 @@ pub fn elementSpecIsBIDIR(mut spec: Arc<Absyn::ElementSpec>) -> bool {
     isBidir = (::match_deref::match_deref! { match &(spec.clone()) {
         Deref @ Absyn::ElementSpec::COMPONENTS { attributes, .. } => {
             (match attributes.direction.clone() {
-        Absyn::Direction::BIDIR => true,
+        Absyn::Direction::BIDIR { .. } => true,
         _ => false,
     })
         },
@@ -269,7 +269,7 @@ pub fn elementSpecIsOUTPUT(mut spec: Arc<Absyn::ElementSpec>) -> bool {
     isOutput = (::match_deref::match_deref! { match &(spec.clone()) {
         Deref @ Absyn::ElementSpec::COMPONENTS { attributes, .. } => {
             (match attributes.direction.clone() {
-        Absyn::Direction::OUTPUT => true,
+        Absyn::Direction::OUTPUT { .. } => true,
         _ => false,
     })
         },

@@ -788,8 +788,8 @@ pub fn printItemStr<Key: Clone + 'static, Val: Clone + 'static>(mut inTree: Tree
             let mut val2Str: FuncTypeValToStr<Val>;
             key2Str = getKeyToStrFunc(inTree.clone())?;
             val2Str = getValToStrFunc(inTree.clone())?;
-            keyStr = key2Str(key.clone())?;
-            valStr = val2Str(val.clone())?;
+            keyStr = (key2Str(key.clone())?).clone();
+            valStr = (val2Str(val.clone())?).clone();
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*keyStr.clone()); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*valStr.clone()); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
             r#str.clone()
         },

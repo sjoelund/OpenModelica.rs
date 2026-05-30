@@ -378,7 +378,7 @@ pub fn subscriptStr(mut in_txt: Tpl::Text, mut in_a_subscript: Arc<DAE::Subscrip
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" */")).clone() }))?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Subscript::WHOLEDIM) => {
+        (txt, Deref @ DAE::Subscript::WHOLEDIM { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("WHOLEDIM")).clone() }))?;
             txt.clone()
@@ -687,15 +687,15 @@ pub fn initValXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_s
 pub fn getVariablity(mut in_txt: Tpl::Text, mut in_a_varKind: BackendDAE::VarKind) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_varKind.clone()) {
-        (mut txt, BackendDAE::VarKind::DISCRETE) => {
+        (mut txt, BackendDAE::VarKind::DISCRETE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("discrete")).clone() }))?;
             txt.clone()
         },
-        (mut txt, BackendDAE::VarKind::PARAM) => {
+        (mut txt, BackendDAE::VarKind::PARAM { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("parameter")).clone() }))?;
             txt.clone()
         },
-        (mut txt, BackendDAE::VarKind::CONST) => {
+        (mut txt, BackendDAE::VarKind::CONST { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("constant")).clone() }))?;
             txt.clone()
         },
@@ -710,7 +710,7 @@ pub fn getVariablity(mut in_txt: Tpl::Text, mut in_a_varKind: BackendDAE::VarKin
 pub fn variabilityString(mut in_txt: Tpl::Text, mut in_a_varKind: BackendDAE::VarKind) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_varKind.clone())) {
-        (txt, BackendDAE::VarKind::VARIABLE) => {
+        (txt, BackendDAE::VarKind::VARIABLE { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("variable")).clone() }))?;
             txt.clone()
@@ -731,17 +731,17 @@ pub fn variabilityString(mut in_txt: Tpl::Text, mut in_a_varKind: BackendDAE::Va
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
             txt.clone()
         },
-        (txt, BackendDAE::VarKind::STATE_DER) => {
+        (txt, BackendDAE::VarKind::STATE_DER { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("STATE_DER")).clone() }))?;
             txt.clone()
         },
-        (txt, BackendDAE::VarKind::DUMMY_DER) => {
+        (txt, BackendDAE::VarKind::DUMMY_DER { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("DUMMY_DER")).clone() }))?;
             txt.clone()
         },
-        (txt, BackendDAE::VarKind::DUMMY_STATE) => {
+        (txt, BackendDAE::VarKind::DUMMY_STATE { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("DUMMY_STATE")).clone() }))?;
             txt.clone()
@@ -751,17 +751,17 @@ pub fn variabilityString(mut in_txt: Tpl::Text, mut in_a_varKind: BackendDAE::Va
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("CLOCKED_STATE")).clone() }))?;
             txt.clone()
         },
-        (txt, BackendDAE::VarKind::DISCRETE) => {
+        (txt, BackendDAE::VarKind::DISCRETE { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("DISCRETE")).clone() }))?;
             txt.clone()
         },
-        (txt, BackendDAE::VarKind::PARAM) => {
+        (txt, BackendDAE::VarKind::PARAM { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("PARAM")).clone() }))?;
             txt.clone()
         },
-        (txt, BackendDAE::VarKind::CONST) => {
+        (txt, BackendDAE::VarKind::CONST { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("CONST")).clone() }))?;
             txt.clone()
@@ -772,42 +772,42 @@ pub fn variabilityString(mut in_txt: Tpl::Text, mut in_a_varKind: BackendDAE::Va
             txt = dotPath(txt.clone(), i_fullClassName.clone())?;
             txt.clone()
         },
-        (txt, BackendDAE::VarKind::JAC_VAR) => {
+        (txt, BackendDAE::VarKind::JAC_VAR { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("JACOBIAN_VAR")).clone() }))?;
             txt.clone()
         },
-        (txt, BackendDAE::VarKind::JAC_TMP_VAR) => {
+        (txt, BackendDAE::VarKind::JAC_TMP_VAR { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("JACOBIAN_TMP_VAR")).clone() }))?;
             txt.clone()
         },
-        (txt, BackendDAE::VarKind::SEED_VAR) => {
+        (txt, BackendDAE::VarKind::SEED_VAR { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("SEED_VAR")).clone() }))?;
             txt.clone()
         },
-        (txt, BackendDAE::VarKind::OPT_CONSTR) => {
+        (txt, BackendDAE::VarKind::OPT_CONSTR { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("OPT_CONSTR")).clone() }))?;
             txt.clone()
         },
-        (txt, BackendDAE::VarKind::OPT_FCONSTR) => {
+        (txt, BackendDAE::VarKind::OPT_FCONSTR { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("OPT_FCONSTR")).clone() }))?;
             txt.clone()
         },
-        (txt, BackendDAE::VarKind::OPT_INPUT_WITH_DER) => {
+        (txt, BackendDAE::VarKind::OPT_INPUT_WITH_DER { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("OPT_INPUT_WITH_DER")).clone() }))?;
             txt.clone()
         },
-        (txt, BackendDAE::VarKind::OPT_INPUT_DER) => {
+        (txt, BackendDAE::VarKind::OPT_INPUT_DER { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("OPT_INPUT_DER")).clone() }))?;
             txt.clone()
         },
-        (txt, BackendDAE::VarKind::OPT_TGRID) => {
+        (txt, BackendDAE::VarKind::OPT_TGRID { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("OPT_TGRID")).clone() }))?;
             txt.clone()
@@ -817,27 +817,27 @@ pub fn variabilityString(mut in_txt: Tpl::Text, mut in_a_varKind: BackendDAE::Va
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("OPT_LOOP_INPUT")).clone() }))?;
             txt.clone()
         },
-        (txt, BackendDAE::VarKind::ALG_STATE) => {
+        (txt, BackendDAE::VarKind::ALG_STATE { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("ALG_STATE")).clone() }))?;
             txt.clone()
         },
-        (txt, BackendDAE::VarKind::DAE_RESIDUAL_VAR) => {
+        (txt, BackendDAE::VarKind::DAE_RESIDUAL_VAR { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("DAE_RESIDUAL_VAR")).clone() }))?;
             txt.clone()
         },
-        (txt, BackendDAE::VarKind::DAE_AUX_VAR) => {
+        (txt, BackendDAE::VarKind::DAE_AUX_VAR { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("DAE_AUX_VAR")).clone() }))?;
             txt.clone()
         },
-        (txt, BackendDAE::VarKind::LOOP_ITERATION) => {
+        (txt, BackendDAE::VarKind::LOOP_ITERATION { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("LOOP_ITERATION")).clone() }))?;
             txt.clone()
         },
-        (txt, BackendDAE::VarKind::LOOP_SOLVED) => {
+        (txt, BackendDAE::VarKind::LOOP_SOLVED { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("LOOP_SOLVED")).clone() }))?;
             txt.clone()
@@ -855,7 +855,7 @@ pub fn variabilityString(mut in_txt: Tpl::Text, mut in_a_varKind: BackendDAE::Va
 pub fn getAliasVar(mut in_txt: Tpl::Text, mut in_a_aliasvar: SimCodeVar::AliasVariable) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_aliasvar.clone()) {
-        (mut txt, SimCodeVar::AliasVariable::NOALIAS) => {
+        (mut txt, SimCodeVar::AliasVariable::NOALIAS { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"noAlias\"")).clone() }))?;
             txt.clone()
         },

@@ -77,7 +77,7 @@ fn createMetaClasses(mut inClass: Arc<Absyn::Class>) -> Result<(Arc<Absyn::Class
     let mut body: Arc<Absyn::ClassDef>;
     let mut parts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
     let () = (::match_deref::match_deref! { match &(outClass.clone()) {
-        Deref @ Absyn::Class { body: body @ Deref @ Absyn::ClassDef::PARTS { classParts: parts, .. }, restriction: Absyn::Restriction::R_UNIONTYPE, .. } => {
+        Deref @ Absyn::Class { body: body @ Deref @ Absyn::ClassDef::PARTS { classParts: parts, .. }, restriction: Absyn::Restriction::R_UNIONTYPE { .. }, .. } => {
             let mut body = (*body).clone();
             let mut parts = (*parts).clone();
             (parts, outMetaClasses) = fixClassParts(parts.clone(), (outClass.name.clone()).clone(), var_field!((*body).typeVars, Absyn::ClassDef::PARTS).clone())?;
@@ -85,7 +85,7 @@ fn createMetaClasses(mut inClass: Arc<Absyn::Class>) -> Result<(Arc<Absyn::Class
             assign_field!(outClass.body = body.clone());
             ()
         },
-        Deref @ Absyn::Class { body: body @ Deref @ Absyn::ClassDef::CLASS_EXTENDS { parts, .. }, restriction: Absyn::Restriction::R_UNIONTYPE, .. } => {
+        Deref @ Absyn::Class { body: body @ Deref @ Absyn::ClassDef::CLASS_EXTENDS { parts, .. }, restriction: Absyn::Restriction::R_UNIONTYPE { .. }, .. } => {
             let mut body = (*body).clone();
             let mut parts = (*parts).clone();
             (parts, outMetaClasses) = fixClassParts(parts.clone(), (outClass.name.clone()).clone(), metamodelica::nil())?;
@@ -249,7 +249,7 @@ fn fixElementItems(mut inElementItems: Arc<metamodelica::List<Arc<Absyn::Element
         let mut __acc: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
         for mut e in (inElementItems.clone()).into_iter().cloned() {
             let __x = (::match_deref::match_deref! { match &(e.clone()) {
-        Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: c @ Deref @ Absyn::Class { restriction: Absyn::Restriction::R_RECORD, .. }, .. }, .. } } => {
+        Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: c @ Deref @ Absyn::Class { restriction: Absyn::Restriction::R_RECORD { .. }, .. }, .. }, .. } } => {
             let mut body: Arc<Absyn::ClassDef>;
             let mut c = (*c).clone();
             body = c.body.clone();

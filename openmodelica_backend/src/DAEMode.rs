@@ -201,7 +201,7 @@ fn createDAEmodeEqSystem(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<Ba
     let mut globalDAEData: BackendDAE::BackendDAEModeData = <BackendDAE::BackendDAEModeData as ::std::default::Default>::default();
     let mut retSystem: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
     let mut newDAEVars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
-    let mut newDAEEquations: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
+    let mut newDAEEquations: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     let mut systemSize: i32 = 0;
     let mut debug: bool = Flags::isSet(Flags::DEBUG_DAEMODE.clone())?;
     let exec: bool = false;
@@ -224,7 +224,7 @@ fn createDAEmodeEqSystem(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<Ba
         globalDAEData.modelVars = Some(travArgs.systemVars.clone());
     }
     if exec.clone() {
-        execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAEmode: adding residual variables:  ")); __mm_s.push_str(&*intString(BackendVariable::varsSize(Util::getOption(globalDAEData.modelVars.clone())?)?)); __mm_s.push_str(&*literal!(": ")); ArcStr::from(__mm_s) }).clone())?;
+        execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAEmode: adding residual variables:  ")); __mm_s.push_str(&*intString(BackendVariable::varsSize(Util::getOption(globalDAEData.modelVars.clone())?))); __mm_s.push_str(&*literal!(": ")); ArcStr::from(__mm_s) }).clone())?;
     }
     retSystem = BackendDAEUtil::createEqSystem(travArgs.newDAEVars.clone(), BackendEquation::emptyEqns(), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
     retSystem = BackendDAEUtil::setEqSystEqs(retSystem.clone(), travArgs.newDAEEquations.clone());
@@ -719,7 +719,7 @@ fn setNonStateVarAlgState(mut varList: Arc<metamodelica::List<BackendDAE::Var>>)
         let mut v = v.clone();
         v = (match v.clone() {
         BackendDAE::Var { varKind: BackendDAE::VarKind::STATE { .. }, .. } => v.clone(),
-        BackendDAE::Var { varKind: BackendDAE::VarKind::VARIABLE, .. } => {
+        BackendDAE::Var { varKind: BackendDAE::VarKind::VARIABLE { .. }, .. } => {
             v = BackendVariable::setVarKind(v.clone(), crate::BackendDAE::VarKind::ALG_STATE)?;
             v.clone()
         },

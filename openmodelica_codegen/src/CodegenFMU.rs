@@ -3107,7 +3107,7 @@ pub fn setRealFunction2(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCode, mut
 fn fun_176(mut in_txt: Tpl::Text, mut in_a_v: SimCodeVar::AliasVariable, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_v.clone(), in_a_simCode.clone()) {
-        (mut txt, SimCodeVar::AliasVariable::NOALIAS, _) => {
+        (mut txt, SimCodeVar::AliasVariable::NOALIAS { .. }, _) => {
             txt = CodegenUtil::error(txt.clone(), Tpl::sourceInfo((literal!("CodegenFMU.tpl")).clone(), 914, 31), (literal!("aliasSetVR expected an alias")).clone())?;
             txt.clone()
         },

@@ -332,7 +332,7 @@ pub fn appendLastList<T: Clone + 'static>(mut inListList: Arc<metamodelica::List
                 ll = __pa1.clone();
             }
             ol = cons(listAppend(l.clone(), inList.clone()), ol.clone());
-            ol = ol.clone().reverse();
+            ol = metamodelica::Dangerous::listReverseInPlace(ol.clone());
             ol.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -355,7 +355,7 @@ pub fn insertListSorted<T: Clone + 'static>(mut inList: Arc<metamodelica::List<T
     pub type CompareFunc<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>;
 
     let mut outList: Arc<metamodelica::List<T>> = metamodelica::nil();
-    outList = insertListSorted1(inList.clone(), inList2.clone(), inCompFunc.clone(), metamodelica::nil())?.reverse();
+    outList = metamodelica::Dangerous::listReverseInPlace(insertListSorted1(inList.clone(), inList2.clone(), inCompFunc.clone(), metamodelica::nil())?);
     Ok(outList)
 }
 
@@ -496,7 +496,7 @@ pub fn getAtIndexLst<T: Clone + 'static>(mut lst: Arc<metamodelica::List<T>>, mu
 pub fn firstN<T: Clone + 'static>(mut inList: Arc<metamodelica::List<T>>, mut N: i32) -> Result<Arc<metamodelica::List<T>>> {
     let mut outList: Arc<metamodelica::List<T>> = metamodelica::nil();
     outList = firstN_reverse(inList.clone(), N.clone())?;
-    outList = outList.clone().reverse();
+    outList = metamodelica::Dangerous::listReverseInPlace(outList.clone());
     Ok(outList)
 }
 
@@ -528,7 +528,7 @@ pub fn stripLast<T: Clone + 'static>(mut inList: Arc<metamodelica::List<T>>) -> 
             _ => bail!("pattern mismatch"),
         } };
         outList = __pa0.clone();
-        outList = outList.clone().reverse();
+        outList = metamodelica::Dangerous::listReverseInPlace(outList.clone());
     }
     Ok(outList)
 }
@@ -614,7 +614,7 @@ pub fn sortedDuplicates<T: Clone + 'static>(mut inList: Arc<metamodelica::List<T
             outDuplicates = cons(e.clone(), outDuplicates.clone());
         }
     }
-    outDuplicates = outDuplicates.clone().reverse();
+    outDuplicates = metamodelica::Dangerous::listReverseInPlace(outDuplicates.clone());
     Ok(outDuplicates)
 }
 
@@ -658,7 +658,7 @@ pub fn sortedUnique<T: Clone + 'static>(mut inList: Arc<metamodelica::List<T>>, 
             outUniqueElements = cons(e.clone(), outUniqueElements.clone());
         }
     }
-    outUniqueElements = outUniqueElements.clone().reverse();
+    outUniqueElements = metamodelica::Dangerous::listReverseInPlace(outUniqueElements.clone());
     Ok(outUniqueElements)
 }
 
@@ -682,8 +682,8 @@ pub fn sortedUniqueAndDuplicates<T: Clone + 'static>(mut inList: Arc<metamodelic
             outUniqueElements = cons(e.clone(), outUniqueElements.clone());
         }
     }
-    outUniqueElements = outUniqueElements.clone().reverse();
-    outDuplicateElements = outDuplicateElements.clone().reverse();
+    outUniqueElements = metamodelica::Dangerous::listReverseInPlace(outUniqueElements.clone());
+    outDuplicateElements = metamodelica::Dangerous::listReverseInPlace(outDuplicateElements.clone());
     Ok((outUniqueElements, outDuplicateElements))
 }
 
@@ -704,7 +704,7 @@ pub fn sortedUniqueOnlyDuplicates<T: Clone + 'static>(mut inList: Arc<metamodeli
             outDuplicateElements = cons(e.clone(), outDuplicateElements.clone());
         }
     }
-    outDuplicateElements = outDuplicateElements.clone().reverse();
+    outDuplicateElements = metamodelica::Dangerous::listReverseInPlace(outDuplicateElements.clone());
     Ok(outDuplicateElements)
 }
 
@@ -729,7 +729,7 @@ fn merge<T: Clone + 'static>(mut inLeft: Arc<metamodelica::List<T>>, mut inRight
             merge(l_rest.clone(), r_rest.clone(), inCompFunc.clone(), cons(el.clone(), acc.clone()))?
         },
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
-            acc.clone().reverse()
+            metamodelica::Dangerous::listReverseInPlace(acc.clone())
         },
         (Deref @ metamodelica::List::Nil, _) => {
             append_reverse(acc.clone(), inRight.clone())
@@ -817,7 +817,7 @@ pub fn unique<T: Clone + 'static + PartialEq>(mut inList: Arc<metamodelica::List
             outList = cons(e.clone(), outList.clone());
         }
     }
-    outList = outList.clone().reverse();
+    outList = metamodelica::Dangerous::listReverseInPlace(outList.clone());
     outList
 }
 
@@ -846,7 +846,7 @@ pub fn uniqueOnTrue<T: Clone + 'static>(mut inList: Arc<metamodelica::List<T>>, 
             outList = cons(e.clone(), outList.clone());
         }
     }
-    outList = outList.clone().reverse();
+    outList = metamodelica::Dangerous::listReverseInPlace(outList.clone());
     outList
 }
 
@@ -868,7 +868,7 @@ pub fn split<T: Clone + 'static>(mut inList: Arc<metamodelica::List<T>>, mut inP
         l2 = __pa1.clone();
         l1 = cons(e.clone(), l1.clone());
     }
-    outList1 = l1.clone().reverse();
+    outList1 = metamodelica::Dangerous::listReverseInPlace(l1.clone());
     outList2 = l2.clone();
     Ok((outList1, outList2))
 }
@@ -909,8 +909,8 @@ pub fn splitOnTrue<T: Clone + 'static>(mut inList: Arc<metamodelica::List<T>>, m
             outFalseList = cons(e.clone(), outFalseList.clone());
         }
     }
-    outTrueList = outTrueList.clone().reverse();
-    outFalseList = outFalseList.clone().reverse();
+    outTrueList = metamodelica::Dangerous::listReverseInPlace(outTrueList.clone());
+    outFalseList = metamodelica::Dangerous::listReverseInPlace(outFalseList.clone());
     (outTrueList, outFalseList)
 }
 
@@ -927,8 +927,8 @@ pub fn split1OnTrue<T: Clone + 'static, ArgT1: Clone + 'static>(mut inList: Arc<
             outFalseList = cons(e.clone(), outFalseList.clone());
         }
     }
-    outTrueList = outTrueList.clone().reverse();
-    outFalseList = outFalseList.clone().reverse();
+    outTrueList = metamodelica::Dangerous::listReverseInPlace(outTrueList.clone());
+    outFalseList = metamodelica::Dangerous::listReverseInPlace(outFalseList.clone());
     (outTrueList, outFalseList)
 }
 
@@ -945,8 +945,8 @@ pub fn split2OnTrue<T: Clone + 'static, ArgT1: Clone + 'static, ArgT2: Clone + '
             outFalseList = cons(e.clone(), outFalseList.clone());
         }
     }
-    outTrueList = outTrueList.clone().reverse();
-    outFalseList = outFalseList.clone().reverse();
+    outTrueList = metamodelica::Dangerous::listReverseInPlace(outTrueList.clone());
+    outFalseList = metamodelica::Dangerous::listReverseInPlace(outFalseList.clone());
     (outTrueList, outFalseList)
 }
 
@@ -969,7 +969,7 @@ pub fn splitOnFirstMatch<T: Clone + 'static>(mut inList: Arc<metamodelica::List<
         }
         outList1 = cons(e.clone(), outList1.clone());
     }
-    outList1 = outList1.clone().reverse();
+    outList1 = metamodelica::Dangerous::listReverseInPlace(outList1.clone());
     Ok((outList1, outList2))
 }
 
@@ -982,7 +982,7 @@ pub fn splitLast<T: Clone + 'static>(mut inList: Arc<metamodelica::List<T>>) -> 
     } };
     outLast = __pa0.clone();
     outRest = __pa1.clone();
-    outRest = outRest.clone().reverse();
+    outRest = metamodelica::Dangerous::listReverseInPlace(outRest.clone());
     Ok((outLast, outRest))
 }
 
@@ -1025,8 +1025,8 @@ pub fn splitOnBoolList<T: Clone + 'static>(mut inList: Arc<metamodelica::List<T>
             outFalseList = cons(e.clone(), outFalseList.clone());
         }
     }
-    outTrueList = outTrueList.clone().reverse();
-    outFalseList = outFalseList.clone().reverse();
+    outTrueList = metamodelica::Dangerous::listReverseInPlace(outTrueList.clone());
+    outFalseList = metamodelica::Dangerous::listReverseInPlace(outFalseList.clone());
     Ok((outTrueList, outFalseList))
 }
 
@@ -1051,7 +1051,7 @@ pub fn partition<T: Clone + 'static>(mut inList: Arc<metamodelica::List<T>>, mut
     if !(lst.clone().is_empty()) {
         outPartitions = cons(lst.clone(), outPartitions.clone());
     }
-    outPartitions = outPartitions.clone().reverse();
+    outPartitions = metamodelica::Dangerous::listReverseInPlace(outPartitions.clone());
     Ok(outPartitions)
 }
 
@@ -1092,7 +1092,7 @@ pub fn sublist<T: Clone + 'static>(mut inList: Arc<metamodelica::List<T>>, mut i
         rest = __pa2.clone();
         outList = cons(e.clone(), outList.clone());
     }
-    outList = outList.clone().reverse();
+    outList = metamodelica::Dangerous::listReverseInPlace(outList.clone());
     Ok(outList)
 }
 
@@ -1180,7 +1180,7 @@ pub fn intersectionOnTrue<T: Clone + 'static>(mut inList1: Arc<metamodelica::Lis
             outIntersection = cons(e.clone(), outIntersection.clone());
         }
     }
-    outIntersection = outIntersection.clone().reverse();
+    outIntersection = metamodelica::Dangerous::listReverseInPlace(outIntersection.clone());
     outIntersection
 }
 
@@ -1215,8 +1215,8 @@ pub fn intersection1OnTrue<T: Clone + 'static>(mut inList1: Arc<metamodelica::Li
             outList1Rest = cons(e.clone(), outList1Rest.clone());
         }
     }
-    outIntersection = outIntersection.clone().reverse();
-    outList1Rest = if (true /* isPresent not implemented in Rust */) {outList1Rest.clone().reverse()} else {metamodelica::nil()};
+    outIntersection = metamodelica::Dangerous::listReverseInPlace(outIntersection.clone());
+    outList1Rest = if (true /* isPresent not implemented in Rust */) {metamodelica::Dangerous::listReverseInPlace(outList1Rest.clone())} else {metamodelica::nil()};
     outList2Rest = if (true /* isPresent not implemented in Rust */) {setDifferenceOnTrue(inList2.clone(), outIntersection.clone(), inCompFunc.clone())?} else {metamodelica::nil()};
     Ok((outIntersection, outList1Rest, outList2Rest))
 }
@@ -1305,7 +1305,7 @@ pub fn union<T: Clone + 'static + PartialEq>(mut inList1: Arc<metamodelica::List
         let mut e = e.clone();
         outUnion = unionElt(e.clone(), outUnion.clone());
     }
-    outUnion = outUnion.clone().reverse();
+    outUnion = metamodelica::Dangerous::listReverseInPlace(outUnion.clone());
     outUnion
 }
 
@@ -1321,7 +1321,7 @@ pub fn unionOnTrue<T: Clone + 'static>(mut inList1: Arc<metamodelica::List<T>>, 
         let mut e = e.clone();
         outUnion = unionEltOnTrue(e.clone(), outUnion.clone(), inCompFunc.clone());
     }
-    outUnion = outUnion.clone().reverse();
+    outUnion = metamodelica::Dangerous::listReverseInPlace(outUnion.clone());
     outUnion
 }
 
@@ -1377,11 +1377,11 @@ pub fn mapArray<TI: Clone + 'static, TO: Clone + 'static>(mut inArray: metamodel
     outList
 }
 
-pub fn mapCheckReferenceEq<TI: Clone + 'static + PartialEq>(mut inList: Arc<metamodelica::List<TI>>, mut inFunc: Arc<dyn ::std::ops::Fn(TI) -> Result<TI> + 'static>) -> Arc<metamodelica::List<TI>> {
+pub fn mapCheckReferenceEq<TI: Clone + 'static>(mut inList: Arc<metamodelica::List<TI>>, mut inFunc: Arc<dyn ::std::ops::Fn(TI) -> Result<TI> + 'static>) -> Arc<metamodelica::List<TI>> {
     pub type MapFunc<TI: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(TI) -> Result<TI> + 'static>;
 
     let mut outList: Arc<metamodelica::List<TI>> = metamodelica::nil();
-    let mut delst: DoubleEnded::MutableList<TI>;
+    let mut delst: DoubleEnded::MutableList<TI> = <DoubleEnded::MutableList<TI> as ::std::default::Default>::default();
     let mut n: i32 = 0;
     let mut e1: TI;
     let mut savedElt: TI;
@@ -1440,9 +1440,9 @@ pub fn map_2<TI: Clone + 'static, TO1: Clone + 'static, TO2: Clone + 'static>(mu
             outList2 = cons(e2.clone(), outList2.clone());
         }
     }
-    outList1 = outList1.clone().reverse();
+    outList1 = metamodelica::Dangerous::listReverseInPlace(outList1.clone());
     if true /* isPresent not implemented in Rust */ {
-        outList2 = outList2.clone().reverse();
+        outList2 = metamodelica::Dangerous::listReverseInPlace(outList2.clone());
     }
     (outList1, outList2)
 }
@@ -1467,12 +1467,12 @@ pub fn map_3<TI: Clone + 'static, TO1: Clone + 'static, TO2: Clone + 'static, TO
             outList3 = cons(e3.clone(), outList3.clone());
         }
     }
-    outList1 = outList1.clone().reverse();
+    outList1 = metamodelica::Dangerous::listReverseInPlace(outList1.clone());
     if true /* isPresent not implemented in Rust */ {
-        outList2 = outList2.clone().reverse();
+        outList2 = metamodelica::Dangerous::listReverseInPlace(outList2.clone());
     }
     if true /* isPresent not implemented in Rust */ {
-        outList3 = outList3.clone().reverse();
+        outList3 = metamodelica::Dangerous::listReverseInPlace(outList3.clone());
     }
     (outList1, outList2, outList3)
 }
@@ -1495,7 +1495,7 @@ pub fn mapOption<TI: Clone + 'static, TO: Clone + 'static>(mut inList: Arc<metam
             outList = cons(eo.clone(), outList.clone());
         }
     }
-    outList = outList.clone().reverse();
+    outList = metamodelica::Dangerous::listReverseInPlace(outList.clone());
     Ok(outList)
 }
 
@@ -1517,7 +1517,7 @@ pub fn map1Option<TI: Clone + 'static, ArgT: Clone + 'static, TO: Clone + 'stati
             outList = cons(eo.clone(), outList.clone());
         }
     }
-    outList = outList.clone().reverse();
+    outList = metamodelica::Dangerous::listReverseInPlace(outList.clone());
     Ok(outList)
 }
 
@@ -1539,7 +1539,7 @@ pub fn map2Option<TI: Clone + 'static, ArgT1: Clone + 'static, ArgT2: Clone + 's
             outList = cons(eo.clone(), outList.clone());
         }
     }
-    outList = outList.clone().reverse();
+    outList = metamodelica::Dangerous::listReverseInPlace(outList.clone());
     Ok(outList)
 }
 
@@ -1606,8 +1606,8 @@ pub fn map1_2<TI: Clone + 'static, ArgT1: Clone + 'static, TO1: Clone + 'static,
         outList1 = cons(e1.clone(), outList1.clone());
         outList2 = cons(e2.clone(), outList2.clone());
     }
-    outList1 = outList1.clone().reverse();
-    outList2 = outList2.clone().reverse();
+    outList1 = metamodelica::Dangerous::listReverseInPlace(outList1.clone());
+    outList2 = metamodelica::Dangerous::listReverseInPlace(outList2.clone());
     (outList1, outList2)
 }
 
@@ -1664,8 +1664,8 @@ pub fn map2_2<TI: Clone + 'static, ArgT1: Clone + 'static, ArgT2: Clone + 'stati
         outList1 = cons(e1.clone(), outList1.clone());
         outList2 = cons(e2.clone(), outList2.clone());
     }
-    outList1 = outList1.clone().reverse();
-    outList2 = outList2.clone().reverse();
+    outList1 = metamodelica::Dangerous::listReverseInPlace(outList1.clone());
+    outList2 = metamodelica::Dangerous::listReverseInPlace(outList2.clone());
     (outList1, outList2)
 }
 
@@ -2080,7 +2080,7 @@ pub fn mapFold<TI: Clone + 'static, FT: Clone + 'static, TO: Clone + 'static>(mu
         (res, outArg) = inFunc(e.clone(), outArg.clone()).unwrap();
         outList = cons(res.clone(), outList.clone());
     }
-    outList = outList.clone().reverse();
+    outList = metamodelica::Dangerous::listReverseInPlace(outList.clone());
     (outList, outArg)
 }
 
@@ -2096,7 +2096,7 @@ pub fn mapFold2<TI: Clone + 'static, FT1: Clone + 'static, FT2: Clone + 'static,
         (res, outArg1, outArg2) = inFunc(e.clone(), outArg1.clone(), outArg2.clone()).unwrap();
         outList = cons(res.clone(), outList.clone());
     }
-    outList = outList.clone().reverse();
+    outList = metamodelica::Dangerous::listReverseInPlace(outList.clone());
     (outList, outArg1, outArg2)
 }
 
@@ -2113,7 +2113,7 @@ pub fn mapFold3<TI: Clone + 'static, FT1: Clone + 'static, FT2: Clone + 'static,
         (res, inArg1, inArg2, inArg3) = inFunc(e.clone(), inArg1.clone(), inArg2.clone(), inArg3.clone()).unwrap();
         outList = cons(res.clone(), outList.clone());
     }
-    outList = outList.clone().reverse();
+    outList = metamodelica::Dangerous::listReverseInPlace(outList.clone());
     (outList, inArg1, inArg2, inArg3)
 }
 
@@ -2132,7 +2132,7 @@ pub fn mapFold5<TI: Clone + 'static, FT1: Clone + 'static, FT2: Clone + 'static,
         (res, inArg1, inArg2, inArg3, inArg4, inArg5) = inFunc(e.clone(), inArg1.clone(), inArg2.clone(), inArg3.clone(), inArg4.clone(), inArg5.clone()).unwrap();
         outList = cons(res.clone(), outList.clone());
     }
-    outList = outList.clone().reverse();
+    outList = metamodelica::Dangerous::listReverseInPlace(outList.clone());
     (outList, inArg1, inArg2, inArg3, inArg4, inArg5)
 }
 
@@ -2147,7 +2147,7 @@ pub fn map1Fold<TI: Clone + 'static, ArgT1: Clone + 'static, FT: Clone + 'static
         (res, outArg) = inFunc(e.clone(), inConstArg.clone(), outArg.clone()).unwrap();
         outList = cons(res.clone(), outList.clone());
     }
-    outList = outList.clone().reverse();
+    outList = metamodelica::Dangerous::listReverseInPlace(outList.clone());
     (outList, outArg)
 }
 
@@ -2162,18 +2162,18 @@ pub fn map2Fold<TI: Clone + 'static, ArgT1: Clone + 'static, ArgT2: Clone + 'sta
         (res, outArg) = inFunc(e.clone(), inConstArg.clone(), inConstArg2.clone(), outArg.clone()).unwrap();
         outList = cons(res.clone(), outList.clone());
     }
-    outList = outList.clone().reverse();
+    outList = metamodelica::Dangerous::listReverseInPlace(outList.clone());
     (outList, outArg)
 }
 
-pub fn map2FoldCheckReferenceEq<TIO: Clone + 'static + PartialEq, ArgT1: Clone + 'static, ArgT2: Clone + 'static, FT: Clone + 'static>(mut inList: Arc<metamodelica::List<TIO>>, mut inFunc: Arc<dyn ::std::ops::Fn(TIO, ArgT1, ArgT2, FT) -> Result<(TIO, FT)> + 'static>, mut inConstArg: ArgT1, mut inConstArg2: ArgT2, mut inArg: FT) -> (Arc<metamodelica::List<TIO>>, FT) {
+pub fn map2FoldCheckReferenceEq<TIO: Clone + 'static, ArgT1: Clone + 'static, ArgT2: Clone + 'static, FT: Clone + 'static>(mut inList: Arc<metamodelica::List<TIO>>, mut inFunc: Arc<dyn ::std::ops::Fn(TIO, ArgT1, ArgT2, FT) -> Result<(TIO, FT)> + 'static>, mut inConstArg: ArgT1, mut inConstArg2: ArgT2, mut inArg: FT) -> (Arc<metamodelica::List<TIO>>, FT) {
     pub type FuncType<TIO: Clone + 'static, ArgT1: Clone + 'static, ArgT2: Clone + 'static, FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(TIO, ArgT1, ArgT2, FT) -> Result<(TIO, FT)> + 'static>;
 
     let mut outList: Arc<metamodelica::List<TIO>> = metamodelica::nil();
     let mut outArg: FT = inArg.clone();
     let mut res: TIO;
     let mut savedElt: TIO;
-    let mut delst: DoubleEnded::MutableList<TIO>;
+    let mut delst: DoubleEnded::MutableList<TIO> = <DoubleEnded::MutableList<TIO> as ::std::default::Default>::default();
     let mut n: i32 = 0;
     for mut e in &*inList.clone() {
         let mut e = e.clone();
@@ -2211,7 +2211,7 @@ pub fn map3Fold<TI: Clone + 'static, ArgT1: Clone + 'static, ArgT2: Clone + 'sta
         (res, outArg) = inFunc(e.clone(), inConstArg.clone(), inConstArg2.clone(), inConstArg3.clone(), outArg.clone()).unwrap();
         outList = cons(res.clone(), outList.clone());
     }
-    outList = outList.clone().reverse();
+    outList = metamodelica::Dangerous::listReverseInPlace(outList.clone());
     (outList, outArg)
 }
 
@@ -2226,7 +2226,7 @@ pub fn mapFoldList<TI: Clone + 'static, FT: Clone + 'static, TO: Clone + 'static
         (res, outArg) = mapFold(lst.clone(), inFunc.clone(), outArg.clone());
         outListList = cons(res.clone(), outListList.clone());
     }
-    outListList = outListList.clone().reverse();
+    outListList = metamodelica::Dangerous::listReverseInPlace(outListList.clone());
     (outListList, outArg)
 }
 
@@ -2287,7 +2287,7 @@ pub fn thread<T: Clone + 'static>(mut inList1: Arc<metamodelica::List<T>>, mut i
         outList = cons(e1.clone(), cons(e2.clone(), outList.clone()));
     }
     let true = (rest_e2.clone().is_empty()) else { bail!("pattern mismatch") };
-    outList = outList.clone().reverse();
+    outList = metamodelica::Dangerous::listReverseInPlace(outList.clone());
     Ok(outList)
 }
 
@@ -2330,8 +2330,8 @@ pub fn unzip<T1: Clone + 'static, T2: Clone + 'static>(mut inTuples: Arc<metamod
             outList2 = cons(e2.clone(), outList2.clone());
         }
     }
-    outList1 = outList1.clone().reverse();
-    outList2 = outList2.clone().reverse();
+    outList1 = metamodelica::Dangerous::listReverseInPlace(outList1.clone());
+    outList2 = metamodelica::Dangerous::listReverseInPlace(outList2.clone());
     (outList1, outList2)
 }
 
@@ -2360,7 +2360,7 @@ pub fn unzipSecond<T1: Clone + 'static, T2: Clone + 'static>(mut inTuples: Arc<m
         (_, e) = tpl.clone();
         outList = cons(e.clone(), outList.clone());
     }
-    outList = outList.clone().reverse();
+    outList = metamodelica::Dangerous::listReverseInPlace(outList.clone());
     outList
 }
 
@@ -2400,8 +2400,8 @@ pub fn threadMap_2<T1: Clone + 'static, T2: Clone + 'static, TO1: Clone + 'stati
         outList1 = cons(ret1.clone(), outList1.clone());
         outList2 = cons(ret2.clone(), outList2.clone());
     }
-    outList1 = outList1.clone().reverse();
-    outList2 = outList2.clone().reverse();
+    outList1 = metamodelica::Dangerous::listReverseInPlace(outList1.clone());
+    outList2 = metamodelica::Dangerous::listReverseInPlace(outList2.clone());
     Ok((outList1, outList2))
 }
 
@@ -2441,8 +2441,8 @@ pub fn threadMapList_2<T1: Clone + 'static, T2: Clone + 'static, TO1: Clone + 's
         outList1 = cons(ret1.clone(), outList1.clone());
         outList2 = cons(ret2.clone(), outList2.clone());
     }
-    outList1 = outList1.clone().reverse();
-    outList2 = outList2.clone().reverse();
+    outList1 = metamodelica::Dangerous::listReverseInPlace(outList1.clone());
+    outList2 = metamodelica::Dangerous::listReverseInPlace(outList2.clone());
     Ok((outList1, outList2))
 }
 
@@ -2537,7 +2537,7 @@ pub fn thread3MapFold<T1: Clone + 'static, T2: Clone + 'static, T3: Clone + 'sta
     }
     let true = (rest_e2.clone().is_empty()) else { bail!("pattern mismatch") };
     let true = (rest_e3.clone().is_empty()) else { bail!("pattern mismatch") };
-    outList = outList.clone().reverse();
+    outList = metamodelica::Dangerous::listReverseInPlace(outList.clone());
     Ok((outList, outArg))
 }
 
@@ -2641,7 +2641,7 @@ pub fn threadMapFold<T1: Clone + 'static, T2: Clone + 'static, FT: Clone + 'stat
         outList = cons(res.clone(), outList.clone());
     }
     let true = (rest_e2.clone().is_empty()) else { bail!("pattern mismatch") };
-    outList = outList.clone().reverse();
+    outList = metamodelica::Dangerous::listReverseInPlace(outList.clone());
     Ok((outList, outArg))
 }
 
@@ -2766,8 +2766,8 @@ pub fn extractOnTrue<T: Clone + 'static>(mut inList: Arc<metamodelica::List<T>>,
             outRemainingList = cons(e.clone(), outRemainingList.clone());
         }
     }
-    outExtractedList = outExtractedList.clone().reverse();
-    outRemainingList = outRemainingList.clone().reverse();
+    outExtractedList = metamodelica::Dangerous::listReverseInPlace(outExtractedList.clone());
+    outRemainingList = metamodelica::Dangerous::listReverseInPlace(outRemainingList.clone());
     (outExtractedList, outRemainingList)
 }
 
@@ -2784,8 +2784,8 @@ pub fn extract1OnTrue<T: Clone + 'static, ArgT1: Clone + 'static>(mut inList: Ar
             outRemainingList = cons(e.clone(), outRemainingList.clone());
         }
     }
-    outExtractedList = outExtractedList.clone().reverse();
-    outRemainingList = outRemainingList.clone().reverse();
+    outExtractedList = metamodelica::Dangerous::listReverseInPlace(outExtractedList.clone());
+    outRemainingList = metamodelica::Dangerous::listReverseInPlace(outRemainingList.clone());
     (outExtractedList, outRemainingList)
 }
 
@@ -2802,7 +2802,7 @@ pub fn filter<T: Clone + 'static>(mut inList: Arc<metamodelica::List<T>>, mut in
         }.is_err() {
         }
     }
-    outList = outList.clone().reverse();
+    outList = metamodelica::Dangerous::listReverseInPlace(outList.clone());
     outList
 }
 
@@ -2820,7 +2820,7 @@ pub fn filterMap<TI: Clone + 'static, TO: Clone + 'static>(mut inList: Arc<metam
         }.is_err() {
         }
     }
-    outList = outList.clone().reverse();
+    outList = metamodelica::Dangerous::listReverseInPlace(outList.clone());
     outList
 }
 
@@ -2838,7 +2838,7 @@ pub fn filterMap1<TI: Clone + 'static, ArgT1: Clone + 'static, TO: Clone + 'stat
         }.is_err() {
         }
     }
-    outList = outList.clone().reverse();
+    outList = metamodelica::Dangerous::listReverseInPlace(outList.clone());
     outList
 }
 
@@ -2894,8 +2894,8 @@ pub fn filter1OnTrueSync<T1: Clone + 'static, ArgT1: Clone + 'static, T2: Clone 
             outList_b = cons(e2.clone(), outList_b.clone());
         }
     }
-    outList_a = outList_a.clone().reverse();
-    outList_b = outList_b.clone().reverse();
+    outList_a = metamodelica::Dangerous::listReverseInPlace(outList_a.clone());
+    outList_b = metamodelica::Dangerous::listReverseInPlace(outList_b.clone());
     Ok((outList_a, outList_b))
 }
 
@@ -2920,8 +2920,8 @@ pub fn filterOnTrueSync<T1: Clone + 'static, T2: Clone + 'static>(mut inList: Ar
             outList_b = cons(e2.clone(), outList_b.clone());
         }
     }
-    outList_a = outList_a.clone().reverse();
-    outList_b = outList_b.clone().reverse();
+    outList_a = metamodelica::Dangerous::listReverseInPlace(outList_a.clone());
+    outList_b = metamodelica::Dangerous::listReverseInPlace(outList_b.clone());
     Ok((outList_a, outList_b))
 }
 
@@ -2938,7 +2938,7 @@ pub fn filter1<T: Clone + 'static, ArgT1: Clone + 'static>(mut inList: Arc<metam
         }.is_err() {
         }
     }
-    outList = outList.clone().reverse();
+    outList = metamodelica::Dangerous::listReverseInPlace(outList.clone());
     outList
 }
 
@@ -3096,7 +3096,7 @@ pub fn findAndRemove<T: Clone + 'static>(mut inList: Arc<metamodelica::List<T>>,
     let mut outElement: T;
     let mut rest: Arc<metamodelica::List<T>> = metamodelica::nil();
     let mut i: i32 = 0;
-    let mut delst: DoubleEnded::MutableList<T>;
+    let mut delst: DoubleEnded::MutableList<T> = <DoubleEnded::MutableList<T> as ::std::default::Default>::default();
     let mut t: T;
     for mut e in &*inList.clone() {
         let mut e = e.clone();
@@ -3133,7 +3133,7 @@ pub fn findAndRemove1<T: Clone + 'static, ArgT1: Clone + 'static>(mut inList: Ar
     let mut outElement: T;
     let mut rest: Arc<metamodelica::List<T>> = metamodelica::nil();
     let mut i: i32 = 0;
-    let mut delst: DoubleEnded::MutableList<T>;
+    let mut delst: DoubleEnded::MutableList<T> = <DoubleEnded::MutableList<T> as ::std::default::Default>::default();
     let mut t: T;
     for mut e in &*inList.clone() {
         let mut e = e.clone();
@@ -3201,7 +3201,7 @@ pub fn deleteMemberOnTrue<VT: Clone + 'static, T: Clone + 'static>(mut inValue: 
         e = __pa0.clone();
         rest = __pa1.clone();
         if inCompareFunc(inValue.clone(), e.clone())? {
-            outList = listAppend(acc.clone().reverse(), rest.clone());
+            outList = listAppend(metamodelica::Dangerous::listReverseInPlace(acc.clone()), rest.clone());
             if true /* isPresent not implemented in Rust */ {
                 outDeletedElement = Some(e.clone());
             }
@@ -3288,7 +3288,7 @@ pub fn replaceAt<T: Clone + 'static>(mut inElement: T, mut inPosition: i32, mut 
     let mut outList: Arc<metamodelica::List<T>> = metamodelica::nil();
     let mut e: T;
     let mut rest: Arc<metamodelica::List<T>> = inList.clone();
-    let mut delst: DoubleEnded::MutableList<T>;
+    let mut delst: DoubleEnded::MutableList<T> = <DoubleEnded::MutableList<T> as ::std::default::Default>::default();
     let true = (inPosition.clone() >= 1) else { bail!("pattern mismatch") };
     delst = DoubleEnded::fromList(metamodelica::nil())?;
     for mut i in 1..=inPosition.clone() - 1 {
@@ -3533,7 +3533,7 @@ pub fn splitEqualPrefix<T1: Clone + 'static, T2: Clone + 'static>(mut inFullList
         }
         outPrefix = cons(e1.clone(), outPrefix.clone());
     }
-    outPrefix = outPrefix.clone().reverse();
+    outPrefix = metamodelica::Dangerous::listReverseInPlace(outPrefix.clone());
     outRest = rest_e1.clone();
     Ok((outPrefix, outRest))
 }
@@ -3604,7 +3604,7 @@ fn combinationMap_tail<TI: Clone + 'static, TO: Clone + 'static>(mut inElements:
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-pub fn allReferenceEq<T: Clone + 'static + PartialEq>(mut inList1: Arc<metamodelica::List<T>>, mut inList2: Arc<metamodelica::List<T>>) -> bool {
+pub fn allReferenceEq<T: Clone + 'static>(mut inList1: Arc<metamodelica::List<T>>, mut inList2: Arc<metamodelica::List<T>>) -> bool {
     let mut outEqual: bool = false;
     outEqual = (::match_deref::match_deref! { match &((inList1.clone(), inList2.clone())) {
         (Deref @ metamodelica::List::Cons { head: el1, tail: rest1 }, Deref @ metamodelica::List::Cons { head: el2, tail: rest2 }) => {
@@ -3634,7 +3634,7 @@ pub fn toListWithPositions<T: Clone + 'static>(mut inList: Arc<metamodelica::Lis
         outList = cons((e.clone(), pos.clone()), outList.clone());
         pos = pos.clone() + 1;
     }
-    outList = outList.clone().reverse();
+    outList = metamodelica::Dangerous::listReverseInPlace(outList.clone());
     outList
 }
 
@@ -3780,7 +3780,7 @@ pub fn mapIndices<T: Clone + 'static>(mut inList: Arc<metamodelica::List<T>>, mu
         }
         i = i.clone() + 1;
     }
-    outList = outList.clone().reverse();
+    outList = metamodelica::Dangerous::listReverseInPlace(outList.clone());
     Ok(outList)
 }
 
@@ -3899,5 +3899,15 @@ pub fn trim<T: Clone + 'static>(mut l: Arc<metamodelica::List<T>>, mut r#fn: Arc
         l = listRest(l.clone())?;
     }
     Ok(l)
+}
+
+pub fn apply<T: Clone + 'static>(mut lst: Arc<metamodelica::List<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<()> + 'static>) -> () {
+    pub type Fn<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<()> + 'static>;
+
+    for mut e in &*lst.clone() {
+        let mut e = e.clone();
+        r#fn(e.clone()).unwrap();
+    }
+    ()
 }
 

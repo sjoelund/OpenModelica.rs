@@ -826,22 +826,25 @@ pub fn builtin_function_ty(name: &str) -> Option<Ty> {
     };
     match name {
         // Equality / comparison predicates: (T, T) -> Bool
+        // Formal names mirror MetaModelicaBuiltin.mo exactly — they are used to
+        // match named-arg partial applications (`function intLt(i2=...)`), so a
+        // mismatch silently drops the binding and emits a `todo!()`.
         "valueEq" | "referenceEq" =>
-            Some(f(vec![inp("a", tv("T")), inp("b", tv("T"))], Ty::Bool, vec!["T".to_owned()])),
+            Some(f(vec![inp("a1", tv("T")), inp("a2", tv("T"))], Ty::Bool, vec!["T".to_owned()])),
         "intEq" | "intNe" | "intLt" | "intLe" | "intGt" | "intGe" =>
-            Some(f(vec![inp("a", Ty::I32), inp("b", Ty::I32)], Ty::Bool, vec![])),
+            Some(f(vec![inp("i1", Ty::I32), inp("i2", Ty::I32)], Ty::Bool, vec![])),
         "realEq" | "realLt" | "realLe" | "realGt" | "realGe" =>
             Some(f(vec![inp("x1", Ty::F64), inp("x2", Ty::F64)], Ty::Bool, vec![])),
         "stringEq" | "stringEqual" =>
-            Some(f(vec![inp("a", Ty::Str), inp("b", Ty::Str)], Ty::Bool, vec![])),
+            Some(f(vec![inp("s1", Ty::Str), inp("s2", Ty::Str)], Ty::Bool, vec![])),
         "boolEq" | "boolAnd" | "boolOr" =>
-            Some(f(vec![inp("a", Ty::Bool), inp("b", Ty::Bool)], Ty::Bool, vec![])),
+            Some(f(vec![inp("b1", Ty::Bool), inp("b2", Ty::Bool)], Ty::Bool, vec![])),
         "boolNot" =>
-            Some(f(vec![inp("a", Ty::Bool)], Ty::Bool, vec![])),
+            Some(f(vec![inp("b", Ty::Bool)], Ty::Bool, vec![])),
         "isSome" | "isNone" =>
-            Some(f(vec![inp("o", Ty::Option(Box::new(tv("T"))))], Ty::Bool, vec!["T".to_owned()])),
+            Some(f(vec![inp("opt", Ty::Option(Box::new(tv("T"))))], Ty::Bool, vec!["T".to_owned()])),
         "listEmpty" =>
-            Some(f(vec![inp("l", Ty::List(Box::new(tv("T"))))], Ty::Bool, vec!["T".to_owned()])),
+            Some(f(vec![inp("lst", Ty::List(Box::new(tv("T"))))], Ty::Bool, vec!["T".to_owned()])),
         // `listGet(list<T>, Integer) -> T`. Without this entry the result type
         // is `Ty::Unknown`, which then propagates into surrounding expressions
         // — most visibly into `+` chains where `binop_ty` can no longer route
@@ -856,17 +859,17 @@ pub fn builtin_function_ty(name: &str) -> Option<Ty> {
         // `call_ty` below handles the result types when those names appear in
         // call position (which is the only context where it matters).
         "listGet" =>
-            Some(f(vec![inp("l", Ty::List(Box::new(tv("T")))), inp("i", Ty::I32)], tv("T"), vec!["T".to_owned()])),
+            Some(f(vec![inp("lst", Ty::List(Box::new(tv("T")))), inp("index", Ty::I32)], tv("T"), vec!["T".to_owned()])),
         "arrayEmpty" =>
-            Some(f(vec![inp("a", Ty::Array(Box::new(tv("T"))))], Ty::Bool, vec!["T".to_owned()])),
+            Some(f(vec![inp("arr", Ty::Array(Box::new(tv("T"))))], Ty::Bool, vec!["T".to_owned()])),
 
         // Length-style: container -> Integer
         "listLength" =>
-            Some(f(vec![inp("l", Ty::List(Box::new(tv("T"))))], Ty::I32, vec!["T".to_owned()])),
+            Some(f(vec![inp("lst", Ty::List(Box::new(tv("T"))))], Ty::I32, vec!["T".to_owned()])),
         "arrayLength" =>
-            Some(f(vec![inp("a", Ty::Array(Box::new(tv("T"))))], Ty::I32, vec!["T".to_owned()])),
+            Some(f(vec![inp("arr", Ty::Array(Box::new(tv("T"))))], Ty::I32, vec!["T".to_owned()])),
         "stringLength" =>
-            Some(f(vec![inp("s", Ty::Str)], Ty::I32, vec![])),
+            Some(f(vec![inp("str", Ty::Str)], Ty::I32, vec![])),
         // OpenModelica.Scripting.uriToFilename — see the cref_to_dotted
         // rewrite above. Signature mirrors the MM declaration in
         // NFModelicaBuiltin.mo: `(String) -> String`.
@@ -879,14 +882,14 @@ pub fn builtin_function_ty(name: &str) -> Option<Ty> {
         // value (which the surrounding `Hash<K> = fn(K) -> Result<i32>` slot
         // then rejects).
         "stringHash" | "stringHashDjb2" | "stringHashSdbm" =>
-            Some(f(vec![inp("s", Ty::Str)], Ty::I32, vec![])),
+            Some(f(vec![inp("str", Ty::Str)], Ty::I32, vec![])),
 
         // Arithmetic: (T, T) -> T
         "intAdd" | "intSub" | "intMul" | "intDiv" | "intMod" | "intMax" | "intMin" =>
-            Some(f(vec![inp("a", Ty::I32), inp("b", Ty::I32)], Ty::I32, vec![])),
+            Some(f(vec![inp("i1", Ty::I32), inp("i2", Ty::I32)], Ty::I32, vec![])),
         "realAdd" | "realSub" | "realMul" | "realDiv" | "realMax" | "realMin"
         | "realMod" | "realPow" =>
-            Some(f(vec![inp("a", Ty::F64), inp("b", Ty::F64)], Ty::F64, vec![])),
+            Some(f(vec![inp("r1", Ty::F64), inp("r2", Ty::F64)], Ty::F64, vec![])),
 
         // Numeric coercions
         "intReal" =>
@@ -902,9 +905,9 @@ pub fn builtin_function_ty(name: &str) -> Option<Ty> {
         "boolString" =>
             Some(f(vec![inp("b", Ty::Bool)], Ty::Str, vec![])),
         "anyString" =>
-            Some(f(vec![inp("v", tv("T"))], Ty::Str, vec!["T".to_owned()])),
+            Some(f(vec![inp("a", tv("T"))], Ty::Str, vec!["T".to_owned()])),
         "stringAppend" =>
-            Some(f(vec![inp("a", Ty::Str), inp("b", Ty::Str)], Ty::Str, vec![])),
+            Some(f(vec![inp("s1", Ty::Str), inp("s2", Ty::Str)], Ty::Str, vec![])),
         // `stringDelimitList(list<String>, String) -> String`. Declared in
         // MetaModelicaBuiltin.mo. Listing it here pins the result type so
         // that adjacent `+` chains in user code are typed as Ty::Str and
@@ -922,11 +925,11 @@ pub fn builtin_function_ty(name: &str) -> Option<Ty> {
             Some(f(vec![], Ty::Str, vec![])),
         // String → number/boolean parsing
         "stringInt" =>
-            Some(f(vec![inp("s", Ty::Str)], Ty::I32, vec![])),
+            Some(f(vec![inp("str", Ty::Str)], Ty::I32, vec![])),
         "stringReal" =>
-            Some(f(vec![inp("s", Ty::Str)], Ty::F64, vec![])),
+            Some(f(vec![inp("str", Ty::Str)], Ty::F64, vec![])),
         "stringBool" =>
-            Some(f(vec![inp("s", Ty::Str)], Ty::Bool, vec![])),
+            Some(f(vec![inp("str", Ty::Str)], Ty::Bool, vec![])),
 
         _ => None,
     }

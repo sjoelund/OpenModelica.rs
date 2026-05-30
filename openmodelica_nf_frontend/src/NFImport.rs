@@ -106,7 +106,7 @@ pub fn resolve(mut imp: Arc<NFImport>) -> Result<(Arc<InstNode::InstNode>, bool,
             printImportError(var_field!((*imp).imp1, NFImport::CONFLICTING_IMPORT).clone(), var_field!((*imp).imp2, NFImport::CONFLICTING_IMPORT).clone())?;
             bail!("fail")
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((node, changed, outImport))
 }

@@ -315,7 +315,7 @@ fn checkSubscriptBoundsCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut isP
 }
 
 fn checkDiscreteReal(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<()> {
-    let mut discrete_reals: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+    let mut discrete_reals: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
     let mut illegal_discrete_vars: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
     discrete_reals = UnorderedSet::new((std::sync::Arc::new(fnptr!(ComponentRef::hashStrip, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqualStrip) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
     for mut eqn in &*flatModel.equations.clone() {

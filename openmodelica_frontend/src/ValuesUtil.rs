@@ -239,7 +239,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         let __mc_input = (val1.clone(), val2.clone(), op.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::MULOP) => {
+                (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::MULOP { .. }) => {
                     let mut e: Arc<DAE::Exp>;
                     let mut outv: Arc<Values::Value> = outv.clone();
                     e = ExpressionSimplify::safeIntOp(iv1.clone(), iv2.clone(), openmodelica_frontend_inst::ExpressionSimplifyTypes::IntOp::MULOP)?;
@@ -251,7 +251,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::MULOP) => {
+                (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::MULOP { .. }) => {
                     let mut rv2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     rv2 = intReal(iv2.clone());
@@ -263,7 +263,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::MULOP) => {
+                (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::MULOP { .. }) => {
                     let mut rv1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     rv1 = intReal(iv1.clone());
@@ -275,7 +275,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::MULOP) => {
+                (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::MULOP { .. }) => {
                     let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     rv3 = rv1.clone() * rv2.clone();
                     Ok(Arc::new(Values::Value::REAL { real: rv3.clone() }))
@@ -285,7 +285,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::DIVOP) => {
+                (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::DIVOP { .. }) => {
                     let mut e: Arc<DAE::Exp>;
                     let mut outv: Arc<Values::Value> = outv.clone();
                     e = ExpressionSimplify::safeIntOp(iv1.clone(), iv2.clone(), openmodelica_frontend_inst::ExpressionSimplifyTypes::IntOp::DIVOP)?;
@@ -297,7 +297,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::DIVOP) => {
+                (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::DIVOP { .. }) => {
                     let mut rv2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     rv2 = intReal(iv2.clone());
@@ -309,7 +309,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::DIVOP) => {
+                (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::DIVOP { .. }) => {
                     let mut rv1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     rv1 = intReal(iv1.clone());
@@ -321,7 +321,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::DIVOP) => {
+                (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::DIVOP { .. }) => {
                     let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     rv3 = rv1.clone() / rv2.clone();
                     Ok(Arc::new(Values::Value::REAL { real: rv3.clone() }))
@@ -331,7 +331,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::POWOP) => {
+                (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::POWOP { .. }) => {
                     let mut rv1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     let mut rv2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
@@ -346,7 +346,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::POWOP) => {
+                (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::POWOP { .. }) => {
                     let mut e: Arc<DAE::Exp>;
                     let mut outv: Arc<Values::Value> = outv.clone();
                     e = ExpressionSimplify::safeIntOp(iv1.clone(), iv2.clone(), openmodelica_frontend_inst::ExpressionSimplifyTypes::IntOp::POWOP)?;
@@ -358,7 +358,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::POWOP) => {
+                (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::POWOP { .. }) => {
                     let mut rv2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     rv2 = intReal(iv2.clone());
@@ -370,7 +370,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::POWOP) => {
+                (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::POWOP { .. }) => {
                     let mut iv2: i32 = 0;
                     let mut e: Arc<DAE::Exp>;
                     let mut outv: Arc<Values::Value> = outv.clone();
@@ -384,7 +384,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::POWOP) => {
+                (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::POWOP { .. }) => {
                     let mut rv1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     rv1 = intReal(iv1.clone());
@@ -396,7 +396,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::POWOP) => {
+                (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::POWOP { .. }) => {
                     let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     rv3 = realPow(rv1.clone(), rv2.clone());
                     Ok(Arc::new(Values::Value::REAL { real: rv3.clone() }))
@@ -406,7 +406,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::ADDOP) => {
+                (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::ADDOP { .. }) => {
                     let mut e: Arc<DAE::Exp>;
                     let mut outv: Arc<Values::Value> = outv.clone();
                     e = ExpressionSimplify::safeIntOp(iv1.clone(), iv2.clone(), openmodelica_frontend_inst::ExpressionSimplifyTypes::IntOp::ADDOP)?;
@@ -418,7 +418,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::ADDOP) => {
+                (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::ADDOP { .. }) => {
                     let mut rv2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     rv2 = intReal(iv2.clone());
@@ -430,7 +430,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::ADDOP) => {
+                (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::ADDOP { .. }) => {
                     let mut rv1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     rv1 = intReal(iv1.clone());
@@ -442,7 +442,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::ADDOP) => {
+                (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::ADDOP { .. }) => {
                     let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     rv3 = rv1.clone() + rv2.clone();
                     Ok(Arc::new(Values::Value::REAL { real: rv3.clone() }))
@@ -452,7 +452,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::SUBOP) => {
+                (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::SUBOP { .. }) => {
                     let mut e: Arc<DAE::Exp>;
                     let mut outv: Arc<Values::Value> = outv.clone();
                     e = ExpressionSimplify::safeIntOp(iv1.clone(), iv2.clone(), openmodelica_frontend_inst::ExpressionSimplifyTypes::IntOp::SUBOP)?;
@@ -464,7 +464,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::SUBOP) => {
+                (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::INTEGER { integer: iv2 }, Values::IntRealOp::SUBOP { .. }) => {
                     let mut rv2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     rv2 = intReal(iv2.clone());
@@ -476,7 +476,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::SUBOP) => {
+                (Deref @ Values::Value::INTEGER { integer: iv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::SUBOP { .. }) => {
                     let mut rv1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     rv1 = intReal(iv1.clone());
@@ -488,7 +488,7 @@ pub fn safeIntRealOp(mut val1: Arc<Values::Value>, mut val2: Arc<Values::Value>,
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::SUBOP) => {
+                (Deref @ Values::Value::REAL { real: rv1 }, Deref @ Values::Value::REAL { real: rv2 }, Values::IntRealOp::SUBOP { .. }) => {
                     let mut rv3: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     rv3 = rv1.clone() - rv2.clone();
                     Ok(Arc::new(Values::Value::REAL { real: rv3.clone() }))
@@ -856,7 +856,7 @@ pub fn valueExp(mut inValue: Arc<Values::Value>, mut originalExp: Option<Arc<DAE
             (explist, _) = Types::matchTypeTuple(explist.clone(), typelist.clone(), List::map(typelist.clone(), (std::sync::Arc::new(Types::boxIfUnboxedType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>)), true)?;
             Arc::new(DAE::Exp::METARECORDCALL { path: path.clone(), args: explist.clone(), fieldNames: namelst.clone(), index: ix.clone(), typeVars: metamodelica::nil() })
         },
-        Deref @ Values::Value::META_FAIL => {
+        Deref @ Values::Value::META_FAIL { .. } => {
             Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("fail")).clone() }), expLst: metamodelica::nil(), attr: DAE::callAttrBuiltinOther().clone() })
         },
         Deref @ Values::Value::META_BOX { value: v } => {
@@ -882,7 +882,7 @@ pub fn valueExp(mut inValue: Arc<Values::Value>, mut originalExp: Option<Arc<DAE
             }
             e.clone()
         },
-        Deref @ Values::Value::NORETCALL => {
+        Deref @ Values::Value::NORETCALL { .. } => {
             Arc::new(DAE::Exp::TUPLE { PR: metamodelica::nil() })
         },
         v => {
@@ -2097,7 +2097,7 @@ pub fn typeConvertRecord(mut inValue: Arc<Values::Value>, mut inType: Arc<DAE::T
 pub fn fixZeroSizeArray(mut e: Arc<DAE::Exp>, mut ty: Arc<DAE::Type>) -> Result<Arc<DAE::Exp>> {
     let mut e: Arc<DAE::Exp> = e;
     e = (::match_deref::match_deref! { match &(e.clone()) {
-        Deref @ DAE::Exp::ARRAY { array: Deref @ metamodelica::List::Nil, scalar: false, ty: Deref @ DAE::Type::T_ARRAY { ty: Deref @ DAE::Type::T_UNKNOWN, .. } } => Arc::new(DAE::Exp::ARRAY { ty: ty.clone(), scalar: !(Types::isArray(Types::unliftArray(ty.clone())?)), array: metamodelica::nil() }),
+        Deref @ DAE::Exp::ARRAY { array: Deref @ metamodelica::List::Nil, scalar: false, ty: Deref @ DAE::Type::T_ARRAY { ty: Deref @ DAE::Type::T_UNKNOWN { .. }, .. } } => Arc::new(DAE::Exp::ARRAY { ty: ty.clone(), scalar: !(Types::isArray(Types::unliftArray(ty.clone())?)), array: metamodelica::nil() }),
         _ => e.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

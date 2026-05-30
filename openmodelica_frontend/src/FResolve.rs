@@ -122,7 +122,6 @@ pub fn ext_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
             let FCore::EX { e: __pa0, .. } = (FNode::refData(r.clone())?) else { bail!("pattern mismatch") };
             e = __pa0.clone();
             p = SCodeUtil::getBaseClassPath(e.clone())?;
-            SCodeUtil::elementInfo(e.clone());
             (g, rr) = FLookup::name(g.clone(), r.clone(), p.clone(), FLookup::ignoreNothing.clone(), FLookup::dummyLookupOption.clone())?;
             g = FGraphBuild::mkRefNode((arcstr::literal!(FNode::refNodeName)).clone(), list![rr.clone()], r.clone(), g.clone())?;
             Ok(g.clone())
@@ -136,7 +135,6 @@ pub fn ext_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
             let FCore::EX { e: __pa0, .. } = (FNode::refData(r.clone())?) else { bail!("pattern mismatch") };
             e = __pa0.clone();
             p = SCodeUtil::getBaseClassPath(e.clone())?;
-            SCodeUtil::elementInfo(e.clone());
             if '__try1: {
                 unwrap_break_err!(FLookup::name(g.clone(), r.clone(), p.clone(), FLookup::ignoreNothing.clone(), FLookup::dummyLookupOption.clone()), '__try1);
                 Ok::<(), anyhow::Error>(())
@@ -302,9 +300,8 @@ pub fn cc_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
             let mut rr: Ref;
             let mut p: Arc<Absyn::Path>;
             let true = (FNode::isRefConstrainClass(r.clone())?) else { bail!("pattern mismatch") };
-            let FCore::CC { cc: __t1 } = (FNode::refData(r.clone())?) else { bail!("pattern mismatch") };
-            let __pa0 = ::match_deref::match_deref! { match &(__t1.clone()) {
-                Deref @ SCode::ConstrainClass { constrainingClass: __pa0, .. } => __pa0.clone(),
+            let __pa0 = ::match_deref::match_deref! { match &(FNode::refData(r.clone())?) {
+                FCore::Data::CC { cc: Deref @ SCode::ConstrainClass { constrainingClass: __pa0, .. } } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             p = __pa0.clone();
@@ -316,9 +313,8 @@ pub fn cc_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
             let (mut r, mut g) = __mc_input.clone() else { bail!("nomatch") };
             let mut p: Arc<Absyn::Path>;
             let true = (FNode::isRefConstrainClass(r.clone())?) else { bail!("pattern mismatch") };
-            let FCore::CC { cc: __t1 } = (FNode::refData(r.clone())?) else { bail!("pattern mismatch") };
-            let __pa0 = ::match_deref::match_deref! { match &(__t1.clone()) {
-                Deref @ SCode::ConstrainClass { constrainingClass: __pa0, .. } => __pa0.clone(),
+            let __pa0 = ::match_deref::match_deref! { match &(FNode::refData(r.clone())?) {
+                FCore::Data::CC { cc: Deref @ SCode::ConstrainClass { constrainingClass: __pa0, .. } } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             p = __pa0.clone();

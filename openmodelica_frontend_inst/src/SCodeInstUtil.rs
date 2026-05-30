@@ -272,7 +272,7 @@ pub fn expandEnumerationMod(mut inMod: Arc<SCode::Mod>) -> Result<Arc<SCode::Mod
 pub fn expandEnumerationClass(mut inElement: Arc<SCode::Element>) -> Result<Arc<SCode::Element>> {
     let mut outElement: Arc<SCode::Element>;
     outElement = (::match_deref::match_deref! { match &(inElement.clone()) {
-        Deref @ SCode::Element::CLASS { info, cmt, classDef: Deref @ SCode::ClassDef::ENUMERATION { enumLst: l }, prefixes, restriction: SCode::Restriction::R_TYPE, name: n, .. } => {
+        Deref @ SCode::Element::CLASS { info, cmt, classDef: Deref @ SCode::ClassDef::ENUMERATION { enumLst: l }, prefixes, restriction: SCode::Restriction::R_TYPE { .. }, name: n, .. } => {
             let mut c: Arc<SCode::Element>;
             c = expandEnumeration((n.clone()).clone(), l.clone(), prefixes.clone(), cmt.clone(), info.clone())?;
             c.clone()

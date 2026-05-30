@@ -166,7 +166,7 @@ pub mod PathTree {
             }
             if (key_comp.clone() == 0) {outTree.clone()} else {balance(outTree.clone())?}
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(tree)
     }
@@ -232,7 +232,7 @@ pub mod PathTree {
             }
             if (key_comp.clone() == 0) {new_tree.clone()} else {balance(new_tree.clone())?}
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(tree)
     }
@@ -366,7 +366,7 @@ pub mod PathTree {
             ()
         },
         Deref @ Tree::EMPTY { .. } => (),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(())
     }
@@ -423,6 +423,8 @@ pub mod PathTree {
         value
     }
 
+    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
+    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
     pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
         let mut comp: bool = false;
         let mut key: Key = arcstr::literal!("");
@@ -435,7 +437,7 @@ pub mod PathTree {
             return Ok(comp.clone());
             bail!("fail")
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
         key_comp = keyCompare((inKey.clone()).clone(), (key.clone()).clone());
         comp = (::match_deref::match_deref! { match &((key_comp.clone(), inTree.clone())) {
@@ -485,7 +487,7 @@ pub mod PathTree {
             tree.clone()
         },
         Deref @ Tree::LEAF { .. } => add(tree.clone(), (var_field!((*treeToJoin).key, Tree::LEAF).clone()).clone(), var_field!((*treeToJoin).value, Tree::LEAF).clone(), conflictFunc.clone())?,
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(tree)
     }
@@ -636,7 +638,7 @@ pub mod PathTree {
         Deref @ Tree::EMPTY { .. } => literal!("EMPTY()"),
         Deref @ Tree::LEAF { .. } => printNodeStr(inTree.clone())?,
         Deref @ Tree::NODE { right, left, .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
         Ok(outString)
     }
@@ -863,7 +865,7 @@ fn addPath(mut path: Arc<Absyn::Path>, mut tree: Arc<PathTree::Tree>) -> Result<
             PathTree::add(tree.clone(), (var_field!((*path).name, Absyn::Path::QUALIFIED).clone()).clone(), entry.clone(), (std::sync::Arc::new(fnptr!(PathTree::addConflictReplace, Arc<PathEntry>, Arc<PathEntry>, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<PathEntry>, Arc<PathEntry>, ArcStr) -> Result<Arc<PathEntry>> + 'static>))?
         },
         Deref @ Absyn::Path::FULLYQUALIFIED { .. } => addPath(var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone(), tree.clone())?,
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(tree)
 }
@@ -1401,7 +1403,7 @@ fn lookupInFunctionArgs(mut args: Arc<Absyn::FunctionArgs>, mut paths: Arc<Paths
             matches = lookupInForIterators(var_field!((*args).iterators, Absyn::FunctionArgs::FOR_ITER_FARG).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
             matches.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(matches)
 }
@@ -1470,7 +1472,7 @@ fn lookupInElementSpec(mut spec: Arc<Absyn::ElementSpec>, mut paths: Arc<Paths::
             }
             matches.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(matches)
 }
@@ -1488,7 +1490,6 @@ fn lookupInImport(mut imp: Absyn::Import, mut paths: Arc<Paths::Paths>, mut exac
         Absyn::Import::QUAL_IMPORT { .. } => matchPath(var_field!(imp.path, Absyn::Import::QUAL_IMPORT).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?,
         Absyn::Import::UNQUAL_IMPORT { .. } => matchPath(var_field!(imp.path, Absyn::Import::UNQUAL_IMPORT).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?,
         Absyn::Import::GROUP_IMPORT { .. } => matchPath(var_field!(imp.prefix, Absyn::Import::GROUP_IMPORT).clone(), paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?,
-        _ => bail!("match: no arm matched"),
     });
     Ok(matches)
 }
@@ -1708,7 +1709,7 @@ fn serializeMatches(mut groupedMatches: Arc<metamodelica::List<Arc<metamodelica:
         json_elems = metamodelica::nil();
         for mut m in &*group.clone() {
             let mut m = m.clone();
-            json_elem = ProgramUtil::dumpJSONSourceInfo(m.info.clone(), false)?;
+            json_elem = JSON::dumpJSONSourceInfo(m.info.clone(), false)?;
             json_elem = JSON::addPair((literal!("name")).clone(), JSON::makeString((Dump::printComponentRefStr(m.name.clone())?).clone()), json_elem.clone())?;
             json_elem = JSON::addPair((literal!("class")).clone(), JSON::makeString((m.scope.clone()).clone()), json_elem.clone())?;
             json_elems = cons(json_elem.clone(), json_elems.clone());
@@ -1737,7 +1738,7 @@ fn groupMatches(mut matches: Matches) -> Result<Arc<metamodelica::List<Arc<metam
     }
 
     let mut outMatches: Arc<metamodelica::List<Arc<metamodelica::List<Match>>>> = metamodelica::nil();
-    let mut grouped_matches: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<metamodelica::List<Match>>>>;
+    let mut grouped_matches: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<metamodelica::List<Match>>>> = <Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<metamodelica::List<Match>>>> as ::std::default::Default>::default();
     grouped_matches = UnorderedMap::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), 1);
     for mut m in &*matches.clone() {
         let mut m = m.clone();

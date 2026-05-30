@@ -926,8 +926,8 @@ fn typeFillCall2(mut fnRef: Arc<ComponentRef::NFComponentRef>, mut fillType: Arc
         dims = cons(Dimension::fromExp(arg.clone(), arg_var.clone())?, dims.clone());
         index = index.clone() + 1;
     }
-    ty_args = ty_args.clone().reverse();
-    dims = dims.clone().reverse();
+    ty_args = metamodelica::Dangerous::listReverseInPlace(ty_args.clone());
+    dims = metamodelica::Dangerous::listReverseInPlace(dims.clone());
     let __pa0 = ::match_deref::match_deref! { match &(Function::typeRefCache(fnRef.clone(), InstContext::FUNCTION.clone())?) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -1289,7 +1289,7 @@ fn typeConnectionsArgs(mut args: Arc<metamodelica::List<Arc<Expression::NFExpres
         outArgs = cons((typeConnectionsArg(arg.clone(), context.clone(), info.clone(), fnRef.clone(), index.clone())?).0, outArgs.clone());
         index = index.clone() + 1;
     }
-    outArgs = outArgs.clone().reverse();
+    outArgs = metamodelica::Dangerous::listReverseInPlace(outArgs.clone());
     Ok(outArgs)
 }
 

@@ -161,7 +161,7 @@ pub fn simplifyEquations(mut eql: Arc<metamodelica::List<Arc<Equation::NFEquatio
         let mut eq = eq.clone();
         outEql = simplifyEquation(eq.clone(), outEql.clone())?;
     }
-    outEql = outEql.clone().reverse();
+    outEql = metamodelica::Dangerous::listReverseInPlace(outEql.clone());
     Ok(outEql)
 }
 
@@ -276,7 +276,7 @@ pub fn simplifyAlgorithms(mut algs: Arc<metamodelica::List<Arc<Algorithm::NFAlgo
             outAlgs = cons(alg.clone(), outAlgs.clone());
         }
     }
-    outAlgs = outAlgs.clone().reverse();
+    outAlgs = metamodelica::Dangerous::listReverseInPlace(outAlgs.clone());
     Ok(outAlgs)
 }
 
@@ -292,7 +292,7 @@ pub fn simplifyStatements(mut stmts: Arc<metamodelica::List<Arc<Statement::NFSta
         let mut s = s.clone();
         outStmts = simplifyStatement(s.clone(), outStmts.clone())?;
     }
-    outStmts = outStmts.clone().reverse();
+    outStmts = metamodelica::Dangerous::listReverseInPlace(outStmts.clone());
     Ok(outStmts)
 }
 
@@ -505,7 +505,7 @@ pub fn simplifyIfEqBranches(mut branches: Arc<metamodelica::List<Arc<Equation::B
                 } else {
                     accum = cons(Equation::makeBranch(cond.clone(), simplifyEquations(body.clone())?, Variability::CONTINUOUS.clone()), accum.clone());
                     accum = List::trim(accum.clone(), (std::sync::Arc::new(Equation::Branch::isEmpty) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Branch::Branch>) -> Result<bool> + 'static>))?;
-                    elements = cons(Equation::makeIf(accum.clone().reverse(), scope.clone(), src.clone()), elements.clone());
+                    elements = cons(Equation::makeIf(metamodelica::Dangerous::listReverseInPlace(accum.clone()), scope.clone(), src.clone()), elements.clone());
                     return Ok(elements.clone());
                 }
             } else if !(Expression::isFalse(cond.clone())) {
@@ -529,7 +529,7 @@ pub fn simplifyIfEqBranches(mut branches: Arc<metamodelica::List<Arc<Equation::B
     }
     accum = List::trim(accum.clone(), (std::sync::Arc::new(Equation::Branch::isEmpty) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Branch::Branch>) -> Result<bool> + 'static>))?;
     if !(accum.clone().is_empty()) {
-        elements = cons(Equation::makeIf(accum.clone().reverse(), scope.clone(), src.clone()), elements.clone());
+        elements = cons(Equation::makeIf(metamodelica::Dangerous::listReverseInPlace(accum.clone()), scope.clone(), src.clone()), elements.clone());
     }
     Ok(elements)
 }
@@ -560,7 +560,7 @@ pub fn simplifyIfStmtBranches<ElemT: Clone + 'static>(mut branches: Arc<metamode
         }
     }
     if !(accum.clone().is_empty()) {
-        elements = cons(makeFunc(accum.clone().reverse(), src.clone())?, elements.clone());
+        elements = cons(makeFunc(metamodelica::Dangerous::listReverseInPlace(accum.clone()), src.clone())?, elements.clone());
     }
     Ok(elements)
 }

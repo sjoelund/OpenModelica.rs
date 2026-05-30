@@ -260,7 +260,7 @@ pub fn reduceMapN(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>, mut dim: i32) -> Re
     let mut resg: metamodelica::Array<metamodelica::Real>;
     let mut reso: metamodelica::Array<metamodelica::Real>;
     let mut aux_as: Arc<SBAtomicSet::SBAtomicSet> = Arc::new(<SBAtomicSet::SBAtomicSet as ::std::default::Default>::default());
-    let mut aux_newd: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>>;
+    let mut aux_newd: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>> = <Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>> as ::std::default::Default>::default();
     let mut asets: metamodelica::Array<Arc<SBAtomicSet::SBAtomicSet>>;
     dom = SBPWLinearMap::dom(pw.clone());
     lmap = SBPWLinearMap::lmap(pw.clone());
@@ -594,7 +594,7 @@ pub fn test() -> Result<()> {
 
 pub fn make_set(mut i: Arc<metamodelica::List<Arc<SBInterval::SBInterval>>>) -> Result<Arc<SBSet::SBSet>> {
     let mut s: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
-    let mut ss: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>>;
+    let mut ss: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>> = <Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>> as ::std::default::Default>::default();
     ss = UnorderedSet::new((std::sync::Arc::new(fnptr!(SBAtomicSet::hash, Arc<SBAtomicSet::SBAtomicSet>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(SBAtomicSet::isEqual, Arc<SBAtomicSet::SBAtomicSet>, Arc<SBAtomicSet::SBAtomicSet>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>, Arc<SBAtomicSet::SBAtomicSet>) -> Result<bool> + 'static>), 13);
     UnorderedSet::add(SBAtomicSet::new(SBMultiInterval::fromList(i.clone())), ss.clone())?;
     s = SBSet::new(ss.clone())?;

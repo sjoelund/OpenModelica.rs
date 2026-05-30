@@ -129,7 +129,6 @@ pub fn currentScope(mut inGraph: Graph) -> Result<Scope> {
     outScope = (match inGraph.clone() {
         FCore::Graph::G { scope: ref outScope, .. } => outScope.clone(),
         FCore::Graph::EG { name: _ } => metamodelica::nil(),
-        _ => bail!("match: no arm matched"),
     });
     Ok(outScope)
 }
@@ -777,8 +776,8 @@ pub fn setScope(mut graph: Graph, mut inScope: Scope) -> Result<Graph> {
 pub fn restrictionToScopeType(mut inRestriction: SCode::Restriction) -> Option<FCore::ScopeType> {
     let mut outType: Option<FCore::ScopeType> = None;
     outType = (match inRestriction.clone() {
-        SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_PARALLEL_FUNCTION } => Some(crate::FCore::ScopeType::PARALLEL_SCOPE),
-        SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_KERNEL_FUNCTION } => Some(crate::FCore::ScopeType::PARALLEL_SCOPE),
+        SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_PARALLEL_FUNCTION { .. } } => Some(crate::FCore::ScopeType::PARALLEL_SCOPE),
+        SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_KERNEL_FUNCTION { .. } } => Some(crate::FCore::ScopeType::PARALLEL_SCOPE),
         SCode::Restriction::R_FUNCTION { functionRestriction: _ } => Some(crate::FCore::ScopeType::FUNCTION_SCOPE),
         _ => Some(crate::FCore::ScopeType::CLASS_SCOPE),
     });
@@ -788,8 +787,8 @@ pub fn restrictionToScopeType(mut inRestriction: SCode::Restriction) -> Option<F
 pub fn scopeTypeToRestriction(mut inScopeType: FCore::ScopeType) -> SCode::Restriction {
     let mut outRestriction: SCode::Restriction = SCode::Restriction::R_BLOCK;
     outRestriction = (match inScopeType.clone() {
-        FCore::ScopeType::PARALLEL_SCOPE => SCode::Restriction::R_FUNCTION { functionRestriction: openmodelica_frontend_types::SCode::FunctionRestriction::FR_PARALLEL_FUNCTION },
-        FCore::ScopeType::FUNCTION_SCOPE => SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_NORMAL_FUNCTION { purity: openmodelica_ast::Absyn::FunctionPurity::NO_PURITY } },
+        FCore::ScopeType::PARALLEL_SCOPE { .. } => SCode::Restriction::R_FUNCTION { functionRestriction: openmodelica_frontend_types::SCode::FunctionRestriction::FR_PARALLEL_FUNCTION },
+        FCore::ScopeType::FUNCTION_SCOPE { .. } => SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_NORMAL_FUNCTION { purity: openmodelica_ast::Absyn::FunctionPurity::NO_PURITY } },
         _ => openmodelica_frontend_types::SCode::Restriction::R_CLASS,
     });
     outRestriction
@@ -1443,7 +1442,7 @@ pub fn createVersionScope(mut inSourceEnv: Graph, mut inSourceName: Name, mut in
         let __mc_input = inMod.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Mod::NOMOD => {
+                Deref @ DAE::Mod::NOMOD { .. } => {
                     Ok((inTargetClassEnv.clone(), inTargetClass.clone(), inIH.clone()))
                 }
                 _ => bail!("nomatch"),

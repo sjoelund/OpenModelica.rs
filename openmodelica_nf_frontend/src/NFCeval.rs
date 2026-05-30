@@ -482,7 +482,7 @@ pub fn subscriptBinding(mut exp: Arc<Expression::NFExpression>, mut cref: Arc<Co
 pub fn subscriptBinding2(mut exp: Arc<Expression::NFExpression>, mut cref: Arc<ComponentRef::NFComponentRef>, mut evalSubscripts: bool, mut subMap: Option<Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>>) -> Result<(Arc<Expression::NFExpression>, Option<Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>>)> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     let mut subMap: Option<Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>> = subMap;
-    let mut sub_map: Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>;
+    let mut sub_map: Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>> = <Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>> as ::std::default::Default>::default();
     let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
     let mut cref_parts: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
     let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
@@ -632,8 +632,8 @@ pub fn makeComponentBinding(mut component: Arc<Component::NFComponent>, mut node
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Component::COMPONENT { ty: Deref @ Type::COMPLEX { complexTy: Deref @ ComplexType::RECORD { constructor: rec_node, .. }, .. }, .. } => {
-                    let mut exp: Arc<Expression::NFExpression> = exp.clone();
                     let mut binding: Arc<Binding::NFBinding> = binding.clone();
+                    let mut exp: Arc<Expression::NFExpression> = exp.clone();
                     exp = makeRecordBindingExp(var_field!((*component).classInst, Component::NFComponent::COMPONENT).clone(), rec_node.clone(), var_field!((*component).ty, Component::NFComponent::COMPONENT).clone(), cref.clone(), target.clone())?;
                     binding = Arc::new(Binding::NFBinding::CEVAL_BINDING { bindingExp: exp.clone() });
                     if !(ComponentRef::hasSubscripts(cref.clone())) {
@@ -647,8 +647,8 @@ pub fn makeComponentBinding(mut component: Arc<Component::NFComponent>, mut node
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Component::COMPONENT { ty: Deref @ Type::ARRAY { elementType: ty @ Deref @ Type::COMPLEX { complexTy: Deref @ ComplexType::RECORD { constructor: rec_node, .. }, .. }, .. }, .. } => {
-                    let mut exp: Arc<Expression::NFExpression> = exp.clone();
                     let mut binding: Arc<Binding::NFBinding> = binding.clone();
+                    let mut exp: Arc<Expression::NFExpression> = exp.clone();
                     exp = Expression::mapCrefScalars(Expression::fromCref(cref.clone(), false)?, Arc::new({ let __pe_b0 = var_field!((*component).classInst, Component::NFComponent::COMPONENT).clone(); let __pe_b1 = rec_node.clone(); let __pe_b2 = ty.clone(); let __pe_b4 = target.clone(); move |__pe_a3| makeRecordBindingExp(__pe_b0.clone(), __pe_b1.clone(), __pe_b2.clone(), __pe_a3, __pe_b4.clone()) }))?;
                     binding = Arc::new(Binding::NFBinding::CEVAL_BINDING { bindingExp: exp.clone() });
                     if !(ComponentRef::hasSubscripts(cref.clone())) {
@@ -2967,7 +2967,7 @@ fn evalArrayConstructor2(mut exp: Arc<Expression::NFExpression>, mut ranges: Arc
             Mutable::update(iter.clone(), value.clone());
             expl = cons(evalArrayConstructor2(exp.clone(), ranges_rest.clone(), iters_rest.clone())?, expl.clone());
         }
-        arr = metamodelica::arrayFromVec(expl.clone().reverse().into_iter().cloned().collect());
+        arr = metamodelica::arrayFromVec(metamodelica::Dangerous::listReverseInPlace(expl.clone()).into_iter().cloned().collect());
         ty = if (arr.clone().borrow().is_empty()) {Type::liftArrayLeftList(Expression::typeOf(exp.clone()), List::mapFlat(ranges_rest.clone(), (std::sync::Arc::new(fnptr!(Expression::dimensions, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<metamodelica::List<Arc<Dimension::NFDimension>>>> + 'static>)))} else {Expression::typeOf(listHead(expl.clone())?)};
         ty = Type::liftArrayLeft(ty.clone(), Dimension::fromInteger((arr.clone().borrow().len() as i32), Prefixes::Variability::CONSTANT.clone()));
         result = Expression::makeArray(ty.clone(), arr.clone(), true);

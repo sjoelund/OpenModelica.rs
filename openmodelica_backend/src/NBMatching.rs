@@ -193,9 +193,9 @@ pub fn isEmpty(mut matching: Arc<NBMatching>) -> bool {
 pub fn isPerfect(mut matching: Arc<NBMatching>) -> bool {
     let mut b: bool = false;
     if (matching.var_to_eqn.clone().borrow().len() as i32) > (matching.eqn_to_var.clone().borrow().len() as i32) {
-        b = Array::all(matching.eqn_to_var.clone(), Arc::new(todo!("PARTEVALFUNCTION of intGt: named args do not match any formal: ["i2"]")));
+        b = Array::all(matching.eqn_to_var.clone(), Arc::new({ let __pe_b1 = 0; move |__pe_a0| Ok(intGt(__pe_a0, __pe_b1.clone())) }));
     } else {
-        b = Array::all(matching.var_to_eqn.clone(), Arc::new(todo!("PARTEVALFUNCTION of intGt: named args do not match any formal: ["i2"]")));
+        b = Array::all(matching.var_to_eqn.clone(), Arc::new({ let __pe_b1 = 0; move |__pe_a0| Ok(intGt(__pe_a0, __pe_b1.clone())) }));
     }
     b
 }
@@ -216,10 +216,10 @@ pub fn getMatches(mut matching: Arc<NBMatching>, mut mapping_opt: Option<Arc<Adj
     let mut matched_eqns: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>> = metamodelica::nil();
     let mut unmatched_eqns: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>> = metamodelica::nil();
     let mut mapping: Arc<Adjacency::Mapping::Mapping> = Arc::new(<Adjacency::Mapping::Mapping as ::std::default::Default>::default());
-    let mut var_map_matched: Arc<UnorderedMap::UnorderedMap<Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<metamodelica::List<i32>>>>;
-    let mut var_map_unmatched: Arc<UnorderedMap::UnorderedMap<Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<metamodelica::List<i32>>>>;
-    let mut eqn_map_matched: Arc<UnorderedMap::UnorderedMap<Pointer::Pointer<Arc<Equation::Equation>>, Arc<metamodelica::List<i32>>>>;
-    let mut eqn_map_unmatched: Arc<UnorderedMap::UnorderedMap<Pointer::Pointer<Arc<Equation::Equation>>, Arc<metamodelica::List<i32>>>>;
+    let mut var_map_matched: Arc<UnorderedMap::UnorderedMap<Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<metamodelica::List<i32>>>> = <Arc<UnorderedMap::UnorderedMap<Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<metamodelica::List<i32>>>> as ::std::default::Default>::default();
+    let mut var_map_unmatched: Arc<UnorderedMap::UnorderedMap<Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<metamodelica::List<i32>>>> = <Arc<UnorderedMap::UnorderedMap<Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<metamodelica::List<i32>>>> as ::std::default::Default>::default();
+    let mut eqn_map_matched: Arc<UnorderedMap::UnorderedMap<Pointer::Pointer<Arc<Equation::Equation>>, Arc<metamodelica::List<i32>>>> = <Arc<UnorderedMap::UnorderedMap<Pointer::Pointer<Arc<Equation::Equation>>, Arc<metamodelica::List<i32>>>> as ::std::default::Default>::default();
+    let mut eqn_map_unmatched: Arc<UnorderedMap::UnorderedMap<Pointer::Pointer<Arc<Equation::Equation>>, Arc<metamodelica::List<i32>>>> = <Arc<UnorderedMap::UnorderedMap<Pointer::Pointer<Arc<Equation::Equation>>, Arc<metamodelica::List<i32>>>> as ::std::default::Default>::default();
     let mut arr_var: Pointer::Pointer<Arc<Variable::NFVariable>>;
     let mut arr_eqn: Pointer::Pointer<Arc<Equation::Equation>>;
     let mut start_idx: i32 = 0;

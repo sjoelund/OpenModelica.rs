@@ -4592,6 +4592,17 @@ fn emit_function<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::
                 }
             })
             .or_else(|| {
+                // Resolve an import-aliased head (`extends Module.aliasInterface;`
+                // where `import Module = NBModule;`). Without this the base
+                // partial function isn't found, its inherited input/output
+                // components are never merged, and the emitted function is
+                // missing its parameters. Mirrors the alias resolution applied
+                // to the signature in `hierarchy::resolve_function_type`.
+                let (head, rest) = dotted.split_once('.')?;
+                let target = ctx.aliased_modules.get(head)?;
+                lookup_node(&format!("{target}.{rest}"), top_level)
+            })
+            .or_else(|| {
                 let last = dotted.rsplit('.').next().unwrap_or(&dotted);
                 lookup_node(last, top_level)
             });
@@ -7392,11 +7403,18 @@ fn emit_parteval<'a>(
     // Any named-args that did NOT match a formal name are a type error —
     // surface them so the bug is visible rather than silently dropping them.
     if !named_map.is_empty() {
-        let bad: Vec<&str> = named_map.keys().copied().collect();
-        return format!(
-            "todo!(\"PARTEVALFUNCTION of {func}: named args do not match any formal: {:?}\")",
-            bad
+        let mut bad: Vec<&str> = named_map.keys().copied().collect();
+        bad.sort_unstable();
+        // Build the message as a String, then embed it via `{:?}` so Rust's
+        // own string-escaping produces a valid literal. A naive
+        // `{:?}`-of-a-Vec inside the literal text emits the element quotes
+        // verbatim (`["acc"]`), which terminates the surrounding `todo!("…")`
+        // string early and makes the whole file fail to parse.
+        let msg = format!(
+            "PARTEVALFUNCTION of {func}: named args do not match any formal: {}",
+            bad.join(", ")
         );
+        return format!("todo!({msg:?})");
     }
 
     let params_list = closure_params.join(", ");
@@ -15356,6 +15374,58 @@ fn emit_stmt<'a>(
                     }
                     return;
                 }
+            }
+            // Tuple LHS where at least one element is a *place* (a record-field
+            // update `x.field` or an indexed slot `a[i]`) rather than a simple
+            // binding. MetaModelica allows e.g. `(shared.eventInfo, _) :=
+            // f(...)`, but Rust cannot put a field-access or index expression
+            // inside a `let`/destructuring pattern — emitting `let
+            // (shared.eventInfo, _) = ...` is a parse error. Bind every slot to
+            // a fresh temporary, then re-emit each meaningful slot as its own
+            // assignment so the existing per-target lowering applies
+            // (`assign_field!`/`assign_variant_field!` for field updates, the
+            // indexed-array write below for `a[i]`, and var (re)assignment for
+            // plain names).
+            if let TypedPat::Tuple(pats) = lhs
+                && pats.iter().any(|p| matches!(p, TypedPat::FieldAccess { .. } | TypedPat::Index { .. }))
+            {
+                let elem_tys: Vec<Ty> = match &scrut_ty {
+                    Ty::Tuple(tys) => tys.clone(),
+                    // A tuple LHS paired with a non-tuple RHS should not occur;
+                    // surface the gap rather than emitting a mis-binding.
+                    _ => {
+                        writeln!(out, "{indent}todo!(\"tuple field-assign with non-tuple rhs\");").unwrap();
+                        return;
+                    }
+                };
+                let n = *fresh; *fresh += 1;
+                // One temp per slot (or `_` for a wildcard). The RHS tuple may
+                // be wider than the LHS — trailing outputs are silently dropped
+                // in MetaModelica, so pad the Rust pattern with `_`.
+                let mut slots: Vec<String> = Vec::with_capacity(elem_tys.len());
+                let mut slot_names: Vec<Option<String>> = Vec::with_capacity(elem_tys.len());
+                for i in 0..elem_tys.len() {
+                    match pats.get(i) {
+                        Some(TypedPat::Wildcard) | None => { slots.push("_".to_owned()); slot_names.push(None); }
+                        Some(_) => {
+                            let t = format!("__asg{n}_{i}");
+                            slots.push(t.clone());
+                            slot_names.push(Some(t));
+                        }
+                    }
+                }
+                writeln!(out, "{indent}let ({}) = {scrut_expr};", slots.join(", ")).unwrap();
+                for (i, p) in pats.iter().enumerate() {
+                    if matches!(p, TypedPat::Wildcard) { continue; }
+                    let Some(tmp) = slot_names.get(i).and_then(|o| o.clone()) else { continue };
+                    let elem_ty = elem_tys.get(i).cloned().unwrap_or(Ty::Unknown);
+                    let synth = typedexp::TypedStmt::Assign {
+                        lhs: p.clone(),
+                        rhs: typedexp::TypedExp::Var { name: tmp, segments: vec![], ty: elem_ty },
+                    };
+                    emit_stmt(out, indent, &synth, fail_mode.clone(), ctx, env, top_level, fresh);
+                }
+                return;
             }
             if let TypedPat::Index { base, index } = lhs {
                 let lhs_ty = lhs_assignment_ty(lhs, env);

@@ -550,7 +550,7 @@ pub fn instModEquation(mut inComponentRef: Arc<DAE::ComponentRef>, mut inType: A
         let __mc_input = (inType.clone(), inMod.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: _ }, .. }, Deref @ DAE::Mod::MOD { binding: Some(DAE::EqMod::TYPED { modifierAsExp: _, modifierAsValue: Some(_), properties: DAE::Properties::PROP { type_: _, constFlag: DAE::Const::C_CONST }, modifierAsAbsynExp: _, .. }), .. }) => {
+                (Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: _ }, .. }, Deref @ DAE::Mod::MOD { binding: Some(DAE::EqMod::TYPED { modifierAsExp: _, modifierAsValue: Some(_), properties: DAE::Properties::PROP { type_: _, constFlag: DAE::Const::C_CONST { .. } }, modifierAsAbsynExp: _, .. }), .. }) => {
                     Ok(DAE::emptyDae().clone())
                 }
                 _ => bail!("nomatch"),
@@ -600,7 +600,7 @@ pub fn instModEquation(mut inComponentRef: Arc<DAE::ComponentRef>, mut inType: A
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (_, Deref @ DAE::Mod::NOMOD) => {
+                (_, Deref @ DAE::Mod::NOMOD { .. }) => {
                     Ok(DAE::emptyDae().clone())
                 }
                 _ => bail!("nomatch"),
@@ -641,7 +641,7 @@ pub fn makeBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAtt
         let __mc_input = (inCache.clone(), inAttributes.clone(), inMod.clone(), inType.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, _, Deref @ DAE::Mod::NOMOD, _) => {
+                (cache, _, Deref @ DAE::Mod::NOMOD { .. }, _) => {
                     let mut binding: Arc<DAE::Binding> = Arc::new(DAE::Binding::UNBOUND);
                     let mut complex_vars: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
                     let mut tpath: Arc<Absyn::Path>;
@@ -660,7 +660,7 @@ pub fn makeBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAtt
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, _, Deref @ DAE::Mod::NOMOD, _) => {
+                (cache, _, Deref @ DAE::Mod::NOMOD { .. }, _) => {
                     Ok((cache.clone(), Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND)))
                 }
                 _ => bail!("nomatch"),
@@ -676,7 +676,7 @@ pub fn makeBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAtt
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, SCode::Attributes { variability: SCode::Variability::PARAM, .. }, Deref @ DAE::Mod::MOD { binding: None, .. }, tp) => {
+                (cache, SCode::Attributes { variability: SCode::Variability::PARAM { .. }, .. }, Deref @ DAE::Mod::MOD { binding: None, .. }, tp) => {
                     let mut binding: Arc<DAE::Binding> = Arc::new(DAE::Binding::UNBOUND);
                     let mut startValueModification: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
                     let mut cache = (*cache).clone();
@@ -765,7 +765,6 @@ pub fn makeBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAtt
                     let mut e_str_1: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = arcstr::literal!("");
                     e_tp = Types::getPropType(prop.clone())?;
-                    Types::propAllConst(prop.clone())?;
                     if '__try0: {
                         unwrap_break_err!(Types::matchType(e.clone(), e_tp.clone(), tp.clone(), false), '__try0);
                         Ok::<(), anyhow::Error>(())
@@ -877,7 +876,7 @@ fn makeRecordBinding3(mut inSubMod: Option<Arc<DAE::SubMod>>, mut inType: Arc<DA
         let __mc_input = inSubMod.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Some(Deref @ DAE::SubMod { r#mod: Deref @ DAE::Mod::MOD { binding: Some(DAE::EqMod::TYPED { modifierAsValue: Some(val), modifierAsExp: exp, .. }), eachPrefix: SCode::Each::EACH, .. }, .. }) => {
+                Some(Deref @ DAE::SubMod { r#mod: Deref @ DAE::Mod::MOD { binding: Some(DAE::EqMod::TYPED { modifierAsValue: Some(val), modifierAsExp: exp, .. }), eachPrefix: SCode::Each::EACH { .. }, .. }, .. }) => {
                     Ok((exp.clone(), val.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -885,7 +884,7 @@ fn makeRecordBinding3(mut inSubMod: Option<Arc<DAE::SubMod>>, mut inType: Arc<DA
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Some(Deref @ DAE::SubMod { r#mod: Deref @ DAE::Mod::MOD { binding: Some(DAE::EqMod::TYPED { properties: DAE::Properties::PROP { type_: ty, .. }, modifierAsValue: Some(val), modifierAsExp: exp, .. }), eachPrefix: SCode::Each::NOT_EACH, .. }, .. }) => {
+                Some(Deref @ DAE::SubMod { r#mod: Deref @ DAE::Mod::MOD { binding: Some(DAE::EqMod::TYPED { properties: DAE::Properties::PROP { type_: ty, .. }, modifierAsValue: Some(val), modifierAsExp: exp, .. }), eachPrefix: SCode::Each::NOT_EACH { .. }, .. }, .. }) => {
                     let mut ty = (*ty).clone();
                     let mut exp = (*exp).clone();
                     (exp, ty) = Types::matchType(exp.clone(), ty.clone(), inType.clone(), true)?;
@@ -896,7 +895,7 @@ fn makeRecordBinding3(mut inSubMod: Option<Arc<DAE::SubMod>>, mut inType: Arc<DA
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Some(Deref @ DAE::SubMod { r#mod: Deref @ DAE::Mod::MOD { binding: Some(DAE::EqMod::TYPED { properties: DAE::Properties::PROP { type_: ty, .. }, modifierAsValue: None, modifierAsExp: exp, .. }), eachPrefix: SCode::Each::NOT_EACH, .. }, .. }) => {
+                Some(Deref @ DAE::SubMod { r#mod: Deref @ DAE::Mod::MOD { binding: Some(DAE::EqMod::TYPED { properties: DAE::Properties::PROP { type_: ty, .. }, modifierAsValue: None, modifierAsExp: exp, .. }), eachPrefix: SCode::Each::NOT_EACH { .. }, .. }, .. }) => {
                     let mut ty = (*ty).clone();
                     let mut exp = (*exp).clone();
                     (exp, ty) = Types::matchType(exp.clone(), ty.clone(), inType.clone(), true)?;
@@ -953,17 +952,19 @@ pub fn makeVariableBinding(mut inType: Arc<DAE::Type>, mut inMod: Arc<DAE::Mod>,
         outBinding = None;
     } else {
         info = Mod::getModInfo(inMod.clone());
-        if let Ok((__pa2, DAE::PROP { constFlag: __pa3, .. })) = Types::matchProp(e.clone(), p.clone(), DAE::Properties::PROP { type_: inType.clone(), constFlag: inConst.clone() }, true) {
-            e2 = __pa2.clone();
-            c = __pa3.clone();
-        } else {
+        let (__pa2, __pa3) = ::match_deref::match_deref! { match &(Types::matchProp(e.clone(), p.clone(), DAE::Properties::PROP { type_: inType.clone(), constFlag: inConst.clone() }, true)) {
+            Ok((__pa2, DAE::Properties::PROP { constFlag: __pa3, .. })) => (__pa2.clone(), __pa3.clone()),
+            _ => {
             e_str = (ExpressionBasics::printExpStr(e.clone())?).clone();
             et_str = (TypesDump::unparseTypeNoAttr(inType.clone())?).clone();
             bt_str = (TypesDump::unparseTypeNoAttr(Types::getPropType(p.clone())?)?).clone();
             Types::typeErrorSanityCheck((et_str.clone()).clone(), (bt_str.clone()).clone(), info.clone())?;
             Error::addSourceMessageAndFail(Error::VARIABLE_BINDING_TYPE_MISMATCH.clone(), list![(inName.clone()).clone(), (e_str.clone()).clone(), (et_str.clone()).clone(), (bt_str.clone()).clone()], info.clone())?;
             unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
-        }
+            },
+        } };
+        e2 = __pa2.clone();
+        c = __pa3.clone();
         InstUtil::checkHigherVariability(inConst.clone(), c.clone(), inPrefix.clone(), (inName.clone()).clone(), e.clone(), info.clone())?;
         outBinding = Some(e2.clone());
     }

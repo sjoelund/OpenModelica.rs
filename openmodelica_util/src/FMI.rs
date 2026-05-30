@@ -236,7 +236,6 @@ pub fn getFMIModelIdentifier(mut inFMIInfo: Info) -> Result<ArcStr> {
         Info { fmiModelIdentifier: mut modelIdentifier, .. } => {
             modelIdentifier.clone()
         },
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(fmiModelIdentifier)
 }
@@ -261,7 +260,6 @@ pub fn getFMIVersion(mut inFMIInfo: Info) -> Result<ArcStr> {
         Info { fmiVersion: mut version, .. } => {
             version.clone()
         },
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(fmiVersion)
 }

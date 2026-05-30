@@ -223,7 +223,7 @@ pub fn checkRedeclaredElementPrefix(mut inItem: Arc<NFSCodeEnv::Item>, mut inRep
 fn checkClassRedeclarationReplaceable(mut inName: ArcStr, mut inReplaceable: Arc<SCode::Replaceable>, mut inOriginInfo: SourceInfo, mut inInfo: SourceInfo) -> Result<bool> {
     let mut isValid: bool = false;
     isValid = (::match_deref::match_deref! { match &(inReplaceable.clone()) {
-        Deref @ SCode::Replaceable::NOT_REPLACEABLE if (!(Flags::getConfigBool(Flags::IGNORE_REPLACEABLE.clone())?)) => {
+        Deref @ SCode::Replaceable::NOT_REPLACEABLE { .. } if (!(Flags::getConfigBool(Flags::IGNORE_REPLACEABLE.clone())?)) => {
             Error::addMultiSourceMessage(Error::REDECLARE_NON_REPLACEABLE.clone(), list![(inName.clone()).clone()], list![inOriginInfo.clone(), inInfo.clone()])?;
             false
         },
@@ -236,8 +236,8 @@ fn checkClassRedeclarationReplaceable(mut inName: ArcStr, mut inReplaceable: Arc
 fn checkCompRedeclarationReplaceable(mut inName: ArcStr, mut inReplaceable: Arc<SCode::Replaceable>, mut inType1: Arc<Absyn::TypeSpec>, mut inType2: Arc<Absyn::TypeSpec>, mut inOriginInfo: SourceInfo, mut inInfo: SourceInfo) -> Result<bool> {
     let mut isValid: bool = false;
     isValid = (::match_deref::match_deref! { match &(inReplaceable.clone()) {
-        Deref @ SCode::Replaceable::NOT_REPLACEABLE if (AbsynUtil::pathEqual(AbsynUtil::typeSpecPath(inType1.clone())?, AbsynUtil::typeSpecPath(inType2.clone())?)) => true,
-        Deref @ SCode::Replaceable::NOT_REPLACEABLE if (!(Flags::getConfigBool(Flags::IGNORE_REPLACEABLE.clone())?)) => {
+        Deref @ SCode::Replaceable::NOT_REPLACEABLE { .. } if (AbsynUtil::pathEqual(AbsynUtil::typeSpecPath(inType1.clone())?, AbsynUtil::typeSpecPath(inType2.clone())?)) => true,
+        Deref @ SCode::Replaceable::NOT_REPLACEABLE { .. } if (!(Flags::getConfigBool(Flags::IGNORE_REPLACEABLE.clone())?)) => {
             Error::addMultiSourceMessage(Error::REDECLARE_NON_REPLACEABLE.clone(), list![(inName.clone()).clone()], list![inOriginInfo.clone(), inInfo.clone()])?;
             bail!("fail")
         },
@@ -250,12 +250,11 @@ fn checkCompRedeclarationReplaceable(mut inName: ArcStr, mut inReplaceable: Arc<
 fn checkRedeclarationFinal(mut inName: ArcStr, mut inType: ArcStr, mut inFinal: SCode::Final, mut inOriginInfo: SourceInfo, mut inInfo: SourceInfo) -> Result<bool> {
     let mut isValid: bool = false;
     isValid = (match inFinal.clone() {
-        SCode::Final::NOT_FINAL => true,
-        SCode::Final::FINAL => {
+        SCode::Final::NOT_FINAL { .. } => true,
+        SCode::Final::FINAL { .. } => {
             Error::addMultiSourceMessage(Error::INVALID_REDECLARE.clone(), list![(literal!("final")).clone(), (inType.clone()).clone(), (inName.clone()).clone()], list![inOriginInfo.clone(), inInfo.clone()])?;
             false
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(isValid)
 }
@@ -263,7 +262,7 @@ fn checkRedeclarationFinal(mut inName: ArcStr, mut inType: ArcStr, mut inFinal: 
 fn checkRedeclarationVariability(mut inName: ArcStr, mut inType: ArcStr, mut inVariability: SCode::Variability, mut inOriginInfo: SourceInfo, mut inInfo: SourceInfo) -> Result<bool> {
     let mut isValid: bool = false;
     isValid = (match inVariability.clone() {
-        SCode::Variability::CONST => {
+        SCode::Variability::CONST { .. } => {
             Error::addMultiSourceMessage(Error::INVALID_REDECLARE.clone(), list![(literal!("constant")).clone(), (inType.clone()).clone(), (inName.clone()).clone()], list![inOriginInfo.clone(), inInfo.clone()])?;
             false
         },
@@ -275,11 +274,11 @@ fn checkRedeclarationVariability(mut inName: ArcStr, mut inType: ArcStr, mut inV
 fn checkRedeclarationVisibility(mut inName: ArcStr, mut inType: ArcStr, mut inOriginalVisibility: SCode::Visibility, mut inNewVisibility: SCode::Visibility, mut inOriginInfo: SourceInfo, mut inNewInfo: SourceInfo) -> Result<bool> {
     let mut isValid: bool = false;
     isValid = (match (inOriginalVisibility.clone(), inNewVisibility.clone()) {
-        (SCode::Visibility::PUBLIC, SCode::Visibility::PROTECTED) => {
+        (SCode::Visibility::PUBLIC { .. }, SCode::Visibility::PROTECTED { .. }) => {
             Error::addMultiSourceMessage(Error::INVALID_REDECLARE_AS.clone(), list![(literal!("public element")).clone(), (inName.clone()).clone(), (literal!("protected")).clone()], list![inNewInfo.clone(), inOriginInfo.clone()])?;
             false
         },
-        (SCode::Visibility::PROTECTED, SCode::Visibility::PUBLIC) => {
+        (SCode::Visibility::PROTECTED { .. }, SCode::Visibility::PUBLIC { .. }) => {
             Error::addMultiSourceMessage(Error::INVALID_REDECLARE_AS.clone(), list![(literal!("protected element")).clone(), (inName.clone()).clone(), (literal!("public")).clone()], list![inNewInfo.clone(), inOriginInfo.clone()])?;
             false
         },
@@ -483,7 +482,7 @@ pub fn checkInstanceRestriction(mut inItem: Arc<NFSCodeEnv::Item>, mut inPrefix:
 
 pub fn checkPartialInstance(mut inItem: Arc<NFSCodeEnv::Item>, mut inInfo: SourceInfo) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inItem.clone()) {
-        Deref @ NFSCodeEnv::Item::CLASS { cls: Deref @ SCode::Element::CLASS { partialPrefix: SCode::Partial::PARTIAL, name, .. }, .. } => {
+        Deref @ NFSCodeEnv::Item::CLASS { cls: Deref @ SCode::Element::CLASS { partialPrefix: SCode::Partial::PARTIAL { .. }, name, .. }, .. } => {
             Error::addSourceMessage(Error::INST_PARTIAL_CLASS.clone(), list![(name.clone()).clone()], inInfo.clone())?;
             bail!("fail")
         },

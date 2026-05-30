@@ -378,7 +378,7 @@ pub fn appendFlatStream(mut flatModel: Arc<NFFlatModel>, mut functions: Arc<Flat
 pub fn inlineFunctions(mut flatModel: Arc<NFFlatModel>) -> (Arc<NFFlatModel>, Arc<metamodelica::List<Arc<Function::Function>>>) {
     let mut flatModel: Arc<NFFlatModel> = flatModel;
     let mut remainingFuncs: Arc<metamodelica::List<Arc<Function::Function>>> = metamodelica::nil();
-    let mut funcs: Arc<UnorderedSet::UnorderedSet<Arc<Function::Function>>>;
+    let mut funcs: Arc<UnorderedSet::UnorderedSet<Arc<Function::Function>>> = <Arc<UnorderedSet::UnorderedSet<Arc<Function::Function>>> as ::std::default::Default>::default();
     funcs = UnorderedSet::new((std::sync::Arc::new(fnptr!(Function::nameHash, Arc<Function::Function>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Function::Function>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(Function::nameEqual, Arc<Function::Function>, Arc<Function::Function>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Function::Function>, Arc<Function::Function>) -> Result<bool> + 'static>), 13);
     flatModel = mapExp(flatModel.clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = Arc::new({ let __pe_b1 = funcs.clone(); move |__pe_a0| inlineFunctions_traverser(__pe_a0, __pe_b1.clone()) }); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }));
     remainingFuncs = UnorderedSet::toList(funcs.clone());
@@ -441,7 +441,7 @@ pub fn collectFunction(mut r#fn: Arc<Function::Function>, mut funcs: Arc<Unorder
 
 pub fn collectFlatTypes(mut flatModel: Arc<NFFlatModel>, mut functions: Arc<metamodelica::List<Arc<Function::Function>>>) -> Result<Arc<metamodelica::List<Arc<Type::NFType>>>> {
     let mut outTypes: Arc<metamodelica::List<Arc<Type::NFType>>> = metamodelica::nil();
-    let mut types: TypeMap;
+    let mut types: TypeMap = <Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Type::NFType>>> as ::std::default::Default>::default();
     types = UnorderedMap::new((std::sync::Arc::new(AbsynUtil::pathHash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(AbsynUtil::pathEqual, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<bool> + 'static>), 1);
     List::map1_0(flatModel.variables.clone(), (std::sync::Arc::new(collectVariableFlatTypes) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Variable::NFVariable>, Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Type::NFType>>>) -> Result<()> + 'static>), types.clone());
     List::map1_0(flatModel.equations.clone(), (std::sync::Arc::new(collectEquationFlatTypes) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>, Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Type::NFType>>>) -> Result<()> + 'static>), types.clone());
@@ -691,7 +691,7 @@ pub fn reconstructRecordInstances(mut variables: Arc<metamodelica::List<Arc<Vari
         }
         outVariables = cons(var.clone(), outVariables.clone());
     }
-    outVariables = outVariables.clone().reverse();
+    outVariables = metamodelica::Dangerous::listReverseInPlace(outVariables.clone());
     Ok(outVariables)
 }
 
@@ -719,7 +719,7 @@ pub fn reconstructRecordInstance(mut recordName: Arc<ComponentRef::NFComponentRe
     if field_exps.clone().is_empty() {
         record_binding = Binding::EMPTY_BINDING().clone();
     } else {
-        field_exps = field_exps.clone().reverse();
+        field_exps = metamodelica::Dangerous::listReverseInPlace(field_exps.clone());
         record_exp = Expression::makeRecord(InstNode::scopePath(InstNode::classScope(record_node.clone()), InstNode::ScopeType::RELATIVE.clone(), false)?, record_ty.clone(), field_exps.clone());
         record_binding = Binding::makeFlat(record_exp.clone(), Component::variability(record_comp.clone()), Binding::Source::GENERATED.clone(), Binding::NO_CONFIDENCE.clone());
     }
@@ -744,7 +744,7 @@ pub type ObfuscationMap = Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>
 
 pub fn obfuscate(mut flatModel: Arc<NFFlatModel>) -> Result<Arc<NFFlatModel>> {
     let mut flatModel: Arc<NFFlatModel> = flatModel;
-    let mut obfuscation_map: ObfuscationMap;
+    let mut obfuscation_map: ObfuscationMap = <Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, ArcStr>> as ::std::default::Default>::default();
     let mut only_encrypted: bool = false;
     only_encrypted = Flags::getConfigString(Flags::OBFUSCATE.clone())? == literal!("encrypted");
     obfuscation_map = UnorderedMap::new((std::sync::Arc::new(fnptr!(InstNode::hash, Arc<InstNode::InstNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(InstNode::refEqual, Arc<InstNode::InstNode>, Arc<InstNode::InstNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<InstNode::InstNode>) -> Result<bool> + 'static>), 1);
@@ -1109,8 +1109,8 @@ pub fn moveBindings(mut flatModel: Arc<NFFlatModel>) -> Result<Arc<NFFlatModel>>
     }
     if !(eqs.clone().is_empty()) {
         assign_field!(
-            flatModel.variables = vars.clone().reverse(),
-            flatModel.equations = listAppend(eqs.clone().reverse(), flatModel.equations.clone())
+            flatModel.variables = metamodelica::Dangerous::listReverseInPlace(vars.clone()),
+            flatModel.equations = listAppend(metamodelica::Dangerous::listReverseInPlace(eqs.clone()), flatModel.equations.clone())
         );
     }
     Ok(flatModel)

@@ -297,8 +297,8 @@ pub mod ClassTree {
             }
             ltree = addLocalElement((InstNode::name(e.clone())?).clone(), lentry.clone(), tree.clone(), ltree.clone())?;
         }
-        cls_arr = Array::appendList(cls_arr.clone(), cls_lst.clone().reverse())?;
-        comp_arr = Array::appendList(comp_arr.clone(), comp_lst.clone().reverse())?;
+        cls_arr = Array::appendList(cls_arr.clone(), metamodelica::Dangerous::listReverseInPlace(cls_lst.clone()))?;
+        comp_arr = Array::appendList(comp_arr.clone(), metamodelica::Dangerous::listReverseInPlace(comp_lst.clone()))?;
         tree = Arc::new(ClassTree::FLAT_TREE { tree: ltree.clone(), classes: cls_arr.clone(), components: comp_arr.clone(), imports: imports.clone(), duplicates: duplicates.clone() });
         Ok(tree)
     }
@@ -353,7 +353,7 @@ pub mod ClassTree {
         }
         dups_ptr = Mutable::create(dups.clone());
         if !(ext_idxs.clone().is_empty()) {
-            ext_idxs = ext_idxs.clone().reverse();
+            ext_idxs = metamodelica::Dangerous::listReverseInPlace(ext_idxs.clone());
             let __range7 = exts.clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut ext in __range7 {
                 let (__pa8, __pa9, __pa10) = ::match_deref::match_deref! { match &(ext_idxs.clone()) {
@@ -508,7 +508,7 @@ pub mod ClassTree {
             if cls_idx.clone() != classCount.clone() + 1 {
                 Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClassTree.ClassTree.instantiate")); __mm_s.push_str(&*literal!(" miscounted classes in ")); __mm_s.push_str(&*InstNode::name(clsNode.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
             }
-            local_comps = local_comps.clone().reverse();
+            local_comps = metamodelica::Dangerous::listReverseInPlace(local_comps.clone());
             assign_variant_field!(cls => Class::NFClass::EXPANDED_CLASS; elements = Arc::new(ClassTree::INSTANTIATED_TREE { tree: ltree.clone(), classes: clss.clone(), components: comps.clone(), localComponents: local_comps.clone(), exts: exts.clone(), imports: imps.clone(), duplicates: dups.clone() }));
             ()
         },
@@ -1538,7 +1538,7 @@ pub mod ClassTree {
         Deref @ LookupTree::Entry::CLASS { .. } => (resolveClass(var_field!((*entry).index, LookupTree::Entry::Entry::CLASS).clone(), tree.clone())?, false),
         Deref @ LookupTree::Entry::COMPONENT { .. } => (resolveComponent(var_field!((*entry).index, LookupTree::Entry::Entry::COMPONENT).clone(), tree.clone())?, false),
         Deref @ LookupTree::Entry::IMPORT { .. } => (resolveImport(var_field!((*entry).index, LookupTree::Entry::Entry::IMPORT).clone(), tree.clone())?, true),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok((element, isImport))
     }
@@ -1954,7 +1954,7 @@ pub mod ClassTree {
                 );
                 return Ok((entry.clone(), tree.clone()));
             } else {
-                entries = entries.clone().reverse();
+                entries = metamodelica::Dangerous::listReverseInPlace(entries.clone());
                 entry = listHead(entries.clone())?;
                 assign_field!(entry.children = listAppend(listRest(entries.clone())?, broken_entries.clone()));
             }

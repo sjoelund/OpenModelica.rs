@@ -325,7 +325,7 @@ pub mod EnvTree {
             }
             if (key_comp.clone() == 0) {outTree.clone()} else {balance(outTree.clone())?}
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(tree)
     }
@@ -389,7 +389,7 @@ pub mod EnvTree {
             }
             if (key_comp.clone() == 0) {new_tree.clone()} else {balance(new_tree.clone())?}
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(tree)
     }
@@ -523,7 +523,7 @@ pub mod EnvTree {
             ()
         },
         Deref @ Tree::EMPTY { .. } => (),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(())
     }
@@ -580,6 +580,8 @@ pub mod EnvTree {
         value
     }
 
+    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
+    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
     pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
         let mut comp: bool = false;
         let mut key: Key = arcstr::literal!("");
@@ -592,7 +594,7 @@ pub mod EnvTree {
             return Ok(comp.clone());
             bail!("fail")
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
         key_comp = keyCompare((inKey.clone()).clone(), (key.clone()).clone());
         comp = (::match_deref::match_deref! { match &((key_comp.clone(), inTree.clone())) {
@@ -642,7 +644,7 @@ pub mod EnvTree {
             tree.clone()
         },
         Deref @ Tree::LEAF { .. } => add(tree.clone(), (var_field!((*treeToJoin).key, Tree::LEAF).clone()).clone(), var_field!((*treeToJoin).value, Tree::LEAF).clone(), conflictFunc.clone())?,
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(tree)
     }
@@ -793,7 +795,7 @@ pub mod EnvTree {
         Deref @ Tree::EMPTY { .. } => literal!("EMPTY()"),
         Deref @ Tree::LEAF { .. } => printNodeStr(inTree.clone())?,
         Deref @ Tree::NODE { right, left, .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
         Ok(outString)
     }
@@ -991,7 +993,7 @@ pub fn enterScopePath(mut inEnv: Env, mut inPath: Arc<Absyn::Path>) -> Result<En
             env = getEnvTopScope(inEnv.clone())?;
             enterScopePath(env.clone(), path.clone())?
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outEnv)
 }
@@ -1019,7 +1021,7 @@ pub fn getEnvTopScope(mut inEnv: Env) -> Result<Env> {
 fn getFrameType(mut encapsulatedPrefix: SCode::Encapsulated) -> FrameType {
     let mut outType: FrameType = FrameType::ENCAPSULATED_SCOPE;
     outType = (match encapsulatedPrefix.clone() {
-        SCode::Encapsulated::ENCAPSULATED => crate::NFSCodeEnv::FrameType::ENCAPSULATED_SCOPE,
+        SCode::Encapsulated::ENCAPSULATED { .. } => crate::NFSCodeEnv::FrameType::ENCAPSULATED_SCOPE,
         _ => crate::NFSCodeEnv::FrameType::NORMAL_SCOPE,
     });
     outType
@@ -1112,7 +1114,6 @@ pub fn printClassType(mut inClassType: ClassType) -> Result<ArcStr> {
         ClassType::CLASS_EXTENDS { .. } => literal!("CLASS_EXTENDS"),
         ClassType::USERDEFINED { .. } => literal!("USERDEFINED"),
         ClassType::BASIC_TYPE { .. } => literal!("BASIC_TYPE"),
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(outString)
 }
@@ -1648,7 +1649,7 @@ fn extendEnvWithElement(mut inElement: Arc<SCode::Element>, mut inEnv: Env) -> R
         let __mc_input = inElement.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ SCode::Element::COMPONENT { prefixes: Deref @ SCode::Prefixes { redeclarePrefix: SCode::Redeclare::REDECLARE, .. }, .. } => {
+                Deref @ SCode::Element::COMPONENT { prefixes: Deref @ SCode::Prefixes { redeclarePrefix: SCode::Redeclare::REDECLARE { .. }, .. }, .. } => {
                     let mut env: Env = metamodelica::nil();
                     env = addElementRedeclarationToEnvExtendsTable(inElement.clone(), inEnv.clone())?;
                     env = extendEnvWithVar(inElement.clone(), env.clone())?;
@@ -1669,7 +1670,7 @@ fn extendEnvWithElement(mut inElement: Arc<SCode::Element>, mut inEnv: Env) -> R
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ SCode::Element::CLASS { prefixes: Deref @ SCode::Prefixes { redeclarePrefix: SCode::Redeclare::REDECLARE, .. }, .. } => {
+                Deref @ SCode::Element::CLASS { prefixes: Deref @ SCode::Prefixes { redeclarePrefix: SCode::Redeclare::REDECLARE { .. }, .. }, .. } => {
                     let mut env: Env = metamodelica::nil();
                     env = addElementRedeclarationToEnvExtendsTable(inElement.clone(), inEnv.clone())?;
                     env = extendEnvWithClassDef(inElement.clone(), env.clone())?;
@@ -2565,7 +2566,7 @@ fn printFrameStr(mut inFrame: Arc<Frame>) -> Result<ArcStr> {
             out = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*name_str.clone()); __mm_s.push_str(&*literal!("\tImports:\n")); __mm_s.push_str(&*imp_str.clone()); __mm_s.push_str(&*literal!("\n\tExtends:\n")); __mm_s.push_str(&*ext_str.clone()); __mm_s.push_str(&*literal!("\n\tComponents:\n")); __mm_s.push_str(&*tree_str.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             out.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(outString)
 }
@@ -2589,7 +2590,6 @@ fn printFrameTypeStr(mut inFrame: FrameType) -> Result<ArcStr> {
         FrameType::NORMAL_SCOPE { .. } => literal!("Normal"),
         FrameType::ENCAPSULATED_SCOPE { .. } => literal!("Encapsulated"),
         FrameType::IMPLICIT_SCOPE { .. } => literal!("Implicit"),
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(outString)
 }

@@ -240,7 +240,7 @@ fn getAllElementsOfType2(mut el: Arc<SCode::Element>, mut typeName: Ident, mut p
         let __mc_input = el.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ SCode::Element::CLASS { name: Deref @ "Modelica", prefixes: _, encapsulatedPrefix: _, partialPrefix: _, restriction: SCode::Restriction::R_PACKAGE, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: _, normalEquationLst: _, initialEquationLst: _, normalAlgorithmLst: _, initialAlgorithmLst: _, constraintLst: _, clsattrs: _, externalDecl: _ }, cmt: _, info: _ } => {
+                Deref @ SCode::Element::CLASS { name: Deref @ "Modelica", prefixes: _, encapsulatedPrefix: _, partialPrefix: _, restriction: SCode::Restriction::R_PACKAGE { .. }, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: _, normalEquationLst: _, initialEquationLst: _, normalAlgorithmLst: _, initialAlgorithmLst: _, constraintLst: _, clsattrs: _, externalDecl: _ }, cmt: _, info: _ } => {
                     println!("{}", (literal!("**** Ignoring Standard Modelica library\n")).clone());
                     Ok(metamodelica::nil())
                 }
@@ -249,7 +249,7 @@ fn getAllElementsOfType2(mut el: Arc<SCode::Element>, mut typeName: Ident, mut p
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ SCode::Element::CLASS { name: Deref @ "OpenModelica", prefixes: _, encapsulatedPrefix: _, partialPrefix: _, restriction: SCode::Restriction::R_PACKAGE, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: _, normalEquationLst: _, initialEquationLst: _, normalAlgorithmLst: _, initialAlgorithmLst: _, constraintLst: _, clsattrs: _, externalDecl: _ }, cmt: _, info: _ } => {
+                Deref @ SCode::Element::CLASS { name: Deref @ "OpenModelica", prefixes: _, encapsulatedPrefix: _, partialPrefix: _, restriction: SCode::Restriction::R_PACKAGE { .. }, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: _, normalEquationLst: _, initialEquationLst: _, normalAlgorithmLst: _, initialAlgorithmLst: _, constraintLst: _, clsattrs: _, externalDecl: _ }, cmt: _, info: _ } => {
                     println!("{}", (literal!("**** Ignoring Open Modelica library\n")).clone());
                     Ok(metamodelica::nil())
                 }
@@ -258,7 +258,7 @@ fn getAllElementsOfType2(mut el: Arc<SCode::Element>, mut typeName: Ident, mut p
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ SCode::Element::CLASS { name: Deref @ "Complex", prefixes: _, encapsulatedPrefix: _, partialPrefix: _, restriction: SCode::Restriction::R_PACKAGE, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: _, normalEquationLst: _, initialEquationLst: _, normalAlgorithmLst: _, initialAlgorithmLst: _, constraintLst: _, clsattrs: _, externalDecl: _ }, cmt: _, info: _ } => {
+                Deref @ SCode::Element::CLASS { name: Deref @ "Complex", prefixes: _, encapsulatedPrefix: _, partialPrefix: _, restriction: SCode::Restriction::R_PACKAGE { .. }, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: _, normalEquationLst: _, initialEquationLst: _, normalAlgorithmLst: _, initialAlgorithmLst: _, constraintLst: _, clsattrs: _, externalDecl: _ }, cmt: _, info: _ } => {
                     println!("{}", (literal!("**** Ignoring Complex library\n")).clone());
                     Ok(metamodelica::nil())
                 }
@@ -267,7 +267,7 @@ fn getAllElementsOfType2(mut el: Arc<SCode::Element>, mut typeName: Ident, mut p
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ SCode::Element::CLASS { name, prefixes: _, encapsulatedPrefix: _, partialPrefix: _, restriction: SCode::Restriction::R_PACKAGE, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: elist, normalEquationLst: _, initialEquationLst: _, normalAlgorithmLst: _, initialAlgorithmLst: _, constraintLst: _, clsattrs: _, externalDecl: _ }, cmt: _, info: _ } => {
+                Deref @ SCode::Element::CLASS { name, prefixes: _, encapsulatedPrefix: _, partialPrefix: _, restriction: SCode::Restriction::R_PACKAGE { .. }, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: elist, normalEquationLst: _, initialEquationLst: _, normalAlgorithmLst: _, initialAlgorithmLst: _, constraintLst: _, clsattrs: _, externalDecl: _ }, cmt: _, info: _ } => {
                     let mut nName: ArcStr = arcstr::literal!("");
                     nName = (if (pathInProg.clone() == literal!("")) {name.clone()} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*pathInProg.clone()); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }}).clone();
                     Ok(getAllElementsOfType(elist.clone(), (typeName.clone()).clone(), (nName.clone()).clone(), metamodelica::nil())?)
@@ -481,7 +481,6 @@ fn parseElems(mut in_elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mu
                 Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { finalPrefix, redeclareKeywords, innerOuter, specification: Deref @ Absyn::ElementSpec::COMPONENTS { attributes, typeSpec: tSpec, components }, info, constrainClass } }, tail: rest } => {
                     let mut e_list: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
                     let mut newName: bool = false;
-                    AbsynUtil::typeSpecPath(typeSpec.clone())?;
                     if AbsynUtil::typeSpecPathString(rootType.clone()) == AbsynUtil::typeSpecPathString(tSpec.clone()) && !(exp2.clone().is_empty()) {
                         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("... found instance provider ")); __mm_s.push_str(&*Dump::unparseTypeSpec(tSpec.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                         if hasPreferred.clone() {
@@ -1381,7 +1380,7 @@ fn getMediatorDefsElement(mut el: Arc<SCode::Element>) -> Result<Arc<metamodelic
         let __mc_input = el.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ SCode::Element::CLASS { name: _, prefixes: _, encapsulatedPrefix: _, partialPrefix: _, restriction: SCode::Restriction::R_PACKAGE, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: elist, normalEquationLst: _, initialEquationLst: _, normalAlgorithmLst: _, initialAlgorithmLst: _, constraintLst: _, clsattrs: _, externalDecl: _ }, cmt: _, info: _ } => {
+                Deref @ SCode::Element::CLASS { name: _, prefixes: _, encapsulatedPrefix: _, partialPrefix: _, restriction: SCode::Restriction::R_PACKAGE { .. }, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: elist, normalEquationLst: _, initialEquationLst: _, normalAlgorithmLst: _, initialAlgorithmLst: _, constraintLst: _, clsattrs: _, externalDecl: _ }, cmt: _, info: _ } => {
                     Ok(getMediatorDefsElements(elist.clone(), metamodelica::nil())?)
                 }
                 _ => bail!("nomatch"),

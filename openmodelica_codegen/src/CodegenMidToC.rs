@@ -1482,7 +1482,7 @@ pub fn genVarBufPtrName(mut in_txt: Tpl::Text, mut in_a_v: MidCode::VarBufPtr) -
 fn fun_116(mut in_txt: Tpl::Text, mut in_a_stmt: MidCode::Stmt) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_stmt.clone()) {
-        (mut txt, MidCode::Stmt::NOP) => {
+        (mut txt, MidCode::Stmt::NOP { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("; // NOP")).clone() }))?;
             txt.clone()
         },
@@ -1680,7 +1680,7 @@ pub fn genRValue(mut in_txt: Tpl::Text, mut in_a_rvalue: MidCode::RValue) -> Res
             txt = genStringBinaryop(txt.clone(), i_op.clone(), i_lsrc.clone(), i_rsrc.clone())?;
             txt.clone()
         },
-        (txt, MidCode::RValue::BINARYOP { rsrc: MidCode::Var { ty: _, name: i_rsrc__name, .. }, lsrc: MidCode::Var { ty: _, name: i_lsrc__name, .. }, op: MidCode::BinaryOp::POW }) => {
+        (txt, MidCode::RValue::BINARYOP { rsrc: MidCode::Var { ty: _, name: i_rsrc__name, .. }, lsrc: MidCode::Var { ty: _, name: i_lsrc__name, .. }, op: MidCode::BinaryOp::POW { .. } }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("pow(")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_lsrc__name.clone()).clone())?;
@@ -1698,12 +1698,12 @@ pub fn genRValue(mut in_txt: Tpl::Text, mut in_a_rvalue: MidCode::RValue) -> Res
             txt = Tpl::writeStr(txt.clone(), (i_rsrc__name.clone()).clone())?;
             txt.clone()
         },
-        (txt, MidCode::RValue::UNARYOP { src: i_src, op: MidCode::UnaryOp::BOX }) => {
+        (txt, MidCode::RValue::UNARYOP { src: i_src, op: MidCode::UnaryOp::BOX { .. } }) => {
             let mut txt = (*txt).clone();
             txt = varBox(txt.clone(), i_src.clone())?;
             txt.clone()
         },
-        (txt, MidCode::RValue::UNARYOP { src: i_src, op: MidCode::UnaryOp::UNBOX }) => {
+        (txt, MidCode::RValue::UNARYOP { src: i_src, op: MidCode::UnaryOp::UNBOX { .. } }) => {
             let mut txt = (*txt).clone();
             txt = varUnbox(txt.clone(), i_src.clone())?;
             txt.clone()
@@ -1802,43 +1802,43 @@ pub fn genRValue(mut in_txt: Tpl::Text, mut in_a_rvalue: MidCode::RValue) -> Res
 pub fn binaryopToString(mut in_txt: Tpl::Text, mut in_a_op: MidCode::BinaryOp) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_op.clone()) {
-        (mut txt, MidCode::BinaryOp::ADD) => {
+        (mut txt, MidCode::BinaryOp::ADD { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("+")).clone() }))?;
             txt.clone()
         },
-        (mut txt, MidCode::BinaryOp::SUB) => {
+        (mut txt, MidCode::BinaryOp::SUB { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("-")).clone() }))?;
             txt.clone()
         },
-        (mut txt, MidCode::BinaryOp::MUL) => {
+        (mut txt, MidCode::BinaryOp::MUL { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("*")).clone() }))?;
             txt.clone()
         },
-        (mut txt, MidCode::BinaryOp::DIV) => {
+        (mut txt, MidCode::BinaryOp::DIV { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/")).clone() }))?;
             txt.clone()
         },
-        (mut txt, MidCode::BinaryOp::LESS) => {
+        (mut txt, MidCode::BinaryOp::LESS { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<")).clone() }))?;
             txt.clone()
         },
-        (mut txt, MidCode::BinaryOp::LESSEQ) => {
+        (mut txt, MidCode::BinaryOp::LESSEQ { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<=")).clone() }))?;
             txt.clone()
         },
-        (mut txt, MidCode::BinaryOp::GREATER) => {
+        (mut txt, MidCode::BinaryOp::GREATER { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(">")).clone() }))?;
             txt.clone()
         },
-        (mut txt, MidCode::BinaryOp::GREATEREQ) => {
+        (mut txt, MidCode::BinaryOp::GREATEREQ { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(">=")).clone() }))?;
             txt.clone()
         },
-        (mut txt, MidCode::BinaryOp::EQUAL) => {
+        (mut txt, MidCode::BinaryOp::EQUAL { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("==")).clone() }))?;
             txt.clone()
         },
-        (mut txt, MidCode::BinaryOp::NEQUAL) => {
+        (mut txt, MidCode::BinaryOp::NEQUAL { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("!=")).clone() }))?;
             txt.clone()
         },
@@ -1853,14 +1853,14 @@ pub fn binaryopToString(mut in_txt: Tpl::Text, mut in_a_op: MidCode::BinaryOp) -
 pub fn unaryopToString(mut in_txt: Tpl::Text, mut in_a_op: MidCode::UnaryOp) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_op.clone()) {
-        (mut txt, MidCode::UnaryOp::MOVE) => {
+        (mut txt, MidCode::UnaryOp::MOVE { .. }) => {
             txt.clone()
         },
-        (mut txt, MidCode::UnaryOp::UMINUS) => {
+        (mut txt, MidCode::UnaryOp::UMINUS { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("-")).clone() }))?;
             txt.clone()
         },
-        (mut txt, MidCode::UnaryOp::NOT) => {
+        (mut txt, MidCode::UnaryOp::NOT { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("!")).clone() }))?;
             txt.clone()
         },
@@ -1875,7 +1875,7 @@ pub fn unaryopToString(mut in_txt: Tpl::Text, mut in_a_op: MidCode::UnaryOp) -> 
 pub fn genStringBinaryop(mut in_txt: Tpl::Text, mut in_a_op: MidCode::BinaryOp, mut in_a_lsrc: MidCode::Var, mut in_a_rsrc: MidCode::Var) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_op.clone(), in_a_lsrc.clone(), in_a_rsrc.clone()) {
-        (mut txt, MidCode::BinaryOp::ADD, mut a_lsrc, mut a_rsrc) => {
+        (mut txt, MidCode::BinaryOp::ADD { .. }, mut a_lsrc, mut a_rsrc) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("stringAppend(")).clone() }))?;
             txt = genVarName(txt.clone(), a_lsrc.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() }))?;
@@ -1927,7 +1927,7 @@ fn fun_133(mut in_txt: Tpl::Text, mut in_a_outputs: Arc<metamodelica::List<MidCo
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
-        (txt, Deref @ metamodelica::List::Cons { head: MidCode::OutVar::OUT_WILD, tail: _ }) => {
+        (txt, Deref @ metamodelica::List::Cons { head: MidCode::OutVar::OUT_WILD { .. }, tail: _ }) => {
             txt.clone()
         },
         (txt, Deref @ metamodelica::List::Cons { head: MidCode::OutVar::OUT_VAR { var: i_var }, tail: _ }) => {
@@ -2072,7 +2072,7 @@ fn fun_141(mut in_txt: Tpl::Text, mut in_a_builtin: bool, mut in_a_func: Arc<Abs
 fn fun_142(mut in_txt: Tpl::Text, mut in_a_terminator: MidCode::Terminator, mut in_a_exitId: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_terminator.clone(), in_a_exitId.clone()) {
-        (mut txt, MidCode::Terminator::RETURN, mut a_exitId) => {
+        (mut txt, MidCode::Terminator::RETURN { .. }, mut a_exitId) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("goto ")).clone() }))?;
             txt = genLabel(txt.clone(), a_exitId.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("; // exit label")).clone() }))?;
@@ -2144,7 +2144,7 @@ fn fun_142(mut in_txt: Tpl::Text, mut in_a_terminator: MidCode::Terminator, mut 
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
             txt.clone()
         },
-        (mut txt, MidCode::Terminator::LONGJMP, _) => {
+        (mut txt, MidCode::Terminator::LONGJMP { .. }, _) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("longjmp(*threadData->mmc_jumper,1);")).clone() }))?;
             txt.clone()
         },
@@ -2258,7 +2258,7 @@ fn fun_144(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Te
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("modelica_metatype")).clone() }))?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Type::T_UNKNOWN) => {
+        (txt, Deref @ DAE::Type::T_UNKNOWN { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("unknown")).clone() }))?;
             txt.clone()

@@ -73,7 +73,6 @@ pub fn translateContent(mut msg: TranslatableContent) -> Result<ArcStr> {
             r#str.clone()
         },
         TranslatableContent::notrans { r#str: mut r#str } => r#str.clone(),
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(r#str)
 }

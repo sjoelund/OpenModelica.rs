@@ -352,7 +352,7 @@ pub fn matchTypedNormalCall(mut call: Arc<NFCall>, mut context: i32, mut info: S
         var = Prefixes::variabilityMax(var.clone(), arg_var.clone());
         pur = Prefixes::purityMin(pur.clone(), arg_pur.clone());
     }
-    args = args.clone().reverse();
+    args = metamodelica::Dangerous::listReverseInPlace(args.clone());
     ty = Function::returnType(func.clone());
     ty = resolvePolymorphicReturnType(func.clone(), typed_args.clone(), ty.clone())?;
     if var.clone() == Variability::PARAMETER.clone() && Function::isExternal(func.clone()) {
@@ -659,7 +659,7 @@ pub fn functionName(mut call: Arc<NFCall>) -> Result<Arc<Absyn::Path>> {
         Deref @ TYPED_ARRAY_CONSTRUCTOR { .. } => Arc::new(Absyn::Path::IDENT { name: (literal!("array")).clone() }),
         Deref @ UNTYPED_REDUCTION { .. } => ComponentRef::toPath(var_field!((*call).r#ref, NFCall::UNTYPED_REDUCTION).clone())?,
         Deref @ TYPED_REDUCTION { .. } => Function::nameConsiderBuiltin(var_field!((*call).r#fn, NFCall::TYPED_REDUCTION).clone())?,
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(name)
 }
@@ -842,7 +842,7 @@ pub fn toString(mut call: Arc<NFCall>) -> Result<ArcStr> {
     }), (literal!(", ")).clone());
             { let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*arg_str.clone()); __mm_s.push_str(&*literal!(" for ")); __mm_s.push_str(&*c.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(r#str)
 }
@@ -1117,7 +1117,7 @@ pub fn toJSONStringArgs(mut args: Arc<metamodelica::List<Arc<Expression::NFExpre
             json_args = cons(make_arg((literal!("leftJustified")).clone(), arg.clone())?, json_args.clone());
         }
     }
-    json = JSON::addPair((literal!("arguments")).clone(), JSON::makeList(json_args.clone().reverse()), json.clone())?;
+    json = JSON::addPair((literal!("arguments")).clone(), JSON::makeList(metamodelica::Dangerous::listReverseInPlace(json_args.clone())), json.clone())?;
     Ok(json)
 }
 
@@ -1455,7 +1455,7 @@ pub fn containsExp(mut call: Arc<NFCall>, mut func: Arc<dyn ::std::ops::Fn(Arc<E
         Deref @ TYPED_REDUCTION { .. } => {
             Expression::contains(var_field!((*call).exp, NFCall::TYPED_REDUCTION).clone(), func.clone())?
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(res)
 }
@@ -1512,7 +1512,7 @@ pub fn containsExpShallow(mut call: Arc<NFCall>, mut func: Arc<dyn ::std::ops::F
         Deref @ TYPED_REDUCTION { .. } => {
             func(var_field!((*call).exp, NFCall::TYPED_REDUCTION).clone())?
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(res)
 }
@@ -1580,7 +1580,7 @@ pub fn applyExp(mut call: Arc<NFCall>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expr
             Expression::applyOpt(Util::tuple31(var_field!((*call).foldExp, NFCall::TYPED_REDUCTION).clone()), func.clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(())
 }
@@ -1648,7 +1648,7 @@ pub fn applyExpShallow(mut call: Arc<NFCall>, mut func: Arc<dyn ::std::ops::Fn(A
             Expression::applyShallowOpt(Util::tuple31(var_field!((*call).foldExp, NFCall::TYPED_REDUCTION).clone()), func.clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(())
 }
@@ -1717,7 +1717,7 @@ pub fn foldExp<ArgT: Clone + 'static>(mut call: Arc<NFCall>, mut func: Arc<dyn :
             foldArg = Expression::foldOpt(Util::tuple31(var_field!((*call).foldExp, NFCall::TYPED_REDUCTION).clone()), func.clone(), foldArg.clone());
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(foldArg)
 }
@@ -1810,7 +1810,7 @@ pub fn mapExp(mut call: Arc<NFCall>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expres
             fold_exp = Util::applyTuple31(var_field!((*call).foldExp, NFCall::TYPED_REDUCTION).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::mapOpt(__pe_a0, __pe_b1.clone()) }));
             Arc::new(NFCall::TYPED_REDUCTION { r#fn: var_field!((*call).r#fn, NFCall::TYPED_REDUCTION).clone(), ty: var_field!((*call).ty, NFCall::TYPED_REDUCTION).clone(), var: var_field!((*call).var, NFCall::TYPED_REDUCTION).clone(), purity: var_field!((*call).purity, NFCall::TYPED_REDUCTION).clone(), exp: e.clone(), iters: iters.clone(), defaultExp: default_exp.clone(), foldExp: fold_exp.clone() })
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outCall)
 }
@@ -1828,7 +1828,7 @@ pub fn mapIteratorsExp(mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode
         new_exp = Expression::map(exp.clone(), func.clone())?;
         outIters = cons(if (referenceEq(&new_exp.clone(),&exp.clone())) {i.clone()} else {(node.clone(), new_exp.clone())}, outIters.clone());
     }
-    outIters = outIters.clone().reverse();
+    outIters = metamodelica::Dangerous::listReverseInPlace(outIters.clone());
     Ok(outIters)
 }
 
@@ -1920,7 +1920,7 @@ pub fn mapExpShallow(mut call: Arc<NFCall>, mut func: Arc<dyn ::std::ops::Fn(Arc
             fold_exp = Util::applyTuple31(var_field!((*call).foldExp, NFCall::TYPED_REDUCTION).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Ok(Expression::mapShallowOpt(__pe_a0, __pe_b1.clone())) }));
             Arc::new(NFCall::TYPED_REDUCTION { r#fn: var_field!((*call).r#fn, NFCall::TYPED_REDUCTION).clone(), ty: var_field!((*call).ty, NFCall::TYPED_REDUCTION).clone(), var: var_field!((*call).var, NFCall::TYPED_REDUCTION).clone(), purity: var_field!((*call).purity, NFCall::TYPED_REDUCTION).clone(), exp: e.clone(), iters: iters.clone(), defaultExp: default_exp.clone(), foldExp: fold_exp.clone() })
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outCall)
 }
@@ -1938,7 +1938,7 @@ pub fn mapIteratorsExpShallow(mut iters: Arc<metamodelica::List<(Arc<InstNode::I
         new_exp = func(exp.clone()).unwrap();
         outIters = cons(if (referenceEq(&new_exp.clone(),&exp.clone())) {i.clone()} else {(node.clone(), new_exp.clone())}, outIters.clone());
     }
-    outIters = outIters.clone().reverse();
+    outIters = metamodelica::Dangerous::listReverseInPlace(outIters.clone());
     outIters
 }
 
@@ -2027,7 +2027,7 @@ pub fn mapFoldExp<ArgT: Clone + 'static>(mut call: Arc<NFCall>, mut func: Arc<dy
             }
             Arc::new(NFCall::TYPED_REDUCTION { r#fn: var_field!((*call).r#fn, NFCall::TYPED_REDUCTION).clone(), ty: var_field!((*call).ty, NFCall::TYPED_REDUCTION).clone(), var: var_field!((*call).var, NFCall::TYPED_REDUCTION).clone(), purity: var_field!((*call).purity, NFCall::TYPED_REDUCTION).clone(), exp: e.clone(), iters: iters.clone(), defaultExp: default_exp.clone(), foldExp: fold_exp.clone() })
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((outCall, foldArg))
 }
@@ -2046,7 +2046,7 @@ pub fn mapFoldIteratorsExp<ArgT: Clone + 'static>(mut iters: Arc<metamodelica::L
         (new_exp, arg) = Expression::mapFold(exp.clone(), func.clone(), arg.clone())?;
         outIters = cons(if (referenceEq(&new_exp.clone(),&exp.clone())) {i.clone()} else {(node.clone(), new_exp.clone())}, outIters.clone());
     }
-    outIters = outIters.clone().reverse();
+    outIters = metamodelica::Dangerous::listReverseInPlace(outIters.clone());
     Ok((outIters, arg))
 }
 
@@ -2135,7 +2135,7 @@ pub fn mapFoldExpShallow<ArgT: Clone + 'static>(mut call: Arc<NFCall>, mut func:
             }
             Arc::new(NFCall::TYPED_REDUCTION { r#fn: var_field!((*call).r#fn, NFCall::TYPED_REDUCTION).clone(), ty: var_field!((*call).ty, NFCall::TYPED_REDUCTION).clone(), var: var_field!((*call).var, NFCall::TYPED_REDUCTION).clone(), purity: var_field!((*call).purity, NFCall::TYPED_REDUCTION).clone(), exp: e.clone(), iters: iters.clone(), defaultExp: default_exp.clone(), foldExp: fold_exp.clone() })
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((outCall, foldArg))
 }
@@ -2154,7 +2154,7 @@ pub fn mapFoldIteratorsExpShallow<ArgT: Clone + 'static>(mut iters: Arc<metamode
         (new_exp, arg) = func(exp.clone(), arg.clone()).unwrap();
         outIters = cons(if (referenceEq(&new_exp.clone(),&exp.clone())) {i.clone()} else {(node.clone(), new_exp.clone())}, outIters.clone());
     }
-    outIters = outIters.clone().reverse();
+    outIters = metamodelica::Dangerous::listReverseInPlace(outIters.clone());
     (outIters, arg)
 }
 
@@ -2463,7 +2463,7 @@ fn typeArrayConstructor(mut call: Arc<NFCall>, mut context: i32, mut info: Sourc
                 purity = Prefixes::purityMin(purity.clone(), iter_pur.clone());
                 iters = cons((iter.clone(), range.clone()), iters.clone());
             }
-            dims = dims.clone().reverse();
+            dims = metamodelica::Dangerous::listReverseInPlace(dims.clone());
             next_context = InstContext::set(next_context.clone(), InstContext::FOR.clone());
             (arg, ty, exp_var, exp_pur) = Typing::typeExp(var_field!((*call).exp, NFCall::UNTYPED_ARRAY_CONSTRUCTOR).clone(), next_context.clone(), info.clone(), false)?;
             variability = Prefixes::variabilityMax(variability.clone(), exp_var.clone());
@@ -2820,7 +2820,7 @@ fn evaluateCallType(mut ty: Arc<Type::NFType>, mut r#fn: Arc<Function::Function>
                 tys = cons(t.clone(), tys.clone());
                 output_index = output_index.clone() + 1;
             }
-            assign_variant_field!(ty => Type::NFType::TUPLE; types = tys.clone().reverse());
+            assign_variant_field!(ty => Type::NFType::TUPLE; types = metamodelica::Dangerous::listReverseInPlace(tys.clone()));
             ty.clone()
         },
         Deref @ Type::COMPLEX { .. } if (Type::isRecord(ty.clone()) && !(Function::isNonDefaultRecordConstructor(r#fn.clone()))) => {

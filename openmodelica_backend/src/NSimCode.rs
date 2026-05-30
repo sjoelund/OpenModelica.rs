@@ -70,6 +70,7 @@ use crate::NSimVar::SimVar;
 use crate::NSimVar::SimVars;
 use crate::NSimVar::VarInfo;
 use crate::SimCode as OldSimCode;
+use crate::SimCodeFunction as OldSimCodeFunction;
 use crate::SimCodeFunction;
 use crate::SimCodeFunctionUtil as OldSimCodeFunctionUtil;
 use crate::SimCodeUtil as OldSimCodeUtil;
@@ -380,7 +381,7 @@ pub mod SimCode {
         let mut event_blocks: Arc<metamodelica::List<Arc<SimStrongComponent::Block::Block>>> = metamodelica::nil();
         (::match_deref::match_deref! { match &(bdae.clone()) {
         Deref @ BackendDAE::MAIN { eqData: eqData @ Deref @ BEquation::EqData::EQ_DATA_SIM { .. }, varData: varData @ Deref @ BVariable::VarData::VAR_DATA_SIM { .. }, .. } => {
-            let mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Function::Function>>>;
+            let mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Function::Function>>> = <Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Function::Function>>> as ::std::default::Default>::default();
             let mut residual_vars: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
             let mut vars: Arc<SimVars::SimVars> = Arc::new(<SimVars::SimVars as ::std::default::Default>::default());
             let mut program: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
@@ -418,8 +419,8 @@ pub mod SimCode {
             let mut discreteVars: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
             let mut extObjInfo: Arc<ExtObjInfo::ExtObjInfo> = Arc::new(<ExtObjInfo::ExtObjInfo as ::std::default::Default>::default());
             let mut jacobians: Arc<metamodelica::List<Arc<SimJacobian::SimJacobian>>> = metamodelica::nil();
-            let mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>;
-            let mut equation_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimStrongComponent::Block::Block>>>;
+            let mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>> as ::std::default::Default>::default();
+            let mut equation_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimStrongComponent::Block::Block>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimStrongComponent::Block::Block>>> as ::std::default::Default>::default();
             let mut daeModeData: Option<Arc<DaeModeData::DaeModeData>> = None;
             let mut jacA: Arc<SimJacobian::SimJacobian> = Arc::new(<SimJacobian::SimJacobian as ::std::default::Default>::default());
             let mut jacB: Arc<SimJacobian::SimJacobian> = Arc::new(<SimJacobian::SimJacobian as ::std::default::Default>::default());
@@ -564,7 +565,7 @@ pub mod SimCode {
                 _ => bail!("pattern mismatch"),
             } };
             residualVars = __pa0.clone();
-            crefToSimVarHT = List::fold(SimVar::convertList(residualVars.clone()), (std::sync::Arc::new(HashTableCrefSimVar::addSimVarToHashTable) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, SimCodeVar::SimVar)>>), i32, (HashTableCrefSimVar::FuncHashCref, HashTableCrefSimVar::FuncCrefEqual, HashTableCrefSimVar::FuncCrefStr, HashTableCrefSimVar::FuncExpStr))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, SimCodeVar::SimVar)>>), i32, (HashTableCrefSimVar::FuncHashCref, HashTableCrefSimVar::FuncCrefEqual, HashTableCrefSimVar::FuncCrefStr, HashTableCrefSimVar::FuncExpStr))> + 'static>), crefToSimVarHT.clone());
+            crefToSimVarHT = List::fold(SimVar::convertList(residualVars.clone()), (std::sync::Arc::new(HashTableCrefSimVar::addSimVarToHashTable) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, SimCodeVar::SimVar)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, SimCodeVar::SimVar)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar) -> Result<ArcStr> + 'static>))> + 'static>), crefToSimVarHT.clone());
         }
         crefToClockIndexHT = HashTable::emptyHashTable();
         for mut cref in &*simCode.discreteVars.clone() {
@@ -822,7 +823,6 @@ pub mod DaeModeData {
         oldMode = (match mode.clone() {
         DaeModeConfig::ALL => crate::SimCode::DaeModeConfig::ALL_EQUATIONS,
         DaeModeConfig::DYNAMIC => crate::SimCode::DaeModeConfig::DYNAMIC_EQUATIONS,
-        _ => bail!("match: no arm matched"),
     });
         Ok(oldMode)
     }
@@ -867,12 +867,14 @@ pub mod DaeModeData {
         sys = (::match_deref::match_deref! { match &(sys.clone()) {
         qual @ Deref @ OldSimCode::SimEqSystem::SES_RESIDUAL { .. } => {
             let mut qual = (*qual).clone();
-            let (qual.exp, _) = OldExpression::traverseExpTopDown(var_field!((*qual).exp, OldSimCode::SimEqSystem::SES_RESIDUAL).clone(), (std::sync::Arc::new(replaceDerCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, i32) -> Result<(Arc<DAE::Exp>, bool, i32)> + 'static>), 0)?;
+            let (__asg0_0, _) = OldExpression::traverseExpTopDown(var_field!((*qual).exp, OldSimCode::SimEqSystem::SES_RESIDUAL).clone(), (std::sync::Arc::new(replaceDerCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, i32) -> Result<(Arc<DAE::Exp>, bool, i32)> + 'static>), 0)?;
+            assign_variant_field!(qual => OldSimCode::SimEqSystem::SES_RESIDUAL; exp = __asg0_0.clone());
             qual.clone()
         },
         qual @ Deref @ OldSimCode::SimEqSystem::SES_SIMPLE_ASSIGN { .. } => {
             let mut qual = (*qual).clone();
-            let (qual.exp, _) = OldExpression::traverseExpTopDown(var_field!((*qual).exp, OldSimCode::SimEqSystem::SES_SIMPLE_ASSIGN).clone(), (std::sync::Arc::new(replaceDerCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, i32) -> Result<(Arc<DAE::Exp>, bool, i32)> + 'static>), 0)?;
+            let (__asg0_0, _) = OldExpression::traverseExpTopDown(var_field!((*qual).exp, OldSimCode::SimEqSystem::SES_SIMPLE_ASSIGN).clone(), (std::sync::Arc::new(replaceDerCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, i32) -> Result<(Arc<DAE::Exp>, bool, i32)> + 'static>), 0)?;
+            assign_variant_field!(qual => OldSimCode::SimEqSystem::SES_SIMPLE_ASSIGN; exp = __asg0_0.clone());
             qual.clone()
         },
         _ => bail!("match: no arm matched"),

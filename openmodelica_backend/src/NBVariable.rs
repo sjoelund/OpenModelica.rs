@@ -692,14 +692,14 @@ pub fn getPartnerCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut func: Arc
 pub fn hasStartAttr(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool = false;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
-    b = Util::isSome(BackendExtension::VariableAttributes::getStartAttribute(var.backendinfo.attributes.clone()));
+    b = isSome(BackendExtension::VariableAttributes::getStartAttribute(var.backendinfo.attributes.clone()));
     b
 }
 
 pub fn hasPre(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool = false;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
-    b = !(isPrevious(var_ptr.clone())) && Util::isSome(getVarPre(var_ptr.clone()));
+    b = !(isPrevious(var_ptr.clone())) && isSome((getVarPre(var_ptr.clone())).0);
     b
 }
 
@@ -1008,7 +1008,7 @@ pub fn setVariableAttributes(mut var: Arc<Variable::NFVariable>, mut variableAtt
             assign_field!(var.backendinfo = backendinfo.clone());
             var.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(var)
 }
@@ -1718,7 +1718,7 @@ pub fn mapExp(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut func
         }
     }
     opt_start = getStartAttribute(var_ptr.clone());
-    if Util::isSome(opt_start.clone()) {
+    if isSome(opt_start.clone()) {
         let __pa0 = ::match_deref::match_deref! { match &(opt_start.clone()) {
             Some(__pa0) => __pa0.clone(),
             _ => bail!("pattern mismatch"),
@@ -1898,7 +1898,7 @@ pub mod VariablePointers {
         let mut length: i32 = 0;
         let mut scal_start: i32 = 0;
         let mut index: ArcStr = arcstr::literal!("");
-        let mut useMapping: bool = Util::isSome(mapping_opt.clone());
+        let mut useMapping: bool = isSome(mapping_opt.clone());
         let mut mapping: metamodelica::Array<(i32, i32)>;
         if useMapping.clone() {
             length = 15;
@@ -1980,7 +1980,7 @@ pub mod VariablePointers {
         let mut variables: Arc<VariablePointers> = Arc::new(<VariablePointers as ::std::default::Default>::default());
         let mut arr_size: i32 = 0;
         let mut bucketSize: i32 = 0;
-        let mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>;
+        let mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
         arr_size = std::cmp::max(size.clone(), BaseHashTable::lowBucketSize.clone());
         bucketSize = Util::nextPrime(arr_size.clone());
         if scalarized.clone() {
@@ -2120,7 +2120,7 @@ pub mod VariablePointers {
         var_ptr = (match UnorderedMap::get(cref.clone(), variables.map.clone()) {
         Some(mut index) if (index.clone() > 0) => ExpandableArray::get(index.clone(), variables.varArr.clone())?,
         _ => {
-            if Util::isSome(info.clone()) {
+            if isSome(info.clone()) {
                 Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBVariable.VariablePointers.getVarSafe")); __mm_s.push_str(&*literal!(" failed for ")); __mm_s.push_str(&*ComponentRef::toString(cref.clone())?); ArcStr::from(__mm_s) }).clone(), Util::getOption(info.clone())?)?;
             }
             bail!("fail")
@@ -2578,7 +2578,7 @@ pub mod VarData {
     }
 
     pub fn getStateOrder(mut varData: Arc<VarData>) -> Result<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>> {
-        let mut state_order: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>;
+        let mut state_order: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
         state_order = (::match_deref::match_deref! { match &(varData.clone()) {
         Deref @ VAR_DATA_SIM { .. } => var_field!((*varData).state_order, VarData::VAR_DATA_SIM).clone(),
         _ => {

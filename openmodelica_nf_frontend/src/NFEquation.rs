@@ -196,7 +196,7 @@ pub mod Branch {
         empty = (::match_deref::match_deref! { match &(branch.clone()) {
         Deref @ BRANCH { .. } => var_field!((*branch).body, Branch::BRANCH).clone().is_empty(),
         Deref @ INVALID_BRANCH { .. } => isEmpty(var_field!((*branch).branch, Branch::INVALID_BRANCH).clone())?,
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(empty)
     }
@@ -226,7 +226,7 @@ pub mod Branch {
             s.clone()
         },
         Deref @ INVALID_BRANCH { .. } => toStream(var_field!((*branch).branch, Branch::INVALID_BRANCH).clone(), (header.clone()).clone(), potentialElse.clone(), (indent.clone()).clone(), s.clone())?,
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(s)
     }
@@ -246,7 +246,7 @@ pub mod Branch {
             s.clone()
         },
         Deref @ INVALID_BRANCH { .. } => toFlatStream(var_field!((*branch).branch, Branch::INVALID_BRANCH).clone(), (header.clone()).clone(), format.clone(), potentialElse.clone(), (indent.clone()).clone(), s.clone())?,
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(s)
     }
@@ -329,7 +329,7 @@ pub fn source(mut eq: Arc<NFEquation>) -> Result<Arc<DAE::ElementSource>> {
         Deref @ TERMINATE { .. } => var_field!((*eq).source, NFEquation::TERMINATE).clone(),
         Deref @ REINIT { .. } => var_field!((*eq).source, NFEquation::REINIT).clone(),
         Deref @ NORETCALL { .. } => var_field!((*eq).source, NFEquation::NORETCALL).clone(),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(source)
 }
@@ -373,7 +373,7 @@ pub fn setSource(mut source: Arc<DAE::ElementSource>, mut eq: Arc<NFEquation>) -
             assign_variant_field!(eq => NFEquation::NORETCALL; source = source.clone());
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(eq)
 }
@@ -390,7 +390,7 @@ pub fn scope(mut eq: Arc<NFEquation>) -> Result<Arc<InstNode::InstNode>> {
         Deref @ TERMINATE { .. } => var_field!((*eq).scope, NFEquation::TERMINATE).clone(),
         Deref @ REINIT { .. } => var_field!((*eq).scope, NFEquation::REINIT).clone(),
         Deref @ NORETCALL { .. } => var_field!((*eq).scope, NFEquation::NORETCALL).clone(),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(scope)
 }
@@ -1486,7 +1486,7 @@ pub fn splitRecordEquations(mut equations: Arc<metamodelica::List<Arc<NFEquation
         let mut eq = eq.clone();
         outEquations = splitRecordEquation(eq.clone(), outEquations.clone())?;
     }
-    outEquations = outEquations.clone().reverse();
+    outEquations = metamodelica::Dangerous::listReverseInPlace(outEquations.clone());
     Ok(outEquations)
 }
 

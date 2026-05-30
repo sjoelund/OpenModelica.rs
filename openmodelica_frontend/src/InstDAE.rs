@@ -293,7 +293,7 @@ fn daeDeclare2(mut inComponentRef: Arc<DAE::ComponentRef>, mut inType: Arc<DAE::
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (vn, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_UNKNOWN, tail: Deref @ metamodelica::List::Nil }, .. }, _, _, _, _, _, _, _, _, _, _, _) => {
+                (vn, Deref @ DAE::Type::T_ARRAY { dims: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_UNKNOWN { .. }, tail: Deref @ metamodelica::List::Nil }, .. }, _, _, _, _, _, _, _, _, _, _, _) => {
                     let mut s: ArcStr = arcstr::literal!("");
                     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
                     let true = (Config::splitArrays()?) else { bail!("pattern mismatch") };

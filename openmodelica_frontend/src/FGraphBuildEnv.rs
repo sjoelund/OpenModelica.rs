@@ -190,7 +190,7 @@ pub fn mkModNode(mut inName: Name, mut inMod: Arc<SCode::Mod>, mut inParentRef: 
         let __mc_input = (inName.clone(), inMod.clone(), inGraph.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (_, Deref @ SCode::Mod::NOMOD, g) => {
+                (_, Deref @ SCode::Mod::NOMOD { .. }, g) => {
                     Ok(g.clone())
                 }
                 _ => bail!("nomatch"),
@@ -337,7 +337,6 @@ fn mkClassChildren(mut inClassDef: Arc<SCode::ClassDef>, mut inParentRef: Ref, m
                     let mut nr: Ref;
                     let mut ad: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = metamodelica::nil();
                     let mut g = (*g).clone();
-                    AbsynUtil::typeSpecPath(ts.clone())?;
                     nr = inParentRef.clone();
                     g = mkModNode((arcstr::literal!(FNode::modNodeName)).clone(), m.clone(), nr.clone(), inKind.clone(), g.clone())?;
                     ad = AbsynUtil::typeSpecDimensions(ts.clone());
@@ -501,7 +500,7 @@ pub fn mkDimsNode_helper(mut inStartWith: i32, mut inArrayDims: Arc<metamodelica
         (_, Deref @ metamodelica::List::Nil, g) => {
             g.clone()
         },
-        (i, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Subscript::NOSUB, tail: rest }, g) => {
+        (i, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Subscript::NOSUB { .. }, tail: rest }, g) => {
             let mut name: Name = arcstr::literal!("");
             let mut g = (*g).clone();
             name = (intString(i.clone())).clone();
@@ -854,7 +853,7 @@ fn analyseCref(mut inCref: Arc<Absyn::ComponentRef>, mut inParentRef: Ref, mut i
         let __mc_input = (inCref.clone(), inGraph.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Absyn::ComponentRef::WILD, g) => {
+                (Deref @ Absyn::ComponentRef::WILD { .. }, g) => {
                     Ok(g.clone())
                 }
                 _ => bail!("nomatch"),

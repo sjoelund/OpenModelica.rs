@@ -169,7 +169,7 @@ pub fn resolve(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<FlatMod
     let mut res: Arc<SBPWLinearMap::SBPWLinearMap> = Arc::new(<SBPWLinearMap::SBPWLinearMap as ::std::default::Default>::default());
     let mut emap1: Arc<SBPWLinearMap::SBPWLinearMap> = Arc::new(<SBPWLinearMap::SBPWLinearMap as ::std::default::Default>::default());
     let mut emap2: Arc<SBPWLinearMap::SBPWLinearMap> = Arc::new(<SBPWLinearMap::SBPWLinearMap as ::std::default::Default>::default());
-    let mut nmv_table: NameVertexTable;
+    let mut nmv_table: NameVertexTable = <Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<SBMultiInterval::SBMultiInterval>>> as ::std::default::Default>::default();
     for mut var in &*flatModel.variables.clone() {
         let mut var = var.clone();
         max_dim = std::cmp::max(max_dim.clone(), Type::dimensionCount(var.ty.clone()));
@@ -434,7 +434,7 @@ fn generateEquations(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>, mut flatModel: A
         equations = generatePotentialEquations(aset.clone(), vc_domi_aux.clone(), vars.clone(), iterators.clone(), iter_expl.clone(), pot_vars.clone(), graph.clone(), nmvTable.clone(), equations.clone())?;
         equations = generateFlowEquation(aset.clone(), vc_domi.clone(), iterators.clone(), flow_vars.clone(), graph.clone(), nmvTable.clone(), equations.clone())?;
     }
-    equations = equations.clone().reverse();
+    equations = metamodelica::Dangerous::listReverseInPlace(equations.clone());
     Ok(equations)
 }
 
@@ -498,7 +498,7 @@ fn generatePotentialEquations2(mut vars1: Arc<metamodelica::List<Arc<ComponentRe
             }
         }
     }
-    equations = equations.clone().reverse();
+    equations = metamodelica::Dangerous::listReverseInPlace(equations.clone());
     Ok(equations)
 }
 
@@ -608,8 +608,8 @@ fn getConnectors(mut flatModel: Arc<FlatModel::NFFlatModel>) -> (Arc<metamodelic
             flowVars = cons(v.clone(), flowVars.clone());
         }
     }
-    effVars = effVars.clone().reverse();
-    flowVars = flowVars.clone().reverse();
+    effVars = metamodelica::Dangerous::listReverseInPlace(effVars.clone());
+    flowVars = metamodelica::Dangerous::listReverseInPlace(flowVars.clone());
     (effVars, flowVars)
 }
 
@@ -668,7 +668,7 @@ fn getVars(mut vars: Arc<metamodelica::List<Arc<Variable::NFVariable>>>, mut sau
             }
         }
     }
-    res = res.clone().reverse();
+    res = metamodelica::Dangerous::listReverseInPlace(res.clone());
     Ok(res)
 }
 
@@ -714,7 +714,7 @@ fn transMulti(mut mi1: Arc<SBMultiInterval::SBMultiInterval>, mut mi2: Arc<SBMul
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFArrayConnections.transMulti")); __mm_s.push_str(&*literal!(" got invalid intervals.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
         }
     }
-    outExpl = outExpl.clone().reverse();
+    outExpl = metamodelica::Dangerous::listReverseInPlace(outExpl.clone());
     Ok((outExpl, flowRange))
 }
 

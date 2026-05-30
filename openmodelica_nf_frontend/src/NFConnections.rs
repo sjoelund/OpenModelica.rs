@@ -159,7 +159,7 @@ pub fn collectConnections(mut flatModel: Arc<FlatModel::NFFlatModel>, mut isDele
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    assign_field!(flatModel.equations = eql.clone().reverse());
+    assign_field!(flatModel.equations = metamodelica::Dangerous::listReverseInPlace(eql.clone()));
     Ok((flatModel, conns))
 }
 
@@ -251,7 +251,7 @@ pub fn connectCount(mut conn: Arc<Connector::NFConnector>, mut connectCounts: Ar
 
 pub fn scalarize(mut conns: Arc<NFConnections>, mut keepSingleConnectedArrays: bool) -> Result<Arc<NFConnections>> {
     let mut conns: Arc<NFConnections> = conns;
-    let mut connect_counts: Arc<UnorderedMap::UnorderedMap<Arc<Connector::NFConnector>, i32>>;
+    let mut connect_counts: Arc<UnorderedMap::UnorderedMap<Arc<Connector::NFConnector>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<Connector::NFConnector>, i32>> as ::std::default::Default>::default();
     let mut flows: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
     let mut connections: Arc<metamodelica::List<Arc<Connection::NFConnection>>> = metamodelica::nil();
     let mut count: i32 = 0;
@@ -275,8 +275,8 @@ pub fn scalarize(mut conns: Arc<NFConnections>, mut keepSingleConnectedArrays: b
             }
         }
         assign_field!(
-            conns.flows = flows.clone().reverse(),
-            conns.connections = connections.clone().reverse()
+            conns.flows = metamodelica::Dangerous::listReverseInPlace(flows.clone()),
+            conns.connections = metamodelica::Dangerous::listReverseInPlace(connections.clone())
         );
     } else {
         assign_field!(
@@ -288,7 +288,7 @@ pub fn scalarize(mut conns: Arc<NFConnections>, mut keepSingleConnectedArrays: b
 }
 
 pub fn analyseArrayConnections(mut conns: Arc<NFConnections>) -> Result<Arc<UnorderedMap::UnorderedMap<Arc<Connector::NFConnector>, i32>>> {
-    let mut connectCounts: Arc<UnorderedMap::UnorderedMap<Arc<Connector::NFConnector>, i32>>;
+    let mut connectCounts: Arc<UnorderedMap::UnorderedMap<Arc<Connector::NFConnector>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<Connector::NFConnector>, i32>> as ::std::default::Default>::default();
     connectCounts = UnorderedMap::new((std::sync::Arc::new(fnptr!(Connector::hashNoSubs, Arc<Connector::NFConnector>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(Connector::isEqualNoSubs, Arc<Connector::NFConnector>, Arc<Connector::NFConnector>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>, Arc<Connector::NFConnector>) -> Result<bool> + 'static>), (conns.connections.clone().len() as i32));
     for mut conn in &*conns.connections.clone() {
         let mut conn = conn.clone();
@@ -329,7 +329,7 @@ pub fn toString(mut conns: Arc<NFConnections>) -> ArcStr {
         let mut c = c.clone();
         strl = cons((Connection::toString(c.clone())).clone(), strl.clone());
     }
-    strl = strl.clone().reverse();
+    strl = metamodelica::Dangerous::listReverseInPlace(strl.clone());
     r#str = stringDelimitList(strl.clone(), (literal!("\n")).clone());
     r#str
 }

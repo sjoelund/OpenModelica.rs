@@ -366,7 +366,6 @@ fn configFlagEq(mut inFlag1: Flags::ConfigFlag, mut inFlag2: Flags::ConfigFlag) 
         (Flags::ConfigFlag { index: mut index1, .. }, Flags::ConfigFlag { index: mut index2, .. }) => {
             index1.clone() == index2.clone()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(eq)
 }
@@ -1105,7 +1104,6 @@ fn getValidOptionsAndDescription2(mut validOptions: Flags::ValidOptions) -> Resu
             descriptions = List::mapMap(options.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)), (std::sync::Arc::new(Gettext::translateContent) as std::sync::Arc<dyn ::std::ops::Fn(Gettext::TranslatableContent) -> Result<ArcStr> + 'static>));
             (validStrings.clone(), descriptions.clone())
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok((validStrings, descriptions))
 }
@@ -1255,7 +1253,7 @@ pub fn printAllConfigFlags() -> ArcStr {
 fn printConfigFlag(mut inFlag: Flags::ConfigFlag) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inFlag.clone() {
-        Flags::ConfigFlag { visibility: Flags::FlagVisibility::INTERNAL, .. } => {
+        Flags::ConfigFlag { visibility: Flags::FlagVisibility::INTERNAL { .. }, .. } => {
             literal!("")
         },
         Flags::ConfigFlag { description: mut desc, .. } => {
@@ -1274,7 +1272,6 @@ fn printConfigFlag(mut inFlag: Flags::ConfigFlag) -> Result<ArcStr> {
             flag_str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(wrapped_str.clone(), (literal!("\n")).clone())); __mm_s.push_str(&*opt_str.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             flag_str.clone()
         },
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(outString)
 }
@@ -1282,7 +1279,7 @@ fn printConfigFlag(mut inFlag: Flags::ConfigFlag) -> Result<ArcStr> {
 fn printConfigFlagSphinx(mut inFlag: Flags::ConfigFlag) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inFlag.clone() {
-        Flags::ConfigFlag { visibility: Flags::FlagVisibility::INTERNAL, .. } => {
+        Flags::ConfigFlag { visibility: Flags::FlagVisibility::INTERNAL { .. }, .. } => {
             literal!("")
         },
         Flags::ConfigFlag { description: mut desc, .. } => {
@@ -1299,7 +1296,6 @@ fn printConfigFlagSphinx(mut inFlag: Flags::ConfigFlag) -> Result<ArcStr> {
             flag_str = stringAppendList(list![(literal!(".. _omcflag-")).clone(), (longName.clone()).clone(), (literal!(":\n\n:ref:`")).clone(), (name.clone()).clone(), (literal!("<omcflag-")).clone(), (longName.clone()).clone(), (literal!(">`\n\n")).clone(), (desc_str.clone()).clone(), (literal!("\n")).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*opt_str.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone()]);
             flag_str.clone()
         },
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(outString)
 }
@@ -1566,7 +1562,6 @@ fn getValidStringOptions(mut inOptions: Flags::ValidOptions) -> Result<Arc<metam
         Flags::ValidOptions::STRING_DESC_OPTION { options: mut options } => {
             List::map(options.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)))
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(validOptions)
 }
@@ -1574,7 +1569,7 @@ fn getValidStringOptions(mut inOptions: Flags::ValidOptions) -> Result<Arc<metam
 pub fn flagDataEq(mut data1: Flags::FlagData, mut data2: Flags::FlagData) -> bool {
     let mut eq: bool = false;
     eq = (match (data1.clone(), data2.clone()) {
-        (Flags::FlagData::EMPTY_FLAG, Flags::FlagData::EMPTY_FLAG) => true,
+        (Flags::FlagData::EMPTY_FLAG { .. }, Flags::FlagData::EMPTY_FLAG { .. }) => true,
         (Flags::FlagData::BOOL_FLAG { .. }, Flags::FlagData::BOOL_FLAG { .. }) => var_field!(data1.data, Flags::FlagData::BOOL_FLAG).clone() == var_field!(data2.data, Flags::FlagData::BOOL_FLAG).clone(),
         (Flags::FlagData::INT_FLAG { .. }, Flags::FlagData::INT_FLAG { .. }) => var_field!(data1.data, Flags::FlagData::INT_FLAG).clone() == var_field!(data2.data, Flags::FlagData::INT_FLAG).clone(),
         (Flags::FlagData::INT_LIST_FLAG { .. }, Flags::FlagData::INT_LIST_FLAG { .. }) => List::isEqualOnTrue(var_field!(data1.data, Flags::FlagData::INT_LIST_FLAG).clone(), var_field!(data2.data, Flags::FlagData::INT_LIST_FLAG).clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>)),

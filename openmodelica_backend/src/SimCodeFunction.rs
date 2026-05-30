@@ -57,10 +57,8 @@ use openmodelica_frontend_dump::ExpressionBasics;
 use openmodelica_frontend_dump::TypesDump;
 use openmodelica_frontend_types::DAE;
 use openmodelica_frontend_types::SCode;
-use openmodelica_susan::Tpl;
 use openmodelica_util::BaseHashTable;
 use openmodelica_util::Error;
-use openmodelica_util::Global;
 use openmodelica_util_datatypes_basic::List;
 
 // public imports

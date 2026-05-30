@@ -251,7 +251,7 @@ fn link(mut t1: Arc<Tree>, mut t2: Arc<Tree>) -> Result<Arc<Tree>> {
             ts2 = cons(t1.clone(), ts2.clone());
             if (compareElement(root(t1.clone())?, root(t2.clone())?)) {Arc::new(Tree { elt: e1.clone(), rank: r1.clone(), trees: ts1.clone() })} else {Arc::new(Tree { elt: e2.clone(), rank: r2.clone(), trees: ts2.clone() })}
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(t)
 }

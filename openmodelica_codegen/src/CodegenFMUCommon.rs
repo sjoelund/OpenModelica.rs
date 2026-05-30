@@ -629,7 +629,7 @@ fn fun_77(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_stateVars: Arc<meta
         (txt, _, a_stateVars, a_simCode, a_exportVar, a_simVar) => {
             let mut ret_0: bool = false;
             let mut txt = (*txt).clone();
-            ret_0 = Util::isSome(a_exportVar.clone());
+            ret_0 = isSome(a_exportVar.clone());
             txt = fun_76(txt.clone(), ret_0.clone(), a_stateVars.clone(), a_simCode.clone(), a_simVar.clone())?;
             txt.clone()
         },
@@ -771,15 +771,15 @@ pub fn ScalarVariableAttribute(mut in_txt: Tpl::Text, mut in_a_simVar: SimCodeVa
 pub fn getCausality(mut in_txt: Tpl::Text, mut in_a_c: Option<SimCodeVar::Causality>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_c.clone()) {
-        (mut txt, Some(SimCodeVar::Causality::NONECAUS)) => {
+        (mut txt, Some(SimCodeVar::Causality::NONECAUS { .. })) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("none")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Some(SimCodeVar::Causality::OUTPUT)) => {
+        (mut txt, Some(SimCodeVar::Causality::OUTPUT { .. })) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("output")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Some(SimCodeVar::Causality::INPUT)) => {
+        (mut txt, Some(SimCodeVar::Causality::INPUT { .. })) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("input")).clone() }))?;
             txt.clone()
         },
@@ -794,19 +794,19 @@ pub fn getCausality(mut in_txt: Tpl::Text, mut in_a_c: Option<SimCodeVar::Causal
 pub fn getVariability(mut in_txt: Tpl::Text, mut in_a_variability__: Option<SimCodeVar::Variability>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_variability__.clone()) {
-        (mut txt, Some(SimCodeVar::Variability::DISCRETE)) => {
+        (mut txt, Some(SimCodeVar::Variability::DISCRETE { .. })) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("discrete")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Some(SimCodeVar::Variability::FIXED)) => {
+        (mut txt, Some(SimCodeVar::Variability::FIXED { .. })) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("parameter")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Some(SimCodeVar::Variability::CONSTANT)) => {
+        (mut txt, Some(SimCodeVar::Variability::CONSTANT { .. })) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("constant")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Some(SimCodeVar::Variability::CONTINUOUS)) => {
+        (mut txt, Some(SimCodeVar::Variability::CONTINUOUS { .. })) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("continuous")).clone() }))?;
             txt.clone()
         },
@@ -821,7 +821,7 @@ pub fn getVariability(mut in_txt: Tpl::Text, mut in_a_variability__: Option<SimC
 pub fn getAliasVar(mut in_txt: Tpl::Text, mut in_a_aliasvar: SimCodeVar::AliasVariable) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_aliasvar.clone()) {
-        (mut txt, SimCodeVar::AliasVariable::NOALIAS) => {
+        (mut txt, SimCodeVar::AliasVariable::NOALIAS { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("noAlias")).clone() }))?;
             txt.clone()
         },
@@ -902,7 +902,7 @@ pub fn ScalarVariableType(mut in_txt: Tpl::Text, mut in_a_simvar: SimCodeVar::Si
 fn fun_88(mut in_txt: Tpl::Text, mut in_a_causality: Option<SimCodeVar::Causality>, mut in_a_type__: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_causality.clone(), in_a_type__.clone())) {
-        (txt, Some(SimCodeVar::Causality::INPUT), a_type__) => {
+        (txt, Some(SimCodeVar::Causality::INPUT { .. }), a_type__) => {
             let mut txt = (*txt).clone();
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("start=\"")).clone() }))?;
@@ -1345,7 +1345,7 @@ fn fun_107(mut in_txt: Tpl::Text, mut in_a_baseClock: Arc<DAE::ClockKind>, mut i
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<Clock><Inferred/></Clock>")).clone() }))?;
             txt.clone()
         },
-        (txt, Deref @ DAE::ClockKind::INFERRED_CLOCK, _) => {
+        (txt, Deref @ DAE::ClockKind::INFERRED_CLOCK { .. }, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<Clock><Inferred/></Clock>")).clone() }))?;
             txt.clone()
@@ -1899,25 +1899,25 @@ fn fun_133(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 pub fn getVariability2(mut in_txt: Tpl::Text, mut in_a_variability: Option<SimCodeVar::Variability>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_variability.clone()) {
-        (mut txt, Some(SimCodeVar::Variability::DISCRETE)) => {
+        (mut txt, Some(SimCodeVar::Variability::DISCRETE { .. })) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("discrete")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Some(SimCodeVar::Variability::FIXED)) => {
+        (mut txt, Some(SimCodeVar::Variability::FIXED { .. })) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("fixed")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Some(SimCodeVar::Variability::CONSTANT)) => {
+        (mut txt, Some(SimCodeVar::Variability::CONSTANT { .. })) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("constant")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Some(SimCodeVar::Variability::CONTINUOUS)) => {
+        (mut txt, Some(SimCodeVar::Variability::CONTINUOUS { .. })) => {
             let mut ret_0: bool = false;
             ret_0 = Flags::isSet(Flags::DUMP_FORCE_FMI_ATTRIBUTES.clone())?;
             txt = fun_133(txt.clone(), ret_0.clone())?;
             txt.clone()
         },
-        (mut txt, Some(SimCodeVar::Variability::TUNABLE)) => {
+        (mut txt, Some(SimCodeVar::Variability::TUNABLE { .. })) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("tunable")).clone() }))?;
             txt.clone()
         },
@@ -1945,29 +1945,29 @@ fn fun_135(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 pub fn getCausality2(mut in_txt: Tpl::Text, mut in_a_c: Option<SimCodeVar::Causality>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_c.clone()) {
-        (mut txt, Some(SimCodeVar::Causality::NONECAUS)) => {
+        (mut txt, Some(SimCodeVar::Causality::NONECAUS { .. })) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("none")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Some(SimCodeVar::Causality::OUTPUT)) => {
+        (mut txt, Some(SimCodeVar::Causality::OUTPUT { .. })) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("output")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Some(SimCodeVar::Causality::INPUT)) => {
+        (mut txt, Some(SimCodeVar::Causality::INPUT { .. })) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("input")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Some(SimCodeVar::Causality::LOCAL)) => {
+        (mut txt, Some(SimCodeVar::Causality::LOCAL { .. })) => {
             let mut ret_0: bool = false;
             ret_0 = Flags::isSet(Flags::DUMP_FORCE_FMI_ATTRIBUTES.clone())?;
             txt = fun_135(txt.clone(), ret_0.clone())?;
             txt.clone()
         },
-        (mut txt, Some(SimCodeVar::Causality::PARAMETER)) => {
+        (mut txt, Some(SimCodeVar::Causality::PARAMETER { .. })) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("parameter")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Some(SimCodeVar::Causality::CALCULATED_PARAMETER)) => {
+        (mut txt, Some(SimCodeVar::Causality::CALCULATED_PARAMETER { .. })) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("calculatedParameter")).clone() }))?;
             txt.clone()
         },
@@ -2111,7 +2111,7 @@ pub fn ScalarVariableTypeCommonAttribute2(mut in_txt: Tpl::Text, mut in_a_simvar
 fn fun_142(mut in_txt: Tpl::Text, mut in_a_varKind: BackendDAE::VarKind, mut in_a_index: i32, mut in_a_stateVars: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_varKind.clone(), in_a_index.clone(), in_a_stateVars.clone())) {
-        (txt, BackendDAE::VarKind::STATE_DER, a_index, a_stateVars) => {
+        (txt, BackendDAE::VarKind::STATE_DER { .. }, a_index, a_stateVars) => {
             let mut ret_0: i32 = 0;
             let mut txt = (*txt).clone();
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
@@ -2149,11 +2149,11 @@ pub fn DerivativeVarIndex(mut in_txt: Tpl::Text, mut in_a_simvar: SimCodeVar::Si
 fn fun_144(mut in_txt: Tpl::Text, mut in_a_initial__: Option<SimCodeVar::Initial>, mut in_a_simvar: SimCodeVar::SimVar) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_initial__.clone(), in_a_simvar.clone()) {
-        (mut txt, Some(SimCodeVar::Initial::EXACT), mut a_simvar) => {
+        (mut txt, Some(SimCodeVar::Initial::EXACT { .. }), mut a_simvar) => {
             txt = startString3(txt.clone(), a_simvar.clone())?;
             txt.clone()
         },
-        (mut txt, Some(SimCodeVar::Initial::APPROX), mut a_simvar) => {
+        (mut txt, Some(SimCodeVar::Initial::APPROX { .. }), mut a_simvar) => {
             txt = startString3(txt.clone(), a_simvar.clone())?;
             txt.clone()
         },
@@ -2173,7 +2173,7 @@ pub fn StartString2(mut in_txt: Tpl::Text, mut in_a_simvar: SimCodeVar::SimVar) 
         (txt, SimCodeVar::SimVar { initialValue: None, .. }) => {
             txt.clone()
         },
-        (txt, i_simvar @ SimCodeVar::SimVar { causality: Some(SimCodeVar::Causality::INPUT), .. }) => {
+        (txt, i_simvar @ SimCodeVar::SimVar { causality: Some(SimCodeVar::Causality::INPUT { .. }), .. }) => {
             let mut txt = (*txt).clone();
             txt = startString3(txt.clone(), i_simvar.clone())?;
             txt.clone()
@@ -2954,7 +2954,7 @@ pub fn baseUnitAttributes(mut in_txt: Tpl::Text, mut in_a_baseUnit: SimCode::Bas
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/>")).clone() }))?;
             txt.clone()
         },
-        (mut txt, SimCode::BaseUnit::NOBASEUNIT) => {
+        (mut txt, SimCode::BaseUnit::NOBASEUNIT { .. }) => {
             txt.clone()
         },
         (mut txt, _) => {

@@ -316,19 +316,19 @@ pub fn getStateName(mut inState: ClassInf::State) -> Arc<Absyn::Path> {
 fn printEventStr(mut inEvent: ClassInf::Event) -> ArcStr {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((match inEvent.clone() {
-        ClassInf::Event::FOUND_EQUATION => {
+        ClassInf::Event::FOUND_EQUATION { .. } => {
             literal!("equation")
         },
-        ClassInf::Event::FOUND_CONSTRAINT => {
+        ClassInf::Event::FOUND_CONSTRAINT { .. } => {
             literal!("constraint")
         },
-        ClassInf::Event::NEWDEF => {
+        ClassInf::Event::NEWDEF { .. } => {
             literal!("new definition")
         },
         ClassInf::Event::FOUND_COMPONENT { name: mut name } => {
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("component ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }
         },
-        ClassInf::Event::FOUND_EXT_DECL => {
+        ClassInf::Event::FOUND_EXT_DECL { .. } => {
             literal!("external function declaration")
         },
         _ => {
@@ -348,56 +348,56 @@ pub fn start(mut inRestriction: SCode::Restriction, mut inPath: Arc<Absyn::Path>
 fn start_dispatch(mut inRestriction: SCode::Restriction, mut inPath: Arc<Absyn::Path>) -> Result<ClassInf::State> {
     let mut outState: ClassInf::State;
     outState = (::match_deref::match_deref! { match &((inRestriction.clone(), inPath.clone())) {
-        (SCode::Restriction::R_CLASS, p) => {
+        (SCode::Restriction::R_CLASS { .. }, p) => {
             ClassInf::State::UNKNOWN { path: p.clone() }
         },
-        (SCode::Restriction::R_OPTIMIZATION, p) => {
+        (SCode::Restriction::R_OPTIMIZATION { .. }, p) => {
             ClassInf::State::OPTIMIZATION { path: p.clone() }
         },
-        (SCode::Restriction::R_MODEL, p) => {
+        (SCode::Restriction::R_MODEL { .. }, p) => {
             ClassInf::State::MODEL { path: p.clone() }
         },
         (SCode::Restriction::R_RECORD { isOperator: _ }, p) => {
             ClassInf::State::RECORD { path: p.clone() }
         },
-        (SCode::Restriction::R_BLOCK, p) => {
+        (SCode::Restriction::R_BLOCK { .. }, p) => {
             ClassInf::State::BLOCK { path: p.clone() }
         },
         (SCode::Restriction::R_CONNECTOR { isExpandable }, p) => {
             ClassInf::State::CONNECTOR { path: p.clone(), isExpandable: isExpandable.clone() }
         },
-        (SCode::Restriction::R_TYPE, p) => {
+        (SCode::Restriction::R_TYPE { .. }, p) => {
             ClassInf::State::TYPE { path: p.clone() }
         },
-        (SCode::Restriction::R_PACKAGE, p) => {
+        (SCode::Restriction::R_PACKAGE { .. }, p) => {
             ClassInf::State::PACKAGE { path: p.clone() }
         },
         (SCode::Restriction::R_FUNCTION { .. }, p) => {
             ClassInf::State::FUNCTION { path: p.clone(), isImpure: SCodeUtil::isRestrictionImpure(inRestriction.clone(), true) }
         },
-        (SCode::Restriction::R_OPERATOR, p) => {
+        (SCode::Restriction::R_OPERATOR { .. }, p) => {
             ClassInf::State::FUNCTION { path: p.clone(), isImpure: false }
         },
-        (SCode::Restriction::R_ENUMERATION, p) => {
+        (SCode::Restriction::R_ENUMERATION { .. }, p) => {
             ClassInf::State::ENUMERATION { path: p.clone() }
         },
-        (SCode::Restriction::R_PREDEFINED_INTEGER, p) => {
+        (SCode::Restriction::R_PREDEFINED_INTEGER { .. }, p) => {
             ClassInf::State::TYPE_INTEGER { path: p.clone() }
         },
-        (SCode::Restriction::R_PREDEFINED_REAL, p) => {
+        (SCode::Restriction::R_PREDEFINED_REAL { .. }, p) => {
             ClassInf::State::TYPE_REAL { path: p.clone() }
         },
-        (SCode::Restriction::R_PREDEFINED_STRING, p) => {
+        (SCode::Restriction::R_PREDEFINED_STRING { .. }, p) => {
             ClassInf::State::TYPE_STRING { path: p.clone() }
         },
-        (SCode::Restriction::R_PREDEFINED_BOOLEAN, p) => {
+        (SCode::Restriction::R_PREDEFINED_BOOLEAN { .. }, p) => {
             ClassInf::State::TYPE_BOOL { path: p.clone() }
         },
-        (SCode::Restriction::R_PREDEFINED_CLOCK, p) => {
+        (SCode::Restriction::R_PREDEFINED_CLOCK { .. }, p) => {
             let true = (Config::synchronousFeaturesAllowed()) else { bail!("pattern mismatch") };
             ClassInf::State::TYPE_CLOCK { path: p.clone() }
         },
-        (SCode::Restriction::R_PREDEFINED_ENUMERATION, p) => {
+        (SCode::Restriction::R_PREDEFINED_ENUMERATION { .. }, p) => {
             ClassInf::State::TYPE_ENUM { path: p.clone() }
         },
         (SCode::Restriction::R_UNIONTYPE { .. }, p) => {
@@ -414,58 +414,58 @@ fn start_dispatch(mut inRestriction: SCode::Restriction, mut inPath: Arc<Absyn::
 pub fn trans(mut inState: ClassInf::State, mut inEvent: ClassInf::Event) -> Result<ClassInf::State> {
     let mut outState: ClassInf::State;
     outState = (match (inState.clone(), inEvent.clone()) {
-        (ClassInf::State::UNKNOWN { path: ref p }, ClassInf::Event::NEWDEF) => {
+        (ClassInf::State::UNKNOWN { path: ref p }, ClassInf::Event::NEWDEF { .. }) => {
             ClassInf::State::HAS_RESTRICTIONS { path: p.clone(), hasEquations: false, hasAlgorithms: false, hasConstraints: false }
         },
-        (ClassInf::State::OPTIMIZATION { .. }, ClassInf::Event::NEWDEF) => {
+        (ClassInf::State::OPTIMIZATION { .. }, ClassInf::Event::NEWDEF { .. }) => {
             inState.clone()
         },
-        (ClassInf::State::MODEL { .. }, ClassInf::Event::NEWDEF) => {
+        (ClassInf::State::MODEL { .. }, ClassInf::Event::NEWDEF { .. }) => {
             inState.clone()
         },
-        (ClassInf::State::RECORD { .. }, ClassInf::Event::NEWDEF) => {
+        (ClassInf::State::RECORD { .. }, ClassInf::Event::NEWDEF { .. }) => {
             inState.clone()
         },
-        (ClassInf::State::BLOCK { .. }, ClassInf::Event::NEWDEF) => {
+        (ClassInf::State::BLOCK { .. }, ClassInf::Event::NEWDEF { .. }) => {
             inState.clone()
         },
-        (ClassInf::State::CONNECTOR { .. }, ClassInf::Event::NEWDEF) => {
+        (ClassInf::State::CONNECTOR { .. }, ClassInf::Event::NEWDEF { .. }) => {
             inState.clone()
         },
-        (ClassInf::State::TYPE { path: ref p }, ClassInf::Event::NEWDEF) => {
+        (ClassInf::State::TYPE { path: ref p }, ClassInf::Event::NEWDEF { .. }) => {
             ClassInf::State::TYPE { path: p.clone() }
         },
-        (ClassInf::State::PACKAGE { path: ref p }, ClassInf::Event::NEWDEF) => {
+        (ClassInf::State::PACKAGE { path: ref p }, ClassInf::Event::NEWDEF { .. }) => {
             ClassInf::State::PACKAGE { path: p.clone() }
         },
-        (ClassInf::State::FUNCTION { .. }, ClassInf::Event::NEWDEF) => {
+        (ClassInf::State::FUNCTION { .. }, ClassInf::Event::NEWDEF { .. }) => {
             inState.clone()
         },
-        (ClassInf::State::ENUMERATION { .. }, ClassInf::Event::NEWDEF) => {
+        (ClassInf::State::ENUMERATION { .. }, ClassInf::Event::NEWDEF { .. }) => {
             inState.clone()
         },
-        (ClassInf::State::TYPE_INTEGER { .. }, ClassInf::Event::NEWDEF) => {
+        (ClassInf::State::TYPE_INTEGER { .. }, ClassInf::Event::NEWDEF { .. }) => {
             inState.clone()
         },
-        (ClassInf::State::TYPE_REAL { .. }, ClassInf::Event::NEWDEF) => {
+        (ClassInf::State::TYPE_REAL { .. }, ClassInf::Event::NEWDEF { .. }) => {
             inState.clone()
         },
-        (ClassInf::State::TYPE_STRING { .. }, ClassInf::Event::NEWDEF) => {
+        (ClassInf::State::TYPE_STRING { .. }, ClassInf::Event::NEWDEF { .. }) => {
             inState.clone()
         },
-        (ClassInf::State::TYPE_BOOL { .. }, ClassInf::Event::NEWDEF) => {
+        (ClassInf::State::TYPE_BOOL { .. }, ClassInf::Event::NEWDEF { .. }) => {
             inState.clone()
         },
-        (ClassInf::State::TYPE_CLOCK { .. }, ClassInf::Event::NEWDEF) => {
+        (ClassInf::State::TYPE_CLOCK { .. }, ClassInf::Event::NEWDEF { .. }) => {
             inState.clone()
         },
-        (ClassInf::State::TYPE_ENUM { .. }, ClassInf::Event::NEWDEF) => {
+        (ClassInf::State::TYPE_ENUM { .. }, ClassInf::Event::NEWDEF { .. }) => {
             inState.clone()
         },
-        (ClassInf::State::META_UNIONTYPE { .. }, ClassInf::Event::NEWDEF) => {
+        (ClassInf::State::META_UNIONTYPE { .. }, ClassInf::Event::NEWDEF { .. }) => {
             inState.clone()
         },
-        (ClassInf::State::META_RECORD { .. }, ClassInf::Event::NEWDEF) => {
+        (ClassInf::State::META_RECORD { .. }, ClassInf::Event::NEWDEF { .. }) => {
             inState.clone()
         },
         (ClassInf::State::UNKNOWN { path: ref p }, ClassInf::Event::FOUND_COMPONENT { .. }) => {
@@ -529,52 +529,52 @@ pub fn trans(mut inState: ClassInf::State, mut inEvent: ClassInf::Event) -> Resu
         (ClassInf::State::META_UNIONTYPE { .. }, ClassInf::Event::FOUND_COMPONENT { .. }) => {
             inState.clone()
         },
-        (ClassInf::State::UNKNOWN { path: ref p }, ClassInf::Event::FOUND_EQUATION) => {
+        (ClassInf::State::UNKNOWN { path: ref p }, ClassInf::Event::FOUND_EQUATION { .. }) => {
             ClassInf::State::HAS_RESTRICTIONS { path: p.clone(), hasEquations: true, hasAlgorithms: false, hasConstraints: false }
         },
-        (ClassInf::State::OPTIMIZATION { .. }, ClassInf::Event::FOUND_EQUATION) => {
+        (ClassInf::State::OPTIMIZATION { .. }, ClassInf::Event::FOUND_EQUATION { .. }) => {
             inState.clone()
         },
-        (ClassInf::State::OPTIMIZATION { .. }, ClassInf::Event::FOUND_CONSTRAINT) => {
+        (ClassInf::State::OPTIMIZATION { .. }, ClassInf::Event::FOUND_CONSTRAINT { .. }) => {
             inState.clone()
         },
-        (ClassInf::State::OPTIMIZATION { .. }, ClassInf::Event::FOUND_ALGORITHM) => {
+        (ClassInf::State::OPTIMIZATION { .. }, ClassInf::Event::FOUND_ALGORITHM { .. }) => {
             inState.clone()
         },
-        (ClassInf::State::MODEL { .. }, ClassInf::Event::FOUND_EQUATION) => {
+        (ClassInf::State::MODEL { .. }, ClassInf::Event::FOUND_EQUATION { .. }) => {
             inState.clone()
         },
-        (ClassInf::State::BLOCK { .. }, ClassInf::Event::FOUND_EQUATION) => {
+        (ClassInf::State::BLOCK { .. }, ClassInf::Event::FOUND_EQUATION { .. }) => {
             inState.clone()
         },
-        (ClassInf::State::MODEL { .. }, ClassInf::Event::FOUND_ALGORITHM) => {
+        (ClassInf::State::MODEL { .. }, ClassInf::Event::FOUND_ALGORITHM { .. }) => {
             inState.clone()
         },
-        (ClassInf::State::BLOCK { .. }, ClassInf::Event::FOUND_ALGORITHM) => {
+        (ClassInf::State::BLOCK { .. }, ClassInf::Event::FOUND_ALGORITHM { .. }) => {
             inState.clone()
         },
-        (ClassInf::State::FUNCTION { .. }, ClassInf::Event::FOUND_ALGORITHM) => {
+        (ClassInf::State::FUNCTION { .. }, ClassInf::Event::FOUND_ALGORITHM { .. }) => {
             inState.clone()
         },
-        (ClassInf::State::HAS_RESTRICTIONS { hasConstraints: mut b3, hasAlgorithms: mut b2, path: ref p, .. }, ClassInf::Event::FOUND_EQUATION) => {
+        (ClassInf::State::HAS_RESTRICTIONS { hasConstraints: mut b3, hasAlgorithms: mut b2, path: ref p, .. }, ClassInf::Event::FOUND_EQUATION { .. }) => {
             ClassInf::State::HAS_RESTRICTIONS { path: p.clone(), hasEquations: true, hasAlgorithms: b2.clone(), hasConstraints: b3.clone() }
         },
-        (ClassInf::State::HAS_RESTRICTIONS { hasAlgorithms: mut b2, hasEquations: mut b1, path: ref p, .. }, ClassInf::Event::FOUND_CONSTRAINT) => {
+        (ClassInf::State::HAS_RESTRICTIONS { hasAlgorithms: mut b2, hasEquations: mut b1, path: ref p, .. }, ClassInf::Event::FOUND_CONSTRAINT { .. }) => {
             ClassInf::State::HAS_RESTRICTIONS { path: p.clone(), hasEquations: b1.clone(), hasAlgorithms: b2.clone(), hasConstraints: true }
         },
-        (ClassInf::State::HAS_RESTRICTIONS { hasConstraints: mut b3, hasEquations: mut b1, path: ref p, .. }, ClassInf::Event::FOUND_ALGORITHM) => {
+        (ClassInf::State::HAS_RESTRICTIONS { hasConstraints: mut b3, hasEquations: mut b1, path: ref p, .. }, ClassInf::Event::FOUND_ALGORITHM { .. }) => {
             ClassInf::State::HAS_RESTRICTIONS { path: p.clone(), hasEquations: b1.clone(), hasAlgorithms: true, hasConstraints: b3.clone() }
         },
-        (ClassInf::State::FUNCTION { .. }, ClassInf::Event::FOUND_EXT_DECL) => {
+        (ClassInf::State::FUNCTION { .. }, ClassInf::Event::FOUND_EXT_DECL { .. }) => {
             inState.clone()
         },
-        (_, ClassInf::Event::FOUND_EXT_DECL) => {
+        (_, ClassInf::Event::FOUND_EXT_DECL { .. }) => {
             bail!("fail")
         },
-        (_, ClassInf::Event::FOUND_EQUATION) => {
+        (_, ClassInf::Event::FOUND_EQUATION { .. }) => {
             bail!("fail")
         },
-        (_, ClassInf::Event::FOUND_CONSTRAINT) => {
+        (_, ClassInf::Event::FOUND_CONSTRAINT { .. }) => {
             bail!("fail")
         },
         (mut st, mut ev) => {
@@ -589,16 +589,16 @@ pub fn trans(mut inState: ClassInf::State, mut inEvent: ClassInf::Event) -> Resu
 pub fn valid(mut inState: ClassInf::State, mut inRestriction: SCode::Restriction) -> Result<()> {
     let () = (match (inState.clone(), inRestriction.clone()) {
         (ClassInf::State::UNKNOWN { .. }, _) => (),
-        (ClassInf::State::HAS_RESTRICTIONS { .. }, SCode::Restriction::R_CLASS) => (),
-        (ClassInf::State::HAS_RESTRICTIONS { .. }, SCode::Restriction::R_MODEL) => (),
-        (ClassInf::State::HAS_RESTRICTIONS { .. }, SCode::Restriction::R_OPTIMIZATION) => (),
-        (ClassInf::State::MODEL { .. }, SCode::Restriction::R_MODEL) => (),
+        (ClassInf::State::HAS_RESTRICTIONS { .. }, SCode::Restriction::R_CLASS { .. }) => (),
+        (ClassInf::State::HAS_RESTRICTIONS { .. }, SCode::Restriction::R_MODEL { .. }) => (),
+        (ClassInf::State::HAS_RESTRICTIONS { .. }, SCode::Restriction::R_OPTIMIZATION { .. }) => (),
+        (ClassInf::State::MODEL { .. }, SCode::Restriction::R_MODEL { .. }) => (),
         (ClassInf::State::RECORD { .. }, SCode::Restriction::R_RECORD { isOperator: _ }) => (),
         (ClassInf::State::RECORD { .. }, SCode::Restriction::R_CONNECTOR { isExpandable: _ }) => (),
         (ClassInf::State::HAS_RESTRICTIONS { hasAlgorithms: false, hasConstraints: false, hasEquations: false, .. }, SCode::Restriction::R_RECORD { isOperator: _ }) => (),
-        (ClassInf::State::BLOCK { .. }, SCode::Restriction::R_BLOCK) => (),
-        (ClassInf::State::MODEL { .. }, SCode::Restriction::R_MODEL) => (),
-        (ClassInf::State::CONNECTOR { .. }, SCode::Restriction::R_TYPE) => (),
+        (ClassInf::State::BLOCK { .. }, SCode::Restriction::R_BLOCK { .. }) => (),
+        (ClassInf::State::MODEL { .. }, SCode::Restriction::R_MODEL { .. }) => (),
+        (ClassInf::State::CONNECTOR { .. }, SCode::Restriction::R_TYPE { .. }) => (),
         (ClassInf::State::CONNECTOR { isExpandable: false, .. }, SCode::Restriction::R_CONNECTOR { isExpandable: false }) => (),
         (ClassInf::State::CONNECTOR { isExpandable: true, .. }, SCode::Restriction::R_CONNECTOR { isExpandable: true }) => (),
         (ClassInf::State::HAS_RESTRICTIONS { hasAlgorithms: false, hasConstraints: false, hasEquations: false, .. }, SCode::Restriction::R_CONNECTOR { isExpandable: _ }) => (),
@@ -610,24 +610,24 @@ pub fn valid(mut inState: ClassInf::State, mut inRestriction: SCode::Restriction
         (ClassInf::State::TYPE_ENUM { .. }, SCode::Restriction::R_CONNECTOR { isExpandable: _ }) => (),
         (ClassInf::State::ENUMERATION { .. }, SCode::Restriction::R_CONNECTOR { isExpandable: _ }) => (),
         (ClassInf::State::TYPE { .. }, SCode::Restriction::R_CONNECTOR { .. }) => (),
-        (ClassInf::State::TYPE { .. }, SCode::Restriction::R_TYPE) => (),
-        (ClassInf::State::TYPE_INTEGER { .. }, SCode::Restriction::R_TYPE) => (),
-        (ClassInf::State::TYPE_REAL { .. }, SCode::Restriction::R_TYPE) => (),
-        (ClassInf::State::TYPE_STRING { .. }, SCode::Restriction::R_TYPE) => (),
-        (ClassInf::State::TYPE_BOOL { .. }, SCode::Restriction::R_TYPE) => (),
-        (ClassInf::State::TYPE_CLOCK { .. }, SCode::Restriction::R_TYPE) => (),
-        (ClassInf::State::TYPE_ENUM { .. }, SCode::Restriction::R_TYPE) => (),
-        (ClassInf::State::ENUMERATION { .. }, SCode::Restriction::R_TYPE) => (),
-        (ClassInf::State::PACKAGE { .. }, SCode::Restriction::R_PACKAGE) => (),
-        (ClassInf::State::HAS_RESTRICTIONS { hasAlgorithms: false, hasConstraints: false, hasEquations: false, .. }, SCode::Restriction::R_PACKAGE) => (),
+        (ClassInf::State::TYPE { .. }, SCode::Restriction::R_TYPE { .. }) => (),
+        (ClassInf::State::TYPE_INTEGER { .. }, SCode::Restriction::R_TYPE { .. }) => (),
+        (ClassInf::State::TYPE_REAL { .. }, SCode::Restriction::R_TYPE { .. }) => (),
+        (ClassInf::State::TYPE_STRING { .. }, SCode::Restriction::R_TYPE { .. }) => (),
+        (ClassInf::State::TYPE_BOOL { .. }, SCode::Restriction::R_TYPE { .. }) => (),
+        (ClassInf::State::TYPE_CLOCK { .. }, SCode::Restriction::R_TYPE { .. }) => (),
+        (ClassInf::State::TYPE_ENUM { .. }, SCode::Restriction::R_TYPE { .. }) => (),
+        (ClassInf::State::ENUMERATION { .. }, SCode::Restriction::R_TYPE { .. }) => (),
+        (ClassInf::State::PACKAGE { .. }, SCode::Restriction::R_PACKAGE { .. }) => (),
+        (ClassInf::State::HAS_RESTRICTIONS { hasAlgorithms: false, hasConstraints: false, hasEquations: false, .. }, SCode::Restriction::R_PACKAGE { .. }) => (),
         (ClassInf::State::FUNCTION { .. }, SCode::Restriction::R_FUNCTION { functionRestriction: _ }) => (),
         (ClassInf::State::HAS_RESTRICTIONS { hasConstraints: false, hasEquations: false, .. }, SCode::Restriction::R_FUNCTION { functionRestriction: _ }) => (),
-        (ClassInf::State::META_TUPLE { .. }, SCode::Restriction::R_TYPE) => (),
-        (ClassInf::State::META_LIST { .. }, SCode::Restriction::R_TYPE) => (),
-        (ClassInf::State::META_OPTION { .. }, SCode::Restriction::R_TYPE) => (),
-        (ClassInf::State::META_RECORD { .. }, SCode::Restriction::R_TYPE) => (),
-        (ClassInf::State::META_ARRAY { .. }, SCode::Restriction::R_TYPE) => (),
-        (ClassInf::State::META_UNIONTYPE { .. }, SCode::Restriction::R_TYPE) => (),
+        (ClassInf::State::META_TUPLE { .. }, SCode::Restriction::R_TYPE { .. }) => (),
+        (ClassInf::State::META_LIST { .. }, SCode::Restriction::R_TYPE { .. }) => (),
+        (ClassInf::State::META_OPTION { .. }, SCode::Restriction::R_TYPE { .. }) => (),
+        (ClassInf::State::META_RECORD { .. }, SCode::Restriction::R_TYPE { .. }) => (),
+        (ClassInf::State::META_ARRAY { .. }, SCode::Restriction::R_TYPE { .. }) => (),
+        (ClassInf::State::META_UNIONTYPE { .. }, SCode::Restriction::R_TYPE { .. }) => (),
         _ => bail!("match: no arm matched"),
     });
     Ok(())

@@ -60,18 +60,110 @@ use crate::NBVariable::VariablePointer;
 use crate::NBVariable::VariablePointers;
 use crate::NBackendDAE as BackendDAE;
 use openmodelica_nf_frontend::NFVariable as Variable;
+use openmodelica_util::Error;
+use openmodelica_util::UnorderedSet;
 use openmodelica_util_datatypes_basic::Pointer;
 
 // NF imports
 // Backend imports
+pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NBackendDAE>> {
+    let mut bdae: Arc<BackendDAE::NBackendDAE> = bdae;
+    let mut func: Module::daeModeInterface;
+    match '__try0: {
+        func = unwrap_break_err!(getModule(), '__try0);
+        bdae = (::match_deref::match_deref! { match &(bdae.clone()) {
+        Deref @ BackendDAE::MAIN { varData: Deref @ BVariable::VarData::VAR_DATA_SIM { variables, .. }, eqData: eqData @ Deref @ EqData::EQ_DATA_SIM { .. }, ode, .. } => {
+            assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN; dae = Some(unwrap_break_err!(func(ode.clone(), variables.clone(), var_field!((**eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone()), '__try0)));
+            bdae.clone()
+        },
+        _ => {
+            unwrap_break_err!(Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBDAEMode.main")); __mm_s.push_str(&*literal!(" failed due to wrong BackendDAE record!")); ArcStr::from(__mm_s) }).clone()]), '__try0);
+            break '__try0 Err::<_, _>(anyhow::anyhow!("fail"))
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+        bdae = unwrap_break_err!(Causalize::main(bdae.clone(), Partition::Kind::DAE.clone()), '__try0);
+        Ok::<_, anyhow::Error>((bdae.clone(), func.clone()))
+    } {
+        Ok((__try0_o0, __try0_o1)) => {
+            bdae = __try0_o0;
+            func = __try0_o1;
+        }
+        Err(_) => {
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBDAEMode.main")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
+            bail!("try/else: outputs not set in else branch");
+        }
+    }
+    Ok(bdae)
+}
+
 pub fn getModule() -> Result<Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>, Arc<VariablePointers::VariablePointers>, Pointer::Pointer<i32>) -> Result<Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>> + 'static>> {
     let mut func: Module::daeModeInterface;
     let mut flag: ArcStr = literal!("default");
     func = (::match_deref::match_deref! { match &(flag.clone()) {
-        Deref @ "default" => daeModeDefault.clone(),
+        Deref @ "default" => (std::sync::Arc::new(daeModeDefault) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>, Arc<VariablePointers::VariablePointers>, Pointer::Pointer<i32>) -> Result<Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>> + 'static>),
         _ => bail!("fail"),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(func)
+}
+
+fn daeModeDefault(mut partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>, mut variables: Arc<VariablePointers::VariablePointers>, mut uniqueIndex: Pointer::Pointer<i32>) -> Result<Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>> {
+    let mut partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>> = partitions;
+    let mut new_partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>> = metamodelica::nil();
+    for mut part in &*partitions.clone() {
+        let mut part = part.clone();
+        new_partitions = (::match_deref::match_deref! { match &(part.association.clone()) {
+        association @ Deref @ Partition::Association::CONTINUOUS { .. } => {
+            let mut new_eqns: Arc<EquationPointers::EquationPointers> = Arc::new(<EquationPointers::EquationPointers as ::std::default::Default>::default());
+            let mut new_vars: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
+            let mut association = (*association).clone();
+            assign_variant_field!(association => Partition::Association::Association::CONTINUOUS; kind = Partition::Kind::DAE.clone());
+            assign_field!(
+                part.association = association.clone(),
+                part.strongComponents = StrongComponent::sortDAEModeComponents(part.strongComponents.clone(), variables.clone(), uniqueIndex.clone())?
+            );
+            (new_eqns, new_vars) = (match part.strongComponents.clone() {
+        Some(mut new_c) => {
+            let mut eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+            let mut vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+            let mut new_eqns_set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Equation::Equation>>>> = <Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Equation::Equation>>>> as ::std::default::Default>::default();
+            let mut new_vars_set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>> = <Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>> as ::std::default::Default>::default();
+            new_eqns_set = UnorderedSet::new((std::sync::Arc::new(fnptr!(Equation::hash, Pointer::Pointer<Arc<Equation::Equation>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(Equation::equalName, Pointer::Pointer<Arc<Equation::Equation>>, Pointer::Pointer<Arc<Equation::Equation>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>, Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>), 13);
+            new_vars_set = UnorderedSet::new((std::sync::Arc::new(fnptr!(BVariable::hash, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(BVariable::equalName, Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 13);
+            let __range0 = new_c.clone().borrow().iter().cloned().collect::<Vec<_>>();
+            for mut comp in __range0 {
+                eqns = StrongComponent::getEquations(comp.clone())?;
+                vars = StrongComponent::getVariables(comp.clone())?;
+                for mut eqn in &*eqns.clone() {
+                    let mut eqn = eqn.clone();
+                    UnorderedSet::add(eqn.clone(), new_eqns_set.clone())?;
+                }
+                for mut var in &*vars.clone() {
+                    let mut var = var.clone();
+                    UnorderedSet::add(var.clone(), new_vars_set.clone())?;
+                }
+            }
+            (EquationPointers::fromList(UnorderedSet::toList(new_eqns_set.clone())), BVariable::VariablePointers::fromList(UnorderedSet::toList(new_vars_set.clone()), false))
+        },
+        _ => {
+            (part.equations.clone(), part.unknowns.clone())
+        },
+    });
+            assign_field!(
+                part.equations = new_eqns.clone(),
+                part.daeUnknowns = Some(part.unknowns.clone()),
+                part.unknowns = new_vars.clone()
+            );
+            if (Partition::Partition::isEmpty(part.clone())) {new_partitions.clone()} else {cons(part.clone(), new_partitions.clone())}
+        },
+        _ => {
+            new_partitions.clone()
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    }
+    partitions = new_partitions.clone().reverse();
+    Ok(partitions)
 }
 

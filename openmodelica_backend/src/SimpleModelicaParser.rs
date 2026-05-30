@@ -1892,7 +1892,7 @@ fn addCommentAtLabelPath(mut tree: Arc<metamodelica::List<Arc<ParseTree>>>, mut 
     let mut rest: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     let mut nodes: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     let mut pathRest: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut delst: DoubleEnded::MutableList<Arc<ParseTree>>;
+    let mut delst: DoubleEnded::MutableList<Arc<ParseTree>> = <DoubleEnded::MutableList<Arc<ParseTree>> as ::std::default::Default>::default();
     let mut b: bool = false;
     if path.clone().is_empty() {
         success = true;
@@ -1950,7 +1950,7 @@ fn removeCommentAtLabelPath(mut tree: Arc<metamodelica::List<Arc<ParseTree>>>, m
     let mut rest: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     let mut nodes: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     let mut pathRest: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    let mut delst: DoubleEnded::MutableList<Arc<ParseTree>>;
+    let mut delst: DoubleEnded::MutableList<Arc<ParseTree>> = <DoubleEnded::MutableList<Arc<ParseTree>> as ::std::default::Default>::default();
     let mut b: bool = false;
     if path.clone().is_empty() {
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(removeCommentAtThisLabel(tree.clone(), tok.clone())?) {
@@ -2005,7 +2005,7 @@ fn removeCommentAtLabelPath(mut tree: Arc<metamodelica::List<Arc<ParseTree>>>, m
 fn removeCommentAtThisLabel(mut tree: Arc<metamodelica::List<Arc<ParseTree>>>, mut tok: Token) -> Result<(Arc<metamodelica::List<Arc<ParseTree>>>, bool)> {
     let mut tree: Arc<metamodelica::List<Arc<ParseTree>>> = tree;
     let mut success: bool = false;
-    let mut delst: DoubleEnded::MutableList<Arc<ParseTree>>;
+    let mut delst: DoubleEnded::MutableList<Arc<ParseTree>> = <DoubleEnded::MutableList<Arc<ParseTree>> as ::std::default::Default>::default();
     let mut rest: Arc<metamodelica::List<Arc<ParseTree>>> = tree.clone();
     let mut nodes: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     let mut n: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
@@ -2612,7 +2612,7 @@ fn filterDiffWhitespace(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodeli
     } });
         firstIter = false;
     }
-    diff = diff.clone().reverse();
+    diff = metamodelica::Dangerous::listReverseInPlace(diff.clone());
     lastTokenNewline = false;
     indentation = metamodelica::nil();
     hasAddedWS = false;
@@ -2724,7 +2724,7 @@ fn filterDiffWhitespace(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodeli
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    diff = diffLocal.clone().reverse();
+    diff = metamodelica::Dangerous::listReverseInPlace(diffLocal.clone());
     Ok(diff)
 }
 
@@ -2943,7 +2943,7 @@ fn findTokens(mut t: Arc<ParseTree>, mut work: metamodelica::Array<Token>, mut i
             }
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((count, commentCount))
 }
@@ -3014,7 +3014,7 @@ fn firstNTokensInTree_reverse(mut t: Arc<ParseTree>, mut n: i32, mut acc: Arc<me
             }
             acc.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(tokens)
 }
@@ -3056,7 +3056,7 @@ fn removeLastTokenInTree(mut t: Arc<ParseTree>) -> Result<Arc<ParseTree>> {
             nodes = __pa1.clone();
             makeNode(cons(removeLastTokenInTree(node.clone())?, nodes.clone()).reverse(), label.clone())
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(t)
 }
@@ -3085,7 +3085,7 @@ fn firstTokenInTree(mut t: Arc<ParseTree>) -> Result<Token> {
         },
         Deref @ ParseTree::LEAF { .. } => var_field!((*t).token, ParseTree::LEAF).clone(),
         Deref @ ParseTree::NODE { .. } => firstTokenInTree((var_field!((*t).nodes, ParseTree::NODE).clone()).get(1)?)?,
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(token)
 }
@@ -3103,7 +3103,7 @@ fn lastToken(mut t: Arc<ParseTree>) -> Result<Token> {
         },
         Deref @ ParseTree::LEAF { .. } => var_field!((*t).token, ParseTree::LEAF).clone(),
         Deref @ ParseTree::NODE { .. } => lastToken(List::last(var_field!((*t).nodes, ParseTree::NODE).clone())?)?,
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(token)
 }
@@ -3154,7 +3154,7 @@ fn fixMoveOperations(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodelica:
                             }
                         }
                     }
-                    d1 = (Diff::Add.clone(), lst2.clone().reverse());
+                    d1 = (Diff::Add.clone(), metamodelica::Dangerous::listReverseInPlace(lst2.clone()));
                     break;
                 }
             }
@@ -3165,7 +3165,7 @@ fn fixMoveOperations(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodelica:
     } });
         diff = cons(d1.clone(), diff.clone());
     }
-    diff = if (changeFound.clone()) {diff.clone().reverse()} else {inDiff.clone()};
+    diff = if (changeFound.clone()) {metamodelica::Dangerous::listReverseInPlace(diff.clone())} else {inDiff.clone()};
     diff
 }
 
@@ -3713,7 +3713,7 @@ fn parseTreeStrWork(mut tree: Arc<ParseTree>) -> Result<()> {
             }
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(())
 }

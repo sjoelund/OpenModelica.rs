@@ -289,7 +289,7 @@ pub mod SimIterator {
         r#str = ((::match_deref::match_deref! { match &(iter.clone()) {
         Deref @ SIM_ITERATOR_RANGE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*ComponentRef::toString(var_field!((*iter).name, SimIterator::SIM_ITERATOR_RANGE).clone())?); __mm_s.push_str(&*literal!(" | start:")); __mm_s.push_str(&*Expression::toString(var_field!((*iter).start, SimIterator::SIM_ITERATOR_RANGE).clone())?); __mm_s.push_str(&*literal!(", step:")); __mm_s.push_str(&*Expression::toString(var_field!((*iter).step, SimIterator::SIM_ITERATOR_RANGE).clone())?); __mm_s.push_str(&*literal!(", stop:")); __mm_s.push_str(&*Expression::toString(var_field!((*iter).stop, SimIterator::SIM_ITERATOR_RANGE).clone())?); __mm_s.push_str(&*literal!(", size: ")); __mm_s.push_str(&*Expression::toString(var_field!((*iter).size, SimIterator::SIM_ITERATOR_RANGE).clone())?); __mm_s.push_str(&*literal!("}")); __mm_s.push_str(&*subIterString(var_field!((*iter).sub_iter, SimIterator::SIM_ITERATOR_RANGE).clone())); ArcStr::from(__mm_s) },
         Deref @ SIM_ITERATOR_LIST { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*ComponentRef::toString(var_field!((*iter).name, SimIterator::SIM_ITERATOR_LIST).clone())?); __mm_s.push_str(&*literal!(" | list: ")); __mm_s.push_str(&*List::toString(var_field!((*iter).lst, SimIterator::SIM_ITERATOR_LIST).clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 10)?); __mm_s.push_str(&*literal!("}")); __mm_s.push_str(&*subIterString(var_field!((*iter).sub_iter, SimIterator::SIM_ITERATOR_LIST).clone())); ArcStr::from(__mm_s) },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
         Ok(r#str)
     }
@@ -399,7 +399,7 @@ pub mod SimIterator {
         }
         __acc.reverse()
     }) },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(old_iter)
     }

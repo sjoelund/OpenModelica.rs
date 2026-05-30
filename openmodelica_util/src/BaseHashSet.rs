@@ -136,7 +136,7 @@ pub fn add<Key: Clone + 'static>(mut entry: Key, mut hashSet: HashSet<Key>) -> R
             println!("{}", (literal!("bsize: ")).clone());
             println!("{}", (intString(bsize.clone())).clone());
             println!("{}", (literal!(" key: ")).clone());
-            s = keystrFunc(key.clone())?;
+            s = (keystrFunc(key.clone())?).clone();
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*literal!(" Hash: ")); ArcStr::from(__mm_s) }).clone());
             hval = intMod(hashFunc(key.clone())?, bsize.clone());
             println!("{}", (intString(hval.clone())).clone());

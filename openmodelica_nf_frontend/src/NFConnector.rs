@@ -243,7 +243,7 @@ pub fn hashNoSubs(mut conn: Arc<NFConnector>) -> i32 {
 pub fn split(mut conn: Arc<NFConnector>) -> Result<Arc<metamodelica::List<Arc<NFConnector>>>> {
     let mut connl: Arc<metamodelica::List<Arc<NFConnector>>> = metamodelica::nil();
     connl = splitImpl(conn.name.clone(), conn.ty.clone(), conn.face.clone(), conn.source.clone(), conn.cty.clone(), metamodelica::nil(), metamodelica::nil())?;
-    connl = connl.clone().reverse();
+    connl = metamodelica::Dangerous::listReverseInPlace(connl.clone());
     Ok(connl)
 }
 
@@ -303,7 +303,7 @@ pub fn scalarizePrefix(mut conn: Arc<NFConnector>) -> Result<Arc<metamodelica::L
         name = ComponentRef::prepend(p.clone(), name.clone())?;
         connl = cons(Arc::new(NFConnector { name: name.clone(), ty: ty.clone(), face: face.clone(), cty: cty.clone(), source: source.clone() }), connl.clone());
     }
-    connl = connl.clone().reverse();
+    connl = metamodelica::Dangerous::listReverseInPlace(connl.clone());
     Ok(connl)
 }
 

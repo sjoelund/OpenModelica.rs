@@ -369,16 +369,16 @@ pub fn makeRecordType(mut constructor: Arc<InstNode::InstNode>) -> Result<Arc<Co
     let mut cache: Arc<CachedData::CachedData> = Arc::new(CachedData::NO_CACHE);
     let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
     let mut fields: metamodelica::Array<Arc<Record::Field::Field>>;
-    let mut indexMap: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>>;
+    let mut indexMap: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>> = <Arc<UnorderedMap::UnorderedMap<ArcStr, i32>> as ::std::default::Default>::default();
     cache = InstNode::getFuncCache(constructor.clone())?;
     recordTy = 'mc: {
         let __mc_input = cache.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ CachedData::FUNCTION { .. } => {
-                    let mut fields: metamodelica::Array<Arc<Record::Field::Field>>;
                     let mut r#fn: Arc<Function::Function> = r#fn.clone();
-                    let mut indexMap: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>>;
+                    let mut fields: metamodelica::Array<Arc<Record::Field::Field>>;
+                    let mut indexMap: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>> = indexMap.clone();
                     r#fn = List::find(var_field!((*cache).funcs, CachedData::CachedData::FUNCTION).clone(), (std::sync::Arc::new(fnptr!(Function::isDefaultRecordConstructor, Arc<Function::Function>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Function::Function>) -> Result<bool> + 'static>))?;
                     (fields, indexMap) = Record::collectRecordFields(r#fn.node.clone())?;
                     Ok(Arc::new(ComplexType::NFComplexType::RECORD { constructor: constructor.clone(), fields: fields.clone(), indexMap: indexMap.clone() }))
@@ -1228,7 +1228,7 @@ pub fn typeRecordExp(mut exp: Arc<Expression::NFExpression>, mut context: i32, m
         purity = Prefixes::purityMin(pur.clone(), purity.clone());
         ty_elems = cons(e.clone(), ty_elems.clone());
     }
-    exp = Expression::makeRecord(path.clone(), ty.clone(), ty_elems.clone().reverse());
+    exp = Expression::makeRecord(path.clone(), ty.clone(), metamodelica::Dangerous::listReverseInPlace(ty_elems.clone()));
     Ok((exp, ty, variability, purity))
 }
 
@@ -1255,7 +1255,7 @@ pub fn typeSubscriptedExp(mut exp: Arc<Expression::NFExpression>, mut context: i
         (expanded_subs, fill_dims) = expandProxySubscripts(subs.clone(), context.clone())?;
         (exp, ty, variability, purity) = typeSubscriptedExp2(e.clone(), expanded_subs.clone(), context.clone(), info.clone())?;
         if !(fill_dims.clone().is_empty()) {
-            fill_dims = fill_dims.clone().reverse();
+            fill_dims = metamodelica::Dangerous::listReverseInPlace(fill_dims.clone());
             ty = Type::liftArrayLeftList(ty.clone(), ({
         let mut __acc: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
         for mut d in (fill_dims.clone()).into_iter().cloned() {
@@ -1333,7 +1333,7 @@ pub fn expandProxySubscripts(mut subscripts: Arc<metamodelica::List<Arc<Subscrip
     } });
     }
     outSubscripts = List::trim(outSubscripts.clone(), (std::sync::Arc::new(fnptr!(Subscript::isWhole, Arc<Subscript::NFSubscript>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>) -> Result<bool> + 'static>))?;
-    outSubscripts = outSubscripts.clone().reverse();
+    outSubscripts = metamodelica::Dangerous::listReverseInPlace(outSubscripts.clone());
     Ok((outSubscripts, fillDimensions))
 }
 
@@ -1353,7 +1353,7 @@ pub fn typeSubscriptedExp2(mut exp: Arc<Expression::NFExpression>, mut splitSubs
                 (e, ty, variability, purity) = typeSubscriptedExp2(e.clone(), listRest(splitSubs.clone())?, context.clone(), info.clone())?;
                 expl = cons(e.clone(), expl.clone());
             }
-            expl = expl.clone().reverse();
+            expl = metamodelica::Dangerous::listReverseInPlace(expl.clone());
             ty = Type::liftArrayLeft(ty.clone(), Dimension::fromInteger((expl.clone().len() as i32), Prefixes::Variability::CONSTANT.clone()));
             outExp = Expression::makeArray(ty.clone(), metamodelica::arrayFromVec(expl.clone().into_iter().cloned().collect()), var_field!((*exp).literal, Expression::NFExpression::ARRAY).clone());
             (outExp.clone(), ty.clone(), variability.clone(), purity.clone())
@@ -1674,7 +1674,7 @@ pub fn typeSubscripts(mut subscripts: Arc<metamodelica::List<Arc<Subscript::NFSu
             Structural::markSubscript(sub.clone())?;
         }
     }
-    typedSubs = typedSubs.clone().reverse();
+    typedSubs = metamodelica::Dangerous::listReverseInPlace(typedSubs.clone());
     Ok((typedSubs, variability))
 }
 
@@ -2115,7 +2115,7 @@ pub fn checkSizeTypingError(mut typingError: Arc<TypingError::TypingError>, mut 
             Error::addSourceMessage(Error::INVALID_SIZE_INDEX.clone(), list![ArcStr::from(::std::format!("{}", index.clone())), (Expression::toString(exp.clone())?).clone(), ArcStr::from(::std::format!("{}", var_field!((*typingError).upperBound, TypingError::TypingError::OUT_OF_BOUNDS).clone()))], info.clone())?;
             bail!("fail")
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(())
 }
@@ -3019,7 +3019,7 @@ pub fn typeWhenEquation(mut branches: Arc<metamodelica::List<Arc<Equation::Branc
     });
         accum_branches = cons(Equation::makeBranch(cond.clone(), body.clone(), var.clone()), accum_branches.clone());
     }
-    whenEq = Arc::new(Equation::NFEquation::WHEN { branches: accum_branches.clone().reverse(), scope: scope.clone(), source: source.clone() });
+    whenEq = Arc::new(Equation::NFEquation::WHEN { branches: metamodelica::Dangerous::listReverseInPlace(accum_branches.clone()), scope: scope.clone(), source: source.clone() });
     Ok(whenEq)
 }
 

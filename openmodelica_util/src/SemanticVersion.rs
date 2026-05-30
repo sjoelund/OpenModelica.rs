@@ -186,7 +186,6 @@ pub fn toString(mut v: Version) -> Result<ArcStr> {
             out.clone()
         },
         Version::NONSEMVER { .. } => var_field!(v.version, Version::NONSEMVER).clone(),
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(out)
 }

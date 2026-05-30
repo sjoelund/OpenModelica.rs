@@ -47,7 +47,6 @@ use crate::BackendDAE;
 use crate::BackendDump;
 use crate::BackendEquation;
 use crate::BackendVariable;
-use openmodelica_frontend_types::DAE;
 use openmodelica_util::ExpandableArray;
 use openmodelica_util::System;
 use openmodelica_util_datatypes_basic::List;
@@ -317,7 +316,7 @@ fn dumpTag(mut tag: Arc<Tag>, mut iBuffer: ArcStr) -> Result<ArcStr> {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*iBuffer.clone()); __mm_s.push_str(&*literal!("\n<canvas ")); __mm_s.push_str(&*t1.clone()); __mm_s.push_str(&*literal!("\">\n")); ArcStr::from(__mm_s) }).clone();
             r#str.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(oBuffer)
 }
@@ -338,7 +337,7 @@ pub fn dumpDAE(mut inDAE: Arc<BackendDAE::BackendDAE>, mut inHeader: ArcStr, mut
     let mut r#str: ArcStr = arcstr::literal!("");
     let mut eqs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = metamodelica::nil();
     let __pa0 = ::match_deref::match_deref! { match &(inDAE.clone()) {
-        Deref @ DAE { eqs: __pa0, .. } => __pa0.clone(),
+        Deref @ BackendDAE::BackendDAE { eqs: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
     eqs = __pa0.clone();
@@ -359,7 +358,7 @@ fn dumpEqSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inPrefixIdstr: Ar
     let mut prefixId: ArcStr = arcstr::literal!("");
     let mut eqnsl: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut vars1: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
-    let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
+    let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     let mut m: Option<metamodelica::Array<Arc<metamodelica::List<i32>>>> = None;
     let mut mT: Option<metamodelica::Array<Arc<metamodelica::List<i32>>>> = None;
     let mut matching: Arc<BackendDAE::Matching> = Arc::new(BackendDAE::Matching::NO_MATCHING);
@@ -445,7 +444,7 @@ fn dumpEqn(mut inEquation: Arc<BackendDAE::Equation>, mut prefixId: ArcStr, mut 
 fn dumpFullMatching(mut inMatch: Arc<BackendDAE::Matching>, mut prefixId: ArcStr, mut inTags: Arc<metamodelica::List<Arc<Tag>>>) -> Result<Arc<metamodelica::List<Arc<Tag>>>> {
     let mut outTags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
     outTags = (::match_deref::match_deref! { match &(inMatch.clone()) {
-        Deref @ BackendDAE::Matching::NO_MATCHING => {
+        Deref @ BackendDAE::Matching::NO_MATCHING { .. } => {
             inTags.clone()
         },
         Deref @ BackendDAE::Matching::MATCHING { ass1, ass2: _, comps: _ } => {
@@ -453,7 +452,7 @@ fn dumpFullMatching(mut inMatch: Arc<BackendDAE::Matching>, mut prefixId: ArcStr
             tags = dumpMatching(ass1.clone(), (prefixId.clone()).clone(), inTags.clone());
             tags.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outTags)
 }

@@ -899,7 +899,7 @@ pub fn makeRecordExp(mut clsNode: Arc<InstNode::InstNode>, mut scope: Arc<InstNo
                 args = cons(Binding::getExp(Component::getImplicitBinding(InstNode::component(c.clone())?, scope.clone()))?, args.clone());
             }
         }
-        args = args.clone().reverse();
+        args = metamodelica::Dangerous::listReverseInPlace(args.clone());
         exp = Arc::new(Expression::NFExpression::CALL { call: Arc::new(Call::NFCall::UNTYPED_CALL { r#ref: ComponentRef::fromNode(ty_node.clone(), ty.clone(), metamodelica::nil(), ComponentRef::Origin::CREF.clone()), arguments: args.clone(), named_args: metamodelica::nil(), call_scope: scope.clone() }) });
     }
     Ok(exp)

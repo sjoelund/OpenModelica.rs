@@ -136,7 +136,7 @@ pub fn firstName(mut inPrefix: Arc<Prefix>) -> Result<ArcStr> {
         Deref @ Prefix::PREFIX { name, .. } => {
             name.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(outStr)
 }
@@ -154,7 +154,7 @@ pub fn prefixCref(mut inCref: Arc<DAE::ComponentRef>, mut inPrefix: Arc<Prefix>)
             cref = Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (name.clone()).clone(), identType: DAE::T_UNKNOWN_DEFAULT().clone(), subscriptLst: metamodelica::nil(), componentRef: inCref.clone() });
             prefixCref(cref.clone(), rest_prefix.clone())?
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outCref)
 }
@@ -172,7 +172,7 @@ pub fn prefixPath(mut inPath: Arc<Absyn::Path>, mut inPrefix: Arc<Prefix>) -> Re
             path = Arc::new(Absyn::Path::QUALIFIED { name: (name.clone()).clone(), path: inPath.clone() });
             prefixPath(path.clone(), rest_prefix.clone())?
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outPath)
 }
@@ -246,7 +246,7 @@ fn fromPath2(mut inPath: Arc<Absyn::Path>, mut inPrefix: Arc<Prefix>) -> Result<
         Deref @ Absyn::Path::FULLYQUALIFIED { path } => {
             fromPath2(path.clone(), inPrefix.clone())?
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outPrefix)
 }
@@ -287,7 +287,7 @@ pub fn toStr(mut inPrefix: Arc<Prefix>) -> Result<ArcStr> {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*toStr(rest_prefix.clone())?); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone();
             r#str.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(outStr)
 }
@@ -343,7 +343,7 @@ pub fn toPackagePrefix(mut inPrefix: Arc<Prefix>) -> Result<Arc<Prefix>> {
         Deref @ Prefix::EMPTY_PREFIX { .. } => {
             Arc::new(Prefix::EMPTY_PREFIX { classPath: None })
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outPrefix)
 }

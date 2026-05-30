@@ -152,7 +152,7 @@ pub mod AvailableLibraries {
             }
             if (key_comp.clone() == 0) {outTree.clone()} else {balance(outTree.clone())?}
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(tree)
     }
@@ -218,7 +218,7 @@ pub mod AvailableLibraries {
             }
             if (key_comp.clone() == 0) {new_tree.clone()} else {balance(new_tree.clone())?}
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(tree)
     }
@@ -352,7 +352,7 @@ pub mod AvailableLibraries {
             ()
         },
         Deref @ Tree::EMPTY { .. } => (),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(())
     }
@@ -409,6 +409,8 @@ pub mod AvailableLibraries {
         value
     }
 
+    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
+    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
     pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
         let mut comp: bool = false;
         let mut key: Key = arcstr::literal!("");
@@ -421,7 +423,7 @@ pub mod AvailableLibraries {
             return Ok(comp.clone());
             bail!("fail")
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
         key_comp = keyCompare((inKey.clone()).clone(), (key.clone()).clone());
         comp = (::match_deref::match_deref! { match &((key_comp.clone(), inTree.clone())) {
@@ -471,7 +473,7 @@ pub mod AvailableLibraries {
             tree.clone()
         },
         Deref @ Tree::LEAF { .. } => add(tree.clone(), (var_field!((*treeToJoin).key, Tree::LEAF).clone()).clone(), var_field!((*treeToJoin).value, Tree::LEAF).clone(), conflictFunc.clone())?,
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(tree)
     }
@@ -622,7 +624,7 @@ pub mod AvailableLibraries {
         Deref @ Tree::EMPTY { .. } => literal!("EMPTY()"),
         Deref @ Tree::LEAF { .. } => printNodeStr(inTree.clone())?,
         Deref @ Tree::NODE { right, left, .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
         Ok(outString)
     }
@@ -835,7 +837,7 @@ pub mod VersionMap {
             }
             if (key_comp.clone() == 0) {outTree.clone()} else {balance(outTree.clone())?}
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(tree)
     }
@@ -901,7 +903,7 @@ pub mod VersionMap {
             }
             if (key_comp.clone() == 0) {new_tree.clone()} else {balance(new_tree.clone())?}
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(tree)
     }
@@ -1035,7 +1037,7 @@ pub mod VersionMap {
             ()
         },
         Deref @ Tree::EMPTY { .. } => (),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(())
     }
@@ -1092,6 +1094,8 @@ pub mod VersionMap {
         Ok(value)
     }
 
+    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
+    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
     pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
         let mut comp: bool = false;
         let mut key: Key;
@@ -1104,7 +1108,7 @@ pub mod VersionMap {
             return Ok(comp.clone());
             bail!("fail")
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         key_comp = keyCompare(inKey.clone(), key.clone())?;
         comp = (::match_deref::match_deref! { match &((key_comp.clone(), inTree.clone())) {
@@ -1154,7 +1158,7 @@ pub mod VersionMap {
             tree.clone()
         },
         Deref @ Tree::LEAF { .. } => add(tree.clone(), var_field!((*treeToJoin).key, Tree::LEAF).clone(), (var_field!((*treeToJoin).value, Tree::LEAF).clone()).clone(), conflictFunc.clone())?,
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(tree)
     }
@@ -1305,7 +1309,7 @@ pub mod VersionMap {
         Deref @ Tree::EMPTY { .. } => literal!("EMPTY()"),
         Deref @ Tree::LEAF { .. } => printNodeStr(inTree.clone())?,
         Deref @ Tree::NODE { right, left, .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
         Ok(outString)
     }

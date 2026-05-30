@@ -147,7 +147,7 @@ pub fn fromAbsynCref(mut acref: Arc<Absyn::ComponentRef>, mut restCref: Arc<NFCo
         Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => fromAbsynCref(var_field!((*acref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(), Arc::new(crate::NFComponentRef::EMPTY))?,
         Deref @ Absyn::ComponentRef::WILD { .. } => Arc::new(crate::NFComponentRef::WILD),
         Deref @ Absyn::ComponentRef::ALLWILD { .. } => Arc::new(crate::NFComponentRef::WILD),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(cref)
 }
@@ -902,7 +902,7 @@ pub fn subscriptsAllWithWholeFlat(mut cref: Arc<NFComponentRef>) -> Arc<metamode
 }
 
 pub fn subscriptsAll(mut cref: Arc<NFComponentRef>) -> Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>> {
-    let mut subscripts: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>> = subscriptsAllReverse(cref.clone(), metamodelica::nil()).reverse();
+    let mut subscripts: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>> = metamodelica::Dangerous::listReverseInPlace(subscriptsAllReverse(cref.clone(), metamodelica::nil()));
     subscripts
 }
 
@@ -1084,7 +1084,7 @@ pub fn replaceWholeSubscripts(mut cref: Arc<NFComponentRef>) -> Result<Arc<NFCom
                     subs = cons(s.clone(), subs.clone());
                     dims = listRest(dims.clone())?;
                 }
-                assign_variant_field!(cref => NFComponentRef::CREF; subscripts = subs.clone().reverse());
+                assign_variant_field!(cref => NFComponentRef::CREF; subscripts = metamodelica::Dangerous::listReverseInPlace(subs.clone()));
             }
             assign_variant_field!(cref => NFComponentRef::CREF; restCref = replaceWholeSubscripts(var_field!((*cref).restCref, NFComponentRef::CREF).clone())?);
             ()
@@ -1652,7 +1652,7 @@ pub fn stripIteratorSubscripts(mut cref: Arc<NFComponentRef>) -> Result<Arc<NFCo
             if !(var_field!((*cref).subscripts, NFComponentRef::CREF).clone().is_empty()) && Subscript::isIterator(List::last(var_field!((*cref).subscripts, NFComponentRef::CREF).clone())?) {
                 subs = var_field!((*cref).subscripts, NFComponentRef::CREF).clone().reverse();
                 subs = List::trim(subs.clone(), (std::sync::Arc::new(fnptr!(Subscript::isIterator, Arc<Subscript::NFSubscript>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>) -> Result<bool> + 'static>))?;
-                assign_variant_field!(cref => NFComponentRef::CREF; subscripts = subs.clone().reverse());
+                assign_variant_field!(cref => NFComponentRef::CREF; subscripts = metamodelica::Dangerous::listReverseInPlace(subs.clone()));
             }
             assign_variant_field!(cref => NFComponentRef::CREF; restCref = stripIteratorSubscripts(var_field!((*cref).restCref, NFComponentRef::CREF).clone())?);
             ()
@@ -1793,7 +1793,7 @@ pub fn sizes(mut cref: Arc<NFComponentRef>, mut withComplex: bool, mut resize: b
         Deref @ WILD { .. } => {
             list![0]
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })
     });
     Ok(s_lst)
@@ -2283,7 +2283,7 @@ pub fn iterate(mut cref: Arc<NFComponentRef>) -> Result<(Arc<NFComponentRef>, Ar
             (rest_cref, iterators) = iterate_impl(var_field!((*cref).restCref, NFComponentRef::CREF).clone(), metamodelica::nil())?;
             if !(iterators.clone().is_empty()) {
                 assign_variant_field!(cref => NFComponentRef::CREF; restCref = rest_cref.clone());
-                iterators = iterators.clone().reverse();
+                iterators = metamodelica::Dangerous::listReverseInPlace(iterators.clone());
             }
             iterators.clone()
         },

@@ -63,7 +63,6 @@ fn buildGraphviz(mut inProgram: Absyn::Program) -> Result<Arc<Graphviz::Node>> {
             nl = printClasses(cs.clone())?;
             Arc::new(Graphviz::Node::NODE { type_: (literal!("ROOT")).clone(), attributes: metamodelica::nil(), children: nl.clone() })
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(outNode)
 }
@@ -486,11 +485,10 @@ fn printAlgorithm(mut inAlgorithm: Arc<Absyn::Algorithm>) -> Result<Arc<Graphviz
 fn variabilitySymbol(mut inVariability: Absyn::Variability) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inVariability.clone() {
-        Absyn::Variability::VAR => literal!(""),
-        Absyn::Variability::DISCRETE => literal!("DISCRETE"),
-        Absyn::Variability::PARAM => literal!("PARAM"),
-        Absyn::Variability::CONST => literal!("CONST"),
-        _ => bail!("match: no arm matched"),
+        Absyn::Variability::VAR { .. } => literal!(""),
+        Absyn::Variability::DISCRETE { .. } => literal!("DISCRETE"),
+        Absyn::Variability::PARAM { .. } => literal!("PARAM"),
+        Absyn::Variability::CONST { .. } => literal!("CONST"),
     })).clone();
     Ok(outString)
 }
@@ -498,9 +496,9 @@ fn variabilitySymbol(mut inVariability: Absyn::Variability) -> Result<ArcStr> {
 fn directionSymbol(mut inDirection: Absyn::Direction) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inDirection.clone() {
-        Absyn::Direction::BIDIR => literal!(""),
-        Absyn::Direction::INPUT => literal!("INPUT"),
-        Absyn::Direction::OUTPUT => literal!("OUTPUT"),
+        Absyn::Direction::BIDIR { .. } => literal!(""),
+        Absyn::Direction::INPUT { .. } => literal!("INPUT"),
+        Absyn::Direction::OUTPUT { .. } => literal!("OUTPUT"),
         _ => bail!("match: no arm matched"),
     })).clone();
     Ok(outString)

@@ -175,7 +175,6 @@ fn meanValueReplacements(mut inVarLst: SimCodeVar::SimVars, mut exp_list: Arc<me
             repl = meanValueReplacements2(repl.clone(), listVars.clone(), exp_list.clone())?;
             repl.clone()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(outVarRepl)
 }
@@ -239,7 +238,7 @@ fn meanValueReplacements2(mut inVarRepl: BackendVarTransform::VariableReplacemen
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (repl, Deref @ metamodelica::List::Cons { head: SimCodeVar::SimVar { type_: Deref @ DAE::Type::T_REAL { varLst: _ }, name, .. }, tail: restVar }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::UNARY { exp: Deref @ Absyn::Exp::REAL { value }, op: Absyn::Operator::UMINUS }, tail: restVal }) => {
+                (repl, Deref @ metamodelica::List::Cons { head: SimCodeVar::SimVar { type_: Deref @ DAE::Type::T_REAL { varLst: _ }, name, .. }, tail: restVar }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::UNARY { exp: Deref @ Absyn::Exp::REAL { value }, op: Absyn::Operator::UMINUS { .. } }, tail: restVal }) => {
                     let mut repl = (*repl).clone();
                     repl = BackendVarTransform::addReplacement(repl.clone(), name.clone(), Arc::new(DAE::Exp::UNARY { operator: DAE::Operator::UMINUS { ty: DAE::T_REAL_DEFAULT().clone() }, exp: Arc::new(DAE::Exp::RCONST { real: stringReal((value.clone()).clone())? }) }), None)?;
                     repl = meanValueReplacements2(repl.clone(), restVar.clone(), restVal.clone())?;
@@ -253,7 +252,7 @@ fn meanValueReplacements2(mut inVarRepl: BackendVarTransform::VariableReplacemen
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (repl, Deref @ metamodelica::List::Cons { head: SimCodeVar::SimVar { type_: Deref @ DAE::Type::T_REAL { varLst: _ }, name, .. }, tail: restVar }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::UNARY { exp: Deref @ Absyn::Exp::INTEGER { value: value2 }, op: Absyn::Operator::UMINUS }, tail: restVal }) => {
+                (repl, Deref @ metamodelica::List::Cons { head: SimCodeVar::SimVar { type_: Deref @ DAE::Type::T_REAL { varLst: _ }, name, .. }, tail: restVar }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::UNARY { exp: Deref @ Absyn::Exp::INTEGER { value: value2 }, op: Absyn::Operator::UMINUS { .. } }, tail: restVal }) => {
                     let mut value: ArcStr = arcstr::literal!("");
                     let mut repl = (*repl).clone();
                     value = (intString(value2.clone())).clone();
@@ -1577,7 +1576,7 @@ fn addOneLabel(mut inExp1: Arc<DAE::Exp>, mut add: bool, mut inIndex: (i32, i32)
                     let mut e2: Arc<DAE::Exp>;
                     let mut i_1: i32 = 0;
                     let true = (Flags::getConfigBool(Flags::REDUCE_TERMS.clone())?) else { bail!("pattern mismatch") };
-                    List::getMember(i.clone(), reduceList.clone())?;
+                    let true = (List::contains(reduceList.clone(), i.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
                     e2 = Expression::expMul(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), e.clone())?;
                     i_1 = i.clone() + 1;
                     Ok((e2.clone(), vars.clone(), (i_1.clone(), p.clone()), metamodelica::nil()))
@@ -2026,7 +2025,7 @@ fn addTwoLabels(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut label:
                     let mut e5: Arc<DAE::Exp>;
                     let mut i_1: i32 = 0;
                     let true = (Flags::getConfigBool(Flags::REDUCE_TERMS.clone())?) else { bail!("pattern mismatch") };
-                    List::getMember(i.clone(), reduceList.clone())?;
+                    let true = (List::contains(reduceList.clone(), i.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
                     e3 = Expression::expMul(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), e1.clone())?;
                     e4 = Expression::expMul(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) }), e2.clone())?;
                     e5 = Expression::expAdd(e3.clone(), e4.clone())?;
@@ -2672,7 +2671,6 @@ fn createLabelVar(mut inVariables: SimCodeVar::SimVars, mut inInteger: i32, mut 
             param_2 = param_2.clone().reverse();
             (SimCodeVar::SimVars { stateVars: states.clone(), derivativeVars: derVar.clone(), algVars: alg.clone(), discreteAlgVars: disAlg.clone(), intAlgVars: intAlg.clone(), boolAlgVars: boolAlg.clone(), inputVars: inVar.clone(), outputVars: outVar.clone(), aliasVars: algAlias.clone(), intAliasVars: intAlias.clone(), boolAliasVars: boolAlias.clone(), paramVars: param_2.clone(), intParamVars: intParam.clone(), boolParamVars: boolParam.clone(), stringAlgVars: stringAlg.clone(), stringParamVars: stringParam.clone(), stringAliasVars: stringAlias.clone(), extObjVars: extObjVar.clone(), constVars: r#const.clone(), intConstVars: intConst.clone(), boolConstVars: boolConst.clone(), stringConstVars: stringConst.clone(), jacobianVars: jacobianVar.clone(), seedVars: seedVar.clone(), realOptimizeConstraintsVars: realOptConst.clone(), realOptimizeFinalConstraintsVars: realOptFinalConst.clone(), sensitivityVars: sensVar.clone(), dataReconSetcVars: setcVar.clone(), dataReconinputVars: datareconinputvar.clone(), dataReconSetBVars: setBVar.clone() }, name.clone())
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok((outVariables, outString))
 }

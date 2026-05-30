@@ -49,7 +49,6 @@ use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_dump::Dump;
 use openmodelica_util::Autoconf;
 use openmodelica_util::Error;
-use openmodelica_util::JSON;
 use openmodelica_util::Print;
 use openmodelica_util::Settings;
 use openmodelica_util::System;
@@ -98,7 +97,7 @@ pub fn updateProgram2(mut inNewClasses: Arc<metamodelica::List<Arc<Absyn::Class>
         (Deref @ metamodelica::List::Nil, _, prg) => {
             prg.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: c1 @ Deref @ Absyn::Class { name, .. }, tail: c2 }, Absyn::Within::TOP, p2 @ Absyn::Program { within_: w2, classes: c3 }) => {
+        (Deref @ metamodelica::List::Cons { head: c1 @ Deref @ Absyn::Class { name, .. }, tail: c2 }, Absyn::Within::TOP { .. }, p2 @ Absyn::Program { within_: w2, classes: c3 }) => {
             let mut newp: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
             if classInProgram((name.clone()).clone(), p2.clone())? {
                 newp = replaceClassInProgram(c1.clone(), p2.clone(), mergeAST.clone())?;
@@ -178,7 +177,7 @@ pub fn getClassnamesInParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<
 
 pub fn getClassnamesInElts(mut inAbsynElementItemLst: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut includeConstants: bool) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut outStringLst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut delst: DoubleEnded::MutableList<ArcStr>;
+    let mut delst: DoubleEnded::MutableList<ArcStr> = <DoubleEnded::MutableList<ArcStr> as ::std::default::Default>::default();
     delst = DoubleEnded::fromList(metamodelica::nil())?;
     for mut elt in &*inAbsynElementItemLst.clone() {
         let mut elt = elt.clone();
@@ -191,7 +190,7 @@ pub fn getClassnamesInElts(mut inAbsynElementItemLst: Arc<metamodelica::List<Arc
             DoubleEnded::push_back(delst.clone(), (id.clone()).clone());
             ()
         },
-        Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::COMPONENTS { components: lst, attributes: Absyn::ElementAttributes { variability: Absyn::Variability::CONST, .. }, .. }, .. } } if (includeConstants.clone()) => {
+        Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::COMPONENTS { components: lst, attributes: Absyn::ElementAttributes { variability: Absyn::Variability::CONST { .. }, .. }, .. }, .. } } if (includeConstants.clone()) => {
             DoubleEnded::push_list_back(delst.clone(), getComponentItemsName(lst.clone(), false));
             ()
         },
@@ -754,7 +753,6 @@ pub fn classInProgram(mut name: ArcStr, mut p: Absyn::Program) -> Result<bool> {
             }
             false
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(b)
 }
@@ -799,7 +797,7 @@ pub fn getPathedClassInProgramWork(mut inPath: Arc<Absyn::Path>, mut inProgram: 
         Deref @ Absyn::Path::FULLYQUALIFIED { .. } => {
             getPathedClassInProgramWork(var_field!((*inPath).path, Absyn::Path::FULLYQUALIFIED).clone(), inProgram.clone(), enclOnErr.clone())?
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outClass)
 }
@@ -1469,20 +1467,5 @@ pub fn findModelicaPath2(mut mp: ArcStr, mut inames: Arc<metamodelica::List<ArcS
         bail!("matchcontinue: no arm matched")
     }).clone();
     Ok(basePath)
-}
-
-pub fn dumpJSONSourceInfo(mut info: SourceInfo, mut dumpFilename: bool) -> Result<Arc<JSON::JSON>> {
-    let mut json: Arc<JSON::JSON> = JSON::makeNull();
-    if dumpFilename.clone() {
-        json = JSON::addPair((literal!("filename")).clone(), JSON::makeString((Testsuite::friendly(info.fileName.clone())?).clone()), json.clone())?;
-    }
-    json = JSON::addPair((literal!("lineStart")).clone(), JSON::makeInteger(info.lineNumberStart.clone()), json.clone())?;
-    json = JSON::addPair((literal!("columnStart")).clone(), JSON::makeInteger(info.columnNumberStart.clone()), json.clone())?;
-    json = JSON::addPair((literal!("lineEnd")).clone(), JSON::makeInteger(info.lineNumberEnd.clone()), json.clone())?;
-    json = JSON::addPair((literal!("columnEnd")).clone(), JSON::makeInteger(info.columnNumberEnd.clone()), json.clone())?;
-    if info.isReadOnly.clone() {
-        json = JSON::addPair((literal!("readonly")).clone(), JSON::makeBoolean(true), json.clone())?;
-    }
-    Ok(json)
 }
 

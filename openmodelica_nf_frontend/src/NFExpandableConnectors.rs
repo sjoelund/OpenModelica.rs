@@ -152,7 +152,7 @@ fn sortConnections(mut conns: Arc<metamodelica::List<Arc<Connection::NFConnectio
             normalConnections = cons(conn.clone(), normalConnections.clone());
         }
     }
-    normalConnections = normalConnections.clone().reverse();
+    normalConnections = metamodelica::Dangerous::listReverseInPlace(normalConnections.clone());
     Ok((expandableConnections, undeclaredConnections, normalConnections))
 }
 
@@ -277,7 +277,7 @@ fn makeVirtualConnector(mut virtualConnector: Arc<Connector::NFConnector>, mut n
 
 fn elaborateExpandableSet(mut set: Arc<metamodelica::List<Arc<Connector::NFConnector>>>, mut vars: Arc<metamodelica::List<Arc<Variable::NFVariable>>>) -> Result<Arc<metamodelica::List<Arc<Variable::NFVariable>>>> {
     let mut vars: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = vars;
-    let mut exp_set: Arc<UnorderedSet::UnorderedSet<Arc<Connector::NFConnector>>>;
+    let mut exp_set: Arc<UnorderedSet::UnorderedSet<Arc<Connector::NFConnector>>> = <Arc<UnorderedSet::UnorderedSet<Arc<Connector::NFConnector>>> as ::std::default::Default>::default();
     let mut exp_conns: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
     let mut exp_set_lst: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
     exp_set = UnorderedSet::new((std::sync::Arc::new(hashConnector) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(Connector::isNodeNameEqual, Arc<Connector::NFConnector>, Arc<Connector::NFConnector>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>, Arc<Connector::NFConnector>) -> Result<bool> + 'static>), 13);

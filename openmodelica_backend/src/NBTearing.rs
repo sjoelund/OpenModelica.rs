@@ -69,9 +69,11 @@ use crate::NBVariable::VarData;
 use crate::NBVariable::VarSlice;
 use crate::NBVariable::VariablePointer;
 use crate::NBVariable::VariablePointers;
+use crate::NBackendDAE as BackendDAE;
 use crate::NBackendDAE as Jacobian;
 use openmodelica_ast::Absyn::Path;
 use openmodelica_nf_frontend::NFAlgorithm as Algorithm;
+use openmodelica_nf_frontend::NFBackendExtension;
 use openmodelica_nf_frontend::NFComponentRef as ComponentRef;
 use openmodelica_nf_frontend::NFExpression as Expression;
 use openmodelica_nf_frontend::NFFunction::Function;
@@ -163,10 +165,37 @@ pub fn toString(mut set: Arc<NBTearing>, mut r#str: ArcStr) -> Result<ArcStr> {
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("### Iteration Variables:\n")); __mm_s.push_str(&*Slice::lstToString(set.iteration_vars.clone(), (std::sync::Arc::new(fnptr!(BVariable::pointerToString, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), 10)); ArcStr::from(__mm_s) }).clone();
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n### Residual Equations:\n")); __mm_s.push_str(&*Slice::lstToString(set.residual_eqns.clone(), Arc::new({ let __pe_b1 = (literal!("")).clone(); move |__pe_a0| Equation::pointerToString(__pe_a0, __pe_b1.clone()) }), 10)); ArcStr::from(__mm_s) }).clone();
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n### Inner Equations:\n")); __mm_s.push_str(&*Array::toString(set.innerEquations.clone(), Arc::new({ let __pe_b1 = -1; move |__pe_a0| StrongComponent::toString(__pe_a0, __pe_b1.clone()) }), (literal!("")).clone(), (literal!("\t")).clone(), (literal!("\n\t")).clone(), (literal!("")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();
-    if Util::isSome(set.jac.clone()) {
+    if isSome(set.jac.clone()) {
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*BJacobian::toString(Util::getOption(set.jac.clone())?, (literal!("NLS")).clone())?); ArcStr::from(__mm_s) }).clone();
     }
     Ok(r#str)
+}
+
+pub fn main(mut bdae: Arc<Jacobian::NBackendDAE>, mut kind: Partition::Kind) -> Result<Arc<Jacobian::NBackendDAE>> {
+    let mut bdae: Arc<Jacobian::NBackendDAE> = bdae;
+    let funcs: Arc<metamodelica::List<Module::tearingInterface>> = getModule()?;
+    if Flags::isSet(Flags::TEARING_DUMP.clone())? {
+        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*Partition::Partition::kindToString(kind.clone())?); __mm_s.push_str(&*literal!("] Tearing")); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    }
+    bdae = (::match_deref::match_deref! { match &((kind.clone(), bdae.clone())) {
+        (Partition::Kind::ODE, Deref @ Jacobian::MAIN { eqData: Deref @ BEquation::EqData::EQ_DATA_SIM { uniqueIndex: eq_index, .. }, .. }) => {
+            assign_variant_field!(bdae => Jacobian::NBackendDAE::MAIN; ode = tearingTraverser(var_field!((*bdae).ode, Jacobian::NBackendDAE::MAIN).clone(), funcs.clone(), var_field!((*bdae).funcMap, Jacobian::NBackendDAE::MAIN).clone(), eq_index.clone(), kind.clone())?);
+            bdae.clone()
+        },
+        (_, Deref @ Jacobian::MAIN { eqData: Deref @ BEquation::EqData::EQ_DATA_SIM { uniqueIndex: eq_index, .. }, .. }) if (Partition::kindIsInitial(kind.clone())) => {
+            assign_variant_field!(bdae => Jacobian::NBackendDAE::MAIN; init = tearingTraverser(var_field!((*bdae).init, Jacobian::NBackendDAE::MAIN).clone(), funcs.clone(), var_field!((*bdae).funcMap, Jacobian::NBackendDAE::MAIN).clone(), eq_index.clone(), kind.clone())?);
+            if isSome(var_field!((*bdae).init_0, Jacobian::NBackendDAE::MAIN).clone()) {
+                assign_variant_field!(bdae => Jacobian::NBackendDAE::MAIN; init_0 = Some(tearingTraverser(Util::getOption(var_field!((*bdae).init_0, Jacobian::NBackendDAE::MAIN).clone())?, funcs.clone(), var_field!((*bdae).funcMap, Jacobian::NBackendDAE::MAIN).clone(), eq_index.clone(), kind.clone())?));
+            }
+            bdae.clone()
+        },
+        (Partition::Kind::DAE, Deref @ Jacobian::MAIN { eqData: Deref @ BEquation::EqData::EQ_DATA_SIM { uniqueIndex: eq_index, .. }, dae: Some(partitions), .. }) => {
+            assign_variant_field!(bdae => Jacobian::NBackendDAE::MAIN; dae = Some(tearingTraverser(partitions.clone(), funcs.clone(), var_field!((*bdae).funcMap, Jacobian::NBackendDAE::MAIN).clone(), eq_index.clone(), kind.clone())?));
+            main(bdae.clone(), Partition::Kind::ODE.clone())?
+        },
+        _ => bail!("match: no arm matched"),
+    } });
+    Ok(bdae)
 }
 
 pub fn implicit(mut comp: Arc<StrongComponent::NBStrongComponent>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut index: i32, mut kind: Partition::Kind) -> Result<(Arc<StrongComponent::NBStrongComponent>, i32)> {
@@ -177,17 +206,17 @@ pub fn implicit(mut comp: Arc<StrongComponent::NBStrongComponent>, mut funcMap: 
     let mut homotopy: Pointer::Pointer<bool> = Pointer::create(false);
     (comp, dummy, index) = (::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ StrongComponent::SINGLE_COMPONENT { .. } => {
-            BEquation::Equation::map(Pointer::access(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone()), Arc::new({ let __pe_b1 = homotopy.clone(); move |__pe_a0| Initialization::containsHomotopyCall(__pe_a0, __pe_b1.clone()) }), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+            BEquation::Equation::map(Pointer::access(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone()), Arc::new({ let __pe_b1 = homotopy.clone(); move |__pe_a0| Initialization::containsHomotopyCall(__pe_a0, __pe_b1.clone()) }), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             new_comp = Arc::new(StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP { status: Solve::Status::IMPLICIT.clone(), homotopy: Pointer::access(homotopy.clone()), mixed: false, linear: false, casual: None, strict: singleImplicit(var_field!((*comp).var, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone(), var_field!((*comp).eqn, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone()), idx: index.clone() });
             finalize(new_comp.clone(), dummy.clone(), funcMap.clone(), index.clone(), BVariable::VariablePointers::empty(BaseHashTable::bigBucketSize.clone(), false), BEquation::EquationPointers::empty(BaseHashTable::bigBucketSize.clone()), Pointer::create(0), kind.clone())?
         },
         Deref @ StrongComponent::MULTI_COMPONENT { .. } => {
-            BEquation::Equation::map(Pointer::access(Slice::getT(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::MULTI_COMPONENT).clone())), Arc::new({ let __pe_b1 = homotopy.clone(); move |__pe_a0| Initialization::containsHomotopyCall(__pe_a0, __pe_b1.clone()) }), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+            BEquation::Equation::map(Pointer::access(Slice::getT(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::MULTI_COMPONENT).clone())), Arc::new({ let __pe_b1 = homotopy.clone(); move |__pe_a0| Initialization::containsHomotopyCall(__pe_a0, __pe_b1.clone()) }), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             new_comp = Arc::new(StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP { status: Solve::Status::IMPLICIT.clone(), homotopy: Pointer::access(homotopy.clone()), mixed: false, linear: false, casual: None, strict: singleImplicit(Slice::getT(listHead(var_field!((*comp).vars, StrongComponent::NBStrongComponent::MULTI_COMPONENT).clone())?), Slice::getT(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::MULTI_COMPONENT).clone())), idx: index.clone() });
             finalize(new_comp.clone(), dummy.clone(), funcMap.clone(), index.clone(), BVariable::VariablePointers::empty(BaseHashTable::bigBucketSize.clone(), false), BEquation::EquationPointers::empty(BaseHashTable::bigBucketSize.clone()), Pointer::create(0), kind.clone())?
         },
         Deref @ StrongComponent::RESIZABLE_COMPONENT { .. } => {
-            BEquation::Equation::map(Pointer::access(Slice::getT(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::RESIZABLE_COMPONENT).clone())), Arc::new({ let __pe_b1 = homotopy.clone(); move |__pe_a0| Initialization::containsHomotopyCall(__pe_a0, __pe_b1.clone()) }), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+            BEquation::Equation::map(Pointer::access(Slice::getT(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::RESIZABLE_COMPONENT).clone())), Arc::new({ let __pe_b1 = homotopy.clone(); move |__pe_a0| Initialization::containsHomotopyCall(__pe_a0, __pe_b1.clone()) }), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             new_comp = Arc::new(StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP { status: Solve::Status::IMPLICIT.clone(), homotopy: Pointer::access(homotopy.clone()), mixed: false, linear: false, casual: None, strict: singleImplicit(Slice::getT(var_field!((*comp).var, StrongComponent::NBStrongComponent::RESIZABLE_COMPONENT).clone()), Slice::getT(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::RESIZABLE_COMPONENT).clone())), idx: index.clone() });
             finalize(new_comp.clone(), dummy.clone(), funcMap.clone(), index.clone(), BVariable::VariablePointers::empty(BaseHashTable::bigBucketSize.clone(), false), BEquation::EquationPointers::empty(BaseHashTable::bigBucketSize.clone()), Pointer::create(0), kind.clone())?
         },
@@ -203,13 +232,20 @@ pub fn singleImplicit(mut var: Pointer::Pointer<Arc<Variable::NFVariable>>, mut 
 }
 
 pub fn getModule() -> Result<Arc<metamodelica::List<Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, i32, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Pointer::Pointer<i32>, Partition::Kind) -> Result<(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, i32)> + 'static>>>> {
+    fn isNotGuruVar(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut init: bool) -> bool {
+        let mut b: bool = false;
+        let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
+        b = BVariable::hasTearingSelect(var_ptr.clone(), NFBackendExtension::TearingSelect::PREFER.clone(), (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>));
+        b
+    }
+
     let mut funcs: Arc<metamodelica::List<Module::tearingInterface>> = metamodelica::nil();
     let mut flag: ArcStr = Flags::getConfigString(Flags::TEARING_METHOD.clone())?;
     funcs = (::match_deref::match_deref! { match &(flag.clone()) {
-        Deref @ "minimalTearing" => list![Arc::new(todo!("PARTEVALFUNCTION of initialize: function signature not resolved")), minimal.clone(), finalize.clone()],
-        Deref @ "cellier" => list![Arc::new(todo!("PARTEVALFUNCTION of initialize: function signature not resolved")), minimal.clone(), finalize.clone()],
-        Deref @ "omcTearing" => list![Arc::new(todo!("PARTEVALFUNCTION of initialize: function signature not resolved")), minimal.clone(), finalize.clone()],
-        Deref @ "guruTearing" => list![Arc::new(todo!("PARTEVALFUNCTION of initialize: function signature not resolved")), guru.clone(), finalize.clone()],
+        Deref @ "minimalTearing" => list![Arc::new({ let __pe_b8: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, bool) -> Result<bool> + 'static> = (std::sync::Arc::new(BVariable::isDiscontinuous) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, bool) -> Result<bool> + 'static>); let __pe_b9 = (std::sync::Arc::new(fnptr!(Equation::isDiscontinuous, Pointer::Pointer<Arc<Equation::Equation>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>); move |__pe_a0, __pe_a1, __pe_a2, __pe_a3, __pe_a4, __pe_a5, __pe_a6, __pe_a7| initialize(__pe_a0, __pe_a1, __pe_a2, __pe_a3, __pe_a4, __pe_a5, __pe_a6, __pe_a7, __pe_b8.clone(), __pe_b9.clone()) }), (std::sync::Arc::new(minimal) as std::sync::Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, i32, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Pointer::Pointer<i32>, Partition::Kind) -> Result<(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, i32)> + 'static>), (std::sync::Arc::new(finalize) as std::sync::Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, i32, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Pointer::Pointer<i32>, Partition::Kind) -> Result<(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, i32)> + 'static>)],
+        Deref @ "cellier" => list![Arc::new({ let __pe_b8: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, bool) -> Result<bool> + 'static> = (std::sync::Arc::new(BVariable::isDiscontinuous) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, bool) -> Result<bool> + 'static>); let __pe_b9 = (std::sync::Arc::new(fnptr!(Equation::isDiscontinuous, Pointer::Pointer<Arc<Equation::Equation>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>); move |__pe_a0, __pe_a1, __pe_a2, __pe_a3, __pe_a4, __pe_a5, __pe_a6, __pe_a7| initialize(__pe_a0, __pe_a1, __pe_a2, __pe_a3, __pe_a4, __pe_a5, __pe_a6, __pe_a7, __pe_b8.clone(), __pe_b9.clone()) }), (std::sync::Arc::new(minimal) as std::sync::Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, i32, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Pointer::Pointer<i32>, Partition::Kind) -> Result<(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, i32)> + 'static>), (std::sync::Arc::new(finalize) as std::sync::Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, i32, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Pointer::Pointer<i32>, Partition::Kind) -> Result<(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, i32)> + 'static>)],
+        Deref @ "omcTearing" => list![Arc::new({ let __pe_b8: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, bool) -> Result<bool> + 'static> = (std::sync::Arc::new(BVariable::isDiscontinuous) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, bool) -> Result<bool> + 'static>); let __pe_b9 = (std::sync::Arc::new(fnptr!(Equation::isDiscontinuous, Pointer::Pointer<Arc<Equation::Equation>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>); move |__pe_a0, __pe_a1, __pe_a2, __pe_a3, __pe_a4, __pe_a5, __pe_a6, __pe_a7| initialize(__pe_a0, __pe_a1, __pe_a2, __pe_a3, __pe_a4, __pe_a5, __pe_a6, __pe_a7, __pe_b8.clone(), __pe_b9.clone()) }), (std::sync::Arc::new(minimal) as std::sync::Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, i32, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Pointer::Pointer<i32>, Partition::Kind) -> Result<(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, i32)> + 'static>), (std::sync::Arc::new(finalize) as std::sync::Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, i32, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Pointer::Pointer<i32>, Partition::Kind) -> Result<(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, i32)> + 'static>)],
+        Deref @ "guruTearing" => list![Arc::new({ let __pe_b8: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, bool) -> Result<bool> + 'static> = (std::sync::Arc::new(fnptr!(isNotGuruVar, Pointer::Pointer<Arc<Variable::NFVariable>>, bool)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, bool) -> Result<bool> + 'static>); let __pe_b9 = (std::sync::Arc::new(fnptr!(noFilterEqn, Pointer::Pointer<Arc<Equation::Equation>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>); move |__pe_a0, __pe_a1, __pe_a2, __pe_a3, __pe_a4, __pe_a5, __pe_a6, __pe_a7| initialize(__pe_a0, __pe_a1, __pe_a2, __pe_a3, __pe_a4, __pe_a5, __pe_a6, __pe_a7, __pe_b8.clone(), __pe_b9.clone()) }), (std::sync::Arc::new(guru) as std::sync::Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, i32, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Pointer::Pointer<i32>, Partition::Kind) -> Result<(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, i32)> + 'static>), (std::sync::Arc::new(finalize) as std::sync::Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, i32, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Pointer::Pointer<i32>, Partition::Kind) -> Result<(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, i32)> + 'static>)],
         _ => bail!("fail"),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -324,6 +360,351 @@ fn tearingTraverser(mut partitions: Arc<metamodelica::List<Arc<Partition::Partit
     }
     new_partitions = new_partitions.clone().reverse();
     Ok(new_partitions)
+}
+
+fn noFilterVar(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut init: bool) -> bool {
+    let mut b: bool = false;
+    let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
+    b = true;
+    b
+}
+
+fn noFilterEqn(mut eqn_ptr: Pointer::Pointer<Arc<Equation::Equation>>) -> bool {
+    let mut b: bool = false;
+    b = true;
+    b
+}
+
+fn initialize(mut comp: Arc<StrongComponent::NBStrongComponent>, mut full: Arc<Adjacency::Matrix::Matrix>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut index: i32, mut variables: Arc<VariablePointers::VariablePointers>, mut equations: Arc<EquationPointers::EquationPointers>, mut eq_index: Pointer::Pointer<i32>, mut kind: Partition::Kind, mut varFunc: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, bool) -> Result<bool> + 'static>, mut eqnFunc: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>) -> Result<(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, i32)> {
+    pub type checkVarInit = std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, bool) -> Result<bool> + 'static>;
+
+    let mut comp: Arc<StrongComponent::NBStrongComponent> = comp;
+    let mut full: Arc<Adjacency::Matrix::Matrix> = full;
+    let mut index: i32 = index;
+    let mut strict: Arc<NBTearing> = Arc::new(<NBTearing as ::std::default::Default>::default());
+    let mut vars_lst: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
+    let mut eqns_lst: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
+    let mut vars_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+    let mut v: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
+    let mut e: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
+    let init: bool = Partition::kindIsInitial(kind.clone());
+    (comp, full, index) = (::match_deref::match_deref! { match &(comp.clone()) {
+        Deref @ StrongComponent::ALGEBRAIC_LOOP { strict, .. } => {
+            index = index.clone() + 1;
+            assign_variant_field!(comp => StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP; idx = index.clone());
+            vars_lst = ({
+        let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
+        for mut var in (strict.iteration_vars.clone()).into_iter().cloned() {
+            if !(varFunc(Slice::getT(var.clone()), init.clone())?) { continue; }
+            let __x = BVariable::getVarName(Slice::getT(var.clone()));
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    });
+            eqns_lst = ({
+        let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
+        for mut eqn in (strict.residual_eqns.clone()).into_iter().cloned() {
+            if !(eqnFunc(Slice::getT(eqn.clone()))?) { continue; }
+            let __x = BEquation::Equation::getEqnName(Slice::getT(eqn.clone()))?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    });
+            vars_set = UnorderedSet::fromList(vars_lst.clone(), (std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
+            v = UnorderedMap::subMap(variables.map.clone(), vars_lst.clone())?;
+            e = UnorderedMap::subMap(equations.map.clone(), eqns_lst.clone())?;
+            full = Adjacency::Matrix::refine(full.clone(), funcMap.clone(), v.clone(), e.clone(), variables.clone(), equations.clone(), vars_set.clone(), Partition::kindIsInitial(kind.clone()))?;
+            assign_variant_field!(comp => StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP; linear = checkLinearity(full.clone(), v.clone(), e.clone())?);
+            (comp.clone(), full.clone(), index.clone())
+        },
+        _ => (comp.clone(), full.clone(), index.clone()),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    Ok((comp, full, index))
+}
+
+fn finalize(mut comp: Arc<StrongComponent::NBStrongComponent>, mut full: Arc<Adjacency::Matrix::Matrix>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut index: i32, mut variables: Arc<VariablePointers::VariablePointers>, mut equations: Arc<EquationPointers::EquationPointers>, mut eq_index: Pointer::Pointer<i32>, mut kind: Partition::Kind) -> Result<(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, i32)> {
+    let mut comp: Arc<StrongComponent::NBStrongComponent> = comp;
+    let mut full: Arc<Adjacency::Matrix::Matrix> = full;
+    let mut index: i32 = index;
+    let mut strict: Arc<NBTearing> = Arc::new(<NBTearing as ::std::default::Default>::default());
+    let mut acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>>> = metamodelica::nil();
+    let mut dummy_set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>> = UnorderedSet::new((std::sync::Arc::new(fnptr!(BVariable::hash, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(BVariable::equalName, Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 13);
+    comp = (::match_deref::match_deref! { match &(comp.clone()) {
+        Deref @ StrongComponent::ALGEBRAIC_LOOP { strict, .. } => {
+            let mut strict = (*strict).clone();
+            acc = ({
+        let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>>> = metamodelica::nil();
+        for mut eqn in (strict.residual_eqns.clone()).into_iter().cloned() {
+            let __x = Inline::inlineRecordSliceEquation(eqn.clone(), variables.clone(), dummy_set.clone(), eq_index.clone(), true)?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    });
+            assign_field!(strict.residual_eqns = ({
+        let mut __acc: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>> = metamodelica::nil();
+        for mut eqn in (List::flatten(acc.clone())).into_iter().cloned() {
+            let __x = Slice::apply(eqn.clone(), Arc::new({ let __pe_b1 = None; let __pe_b2 = true; let __pe_b3 = false; move |__pe_a0| Equation::createResidual(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }));
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    }));
+            assign_variant_field!(comp => StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP; strict = strict.clone());
+            if Flags::isSet(Flags::TEARING_DUMP.clone())? {
+                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*Partition::Partition::kindToString(kind.clone())?); __mm_s.push_str(&*literal!("] Tearing Result ")); __mm_s.push_str(&*intString(var_field!((*comp).idx, StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP).clone())); ArcStr::from(__mm_s) }).clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*StrongComponent::toString(comp.clone(), -1)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            }
+            comp.clone()
+        },
+        _ => comp.clone(),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    Ok((comp, full, index))
+}
+
+fn minimal(mut comp: Arc<StrongComponent::NBStrongComponent>, mut full: Arc<Adjacency::Matrix::Matrix>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut index: i32, mut variables: Arc<VariablePointers::VariablePointers>, mut equations: Arc<EquationPointers::EquationPointers>, mut eq_index: Pointer::Pointer<i32>, mut kind: Partition::Kind) -> Result<(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, i32)> {
+    let mut comp: Arc<StrongComponent::NBStrongComponent> = comp;
+    let mut full: Arc<Adjacency::Matrix::Matrix> = full;
+    let mut index: i32 = index;
+    let mut strict: Arc<NBTearing> = Arc::new(<NBTearing as ::std::default::Default>::default());
+    let mut vars_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+    let mut cont_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+    let mut disc_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+    let mut implied_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+    let mut eqns_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+    let mut cont_eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+    let mut disc_eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+    let mut num_vars: i32 = 0;
+    let mut num_eqns: i32 = 0;
+    let mut matched_vars: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>> = metamodelica::nil();
+    let mut iteration_vars: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>> = metamodelica::nil();
+    let mut adj: Arc<Adjacency::Matrix::Matrix>;
+    let mut matching: Arc<Matching::NBMatching> = Arc::new(<Matching::NBMatching as ::std::default::Default>::default());
+    let mut inner_comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>> = metamodelica::nil();
+    let mut v: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
+    let mut e: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
+    let mut matched_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
+    comp = (::match_deref::match_deref! { match &(comp.clone()) {
+        Deref @ StrongComponent::ALGEBRAIC_LOOP { strict, .. } => {
+            let mut strict = (*strict).clone();
+            vars_lst = ({
+        let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+        for mut var in (strict.iteration_vars.clone()).into_iter().cloned() {
+            let __x = Slice::getT(var.clone());
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    });
+            eqns_lst = ({
+        let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+        for mut eqn in (strict.residual_eqns.clone()).into_iter().cloned() {
+            let __x = Slice::getT(eqn.clone());
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    });
+            (cont_vars, disc_vars) = filterDiscreteVariables(vars_lst.clone(), Partition::kindIsInitial(kind.clone()))?;
+            (cont_eqns, disc_eqns) = List::splitOnTrue(eqns_lst.clone(), (std::sync::Arc::new(Equation::isContinousRecordAware) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>));
+            implied_vars = List::flatten(({
+        let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>> = metamodelica::nil();
+        for mut eqn in (disc_eqns.clone()).into_iter().cloned() {
+            let __x = getImpliedInnerVars(eqn.clone())?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    }));
+            disc_vars = UnorderedSet::unique_list(listAppend(disc_vars.clone(), implied_vars.clone()), (std::sync::Arc::new(fnptr!(BVariable::hash, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(BVariable::equalName, Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>));
+            cont_vars = UnorderedSet::difference_list(cont_vars.clone(), implied_vars.clone(), (std::sync::Arc::new(fnptr!(BVariable::hash, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(BVariable::equalName, Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>))?;
+            num_vars = ({
+        let mut __acc: i32 = 0;
+        for mut var in (disc_vars.clone()).into_iter().cloned() {
+            let __x = BVariable::size(var.clone(), false);
+            __acc += __x;
+        }
+        __acc
+    });
+            num_eqns = ({
+        let mut __acc: i32 = 0;
+        for mut eqn in (disc_eqns.clone()).into_iter().cloned() {
+            let __x = BEquation::Equation::size(eqn.clone(), false)?;
+            __acc += __x;
+        }
+        __acc
+    });
+            if !(disc_eqns.clone().is_empty()) {
+                assign_variant_field!(comp => StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP; mixed = true);
+                v = UnorderedMap::subMap(variables.map.clone(), ({
+        let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
+        for mut var in (disc_vars.clone()).into_iter().cloned() {
+            let __x = BVariable::getVarName(var.clone());
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    }))?;
+                e = UnorderedMap::subMap(equations.map.clone(), ({
+        let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
+        for mut eqn in (disc_eqns.clone()).into_iter().cloned() {
+            let __x = BEquation::Equation::getEqnName(eqn.clone())?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    }))?;
+                adj = Adjacency::Matrix::fullToFinal(full.clone(), v.clone(), e.clone(), equations.clone(), Adjacency::MatrixStrictness::MATCHING.clone(), Arc::new(crate::NBEquation::Iterator::EMPTY));
+                matching = Matching::regular(Matching::EMPTY_MATCHING().clone(), adj.clone(), true, true, true)?;
+                (matched_vars, _, _, _) = Matching::getMatches(matching.clone(), Adjacency::Matrix::getMappingOpt(adj.clone()), variables.clone(), equations.clone())?;
+                for mut var in &*matched_vars.clone() {
+                    let mut var = var.clone();
+                    UnorderedSet::add(BVariable::getVarName(Slice::getT(var.clone())), matched_set.clone())?;
+                }
+                for mut var in &*strict.iteration_vars.clone() {
+                    let mut var = var.clone();
+                    if !(UnorderedSet::contains(BVariable::getVarName(Slice::getT(var.clone())), matched_set.clone())?) {
+                        iteration_vars = cons(var.clone(), iteration_vars.clone());
+                    }
+                }
+                adj = Adjacency::Matrix::upgrade(adj.clone(), full.clone(), v.clone(), e.clone(), equations.clone(), Adjacency::MatrixStrictness::SORTING.clone(), Arc::new(crate::NBEquation::Iterator::EMPTY))?;
+                inner_comps = Sorting::tarjan(adj.clone(), matching.clone(), variables.clone(), equations.clone())?;
+                assign_field!(
+                    strict.innerEquations = metamodelica::arrayFromVec(inner_comps.clone().into_iter().cloned().collect()),
+                    strict.residual_eqns = ({
+        let mut __acc: Arc<metamodelica::List<Arc<Slice::NBSlice>>> = metamodelica::nil();
+        for mut eqn in (cont_eqns.clone()).into_iter().cloned() {
+            let __x = Arc::new(Slice::NBSlice { t: eqn.clone(), indices: metamodelica::nil() });
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    }),
+                    strict.iteration_vars = iteration_vars.clone().reverse()
+                );
+                assign_variant_field!(comp => StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP; strict = strict.clone());
+            }
+            comp.clone()
+        },
+        _ => comp.clone(),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    Ok((comp, full, index))
+}
+
+fn guru(mut comp: Arc<StrongComponent::NBStrongComponent>, mut full: Arc<Adjacency::Matrix::Matrix>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut index: i32, mut variables: Arc<VariablePointers::VariablePointers>, mut equations: Arc<EquationPointers::EquationPointers>, mut eq_index: Pointer::Pointer<i32>, mut kind: Partition::Kind) -> Result<(Arc<StrongComponent::NBStrongComponent>, Arc<Adjacency::Matrix::Matrix>, i32)> {
+    let mut comp: Arc<StrongComponent::NBStrongComponent> = comp;
+    let mut full: Arc<Adjacency::Matrix::Matrix> = full;
+    let mut index: i32 = index;
+    let mut inner_comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>> = metamodelica::nil();
+    let mut residuals: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>> = metamodelica::nil();
+    let mut strict: Arc<NBTearing> = Arc::new(<NBTearing as ::std::default::Default>::default());
+    let mut nEqn: i32 = 0;
+    let mut inner_vars: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>> = metamodelica::nil();
+    let mut guru_vars: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>> = metamodelica::nil();
+    let mut failed_vars: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>> = metamodelica::nil();
+    let mut unsolved_inner_vars: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>> as ::std::default::Default>::default();
+    let mut unsolved_equations: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>> as ::std::default::Default>::default();
+    let mut solve_opt: Option<Arc<ComponentRef::NFComponentRef>> = None;
+    let mut solve_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+    let mut solve_var: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
+    let mut solve_eqn: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>;
+    let mut success: bool = false;
+    let mut var_assigned: bool = false;
+    let mut stripped: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
+    let init: bool = Partition::kindIsInitial(kind.clone());
+    comp = (::match_deref::match_deref! { match &((comp.clone(), full.clone())) {
+        (Deref @ StrongComponent::ALGEBRAIC_LOOP { strict, .. }, Deref @ Adjacency::Matrix::FULL { .. }) => {
+            let mut strict = (*strict).clone();
+            nEqn = (var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).clone().borrow().len() as i32);
+            (inner_vars, guru_vars) = List::splitOnTrue(strict.iteration_vars.clone(), Arc::new({ let __pe_b1 = Arc::new({ let __pe_b1 = NFBackendExtension::TearingSelect::PREFER.clone(); let __pe_b2: Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static> = (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>); move |__pe_a0| Ok(BVariable::hasTearingSelect(__pe_a0, __pe_b1.clone(), __pe_b2.clone())) }); move |__pe_a0| Ok(Slice::check(__pe_a0, __pe_b1.clone())) }));
+            if guru_vars.clone().is_empty() {
+                Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBTearing.guru")); __mm_s.push_str(&*literal!(" failed. No guru variables provided for strong component:\n")); __mm_s.push_str(&*StrongComponent::toString(comp.clone(), -1)?); ArcStr::from(__mm_s) }).clone()])?;
+                bail!("fail");
+            } else {
+                failed_vars = ({
+        let mut __acc: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>> = metamodelica::nil();
+        for mut var in (guru_vars.clone()).into_iter().cloned() {
+            if !(Slice::check(var.clone(), Arc::new({ let __pe_b1 = init.clone(); move |__pe_a0| BVariable::isDiscontinuous(__pe_a0, __pe_b1.clone()) }))) { continue; }
+            let __x = var.clone();
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    });
+                if !(failed_vars.clone().is_empty()) {
+                    Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBTearing.guru")); __mm_s.push_str(&*literal!(" failed. Following variables cannot be chosen as iteration variables because they are discontinuous:\n")); __mm_s.push_str(&*List::toString(failed_vars.clone(), Arc::new({ let __pe_b1 = (std::sync::Arc::new(fnptr!(BVariable::pointerToString, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>); let __pe_b2 = 10; move |__pe_a0| Slice::toString(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }), (literal!("")).clone(), (literal!("\t")).clone(), (literal!("\n\t")).clone(), (literal!("")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone()])?;
+                    bail!("fail");
+                }
+                unsolved_inner_vars = UnorderedMap::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
+                for mut var in &*inner_vars.clone() {
+                    let mut var = var.clone();
+                    UnorderedMap::add(BVariable::getVarName(Slice::getT(var.clone())), var.clone(), unsolved_inner_vars.clone())?;
+                }
+                unsolved_equations = UnorderedMap::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
+                for mut eqn in &*strict.residual_eqns.clone() {
+                    let mut eqn = eqn.clone();
+                    UnorderedMap::add(BEquation::Equation::getEqnName(Slice::getT(eqn.clone()))?, eqn.clone(), unsolved_equations.clone())?;
+                }
+                while !(UnorderedMap::isEmpty(unsolved_inner_vars.clone())) {
+                    for mut i in 1..=nEqn.clone() {
+                        var_assigned = false;
+                        if UnorderedMap::contains(var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(), unsolved_equations.clone()) {
+                            solve_opt = None;
+                            success = false;
+                            let __range0 = &*UnorderedSet::toList(var_field!((*full).occurrences, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone());
+                            for mut cref in __range0 {
+                                let mut cref = cref.clone();
+                                stripped = ComponentRef::stripSubscriptsAll(cref.clone());
+                                if UnorderedMap::contains(stripped.clone(), unsolved_inner_vars.clone()) {
+                                    if isNone(solve_opt.clone()) {
+                                        success = true;
+                                        solve_opt = Some(cref.clone());
+                                    } else {
+                                        success = false;
+                                        break;
+                                    }
+                                }
+                            }
+                            let () = (::match_deref::match_deref! { match &((solve_opt.clone(), success.clone())) {
+        (Some(solve_cref), true) => {
+            stripped = ComponentRef::stripSubscriptsAll(solve_cref.clone());
+            solve_var = UnorderedMap::getSafe(stripped.clone(), unsolved_inner_vars.clone(), metamodelica::sourceInfo!())?;
+            solve_eqn = UnorderedMap::getSafe(var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(), unsolved_equations.clone(), metamodelica::sourceInfo!())?;
+            inner_comps = cons(StrongComponent::createSliceOrSingle(solve_cref.clone(), solve_var.clone(), solve_eqn.clone()), inner_comps.clone());
+            UnorderedMap::remove(stripped.clone(), unsolved_inner_vars.clone())?;
+            UnorderedMap::remove(var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(), unsolved_equations.clone())?;
+            var_assigned = true;
+            ()
+        },
+        (Some(solve_cref), false) => (),
+        (None, false) => {
+            residuals = cons(UnorderedMap::getSafe(var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(), unsolved_equations.clone(), metamodelica::sourceInfo!())?, residuals.clone());
+            UnorderedMap::remove(var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(), unsolved_equations.clone())?;
+            ()
+        },
+        _ => {
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBTearing.guru")); __mm_s.push_str(&*literal!(" failed. Impossible result for equation representative: ")); __mm_s.push_str(&*ComponentRef::toString(var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone())?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone()])?;
+            ()
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+                        }
+                        if var_assigned.clone() {
+                            break;
+                        }
+                    }
+                    if !(var_assigned.clone()) {
+                        Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBTearing.guru")); __mm_s.push_str(&*literal!(" failed. Following variables could not be solved as inner variables:\n")); __mm_s.push_str(&*List::toString(UnorderedMap::valueList(unsolved_inner_vars.clone()), Arc::new({ let __pe_b1 = (std::sync::Arc::new(fnptr!(BVariable::pointerToString, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>); let __pe_b2 = 10; move |__pe_a0| Slice::toString(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }), (literal!("")).clone(), (literal!("\t")).clone(), (literal!("\n\t")).clone(), (literal!("")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone()])?;
+                        bail!("fail");
+                    }
+                }
+                assign_variant_field!(comp => StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP; mixed = List::any(inner_vars.clone(), Arc::new({ let __pe_b1 = Arc::new({ let __pe_b1 = init.clone(); move |__pe_a0| BVariable::isDiscontinuous(__pe_a0, __pe_b1.clone()) }); move |__pe_a0| Ok(Slice::check(__pe_a0, __pe_b1.clone())) })));
+                assign_field!(
+                    strict.innerEquations = metamodelica::arrayFromVec(inner_comps.clone().reverse().into_iter().cloned().collect()),
+                    strict.residual_eqns = listAppend(UnorderedMap::valueList(unsolved_equations.clone()), residuals.clone()),
+                    strict.iteration_vars = guru_vars.clone()
+                );
+                assign_variant_field!(comp => StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP; strict = strict.clone());
+            }
+            comp.clone()
+        },
+        _ => comp.clone(),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    Ok((comp, full, index))
 }
 
 fn checkLinearity(mut full: Arc<Adjacency::Matrix::Matrix>, mut v: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut e: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>) -> Result<bool> {

@@ -51,7 +51,6 @@ use openmodelica_frontend::FCore;
 use openmodelica_frontend::HashTable3;
 use openmodelica_frontend::HashTableCG;
 use openmodelica_frontend_dump::AvlTreePathFunction;
-use openmodelica_frontend_types::DAE;
 use openmodelica_frontend_types::SCode;
 use openmodelica_util::ExpandableArray;
 use openmodelica_util::MMath;
@@ -60,7 +59,7 @@ use openmodelica_util_datatypes_basic::DoubleEnded;
 /// Once we are in BackendDAE, the Type can be only basic types or enumeration.
 /// We cannot do this in DAE because functions may contain many more types.
 /// adrpo: yes we can, we just simplify the DAE.Type, see Types.simplifyType
-pub type Type = Arc<DAE::Type>;
+pub type Type = Arc<openmodelica_frontend_types::DAE::Type>;
 
 /// THE LOWERED DAE consist of variables and equations. The variables are split into
 ///  two lists, one for unknown variables states and algebraic and one for known variables
@@ -178,9 +177,9 @@ pub struct Shared {
     /// these are equations that cannot solve for a variable. for example assertions, external function calls, algorithm sections without effect
     pub removedEqs: EquationArray,
     /// constraints (Optimica extension)
-    pub constraints: Arc<metamodelica::List<Arc<DAE::Constraint>>>,
+    pub constraints: Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::Constraint>>>,
     /// class attributes (Optimica extension)
-    pub classAttrs: Arc<metamodelica::List<Arc<DAE::ClassAttributes>>>,
+    pub classAttrs: Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ClassAttributes>>>,
     pub cache: FCore::Cache,
     pub graph: FCore::Graph,
     /// functions for Backend
@@ -200,7 +199,7 @@ pub struct Shared {
     pub daeModeData: BackendDAEModeData,
     pub dataReconciliationData: Option<DataReconciliationData>,
     /// from experiment annotation Interval, used for derivative nominal guesswork
-    pub timeInterval: Option<Arc<DAE::Exp>>,
+    pub timeInterval: Option<Arc<openmodelica_frontend_types::DAE::Exp>>,
 }
 
 impl Default for Shared {
@@ -253,7 +252,7 @@ pub type INLINE_DATA = InlineData;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct BasePartition {
-    pub clock: Arc<DAE::ClockKind>,
+    pub clock: Arc<openmodelica_frontend_types::DAE::ClockKind>,
     pub nSubClocks: i32,
 }
 
@@ -273,7 +272,7 @@ pub type BASE_PARTITION = BasePartition;
 pub struct SubPartition {
     pub clock: SubClock,
     pub holdEvents: bool,
-    pub prevVars: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>,
+    pub prevVars: Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>,
 }
 
 impl Default for SubPartition {
@@ -420,7 +419,7 @@ pub type VARIABLES = Variables;
 /// Component Reference Index
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct CrefIndex {
-    pub cref: Arc<DAE::ComponentRef>,
+    pub cref: Arc<openmodelica_frontend_types::DAE::ComponentRef>,
     pub index: i32,
 }
 
@@ -463,35 +462,35 @@ pub type EquationArray = Arc<ExpandableArray::ExpandableArray<Arc<Equation>>>;
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Var {
     /// variable name
-    pub varName: Arc<DAE::ComponentRef>,
+    pub varName: Arc<openmodelica_frontend_types::DAE::ComponentRef>,
     /// kind of variable
     pub varKind: VarKind,
     /// input, output or bidirectional
-    pub varDirection: DAE::VarDirection,
+    pub varDirection: openmodelica_frontend_types::DAE::VarDirection,
     /// parallelism of the variable. parglobal, parlocal or non-parallel
-    pub varParallelism: DAE::VarParallelism,
+    pub varParallelism: openmodelica_frontend_types::DAE::VarParallelism,
     /// built-in type or enumeration
     pub varType: Type,
     /// Binding expression e.g. for parameters
-    pub bindExp: Option<Arc<DAE::Exp>>,
+    pub bindExp: Option<Arc<openmodelica_frontend_types::DAE::Exp>>,
     /// Variable is part of a tuple. Needed for the globalKnownVars and localKnownVars
-    pub tplExp: Option<Arc<DAE::Exp>>,
+    pub tplExp: Option<Arc<openmodelica_frontend_types::DAE::Exp>>,
     /// array dimensions of non-expanded var
-    pub arryDim: Arc<metamodelica::List<Arc<DAE::Dimension>>>,
+    pub arryDim: Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::Dimension>>>,
     /// origin of variable
-    pub source: Arc<DAE::ElementSource>,
+    pub source: Arc<openmodelica_frontend_types::DAE::ElementSource>,
     /// values on built-in attributes
-    pub values: Option<Arc<DAE::VariableAttributes>>,
+    pub values: Option<Arc<openmodelica_frontend_types::DAE::VariableAttributes>>,
     /// value for TearingSelect
     pub tearingSelectOption: Option<TearingSelect>,
     /// expression from the hideResult annotation
-    pub hideResult: Option<Arc<DAE::Exp>>,
+    pub hideResult: Option<Arc<openmodelica_frontend_types::DAE::Exp>>,
     /// this contains the comment and annotation from Absyn
     pub comment: Option<Arc<SCode::Comment>>,
     /// flow, stream, unspecified or not connector.
-    pub connectorType: Arc<DAE::ConnectorType>,
+    pub connectorType: Arc<openmodelica_frontend_types::DAE::ConnectorType>,
     /// inner, outer, inner outer or unspecified
-    pub innerOuter: DAE::VarInnerOuter,
+    pub innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter,
     /// indicates if it is allowed to replace this variable
     pub unreplaceable: bool,
     /// indicates if the variable is a nonlinear iteration variable during initialization
@@ -536,7 +535,7 @@ pub enum VarKind {
         /// how often this states was differentiated
         index: i32,
         /// the name of the derivative
-        derName: Option<Arc<DAE::ComponentRef>>,
+        derName: Option<Arc<openmodelica_frontend_types::DAE::ComponentRef>>,
         /// false if it was forced by StateSelect.always or StateSelect.prefer or generated by index reduction
         natural: bool,
     },
@@ -545,7 +544,7 @@ pub enum VarKind {
     DUMMY_STATE,
     CLOCKED_STATE {
         /// the name of the previous variable
-        previousName: Arc<DAE::ComponentRef>,
+        previousName: Arc<openmodelica_frontend_types::DAE::ComponentRef>,
         /// is fixed at first clock tick
         isStartFixed: bool,
     },
@@ -564,7 +563,7 @@ pub enum VarKind {
     OPT_INPUT_DER,
     OPT_TGRID,
     OPT_LOOP_INPUT {
-        replaceExp: Arc<DAE::ComponentRef>,
+        replaceExp: Arc<openmodelica_frontend_types::DAE::ComponentRef>,
     },
     /// algebraic state used by inline solver
     ALG_STATE,
@@ -678,47 +677,47 @@ pub static EQ_ATTR_DEFAULT_UNKNOWN: std::sync::LazyLock<EquationAttributes> = st
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Equation {
     EQUATION {
-        exp: Arc<DAE::Exp>,
-        scalar: Arc<DAE::Exp>,
+        exp: Arc<openmodelica_frontend_types::DAE::Exp>,
+        scalar: Arc<openmodelica_frontend_types::DAE::Exp>,
         /// origin of equation
-        source: Arc<DAE::ElementSource>,
+        source: Arc<openmodelica_frontend_types::DAE::ElementSource>,
         attr: EquationAttributes,
     },
     ARRAY_EQUATION {
         /// dimension sizes
         dimSize: Arc<metamodelica::List<i32>>,
         /// lhs
-        left: Arc<DAE::Exp>,
+        left: Arc<openmodelica_frontend_types::DAE::Exp>,
         /// rhs
-        right: Arc<DAE::Exp>,
+        right: Arc<openmodelica_frontend_types::DAE::Exp>,
         /// origin of equation
-        source: Arc<DAE::ElementSource>,
+        source: Arc<openmodelica_frontend_types::DAE::ElementSource>,
         attr: EquationAttributes,
         /// NONE() if not a record
         recordSize: Option<i32>,
     },
     SOLVED_EQUATION {
-        componentRef: Arc<DAE::ComponentRef>,
-        exp: Arc<DAE::Exp>,
+        componentRef: Arc<openmodelica_frontend_types::DAE::ComponentRef>,
+        exp: Arc<openmodelica_frontend_types::DAE::Exp>,
         /// origin of equation
-        source: Arc<DAE::ElementSource>,
+        source: Arc<openmodelica_frontend_types::DAE::ElementSource>,
         attr: EquationAttributes,
     },
     RESIDUAL_EQUATION {
         /// not present from FrontEnd
-        exp: Arc<DAE::Exp>,
+        exp: Arc<openmodelica_frontend_types::DAE::Exp>,
         /// origin of equation
-        source: Arc<DAE::ElementSource>,
+        source: Arc<openmodelica_frontend_types::DAE::ElementSource>,
         attr: EquationAttributes,
     },
     ALGORITHM {
         /// size of equation
         size: i32,
-        alg: Arc<DAE::Algorithm>,
+        alg: Arc<openmodelica_frontend_types::DAE::Algorithm>,
         /// origin of algorithm
-        source: Arc<DAE::ElementSource>,
+        source: Arc<openmodelica_frontend_types::DAE::ElementSource>,
         /// this algorithm was translated from an equation. we should not expand array crefs!
-        expand: DAE::Expand,
+        expand: openmodelica_frontend_types::DAE::Expand,
         attr: EquationAttributes,
     },
     WHEN_EQUATION {
@@ -726,7 +725,7 @@ pub enum Equation {
         size: i32,
         whenEquation: Arc<WhenEquation>,
         /// origin of equation
-        source: Arc<DAE::ElementSource>,
+        source: Arc<openmodelica_frontend_types::DAE::ElementSource>,
         attr: EquationAttributes,
     },
     /// complex equations: recordX = function call(x, y, ..);
@@ -734,37 +733,37 @@ pub enum Equation {
         /// size of equation
         size: i32,
         /// lhs
-        left: Arc<DAE::Exp>,
+        left: Arc<openmodelica_frontend_types::DAE::Exp>,
         /// rhs
-        right: Arc<DAE::Exp>,
+        right: Arc<openmodelica_frontend_types::DAE::Exp>,
         /// origin of equation
-        source: Arc<DAE::ElementSource>,
+        source: Arc<openmodelica_frontend_types::DAE::ElementSource>,
         attr: EquationAttributes,
     },
     /// an if-equation
     IF_EQUATION {
         /// Condition
-        conditions: Arc<metamodelica::List<Arc<DAE::Exp>>>,
+        conditions: Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::Exp>>>,
         /// Equations of true branch
         eqnstrue: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Equation>>>>>,
         /// Equations of false branch
         eqnsfalse: Arc<metamodelica::List<Arc<Equation>>>,
         /// origin of equation
-        source: Arc<DAE::ElementSource>,
+        source: Arc<openmodelica_frontend_types::DAE::ElementSource>,
         attr: EquationAttributes,
     },
     /// a for-equation
     FOR_EQUATION {
         /// the iterator variable
-        iter: Arc<DAE::Exp>,
+        iter: Arc<openmodelica_frontend_types::DAE::Exp>,
         /// start of iteration
-        start: Arc<DAE::Exp>,
+        start: Arc<openmodelica_frontend_types::DAE::Exp>,
         /// end of iteration
-        stop: Arc<DAE::Exp>,
+        stop: Arc<openmodelica_frontend_types::DAE::Exp>,
         /// iterated equation
         body: Arc<Equation>,
         /// origin of equation
-        source: Arc<DAE::ElementSource>,
+        source: Arc<openmodelica_frontend_types::DAE::ElementSource>,
         attr: EquationAttributes,
     },
     DUMMY_EQUATION,
@@ -778,7 +777,7 @@ pub use self::Equation::{EQUATION,ARRAY_EQUATION,SOLVED_EQUATION,RESIDUAL_EQUATI
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct WhenEquation {
     /// the when-condition
-    pub condition: Arc<DAE::Exp>,
+    pub condition: Arc<openmodelica_frontend_types::DAE::Exp>,
     pub whenStmtLst: Arc<metamodelica::List<WhenOperator>>,
     /// elsewhen equation with the same cref on the left hand side.
     pub elsewhenPart: Option<Arc<WhenEquation>>,
@@ -802,41 +801,41 @@ pub enum WhenOperator {
     /// left_cr = right_exp
     ASSIGN {
         /// left hand side of equation
-        left: Arc<DAE::Exp>,
+        left: Arc<openmodelica_frontend_types::DAE::Exp>,
         /// right hand side of equation
-        right: Arc<DAE::Exp>,
+        right: Arc<openmodelica_frontend_types::DAE::Exp>,
         /// origin of equation
-        source: Arc<DAE::ElementSource>,
+        source: Arc<openmodelica_frontend_types::DAE::ElementSource>,
     },
     /// Reinit Statement
     REINIT {
         /// State variable to reinit
-        stateVar: Arc<DAE::ComponentRef>,
+        stateVar: Arc<openmodelica_frontend_types::DAE::ComponentRef>,
         /// Value after reinit
-        value: Arc<DAE::Exp>,
+        value: Arc<openmodelica_frontend_types::DAE::Exp>,
         /// origin of equation
-        source: Arc<DAE::ElementSource>,
+        source: Arc<openmodelica_frontend_types::DAE::ElementSource>,
     },
     ASSERT {
-        condition: Arc<DAE::Exp>,
-        message: Arc<DAE::Exp>,
-        level: Arc<DAE::Exp>,
+        condition: Arc<openmodelica_frontend_types::DAE::Exp>,
+        message: Arc<openmodelica_frontend_types::DAE::Exp>,
+        level: Arc<openmodelica_frontend_types::DAE::Exp>,
         /// the origin of the component/equation/algorithm
-        source: Arc<DAE::ElementSource>,
+        source: Arc<openmodelica_frontend_types::DAE::ElementSource>,
     },
     /// The Modelica built-in terminate(msg)
     TERMINATE {
-        message: Arc<DAE::Exp>,
+        message: Arc<openmodelica_frontend_types::DAE::Exp>,
         /// the origin of the component/equation/algorithm
-        source: Arc<DAE::ElementSource>,
+        source: Arc<openmodelica_frontend_types::DAE::ElementSource>,
     },
     /// call with no return value, i.e. no equation.
     ///    Typically side effect call of external function but also
     ///    Connections.* i.e. Connections.root(...) functions.
     NORETCALL {
-        exp: Arc<DAE::Exp>,
+        exp: Arc<openmodelica_frontend_types::DAE::Exp>,
         /// the origin of the component/equation/algorithm
-        source: Arc<DAE::ElementSource>,
+        source: Arc<openmodelica_frontend_types::DAE::ElementSource>,
     },
 }
 impl Default for WhenOperator {
@@ -858,7 +857,7 @@ pub struct ExternalObjectClass {
     /// className of external object
     pub path: Arc<Absyn::Path>,
     /// origin of equation
-    pub source: Arc<DAE::ElementSource>,
+    pub source: Arc<openmodelica_frontend_types::DAE::ElementSource>,
 }
 
 impl Default for ExternalObjectClass {
@@ -926,9 +925,9 @@ pub type ConstraintEquations = metamodelica::Array<Arc<metamodelica::List<Arc<Eq
 pub enum StateOrder {
     STATEORDER {
         /// x -> dx
-        hashTable: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)>>), i32, (HashTableCG::FuncHashCref, HashTableCG::FuncCrefEqual, HashTableCG::FuncCrefStr, HashTableCG::FuncExpStr)),
+        hashTable: (metamodelica::Array<Arc<metamodelica::List<(Arc<openmodelica_frontend_types::DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<openmodelica_frontend_types::DAE::ComponentRef>, Arc<openmodelica_frontend_types::DAE::ComponentRef>)>>), i32, (HashTableCG::FuncHashCref, HashTableCG::FuncCrefEqual, HashTableCG::FuncCrefStr, HashTableCG::FuncExpStr)),
         /// dx -> {x,y,z}
-        invHashTable: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>), i32, (HashTable3::FuncHashCref, HashTable3::FuncCrefEqual, HashTable3::FuncCrefStr, HashTable3::FuncExpStr)),
+        invHashTable: (metamodelica::Array<Arc<metamodelica::List<(Arc<openmodelica_frontend_types::DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<openmodelica_frontend_types::DAE::ComponentRef>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>)>>), i32, (HashTable3::FuncHashCref, HashTable3::FuncCrefEqual, HashTable3::FuncCrefStr, HashTable3::FuncExpStr)),
     },
     /// Index reduction disabled; don't need big hashtables
     NOSTATEORDER,
@@ -1088,15 +1087,15 @@ pub type StateSets = Arc<metamodelica::List<StateSet>>;
 pub struct StateSet {
     pub index: i32,
     pub rang: i32,
-    pub state: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>,
+    pub state: Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>,
     /// set.x=A*states
-    pub crA: Arc<DAE::ComponentRef>,
+    pub crA: Arc<openmodelica_frontend_types::DAE::ComponentRef>,
     pub varA: Arc<metamodelica::List<Var>>,
     pub statescandidates: Arc<metamodelica::List<Var>>,
     pub ovars: Arc<metamodelica::List<Var>>,
     pub eqns: Arc<metamodelica::List<Arc<Equation>>>,
     pub oeqns: Arc<metamodelica::List<Arc<Equation>>>,
-    pub crJ: Arc<DAE::ComponentRef>,
+    pub crJ: Arc<openmodelica_frontend_types::DAE::ComponentRef>,
     pub varJ: Arc<metamodelica::List<Var>>,
     pub jacobian: Arc<Jacobian>,
 }
@@ -1178,7 +1177,7 @@ pub struct ZeroCrossing {
     /// zero crossing index
     pub index: i32,
     /// function
-    pub relation_: Arc<DAE::Exp>,
+    pub relation_: Arc<openmodelica_frontend_types::DAE::Exp>,
     /// list of equations where the function occurs
     pub occurEquLst: Arc<metamodelica::List<i32>>,
     /// optional iterator for for-loops
@@ -1202,19 +1201,19 @@ pub type ZERO_CROSSING = ZeroCrossing;
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum SimIterator {
     SIM_ITERATOR_RANGE {
-        name: Arc<DAE::ComponentRef>,
-        start: Arc<DAE::Exp>,
-        step: Arc<DAE::Exp>,
-        stop: Arc<DAE::Exp>,
-        size: Arc<DAE::Exp>,
+        name: Arc<openmodelica_frontend_types::DAE::ComponentRef>,
+        start: Arc<openmodelica_frontend_types::DAE::Exp>,
+        step: Arc<openmodelica_frontend_types::DAE::Exp>,
+        stop: Arc<openmodelica_frontend_types::DAE::Exp>,
+        size: Arc<openmodelica_frontend_types::DAE::Exp>,
         non_resizable_size: i32,
-        sub_iter: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, metamodelica::Array<Arc<DAE::Exp>>)>>,
+        sub_iter: Arc<metamodelica::List<(Arc<openmodelica_frontend_types::DAE::ComponentRef>, metamodelica::Array<Arc<openmodelica_frontend_types::DAE::Exp>>)>>,
     },
     SIM_ITERATOR_LIST {
-        name: Arc<DAE::ComponentRef>,
+        name: Arc<openmodelica_frontend_types::DAE::ComponentRef>,
         lst: Arc<metamodelica::List<i32>>,
         size: i32,
-        sub_iter: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, metamodelica::Array<Arc<DAE::Exp>>)>>,
+        sub_iter: Arc<metamodelica::List<(Arc<openmodelica_frontend_types::DAE::ComponentRef>, metamodelica::Array<Arc<openmodelica_frontend_types::DAE::Exp>>)>>,
     },
 }
 impl Default for SimIterator {
@@ -1229,7 +1228,7 @@ impl Default for SimIterator {
 }
 pub use self::SimIterator::{SIM_ITERATOR_RANGE,SIM_ITERATOR_LIST};
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum TimeEvent {
     /// e.g. time > 0.5
     SIMPLE_TIME_EVENT,
@@ -1237,8 +1236,10 @@ pub enum TimeEvent {
     SAMPLE_TIME_EVENT {
         /// unique sample index
         index: i32,
-        startExp: Arc<DAE::Exp>,
-        intervalExp: Arc<DAE::Exp>,
+        startExp: Arc<openmodelica_frontend_types::DAE::Exp>,
+        intervalExp: Arc<openmodelica_frontend_types::DAE::Exp>,
+        /// optional iterator for for-loops
+        iter: Option<Arc<metamodelica::List<SimIterator>>>,
     },
 }
 impl Default for TimeEvent {
@@ -1268,13 +1269,13 @@ pub type AdjacencyMatrixT = metamodelica::Array<Arc<metamodelica::List<i32>>>;
 /// Boolean             : true if analytical to structural singularity processing has already been done
 pub type AdjacencyMatrixMapping = (metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, IndexType, bool, bool);
 
-pub type AdjacencyMatrixElementEnhancedEntry = (i32, Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>);
+pub type AdjacencyMatrixElementEnhancedEntry = (i32, Solvability, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::Constraint>>>);
 
-pub type AdjacencyMatrixElementEnhanced = Arc<metamodelica::List<(i32, Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>;
+pub type AdjacencyMatrixElementEnhanced = Arc<metamodelica::List<(i32, Solvability, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::Constraint>>>)>>;
 
-pub type AdjacencyMatrixEnhanced = metamodelica::Array<Arc<metamodelica::List<(i32, Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>;
+pub type AdjacencyMatrixEnhanced = metamodelica::Array<Arc<metamodelica::List<(i32, Solvability, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::Constraint>>>)>>>;
 
-pub type AdjacencyMatrixTEnhanced = metamodelica::Array<Arc<metamodelica::List<(i32, Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>;
+pub type AdjacencyMatrixTEnhanced = metamodelica::Array<Arc<metamodelica::List<(i32, Solvability, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::Constraint>>>)>>>;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Solvability {
@@ -1309,7 +1310,7 @@ pub enum Solvability {
 pub use self::Solvability::{SOLVABILITY_SOLVED,SOLVABILITY_CONSTONE,SOLVABILITY_CONST,SOLVABILITY_PARAMETER,SOLVABILITY_LINEAR,SOLVABILITY_NONLINEAR,SOLVABILITY_UNSOLVABLE,SOLVABILITY_SOLVABLE};
 
 /// Constraints on the solvability of the (casual) tearing set; needed for proper Dynamic Tearing
-pub type Constraints = Arc<metamodelica::List<Arc<DAE::Constraint>>>;
+pub type Constraints = Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::Constraint>>>;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum IndexType {
@@ -1385,7 +1386,7 @@ pub enum Jacobian {
         jacobian: FullJacobian,
     },
     GENERIC_JACOBIAN {
-        jacobian: Option<(Arc<BackendDAE>, ArcStr, Arc<metamodelica::List<Var>>, Arc<metamodelica::List<Var>>, Arc<metamodelica::List<Var>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>,
+        jacobian: Option<(Arc<BackendDAE>, ArcStr, Arc<metamodelica::List<Var>>, Arc<metamodelica::List<Var>>, Arc<metamodelica::List<Var>>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>)>,
         sparsePattern: SparsePattern,
         coloring: SparseColoring,
         nonlinearPattern: NonlinearPattern,
@@ -1397,9 +1398,9 @@ impl Default for Jacobian {
 }
 pub use self::Jacobian::{FULL_JACOBIAN,GENERIC_JACOBIAN,EMPTY_JACOBIAN};
 
-pub type SymbolicJacobians = Arc<metamodelica::List<(Option<(Arc<BackendDAE>, ArcStr, Arc<metamodelica::List<Var>>, Arc<metamodelica::List<Var>>, Arc<metamodelica::List<Var>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32), Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>, (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32))>>;
+pub type SymbolicJacobians = Arc<metamodelica::List<(Option<(Arc<BackendDAE>, ArcStr, Arc<metamodelica::List<Var>>, Arc<metamodelica::List<Var>>, Arc<metamodelica::List<Var>>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>)>, (Arc<metamodelica::List<(Arc<openmodelica_frontend_types::DAE::ComponentRef>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<openmodelica_frontend_types::DAE::ComponentRef>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>), i32), Arc<metamodelica::List<Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>>>, (Arc<metamodelica::List<(Arc<openmodelica_frontend_types::DAE::ComponentRef>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<openmodelica_frontend_types::DAE::ComponentRef>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>), i32))>>;
 
-pub type SymbolicJacobian = (Arc<BackendDAE>, ArcStr, Arc<metamodelica::List<Var>>, Arc<metamodelica::List<Var>>, Arc<metamodelica::List<Var>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>);
+pub type SymbolicJacobian = (Arc<BackendDAE>, ArcStr, Arc<metamodelica::List<Var>>, Arc<metamodelica::List<Var>>, Arc<metamodelica::List<Var>>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>);
 
 // symbolic equation system
 // Matrix name
@@ -1407,30 +1408,30 @@ pub type SymbolicJacobian = (Arc<BackendDAE>, ArcStr, Arc<metamodelica::List<Var
 // diffed vars (residual vars)
 // all diffed vars (residual vars + dependent vars)
 // original dependent variables
-pub type SparsePatternCref = (Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>);
+pub type SparsePatternCref = (Arc<openmodelica_frontend_types::DAE::ComponentRef>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>);
 
-pub type SparsePatternCrefs = Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>;
+pub type SparsePatternCrefs = Arc<metamodelica::List<(Arc<openmodelica_frontend_types::DAE::ComponentRef>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>)>>;
 
-pub type NonlinearPatternCref = (Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>);
+pub type NonlinearPatternCref = (Arc<openmodelica_frontend_types::DAE::ComponentRef>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>);
 
-pub type NonlinearPatternCrefs = Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>;
+pub type NonlinearPatternCrefs = Arc<metamodelica::List<(Arc<openmodelica_frontend_types::DAE::ComponentRef>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>)>>;
 
-pub type SparsePattern = (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32);
+pub type SparsePattern = (Arc<metamodelica::List<(Arc<openmodelica_frontend_types::DAE::ComponentRef>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<openmodelica_frontend_types::DAE::ComponentRef>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>), i32);
 
 // column-wise sparse pattern
 // row-wise sparse pattern
 // diff vars (independent vars) of associated jacobian
 // diffed vars (residual vars) of associated jacobian
 // nonZeroElements
-pub type NonlinearPattern = (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32);
+pub type NonlinearPattern = (Arc<metamodelica::List<(Arc<openmodelica_frontend_types::DAE::ComponentRef>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<openmodelica_frontend_types::DAE::ComponentRef>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>), i32);
 
-thread_local! { static __emptySparsePattern_TLS: (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32) = (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), 0); }
-pub fn emptySparsePattern() -> (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32) { __emptySparsePattern_TLS.with(|__t| __t.clone()) }
+thread_local! { static __emptySparsePattern_TLS: (Arc<metamodelica::List<(Arc<openmodelica_frontend_types::DAE::ComponentRef>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<openmodelica_frontend_types::DAE::ComponentRef>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>), i32) = (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), 0); }
+pub fn emptySparsePattern() -> (Arc<metamodelica::List<(Arc<openmodelica_frontend_types::DAE::ComponentRef>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<openmodelica_frontend_types::DAE::ComponentRef>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>), i32) { __emptySparsePattern_TLS.with(|__t| __t.clone()) }
 
-thread_local! { static __emptyNonlinearPattern_TLS: (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32) = (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), 0); }
-pub fn emptyNonlinearPattern() -> (Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>), i32) { __emptyNonlinearPattern_TLS.with(|__t| __t.clone()) }
+thread_local! { static __emptyNonlinearPattern_TLS: (Arc<metamodelica::List<(Arc<openmodelica_frontend_types::DAE::ComponentRef>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<openmodelica_frontend_types::DAE::ComponentRef>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>), i32) = (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), 0); }
+pub fn emptyNonlinearPattern() -> (Arc<metamodelica::List<(Arc<openmodelica_frontend_types::DAE::ComponentRef>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>)>>, Arc<metamodelica::List<(Arc<openmodelica_frontend_types::DAE::ComponentRef>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>)>>, (Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>), i32) { __emptyNonlinearPattern_TLS.with(|__t| __t.clone()) }
 
-pub type SparseColoring = Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>;
+pub type SparseColoring = Arc<metamodelica::List<Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>>>;
 
 // colouring
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -1440,7 +1441,7 @@ pub struct DifferentiateInputData {
     pub knownVars: Option<Variables>,
     pub allVars: Option<Variables>,
     pub controlVars: Arc<metamodelica::List<Var>>,
-    pub diffCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>,
+    pub diffCrefs: Arc<metamodelica::List<Arc<openmodelica_frontend_types::DAE::ComponentRef>>>,
     pub matrixName: Option<ArcStr>,
     pub diffedFunctions: Arc<AvlSetPath::Tree>,
 }
@@ -1466,7 +1467,7 @@ pub type DIFFINPUTDATA = DifferentiateInputData;
 thread_local! { static __emptyInputData_TLS: DifferentiateInputData = DifferentiateInputData { independenentVars: None, dependenentVars: None, knownVars: None, allVars: None, controlVars: metamodelica::nil(), diffCrefs: metamodelica::nil(), matrixName: None, diffedFunctions: Arc::new(openmodelica_ast_collections::AvlSetPath::Tree::EMPTY) }; }
 pub fn emptyInputData() -> DifferentiateInputData { __emptyInputData_TLS.with(|__t| __t.clone()) }
 
-pub type DifferentiateInputArguments = (Arc<DAE::ComponentRef>, DifferentiateInputData, DifferentiationType, Arc<AvlTreePathFunction::Tree>);
+pub type DifferentiateInputArguments = (Arc<openmodelica_frontend_types::DAE::ComponentRef>, DifferentiateInputData, DifferentiationType, Arc<AvlTreePathFunction::Tree>);
 
 /// Define the behaviour of differentiation method for (e.g. index reduction, ...)
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]

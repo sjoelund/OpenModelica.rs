@@ -910,8 +910,6 @@ fn buildBackendDAEForEquations(mut classEqs: Arc<metamodelica::List<Arc<BackendD
                     lhs = __pa3.clone();
                     let true = (ComponentReferenceBasics::crefEqualWithoutSubs(Expression::expCref(lhs.clone())?, Expression::expCref(rhs.clone())?)) else { bail!("pattern mismatch") };
                     (similarEqs, rest) = List::separate1OnTrue(classEqs.clone(), (std::sync::Arc::new(equationEqualNoCrefSubs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, Arc<BackendDAE::Equation>) -> Result<bool> + 'static>), eq.clone());
-                    Expression::expCref(lhs.clone())?;
-                    Expression::expCref(rhs.clone())?;
                     iterator = Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (literal!("i")).clone(), identType: DAE::T_INTEGER_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), ty: DAE::T_INTEGER_DEFAULT().clone() });
                     eq = Arc::new(BackendDAE::Equation::FOR_EQUATION { iter: iterator.clone(), start: Arc::new(DAE::Exp::ICONST { integer: 1 }), stop: Arc::new(DAE::Exp::ICONST { integer: (similarEqs.clone().len() as i32) }), body: Arc::new(BackendDAE::Equation::EQUATION { exp: lhs.clone(), scalar: rhs.clone(), source: source.clone(), attr: attr.clone() }), source: source.clone(), attr: attr.clone() });
                     foldEqs = buildBackendDAEForEquations(rest.clone(), cons(eq.clone(), foldIn.clone()))?;

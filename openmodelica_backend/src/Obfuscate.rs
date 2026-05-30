@@ -102,8 +102,8 @@ pub fn obfuscateProgram(mut program: Arc<metamodelica::List<Arc<SCode::Element>>
     let mut classPath: Arc<Absyn::Path> = classPath;
     let mut classComment: Arc<SCode::Comment> = classComment;
     let mut mapStr: ArcStr = arcstr::literal!("");
-    let mut mapping: Mapping;
-    let mut builtins: Builtins;
+    let mut mapping: Mapping = <Arc<UnorderedMap::UnorderedMap<ArcStr, ArcStr>> as ::std::default::Default>::default();
+    let mut builtins: Builtins = <Arc<UnorderedMap::UnorderedMap<ArcStr, ElementType>> as ::std::default::Default>::default();
     let mut env: Env = <Env as ::std::default::Default>::default();
     mapping = UnorderedMap::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEqual, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), 1);
     builtins = makeBuiltins()?;
@@ -123,7 +123,7 @@ pub fn obfuscateProgram(mut program: Arc<metamodelica::List<Arc<SCode::Element>>
 }
 
 pub fn makeBuiltins() -> Result<Builtins> {
-    let mut builtins: Builtins;
+    let mut builtins: Builtins = <Arc<UnorderedMap::UnorderedMap<ArcStr, ElementType>> as ::std::default::Default>::default();
     let mut builtin_scode: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     let mut etype: ElementType = ElementType::TYPE;
     builtins = UnorderedMap::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEqual, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), 1);
@@ -241,7 +241,6 @@ pub fn obfuscateImport(mut imp: Absyn::Import, mut env: Env) -> Result<Absyn::Im
             } else { panic!("owned-variant field-assign: value held a different variant than Absyn::Import::GROUP_IMPORT"); }
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(imp)
 }
@@ -265,7 +264,6 @@ pub fn obfuscateGroupImport(mut imp: Absyn::GroupImport, mut env: Env) -> Result
             } else { panic!("owned-variant field-assign: value held a different variant than Absyn::GroupImport::GROUP_IMPORT_RENAME"); }
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(imp)
 }
@@ -370,7 +368,7 @@ pub fn obfuscateClassDef(mut cdef: Arc<SCode::ClassDef>, mut env: Env) -> Result
             );
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(cdef)
 }
@@ -400,7 +398,7 @@ pub fn obfuscateTypeSpec(mut ty: Arc<Absyn::TypeSpec>, mut env: Env) -> Result<A
             );
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(ty)
 }
@@ -509,7 +507,7 @@ pub fn obfuscatePath(mut path: Arc<Absyn::Path>, mut env: Env, mut etype: Elemen
             assign_variant_field!(path => Absyn::Path::FULLYQUALIFIED; path = obfuscatePath(var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone(), env.clone(), etype.clone())?);
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(path)
 }
@@ -951,7 +949,7 @@ pub fn obfuscateEquation(mut eq: Arc<SCode::Equation>, mut env: Env) -> Result<A
             );
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(eq)
 }

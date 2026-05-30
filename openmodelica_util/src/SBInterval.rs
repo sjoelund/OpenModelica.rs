@@ -183,7 +183,7 @@ pub fn intersection(mut int1: Arc<SBInterval>, mut int2: Arc<SBInterval>) -> Arc
 }
 
 pub fn complement(mut int1: Arc<SBInterval>, mut int2: Arc<SBInterval>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<SBInterval>>>> {
-    let mut ints: Arc<UnorderedSet::UnorderedSet<Arc<SBInterval>>>;
+    let mut ints: Arc<UnorderedSet::UnorderedSet<Arc<SBInterval>>> = <Arc<UnorderedSet::UnorderedSet<Arc<SBInterval>>> as ::std::default::Default>::default();
     let mut i2: Arc<SBInterval> = Arc::new(<SBInterval as ::std::default::Default>::default());
     let mut count_r: i32 = 0;
     let mut count_s: i32 = 0;

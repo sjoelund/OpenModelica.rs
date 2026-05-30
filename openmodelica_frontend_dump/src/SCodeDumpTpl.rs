@@ -273,7 +273,7 @@ fn fun_25(mut in_txt: Tpl::Text, mut in_a_options: SCodeDump::SCodeDumpOptions, 
 fn fun_26(mut in_txt: Tpl::Text, mut in_a_visibility: SCode::Visibility, mut in_a_element: Arc<SCode::Element>, mut in_a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_visibility.clone(), in_a_element.clone(), in_a_options.clone())) {
-        (txt, SCode::Visibility::PROTECTED, a_element, a_options) => {
+        (txt, SCode::Visibility::PROTECTED { .. }, a_element, a_options) => {
             let mut txt = (*txt).clone();
             txt = fun_25(txt.clone(), a_options.clone(), a_element.clone())?;
             txt.clone()
@@ -395,11 +395,11 @@ fn fun_30(mut in_txt: Tpl::Text, mut in_a_inPublicSection: bool) -> Result<Tpl::
 pub fn dumpSectionVisibility(mut in_txt: Tpl::Text, mut in_a_visibility: SCode::Visibility, mut in_a_inPublicSection: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_visibility.clone(), in_a_inPublicSection.clone()) {
-        (mut txt, SCode::Visibility::PUBLIC, mut a_inPublicSection) => {
+        (mut txt, SCode::Visibility::PUBLIC { .. }, mut a_inPublicSection) => {
             txt = fun_29(txt.clone(), a_inPublicSection.clone())?;
             txt.clone()
         },
-        (mut txt, SCode::Visibility::PROTECTED, mut a_inPublicSection) => {
+        (mut txt, SCode::Visibility::PROTECTED { .. }, mut a_inPublicSection) => {
             txt = fun_30(txt.clone(), a_inPublicSection.clone())?;
             txt.clone()
         },
@@ -913,7 +913,7 @@ pub fn dumpClassAnnotation(mut in_txt: Tpl::Text, mut in_a_comment: Arc<SCode::C
 fn fun_50(mut in_txt: Tpl::Text, mut in_a_attributes: SCode::Attributes, mut in_a_mod__str1: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_attributes.clone(), in_a_mod__str1.clone()) {
-        (mut txt, SCode::Attributes { direction: Absyn::Direction::OUTPUT, .. }, _) => {
+        (mut txt, SCode::Attributes { direction: Absyn::Direction::OUTPUT { .. }, .. }, _) => {
             txt.clone()
         },
         (mut txt, _, mut a_mod__str1) => {
@@ -2217,7 +2217,7 @@ pub fn dumpPrefixes(mut in_txt: Tpl::Text, mut in_a_prefixes: Arc<SCode::Prefixe
 pub fn dumpVisibility(mut in_txt: Tpl::Text, mut in_a_visibility: SCode::Visibility) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_visibility.clone()) {
-        (mut txt, SCode::Visibility::PROTECTED) => {
+        (mut txt, SCode::Visibility::PROTECTED { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("protected ")).clone() }))?;
             txt.clone()
         },
@@ -2231,7 +2231,7 @@ pub fn dumpVisibility(mut in_txt: Tpl::Text, mut in_a_visibility: SCode::Visibil
 pub fn dumpRedeclare(mut in_txt: Tpl::Text, mut in_a_redeclare: SCode::Redeclare) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_redeclare.clone()) {
-        (mut txt, SCode::Redeclare::REDECLARE) => {
+        (mut txt, SCode::Redeclare::REDECLARE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("redeclare ")).clone() }))?;
             txt.clone()
         },
@@ -2245,7 +2245,7 @@ pub fn dumpRedeclare(mut in_txt: Tpl::Text, mut in_a_redeclare: SCode::Redeclare
 pub fn dumpFinal(mut in_txt: Tpl::Text, mut in_a_final: SCode::Final) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_final.clone()) {
-        (mut txt, SCode::Final::FINAL) => {
+        (mut txt, SCode::Final::FINAL { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("final ")).clone() }))?;
             txt.clone()
         },
@@ -2259,15 +2259,15 @@ pub fn dumpFinal(mut in_txt: Tpl::Text, mut in_a_final: SCode::Final) -> Result<
 pub fn dumpInnerOuter(mut in_txt: Tpl::Text, mut in_a_innerOuter: Absyn::InnerOuter) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_innerOuter.clone()) {
-        (mut txt, Absyn::InnerOuter::INNER) => {
+        (mut txt, Absyn::InnerOuter::INNER { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("inner ")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::InnerOuter::OUTER) => {
+        (mut txt, Absyn::InnerOuter::OUTER { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("outer ")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::InnerOuter::INNER_OUTER) => {
+        (mut txt, Absyn::InnerOuter::INNER_OUTER { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("inner outer ")).clone() }))?;
             txt.clone()
         },
@@ -2321,7 +2321,7 @@ pub fn dumpReplaceableConstrainClass(mut in_txt: Tpl::Text, mut in_a_replaceable
 pub fn dumpEach(mut in_txt: Tpl::Text, mut in_a_each: SCode::Each) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_each.clone()) {
-        (mut txt, SCode::Each::EACH) => {
+        (mut txt, SCode::Each::EACH { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("each ")).clone() }))?;
             txt.clone()
         },
@@ -2335,7 +2335,7 @@ pub fn dumpEach(mut in_txt: Tpl::Text, mut in_a_each: SCode::Each) -> Result<Tpl
 pub fn dumpEncapsulated(mut in_txt: Tpl::Text, mut in_a_encapsulated: SCode::Encapsulated) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_encapsulated.clone()) {
-        (mut txt, SCode::Encapsulated::ENCAPSULATED) => {
+        (mut txt, SCode::Encapsulated::ENCAPSULATED { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("encapsulated ")).clone() }))?;
             txt.clone()
         },
@@ -2349,7 +2349,7 @@ pub fn dumpEncapsulated(mut in_txt: Tpl::Text, mut in_a_encapsulated: SCode::Enc
 pub fn dumpPartial(mut in_txt: Tpl::Text, mut in_a_partial: SCode::Partial) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_partial.clone()) {
-        (mut txt, SCode::Partial::PARTIAL) => {
+        (mut txt, SCode::Partial::PARTIAL { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("partial ")).clone() }))?;
             txt.clone()
         },
@@ -2393,15 +2393,15 @@ fn fun_105(mut in_txt: Tpl::Text, mut in_a_isExpandable: bool) -> Result<Tpl::Te
 pub fn dumpRestriction(mut in_txt: Tpl::Text, mut in_a_restriction: SCode::Restriction) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_restriction.clone()) {
-        (mut txt, SCode::Restriction::R_CLASS) => {
+        (mut txt, SCode::Restriction::R_CLASS { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("class")).clone() }))?;
             txt.clone()
         },
-        (mut txt, SCode::Restriction::R_OPTIMIZATION) => {
+        (mut txt, SCode::Restriction::R_OPTIMIZATION { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("optimization")).clone() }))?;
             txt.clone()
         },
-        (mut txt, SCode::Restriction::R_MODEL) => {
+        (mut txt, SCode::Restriction::R_MODEL { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("model")).clone() }))?;
             txt.clone()
         },
@@ -2409,11 +2409,11 @@ pub fn dumpRestriction(mut in_txt: Tpl::Text, mut in_a_restriction: SCode::Restr
             txt = fun_104(txt.clone(), i_isOperator.clone())?;
             txt.clone()
         },
-        (mut txt, SCode::Restriction::R_OPERATOR) => {
+        (mut txt, SCode::Restriction::R_OPERATOR { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("operator")).clone() }))?;
             txt.clone()
         },
-        (mut txt, SCode::Restriction::R_BLOCK) => {
+        (mut txt, SCode::Restriction::R_BLOCK { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("block")).clone() }))?;
             txt.clone()
         },
@@ -2421,15 +2421,15 @@ pub fn dumpRestriction(mut in_txt: Tpl::Text, mut in_a_restriction: SCode::Restr
             txt = fun_105(txt.clone(), i_isExpandable.clone())?;
             txt.clone()
         },
-        (mut txt, SCode::Restriction::R_OPERATOR) => {
+        (mut txt, SCode::Restriction::R_OPERATOR { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("operator")).clone() }))?;
             txt.clone()
         },
-        (mut txt, SCode::Restriction::R_TYPE) => {
+        (mut txt, SCode::Restriction::R_TYPE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("type")).clone() }))?;
             txt.clone()
         },
-        (mut txt, SCode::Restriction::R_PACKAGE) => {
+        (mut txt, SCode::Restriction::R_PACKAGE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("package")).clone() }))?;
             txt.clone()
         },
@@ -2437,27 +2437,27 @@ pub fn dumpRestriction(mut in_txt: Tpl::Text, mut in_a_restriction: SCode::Restr
             txt = dumpFunctionRestriction(txt.clone(), i_functionRestriction.clone())?;
             txt.clone()
         },
-        (mut txt, SCode::Restriction::R_ENUMERATION) => {
+        (mut txt, SCode::Restriction::R_ENUMERATION { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("enumeration")).clone() }))?;
             txt.clone()
         },
-        (mut txt, SCode::Restriction::R_PREDEFINED_INTEGER) => {
+        (mut txt, SCode::Restriction::R_PREDEFINED_INTEGER { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("IntegerType")).clone() }))?;
             txt.clone()
         },
-        (mut txt, SCode::Restriction::R_PREDEFINED_REAL) => {
+        (mut txt, SCode::Restriction::R_PREDEFINED_REAL { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("RealType")).clone() }))?;
             txt.clone()
         },
-        (mut txt, SCode::Restriction::R_PREDEFINED_STRING) => {
+        (mut txt, SCode::Restriction::R_PREDEFINED_STRING { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("StringType")).clone() }))?;
             txt.clone()
         },
-        (mut txt, SCode::Restriction::R_PREDEFINED_BOOLEAN) => {
+        (mut txt, SCode::Restriction::R_PREDEFINED_BOOLEAN { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("BooleanType")).clone() }))?;
             txt.clone()
         },
-        (mut txt, SCode::Restriction::R_PREDEFINED_ENUMERATION) => {
+        (mut txt, SCode::Restriction::R_PREDEFINED_ENUMERATION { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("EnumType")).clone() }))?;
             txt.clone()
         },
@@ -2544,11 +2544,11 @@ pub fn dumpFunctionRestriction(mut in_txt: Tpl::Text, mut in_a_funcRest: SCode::
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("function")).clone() }))?;
             txt.clone()
         },
-        (mut txt, SCode::FunctionRestriction::FR_OPERATOR_FUNCTION) => {
+        (mut txt, SCode::FunctionRestriction::FR_OPERATOR_FUNCTION { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("operator function")).clone() }))?;
             txt.clone()
         },
-        (mut txt, SCode::FunctionRestriction::FR_RECORD_CONSTRUCTOR) => {
+        (mut txt, SCode::FunctionRestriction::FR_RECORD_CONSTRUCTOR { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("function")).clone() }))?;
             txt.clone()
         },
@@ -2896,11 +2896,11 @@ pub fn dumpAttributes(mut in_txt: Tpl::Text, mut in_a_attributes: SCode::Attribu
 pub fn dumpConnectorType(mut in_txt: Tpl::Text, mut in_a_connectorType: SCode::ConnectorType) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_connectorType.clone()) {
-        (mut txt, SCode::ConnectorType::FLOW) => {
+        (mut txt, SCode::ConnectorType::FLOW { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("flow ")).clone() }))?;
             txt.clone()
         },
-        (mut txt, SCode::ConnectorType::STREAM) => {
+        (mut txt, SCode::ConnectorType::STREAM { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("stream ")).clone() }))?;
             txt.clone()
         },
@@ -2914,11 +2914,11 @@ pub fn dumpConnectorType(mut in_txt: Tpl::Text, mut in_a_connectorType: SCode::C
 pub fn dumpParallelism(mut in_txt: Tpl::Text, mut in_a_parallelism: SCode::Parallelism) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_parallelism.clone()) {
-        (mut txt, SCode::Parallelism::PARGLOBAL) => {
+        (mut txt, SCode::Parallelism::PARGLOBAL { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("parglobal ")).clone() }))?;
             txt.clone()
         },
-        (mut txt, SCode::Parallelism::PARLOCAL) => {
+        (mut txt, SCode::Parallelism::PARLOCAL { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("parlocal ")).clone() }))?;
             txt.clone()
         },
@@ -2932,15 +2932,15 @@ pub fn dumpParallelism(mut in_txt: Tpl::Text, mut in_a_parallelism: SCode::Paral
 pub fn dumpVariability(mut in_txt: Tpl::Text, mut in_a_variability: SCode::Variability) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_variability.clone()) {
-        (mut txt, SCode::Variability::DISCRETE) => {
+        (mut txt, SCode::Variability::DISCRETE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("discrete ")).clone() }))?;
             txt.clone()
         },
-        (mut txt, SCode::Variability::PARAM) => {
+        (mut txt, SCode::Variability::PARAM { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("parameter ")).clone() }))?;
             txt.clone()
         },
-        (mut txt, SCode::Variability::CONST) => {
+        (mut txt, SCode::Variability::CONST { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("constant ")).clone() }))?;
             txt.clone()
         },
@@ -2954,15 +2954,15 @@ pub fn dumpVariability(mut in_txt: Tpl::Text, mut in_a_variability: SCode::Varia
 pub fn dumpDirection(mut in_txt: Tpl::Text, mut in_a_direction: Absyn::Direction) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_direction.clone()) {
-        (mut txt, Absyn::Direction::INPUT) => {
+        (mut txt, Absyn::Direction::INPUT { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("input ")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Direction::OUTPUT) => {
+        (mut txt, Absyn::Direction::OUTPUT { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("output ")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Absyn::Direction::INPUT_OUTPUT) => {
+        (mut txt, Absyn::Direction::INPUT_OUTPUT { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("input output ")).clone() }))?;
             txt.clone()
         },

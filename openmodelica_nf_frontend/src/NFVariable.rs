@@ -243,7 +243,7 @@ pub fn expand(mut var: Arc<NFVariable>, mut backend: bool) -> Result<Arc<metamod
                 vars = cons(v.clone(), vars.clone());
             }
         }
-        vars = vars.clone().reverse();
+        vars = metamodelica::Dangerous::listReverseInPlace(vars.clone());
     } else {
         vars = list![var.clone()];
     }
@@ -451,8 +451,8 @@ pub fn propagateAnnotation(mut name: ArcStr, mut overwrite: bool, mut evaluate: 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Mod::MOD { binding: Some(aexp), .. } => {
-                    let mut exp: Arc<Expression::NFExpression> = exp.clone();
                     let mut r#mod: Arc<SCode::Mod> = r#mod.clone();
+                    let mut exp: Arc<Expression::NFExpression> = exp.clone();
                     exp = Inst::instExp(aexp.clone(), scope.clone(), NFInstContext::ANNOTATION.clone(), var_field!((*r#mod).info, SCode::Mod::MOD).clone())?;
                     (exp, _, _, _) = Typing::typeExp(exp.clone(), NFInstContext::ANNOTATION.clone(), var_field!((*r#mod).info, SCode::Mod::MOD).clone(), false)?;
                     exp = Ceval::evalExp(exp.clone(), Ceval::noTarget().clone())?;

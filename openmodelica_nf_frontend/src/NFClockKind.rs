@@ -410,7 +410,7 @@ pub fn toAbsyn(mut clk: Arc<NFClockKind>) -> Result<Arc<Absyn::Exp>> {
         Deref @ REAL_CLOCK { .. } => list![Expression::toAbsyn(var_field!((*clk).interval, NFClockKind::REAL_CLOCK).clone())?],
         Deref @ EVENT_CLOCK { .. } => list![Expression::toAbsyn(var_field!((*clk).condition, NFClockKind::EVENT_CLOCK).clone())?, Expression::toAbsyn(var_field!((*clk).startInterval, NFClockKind::EVENT_CLOCK).clone())?],
         Deref @ SOLVER_CLOCK { .. } => list![Expression::toAbsyn(var_field!((*clk).c, NFClockKind::SOLVER_CLOCK).clone())?, Expression::toAbsyn(var_field!((*clk).solverMethod, NFClockKind::SOLVER_CLOCK).clone())?],
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     exp = AbsynUtil::makeCall(Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("Clock")).clone(), subscripts: metamodelica::nil() }), args.clone(), metamodelica::nil());
     Ok(exp)
@@ -434,7 +434,7 @@ pub fn toDAE(mut ick: Arc<NFClockKind>) -> Result<Arc<DAE::ClockKind>> {
         Deref @ SOLVER_CLOCK { c, solverMethod: sm } => {
             Arc::new(DAE::ClockKind::SOLVER_CLOCK { c: Expression::toDAE(c.clone(), false)?, solverMethod: Expression::toDAE(sm.clone(), false)? })
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(ock)
 }
@@ -457,7 +457,7 @@ pub fn toDebugString(mut ick: Arc<NFClockKind>) -> Result<ArcStr> {
         Deref @ SOLVER_CLOCK { c, solverMethod: sm } => {
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SOLVER_CLOCK(")); __mm_s.push_str(&*Expression::toString(c.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toString(sm.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(ock)
 }
@@ -480,7 +480,7 @@ pub fn toString(mut ck: Arc<NFClockKind>) -> Result<ArcStr> {
         Deref @ SOLVER_CLOCK { c: e1, solverMethod: e2 } => {
             { let mut __mm_s = String::new(); __mm_s.push_str(&*Expression::toString(e1.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toString(e2.clone())?); ArcStr::from(__mm_s) }
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Clock(")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
     Ok(r#str)
@@ -504,7 +504,7 @@ pub fn toFlatString(mut ck: Arc<NFClockKind>, mut format: BaseModelica::OutputFo
         Deref @ SOLVER_CLOCK { c: e1, solverMethod: e2 } => {
             { let mut __mm_s = String::new(); __mm_s.push_str(&*Expression::toFlatString(e1.clone(), format.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*Expression::toFlatString(e2.clone(), format.clone())?); ArcStr::from(__mm_s) }
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Clock(")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
     Ok(r#str)
@@ -541,7 +541,7 @@ pub fn toJSON(mut clk: Arc<NFClockKind>) -> Result<Arc<JSON::JSON>> {
             json = JSON::addPair((literal!("solverMethod")).clone(), Expression::toJSON(var_field!((*clk).solverMethod, NFClockKind::SOLVER_CLOCK).clone())?, json.clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(json)
 }
@@ -570,7 +570,7 @@ pub fn hashContinue(mut clk: Arc<NFClockKind>, mut hash: i32) -> Result<i32> {
             hash = Expression::hashContinue(var_field!((*clk).solverMethod, NFClockKind::SOLVER_CLOCK).clone(), hash.clone())?;
             hash.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     hash = stringHashDjb2Continue((literal!(")")).clone(), hash.clone());
     Ok(hash)

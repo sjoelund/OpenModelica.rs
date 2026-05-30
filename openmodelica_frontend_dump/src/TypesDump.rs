@@ -86,7 +86,6 @@ pub fn unparseEqMod(mut eq: DAE::EqMod) -> Result<ArcStr> {
             r#str = (Dump::printExpStr(e2.clone())?).clone();
             r#str.clone()
         },
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(r#str)
 }
@@ -317,7 +316,7 @@ pub fn unparseType(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
             res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("#")); __mm_s.push_str(&*res.clone()); ArcStr::from(__mm_s) }).clone();
             res.clone()
         },
-        Deref @ DAE::Type::T_METAOPTION { ty: Deref @ DAE::Type::T_UNKNOWN } => {
+        Deref @ DAE::Type::T_METAOPTION { ty: Deref @ DAE::Type::T_UNKNOWN { .. } } => {
             literal!("Option<Any>")
         },
         Deref @ DAE::Type::T_METAOPTION { ty } => {
@@ -330,10 +329,10 @@ pub fn unparseType(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
         Deref @ DAE::Type::T_METATYPE { ty } => {
             unparseType(ty.clone())?
         },
-        Deref @ DAE::Type::T_NORETCALL => {
+        Deref @ DAE::Type::T_NORETCALL { .. } => {
             literal!("#NORETCALL#")
         },
-        Deref @ DAE::Type::T_UNKNOWN => {
+        Deref @ DAE::Type::T_UNKNOWN { .. } => {
             literal!("#T_UNKNOWN#")
         },
         Deref @ DAE::Type::T_ANYTYPE { .. } => {
@@ -373,7 +372,6 @@ pub fn unparsePropTypeNoAttr(mut inProps: DAE::Properties) -> Result<ArcStr> {
         DAE::Properties::PROP_TUPLE { type_: ref ty, .. } => {
             unparseTypeNoAttr(ty.clone())?
         },
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(outString)
 }
@@ -381,11 +379,10 @@ pub fn unparsePropTypeNoAttr(mut inProps: DAE::Properties) -> Result<ArcStr> {
 pub fn unparseConst(mut inConst: DAE::Const) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inConst.clone() {
-        DAE::Const::C_CONST => literal!("constant"),
-        DAE::Const::C_PARAM => literal!("parameter"),
-        DAE::Const::C_VAR => literal!("continuous"),
-        DAE::Const::C_UNKNOWN => literal!("unknown"),
-        _ => bail!("match: no arm matched"),
+        DAE::Const::C_CONST { .. } => literal!("constant"),
+        DAE::Const::C_PARAM { .. } => literal!("parameter"),
+        DAE::Const::C_VAR { .. } => literal!("continuous"),
+        DAE::Const::C_UNKNOWN { .. } => literal!("unknown"),
     })).clone();
     Ok(outString)
 }
@@ -393,9 +390,9 @@ pub fn unparseConst(mut inConst: DAE::Const) -> Result<ArcStr> {
 pub fn printConstStr(mut inConst: DAE::Const) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inConst.clone() {
-        DAE::Const::C_CONST => literal!("C_CONST"),
-        DAE::Const::C_PARAM => literal!("C_PARAM"),
-        DAE::Const::C_VAR => literal!("C_VAR"),
+        DAE::Const::C_CONST { .. } => literal!("C_CONST"),
+        DAE::Const::C_PARAM { .. } => literal!("C_PARAM"),
+        DAE::Const::C_VAR { .. } => literal!("C_VAR"),
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("TypesDump.printConstStr")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
             bail!("fail")
@@ -421,7 +418,7 @@ pub fn printTupleConstStr(mut inTupleConst: Arc<DAE::TupleConst>) -> Result<ArcS
             res_1 = stringAppendList(list![(literal!("(")).clone(), (res.clone()).clone(), (literal!(")")).clone()]);
             res_1.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(outString)
 }
@@ -619,7 +616,7 @@ pub fn printTypeStr(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_UNKNOWN => {
+                Deref @ DAE::Type::T_UNKNOWN { .. } => {
                     let mut r#str: ArcStr = r#str.clone();
                     r#str = (literal!("T_UNKNOWN")).clone();
                     Ok(r#str.clone())
@@ -651,7 +648,7 @@ pub fn printTypeStr(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_NORETCALL => {
+                Deref @ DAE::Type::T_NORETCALL { .. } => {
                     Ok(literal!("()"))
                 }
                 _ => bail!("nomatch"),
@@ -695,7 +692,7 @@ pub fn printTypeStr(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_EXPRESSION } => {
+                Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_EXPRESSION { .. } } => {
                     Ok(literal!("$Code(Expression)"))
                 }
                 _ => bail!("nomatch"),
@@ -703,7 +700,7 @@ pub fn printTypeStr(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_EXPRESSION_OR_MODIFICATION } => {
+                Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_EXPRESSION_OR_MODIFICATION { .. } } => {
                     Ok(literal!("$Code(ExpressionOrModification)"))
                 }
                 _ => bail!("nomatch"),
@@ -711,7 +708,7 @@ pub fn printTypeStr(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME } => {
+                Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } } => {
                     Ok(literal!("$Code(TypeName)"))
                 }
                 _ => bail!("nomatch"),
@@ -719,7 +716,7 @@ pub fn printTypeStr(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_VARIABLENAME } => {
+                Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_VARIABLENAME { .. } } => {
                     Ok(literal!("$Code(VariableName)"))
                 }
                 _ => bail!("nomatch"),
@@ -727,7 +724,7 @@ pub fn printTypeStr(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_VARIABLENAMES } => {
+                Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_VARIABLENAMES { .. } } => {
                     Ok(literal!("$Code(VariableName[:])"))
                 }
                 _ => bail!("nomatch"),
@@ -774,8 +771,8 @@ pub fn printConnectorTypeStr(mut it: Arc<DAE::Type>) -> Result<(ArcStr, ArcStr)>
                 Deref @ DAE::Type::T_SUBTYPE_BASIC { complexType: t, varLst: vars, complexClassType: ClassInf::State::CONNECTOR { path: connectorName, isExpandable }, .. } => {
                     let mut varNames: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut isExpandableStr: ArcStr = arcstr::literal!("");
-                    let mut s: ArcStr = s.clone();
                     let mut s2: ArcStr = s2.clone();
+                    let mut s: ArcStr = s.clone();
                     varNames = List::map(vars.clone(), (std::sync::Arc::new(getVarName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>));
                     isExpandableStr = (if (isExpandable.clone()) {literal!("/* expandable */ ")} else {literal!("")}).clone();
                     s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*isExpandableStr.clone()); __mm_s.push_str(&*AbsynUtil::pathString(connectorName.clone(), (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }).clone();
@@ -905,7 +902,7 @@ pub fn connectorTypeStr(mut ct: Arc<DAE::ConnectorType>) -> Result<ArcStr> {
         let __mc_input = ct.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::ConnectorType::POTENTIAL => {
+                Deref @ DAE::ConnectorType::POTENTIAL { .. } => {
                     Ok(literal!(""))
                 }
                 _ => bail!("nomatch"),
@@ -913,7 +910,7 @@ pub fn connectorTypeStr(mut ct: Arc<DAE::ConnectorType>) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::ConnectorType::FLOW => {
+                Deref @ DAE::ConnectorType::FLOW { .. } => {
                     Ok(literal!("flow "))
                 }
                 _ => bail!("nomatch"),
@@ -1010,7 +1007,7 @@ pub fn printVarStr(mut inVar: Arc<DAE::Var>) -> Result<ArcStr> {
 pub fn printBindingStr(mut inBinding: Arc<DAE::Binding>) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((::match_deref::match_deref! { match &(inBinding.clone()) {
-        Deref @ DAE::Binding::UNBOUND => {
+        Deref @ DAE::Binding::UNBOUND { .. } => {
             literal!("UNBOUND")
         },
         Deref @ DAE::Binding::EQBOUND { evaluatedExp: None, .. } => {
@@ -1063,7 +1060,7 @@ pub fn printFarg(mut inFuncArg: Arc<DAE::FuncArg>) -> Result<()> {
             Print::printErrorBuf((n.clone()).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(())
 }
@@ -1080,7 +1077,7 @@ pub fn printFargStr(mut inFuncArg: Arc<DAE::FuncArg>) -> Result<ArcStr> {
             res = stringAppendList(list![(cs.clone()).clone(), (s.clone()).clone(), (literal!(" ")).clone(), (n.clone()).clone()]);
             res.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(outString)
 }
@@ -1194,9 +1191,9 @@ pub fn getTypeName(mut inType: Arc<DAE::Type>) -> Result<ArcStr> {
 pub fn constStrFriendly(mut r#const: DAE::Const) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((match r#const.clone() {
-        DAE::Const::C_VAR => literal!(""),
-        DAE::Const::C_PARAM => literal!("parameter "),
-        DAE::Const::C_CONST => literal!("constant "),
+        DAE::Const::C_VAR { .. } => literal!(""),
+        DAE::Const::C_PARAM { .. } => literal!("parameter "),
+        DAE::Const::C_CONST { .. } => literal!("constant "),
         _ => bail!("match: no arm matched"),
     })).clone();
     Ok(r#str)
@@ -1205,10 +1202,9 @@ pub fn constStrFriendly(mut r#const: DAE::Const) -> Result<ArcStr> {
 pub fn dumpVarParallelismStr(mut inVarParallelism: DAE::VarParallelism) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inVarParallelism.clone() {
-        DAE::VarParallelism::NON_PARALLEL => literal!(""),
-        DAE::VarParallelism::PARGLOBAL => literal!("parglobal "),
-        DAE::VarParallelism::PARLOCAL => literal!("parlocal "),
-        _ => bail!("match: no arm matched"),
+        DAE::VarParallelism::NON_PARALLEL { .. } => literal!(""),
+        DAE::VarParallelism::PARGLOBAL { .. } => literal!("parglobal "),
+        DAE::VarParallelism::PARLOCAL { .. } => literal!("parlocal "),
     })).clone();
     Ok(outString)
 }
@@ -1216,11 +1212,10 @@ pub fn dumpVarParallelismStr(mut inVarParallelism: DAE::VarParallelism) -> Resul
 pub fn printBindingSourceStr(mut bindingSource: DAE::BindingSource) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((match bindingSource.clone() {
-        DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE => literal!("[DEFAULT VALUE]"),
-        DAE::BindingSource::BINDING_FROM_START_VALUE => literal!("[START VALUE]"),
-        DAE::BindingSource::BINDING_FROM_RECORD_SUBMODS => literal!("[RECORD SUBMODS]"),
-        DAE::BindingSource::BINDING_FROM_DERIVED_RECORD_DECL => literal!("[DERIVED RECORD]"),
-        _ => bail!("match: no arm matched"),
+        DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE { .. } => literal!("[DEFAULT VALUE]"),
+        DAE::BindingSource::BINDING_FROM_START_VALUE { .. } => literal!("[START VALUE]"),
+        DAE::BindingSource::BINDING_FROM_RECORD_SUBMODS { .. } => literal!("[RECORD SUBMODS]"),
+        DAE::BindingSource::BINDING_FROM_DERIVED_RECORD_DECL { .. } => literal!("[DERIVED RECORD]"),
     })).clone();
     Ok(r#str)
 }
@@ -1254,7 +1249,7 @@ pub fn getVarName(mut v: Arc<DAE::Var>) -> Result<ArcStr> {
     let mut name: ArcStr = arcstr::literal!("");
     name = ((::match_deref::match_deref! { match &(v.clone()) {
         Deref @ DAE::Var { name, .. } => name.clone(),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(name)
 }
@@ -1307,12 +1302,12 @@ pub fn printDimensionsStr(mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>
 pub fn printCodeTypeStr(mut ct: DAE::CodeType) -> ArcStr {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((match ct.clone() {
-        DAE::CodeType::C_EXPRESSION => literal!("OpenModelica.Code.Expression"),
-        DAE::CodeType::C_EXPRESSION_OR_MODIFICATION => literal!("OpenModelica.Code.ExpressionOrModification"),
-        DAE::CodeType::C_MODIFICATION => literal!("OpenModelica.Code.Modification"),
-        DAE::CodeType::C_TYPENAME => literal!("OpenModelica.Code.TypeName"),
-        DAE::CodeType::C_VARIABLENAME => literal!("OpenModelica.Code.VariableName"),
-        DAE::CodeType::C_VARIABLENAMES => literal!("OpenModelica.Code.VariableNames"),
+        DAE::CodeType::C_EXPRESSION { .. } => literal!("OpenModelica.Code.Expression"),
+        DAE::CodeType::C_EXPRESSION_OR_MODIFICATION { .. } => literal!("OpenModelica.Code.ExpressionOrModification"),
+        DAE::CodeType::C_MODIFICATION { .. } => literal!("OpenModelica.Code.Modification"),
+        DAE::CodeType::C_TYPENAME { .. } => literal!("OpenModelica.Code.TypeName"),
+        DAE::CodeType::C_VARIABLENAME { .. } => literal!("OpenModelica.Code.VariableName"),
+        DAE::CodeType::C_VARIABLENAMES { .. } => literal!("OpenModelica.Code.VariableNames"),
         _ => literal!("TypesDump.printCodeTypeStr failed"),
     })).clone();
     r#str

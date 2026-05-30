@@ -75,7 +75,7 @@ impl<T: Clone> Default for ExpandableArray<T> {
 pub type EXPANDABLE_ARRAY<T> = ExpandableArray<T>;
 
 pub fn new<T: Clone + 'static>(mut capacity: i32, mut dummy: T) -> Arc<ExpandableArray<T>> {
-    let mut exarray: Arc<ExpandableArray<T>>;
+    let mut exarray: Arc<ExpandableArray<T>> = <Arc<ExpandableArray<T>> as ::std::default::Default>::default();
     exarray = Arc::new(ExpandableArray { numberOfElements: Mutable::create(0), lastUsedIndex: Mutable::create(0), capacity: Mutable::create(capacity.clone()), data: Mutable::create(arrayCreate(capacity.clone(), None)) });
     exarray
 }
@@ -100,7 +100,7 @@ pub fn clear<T: Clone + 'static>(mut exarray: Arc<ExpandableArray<T>>) -> Arc<Ex
 }
 
 pub fn copy<T: Clone + 'static>(mut inExarray: Arc<ExpandableArray<T>>, mut dummy: T) -> Arc<ExpandableArray<T>> {
-    let mut outExarray: Arc<ExpandableArray<T>>;
+    let mut outExarray: Arc<ExpandableArray<T>> = <Arc<ExpandableArray<T>> as ::std::default::Default>::default();
     outExarray = new(Mutable::access(inExarray.capacity.clone()), dummy.clone());
     assign_field!(
         outExarray.numberOfElements = Mutable::create(Mutable::access(inExarray.numberOfElements.clone())),

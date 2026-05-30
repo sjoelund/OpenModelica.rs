@@ -69,7 +69,7 @@ pub fn createDynamicOptimization(mut dae: Arc<BackendDAE::BackendDAE>) -> Result
     let mut dae: Arc<BackendDAE::BackendDAE> = dae;
     let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     let mut syst: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
+    let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
     shared = dae.shared.clone();
     let __pa0 = ::match_deref::match_deref! { match &(dae.eqs.clone()) {
@@ -403,7 +403,6 @@ fn inputDerivativesForDynOptWork(mut isyst: Arc<BackendDAE::EqSystem>, mut inSha
                         v = BackendVariable::setVarKind(v.clone(), crate::BackendDAE::VarKind::OPT_INPUT_DER)?;
                         outShared = BackendVariable::addGlobalKnownVarDAE(v.clone(), outShared.clone())?;
                     }
-                    BackendVariable::daeGlobalKnownVars(outShared.clone());
                     Ok((isyst.clone(), true))
                 }
                 _ => bail!("nomatch"),
@@ -612,8 +611,8 @@ fn removeLoopsWork(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backen
 fn isConstOrlinear(mut jacType: BackendDAE::JacobianType) -> bool {
     let mut b: bool = false;
     b = (match jacType.clone() {
-        BackendDAE::JacobianType::JAC_CONSTANT => true,
-        BackendDAE::JacobianType::JAC_LINEAR => true,
+        BackendDAE::JacobianType::JAC_CONSTANT { .. } => true,
+        BackendDAE::JacobianType::JAC_LINEAR { .. } => true,
         _ => false,
     });
     b
@@ -721,7 +720,7 @@ pub fn simplifyConstraints(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
     let mut c: Arc<DAE::Exp>;
     let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     let mut globalKnownVars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
-    let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
+    let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
     let mut oMax_con: Option<Arc<DAE::Exp>> = None;
     let mut oMin_con: Option<Arc<DAE::Exp>> = None;
@@ -739,7 +738,7 @@ pub fn simplifyConstraints(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
     let mut tp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     if Flags::getConfigBool(Flags::GENERATE_DYN_OPTIMIZATION_PROBLEM.clone())? {
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inDAE.clone()) {
-            Deref @ DAE { UNIQUEIO: __pa0, derivativeNamePrefix: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+            Deref @ BackendDAE::BackendDAE { eqs: __pa0, shared: __pa1 } => (__pa0.clone(), __pa1.clone()),
             _ => bail!("pattern mismatch"),
         } };
         systlst = __pa0.clone();
@@ -922,7 +921,7 @@ pub fn simplifyConstraints(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
             }
         }
         shared = BackendDAEUtil::setSharedGlobalKnownVars(shared.clone(), globalKnownVars.clone());
-        outDAE = BackendDAE::DAE(new_systlst.clone(), shared.clone())?;
+        outDAE = Arc::new(BackendDAE::BackendDAE { eqs: new_systlst.clone(), shared: shared.clone() });
     } else {
         outDAE = inDAE.clone();
     }
@@ -947,7 +946,7 @@ pub fn reduceDynamicOptimization(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Resu
     let mut v: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inDAE.clone()) {
-        Deref @ DAE { UNIQUEIO: __pa0, derivativeNamePrefix: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+        Deref @ BackendDAE::BackendDAE { eqs: __pa0, shared: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
     systlst = __pa0.clone();
@@ -971,7 +970,7 @@ pub fn reduceDynamicOptimization(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Resu
             newsyst = cons(BackendDAEUtil::tryReduceEqSystem(syst.clone(), shared.clone(), opt_varlst.clone(), false), newsyst.clone());
         }
     }
-    outDAE = BackendDAE::DAE(newsyst.clone(), shared.clone())?;
+    outDAE = Arc::new(BackendDAE::BackendDAE { eqs: newsyst.clone(), shared: shared.clone() });
     Ok(outDAE)
 }
 

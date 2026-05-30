@@ -159,37 +159,37 @@ pub fn printAnnotationStr(mut inComment: Arc<SCode::Comment>, mut options: SCode
 pub fn restrString(mut inRestriction: SCode::Restriction) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inRestriction.clone() {
-        SCode::Restriction::R_CLASS => literal!("class"),
-        SCode::Restriction::R_OPTIMIZATION => literal!("optimization"),
-        SCode::Restriction::R_MODEL => literal!("model"),
+        SCode::Restriction::R_CLASS { .. } => literal!("class"),
+        SCode::Restriction::R_OPTIMIZATION { .. } => literal!("optimization"),
+        SCode::Restriction::R_MODEL { .. } => literal!("model"),
         SCode::Restriction::R_RECORD { isOperator: false } => literal!("record"),
         SCode::Restriction::R_RECORD { isOperator: true } => literal!("operator record"),
-        SCode::Restriction::R_BLOCK => literal!("block"),
+        SCode::Restriction::R_BLOCK { .. } => literal!("block"),
         SCode::Restriction::R_CONNECTOR { isExpandable: false } => literal!("connector"),
         SCode::Restriction::R_CONNECTOR { isExpandable: true } => literal!("expandable connector"),
-        SCode::Restriction::R_OPERATOR => literal!("operator"),
+        SCode::Restriction::R_OPERATOR { .. } => literal!("operator"),
         SCode::Restriction::R_FUNCTION { .. } => (match var_field!(inRestriction.functionRestriction, SCode::Restriction::R_FUNCTION).clone() {
         SCode::FunctionRestriction::FR_NORMAL_FUNCTION { purity: Absyn::FunctionPurity::PURE { .. } } => literal!("pure function"),
         SCode::FunctionRestriction::FR_NORMAL_FUNCTION { purity: Absyn::FunctionPurity::IMPURE { .. } } => literal!("impure function"),
-        SCode::FunctionRestriction::FR_OPERATOR_FUNCTION => literal!("operator function"),
+        SCode::FunctionRestriction::FR_OPERATOR_FUNCTION { .. } => literal!("operator function"),
         SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { purity: Absyn::FunctionPurity::PURE { .. } } => literal!("pure external function"),
         SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { purity: Absyn::FunctionPurity::IMPURE { .. } } => literal!("impure external function"),
-        SCode::FunctionRestriction::FR_RECORD_CONSTRUCTOR => literal!("record constructor"),
-        SCode::FunctionRestriction::FR_PARALLEL_FUNCTION => literal!("parallel function"),
-        SCode::FunctionRestriction::FR_KERNEL_FUNCTION => literal!("kernel function"),
+        SCode::FunctionRestriction::FR_RECORD_CONSTRUCTOR { .. } => literal!("record constructor"),
+        SCode::FunctionRestriction::FR_PARALLEL_FUNCTION { .. } => literal!("parallel function"),
+        SCode::FunctionRestriction::FR_KERNEL_FUNCTION { .. } => literal!("kernel function"),
         _ => literal!("function"),
     }),
-        SCode::Restriction::R_TYPE => literal!("type"),
-        SCode::Restriction::R_PACKAGE => literal!("package"),
-        SCode::Restriction::R_ENUMERATION => literal!("enumeration"),
+        SCode::Restriction::R_TYPE { .. } => literal!("type"),
+        SCode::Restriction::R_PACKAGE { .. } => literal!("package"),
+        SCode::Restriction::R_ENUMERATION { .. } => literal!("enumeration"),
         SCode::Restriction::R_METARECORD { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("metarecord ")); __mm_s.push_str(&*AbsynUtil::pathString(var_field!(inRestriction.name, SCode::Restriction::R_METARECORD).clone(), (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) },
         SCode::Restriction::R_UNIONTYPE { .. } => literal!("uniontype"),
-        SCode::Restriction::R_PREDEFINED_INTEGER => literal!("Integer"),
-        SCode::Restriction::R_PREDEFINED_REAL => literal!("Real"),
-        SCode::Restriction::R_PREDEFINED_STRING => literal!("String"),
-        SCode::Restriction::R_PREDEFINED_BOOLEAN => literal!("Boolean"),
-        SCode::Restriction::R_PREDEFINED_CLOCK => literal!("Clock"),
-        SCode::Restriction::R_PREDEFINED_ENUMERATION => literal!("enumeration"),
+        SCode::Restriction::R_PREDEFINED_INTEGER { .. } => literal!("Integer"),
+        SCode::Restriction::R_PREDEFINED_REAL { .. } => literal!("Real"),
+        SCode::Restriction::R_PREDEFINED_STRING { .. } => literal!("String"),
+        SCode::Restriction::R_PREDEFINED_BOOLEAN { .. } => literal!("Boolean"),
+        SCode::Restriction::R_PREDEFINED_CLOCK { .. } => literal!("Clock"),
+        SCode::Restriction::R_PREDEFINED_ENUMERATION { .. } => literal!("enumeration"),
         _ => bail!("match: no arm matched"),
     })).clone();
     Ok(outString)
@@ -267,7 +267,7 @@ pub fn printEnumStr(mut en: Arc<SCode::Enum>) -> Result<ArcStr> {
         Deref @ SCode::Enum { literal: s, comment: _ } => {
             s.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(r#str)
 }
@@ -275,11 +275,10 @@ pub fn printEnumStr(mut en: Arc<SCode::Enum>) -> Result<ArcStr> {
 pub fn variabilityString(mut inVariability: SCode::Variability) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inVariability.clone() {
-        SCode::Variability::VAR => literal!("VAR"),
-        SCode::Variability::DISCRETE => literal!("DISCRETE"),
-        SCode::Variability::PARAM => literal!("PARAM"),
-        SCode::Variability::CONST => literal!("CONST"),
-        _ => bail!("match: no arm matched"),
+        SCode::Variability::VAR { .. } => literal!("VAR"),
+        SCode::Variability::DISCRETE { .. } => literal!("DISCRETE"),
+        SCode::Variability::PARAM { .. } => literal!("PARAM"),
+        SCode::Variability::CONST { .. } => literal!("CONST"),
     })).clone();
     Ok(outString)
 }
@@ -287,10 +286,9 @@ pub fn variabilityString(mut inVariability: SCode::Variability) -> Result<ArcStr
 pub fn parallelismString(mut inParallelism: SCode::Parallelism) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inParallelism.clone() {
-        SCode::Parallelism::PARGLOBAL => literal!("PARGLOBAL"),
-        SCode::Parallelism::PARLOCAL => literal!("PARLOCAL"),
-        SCode::Parallelism::NON_PARALLEL => literal!("NON_PARALLEL"),
-        _ => bail!("match: no arm matched"),
+        SCode::Parallelism::PARGLOBAL { .. } => literal!("PARGLOBAL"),
+        SCode::Parallelism::PARLOCAL { .. } => literal!("PARLOCAL"),
+        SCode::Parallelism::NON_PARALLEL { .. } => literal!("NON_PARALLEL"),
     })).clone();
     Ok(outString)
 }
@@ -298,11 +296,10 @@ pub fn parallelismString(mut inParallelism: SCode::Parallelism) -> Result<ArcStr
 pub fn innerouterString(mut innerOuter: Absyn::InnerOuter) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match innerOuter.clone() {
-        Absyn::InnerOuter::INNER_OUTER => literal!("INNER/OUTER"),
-        Absyn::InnerOuter::INNER => literal!("INNER"),
-        Absyn::InnerOuter::OUTER => literal!("OUTER"),
-        Absyn::InnerOuter::NOT_INNER_OUTER => literal!(""),
-        _ => bail!("match: no arm matched"),
+        Absyn::InnerOuter::INNER_OUTER { .. } => literal!("INNER/OUTER"),
+        Absyn::InnerOuter::INNER { .. } => literal!("INNER"),
+        Absyn::InnerOuter::OUTER { .. } => literal!("OUTER"),
+        Absyn::InnerOuter::NOT_INNER_OUTER { .. } => literal!(""),
     })).clone();
     Ok(outString)
 }
@@ -310,11 +307,10 @@ pub fn innerouterString(mut innerOuter: Absyn::InnerOuter) -> Result<ArcStr> {
 pub fn unparseVariability(mut inVariability: SCode::Variability) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inVariability.clone() {
-        SCode::Variability::VAR => literal!(""),
-        SCode::Variability::DISCRETE => literal!("discrete"),
-        SCode::Variability::PARAM => literal!("parameter"),
-        SCode::Variability::CONST => literal!("constant"),
-        _ => bail!("match: no arm matched"),
+        SCode::Variability::VAR { .. } => literal!(""),
+        SCode::Variability::DISCRETE { .. } => literal!("discrete"),
+        SCode::Variability::PARAM { .. } => literal!("parameter"),
+        SCode::Variability::CONST { .. } => literal!("constant"),
     })).clone();
     Ok(outString)
 }
@@ -322,9 +318,8 @@ pub fn unparseVariability(mut inVariability: SCode::Variability) -> Result<ArcSt
 pub fn printInitialStr(mut initial_: SCode::Initial) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((match initial_.clone() {
-        SCode::Initial::INITIAL => literal!("initial"),
-        SCode::Initial::NON_INITIAL => literal!("non initial"),
-        _ => bail!("match: no arm matched"),
+        SCode::Initial::INITIAL { .. } => literal!("initial"),
+        SCode::Initial::NON_INITIAL { .. } => literal!("non initial"),
     })).clone();
     Ok(r#str)
 }
@@ -332,10 +327,9 @@ pub fn printInitialStr(mut initial_: SCode::Initial) -> Result<ArcStr> {
 pub fn connectorTypeStr(mut inConnectorType: SCode::ConnectorType) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((match inConnectorType.clone() {
-        SCode::ConnectorType::POTENTIAL => literal!(""),
-        SCode::ConnectorType::FLOW => literal!("flow"),
-        SCode::ConnectorType::STREAM => literal!("stream"),
-        _ => bail!("match: no arm matched"),
+        SCode::ConnectorType::POTENTIAL { .. } => literal!(""),
+        SCode::ConnectorType::FLOW { .. } => literal!("flow"),
+        SCode::ConnectorType::STREAM { .. } => literal!("stream"),
     })).clone();
     Ok(r#str)
 }
@@ -343,9 +337,8 @@ pub fn connectorTypeStr(mut inConnectorType: SCode::ConnectorType) -> Result<Arc
 pub fn encapsulatedStr(mut inEncapsulated: SCode::Encapsulated) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((match inEncapsulated.clone() {
-        SCode::Encapsulated::ENCAPSULATED => literal!("encapsulated "),
-        SCode::Encapsulated::NOT_ENCAPSULATED => literal!(""),
-        _ => bail!("match: no arm matched"),
+        SCode::Encapsulated::ENCAPSULATED { .. } => literal!("encapsulated "),
+        SCode::Encapsulated::NOT_ENCAPSULATED { .. } => literal!(""),
     })).clone();
     Ok(r#str)
 }
@@ -353,9 +346,8 @@ pub fn encapsulatedStr(mut inEncapsulated: SCode::Encapsulated) -> Result<ArcStr
 pub fn partialStr(mut inPartial: SCode::Partial) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((match inPartial.clone() {
-        SCode::Partial::PARTIAL => literal!("partial "),
-        SCode::Partial::NOT_PARTIAL => literal!(""),
-        _ => bail!("match: no arm matched"),
+        SCode::Partial::PARTIAL { .. } => literal!("partial "),
+        SCode::Partial::NOT_PARTIAL { .. } => literal!(""),
     })).clone();
     Ok(r#str)
 }
@@ -363,9 +355,8 @@ pub fn partialStr(mut inPartial: SCode::Partial) -> Result<ArcStr> {
 pub fn visibilityStr(mut inVisibility: SCode::Visibility) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((match inVisibility.clone() {
-        SCode::Visibility::PUBLIC => literal!("public "),
-        SCode::Visibility::PROTECTED => literal!("protected "),
-        _ => bail!("match: no arm matched"),
+        SCode::Visibility::PUBLIC { .. } => literal!("public "),
+        SCode::Visibility::PROTECTED { .. } => literal!("protected "),
     })).clone();
     Ok(r#str)
 }
@@ -373,9 +364,8 @@ pub fn visibilityStr(mut inVisibility: SCode::Visibility) -> Result<ArcStr> {
 pub fn finalStr(mut inFinal: SCode::Final) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((match inFinal.clone() {
-        SCode::Final::FINAL => literal!("final "),
-        SCode::Final::NOT_FINAL => literal!(""),
-        _ => bail!("match: no arm matched"),
+        SCode::Final::FINAL { .. } => literal!("final "),
+        SCode::Final::NOT_FINAL { .. } => literal!(""),
     })).clone();
     Ok(r#str)
 }
@@ -383,9 +373,8 @@ pub fn finalStr(mut inFinal: SCode::Final) -> Result<ArcStr> {
 pub fn eachStr(mut inEach: SCode::Each) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((match inEach.clone() {
-        SCode::Each::EACH => literal!("each "),
-        SCode::Each::NOT_EACH => literal!(""),
-        _ => bail!("match: no arm matched"),
+        SCode::Each::EACH { .. } => literal!("each "),
+        SCode::Each::NOT_EACH { .. } => literal!(""),
     })).clone();
     Ok(r#str)
 }
@@ -393,9 +382,8 @@ pub fn eachStr(mut inEach: SCode::Each) -> Result<ArcStr> {
 pub fn redeclareStr(mut inRedeclare: SCode::Redeclare) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((match inRedeclare.clone() {
-        SCode::Redeclare::REDECLARE => literal!("redeclare "),
-        SCode::Redeclare::NOT_REDECLARE => literal!(""),
-        _ => bail!("match: no arm matched"),
+        SCode::Redeclare::REDECLARE { .. } => literal!("redeclare "),
+        SCode::Redeclare::NOT_REDECLARE { .. } => literal!(""),
     })).clone();
     Ok(r#str)
 }
@@ -414,7 +402,7 @@ pub fn replaceableStr(mut inReplaceable: Arc<SCode::Replaceable>) -> Result<(Arc
         Deref @ SCode::Replaceable::REPLACEABLE { cc: None } => {
             (literal!("replaceable "), literal!(""))
         },
-        Deref @ SCode::Replaceable::NOT_REPLACEABLE => {
+        Deref @ SCode::Replaceable::NOT_REPLACEABLE { .. } => {
             (literal!(""), literal!(""))
         },
         _ => bail!("match: no arm matched"),
@@ -426,8 +414,8 @@ pub fn replaceablePrefixStr(mut inReplaceable: Arc<SCode::Replaceable>) -> Resul
     let mut strReplaceable: ArcStr = arcstr::literal!("");
     strReplaceable = ((::match_deref::match_deref! { match &(inReplaceable.clone()) {
         Deref @ SCode::Replaceable::REPLACEABLE { cc: _ } => literal!("replaceable "),
-        Deref @ SCode::Replaceable::NOT_REPLACEABLE => literal!(""),
-        _ => bail!("match: no arm matched"),
+        Deref @ SCode::Replaceable::NOT_REPLACEABLE { .. } => literal!(""),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(strReplaceable)
 }
@@ -446,7 +434,7 @@ pub fn prefixesStr(mut prefixes: Arc<SCode::Prefixes>) -> Result<ArcStr> {
             s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*visibilityStr(v.clone())?); __mm_s.push_str(&*redeclareStr(rd.clone())?); __mm_s.push_str(&*finalStr(f.clone())?); __mm_s.push_str(&*Dump::unparseInnerOuterStr(io.clone())?); __mm_s.push_str(&*replaceablePrefixStr(rpl.clone())?); ArcStr::from(__mm_s) }).clone();
             s.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(r#str)
 }
@@ -460,9 +448,9 @@ pub fn filterElements(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>
 fn filterElement(mut element: Arc<SCode::Element>, mut options: SCodeDumpOptions) -> bool {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &((element.clone(), options.clone())) {
-        (Deref @ SCode::Element::IMPORT { visibility: SCode::Visibility::PROTECTED, .. }, SCodeDumpOptions { stripProtectedImports: true, .. }) => false,
-        (Deref @ SCode::Element::CLASS { prefixes: Deref @ SCode::Prefixes { visibility: SCode::Visibility::PROTECTED, .. }, .. }, SCodeDumpOptions { stripProtectedClasses: true, .. }) => false,
-        (Deref @ SCode::Element::COMPONENT { prefixes: Deref @ SCode::Prefixes { visibility: SCode::Visibility::PROTECTED, .. }, .. }, SCodeDumpOptions { stripProtectedComponents: true, .. }) => false,
+        (Deref @ SCode::Element::IMPORT { visibility: SCode::Visibility::PROTECTED { .. }, .. }, SCodeDumpOptions { stripProtectedImports: true, .. }) => false,
+        (Deref @ SCode::Element::CLASS { prefixes: Deref @ SCode::Prefixes { visibility: SCode::Visibility::PROTECTED { .. }, .. }, .. }, SCodeDumpOptions { stripProtectedClasses: true, .. }) => false,
+        (Deref @ SCode::Element::COMPONENT { prefixes: Deref @ SCode::Prefixes { visibility: SCode::Visibility::PROTECTED { .. }, .. }, .. }, SCodeDumpOptions { stripProtectedComponents: true, .. }) => false,
         (Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_METARECORD { moved: true, .. }, .. }, SCodeDumpOptions { stripMetaRecords: true, .. }) => false,
         _ => true,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

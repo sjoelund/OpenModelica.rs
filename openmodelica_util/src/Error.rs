@@ -1557,13 +1557,12 @@ pub fn getMessagesStrSeverity(mut inSeverity: ErrorTypes::Severity) -> ArcStr {
 pub fn messageTypeStr(mut inMessageType: ErrorTypes::MessageType) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inMessageType.clone() {
-        ErrorTypes::MessageType::SYNTAX => literal!("SYNTAX"),
-        ErrorTypes::MessageType::GRAMMAR => literal!("GRAMMAR"),
-        ErrorTypes::MessageType::TRANSLATION => literal!("TRANSLATION"),
-        ErrorTypes::MessageType::SYMBOLIC => literal!("SYMBOLIC"),
-        ErrorTypes::MessageType::SIMULATION => literal!("SIMULATION"),
-        ErrorTypes::MessageType::SCRIPTING => literal!("SCRIPTING"),
-        _ => bail!("match: no arm matched"),
+        ErrorTypes::MessageType::SYNTAX { .. } => literal!("SYNTAX"),
+        ErrorTypes::MessageType::GRAMMAR { .. } => literal!("GRAMMAR"),
+        ErrorTypes::MessageType::TRANSLATION { .. } => literal!("TRANSLATION"),
+        ErrorTypes::MessageType::SYMBOLIC { .. } => literal!("SYMBOLIC"),
+        ErrorTypes::MessageType::SIMULATION { .. } => literal!("SIMULATION"),
+        ErrorTypes::MessageType::SCRIPTING { .. } => literal!("SCRIPTING"),
     })).clone();
     Ok(outString)
 }
@@ -1571,11 +1570,10 @@ pub fn messageTypeStr(mut inMessageType: ErrorTypes::MessageType) -> Result<ArcS
 pub fn severityStr(mut inSeverity: ErrorTypes::Severity) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inSeverity.clone() {
-        ErrorTypes::Severity::INTERNAL => literal!("Internal error"),
-        ErrorTypes::Severity::ERROR => literal!("Error"),
-        ErrorTypes::Severity::WARNING => literal!("Warning"),
-        ErrorTypes::Severity::NOTIFICATION => literal!("Notification"),
-        _ => bail!("match: no arm matched"),
+        ErrorTypes::Severity::INTERNAL { .. } => literal!("Internal error"),
+        ErrorTypes::Severity::ERROR { .. } => literal!("Error"),
+        ErrorTypes::Severity::WARNING { .. } => literal!("Warning"),
+        ErrorTypes::Severity::NOTIFICATION { .. } => literal!("Notification"),
     })).clone();
     Ok(outString)
 }
@@ -1618,7 +1616,7 @@ pub fn assertionOrAddSourceMessage(mut inCond: bool, mut inErrorMsg: ErrorTypes:
 
 fn failOnErrorMsg(mut inMessage: ErrorTypes::Message) -> Result<()> {
     let () = (match inMessage.clone() {
-        ErrorTypes::Message { severity: ErrorTypes::Severity::ERROR, .. } => bail!("fail"),
+        ErrorTypes::Message { severity: ErrorTypes::Severity::ERROR { .. }, .. } => bail!("fail"),
         _ => (),
     });
     Ok(())

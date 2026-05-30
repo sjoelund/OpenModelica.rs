@@ -293,7 +293,7 @@ fn flattenTypeSpec(mut inTypeSpec: Arc<Absyn::TypeSpec>, mut inEnv: Env, mut inI
             tys = List::map2(tys.clone(), (std::sync::Arc::new(flattenTypeSpec) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::TypeSpec>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo) -> Result<Arc<Absyn::TypeSpec>> + 'static>), inEnv.clone(), inInfo.clone());
             Arc::new(Absyn::TypeSpec::TCOMPLEX { path: path.clone(), typeSpecs: tys.clone(), arrayDim: ad.clone() })
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outTypeSpec)
 }
@@ -431,7 +431,7 @@ fn flattenModifier(mut inMod: Arc<SCode::Mod>, mut inEnv: Env, mut inInfo: Sourc
             el = flattenRedeclare(el.clone(), inEnv.clone())?;
             Arc::new(SCode::Mod::REDECL { finalPrefix: fp.clone(), eachPrefix: ep.clone(), element: el.clone() })
         },
-        Deref @ SCode::Mod::NOMOD => {
+        Deref @ SCode::Mod::NOMOD { .. } => {
             inMod.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -463,7 +463,7 @@ fn flattenSubMod(mut inSubMod: Arc<SCode::SubMod>, mut inEnv: Env, mut inInfo: S
             r#mod = flattenModifier(r#mod.clone(), inEnv.clone(), inInfo.clone())?;
             Arc::new(SCode::SubMod { ident: (ident.clone()).clone(), r#mod: r#mod.clone() })
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outSubMod)
 }
@@ -501,10 +501,10 @@ fn flattenSubscript(mut inSub: Arc<Absyn::Subscript>, mut inEnv: Env, mut inInfo
             exp = flattenExp(exp.clone(), inEnv.clone(), inInfo.clone())?;
             Arc::new(Absyn::Subscript::SUBSCRIPT { subscript: exp.clone() })
         },
-        Deref @ Absyn::Subscript::NOSUB => {
+        Deref @ Absyn::Subscript::NOSUB { .. } => {
             inSub.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outSub)
 }

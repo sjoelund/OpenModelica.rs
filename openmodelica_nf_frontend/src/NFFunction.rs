@@ -529,7 +529,7 @@ pub mod Function {
             fnNode = Record::instDefaultConstructor(fnPath.clone(), fnNode.clone(), context.clone(), info.clone())?;
             (fnNode.clone(), false)
         },
-        Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { .. }, restriction: SCode::Restriction::R_OPERATOR, .. } => {
+        Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { .. }, restriction: SCode::Restriction::R_OPERATOR { .. }, .. } => {
             (fnNode, _) = instFunction3(fnNode.clone(), context.clone(), info.clone())?;
             fnNode = OperatorOverloading::instOperatorFunctions(fnNode.clone(), context.clone(), info.clone())?;
             (fnNode.clone(), false)
@@ -1197,7 +1197,6 @@ pub mod Function {
             {let _arr = slots.clone(); _arr.borrow_mut()[(slot.index.clone()-1) as usize] = slot.clone(); _arr};
             outArg.clone()
         },
-        _ => bail!("match: no arm matched"),
     });
         Ok(outArg)
     }
@@ -1407,7 +1406,7 @@ pub mod Function {
             outDims = cons(dim.clone(), outDims.clone());
             i = i.clone() + 1;
         }
-        outDims = outDims.clone().reverse();
+        outDims = metamodelica::Dangerous::listReverseInPlace(outDims.clone());
         outDims
     }
 
@@ -1686,12 +1685,12 @@ pub mod Function {
             }
         }
         assign_field!(
-            r#fn.inputs = inputs.clone().reverse(),
-            r#fn.slots = slots.clone().reverse()
+            r#fn.inputs = metamodelica::Dangerous::listReverseInPlace(inputs.clone()),
+            r#fn.slots = metamodelica::Dangerous::listReverseInPlace(slots.clone())
         );
         fn_ty = Arc::new(Type::NFType::FUNCTION { r#fn: r#fn.clone(), fnType: Type::FunctionType::FUNCTIONAL_VARIABLE.clone() });
-        args = args.clone().reverse();
-        arg_names = arg_names.clone().reverse();
+        args = metamodelica::Dangerous::listReverseInPlace(args.clone());
+        arg_names = metamodelica::Dangerous::listReverseInPlace(arg_names.clone());
         outExp = Arc::new(Expression::NFExpression::PARTIAL_FUNCTION_APPLICATION { r#fn: fnRef.clone(), args: args.clone(), argNames: arg_names.clone(), ty: fn_ty.clone() });
         Ok(outExp)
     }
@@ -1836,7 +1835,7 @@ pub mod Function {
             let mut i = i.clone();
             names = cons((InstNode::name((r#fn.inputs.clone()).get(i.clone())?)?).clone(), names.clone());
         }
-        names = names.clone().reverse();
+        names = metamodelica::Dangerous::listReverseInPlace(names.clone());
         Ok(names)
     }
 
@@ -2104,7 +2103,7 @@ pub mod Function {
                 localArgs = cons(Binding::getExp(binding.clone())?, localArgs.clone());
             }
         }
-        localArgs = localArgs.clone().reverse();
+        localArgs = metamodelica::Dangerous::listReverseInPlace(localArgs.clone());
         Ok(localArgs)
     }
 
@@ -2137,7 +2136,6 @@ pub mod Function {
             locals = cons(n.clone(), locals.clone());
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
             }
             ()
@@ -2202,7 +2200,7 @@ pub mod Function {
             slots = cons(makeSlot(i.clone(), index.clone())?, slots.clone());
             index = index.clone() + 1;
         }
-        slots = slots.clone().reverse();
+        slots = metamodelica::Dangerous::listReverseInPlace(slots.clone());
         Ok(slots)
     }
 
@@ -2262,7 +2260,7 @@ pub mod Function {
     } });
         }
         outComment = (::match_deref::match_deref! { match &(r#mod.clone()) {
-        Deref @ SCode::Mod::NOMOD => Arc::new(SCode::Comment { annotation_: None, comment: comment.clone() }),
+        Deref @ SCode::Mod::NOMOD { .. } => Arc::new(SCode::Comment { annotation_: None, comment: comment.clone() }),
         _ => Arc::new(SCode::Comment { annotation_: Some(Arc::new(SCode::Annotation { modification: r#mod.clone() })), comment: comment.clone() }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2549,7 +2547,7 @@ pub mod Function {
 
     pub fn sortLocals(mut locals: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut info: SourceInfo) -> Result<Arc<metamodelica::List<Arc<InstNode::InstNode>>>> {
         let mut locals: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = locals;
-        let mut locals_set: Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>;
+        let mut locals_set: Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>> = <Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>> as ::std::default::Default>::default();
         let mut dep_graph: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<metamodelica::List<Arc<InstNode::InstNode>>>)>> = metamodelica::nil();
         let mut cycles: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<metamodelica::List<Arc<InstNode::InstNode>>>)>> = metamodelica::nil();
         let mut cycles_str: ArcStr = arcstr::literal!("");
@@ -2573,7 +2571,7 @@ pub mod Function {
 
     pub fn getLocalDependencies(mut node: Arc<InstNode::InstNode>, mut locals: Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>) -> Result<Arc<metamodelica::List<Arc<InstNode::InstNode>>>> {
         let mut dependencies: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
-        let mut deps: Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>;
+        let mut deps: Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>> = <Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>> as ::std::default::Default>::default();
         deps = UnorderedSet::new((std::sync::Arc::new(fnptr!(InstNode::hash, Arc<InstNode::InstNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(InstNode::refEqual, Arc<InstNode::InstNode>, Arc<InstNode::InstNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<InstNode::InstNode>) -> Result<bool> + 'static>), 1);
         deps = getLocalDependencies2(node.clone(), locals.clone(), deps.clone())?;
         UnorderedSet::remove(node.clone(), deps.clone())?;
@@ -2819,7 +2817,7 @@ pub mod Function {
                 }
                 derivedVars = cons(index.clone(), derivedVars.clone());
             }
-            derivedVars = derivedVars.clone().reverse();
+            derivedVars = metamodelica::Dangerous::listReverseInPlace(derivedVars.clone());
             ()
         },
         _ => (),

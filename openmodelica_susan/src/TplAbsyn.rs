@@ -620,7 +620,6 @@ pub fn fullyQualifyTemplatePackage(mut inTplPackage: TemplPackage) -> Result<Tem
             templateDefs = listMap1Tuple22(templateDefs.clone(), (std::sync::Arc::new(fullyQualifyTemplateDef) as std::sync::Arc<dyn ::std::ops::Fn(TemplateDef, Arc<metamodelica::List<ASTDef>>) -> Result<TemplateDef> + 'static>), astDefs.clone())?;
             TemplPackage { name: name.clone(), astDefs: astDefs.clone(), templateDefs: templateDefs.clone(), annotationFooter: (ann.clone()).clone() }
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(outTplPackage)
 }
@@ -958,7 +957,7 @@ pub fn addOutTextAssigns(mut inTextArgs: TypedIdents, mut inTranslatedTextArgs: 
             outStmts = cons(Arc::new(MMExp::MM_ASSIGN { lhsArgs: list![(outident.clone()).clone()], rhs: Arc::new(MMExp::MM_IDENT { ident: Arc::new(PathIdent::IDENT { ident: (ident.clone()).clone() }) }) }), outStmts.clone());
         }
     }
-    outStmts = outStmts.clone().reverse();
+    outStmts = metamodelica::Dangerous::listReverseInPlace(outStmts.clone());
     outStmts
 }
 
@@ -3298,8 +3297,8 @@ pub fn getMatchArgName(mut inArgExp: Expression) -> Result<(Ident, Ident)> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ ExpressionBase::BOUND_VALUE { boundPath: path }, _) => {
-                    let mut outInputValueName: ArcStr = outInputValueName.clone();
                     let mut outMatchArgName: ArcStr = outMatchArgName.clone();
+                    let mut outInputValueName: ArcStr = outInputValueName.clone();
                     outInputValueName = (pathIdentString(path.clone())?).clone();
                     outMatchArgName = (encodeIdent((outInputValueName.clone()).clone(), (arcstr::literal!(funArgNamePrefix)).clone())?).clone();
                     Ok((outInputValueName.clone(), outMatchArgName.clone()))
@@ -7026,7 +7025,7 @@ fn addPathIdentToSet(mut set: Arc<AvlSetString::Tree>, mut name: Arc<PathIdent>)
     set = (::match_deref::match_deref! { match &(name.clone()) {
         Deref @ PathIdent::IDENT { .. } => AvlSetString::add(set.clone(), (var_field!((*name).ident, PathIdent::IDENT).clone()).clone())?,
         Deref @ PathIdent::PATH_IDENT { .. } => AvlSetString::add(set.clone(), (var_field!((*name).ident, PathIdent::PATH_IDENT).clone()).clone())?,
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(set)
 }

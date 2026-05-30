@@ -255,7 +255,7 @@ pub fn replaceVarPtr(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, m
     let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>> = var_ptr;
     let mut cref: Option<Arc<ComponentRef::NFComponentRef>> = None;
     cref = UnorderedMap::get(BVariable::getVarName(var_ptr.clone()), replacements.clone());
-    if Util::isSome(cref.clone()) {
+    if isSome(cref.clone()) {
         var_ptr = BVariable::getVarPointer(Util::getOption(cref.clone())?, metamodelica::sourceInfo!())?;
     }
     Ok(var_ptr)
@@ -301,7 +301,7 @@ pub fn applyFuncExp(mut exp: Arc<Expression::NFExpression>, mut replacements: Ar
     let mut exp: Arc<Expression::NFExpression> = exp;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { r#fn, .. } } if (UnorderedMap::contains(r#fn.path.clone(), replacements.clone())) => {
-            let mut local_replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>;
+            let mut local_replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
             let mut input_crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
             let mut local_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
             let mut binding_exp_opt: Option<Arc<Expression::NFExpression>> = None;
@@ -330,7 +330,7 @@ pub fn applyFuncExp(mut exp: Arc<Expression::NFExpression>, mut replacements: Ar
                 let mut local_node = local_node.clone();
                 local_cref = ComponentRef::fromNode(local_node.clone(), InstNode::getType(local_node.clone())?, metamodelica::nil(), ComponentRef::Origin::CREF.clone());
                 binding_exp_opt = InstNode::getBindingExpOpt(local_node.clone());
-                if Util::isSome(binding_exp_opt.clone()) {
+                if isSome(binding_exp_opt.clone()) {
                     binding_exp = Expression::map(Util::getOption(binding_exp_opt.clone())?, Arc::new({ let __pe_b1 = local_replacements.clone(); move |__pe_a0| applySimpleExp(__pe_a0, __pe_b1.clone()) }))?;
                 } else {
                     binding_exp = Arc::new(Expression::NFExpression::CREF { ty: Arc::new(openmodelica_nf_frontend::NFType::UNKNOWN), cref: Arc::new(openmodelica_nf_frontend::NFComponentRef::WILD) });

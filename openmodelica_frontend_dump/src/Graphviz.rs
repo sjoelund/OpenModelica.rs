@@ -135,7 +135,7 @@ fn dumpNode(mut inNode: Arc<Node>) -> Result<Ident> {
             dumpChildren((nm.clone()).clone(), children.clone())?;
             nm.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(outIdent)
 }

@@ -84,7 +84,7 @@ pub fn toString(mut iter: Arc<NFExpressionIterator>) -> Result<ArcStr> {
         Deref @ SCALAR_ITERATOR { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[SCAL] scalar iterator: ")); __mm_s.push_str(&*Expression::toString(var_field!((*iter).exp, NFExpressionIterator::SCALAR_ITERATOR).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) },
         Deref @ EACH_ITERATOR { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[EACH] each iterator: ")); __mm_s.push_str(&*Expression::toString(var_field!((*iter).exp, NFExpressionIterator::EACH_ITERATOR).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) },
         Deref @ NONE_ITERATOR { .. } => literal!("[NONE] no iterator.\n"),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(r#str)
 }
@@ -155,7 +155,7 @@ pub fn hasNext(mut iterator: Arc<NFExpressionIterator>) -> Result<bool> {
         Deref @ EACH_ITERATOR { .. } => true,
         Deref @ NONE_ITERATOR { .. } => false,
         Deref @ REPEAT_ITERATOR { .. } => true,
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(hasNext)
 }
@@ -275,7 +275,7 @@ fn makeArrayIterator(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<NFExp
 fn flattenArray(mut exp: Arc<Expression::NFExpression>, mut arrays: Arc<metamodelica::List<metamodelica::Array<Arc<Expression::NFExpression>>>>) -> Result<Arc<metamodelica::List<metamodelica::Array<Arc<Expression::NFExpression>>>>> {
     let mut arrays: Arc<metamodelica::List<metamodelica::Array<Arc<Expression::NFExpression>>>> = arrays;
     arrays = flattenArray_impl(exp.clone(), metamodelica::nil())?;
-    arrays = arrays.clone().reverse();
+    arrays = metamodelica::Dangerous::listReverseInPlace(arrays.clone());
     while !(arrays.clone().is_empty()) && listHead(arrays.clone())?.borrow().is_empty() {
         arrays = listRest(arrays.clone())?;
     }

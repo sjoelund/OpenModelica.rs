@@ -433,7 +433,7 @@ fn fun_69(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar, mut in_a_simC
             txt = Tpl::writeStr(txt.clone(), (intString(ret_2.clone())).clone())?;
             txt.clone()
         },
-        (txt, SimCodeVar::SimVar { causality: Some(SimCodeVar::Causality::OUTPUT), type_: Deref @ DAE::Type::T_REAL { varLst: _ }, name: i_name, .. }, a_simCode) => {
+        (txt, SimCodeVar::SimVar { causality: Some(SimCodeVar::Causality::OUTPUT { .. }), type_: Deref @ DAE::Type::T_REAL { varLst: _ }, name: i_name, .. }, a_simCode) => {
             let mut ret_5: i32 = 0;
             let mut ret_4: i32 = 0;
             let mut ret_3: SimCodeVar::SimVar = <SimCodeVar::SimVar as ::std::default::Default>::default();

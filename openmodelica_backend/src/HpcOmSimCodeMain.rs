@@ -81,7 +81,7 @@ pub fn createSimCode(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inInitDA
         let __mc_input = inBackendDAE.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE { .. } => {
+                Deref @ BackendDAE::BackendDAE { .. } => {
                     let mut lastEqMappingIdx: i32 = 0;
                     let mut equationSccMapping: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
                     let mut sccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>;
@@ -103,7 +103,6 @@ pub fn createSimCode(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inInitDA
                     simCode = __pa0.clone();
                     lastEqMappingIdx = __pa1.clone();
                     equationSccMapping = __pa2.clone();
-                    SimCodeUtil::getSimVarMappingOfBackendMapping(simCode.backendMapping.clone());
                     (simeqCompMapping, sccSimEqMapping, daeSccSimEqMapping) = HpcOmTaskGraph::setUpHpcOmMapping(inBackendDAE.clone(), simCode.clone(), lastEqMappingIdx.clone(), equationSccMapping.clone())?;
                     ExecStat::execStat((literal!("hpcom setup")).clone())?;
                     (taskGraph, taskGraphData) = HpcOmTaskGraph::createTaskGraph(inBackendDAE.clone(), false)?;
@@ -127,7 +126,7 @@ pub fn createSimCode(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inInitDA
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE { eqs, .. } => {
+                Deref @ BackendDAE::BackendDAE { eqs, .. } => {
                     let mut lastEqMappingIdx: i32 = 0;
                     let mut equationSccMapping: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
                     let mut sccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>;
@@ -409,11 +408,11 @@ fn applyGRSForScheduler(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::Li
         let __mc_input = iContractedTasks.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut tmpTaskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut levelNodes: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = levelNodes.clone();
-            let mut flagValue: ArcStr = flagValue.clone();
-            let mut contractedNodes: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = contractedNodes.clone();
             let mut tmpTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+            let mut contractedNodes: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = contractedNodes.clone();
+            let mut flagValue: ArcStr = flagValue.clone();
+            let mut levelNodes: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = levelNodes.clone();
+            let mut tmpTaskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
             let mut tmpTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta = tmpTaskGraphMeta.clone();
             flagValue = (Flags::getConfigString(Flags::HPCOM_SCHEDULER.clone())?).clone();
             let true = (stringEq((flagValue.clone()).clone(), (literal!("levelfix")).clone())) else { bail!("pattern mismatch") };
@@ -766,9 +765,9 @@ fn createSchedule1(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i3
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ "tds" => {
-                    let mut taskGraphMeta1: HpcOmTaskGraph::TaskGraphMeta = taskGraphMeta1.clone();
-                    let mut simCode: SimCode::SimCode = simCode.clone();
                     let mut taskGraph1: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+                    let mut simCode: SimCode::SimCode = simCode.clone();
+                    let mut taskGraphMeta1: HpcOmTaskGraph::TaskGraphMeta = taskGraphMeta1.clone();
                     let mut schedule: Arc<HpcOmSimCode::Schedule>;
                     let mut sccSimEqMap: metamodelica::Array<Arc<metamodelica::List<i32>>>;
                     println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Using Task Duplication-based Scheduling for the ")); __mm_s.push_str(&*iSystemName.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -781,8 +780,8 @@ fn createSchedule1(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i3
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ "bls" => {
-                    let mut schedule: Arc<HpcOmSimCode::Schedule>;
                     let mut taskGraphMeta1: HpcOmTaskGraph::TaskGraphMeta = taskGraphMeta1.clone();
+                    let mut schedule: Arc<HpcOmSimCode::Schedule>;
                     println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Using Balanced Level Scheduling for the ")); __mm_s.push_str(&*iSystemName.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     (schedule, taskGraphMeta1) = HpcOmScheduler::createBalancedLevelScheduling(iTaskGraph.clone(), iTaskGraphMeta.clone(), iSccSimEqMapping.clone())?;
                     Ok((schedule.clone(), iSimCode.clone(), iTaskGraph.clone(), taskGraphMeta1.clone(), iSccSimEqMapping.clone()))
@@ -995,7 +994,7 @@ pub fn outputTimeBenchmark(mut graphData: HpcOmTaskGraph::TaskGraphMeta, mut dae
     let mut numCycles: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
     let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(dae.clone()) {
-        Deref @ DAE { shared: __pa0, eqs: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+        Deref @ BackendDAE::BackendDAE { shared: __pa0, eqs: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
     shared = __pa0.clone();

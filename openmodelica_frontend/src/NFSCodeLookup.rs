@@ -251,7 +251,7 @@ fn lookupSimpleName2(mut inName: ArcStr, mut inEnv: Env, mut inVisitedScopes: Ar
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Frame { frameType: NFSCodeEnv::FrameType::ENCAPSULATED_SCOPE, .. }, tail: rest_env } => {
+                Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Frame { frameType: NFSCodeEnv::FrameType::ENCAPSULATED_SCOPE { .. }, .. }, tail: rest_env } => {
                     let mut opt_item: Option<Arc<NFSCodeEnv::Item>> = None;
                     let mut opt_path: Option<Arc<Absyn::Path>> = None;
                     let mut opt_env: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>> = None;
@@ -271,7 +271,7 @@ fn lookupSimpleName2(mut inName: ArcStr, mut inEnv: Env, mut inVisitedScopes: Ar
 
 pub fn frameNotEncapsulated(mut frameType: FrameType) -> Result<()> {
     let () = (match frameType.clone() {
-        NFSCodeEnv::FrameType::ENCAPSULATED_SCOPE => bail!("fail"),
+        NFSCodeEnv::FrameType::ENCAPSULATED_SCOPE { .. } => bail!("fail"),
         _ => (),
     });
     Ok(())
@@ -279,7 +279,7 @@ pub fn frameNotEncapsulated(mut frameType: FrameType) -> Result<()> {
 
 fn checkBuiltinItem(mut inItem: Option<Arc<NFSCodeEnv::Item>>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inItem.clone()) {
-        Some(Deref @ NFSCodeEnv::Item::CLASS { classType: NFSCodeEnv::ClassType::BUILTIN, .. }) => (),
+        Some(Deref @ NFSCodeEnv::Item::CLASS { classType: NFSCodeEnv::ClassType::BUILTIN { .. }, .. }) => (),
         None => (),
         _ => bail!("match: no arm matched"),
     } });
@@ -479,7 +479,7 @@ pub fn lookupInBaseClasses3(mut inName: ArcStr, mut inBaseClass: Extends, mut in
             (opt_item, opt_path, opt_env) = lookupInBaseClasses4(Arc::new(Absyn::Path::IDENT { name: (inName.clone()).clone() }), opt_item.clone(), opt_env.clone())?;
             (opt_item.clone(), opt_path.clone(), opt_env.clone())
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((outItem, outPath, outEnv))
 }
@@ -958,7 +958,7 @@ fn lookupRedeclaredClass2(mut inItem: Item, mut inRedeclarePrefix: SCode::Redecl
         let __mc_input = (inItem.clone(), inRedeclarePrefix.clone(), inReplaceablePrefix.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (_, SCode::Redeclare::NOT_REDECLARE, Deref @ SCode::Replaceable::REPLACEABLE { .. }) => {
+                (_, SCode::Redeclare::NOT_REDECLARE { .. }, Deref @ SCode::Replaceable::REPLACEABLE { .. }) => {
                     Ok((inItem.clone(), inEnv.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -966,7 +966,7 @@ fn lookupRedeclaredClass2(mut inItem: Item, mut inRedeclarePrefix: SCode::Redecl
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ NFSCodeEnv::Item::CLASS { cls: Deref @ SCode::Element::CLASS { name, .. }, .. }, SCode::Redeclare::REDECLARE, Deref @ SCode::Replaceable::REPLACEABLE { .. }) => {
+                (Deref @ NFSCodeEnv::Item::CLASS { cls: Deref @ SCode::Element::CLASS { name, .. }, .. }, SCode::Redeclare::REDECLARE { .. }, Deref @ SCode::Replaceable::REPLACEABLE { .. }) => {
                     let mut item: Item;
                     let mut env: Env = metamodelica::nil();
                     let mut rdp: SCode::Redeclare = SCode::Redeclare::NOT_REDECLARE;
@@ -1002,7 +1002,7 @@ fn lookupRedeclaredClass2(mut inItem: Item, mut inRedeclarePrefix: SCode::Redecl
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ NFSCodeEnv::Item::CLASS { cls: Deref @ SCode::Element::CLASS { info, name, .. }, .. }, _, Deref @ SCode::Replaceable::NOT_REPLACEABLE) => {
+                (Deref @ NFSCodeEnv::Item::CLASS { cls: Deref @ SCode::Element::CLASS { info, name, .. }, .. }, _, Deref @ SCode::Replaceable::NOT_REPLACEABLE { .. }) => {
                     Error::addSourceMessage(Error::ERROR_FROM_HERE.clone(), metamodelica::nil(), inInfo.clone())?;
                     Error::addSourceMessage(Error::REDECLARE_NON_REPLACEABLE.clone(), list![(name.clone()).clone()], info.clone())?;
                     Ok(bail!("fail"))
@@ -1336,7 +1336,7 @@ pub fn lookupComponentRef(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv: Env, 
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Absyn::ComponentRef::WILD => {
+                Deref @ Absyn::ComponentRef::WILD { .. } => {
                     Ok(inCref.clone())
                 }
                 _ => bail!("nomatch"),

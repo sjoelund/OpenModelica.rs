@@ -161,7 +161,7 @@ pub fn instantiateExternalObject(mut inCache: FCore::Cache, mut inEnv: FCore::Gr
 
 fn checkExternalObjectMod(mut inMod: Arc<DAE::Mod>, mut inClassName: ArcStr) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inMod.clone()) {
-        Deref @ DAE::Mod::NOMOD => {
+        Deref @ DAE::Mod::NOMOD { .. } => {
             ()
         },
         Deref @ DAE::Mod::MOD { subModLst: Deref @ metamodelica::List::Nil, .. } => {
@@ -487,7 +487,7 @@ fn instantiateDerivativeFuncs2(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
                     let _ = __mc_input.clone() else { bail!("nomatch") };
-                    let mut ih: Arc<metamodelica::List<InnerOuter::TopInstance>>;
+                    let mut ih: Arc<metamodelica::List<InnerOuter::TopInstance>> = ih.clone();
                     let mut cache: FCore::Cache = cache.clone();
                     let mut funcs: Arc<metamodelica::List<DAE::Function>>;
                     cache = FCore::addCachedInstFuncGuard(cache.clone(), p.clone())?;
@@ -718,7 +718,7 @@ fn instExtMakeDefaultExternalCall(mut elements: Arc<metamodelica::List<Arc<DAE::
             (openmodelica_frontend_types::DAE::ExtArg::NOEXTARG, false)
         },
         Deref @ DAE::Type::T_FUNCTION { funcResultType: Deref @ DAE::Type::T_TUPLE { .. }, .. } => (openmodelica_frontend_types::DAE::ExtArg::NOEXTARG, false),
-        Deref @ DAE::Type::T_FUNCTION { funcResultType: Deref @ DAE::Type::T_NORETCALL, .. } => (openmodelica_frontend_types::DAE::ExtArg::NOEXTARG, false),
+        Deref @ DAE::Type::T_FUNCTION { funcResultType: Deref @ DAE::Type::T_NORETCALL { .. }, .. } => (openmodelica_frontend_types::DAE::ExtArg::NOEXTARG, false),
         Deref @ DAE::Type::T_FUNCTION { funcResultType: ty, .. } => (DAE::ExtArg::EXTARG { componentRef: DAEUtil::varCref(List::find(elements.clone(), (std::sync::Arc::new(fnptr!(DAEUtil::isOutputVar, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<bool> + 'static>))?)?, direction: openmodelica_ast::Absyn::Direction::OUTPUT, type_: ty.clone() }, true),
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("instExtMakeDefaultExternalCall failed for ")); __mm_s.push_str(&*TypesDump::unparseType(funcType.clone())?); ArcStr::from(__mm_s) }).clone(), info.clone())?;
@@ -729,9 +729,9 @@ fn instExtMakeDefaultExternalCall(mut elements: Arc<metamodelica::List<Arc<DAE::
     for mut elt in &*elements.clone() {
         let mut elt = elt.clone();
         fargs = (::match_deref::match_deref! { match &(elt.clone()) {
-        Deref @ DAE::Element::VAR { direction: DAE::VarDirection::OUTPUT, .. } if (!(singleOutput.clone())) => addExtVarToCall(var_field!((*elt).componentRef, DAE::Element::VAR).clone(), openmodelica_ast::Absyn::Direction::OUTPUT, var_field!((*elt).dims, DAE::Element::VAR).clone(), fargs.clone())?,
-        Deref @ DAE::Element::VAR { direction: DAE::VarDirection::INPUT, .. } => addExtVarToCall(var_field!((*elt).componentRef, DAE::Element::VAR).clone(), openmodelica_ast::Absyn::Direction::INPUT, var_field!((*elt).dims, DAE::Element::VAR).clone(), fargs.clone())?,
-        Deref @ DAE::Element::VAR { direction: DAE::VarDirection::BIDIR, .. } => addExtVarToCall(var_field!((*elt).componentRef, DAE::Element::VAR).clone(), openmodelica_ast::Absyn::Direction::OUTPUT, var_field!((*elt).dims, DAE::Element::VAR).clone(), fargs.clone())?,
+        Deref @ DAE::Element::VAR { direction: DAE::VarDirection::OUTPUT { .. }, .. } if (!(singleOutput.clone())) => addExtVarToCall(var_field!((*elt).componentRef, DAE::Element::VAR).clone(), openmodelica_ast::Absyn::Direction::OUTPUT, var_field!((*elt).dims, DAE::Element::VAR).clone(), fargs.clone())?,
+        Deref @ DAE::Element::VAR { direction: DAE::VarDirection::INPUT { .. }, .. } => addExtVarToCall(var_field!((*elt).componentRef, DAE::Element::VAR).clone(), openmodelica_ast::Absyn::Direction::INPUT, var_field!((*elt).dims, DAE::Element::VAR).clone(), fargs.clone())?,
+        Deref @ DAE::Element::VAR { direction: DAE::VarDirection::BIDIR { .. }, .. } => addExtVarToCall(var_field!((*elt).componentRef, DAE::Element::VAR).clone(), openmodelica_ast::Absyn::Direction::OUTPUT, var_field!((*elt).dims, DAE::Element::VAR).clone(), fargs.clone())?,
         _ => fargs.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -896,7 +896,7 @@ pub fn addRecordConstructorFunction(mut inCache: FCore::Cache, mut inEnv: FCore:
 fn isElementImportantForFunction(mut elt: Arc<SCode::Element>) -> bool {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(elt.clone()) {
-        Deref @ SCode::Element::COMPONENT { attributes: SCode::Attributes { variability: SCode::Variability::VAR, direction: Absyn::Direction::BIDIR, .. }, prefixes: Deref @ SCode::Prefixes { visibility: SCode::Visibility::PROTECTED, .. }, .. } => false,
+        Deref @ SCode::Element::COMPONENT { attributes: SCode::Attributes { variability: SCode::Variability::VAR { .. }, direction: Absyn::Direction::BIDIR { .. }, .. }, prefixes: Deref @ SCode::Prefixes { visibility: SCode::Visibility::PROTECTED { .. }, .. }, .. } => false,
         _ => true,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

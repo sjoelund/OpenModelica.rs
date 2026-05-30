@@ -883,7 +883,7 @@ pub fn recollectRangesHeuristic(mut frame_locations_transposed: Arc<metamodelica
     let mut min_dim: i32 = 0;
     let mut max_dim: i32 = 0;
     let mut diagonal: Arc<metamodelica::List<(metamodelica::Array<i32>, (Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>))>> = metamodelica::nil();
-    let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>;
+    let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
     let mut fos: FrameOrderingStatus = FrameOrderingStatus::UNCHANGED;
     for mut tpl in &*frame_locations_transposed.clone() {
         let mut tpl = tpl.clone();
@@ -1380,7 +1380,7 @@ fn resolveDependency(mut original_cref: Arc<ComponentRef::NFComponentRef>, mut e
 fn resolveAllRegular(mut cref: Arc<ComponentRef::NFComponentRef>, mut original_cref: Arc<ComponentRef::NFComponentRef>, mut eqn_name: Arc<ComponentRef::NFComponentRef>, mut skip_idx: i32, mut size: i32, mut iter_size: i32, mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>, mut rep: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapping: Arc<Mapping::Mapping>, mut modes: Arc<UnorderedMap::UnorderedMap<(i32, i32), Arc<Mode::Mode>>>) -> Result<()> {
     let mut mode: Arc<Mode::Mode> = Arc::new(<Mode::Mode as ::std::default::Default>::default());
     let mut scalarized: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-    let mut map3: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<i32>>>>;
+    let mut map3: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<i32>>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<i32>>>> as ::std::default::Default>::default();
     let mut scal_size: i32 = 0;
     let mut shift: i32 = 0;
     mode = Mode::create(eqn_name.clone(), list![original_cref.clone()], false);
@@ -1415,8 +1415,8 @@ fn resolveMixed(mut cref: Arc<ComponentRef::NFComponentRef>, mut original_cref: 
     let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
     let mut eq_dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
     let mut key: metamodelica::Array<i32>;
-    let mut map1: Arc<UnorderedMap::UnorderedMap<Arc<metamodelica::List<i32>>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>;
-    let mut map2: Arc<UnorderedMap::UnorderedMap<Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>>>;
+    let mut map1: Arc<UnorderedMap::UnorderedMap<Arc<metamodelica::List<i32>>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>> = <Arc<UnorderedMap::UnorderedMap<Arc<metamodelica::List<i32>>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>> as ::std::default::Default>::default();
+    let mut map2: Arc<UnorderedMap::UnorderedMap<Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>>> = <Arc<UnorderedMap::UnorderedMap<Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>>> as ::std::default::Default>::default();
     let mut scalarized: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
     let mut scal_lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut size_comp: i32 = 0;
@@ -1469,7 +1469,7 @@ fn resolveMixed(mut cref: Arc<ComponentRef::NFComponentRef>, mut original_cref: 
 fn resolveAllReduced(mut cref: Arc<ComponentRef::NFComponentRef>, mut original_cref: Arc<ComponentRef::NFComponentRef>, mut eqn_name: Arc<ComponentRef::NFComponentRef>, mut skip_idx: i32, mut size: i32, mut iter_size: i32, mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>, mut rep: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapping: Arc<Mapping::Mapping>, mut modes: Arc<UnorderedMap::UnorderedMap<(i32, i32), Arc<Mode::Mode>>>) -> Result<()> {
     let mut repeated: bool = false;
     let mut scalarized: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-    let mut map3: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<i32>>>>;
+    let mut map3: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<i32>>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<i32>>>> as ::std::default::Default>::default();
     let mut shift: i32 = 0;
     let mut mode: Arc<Mode::Mode> = Arc::new(<Mode::Mode as ::std::default::Default>::default());
     repeated = UnorderedSet::contains(cref.clone(), rep.clone())?;
@@ -1609,7 +1609,7 @@ fn combineFrames2Indices(mut first: i32, mut sizes: Arc<metamodelica::List<i32>>
         Deref @ Expression::ARRAY { .. } => {
             iterator_exps = ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-        for mut e in (var_field!((*range).elements, Expression::NFExpression::ARRAY).clone()).borrow().iter() {
+        for mut e in (var_field!((**range).elements, Expression::NFExpression::ARRAY).clone()).borrow().iter() {
             let __x = Expression::map(e.clone(), Arc::new({ let __pe_b1 = replacements.clone(); move |__pe_a0| Replacements::applySimpleExp(__pe_a0, __pe_b1.clone()) }))?;
             __acc = cons(__x, __acc);
         }

@@ -195,7 +195,7 @@ fn qualifyLocalScope(mut inEnv: Env, mut inClassType: ClassType, mut inExtendsTa
 fn qualifyExtendsList(mut inExtends: Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>>, mut inClassType: ClassType, mut inEnv: Env, mut inExtendsTable: ExtendsTableArray) -> Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>> {
     let mut outExtends: Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>> = metamodelica::nil();
     outExtends = (::match_deref::match_deref! { match &((inExtends.clone(), inClassType.clone())) {
-        (Deref @ metamodelica::List::Cons { head: ext, tail: extl }, NFSCodeEnv::ClassType::CLASS_EXTENDS) => {
+        (Deref @ metamodelica::List::Cons { head: ext, tail: extl }, NFSCodeEnv::ClassType::CLASS_EXTENDS { .. }) => {
             let mut extl = (*extl).clone();
             extl = List::map2Reverse(extl.clone(), (std::sync::Arc::new(qualifyExtends) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSCodeEnv::Extends>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, metamodelica::Array<ExtendsWrapper>) -> Result<Arc<NFSCodeEnv::Extends>> + 'static>), inEnv.clone(), inExtendsTable.clone());
             cons(ext.clone(), extl.clone())
@@ -1003,7 +1003,7 @@ fn updateClassExtends(mut inClass: Arc<SCode::Element>, mut inEnv: Env, mut inCl
     let mut outClass: Arc<SCode::Element>;
     let mut outEnv: Env = metamodelica::nil();
     (outClass, outEnv) = (::match_deref::match_deref! { match &((inEnv.clone(), inClassType.clone())) {
-        (Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Frame { extendsTable: Deref @ NFSCodeEnv::ExtendsTable { classExtendsInfo: Some(ext), .. }, name: Some(name), .. }, tail: _ }, NFSCodeEnv::ClassType::CLASS_EXTENDS) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Frame { extendsTable: Deref @ NFSCodeEnv::ExtendsTable { classExtendsInfo: Some(ext), .. }, name: Some(name), .. }, tail: _ }, NFSCodeEnv::ClassType::CLASS_EXTENDS { .. }) => {
             let mut env: Env = metamodelica::nil();
             let mut mods: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
             let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();

@@ -95,8 +95,8 @@ pub fn isNotAssertStatement(mut stmt: Arc<DAE::Statement>) -> bool {
 pub fn makeAssignmentNoTypeCheck(mut ty: Arc<DAE::Type>, mut lhs: Arc<DAE::Exp>, mut rhs: Arc<DAE::Exp>, mut source: Arc<DAE::ElementSource>) -> Arc<DAE::Statement> {
     let mut outStatement: Arc<DAE::Statement>;
     outStatement = (::match_deref::match_deref! { match &(lhs.clone()) {
-        Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD, .. } => Arc::new(DAE::Statement::STMT_NORETCALL { exp: rhs.clone(), source: source.clone() }),
-        Deref @ DAE::Exp::PATTERN { pattern: Deref @ DAE::Pattern::PAT_WILD } => Arc::new(DAE::Statement::STMT_NORETCALL { exp: rhs.clone(), source: source.clone() }),
+        Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD { .. }, .. } => Arc::new(DAE::Statement::STMT_NORETCALL { exp: rhs.clone(), source: source.clone() }),
+        Deref @ DAE::Exp::PATTERN { pattern: Deref @ DAE::Pattern::PAT_WILD { .. } } => Arc::new(DAE::Statement::STMT_NORETCALL { exp: rhs.clone(), source: source.clone() }),
         _ => Arc::new(DAE::Statement::STMT_ASSIGN { type_: ty.clone(), exp1: lhs.clone(), exp: rhs.clone(), source: source.clone() }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -106,7 +106,7 @@ pub fn makeAssignmentNoTypeCheck(mut ty: Arc<DAE::Type>, mut lhs: Arc<DAE::Exp>,
 pub fn makeArrayAssignmentNoTypeCheck(mut ty: Arc<DAE::Type>, mut lhs: Arc<DAE::Exp>, mut rhs: Arc<DAE::Exp>, mut source: Arc<DAE::ElementSource>) -> Arc<DAE::Statement> {
     let mut outStatement: Arc<DAE::Statement>;
     outStatement = (::match_deref::match_deref! { match &(lhs.clone()) {
-        Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD, .. } => Arc::new(DAE::Statement::STMT_NORETCALL { exp: rhs.clone(), source: source.clone() }),
+        Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD { .. }, .. } => Arc::new(DAE::Statement::STMT_NORETCALL { exp: rhs.clone(), source: source.clone() }),
         _ => Arc::new(DAE::Statement::STMT_ASSIGN_ARR { type_: ty.clone(), lhs: lhs.clone(), exp: rhs.clone(), source: source.clone() }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -149,7 +149,7 @@ pub fn makeAssignment(mut inExp1: Arc<DAE::Exp>, mut inProperties2: DAE::Propert
         let __mc_input = (inExp1.clone(), inProperties2.clone(), inExp3.clone(), inProperties4.clone(), inAttributes.clone(), initial_.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD, .. }, _, rhs, _, _, _) => {
+                (Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD { .. }, .. }, _, rhs, _, _, _) => {
                     Ok(Arc::new(DAE::Statement::STMT_NORETCALL { exp: rhs.clone(), source: source.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -157,7 +157,7 @@ pub fn makeAssignment(mut inExp1: Arc<DAE::Exp>, mut inProperties2: DAE::Propert
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (lhs @ Deref @ DAE::Exp::CREF { componentRef: cr, .. }, lhprop, rhs, rhprop, _, SCode::Initial::NON_INITIAL) => {
+                (lhs @ Deref @ DAE::Exp::CREF { componentRef: cr, .. }, lhprop, rhs, rhprop, _, SCode::Initial::NON_INITIAL { .. }) => {
                     let mut outStatement: Arc<DAE::Statement>;
                     let DAE::C_PARAM { .. } = (Types::propAnyConst(lhprop.clone())?) else { bail!("pattern mismatch") };
                     let true = (ComponentReference::isRecord(cr.clone())) else { bail!("pattern mismatch") };
@@ -169,7 +169,7 @@ pub fn makeAssignment(mut inExp1: Arc<DAE::Exp>, mut inProperties2: DAE::Propert
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (lhs, lprop, rhs, _, _, SCode::Initial::NON_INITIAL) => {
+                (lhs, lprop, rhs, _, _, SCode::Initial::NON_INITIAL { .. }) => {
                     let mut lhs_str: ArcStr = arcstr::literal!("");
                     let mut rhs_str: ArcStr = arcstr::literal!("");
                     let DAE::C_PARAM { .. } = (Types::propAnyConst(lprop.clone())?) else { bail!("pattern mismatch") };
@@ -183,7 +183,7 @@ pub fn makeAssignment(mut inExp1: Arc<DAE::Exp>, mut inProperties2: DAE::Propert
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (lhs, _, _, _, Deref @ DAE::Attributes { variability: SCode::Variability::CONST, .. }, _) => {
+                (lhs, _, _, _, Deref @ DAE::Attributes { variability: SCode::Variability::CONST { .. }, .. }, _) => {
                     let mut lhs_str: ArcStr = arcstr::literal!("");
                     lhs_str = (ExpressionBasics::printExpStr(lhs.clone())?).clone();
                     Error::addSourceMessage(Error::ASSIGN_READONLY_ERROR.clone(), list![(literal!("constant")).clone(), (lhs_str.clone()).clone()], ElementSource::getElementSourceFileInfo(source.clone()))?;
@@ -194,7 +194,7 @@ pub fn makeAssignment(mut inExp1: Arc<DAE::Exp>, mut inProperties2: DAE::Propert
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (lhs, lhprop, rhs, rhprop, _, SCode::Initial::INITIAL) => {
+                (lhs, lhprop, rhs, rhprop, _, SCode::Initial::INITIAL { .. }) => {
                     let mut outStatement: Arc<DAE::Statement>;
                     let DAE::C_PARAM { .. } = (Types::propAnyConst(lhprop.clone())?) else { bail!("pattern mismatch") };
                     outStatement = makeAssignment2(lhs.clone(), lhprop.clone(), rhs.clone(), rhprop.clone(), source.clone())?;
@@ -332,7 +332,7 @@ pub fn makeAssignmentsList(mut lhsExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, 
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil, _, _) => {
             metamodelica::nil()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD, .. }, tail: rest_lhs }, Deref @ metamodelica::List::Cons { head: _, tail: rest_lhs_prop }, Deref @ metamodelica::List::Cons { head: _, tail: rest_rhs }, Deref @ metamodelica::List::Cons { head: _, tail: rest_rhs_prop }) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD { .. }, .. }, tail: rest_lhs }, Deref @ metamodelica::List::Cons { head: _, tail: rest_lhs_prop }, Deref @ metamodelica::List::Cons { head: _, tail: rest_rhs }, Deref @ metamodelica::List::Cons { head: _, tail: rest_rhs_prop }) => {
             makeAssignmentsList(rest_lhs.clone(), rest_lhs_prop.clone(), rest_rhs.clone(), rest_rhs_prop.clone(), attributes.clone(), initial_.clone(), source.clone())?
         },
         (Deref @ metamodelica::List::Cons { head: lhs, tail: rest_lhs }, Deref @ metamodelica::List::Cons { head: lhs_prop, tail: rest_lhs_prop }, Deref @ metamodelica::List::Cons { head: rhs, tail: rest_rhs }, Deref @ metamodelica::List::Cons { head: rhs_prop, tail: rest_rhs_prop }) => {
@@ -356,15 +356,15 @@ pub fn checkLHSWritable(mut lhs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut pro
     for mut p in &*props.clone() {
         let mut p = p.clone();
         let () = (match p.clone() {
-        DAE::Properties::PROP { constFlag: DAE::Const::C_VAR, .. } => (),
-        DAE::Properties::PROP { type_: _, constFlag: DAE::Const::C_CONST } => {
+        DAE::Properties::PROP { constFlag: DAE::Const::C_VAR { .. }, .. } => (),
+        DAE::Properties::PROP { type_: _, constFlag: DAE::Const::C_CONST { .. } } => {
             l = stringAppendList(list![(literal!("(")).clone(), stringDelimitList(List::map(lhs.clone(), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)), (literal!(", ")).clone()), (literal!(")")).clone()]);
             r = (ExpressionBasics::printExpStr(rhs.clone())?).clone();
             Error::addSourceMessage(Error::ASSIGN_CONSTANT_ERROR.clone(), list![(l.clone()).clone(), (r.clone()).clone()], ElementSource::getElementSourceFileInfo(source.clone()))?;
             bail!("fail");
             ()
         },
-        DAE::Properties::PROP { type_: ref ty, constFlag: DAE::Const::C_PARAM } => {
+        DAE::Properties::PROP { type_: ref ty, constFlag: DAE::Const::C_PARAM { .. } } => {
             if Types::getFixedVarAttributeParameterOrConstant(ty.clone()) {
                 l = stringAppendList(list![(literal!("(")).clone(), stringDelimitList(List::map(lhs.clone(), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)), (literal!(", ")).clone()), (literal!(")")).clone()]);
                 r = (ExpressionBasics::printExpStr(rhs.clone())?).clone();
@@ -408,7 +408,7 @@ pub fn makeTupleAssignment(mut inExpExpLst: Arc<metamodelica::List<Arc<DAE::Exp>
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (lhs, lprop, rhs, _, SCode::Initial::NON_INITIAL) => {
+                (lhs, lprop, rhs, _, SCode::Initial::NON_INITIAL { .. }) => {
                     let mut bvals: Arc<metamodelica::List<DAE::Const>> = metamodelica::nil();
                     let mut sl: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut s: ArcStr = arcstr::literal!("");
@@ -589,7 +589,7 @@ pub fn optimizeIf(mut icond: Arc<DAE::Exp>, mut istmts: Arc<metamodelica::List<A
         (Deref @ DAE::Exp::BCONST { bool: true }, stmts, _, _) => {
             (stmts.clone(), true)
         },
-        (Deref @ DAE::Exp::BCONST { bool: false }, _, Deref @ DAE::Else::NOELSE, _) => {
+        (Deref @ DAE::Exp::BCONST { bool: false }, _, Deref @ DAE::Else::NOELSE { .. }, _) => {
             (metamodelica::nil(), true)
         },
         (Deref @ DAE::Exp::BCONST { bool: false }, _, Deref @ DAE::Else::ELSE { statementLst: stmts }, _) => {
@@ -749,7 +749,6 @@ pub fn makeParFor(mut inIdent: ArcStr, mut inExp: Arc<DAE::Exp>, mut inPropertie
                 (i, e, DAE::Properties::PROP { type_: Deref @ DAE::Type::T_ARRAY { dims, ty: t }, .. }, stmts) => {
                     let mut isArray: bool = false;
                     isArray = Types::isNonscalarArray(t.clone(), dims.clone())?;
-                    Types::simplifyType(t.clone())?;
                     Ok(Arc::new(DAE::Statement::STMT_PARFOR { type_: t.clone(), iterIsArray: isArray.clone(), iter: (i.clone()).clone(), range: e.clone(), statementLst: stmts.clone(), loopPrlVars: inLoopPrlVars.clone(), source: source.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -947,7 +946,7 @@ pub fn getAllExps(mut inAlgorithm: Arc<DAE::Algorithm>) -> Result<Arc<metamodeli
             exps = getAllExpsStmts(stmts.clone());
             exps.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outExpExpLst)
 }

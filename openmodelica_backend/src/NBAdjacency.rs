@@ -528,10 +528,10 @@ pub mod Matrix {
         let mut dependencies: metamodelica::Array<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>>>;
         let mut solvabilities: metamodelica::Array<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Solvability::Solvability>>>>;
         let mut repetitions: metamodelica::Array<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>>;
-        let mut occ_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
-        let mut rep_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
-        let mut dep_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>>;
-        let mut sol_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Solvability::Solvability>>>;
+        let mut occ_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+        let mut rep_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+        let mut dep_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>> as ::std::default::Default>::default();
+        let mut sol_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Solvability::Solvability>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Solvability::Solvability>>> as ::std::default::Default>::default();
         let mut mapping: Arc<Mapping::Mapping> = Arc::new(<Mapping::Mapping as ::std::default::Default>::default());
         if ExpandableArray::getNumberOfElements(vars.varArr.clone()) > 0 || ExpandableArray::getNumberOfElements(eqns.eqArr.clone()) > 0 {
             equation_names = arrayCreate(size.clone(), Arc::new(openmodelica_nf_frontend::NFComponentRef::EMPTY));
@@ -610,8 +610,8 @@ pub mod Matrix {
             let mut repeated: bool = false;
             let mut inner_deps: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
             let mut changed: bool = false;
-            let mut dep_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>>;
-            let mut rep_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+            let mut dep_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>> as ::std::default::Default>::default();
+            let mut rep_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
             let __range0 = 1..=(var_field!((*full).equation_names, Matrix::FULL).clone().borrow().len() as i32);
             for mut i in __range0 {
                 UnorderedMap::add(var_field!((*full).equation_names, Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(), i.clone(), index_map.clone())?;
@@ -912,7 +912,7 @@ pub mod Matrix {
         Deref @ FULL { .. } => {
             let mut index: i32 = 0;
             let mut eqn_ptr: Pointer::Pointer<Arc<Equation::Equation>>;
-            let mut occ_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+            let mut occ_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
             full = Arc::new(Matrix::FULL { equation_names: Array::expandToSize(size.clone(), var_field!((*full).equation_names, Matrix::FULL).clone(), Arc::new(openmodelica_nf_frontend::NFComponentRef::EMPTY))?, occurrences: Array::expandToSize(size.clone(), var_field!((*full).occurrences, Matrix::FULL).clone(), UnorderedSet::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13))?, dependencies: Array::expandToSize(size.clone(), var_field!((*full).dependencies, Matrix::FULL).clone(), UnorderedMap::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1))?, solvabilities: Array::expandToSize(size.clone(), var_field!((*full).solvabilities, Matrix::FULL).clone(), UnorderedMap::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1))?, repetitions: Array::expandToSize(size.clone(), var_field!((*full).repetitions, Matrix::FULL).clone(), UnorderedSet::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13))?, mapping: Mapping::expand(var_field!((*full).mapping, Matrix::FULL).clone(), new_eqns.clone(), new_vars.clone())? });
             if !(UnorderedMap::isEmpty(vn.clone())) {
                 for mut e in &*UnorderedMap::valueList(eo.clone()) {
@@ -968,9 +968,9 @@ pub mod Matrix {
             let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut status: Solve::Status = Solve::Status::UNPROCESSED;
             let mut sol: Arc<Solvability::Solvability> = Arc::new(Solvability::IMPLICIT);
-            let mut linear_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
-            let mut param_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
-            let mut var_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+            let mut linear_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+            let mut param_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+            let mut var_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
             let mut eqnIsDiscrete: bool = false;
             let mut eqnIsIf: bool = false;
             let __range0 = UnorderedMap::valueArray(e.clone()).borrow().iter().cloned().collect::<Vec<_>>();
@@ -1925,7 +1925,7 @@ pub mod Dependency {
         let mut dep: Arc<Dependency> = Arc::new(<Dependency as ::std::default::Default>::default());
         let mut kinds: Arc<metamodelica::List<Kind>> = metamodelica::nil();
         let mut res: i32 = 0;
-        if Util::isSome(opt_dep.clone()) {
+        if isSome(opt_dep.clone()) {
             let __pa0 = ::match_deref::match_deref! { match &(opt_dep.clone()) {
                 Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
@@ -1952,7 +1952,7 @@ pub mod Dependency {
     pub fn skip(mut cref: Arc<ComponentRef::NFComponentRef>, mut depth: i32, mut sk: i32, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency>>>) -> Result<()> {
         let mut opt_dep: Option<Arc<Dependency>> = UnorderedMap::get(cref.clone(), map.clone());
         let mut dep: Arc<Dependency> = Arc::new(<Dependency as ::std::default::Default>::default());
-        if Util::isSome(opt_dep.clone()) {
+        if isSome(opt_dep.clone()) {
             let __pa0 = ::match_deref::match_deref! { match &(opt_dep.clone()) {
                 Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
@@ -1979,7 +1979,7 @@ pub mod Dependency {
         let mut rest: i32 = num.clone();
         let mut i: i32 = 0;
         let mut len: i32 = 0;
-        if Util::isSome(opt_dep.clone()) {
+        if isSome(opt_dep.clone()) {
             let __pa0 = ::match_deref::match_deref! { match &(opt_dep.clone()) {
                 Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
@@ -2129,7 +2129,7 @@ pub mod Solvability {
         Deref @ UNSOLVABLE { .. } => literal!("XX"),
         Deref @ IMPLICIT { .. } => literal!("II"),
         Deref @ EXPLICIT_NONLINEAR { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("N")); __mm_s.push_str(&*if (var_field!((*sol).unique, Solvability::EXPLICIT_NONLINEAR).clone()) {literal!("+")} else {literal!("-")}); ArcStr::from(__mm_s) },
-        Deref @ EXPLICIT_LINEAR { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("L")); __mm_s.push_str(&*if (Util::isSome(var_field!((*sol).vars, Solvability::EXPLICIT_LINEAR).clone())) {literal!("V")} else if (Util::isSome(var_field!((*sol).pars, Solvability::EXPLICIT_LINEAR).clone())) {literal!("P")} else {literal!("C")}); ArcStr::from(__mm_s) },
+        Deref @ EXPLICIT_LINEAR { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("L")); __mm_s.push_str(&*if (isSome(var_field!((*sol).vars, Solvability::EXPLICIT_LINEAR).clone())) {literal!("V")} else if (isSome(var_field!((*sol).pars, Solvability::EXPLICIT_LINEAR).clone())) {literal!("P")} else {literal!("C")}); ArcStr::from(__mm_s) },
         Deref @ UNKNOWN { .. } => literal!("||"),
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBAdjacency.Solvability.toString")); __mm_s.push_str(&*literal!(" failed because of unknown solvability kind.")); ArcStr::from(__mm_s) }).clone()])?;
@@ -2265,27 +2265,27 @@ pub mod Solvability {
 }
 
 pub fn collectDependenciesEquation(mut eqn: Arc<Equation::Equation>, mut kind: Partition::Kind, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut dep_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>>, mut sol_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Solvability::Solvability>>>, mut rep_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> {
-    let mut occurrences: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+    let mut occurrences: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
     let mut inputs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
     let mut outputs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
     occurrences = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ BEquation::Equation::SCALAR_EQUATION { .. } => {
-            let mut occ1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
-            let mut occ2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+            let mut occ1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+            let mut occ2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
             occ1 = collectDependencies(var_field!((*eqn).lhs, Equation::Equation::SCALAR_EQUATION).clone(), 0, kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?;
             occ2 = collectDependencies(var_field!((*eqn).rhs, Equation::Equation::SCALAR_EQUATION).clone(), 0, kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?;
             UnorderedSet::union(occ1.clone(), occ2.clone())?
         },
         Deref @ BEquation::Equation::ARRAY_EQUATION { .. } => {
-            let mut occ1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
-            let mut occ2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+            let mut occ1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+            let mut occ2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
             occ1 = collectDependencies(var_field!((*eqn).lhs, Equation::Equation::ARRAY_EQUATION).clone(), 0, kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?;
             occ2 = collectDependencies(var_field!((*eqn).rhs, Equation::Equation::ARRAY_EQUATION).clone(), 0, kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?;
             UnorderedSet::union(occ1.clone(), occ2.clone())?
         },
         Deref @ BEquation::Equation::RECORD_EQUATION { .. } => {
-            let mut occ1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
-            let mut occ2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+            let mut occ1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+            let mut occ2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
             occ1 = collectDependencies(var_field!((*eqn).lhs, Equation::Equation::RECORD_EQUATION).clone(), 0, kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?;
             occ2 = collectDependencies(var_field!((*eqn).rhs, Equation::Equation::RECORD_EQUATION).clone(), 0, kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?;
             UnorderedSet::union(occ1.clone(), occ2.clone())?
@@ -2315,13 +2315,13 @@ pub fn collectDependenciesEquation(mut eqn: Arc<Equation::Equation>, mut kind: P
             UnorderedSet::fromList(listAppend(inputs.clone(), outputs.clone()), (std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?
         },
         Deref @ BEquation::Equation::FOR_EQUATION { body: Deref @ metamodelica::List::Cons { head: body, tail: Deref @ metamodelica::List::Nil }, .. } => {
-            let mut occ1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
-            let mut occ2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+            let mut occ1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+            let mut occ2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
             let mut filter: Slice::filterCref;
             occ1 = collectDependenciesEquation(body.clone(), kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?;
             occ2 = UnorderedSet::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
             filter = Arc::new({ let __pe_b2 = map.clone(); let __pe_b3 = true; move |__pe_a0, __pe_a1| Slice::getDependentCref(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone()) });
-            BEquation::Iterator::map(var_field!((*eqn).iter, Equation::Equation::FOR_EQUATION).clone(), Arc::new({ let __pe_b1 = (std::sync::Arc::new(fnptr!(filter, Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>); let __pe_b2 = occ2.clone(); move |__pe_a0| Slice::Slice::filterExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }), Some(Arc::new(todo!("PARTEVALFUNCTION of filter: named args do not match any formal: ["acc"]"))), (std::sync::Arc::new(Expression::mapShallow) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+            BEquation::Iterator::map(var_field!((*eqn).iter, Equation::Equation::FOR_EQUATION).clone(), Arc::new({ let __pe_b1 = (std::sync::Arc::new(fnptr!(filter::<()>, Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>); let __pe_b2 = occ2.clone(); move |__pe_a0| Slice::Slice::filterExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }), Some(Arc::new(todo!("PARTEVALFUNCTION of filter: named args do not match any formal: acc"))), (std::sync::Arc::new(Expression::mapShallow) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             Solvability::updateList(UnorderedSet::toList(occ2.clone()), Arc::new(crate::NBAdjacency::Solvability::UNSOLVABLE), sol_map.clone())?;
             UnorderedSet::union(occ1.clone(), occ2.clone())?
         },
@@ -2340,7 +2340,7 @@ pub fn collectDependenciesEquation(mut eqn: Arc<Equation::Equation>, mut kind: P
 }
 
 pub fn collectDependencies(mut exp: Arc<Expression::NFExpression>, mut depth: i32, mut kind: Partition::Kind, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut dep_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>>, mut sol_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Solvability::Solvability>>>, mut rep_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> {
-    let mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+    let mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
     set = ({
         let mut sets: Arc<metamodelica::List<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>>> = metamodelica::nil();
         (::match_deref::match_deref! { match &(exp.clone()) {
@@ -2348,7 +2348,7 @@ pub fn collectDependencies(mut exp: Arc<Expression::NFExpression>, mut depth: i3
             UnorderedSet::fromList(collectDependenciesCref(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), depth.clone(), map.clone(), dep_map.clone(), sol_map.clone())?, (std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?
         },
         Deref @ Expression::ARRAY { literal: false, .. } => {
-            let mut set1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+            let mut set1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
             let __range0 = 1..=(var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone().borrow().len() as i32);
             for mut i in __range0 {
                 set1 = collectDependencies(var_field!((*exp).elements, Expression::NFExpression::ARRAY).borrow()[(i.clone()-1) as usize].clone(), depth.clone() + 1, kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?;
@@ -2358,7 +2358,7 @@ pub fn collectDependencies(mut exp: Arc<Expression::NFExpression>, mut depth: i3
             UnorderedSet::union_list(sets.clone(), (std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?
         },
         Deref @ Expression::TUPLE { .. } => {
-            let mut set1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+            let mut set1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
             let mut ind: i32 = 0;
             ind = 1;
             for mut elem in &*var_field!((*exp).elements, Expression::NFExpression::TUPLE).clone() {
@@ -2384,8 +2384,8 @@ pub fn collectDependencies(mut exp: Arc<Expression::NFExpression>, mut depth: i3
             collectDependencies(var_field!((*exp).recordExp, Expression::NFExpression::RECORD_ELEMENT).clone(), depth.clone(), kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?
         },
         Deref @ Expression::BINARY { .. } => {
-            let mut set1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
-            let mut set2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+            let mut set1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+            let mut set2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
             let mut repeatLeft: bool = false;
             let mut repeatRight: bool = false;
             let mut reduce: bool = false;
@@ -2406,8 +2406,8 @@ pub fn collectDependencies(mut exp: Arc<Expression::NFExpression>, mut depth: i3
             UnorderedSet::union(set1.clone(), set2.clone())?
         },
         Deref @ Expression::MULTARY { .. } => {
-            let mut set1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
-            let mut set2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+            let mut set1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+            let mut set2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
             let mut repeatLeft: bool = false;
             let mut repeatRight: bool = false;
             (repeatLeft, repeatRight) = Operator::repetition(var_field!((*exp).operator, Expression::NFExpression::MULTARY).clone());
@@ -2428,8 +2428,8 @@ pub fn collectDependencies(mut exp: Arc<Expression::NFExpression>, mut depth: i3
             set.clone()
         },
         Deref @ Expression::LBINARY { .. } => {
-            let mut set1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
-            let mut set2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+            let mut set1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+            let mut set2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
             set1 = collectDependencies(var_field!((*exp).exp1, Expression::NFExpression::LBINARY).clone(), depth.clone(), kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?;
             set2 = collectDependencies(var_field!((*exp).exp2, Expression::NFExpression::LBINARY).clone(), depth.clone(), kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?;
             set = UnorderedSet::union(set1.clone(), set2.clone())?;
@@ -2437,8 +2437,8 @@ pub fn collectDependencies(mut exp: Arc<Expression::NFExpression>, mut depth: i3
             set.clone()
         },
         Deref @ Expression::RELATION { .. } => {
-            let mut set1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
-            let mut set2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+            let mut set1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+            let mut set2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
             set1 = collectDependencies(var_field!((*exp).exp1, Expression::NFExpression::RELATION).clone(), depth.clone(), kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?;
             set2 = collectDependencies(var_field!((*exp).exp2, Expression::NFExpression::RELATION).clone(), depth.clone(), kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?;
             set = UnorderedSet::union(set1.clone(), set2.clone())?;
@@ -2464,9 +2464,9 @@ pub fn collectDependencies(mut exp: Arc<Expression::NFExpression>, mut depth: i3
             collectDependencies(Mutable::access(var_field!((*exp).exp, Expression::NFExpression::MUTABLE).clone()), depth.clone(), kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?
         },
         Deref @ Expression::SIZE { .. } => {
-            let mut set2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+            let mut set2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
             set = collectDependencies(var_field!((*exp).exp, Expression::NFExpression::SIZE).clone(), depth.clone(), kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?;
-            if Util::isSome(var_field!((*exp).dimIndex, Expression::NFExpression::SIZE).clone()) {
+            if isSome(var_field!((*exp).dimIndex, Expression::NFExpression::SIZE).clone()) {
                 set2 = collectDependencies(Util::getOption(var_field!((*exp).dimIndex, Expression::NFExpression::SIZE).clone())?, depth.clone(), kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?;
                 set = UnorderedSet::union(set.clone(), set2.clone())?;
             }
@@ -2474,9 +2474,9 @@ pub fn collectDependencies(mut exp: Arc<Expression::NFExpression>, mut depth: i3
             set.clone()
         },
         Deref @ Expression::IF { .. } => {
-            let mut set1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
-            let mut set2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
-            let mut diff: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+            let mut set1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+            let mut set2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+            let mut diff: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
             if isInitialException(var_field!((*exp).condition, Expression::NFExpression::IF).clone()) {
                 set = collectDependencies(var_field!((*exp).falseBranch, Expression::NFExpression::IF).clone(), depth.clone(), kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?;
             } else {
@@ -2545,7 +2545,7 @@ pub fn collectDependencies(mut exp: Arc<Expression::NFExpression>, mut depth: i3
         },
         Deref @ Expression::RANGE { .. } => {
             sets = cons(collectDependencies(var_field!((*exp).start, Expression::NFExpression::RANGE).clone(), depth.clone(), kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?, sets.clone());
-            if Util::isSome(var_field!((*exp).step, Expression::NFExpression::RANGE).clone()) {
+            if isSome(var_field!((*exp).step, Expression::NFExpression::RANGE).clone()) {
                 sets = cons(collectDependencies(Util::getOption(var_field!((*exp).step, Expression::NFExpression::RANGE).clone())?, depth.clone(), kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?, sets.clone());
             }
             sets = cons(collectDependencies(var_field!((*exp).stop, Expression::NFExpression::RANGE).clone(), depth.clone(), kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?, sets.clone());
@@ -2629,13 +2629,13 @@ pub fn addRepetitions(mut occ: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::
 }
 
 pub fn collectDependenciesIf(mut body: Arc<IfEquationBody::IfEquationBody>, mut kind: Partition::Kind, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut dep_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>>, mut sol_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Solvability::Solvability>>>, mut rep_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> {
-    let mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+    let mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
     let mut sets1: Arc<metamodelica::List<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>>> = metamodelica::nil();
-    let mut set1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
-    let mut set2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
-    let mut diff: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+    let mut set1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+    let mut set2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+    let mut diff: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
     if isInitialException(body.condition.clone()) {
-        if Util::isSome(body.else_if.clone()) {
+        if isSome(body.else_if.clone()) {
             set = collectDependenciesIf(Util::getOption(body.else_if.clone())?, kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?;
         }
     } else {
@@ -2646,7 +2646,7 @@ pub fn collectDependenciesIf(mut body: Arc<IfEquationBody::IfEquationBody>, mut 
             let mut eqn = eqn.clone();
             sets1 = cons(collectDependenciesEquation(Pointer::access(eqn.clone()), kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?, sets1.clone());
         }
-        if Util::isSome(body.else_if.clone()) {
+        if isSome(body.else_if.clone()) {
             set1 = UnorderedSet::union_list(sets1.clone(), (std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
             set2 = collectDependenciesIf(Util::getOption(body.else_if.clone())?, kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?;
             diff = UnorderedSet::sym_difference(set1.clone(), set2.clone())?;
@@ -2660,16 +2660,16 @@ pub fn collectDependenciesIf(mut body: Arc<IfEquationBody::IfEquationBody>, mut 
 }
 
 pub fn collectDependenciesWhen(mut body: Arc<WhenEquationBody::WhenEquationBody>, mut kind: Partition::Kind, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut dep_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>>, mut sol_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Solvability::Solvability>>>, mut rep_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> {
-    let mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
-    let mut set1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
-    let mut set2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
-    let mut diff: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+    let mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+    let mut set1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+    let mut set2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+    let mut diff: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
     let mut lst: Arc<metamodelica::List<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>>> = metamodelica::nil();
     let mut lst1: Arc<metamodelica::List<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>>> = metamodelica::nil();
     let mut lst2: Arc<metamodelica::List<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>>> = metamodelica::nil();
     let mut tpl_lst: Arc<metamodelica::List<(Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>)>> = metamodelica::nil();
     if isInitialException(body.condition.clone()) {
-        if Util::isSome(body.else_when.clone()) {
+        if isSome(body.else_when.clone()) {
             lst = cons(collectDependenciesWhen(Util::getOption(body.else_when.clone())?, kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?, lst.clone());
         }
         set = UnorderedSet::union_list(lst.clone(), (std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
@@ -2695,7 +2695,7 @@ pub fn collectDependenciesWhen(mut body: Arc<WhenEquationBody::WhenEquationBody>
         set2 = UnorderedSet::union_list(lst2.clone(), (std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
         diff = UnorderedSet::difference(set2.clone(), set1.clone())?;
         Solvability::updateList(UnorderedSet::toList(diff.clone()), Arc::new(crate::NBAdjacency::Solvability::UNSOLVABLE), sol_map.clone())?;
-        if Util::isSome(body.else_when.clone()) {
+        if isSome(body.else_when.clone()) {
             lst = cons(collectDependenciesWhen(Util::getOption(body.else_when.clone())?, kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?, lst.clone());
         }
         set = UnorderedSet::union_list(cons(set.clone(), cons(set1.clone(), cons(set2.clone(), lst.clone()))), (std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
@@ -2705,8 +2705,8 @@ pub fn collectDependenciesWhen(mut body: Arc<WhenEquationBody::WhenEquationBody>
 
 pub fn collectDependenciesStmt(mut stmt: Arc<WhenStatement::WhenStatement>, mut kind: Partition::Kind, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut dep_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>>, mut sol_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Solvability::Solvability>>>, mut rep_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<(Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>)> {
     let mut set_tpl: (Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>);
-    let mut set1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
-    let mut set2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+    let mut set1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+    let mut set2: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
     set_tpl = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ BEquation::WhenStatement::ASSIGN { .. } => {
             set1 = collectDependencies(var_field!((*stmt).lhs, WhenStatement::WhenStatement::ASSIGN).clone(), 0, kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?;
@@ -2749,8 +2749,8 @@ pub fn collectDependenciesAlgorithmInputs(mut stmts: Arc<metamodelica::List<Arc<
 pub fn collectDependenciesAlgorithmStatement(mut stmt: Arc<Statement::NFStatement>, mut candidates: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut result: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ Statement::ASSIGNMENT { .. } => {
-            Slice::filterExp(var_field!((*stmt).lhs, Statement::NFStatement::ASSIGNMENT).clone(), Arc::new(todo!("PARTEVALFUNCTION of Equation.collectFromSet: function signature not resolved")), result.clone())?;
-            Slice::filterExp(var_field!((*stmt).rhs, Statement::NFStatement::ASSIGNMENT).clone(), Arc::new(todo!("PARTEVALFUNCTION of Equation.collectFromSet: function signature not resolved")), result.clone())?;
+            Slice::filterExp(var_field!((*stmt).lhs, Statement::NFStatement::ASSIGNMENT).clone(), Arc::new({ let __pe_b2 = candidates.clone(); move |__pe_a0, __pe_a1| Equation::collectFromSet(__pe_a0, __pe_a1, __pe_b2.clone()) }), result.clone())?;
+            Slice::filterExp(var_field!((*stmt).rhs, Statement::NFStatement::ASSIGNMENT).clone(), Arc::new({ let __pe_b2 = candidates.clone(); move |__pe_a0, __pe_a1| Equation::collectFromSet(__pe_a0, __pe_a1, __pe_b2.clone()) }), result.clone())?;
             ()
         },
         Deref @ Statement::FOR { .. } => {

@@ -612,7 +612,7 @@ pub mod Alias {
             offsetStr = (if (var_field!((*alias).offset, Alias::ALIAS).clone() == metamodelica::OrderedFloat(0.0_f64)) {literal!("")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("+")); __mm_s.push_str(&*realString(var_field!((*alias).offset, Alias::ALIAS).clone())); ArcStr::from(__mm_s) }}).clone();
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(bound alias: ")); __mm_s.push_str(&*gainStr.clone()); __mm_s.push_str(&*ComponentRef::toString(var_field!((*alias).alias, Alias::ALIAS).clone())?); __mm_s.push_str(&*offsetStr.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
         Ok(r#str)
     }

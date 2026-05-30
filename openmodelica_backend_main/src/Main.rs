@@ -47,7 +47,6 @@ use crate::BackendInterfaceImplementation;
 use crate::CevalScript;
 use crate::CevalScriptBackend;
 use crate::Interactive;
-use crate::InteractiveUtil;
 use openmodelica_ast::Absyn;
 use openmodelica_ast::GlobalScript;
 use openmodelica_backend::SymbolTable;
@@ -199,13 +198,13 @@ fn handleCommand2(mut inStatements: Option<GlobalScript::Statements>, mut inProg
         if let Ok(__v) = (|| -> Result<_> {
             let (_, _) = __mc_input.clone() else { bail!("nomatch") };
             let mut result: ArcStr = arcstr::literal!("");
-            let true = (isSome(inStatements.clone()) || Util::isSome(inProgram.clone())) else { bail!("pattern mismatch") };
+            let true = (isSome(inStatements.clone()) || isSome(inProgram.clone())) else { bail!("pattern mismatch") };
             result = (Error::printMessagesStr(false)).clone();
             Ok(result.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let true = (isSome(inStatements.clone()) || Util::isSome(inProgram.clone())) else { bail!("pattern mismatch") };
+            let true = (isSome(inStatements.clone()) || isSome(inProgram.clone())) else { bail!("pattern mismatch") };
             Error::addMessage(Error::STACK_OVERFLOW.clone(), list![(inCommand.clone()).clone()])?;
             Ok(literal!(""))
         })() { break 'mc __v; }
@@ -238,7 +237,7 @@ fn makeClassDefResult(mut p: Absyn::Program) -> Result<ArcStr> {
     }), (literal!(",")).clone())); __mm_s.push_str(&*literal!("}\n")); ArcStr::from(__mm_s) }).clone();
             res.clone()
         },
-        Absyn::Program { within_: Absyn::Within::TOP, classes: ref cls } => {
+        Absyn::Program { within_: Absyn::Within::TOP { .. }, classes: ref cls } => {
             let mut names: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
             names = ({
         let mut __acc: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
@@ -412,11 +411,11 @@ fn translateFile(mut inStringLst: Arc<metamodelica::List<ArcStr>>) -> Result<()>
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 libs => {
-                    let mut fileNamePrefix: ArcStr = fileNamePrefix.clone();
-                    let mut cname: Arc<Absyn::Path>;
                     let mut runBackend: bool = runBackend.clone();
                     let mut runSilent: bool = runSilent.clone();
+                    let mut cname: Arc<Absyn::Path>;
                     let mut cls: ArcStr = cls.clone();
+                    let mut fileNamePrefix: ArcStr = fileNamePrefix.clone();
                     isEmptyOrFirstIsModelicaFile(libs.clone())?;
                     execStatReset()?;
                     for mut lib in &*libs.clone() {

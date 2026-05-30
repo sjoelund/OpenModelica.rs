@@ -1140,7 +1140,7 @@ pub fn GC_expand_hp(mut size: i32) -> Result<bool> {
 
 pub fn GC_gcollect_and_unmap() -> Result<()> {
     ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("GC_gcollect_and_unmap")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
-        (_, Deref @ Values::Value::NORETCALL) => (),
+        (_, Deref @ Values::Value::NORETCALL { .. }) => (),
         _ => bail!("pattern mismatch"),
     } };
     Ok(())
@@ -1158,7 +1158,7 @@ pub fn getMemorySize() -> Result<metamodelica::Real> {
 
 pub fn threadWorkFailed() -> Result<()> {
     ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("threadWorkFailed")).clone(), metamodelica::nil(), dummyMsg.clone())?) {
-        (_, Deref @ Values::Value::NORETCALL) => (),
+        (_, Deref @ Values::Value::NORETCALL { .. }) => (),
         _ => bail!("pattern mismatch"),
     } };
     Ok(())
@@ -1166,7 +1166,7 @@ pub fn threadWorkFailed() -> Result<()> {
 
 pub fn exit(mut status: i32) -> Result<()> {
     ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("exit")).clone(), list![Arc::new(Values::Value::INTEGER { integer: status.clone() })], dummyMsg.clone())?) {
-        (_, Deref @ Values::Value::NORETCALL) => (),
+        (_, Deref @ Values::Value::NORETCALL { .. }) => (),
         _ => bail!("pattern mismatch"),
     } };
     Ok(())
@@ -1209,7 +1209,7 @@ pub fn numProcessors() -> Result<i32> {
 
 pub fn generateEntryPoint(mut fileName: ArcStr, mut entryPoint: ArcStr, mut url: ArcStr) -> Result<()> {
     ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("generateEntryPoint")).clone(), list![Arc::new(Values::Value::STRING { string: (fileName.clone()).clone() }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((entryPoint.clone()).clone())? }) }), Arc::new(Values::Value::STRING { string: (url.clone()).clone() })], dummyMsg.clone())?) {
-        (_, Deref @ Values::Value::NORETCALL) => (),
+        (_, Deref @ Values::Value::NORETCALL { .. }) => (),
         _ => bail!("pattern mismatch"),
     } };
     Ok(())
@@ -2521,7 +2521,7 @@ pub fn getComponentModifierNames(mut class_: ArcStr, mut componentName: ArcStr) 
 
 pub fn getElements(mut className: ArcStr, mut useQuotes: bool) -> Result<()> {
     ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getElements")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className.clone()).clone())? }) }), Arc::new(Values::Value::BOOL { boolean: useQuotes.clone() })], dummyMsg.clone())?) {
-        (_, Deref @ Values::Value::NORETCALL) => (),
+        (_, Deref @ Values::Value::NORETCALL { .. }) => (),
         _ => bail!("pattern mismatch"),
     } };
     Ok(())
@@ -2529,7 +2529,7 @@ pub fn getElements(mut className: ArcStr, mut useQuotes: bool) -> Result<()> {
 
 pub fn getComponents(mut className: ArcStr, mut useQuotes: bool) -> Result<()> {
     ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getComponents")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className.clone()).clone())? }) }), Arc::new(Values::Value::BOOL { boolean: useQuotes.clone() })], dummyMsg.clone())?) {
-        (_, Deref @ Values::Value::NORETCALL) => (),
+        (_, Deref @ Values::Value::NORETCALL { .. }) => (),
         _ => bail!("pattern mismatch"),
     } };
     Ok(())

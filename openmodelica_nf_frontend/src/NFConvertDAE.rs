@@ -658,7 +658,7 @@ fn convertIfEquation(mut ifBranches: Arc<metamodelica::List<Arc<Equation::Branch
             Equation::Branch::triggerErrors(branch.clone())?;
             bail!("fail")
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
     dbranches = if (isInitial.clone()) {({
@@ -695,7 +695,7 @@ fn convertIfEquation(mut ifBranches: Arc<metamodelica::List<Arc<Equation::Branch
         }
         __acc
     });
-    dbranches = dbranches.clone().reverse();
+    dbranches = metamodelica::Dangerous::listReverseInPlace(dbranches.clone());
     ifEquation = if (isInitial.clone()) {Arc::new(DAE::Element::INITIAL_IF_EQUATION { condition1: dconds.clone(), equations2: dbranches.clone(), equations3: else_branch.clone(), source: source.clone() })} else {Arc::new(DAE::Element::IF_EQUATION { condition1: dconds.clone(), equations2: dbranches.clone(), equations3: else_branch.clone(), source: source.clone() })};
     Ok(ifEquation)
 }
@@ -964,7 +964,7 @@ fn convertForStatement(mut forStmt: Arc<Statement::NFStatement>) -> Result<Arc<D
     });
             Arc::new(DAE::Statement::STMT_PARFOR { type_: Type::toDAE(ty.clone(), true)?, iterIsArray: Type::isArray(ty.clone()), iter: (InstNode::name(iterator.clone())?).clone(), range: Expression::toDAE(range.clone(), false)?, statementLst: dbody.clone(), loopPrlVars: loop_vars.clone(), source: source.clone() })
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(forDAE)
 }
@@ -1089,7 +1089,7 @@ pub fn convertFunctionTree(mut funcs: Arc<Flatten::FunctionTreeImpl::Tree>) -> R
         Deref @ Flatten::FunctionTreeImpl::Tree::EMPTY => {
             Arc::new(openmodelica_frontend_dump::AvlTreePathFunction::Tree::EMPTY)
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(dfuncs)
 }

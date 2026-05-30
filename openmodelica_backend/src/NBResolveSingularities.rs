@@ -199,7 +199,7 @@ fn getConstraintsAndCandidates(mut equations: Arc<EquationPointers::EquationPoin
         eqn_ptr = EquationPointers::getEqnAt(equations.clone(), eqn.clone())?;
         constr = EquationPointers::add(eqn_ptr.clone(), constr.clone())?;
         sliced_constr = cons(Arc::new(Slice::NBSlice { t: eqn_ptr.clone(), indices: eqn_slices.borrow()[(eqn.clone()-1) as usize].clone() }), sliced_constr.clone());
-        for mut candidate in &*Equation::collectCrefs(Pointer::access(eqn_ptr.clone()), (std::sync::Arc::new(getStateCandidate) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>), (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>>) -> Result<Arc<Expression::NFExpression>> + 'static>))? {
+        for mut candidate in &*Equation::collectCrefs(Pointer::access(eqn_ptr.clone()), (std::sync::Arc::new(getStateCandidate) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>), (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))? {
             let mut candidate = candidate.clone();
             UnorderedSet::add(candidate.clone(), state_candidates.clone())?;
         }
@@ -270,7 +270,7 @@ fn sortCandidates(mut candidates: Arc<metamodelica::List<Pointer::Pointer<Arc<Va
 fn resolveSlicedUnmatched(mut old_unmatched: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>, mut slice_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<i32>>>>) -> Result<Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>> {
     pub fn resolveSlicedUnmatchedSingle(mut eq: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>, mut acc: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>, mut slice_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<i32>>>>) -> Result<Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>>> {
         let mut acc: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>>> = acc;
-        let mut relevant_indices: Arc<UnorderedSet::UnorderedSet<i32>>;
+        let mut relevant_indices: Arc<UnorderedSet::UnorderedSet<i32>> = <Arc<UnorderedSet::UnorderedSet<i32>> as ::std::default::Default>::default();
         relevant_indices = UnorderedMap::getSafe(Equation::getEqnName(Slice::getT(eq.clone()))?, slice_map.clone(), metamodelica::sourceInfo!())?;
         if UnorderedSet::isEmpty(relevant_indices.clone()) {
             acc = cons(eq.clone(), acc.clone());

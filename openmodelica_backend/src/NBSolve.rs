@@ -137,6 +137,93 @@ pub fn statusString(mut status: Status) -> ArcStr {
     r#str
 }
 
+pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NBackendDAE>> {
+    let mut bdae: Arc<BackendDAE::NBackendDAE> = bdae;
+    let mut implicit_index_ptr: Pointer::Pointer<i32> = Pointer::create(1);
+    let mut duplicate_map: Arc<UnorderedMap::UnorderedMap<Arc<StrongComponent::NBStrongComponent>, Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>>> = UnorderedMap::new((std::sync::Arc::new(StrongComponent::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>) -> Result<i32> + 'static>), (std::sync::Arc::new(StrongComponent::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>, Arc<StrongComponent::NBStrongComponent>) -> Result<bool> + 'static>), 1);
+    bdae = (::match_deref::match_deref! { match &(bdae.clone()) {
+        Deref @ BackendDAE::MAIN { .. } => {
+            assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN; init = ({
+        let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
+        for mut par in (var_field!((*bdae).init, BackendDAE::NBackendDAE::MAIN).clone()).into_iter().cloned() {
+            let __x = solvePartition(par.clone(), var_field!((*bdae).funcMap, BackendDAE::NBackendDAE::MAIN).clone(), implicit_index_ptr.clone(), duplicate_map.clone(), var_field!((*bdae).varData, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).eqData, BackendDAE::NBackendDAE::MAIN).clone())?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    }));
+            if isSome(var_field!((*bdae).init_0, BackendDAE::NBackendDAE::MAIN).clone()) {
+                assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN; init_0 = Some(({
+        let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
+        for mut par in (Util::getOption(var_field!((*bdae).init_0, BackendDAE::NBackendDAE::MAIN).clone())?).into_iter().cloned() {
+            let __x = solvePartition(par.clone(), var_field!((*bdae).funcMap, BackendDAE::NBackendDAE::MAIN).clone(), implicit_index_ptr.clone(), duplicate_map.clone(), var_field!((*bdae).varData, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).eqData, BackendDAE::NBackendDAE::MAIN).clone())?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    })));
+            }
+            if isSome(var_field!((*bdae).dae, BackendDAE::NBackendDAE::MAIN).clone()) {
+                assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN; dae = Some(({
+        let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
+        for mut par in (Util::getOption(var_field!((*bdae).dae, BackendDAE::NBackendDAE::MAIN).clone())?).into_iter().cloned() {
+            let __x = solvePartition(par.clone(), var_field!((*bdae).funcMap, BackendDAE::NBackendDAE::MAIN).clone(), implicit_index_ptr.clone(), duplicate_map.clone(), var_field!((*bdae).varData, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).eqData, BackendDAE::NBackendDAE::MAIN).clone())?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    })));
+            }
+            assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN;
+                ode = ({
+        let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
+        for mut par in (var_field!((*bdae).ode, BackendDAE::NBackendDAE::MAIN).clone()).into_iter().cloned() {
+            let __x = solvePartition(par.clone(), var_field!((*bdae).funcMap, BackendDAE::NBackendDAE::MAIN).clone(), implicit_index_ptr.clone(), duplicate_map.clone(), var_field!((*bdae).varData, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).eqData, BackendDAE::NBackendDAE::MAIN).clone())?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    }),
+                algebraic = ({
+        let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
+        for mut par in (var_field!((*bdae).algebraic, BackendDAE::NBackendDAE::MAIN).clone()).into_iter().cloned() {
+            let __x = solvePartition(par.clone(), var_field!((*bdae).funcMap, BackendDAE::NBackendDAE::MAIN).clone(), implicit_index_ptr.clone(), duplicate_map.clone(), var_field!((*bdae).varData, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).eqData, BackendDAE::NBackendDAE::MAIN).clone())?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    }),
+                ode_event = ({
+        let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
+        for mut par in (var_field!((*bdae).ode_event, BackendDAE::NBackendDAE::MAIN).clone()).into_iter().cloned() {
+            let __x = solvePartition(par.clone(), var_field!((*bdae).funcMap, BackendDAE::NBackendDAE::MAIN).clone(), implicit_index_ptr.clone(), duplicate_map.clone(), var_field!((*bdae).varData, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).eqData, BackendDAE::NBackendDAE::MAIN).clone())?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    }),
+                alg_event = ({
+        let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
+        for mut par in (var_field!((*bdae).alg_event, BackendDAE::NBackendDAE::MAIN).clone()).into_iter().cloned() {
+            let __x = solvePartition(par.clone(), var_field!((*bdae).funcMap, BackendDAE::NBackendDAE::MAIN).clone(), implicit_index_ptr.clone(), duplicate_map.clone(), var_field!((*bdae).varData, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).eqData, BackendDAE::NBackendDAE::MAIN).clone())?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    }),
+                clocked = ({
+        let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
+        for mut par in (var_field!((*bdae).clocked, BackendDAE::NBackendDAE::MAIN).clone()).into_iter().cloned() {
+            let __x = solvePartition(par.clone(), var_field!((*bdae).funcMap, BackendDAE::NBackendDAE::MAIN).clone(), implicit_index_ptr.clone(), duplicate_map.clone(), var_field!((*bdae).varData, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).eqData, BackendDAE::NBackendDAE::MAIN).clone())?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    })
+            );
+            bdae.clone()
+        },
+        _ => {
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBSolve.main")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
+            bail!("fail")
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    Ok(bdae)
+}
+
 pub fn solvePartition(mut partition: Arc<Partition::Partition>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut implicit_index_ptr: Pointer::Pointer<i32>, mut duplicate_map: Arc<UnorderedMap::UnorderedMap<Arc<StrongComponent::NBStrongComponent>, Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>>>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>) -> Result<Arc<Partition::Partition>> {
     let mut partition: Arc<Partition::Partition> = partition;
     let mut kind: BPartition::Kind = BPartition::Partition::getKind(partition.clone());
@@ -147,7 +234,7 @@ pub fn solvePartition(mut partition: Arc<Partition::Partition>, mut funcMap: Arc
     let mut comp_idx: Pointer::Pointer<i32> = Pointer::create(1);
     let mut name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut sliced_eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-    if Util::isSome(partition.strongComponents.clone()) {
+    if isSome(partition.strongComponents.clone()) {
         let __range0 = Util::getOption(partition.strongComponents.clone())?.borrow().iter().cloned().collect::<Vec<_>>();
         for mut comp in __range0 {
             solved_comps = (::match_deref::match_deref! { match &(UnorderedMap::get(comp.clone(), duplicate_map.clone())) {
@@ -220,15 +307,15 @@ pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, m
             let mut solved_crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
             let mut inputs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
             let mut outputs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-            let mut output_crefs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
-            let mut input_crefs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
-            let mut solved_inputs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+            let mut output_crefs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+            let mut input_crefs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+            let mut solved_inputs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
             let mut tmp_crefs: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>)>> = metamodelica::nil();
             let mut tmp_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
             let mut tmp_eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
             let mut idx: Pointer::Pointer<i32>;
-            let mut cref_repl: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>;
-            let mut exp_repl: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>;
+            let mut cref_repl: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+            let mut exp_repl: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
             eqn_ptr = Slice::getT(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::MULTI_COMPONENT).clone());
             eqn = Pointer::access(eqn_ptr.clone());
             (solved_comp, solve_status) = (::match_deref::match_deref! { match &(eqn.clone()) {
@@ -336,7 +423,7 @@ pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, m
                     status = Status::EXPLICIT.clone()
                 );
                 assign_variant_field!(eqn => Equation::Equation::ALGORITHM; alg = alg.clone());
-                Pointer::update(eqn_ptr.clone(), Equation::map(eqn.clone(), Arc::new({ let __pe_b1 = exp_repl.clone(); move |__pe_a0| Replacements::applySimpleExp(__pe_a0, __pe_b1.clone()) }), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>>) -> Result<Arc<Expression::NFExpression>> + 'static>))?);
+                Pointer::update(eqn_ptr.clone(), Equation::map(eqn.clone(), Arc::new({ let __pe_b1 = exp_repl.clone(); move |__pe_a0| Replacements::applySimpleExp(__pe_a0, __pe_b1.clone()) }), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?);
                 strict = Arc::new(Tearing::NBTearing { iteration_vars: ({
         let mut __acc: Arc<metamodelica::List<Arc<Slice::NBSlice>>> = metamodelica::nil();
         for mut c in (UnorderedSet::toList(solved_inputs.clone())).into_iter().cloned() {
@@ -501,7 +588,7 @@ pub fn solveGenericEquationSlice(mut var_slice: Arc<Slice::NBSlice<Pointer::Poin
     let mut eqn_ptr: Pointer::Pointer<Arc<Equation::Equation>> = Slice::getT(eqn_slice.clone());
     let mut eqn: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
     let mut solved_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>;
-    let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>;
+    let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
     if List::hasOneElement(eqn_slice.indices.clone()) {
         replacements = UnorderedMap::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
         (eqn, solve_status) = Equation::singleSlice(eqn_ptr.clone(), listHead(eqn_slice.indices.clone())?, Equation::sizes(eqn_ptr.clone(), false)?, cref.clone(), replacements.clone(), functions.clone())?;
@@ -596,7 +683,7 @@ pub fn solveMultiRecordStrongComponent(mut eqn: Arc<Equation::Equation>, mut var
     });
     let mut lhs: Arc<Expression::NFExpression> = Util::getOption(Equation::getLHS(eqn.clone())?)?;
     let mut rhs: Arc<Expression::NFExpression> = Util::getOption(Equation::getRHS(eqn.clone())?)?;
-    let mut record_crefs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+    let mut record_crefs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
     let mut var_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     (solved_eqn, status) = (::match_deref::match_deref! { match &((lhs.clone(), rhs.clone())) {
         (exp @ Deref @ Expression::TUPLE { .. }, _) if (tupleSolvable(var_field!((**exp).elements, Expression::NFExpression::TUPLE).clone(), vars.clone())?) => {
@@ -738,7 +825,7 @@ pub fn solveIfBody(mut body: Arc<IfEquationBody::IfEquationBody>, mut vars: Arc<
         }
     }
     assign_field!(body.then_eqns = new_then_eqns.clone().reverse());
-    if Util::isSome(body.else_if.clone()) {
+    if isSome(body.else_if.clone()) {
         (else_if, status, implicit_index) = solveIfBody(Util::getOption(body.else_if.clone())?, vars.clone(), funcMap.clone(), kind.clone(), implicit_index.clone(), slicing_map.clone(), iter.clone(), varData.clone(), eqData.clone())?;
         assign_field!(body.else_if = Some(else_if.clone()));
     } else {
@@ -857,7 +944,7 @@ fn solveSimpleIf(mut body: Arc<IfEquationBody::IfEquationBody>, mut cref: Arc<Co
     let mut invertRelation: RelationInversion = RelationInversion::FALSE.clone();
     let mut else_if: Arc<IfEquationBody::IfEquationBody> = Arc::new(<IfEquationBody::IfEquationBody as ::std::default::Default>::default());
     let mut eqn: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
-    if Util::isSome(body.else_if.clone()) {
+    if isSome(body.else_if.clone()) {
         (else_if, status, _) = solveSimpleIf(Util::getOption(body.else_if.clone())?, cref.clone())?;
         if status.clone() == Status::EXPLICIT.clone() {
             assign_field!(body.else_if = Some(else_if.clone()));
@@ -1470,7 +1557,7 @@ fn tupleSolvable(mut tuple_exps: Arc<metamodelica::List<Arc<Expression::NFExpres
         }
         __acc.reverse()
     });
-    let mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, bool>>;
+    let mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, bool>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, bool>> as ::std::default::Default>::default();
     if List::compareLength(filtered_exps.clone(), vars.clone())? == 0 {
         map = UnorderedMap::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
         for mut var in &*vars.clone() {
@@ -1501,13 +1588,13 @@ fn getVarSlice(mut var_cref: Arc<ComponentRef::NFComponentRef>, mut eqn: Arc<Equ
     let mut solve_status: Status = Status::UNPROCESSED;
     let mut slices_lst: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
     let mut record_parent: Option<Pointer::Pointer<Arc<Variable::NFVariable>>> = None;
-    slices_lst = Equation::collectCrefs(eqn.clone(), Arc::new({ let __pe_b2 = var_cref.clone(); move |__pe_a0, __pe_a1| Slice::getSliceCandidates(__pe_a0, __pe_a1, __pe_b2.clone()) }), (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+    slices_lst = Equation::collectCrefs(eqn.clone(), Arc::new({ let __pe_b2 = var_cref.clone(); move |__pe_a0, __pe_a1| Slice::getSliceCandidates(__pe_a0, __pe_a1, __pe_b2.clone()) }), (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     if List::hasOneElement(slices_lst.clone()) {
         var_cref = listHead(slices_lst.clone())?;
         solve_status = Status::UNPROCESSED.clone();
     } else {
         record_parent = BVariable::getParent(BVariable::getVarPointer(var_cref.clone(), metamodelica::sourceInfo!())?);
-        if Util::isSome(record_parent.clone()) {
+        if isSome(record_parent.clone()) {
             (var_cref, solve_status) = getVarSlice(BVariable::getVarName(Util::getOption(record_parent.clone())?), eqn.clone())?;
         } else {
             solve_status = Status::UNSOLVABLE.clone();

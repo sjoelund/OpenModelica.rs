@@ -98,6 +98,102 @@ use openmodelica_util_datatypes_basic::Pointer;
 // NF imports
 // Backend imports
 // Util imports
+pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NBackendDAE>> {
+    let mut bdae: Arc<BackendDAE::NBackendDAE> = bdae;
+    let mut variables: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
+    let mut initialVars: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
+    let mut equations: Arc<EquationPointers::EquationPointers> = Arc::new(<EquationPointers::EquationPointers as ::std::default::Default>::default());
+    let mut initialEqs: Arc<EquationPointers::EquationPointers> = Arc::new(<EquationPointers::EquationPointers as ::std::default::Default>::default());
+    let mut modules: Arc<metamodelica::List<(Module::wrapper, ArcStr)>> = metamodelica::nil();
+    let mut clocks: Arc<metamodelica::List<(ArcStr, metamodelica::Real)>> = metamodelica::nil();
+    let mut followEquations: Arc<metamodelica::List<ArcStr>> = Flags::getConfigStringList(Flags::DEBUG_FOLLOW_EQUATIONS.clone())?;
+    let mut eq_filter_opt: Option<Arc<UnorderedSet::UnorderedSet<ArcStr>>> = None;
+    match '__try0: {
+        bdae = ({
+        let mut algorithm_outputs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
+        let mut new_iters: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>> = UnorderedSet::new((std::sync::Arc::new(fnptr!(BVariable::hash, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(BVariable::equalName, Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 13);
+        let mut cref_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Iterator::Iterator>>> = UnorderedMap::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
+        (::match_deref::match_deref! { match &(bdae.clone()) {
+        Deref @ BackendDAE::MAIN { eqData: eqData @ Deref @ BEquation::EqData::EQ_DATA_SIM { initials: initialEqs, equations, .. }, varData: varData @ Deref @ BVariable::VarData::VAR_DATA_SIM { initials: initialVars, variables, .. }, .. } => {
+            let mut clonedEqns: Arc<EquationPointers::EquationPointers> = Arc::new(<EquationPointers::EquationPointers as ::std::default::Default>::default());
+            let mut clonedVars: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
+            let mut eqData = (*eqData).clone();
+            let mut initialEqs = (*initialEqs).clone();
+            let mut equations = (*equations).clone();
+            let mut varData = (*varData).clone();
+            let mut initialVars = (*initialVars).clone();
+            let mut variables = (*variables).clone();
+            clonedEqns = unwrap_break_err!(BEquation::EquationPointers::clone(equations.clone(), false), '__try0);
+            initialEqs = BEquation::EquationPointers::addList(BEquation::EquationPointers::toList(initialEqs.clone())?, clonedEqns.clone());
+            unwrap_break_err!(BEquation::EquationPointers::mapRemovePtr(initialEqs.clone(), (std::sync::Arc::new(fnptr!(Equation::isClocked, Pointer::Pointer<Arc<Equation::Equation>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>)), '__try0);
+            unwrap_break_err!(BEquation::EquationPointers::mapPtr(initialEqs.clone(), (std::sync::Arc::new(replaceClockedFunctionsEqn) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<Pointer::Pointer<Arc<Equation::Equation>>> + 'static>)), '__try0);
+            initialEqs = unwrap_break_err!(BEquation::EquationPointers::map(initialEqs.clone(), Arc::new({ let __pe_b1 = Arc::new(crate::NBEquation::Iterator::EMPTY); let __pe_b2 = cref_map.clone(); move |__pe_a0| removeWhenEquation(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) })), '__try0);
+            (equations, initialEqs) = unwrap_break_err!(createWhenReplacementEquations(cref_map.clone(), equations.clone(), initialEqs.clone(), var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone()), '__try0);
+            unwrap_break_err!(BEquation::EquationPointers::map(initialEqs.clone(), Arc::new({ let __pe_b1 = algorithm_outputs.clone(); move |__pe_a0| collectAlgorithmOutputs(__pe_a0, __pe_b1.clone()) })), '__try0);
+            (variables, initialVars, equations, initialEqs) = unwrap_break_err!(createStartEquations(var_field!((*varData).states, VarData::VarData::VAR_DATA_SIM).clone(), variables.clone(), initialVars.clone(), equations.clone(), initialEqs.clone(), var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(), algorithm_outputs.clone(), (literal!("State")).clone()), '__try0);
+            (variables, initialVars, equations, initialEqs) = unwrap_break_err!(createStartEquations(var_field!((*varData).algebraics, VarData::VarData::VAR_DATA_SIM).clone(), variables.clone(), initialVars.clone(), equations.clone(), initialEqs.clone(), var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(), algorithm_outputs.clone(), (literal!("Algebraic")).clone()), '__try0);
+            (variables, initialVars, equations, initialEqs) = unwrap_break_err!(createStartEquations(var_field!((*varData).discretes, VarData::VarData::VAR_DATA_SIM).clone(), variables.clone(), initialVars.clone(), equations.clone(), initialEqs.clone(), var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(), algorithm_outputs.clone(), (literal!("Discrete")).clone()), '__try0);
+            (variables, initialVars, equations, initialEqs) = unwrap_break_err!(createStartEquations(var_field!((*varData).discrete_states, VarData::VarData::VAR_DATA_SIM).clone(), variables.clone(), initialVars.clone(), equations.clone(), initialEqs.clone(), var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(), algorithm_outputs.clone(), (literal!("Discrete State")).clone()), '__try0);
+            (variables, initialVars, equations, initialEqs) = unwrap_break_err!(createStartEquations(var_field!((*varData).clocked_states, VarData::VarData::VAR_DATA_SIM).clone(), variables.clone(), initialVars.clone(), equations.clone(), initialEqs.clone(), var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(), algorithm_outputs.clone(), (literal!("Clocked State")).clone()), '__try0);
+            (equations, initialEqs, initialVars) = unwrap_break_err!(createParameterEquations(var_field!((*varData).parameters, VarData::VarData::VAR_DATA_SIM).clone(), equations.clone(), initialEqs.clone(), initialVars.clone(), new_iters.clone(), var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(), (literal!(" ")).clone()), '__try0);
+            (equations, initialEqs, initialVars) = unwrap_break_err!(createParameterEquations(var_field!((*varData).records, VarData::VarData::VAR_DATA_SIM).clone(), equations.clone(), initialEqs.clone(), initialVars.clone(), new_iters.clone(), var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(), (literal!(" Record ")).clone()), '__try0);
+            (equations, initialEqs, initialVars) = unwrap_break_err!(createParameterEquations(var_field!((*varData).external_objects, VarData::VarData::VAR_DATA_SIM).clone(), equations.clone(), initialEqs.clone(), initialVars.clone(), new_iters.clone(), var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(), (literal!(" External Object ")).clone()), '__try0);
+            clonedVars = unwrap_break_err!(BVariable::VariablePointers::clone(initialVars.clone(), true), '__try0);
+            unwrap_break_err!(BVariable::VariablePointers::mapRemovePtr(clonedVars.clone(), (std::sync::Arc::new(fnptr!(BVariable::isClocked, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>)), '__try0);
+            assign_variant_field!(varData => VarData::VarData::VAR_DATA_SIM;
+                variables = variables.clone(),
+                initials = unwrap_break_err!(BVariable::VariablePointers::compress(clonedVars.clone()), '__try0)
+            );
+            assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM;
+                equations = equations.clone(),
+                initials = unwrap_break_err!(BEquation::EquationPointers::compress(initialEqs.clone()), '__try0)
+            );
+            assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN; eqData = eqData.clone());
+            unwrap_break_err!(BackendDAE::setVarData(bdae.clone(), BVariable::VarData::addTypedList(varData.clone(), UnorderedSet::toList(new_iters.clone()), BVariable::VarData::VarType::ITERATOR.clone())?), '__try0)
+        },
+        _ => {
+            unwrap_break_err!(Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBInitialization.main")); __mm_s.push_str(&*literal!(" failed to create initial partition!")); ArcStr::from(__mm_s) }).clone()]), '__try0);
+            break '__try0 Err::<_, _>(anyhow::anyhow!("fail"))
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } })
+    });
+        if followEquations.clone().is_empty() {
+            eq_filter_opt = None;
+        } else {
+            eq_filter_opt = Some(unwrap_break_err!(UnorderedSet::fromList(followEquations.clone(), (std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEqual, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>)), '__try0));
+        }
+        modules = list![({ let __pe_b1 = true; move |__pe_a0| BackendDAE::simplify(__pe_a0, __pe_b1.clone()) }, literal!("Simplify")), ({ let __pe_b1 = list![openmodelica_frontend_types::DAE::InlineType::NORM_INLINE, openmodelica_frontend_types::DAE::InlineType::BUILTIN_EARLY_INLINE, openmodelica_frontend_types::DAE::InlineType::EARLY_INLINE, openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE]; let __pe_b2 = true; move |__pe_a0| Inline::main(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }, literal!("Inline")), ({ let __pe_b1 = BPartition::Kind::INI.clone(); move |__pe_a0| Partitioning::main(__pe_a0, __pe_b1.clone()) }, literal!("Partitioning")), ((std::sync::Arc::new(cleanup) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NBackendDAE>> + 'static>), literal!("Cleanup")), ({ let __pe_b1 = BPartition::Kind::INI.clone(); move |__pe_a0| Causalize::main(__pe_a0, __pe_b1.clone()) }, literal!("Causalize")), ({ let __pe_b1 = BPartition::Kind::INI.clone(); move |__pe_a0| Tearing::main(__pe_a0, __pe_b1.clone()) }, literal!("Tearing"))];
+        (bdae, clocks) = unwrap_break_err!(BackendDAE::applyModules(bdae.clone(), modules.clone(), eq_filter_opt.clone(), ClockIndexes::RT_CLOCK_NEW_BACKEND_INITIALIZATION.clone()), '__try0);
+        if unwrap_break_err!(Flags::isSet(Flags::DUMP_BACKEND_CLOCKS.clone()), '__try0) {
+            if !(clocks.clone().is_empty()) {
+                println!("{}", (StringUtil::headline_4((literal!("Initialization Backend Clocks:")).clone())).clone());
+                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(({
+        let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+        for mut clck in (clocks.clone()).into_iter().cloned() {
+            let __x = Module::moduleClockString(clck.clone())?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    }), (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            }
+        }
+        Ok::<_, anyhow::Error>((bdae.clone(), clocks.clone(), eq_filter_opt.clone(), modules.clone()))
+    } {
+        Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3)) => {
+            bdae = __try0_o0;
+            clocks = __try0_o1;
+            eq_filter_opt = __try0_o2;
+            modules = __try0_o3;
+        }
+        Err(_) => {
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBInitialization.main")); __mm_s.push_str(&*literal!(" failed to apply modules!")); ArcStr::from(__mm_s) }).clone()])?;
+            bail!("fail");
+        }
+    }
+    Ok(bdae)
+}
+
 pub fn createStartEquations(mut states: Arc<VariablePointers::VariablePointers>, mut variables: Arc<VariablePointers::VariablePointers>, mut initialVars: Arc<VariablePointers::VariablePointers>, mut equations: Arc<EquationPointers::EquationPointers>, mut initialEqs: Arc<EquationPointers::EquationPointers>, mut idx: Pointer::Pointer<i32>, mut algorithm_outputs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut r#str: ArcStr) -> Result<(Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Arc<EquationPointers::EquationPointers>)> {
     let mut variables: Arc<VariablePointers::VariablePointers> = variables;
     let mut initialVars: Arc<VariablePointers::VariablePointers> = initialVars;
@@ -213,7 +309,7 @@ pub fn createWhenReplacementEquation(mut tpl: (Arc<ComponentRef::NFComponentRef>
     (cref, iter) = tpl.clone();
     var_ptr = BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!())?;
     (var_pre, _) = BVariable::getVarPre(var_ptr.clone());
-    if Util::isSome(var_pre.clone()) {
+    if isSome(var_pre.clone()) {
         pre = BVariable::getVarName(Util::getOption(var_pre.clone())?);
         pre = ComponentRef::copySubscripts(cref.clone(), pre.clone())?;
         kind = if (BVariable::isContinuous(var_ptr.clone(), true)?) {EquationKind::CONTINUOUS.clone()} else {EquationKind::DISCRETE.clone()};
@@ -233,10 +329,10 @@ pub fn createStartVar(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, 
     let mut start_name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let (mut var_pre, _): (Option<Pointer::Pointer<Arc<Variable::NFVariable>>>, ArcStr) = BVariable::getVarPre(var_ptr.clone());
     let mut merged_name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    if BVariable::isPrevious(var_ptr.clone()) && Util::isSome(var_pre.clone()) {
+    if BVariable::isPrevious(var_ptr.clone()) && isSome(var_pre.clone()) {
         merged_name = BVariable::getVarName(Util::getOption(var_pre.clone())?);
         merged_name = ComponentRef::mergeSubscripts(subscripts.clone(), merged_name.clone(), true, true, true)?;
-    } else if Util::isSome(var_pre.clone()) {
+    } else if isSome(var_pre.clone()) {
         merged_name = ComponentRef::mergeSubscripts(subscripts.clone(), name.clone(), true, true, true)?;
         var_ptr = Util::getOption(var_pre.clone())?;
         name = BVariable::getVarName(var_ptr.clone());
@@ -367,7 +463,7 @@ pub fn createStartEquationSlice(mut var_slice: Arc<Slice::NBSlice<Pointer::Point
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    if Util::isSome(start_eq.clone()) {
+    if isSome(start_eq.clone()) {
         if !(var_slice.indices.clone().is_empty()) {
             (sliced_eqn, _) = BEquation::Equation::slice(Util::getOption(start_eq.clone())?, var_slice.indices.clone())?;
             Pointer::update(ptr_start_eqs.clone(), listAppend(Pointer::access(ptr_start_eqs.clone()), sliced_eqn.clone()));
@@ -388,7 +484,7 @@ pub fn createStartExpressionSlice(mut exp: Arc<Expression::NFExpression>, mut va
     (start_exp, iterator) = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CALL { call: array_constructor @ Deref @ Call::TYPED_ARRAY_CONSTRUCTOR { .. } } => {
             let mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>> = metamodelica::nil();
-            let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>;
+            let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
             let mut old_iter: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
             let mut new_iter: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
             (var_ptr, name, start_var, start_cref, _, frames, iterator) = createIteratedStartCref(var_ptr.clone(), name.clone(), (var_field!((**array_constructor).iters, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone().len() as i32))?;
@@ -489,7 +585,7 @@ pub fn createPreEquation(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>
     let mut kind: EquationKind = EquationKind::CONTINUOUS;
     if !(BVariable::isPrevious(var_ptr.clone())) {
         (pre, _) = BVariable::getVarPre(var_ptr.clone());
-        if Util::isSome(pre.clone()) {
+        if isSome(pre.clone()) {
             kind = if (BVariable::isContinuous(var_ptr.clone(), true)?) {EquationKind::CONTINUOUS.clone()} else {EquationKind::DISCRETE.clone()};
             pre_eq = BEquation::Equation::makeAssignment(Expression::fromCref(BVariable::getVarName(var_ptr.clone()), false)?, Expression::fromCref(BVariable::getVarName(Util::getOption(pre.clone())?), false)?, idx.clone(), (arcstr::literal!(BEquation::PRE_STR)).clone(), Arc::new(crate::NBEquation::Iterator::EMPTY), BEquation::default(kind.clone(), true, None, None))?;
             Pointer::update(ptr_pre_eqs.clone(), cons(pre_eq.clone(), Pointer::access(ptr_pre_eqs.clone())));
@@ -514,7 +610,7 @@ pub fn createPreEquationSlice(mut var_slice: Arc<Slice::NBSlice<Pointer::Pointer
     var_ptr = Slice::getT(var_slice.clone());
     if !(BVariable::isPrevious(var_ptr.clone())) {
         (pre, _) = BVariable::getVarPre(var_ptr.clone());
-        if Util::isSome(pre.clone()) {
+        if isSome(pre.clone()) {
             name = BVariable::getVarName(var_ptr.clone());
             dims = Type::arrayDims(ComponentRef::getSubscriptedType(name.clone(), false)?);
             (iterators, ranges, subscripts) = Flatten::makeIterators(name.clone(), dims.clone())?;
@@ -542,6 +638,151 @@ pub fn createPreEquationSlice(mut var_slice: Arc<Slice::NBSlice<Pointer::Pointer
     Ok(())
 }
 
+pub fn cleanup(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NBackendDAE>> {
+    let mut bdae: Arc<BackendDAE::NBackendDAE> = bdae;
+    let mut hasHom: Pointer::Pointer<bool> = Pointer::create(false);
+    let mut init_0: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
+    bdae = (::match_deref::match_deref! { match &(bdae.clone()) {
+        Deref @ BackendDAE::MAIN { .. } => {
+            assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN;
+                ode = ({
+        let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
+        for mut par in (var_field!((*bdae).ode, BackendDAE::NBackendDAE::MAIN).clone()).into_iter().cloned() {
+            let __x = BPartition::Partition::mapEqn(par.clone(), Arc::new({ let __pe_b1 = BPartition::Partition::getKind(par.clone()); move |__pe_a0| cleanupInitialCall(__pe_a0, __pe_b1.clone()) }))?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    }),
+                algebraic = ({
+        let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
+        for mut par in (var_field!((*bdae).algebraic, BackendDAE::NBackendDAE::MAIN).clone()).into_iter().cloned() {
+            let __x = BPartition::Partition::mapEqn(par.clone(), Arc::new({ let __pe_b1 = BPartition::Partition::getKind(par.clone()); move |__pe_a0| cleanupInitialCall(__pe_a0, __pe_b1.clone()) }))?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    }),
+                ode_event = ({
+        let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
+        for mut par in (var_field!((*bdae).ode_event, BackendDAE::NBackendDAE::MAIN).clone()).into_iter().cloned() {
+            let __x = BPartition::Partition::mapEqn(par.clone(), Arc::new({ let __pe_b1 = BPartition::Partition::getKind(par.clone()); move |__pe_a0| cleanupInitialCall(__pe_a0, __pe_b1.clone()) }))?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    }),
+                alg_event = ({
+        let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
+        for mut par in (var_field!((*bdae).alg_event, BackendDAE::NBackendDAE::MAIN).clone()).into_iter().cloned() {
+            let __x = BPartition::Partition::mapEqn(par.clone(), Arc::new({ let __pe_b1 = BPartition::Partition::getKind(par.clone()); move |__pe_a0| cleanupInitialCall(__pe_a0, __pe_b1.clone()) }))?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    })
+            );
+            if isSome(var_field!((*bdae).dae, BackendDAE::NBackendDAE::MAIN).clone()) {
+                assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN; dae = Some(({
+        let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
+        for mut par in (Util::getOption(var_field!((*bdae).dae, BackendDAE::NBackendDAE::MAIN).clone())?).into_iter().cloned() {
+            let __x = BPartition::Partition::mapEqn(par.clone(), Arc::new({ let __pe_b1 = BPartition::Partition::getKind(par.clone()); move |__pe_a0| cleanupInitialCall(__pe_a0, __pe_b1.clone()) }))?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    })));
+            }
+            assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN;
+                ode = ({
+        let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
+        for mut par in (var_field!((*bdae).ode, BackendDAE::NBackendDAE::MAIN).clone()).into_iter().cloned() {
+            let __x = BPartition::Partition::mapExp(par.clone(), Arc::new({ let __pe_b1 = BPartition::Partition::getKind(par.clone()); move |__pe_a0| cleanupHomotopy(__pe_a0, __pe_b1.clone()) }))?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    }),
+                algebraic = ({
+        let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
+        for mut par in (var_field!((*bdae).algebraic, BackendDAE::NBackendDAE::MAIN).clone()).into_iter().cloned() {
+            let __x = BPartition::Partition::mapExp(par.clone(), Arc::new({ let __pe_b1 = BPartition::Partition::getKind(par.clone()); move |__pe_a0| cleanupHomotopy(__pe_a0, __pe_b1.clone()) }))?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    }),
+                ode_event = ({
+        let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
+        for mut par in (var_field!((*bdae).ode_event, BackendDAE::NBackendDAE::MAIN).clone()).into_iter().cloned() {
+            let __x = BPartition::Partition::mapExp(par.clone(), Arc::new({ let __pe_b1 = BPartition::Partition::getKind(par.clone()); move |__pe_a0| cleanupHomotopy(__pe_a0, __pe_b1.clone()) }))?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    }),
+                alg_event = ({
+        let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
+        for mut par in (var_field!((*bdae).alg_event, BackendDAE::NBackendDAE::MAIN).clone()).into_iter().cloned() {
+            let __x = BPartition::Partition::mapExp(par.clone(), Arc::new({ let __pe_b1 = BPartition::Partition::getKind(par.clone()); move |__pe_a0| cleanupHomotopy(__pe_a0, __pe_b1.clone()) }))?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    })
+            );
+            if isSome(var_field!((*bdae).dae, BackendDAE::NBackendDAE::MAIN).clone()) {
+                assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN; dae = Some(({
+        let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
+        for mut par in (Util::getOption(var_field!((*bdae).dae, BackendDAE::NBackendDAE::MAIN).clone())?).into_iter().cloned() {
+            let __x = BPartition::Partition::mapExp(par.clone(), Arc::new({ let __pe_b1 = BPartition::Partition::getKind(par.clone()); move |__pe_a0| cleanupHomotopy(__pe_a0, __pe_b1.clone()) }))?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    })));
+            }
+            assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN; init = ({
+        let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
+        for mut par in (var_field!((*bdae).init, BackendDAE::NBackendDAE::MAIN).clone()).into_iter().cloned() {
+            let __x = BPartition::Partition::mapExp(par.clone(), Arc::new({ let __pe_b1 = hasHom.clone(); move |__pe_a0| containsLambda0(__pe_a0, __pe_b1.clone()) }))?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    }));
+            if Pointer::access(hasHom.clone()) {
+                init_0 = ({
+        let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
+        for mut par in (var_field!((*bdae).init, BackendDAE::NBackendDAE::MAIN).clone()).into_iter().cloned() {
+            let __x = BPartition::Partition::setKind(BPartition::Partition::clone(par.clone(), false)?, BPartition::Kind::INI_0.clone())?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    });
+                init_0 = ({
+        let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
+        for mut par in (init_0.clone()).into_iter().cloned() {
+            let __x = BPartition::Partition::mapEqn(par.clone(), Arc::new({ let __pe_b1 = BPartition::Partition::getKind(par.clone()); move |__pe_a0| cleanupInitialCall(__pe_a0, __pe_b1.clone()) }))?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    });
+                init_0 = ({
+        let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
+        for mut par in (init_0.clone()).into_iter().cloned() {
+            let __x = BPartition::Partition::mapExp(par.clone(), Arc::new({ let __pe_b1 = BPartition::Partition::getKind(par.clone()); move |__pe_a0| cleanupHomotopy(__pe_a0, __pe_b1.clone()) }))?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    });
+                assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN; init_0 = Some(init_0.clone()));
+            }
+            assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN; init = ({
+        let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
+        for mut par in (var_field!((*bdae).init, BackendDAE::NBackendDAE::MAIN).clone()).into_iter().cloned() {
+            let __x = BPartition::Partition::mapEqn(par.clone(), Arc::new({ let __pe_b1 = BPartition::Partition::getKind(par.clone()); move |__pe_a0| cleanupInitialCall(__pe_a0, __pe_b1.clone()) }))?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    }));
+            bdae.clone()
+        },
+        _ => bdae.clone(),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    Ok(bdae)
+}
+
 pub fn cleanupInitialCall(mut eq: Arc<Equation::Equation>, mut kind: BPartition::Kind) -> Result<Arc<Equation::Equation>> {
     fn cleanupInitialCallExp(mut exp: Arc<Expression::NFExpression>, mut kind: BPartition::Kind, mut simplify: Pointer::Pointer<bool>) -> Result<Arc<Expression::NFExpression>> {
         let mut exp: Arc<Expression::NFExpression> = exp;
@@ -557,7 +798,7 @@ pub fn cleanupInitialCall(mut eq: Arc<Equation::Equation>, mut kind: BPartition:
 
     let mut eq: Arc<Equation::Equation> = eq;
     let mut simplify: Pointer::Pointer<bool> = Pointer::create(false);
-    eq = BEquation::Equation::map(eq.clone(), Arc::new({ let __pe_b1 = kind.clone(); let __pe_b2 = simplify.clone(); move |__pe_a0| cleanupInitialCallExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+    eq = BEquation::Equation::map(eq.clone(), Arc::new({ let __pe_b1 = kind.clone(); let __pe_b2 = simplify.clone(); move |__pe_a0| cleanupInitialCallExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     if Pointer::access(simplify.clone()) {
         eq = BEquation::Equation::simplify(eq.clone(), (literal!("")).clone(), (literal!("")).clone(), Pointer::create(metamodelica::nil()), Pointer::create(metamodelica::nil()), Arc::new({ let __pe_b1 = true; let __pe_b2 = (literal!("")).clone(); let __pe_b3 = (literal!("")).clone(); move |__pe_a0| SimplifyExp::simplifyDump(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }))?;
     }
@@ -592,6 +833,28 @@ pub fn containsLambda0(mut exp: Arc<Expression::NFExpression>, mut b: Pointer::P
         Pointer::update(b.clone(), true);
     }
     Ok(exp)
+}
+
+pub fn minimizeHomotopySystem(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NBackendDAE>> {
+    let mut bdae: Arc<BackendDAE::NBackendDAE> = bdae;
+    bdae = (::match_deref::match_deref! { match &(bdae.clone()) {
+        Deref @ BackendDAE::MAIN { .. } => {
+            if isSome(var_field!((*bdae).init_0, BackendDAE::NBackendDAE::MAIN).clone()) {
+                assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN; init = ({
+        let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
+        for mut par in (var_field!((*bdae).init, BackendDAE::NBackendDAE::MAIN).clone()).into_iter().cloned() {
+            let __x = BPartition::Partition::mapStrongComponents(par.clone(), Arc::new({ let __pe_b1 = true; move |__pe_a0| Ok(StrongComponent::setHomotopy(__pe_a0, __pe_b1.clone())) }))?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    }));
+            }
+            bdae.clone()
+        },
+        _ => bdae.clone(),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    Ok(bdae)
 }
 
 pub fn removeWhenEquation(mut eqn: Arc<Equation::Equation>, mut iter: Arc<Iterator::Iterator>, mut cref_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Iterator::Iterator>>>) -> Result<Arc<Equation::Equation>> {
@@ -765,7 +1028,7 @@ pub fn removeConditionEquation(mut stmt: Arc<Statement::NFStatement>, mut condit
     let mut out_stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
     out_stmts = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ Statement::ASSIGNMENT { .. } if (UnorderedSet::contains(var_field!((*stmt).lhs, Statement::NFStatement::ASSIGNMENT).clone(), condition_set.clone())?) => {
-            let mut pre_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+            let mut pre_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
             let mut post_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
             let mut tail_stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
             pre_set = UnorderedSet::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
@@ -806,7 +1069,7 @@ pub fn findPreVars(mut exp: Arc<Expression::NFExpression>, mut pre_set: Arc<Unor
 
 pub fn replaceClockedFunctionsEqn(mut eqn: Pointer::Pointer<Arc<Equation::Equation>>) -> Result<Pointer::Pointer<Arc<Equation::Equation>>> {
     let mut eqn: Pointer::Pointer<Arc<Equation::Equation>> = eqn;
-    Pointer::update(eqn.clone(), BEquation::Equation::map(Pointer::access(eqn.clone()), (std::sync::Arc::new(replaceClockedFunctions) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>>) -> Result<Arc<Expression::NFExpression>> + 'static>))?);
+    Pointer::update(eqn.clone(), BEquation::Equation::map(Pointer::access(eqn.clone()), (std::sync::Arc::new(replaceClockedFunctions) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?);
     Ok(eqn)
 }
 

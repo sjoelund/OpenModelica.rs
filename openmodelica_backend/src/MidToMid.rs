@@ -155,7 +155,7 @@ fn getSuccessors(mut block_: MidCode::Block) -> Result<Arc<metamodelica::List<i3
         MidCode::Terminator::GOTO { next: mut l0 } => list![l0.clone()],
         MidCode::Terminator::BRANCH { condition: _, onTrue: mut l0, onFalse: mut l1 } => list![l0.clone(), l1.clone()],
         MidCode::Terminator::CALL { func: _, builtin: _, inputs: _, outputs: _, next: mut l0 } => list![l0.clone()],
-        MidCode::Terminator::RETURN => metamodelica::nil(),
+        MidCode::Terminator::RETURN { .. } => metamodelica::nil(),
         MidCode::Terminator::SWITCH { condition: _, cases: ref switchList } => ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut x in (switchList.clone()).into_iter().cloned() {
@@ -164,7 +164,7 @@ fn getSuccessors(mut block_: MidCode::Block) -> Result<Arc<metamodelica::List<i3
         }
         __acc.reverse()
     }),
-        MidCode::Terminator::LONGJMP => metamodelica::nil(),
+        MidCode::Terminator::LONGJMP { .. } => metamodelica::nil(),
         MidCode::Terminator::PUSHJMP { old_buf: _, new_buf: _, next: mut l0 } => list![l0.clone()],
         MidCode::Terminator::POPJMP { old_buf: _, next: mut l0 } => list![l0.clone()],
         _ => bail!("match: no arm matched"),
@@ -181,7 +181,7 @@ fn tupleSnd(mut t: (i32, i32)) -> i32 {
 fn isLongJmp(mut t: MidCode::Terminator) -> bool {
     let mut b: bool = false;
     b = (match t.clone() {
-        MidCode::Terminator::LONGJMP => true,
+        MidCode::Terminator::LONGJMP { .. } => true,
         _ => false,
     });
     b

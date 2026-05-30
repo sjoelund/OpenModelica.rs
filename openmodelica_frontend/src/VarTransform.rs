@@ -119,7 +119,6 @@ pub fn applyReplacementsDAE(mut dae: DAE::DAElist, mut repl: VariableReplacement
             elts = applyReplacementsDAEElts(elts.clone(), repl.clone(), condExpFunc.clone())?;
             DAE::DAElist { elementLst: elts.clone() }
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(outDae)
 }
@@ -854,7 +853,6 @@ pub fn dumpReplacements(mut inVariableReplacements: VariableReplacements) -> Res
             println!("{}", (literal!("\n")).clone());
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(())
 }
@@ -871,7 +869,6 @@ pub fn dumpReplacementsStr(mut inVariableReplacements: VariableReplacements) -> 
             s1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Replacements: (")); __mm_s.push_str(&*intString((tplLst.clone().len() as i32))); __mm_s.push_str(&*literal!(")\n=============\n")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             s1.clone()
         },
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(ostr)
 }
@@ -887,7 +884,6 @@ pub fn getAllReplacements(mut inVariableReplacements: VariableReplacements) -> R
             dsts = List::map(tplLst.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)));
             (crefs.clone(), dsts.clone())
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok((crefs, dsts))
 }
@@ -905,7 +901,6 @@ pub fn replacementSources(mut repl: VariableReplacements) -> Result<Arc<metamode
             sources = BaseHashTable::hashTableKeyList(ht.clone());
             sources.clone()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(sources)
 }
@@ -920,7 +915,6 @@ pub fn replacementTargets(mut repl: VariableReplacements) -> Result<Arc<metamode
             targets2 = List::flatten(List::map(targets.clone(), (std::sync::Arc::new(Expression::extractCrefsFromExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> + 'static>)));
             targets2.clone()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(sources)
 }
@@ -1004,7 +998,7 @@ fn addReplacementInv(mut invHt: (metamodelica::Array<Arc<metamodelica::List<(Arc
             let mut invHt_1: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>), i32, (HashTable3::FuncHashCref, HashTable3::FuncCrefEqual, HashTable3::FuncCrefStr, HashTable3::FuncExpStr));
             let mut dests: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
             dests = Expression::extractCrefsFromExp(dst.clone())?;
-            invHt_1 = List::fold1r(dests.clone(), (std::sync::Arc::new(addReplacementInv2) as std::sync::Arc<dyn ::std::ops::Fn((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>), i32, (HashTable3::FuncHashCref, HashTable3::FuncCrefEqual, HashTable3::FuncCrefStr, HashTable3::FuncExpStr)), Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>), i32, (HashTable3::FuncHashCref, HashTable3::FuncCrefEqual, HashTable3::FuncCrefStr, HashTable3::FuncExpStr))> + 'static>), src.clone(), invHt.clone());
+            invHt_1 = List::fold1r(dests.clone(), (std::sync::Arc::new(addReplacementInv2) as std::sync::Arc<dyn ::std::ops::Fn((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<ArcStr> + 'static>)), Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<ArcStr> + 'static>))> + 'static>), src.clone(), invHt.clone());
             invHt_1.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1159,7 +1153,7 @@ pub fn getReplacement(mut inVariableReplacements: VariableReplacements, mut inCo
             dst = BaseHashTable::get(src.clone(), ht.clone())?;
             dst.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outComponentRef)
 }
@@ -1188,7 +1182,7 @@ pub fn avoidDoubleHashLookup(mut inExp: Arc<DAE::Exp>, mut inType: Arc<DAE::Type
         let __mc_input = inExp.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Exp::CREF { componentRef: cr, ty: Deref @ DAE::Type::T_UNKNOWN } => {
+                Deref @ DAE::Exp::CREF { componentRef: cr, ty: Deref @ DAE::Type::T_UNKNOWN { .. } } => {
                     Ok(Expression::makeCrefExp(cr.clone(), inType.clone())?)
                 }
                 _ => bail!("nomatch"),
@@ -1307,7 +1301,7 @@ pub fn replaceExpList(mut iexpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut rep
         acc2 = acc2.clone() || c.clone();
         acc1 = cons(exp.clone(), acc1.clone());
     }
-    outExpl = acc1.clone().reverse();
+    outExpl = metamodelica::Dangerous::listReverseInPlace(acc1.clone());
     replacementPerformed = acc2.clone();
     Ok((outExpl, replacementPerformed))
 }
@@ -1344,7 +1338,7 @@ fn replaceExpMatrix(mut inTplExpExpBooleanLstLst: Arc<metamodelica::List<Arc<met
         acc2 = acc2.clone() || c.clone();
         acc1 = cons(exp.clone(), acc1.clone());
     }
-    outTplExpExpBooleanLstLst = acc1.clone().reverse();
+    outTplExpExpBooleanLstLst = metamodelica::Dangerous::listReverseInPlace(acc1.clone());
     replacementPerformed = acc2.clone();
     Ok((outTplExpExpBooleanLstLst, replacementPerformed))
 }

@@ -712,7 +712,7 @@ pub fn toString(mut subscript: Arc<NFSubscript>) -> Result<ArcStr> {
         Deref @ WHOLE { .. } => literal!(":"),
         Deref @ SPLIT_PROXY { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("<")); __mm_s.push_str(&*InstNode::name(var_field!((*subscript).origin, NFSubscript::SPLIT_PROXY).clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*InstNode::name(var_field!((*subscript).parent, NFSubscript::SPLIT_PROXY).clone())?); __mm_s.push_str(&*literal!(">")); ArcStr::from(__mm_s) },
         Deref @ SPLIT_INDEX { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("<")); __mm_s.push_str(&*InstNode::name(var_field!((*subscript).node, NFSubscript::SPLIT_INDEX).clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", var_field!((*subscript).dimIndex, NFSubscript::SPLIT_INDEX).clone()))); __mm_s.push_str(&*literal!(">")); ArcStr::from(__mm_s) },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(string)
 }
@@ -827,9 +827,9 @@ pub fn simplifyList(mut subscripts: Arc<metamodelica::List<Arc<NFSubscript>>>, m
             outSubscripts = cons(simplify(s.clone(), d.clone())?, outSubscripts.clone());
         }
         if trim.clone() {
-            outSubscripts = List::trim(outSubscripts.clone(), (std::sync::Arc::new(fnptr!(isWhole, Arc<NFSubscript>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSubscript>) -> Result<bool> + 'static>))?.reverse();
+            outSubscripts = metamodelica::Dangerous::listReverseInPlace(List::trim(outSubscripts.clone(), (std::sync::Arc::new(fnptr!(isWhole, Arc<NFSubscript>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSubscript>) -> Result<bool> + 'static>))?);
         } else {
-            outSubscripts = outSubscripts.clone().reverse();
+            outSubscripts = metamodelica::Dangerous::listReverseInPlace(outSubscripts.clone());
         }
     }
     Ok(outSubscripts)
@@ -1117,7 +1117,7 @@ pub fn mergeList(mut newSubs: Arc<metamodelica::List<Arc<NFSubscript>>>, mut old
         outSubs = cons(new_sub.clone(), outSubs.clone());
         subs_count = subs_count.clone() + 1;
     }
-    outSubs = outSubs.clone().reverse();
+    outSubs = metamodelica::Dangerous::listReverseInPlace(outSubs.clone());
     Ok((outSubs, remainingSubs))
 }
 
@@ -1227,7 +1227,7 @@ pub fn expandSplitIndices(mut subs: Arc<metamodelica::List<Arc<NFSubscript>>>, m
     }
     if changed.clone() {
         outSubs = List::trim(outSubs.clone(), (std::sync::Arc::new(fnptr!(isWhole, Arc<NFSubscript>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSubscript>) -> Result<bool> + 'static>))?;
-        outSubs = outSubs.clone().reverse();
+        outSubs = metamodelica::Dangerous::listReverseInPlace(outSubs.clone());
     } else {
         outSubs = subs.clone();
     }

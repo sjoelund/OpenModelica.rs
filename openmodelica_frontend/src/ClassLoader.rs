@@ -837,7 +837,6 @@ fn getProgramFromStrategy(mut filename: ArcStr, mut strategy: LoadFileStrategy) 
             BaseHashTable::get((f.clone()).clone(), var_field!(strategy.ht, LoadFileStrategy::STRATEGY_HASHTABLE).clone())?
         },
         LoadFileStrategy::STRATEGY_ON_DEMAND { .. } => Parser::parse((filename.clone()).clone(), (var_field!(strategy.encoding, LoadFileStrategy::STRATEGY_ON_DEMAND).clone()).clone(), (literal!("")).clone(), None, Config::acceptedGrammar()?, Flags::getConfigEnum(Flags::LANGUAGE_STANDARD.clone())?, Flags::getConfigBool(Flags::STRICT.clone())?)?,
-        _ => bail!("match: no arm matched"),
     });
     Ok(program)
 }

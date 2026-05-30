@@ -56,6 +56,7 @@ use crate::NBPartitioning;
 use crate::NBStrongComponent as StrongComponent;
 use crate::NBVariable as BVariable;
 use crate::NBVariable::VariablePointers;
+use crate::NBackendDAE as BackendDAE;
 use crate::NBackendDAE as Jacobian;
 use openmodelica_nf_frontend::NFCall as Call;
 use openmodelica_nf_frontend::NFClockKind as ClockKind;
@@ -149,7 +150,7 @@ pub mod Association {
         let mut r#str: ArcStr = arcstr::literal!("");
         r#str = ((::match_deref::match_deref! { match &(association.clone()) {
         Deref @ CONTINUOUS { .. } => {
-            if Util::isSome(var_field!((*association).jacobian, Association::CONTINUOUS).clone()) {
+            if isSome(var_field!((*association).jacobian, Association::CONTINUOUS).clone()) {
                 r#str = (BJacobian::toString(Util::getOption(var_field!((*association).jacobian, Association::CONTINUOUS).clone())?, (Partition::kindToString(var_field!((*association).kind, Association::CONTINUOUS).clone())?).clone())?).clone();
                 if Flags::getConfigBool(Flags::MOO_DYNAMIC_OPTIMIZATION.clone())? {
                     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*BJacobian::toString(Util::getOption(var_field!((*association).LFG_jacobian, Association::CONTINUOUS).clone())?, (Partition::kindToString(var_field!((*association).kind, Association::CONTINUOUS).clone())?).clone())?); ArcStr::from(__mm_s) }).clone();
@@ -159,14 +160,14 @@ pub mod Association {
             } else {
                 r#str = (StringUtil::headline_1((literal!("No Jacobian")).clone())).clone();
             }
-            if Util::isSome(var_field!((*association).jacobianAdjoint, Association::CONTINUOUS).clone()) {
+            if isSome(var_field!((*association).jacobianAdjoint, Association::CONTINUOUS).clone()) {
                 r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*BJacobian::toString(Util::getOption(var_field!((*association).jacobianAdjoint, Association::CONTINUOUS).clone())?, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*Partition::kindToString(var_field!((*association).kind, Association::CONTINUOUS).clone())?); __mm_s.push_str(&*literal!(" Adjoint")); ArcStr::from(__mm_s) }).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             }
             r#str.clone()
         },
         Deref @ CLOCKED { .. } => {
             r#str = (BClock::toString(var_field!((*association).clock, Association::CLOCKED).clone())?).clone();
-            if Util::isSome(var_field!((*association).baseClock, Association::CLOCKED).clone()) {
+            if isSome(var_field!((*association).baseClock, Association::CLOCKED).clone()) {
                 r#str = (StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Sub clock: ")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(" of base clock ")); __mm_s.push_str(&*BClock::toString(Util::getOption(var_field!((*association).baseClock, Association::CLOCKED).clone())?)?); ArcStr::from(__mm_s) }).clone())).clone();
             } else {
                 r#str = (StringUtil::headline_1(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Base clock: ")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone())).clone();
@@ -196,7 +197,7 @@ pub mod Association {
         BEquation::EquationPointers::mapExp(equations.clone(), Arc::new({ let __pe_b1 = info.clone(); let __pe_b2 = clock_ptr.clone(); let __pe_b3 = infer_ptr.clone(); let __pe_b4 = failed_set.clone(); let __pe_b5 = clock_deps.clone(); let __pe_b6 = infer_del.clone(); move |__pe_a0| expClocked(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone()) }), None, (std::sync::Arc::new(fnptr!(Expression::fakeMap, Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
         clock_tpl = Pointer::access(clock_ptr.clone());
         infer = Pointer::access(infer_ptr.clone());
-        if Util::isSome(clock_tpl.clone()) {
+        if isSome(clock_tpl.clone()) {
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(clock_tpl.clone()) {
                 Some((__pa0, __pa1)) => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
@@ -209,7 +210,7 @@ pub mod Association {
             }
             if BClock::isBaseClock(clock.clone()) {
                 if BClock::isInferredClock(clock.clone()) {
-                    if Util::isNone(infer.clone()) {
+                    if isNone(infer.clone()) {
                         clock = NBPartitioning::DEFAULT_BASE_CLOCK().clone();
                         UnorderedMap::add(name.clone(), clock.clone(), info.baseClocks.clone())?;
                     } else {
@@ -647,7 +648,7 @@ pub mod Partition {
     }
 
     pub fn getClockDependencies(mut part: Arc<Partition>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<BClock::BClock>>>> {
-        let mut clock_deps: Arc<UnorderedSet::UnorderedSet<Arc<BClock::BClock>>>;
+        let mut clock_deps: Arc<UnorderedSet::UnorderedSet<Arc<BClock::BClock>>> = <Arc<UnorderedSet::UnorderedSet<Arc<BClock::BClock>>> as ::std::default::Default>::default();
         clock_deps = (::match_deref::match_deref! { match &(part.association.clone()) {
         Deref @ Association::CLOCKED { clock_deps, .. } => clock_deps.clone(),
         _ => {
@@ -661,7 +662,7 @@ pub mod Partition {
 
     pub fn getLoopResiduals(mut part: Arc<Partition>) -> Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> {
         let mut residuals: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-        if Util::isSome(part.strongComponents.clone()) {
+        if isSome(part.strongComponents.clone()) {
             let __range0 = Util::getOption(part.strongComponents.clone()).unwrap().borrow().iter().cloned().collect::<Vec<_>>();
             for mut comp in __range0 {
                 residuals = listAppend(StrongComponent::getLoopResiduals(comp.clone()), residuals.clone());
@@ -682,7 +683,7 @@ pub mod Partition {
         pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>;
 
         let mut partition: Arc<Partition> = partition;
-        assign_field!(partition.equations = BEquation::EquationPointers::mapExp(partition.equations.clone(), func.clone(), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>>) -> Result<Arc<Expression::NFExpression>> + 'static>))?);
+        assign_field!(partition.equations = BEquation::EquationPointers::mapExp(partition.equations.clone(), func.clone(), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?);
         Ok(partition)
     }
 
@@ -691,7 +692,7 @@ pub mod Partition {
 
         let mut partition: Arc<Partition> = partition;
         let mut comps: metamodelica::Array<Arc<StrongComponent::NBStrongComponent>>;
-        if Util::isSome(partition.strongComponents.clone()) {
+        if isSome(partition.strongComponents.clone()) {
             let __pa0 = ::match_deref::match_deref! { match &(partition.strongComponents.clone()) {
                 Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
@@ -776,7 +777,7 @@ pub mod Partition {
     pub fn removeAlias(mut par: Arc<Partition>) -> Result<Arc<Partition>> {
         let mut par: Arc<Partition> = par;
         let mut comps: metamodelica::Array<Arc<StrongComponent::NBStrongComponent>>;
-        if Util::isSome(par.strongComponents.clone()) {
+        if isSome(par.strongComponents.clone()) {
             comps = Util::getOption(par.strongComponents.clone())?;
             let __range0 = 1..=(comps.clone().borrow().len() as i32);
             for mut i in __range0 {
@@ -807,16 +808,16 @@ pub mod Partition {
 
     pub fn merge(mut part1: Arc<Partition>, mut part2: Arc<Partition>, mut strict: bool) -> Result<Arc<Partition>> {
         let mut part1: Arc<Partition> = part1;
-        if Util::isSome(part1.daeUnknowns.clone()) || Util::isSome(part2.daeUnknowns.clone()) {
+        if isSome(part1.daeUnknowns.clone()) || isSome(part2.daeUnknowns.clone()) {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBPartition.Partition.merge")); __mm_s.push_str(&*literal!(" failed. Cannot merge DAE-Mode partitions.")); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail");
-        } else if Util::isSome(part1.strongComponents.clone()) || Util::isSome(part2.strongComponents.clone()) {
+        } else if isSome(part1.strongComponents.clone()) || isSome(part2.strongComponents.clone()) {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBPartition.Partition.merge")); __mm_s.push_str(&*literal!(" failed. Should not merge sorted partitions.")); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail");
-        } else if Util::isSome(part1.matching.clone()) || Util::isSome(part2.matching.clone()) {
+        } else if isSome(part1.matching.clone()) || isSome(part2.matching.clone()) {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBPartition.Partition.merge")); __mm_s.push_str(&*literal!(" failed. Should not merge matched partitions.")); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail");
-        } else if Util::isSome(part1.adjacencyMatrix.clone()) || Util::isSome(part2.adjacencyMatrix.clone()) {
+        } else if isSome(part1.adjacencyMatrix.clone()) || isSome(part2.adjacencyMatrix.clone()) {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBPartition.Partition.merge")); __mm_s.push_str(&*literal!(" failed. Should not merge partitions with adjacency matrix.")); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail");
         }

@@ -1057,7 +1057,7 @@ fn lm_96(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::St
 pub fn elseStatement(mut in_txt: Tpl::Text, mut in_a_else__: Arc<DAE::Else>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_else__.clone())) {
-        (txt, Deref @ DAE::Else::NOELSE) => {
+        (txt, Deref @ DAE::Else::NOELSE { .. }) => {
             txt.clone()
         },
         (txt, Deref @ DAE::Else::ELSEIF { else_: i_else__, statementLst: i_statementLst, exp: i_exp }) => {
@@ -1103,7 +1103,7 @@ pub fn cref(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Resul
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("comp->currentTime")).clone() }))?;
             txt.clone()
         },
-        (txt, Deref @ DAE::ComponentRef::WILD) => {
+        (txt, Deref @ DAE::ComponentRef::WILD { .. }) => {
             txt.clone()
         },
         (txt, i_cr) => {
@@ -1812,13 +1812,13 @@ fn fun_113(mut in_txt: Tpl::Text, mut in_a_isPre: bool) -> Result<Tpl::Text> {
 fn fun_114(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar, mut in_a_isPre: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_var.clone(), in_a_isPre.clone()) {
-        (mut txt, SimCodeVar::SimVar { name: ref i_name, varKind: BackendDAE::VarKind::PARAM, .. }, _) => {
+        (mut txt, SimCodeVar::SimVar { name: ref i_name, varKind: BackendDAE::VarKind::PARAM { .. }, .. }, _) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("comp->")).clone() }))?;
             txt = crefShortType(txt.clone(), i_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Parameter")).clone() }))?;
             txt.clone()
         },
-        (mut txt, SimCodeVar::SimVar { name: ref i_name, varKind: BackendDAE::VarKind::OPT_TGRID, .. }, _) => {
+        (mut txt, SimCodeVar::SimVar { name: ref i_name, varKind: BackendDAE::VarKind::OPT_TGRID { .. }, .. }, _) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("comp->")).clone() }))?;
             txt = crefShortType(txt.clone(), i_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Parameter")).clone() }))?;

@@ -63,7 +63,7 @@ pub fn mergeSources(mut src1: Arc<DAE::ElementSource>, mut src2: Arc<DAE::Elemen
             let mut comment: Arc<metamodelica::List<Arc<SCode::Comment>>> = metamodelica::nil();
             p = List::union(partOfLst1.clone(), partOfLst2.clone());
             i = (::match_deref::match_deref! { match &(instanceOpt1.clone()) {
-        Deref @ DAE::ComponentPrefix::NOCOMPPRE => instanceOpt2.clone(),
+        Deref @ DAE::ComponentPrefix::NOCOMPPRE { .. } => instanceOpt2.clone(),
         _ => instanceOpt1.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -73,7 +73,7 @@ pub fn mergeSources(mut src1: Arc<DAE::ElementSource>, mut src2: Arc<DAE::Elemen
             comment = List::union(comment1.clone(), comment2.clone());
             Arc::new(DAE::ElementSource { info: info.clone(), partOfLst: p.clone(), instance: i.clone(), connectEquationOptLst: c.clone(), typeLst: t.clone(), operations: o.clone(), comment: comment.clone() })
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(mergedSrc)
 }
@@ -101,9 +101,8 @@ pub fn createElementSource(mut fileInfo: SourceInfo, mut partOf: Option<Arc<Absy
         Some(path) => list![Absyn::Within::WITHIN { path: path.clone() }],
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } }), instance: (match prefix.clone() {
-        DAE::Prefix::NOPRE => Arc::new(openmodelica_frontend_types::DAE::ComponentPrefix::NOCOMPPRE),
+        DAE::Prefix::NOPRE { .. } => Arc::new(openmodelica_frontend_types::DAE::ComponentPrefix::NOCOMPPRE),
         DAE::Prefix::PREFIX { .. } => var_field!(prefix.compPre, DAE::Prefix::PREFIX).clone(),
-        _ => bail!("match: no arm matched"),
     }), connectEquationOptLst: (::match_deref::match_deref! { match &(connectEquation.clone()) {
         (Deref @ DAE::ComponentRef::CREF_IDENT { ident: Deref @ "", .. }, _) => metamodelica::nil(),
         _ => list![connectEquation.clone()],
@@ -124,7 +123,7 @@ pub fn addAdditionalComment(mut source: Arc<DAE::ElementSource>, mut message: Ar
             comment = if (b.clone()) {comment.clone()} else {cons(c.clone(), comment.clone())};
             Arc::new(DAE::ElementSource { info: info.clone(), partOfLst: partOfLst.clone(), instance: instanceOpt.clone(), connectEquationOptLst: connectEquationOptLst.clone(), typeLst: typeLst.clone(), operations: operations.clone(), comment: comment.clone() })
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outSource)
 }
@@ -149,7 +148,7 @@ pub fn getComments(mut source: Arc<DAE::ElementSource>) -> Result<Arc<metamodeli
         Deref @ DAE::ElementSource { comment, .. } => {
             comment.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outComments)
 }
@@ -178,7 +177,7 @@ pub fn addSymbolicTransformation(mut source: Arc<DAE::ElementSource>, mut op: Ar
         (Deref @ DAE::ElementSource { info, partOfLst, instance: instanceOpt, connectEquationOptLst, typeLst, operations, comment }, _) => {
             Arc::new(DAE::ElementSource { info: info.clone(), partOfLst: partOfLst.clone(), instance: instanceOpt.clone(), connectEquationOptLst: connectEquationOptLst.clone(), typeLst: typeLst.clone(), operations: cons(op.clone(), operations.clone()), comment: comment.clone() })
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(source)
 }
@@ -225,7 +224,7 @@ pub fn addSymbolicTransformationFlattenedEqs(mut source: Arc<DAE::ElementSource>
             Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Tried to add the flattened elements to the list of operations, but did not find the SCode equation")).clone()], info.clone())?;
             bail!("fail")
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(source)
 }
@@ -459,7 +458,7 @@ pub fn addElementSourceConnect(mut inSource: Arc<DAE::ElementSource>, mut connec
         Deref @ DAE::ElementSource { info, partOfLst, instance: instanceOpt, connectEquationOptLst, typeLst, operations, comment } => {
             Arc::new(DAE::ElementSource { info: info.clone(), partOfLst: partOfLst.clone(), instance: instanceOpt.clone(), connectEquationOptLst: cons(connectEquationOpt.clone(), connectEquationOptLst.clone()), typeLst: typeLst.clone(), operations: operations.clone(), comment: comment.clone() })
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outSource)
 }
@@ -473,7 +472,7 @@ pub fn addElementSourceType(mut source: Arc<DAE::ElementSource>, mut classPath: 
         Deref @ DAE::ElementSource { info, partOfLst, instance: instanceOpt, connectEquationOptLst, typeLst, operations, comment } => {
             Arc::new(DAE::ElementSource { info: info.clone(), partOfLst: partOfLst.clone(), instance: instanceOpt.clone(), connectEquationOptLst: connectEquationOptLst.clone(), typeLst: cons(classPath.clone(), typeLst.clone()), operations: operations.clone(), comment: comment.clone() })
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(source)
 }
@@ -481,12 +480,12 @@ pub fn addElementSourceType(mut source: Arc<DAE::ElementSource>, mut classPath: 
 pub fn addElementSourceInstanceOpt(mut source: Arc<DAE::ElementSource>, mut instanceOpt: Arc<DAE::ComponentPrefix>) -> Result<Arc<DAE::ElementSource>> {
     let mut source: Arc<DAE::ElementSource> = source;
     let () = (::match_deref::match_deref! { match &((source.clone(), instanceOpt.clone())) {
-        (_, Deref @ DAE::ComponentPrefix::NOCOMPPRE) => (),
+        (_, Deref @ DAE::ComponentPrefix::NOCOMPPRE { .. }) => (),
         (Deref @ DAE::ElementSource { .. }, _) => {
             assign_field!(source.instance = instanceOpt.clone());
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(source)
 }

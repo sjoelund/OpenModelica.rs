@@ -76,7 +76,7 @@ pub mod LookupStateName {
         r#str = ((::match_deref::match_deref! { match &(name.clone()) {
         Deref @ PATH { .. } => AbsynUtil::pathString(var_field!((*name).path, LookupStateName::PATH).clone(), (literal!(".")).clone(), true, false)?,
         Deref @ CREF { .. } => Dump::printComponentRefStr(var_field!((*name).cref, LookupStateName::CREF).clone())?,
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
         Ok(r#str)
     }
@@ -86,7 +86,7 @@ pub mod LookupStateName {
         id = ((::match_deref::match_deref! { match &(name.clone()) {
         Deref @ PATH { .. } => AbsynUtil::pathFirstIdent(var_field!((*name).path, LookupStateName::PATH).clone())?,
         Deref @ CREF { .. } => AbsynUtil::crefFirstIdent(var_field!((*name).cref, LookupStateName::CREF).clone())?,
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
         Ok(id)
     }
@@ -96,7 +96,7 @@ pub mod LookupStateName {
         id = ((::match_deref::match_deref! { match &(name.clone()) {
         Deref @ PATH { .. } => AbsynUtil::pathSecondIdent(var_field!((*name).path, LookupStateName::PATH).clone())?,
         Deref @ CREF { .. } => AbsynUtil::crefSecondIdent(var_field!((*name).cref, LookupStateName::CREF).clone())?,
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
         Ok(id)
     }
@@ -417,7 +417,7 @@ pub mod LookupState {
     pub fn elementState(mut element: Arc<SCode::Element>) -> Result<Arc<LookupState>> {
         let mut state: Arc<LookupState> = Arc::new(LookupState::BEGIN);
         state = (::match_deref::match_deref! { match &(element.clone()) {
-        Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_PACKAGE, .. } => Arc::new(crate::NFLookupState::LookupState::PACKAGE),
+        Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_PACKAGE { .. }, .. } => Arc::new(crate::NFLookupState::LookupState::PACKAGE),
         Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_FUNCTION { .. }, .. } => Arc::new(crate::NFLookupState::LookupState::FUNC),
         Deref @ SCode::Element::CLASS { .. } => Arc::new(crate::NFLookupState::LookupState::CLASS),
         _ => {

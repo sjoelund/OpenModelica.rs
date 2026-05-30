@@ -88,14 +88,14 @@ macro_rules! fnptr {
         // from the caller). The implementation expands one closure
         // parameter per `$t` via the `${index()}` builtin if available, but
         // we fall back to a hand-written tuple form for stability across
-        // Rust versions: we accept up to 8 type arguments — enough for all
-        // call sites we generate today — and the user gets a clear macro
-        // error otherwise.
+        // Rust versions: we accept up to 10 type arguments — enough for all
+        // call sites we generate today (e.g. `NBJacobian.jacobianNone`, which
+        // takes 9) — and the user gets a clear macro error otherwise.
         $crate::__fnptr_dispatch!($f $(, $t)+)
     }};
 }
 
-/// Internal helper for [`fnptr!`]: dispatches on arity (1..=8) without
+/// Internal helper for [`fnptr!`]: dispatches on arity (1..=10) without
 /// requiring the unstable `${index()}` builtin. Each arm just spells out the
 /// closure parameter names; adding more arms is mechanical if a generated
 /// call site ever needs >8 arguments.
@@ -118,6 +118,10 @@ macro_rules! __fnptr_dispatch {
         { |a1: $t1, a2: $t2, a3: $t3, a4: $t4, a5: $t5, a6: $t6, a7: $t7| -> ::anyhow::Result<_> { ::std::result::Result::Ok($f(a1, a2, a3, a4, a5, a6, a7)) } };
     ($f:path, $t1:ty, $t2:ty, $t3:ty, $t4:ty, $t5:ty, $t6:ty, $t7:ty, $t8:ty) =>
         { |a1: $t1, a2: $t2, a3: $t3, a4: $t4, a5: $t5, a6: $t6, a7: $t7, a8: $t8| -> ::anyhow::Result<_> { ::std::result::Result::Ok($f(a1, a2, a3, a4, a5, a6, a7, a8)) } };
+    ($f:path, $t1:ty, $t2:ty, $t3:ty, $t4:ty, $t5:ty, $t6:ty, $t7:ty, $t8:ty, $t9:ty) =>
+        { |a1: $t1, a2: $t2, a3: $t3, a4: $t4, a5: $t5, a6: $t6, a7: $t7, a8: $t8, a9: $t9| -> ::anyhow::Result<_> { ::std::result::Result::Ok($f(a1, a2, a3, a4, a5, a6, a7, a8, a9)) } };
+    ($f:path, $t1:ty, $t2:ty, $t3:ty, $t4:ty, $t5:ty, $t6:ty, $t7:ty, $t8:ty, $t9:ty, $t10:ty) =>
+        { |a1: $t1, a2: $t2, a3: $t3, a4: $t4, a5: $t5, a6: $t6, a7: $t7, a8: $t8, a9: $t9, a10: $t10| -> ::anyhow::Result<_> { ::std::result::Result::Ok($f(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10)) } };
 }
 
 /// MetaModelica's `sourceInfo()` built-in: returns a `SourceInfo` populated from

@@ -119,7 +119,7 @@ pub fn EntryString(mut entry: Entry) -> Result<ArcStr> {
 pub fn eliminateAliases(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<FlatModel::NFFlatModel>> {
     let mut flatModel: Arc<FlatModel::NFFlatModel> = flatModel;
     let mut sets: Sets = <Sets as ::std::default::Default>::default();
-    let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>;
+    let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
     let mut aliases: Arc<metamodelica::List<(Arc<FlowAlias::FlowAlias>, Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>)>> = metamodelica::nil();
     (flatModel, sets) = fromModel(flatModel.clone())?;
     (flatModel, aliases) = createAliases(sets.clone(), flatModel.clone())?;
@@ -361,7 +361,7 @@ pub fn negateSet(mut set: i32, mut sets: Sets) -> Result<Sets> {
     let mut sets: Sets = sets;
     let mut nodes: metamodelica::Array<i32>;
     let mut indices: metamodelica::Array<i32>;
-    let mut elements: Arc<UnorderedMap::UnorderedMap<Arc<FlowAlias::FlowAlias>, i32>>;
+    let mut elements: Arc<UnorderedMap::UnorderedMap<Arc<FlowAlias::FlowAlias>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<FlowAlias::FlowAlias>, i32>> as ::std::default::Default>::default();
     let mut root: i32 = 0;
     let mut alias: Arc<FlowAlias::FlowAlias> = Arc::new(<FlowAlias::FlowAlias as ::std::default::Default>::default());
     nodes = sets.nodes.clone();
@@ -407,16 +407,16 @@ pub fn createAliases(mut sets: Sets, mut flatModel: Arc<FlatModel::NFFlatModel>)
         }
         aliases = cons((representative.clone(), rest_aliases.clone()), aliases.clone());
     }
-    aliases = aliases.clone().reverse();
+    aliases = metamodelica::Dangerous::listReverseInPlace(aliases.clone());
     assign_field!(
-        flatModel.variables = listAppend(flatModel.variables.clone(), alias_vars.clone().reverse()),
-        flatModel.equations = listAppend(flatModel.equations.clone(), alias_eqs.clone().reverse())
+        flatModel.variables = listAppend(flatModel.variables.clone(), metamodelica::Dangerous::listReverseInPlace(alias_vars.clone())),
+        flatModel.equations = listAppend(flatModel.equations.clone(), metamodelica::Dangerous::listReverseInPlace(alias_eqs.clone()))
     );
     Ok((flatModel, aliases))
 }
 
 pub fn buildReplacements(mut aliases: Arc<metamodelica::List<(Arc<FlowAlias::FlowAlias>, Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>)>>) -> Result<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>> {
-    let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>;
+    let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
     let mut representative: Arc<FlowAlias::FlowAlias> = Arc::new(<FlowAlias::FlowAlias as ::std::default::Default>::default());
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut negative_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
@@ -571,7 +571,7 @@ pub fn evalAliasAttributes(mut alias: Arc<FlowAlias::FlowAlias>, mut startValues
         }
         accum_attrs = cons(attr.clone(), accum_attrs.clone());
     }
-    attrs = attrs.clone().reverse();
+    attrs = metamodelica::Dangerous::listReverseInPlace(attrs.clone());
     assign_field!(var.typeAttributes = attrs.clone());
     assign_field!(alias.variable = Some(var.clone()));
     Ok((alias, startValues, nominalValues, minValues, maxValues))
@@ -658,7 +658,7 @@ pub fn add(mut entry: Entry, mut sets: Sets) -> Result<(Sets, i32)> {
     let mut sets: Sets = sets;
     let mut index: i32 = 0;
     let mut nodes: metamodelica::Array<i32>;
-    let mut elements: IndexTable;
+    let mut elements: IndexTable = <Arc<UnorderedMap::UnorderedMap<Arc<FlowAlias::FlowAlias>, i32>> as ::std::default::Default>::default();
     let mut node_count: i32 = 0;
     let Sets { nodes: __pa0, elements: __pa1, nodeCount: __pa2 } = (sets.clone()) else { bail!("pattern mismatch") };
     nodes = __pa0.clone();
@@ -676,7 +676,7 @@ pub fn add(mut entry: Entry, mut sets: Sets) -> Result<(Sets, i32)> {
 pub fn addList(mut entries: Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>, mut sets: Sets) -> Result<Sets> {
     let mut sets: Sets = sets;
     let mut nodes: metamodelica::Array<i32>;
-    let mut elements: IndexTable;
+    let mut elements: IndexTable = <Arc<UnorderedMap::UnorderedMap<Arc<FlowAlias::FlowAlias>, i32>> as ::std::default::Default>::default();
     let mut node_count: i32 = 0;
     let mut sz: i32 = 0;
     let mut index: i32 = 0;
@@ -708,7 +708,7 @@ pub fn contains(mut entry: Entry, mut sets: Sets) -> bool {
 pub fn emptySets(mut setCount: i32) -> Sets {
     let mut sets: Sets = <Sets as ::std::default::Default>::default();
     let mut nodes: metamodelica::Array<i32>;
-    let mut elements: IndexTable;
+    let mut elements: IndexTable = <Arc<UnorderedMap::UnorderedMap<Arc<FlowAlias::FlowAlias>, i32>> as ::std::default::Default>::default();
     let mut sz: i32 = 0;
     sz = std::cmp::max(setCount.clone(), 3);
     nodes = arrayCreate(sz.clone(), -1);

@@ -1109,7 +1109,6 @@ pub mod VariableAttributes {
         StateSelect::DEFAULT => literal!("StateSelect = default"),
         StateSelect::PREFER => literal!("StateSelect = prefer"),
         StateSelect::ALWAYS => literal!("StateSelect = always"),
-        _ => bail!("match: no arm matched"),
     })).clone();
         Ok(r#str)
     }
@@ -1122,7 +1121,6 @@ pub mod VariableAttributes {
         TearingSelect::DEFAULT => literal!("TearingSelect = default"),
         TearingSelect::PREFER => literal!("TearingSelect = prefer"),
         TearingSelect::ALWAYS => literal!("TearingSelect = always"),
-        _ => bail!("match: no arm matched"),
     })).clone();
         Ok(r#str)
     }

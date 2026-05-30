@@ -431,16 +431,6 @@ pub fn isTrivialCref(mut exp: Arc<NFExpression>) -> bool {
     b
 }
 
-pub fn isRelation(mut exp: Arc<NFExpression>) -> bool {
-    let mut b: bool = false;
-    b = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ RELATION { .. } => true,
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    b
-}
-
 pub fn hash(mut exp: Arc<NFExpression>) -> i32 {
     let mut hash: i32 = hashContinue(exp.clone(), Util::HASH_SEED.clone()).unwrap();
     hash
@@ -3047,8 +3037,8 @@ pub fn toDAERecord(mut ty: Arc<Type::NFType>, mut path: Arc<Path>, mut args: Arc
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    field_names = field_names.clone().reverse();
-    dargs = dargs.clone().reverse();
+    field_names = metamodelica::Dangerous::listReverseInPlace(field_names.clone());
+    dargs = metamodelica::Dangerous::listReverseInPlace(dargs.clone());
     exp = if (Type::isBoxed(ty.clone())) {Arc::new(DAE::Exp::METARECORDCALL { path: path.clone(), args: dargs.clone(), fieldNames: field_names.clone(), index: -1, typeVars: metamodelica::nil() })} else {Arc::new(DAE::Exp::RECORD { path: path.clone(), exps: dargs.clone(), comp: field_names.clone(), ty: Type::toDAE(ty.clone(), true)? })};
     Ok(exp)
 }
@@ -3120,8 +3110,8 @@ pub fn toDAEValueRecord(mut ty: Arc<Type::NFType>, mut path: Arc<Path>, mut args
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    field_names = field_names.clone().reverse();
-    values = values.clone().reverse();
+    field_names = metamodelica::Dangerous::listReverseInPlace(field_names.clone());
+    values = metamodelica::Dangerous::listReverseInPlace(values.clone());
     value = Arc::new(Values::Value::RECORD { record_: path.clone(), orderd: values.clone(), comp: field_names.clone(), index: -1 });
     Ok(value)
 }
@@ -5705,7 +5695,7 @@ pub fn arrayElementList(mut array: Arc<NFExpression>) -> Result<Arc<metamodelica
 
 pub fn arrayScalarElements(mut exp: Arc<NFExpression>) -> Arc<metamodelica::List<Arc<NFExpression>>> {
     let mut elements: Arc<metamodelica::List<Arc<NFExpression>>> = metamodelica::nil();
-    elements = arrayScalarElements_impl(exp.clone(), metamodelica::nil()).reverse();
+    elements = metamodelica::Dangerous::listReverseInPlace(arrayScalarElements_impl(exp.clone(), metamodelica::nil()));
     elements
 }
 
@@ -6552,7 +6542,7 @@ pub fn mapSplitExpressions(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::
 
     let mut outExp: Arc<NFExpression> = Arc::new(NFExpression::END);
     let mut osub_repls: Option<Arc<UnorderedMap::UnorderedMap<Arc<Subscript::NFSubscript>, Arc<NFExpression>>>> = None;
-    let mut sub_repls: Arc<UnorderedMap::UnorderedMap<Arc<Subscript::NFSubscript>, Arc<NFExpression>>>;
+    let mut sub_repls: Arc<UnorderedMap::UnorderedMap<Arc<Subscript::NFSubscript>, Arc<NFExpression>>> = <Arc<UnorderedMap::UnorderedMap<Arc<Subscript::NFSubscript>, Arc<NFExpression>>> as ::std::default::Default>::default();
     let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
     let mut sub_exps: Arc<metamodelica::List<Arc<NFExpression>>> = metamodelica::nil();
     let mut dim_sizes: Arc<metamodelica::List<Arc<NFExpression>>> = metamodelica::nil();
@@ -6610,7 +6600,7 @@ pub fn replaceSplitSubscripts2(mut subscript: Arc<Subscript::NFSubscript>, mut s
     let mut subscript: Arc<Subscript::NFSubscript> = subscript;
     let mut subRepls: Option<Arc<UnorderedMap::UnorderedMap<Arc<Subscript::NFSubscript>, Arc<NFExpression>>>> = subRepls;
     let mut sub_exp: Arc<NFExpression> = Arc::new(NFExpression::END);
-    let mut sub_repls: Arc<UnorderedMap::UnorderedMap<Arc<Subscript::NFSubscript>, Arc<NFExpression>>>;
+    let mut sub_repls: Arc<UnorderedMap::UnorderedMap<Arc<Subscript::NFSubscript>, Arc<NFExpression>>> = <Arc<UnorderedMap::UnorderedMap<Arc<Subscript::NFSubscript>, Arc<NFExpression>>> as ::std::default::Default>::default();
     subscript = (::match_deref::match_deref! { match &(subscript.clone()) {
         Deref @ Subscript::SPLIT_INDEX { .. } => {
             if isSome(subRepls.clone()) {

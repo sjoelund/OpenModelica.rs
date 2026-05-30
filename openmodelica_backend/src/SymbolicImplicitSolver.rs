@@ -101,7 +101,7 @@ fn symSolverWork(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<BackendDAE::I
         shared.globalKnownVars = knownVariables.clone(),
         shared.backendDAEType = crate::BackendDAE::BackendDAEType::INLINESYSTEM
     );
-    inlineBDAE = BackendDAE::DAE(osystlst.clone(), shared.clone())?;
+    inlineBDAE = Arc::new(BackendDAE::BackendDAE { eqs: osystlst.clone(), shared: shared.clone() });
     execbool = FlagsUtil::disableDebug(Flags::EXEC_STAT.clone())?;
     if Flags::isSet(Flags::DUMP_INLINE_SOLVER.clone())? {
         BackendDump::bltdump((literal!("Generated inline system:")).clone(), inlineBDAE.clone())?;
@@ -115,7 +115,7 @@ fn symSolverWork(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<BackendDAE::I
         BackendDump::dumpCompShort(inlineBDAE.clone())?;
     }
     let __pa0 = ::match_deref::match_deref! { match &(inlineBDAE.clone()) {
-        Deref @ DAE { UNIQUEIO: __pa0, derivativeNamePrefix: _, .. } => __pa0.clone(),
+        Deref @ BackendDAE::BackendDAE { eqs: __pa0, shared: _ } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
     localInline = __pa0.clone();
@@ -129,7 +129,7 @@ fn symSolverUpdateSyst(mut iSyst: Arc<BackendDAE::EqSystem>, mut inKnVars: Backe
     let mut oKnVars: BackendDAE::Variables = inKnVars.clone();
     let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
     let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
-    let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
+    let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     let mut crlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     oSyst = (::match_deref::match_deref! { match &(iSyst.clone()) {
         syst @ Deref @ BackendDAE::EqSystem { orderedEqs: eqns, orderedVars: vars, .. } => {
@@ -152,7 +152,7 @@ fn symSolverUpdateSyst(mut iSyst: Arc<BackendDAE::EqSystem>, mut inKnVars: Backe
             );
             BackendDAEUtil::clearEqSyst(syst.clone())?
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((oSyst, oKnVars))
 }

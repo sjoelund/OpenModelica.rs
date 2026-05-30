@@ -869,27 +869,27 @@ pub fn ScalarVariableAttributesXml(mut in_txt: Tpl::Text, mut in_a_simVar: SimCo
 pub fn getCausalityXml(mut in_txt: Tpl::Text, mut in_a_c: Option<SimCodeVar::Causality>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_c.clone()) {
-        (mut txt, Some(SimCodeVar::Causality::NONECAUS)) => {
+        (mut txt, Some(SimCodeVar::Causality::NONECAUS { .. })) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("none")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Some(SimCodeVar::Causality::OUTPUT)) => {
+        (mut txt, Some(SimCodeVar::Causality::OUTPUT { .. })) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("output")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Some(SimCodeVar::Causality::INPUT)) => {
+        (mut txt, Some(SimCodeVar::Causality::INPUT { .. })) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("input")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Some(SimCodeVar::Causality::LOCAL)) => {
+        (mut txt, Some(SimCodeVar::Causality::LOCAL { .. })) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("local")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Some(SimCodeVar::Causality::PARAMETER)) => {
+        (mut txt, Some(SimCodeVar::Causality::PARAMETER { .. })) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("parameter")).clone() }))?;
             txt.clone()
         },
-        (mut txt, Some(SimCodeVar::Causality::CALCULATED_PARAMETER)) => {
+        (mut txt, Some(SimCodeVar::Causality::CALCULATED_PARAMETER { .. })) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("calculatedParameter")).clone() }))?;
             txt.clone()
         },
@@ -904,15 +904,15 @@ pub fn getCausalityXml(mut in_txt: Tpl::Text, mut in_a_c: Option<SimCodeVar::Cau
 pub fn getVariablityXml(mut in_txt: Tpl::Text, mut in_a_varKind: BackendDAE::VarKind) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_varKind.clone()) {
-        (mut txt, BackendDAE::VarKind::DISCRETE) => {
+        (mut txt, BackendDAE::VarKind::DISCRETE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("discrete")).clone() }))?;
             txt.clone()
         },
-        (mut txt, BackendDAE::VarKind::PARAM) => {
+        (mut txt, BackendDAE::VarKind::PARAM { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("parameter")).clone() }))?;
             txt.clone()
         },
-        (mut txt, BackendDAE::VarKind::CONST) => {
+        (mut txt, BackendDAE::VarKind::CONST { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("constant")).clone() }))?;
             txt.clone()
         },
@@ -927,7 +927,7 @@ pub fn getVariablityXml(mut in_txt: Tpl::Text, mut in_a_varKind: BackendDAE::Var
 pub fn getAliasVarXml(mut in_txt: Tpl::Text, mut in_a_aliasvar: SimCodeVar::AliasVariable) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_aliasvar.clone()) {
-        (mut txt, SimCodeVar::AliasVariable::NOALIAS) => {
+        (mut txt, SimCodeVar::AliasVariable::NOALIAS { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("noAlias")).clone() }))?;
             txt.clone()
         },
@@ -950,7 +950,7 @@ pub fn getAliasVarXml(mut in_txt: Tpl::Text, mut in_a_aliasvar: SimCodeVar::Alia
 pub fn variableCategoryXml(mut in_txt: Tpl::Text, mut in_a_varKind: BackendDAE::VarKind) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_varKind.clone()) {
-        (mut txt, BackendDAE::VarKind::VARIABLE) => {
+        (mut txt, BackendDAE::VarKind::VARIABLE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("algebraic")).clone() }))?;
             txt.clone()
         },
@@ -958,27 +958,27 @@ pub fn variableCategoryXml(mut in_txt: Tpl::Text, mut in_a_varKind: BackendDAE::
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("state")).clone() }))?;
             txt.clone()
         },
-        (mut txt, BackendDAE::VarKind::STATE_DER) => {
+        (mut txt, BackendDAE::VarKind::STATE_DER { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("derivative")).clone() }))?;
             txt.clone()
         },
-        (mut txt, BackendDAE::VarKind::DUMMY_DER) => {
+        (mut txt, BackendDAE::VarKind::DUMMY_DER { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("algebraic")).clone() }))?;
             txt.clone()
         },
-        (mut txt, BackendDAE::VarKind::DUMMY_STATE) => {
+        (mut txt, BackendDAE::VarKind::DUMMY_STATE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("algebraic")).clone() }))?;
             txt.clone()
         },
-        (mut txt, BackendDAE::VarKind::DISCRETE) => {
+        (mut txt, BackendDAE::VarKind::DISCRETE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("algebraic")).clone() }))?;
             txt.clone()
         },
-        (mut txt, BackendDAE::VarKind::PARAM) => {
+        (mut txt, BackendDAE::VarKind::PARAM { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("independentParameter")).clone() }))?;
             txt.clone()
         },
-        (mut txt, BackendDAE::VarKind::CONST) => {
+        (mut txt, BackendDAE::VarKind::CONST { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("independentConstant")).clone() }))?;
             txt.clone()
         },
@@ -987,11 +987,11 @@ pub fn variableCategoryXml(mut in_txt: Tpl::Text, mut in_a_varKind: BackendDAE::
             txt = dotPathXml(txt.clone(), i_fullClassName.clone())?;
             txt.clone()
         },
-        (mut txt, BackendDAE::VarKind::JAC_VAR) => {
+        (mut txt, BackendDAE::VarKind::JAC_VAR { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("jacobianVar")).clone() }))?;
             txt.clone()
         },
-        (mut txt, BackendDAE::VarKind::JAC_TMP_VAR) => {
+        (mut txt, BackendDAE::VarKind::JAC_TMP_VAR { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("jacobianTmpVar")).clone() }))?;
             txt.clone()
         },
@@ -1315,7 +1315,7 @@ pub fn crefXml(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) -> Re
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<exp:Time>time</exp:Time>")).clone() }))?;
             txt.clone()
         },
-        (txt, Deref @ DAE::ComponentRef::WILD) => {
+        (txt, Deref @ DAE::ComponentRef::WILD { .. }) => {
             txt.clone()
         },
         (txt, i_cr) => {
@@ -1487,7 +1487,7 @@ pub fn arraysubscriptStrXml(mut in_txt: Tpl::Text, mut in_a_subscript: Arc<DAE::
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("</exp:IndexExpression>")).clone() }))?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Subscript::WHOLEDIM) => {
+        (txt, Deref @ DAE::Subscript::WHOLEDIM { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("WHOLEDIM")).clone() }))?;
             txt.clone()
@@ -1548,7 +1548,7 @@ pub fn crefToXmlStr(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentRef>) 
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("</exp:TimedVariable>")).clone() }))?;
             txt.clone()
         },
-        (txt, Deref @ DAE::ComponentRef::WILD) => {
+        (txt, Deref @ DAE::ComponentRef::WILD { .. }) => {
             txt.clone()
         },
         (txt, _) => {
@@ -1756,7 +1756,7 @@ pub fn subscriptStrXml(mut in_txt: Tpl::Text, mut in_a_subscript: Arc<DAE::Subsc
             txt = Tpl::writeStr(txt.clone(), (intString(i_i.clone())).clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Subscript::WHOLEDIM) => {
+        (txt, Deref @ DAE::Subscript::WHOLEDIM { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("WHOLEDIM")).clone() }))?;
             txt.clone()
@@ -5129,7 +5129,7 @@ pub fn algStmtAssignXml(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone(), in_a_context.clone(), in_a_varDecls.clone())) {
-        (txt, Deref @ DAE::Statement::STMT_ASSIGN { exp: i_e, exp1: Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD, .. }, .. }, a_context, a_varDecls) => {
+        (txt, Deref @ DAE::Statement::STMT_ASSIGN { exp: i_e, exp1: Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD { .. }, .. }, .. }, a_context, a_varDecls) => {
             let mut l_expPart: Tpl::Text;
             let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -5644,7 +5644,7 @@ pub fn writeLhsCrefXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut i
     let mut out_a_preExp: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_preExp, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_rhsStr.clone(), in_a_context.clone(), in_a_preExp.clone(), in_a_varDecls.clone())) {
-        (txt, Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD, .. }, _, _, a_preExp, a_varDecls) => {
+        (txt, Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD { .. }, .. }, _, _, a_preExp, a_varDecls) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<fun:EmptyOutputArgument></fun:EmptyOutputArgument>")).clone() }))?;
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
@@ -6363,7 +6363,7 @@ pub fn elseExprXml(mut in_txt: Tpl::Text, mut in_a_else__: Arc<DAE::Else>, mut i
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_else__.clone(), in_a_context.clone(), in_a_varDecls.clone())) {
-        (txt, Deref @ DAE::Else::NOELSE, _, a_varDecls) => {
+        (txt, Deref @ DAE::Else::NOELSE { .. }, _, a_varDecls) => {
             (txt.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Else::ELSEIF { else_: i_else__, statementLst: i_statementLst, exp: i_exp }, a_context, a_varDecls) => {
@@ -6456,7 +6456,7 @@ pub fn scalarLhsCrefXml(mut in_txt: Tpl::Text, mut in_a_ecr: Arc<DAE::Exp>, mut 
             txt = crefXml(txt.clone(), i_ecr_componentRef.clone())?;
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
-        (txt, Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD, .. }, _, a_preExp, a_varDecls) => {
+        (txt, Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD { .. }, .. }, _, a_preExp, a_varDecls) => {
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, _, _, a_preExp, a_varDecls) => {
@@ -7290,7 +7290,7 @@ fn fun_307(mut in_txt: Tpl::Text, mut in_a_sub: Arc<DAE::Subscript>, mut in_a_va
             txt = Tpl::writeText(txt.clone(), l_str.clone())?;
             (txt.clone(), a_varDecls.clone(), a_preExp.clone())
         },
-        (txt, Deref @ DAE::Subscript::WHOLEDIM, a_varDecls, a_preExp, _) => {
+        (txt, Deref @ DAE::Subscript::WHOLEDIM { .. }, a_varDecls, a_preExp, _) => {
             let mut l_str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_str = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(1), (int*)0, 'W'")).clone() }))?;
@@ -7795,7 +7795,7 @@ fn fun_323(mut in_txt: Tpl::Text, mut in_a_sub: Arc<DAE::Subscript>, mut in_a_va
             txt = Tpl::writeText(txt.clone(), l_str.clone())?;
             (txt.clone(), a_varDecls.clone(), a_afterExp.clone())
         },
-        (txt, Deref @ DAE::Subscript::WHOLEDIM, a_varDecls, a_afterExp, _) => {
+        (txt, Deref @ DAE::Subscript::WHOLEDIM { .. }, a_varDecls, a_afterExp, _) => {
             let mut l_str: Tpl::Text;
             let mut txt = (*txt).clone();
             l_str = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(1), (int*)0, 'W'")).clone() }))?;
@@ -9526,7 +9526,7 @@ fn fun_366(mut in_txt: Tpl::Text, mut in_a_preExp: Tpl::Text, mut in_a_argStr: T
 fn fun_367(mut in_txt: Tpl::Text, mut in_a_attr_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_attr_ty.clone())) {
-        (txt, Deref @ DAE::Type::T_NORETCALL) => {
+        (txt, Deref @ DAE::Type::T_NORETCALL { .. }) => {
             txt.clone()
         },
         (txt, i_attr_ty) => {
@@ -9561,7 +9561,7 @@ fn fun_369(mut in_txt: Tpl::Text, mut in_a_attr_ty: Arc<DAE::Type>, mut in_a_var
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_attr_ty.clone(), in_a_varDecls.clone(), in_a_retType.clone())) {
-        (txt, Deref @ DAE::Type::T_NORETCALL, a_varDecls, _) => {
+        (txt, Deref @ DAE::Type::T_NORETCALL { .. }, a_varDecls, _) => {
             (txt.clone(), a_varDecls.clone())
         },
         (txt, _, a_varDecls, a_retType) => {
@@ -9612,7 +9612,7 @@ fn fun_370(mut in_txt: Tpl::Text, mut in_a_attr_builtin: bool, mut in_a_builtinF
 fn fun_371(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_builtinFunctionName: Tpl::Text, mut in_a_result: Tpl::Text, mut in_a_funName: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_exp.clone(), in_a_builtinFunctionName.clone(), in_a_result.clone(), in_a_funName.clone())) {
-        (txt, Deref @ DAE::Exp::CALL { attr: Deref @ DAE::CallAttributes { ty: Deref @ DAE::Type::T_NORETCALL, .. }, .. }, _, _, _) => {
+        (txt, Deref @ DAE::Exp::CALL { attr: Deref @ DAE::CallAttributes { ty: Deref @ DAE::Type::T_NORETCALL { .. }, .. }, .. }, _, _, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/* NORETCALL */")).clone() }))?;
             txt.clone()
@@ -11649,7 +11649,7 @@ pub fn expTypeShortXml(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>) -> 
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("fnptr")).clone() }))?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Type::T_UNKNOWN) => {
+        (txt, Deref @ DAE::Type::T_UNKNOWN { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Complex")).clone() }))?;
             txt.clone()
@@ -12404,7 +12404,7 @@ pub fn dimensionXml(mut in_txt: Tpl::Text, mut in_a_d: Arc<DAE::Dimension>) -> R
             txt = Tpl::writeStr(txt.clone(), (intString(i_size.clone())).clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Dimension::DIM_UNKNOWN) => {
+        (txt, Deref @ DAE::Dimension::DIM_UNKNOWN { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(":")).clone() }))?;
             txt.clone()

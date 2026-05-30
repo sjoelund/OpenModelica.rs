@@ -148,7 +148,7 @@ pub fn addAtomicSets(mut asets: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::
 pub fn intersection(mut set1: Arc<SBSet>, mut set2: Arc<SBSet>) -> Result<Arc<SBSet>> {
     let mut outSet: Arc<SBSet> = Arc::new(<SBSet as ::std::default::Default>::default());
     let mut int_set: Arc<SBAtomicSet::SBAtomicSet> = Arc::new(<SBAtomicSet::SBAtomicSet as ::std::default::Default>::default());
-    let mut res: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>>;
+    let mut res: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>> = <Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>> as ::std::default::Default>::default();
     if UnorderedSet::isEmpty(set1.asets.clone()) || UnorderedSet::isEmpty(set2.asets.clone()) {
         outSet = newEmpty();
         return Ok(outSet.clone());
@@ -170,9 +170,9 @@ pub fn intersection(mut set1: Arc<SBSet>, mut set2: Arc<SBSet>) -> Result<Arc<SB
 
 pub fn complement(mut set1: Arc<SBSet>, mut set2: Arc<SBSet>) -> Result<Arc<SBSet>> {
     let mut outSet: Arc<SBSet> = Arc::new(<SBSet as ::std::default::Default>::default());
-    let mut int_res: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>>;
-    let mut aux: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>>;
-    let mut comp_res: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>>;
+    let mut int_res: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>> = <Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>> as ::std::default::Default>::default();
+    let mut aux: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>> = <Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>> as ::std::default::Default>::default();
+    let mut comp_res: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>> = <Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>> as ::std::default::Default>::default();
     let mut new_sets: Arc<SBSet> = Arc::new(<SBSet as ::std::default::Default>::default());
     outSet = newEmpty();
     let __pa0 = ::match_deref::match_deref! { match &(intersection(set1.clone(), set2.clone())?) {

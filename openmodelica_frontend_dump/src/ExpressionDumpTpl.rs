@@ -415,7 +415,7 @@ fn lm_33(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Re
 fn fun_34(mut in_txt: Tpl::Text, mut in_a_ri_iterType: Absyn::ReductionIterType) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_ri_iterType.clone()) {
-        (mut txt, Absyn::ReductionIterType::THREAD) => {
+        (mut txt, Absyn::ReductionIterType::THREAD { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("threaded ")).clone() }))?;
             txt.clone()
         },
@@ -1077,7 +1077,7 @@ pub fn dumpExpListCrefs(mut txt: Tpl::Text, mut a_expl: Arc<metamodelica::List<A
 pub fn dumpClockKind(mut in_txt: Tpl::Text, mut in_a_clk: Arc<DAE::ClockKind>, mut in_a_stringDelimiter: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_clk.clone(), in_a_stringDelimiter.clone())) {
-        (txt, Deref @ DAE::ClockKind::INFERRED_CLOCK, _) => {
+        (txt, Deref @ DAE::ClockKind::INFERRED_CLOCK { .. }, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Clock()")).clone() }))?;
             txt.clone()
@@ -1181,7 +1181,7 @@ pub fn dumpCref(mut in_txt: Tpl::Text, mut in_a_cref: Arc<DAE::ComponentRef>) ->
             txt = fun_45(txt.clone(), ret_2.clone(), l_cref__str.clone(), l_sub__str.clone(), (i_ident.clone()).clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::ComponentRef::WILD) => {
+        (txt, Deref @ DAE::ComponentRef::WILD { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
             txt.clone()
@@ -1294,7 +1294,7 @@ pub fn dumpSubscripts(mut in_txt: Tpl::Text, mut in_a_subscripts: Arc<metamodeli
 pub fn dumpSubscript(mut in_txt: Tpl::Text, mut in_a_subscript: Arc<DAE::Subscript>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_subscript.clone())) {
-        (txt, Deref @ DAE::Subscript::WHOLEDIM) => {
+        (txt, Deref @ DAE::Subscript::WHOLEDIM { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(":")).clone() }))?;
             txt.clone()
@@ -1899,7 +1899,7 @@ pub fn dumpType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tp
             txt = dumpType(txt.clone(), i_ty.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Type::T_UNKNOWN) => {
+        (txt, Deref @ DAE::Type::T_UNKNOWN { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("#T_UNKNOWN#")).clone() }))?;
             txt.clone()
@@ -1909,7 +1909,7 @@ pub fn dumpType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tp
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Any")).clone() }))?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Type::T_NORETCALL) => {
+        (txt, Deref @ DAE::Type::T_NORETCALL { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("#T_NORETCALL#")).clone() }))?;
             txt.clone()
@@ -1984,7 +1984,7 @@ pub fn dumpDimension(mut in_txt: Tpl::Text, mut in_a_dim: Arc<DAE::Dimension>) -
             txt = dumpExp(txt.clone(), i_exp.clone(), (literal!("\"")).clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Dimension::DIM_UNKNOWN) => {
+        (txt, Deref @ DAE::Dimension::DIM_UNKNOWN { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(":")).clone() }))?;
             txt.clone()
@@ -2008,7 +2008,7 @@ pub fn dumpClassState(mut txt: Tpl::Text, mut a_state: ClassInf::State) -> Resul
 pub fn dumpMatchType(mut in_txt: Tpl::Text, mut in_a_ty: DAE::MatchType) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
-        (txt, DAE::MatchType::MATCHCONTINUE) => {
+        (txt, DAE::MatchType::MATCHCONTINUE { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("matchcontinue")).clone() }))?;
             txt.clone()
@@ -2155,17 +2155,17 @@ fn lm_76(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<DAE::P
 pub fn dumpPattern(mut in_txt: Tpl::Text, mut in_a_pattern: Arc<DAE::Pattern>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_pattern.clone())) {
-        (txt, Deref @ DAE::Pattern::PAT_WILD) => {
+        (txt, Deref @ DAE::Pattern::PAT_WILD { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Pattern::PAT_AS { id: i_id, pat: Deref @ DAE::Pattern::PAT_WILD, .. }) => {
+        (txt, Deref @ DAE::Pattern::PAT_AS { id: i_id, pat: Deref @ DAE::Pattern::PAT_WILD { .. }, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (i_id.clone()).clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Pattern::PAT_AS_FUNC_PTR { id: i_id, pat: Deref @ DAE::Pattern::PAT_WILD }) => {
+        (txt, Deref @ DAE::Pattern::PAT_AS_FUNC_PTR { id: i_id, pat: Deref @ DAE::Pattern::PAT_WILD { .. } }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (i_id.clone()).clone())?;
             txt.clone()
@@ -2458,7 +2458,7 @@ fn lm_89(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Re
 fn fun_90(mut in_txt: Tpl::Text, mut in_a_ri_iterType: Absyn::ReductionIterType) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_ri_iterType.clone()) {
-        (mut txt, Absyn::ReductionIterType::THREAD) => {
+        (mut txt, Absyn::ReductionIterType::THREAD { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("threaded ")).clone() }))?;
             txt.clone()
         },

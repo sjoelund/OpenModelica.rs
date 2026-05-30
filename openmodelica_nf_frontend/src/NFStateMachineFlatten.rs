@@ -164,8 +164,8 @@ pub fn flatten(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<FlatMod
     let mut smVars: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
     let mut resultVars: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
     let mut allStateCrefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-    let mut outerVarMap: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>)>>>>;
-    let mut stateToSem: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, FlatSmSemantics>>;
+    let mut outerVarMap: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>)>>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>)>>>> as ::std::default::Default>::default();
+    let mut stateToSem: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, FlatSmSemantics>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, FlatSmSemantics>> as ::std::default::Default>::default();
     let mut smGroupPairs: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>)>> = metamodelica::nil();
     let mut smGroupsSorted: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>)>> = metamodelica::nil();
     let mut sem: FlatSmSemantics = <FlatSmSemantics as ::std::default::Default>::default();
@@ -414,7 +414,7 @@ fn smCompToDataFlow(mut stateCref: Arc<ComponentRef::NFComponentRef>, mut sem: F
     let mut accVars: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = accVars;
     let mut stateEqs: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
     let mut stateVars: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
-    let mut crToStart: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>;
+    let mut crToStart: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
     let mut transformedEqs: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
     let mut extraVars: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
     stateEqs = List::filterOnTrue(allEquations.clone(), Arc::new({ let __pe_b1 = stateCref.clone(); move |__pe_a0| isEquationOfState(__pe_a0, __pe_b1.clone()) }));

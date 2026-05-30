@@ -150,7 +150,7 @@ pub fn scalarizeVariables(mut vars: Arc<metamodelica::List<Arc<Variable::NFVaria
         let mut v = v.clone();
         outVars = scalarizeVariable(v.clone(), outVars.clone(), forceScalarize.clone())?;
     }
-    outVars = outVars.clone().reverse();
+    outVars = metamodelica::Dangerous::listReverseInPlace(outVars.clone());
     Ok(outVars)
 }
 
@@ -379,7 +379,7 @@ pub fn scalarizeEquations(mut eql: Arc<metamodelica::List<Arc<Equation::NFEquati
         let mut eq = eq.clone();
         equations = scalarizeEquation(eq.clone(), equations.clone(), forceScalarize.clone())?;
     }
-    equations = equations.clone().reverse();
+    equations = metamodelica::Dangerous::listReverseInPlace(equations.clone());
     Ok(equations)
 }
 
@@ -457,7 +457,7 @@ pub fn scalarizeIfEquation(mut branches: Arc<metamodelica::List<Arc<Equation::Br
         }
     }
     if !(bl.clone().is_empty()) {
-        equations = cons(Arc::new(Equation::NFEquation::IF { branches: bl.clone().reverse(), scope: scope.clone(), source: source.clone() }), equations.clone());
+        equations = cons(Arc::new(Equation::NFEquation::IF { branches: metamodelica::Dangerous::listReverseInPlace(bl.clone()), scope: scope.clone(), source: source.clone() }), equations.clone());
     }
     Ok(equations)
 }
@@ -483,7 +483,7 @@ pub fn scalarizeWhenEquation(mut branches: Arc<metamodelica::List<Arc<Equation::
         }
         bl = cons(Equation::makeBranch(cond.clone(), body.clone(), var.clone()), bl.clone());
     }
-    equations = cons(Arc::new(Equation::NFEquation::WHEN { branches: bl.clone().reverse(), scope: scope.clone(), source: source.clone() }), equations.clone());
+    equations = cons(Arc::new(Equation::NFEquation::WHEN { branches: metamodelica::Dangerous::listReverseInPlace(bl.clone()), scope: scope.clone(), source: source.clone() }), equations.clone());
     Ok(equations)
 }
 
@@ -499,7 +499,7 @@ pub fn scalarizeStatements(mut stmts: Arc<metamodelica::List<Arc<Statement::NFSt
         let mut s = s.clone();
         statements = scalarizeStatement(s.clone(), statements.clone())?;
     }
-    statements = statements.clone().reverse();
+    statements = metamodelica::Dangerous::listReverseInPlace(statements.clone());
     Ok(statements)
 }
 
@@ -530,7 +530,7 @@ pub fn scalarizeIfStatement(mut branches: Arc<metamodelica::List<(Arc<Expression
         }
     }
     if !(bl.clone().is_empty()) {
-        statements = cons(Arc::new(Statement::NFStatement::IF { branches: bl.clone().reverse(), source: source.clone() }), statements.clone());
+        statements = cons(Arc::new(Statement::NFStatement::IF { branches: metamodelica::Dangerous::listReverseInPlace(bl.clone()), source: source.clone() }), statements.clone());
     }
     Ok(statements)
 }
@@ -549,7 +549,7 @@ pub fn scalarizeWhenStatement(mut branches: Arc<metamodelica::List<(Arc<Expressi
         }
         bl = cons((cond.clone(), body.clone()), bl.clone());
     }
-    statements = cons(Arc::new(Statement::NFStatement::WHEN { branches: bl.clone().reverse(), source: source.clone() }), statements.clone());
+    statements = cons(Arc::new(Statement::NFStatement::WHEN { branches: metamodelica::Dangerous::listReverseInPlace(bl.clone()), source: source.clone() }), statements.clone());
     Ok(statements)
 }
 

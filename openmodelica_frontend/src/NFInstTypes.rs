@@ -287,7 +287,8 @@ pub enum DaePrefixes {
 }
 pub use self::DaePrefixes::{NO_DAE_PREFIXES,DAE_PREFIXES};
 
-pub const fn DEFAULT_CONST_DAE_PREFIXES() -> DaePrefixes { DaePrefixes::DAE_PREFIXES { visibility: openmodelica_frontend_types::DAE::VarVisibility::PUBLIC, variability: openmodelica_frontend_types::DAE::VarKind::CONST, finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, direction: openmodelica_frontend_types::DAE::VarDirection::BIDIR, connectorType: openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR } }
+thread_local! { static __DEFAULT_CONST_DAE_PREFIXES_TLS: DaePrefixes = DaePrefixes::DAE_PREFIXES { visibility: openmodelica_frontend_types::DAE::VarVisibility::PUBLIC, variability: openmodelica_frontend_types::DAE::VarKind::CONST, finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, direction: openmodelica_frontend_types::DAE::VarDirection::BIDIR, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR) }; }
+pub fn DEFAULT_CONST_DAE_PREFIXES() -> DaePrefixes { __DEFAULT_CONST_DAE_PREFIXES_TLS.with(|__t| __t.clone()) }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Equation {

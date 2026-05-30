@@ -980,7 +980,7 @@ pub fn printComponentRefStr(mut inComponentRef: Arc<DAE::ComponentRef>) -> Resul
             r#str = stringAppendList(list![(r#str.clone()).clone(), (strseb.clone()).clone(), (strrest.clone()).clone()]);
             r#str.clone()
         },
-        Deref @ DAE::ComponentRef::WILD => {
+        Deref @ DAE::ComponentRef::WILD { .. } => {
             literal!("_")
         },
         _ => bail!("match: no arm matched"),

@@ -127,7 +127,7 @@ thread_local! { static __LU_COMPLEXUNITS_TLS: Arc<metamodelica::List<(ArcStr, Un
 pub fn LU_COMPLEXUNITS() -> Arc<metamodelica::List<(ArcStr, Unit)>> { __LU_COMPLEXUNITS_TLS.with(|__t| __t.clone()) }
 
 pub fn getKnownUnits() -> Result<StringToUnitTable> {
-    let mut outKnownUnits: StringToUnitTable;
+    let mut outKnownUnits: StringToUnitTable = <Arc<UnorderedMap::UnorderedMap<ArcStr, Unit>> as ::std::default::Default>::default();
     let mut s: ArcStr = arcstr::literal!("");
     let mut ut: Unit;
     outKnownUnits = UnorderedMap::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), Util::nextPrime((LU_COMPLEXUNITS().clone().len() as i32)));
@@ -140,7 +140,7 @@ pub fn getKnownUnits() -> Result<StringToUnitTable> {
 }
 
 pub fn getKnownUnitsInverse() -> Result<UnitToStringTable> {
-    let mut outKnownUnitsInverse: UnitToStringTable;
+    let mut outKnownUnitsInverse: UnitToStringTable = <Arc<UnorderedMap::UnorderedMap<Unit, ArcStr>> as ::std::default::Default>::default();
     let mut s: ArcStr = arcstr::literal!("");
     let mut ut: Unit;
     outKnownUnitsInverse = UnorderedMap::new((std::sync::Arc::new(fnptr!(hash, Unit)) as std::sync::Arc<dyn ::std::ops::Fn(Unit) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(isEqual, Unit, Unit)) as std::sync::Arc<dyn ::std::ops::Fn(Unit, Unit) -> Result<bool> + 'static>), Util::nextPrime((LU_COMPLEXUNITS().clone().len() as i32)));
@@ -153,7 +153,7 @@ pub fn getKnownUnitsInverse() -> Result<UnitToStringTable> {
 }
 
 pub fn newCrefUnitTable(mut size: i32) -> CrefToUnitTable {
-    let mut table: CrefToUnitTable;
+    let mut table: CrefToUnitTable = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Unit>> as ::std::default::Default>::default();
     table = UnorderedMap::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), size.clone());
     table
 }
@@ -256,7 +256,6 @@ pub fn unit2string(mut unit: Unit) -> Result<ArcStr> {
         Unit::UNKNOWN { .. } => {
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("UNKOWN(")); __mm_s.push_str(&*var_field!(unit.unit, Unit::UNKNOWN).clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
         },
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(outString)
 }

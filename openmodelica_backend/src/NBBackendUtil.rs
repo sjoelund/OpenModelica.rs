@@ -421,7 +421,7 @@ pub fn getLocalSystem(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, 
 
 pub fn makeFDerString(mut r#str: ArcStr, mut i_opt: Option<i32>) -> ArcStr {
     let mut r#str: ArcStr = r#str;
-    let mut i: ArcStr = if (Util::isSome(i_opt.clone())) {intString(Util::getOption(i_opt.clone()).unwrap())} else {literal!("")};
+    let mut i: ArcStr = if (isSome(i_opt.clone())) {intString(Util::getOption(i_opt.clone()).unwrap())} else {literal!("")};
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(BVariable::FUNCTION_DERIVATIVE_STR)); __mm_s.push_str(&*i.clone()); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone();
     r#str
 }

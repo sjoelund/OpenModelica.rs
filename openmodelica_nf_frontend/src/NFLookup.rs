@@ -289,7 +289,7 @@ pub fn lookupCref(mut cref: Arc<Absyn::ComponentRef>, mut scope: Arc<InstNode::I
         Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => lookupCref(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(), InstNode::topScope(scope.clone()), context.clone())?,
         Deref @ Absyn::ComponentRef::WILD { .. } => (Arc::new(crate::NFComponentRef::WILD), scope.clone(), Arc::new(crate::NFLookupState::LookupState::PREDEF_COMP)),
         Deref @ Absyn::ComponentRef::ALLWILD { .. } => (Arc::new(crate::NFComponentRef::WILD), scope.clone(), Arc::new(crate::NFLookupState::LookupState::PREDEF_COMP)),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((foundCref, foundScope, state))
 }
@@ -304,9 +304,9 @@ pub fn lookupLocalCref(mut cref: Arc<Absyn::ComponentRef>, mut scope: Arc<InstNo
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => {
+                    let mut state: Arc<LookupState::LookupState> = state.clone();
                     let mut node: Arc<InstNode::InstNode> = node.clone();
                     let mut foundScope: Arc<InstNode::InstNode> = foundScope.clone();
-                    let mut state: Arc<LookupState::LookupState> = state.clone();
                     (node, foundScope) = lookupLocalSimpleCref((var_field!((*cref).name, Absyn::ComponentRef::CREF_IDENT).clone()).clone(), scope.clone())?;
                     state = LookupState::nodeState(node.clone())?;
                     Ok((ComponentRef::fromAbsyn(node.clone(), var_field!((*cref).subscripts, Absyn::ComponentRef::CREF_IDENT).clone(), Arc::new(crate::NFComponentRef::EMPTY)), foundScope.clone(), state.clone()))
@@ -317,10 +317,10 @@ pub fn lookupLocalCref(mut cref: Arc<Absyn::ComponentRef>, mut scope: Arc<InstNo
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::ComponentRef::CREF_QUAL { .. } => {
-                    let mut state: Arc<LookupState::LookupState> = state.clone();
-                    let mut foundCref: Arc<ComponentRef::NFComponentRef> = foundCref.clone();
                     let mut foundScope: Arc<InstNode::InstNode> = foundScope.clone();
                     let mut node: Arc<InstNode::InstNode> = node.clone();
+                    let mut foundCref: Arc<ComponentRef::NFComponentRef> = foundCref.clone();
+                    let mut state: Arc<LookupState::LookupState> = state.clone();
                     (node, foundScope) = lookupLocalSimpleCref((var_field!((*cref).name, Absyn::ComponentRef::CREF_QUAL).clone()).clone(), scope.clone())?;
                     state = LookupState::nodeState(node.clone())?;
                     foundCref = ComponentRef::fromAbsyn(node.clone(), var_field!((*cref).subscripts, Absyn::ComponentRef::CREF_QUAL).clone(), Arc::new(crate::NFComponentRef::EMPTY));
@@ -495,7 +495,7 @@ pub fn lookupName(mut name: Arc<Absyn::Path>, mut scope: Arc<InstNode::InstNode>
             lookupLocalName(var_field!((*name).path, Absyn::Path::QUALIFIED).clone(), node.clone(), state.clone(), context.clone(), checkAccessViolations.clone(), self_reference.clone())?
         },
         Deref @ Absyn::Path::FULLYQUALIFIED { .. } => lookupName(var_field!((*name).path, Absyn::Path::FULLYQUALIFIED).clone(), InstNode::topScope(scope.clone()), context.clone(), checkAccessViolations.clone())?,
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((node, state))
 }
@@ -518,7 +518,7 @@ pub fn lookupNames(mut name: Arc<Absyn::Path>, mut scope: Arc<InstNode::InstNode
         Deref @ Absyn::Path::FULLYQUALIFIED { .. } => {
             lookupNames(var_field!((*name).path, Absyn::Path::FULLYQUALIFIED).clone(), InstNode::topScope(scope.clone()), context.clone())?
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((nodes, state))
 }

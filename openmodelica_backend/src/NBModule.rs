@@ -57,6 +57,7 @@ use crate::NBStrongComponent as StrongComponent;
 use crate::NBVariable as BVariable;
 use crate::NBVariable::VarData;
 use crate::NBVariable::VariablePointers;
+use crate::NBackendDAE as BackendDAE;
 use crate::NBackendDAE as Jacobian;
 use openmodelica_ast::Absyn::Path;
 use openmodelica_frontend_types::DAE;

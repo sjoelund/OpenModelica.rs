@@ -352,10 +352,9 @@ pub fn updateInstStore(mut store: UnitAbsyn::InstStore, mut st: UnitAbsyn::Store
         UnitAbsyn::InstStore::INSTSTORE { store: _, ht: mut ht, checkResult: mut res } => {
             UnitAbsyn::InstStore::INSTSTORE { store: st.clone(), ht: ht.clone(), checkResult: res.clone() }
         },
-        UnitAbsyn::InstStore::NOSTORE => {
+        UnitAbsyn::InstStore::NOSTORE { .. } => {
             crate::UnitAbsyn::InstStore::NOSTORE
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(outStore)
 }
@@ -369,7 +368,6 @@ fn expandStore(mut st: UnitAbsyn::Store) -> Result<UnitAbsyn::Store> {
             vector = Array::expand(incr.clone(), vector.clone(), None)?;
             UnitAbsyn::Store { storeVector: vector.clone(), numElts: indx.clone() }
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(outSt)
 }
@@ -425,8 +423,7 @@ pub fn instGetStore(mut store: UnitAbsyn::InstStore) -> Result<UnitAbsyn::Store>
     let mut st: UnitAbsyn::Store = <UnitAbsyn::Store as ::std::default::Default>::default();
     st = (match store.clone() {
         UnitAbsyn::InstStore::INSTSTORE { store: mut st, ht: _, checkResult: _ } => st.clone(),
-        UnitAbsyn::InstStore::NOSTORE => emptyStore(),
-        _ => bail!("match: no arm matched"),
+        UnitAbsyn::InstStore::NOSTORE { .. } => emptyStore(),
     });
     Ok(st)
 }
@@ -525,10 +522,9 @@ pub fn printInstStore(mut st: UnitAbsyn::InstStore) -> Result<()> {
             BaseHashTable::dumpHashTable(h.clone());
             ()
         },
-        UnitAbsyn::InstStore::NOSTORE => {
+        UnitAbsyn::InstStore::NOSTORE { .. } => {
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(())
 }
@@ -541,7 +537,6 @@ pub fn printStore(mut st: UnitAbsyn::Store) -> Result<()> {
             printStore2(lst.clone(), 1)?;
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(())
 }
@@ -597,7 +592,7 @@ fn printUnit(mut unit: UnitAbsyn::Unit) -> Result<()> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                UnitAbsyn::Unit::UNSPECIFIED => {
+                UnitAbsyn::Unit::UNSPECIFIED { .. } => {
                     println!("{}", (literal!("Unspecified")).clone());
                     Ok(())
                 }
@@ -659,7 +654,6 @@ fn printTypeParameterStr(mut typeParam: (MMath::Rational, UnitAbsyn::TypeParamet
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!("^(")); __mm_s.push_str(&*intString(i1.clone())); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*intString(i2.clone())); __mm_s.push_str(&*literal!(")")); __mm_s.push_str(&*literal!("[indx=")); __mm_s.push_str(&*intString(indx.clone())); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
             r#str.clone()
         },
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(r#str)
 }
@@ -737,7 +731,7 @@ pub fn instBuildUnitTerms(mut env: FCore::Graph, mut dae: DAE::DAElist, mut comp
     (outStore, terms) = 'mc: {
         let __mc_input = store.clone();
         if let Ok(__v) = (|| -> Result<_> {
-            let UnitAbsyn::InstStore::NOSTORE = __mc_input.clone() else { bail!("nomatch") };
+            let UnitAbsyn::InstStore::NOSTORE { .. } = __mc_input.clone() else { bail!("nomatch") };
             Ok((crate::UnitAbsyn::InstStore::NOSTORE, metamodelica::nil()))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -779,7 +773,7 @@ pub fn instAddStore(mut istore: UnitAbsyn::InstStore, mut itp: Arc<DAE::Type>, m
         let __mc_input = (istore.clone(), itp.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (UnitAbsyn::InstStore::NOSTORE, _) => {
+                (UnitAbsyn::InstStore::NOSTORE { .. }, _) => {
                     Ok(istore.clone())
                 }
                 _ => bail!("nomatch"),
@@ -842,7 +836,6 @@ pub fn storeSize(mut store: UnitAbsyn::Store) -> Result<i32> {
     let mut size: i32 = 0;
     size = (match store.clone() {
         UnitAbsyn::Store { storeVector: _, numElts: mut size } => size.clone(),
-        _ => bail!("match: no arm matched"),
     });
     Ok(size)
 }
@@ -1477,8 +1470,8 @@ fn buildResultTerms(mut ifunctp: Arc<DAE::Type>, mut funcInstId: i32, mut funcCa
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Type::T_FUNCTION { funcResultType: Deref @ DAE::Type::T_TUPLE { types: typeLst, .. }, .. }, store) => {
                     let mut store = (*store).clone();
-                    let mut extraTerms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = extraTerms.clone();
                     let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = terms.clone();
+                    let mut extraTerms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = extraTerms.clone();
                     (terms, extraTerms, store) = buildTupleResultTerms(typeLst.clone(), funcInstId.clone(), funcCallExp.clone(), store.clone())?;
                     Ok((terms.clone(), extraTerms.clone(), store.clone()))
                 }
@@ -1545,8 +1538,8 @@ fn buildTermExpList(mut env: FCore::Graph, mut iexpl: Arc<metamodelica::List<Arc
                     let mut eterms2: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
                     let mut ut: Arc<UnitAbsyn::UnitTerm>;
                     let mut store = (*store).clone();
-                    let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = terms.clone();
                     let mut extraTerms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = extraTerms.clone();
+                    let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = terms.clone();
                     (ut, eterms1, store) = buildTermExp(env.clone(), e.clone(), false, ht.clone(), store.clone())?;
                     (terms, eterms2, store) = buildTermExpList(env.clone(), expl.clone(), ht.clone(), store.clone())?;
                     extraTerms = listAppend(eterms1.clone(), eterms2.clone());
@@ -1740,7 +1733,7 @@ fn origExpInTerm(mut ut: Arc<UnitAbsyn::UnitTerm>) -> Result<Arc<DAE::Exp>> {
         Deref @ UnitAbsyn::UnitTerm::POW { ut1: _, exponent: _, origExp: e } => {
             e.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(origExp)
 }
@@ -1994,7 +1987,7 @@ pub fn unit2str(mut unit: UnitAbsyn::Unit) -> Result<ArcStr> {
             res = (UnitParserExt::unit2str(nums.clone(), denoms.clone(), tpnoms.clone(), tpdenoms.clone(), tpstrs.clone(), metamodelica::OrderedFloat(1.0_f64), metamodelica::OrderedFloat(0.0_f64))).clone();
             res.clone()
         },
-        UnitAbsyn::Unit::UNSPECIFIED => {
+        UnitAbsyn::Unit::UNSPECIFIED { .. } => {
             literal!("unspecified")
         },
         _ => bail!("match: no arm matched"),

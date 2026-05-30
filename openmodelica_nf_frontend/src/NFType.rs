@@ -1191,7 +1191,6 @@ pub fn toDAE(mut ty: Arc<NFType>, mut makeTypeVars: bool) -> Result<Arc<DAE::Typ
         FunctionType::FUNCTIONAL_PARAMETER => Function::makeDAEType(var_field!((*ty).r#fn, NFType::FUNCTION).clone(), false)?,
         FunctionType::FUNCTION_REFERENCE => Arc::new(DAE::Type::T_FUNCTION_REFERENCE_FUNC { builtin: Function::isBuiltin(var_field!((*ty).r#fn, NFType::FUNCTION).clone()), functionType: Function::makeDAEType(var_field!((*ty).r#fn, NFType::FUNCTION).clone(), false)? }),
         FunctionType::FUNCTIONAL_VARIABLE => Arc::new(DAE::Type::T_FUNCTION_REFERENCE_VAR { functionType: Function::makeDAEType(var_field!((*ty).r#fn, NFType::FUNCTION).clone(), true)? }),
-        _ => bail!("match: no arm matched"),
     }),
         Deref @ NORETCALL => DAE::T_NORETCALL_DEFAULT().clone(),
         Deref @ UNKNOWN => DAE::T_UNKNOWN_DEFAULT().clone(),
@@ -1436,7 +1435,7 @@ pub fn setRecordFields(mut field_lst: Arc<metamodelica::List<Arc<Record::Field::
         let mut fields: metamodelica::Array<Arc<Record::Field::Field>> = metamodelica::arrayFromVec(field_lst.clone().into_iter().cloned().collect());
         (::match_deref::match_deref! { match &(recordType.clone()) {
         Deref @ COMPLEX { complexTy: Deref @ ComplexType::RECORD { constructor: rec_node, .. }, .. } => {
-            let mut indexMap: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>>;
+            let mut indexMap: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>> = <Arc<UnorderedMap::UnorderedMap<ArcStr, i32>> as ::std::default::Default>::default();
             indexMap = UnorderedMap::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), (fields.clone().borrow().len() as i32));
             updateRecordFieldsIndexMap(fields.clone(), indexMap.clone())?;
             Arc::new(NFType::COMPLEX { cls: var_field!((*recordType).cls, NFType::COMPLEX).clone(), complexTy: Arc::new(ComplexType::NFComplexType::RECORD { constructor: rec_node.clone(), fields: fields.clone(), indexMap: indexMap.clone() }) })

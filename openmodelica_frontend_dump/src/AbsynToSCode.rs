@@ -160,7 +160,7 @@ pub fn translateOperatorDef(mut inClassDef: Arc<Absyn::ClassDef>, mut operatorNa
 pub fn getOperatorGivenName(mut inOperatorFunction: Arc<SCode::Element>) -> Result<Arc<Absyn::Path>> {
     let mut outName: Arc<Absyn::Path>;
     outName = (::match_deref::match_deref! { match &(inOperatorFunction.clone()) {
-        Deref @ SCode::Element::CLASS { name, prefixes: _, encapsulatedPrefix: _, partialPrefix: _, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_OPERATOR_FUNCTION }, classDef: _, cmt: _, info: _ } => {
+        Deref @ SCode::Element::CLASS { name, prefixes: _, encapsulatedPrefix: _, partialPrefix: _, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_OPERATOR_FUNCTION { .. } }, classDef: _, cmt: _, info: _ } => {
             Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() })
         },
         _ => bail!("match: no arm matched"),
@@ -182,12 +182,12 @@ pub fn getOperatorQualName(mut inOperatorFunction: Arc<SCode::Element>, mut oper
 pub fn getListofQualOperatorFuncsfromOperator(mut inOperator: Arc<SCode::Element>) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> {
     let mut outNames: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
     outNames = (::match_deref::match_deref! { match &(inOperator.clone()) {
-        Deref @ SCode::Element::CLASS { name: opername, prefixes: _, encapsulatedPrefix: _, partialPrefix: _, restriction: SCode::Restriction::R_OPERATOR, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: els, .. }, cmt: _, info: _ } => {
+        Deref @ SCode::Element::CLASS { name: opername, prefixes: _, encapsulatedPrefix: _, partialPrefix: _, restriction: SCode::Restriction::R_OPERATOR { .. }, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: els, .. }, cmt: _, info: _ } => {
             let mut names: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
             names = List::map1(els.clone(), (std::sync::Arc::new(getOperatorQualName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, ArcStr) -> Result<Arc<Absyn::Path>> + 'static>), (opername.clone()).clone());
             names.clone()
         },
-        Deref @ SCode::Element::CLASS { name: opername, prefixes: _, encapsulatedPrefix: _, partialPrefix: _, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_OPERATOR_FUNCTION }, classDef: _, cmt: _, info: _ } => {
+        Deref @ SCode::Element::CLASS { name: opername, prefixes: _, encapsulatedPrefix: _, partialPrefix: _, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_OPERATOR_FUNCTION { .. } }, classDef: _, cmt: _, info: _ } => {
             let mut names: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
             names = list![Arc::new(Absyn::Path::IDENT { name: (opername.clone()).clone() })];
             names.clone()
@@ -203,77 +203,77 @@ pub fn translateRestriction(mut inClass: Arc<Absyn::Class>, mut inRestriction: A
         (d, Absyn::Restriction::R_FUNCTION { functionRestriction: Absyn::FunctionRestriction::FR_NORMAL_FUNCTION { purity } }) => {
             if (containsExternalFuncDecl(d.clone())) {SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { purity: purity.clone() } }} else {SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_NORMAL_FUNCTION { purity: purity.clone() } }}
         },
-        (_, Absyn::Restriction::R_FUNCTION { functionRestriction: Absyn::FunctionRestriction::FR_OPERATOR_FUNCTION }) => {
+        (_, Absyn::Restriction::R_FUNCTION { functionRestriction: Absyn::FunctionRestriction::FR_OPERATOR_FUNCTION { .. } }) => {
             SCode::Restriction::R_FUNCTION { functionRestriction: openmodelica_frontend_types::SCode::FunctionRestriction::FR_OPERATOR_FUNCTION }
         },
-        (_, Absyn::Restriction::R_FUNCTION { functionRestriction: Absyn::FunctionRestriction::FR_PARALLEL_FUNCTION }) => {
+        (_, Absyn::Restriction::R_FUNCTION { functionRestriction: Absyn::FunctionRestriction::FR_PARALLEL_FUNCTION { .. } }) => {
             SCode::Restriction::R_FUNCTION { functionRestriction: openmodelica_frontend_types::SCode::FunctionRestriction::FR_PARALLEL_FUNCTION }
         },
-        (_, Absyn::Restriction::R_FUNCTION { functionRestriction: Absyn::FunctionRestriction::FR_KERNEL_FUNCTION }) => {
+        (_, Absyn::Restriction::R_FUNCTION { functionRestriction: Absyn::FunctionRestriction::FR_KERNEL_FUNCTION { .. } }) => {
             SCode::Restriction::R_FUNCTION { functionRestriction: openmodelica_frontend_types::SCode::FunctionRestriction::FR_KERNEL_FUNCTION }
         },
-        (_, Absyn::Restriction::R_CLASS) => {
+        (_, Absyn::Restriction::R_CLASS { .. }) => {
             openmodelica_frontend_types::SCode::Restriction::R_CLASS
         },
-        (_, Absyn::Restriction::R_OPTIMIZATION) => {
+        (_, Absyn::Restriction::R_OPTIMIZATION { .. }) => {
             openmodelica_frontend_types::SCode::Restriction::R_OPTIMIZATION
         },
-        (_, Absyn::Restriction::R_MODEL) => {
+        (_, Absyn::Restriction::R_MODEL { .. }) => {
             openmodelica_frontend_types::SCode::Restriction::R_MODEL
         },
-        (_, Absyn::Restriction::R_RECORD) => {
+        (_, Absyn::Restriction::R_RECORD { .. }) => {
             SCode::Restriction::R_RECORD { isOperator: false }
         },
-        (_, Absyn::Restriction::R_OPERATOR_RECORD) => {
+        (_, Absyn::Restriction::R_OPERATOR_RECORD { .. }) => {
             SCode::Restriction::R_RECORD { isOperator: true }
         },
-        (_, Absyn::Restriction::R_BLOCK) => {
+        (_, Absyn::Restriction::R_BLOCK { .. }) => {
             openmodelica_frontend_types::SCode::Restriction::R_BLOCK
         },
-        (_, Absyn::Restriction::R_CONNECTOR) => {
+        (_, Absyn::Restriction::R_CONNECTOR { .. }) => {
             SCode::Restriction::R_CONNECTOR { isExpandable: false }
         },
-        (_, Absyn::Restriction::R_EXP_CONNECTOR) => {
+        (_, Absyn::Restriction::R_EXP_CONNECTOR { .. }) => {
             System::setHasExpandableConnectors(true);
             SCode::Restriction::R_CONNECTOR { isExpandable: true }
         },
-        (_, Absyn::Restriction::R_OPERATOR) => {
+        (_, Absyn::Restriction::R_OPERATOR { .. }) => {
             openmodelica_frontend_types::SCode::Restriction::R_OPERATOR
         },
-        (_, Absyn::Restriction::R_TYPE) => {
+        (_, Absyn::Restriction::R_TYPE { .. }) => {
             openmodelica_frontend_types::SCode::Restriction::R_TYPE
         },
-        (_, Absyn::Restriction::R_PACKAGE) => {
+        (_, Absyn::Restriction::R_PACKAGE { .. }) => {
             openmodelica_frontend_types::SCode::Restriction::R_PACKAGE
         },
-        (_, Absyn::Restriction::R_ENUMERATION) => {
+        (_, Absyn::Restriction::R_ENUMERATION { .. }) => {
             openmodelica_frontend_types::SCode::Restriction::R_ENUMERATION
         },
-        (_, Absyn::Restriction::R_PREDEFINED_INTEGER) => {
+        (_, Absyn::Restriction::R_PREDEFINED_INTEGER { .. }) => {
             openmodelica_frontend_types::SCode::Restriction::R_PREDEFINED_INTEGER
         },
-        (_, Absyn::Restriction::R_PREDEFINED_REAL) => {
+        (_, Absyn::Restriction::R_PREDEFINED_REAL { .. }) => {
             openmodelica_frontend_types::SCode::Restriction::R_PREDEFINED_REAL
         },
-        (_, Absyn::Restriction::R_PREDEFINED_STRING) => {
+        (_, Absyn::Restriction::R_PREDEFINED_STRING { .. }) => {
             openmodelica_frontend_types::SCode::Restriction::R_PREDEFINED_STRING
         },
-        (_, Absyn::Restriction::R_PREDEFINED_BOOLEAN) => {
+        (_, Absyn::Restriction::R_PREDEFINED_BOOLEAN { .. }) => {
             openmodelica_frontend_types::SCode::Restriction::R_PREDEFINED_BOOLEAN
         },
-        (_, Absyn::Restriction::R_PREDEFINED_CLOCK) => {
+        (_, Absyn::Restriction::R_PREDEFINED_CLOCK { .. }) => {
             openmodelica_frontend_types::SCode::Restriction::R_PREDEFINED_CLOCK
         },
-        (_, Absyn::Restriction::R_PREDEFINED_ENUMERATION) => {
+        (_, Absyn::Restriction::R_PREDEFINED_ENUMERATION { .. }) => {
             openmodelica_frontend_types::SCode::Restriction::R_PREDEFINED_ENUMERATION
         },
         (_, Absyn::Restriction::R_METARECORD { name, index, singleton, moved, typeVars }) => {
             SCode::Restriction::R_METARECORD { name: name.clone(), index: index.clone(), singleton: singleton.clone(), moved: moved.clone(), typeVars: typeVars.clone() }
         },
-        (Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { typeVars, .. }, .. }, Absyn::Restriction::R_UNIONTYPE) => {
+        (Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { typeVars, .. }, .. }, Absyn::Restriction::R_UNIONTYPE { .. }) => {
             SCode::Restriction::R_UNIONTYPE { typeVars: typeVars.clone() }
         },
-        (_, Absyn::Restriction::R_UNIONTYPE) => {
+        (_, Absyn::Restriction::R_UNIONTYPE { .. }) => {
             SCode::Restriction::R_UNIONTYPE { typeVars: metamodelica::nil() }
         },
         _ => bail!("match: no arm matched"),
@@ -312,7 +312,7 @@ fn translateAttributes(mut inEA: Absyn::ElementAttributes, mut extraArrayDim: Ar
             adim = listAppend(extraADim.clone(), adim.clone());
             SCode::Attributes { arrayDims: adim.clone(), connectorType: ct.clone(), parallelism: sp.clone(), variability: sv.clone(), direction: dir.clone(), isField: fi.clone() }
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outA)
 }
@@ -382,7 +382,7 @@ fn translateClassdef(mut inClassDef: Arc<Absyn::ClassDef>, mut info: SourceInfo,
             scodeCmt = translateComment(cmt.clone())?;
             (Arc::new(SCode::ClassDef::ENUMERATION { enumLst: lst_1.clone() }), scodeCmt.clone())
         },
-        Deref @ Absyn::ClassDef::ENUMERATION { enumLiterals: Deref @ Absyn::EnumDef::ENUM_COLON, comment: cmt } => {
+        Deref @ Absyn::ClassDef::ENUMERATION { enumLiterals: Deref @ Absyn::EnumDef::ENUM_COLON { .. }, comment: cmt } => {
             let mut scodeCmt: Arc<SCode::Comment> = Arc::new(<SCode::Comment as ::std::default::Default>::default());
             scodeCmt = translateComment(cmt.clone())?;
             (Arc::new(SCode::ClassDef::ENUMERATION { enumLst: metamodelica::nil() }), scodeCmt.clone())
@@ -765,16 +765,16 @@ fn translateClassdefAlgorithmItem(mut inAlgorithm: Arc<Absyn::AlgorithmItem>) ->
             else_body = translateClassdefAlgorithmitems(var_field!((*alg).elseBody, Absyn::Algorithm::ALG_TRY).clone())?;
             Arc::new(SCode::Statement::ALG_TRY { body: body.clone(), elseBody: else_body.clone(), comment: comment.clone(), info: info.clone() })
         },
-        Deref @ Absyn::Algorithm::ALG_RETURN => {
+        Deref @ Absyn::Algorithm::ALG_RETURN { .. } => {
             Arc::new(SCode::Statement::ALG_RETURN { comment: comment.clone(), info: info.clone() })
         },
-        Deref @ Absyn::Algorithm::ALG_BREAK => {
+        Deref @ Absyn::Algorithm::ALG_BREAK { .. } => {
             Arc::new(SCode::Statement::ALG_BREAK { comment: comment.clone(), info: info.clone() })
         },
-        Deref @ Absyn::Algorithm::ALG_CONTINUE => {
+        Deref @ Absyn::Algorithm::ALG_CONTINUE { .. } => {
             Arc::new(SCode::Statement::ALG_CONTINUE { comment: comment.clone(), info: info.clone() })
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outStatement)
 }
@@ -857,7 +857,7 @@ pub fn translateAnnotation(mut inAnnotation: Arc<Absyn::Annotation>) -> Result<O
             m = translateMod(Some(Arc::new(Absyn::Modification { elementArgLst: args.clone(), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) })), openmodelica_frontend_types::SCode::Final::NOT_FINAL, openmodelica_frontend_types::SCode::Each::NOT_EACH, None, Absyn::dummyInfo.clone(), true)?;
             if (SCodeUtil::isEmptyMod(m.clone())) {None} else {Some(Arc::new(SCode::Annotation { modification: m.clone() }))}
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outAnnotation)
 }
@@ -939,7 +939,7 @@ fn translateDefineunitParam2(mut inArgs: Arc<metamodelica::List<Arc<Absyn::Named
 fn translateElementspec(mut cc: Option<Arc<Absyn::ConstrainClass>>, mut finalPrefix: bool, mut io: Absyn::InnerOuter, mut inRedeclareKeywords: Option<Absyn::RedeclareKeywords>, mut inVisibility: SCode::Visibility, mut inElementSpec4: Arc<Absyn::ElementSpec>, mut inInfo: SourceInfo) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
     let mut outElementLst: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     outElementLst = (::match_deref::match_deref! { match &((inRedeclareKeywords.clone(), inVisibility.clone(), inElementSpec4.clone(), inInfo.clone())) {
-        (repl, vis, Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { info: i, body: de, restriction: Absyn::Restriction::R_OPERATOR, encapsulatedPrefix: e, partialPrefix: pa, name: n, .. }, replaceable_: rp }, _) => {
+        (repl, vis, Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { info: i, body: de, restriction: Absyn::Restriction::R_OPERATOR { .. }, encapsulatedPrefix: e, partialPrefix: pa, name: n, .. }, replaceable_: rp }, _) => {
             let mut de_1: Arc<SCode::ClassDef>;
             let mut redecl: bool = false;
             let mut cmt: Arc<SCode::Comment> = Arc::new(<SCode::Comment as ::std::default::Default>::default());
@@ -1049,7 +1049,7 @@ fn translateElementspec(mut cc: Option<Arc<Absyn::ConstrainClass>>, mut finalPre
                 ct = translateConnectorType(fl.clone(), st.clone())?;
                 prefixes = Arc::new(SCode::Prefixes { visibility: vis.clone(), redeclarePrefix: sRed.clone(), finalPrefix: sFin.clone(), innerOuter: io.clone(), replaceablePrefix: sRep.clone() });
                 xs_1 = (match di.clone() {
-        Absyn::Direction::INPUT_OUTPUT if (!(Flags::isSet(Flags::SKIP_INPUT_OUTPUT_SYNTACTIC_SUGAR.clone())?)) => {
+        Absyn::Direction::INPUT_OUTPUT { .. } if (!(Flags::isSet(Flags::SKIP_INPUT_OUTPUT_SYNTACTIC_SUGAR.clone())?)) => {
             let mut attr1: SCode::Attributes = <SCode::Attributes as ::std::default::Default>::default();
             let mut attr2: SCode::Attributes = <SCode::Attributes as ::std::default::Default>::default();
             let mut mod2: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
@@ -1127,7 +1127,7 @@ fn translateGroupImport(mut gimp: Absyn::GroupImport, mut prefix: Arc<Absyn::Pat
 
 fn setHasInnerOuterDefinitionsHandler(mut io: Absyn::InnerOuter) -> () {
     let () = (match io.clone() {
-        Absyn::InnerOuter::NOT_INNER_OUTER => (),
+        Absyn::InnerOuter::NOT_INNER_OUTER { .. } => (),
         _ => {
             System::setHasInnerOuterDefinitions(true);
             ()
@@ -1151,9 +1151,9 @@ fn translateRedeclarekeywords(mut inRedeclKeywords: Option<Absyn::RedeclareKeywo
     let mut outIsReplaceable: bool = false;
     let mut outIsRedeclared: bool = false;
     (outIsReplaceable, outIsRedeclared) = (match inRedeclKeywords.clone() {
-        Some(Absyn::RedeclareKeywords::REDECLARE) => (false, true),
-        Some(Absyn::RedeclareKeywords::REPLACEABLE) => (true, false),
-        Some(Absyn::RedeclareKeywords::REDECLARE_REPLACEABLE) => (true, true),
+        Some(Absyn::RedeclareKeywords::REDECLARE { .. }) => (false, true),
+        Some(Absyn::RedeclareKeywords::REPLACEABLE { .. }) => (true, false),
+        Some(Absyn::RedeclareKeywords::REDECLARE_REPLACEABLE { .. }) => (true, true),
         _ => (false, false),
     });
     (outIsReplaceable, outIsRedeclared)
@@ -1182,10 +1182,9 @@ fn translateConstrainClass(mut inConstrainClass: Option<Arc<Absyn::ConstrainClas
 fn translateParallelism(mut inParallelism: Absyn::Parallelism) -> Result<SCode::Parallelism> {
     let mut outParallelism: SCode::Parallelism = SCode::Parallelism::NON_PARALLEL;
     outParallelism = (match inParallelism.clone() {
-        Absyn::Parallelism::PARGLOBAL => openmodelica_frontend_types::SCode::Parallelism::PARGLOBAL,
-        Absyn::Parallelism::PARLOCAL => openmodelica_frontend_types::SCode::Parallelism::PARLOCAL,
-        Absyn::Parallelism::NON_PARALLEL => openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL,
-        _ => bail!("match: no arm matched"),
+        Absyn::Parallelism::PARGLOBAL { .. } => openmodelica_frontend_types::SCode::Parallelism::PARGLOBAL,
+        Absyn::Parallelism::PARLOCAL { .. } => openmodelica_frontend_types::SCode::Parallelism::PARLOCAL,
+        Absyn::Parallelism::NON_PARALLEL { .. } => openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL,
     });
     Ok(outParallelism)
 }
@@ -1193,11 +1192,10 @@ fn translateParallelism(mut inParallelism: Absyn::Parallelism) -> Result<SCode::
 fn translateVariability(mut inVariability: Absyn::Variability) -> Result<SCode::Variability> {
     let mut outVariability: SCode::Variability = SCode::Variability::CONST;
     outVariability = (match inVariability.clone() {
-        Absyn::Variability::VAR => openmodelica_frontend_types::SCode::Variability::VAR,
-        Absyn::Variability::DISCRETE => openmodelica_frontend_types::SCode::Variability::DISCRETE,
-        Absyn::Variability::PARAM => openmodelica_frontend_types::SCode::Variability::PARAM,
-        Absyn::Variability::CONST => openmodelica_frontend_types::SCode::Variability::CONST,
-        _ => bail!("match: no arm matched"),
+        Absyn::Variability::VAR { .. } => openmodelica_frontend_types::SCode::Variability::VAR,
+        Absyn::Variability::DISCRETE { .. } => openmodelica_frontend_types::SCode::Variability::DISCRETE,
+        Absyn::Variability::PARAM { .. } => openmodelica_frontend_types::SCode::Variability::PARAM,
+        Absyn::Variability::CONST { .. } => openmodelica_frontend_types::SCode::Variability::CONST,
     });
     Ok(outVariability)
 }
@@ -1477,7 +1475,7 @@ pub fn translateMod(mut inMod: Option<Arc<Absyn::Modification>>, mut finalPrefix
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     outMod = (::match_deref::match_deref! { match &((subs.clone(), binding.clone(), finalPrefix.clone(), eachPrefix.clone())) {
-        (Deref @ metamodelica::List::Nil, None, SCode::Final::NOT_FINAL, SCode::Each::NOT_EACH) => Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD),
+        (Deref @ metamodelica::List::Nil, None, SCode::Final::NOT_FINAL { .. }, SCode::Each::NOT_EACH { .. }) => Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD),
         _ => Arc::new(SCode::Mod::MOD { finalPrefix: finalPrefix.clone(), eachPrefix: eachPrefix.clone(), subModLst: subs.clone(), binding: binding.clone(), comment: comment.clone(), info: info.clone() }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1553,9 +1551,8 @@ fn makeTypeVarElement(mut r#str: ArcStr, mut info: SourceInfo) -> Arc<SCode::Ele
 fn translateEach(mut inAEach: Absyn::Each) -> Result<SCode::Each> {
     let mut outSEach: SCode::Each = SCode::Each::EACH;
     outSEach = (match inAEach.clone() {
-        Absyn::Each::EACH => openmodelica_frontend_types::SCode::Each::EACH,
-        Absyn::Each::NON_EACH => openmodelica_frontend_types::SCode::Each::NOT_EACH,
-        _ => bail!("match: no arm matched"),
+        Absyn::Each::EACH { .. } => openmodelica_frontend_types::SCode::Each::EACH,
+        Absyn::Each::NON_EACH { .. } => openmodelica_frontend_types::SCode::Each::NOT_EACH,
     });
     Ok(outSEach)
 }
@@ -1589,7 +1586,7 @@ fn checkTypeSpec(mut ts: Arc<Absyn::TypeSpec>, mut info: SourceInfo) -> Result<(
             }
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(())
 }

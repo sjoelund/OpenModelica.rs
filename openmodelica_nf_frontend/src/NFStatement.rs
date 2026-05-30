@@ -296,7 +296,7 @@ pub fn source(mut stmt: Arc<NFStatement>) -> Result<Arc<DAE::ElementSource>> {
         Deref @ RETURN { .. } => var_field!((*stmt).source, NFStatement::RETURN).clone(),
         Deref @ BREAK { .. } => var_field!((*stmt).source, NFStatement::BREAK).clone(),
         Deref @ FAILURE { .. } => var_field!((*stmt).source, NFStatement::FAILURE).clone(),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(source)
 }

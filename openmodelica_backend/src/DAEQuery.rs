@@ -90,7 +90,7 @@ pub fn getEquations(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
     let mut syst: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
     let mut ls1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let __pa0 = ::match_deref::match_deref! { match &(inBackendDAE.clone()) {
-        Deref @ DAE { UNIQUEIO: Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil }, derivativeNamePrefix: _, .. } => __pa0.clone(),
+        Deref @ BackendDAE::BackendDAE { eqs: Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil }, shared: _ } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
     syst = __pa0.clone();
@@ -231,7 +231,7 @@ fn getAdjacencyRow(mut inStringLst: Arc<metamodelica::List<ArcStr>>) -> ArcStr {
 pub fn getVariables(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<ArcStr> {
     let mut strVars: ArcStr = arcstr::literal!("");
     strVars = ((::match_deref::match_deref! { match &(inBackendDAE.clone()) {
-        Deref @ DAE { eqs: Deref @ metamodelica::List::Cons { head: BackendDAE::EqSystem { orderedVars: vars1, .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
+        Deref @ BackendDAE::BackendDAE { eqs: Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::EqSystem { orderedVars: vars1, .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
             let mut vars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
             let mut s: ArcStr = arcstr::literal!("");
             vars = BackendVariable::varList(vars1.clone())?;
@@ -301,7 +301,7 @@ pub fn adjacencyMatrix(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<
         let __mc_input = inBackendDAE.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE { eqs: Deref @ metamodelica::List::Cons { head: BackendDAE::EqSystem { orderedEqs: eqns, orderedVars: vars, .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
+                Deref @ BackendDAE::BackendDAE { eqs: Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::EqSystem { orderedEqs: eqns, orderedVars: vars, .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
                     let mut eqnsl: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
                     let mut lstlst: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
                     let mut arr: metamodelica::Array<Arc<metamodelica::List<ArcStr>>>;
@@ -612,7 +612,7 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
                     let mut p: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut pStr: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let __pa0 = ::match_deref::match_deref! { match &(BackendVariable::getVar(cr.clone(), vars.clone())?) {
-                        (Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::VARIABLE, .. }, tail: _ }, __pa0) => __pa0.clone(),
+                        (Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::VARIABLE { .. }, .. }, tail: _ }, __pa0) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
                     p = __pa0.clone();
@@ -628,7 +628,7 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
                     let mut p: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut pStr: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let __pa0 = ::match_deref::match_deref! { match &(BackendVariable::getVar(cr.clone(), vars.clone())?) {
-                        (Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::DISCRETE, .. }, tail: _ }, __pa0) => __pa0.clone(),
+                        (Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::DISCRETE { .. }, .. }, tail: _ }, __pa0) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
                     p = __pa0.clone();
@@ -644,7 +644,7 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
                     let mut p: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut pStr: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let __pa0 = ::match_deref::match_deref! { match &(BackendVariable::getVar(cr.clone(), vars.clone())?) {
-                        (Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::DUMMY_DER, .. }, tail: _ }, __pa0) => __pa0.clone(),
+                        (Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::DUMMY_DER { .. }, .. }, tail: _ }, __pa0) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
                     p = __pa0.clone();
@@ -660,7 +660,7 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
                     let mut p: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut pStr: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let __pa0 = ::match_deref::match_deref! { match &(BackendVariable::getVar(cr.clone(), vars.clone())?) {
-                        (Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::DUMMY_STATE, .. }, tail: _ }, __pa0) => __pa0.clone(),
+                        (Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::DUMMY_STATE { .. }, .. }, tail: _ }, __pa0) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
                     p = __pa0.clone();
@@ -860,7 +860,6 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
                 (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, vars) => {
                     let mut p: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     (_, p) = BackendVariable::getVar(cr.clone(), vars.clone())?;
-                    List::map(p.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>));
                     Ok(metamodelica::nil())
                 }
                 _ => bail!("nomatch"),
@@ -993,7 +992,7 @@ fn adjacencyRowIter(mut iter: Arc<DAE::ReductionIterator>, mut vars: BackendDAE:
         Deref @ DAE::ReductionIterator { exp: e1, .. } => {
             adjacencyRowExp(e1.clone(), vars.clone())?
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(strs)
 }

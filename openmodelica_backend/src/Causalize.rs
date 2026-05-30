@@ -70,16 +70,16 @@ pub fn singularSystemCheck(mut nvars: i32, mut neqns: i32, mut isyst: Arc<Backen
     outSyst = 'mc: {
         let __mc_input = inMatchingOptions.clone();
         if let Ok(__v) = (|| -> Result<_> {
-            let (_, BackendDAE::EquationConstraints::ALLOW_UNDERCONSTRAINED) = __mc_input.clone() else { bail!("nomatch") };
+            let (_, BackendDAE::EquationConstraints::ALLOW_UNDERCONSTRAINED { .. }) = __mc_input.clone() else { bail!("nomatch") };
             Ok(singularSystemCheck1(nvars.clone(), neqns.clone(), isyst.clone(), crate::BackendDAE::EquationConstraints::ALLOW_UNDERCONSTRAINED, matchingAlgorithm.clone(), arg.clone(), ishared.clone())?)
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
-            let (_, BackendDAE::EquationConstraints::EXACT) = __mc_input.clone() else { bail!("nomatch") };
+            let (_, BackendDAE::EquationConstraints::EXACT { .. }) = __mc_input.clone() else { bail!("nomatch") };
             let true = (intEq(nvars.clone(), neqns.clone())) else { bail!("pattern mismatch") };
             Ok(singularSystemCheck1(nvars.clone(), neqns.clone(), isyst.clone(), crate::BackendDAE::EquationConstraints::EXACT, matchingAlgorithm.clone(), arg.clone(), ishared.clone())?)
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
-            let (_, BackendDAE::EquationConstraints::EXACT) = __mc_input.clone() else { bail!("nomatch") };
+            let (_, BackendDAE::EquationConstraints::EXACT { .. }) = __mc_input.clone() else { bail!("nomatch") };
             let mut esize_str: ArcStr = arcstr::literal!("");
             let mut vsize_str: ArcStr = arcstr::literal!("");
             let true = (intGt(nvars.clone(), neqns.clone())) else { bail!("pattern mismatch") };

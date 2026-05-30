@@ -114,7 +114,7 @@ pub fn add(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<Arc<Tree>> {
             }
             outTree.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(tree)
 }
@@ -170,6 +170,8 @@ fn calculateBalance(mut inNode: Arc<Tree>) -> i32 {
     outBalance
 }
 
+// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
+// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
     let mut comp: bool = false;
     let mut key: Key = Arc::new(DAE::ComponentRef::WILD);
@@ -182,7 +184,7 @@ pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
             return Ok(comp.clone());
             bail!("fail")
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     key_comp = keyCompare(inKey.clone(), key.clone())?;
     comp = (::match_deref::match_deref! { match &((key_comp.clone(), inTree.clone())) {
@@ -318,7 +320,7 @@ pub fn join(mut tree: Arc<Tree>, mut treeToJoin: Arc<Tree>) -> Result<Arc<Tree>>
             tree.clone()
         },
         Deref @ Tree::LEAF { .. } => add(tree.clone(), var_field!((*treeToJoin).key, Tree::LEAF).clone())?,
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(tree)
 }
@@ -378,7 +380,7 @@ pub fn printTreeStr(mut inTree: Arc<Tree>) -> Result<ArcStr> {
         Deref @ Tree::EMPTY { .. } => literal!("EMPTY()"),
         Deref @ Tree::LEAF { .. } => printNodeStr(inTree.clone())?,
         Deref @ Tree::NODE { right, left, .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(outString)
 }

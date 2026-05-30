@@ -124,7 +124,7 @@ pub fn evaluate(mut r#fn: Arc<Function::Function>, mut args: Arc<metamodelica::L
 pub fn evaluateNormal(mut r#fn: Arc<Function::Function>, mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut context: i32) -> Result<Arc<Expression::NFExpression>> {
     let mut result: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut fn_body: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
-    let mut arg_map: ArgumentMap;
+    let mut arg_map: ArgumentMap = <Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
     let mut call_count: i32 = 0;
     let mut limit: i32 = 0;
     let mut call_counter: Pointer::Pointer<i32> = r#fn.callCounter.clone();
@@ -235,7 +235,7 @@ pub fn evaluateExternal(mut r#fn: Arc<Function::Function>, mut args: Arc<metamod
 
 pub fn evaluateRecordConstructor(mut r#fn: Arc<Function::Function>, mut ty: Arc<Type::NFType>, mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut evaluate: bool) -> Result<Arc<Expression::NFExpression>> {
     let mut result: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut arg_map: ArgumentMap;
+    let mut arg_map: ArgumentMap = <Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
     let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut out_ty: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     arg_map = createArgumentMap(r#fn.inputs.clone(), metamodelica::nil(), r#fn.locals.clone(), args.clone(), false, true)?;
@@ -248,7 +248,7 @@ pub fn evaluateRecordConstructor(mut r#fn: Arc<Function::Function>, mut ty: Arc<
     for mut c in __range1 {
         expl = cons(UnorderedMap::getOrFail(c.clone(), arg_map.clone()), expl.clone());
     }
-    result = Expression::makeRecord(Function::name(r#fn.clone()), ty.clone(), expl.clone().reverse());
+    result = Expression::makeRecord(Function::name(r#fn.clone()), ty.clone(), metamodelica::Dangerous::listReverseInPlace(expl.clone()));
     if evaluate.clone() {
         result = Ceval::evalExp(result.clone(), Ceval::noTarget().clone())?;
     }
@@ -256,7 +256,7 @@ pub fn evaluateRecordConstructor(mut r#fn: Arc<Function::Function>, mut ty: Arc<
 }
 
 fn createArgumentMap(mut inputs: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut outputs: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut locals: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut mutableParams: bool, mut buildArrayBinding: bool) -> Result<ArgumentMap> {
-    let mut map: ArgumentMap;
+    let mut map: ArgumentMap = <Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
     let mut arg: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut rest_args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = args.clone();
     let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
@@ -361,7 +361,7 @@ fn buildRecordBinding(mut recordNode: Arc<InstNode::InstNode>, mut map: Argument
     let mut comps: metamodelica::Array<Arc<InstNode::InstNode>>;
     let mut bindings: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut local_map: ArgumentMap;
+    let mut local_map: ArgumentMap = <Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
     result = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ Class::INSTANCED_CLASS { elements: Deref @ ClassTree::FLAT_TREE { components: comps, .. }, .. } => {
             bindings = metamodelica::nil();
@@ -535,7 +535,7 @@ fn evaluateReplacement2(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<Ex
 
 fn mergeFunctionApplicationArgs(mut oldFn: Arc<Function::Function>, mut oldArgs: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut newFn: Arc<Function::Function>, mut newArgs: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut argNames: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<Arc<Expression::NFExpression>>>> {
     let mut outArgs: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut arg_map: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<Expression::NFExpression>>>;
+    let mut arg_map: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<Expression::NFExpression>>> = <Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
     let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     arg_map = UnorderedMap::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), 1);
     for mut s in &*newFn.slots.clone() {
@@ -560,7 +560,7 @@ fn mergeFunctionApplicationArgs(mut oldFn: Arc<Function::Function>, mut oldArgs:
         let mut i = i.clone();
         outArgs = cons(UnorderedMap::getOrFail((InstNode::name(i.clone())?).clone(), arg_map.clone()), outArgs.clone());
     }
-    outArgs = outArgs.clone().reverse();
+    outArgs = metamodelica::Dangerous::listReverseInPlace(outArgs.clone());
     Ok(outArgs)
 }
 
@@ -614,7 +614,7 @@ fn createResult(mut map: ArgumentMap, mut outputs: Arc<metamodelica::List<Arc<In
             assertAssignedOutput(o.clone(), e.clone())?;
             expl = cons(e.clone(), expl.clone());
         }
-        expl = expl.clone().reverse();
+        expl = metamodelica::Dangerous::listReverseInPlace(expl.clone());
         types = ({
         let mut __acc: Arc<metamodelica::List<Arc<Type::NFType>>> = metamodelica::nil();
         for mut e in (expl.clone()).into_iter().cloned() {
@@ -992,7 +992,7 @@ fn evalTargetFromSource(mut source: Arc<DAE::ElementSource>, mut context: i32, m
 
 fn evaluateExternal2(mut name: ArcStr, mut r#fn: Arc<Function::Function>, mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut extArgs: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<Arc<Expression::NFExpression>> {
     let mut result: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut map: ArgumentMap;
+    let mut map: ArgumentMap = <Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
     let mut ext_args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     map = createArgumentMap(r#fn.inputs.clone(), r#fn.outputs.clone(), r#fn.locals.clone(), args.clone(), true, true)?;
     ext_args = ({
@@ -1298,7 +1298,7 @@ fn freeLibraryFunction(mut fnHandle: i32, mut debug: bool) -> Result<()> {
 fn mapExternalArgs(mut r#fn: Arc<Function::Function>, mut inputArgs: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut extArgs: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<(metamodelica::Array<Arc<Expression::NFExpression>>, metamodelica::Array<FFI::ArgSpec>)> {
     let mut mappedArgs: metamodelica::Array<Arc<Expression::NFExpression>>;
     let mut argSpecs: metamodelica::Array<FFI::ArgSpec>;
-    let mut arg_map: ArgumentMap;
+    let mut arg_map: ArgumentMap = <Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
     let mut marg: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut arg_spec: FFI::ArgSpec = FFI::ArgSpec::INPUT;
     let mut args_len: i32 = 0;
@@ -1368,7 +1368,7 @@ fn mapExternalArg(mut extArg: Arc<Expression::NFExpression>, mut argMap: Argumen
 
 fn makeExternalResult(mut values: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut outputRef: Arc<ComponentRef::NFComponentRef>, mut extArgs: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut outputs: Arc<metamodelica::List<Arc<InstNode::InstNode>>>) -> Result<Arc<Expression::NFExpression>> {
     let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut arg_map: ArgumentMap;
+    let mut arg_map: ArgumentMap = <Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
     let mut val: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut vals: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut ret_vals: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
@@ -1433,7 +1433,7 @@ fn getExternalOutputResult(mut outputNode: Arc<InstNode::InstNode>, mut map: Arg
         for mut c in __range1 {
             expl = cons(getExternalOutputResult(c.clone(), map.clone())?, expl.clone());
         }
-        exp = Expression::makeRecord(InstNode::fullPath(cls_node.clone(), false), InstNode::getType(cls_node.clone())?, expl.clone().reverse());
+        exp = Expression::makeRecord(InstNode::fullPath(cls_node.clone(), false), InstNode::getType(cls_node.clone())?, metamodelica::Dangerous::listReverseInPlace(expl.clone()));
     } else {
         Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFEvalFunction.getExternalOutputResult")); __mm_s.push_str(&*literal!(" failed to find return value for output ")); __mm_s.push_str(&*InstNode::name(outputNode.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
     }

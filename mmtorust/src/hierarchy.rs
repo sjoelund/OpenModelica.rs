@@ -1608,7 +1608,14 @@ fn resolve_function_type(
         // from `module_prefix` so a sibling `partialParser` is found in
         // the same package.
         let base_ty = if ext_path.contains('.') {
-            sk_get(known, ext_path).cloned()
+            // The head segment may be an import alias (`extends Module.aliasInterface;`
+            // where `import Module = NBModule;`). Resolve it through the alias
+            // map first — otherwise the literal `Module.aliasInterface` is never
+            // a `known` key, `base_ty` stays `None`, and the function is deferred
+            // forever and ultimately dropped (no signature → not emitted).
+            expand_dotted_through_aliases(ext_path, aliases, known, module_prefix)
+                .and_then(|q| sk_get(known, &q).cloned())
+                .or_else(|| sk_get(known, ext_path).cloned())
         } else {
             sk_lookup_bare(known, ext_path, module_prefix).map(|(t, _)| t.clone())
         };

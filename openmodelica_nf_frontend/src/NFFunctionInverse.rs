@@ -197,7 +197,7 @@ fn instInverseSubMod(mut submod: Arc<SCode::SubMod>, mut fnNode: Arc<InstNode::I
             Error::addStrictMessage(Error::INVALID_FUNCTION_ANNOTATION_ATTR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*submod.ident.clone()); __mm_s.push_str(&*SCodeDump::printModStr(submod.r#mod.clone(), SCodeDump::defaultOptions.clone())?); ArcStr::from(__mm_s) }).clone(), (literal!("inverse")).clone()], info.clone())?;
             fnInvs.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(fnInvs)
 }

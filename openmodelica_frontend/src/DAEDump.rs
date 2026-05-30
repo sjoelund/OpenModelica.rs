@@ -86,7 +86,6 @@ pub fn dump(mut dae: DAE::DAElist, mut functionTree: Arc<AvlTreePathFunction::Tr
             List::map_0(daelist.clone(), (std::sync::Arc::new(dumpCompElement) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<()> + 'static>));
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(())
 }
@@ -428,7 +427,6 @@ pub fn dumpExtDeclStr(mut inExternalDecl: DAE::ExternalDecl) -> Result<ArcStr> {
             r#str = stringAppendList(list![(literal!("external \"")).clone(), (lang.clone()).clone(), (literal!("\" ")).clone(), (rettystr.clone()).clone(), (id.clone()).clone(), (literal!("(")).clone(), (extargsstr.clone()).clone(), (literal!(");")).clone()]);
             r#str.clone()
         },
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(outString)
 }
@@ -436,7 +434,7 @@ pub fn dumpExtDeclStr(mut inExternalDecl: DAE::ExternalDecl) -> Result<ArcStr> {
 pub fn dumpExtArgStr(mut inExtArg: DAE::ExtArg) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inExtArg.clone() {
-        DAE::ExtArg::NOEXTARG => {
+        DAE::ExtArg::NOEXTARG { .. } => {
             literal!("")
         },
         DAE::ExtArg::EXTARG { componentRef: ref cr, .. } => {
@@ -458,7 +456,6 @@ pub fn dumpExtArgStr(mut inExtArg: DAE::ExtArg) -> Result<ArcStr> {
             r#str = stringAppendList(list![(literal!("size(")).clone(), (crstr.clone()).clone(), (literal!(", ")).clone(), (dimstr.clone()).clone(), (literal!(")")).clone()]);
             r#str.clone()
         },
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(outString)
 }
@@ -526,23 +523,22 @@ fn dumpVars(mut lst: Arc<metamodelica::List<Arc<DAE::Element>>>, mut printTypeDi
 
 fn dumpKind(mut inVarKind: DAE::VarKind) -> Result<()> {
     let () = (match inVarKind.clone() {
-        DAE::VarKind::CONST => {
+        DAE::VarKind::CONST { .. } => {
             Print::printBuf((literal!(" constant  ")).clone())?;
             ()
         },
-        DAE::VarKind::PARAM => {
+        DAE::VarKind::PARAM { .. } => {
             Print::printBuf((literal!(" parameter ")).clone())?;
             ()
         },
-        DAE::VarKind::DISCRETE => {
+        DAE::VarKind::DISCRETE { .. } => {
             Print::printBuf((literal!(" discrete  ")).clone())?;
             ()
         },
-        DAE::VarKind::VARIABLE => {
+        DAE::VarKind::VARIABLE { .. } => {
             Print::printBuf((literal!("           ")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(())
 }
@@ -550,49 +546,46 @@ fn dumpKind(mut inVarKind: DAE::VarKind) -> Result<()> {
 pub fn dumpKindStr(mut inVarKind: DAE::VarKind) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inVarKind.clone() {
-        DAE::VarKind::CONST => literal!("constant "),
-        DAE::VarKind::PARAM => literal!("parameter "),
-        DAE::VarKind::DISCRETE => literal!("discrete "),
-        DAE::VarKind::VARIABLE => literal!(""),
-        _ => bail!("match: no arm matched"),
+        DAE::VarKind::CONST { .. } => literal!("constant "),
+        DAE::VarKind::PARAM { .. } => literal!("parameter "),
+        DAE::VarKind::DISCRETE { .. } => literal!("discrete "),
+        DAE::VarKind::VARIABLE { .. } => literal!(""),
     })).clone();
     Ok(outString)
 }
 
 fn dumpDirection(mut inVarDirection: DAE::VarDirection) -> Result<()> {
     let () = (match inVarDirection.clone() {
-        DAE::VarDirection::INPUT => {
+        DAE::VarDirection::INPUT { .. } => {
             Print::printBuf((literal!(" input  ")).clone())?;
             ()
         },
-        DAE::VarDirection::OUTPUT => {
+        DAE::VarDirection::OUTPUT { .. } => {
             Print::printBuf((literal!(" output ")).clone())?;
             ()
         },
-        DAE::VarDirection::BIDIR => {
+        DAE::VarDirection::BIDIR { .. } => {
             Print::printBuf((literal!("        ")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(())
 }
 
 fn dumpParallelism(mut inVarParallelism: DAE::VarParallelism) -> Result<()> {
     let () = (match inVarParallelism.clone() {
-        DAE::VarParallelism::NON_PARALLEL => {
+        DAE::VarParallelism::NON_PARALLEL { .. } => {
             Print::printBuf((literal!("        ")).clone())?;
             ()
         },
-        DAE::VarParallelism::PARGLOBAL => {
+        DAE::VarParallelism::PARGLOBAL { .. } => {
             Print::printBuf((literal!(" parglobal ")).clone())?;
             ()
         },
-        DAE::VarParallelism::PARLOCAL => {
+        DAE::VarParallelism::PARLOCAL { .. } => {
             Print::printBuf((literal!(" parlocal ")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(())
 }
@@ -600,10 +593,9 @@ fn dumpParallelism(mut inVarParallelism: DAE::VarParallelism) -> Result<()> {
 pub fn dumpDirectionStr(mut inVarDirection: DAE::VarDirection) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inVarDirection.clone() {
-        DAE::VarDirection::INPUT => literal!("input "),
-        DAE::VarDirection::OUTPUT => literal!("output "),
-        DAE::VarDirection::BIDIR => literal!(""),
-        _ => bail!("match: no arm matched"),
+        DAE::VarDirection::INPUT { .. } => literal!("input "),
+        DAE::VarDirection::OUTPUT { .. } => literal!("output "),
+        DAE::VarDirection::BIDIR { .. } => literal!(""),
     })).clone();
     Ok(outString)
 }
@@ -611,12 +603,11 @@ pub fn dumpDirectionStr(mut inVarDirection: DAE::VarDirection) -> Result<ArcStr>
 fn dumpStateSelectStr(mut inStateSelect: DAE::StateSelect) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inStateSelect.clone() {
-        DAE::StateSelect::NEVER => literal!("StateSelect.never"),
-        DAE::StateSelect::AVOID => literal!("StateSelect.avoid"),
-        DAE::StateSelect::PREFER => literal!("StateSelect.prefer"),
-        DAE::StateSelect::ALWAYS => literal!("StateSelect.always"),
-        DAE::StateSelect::DEFAULT => literal!("StateSelect.default"),
-        _ => bail!("match: no arm matched"),
+        DAE::StateSelect::NEVER { .. } => literal!("StateSelect.never"),
+        DAE::StateSelect::AVOID { .. } => literal!("StateSelect.avoid"),
+        DAE::StateSelect::PREFER { .. } => literal!("StateSelect.prefer"),
+        DAE::StateSelect::ALWAYS { .. } => literal!("StateSelect.always"),
+        DAE::StateSelect::DEFAULT { .. } => literal!("StateSelect.default"),
     })).clone();
     Ok(outString)
 }
@@ -624,11 +615,10 @@ fn dumpStateSelectStr(mut inStateSelect: DAE::StateSelect) -> Result<ArcStr> {
 fn dumpUncertaintyStr(mut uncertainty: DAE::Uncertainty) -> Result<ArcStr> {
     let mut out: ArcStr = arcstr::literal!("");
     out = ((match uncertainty.clone() {
-        DAE::Uncertainty::GIVEN => literal!("Uncertainty.given"),
-        DAE::Uncertainty::SOUGHT => literal!("Uncertainty.sought"),
-        DAE::Uncertainty::REFINE => literal!("Uncertainty.refine"),
-        DAE::Uncertainty::PROPAGATE => literal!("Uncertainty.propagate"),
-        _ => bail!("match: no arm matched"),
+        DAE::Uncertainty::GIVEN { .. } => literal!("Uncertainty.given"),
+        DAE::Uncertainty::SOUGHT { .. } => literal!("Uncertainty.sought"),
+        DAE::Uncertainty::REFINE { .. } => literal!("Uncertainty.refine"),
+        DAE::Uncertainty::PROPAGATE { .. } => literal!("Uncertainty.propagate"),
     })).clone();
     Ok(out)
 }
@@ -645,7 +635,7 @@ fn dumpDistributionStr(mut distribution: Arc<DAE::Distribution>) -> Result<ArcSt
             paramNames_str = (ExpressionBasics::printExpStr(paramNames.clone())?).clone();
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Distribution(name = ")); __mm_s.push_str(&*name_str.clone()); __mm_s.push_str(&*literal!(", params = ")); __mm_s.push_str(&*params_str.clone()); __mm_s.push_str(&*literal!(", paramNames= ")); __mm_s.push_str(&*paramNames_str.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(out)
 }
@@ -833,9 +823,8 @@ fn getStartOrigin(mut inStartOrigin: Option<Arc<DAE::Exp>>) -> Result<ArcStr> {
 fn dumpVarVisibilityStr(mut prot: DAE::VarVisibility) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((match prot.clone() {
-        DAE::VarVisibility::PUBLIC => literal!(""),
-        DAE::VarVisibility::PROTECTED => literal!("protected "),
-        _ => bail!("match: no arm matched"),
+        DAE::VarVisibility::PUBLIC { .. } => literal!(""),
+        DAE::VarVisibility::PROTECTED { .. } => literal!("protected "),
     })).clone();
     Ok(r#str)
 }
@@ -843,10 +832,9 @@ fn dumpVarVisibilityStr(mut prot: DAE::VarVisibility) -> Result<ArcStr> {
 pub fn dumpVarParallelismStr(mut inVarParallelism: DAE::VarParallelism) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inVarParallelism.clone() {
-        DAE::VarParallelism::NON_PARALLEL => literal!(""),
-        DAE::VarParallelism::PARGLOBAL => literal!("parglobal "),
-        DAE::VarParallelism::PARLOCAL => literal!("parlocal "),
-        _ => bail!("match: no arm matched"),
+        DAE::VarParallelism::NON_PARALLEL { .. } => literal!(""),
+        DAE::VarParallelism::PARGLOBAL { .. } => literal!("parglobal "),
+        DAE::VarParallelism::PARLOCAL { .. } => literal!("parlocal "),
     })).clone();
     Ok(outString)
 }
@@ -1373,10 +1361,9 @@ pub fn derivativeCondStr(mut dc: DAE::derivativeCond) -> Result<ArcStr> {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("noDerivative(")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
             r#str.clone()
         },
-        DAE::derivativeCond::ZERO_DERIVATIVE => {
+        DAE::derivativeCond::ZERO_DERIVATIVE { .. } => {
             literal!("zeroDerivative")
         },
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(r#str)
 }
@@ -1485,9 +1472,9 @@ fn dumpFunction(mut inElement: DAE::Function) -> Result<()> {
 fn dumpParallelismStr(mut inType: Arc<DAE::Type>) -> ArcStr {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((::match_deref::match_deref! { match &(inType.clone()) {
-        Deref @ DAE::Type::T_FUNCTION { funcArg: _, funcResultType: _, functionAttributes: DAE::FunctionAttributes { functionParallelism: DAE::FunctionParallelism::FP_NON_PARALLEL, .. }, path: _ } => literal!(""),
-        Deref @ DAE::Type::T_FUNCTION { funcArg: _, funcResultType: _, functionAttributes: DAE::FunctionAttributes { functionParallelism: DAE::FunctionParallelism::FP_PARALLEL_FUNCTION, .. }, path: _ } => literal!("parallel "),
-        Deref @ DAE::Type::T_FUNCTION { funcArg: _, funcResultType: _, functionAttributes: DAE::FunctionAttributes { functionParallelism: DAE::FunctionParallelism::FP_KERNEL_FUNCTION, .. }, path: _ } => literal!("kernel "),
+        Deref @ DAE::Type::T_FUNCTION { funcArg: _, funcResultType: _, functionAttributes: DAE::FunctionAttributes { functionParallelism: DAE::FunctionParallelism::FP_NON_PARALLEL { .. }, .. }, path: _ } => literal!(""),
+        Deref @ DAE::Type::T_FUNCTION { funcArg: _, funcResultType: _, functionAttributes: DAE::FunctionAttributes { functionParallelism: DAE::FunctionParallelism::FP_PARALLEL_FUNCTION { .. }, .. }, path: _ } => literal!("parallel "),
+        Deref @ DAE::Type::T_FUNCTION { funcArg: _, funcResultType: _, functionAttributes: DAE::FunctionAttributes { functionParallelism: DAE::FunctionParallelism::FP_KERNEL_FUNCTION { .. }, .. }, path: _ } => literal!("kernel "),
         _ => literal!("#dumpParallelismStr failed#"),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -1497,12 +1484,12 @@ fn dumpParallelismStr(mut inType: Arc<DAE::Type>) -> ArcStr {
 pub fn dumpInlineTypeStr(mut inlineType: DAE::InlineType) -> ArcStr {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((match inlineType.clone() {
-        DAE::InlineType::NO_INLINE => literal!("\"Inline never\""),
-        DAE::InlineType::AFTER_INDEX_RED_INLINE => literal!(" \"Inline after index reduction\""),
-        DAE::InlineType::NORM_INLINE => literal!(" \"Inline before index reduction\""),
-        DAE::InlineType::DEFAULT_INLINE => literal!("\"Inline if necessary\""),
-        DAE::InlineType::EARLY_INLINE => literal!("\"Inline earier than normal inline\""),
-        DAE::InlineType::BUILTIN_EARLY_INLINE => literal!("\"Inline even if inlining is disabled\""),
+        DAE::InlineType::NO_INLINE { .. } => literal!("\"Inline never\""),
+        DAE::InlineType::AFTER_INDEX_RED_INLINE { .. } => literal!(" \"Inline after index reduction\""),
+        DAE::InlineType::NORM_INLINE { .. } => literal!(" \"Inline before index reduction\""),
+        DAE::InlineType::DEFAULT_INLINE { .. } => literal!("\"Inline if necessary\""),
+        DAE::InlineType::EARLY_INLINE { .. } => literal!("\"Inline earier than normal inline\""),
+        DAE::InlineType::BUILTIN_EARLY_INLINE { .. } => literal!("\"Inline even if inlining is disabled\""),
         _ => literal!("\"unknown\""),
     })).clone();
     r#str
@@ -1511,12 +1498,12 @@ pub fn dumpInlineTypeStr(mut inlineType: DAE::InlineType) -> ArcStr {
 pub fn dumpInlineTypeBackendStr(mut inlineType: DAE::InlineType) -> ArcStr {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((match inlineType.clone() {
-        DAE::InlineType::NO_INLINE => literal!("NONE"),
-        DAE::InlineType::AFTER_INDEX_RED_INLINE => literal!("AFTER_INDEX_RED"),
-        DAE::InlineType::NORM_INLINE => literal!("NORMAL"),
-        DAE::InlineType::DEFAULT_INLINE => literal!("DEFAULT"),
-        DAE::InlineType::EARLY_INLINE => literal!("EARLY"),
-        DAE::InlineType::BUILTIN_EARLY_INLINE => literal!("BUILTIN_EARLY"),
+        DAE::InlineType::NO_INLINE { .. } => literal!("NONE"),
+        DAE::InlineType::AFTER_INDEX_RED_INLINE { .. } => literal!("AFTER_INDEX_RED"),
+        DAE::InlineType::NORM_INLINE { .. } => literal!("NORMAL"),
+        DAE::InlineType::DEFAULT_INLINE { .. } => literal!("DEFAULT"),
+        DAE::InlineType::EARLY_INLINE { .. } => literal!("EARLY"),
+        DAE::InlineType::BUILTIN_EARLY_INLINE { .. } => literal!("BUILTIN_EARLY"),
         _ => literal!("UNKNOWN"),
     })).clone();
     r#str
@@ -1568,8 +1555,8 @@ fn printRecordConstructorInputStr(mut inVar: Arc<DAE::Var>) -> Result<ArcStr> {
 fn printRecordConstructorInputAttrStr(mut inAttributes: Arc<DAE::Attributes>) -> ArcStr {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((::match_deref::match_deref! { match &(inAttributes.clone()) {
-        Deref @ DAE::Attributes { visibility: SCode::Visibility::PROTECTED, .. } => literal!("protected "),
-        Deref @ DAE::Attributes { variability: SCode::Variability::CONST, .. } => literal!("constant "),
+        Deref @ DAE::Attributes { visibility: SCode::Visibility::PROTECTED { .. }, .. } => literal!("protected "),
+        Deref @ DAE::Attributes { variability: SCode::Variability::CONST { .. }, .. } => literal!("constant "),
         _ => literal!("input "),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -1579,18 +1566,18 @@ fn printRecordConstructorInputAttrStr(mut inAttributes: Arc<DAE::Attributes>) ->
 fn printRecordConstructorBinding(mut binding: Arc<DAE::Binding>) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((::match_deref::match_deref! { match &(binding.clone()) {
-        Deref @ DAE::Binding::UNBOUND => {
+        Deref @ DAE::Binding::UNBOUND { .. } => {
             literal!("")
         },
-        Deref @ DAE::Binding::EQBOUND { source: DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE, exp: e, .. } => {
+        Deref @ DAE::Binding::EQBOUND { source: DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE { .. }, exp: e, .. } => {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); ArcStr::from(__mm_s) }).clone();
             r#str.clone()
         },
-        Deref @ DAE::Binding::EQBOUND { source: DAE::BindingSource::BINDING_FROM_RECORD_SUBMODS, exp: e, .. } => {
+        Deref @ DAE::Binding::EQBOUND { source: DAE::BindingSource::BINDING_FROM_RECORD_SUBMODS { .. }, exp: e, .. } => {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); ArcStr::from(__mm_s) }).clone();
             r#str.clone()
         },
-        Deref @ DAE::Binding::VALBOUND { source: DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE, valBound: v } => {
+        Deref @ DAE::Binding::VALBOUND { source: DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE { .. }, valBound: v } => {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*ValuesDump::valString(v.clone())?); ArcStr::from(__mm_s) }).clone();
             r#str.clone()
         },
@@ -2244,7 +2231,7 @@ pub fn ppStmtListStr(mut inAlgorithmStatementLst: Arc<metamodelica::List<Arc<DAE
 
 fn ppElse(mut inElse: Arc<DAE::Else>, mut inInteger: i32) -> Result<()> {
     let () = (::match_deref::match_deref! { match &((inElse.clone(), inInteger.clone())) {
-        (Deref @ DAE::Else::NOELSE, _) => {
+        (Deref @ DAE::Else::NOELSE { .. }, _) => {
             ()
         },
         (Deref @ DAE::Else::ELSEIF { else_, statementLst: then_, exp: e }, i) => {
@@ -2274,7 +2261,7 @@ fn ppElse(mut inElse: Arc<DAE::Else>, mut inInteger: i32) -> Result<()> {
 fn ppElseStr(mut inElse: Arc<DAE::Else>, mut inInteger: i32) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((::match_deref::match_deref! { match &((inElse.clone(), inInteger.clone())) {
-        (Deref @ DAE::Else::NOELSE, _) => {
+        (Deref @ DAE::Else::NOELSE { .. }, _) => {
             literal!("")
         },
         (Deref @ DAE::Else::ELSEIF { else_, statementLst: then_, exp: e }, i) => {
@@ -2369,7 +2356,6 @@ pub fn dumpDebug(mut inDAElist: DAE::DAElist) -> Result<()> {
             Print::printBuf((literal!(")")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(())
 }
@@ -2399,7 +2385,6 @@ pub fn dumpDebugDAE(mut dae: DAE::DAElist) -> Result<ArcStr> {
             r#str = (Print::getString()?).clone();
             r#str.clone()
         },
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(r#str)
 }
@@ -2742,9 +2727,9 @@ pub fn dumpDebugElement(mut inElement: Arc<DAE::Element>) -> Result<()> {
 pub fn dumpFlow(mut var: Arc<DAE::ConnectorType>) -> Result<ArcStr> {
     let mut flowString: ArcStr = arcstr::literal!("");
     flowString = ((::match_deref::match_deref! { match &(var.clone()) {
-        Deref @ DAE::ConnectorType::FLOW => literal!("flow"),
-        Deref @ DAE::ConnectorType::POTENTIAL => literal!("effort"),
-        Deref @ DAE::ConnectorType::NON_CONNECTOR => literal!("non_connector"),
+        Deref @ DAE::ConnectorType::FLOW { .. } => literal!("flow"),
+        Deref @ DAE::ConnectorType::POTENTIAL { .. } => literal!("effort"),
+        Deref @ DAE::ConnectorType::NON_CONNECTOR { .. } => literal!("non_connector"),
         _ => bail!("match: no arm matched"),
     } })).clone();
     Ok(flowString)
@@ -2753,7 +2738,7 @@ pub fn dumpFlow(mut var: Arc<DAE::ConnectorType>) -> Result<ArcStr> {
 pub fn dumpConnectorType(mut inConnectorType: Arc<DAE::ConnectorType>) -> ArcStr {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((::match_deref::match_deref! { match &(inConnectorType.clone()) {
-        Deref @ DAE::ConnectorType::FLOW => literal!("flow"),
+        Deref @ DAE::ConnectorType::FLOW { .. } => literal!("flow"),
         Deref @ DAE::ConnectorType::STREAM { .. } => literal!("stream"),
         _ => literal!(""),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2784,7 +2769,6 @@ fn buildGraphviz(mut inDAElist: DAE::DAElist) -> Result<Arc<Graphviz::Node>> {
             nodelist = listAppend(nonvarnodes.clone(), varnodes.clone());
             Arc::new(Graphviz::Node::NODE { type_: (literal!("DAE")).clone(), attributes: metamodelica::nil(), children: nodelist.clone() })
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(outNode)
 }
@@ -2853,7 +2837,7 @@ pub fn buildGrStrlist<Type_a: Clone + 'static>(mut inTypeALst: Arc<metamodelica:
             let mut r#str: ArcStr = arcstr::literal!("");
             count_1 = count.clone() - 1;
             (strlist, ignored) = buildGrStrlist(rest.clone(), printer.clone(), count_1.clone())?;
-            r#str = printer(var.clone())?;
+            r#str = (printer(var.clone())?).clone();
             (cons((r#str.clone()).clone(), strlist.clone()), ignored.clone())
         },
         _ => bail!("match: no arm matched"),
@@ -3169,7 +3153,6 @@ pub fn dumpStream(mut dae: DAE::DAElist, mut functionTree: Arc<AvlTreePathFuncti
             r#str = List::fold(daelist.clone(), (std::sync::Arc::new(dumpCompElementStream) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, IOStream::IOStream) -> Result<IOStream::IOStream> + 'static>), r#str.clone());
             r#str.clone()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(outStream)
 }
@@ -3199,10 +3182,10 @@ fn isVisibleFunction(mut inFunc: DAE::Function, mut inHideRecordCons: bool, mut 
         (DAE::Function::FUNCTION { path: Deref @ Absyn::Path::FULLYQUALIFIED { path: Deref @ Absyn::Path::QUALIFIED { name: Deref @ "OpenModelica", .. } }, .. }, _, _) => {
             false
         },
-        (DAE::Function::FUNCTION { inlineType: DAE::InlineType::BUILTIN_EARLY_INLINE, .. }, _, _) => {
+        (DAE::Function::FUNCTION { inlineType: DAE::InlineType::BUILTIN_EARLY_INLINE { .. }, .. }, _, _) => {
             false
         },
-        (DAE::Function::FUNCTION { inlineType: DAE::InlineType::EARLY_INLINE, .. }, _, true) => {
+        (DAE::Function::FUNCTION { inlineType: DAE::InlineType::EARLY_INLINE { .. }, .. }, _, true) => {
             false
         },
         (DAE::Function::FUNCTION { comment: cmt, .. }, _, _) => {
@@ -3873,7 +3856,6 @@ pub fn dumpDAEElementsStr(mut d: DAE::DAElist) -> Result<ArcStr> {
             r#str = (IOStream::string(myStream.clone())?).clone();
             r#str.clone()
         },
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(r#str)
 }
@@ -4250,11 +4232,10 @@ pub fn dumpFunctionElementsStream(mut l: Arc<metamodelica::List<Arc<DAE::Element
 pub fn unparseVarKind(mut inVarKind: DAE::VarKind) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inVarKind.clone() {
-        DAE::VarKind::VARIABLE => literal!(""),
-        DAE::VarKind::PARAM => literal!("parameter"),
-        DAE::VarKind::CONST => literal!("const"),
-        DAE::VarKind::DISCRETE => literal!("discrete"),
-        _ => bail!("match: no arm matched"),
+        DAE::VarKind::VARIABLE { .. } => literal!(""),
+        DAE::VarKind::PARAM { .. } => literal!("parameter"),
+        DAE::VarKind::CONST { .. } => literal!("const"),
+        DAE::VarKind::DISCRETE { .. } => literal!("discrete"),
     })).clone();
     Ok(outString)
 }
@@ -4262,10 +4243,9 @@ pub fn unparseVarKind(mut inVarKind: DAE::VarKind) -> Result<ArcStr> {
 pub fn unparseVarDirection(mut inVarDirection: DAE::VarDirection) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inVarDirection.clone() {
-        DAE::VarDirection::BIDIR => literal!(""),
-        DAE::VarDirection::INPUT => literal!("input"),
-        DAE::VarDirection::OUTPUT => literal!("output"),
-        _ => bail!("match: no arm matched"),
+        DAE::VarDirection::BIDIR { .. } => literal!(""),
+        DAE::VarDirection::INPUT { .. } => literal!("input"),
+        DAE::VarDirection::OUTPUT { .. } => literal!("output"),
     })).clone();
     Ok(outString)
 }
@@ -4354,13 +4334,12 @@ fn connectsStr(mut inLst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DA
 fn withinString(mut w: Absyn::Within) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((match w.clone() {
-        Absyn::Within::TOP => {
+        Absyn::Within::TOP { .. } => {
             literal!("TOP")
         },
         Absyn::Within::WITHIN { path: ref p1 } => {
             AbsynUtil::pathString(p1.clone(), (literal!(".")).clone(), true, false)?
         },
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(r#str)
 }
@@ -4414,7 +4393,7 @@ pub fn cmtListToString(mut inCmtLst: Arc<metamodelica::List<Arc<SCode::Comment>>
 pub fn clockKindString(mut cK: Arc<DAE::ClockKind>) -> Result<ArcStr> {
     let mut sOut: ArcStr = arcstr::literal!("");
     sOut = ((::match_deref::match_deref! { match &(cK.clone()) {
-        Deref @ DAE::ClockKind::INFERRED_CLOCK => {
+        Deref @ DAE::ClockKind::INFERRED_CLOCK { .. } => {
             literal!("Inferred Clock")
         },
         Deref @ DAE::ClockKind::RATIONAL_CLOCK { resolution: e2, intervalCounter: e1 } => {
@@ -4429,7 +4408,7 @@ pub fn clockKindString(mut cK: Arc<DAE::ClockKind>) -> Result<ArcStr> {
         Deref @ DAE::ClockKind::SOLVER_CLOCK { solverMethod: e2, c: e1 } => {
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Solver Clock(")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e1.clone())?); __mm_s.push_str(&*literal!("; ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e2.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(sOut)
 }
@@ -4831,7 +4810,7 @@ fn getOptionWithConcatStr<Type_a: Clone + 'static>(mut inTypeAOption: Option<Typ
         (Some(mut a), mut r, mut default_str) => {
             let mut r#str: ArcStr = arcstr::literal!("");
             let mut str_1: ArcStr = arcstr::literal!("");
-            r#str = r(a.clone())?;
+            r#str = (r(a.clone())?).clone();
             str_1 = (stringAppend((default_str.clone()).clone(), (r#str.clone()).clone())).clone();
             str_1.clone()
         },

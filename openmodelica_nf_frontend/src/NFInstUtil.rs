@@ -396,7 +396,7 @@ pub fn mergeScalars3(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>,
         i = i.clone() + 1;
         outElements = cons(merged_e.clone(), outElements.clone());
     }
-    outElements = outElements.clone().reverse();
+    outElements = metamodelica::Dangerous::listReverseInPlace(outElements.clone());
     Ok(outElements)
 }
 
@@ -418,7 +418,7 @@ pub fn makeMergeMap(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>) 
 
     let mut mergeable: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SCode::Element>>>>> = metamodelica::nil();
     let mut unmergeable: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-    let mut merge_map: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<metamodelica::List<Arc<SCode::Element>>>>>;
+    let mut merge_map: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<metamodelica::List<Arc<SCode::Element>>>>> = <Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<metamodelica::List<Arc<SCode::Element>>>>> as ::std::default::Default>::default();
     let mut grouped_elems: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SCode::Element>>>>> = metamodelica::nil();
     merge_map = UnorderedMap::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), 1);
     for mut e in &*elements.clone() {
@@ -441,7 +441,7 @@ pub fn makeMergeMap(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>) 
         if (el.clone().len() as i32) == 1 {
             unmergeable = cons(listHead(el.clone())?, unmergeable.clone());
         } else {
-            mergeable = cons(el.clone().reverse(), mergeable.clone());
+            mergeable = cons(metamodelica::Dangerous::listReverseInPlace(el.clone()), mergeable.clone());
         }
     }
     Ok((mergeable, unmergeable))
@@ -470,7 +470,7 @@ pub fn isMergeableMod(mut r#mod: Arc<SCode::Mod>) -> bool {
             }
             true
         },
-        Deref @ SCode::Mod::NOMOD => true,
+        Deref @ SCode::Mod::NOMOD { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -594,7 +594,7 @@ pub fn mergeMods(mut mods: Arc<metamodelica::List<Arc<SCode::Mod>>>) -> Result<A
     let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
     let mut names: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
     let mut bindings: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::Exp>>>>> = metamodelica::nil();
-    let mut binding_map: Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Absyn::Exp>>>;
+    let mut binding_map: Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Absyn::Exp>>> = <Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Absyn::Exp>>> as ::std::default::Default>::default();
     if mods.clone().is_empty() {
         r#mod = Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD);
         return Ok(r#mod.clone());
@@ -663,7 +663,7 @@ pub fn mergeMods2(mut r#mod: Arc<SCode::Mod>, mut bindingMap: Arc<UnorderedMap::
                     assign_field!(m.r#mod = mergeMods2(m.r#mod.clone(), bindingMap.clone(), cons((m.ident.clone()).clone(), name.clone()))?);
                     submods = cons(m.clone(), submods.clone());
                 }
-                assign_variant_field!(r#mod => SCode::Mod::MOD; subModLst = submods.clone().reverse());
+                assign_variant_field!(r#mod => SCode::Mod::MOD; subModLst = metamodelica::Dangerous::listReverseInPlace(submods.clone()));
             }
             ()
         },
@@ -904,7 +904,7 @@ pub fn createExtractorModel(mut flatModel: Arc<FlatModel::NFFlatModel>, mut func
         (eq, outFuncs, index) = createExtractorModelDummyEq(i.clone(), (literal!("input")).clone(), fn_template.clone(), args.clone(), outFuncs.clone(), index.clone())?;
         eqs = cons(eq.clone(), eqs.clone());
     }
-    eqs = eqs.clone().reverse();
+    eqs = metamodelica::Dangerous::listReverseInPlace(eqs.clone());
     assign_field!(extractorModel.equations = listAppend(extractorModel.equations.clone(), eqs.clone()));
     Ok((extractorModel, outFuncs))
 }

@@ -89,11 +89,39 @@ use openmodelica_util_datatypes_basic::Pointer;
 ///  package:      NBInline
 ///  description:  This file contains functions for inlining operations.
 pub struct NBInline<T>(std::marker::PhantomData<T>);
+pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut inline_types: Arc<metamodelica::List<DAE::InlineType>>, mut init: bool) -> Result<Arc<BackendDAE::NBackendDAE>> {
+    let mut bdae: Arc<BackendDAE::NBackendDAE> = bdae;
+    bdae = (::match_deref::match_deref! { match &(bdae.clone()) {
+        Deref @ BackendDAE::MAIN { .. } => {
+            let mut eqData: Arc<EqData::EqData> = Arc::new(EqData::EQ_DATA_EMPTY);
+            let mut varData: Arc<VarData::VarData> = Arc::new(VarData::VAR_DATA_EMPTY);
+            if Flags::isSet(Flags::DUMPBACKENDINLINE.clone())? {
+                println!("{}", (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[dumpBackendInline] Inlining operatations for: ")); __mm_s.push_str(&*List::toString(inline_types.clone(), (std::sync::Arc::new(fnptr!(DAEDump::dumpInlineTypeBackendStr, DAE::InlineType)) as std::sync::Arc<dyn ::std::ops::Fn(DAE::InlineType) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone())).clone());
+            }
+            (eqData, varData) = inline(var_field!((*bdae).eqData, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).varData, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).funcMap, BackendDAE::NBackendDAE::MAIN).clone(), inline_types.clone(), init.clone())?;
+            assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN;
+                eqData = eqData.clone(),
+                varData = varData.clone()
+            );
+            if Flags::isSet(Flags::DUMPBACKENDINLINE.clone())? {
+                println!("{}", (literal!("\n")).clone());
+            }
+            bdae.clone()
+        },
+        _ => {
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBInline.main")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
+            bail!("fail")
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    Ok(bdae)
+}
+
 pub fn inlineForEquation(mut eqn: Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> {
     let mut eqn: Arc<Equation::Equation> = eqn;
     eqn = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ BEquation::Equation::FOR_EQUATION { body: Deref @ metamodelica::List::Cons { head: new_eqn, tail: Deref @ metamodelica::List::Nil }, .. } if (BEquation::Iterator::size(var_field!((*eqn).iter, Equation::Equation::FOR_EQUATION).clone(), false) == 1 && !(BEquation::Iterator::isResizable(var_field!((*eqn).iter, Equation::Equation::FOR_EQUATION).clone())?)) => {
-            let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>;
+            let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
             let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
             let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
             let mut name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
@@ -108,7 +136,7 @@ pub fn inlineForEquation(mut eqn: Arc<Equation::Equation>) -> Result<Arc<Equatio
                 (start, _, _) = Expression::getIntegerRange(range.clone(), true)?;
                 UnorderedMap::add(name.clone(), Arc::new(Expression::NFExpression::INTEGER { value: start.clone() }), replacements.clone())?;
             }
-            new_eqn = BEquation::Equation::map(new_eqn.clone(), Arc::new({ let __pe_b1 = replacements.clone(); move |__pe_a0| Replacements::applySimpleExp(__pe_a0, __pe_b1.clone()) }), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+            new_eqn = BEquation::Equation::map(new_eqn.clone(), Arc::new({ let __pe_b1 = replacements.clone(); move |__pe_a0| Replacements::applySimpleExp(__pe_a0, __pe_b1.clone()) }), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             if Flags::isSet(Flags::DUMPBACKENDINLINE.clone())? {
                 println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*literal!("NBInline.inlineForEquation")); __mm_s.push_str(&*literal!("] Inlining: ")); __mm_s.push_str(&*BEquation::Equation::toString(eqn.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("-- Result: ")); __mm_s.push_str(&*BEquation::Equation::toString(new_eqn.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -191,6 +219,38 @@ pub fn inlineArrayConstructorSingle(mut eqn: Arc<Equation::Equation>, mut iter: 
         }
     }
     Ok((eqn, changed))
+}
+
+fn inline(mut eqData: Arc<EqData::EqData>, mut varData: Arc<VarData::VarData>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Function::Function>>>, mut inline_types: Arc<metamodelica::List<DAE::InlineType>>, mut init: bool) -> Result<(Arc<EqData::EqData>, Arc<VarData::VarData>)> {
+    let mut eqData: Arc<EqData::EqData> = eqData;
+    let mut varData: Arc<VarData::VarData> = varData;
+    let mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Function::Function>>> = <Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Function::Function>>> as ::std::default::Default>::default();
+    let mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>> = <Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>> as ::std::default::Default>::default();
+    let mut variables: Arc<VariablePointers::VariablePointers> = BVariable::VarData::getVariables(varData.clone())?;
+    let mut key: Arc<Absyn::Path>;
+    let mut value: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
+    let mut func_map: Arc<UnorderedMap::UnorderedMap<Arc<Function::Function>, Arc<InlineRating::InlineRating>>> = UnorderedMap::new((std::sync::Arc::new(fnptr!(Function::nameHash, Arc<Function::Function>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Function::Function>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(Function::nameEqual, Arc<Function::Function>, Arc<Function::Function>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Function::Function>, Arc<Function::Function>) -> Result<bool> + 'static>), 1);
+    replacements = UnorderedMap::new((std::sync::Arc::new(AbsynUtil::pathHash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(AbsynUtil::pathEqual, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<bool> + 'static>), 1);
+    for mut tpl in &*UnorderedMap::toList(funcMap.clone()) {
+        let mut tpl = tpl.clone();
+        (key, value) = tpl.clone();
+        if checkInline(value.clone(), inline_types.clone(), func_map.clone())? {
+            UnorderedMap::add(key.clone(), value.clone(), replacements.clone())?;
+        }
+    }
+    if Flags::isSet(Flags::DUMPBACKENDINLINE_VERBOSE.clone())? && List::contains(inline_types.clone(), openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE, (std::sync::Arc::new(fnptr!(DAEUtil::inlineTypeEqual, DAE::InlineType, DAE::InlineType)) as std::sync::Arc<dyn ::std::ops::Fn(DAE::InlineType, DAE::InlineType) -> Result<bool> + 'static>)) && !(init.clone()) {
+        println!("{}", (StringUtil::headline_2(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Heuristic results for Inline=default functions. Threshold = ")); __mm_s.push_str(&*intString(HEURISTIC_THRESHOLD.clone())); ArcStr::from(__mm_s) }).clone())).clone());
+        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*UnorderedMap::toString(func_map.clone(), Arc::new({ let __pe_b1 = false; move |__pe_a0| Function::signatureString(__pe_a0, __pe_b1.clone()) }), (std::sync::Arc::new(InlineRating::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InlineRating::InlineRating>) -> Result<ArcStr> + 'static>), (literal!("\n")).clone(), (literal!(", ")).clone())?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+    }
+    eqData = Replacements::replaceFunctions(eqData.clone(), variables.clone(), replacements.clone())?;
+    set = UnorderedSet::new((std::sync::Arc::new(fnptr!(BVariable::hash, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(BVariable::equalName, Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 13);
+    if !(List::any(inline_types.clone(), Arc::new({ let __pe_b1 = openmodelica_frontend_types::DAE::InlineType::AFTER_INDEX_RED_INLINE; move |__pe_a0| Ok(DAEUtil::inlineTypeEqual(__pe_a0, __pe_b1.clone())) }))) {
+        eqData = inlineRecordsTuplesArrays(eqData.clone(), variables.clone(), set.clone(), init.clone())?;
+    }
+    eqData = BEquation::EqData::map(eqData.clone(), Arc::new({ let __pe_b1 = variables.clone(); let __pe_b2 = set.clone(); move |__pe_a0| BackendDAE::lowerEquationIterators(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }))?;
+    varData = BVariable::VarData::addTypedList(varData.clone(), UnorderedSet::toList(set.clone()), BVariable::VarData::VarType::ITERATOR.clone())?;
+    eqData = BEquation::EqData::mapExp(eqData.clone(), Arc::new({ let __pe_b1 = variables.clone(); let __pe_b2 = true; move |__pe_a0| BackendDAE::lowerComponentReferenceExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }))?;
+    Ok((eqData, varData))
 }
 
 fn inlineRecordsTuplesArrays(mut eqData: Arc<EqData::EqData>, mut variables: Arc<VariablePointers::VariablePointers>, mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut init: bool) -> Result<Arc<EqData::EqData>> {
@@ -865,7 +925,7 @@ pub mod InlineRating {
         Deref @ Expression::CREF { .. } => {
             let mut iro: Option<Arc<InlineRating>> = None;
             iro = UnorderedMap::get(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), local_map.clone());
-            if Util::isSome(iro.clone()) {
+            if isSome(iro.clone()) {
                 Pointer::update(irp.clone(), add(Pointer::access(irp.clone()), multiply(Util::getOption(iro.clone())?, i.clone()))?);
             }
             ()
@@ -930,7 +990,7 @@ pub mod InlineRating {
             let mut lir: Option<Arc<InlineRating>> = None;
             r#fn = Call::typedFunction(var_field!((*exp).call, Expression::NFExpression::CALL).clone())?;
             lir = UnorderedMap::get(r#fn.clone(), func_map.clone());
-            if Util::isSome(lir.clone()) {
+            if isSome(lir.clone()) {
                 Pointer::update(irp.clone(), addMapped(Pointer::access(irp.clone()), Util::getOption(lir.clone())?, metamodelica::arrayFromVec(Call::arguments(var_field!((*exp).call, Expression::NFExpression::CALL).clone())?.into_iter().cloned().collect()), local_map.clone())?);
                 cont = false;
             } else if DAEUtil::inlineTypeEqual(Function::inlineBuiltin(r#fn.clone()), openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE) {

@@ -90,7 +90,6 @@ pub mod ConnectorType {
         SCode::ConnectorType::POTENTIAL { .. } => 0,
         SCode::ConnectorType::FLOW { .. } => FLOW.clone(),
         SCode::ConnectorType::STREAM { .. } => STREAM.clone(),
-        _ => bail!("match: no arm matched"),
     });
         Ok(cty)
     }
@@ -412,7 +411,6 @@ pub fn parallelismFromSCode(mut scodePar: SCode::Parallelism) -> Result<Parallel
         SCode::Parallelism::PARGLOBAL { .. } => Parallelism::GLOBAL.clone(),
         SCode::Parallelism::PARLOCAL { .. } => Parallelism::LOCAL.clone(),
         SCode::Parallelism::NON_PARALLEL { .. } => Parallelism::NON_PARALLEL.clone(),
-        _ => bail!("match: no arm matched"),
     });
     Ok(par)
 }
@@ -423,7 +421,6 @@ pub fn parallelismToSCode(mut par: Parallelism) -> Result<SCode::Parallelism> {
         Parallelism::GLOBAL => openmodelica_frontend_types::SCode::Parallelism::PARGLOBAL,
         Parallelism::LOCAL { .. } => openmodelica_frontend_types::SCode::Parallelism::PARLOCAL,
         Parallelism::NON_PARALLEL => openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL,
-        _ => bail!("match: no arm matched"),
     });
     Ok(scodePar)
 }
@@ -434,7 +431,6 @@ pub fn parallelismToDAE(mut par: Parallelism) -> Result<DAE::VarParallelism> {
         Parallelism::GLOBAL => openmodelica_frontend_types::DAE::VarParallelism::PARGLOBAL,
         Parallelism::LOCAL { .. } => openmodelica_frontend_types::DAE::VarParallelism::PARLOCAL,
         Parallelism::NON_PARALLEL => openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL,
-        _ => bail!("match: no arm matched"),
     });
     Ok(dpar)
 }
@@ -480,7 +476,6 @@ pub fn variabilityFromSCode(mut scodeVar: SCode::Variability) -> Result<Variabil
         SCode::Variability::PARAM { .. } => Variability::PARAMETER.clone(),
         SCode::Variability::DISCRETE { .. } => Variability::DISCRETE.clone(),
         SCode::Variability::VAR { .. } => Variability::CONTINUOUS.clone(),
-        _ => bail!("match: no arm matched"),
     });
     Ok(var)
 }
@@ -533,7 +528,6 @@ pub fn variabilityString(mut var: Variability) -> Result<ArcStr> {
         Variability::DISCRETE => literal!("discrete"),
         Variability::IMPLICITLY_DISCRETE => literal!("discrete"),
         Variability::CONTINUOUS { .. } => literal!("continuous"),
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(r#str)
 }
@@ -577,7 +571,6 @@ pub fn purityString(mut purity: Purity) -> Result<ArcStr> {
     r#str = ((match purity.clone() {
         Purity::PURE => literal!("pure"),
         Purity::IMPURE => literal!("impure"),
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(r#str)
 }
@@ -654,11 +647,10 @@ pub fn mergeDirection(mut outerDir: Direction, mut innerDir: Direction, mut node
 pub fn innerOuterFromSCode(mut scodeIO: Absyn::InnerOuter) -> Result<InnerOuter> {
     let mut io: InnerOuter = InnerOuter::NOT_INNER_OUTER;
     io = (match scodeIO.clone() {
-        Absyn::InnerOuter::NOT_INNER_OUTER => InnerOuter::NOT_INNER_OUTER.clone(),
-        Absyn::InnerOuter::INNER => InnerOuter::INNER.clone(),
-        Absyn::InnerOuter::OUTER => InnerOuter::OUTER.clone(),
-        Absyn::InnerOuter::INNER_OUTER => InnerOuter::INNER_OUTER.clone(),
-        _ => bail!("match: no arm matched"),
+        Absyn::InnerOuter::NOT_INNER_OUTER { .. } => InnerOuter::NOT_INNER_OUTER.clone(),
+        Absyn::InnerOuter::INNER { .. } => InnerOuter::INNER.clone(),
+        Absyn::InnerOuter::OUTER { .. } => InnerOuter::OUTER.clone(),
+        Absyn::InnerOuter::INNER_OUTER { .. } => InnerOuter::INNER_OUTER.clone(),
     });
     Ok(io)
 }
@@ -670,7 +662,6 @@ pub fn innerOuterToAbsyn(mut inIO: InnerOuter) -> Result<Absyn::InnerOuter> {
         InnerOuter::INNER => openmodelica_ast::Absyn::InnerOuter::INNER,
         InnerOuter::OUTER { .. } => openmodelica_ast::Absyn::InnerOuter::OUTER,
         InnerOuter::INNER_OUTER => openmodelica_ast::Absyn::InnerOuter::INNER_OUTER,
-        _ => bail!("match: no arm matched"),
     });
     Ok(outIO)
 }

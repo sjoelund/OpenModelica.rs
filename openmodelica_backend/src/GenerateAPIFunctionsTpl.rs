@@ -87,7 +87,7 @@ pub fn getInType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<T
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(">")).clone() }))?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME }) => {
+        (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("String")).clone() }))?;
             txt.clone()
@@ -152,7 +152,7 @@ fn fun_47(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("))")).clone() }))?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME }, a_name) => {
+        (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } }, a_name) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Values.CODE(Absyn.C_TYPENAME(Parser.stringPath(")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
@@ -235,7 +235,7 @@ fn fun_49(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_arr")).clone() }))?;
             (txt.clone(), a_varDecl.clone(), a_postMatch.clone())
         },
-        (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME }, a_name, a_varDecl, a_postMatch) => {
+        (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } }, a_name, a_varDecl, a_postMatch) => {
             let mut txt = (*txt).clone();
             let mut a_varDecl = (*a_varDecl).clone();
             let mut a_postMatch = (*a_postMatch).clone();
@@ -331,7 +331,7 @@ fn fun_51(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("))")).clone() }))?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME }, a_name) => {
+        (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } }, a_name) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("ValuesUtil.valString(")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
@@ -429,7 +429,7 @@ fn fun_55(mut in_txt: Tpl::Text, mut in_a_res: Arc<DAE::Type>, mut in_a_postMatc
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("})")).clone() }))?;
             (txt.clone(), a_postMatch.clone(), a_varDecl.clone())
         },
-        (txt, Deref @ DAE::Type::T_NORETCALL, a_postMatch, a_varDecl) => {
+        (txt, Deref @ DAE::Type::T_NORETCALL { .. }, a_postMatch, a_varDecl) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Values.NORETCALL()")).clone() }))?;
             (txt.clone(), a_postMatch.clone(), a_varDecl.clone())
@@ -511,7 +511,7 @@ fn fun_58(mut in_txt: Tpl::Text, mut in_a_res: Arc<DAE::Type>) -> Result<Tpl::Te
             txt = Tpl::popIter(txt.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Type::T_NORETCALL) => {
+        (txt, Deref @ DAE::Type::T_NORETCALL { .. }) => {
             txt.clone()
         },
         (txt, i_res) => {
@@ -705,7 +705,7 @@ pub fn getQtType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<T
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" >")).clone() }))?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME }) => {
+        (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("QString")).clone() }))?;
             txt.clone()
@@ -769,7 +769,7 @@ fn fun_68(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_res: Arc<
     let mut out_txt: Tpl::Text;
     let mut out_a_name: Tpl::Text;
     (out_txt, out_a_name) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_res.clone(), in_a_index.clone(), in_a_name.clone())) {
-        (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME }, a_res, a_index, a_name) => {
+        (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } }, a_res, a_index, a_name) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".append(")).clone() }))?;
@@ -1001,7 +1001,7 @@ fn fun_74(mut in_txt: Tpl::Text, mut in_a_res: Arc<DAE::Type>, mut in_a_name: Ar
             txt = fun_73(txt.clone(), a_addStructs.clone(), i_res.clone(), i_types.clone(), (a_name.clone()).clone(), (a_prefix.clone()).clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Type::T_NORETCALL, _, _, _) => {
+        (txt, Deref @ DAE::Type::T_NORETCALL { .. }, _, _, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("void")).clone() }))?;
             txt.clone()
@@ -1038,7 +1038,7 @@ fn fun_76(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
     let mut out_txt: Tpl::Text;
     let mut out_a_varDecl: Tpl::Text;
     (out_txt, out_a_varDecl) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone(), in_a_varDecl.clone())) {
-        (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME }, a_name, a_varDecl) => {
+        (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } }, a_name, a_varDecl) => {
             let mut txt = (*txt).clone();
             let mut a_varDecl = (*a_varDecl).clone();
             a_varDecl = Tpl::writeTok(a_varDecl.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("QByteArray ")).clone() }))?;
@@ -1158,7 +1158,7 @@ pub fn getQtInArg(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_ty: Arc<DAE::
 fn fun_78(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone())) {
-        (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME }, a_name) => {
+        (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } }, a_name) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
             txt.clone()
@@ -1221,7 +1221,7 @@ fn fun_80(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
     let mut out_txt: Tpl::Text;
     let mut out_a_commandLog: Tpl::Text;
     (out_txt, out_a_commandLog) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone(), in_a_commandLog.clone())) {
-        (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME }, a_name, a_commandLog) => {
+        (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } }, a_name, a_commandLog) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_commandLog.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".append(")).clone() }))?;
@@ -1335,7 +1335,7 @@ fn fun_82(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
     let mut out_a_varDecl: Tpl::Text;
     let mut out_a_postCall: Tpl::Text;
     (out_txt, out_a_name, out_a_shortName, out_a_varDecl, out_a_postCall) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone(), in_a_shortName.clone(), in_a_varDecl.clone(), in_a_postCall.clone())) {
-        (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME }, a_name, a_shortName, a_varDecl, a_postCall) => {
+        (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } }, a_name, a_shortName, a_varDecl, a_postCall) => {
             let mut txt = (*txt).clone();
             let mut a_varDecl = (*a_varDecl).clone();
             let mut a_postCall = (*a_postCall).clone();
@@ -1430,7 +1430,7 @@ pub fn getQtOutArg(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_shortName: T
 fn fun_84(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl::Text, mut in_a_shortName: Tpl::Text, mut in_a_mm: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone(), in_a_shortName.clone(), in_a_mm.clone())) {
-        (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME }, a_name, _, a_mm) => {
+        (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } }, a_name, _, a_mm) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" = MMC_STRINGDATA(")).clone() }))?;
@@ -1539,7 +1539,7 @@ fn fun_86(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
     let mut out_txt: Tpl::Text;
     let mut out_a_responseLog: Tpl::Text;
     (out_txt, out_a_responseLog) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone(), in_a_responseLog.clone())) {
-        (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME }, a_name, a_responseLog) => {
+        (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } }, a_name, a_responseLog) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeText(txt.clone(), a_responseLog.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".append(")).clone() }))?;
@@ -1744,7 +1744,7 @@ fn fun_91(mut in_txt: Tpl::Text, mut in_a_res: Arc<DAE::Type>, mut in_a_postCall
     let mut out_a_responseLog: Tpl::Text;
     let mut out_a_varDecl: Tpl::Text;
     (out_txt, out_a_postCall, out_a_outArg, out_a_responseLog, out_a_varDecl) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_res.clone(), in_a_postCall.clone(), in_a_outArg.clone(), in_a_responseLog.clone(), in_a_name.clone(), in_a_varDecl.clone())) {
-        (txt, Deref @ DAE::Type::T_NORETCALL, a_postCall, a_outArg, a_responseLog, _, a_varDecl) => {
+        (txt, Deref @ DAE::Type::T_NORETCALL { .. }, a_postCall, a_outArg, a_responseLog, _, a_varDecl) => {
             (txt.clone(), a_postCall.clone(), a_outArg.clone(), a_responseLog.clone(), a_varDecl.clone())
         },
         (txt, i_t @ Deref @ DAE::Type::T_TUPLE { types: Deref @ metamodelica::List::Cons { head: i_type1, tail: i_types2 }, .. }, a_postCall, a_outArg, a_responseLog, a_name, a_varDecl) => {

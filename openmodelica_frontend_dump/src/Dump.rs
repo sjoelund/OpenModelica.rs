@@ -134,7 +134,7 @@ pub fn unparseClassAttributesStr(mut inClass: Arc<Absyn::Class>) -> Result<ArcSt
             r#str = stringAppendList(list![(s2_1.clone()).clone(), (s1.clone()).clone(), (s2.clone()).clone(), (s3.clone()).clone()]);
             r#str.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(outString)
 }
@@ -154,9 +154,8 @@ pub fn unparseRestrictionStr(mut inRestriction: Absyn::Restriction) -> Result<Ar
 pub fn unparseEachStr(mut inEach: Absyn::Each) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inEach.clone() {
-        Absyn::Each::EACH => literal!("each "),
-        Absyn::Each::NON_EACH => literal!(""),
-        _ => bail!("match: no arm matched"),
+        Absyn::Each::EACH { .. } => literal!("each "),
+        Absyn::Each::NON_EACH { .. } => literal!(""),
     })).clone();
     Ok(outString)
 }
@@ -238,11 +237,10 @@ pub fn unparseAnnotationOption(mut inAbsynAnnotation: Option<Arc<Absyn::Annotati
 pub fn unparseInnerOuterStr(mut inInnerOuter: Absyn::InnerOuter) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inInnerOuter.clone() {
-        Absyn::InnerOuter::INNER => literal!("inner "),
-        Absyn::InnerOuter::OUTER => literal!("outer "),
-        Absyn::InnerOuter::INNER_OUTER => literal!("inner outer "),
-        Absyn::InnerOuter::NOT_INNER_OUTER => literal!(""),
-        _ => bail!("match: no arm matched"),
+        Absyn::InnerOuter::INNER { .. } => literal!("inner "),
+        Absyn::InnerOuter::OUTER { .. } => literal!("outer "),
+        Absyn::InnerOuter::INNER_OUTER { .. } => literal!("inner outer "),
+        Absyn::InnerOuter::NOT_INNER_OUTER { .. } => literal!(""),
     })).clone();
     Ok(outString)
 }
@@ -256,7 +254,6 @@ fn unparseGroupImport(mut gimp: Absyn::GroupImport) -> Result<ArcStr> {
         Absyn::GroupImport::GROUP_IMPORT_RENAME { name: mut name, rename: mut rename } => {
             { let mut __mm_s = String::new(); __mm_s.push_str(&*rename.clone()); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }
         },
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(r#str)
 }
@@ -274,11 +271,10 @@ pub fn unparseImportStr(mut inImport: Absyn::Import) -> Result<ArcStr> {
 fn unparseVariabilitySymbolStr(mut inVariability: Absyn::Variability) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inVariability.clone() {
-        Absyn::Variability::VAR => literal!(""),
-        Absyn::Variability::DISCRETE => literal!("discrete "),
-        Absyn::Variability::PARAM => literal!("parameter "),
-        Absyn::Variability::CONST => literal!("constant "),
-        _ => bail!("match: no arm matched"),
+        Absyn::Variability::VAR { .. } => literal!(""),
+        Absyn::Variability::DISCRETE { .. } => literal!("discrete "),
+        Absyn::Variability::PARAM { .. } => literal!("parameter "),
+        Absyn::Variability::CONST { .. } => literal!("constant "),
     })).clone();
     Ok(outString)
 }
@@ -286,9 +282,9 @@ fn unparseVariabilitySymbolStr(mut inVariability: Absyn::Variability) -> Result<
 pub fn unparseDirectionSymbolStr(mut inDirection: Absyn::Direction) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inDirection.clone() {
-        Absyn::Direction::BIDIR => literal!(""),
-        Absyn::Direction::INPUT => literal!("input "),
-        Absyn::Direction::OUTPUT => literal!("output "),
+        Absyn::Direction::BIDIR { .. } => literal!(""),
+        Absyn::Direction::INPUT { .. } => literal!("input "),
+        Absyn::Direction::OUTPUT { .. } => literal!("output "),
         _ => bail!("match: no arm matched"),
     })).clone();
     Ok(outString)
@@ -297,9 +293,9 @@ pub fn unparseDirectionSymbolStr(mut inDirection: Absyn::Direction) -> Result<Ar
 pub fn directionSymbol(mut inDirection: Absyn::Direction) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inDirection.clone() {
-        Absyn::Direction::BIDIR => literal!(""),
-        Absyn::Direction::INPUT => literal!("input"),
-        Absyn::Direction::OUTPUT => literal!("output"),
+        Absyn::Direction::BIDIR { .. } => literal!(""),
+        Absyn::Direction::INPUT { .. } => literal!("input"),
+        Absyn::Direction::OUTPUT { .. } => literal!("output"),
         _ => bail!("match: no arm matched"),
     })).clone();
     Ok(outString)
@@ -308,10 +304,9 @@ pub fn directionSymbol(mut inDirection: Absyn::Direction) -> Result<ArcStr> {
 pub fn unparseParallelismSymbolStr(mut inParallelism: Absyn::Parallelism) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inParallelism.clone() {
-        Absyn::Parallelism::NON_PARALLEL => literal!(""),
-        Absyn::Parallelism::PARGLOBAL => literal!("parglobal "),
-        Absyn::Parallelism::PARLOCAL => literal!("parlocal "),
-        _ => bail!("match: no arm matched"),
+        Absyn::Parallelism::NON_PARALLEL { .. } => literal!(""),
+        Absyn::Parallelism::PARGLOBAL { .. } => literal!("parglobal "),
+        Absyn::Parallelism::PARLOCAL { .. } => literal!("parlocal "),
     })).clone();
     Ok(outString)
 }
@@ -335,7 +330,7 @@ pub fn printArraydimStr(mut s: Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -
 pub fn printSubscriptStr(mut inSubscript: Arc<Absyn::Subscript>) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((::match_deref::match_deref! { match &(inSubscript.clone()) {
-        Deref @ Absyn::Subscript::NOSUB => {
+        Deref @ Absyn::Subscript::NOSUB { .. } => {
             literal!(":")
         },
         Deref @ Absyn::Subscript::SUBSCRIPT { subscript: e1 } => {
@@ -343,7 +338,7 @@ pub fn printSubscriptStr(mut inSubscript: Arc<Absyn::Subscript>) -> Result<ArcSt
             s = (printExpStr(e1.clone())?).clone();
             s.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(outString)
 }
@@ -455,13 +450,13 @@ pub fn printComponentRefStr(mut inComponentRef: Arc<Absyn::ComponentRef>) -> Res
             s_3 = (stringAppend((literal!(".")).clone(), (crs.clone()).clone())).clone();
             s_3.clone()
         },
-        Deref @ Absyn::ComponentRef::ALLWILD => {
+        Deref @ Absyn::ComponentRef::ALLWILD { .. } => {
             literal!("__")
         },
-        Deref @ Absyn::ComponentRef::WILD => {
+        Deref @ Absyn::ComponentRef::WILD { .. } => {
             if (Config::acceptMetaModelicaGrammar()?) {literal!("_")} else {literal!("")}
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(outString)
 }
@@ -633,7 +628,7 @@ pub fn printNamedArgStr(mut inNamedArg: Arc<Absyn::NamedArg>) -> Result<ArcStr> 
             r#str = (stringAppend((s1.clone()).clone(), (s2.clone()).clone())).clone();
             r#str.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(outString)
 }
@@ -646,7 +641,7 @@ pub fn printNamedArgValueStr(mut inNamedArg: Arc<Absyn::NamedArg>) -> Result<Arc
             r#str = (printExpStr(e.clone())?).clone();
             r#str.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(outString)
 }
@@ -697,9 +692,9 @@ fn isAssociativeExp(mut inExp: Arc<Absyn::Exp>) -> bool {
 fn isAssociativeOp(mut inOperator: Absyn::Operator) -> bool {
     let mut outIsAssociative: bool = false;
     outIsAssociative = (match inOperator.clone() {
-        Absyn::Operator::ADD => true,
-        Absyn::Operator::ADD_EW => true,
-        Absyn::Operator::MUL_EW => true,
+        Absyn::Operator::ADD { .. } => true,
+        Absyn::Operator::ADD_EW { .. } => true,
+        Absyn::Operator::MUL_EW { .. } => true,
         _ => false,
     });
     outIsAssociative
@@ -718,8 +713,8 @@ fn isNonAssociativeExp(mut exp: Arc<Absyn::Exp>) -> bool {
 fn isNonAssociativeOp(mut operator: Absyn::Operator) -> bool {
     let mut isNonAssociative: bool = false;
     isNonAssociative = (match operator.clone() {
-        Absyn::Operator::POW => true,
-        Absyn::Operator::POW_EW => true,
+        Absyn::Operator::POW { .. } => true,
+        Absyn::Operator::POW_EW { .. } => true,
         _ => false,
     });
     isNonAssociative
@@ -763,16 +758,16 @@ pub fn expPriority(mut inExp: Arc<Absyn::Exp>, mut inLhs: bool) -> Result<i32> {
 fn priorityBinopLhs(mut inOp: Absyn::Operator) -> Result<i32> {
     let mut outPriority: i32 = 0;
     outPriority = (match inOp.clone() {
-        Absyn::Operator::ADD => 5,
-        Absyn::Operator::SUB => 5,
-        Absyn::Operator::MUL => 2,
-        Absyn::Operator::DIV => 2,
-        Absyn::Operator::POW => 1,
-        Absyn::Operator::ADD_EW => 5,
-        Absyn::Operator::SUB_EW => 5,
-        Absyn::Operator::MUL_EW => 2,
-        Absyn::Operator::DIV_EW => 2,
-        Absyn::Operator::POW_EW => 1,
+        Absyn::Operator::ADD { .. } => 5,
+        Absyn::Operator::SUB { .. } => 5,
+        Absyn::Operator::MUL { .. } => 2,
+        Absyn::Operator::DIV { .. } => 2,
+        Absyn::Operator::POW { .. } => 1,
+        Absyn::Operator::ADD_EW { .. } => 5,
+        Absyn::Operator::SUB_EW { .. } => 5,
+        Absyn::Operator::MUL_EW { .. } => 2,
+        Absyn::Operator::DIV_EW { .. } => 2,
+        Absyn::Operator::POW_EW { .. } => 1,
         _ => bail!("match: no arm matched"),
     });
     Ok(outPriority)
@@ -781,16 +776,16 @@ fn priorityBinopLhs(mut inOp: Absyn::Operator) -> Result<i32> {
 fn priorityBinopRhs(mut inOp: Absyn::Operator) -> Result<i32> {
     let mut outPriority: i32 = 0;
     outPriority = (match inOp.clone() {
-        Absyn::Operator::ADD => 6,
-        Absyn::Operator::SUB => 5,
-        Absyn::Operator::MUL => 2,
-        Absyn::Operator::DIV => 2,
-        Absyn::Operator::POW => 1,
-        Absyn::Operator::ADD_EW => 6,
-        Absyn::Operator::SUB_EW => 5,
-        Absyn::Operator::MUL_EW => 3,
-        Absyn::Operator::DIV_EW => 2,
-        Absyn::Operator::POW_EW => 1,
+        Absyn::Operator::ADD { .. } => 6,
+        Absyn::Operator::SUB { .. } => 5,
+        Absyn::Operator::MUL { .. } => 2,
+        Absyn::Operator::DIV { .. } => 2,
+        Absyn::Operator::POW { .. } => 1,
+        Absyn::Operator::ADD_EW { .. } => 6,
+        Absyn::Operator::SUB_EW { .. } => 5,
+        Absyn::Operator::MUL_EW { .. } => 3,
+        Absyn::Operator::DIV_EW { .. } => 2,
+        Absyn::Operator::POW_EW { .. } => 1,
         _ => bail!("match: no arm matched"),
     });
     Ok(outPriority)
@@ -799,8 +794,8 @@ fn priorityBinopRhs(mut inOp: Absyn::Operator) -> Result<i32> {
 fn priorityLBinop(mut inOp: Absyn::Operator) -> Result<i32> {
     let mut outPriority: i32 = 0;
     outPriority = (match inOp.clone() {
-        Absyn::Operator::AND => 8,
-        Absyn::Operator::OR => 9,
+        Absyn::Operator::AND { .. } => 8,
+        Absyn::Operator::OR { .. } => 9,
         _ => bail!("match: no arm matched"),
     });
     Ok(outPriority)
@@ -871,7 +866,7 @@ fn printListStr<Type_a: Clone + 'static>(mut inTypeALst: Arc<metamodelica::List<
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: h, tail: Deref @ metamodelica::List::Nil }, r, _) => {
                     let mut s: ArcStr = arcstr::literal!("");
-                    s = r(h.clone())?;
+                    s = (r(h.clone())?).clone();
                     Ok(s.clone())
                 }
                 _ => bail!("nomatch"),
@@ -884,7 +879,7 @@ fn printListStr<Type_a: Clone + 'static>(mut inTypeALst: Arc<metamodelica::List<
                     let mut srest: ArcStr = arcstr::literal!("");
                     let mut s_1: ArcStr = arcstr::literal!("");
                     let mut s_2: ArcStr = arcstr::literal!("");
-                    s = r(h.clone())?;
+                    s = (r(h.clone())?).clone();
                     srest = (printListStr(t.clone(), r.clone(), (sep.clone()).clone())?).clone();
                     s_1 = (stringAppend((s.clone()).clone(), (sep.clone()).clone())).clone();
                     s_2 = (stringAppend((s_1.clone()).clone(), (srest.clone()).clone())).clone();
@@ -901,30 +896,29 @@ fn printListStr<Type_a: Clone + 'static>(mut inTypeALst: Arc<metamodelica::List<
 pub fn opSymbol(mut inOperator: Absyn::Operator) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inOperator.clone() {
-        Absyn::Operator::ADD => literal!(" + "),
-        Absyn::Operator::SUB => literal!(" - "),
-        Absyn::Operator::MUL => literal!(" * "),
-        Absyn::Operator::DIV => literal!(" / "),
-        Absyn::Operator::POW => literal!(" ^ "),
-        Absyn::Operator::UMINUS => literal!("-"),
-        Absyn::Operator::UPLUS => literal!("+"),
-        Absyn::Operator::ADD_EW => literal!(" .+ "),
-        Absyn::Operator::SUB_EW => literal!(" .- "),
-        Absyn::Operator::MUL_EW => literal!(" .* "),
-        Absyn::Operator::DIV_EW => literal!(" ./ "),
-        Absyn::Operator::POW_EW => literal!(" .^ "),
-        Absyn::Operator::UMINUS_EW => literal!(" .-"),
-        Absyn::Operator::UPLUS_EW => literal!(" .+"),
-        Absyn::Operator::AND => literal!(" and "),
-        Absyn::Operator::OR => literal!(" or "),
-        Absyn::Operator::NOT => literal!("not "),
-        Absyn::Operator::LESS => literal!(" < "),
-        Absyn::Operator::LESSEQ => literal!(" <= "),
-        Absyn::Operator::GREATER => literal!(" > "),
-        Absyn::Operator::GREATEREQ => literal!(" >= "),
-        Absyn::Operator::EQUAL => literal!(" == "),
-        Absyn::Operator::NEQUAL => literal!(" <> "),
-        _ => bail!("match: no arm matched"),
+        Absyn::Operator::ADD { .. } => literal!(" + "),
+        Absyn::Operator::SUB { .. } => literal!(" - "),
+        Absyn::Operator::MUL { .. } => literal!(" * "),
+        Absyn::Operator::DIV { .. } => literal!(" / "),
+        Absyn::Operator::POW { .. } => literal!(" ^ "),
+        Absyn::Operator::UMINUS { .. } => literal!("-"),
+        Absyn::Operator::UPLUS { .. } => literal!("+"),
+        Absyn::Operator::ADD_EW { .. } => literal!(" .+ "),
+        Absyn::Operator::SUB_EW { .. } => literal!(" .- "),
+        Absyn::Operator::MUL_EW { .. } => literal!(" .* "),
+        Absyn::Operator::DIV_EW { .. } => literal!(" ./ "),
+        Absyn::Operator::POW_EW { .. } => literal!(" .^ "),
+        Absyn::Operator::UMINUS_EW { .. } => literal!(" .-"),
+        Absyn::Operator::UPLUS_EW { .. } => literal!(" .+"),
+        Absyn::Operator::AND { .. } => literal!(" and "),
+        Absyn::Operator::OR { .. } => literal!(" or "),
+        Absyn::Operator::NOT { .. } => literal!("not "),
+        Absyn::Operator::LESS { .. } => literal!(" < "),
+        Absyn::Operator::LESSEQ { .. } => literal!(" <= "),
+        Absyn::Operator::GREATER { .. } => literal!(" > "),
+        Absyn::Operator::GREATEREQ { .. } => literal!(" >= "),
+        Absyn::Operator::EQUAL { .. } => literal!(" == "),
+        Absyn::Operator::NEQUAL { .. } => literal!(" <> "),
     })).clone();
     Ok(outString)
 }
@@ -932,28 +926,28 @@ pub fn opSymbol(mut inOperator: Absyn::Operator) -> Result<ArcStr> {
 pub fn opSymbolCompact(mut inOperator: Absyn::Operator) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inOperator.clone() {
-        Absyn::Operator::ADD => literal!("+"),
-        Absyn::Operator::SUB => literal!("-"),
-        Absyn::Operator::MUL => literal!("*"),
-        Absyn::Operator::DIV => literal!("/"),
-        Absyn::Operator::POW => literal!("^"),
-        Absyn::Operator::UMINUS => literal!("-"),
-        Absyn::Operator::UPLUS => literal!("+"),
-        Absyn::Operator::ADD_EW => literal!("+"),
-        Absyn::Operator::SUB_EW => literal!("-"),
-        Absyn::Operator::MUL_EW => literal!("*"),
-        Absyn::Operator::DIV_EW => literal!("/"),
-        Absyn::Operator::POW_EW => literal!("^"),
-        Absyn::Operator::UMINUS_EW => literal!("-"),
-        Absyn::Operator::AND => literal!("and"),
-        Absyn::Operator::OR => literal!("or"),
-        Absyn::Operator::NOT => literal!("not"),
-        Absyn::Operator::LESS => literal!("<"),
-        Absyn::Operator::LESSEQ => literal!("<="),
-        Absyn::Operator::GREATER => literal!(">"),
-        Absyn::Operator::GREATEREQ => literal!(">="),
-        Absyn::Operator::EQUAL => literal!("=="),
-        Absyn::Operator::NEQUAL => literal!("<>"),
+        Absyn::Operator::ADD { .. } => literal!("+"),
+        Absyn::Operator::SUB { .. } => literal!("-"),
+        Absyn::Operator::MUL { .. } => literal!("*"),
+        Absyn::Operator::DIV { .. } => literal!("/"),
+        Absyn::Operator::POW { .. } => literal!("^"),
+        Absyn::Operator::UMINUS { .. } => literal!("-"),
+        Absyn::Operator::UPLUS { .. } => literal!("+"),
+        Absyn::Operator::ADD_EW { .. } => literal!("+"),
+        Absyn::Operator::SUB_EW { .. } => literal!("-"),
+        Absyn::Operator::MUL_EW { .. } => literal!("*"),
+        Absyn::Operator::DIV_EW { .. } => literal!("/"),
+        Absyn::Operator::POW_EW { .. } => literal!("^"),
+        Absyn::Operator::UMINUS_EW { .. } => literal!("-"),
+        Absyn::Operator::AND { .. } => literal!("and"),
+        Absyn::Operator::OR { .. } => literal!("or"),
+        Absyn::Operator::NOT { .. } => literal!("not"),
+        Absyn::Operator::LESS { .. } => literal!("<"),
+        Absyn::Operator::LESSEQ { .. } => literal!("<="),
+        Absyn::Operator::GREATER { .. } => literal!(">"),
+        Absyn::Operator::GREATEREQ { .. } => literal!(">="),
+        Absyn::Operator::EQUAL { .. } => literal!("=="),
+        Absyn::Operator::NEQUAL { .. } => literal!("<>"),
         _ => bail!("fail"),
     })).clone();
     Ok(outString)
@@ -1072,7 +1066,6 @@ pub fn getAstAsCorbaString(mut program: Absyn::Program) -> Result<()> {
             Print::printBuf((literal!("\nend Absyn.PROGRAM;")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(())
 }
@@ -1099,7 +1092,7 @@ fn printPathAsCorbaString(mut inPath: Arc<Absyn::Path>) -> Result<()> {
             Print::printBuf((literal!("\" end Absyn.FULLYQUALIFIED;")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(())
 }
@@ -1124,11 +1117,11 @@ fn printComponentRefAsCorbaString(mut cref: Arc<Absyn::ComponentRef>) -> Result<
             Print::printBuf((literal!(" end Absyn.CREF_IDENT;")).clone())?;
             ()
         },
-        Deref @ Absyn::ComponentRef::ALLWILD => {
+        Deref @ Absyn::ComponentRef::ALLWILD { .. } => {
             Print::printBuf((literal!("record Absyn.ALLWILD end Absyn.ALLWILD;")).clone())?;
             ()
         },
-        Deref @ Absyn::ComponentRef::WILD => {
+        Deref @ Absyn::ComponentRef::WILD { .. } => {
             Print::printBuf((literal!("record Absyn.WILD end Absyn.WILD;")).clone())?;
             ()
         },
@@ -1145,11 +1138,10 @@ fn printWithinAsCorbaString(mut within_: Absyn::Within) -> Result<()> {
             Print::printBuf((literal!(" end Absyn.WITHIN;")).clone())?;
             ()
         },
-        Absyn::Within::TOP => {
+        Absyn::Within::TOP { .. } => {
             Print::printBuf((literal!("record Absyn.TOP end Absyn.TOP;")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(())
 }
@@ -1294,7 +1286,7 @@ fn printEnumDefAsCorbaString(mut enumDef: Arc<Absyn::EnumDef>) -> Result<()> {
             Print::printBuf((literal!("end Absyn.ENUMLITERALS;")).clone())?;
             ()
         },
-        Deref @ Absyn::EnumDef::ENUM_COLON => {
+        Deref @ Absyn::EnumDef::ENUM_COLON { .. } => {
             Print::printBuf((literal!("record Absyn.ENUM_COLON end Absyn.ENUM_COLON;")).clone())?;
             ()
         },
@@ -1328,39 +1320,39 @@ fn printEnumLiteralAsCorbaString(mut enumLit: Arc<Absyn::EnumLiteral>) -> Result
 
 fn printRestrictionAsCorbaString(mut r: Absyn::Restriction) -> Result<()> {
     let () = (match r.clone() {
-        Absyn::Restriction::R_CLASS => {
+        Absyn::Restriction::R_CLASS { .. } => {
             Print::printBuf((literal!("record Absyn.R_CLASS end Absyn.R_CLASS;")).clone())?;
             ()
         },
-        Absyn::Restriction::R_OPTIMIZATION => {
+        Absyn::Restriction::R_OPTIMIZATION { .. } => {
             Print::printBuf((literal!("record Absyn.R_OPTIMIZATION end Absyn.R_OPTIMIZATION;")).clone())?;
             ()
         },
-        Absyn::Restriction::R_MODEL => {
+        Absyn::Restriction::R_MODEL { .. } => {
             Print::printBuf((literal!("record Absyn.R_MODEL end Absyn.R_MODEL;")).clone())?;
             ()
         },
-        Absyn::Restriction::R_RECORD => {
+        Absyn::Restriction::R_RECORD { .. } => {
             Print::printBuf((literal!("record Absyn.R_RECORD end Absyn.R_RECORD;")).clone())?;
             ()
         },
-        Absyn::Restriction::R_BLOCK => {
+        Absyn::Restriction::R_BLOCK { .. } => {
             Print::printBuf((literal!("record Absyn.R_BLOCK end Absyn.R_BLOCK;")).clone())?;
             ()
         },
-        Absyn::Restriction::R_CONNECTOR => {
+        Absyn::Restriction::R_CONNECTOR { .. } => {
             Print::printBuf((literal!("record Absyn.R_CONNECTOR end Absyn.R_CONNECTOR;")).clone())?;
             ()
         },
-        Absyn::Restriction::R_EXP_CONNECTOR => {
+        Absyn::Restriction::R_EXP_CONNECTOR { .. } => {
             Print::printBuf((literal!("record Absyn.R_EXP_CONNECTOR end Absyn.R_EXP_CONNECTOR;")).clone())?;
             ()
         },
-        Absyn::Restriction::R_TYPE => {
+        Absyn::Restriction::R_TYPE { .. } => {
             Print::printBuf((literal!("record Absyn.R_TYPE end Absyn.R_TYPE;")).clone())?;
             ()
         },
-        Absyn::Restriction::R_PACKAGE => {
+        Absyn::Restriction::R_PACKAGE { .. } => {
             Print::printBuf((literal!("record Absyn.R_PACKAGE end Absyn.R_PACKAGE;")).clone())?;
             ()
         },
@@ -1370,39 +1362,39 @@ fn printRestrictionAsCorbaString(mut r: Absyn::Restriction) -> Result<()> {
             Print::printBuf((literal!("end Absyn.R_FUNCTION;")).clone())?;
             ()
         },
-        Absyn::Restriction::R_OPERATOR => {
+        Absyn::Restriction::R_OPERATOR { .. } => {
             Print::printBuf((literal!("record Absyn.R_OPERATOR end Absyn.R_OPERATOR;")).clone())?;
             ()
         },
-        Absyn::Restriction::R_ENUMERATION => {
+        Absyn::Restriction::R_ENUMERATION { .. } => {
             Print::printBuf((literal!("record Absyn.R_ENUMERATION end Absyn.R_ENUMERATION;")).clone())?;
             ()
         },
-        Absyn::Restriction::R_PREDEFINED_INTEGER => {
+        Absyn::Restriction::R_PREDEFINED_INTEGER { .. } => {
             Print::printBuf((literal!("record Absyn.R_PREDEFINED_INTEGER end Absyn.R_PREDEFINED_INTEGER;")).clone())?;
             ()
         },
-        Absyn::Restriction::R_PREDEFINED_REAL => {
+        Absyn::Restriction::R_PREDEFINED_REAL { .. } => {
             Print::printBuf((literal!("record Absyn.R_PREDEFINED_REAL end Absyn.R_PREDEFINED_REAL;")).clone())?;
             ()
         },
-        Absyn::Restriction::R_PREDEFINED_STRING => {
+        Absyn::Restriction::R_PREDEFINED_STRING { .. } => {
             Print::printBuf((literal!("record Absyn.R_PREDEFINED_STRING end Absyn.R_PREDEFINED_STRING;")).clone())?;
             ()
         },
-        Absyn::Restriction::R_PREDEFINED_BOOLEAN => {
+        Absyn::Restriction::R_PREDEFINED_BOOLEAN { .. } => {
             Print::printBuf((literal!("record Absyn.R_PREDEFINED_BOOLEAN end Absyn.R_PREDEFINED_BOOLEAN;")).clone())?;
             ()
         },
-        Absyn::Restriction::R_PREDEFINED_CLOCK => {
+        Absyn::Restriction::R_PREDEFINED_CLOCK { .. } => {
             Print::printBuf((literal!("record Absyn.R_PREDEFINED_CLOCK end Absyn.R_PREDEFINED_CLOCK;")).clone())?;
             ()
         },
-        Absyn::Restriction::R_PREDEFINED_ENUMERATION => {
+        Absyn::Restriction::R_PREDEFINED_ENUMERATION { .. } => {
             Print::printBuf((literal!("record Absyn.R_PREDEFINED_ENUMERATION end Absyn.R_PREDEFINED_ENUMERATION;")).clone())?;
             ()
         },
-        Absyn::Restriction::R_UNIONTYPE => {
+        Absyn::Restriction::R_UNIONTYPE { .. } => {
             Print::printBuf((literal!("record Absyn.R_UNIONTYPE end Absyn.R_UNIONTYPE;")).clone())?;
             ()
         },
@@ -1414,7 +1406,7 @@ fn printRestrictionAsCorbaString(mut r: Absyn::Restriction) -> Result<()> {
             Print::printBuf((literal!(" end Absyn.R_METARECORD;")).clone())?;
             ()
         },
-        Absyn::Restriction::R_UNKNOWN => {
+        Absyn::Restriction::R_UNKNOWN { .. } => {
             Print::printBuf((literal!("record Absyn.R_UNKNOWN end Absyn.R_UNKNOWN;")).clone())?;
             ()
         },
@@ -1434,38 +1426,36 @@ fn printFunctionRestrictionAsCorbaString(mut functionRestriction: Absyn::Functio
             Print::printBuf((literal!(" end Absyn.FR_NORMAL_FUNCTION;")).clone())?;
             ()
         },
-        Absyn::FunctionRestriction::FR_OPERATOR_FUNCTION => {
+        Absyn::FunctionRestriction::FR_OPERATOR_FUNCTION { .. } => {
             Print::printBuf((literal!("record Absyn.FR_OPERATOR_FUNCTION end Absyn.FR_OPERATOR_FUNCTION;")).clone())?;
             ()
         },
-        Absyn::FunctionRestriction::FR_PARALLEL_FUNCTION => {
+        Absyn::FunctionRestriction::FR_PARALLEL_FUNCTION { .. } => {
             Print::printBuf((literal!("record Absyn.FR_PARALLEL_FUNCTION end Absyn.FR_PARALLEL_FUNCTION;")).clone())?;
             ()
         },
-        Absyn::FunctionRestriction::FR_KERNEL_FUNCTION => {
+        Absyn::FunctionRestriction::FR_KERNEL_FUNCTION { .. } => {
             Print::printBuf((literal!("record Absyn.FR_KERNEL_FUNCTION end Absyn.FR_KERNEL_FUNCTION;")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(())
 }
 
 fn printFunctionPurityAsCorbaString(mut functionPurity: Absyn::FunctionPurity) -> Result<()> {
     let () = (match functionPurity.clone() {
-        Absyn::FunctionPurity::PURE => {
+        Absyn::FunctionPurity::PURE { .. } => {
             Print::printBuf((literal!("record Absyn.PURE end Absyn.PURE;")).clone())?;
             ()
         },
-        Absyn::FunctionPurity::IMPURE => {
+        Absyn::FunctionPurity::IMPURE { .. } => {
             Print::printBuf((literal!("record Absyn.IMPURE end Absyn.IMPURE;")).clone())?;
             ()
         },
-        Absyn::FunctionPurity::NO_PURITY => {
+        Absyn::FunctionPurity::NO_PURITY { .. } => {
             Print::printBuf((literal!("record Absyn.NO_PURITY end Absyn.NO_PURITY;")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(())
 }
@@ -1620,42 +1610,40 @@ fn printElementAsCorbaString(mut el: Arc<Absyn::Element>) -> Result<()> {
 
 fn printInnerOuterAsCorbaString(mut innerOuter: Absyn::InnerOuter) -> Result<()> {
     let () = (match innerOuter.clone() {
-        Absyn::InnerOuter::INNER => {
+        Absyn::InnerOuter::INNER { .. } => {
             Print::printBuf((literal!("record Absyn.INNER end Absyn.INNER;")).clone())?;
             ()
         },
-        Absyn::InnerOuter::OUTER => {
+        Absyn::InnerOuter::OUTER { .. } => {
             Print::printBuf((literal!("record Absyn.OUTER end Absyn.OUTER;")).clone())?;
             ()
         },
-        Absyn::InnerOuter::INNER_OUTER => {
+        Absyn::InnerOuter::INNER_OUTER { .. } => {
             Print::printBuf((literal!("record Absyn.INNER_OUTER end Absyn.INNER_OUTER;")).clone())?;
             ()
         },
-        Absyn::InnerOuter::NOT_INNER_OUTER => {
+        Absyn::InnerOuter::NOT_INNER_OUTER { .. } => {
             Print::printBuf((literal!("record Absyn.NOT_INNER_OUTER end Absyn.NOT_INNER_OUTER;")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(())
 }
 
 fn printRedeclareKeywordsAsCorbaString(mut redeclareKeywords: Absyn::RedeclareKeywords) -> Result<()> {
     let () = (match redeclareKeywords.clone() {
-        Absyn::RedeclareKeywords::REDECLARE => {
+        Absyn::RedeclareKeywords::REDECLARE { .. } => {
             Print::printBuf((literal!("record Absyn.REDECLARE end Absyn.REDECLARE;")).clone())?;
             ()
         },
-        Absyn::RedeclareKeywords::REPLACEABLE => {
+        Absyn::RedeclareKeywords::REPLACEABLE { .. } => {
             Print::printBuf((literal!("record Absyn.REPLACEABLE end Absyn.REPLACEABLE;")).clone())?;
             ()
         },
-        Absyn::RedeclareKeywords::REDECLARE_REPLACEABLE => {
+        Absyn::RedeclareKeywords::REDECLARE_REPLACEABLE { .. } => {
             Print::printBuf((literal!("record Absyn.REDECLARE_REPLACEABLE end Absyn.REDECLARE_REPLACEABLE;")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(())
 }
@@ -1670,7 +1658,7 @@ fn printConstrainClassAsCorbaString(mut constrainClass: Arc<Absyn::ConstrainClas
             Print::printBuf((literal!(" end Absyn.CONSTRAINCLASS;")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(())
 }
@@ -1715,7 +1703,7 @@ fn printElementSpecAsCorbaString(mut spec: Arc<Absyn::ElementSpec>) -> Result<()
             Print::printBuf((literal!(" end Absyn.COMPONENTS;")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(())
 }
@@ -1732,7 +1720,7 @@ fn printComponentItemAsCorbaString(mut componentItem: Arc<Absyn::ComponentItem>)
             Print::printBuf((literal!(" end Absyn.COMPONENTITEM;")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(())
 }
@@ -1749,7 +1737,6 @@ fn printComponentAsCorbaString(mut component: Absyn::Component) -> Result<()> {
             Print::printBuf((literal!(" end Absyn.COMPONENT;")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(())
 }
@@ -1764,14 +1751,14 @@ fn printModificationAsCorbaString(mut r#mod: Arc<Absyn::Modification>) -> Result
             Print::printBuf((literal!(" end Absyn.CLASSMOD;")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(())
 }
 
 fn printEqModAsCorbaString(mut eqMod: Arc<Absyn::EqMod>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(eqMod.clone()) {
-        Deref @ Absyn::EqMod::NOMOD => {
+        Deref @ Absyn::EqMod::NOMOD { .. } => {
             Print::printBuf((literal!("record Absyn.NOMOD end Absyn.NOMOD;")).clone())?;
             ()
         },
@@ -1783,7 +1770,7 @@ fn printEqModAsCorbaString(mut eqMod: Arc<Absyn::EqMod>) -> Result<()> {
             Print::printBuf((literal!(" end Absyn.EQMOD;")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(())
 }
@@ -1877,7 +1864,7 @@ fn printEquationAsCorbaString(mut eq: Arc<Absyn::Equation>) -> Result<()> {
             Print::printBuf((literal!(" end Absyn.EQ_FAILURE;")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(())
 }
@@ -1963,11 +1950,11 @@ fn printAlgorithmAsCorbaString(mut alg: Arc<Absyn::Algorithm>) -> Result<()> {
             Print::printBuf((literal!(" end Absyn.ALG_NORETCALL;")).clone())?;
             ()
         },
-        Deref @ Absyn::Algorithm::ALG_RETURN => {
+        Deref @ Absyn::Algorithm::ALG_RETURN { .. } => {
             Print::printBuf((literal!("record Absyn.ALG_RETURN end Absyn.ALG_RETURN;")).clone())?;
             ()
         },
-        Deref @ Absyn::Algorithm::ALG_BREAK => {
+        Deref @ Absyn::Algorithm::ALG_BREAK { .. } => {
             Print::printBuf((literal!("record Absyn.ALG_BREAK end Absyn.ALG_BREAK;")).clone())?;
             ()
         },
@@ -2010,7 +1997,7 @@ fn printAnnotationAsCorbaString(mut annotation_: Arc<Absyn::Annotation>) -> Resu
             Print::printBuf((literal!(" end Absyn.ANNOTATION;")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(())
 }
@@ -2025,7 +2012,7 @@ fn printCommentAsCorbaString(mut inComment: Arc<Absyn::Comment>) -> Result<()> {
             Print::printBuf((literal!(" end Absyn.COMMENT;")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(())
 }
@@ -2050,7 +2037,7 @@ fn printTypeSpecAsCorbaString(mut typeSpec: Arc<Absyn::TypeSpec>) -> Result<()> 
             Print::printBuf((literal!(" end Absyn.TPATH;")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(())
 }
@@ -2062,7 +2049,7 @@ fn printArrayDimAsCorbaString(mut arrayDim: Arc<metamodelica::List<Arc<Absyn::Su
 
 fn printSubscriptAsCorbaString(mut subscript: Arc<Absyn::Subscript>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(subscript.clone()) {
-        Deref @ Absyn::Subscript::NOSUB => {
+        Deref @ Absyn::Subscript::NOSUB { .. } => {
             Print::printBuf((literal!("record Absyn.NOSUB end Absyn.NOSUB;")).clone())?;
             ()
         },
@@ -2072,7 +2059,7 @@ fn printSubscriptAsCorbaString(mut subscript: Arc<Absyn::Subscript>) -> Result<(
             Print::printBuf((literal!(" end Absyn.SUBSCRIPT;")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(())
 }
@@ -2126,64 +2113,61 @@ fn printElementAttributesAsCorbaString(mut attr: Absyn::ElementAttributes) -> Re
             Print::printBuf((literal!(" end Absyn.ATTR;")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(())
 }
 
 fn printParallelismAsCorbaString(mut parallelism: Absyn::Parallelism) -> Result<()> {
     let () = (match parallelism.clone() {
-        Absyn::Parallelism::PARGLOBAL => {
+        Absyn::Parallelism::PARGLOBAL { .. } => {
             Print::printBuf((literal!("record Absyn.PARGLOBAL end Absyn.PARGLOBAL;")).clone())?;
             ()
         },
-        Absyn::Parallelism::PARLOCAL => {
+        Absyn::Parallelism::PARLOCAL { .. } => {
             Print::printBuf((literal!("record Absyn.PARLOCAL end Absyn.PARLOCAL;")).clone())?;
             ()
         },
-        Absyn::Parallelism::NON_PARALLEL => {
+        Absyn::Parallelism::NON_PARALLEL { .. } => {
             Print::printBuf((literal!("record Absyn.NON_PARALLEL end Absyn.NON_PARALLEL;")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(())
 }
 
 fn printVariabilityAsCorbaString(mut var: Absyn::Variability) -> Result<()> {
     let () = (match var.clone() {
-        Absyn::Variability::VAR => {
+        Absyn::Variability::VAR { .. } => {
             Print::printBuf((literal!("record Absyn.VAR end Absyn.VAR;")).clone())?;
             ()
         },
-        Absyn::Variability::DISCRETE => {
+        Absyn::Variability::DISCRETE { .. } => {
             Print::printBuf((literal!("record Absyn.DISCRETE end Absyn.DISCRETE;")).clone())?;
             ()
         },
-        Absyn::Variability::PARAM => {
+        Absyn::Variability::PARAM { .. } => {
             Print::printBuf((literal!("record Absyn.PARAM end Absyn.PARAM;")).clone())?;
             ()
         },
-        Absyn::Variability::CONST => {
+        Absyn::Variability::CONST { .. } => {
             Print::printBuf((literal!("record Absyn.CONST end Absyn.CONST;")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(())
 }
 
 fn printDirectionAsCorbaString(mut dir: Absyn::Direction) -> Result<()> {
     let () = (match dir.clone() {
-        Absyn::Direction::INPUT => {
+        Absyn::Direction::INPUT { .. } => {
             Print::printBuf((literal!("record Absyn.INPUT end Absyn.INPUT;")).clone())?;
             ()
         },
-        Absyn::Direction::OUTPUT => {
+        Absyn::Direction::OUTPUT { .. } => {
             Print::printBuf((literal!("record Absyn.OUTPUT end Absyn.OUTPUT;")).clone())?;
             ()
         },
-        Absyn::Direction::BIDIR => {
+        Absyn::Direction::BIDIR { .. } => {
             Print::printBuf((literal!("record Absyn.BIDIR end Absyn.BIDIR;")).clone())?;
             ()
         },
@@ -2194,15 +2178,14 @@ fn printDirectionAsCorbaString(mut dir: Absyn::Direction) -> Result<()> {
 
 fn printIsFieldAsCorbaString(mut isf: Absyn::IsField) -> Result<()> {
     let () = (match isf.clone() {
-        Absyn::IsField::NONFIELD => {
+        Absyn::IsField::NONFIELD { .. } => {
             Print::printBuf((literal!("record Absyn.NONFIELD end Absyn.NONFIELD;")).clone())?;
             ()
         },
-        Absyn::IsField::FIELD => {
+        Absyn::IsField::FIELD { .. } => {
             Print::printBuf((literal!("record Absyn.FIELD end Absyn.FIELD;")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(())
 }
@@ -2264,7 +2247,7 @@ fn printFunctionArgsAsCorbaString(mut fargs: Arc<Absyn::FunctionArgs>) -> Result
             Print::printBuf((literal!(" end Absyn.FOR_ITER_FARG;")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(())
 }
@@ -2281,7 +2264,7 @@ fn printForIteratorAsCorbaString(mut iter: Arc<Absyn::ForIterator>) -> Result<()
             Print::printBuf((literal!("end Absyn.ITERATOR;")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(())
 }
@@ -2296,7 +2279,7 @@ fn printNamedArgAsCorbaString(mut arg: Arc<Absyn::NamedArg>) -> Result<()> {
             Print::printBuf((literal!(" end Absyn.NAMEDARG;")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(())
 }
@@ -2435,7 +2418,7 @@ fn printExpAsCorbaString(mut inExp: Arc<Absyn::Exp>) -> Result<()> {
             Print::printBuf((literal!(" end Absyn.TUPLE;")).clone())?;
             ()
         },
-        Deref @ Absyn::Exp::END => {
+        Deref @ Absyn::Exp::END { .. } => {
             Print::printBuf((literal!("record Absyn.END end Absyn.END;")).clone())?;
             ()
         },
@@ -2482,15 +2465,14 @@ fn printExpAsCorbaString(mut inExp: Arc<Absyn::Exp>) -> Result<()> {
 
 fn printMatchTypeAsCorbaString(mut matchTy: Absyn::MatchType) -> Result<()> {
     let () = (match matchTy.clone() {
-        Absyn::MatchType::MATCH => {
+        Absyn::MatchType::MATCH { .. } => {
             Print::printBuf((literal!("record Absyn.MATCH end Absyn.MATCH;")).clone())?;
             ()
         },
-        Absyn::MatchType::MATCHCONTINUE => {
+        Absyn::MatchType::MATCHCONTINUE { .. } => {
             Print::printBuf((literal!("record Absyn.MATCHCONTINUE end Absyn.MATCHCONTINUE;")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(())
 }
@@ -2535,7 +2517,7 @@ fn printCaseAsCorbaString(mut case_: Arc<Absyn::Case>) -> Result<()> {
             Print::printBuf((literal!(" end Absyn.ELSE;")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(())
 }
@@ -2627,91 +2609,91 @@ fn printTupleAsCorbaString<Type_a: Clone + 'static, Type_b: Clone + 'static>(mut
 
 fn printOperatorAsCorbaString(mut op: Absyn::Operator) -> Result<()> {
     let () = (match op.clone() {
-        Absyn::Operator::ADD => {
+        Absyn::Operator::ADD { .. } => {
             Print::printBuf((literal!("record Absyn.ADD end Absyn.ADD;")).clone())?;
             ()
         },
-        Absyn::Operator::SUB => {
+        Absyn::Operator::SUB { .. } => {
             Print::printBuf((literal!("record Absyn.SUB end Absyn.SUB;")).clone())?;
             ()
         },
-        Absyn::Operator::MUL => {
+        Absyn::Operator::MUL { .. } => {
             Print::printBuf((literal!("record Absyn.MUL end Absyn.MUL;")).clone())?;
             ()
         },
-        Absyn::Operator::DIV => {
+        Absyn::Operator::DIV { .. } => {
             Print::printBuf((literal!("record Absyn.DIV end Absyn.DIV;")).clone())?;
             ()
         },
-        Absyn::Operator::POW => {
+        Absyn::Operator::POW { .. } => {
             Print::printBuf((literal!("record Absyn.POW end Absyn.POW;")).clone())?;
             ()
         },
-        Absyn::Operator::UPLUS => {
+        Absyn::Operator::UPLUS { .. } => {
             Print::printBuf((literal!("record Absyn.UPLUS end Absyn.UPLUS;")).clone())?;
             ()
         },
-        Absyn::Operator::UMINUS => {
+        Absyn::Operator::UMINUS { .. } => {
             Print::printBuf((literal!("record Absyn.UMINUS end Absyn.UMINUS;")).clone())?;
             ()
         },
-        Absyn::Operator::ADD_EW => {
+        Absyn::Operator::ADD_EW { .. } => {
             Print::printBuf((literal!("record Absyn.ADD_EW end Absyn.ADD_EW;")).clone())?;
             ()
         },
-        Absyn::Operator::SUB_EW => {
+        Absyn::Operator::SUB_EW { .. } => {
             Print::printBuf((literal!("record Absyn.SUB_EW end Absyn.SUB_EW;")).clone())?;
             ()
         },
-        Absyn::Operator::MUL_EW => {
+        Absyn::Operator::MUL_EW { .. } => {
             Print::printBuf((literal!("record Absyn.MUL_EW end Absyn.MUL_EW;")).clone())?;
             ()
         },
-        Absyn::Operator::DIV_EW => {
+        Absyn::Operator::DIV_EW { .. } => {
             Print::printBuf((literal!("record Absyn.DIV_EW end Absyn.DIV_EW;")).clone())?;
             ()
         },
-        Absyn::Operator::UPLUS_EW => {
+        Absyn::Operator::UPLUS_EW { .. } => {
             Print::printBuf((literal!("record Absyn.UPLUS_EW end Absyn.UPLUS_EW;")).clone())?;
             ()
         },
-        Absyn::Operator::UMINUS_EW => {
+        Absyn::Operator::UMINUS_EW { .. } => {
             Print::printBuf((literal!("record Absyn.UMINUS_EW end Absyn.UMINUS_EW;")).clone())?;
             ()
         },
-        Absyn::Operator::AND => {
+        Absyn::Operator::AND { .. } => {
             Print::printBuf((literal!("record Absyn.AND end Absyn.AND;")).clone())?;
             ()
         },
-        Absyn::Operator::OR => {
+        Absyn::Operator::OR { .. } => {
             Print::printBuf((literal!("record Absyn.OR end Absyn.OR;")).clone())?;
             ()
         },
-        Absyn::Operator::NOT => {
+        Absyn::Operator::NOT { .. } => {
             Print::printBuf((literal!("record Absyn.NOT end Absyn.NOT;")).clone())?;
             ()
         },
-        Absyn::Operator::LESS => {
+        Absyn::Operator::LESS { .. } => {
             Print::printBuf((literal!("record Absyn.LESS end Absyn.LESS;")).clone())?;
             ()
         },
-        Absyn::Operator::LESSEQ => {
+        Absyn::Operator::LESSEQ { .. } => {
             Print::printBuf((literal!("record Absyn.LESSEQ end Absyn.LESSEQ;")).clone())?;
             ()
         },
-        Absyn::Operator::GREATER => {
+        Absyn::Operator::GREATER { .. } => {
             Print::printBuf((literal!("record Absyn.GREATER end Absyn.GREATER;")).clone())?;
             ()
         },
-        Absyn::Operator::GREATEREQ => {
+        Absyn::Operator::GREATEREQ { .. } => {
             Print::printBuf((literal!("record Absyn.GREATEREQ end Absyn.GREATEREQ;")).clone())?;
             ()
         },
-        Absyn::Operator::EQUAL => {
+        Absyn::Operator::EQUAL { .. } => {
             Print::printBuf((literal!("record Absyn.EQUAL end Absyn.EQUAL;")).clone())?;
             ()
         },
-        Absyn::Operator::NEQUAL => {
+        Absyn::Operator::NEQUAL { .. } => {
             Print::printBuf((literal!("record Absyn.NEQUAL end Absyn.NEQUAL;")).clone())?;
             ()
         },
@@ -2722,15 +2704,14 @@ fn printOperatorAsCorbaString(mut op: Absyn::Operator) -> Result<()> {
 
 fn printEachAsCorbaString(mut each_: Absyn::Each) -> Result<()> {
     let () = (match each_.clone() {
-        Absyn::Each::EACH => {
+        Absyn::Each::EACH { .. } => {
             Print::printBuf((literal!("record Absyn.EACH end Absyn.EACH;")).clone())?;
             ()
         },
-        Absyn::Each::NON_EACH => {
+        Absyn::Each::NON_EACH { .. } => {
             Print::printBuf((literal!("record Absyn.NON_EACH end Absyn.NON_EACH;")).clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(())
 }
@@ -2767,7 +2748,7 @@ pub fn writePath(mut file: File::File, mut path: Arc<Absyn::Path>, mut escape: E
             }
             var_field!((*p).path, Absyn::Path::FULLYQUALIFIED).clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
     Ok(())

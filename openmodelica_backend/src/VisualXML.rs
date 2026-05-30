@@ -129,7 +129,7 @@ pub fn visualizationInfoXML(mut daeIn: Arc<BackendDAE::BackendDAE>, mut fileName
     let mut visuals: Arc<metamodelica::List<Visualization>> = metamodelica::nil();
     let mut allVisuals: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>> = metamodelica::nil();
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(daeIn.clone()) {
-        Deref @ DAE { shared: __pa0, eqs: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+        Deref @ BackendDAE::BackendDAE { shared: __pa0, eqs: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
     shared = __pa0.clone();
@@ -154,7 +154,7 @@ pub fn visualizationInfoXML(mut daeIn: Arc<BackendDAE::BackendDAE>, mut fileName
     dumpVis(metamodelica::arrayFromVec(visuals.clone().into_iter().cloned().collect()), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*fileName.clone()); __mm_s.push_str(&*literal!("_visual.xml")); ArcStr::from(__mm_s) }).clone())?;
     (globalKnownVars, _) = BackendVariable::traverseBackendDAEVarsWithUpdate(globalKnownVars.clone(), (std::sync::Arc::new(setVisVarsPublic) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArcStr) -> Result<(BackendDAE::Var, ArcStr)> + 'static>), (literal!("")).clone())?;
     (aliasVars, _) = BackendVariable::traverseBackendDAEVarsWithUpdate(aliasVars.clone(), (std::sync::Arc::new(setVisVarsPublic) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArcStr) -> Result<(BackendDAE::Var, ArcStr)> + 'static>), (literal!("")).clone())?;
-    daeOut = BackendDAE::DAE(shared=shared.clone(), eqs=eqs.clone())?;
+    daeOut = Arc::new(BackendDAE::BackendDAE { shared: shared.clone(), eqs: eqs.clone() });
     Ok(daeOut)
 }
 
@@ -280,7 +280,7 @@ fn setBindingForProtectedVars(mut eqSysIn: Arc<BackendDAE::EqSystem>) -> Arc<Bac
     let mut eqSysOut: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
     let mut ass1: metamodelica::Array<i32>;
     let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
-    let mut eqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
+    let mut eqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     if '__try0: {
         let (__pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(eqSysIn.clone()) {
             Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::MATCHING { ass1: __pa1, .. }, orderedVars: __pa2, orderedEqs: __pa3, .. } => (__pa1.clone(), __pa2.clone(), __pa3.clone()),

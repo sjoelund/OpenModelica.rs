@@ -63,7 +63,7 @@ pub fn printExpStr(mut e: Arc<DAE::Exp>) -> Result<ArcStr> {
 pub fn dimensionString(mut dim: Arc<DAE::Dimension>) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((::match_deref::match_deref! { match &(dim.clone()) {
-        Deref @ DAE::Dimension::DIM_UNKNOWN => {
+        Deref @ DAE::Dimension::DIM_UNKNOWN { .. } => {
             literal!(":")
         },
         Deref @ DAE::Dimension::DIM_ENUM { enumTypeName: p, .. } => {
@@ -71,7 +71,7 @@ pub fn dimensionString(mut dim: Arc<DAE::Dimension>) -> Result<ArcStr> {
             s = (AbsynUtil::pathString(p.clone(), (literal!(".")).clone(), true, false)?).clone();
             s.clone()
         },
-        Deref @ DAE::Dimension::DIM_BOOLEAN => {
+        Deref @ DAE::Dimension::DIM_BOOLEAN { .. } => {
             literal!("Boolean")
         },
         Deref @ DAE::Dimension::DIM_INTEGER { integer: x } => {
@@ -84,7 +84,7 @@ pub fn dimensionString(mut dim: Arc<DAE::Dimension>) -> Result<ArcStr> {
             s = (printExpStr(e.clone())?).clone();
             s.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(r#str)
 }
@@ -1020,7 +1020,7 @@ pub fn subscriptEqual(mut inSubscriptLst1: Arc<metamodelica::List<Arc<DAE::Subsc
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
             true
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM, tail: xs1 }, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM, tail: xs2 }) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM { .. }, tail: xs1 }, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM { .. }, tail: xs2 }) => {
             subscriptEqual(xs1.clone(), xs2.clone())?
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::SLICE { exp: e1 }, tail: xs1 }, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::SLICE { exp: e2 }, tail: xs2 }) => {
@@ -1051,11 +1051,11 @@ pub fn printListStr<Type_a: Clone + 'static>(mut inTypeALst: Arc<metamodelica::L
 pub fn printSubscriptStr(mut sub: Arc<DAE::Subscript>) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((::match_deref::match_deref! { match &(sub.clone()) {
-        Deref @ DAE::Subscript::WHOLEDIM => literal!(":"),
+        Deref @ DAE::Subscript::WHOLEDIM { .. } => literal!(":"),
         Deref @ DAE::Subscript::INDEX { .. } => printExpStr(var_field!((*sub).exp, DAE::Subscript::INDEX).clone())?,
         Deref @ DAE::Subscript::SLICE { .. } => printExpStr(var_field!((*sub).exp, DAE::Subscript::SLICE).clone())?,
         Deref @ DAE::Subscript::WHOLE_NONEXP { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("1:")); __mm_s.push_str(&*printExpStr(var_field!((*sub).exp, DAE::Subscript::WHOLE_NONEXP).clone())?); ArcStr::from(__mm_s) },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(outString)
 }

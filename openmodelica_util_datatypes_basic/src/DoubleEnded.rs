@@ -53,18 +53,28 @@ pub struct MutableList<T: Clone> {
     pub back: Mutable::Mutable<Arc<metamodelica::List<T>>>,
 }
 
+impl<T: Clone> Default for MutableList<T> {
+    fn default() -> Self {
+        Self {
+            length: Default::default(),
+            front: Default::default(),
+            back: Default::default(),
+        }
+    }
+}
+
 pub type LIST<T> = MutableList<T>;
 
 
 pub fn new<T: Clone + 'static>(mut first: T) -> MutableList<T> {
-    let mut delst: MutableList<T>;
+    let mut delst: MutableList<T> = <MutableList<T> as ::std::default::Default>::default();
     let mut lst: Arc<metamodelica::List<T>> = list![first.clone()];
     delst = MutableList { length: Mutable::create(1), front: Mutable::create(lst.clone()), back: Mutable::create(lst.clone()) };
     delst
 }
 
 pub fn fromList<T: Clone + 'static>(mut lst: Arc<metamodelica::List<T>>) -> Result<MutableList<T>> {
-    let mut delst: MutableList<T>;
+    let mut delst: MutableList<T> = <MutableList<T> as ::std::default::Default>::default();
     let mut head: Arc<metamodelica::List<T>> = metamodelica::nil();
     let mut tail: Arc<metamodelica::List<T>> = metamodelica::nil();
     let mut tmp: Arc<metamodelica::List<T>> = metamodelica::nil();
@@ -95,7 +105,7 @@ pub fn fromList<T: Clone + 'static>(mut lst: Arc<metamodelica::List<T>>) -> Resu
 }
 
 pub fn empty<T: Clone + 'static>(mut dummy: T) -> MutableList<T> {
-    let mut delst: MutableList<T>;
+    let mut delst: MutableList<T> = <MutableList<T> as ::std::default::Default>::default();
     delst = MutableList { length: Mutable::create(0), front: Mutable::create(metamodelica::nil()), back: Mutable::create(metamodelica::nil()) };
     delst
 }

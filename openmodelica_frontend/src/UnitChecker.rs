@@ -134,7 +134,6 @@ pub fn isComplete(mut st: UnitAbsyn::Store) -> Result<(bool, UnitAbsyn::Store)> 
             (comp, st2) = completeCheck(lst.clone(), 1, UnitAbsyn::Store { storeVector: vector.clone(), numElts: indx.clone() })?;
             (comp.clone(), st2.clone())
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok((complete, stout))
 }
@@ -352,9 +351,9 @@ fn chooseResult(mut res1: UnitAbsyn::UnitCheckResult, mut res2: UnitAbsyn::UnitC
     let mut resout: UnitAbsyn::UnitCheckResult = UnitAbsyn::UnitCheckResult::CONSISTENT;
     let mut incon: UnitAbsyn::UnitCheckResult = UnitAbsyn::UnitCheckResult::CONSISTENT;
     resout = (match (res1.clone(), res2.clone(), res3.clone()) {
-        (UnitAbsyn::UnitCheckResult::CONSISTENT, UnitAbsyn::UnitCheckResult::CONSISTENT, UnitAbsyn::UnitCheckResult::CONSISTENT) => crate::UnitAbsyn::UnitCheckResult::CONSISTENT,
-        (UnitAbsyn::UnitCheckResult::CONSISTENT, UnitAbsyn::UnitCheckResult::CONSISTENT, mut incon) => incon.clone(),
-        (UnitAbsyn::UnitCheckResult::CONSISTENT, mut incon, _) => incon.clone(),
+        (UnitAbsyn::UnitCheckResult::CONSISTENT { .. }, UnitAbsyn::UnitCheckResult::CONSISTENT { .. }, UnitAbsyn::UnitCheckResult::CONSISTENT { .. }) => crate::UnitAbsyn::UnitCheckResult::CONSISTENT,
+        (UnitAbsyn::UnitCheckResult::CONSISTENT { .. }, UnitAbsyn::UnitCheckResult::CONSISTENT { .. }, mut incon) => incon.clone(),
+        (UnitAbsyn::UnitCheckResult::CONSISTENT { .. }, mut incon, _) => incon.clone(),
         (mut incon, _, _) => incon.clone(),
         _ => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
@@ -903,7 +902,7 @@ pub fn normalizeOnUnit(mut u: UnitAbsyn::Unit, mut st: UnitAbsyn::Store) -> Resu
     (unit, outSt) = 'mc: {
         let __mc_input = u.clone();
         if let Ok(__v) = (|| -> Result<_> {
-            let UnitAbsyn::Unit::UNSPECIFIED = __mc_input.clone() else { bail!("nomatch") };
+            let UnitAbsyn::Unit::UNSPECIFIED { .. } = __mc_input.clone() else { bail!("nomatch") };
             Ok((crate::UnitAbsyn::Unit::UNSPECIFIED, st.clone()))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -1098,7 +1097,7 @@ fn mulSpecUnitWithNorm(mut suin: UnitAbsyn::SpecUnit, mut normunit: UnitAbsyn::U
     suout = 'mc: {
         let __mc_input = (suin.clone(), normunit.clone());
         if let Ok(__v) = (|| -> Result<_> {
-            let (UnitAbsyn::SpecUnit { typeParameters: ref params, units: ref unitvec }, UnitAbsyn::Unit::UNSPECIFIED) = __mc_input.clone() else { bail!("nomatch") };
+            let (UnitAbsyn::SpecUnit { typeParameters: ref params, units: ref unitvec }, UnitAbsyn::Unit::UNSPECIFIED { .. }) = __mc_input.clone() else { bail!("nomatch") };
             Ok(UnitAbsyn::SpecUnit { typeParameters: cons((expo.clone(), UnitAbsyn::TypeParameter { name: (name.clone()).clone(), indx: loc.clone() }), params.clone()), units: unitvec.clone() })
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -1131,7 +1130,6 @@ pub fn printSpecUnit(mut text: ArcStr, mut su: UnitAbsyn::SpecUnit) -> Result<()
             println!("{}", (literal!("}\n")).clone());
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(())
 }
@@ -1166,7 +1164,7 @@ pub fn testUnitOp() -> () {
 
 pub fn printResult(mut res: UnitAbsyn::UnitCheckResult) -> Result<()> {
     let () = (match res.clone() {
-        UnitAbsyn::UnitCheckResult::CONSISTENT => {
+        UnitAbsyn::UnitCheckResult::CONSISTENT { .. } => {
             println!("{}", (literal!("\n---\nThe system of units is consistent.\n---\n")).clone());
             ()
         },
@@ -1182,7 +1180,6 @@ pub fn printResult(mut res: UnitAbsyn::UnitCheckResult) -> Result<()> {
             println!("{}", (literal!("\"\n---\n")).clone());
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(())
 }

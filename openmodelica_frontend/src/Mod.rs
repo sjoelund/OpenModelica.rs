@@ -127,7 +127,7 @@ pub fn elabMod(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc
     let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
     r#mod = SCodeInstUtil::expandEnumerationMod(inMod.clone())?;
     (outCache, outMod) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), r#mod.clone(), inBoolean.clone(), inInfo.clone())) {
-        (cache, _, _, _, Deref @ SCode::Mod::NOMOD, _, _) => {
+        (cache, _, _, _, Deref @ SCode::Mod::NOMOD { .. }, _, _) => {
             (cache.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD))
         },
         (cache, env, ih, pre, Deref @ SCode::Mod::MOD { info, binding: None, subModLst: subs, eachPrefix: each_, finalPrefix, .. }, r#impl, _) => {
@@ -173,7 +173,7 @@ pub fn isInvariantMod(mut r#mod: Arc<SCode::Mod>) -> Result<bool> {
     let mut e: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut mods: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
     b = (::match_deref::match_deref! { match &(r#mod.clone()) {
-        Deref @ SCode::Mod::NOMOD => true,
+        Deref @ SCode::Mod::NOMOD { .. } => true,
         Deref @ SCode::Mod::MOD { binding: None, .. } => {
             b = (::match_deref::match_deref! { match &(var_field!((*r#mod).binding, SCode::Mod::MOD).clone()) {
         Some(e) => {
@@ -208,7 +208,7 @@ pub fn isInvariantDAEMod(mut r#mod: Arc<DAE::Mod>) -> Result<bool> {
     let mut exp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut mods: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
     b = (::match_deref::match_deref! { match &(r#mod.clone()) {
-        Deref @ DAE::Mod::NOMOD => true,
+        Deref @ DAE::Mod::NOMOD { .. } => true,
         Deref @ DAE::Mod::MOD { binding: None, .. } => {
             b = (match var_field!((*r#mod).binding, DAE::Mod::MOD).clone() {
         Some(DAE::EqMod::TYPED { modifierAsExp: ref e, .. }) => {
@@ -250,7 +250,7 @@ pub fn elabModForBasicType(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
 
 fn checkIfModsAreBasicTypeMods(mut r#mod: Arc<SCode::Mod>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(r#mod.clone()) {
-        Deref @ SCode::Mod::NOMOD => {
+        Deref @ SCode::Mod::NOMOD { .. } => {
             ()
         },
         Deref @ SCode::Mod::MOD { subModLst: subs, .. } => {
@@ -300,7 +300,7 @@ fn elabModRedeclareElement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_ENUMERATION, .. } => {
+                Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_ENUMERATION { .. }, .. } => {
                     Ok((inElt.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD)))
                 }
                 _ => bail!("nomatch"),
@@ -405,7 +405,7 @@ pub fn unelabMod(mut inMod: Arc<DAE::Mod>) -> Result<Arc<SCode::Mod>> {
         let __mc_input = inMod.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Mod::NOMOD => {
+                Deref @ DAE::Mod::NOMOD { .. } => {
                     Ok(Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD))
                 }
                 _ => bail!("nomatch"),
@@ -490,7 +490,7 @@ fn unelabSubmods(mut inTypesSubModLst: Arc<metamodelica::List<Arc<DAE::SubMod>>>
             m_1 = unelabMod(m.clone())?;
             Arc::new(SCode::SubMod { ident: (i.clone()).clone(), r#mod: m_1.clone() })
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             __acc = cons(__x, __acc);
         }
@@ -519,7 +519,7 @@ pub fn updateMod(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), inMod.clone(), inBoolean.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, _, _, _, Deref @ DAE::Mod::NOMOD, _) => {
+                (cache, _, _, _, Deref @ DAE::Mod::NOMOD { .. }, _) => {
                     Ok((cache.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD)))
                 }
                 _ => bail!("nomatch"),
@@ -607,7 +607,7 @@ fn updateSubmods(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
             (outCache, m_1) = updateMod(outCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), m.clone(), inBoolean.clone(), info.clone())?;
             Arc::new(DAE::SubMod { ident: (i.clone()).clone(), r#mod: m_1.clone() })
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             __acc = cons(__x, __acc);
         }
@@ -622,7 +622,7 @@ pub fn elabUntypedMod(mut inMod: Arc<SCode::Mod>, mut inModScope: ModScope) -> R
         let __mc_input = inMod.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ SCode::Mod::NOMOD => {
+                Deref @ SCode::Mod::NOMOD { .. } => {
                     Ok(Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD))
                 }
                 _ => bail!("nomatch"),
@@ -732,7 +732,7 @@ fn compactSubMod2(mut inExistingMod: Arc<SCode::SubMod>, mut inNewMod: Arc<SCode
             submod = mergeSubModsInSameScope(inExistingMod.clone(), inNewMod.clone(), cons((name1.clone()).clone(), inName.clone()), inModScope.clone())?;
             (submod.clone(), true)
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((outMod, outFound))
 }
@@ -780,7 +780,6 @@ fn printModScope(mut inModScope: ModScope) -> Result<ArcStr> {
         ModScope::DERIVED { path: mut path } => {
             { let mut __mm_s = String::new(); __mm_s.push_str(&*System::gettext((literal!("inherited class ")).clone())); __mm_s.push_str(&*AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }
         },
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(outString)
 }
@@ -825,7 +824,7 @@ fn elabUntypedSubmod(mut inSubMod: Arc<SCode::SubMod>) -> Result<Arc<metamodelic
             m_1 = elabUntypedMod(m.clone(), ModScope::COMPONENT { name: (literal!("")).clone() })?;
             list![Arc::new(DAE::SubMod { ident: (i.clone()).clone(), r#mod: m_1.clone() })]
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outTypesSubModLst)
 }
@@ -1001,7 +1000,7 @@ fn mergeSubMods(mut inMods: Arc<DAE::Mod>, mut inMod: Arc<DAE::Mod>, mut f: SCod
 pub fn lookupCompModificationFromEqu(mut inMod: Arc<DAE::Mod>, mut inIdent: ArcStr) -> Result<Arc<DAE::Mod>> {
     let mut outMod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
     outMod = (::match_deref::match_deref! { match &((inMod.clone(), inIdent.clone())) {
-        (Deref @ DAE::Mod::NOMOD, _) => {
+        (Deref @ DAE::Mod::NOMOD { .. }, _) => {
             Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD)
         },
         (Deref @ DAE::Mod::REDECL { .. }, _) => {
@@ -1024,7 +1023,7 @@ pub fn lookupCompModificationFromEqu(mut inMod: Arc<DAE::Mod>, mut inIdent: ArcS
 fn selectEqMod(mut subMod: Arc<DAE::Mod>, mut eqMod: Arc<DAE::Mod>, mut n: ArcStr) -> Result<Arc<DAE::Mod>> {
     let mut r#mod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
     r#mod = (::match_deref::match_deref! { match &(eqMod.clone()) {
-        Deref @ DAE::Mod::NOMOD => subMod.clone(),
+        Deref @ DAE::Mod::NOMOD { .. } => subMod.clone(),
         Deref @ DAE::Mod::MOD { binding: Some(DAE::EqMod::TYPED { .. }), .. } => eqMod.clone(),
         _ => {
             r#mod = checkDuplicateModifications(subMod.clone(), eqMod.clone(), (n.clone()).clone())?;
@@ -1080,10 +1079,10 @@ fn lookupComplexCompModification(mut inEqMod: Option<DAE::EqMod>, mut inName: Ar
 fn checkDuplicateModifications(mut mod1: Arc<DAE::Mod>, mut mod2: Arc<DAE::Mod>, mut n: ArcStr) -> Result<Arc<DAE::Mod>> {
     let mut outMod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
     outMod = (::match_deref::match_deref! { match &((mod1.clone(), mod2.clone())) {
-        (Deref @ DAE::Mod::NOMOD, _) => {
+        (Deref @ DAE::Mod::NOMOD { .. }, _) => {
             mod2.clone()
         },
-        (_, Deref @ DAE::Mod::NOMOD) => {
+        (_, Deref @ DAE::Mod::NOMOD { .. }) => {
             mod1.clone()
         },
         (Deref @ DAE::Mod::REDECL { .. }, Deref @ DAE::Mod::MOD { .. }) => {
@@ -1161,7 +1160,7 @@ fn modEqualNoPrefix(mut mod1: Arc<DAE::Mod>, mut mod2: Arc<DAE::Mod>) -> Result<
             let true = (SCodeUtil::elementEqual(var_field!((*mod1).element, DAE::Mod::REDECL).clone(), var_field!((*mod2).element, DAE::Mod::REDECL).clone())?) else { bail!("pattern mismatch") };
             (mod2.clone(), true)
         },
-        (Deref @ DAE::Mod::NOMOD, Deref @ DAE::Mod::NOMOD) => (Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), true),
+        (Deref @ DAE::Mod::NOMOD { .. }, Deref @ DAE::Mod::NOMOD { .. }) => (Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), true),
         _ => (mod2.clone(), false),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1238,7 +1237,7 @@ pub fn lookupIdxModification(mut inMod: Arc<DAE::Mod>, mut inIndex: Arc<DAE::Exp
         let __mc_input = inMod.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Mod::NOMOD => {
+                Deref @ DAE::Mod::NOMOD { .. } => {
                     Ok(Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD))
                 }
                 _ => bail!("nomatch"),
@@ -1312,20 +1311,20 @@ fn lookupIdxModification2(mut inSubMods: Arc<metamodelica::List<Arc<DAE::SubMod>
 fn lookupIdxModification3(mut inMod: Arc<DAE::Mod>, mut inIndex: Arc<DAE::Exp>) -> Result<Arc<DAE::Mod>> {
     let mut outMod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
     outMod = (::match_deref::match_deref! { match &(inMod.clone()) {
-        Deref @ DAE::Mod::NOMOD => {
+        Deref @ DAE::Mod::NOMOD { .. } => {
             Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD)
         },
         Deref @ DAE::Mod::REDECL { .. } => {
             inMod.clone()
         },
-        Deref @ DAE::Mod::MOD { eachPrefix: SCode::Each::NOT_EACH, .. } => {
+        Deref @ DAE::Mod::MOD { eachPrefix: SCode::Each::NOT_EACH { .. }, .. } => {
             let mut subs: Arc<metamodelica::List<Arc<DAE::SubMod>>> = metamodelica::nil();
             let mut eq: Option<DAE::EqMod> = None;
             (_, subs) = lookupIdxModification2(var_field!((*inMod).subModLst, DAE::Mod::MOD).clone(), inIndex.clone())?;
             eq = indexEqmod(var_field!((*inMod).binding, DAE::Mod::MOD).clone(), list![inIndex.clone()], var_field!((*inMod).info, DAE::Mod::MOD).clone())?;
             Arc::new(DAE::Mod::MOD { finalPrefix: var_field!((*inMod).finalPrefix, DAE::Mod::MOD).clone(), eachPrefix: var_field!((*inMod).eachPrefix, DAE::Mod::MOD).clone(), subModLst: subs.clone(), binding: eq.clone(), info: var_field!((*inMod).info, DAE::Mod::MOD).clone() })
         },
-        Deref @ DAE::Mod::MOD { eachPrefix: SCode::Each::EACH, .. } => {
+        Deref @ DAE::Mod::MOD { eachPrefix: SCode::Each::EACH { .. }, .. } => {
             inMod.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -1443,8 +1442,8 @@ fn merge_isEqual(mut inMod1: Arc<DAE::Mod>, mut inMod2: Arc<DAE::Mod>) -> bool {
 pub fn isFinalMod(mut inMod1: Arc<DAE::Mod>) -> bool {
     let mut outMod: bool = false;
     outMod = (::match_deref::match_deref! { match &(inMod1.clone()) {
-        Deref @ DAE::Mod::MOD { finalPrefix: SCode::Final::FINAL, .. } => true,
-        Deref @ DAE::Mod::REDECL { element: Deref @ SCode::Element::COMPONENT { prefixes: Deref @ SCode::Prefixes { finalPrefix: SCode::Final::FINAL, .. }, .. }, .. } => true,
+        Deref @ DAE::Mod::MOD { finalPrefix: SCode::Final::FINAL { .. }, .. } => true,
+        Deref @ DAE::Mod::REDECL { element: Deref @ SCode::Element::COMPONENT { prefixes: Deref @ SCode::Prefixes { finalPrefix: SCode::Final::FINAL { .. }, .. }, .. }, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1681,10 +1680,10 @@ fn mergeEq(mut inOuterEq: Option<DAE::EqMod>, mut inInnerEq: Option<DAE::EqMod>)
 pub fn modEquation(mut inMod: Arc<DAE::Mod>) -> Result<Option<DAE::EqMod>> {
     let mut outEqMod: Option<DAE::EqMod> = None;
     outEqMod = (::match_deref::match_deref! { match &(inMod.clone()) {
-        Deref @ DAE::Mod::NOMOD => None,
+        Deref @ DAE::Mod::NOMOD { .. } => None,
         Deref @ DAE::Mod::REDECL { .. } => None,
         Deref @ DAE::Mod::MOD { .. } => var_field!((*inMod).binding, DAE::Mod::MOD).clone(),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outEqMod)
 }
@@ -1695,7 +1694,7 @@ fn modSubsetOrEqualOrNonOverlap(mut mod1: Arc<DAE::Mod>, mut mod2: Arc<DAE::Mod>
         let __mc_input = (mod1.clone(), mod2.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Mod::MOD { finalPrefix: f1, eachPrefix: _, subModLst: _, binding: None, info: _ }, Deref @ DAE::Mod::MOD { finalPrefix: f2, eachPrefix: SCode::Each::NOT_EACH, subModLst: Deref @ metamodelica::List::Nil, binding: Some(_), info: _ }) => {
+                (Deref @ DAE::Mod::MOD { finalPrefix: f1, eachPrefix: _, subModLst: _, binding: None, info: _ }, Deref @ DAE::Mod::MOD { finalPrefix: f2, eachPrefix: SCode::Each::NOT_EACH { .. }, subModLst: Deref @ metamodelica::List::Nil, binding: Some(_), info: _ }) => {
                     let true = (SCodeUtil::finalEqual(f1.clone(), f2.clone())) else { bail!("pattern mismatch") };
                     Ok(true)
                 }
@@ -1704,7 +1703,7 @@ fn modSubsetOrEqualOrNonOverlap(mut mod1: Arc<DAE::Mod>, mut mod2: Arc<DAE::Mod>
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Mod::MOD { binding: eqmod1, .. }, Deref @ DAE::Mod::MOD { finalPrefix: _, eachPrefix: SCode::Each::NOT_EACH, subModLst: Deref @ metamodelica::List::Nil, binding: eqmod2, info: _ }) => {
+                (Deref @ DAE::Mod::MOD { binding: eqmod1, .. }, Deref @ DAE::Mod::MOD { finalPrefix: _, eachPrefix: SCode::Each::NOT_EACH { .. }, subModLst: Deref @ metamodelica::List::Nil, binding: eqmod2, info: _ }) => {
                     let true = (eqModSubsetOrEqual(eqmod1.clone(), eqmod2.clone())?) else { bail!("pattern mismatch") };
                     Ok(true)
                 }
@@ -1736,7 +1735,7 @@ fn modSubsetOrEqualOrNonOverlap(mut mod1: Arc<DAE::Mod>, mut mod2: Arc<DAE::Mod>
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Mod::NOMOD, Deref @ DAE::Mod::NOMOD) => {
+                (Deref @ DAE::Mod::NOMOD { .. }, Deref @ DAE::Mod::NOMOD { .. }) => {
                     Ok(true)
                 }
                 _ => bail!("nomatch"),
@@ -1837,7 +1836,7 @@ pub fn modEqual(mut mod1: Arc<DAE::Mod>, mut mod2: Arc<DAE::Mod>) -> Result<bool
     equal = (::match_deref::match_deref! { match &((mod1.clone(), mod2.clone())) {
         (Deref @ DAE::Mod::MOD { .. }, Deref @ DAE::Mod::MOD { .. }) => SCodeUtil::finalEqual(var_field!((*mod1).finalPrefix, DAE::Mod::MOD).clone(), var_field!((*mod2).finalPrefix, DAE::Mod::MOD).clone()) && SCodeUtil::eachEqual(var_field!((*mod1).eachPrefix, DAE::Mod::MOD).clone(), var_field!((*mod2).eachPrefix, DAE::Mod::MOD).clone()) && List::isEqualOnTrue(var_field!((*mod1).subModLst, DAE::Mod::MOD).clone(), var_field!((*mod2).subModLst, DAE::Mod::MOD).clone(), (std::sync::Arc::new(subModEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::SubMod>, Arc<DAE::SubMod>) -> Result<bool> + 'static>)) && eqModEqual(var_field!((*mod1).binding, DAE::Mod::MOD).clone(), var_field!((*mod2).binding, DAE::Mod::MOD).clone())?,
         (Deref @ DAE::Mod::REDECL { .. }, Deref @ DAE::Mod::REDECL { .. }) => SCodeUtil::finalEqual(var_field!((*mod1).finalPrefix, DAE::Mod::REDECL).clone(), var_field!((*mod2).finalPrefix, DAE::Mod::REDECL).clone()) && SCodeUtil::eachEqual(var_field!((*mod1).eachPrefix, DAE::Mod::REDECL).clone(), var_field!((*mod2).eachPrefix, DAE::Mod::REDECL).clone()) && SCodeUtil::elementEqual(var_field!((*mod1).element, DAE::Mod::REDECL).clone(), var_field!((*mod2).element, DAE::Mod::REDECL).clone())?,
-        (Deref @ DAE::Mod::NOMOD, Deref @ DAE::Mod::NOMOD) => true,
+        (Deref @ DAE::Mod::NOMOD { .. }, Deref @ DAE::Mod::NOMOD { .. }) => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1957,7 +1956,7 @@ pub fn printModStr(mut inMod: Arc<DAE::Mod>) -> Result<ArcStr> {
         let __mc_input = inMod.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Mod::NOMOD => {
+                Deref @ DAE::Mod::NOMOD { .. } => {
                     Ok(literal!("()"))
                 }
                 _ => bail!("nomatch"),
@@ -2047,7 +2046,7 @@ pub fn prettyPrintMod(mut m: Arc<DAE::Mod>, mut depth: i32) -> Result<ArcStr> {
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Mod::NOMOD => {
+                Deref @ DAE::Mod::NOMOD { .. } => {
                     Ok(literal!(""))
                 }
                 _ => bail!("nomatch"),
@@ -2105,7 +2104,7 @@ pub fn prettyPrintSubmod(mut inSub: Arc<DAE::SubMod>) -> Result<ArcStr> {
             s2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*id.clone()); __mm_s.push_str(&*s2.clone()); ArcStr::from(__mm_s) }).clone();
             s2.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(r#str)
 }
@@ -2138,7 +2137,7 @@ fn printSubStr(mut inSubMod: Arc<DAE::SubMod>) -> Result<ArcStr> {
             res = (stringAppend(({ let mut __mm_s = String::new(); __mm_s.push_str(&*n.clone()); __mm_s.push_str(&*literal!(" ")); ArcStr::from(__mm_s) }).clone(), (mod_str.clone()).clone())).clone();
             res.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(outString)
 }
@@ -2249,7 +2248,7 @@ pub fn renameNamedSubMod(mut submod: Arc<DAE::SubMod>, mut oldIdent: ArcStr, mut
 pub fn emptyModOrEquality(mut r#mod: Arc<DAE::Mod>) -> bool {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(r#mod.clone()) {
-        Deref @ DAE::Mod::NOMOD => true,
+        Deref @ DAE::Mod::NOMOD { .. } => true,
         Deref @ DAE::Mod::MOD { subModLst: Deref @ metamodelica::List::Nil, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2296,10 +2295,10 @@ fn isPrefixOf(mut indexSubMod: (ArcStr, Arc<DAE::SubMod>), mut idx: ArcStr) -> R
 fn getFullModsFromMod(mut inTopCref: Arc<DAE::ComponentRef>, mut inMod: Arc<DAE::Mod>) -> Result<Arc<metamodelica::List<FullMod>>> {
     let mut outFullMods: Arc<metamodelica::List<FullMod>> = metamodelica::nil();
     outFullMods = (::match_deref::match_deref! { match &(inMod.clone()) {
-        Deref @ DAE::Mod::NOMOD => metamodelica::nil(),
+        Deref @ DAE::Mod::NOMOD { .. } => metamodelica::nil(),
         Deref @ DAE::Mod::MOD { .. } => getFullModsFromSubMods(inTopCref.clone(), var_field!((*inMod).subModLst, DAE::Mod::MOD).clone())?,
         Deref @ DAE::Mod::REDECL { .. } => list![getFullModFromModRedeclare(inTopCref.clone(), inMod.clone())?],
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outFullMods)
 }
@@ -2376,7 +2375,6 @@ fn prettyPrintFullMod(mut inFullMod: FullMod, mut inDepth: i32) -> Result<ArcStr
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cr.clone())?); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*prettyPrintSubmod(subMod.clone())?); ArcStr::from(__mm_s) }).clone();
             r#str.clone()
         },
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(outStr)
 }
@@ -2423,48 +2421,17 @@ fn getUnelabedSubMod2(mut inSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>>
 
 pub fn isUntypedMod(mut inMod: Arc<DAE::Mod>) -> Result<bool> {
     let mut outIsUntyped: bool = false;
-    outIsUntyped = 'mc: {
-        let __mc_input = inMod.clone();
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Mod::MOD { binding: Some(DAE::EqMod::UNTYPED { .. }), .. } => {
-                    Ok(true)
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Mod::MOD { subModLst: submods, .. } => {
-                    List::find(submods.clone(), (std::sync::Arc::new(isUntypedSubMod) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::SubMod>) -> Result<bool> + 'static>))?;
-                    Ok(true)
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Ok(false)
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    outIsUntyped = (::match_deref::match_deref! { match &(inMod.clone()) {
+        Deref @ DAE::Mod::MOD { binding: Some(DAE::EqMod::UNTYPED { .. }), .. } => true,
+        Deref @ DAE::Mod::MOD { .. } => List::any(var_field!((*inMod).subModLst, DAE::Mod::MOD).clone(), (std::sync::Arc::new(fnptr!(isUntypedSubMod, Arc<DAE::SubMod>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::SubMod>) -> Result<bool> + 'static>)),
+        _ => bail!("match: no arm matched"),
+    } });
     Ok(outIsUntyped)
 }
 
-fn isUntypedSubMod(mut inSubMod: Arc<DAE::SubMod>) -> Result<bool> {
-    let mut outIsUntyped: bool = false;
-    let mut r#mod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-    let __pa0 = ::match_deref::match_deref! { match &(inSubMod.clone()) {
-        Deref @ DAE::SubMod { r#mod: __pa0, .. } => __pa0.clone(),
-        _ => bail!("pattern mismatch"),
-    } };
-    r#mod = __pa0.clone();
-    outIsUntyped = isUntypedMod(r#mod.clone())?;
-    Ok(outIsUntyped)
+fn isUntypedSubMod(mut inSubMod: Arc<DAE::SubMod>) -> bool {
+    let mut outIsUntyped: bool = isUntypedMod(inSubMod.r#mod.clone()).unwrap();
+    outIsUntyped
 }
 
 pub fn getUntypedCrefs(mut inMod: Arc<DAE::Mod>) -> Result<Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>> {
@@ -2512,7 +2479,7 @@ fn getUntypedCrefFromSubMod(mut inSubMod: Arc<DAE::SubMod>, mut inCrefs: Arc<met
             crefs = getUntypedCrefs(r#mod.clone())?;
             listAppend(crefs.clone(), inCrefs.clone())
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outCrefs)
 }
@@ -2612,7 +2579,7 @@ pub fn removeModList(mut inMod: Arc<DAE::Mod>, mut remStrings: Arc<metamodelica:
 pub fn removeMod(mut inMod: Arc<DAE::Mod>, mut componentModified: ArcStr) -> Result<Arc<DAE::Mod>> {
     let mut outMod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
     outMod = (::match_deref::match_deref! { match &(inMod.clone()) {
-        Deref @ DAE::Mod::NOMOD => {
+        Deref @ DAE::Mod::NOMOD { .. } => {
             Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD)
         },
         Deref @ DAE::Mod::REDECL { .. } => {
@@ -2624,7 +2591,7 @@ pub fn removeMod(mut inMod: Arc<DAE::Mod>, mut componentModified: ArcStr) -> Res
             outMod = Arc::new(DAE::Mod::MOD { finalPrefix: f.clone(), eachPrefix: e.clone(), subModLst: subs.clone(), binding: oem.clone(), info: info.clone() });
             outMod.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outMod)
 }
@@ -2662,7 +2629,7 @@ pub fn addEachIfNeeded(mut inMod: Arc<DAE::Mod>, mut inDimensions: Arc<metamodel
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Mod::NOMOD, _) => {
+                (Deref @ DAE::Mod::NOMOD { .. }, _) => {
                     Ok(Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD))
                 }
                 _ => bail!("nomatch"),
@@ -2678,7 +2645,7 @@ pub fn addEachIfNeeded(mut inMod: Arc<DAE::Mod>, mut inDimensions: Arc<metamodel
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ DAE::Mod::MOD { finalPrefix, eachPrefix: SCode::Each::EACH, subModLst: subs, binding: eq, info }, _) => {
+                (Deref @ DAE::Mod::MOD { finalPrefix, eachPrefix: SCode::Each::EACH { .. }, subModLst: subs, binding: eq, info }, _) => {
                     Ok(Arc::new(DAE::Mod::MOD { finalPrefix: finalPrefix.clone(), eachPrefix: openmodelica_frontend_types::SCode::Each::EACH, subModLst: subs.clone(), binding: eq.clone(), info: info.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -2714,7 +2681,7 @@ pub fn addEachOneLevel(mut inMod: Arc<DAE::Mod>) -> Result<Arc<DAE::Mod>> {
         let __mc_input = inMod.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Mod::NOMOD => {
+                Deref @ DAE::Mod::NOMOD { .. } => {
                     Ok(Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD))
                 }
                 _ => bail!("nomatch"),
@@ -2774,7 +2741,7 @@ pub fn addEachToSubsIfNeeded(mut inSubMods: Arc<metamodelica::List<Arc<DAE::SubM
 pub fn isEmptyMod(mut inMod: Arc<DAE::Mod>) -> bool {
     let mut isEmpty: bool = false;
     isEmpty = (::match_deref::match_deref! { match &(inMod.clone()) {
-        Deref @ DAE::Mod::NOMOD => true,
+        Deref @ DAE::Mod::NOMOD { .. } => true,
         Deref @ DAE::Mod::MOD { binding: None, subModLst: Deref @ metamodelica::List::Nil, .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -2785,7 +2752,7 @@ pub fn isEmptyMod(mut inMod: Arc<DAE::Mod>) -> bool {
 pub fn isNoMod(mut inMod: Arc<DAE::Mod>) -> bool {
     let mut outIsNoMod: bool = false;
     outIsNoMod = (::match_deref::match_deref! { match &(inMod.clone()) {
-        Deref @ DAE::Mod::NOMOD => true,
+        Deref @ DAE::Mod::NOMOD { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2827,8 +2794,8 @@ pub fn getClassModifier(mut inEnv: FCore::Graph, mut inName: ArcStr) -> Result<A
         let __mc_input = inName.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut r#mod: Arc<DAE::Mod> = r#mod.clone();
             let mut n: FCore::Node = n.clone();
+            let mut r#mod: Arc<DAE::Mod> = r#mod.clone();
             n = FNode::fromRef(FNode::child(FGraph::lastScopeRef(inEnv.clone())?, (inName.clone()).clone())?)?;
             if !(FNode::isInstance(FNode::fromRef(FGraph::lastScopeRef(inEnv.clone())?)?)) {
                 let FCore::N { data: FCore::CL { r#mod: __pa0, .. }, .. } = (n.clone()) else { bail!("pattern mismatch") };
@@ -2960,7 +2927,7 @@ fn filterRedeclaresSubMods(mut inSubMods: Arc<metamodelica::List<Arc<DAE::SubMod
 pub fn unparseModStr(mut inMod: Arc<DAE::Mod>) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((::match_deref::match_deref! { match &(inMod.clone()) {
-        Deref @ DAE::Mod::NOMOD => {
+        Deref @ DAE::Mod::NOMOD { .. } => {
             literal!("")
         },
         Deref @ DAE::Mod::MOD { .. } => {
@@ -2983,7 +2950,7 @@ pub fn unparseModStr(mut inMod: Arc<DAE::Mod>) -> Result<ArcStr> {
             el_str = (SCodeDump::unparseElementStr(var_field!((*inMod).element, DAE::Mod::REDECL).clone(), SCodeDump::defaultOptions.clone())?).clone();
             { let mut __mm_s = String::new(); __mm_s.push_str(&*final_str.clone()); __mm_s.push_str(&*each_str.clone()); __mm_s.push_str(&*literal!("redeclare ")); __mm_s.push_str(&*el_str.clone()); ArcStr::from(__mm_s) }
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(outString)
 }
@@ -2992,7 +2959,7 @@ fn unparseSubModStr(mut inSubMod: Arc<DAE::SubMod>) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((::match_deref::match_deref! { match &(inSubMod.clone()) {
         Deref @ DAE::SubMod { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*inSubMod.ident.clone()); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*unparseModStr(inSubMod.r#mod.clone())?); ArcStr::from(__mm_s) },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(outString)
 }

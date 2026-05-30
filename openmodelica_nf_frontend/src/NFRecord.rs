@@ -108,7 +108,7 @@ pub mod Field {
         name = ((::match_deref::match_deref! { match &(field.clone()) {
         Deref @ INPUT { .. } => var_field!((*field).name, Field::INPUT).clone(),
         Deref @ LOCAL { .. } => var_field!((*field).name, Field::LOCAL).clone(),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
         Ok(name)
     }
@@ -163,7 +163,7 @@ pub fn instDefaultConstructor(mut path: Arc<Absyn::Path>, mut node: Arc<InstNode
 }
 
 pub fn checkLocalFieldOrder(mut locals: Arc<metamodelica::List<Arc<InstNode::InstNode>>>, mut recNode: Arc<InstNode::InstNode>, mut info: SourceInfo) -> Result<()> {
-    let mut locals_set: Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>>;
+    let mut locals_set: Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>> = <Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>> as ::std::default::Default>::default();
     let mut locs: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
     let mut deps: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
     let mut loc: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
@@ -254,12 +254,12 @@ pub fn setFieldDirection(mut field: Arc<InstNode::InstNode>, mut direction: Dire
 
 pub fn collectRecordFields(mut recNode: Arc<InstNode::InstNode>) -> Result<(metamodelica::Array<Arc<Field::Field>>, Arc<UnorderedMap::UnorderedMap<ArcStr, i32>>)> {
     let mut fields: metamodelica::Array<Arc<Field::Field>>;
-    let mut indexMap: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>>;
+    let mut indexMap: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>> = <Arc<UnorderedMap::UnorderedMap<ArcStr, i32>> as ::std::default::Default>::default();
     let mut field_lst: Arc<metamodelica::List<Arc<Field::Field>>> = metamodelica::nil();
     let mut tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
     tree = Class::classTree(InstNode::getClass(recNode.clone())?)?;
     field_lst = ClassTree::foldComponents(tree.clone(), (std::sync::Arc::new(collectRecordField) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<metamodelica::List<Arc<Field::Field>>>) -> Result<Arc<metamodelica::List<Arc<Field::Field>>>> + 'static>), metamodelica::nil());
-    fields = metamodelica::arrayFromVec(field_lst.clone().reverse().into_iter().cloned().collect());
+    fields = metamodelica::arrayFromVec(metamodelica::Dangerous::listReverseInPlace(field_lst.clone()).into_iter().cloned().collect());
     indexMap = UnorderedMap::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), (fields.clone().borrow().len() as i32));
     Type::updateRecordFieldsIndexMap(fields.clone(), indexMap.clone())?;
     Ok((fields, indexMap))

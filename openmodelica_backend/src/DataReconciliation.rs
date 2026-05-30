@@ -83,8 +83,8 @@ pub const UNDERLINE: &'static str = "===========================================
 pub fn newExtractionAlgorithm(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
     let mut currentSystem: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    let mut outOtherEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
-    let mut outResidualEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
+    let mut outOtherEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
+    let mut outResidualEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     let mut setC_Eq: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut setS_Eq: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut residualEquations: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
@@ -154,7 +154,7 @@ pub fn newExtractionAlgorithm(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<
     while !(status.clone()) {
         BackendDump::dumpVariables(currentSystem.orderedVars.clone(), (literal!("OrderedVariables")).clone())?;
         BackendDump::dumpEquationArray(currentSystem.orderedEqs.clone(), (literal!("OrderedEquation")).clone())?;
-        allVarsList = List::intRange(BackendVariable::varsSize(currentSystem.orderedVars.clone())?);
+        allVarsList = List::intRange(BackendVariable::varsSize(currentSystem.orderedVars.clone()));
         varCount = currentSystem.orderedVars.numberOfVars.clone();
         eqCount = BackendEquation::equationArraySize(currentSystem.orderedEqs.clone())?;
         (adjacencyMatrix, _, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::adjacencyMatrixScalar(currentSystem.clone(), crate::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
@@ -276,7 +276,7 @@ pub fn newExtractionAlgorithm(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<
     modelicaOutput = (dumpExtractedEquations((modelicaOutput.clone()).clone(), outOtherEqns.clone(), (literal!("remaining equations in Set-S")).clone())?).clone();
     modelicaOutput = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*modelicaOutput.clone()); __mm_s.push_str(&*literal!("\nend ")); __mm_s.push_str(&*modelName.clone()); __mm_s.push_str(&*literal!(";")); ArcStr::from(__mm_s) }).clone();
     System::writeFile(({ let mut __mm_s = String::new(); __mm_s.push_str(&*modelicaFileName.clone()); __mm_s.push_str(&*literal!(".mo")); ArcStr::from(__mm_s) }).clone(), (modelicaOutput.clone()).clone())?;
-    outDAE = BackendDAE::DAE(list![currentSystem.clone()], shared.clone())?;
+    outDAE = Arc::new(BackendDAE::BackendDAE { eqs: list![currentSystem.clone()], shared: shared.clone() });
     Ok(outDAE)
 }
 
@@ -422,8 +422,8 @@ fn dumpRelatedBoundaryConditionsEquations(mut setBFailedBoundaryConditionEquatio
 pub fn extractBoundaryCondition(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
     let mut currentSystem: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    let mut outOtherEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
-    let mut outBoundaryConditionEquations: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
+    let mut outOtherEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
+    let mut outBoundaryConditionEquations: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     let mut setS_Eq: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut failedboundaryConditionEquations: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut adjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>>;
@@ -492,7 +492,7 @@ pub fn extractBoundaryCondition(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Resul
     while !(status.clone()) {
         BackendDump::dumpVariables(currentSystem.orderedVars.clone(), (literal!("OrderedVariables")).clone())?;
         BackendDump::dumpEquationArray(currentSystem.orderedEqs.clone(), (literal!("OrderedEquation")).clone())?;
-        allVarsList = List::intRange(BackendVariable::varsSize(currentSystem.orderedVars.clone())?);
+        allVarsList = List::intRange(BackendVariable::varsSize(currentSystem.orderedVars.clone()));
         varCount = currentSystem.orderedVars.numberOfVars.clone();
         eqCount = BackendEquation::equationArraySize(currentSystem.orderedEqs.clone())?;
         (adjacencyMatrix, _, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::adjacencyMatrixScalar(currentSystem.clone(), crate::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
@@ -605,17 +605,17 @@ pub fn extractBoundaryCondition(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Resul
     modelicaOutput = (dumpExtractedEquations((modelicaOutput.clone()).clone(), outOtherEqns.clone(), (literal!("remaining equations in Set-S'")).clone())?).clone();
     modelicaOutput = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*modelicaOutput.clone()); __mm_s.push_str(&*literal!("\nend ")); __mm_s.push_str(&*modelName.clone()); __mm_s.push_str(&*literal!(";")); ArcStr::from(__mm_s) }).clone();
     System::writeFile(({ let mut __mm_s = String::new(); __mm_s.push_str(&*modelicaFileName.clone()); __mm_s.push_str(&*literal!(".mo")); ArcStr::from(__mm_s) }).clone(), (modelicaOutput.clone()).clone())?;
-    outDAE = BackendDAE::DAE(list![currentSystem.clone()], shared.clone())?;
+    outDAE = Arc::new(BackendDAE::BackendDAE { eqs: list![currentSystem.clone()], shared: shared.clone() });
     Ok(outDAE)
 }
 
 pub fn stateEstimation(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
     let mut currentSystem: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    let mut outOtherEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
-    let mut outOtherEqnsSetSPrime: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
-    let mut outResidualEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
-    let mut outBoundaryConditionEquations: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
+    let mut outOtherEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
+    let mut outOtherEqnsSetSPrime: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
+    let mut outResidualEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
+    let mut outBoundaryConditionEquations: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     let mut setC_Eq: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut setS_Eq: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut setSPrime_Eq: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
@@ -697,7 +697,7 @@ pub fn stateEstimation(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<Bac
     while !(status.clone()) {
         BackendDump::dumpVariables(currentSystem.orderedVars.clone(), (literal!("OrderedVariables")).clone())?;
         BackendDump::dumpEquationArray(currentSystem.orderedEqs.clone(), (literal!("OrderedEquation")).clone())?;
-        allVarsList = List::intRange(BackendVariable::varsSize(currentSystem.orderedVars.clone())?);
+        allVarsList = List::intRange(BackendVariable::varsSize(currentSystem.orderedVars.clone()));
         varCount = currentSystem.orderedVars.numberOfVars.clone();
         eqCount = BackendEquation::equationArraySize(currentSystem.orderedEqs.clone())?;
         (adjacencyMatrix, _, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::adjacencyMatrixScalar(currentSystem.clone(), crate::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
@@ -885,7 +885,7 @@ pub fn stateEstimation(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<Bac
     modelicaOutput = (dumpExtractedEquations((modelicaOutput.clone()).clone(), BackendEquation::listEquation(setSPrime_Eq.clone())?, (literal!("remaining equations in Set-S'")).clone())?).clone();
     modelicaOutput = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*modelicaOutput.clone()); __mm_s.push_str(&*literal!("\nend ")); __mm_s.push_str(&*modelName.clone()); __mm_s.push_str(&*literal!(";")); ArcStr::from(__mm_s) }).clone();
     System::writeFile(({ let mut __mm_s = String::new(); __mm_s.push_str(&*modelicaFileName.clone()); __mm_s.push_str(&*literal!(".mo")); ArcStr::from(__mm_s) }).clone(), (modelicaOutput.clone()).clone())?;
-    outDAE = BackendDAE::DAE(list![currentSystem.clone()], shared.clone())?;
+    outDAE = Arc::new(BackendDAE::BackendDAE { eqs: list![currentSystem.clone()], shared: shared.clone() });
     Ok(outDAE)
 }
 
@@ -1232,8 +1232,8 @@ fn extractNewMinimalSetS(mut unknownsInSetC: Arc<metamodelica::List<i32>>, mut s
 pub fn extractionAlgorithm(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::BackendDAE>> {
     let mut outDAE: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
     let mut currentSystem: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    let mut outOtherEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
-    let mut outResidualEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
+    let mut outOtherEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
+    let mut outResidualEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     let mut newEqnsLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut setC_Eq: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut setS_Eq: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
@@ -1311,7 +1311,7 @@ pub fn extractionAlgorithm(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
         BackendDump::dumpEquationArray(currentSystem.orderedEqs.clone(), (literal!("Updated-OrderedVariables-withBoundaryConditionEqs")).clone())?;
         BackendDump::dumpVariables(shared.globalKnownVars.clone(), (literal!("Updated-GlobalKnownVars-withBoundaryConditionVarsRemoved")).clone())?;
     }
-    allVarsList = List::intRange(BackendVariable::varsSize(currentSystem.orderedVars.clone())?);
+    allVarsList = List::intRange(BackendVariable::varsSize(currentSystem.orderedVars.clone()));
     (adjacencyMatrix, _, _, _) = BackendDAEUtil::adjacencyMatrixScalar(currentSystem.clone(), crate::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
     (knowns, boundaryConditionVars, exactEquationVars, _) = getVariablesBlockCategories(currentSystem.orderedVars.clone(), allVarsList.clone())?;
     if debug.clone() {
@@ -1322,7 +1322,7 @@ pub fn extractionAlgorithm(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nadjacencyMatrix              :")); __mm_s.push_str(&*anyString(adjacencyMatrix.clone())); ArcStr::from(__mm_s) }).clone());
         println!("{}", (literal!("\n")).clone());
     }
-    allVarsList = List::intRange(BackendVariable::varsSize(currentSystem.orderedVars.clone())?);
+    allVarsList = List::intRange(BackendVariable::varsSize(currentSystem.orderedVars.clone()));
     knownVariablesWithEquationBinding = getUncertainRefineVariablesBindedEquations(adjacencyMatrix.clone(), knowns.clone());
     if debug.clone() {
         println!("{}", (literal!("\nEquations with KnownBindings:\n===================================")).clone());
@@ -1525,7 +1525,7 @@ pub fn extractionAlgorithm(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
     modelicaOutput = (dumpExtractedEquations((modelicaOutput.clone()).clone(), outOtherEqns.clone(), (literal!("remaining equations in Set-S")).clone())?).clone();
     modelicaOutput = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*modelicaOutput.clone()); __mm_s.push_str(&*literal!("\nend ")); __mm_s.push_str(&*modelName.clone()); __mm_s.push_str(&*literal!(";")); ArcStr::from(__mm_s) }).clone();
     System::writeFile(({ let mut __mm_s = String::new(); __mm_s.push_str(&*modelicaFileName.clone()); __mm_s.push_str(&*literal!(".mo")); ArcStr::from(__mm_s) }).clone(), (modelicaOutput.clone()).clone())?;
-    outDAE = BackendDAE::DAE(list![currentSystem.clone()], shared.clone())?;
+    outDAE = Arc::new(BackendDAE::BackendDAE { eqs: list![currentSystem.clone()], shared: shared.clone() });
     Ok(outDAE)
 }
 
@@ -1737,7 +1737,7 @@ pub fn setBoundaryConditionEquationsAndVars(mut currentSystem: Arc<BackendDAE::E
 
 fn deleteEquationsFromEqSyst(mut currentSystem: Arc<BackendDAE::EqSystem>, mut eqIndex: Arc<metamodelica::List<i32>>) -> Result<Arc<BackendDAE::EqSystem>> {
     let mut currentSystem: Arc<BackendDAE::EqSystem> = currentSystem;
-    let mut newOrderedEquationArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>;
+    let mut newOrderedEquationArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     assign_field!(currentSystem.orderedEqs = BackendEquation::deleteList(currentSystem.orderedEqs.clone(), eqIndex.clone())?);
     newOrderedEquationArray = BackendEquation::emptyEqns();
     BackendEquation::addList(BackendEquation::equationList(currentSystem.orderedEqs.clone()), newOrderedEquationArray.clone())?;
@@ -1881,7 +1881,7 @@ fn dumpSetSVarsSolvedInfo(mut tempSetS: Arc<metamodelica::List<i32>>, mut solved
 fn dumpSetSVars(mut setSVars: BackendDAE::Variables, mut heading: ArcStr) -> Result<()> {
     let mut count: i32 = 1;
     let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
-    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString(BackendVariable::varsSize(setSVars.clone())?)); __mm_s.push_str(&*literal!(")\n")); __mm_s.push_str(&*literal!("========================================")); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*heading.clone()); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString(BackendVariable::varsSize(setSVars.clone()))); __mm_s.push_str(&*literal!(")\n")); __mm_s.push_str(&*literal!("========================================")); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     for mut var in &*BackendVariable::varList(setSVars.clone())? {
         let mut var = var.clone();
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*intString(count.clone())); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(var.varName.clone())?); __mm_s.push_str(&*literal!(" type: ")); __mm_s.push_str(&*DAEDump::daeTypeStr(var.varType.clone())?); ArcStr::from(__mm_s) }).clone());

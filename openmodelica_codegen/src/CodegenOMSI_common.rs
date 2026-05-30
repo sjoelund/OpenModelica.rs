@@ -1077,17 +1077,17 @@ fn fun_81(mut in_txt: Tpl::Text, mut in_a_variable: SimCodeVar::SimVar, mut in_a
     let mut out_a_stringIndex: Tpl::Text;
     let mut out_a_stringName: Tpl::Text;
     (out_txt, out_a_stringIndex, out_a_stringName) = (match (in_txt.clone(), in_a_variable.clone(), in_a_stringIndex.clone(), in_a_stringName.clone()) {
-        (mut txt, ref i_var @ SimCodeVar::SimVar { index: ref i_var_index, varKind: BackendDAE::VarKind::JAC_VAR, .. }, mut a_stringIndex, mut a_stringName) => {
+        (mut txt, ref i_var @ SimCodeVar::SimVar { index: ref i_var_index, varKind: BackendDAE::VarKind::JAC_VAR { .. }, .. }, mut a_stringIndex, mut a_stringName) => {
             a_stringName = CodegenUtil::crefCCommentWithVariability(a_stringName.clone(), i_var.clone())?;
             a_stringIndex = Tpl::writeStr(a_stringIndex.clone(), (intString(i_var_index.clone())).clone())?;
             (txt.clone(), a_stringIndex.clone(), a_stringName.clone())
         },
-        (mut txt, ref i_var @ SimCodeVar::SimVar { index: ref i_var_index, varKind: BackendDAE::VarKind::JAC_TMP_VAR, .. }, mut a_stringIndex, mut a_stringName) => {
+        (mut txt, ref i_var @ SimCodeVar::SimVar { index: ref i_var_index, varKind: BackendDAE::VarKind::JAC_TMP_VAR { .. }, .. }, mut a_stringIndex, mut a_stringName) => {
             a_stringName = CodegenUtil::crefCCommentWithVariability(a_stringName.clone(), i_var.clone())?;
             a_stringIndex = Tpl::writeStr(a_stringIndex.clone(), (intString(i_var_index.clone())).clone())?;
             (txt.clone(), a_stringIndex.clone(), a_stringName.clone())
         },
-        (mut txt, ref i_var @ SimCodeVar::SimVar { index: ref i_var_index, varKind: BackendDAE::VarKind::SEED_VAR, .. }, mut a_stringIndex, mut a_stringName) => {
+        (mut txt, ref i_var @ SimCodeVar::SimVar { index: ref i_var_index, varKind: BackendDAE::VarKind::SEED_VAR { .. }, .. }, mut a_stringIndex, mut a_stringName) => {
             a_stringName = CodegenUtil::crefCCommentWithVariability(a_stringName.clone(), i_var.clone())?;
             a_stringIndex = Tpl::writeStr(a_stringIndex.clone(), (intString(i_var_index.clone())).clone())?;
             (txt.clone(), a_stringIndex.clone(), a_stringName.clone())
@@ -1416,7 +1416,7 @@ fn fun_94(mut in_txt: Tpl::Text, mut in_a_timeEvent: BackendDAE::TimeEvent, mut 
     let mut out_a_auxFunction: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_auxFunction, out_a_varDecls) = (match (in_txt.clone(), in_a_timeEvent.clone(), in_a_i0.clone(), in_a_auxFunction.clone(), in_a_varDecls.clone()) {
-        (mut txt, BackendDAE::TimeEvent::SAMPLE_TIME_EVENT { index: mut i_index, intervalExp: ref i_intervalExp, startExp: ref i_startExp }, mut a_i0, mut a_auxFunction, mut a_varDecls) => {
+        (mut txt, BackendDAE::TimeEvent::SAMPLE_TIME_EVENT { index: mut i_index, intervalExp: ref i_intervalExp, startExp: ref i_startExp, .. }, mut a_i0, mut a_auxFunction, mut a_varDecls) => {
             let mut l_e2: Tpl::Text;
             let mut l_e1: Tpl::Text;
             let mut l_preExp: Tpl::Text;

@@ -338,7 +338,7 @@ fn printRow(mut es_1: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<()> {
 pub fn debugPrintSubscriptStr(mut inSubscript: Arc<DAE::Subscript>) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((::match_deref::match_deref! { match &(inSubscript.clone()) {
-        Deref @ DAE::Subscript::WHOLEDIM => {
+        Deref @ DAE::Subscript::WHOLEDIM { .. } => {
             literal!(":")
         },
         Deref @ DAE::Subscript::INDEX { exp: e1 } => {
@@ -359,7 +359,7 @@ pub fn debugPrintSubscriptStr(mut inSubscript: Arc<DAE::Subscript>) -> Result<Ar
             s = (System::stringReplace((s.clone()).clone(), (literal!("\n")).clone(), (literal!("")).clone())?).clone();
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("1:")); __mm_s.push_str(&*s.clone()); ArcStr::from(__mm_s) }
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(outString)
 }
@@ -464,7 +464,7 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CREF { componentRef: c, .. }, Some((pcreffunc, creffuncparam)), _) => {
                     let mut s: ArcStr = arcstr::literal!("");
-                    s = pcreffunc(c.clone(), creffuncparam.clone())?;
+                    s = (pcreffunc(c.clone(), creffuncparam.clone())?).clone();
                     Ok(s.clone())
                 }
                 _ => bail!("nomatch"),
@@ -645,7 +645,7 @@ pub fn printExp2Str<Type_a: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut strin
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { .. }, _, Some(pcallfunc)) => {
                     let mut s_2: ArcStr = arcstr::literal!("");
-                    s_2 = pcallfunc(e.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone())?;
+                    s_2 = (pcallfunc(e.clone(), (stringDelimiter.clone()).clone(), opcreffunc.clone())?).clone();
                     Ok(s_2.clone())
                 }
                 _ => bail!("nomatch"),
@@ -1060,7 +1060,7 @@ fn reductionIteratorStr(mut riter: Arc<DAE::ReductionIterator>) -> Result<ArcStr
 fn printMatchType(mut ty: DAE::MatchType) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((::match_deref::match_deref! { match &(ty.clone()) {
-        DAE::MatchType::MATCHCONTINUE => literal!("matchcontinue"),
+        DAE::MatchType::MATCHCONTINUE { .. } => literal!("matchcontinue"),
         DAE::MatchType::MATCH { switch: None } => literal!("match"),
         DAE::MatchType::MATCH { switch: Some(_) } => literal!("match /* switch */"),
         _ => bail!("match: no arm matched"),
@@ -1161,7 +1161,7 @@ pub fn expPriority(mut inExp: Arc<DAE::Exp>) -> i32 {
 
 pub fn printRowStr(mut es_1: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut stringDelimiter: ArcStr) -> ArcStr {
     let mut s: ArcStr = arcstr::literal!("");
-    s = stringDelimitList(List::map3(es_1.clone(), (std::sync::Arc::new(printExp2Str) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArcStr, _, _) -> Result<ArcStr> + 'static>), (stringDelimiter.clone()).clone(), None, None), (literal!(",")).clone());
+    s = stringDelimitList(List::map3(es_1.clone(), (std::sync::Arc::new(printExp2Str::<()>) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArcStr, _, _) -> Result<ArcStr> + 'static>), (stringDelimiter.clone()).clone(), None, None), (literal!(",")).clone());
     s
 }
 
@@ -2168,13 +2168,13 @@ pub fn debugPrintComponentRefExp(mut inExp: Arc<DAE::Exp>) -> Result<ArcStr> {
 pub fn dimensionIntString(mut dim: Arc<DAE::Dimension>) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((::match_deref::match_deref! { match &(dim.clone()) {
-        Deref @ DAE::Dimension::DIM_UNKNOWN => {
+        Deref @ DAE::Dimension::DIM_UNKNOWN { .. } => {
             literal!(":")
         },
         Deref @ DAE::Dimension::DIM_ENUM { size, .. } => {
             intString(size.clone())
         },
-        Deref @ DAE::Dimension::DIM_BOOLEAN => {
+        Deref @ DAE::Dimension::DIM_BOOLEAN { .. } => {
             literal!("1")
         },
         Deref @ DAE::Dimension::DIM_INTEGER { integer: x } => {
@@ -2185,7 +2185,7 @@ pub fn dimensionIntString(mut dim: Arc<DAE::Dimension>) -> Result<ArcStr> {
             s = (ExpressionBasics::printExpStr(e.clone())?).clone();
             s.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(r#str)
 }
@@ -2201,7 +2201,7 @@ pub fn dumpExpWithTitle(mut title: ArcStr, mut exp: Arc<DAE::Exp>) -> Result<()>
 
 pub fn printSubscript(mut inSubscript: Arc<DAE::Subscript>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(inSubscript.clone()) {
-        Deref @ DAE::Subscript::WHOLEDIM => {
+        Deref @ DAE::Subscript::WHOLEDIM { .. } => {
             Print::printBuf((literal!(":")).clone())?;
             ()
         },
@@ -2218,7 +2218,7 @@ pub fn printSubscript(mut inSubscript: Arc<DAE::Subscript>) -> Result<()> {
             printExp(e1.clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(())
 }
@@ -2258,7 +2258,7 @@ pub fn parenthesize(mut inString1: ArcStr, mut inInteger2: i32, mut inInteger3: 
 pub fn clockKindString(mut inClockKind: Arc<DAE::ClockKind>) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((::match_deref::match_deref! { match &(inClockKind.clone()) {
-        Deref @ DAE::ClockKind::INFERRED_CLOCK => {
+        Deref @ DAE::ClockKind::INFERRED_CLOCK { .. } => {
             literal!("Clock()")
         },
         Deref @ DAE::ClockKind::RATIONAL_CLOCK { resolution, intervalCounter } => {
@@ -2273,7 +2273,7 @@ pub fn clockKindString(mut inClockKind: Arc<DAE::ClockKind>) -> Result<ArcStr> {
         Deref @ DAE::ClockKind::SOLVER_CLOCK { solverMethod, c } => {
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Clock(")); __mm_s.push_str(&*dumpExpStr(c.clone(), 0)?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*dumpExpStr(solverMethod.clone(), 0)?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(outString)
 }

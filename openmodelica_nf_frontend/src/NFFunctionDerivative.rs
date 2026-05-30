@@ -175,7 +175,6 @@ pub fn conditionToDAE(mut cond: (i32, ArcStr, Condition)) -> Result<(i32, DAE::d
     daeCond = (match c.clone() {
         Condition::ZERO_DERIVATIVE => (idx.clone(), openmodelica_frontend_types::DAE::derivativeCond::ZERO_DERIVATIVE),
         Condition::NO_DERIVATIVE { .. } => (idx.clone(), DAE::derivativeCond::NO_DERIVATIVE { binding: Arc::new(DAE::Exp::ICONST { integer: 99 }) }),
-        _ => bail!("match: no arm matched"),
     });
     Ok(daeCond)
 }
@@ -368,7 +367,7 @@ fn addLowerOrderDerivative2(mut r#fn: Arc<Function::Function>, mut lowerDerNode:
             assign_field!(fn_der.lowerOrderDerivatives = cons(lowerDerNode.clone(), fn_der.lowerOrderDerivatives.clone()));
             fn_der.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             __acc = cons(__x, __acc);
         }

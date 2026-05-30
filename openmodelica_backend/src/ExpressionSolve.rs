@@ -421,7 +421,6 @@ fn generateAssertType(mut tp: Arc<DAE::Type>, mut cr: Arc<DAE::ComponentRef>, mu
             en = Arc::new(DAE::Exp::ENUM_LITERAL { name: p1.clone(), index: n.clone() });
             s1 = (AbsynUtil::pathString(p1.clone(), (literal!(".")).clone(), true, false)?).clone();
             sn = (AbsynUtil::pathString(pn.clone(), (literal!(".")).clone(), true, false)?).clone();
-            ExpressionBasics::printExpStr(iExp.clone())?;
             crstr = (ComponentReferenceBasics::printComponentRefStr(cr.clone())?).clone();
             estr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expression for ")); __mm_s.push_str(&*crstr.clone()); __mm_s.push_str(&*literal!(" out of min(")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!(")/max(")); __mm_s.push_str(&*sn.clone()); __mm_s.push_str(&*literal!(") = ")); ArcStr::from(__mm_s) }).clone();
             e = Arc::new(DAE::Exp::LBINARY { exp1: Arc::new(DAE::Exp::RELATION { exp1: iExp.clone(), operator: DAE::Operator::GREATEREQ { ty: DAE::T_INTEGER_DEFAULT().clone() }, exp2: e1.clone(), index: -1, optionExpisASUB: None }), operator: DAE::Operator::AND { ty: DAE::T_BOOL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::RELATION { exp1: iExp.clone(), operator: DAE::Operator::LESSEQ { ty: DAE::T_INTEGER_DEFAULT().clone() }, exp2: en.clone(), index: -1, optionExpisASUB: None }) });
@@ -1081,9 +1080,9 @@ fn preprocessingSolveTmpVars(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp
                     if !((expHasCref(arg.clone(), inExp3.clone())? && !(expHasCref(inExp2.clone(), inExp3.clone())?))) { bail!("guard") }
                     let mut eqnForNewVars_: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
                     let mut newVarsCrefs_: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-                    let mut y: Arc<DAE::Exp>;
-                    let mut new_x: bool = new_x.clone();
                     let mut odepth: i32 = odepth.clone();
+                    let mut new_x: bool = new_x.clone();
+                    let mut y: Arc<DAE::Exp>;
                     (y, new_x, eqnForNewVars_, newVarsCrefs_, odepth) = preprocessingSolveFunctionCall((name.clone()).clone(), arg.clone(), inExp2.clone(), inExp3.clone(), optCond.clone(), uniqueEqIndex.clone(), idepth.clone())?;
                     if eqnForNewVars_.clone().is_empty() {
                         eqnForNewVars_ = ieqnForNewVars.clone();

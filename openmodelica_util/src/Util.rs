@@ -898,7 +898,6 @@ pub fn isSuccess(mut status: Status) -> Result<bool> {
     bool = (match status.clone() {
         Status::SUCCESS { .. } => true,
         Status::FAILURE { .. } => false,
-        _ => bail!("match: no arm matched"),
     });
     Ok(bool)
 }
@@ -1323,7 +1322,7 @@ pub fn profilertock2() -> Result<metamodelica::Real> {
     Ok(t)
 }
 
-pub fn applyTuple21<T1: Clone + 'static + PartialEq, T2: Clone + 'static>(mut inTuple: (T1, T2), mut func: Arc<dyn ::std::ops::Fn(T1) -> Result<T1> + 'static>) -> (T1, T2) {
+pub fn applyTuple21<T1: Clone + 'static, T2: Clone + 'static>(mut inTuple: (T1, T2), mut func: Arc<dyn ::std::ops::Fn(T1) -> Result<T1> + 'static>) -> (T1, T2) {
     pub type FuncT<T1: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T1) -> Result<T1> + 'static>;
 
     let mut outTuple: (T1, T2);
@@ -1336,7 +1335,7 @@ pub fn applyTuple21<T1: Clone + 'static + PartialEq, T2: Clone + 'static>(mut in
     outTuple
 }
 
-pub fn applyTuple22<T1: Clone + 'static, T2: Clone + 'static + PartialEq>(mut inTuple: (T1, T2), mut func: Arc<dyn ::std::ops::Fn(T2) -> Result<T2> + 'static>) -> (T1, T2) {
+pub fn applyTuple22<T1: Clone + 'static, T2: Clone + 'static>(mut inTuple: (T1, T2), mut func: Arc<dyn ::std::ops::Fn(T2) -> Result<T2> + 'static>) -> (T1, T2) {
     pub type FuncT<T2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T2) -> Result<T2> + 'static>;
 
     let mut outTuple: (T1, T2);
@@ -1349,7 +1348,7 @@ pub fn applyTuple22<T1: Clone + 'static, T2: Clone + 'static + PartialEq>(mut in
     outTuple
 }
 
-pub fn applyTuple31<T1: Clone + 'static + PartialEq, T2: Clone + 'static, T3: Clone + 'static>(mut inTuple: (T1, T2, T3), mut func: Arc<dyn ::std::ops::Fn(T1) -> Result<T1> + 'static>) -> (T1, T2, T3) {
+pub fn applyTuple31<T1: Clone + 'static, T2: Clone + 'static, T3: Clone + 'static>(mut inTuple: (T1, T2, T3), mut func: Arc<dyn ::std::ops::Fn(T1) -> Result<T1> + 'static>) -> (T1, T2, T3) {
     pub type FuncT<T1: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T1) -> Result<T1> + 'static>;
 
     let mut outTuple: (T1, T2, T3);

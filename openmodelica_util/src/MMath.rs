@@ -88,7 +88,6 @@ pub fn addRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
             ri2 = intDiv(ri2.clone(), d.clone());
             normalizeZero(Rational { nom: ri1.clone(), denom: ri2.clone() })
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(r)
 }
@@ -109,7 +108,6 @@ pub fn rationalString(mut r: Rational) -> Result<ArcStr> {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(n.clone())); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*intString(d.clone())); ArcStr::from(__mm_s) }).clone();
             r#str.clone()
         },
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(r#str)
 }
@@ -120,7 +118,6 @@ pub fn equals(mut r1: Rational, mut r2: Rational) -> Result<bool> {
         (Rational { nom: mut i1, denom: mut i2 }, Rational { nom: mut i3, denom: mut i4 }) => {
             i1.clone() * i4.clone() - i3.clone() * i2.clone() == 0
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(res)
 }
@@ -139,7 +136,6 @@ pub fn subRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
             ri2 = intDiv(ri2.clone(), d.clone());
             normalizeZero(Rational { nom: ri1.clone(), denom: ri2.clone() })
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(r)
 }
@@ -158,7 +154,6 @@ pub fn multRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
             ri2 = intDiv(ri2.clone(), d.clone());
             normalizeZero(Rational { nom: ri1.clone(), denom: ri2.clone() })
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(r)
 }
@@ -177,7 +172,6 @@ pub fn divRational(mut r1: Rational, mut r2: Rational) -> Result<Rational> {
             ri2 = intDiv(ri2.clone(), d.clone());
             normalizeZero(Rational { nom: ri1.clone(), denom: ri2.clone() })
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(r)
 }

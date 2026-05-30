@@ -52,6 +52,7 @@ use crate::LexerJSON::tokenSourceInfo;
 use crate::LexerJSON;
 use crate::Print;
 use crate::System;
+use crate::Testsuite;
 use crate::UnorderedMap;
 use crate::Util;
 use crate::Vector;
@@ -772,7 +773,7 @@ pub fn parse_object(mut inTokens: Arc<metamodelica::List<Token>>) -> Result<(Arc
     let mut value: Arc<JSON> = Arc::new(JSON::FALSE);
     let mut tokens: Arc<metamodelica::List<Token>> = inTokens.clone();
     let mut tok: Token = <Token as ::std::default::Default>::default();
-    let mut values: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<JSON>>>;
+    let mut values: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<JSON>>> = <Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<JSON>>> as ::std::default::Default>::default();
     let mut key: ArcStr = arcstr::literal!("");
     let mut cont: bool = false;
     values = UnorderedMap::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), 1);
@@ -883,6 +884,21 @@ fn errorExpected(mut expected: ArcStr, mut tok: Token) -> Result<()> {
     Error::addSourceMessage(Error::COMPILER_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("JSON expected ")); __mm_s.push_str(&*expected.clone()); __mm_s.push_str(&*literal!(", got token ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{:?}", tok.id.clone()))); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*tokenContent(tok.clone())?); ArcStr::from(__mm_s) }).clone()], tokenSourceInfo(tok.clone())?)?;
     bail!("fail");
     Ok(())
+}
+
+pub fn dumpJSONSourceInfo(mut info: SourceInfo, mut dumpFilename: bool) -> Result<Arc<JSON>> {
+    let mut json: Arc<JSON> = makeNull();
+    if dumpFilename.clone() {
+        json = addPair((literal!("filename")).clone(), makeString((Testsuite::friendly(info.fileName.clone())?).clone()), json.clone())?;
+    }
+    json = addPair((literal!("lineStart")).clone(), makeInteger(info.lineNumberStart.clone()), json.clone())?;
+    json = addPair((literal!("columnStart")).clone(), makeInteger(info.columnNumberStart.clone()), json.clone())?;
+    json = addPair((literal!("lineEnd")).clone(), makeInteger(info.lineNumberEnd.clone()), json.clone())?;
+    json = addPair((literal!("columnEnd")).clone(), makeInteger(info.columnNumberEnd.clone()), json.clone())?;
+    if info.isReadOnly.clone() {
+        json = addPair((literal!("readonly")).clone(), makeBoolean(true), json.clone())?;
+    }
+    Ok(json)
 }
 
 

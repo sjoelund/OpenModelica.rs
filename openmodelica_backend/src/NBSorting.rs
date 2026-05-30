@@ -101,7 +101,7 @@ pub mod Value {
         r#str = ((::match_deref::match_deref! { match &(val.clone()) {
         Deref @ SINGLE_VAL { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n\tval: (")); __mm_s.push_str(&*ComponentRef::toString(var_field!((*val).cref_to_solve, Value::SINGLE_VAL).clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) },
         Deref @ MULTI_VAL { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n\tval: ")); __mm_s.push_str(&*List::toString(var_field!((*val).crefs_to_solve, Value::MULTI_VAL).clone(), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); ArcStr::from(__mm_s) },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
         Ok(r#str)
     }
@@ -133,7 +133,7 @@ pub mod Value {
     }));
             val.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(val)
     }
@@ -143,7 +143,7 @@ pub mod Value {
         eqn_scal_indices = (::match_deref::match_deref! { match &(val.clone()) {
         Deref @ SINGLE_VAL { .. } => var_field!((*val).eqn_scal_indices, Value::SINGLE_VAL).clone(),
         Deref @ MULTI_VAL { .. } => var_field!((*val).eqn_scal_indices, Value::MULTI_VAL).clone(),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(eqn_scal_indices)
     }
@@ -159,7 +159,7 @@ pub mod Value {
             assign_variant_field!(val => Value::MULTI_VAL; eqn_scal_indices = cons(eqn_idx.clone(), var_field!((*val).eqn_scal_indices, Value::MULTI_VAL).clone()));
             val.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(val)
     }
@@ -192,7 +192,7 @@ pub mod PseudoBucket {
         let __range0 = 1..=(eqn_to_var.clone().borrow().len() as i32);
         for mut eqn_scal_idx in __range0 {
             mode_opt = UnorderedMap::get((eqn_scal_idx.clone(), eqn_to_var.borrow()[(eqn_scal_idx.clone()-1) as usize].clone()), modes.clone());
-            if Util::isSome(mode_opt.clone()) {
+            if isSome(mode_opt.clone()) {
                 mode = Util::getOption(mode_opt.clone())?;
                 if BEquation::Equation::isRecordOrTupleEquation(BEquation::EquationPointers::getEqnAt(eqns.clone(), mapping.eqn_StA.borrow()[(eqn_scal_idx.clone()-1) as usize].clone())?) {
                     cref = listHead(mode.crefs.clone())?;
@@ -212,7 +212,7 @@ pub mod PseudoBucket {
     pub fn add(mut eqn_scal_idx: i32, mut mode: Arc<Mode::Mode>, mut buckets: Arc<UnorderedMap::UnorderedMap<Arc<Mode::Mode>, Arc<Value::Value>>>) -> Result<()> {
         let mut val_opt: Option<Arc<Value::Value>> = UnorderedMap::get(mode.clone(), buckets.clone());
         let mut val: Arc<Value::Value>;
-        if Util::isSome(val_opt.clone()) {
+        if isSome(val_opt.clone()) {
             let __pa0 = ::match_deref::match_deref! { match &(val_opt.clone()) {
                 Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
@@ -230,7 +230,7 @@ pub mod PseudoBucket {
     pub fn addMulti(mut cref: Arc<ComponentRef::NFComponentRef>, mut eqn_scal_idx: i32, mut mode: Arc<Mode::Mode>, mut buckets: Arc<UnorderedMap::UnorderedMap<Arc<Mode::Mode>, Arc<Value::Value>>>) -> Result<()> {
         let mut val_opt: Option<Arc<Value::Value>> = UnorderedMap::get(mode.clone(), buckets.clone());
         let mut val: Arc<Value::Value>;
-        if Util::isSome(val_opt.clone()) {
+        if isSome(val_opt.clone()) {
             let __pa0 = ::match_deref::match_deref! { match &(val_opt.clone()) {
                 Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
@@ -282,7 +282,7 @@ pub fn tarjan(mut adj: Arc<Adjacency::Matrix::Matrix>, mut matching: Arc<Matchin
             let mut phase2_adj: Arc<Adjacency::Matrix::Matrix>;
             let mut phase2_matching: Arc<Matching::NBMatching> = Arc::new(<Matching::NBMatching as ::std::default::Default>::default());
             let mut super_nodes: metamodelica::Array<Arc<SuperNode::SuperNode>>;
-            let mut buckets: Arc<UnorderedMap::UnorderedMap<Arc<Mode::Mode>, Arc<Value::Value>>>;
+            let mut buckets: Arc<UnorderedMap::UnorderedMap<Arc<Mode::Mode>, Arc<Value::Value>>> = <Arc<UnorderedMap::UnorderedMap<Arc<Mode::Mode>, Arc<Value::Value>>> as ::std::default::Default>::default();
             if unwrap_break_err!(Flags::isSet(Flags::DUMP_SORTING.clone()), '__try0) {
                 println!("{}", (StringUtil::headline_1((literal!("Sorting")).clone())).clone());
             }
@@ -620,7 +620,7 @@ pub mod SuperNode {
             mergeLoopNodes(super_nodes.clone(), var_lst.clone(), index.clone(), false)?;
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
                 index = mergeRows(var_field!((*phase2_adj).mT, Adjacency::Matrix::Matrix::FINAL).clone(), phase2_matching.var_to_eqn.clone(), super_nodes.clone(), var_lst.clone(), index.clone())?;
             }
@@ -644,7 +644,7 @@ pub mod SuperNode {
             mergeLoopNodes(super_nodes.clone(), eqn_lst.clone(), index.clone(), true)?;
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
                 index = mergeRows(var_field!((*phase2_adj).m, Adjacency::Matrix::Matrix::FINAL).clone(), phase2_matching.eqn_to_var.clone(), super_nodes.clone(), eqn_lst.clone(), index.clone())?;
             }

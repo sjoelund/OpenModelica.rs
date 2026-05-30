@@ -395,7 +395,7 @@ pub mod RefTree {
             }
             if (key_comp.clone() == 0) {outTree.clone()} else {balance(outTree.clone())?}
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(tree)
     }
@@ -461,7 +461,7 @@ pub mod RefTree {
             }
             if (key_comp.clone() == 0) {new_tree.clone()} else {balance(new_tree.clone())?}
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(tree)
     }
@@ -595,7 +595,7 @@ pub mod RefTree {
             ()
         },
         Deref @ Tree::EMPTY { .. } => (),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(())
     }
@@ -652,6 +652,8 @@ pub mod RefTree {
         value
     }
 
+    // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
+    // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
     pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
         let mut comp: bool = false;
         let mut key: Key = arcstr::literal!("");
@@ -664,7 +666,7 @@ pub mod RefTree {
             return Ok(comp.clone());
             bail!("fail")
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
         key_comp = keyCompare((inKey.clone()).clone(), (key.clone()).clone());
         comp = (::match_deref::match_deref! { match &((key_comp.clone(), inTree.clone())) {
@@ -714,7 +716,7 @@ pub mod RefTree {
             tree.clone()
         },
         Deref @ Tree::LEAF { .. } => add(tree.clone(), (var_field!((*treeToJoin).key, Tree::LEAF).clone()).clone(), var_field!((*treeToJoin).value, Tree::LEAF).clone(), conflictFunc.clone())?,
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(tree)
     }
@@ -865,7 +867,7 @@ pub mod RefTree {
         Deref @ Tree::EMPTY { .. } => literal!("EMPTY()"),
         Deref @ Tree::LEAF { .. } => printNodeStr(inTree.clone())?,
         Deref @ Tree::NODE { right, left, .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*printTreeStr2(left.clone(), true, (literal!("")).clone())?); __mm_s.push_str(&*printNodeStr(inTree.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*printTreeStr2(right.clone(), false, (literal!("")).clone())?); ArcStr::from(__mm_s) },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
         Ok(outString)
     }
@@ -1278,10 +1280,10 @@ pub fn noCache() -> Cache {
 pub fn addEvaluatedCref(mut cache: Cache, mut var: SCode::Variability, mut cr: Arc<DAE::ComponentRef>) -> Cache {
     let mut ocache: Cache = Cache::NO_CACHE;
     ocache = (::match_deref::match_deref! { match &((cache.clone(), var.clone())) {
-        (Cache::CACHE { initialGraph, functions, evaluatedParams: (ht, Deref @ metamodelica::List::Cons { head: crs, tail: st }), modelName: p }, SCode::Variability::PARAM) => {
+        (Cache::CACHE { initialGraph, functions, evaluatedParams: (ht, Deref @ metamodelica::List::Cons { head: crs, tail: st }), modelName: p }, SCode::Variability::PARAM { .. }) => {
             Cache::CACHE { initialGraph: initialGraph.clone(), functions: functions.clone(), evaluatedParams: (ht.clone(), cons(cons(cr.clone(), crs.clone()), st.clone())), modelName: p.clone() }
         },
-        (Cache::CACHE { initialGraph, functions, evaluatedParams: (ht, Deref @ metamodelica::List::Nil), modelName: p }, SCode::Variability::PARAM) => {
+        (Cache::CACHE { initialGraph, functions, evaluatedParams: (ht, Deref @ metamodelica::List::Nil), modelName: p }, SCode::Variability::PARAM { .. }) => {
             Cache::CACHE { initialGraph: initialGraph.clone(), functions: functions.clone(), evaluatedParams: (ht.clone(), cons(list![cr.clone()], metamodelica::nil())), modelName: p.clone() }
         },
         _ => {

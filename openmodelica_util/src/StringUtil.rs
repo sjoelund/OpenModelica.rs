@@ -206,7 +206,7 @@ pub fn wordWrap(mut inString: ArcStr, mut inWrapLength: i32, mut inDelimiter: Ar
         end_pos = line_len.clone();
         delim = (inDelimiter.clone()).clone();
     }
-    outStrings = outStrings.clone().reverse();
+    outStrings = metamodelica::Dangerous::listReverseInPlace(outStrings.clone());
     Ok(outStrings)
 }
 

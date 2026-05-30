@@ -221,7 +221,7 @@ fn cevalWork2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, Deref @ DAE::Exp::ARRAY { ty: Deref @ DAE::Type::T_UNKNOWN, array: es, .. }, r#impl, msg) => {
+                (cache, env, Deref @ DAE::Exp::ARRAY { ty: Deref @ DAE::Type::T_UNKNOWN { .. }, array: es, .. }, r#impl, msg) => {
                     if !((Config::getGraphicsExpMode()? && Config::getEvaluateParametersInAnnotations()?)) { bail!("guard") }
                     let mut es_1: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
                     let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
@@ -232,8 +232,8 @@ fn cevalWork2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc
         let __mc_input = ();
         if let Ok(__v) = (|| -> Result<_> {
                     let () = __mc_input.clone() else { bail!("nomatch") };
-                    let mut v: Arc<Values::Value>;
                     let mut dims: Arc<metamodelica::List<i32>>;
+                    let mut v: Arc<Values::Value>;
                     dims = list![1];
                     v = Arc::new(Values::Value::ARRAY { valueLst: es_1.clone(), dimLst: dims.clone() });
                     Ok(v.clone())
@@ -1429,15 +1429,15 @@ pub fn cevalIfConstant(mut cache: FCore::Cache, mut inEnv: FCore::Graph, mut exp
     (cache, exp, prop) = 'mc: {
         let __mc_input = prop.clone();
         if let Ok(__v) = (|| -> Result<_> {
-            let DAE::Properties::PROP { type_: ref tp, constFlag: DAE::Const::C_PARAM } = __mc_input.clone() else { bail!("nomatch") };
+            let DAE::Properties::PROP { type_: ref tp, constFlag: DAE::Const::C_PARAM { .. } } = __mc_input.clone() else { bail!("nomatch") };
             if !((!(Flags::getConfigBool(Flags::CEVAL_EQUATION.clone())?))) { bail!("guard") }
             Ok((cache.clone(), exp.clone(), DAE::Properties::PROP { type_: tp.clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_VAR }))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
-            let DAE::Properties::PROP { type_: ref tp, constFlag: DAE::Const::C_CONST } = __mc_input.clone() else { bail!("nomatch") };
+            let DAE::Properties::PROP { type_: ref tp, constFlag: DAE::Const::C_CONST { .. } } = __mc_input.clone() else { bail!("nomatch") };
             let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-            let mut exp: Arc<DAE::Exp> = exp.clone();
             let mut cache: FCore::Cache = cache.clone();
+            let mut exp: Arc<DAE::Exp> = exp.clone();
             (cache, v) = ceval(cache.clone(), inEnv.clone(), exp.clone(), r#impl.clone(), Absyn::Msg::MSG { info: inInfo.clone() }, 0)?;
             exp = ValuesUtil::valueExp(v.clone(), Some(exp.clone()))?;
             exp = ValuesUtil::fixZeroSizeArray(exp.clone(), tp.clone())?;
@@ -1984,7 +1984,7 @@ fn cevalMatrixElt(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inMatr
         v = ValuesMake::makeArray(vl.clone())?;
         outValues = cons(v.clone(), outValues.clone());
     }
-    outValues = outValues.clone().reverse();
+    outValues = metamodelica::Dangerous::listReverseInPlace(outValues.clone());
     Ok((outCache, outValues))
 }
 
@@ -2102,7 +2102,7 @@ fn cevalBuiltinSize(mut inCache: FCore::Cache, mut inEnv1: FCore::Graph, mut inE
                         Error::addSourceMessage(Error::DIMENSION_NOT_KNOWN.clone(), list![(size_str.clone()).clone()], info.clone())?;
                     } else {
                         let _ = (::match_deref::match_deref! { match &(binding.clone()) {
-        Deref @ DAE::Binding::UNBOUND => {
+        Deref @ DAE::Binding::UNBOUND { .. } => {
                     expstr = (ExpressionBasics::printExpStr(inExp2.clone())?).clone();
                     Error::addSourceMessage(Error::UNBOUND_VALUE.clone(), list![(expstr.clone()).clone()], info.clone())?;
                     bail!("fail")
@@ -2142,7 +2142,6 @@ fn cevalBuiltinSize(mut inCache: FCore::Cache, mut inEnv1: FCore::Graph, mut inE
                 (cache, env, Deref @ DAE::Exp::ARRAY { array: Deref @ metamodelica::List::Cons { head: exp, tail: es }, .. }, dimExp, r#impl, msg) => {
                     let mut len: i32 = 0;
                     let mut cache = (*cache).clone();
-                    Expression::r#typeof(exp.clone())?;
                     let __pa0 = ::match_deref::match_deref! { match &(ceval(cache.clone(), env.clone(), dimExp.clone(), r#impl.clone(), msg.clone(), numIter.clone() + 1)?) {
                         (__pa0, Deref @ Values::Value::INTEGER { integer: 1 }) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -3904,7 +3903,7 @@ fn cevalBuiltinDiv(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: exp2, tail: Deref @ metamodelica::List::Nil } }, r#impl, Absyn::Msg::NO_MSG) => {
+                (cache, env, Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: exp2, tail: Deref @ metamodelica::List::Nil } }, r#impl, Absyn::Msg::NO_MSG { .. }) => {
                     let mut rv2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     let __pa0 = ::match_deref::match_deref! { match &(ceval(cache.clone(), env.clone(), exp2.clone(), r#impl.clone(), openmodelica_ast::Absyn::Msg::NO_MSG, numIter.clone() + 1)?) {
                         (_, Deref @ Values::Value::REAL { real: __pa0 }) => __pa0.clone(),
@@ -3939,7 +3938,7 @@ fn cevalBuiltinDiv(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: exp2, tail: Deref @ metamodelica::List::Nil } }, r#impl, Absyn::Msg::NO_MSG) => {
+                (cache, env, Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: exp2, tail: Deref @ metamodelica::List::Nil } }, r#impl, Absyn::Msg::NO_MSG { .. }) => {
                     let mut ri2: i32 = 0;
                     let __pa0 = ::match_deref::match_deref! { match &(ceval(cache.clone(), env.clone(), exp2.clone(), r#impl.clone(), openmodelica_ast::Absyn::Msg::NO_MSG, numIter.clone() + 1)?) {
                         (_, Deref @ Values::Value::INTEGER { integer: __pa0 }) => __pa0.clone(),
@@ -4935,7 +4934,7 @@ pub fn cevalList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExpEx
         (outCache, v) = ceval(outCache.clone(), inEnv.clone(), exp.clone(), inBoolean.clone(), inMsg.clone(), numIter.clone() + 1)?;
         outValuesValueLst = cons(v.clone(), outValuesValueLst.clone());
     }
-    outValuesValueLst = outValuesValueLst.clone().reverse();
+    outValuesValueLst = metamodelica::Dangerous::listReverseInPlace(outValuesValueLst.clone());
     Ok((outCache, outValuesValueLst))
 }
 
@@ -4990,10 +4989,10 @@ pub fn cevalCref_dispatch(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
     (outCache, outValue) = (::match_deref::match_deref! { match &((inAttr.clone(), inBinding.clone(), constForRange.clone(), inImpl.clone(), inMsg.clone())) {
-        (_, Deref @ DAE::Binding::UNBOUND, Some(_), _, _) => {
+        (_, Deref @ DAE::Binding::UNBOUND { .. }, Some(_), _, _) => {
             bail!("fail")
         },
-        (_, Deref @ DAE::Binding::UNBOUND, None, false, Absyn::Msg::MSG { .. }) => {
+        (_, Deref @ DAE::Binding::UNBOUND { .. }, None, false, Absyn::Msg::MSG { .. }) => {
             let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
             let mut r#str: ArcStr = arcstr::literal!("");
             let mut scope_str: ArcStr = arcstr::literal!("");
@@ -5021,7 +5020,7 @@ pub fn cevalCref_dispatch(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
             cache = FCore::addEvaluatedCref(cache.clone(), variability.clone(), ComponentReferenceBasics::crefStripLastSubs(inCref.clone())?);
             (cache.clone(), v.clone())
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((outCache, outValue))
 }
@@ -5046,7 +5045,7 @@ pub fn cevalCrefBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, Deref @ DAE::ComponentRef::CREF_IDENT { ident: _, identType: ty, subscriptLst: Deref @ metamodelica::List::Nil }, Deref @ DAE::Binding::UNBOUND, _, Absyn::Msg::MSG { info }) => {
+                (cache, env, Deref @ DAE::ComponentRef::CREF_IDENT { ident: _, identType: ty, subscriptLst: Deref @ metamodelica::List::Nil }, Deref @ DAE::Binding::UNBOUND { .. }, _, Absyn::Msg::MSG { info }) => {
                     let mut res: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
                     let mut vl: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
                     let mut tpath: Arc<Absyn::Path>;
@@ -5068,7 +5067,7 @@ pub fn cevalCrefBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (_, _, _, Deref @ DAE::Binding::UNBOUND, false, Absyn::Msg::MSG { info: _ }) => {
+                (_, _, _, Deref @ DAE::Binding::UNBOUND { .. }, false, Absyn::Msg::MSG { info: _ }) => {
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -5076,7 +5075,7 @@ pub fn cevalCrefBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (_, _, _, Deref @ DAE::Binding::UNBOUND, true, Absyn::Msg::MSG { info: _ }) => {
+                (_, _, _, Deref @ DAE::Binding::UNBOUND { .. }, true, Absyn::Msg::MSG { info: _ }) => {
                     let true = (Flags::isSet(Flags::CEVAL.clone())?) else { bail!("pattern mismatch") };
                     Debug::trace((literal!("#- Ceval.cevalCrefBinding: Ignoring unbound when implicit\n")).clone())?;
                     Ok(bail!("fail"))
@@ -5086,7 +5085,7 @@ pub fn cevalCrefBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, cr, Deref @ DAE::Binding::EQBOUND { constant_: DAE::Const::C_CONST, exp, .. }, r#impl, msg) => {
+                (cache, env, cr, Deref @ DAE::Binding::EQBOUND { constant_: DAE::Const::C_CONST { .. }, exp, .. }, r#impl, msg) => {
                     let mut subsc: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
                     let mut res: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
                     let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
@@ -5118,7 +5117,7 @@ pub fn cevalCrefBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, cr, Deref @ DAE::Binding::EQBOUND { constant_: DAE::Const::C_CONST, exp, .. }, r#impl, msg) => {
+                (cache, env, cr, Deref @ DAE::Binding::EQBOUND { constant_: DAE::Const::C_CONST { .. }, exp, .. }, r#impl, msg) => {
                     let mut subsc: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
                     let mut res: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
                     let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
@@ -5133,7 +5132,7 @@ pub fn cevalCrefBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, env, cr, Deref @ DAE::Binding::EQBOUND { constant_: DAE::Const::C_PARAM, exp, .. }, r#impl, msg) => {
+                (cache, env, cr, Deref @ DAE::Binding::EQBOUND { constant_: DAE::Const::C_PARAM { .. }, exp, .. }, r#impl, msg) => {
                     let mut subsc: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
                     let mut res: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
                     let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
@@ -5149,7 +5148,7 @@ pub fn cevalCrefBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (_, _, _, Deref @ DAE::Binding::EQBOUND { constant_: DAE::Const::C_VAR, exp, .. }, _, Absyn::Msg::MSG { info: _ }) => {
+                (_, _, _, Deref @ DAE::Binding::EQBOUND { constant_: DAE::Const::C_VAR { .. }, exp, .. }, _, Absyn::Msg::MSG { info: _ }) => {
                     let mut expstr: ArcStr = arcstr::literal!("");
                     let true = (Flags::isSet(Flags::CEVAL.clone())?) else { bail!("pattern mismatch") };
                     Debug::trace((literal!("#- Ceval.cevalCrefBinding failed (nonconstant EQBOUND(")).clone())?;
@@ -5249,7 +5248,7 @@ pub fn cevalSubscriptValue(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
             res = ValuesMake::makeArray(lst.clone())?;
             (cache.clone(), res.clone())
         },
-        (cache, env, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM, tail: subs }, subval @ Deref @ Values::Value::ARRAY { .. }, r#impl, msg) => {
+        (cache, env, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM { .. }, tail: subs }, subval @ Deref @ Values::Value::ARRAY { .. }, r#impl, msg) => {
             let mut res: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
             let mut lst: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
             let mut cache = (*cache).clone();
@@ -5342,7 +5341,7 @@ pub fn cevalSubscript(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
         let __mc_input = (inCache.clone(), inEnv.clone(), inSubscript.clone(), inBoolean.clone(), inMsg.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, _, Deref @ DAE::Subscript::WHOLEDIM, _, _) => {
+                (cache, _, Deref @ DAE::Subscript::WHOLEDIM { .. }, _, _) => {
                     Ok((cache.clone(), Arc::new(openmodelica_frontend_types::DAE::Subscript::WHOLEDIM)))
                 }
                 _ => bail!("nomatch"),
@@ -5650,17 +5649,17 @@ fn backpatchArrayReduction(mut path: Arc<Absyn::Path>, mut iterType: Absyn::Redu
         (_, _, value, Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }) => {
             value.clone()
         },
-        (Deref @ Absyn::Path::IDENT { name: Deref @ "array" }, Absyn::ReductionIterType::COMBINE, Deref @ Values::Value::ARRAY { valueLst: vals, .. }, _) => {
+        (Deref @ Absyn::Path::IDENT { name: Deref @ "array" }, Absyn::ReductionIterType::COMBINE { .. }, Deref @ Values::Value::ARRAY { valueLst: vals, .. }, _) => {
             let mut value: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
             value = backpatchArrayReduction3(vals.clone(), dims.clone().reverse(), (std::sync::Arc::new(ValuesMake::makeArray) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<Values::Value>> + 'static>))?;
             value.clone()
         },
-        (Deref @ Absyn::Path::IDENT { name: Deref @ "list" }, Absyn::ReductionIterType::COMBINE, Deref @ Values::Value::LIST { valueLst: vals }, _) => {
+        (Deref @ Absyn::Path::IDENT { name: Deref @ "list" }, Absyn::ReductionIterType::COMBINE { .. }, Deref @ Values::Value::LIST { valueLst: vals }, _) => {
             let mut value: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
             value = backpatchArrayReduction3(vals.clone(), dims.clone().reverse(), (std::sync::Arc::new(fnptr!(ValuesMake::makeList, Arc<metamodelica::List<Arc<Values::Value>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<Values::Value>> + 'static>))?;
             value.clone()
         },
-        (Deref @ Absyn::Path::IDENT { name: Deref @ "listReverse" }, Absyn::ReductionIterType::COMBINE, Deref @ Values::Value::LIST { valueLst: vals }, _) => {
+        (Deref @ Absyn::Path::IDENT { name: Deref @ "listReverse" }, Absyn::ReductionIterType::COMBINE { .. }, Deref @ Values::Value::LIST { valueLst: vals }, _) => {
             let mut value: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
             value = backpatchArrayReduction3(vals.clone(), dims.clone().reverse(), (std::sync::Arc::new(fnptr!(ValuesMake::makeList, Arc<metamodelica::List<Arc<Values::Value>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<Values::Value>> + 'static>))?;
             value.clone()
@@ -5931,7 +5930,7 @@ pub fn cevalAstExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (cache, _, Deref @ Absyn::Exp::END, _, _) => {
+                (cache, _, Deref @ Absyn::Exp::END { .. }, _, _) => {
                     Ok((cache.clone(), Arc::new(openmodelica_ast::Absyn::Exp::END)))
                 }
                 _ => bail!("nomatch"),
@@ -6077,7 +6076,7 @@ fn cevalAstModification(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
             (cache, eltargs_1) = cevalAstEltargs(cache.clone(), env.clone(), eltargs.clone(), r#impl.clone(), msg.clone(), info.clone())?;
             (cache.clone(), Arc::new(Absyn::Modification { elementArgLst: eltargs_1.clone(), eqMod: Arc::new(Absyn::EqMod::EQMOD { exp: e_1.clone(), info: info2.clone() }) }))
         },
-        (cache, env, Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::NOMOD, elementArgLst: eltargs }, r#impl, msg) => {
+        (cache, env, Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::NOMOD { .. }, elementArgLst: eltargs }, r#impl, msg) => {
             let mut eltargs_1: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
             let mut cache = (*cache).clone();
             (cache, eltargs_1) = cevalAstEltargs(cache.clone(), env.clone(), eltargs.clone(), r#impl.clone(), msg.clone(), info.clone())?;
@@ -6137,7 +6136,7 @@ fn cevalAstArraydim(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAr
         (cache, _, Deref @ metamodelica::List::Nil, _, _) => {
             (cache.clone(), metamodelica::nil())
         },
-        (cache, env, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Subscript::NOSUB, tail: xs }, r#impl, msg) => {
+        (cache, env, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Subscript::NOSUB { .. }, tail: xs }, r#impl, msg) => {
             let mut res: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = metamodelica::nil();
             let mut cache = (*cache).clone();
             (cache, res) = cevalAstArraydim(cache.clone(), env.clone(), xs.clone(), r#impl.clone(), msg.clone(), info.clone())?;
@@ -6187,7 +6186,7 @@ pub fn cevalDimension(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
         Deref @ DAE::Dimension::DIM_ENUM { size: dim_int, .. } => {
             (inCache.clone(), Arc::new(Values::Value::INTEGER { integer: dim_int.clone() }))
         },
-        Deref @ DAE::Dimension::DIM_BOOLEAN => {
+        Deref @ DAE::Dimension::DIM_BOOLEAN { .. } => {
             (inCache.clone(), Arc::new(Values::Value::INTEGER { integer: 2 }))
         },
         Deref @ DAE::Dimension::DIM_EXP { exp } => {
@@ -6204,9 +6203,8 @@ pub fn cevalDimension(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
 fn makeReductionAllCombinations(mut inValMatrix: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Values::Value>>>>>, mut rtype: Absyn::ReductionIterType) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<Arc<Values::Value>>>>>> {
     let mut valMatrix: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Values::Value>>>>> = metamodelica::nil();
     valMatrix = (match rtype.clone() {
-        Absyn::ReductionIterType::COMBINE => List::allCombinations(inValMatrix.clone(), Some(100000), Absyn::dummyInfo.clone())?.reverse(),
-        Absyn::ReductionIterType::THREAD => List::transposeList(inValMatrix.clone())?.reverse(),
-        _ => bail!("match: no arm matched"),
+        Absyn::ReductionIterType::COMBINE { .. } => List::allCombinations(inValMatrix.clone(), Some(100000), Absyn::dummyInfo.clone())?.reverse(),
+        Absyn::ReductionIterType::THREAD { .. } => List::transposeList(inValMatrix.clone())?.reverse(),
     });
     Ok(valMatrix)
 }

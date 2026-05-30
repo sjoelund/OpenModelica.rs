@@ -62,6 +62,7 @@ use crate::NBVariable::VarData;
 use crate::NBVariable::VariablePointers;
 use crate::NBackendDAE as BackendDAE;
 use openmodelica_ast::Absyn;
+use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_nf_frontend::NFBackendExtension::VariableKind;
 use openmodelica_nf_frontend::NFCall as Call;
 use openmodelica_nf_frontend::NFComponentRef as ComponentRef;
@@ -87,13 +88,39 @@ use openmodelica_util_datatypes_basic::Pointer;
 // =========================================================================
 //                      MAIN ROUTINE, PLEASE DO NOT CHANGE
 // =========================================================================
+pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NBackendDAE>> {
+    let mut bdae: Arc<BackendDAE::NBackendDAE> = bdae;
+    let mut mainFunc: Module::detectStatesInterface;
+    let mut contFunc: Module::detectContinuousStatesInterface;
+    let mut discFunc: Module::detectDiscreteStatesInterface;
+    (mainFunc, contFunc, discFunc) = getModule()?;
+    bdae = (::match_deref::match_deref! { match &(bdae.clone()) {
+        Deref @ BackendDAE::MAIN { eqData, varData, .. } => {
+            let mut eqData = (*eqData).clone();
+            let mut varData = (*varData).clone();
+            (varData, eqData) = mainFunc(varData.clone(), eqData.clone(), contFunc.clone(), discFunc.clone())?;
+            assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN;
+                varData = varData.clone(),
+                eqData = eqData.clone()
+            );
+            bdae.clone()
+        },
+        _ => {
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBDetectStates.main")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
+            bail!("fail")
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    Ok(bdae)
+}
+
 pub fn getModule() -> Result<(Arc<dyn ::std::ops::Fn(Arc<VarData::VarData>, Arc<EqData::EqData>, Arc<dyn ::std::ops::Fn(Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>) -> Result<(Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>)> + 'static>, Arc<dyn ::std::ops::Fn(Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, ArcStr) -> Result<(Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>)> + 'static>) -> Result<(Arc<VarData::VarData>, Arc<EqData::EqData>)> + 'static>, Arc<dyn ::std::ops::Fn(Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>) -> Result<(Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>)> + 'static>, Arc<dyn ::std::ops::Fn(Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, ArcStr) -> Result<(Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>)> + 'static>)> {
     let mut mainFunc: Module::detectStatesInterface;
     let mut contFunc: Module::detectContinuousStatesInterface;
     let mut discFunc: Module::detectDiscreteStatesInterface;
     let mut flag: ArcStr = literal!("default");
     (mainFunc, contFunc, discFunc) = (::match_deref::match_deref! { match &(flag.clone()) {
-        Deref @ "default" => (detectStatesDefault.clone(), detectContinuousStatesDefault.clone(), detectDiscreteStatesDefault.clone()),
+        Deref @ "default" => ((std::sync::Arc::new(detectStatesDefault) as std::sync::Arc<dyn ::std::ops::Fn(Arc<VarData::VarData>, Arc<EqData::EqData>, Arc<dyn ::std::ops::Fn(Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>) -> Result<(Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>)> + 'static>, Arc<dyn ::std::ops::Fn(Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, ArcStr) -> Result<(Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>)> + 'static>) -> Result<(Arc<VarData::VarData>, Arc<EqData::EqData>)> + 'static>), (std::sync::Arc::new(detectContinuousStatesDefault) as std::sync::Arc<dyn ::std::ops::Fn(Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>) -> Result<(Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>)> + 'static>), (std::sync::Arc::new(detectDiscreteStatesDefault) as std::sync::Arc<dyn ::std::ops::Fn(Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, ArcStr) -> Result<(Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>)> + 'static>)),
         _ => bail!("fail"),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -103,6 +130,103 @@ pub fn getModule() -> Result<(Arc<dyn ::std::ops::Fn(Arc<VarData::VarData>, Arc<
 /* =========================================================================
                               SUB ROUTINES
 ========================================================================= */
+fn detectStatesDefault(mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>, mut continuousFunc: Arc<dyn ::std::ops::Fn(Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>) -> Result<(Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>)> + 'static>, mut discreteFunc: Arc<dyn ::std::ops::Fn(Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, ArcStr) -> Result<(Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>)> + 'static>) -> Result<(Arc<VarData::VarData>, Arc<EqData::EqData>)> {
+    let mut varData: Arc<VarData::VarData> = varData;
+    let mut eqData: Arc<EqData::EqData> = eqData;
+    let mut variables: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
+    let mut equations: Arc<EquationPointers::EquationPointers> = Arc::new(<EquationPointers::EquationPointers as ::std::default::Default>::default());
+    let mut disc_eqns: Arc<EquationPointers::EquationPointers> = Arc::new(<EquationPointers::EquationPointers as ::std::default::Default>::default());
+    let mut init_eqns: Arc<EquationPointers::EquationPointers> = Arc::new(<EquationPointers::EquationPointers as ::std::default::Default>::default());
+    let mut unknowns: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
+    let mut knowns: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
+    let mut initials: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
+    let mut states: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
+    let mut derivatives: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
+    let mut algebraics: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
+    let mut discretes: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
+    let mut discrete_states: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
+    let mut clocked_states: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
+    let mut previous: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
+    let mut aux_eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+    let mut newEqData: Arc<EqData::EqData> = Arc::new(EqData::EQ_DATA_EMPTY);
+    (varData, eqData) = FunctionAlias::introduceSlicedStateAlias(varData.clone(), eqData.clone(), BPartition::Kind::ODE.clone())?;
+    (varData, eqData) = (::match_deref::match_deref! { match &((varData.clone(), eqData.clone())) {
+        (Deref @ BVariable::VarData::VAR_DATA_SIM { .. }, Deref @ BEquation::EqData::EQ_DATA_SIM { .. }) => {
+            (variables, unknowns, knowns, initials, states, derivatives, algebraics, aux_eqns) = continuousFunc(var_field!((*varData).variables, VarData::VarData::VAR_DATA_SIM).clone(), var_field!((*varData).unknowns, VarData::VarData::VAR_DATA_SIM).clone(), var_field!((*varData).knowns, VarData::VarData::VAR_DATA_SIM).clone(), var_field!((*varData).initials, VarData::VarData::VAR_DATA_SIM).clone(), var_field!((*varData).states, VarData::VarData::VAR_DATA_SIM).clone(), var_field!((*varData).derivatives, VarData::VarData::VAR_DATA_SIM).clone(), var_field!((*varData).algebraics, VarData::VarData::VAR_DATA_SIM).clone(), var_field!((*eqData).equations, EqData::EqData::EQ_DATA_SIM).clone())?;
+            (variables, disc_eqns, knowns, initials, discretes, discrete_states, clocked_states, previous) = discreteFunc(var_field!((*varData).variables, VarData::VarData::VAR_DATA_SIM).clone(), var_field!((*eqData).discretes, EqData::EqData::EQ_DATA_SIM).clone(), var_field!((*varData).knowns, VarData::VarData::VAR_DATA_SIM).clone(), var_field!((*varData).initials, VarData::VarData::VAR_DATA_SIM).clone(), var_field!((*varData).discretes, VarData::VarData::VAR_DATA_SIM).clone(), var_field!((*varData).discrete_states, VarData::VarData::VAR_DATA_SIM).clone(), var_field!((*varData).clocked_states, VarData::VarData::VAR_DATA_SIM).clone(), var_field!((*varData).previous, VarData::VarData::VAR_DATA_SIM).clone(), (literal!("discrete equations")).clone())?;
+            (variables, disc_eqns, knowns, initials, discretes, discrete_states, clocked_states, previous) = discreteFunc(variables.clone(), var_field!((*eqData).clocked, EqData::EqData::EQ_DATA_SIM).clone(), knowns.clone(), initials.clone(), discretes.clone(), discrete_states.clone(), clocked_states.clone(), previous.clone(), (literal!("clocked equations")).clone())?;
+            (variables, disc_eqns, knowns, initials, discretes, discrete_states, clocked_states, previous) = discreteFunc(variables.clone(), var_field!((*eqData).continuous, EqData::EqData::EQ_DATA_SIM).clone(), knowns.clone(), initials.clone(), discretes.clone(), discrete_states.clone(), clocked_states.clone(), previous.clone(), (literal!("continuous equations")).clone())?;
+            (variables, init_eqns, knowns, initials, discretes, discrete_states, clocked_states, previous) = discreteFunc(variables.clone(), var_field!((*eqData).initials, EqData::EqData::EQ_DATA_SIM).clone(), knowns.clone(), initials.clone(), discretes.clone(), discrete_states.clone(), clocked_states.clone(), previous.clone(), (literal!("initial equations")).clone())?;
+            assign_variant_field!(varData => VarData::VarData::VAR_DATA_SIM;
+                variables = variables.clone(),
+                unknowns = unknowns.clone(),
+                knowns = knowns.clone(),
+                initials = initials.clone(),
+                derivatives = derivatives.clone(),
+                algebraics = algebraics.clone(),
+                discretes = discretes.clone(),
+                discrete_states = discrete_states.clone(),
+                clocked_states = clocked_states.clone(),
+                previous = previous.clone(),
+                states = states.clone()
+            );
+            newEqData = BEquation::EqData::addTypedList(eqData.clone(), aux_eqns.clone(), EqData::EqType::CONTINUOUS.clone(), false)?;
+            BEquation::EquationPointers::map(BEquation::EqData::getEquations(newEqData.clone())?, Arc::new({ let __pe_b1 = var_field!((*varData).state_order, VarData::VarData::VAR_DATA_SIM).clone(); move |__pe_a0| stateOrder(__pe_a0, __pe_b1.clone()) }))?;
+            if Flags::isSet(Flags::DUMP_STATESELECTION_INFO.clone())? && !(UnorderedMap::isEmpty(var_field!((*varData).state_order, VarData::VarData::VAR_DATA_SIM).clone())) {
+                println!("{}", (StringUtil::headline_4((literal!("[stateselection] State Order:")).clone())).clone());
+                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\t")); __mm_s.push_str(&*UnorderedMap::toString(var_field!((*varData).state_order, VarData::VarData::VAR_DATA_SIM).clone(), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("\n\t")).clone(), (literal!(" --d/dt--> ")).clone())?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+            }
+            (varData.clone(), newEqData.clone())
+        },
+        _ => (varData.clone(), eqData.clone()),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    Ok((varData, eqData))
+}
+
+fn detectContinuousStatesDefault(mut variables: Arc<VariablePointers::VariablePointers>, mut unknowns: Arc<VariablePointers::VariablePointers>, mut knowns: Arc<VariablePointers::VariablePointers>, mut initials: Arc<VariablePointers::VariablePointers>, mut states: Arc<VariablePointers::VariablePointers>, mut derivatives: Arc<VariablePointers::VariablePointers>, mut algebraics: Arc<VariablePointers::VariablePointers>, mut equations: Arc<EquationPointers::EquationPointers>) -> Result<(Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>)> {
+    let mut variables: Arc<VariablePointers::VariablePointers> = variables;
+    let mut unknowns: Arc<VariablePointers::VariablePointers> = unknowns;
+    let mut knowns: Arc<VariablePointers::VariablePointers> = knowns;
+    let mut initials: Arc<VariablePointers::VariablePointers> = initials;
+    let mut states: Arc<VariablePointers::VariablePointers> = states;
+    let mut derivatives: Arc<VariablePointers::VariablePointers> = derivatives;
+    let mut algebraics: Arc<VariablePointers::VariablePointers> = algebraics;
+    let mut aux_eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+    let mut acc_states: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> = Pointer::create(metamodelica::nil());
+    let mut acc_derivatives: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> = Pointer::create(metamodelica::nil());
+    let mut acc_aux_equations: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>> = Pointer::create(metamodelica::nil());
+    let mut uniqueIndex: Pointer::Pointer<i32> = Pointer::create(0);
+    let mut diffArgs: Arc<Differentiate::DifferentiationArguments::DifferentiationArguments> = Differentiate::DifferentiationArguments::default(Differentiate::DifferentiationType::TIME.clone(), UnorderedMap::new((std::sync::Arc::new(AbsynUtil::pathHash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(AbsynUtil::pathEqual, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<bool> + 'static>), 1));
+    BEquation::EquationPointers::mapExp(equations.clone(), Arc::new({ let __pe_b1 = acc_states.clone(); let __pe_b2 = acc_derivatives.clone(); let __pe_b3 = variables.scalarized.clone(); move |__pe_a0| collectStatesAndDerivatives(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+    BEquation::EquationPointers::mapExp(equations.clone(), Arc::new({ let __pe_b1 = acc_states.clone(); let __pe_b2 = acc_derivatives.clone(); let __pe_b3 = acc_aux_equations.clone(); let __pe_b4 = uniqueIndex.clone(); let __pe_b5 = diffArgs.clone(); move |__pe_a0| resolveGeneralDer(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone()) }), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+    (variables, unknowns, knowns, initials, states, derivatives, algebraics) = updateStatesAndDerivatives(variables.clone(), unknowns.clone(), knowns.clone(), initials.clone(), states.clone(), derivatives.clone(), algebraics.clone(), Pointer::access(acc_states.clone()), Pointer::access(acc_derivatives.clone()))?;
+    aux_eqns = Pointer::access(acc_aux_equations.clone());
+    if Flags::isSet(Flags::DUMP_STATESELECTION_INFO.clone())? && !(aux_eqns.clone().is_empty()) {
+        println!("{}", (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[stateselection] (")); __mm_s.push_str(&*intString((aux_eqns.clone().len() as i32))); __mm_s.push_str(&*literal!(") Created auxiliary equations:")); ArcStr::from(__mm_s) }).clone())).clone());
+        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(aux_eqns.clone(), Arc::new({ let __pe_b1 = (literal!("")).clone(); move |__pe_a0| Equation::pointerToString(__pe_a0, __pe_b1.clone()) }), (literal!("")).clone(), (literal!("\t")).clone(), (literal!("\n\t")).clone(), (literal!("\n")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+    }
+    Ok((variables, unknowns, knowns, initials, states, derivatives, algebraics, aux_eqns))
+}
+
+fn detectDiscreteStatesDefault(mut variables: Arc<VariablePointers::VariablePointers>, mut equations: Arc<EquationPointers::EquationPointers>, mut knowns: Arc<VariablePointers::VariablePointers>, mut initials: Arc<VariablePointers::VariablePointers>, mut discretes: Arc<VariablePointers::VariablePointers>, mut discrete_states: Arc<VariablePointers::VariablePointers>, mut clocked_states: Arc<VariablePointers::VariablePointers>, mut previous: Arc<VariablePointers::VariablePointers>, mut context: ArcStr) -> Result<(Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>, Arc<VariablePointers::VariablePointers>)> {
+    let mut variables: Arc<VariablePointers::VariablePointers> = variables;
+    let mut equations: Arc<EquationPointers::EquationPointers> = equations;
+    let mut knowns: Arc<VariablePointers::VariablePointers> = knowns;
+    let mut initials: Arc<VariablePointers::VariablePointers> = initials;
+    let mut discretes: Arc<VariablePointers::VariablePointers> = discretes;
+    let mut discrete_states: Arc<VariablePointers::VariablePointers> = discrete_states;
+    let mut clocked_states: Arc<VariablePointers::VariablePointers> = clocked_states;
+    let mut previous: Arc<VariablePointers::VariablePointers> = previous;
+    let mut acc_discrete_states: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> = Pointer::create(metamodelica::nil());
+    let mut acc_clocked_states: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> = Pointer::create(metamodelica::nil());
+    let mut acc_previous: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> = Pointer::create(metamodelica::nil());
+    BEquation::EquationPointers::map(equations.clone(), Arc::new({ let __pe_b1 = acc_discrete_states.clone(); let __pe_b2 = acc_previous.clone(); let __pe_b3 = variables.scalarized.clone(); move |__pe_a0| collectDiscreteStatesFromWhen(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }))?;
+    BEquation::EquationPointers::mapExp(equations.clone(), Arc::new({ let __pe_b1 = acc_previous.clone(); let __pe_b2 = acc_clocked_states.clone(); let __pe_b3 = variables.scalarized.clone(); move |__pe_a0| collectPreAndPrevious(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+    (variables, knowns, initials, discretes, discrete_states, clocked_states, previous) = updateDiscreteStatesAndPrevious(variables.clone(), knowns.clone(), initials.clone(), discretes.clone(), discrete_states.clone(), clocked_states.clone(), previous.clone(), Pointer::access(acc_discrete_states.clone()), Pointer::access(acc_clocked_states.clone()), Pointer::access(acc_previous.clone()), (context.clone()).clone())?;
+    Ok((variables, equations, knowns, initials, discretes, discrete_states, clocked_states, previous))
+}
+
 fn collectStatesAndDerivatives(mut exp: Arc<Expression::NFExpression>, mut acc_states: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>, mut acc_derivatives: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>, mut scalarized: bool) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
@@ -381,7 +505,7 @@ fn collectDiscreteStatesFromWhenInIf(mut body: Arc<IfEquationBody::IfEquationBod
         let mut eqn = eqn.clone();
         collectDiscreteStatesFromWhen(Pointer::access(eqn.clone()), acc_discrete_states.clone(), acc_previous.clone(), scalarized.clone())?;
     }
-    if Util::isSome(body.else_if.clone()) {
+    if isSome(body.else_if.clone()) {
         collectDiscreteStatesFromWhenInIf(Util::getOption(body.else_if.clone())?, acc_discrete_states.clone(), acc_previous.clone(), scalarized.clone())?;
     }
     Ok(())
@@ -391,7 +515,7 @@ fn getPreVar(mut var_cref: Arc<ComponentRef::NFComponentRef>, mut var_ptr: Point
     let mut pre_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let (mut pre, _): (Option<Pointer::Pointer<Arc<Variable::NFVariable>>>, ArcStr) = BVariable::getVarPre(var_ptr.clone());
     let mut pre_var: Pointer::Pointer<Arc<Variable::NFVariable>>;
-    if Util::isSome(pre.clone()) {
+    if isSome(pre.clone()) {
         let __pa0 = ::match_deref::match_deref! { match &(pre.clone()) {
             Some(__pa0) => __pa0.clone(),
             _ => bail!("pattern mismatch"),

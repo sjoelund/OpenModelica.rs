@@ -196,12 +196,12 @@ fn pairFuncParamsWithArgs(mut inElements: Arc<metamodelica::List<Arc<DAE::Elemen
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
             metamodelica::nil()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::VAR { direction: DAE::VarDirection::INPUT, .. }, tail: _ }, Deref @ metamodelica::List::Nil) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::VAR { direction: DAE::VarDirection::INPUT { .. }, .. }, tail: _ }, Deref @ metamodelica::List::Nil) => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
             Debug::trace((literal!("- CevalFunction.pairFuncParamsWithArgs failed because of too few input arguments.\n")).clone())?;
             bail!("fail")
         },
-        (Deref @ metamodelica::List::Cons { head: var @ Deref @ DAE::Element::VAR { direction: DAE::VarDirection::INPUT, .. }, tail: rest_vars }, Deref @ metamodelica::List::Cons { head: val, tail: rest_vals }) => {
+        (Deref @ metamodelica::List::Cons { head: var @ Deref @ DAE::Element::VAR { direction: DAE::VarDirection::INPUT { .. }, .. }, tail: rest_vars }, Deref @ metamodelica::List::Cons { head: val, tail: rest_vals }) => {
             let mut params: Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>> = metamodelica::nil();
             params = pairFuncParamsWithArgs(rest_vars.clone(), rest_vals.clone())?;
             cons((var.clone(), Some(val.clone())), params.clone())
@@ -1204,7 +1204,7 @@ fn evaluateStatement(mut inStatement: Arc<DAE::Statement>, mut inCache: FCore::C
             (cache, vals) = cevalExpList(exps.clone(), inCache.clone(), inEnv.clone())?;
             (cache, v) = cevalExp(rhs.clone(), cache.clone(), inEnv.clone())?;
             (cache, env, outLoopControl) = (::match_deref::match_deref! { match &(tailCall.clone()) {
-        DAE::TailCall::NO_TAIL => (cache.clone(), inEnv.clone(), crate::CevalFunction::LoopControl::NEXT),
+        DAE::TailCall::NO_TAIL { .. } => (cache.clone(), inEnv.clone(), crate::CevalFunction::LoopControl::NEXT),
         DAE::TailCall::TAIL { outVars: Deref @ metamodelica::List::Nil, .. } => (cache.clone(), inEnv.clone(), crate::CevalFunction::LoopControl::RETURN),
         DAE::TailCall::TAIL { outVars: Deref @ metamodelica::List::Cons { head: var, tail: Deref @ metamodelica::List::Nil }, .. } => {
             (cache, env) = assignVariable(ComponentReference::makeUntypedCrefIdent((var.clone()).clone()), v.clone(), cache.clone(), inEnv.clone())?;
@@ -1212,6 +1212,7 @@ fn evaluateStatement(mut inStatement: Arc<DAE::Statement>, mut inCache: FCore::C
         },
         DAE::TailCall::TAIL { outVars: vars, .. } => {
             let mut vars = (*vars).clone();
+            env = inEnv.clone();
             let __pa0 = ::match_deref::match_deref! { match &(v.clone()) {
                 Deref @ Values::Value::TUPLE { valueLst: __pa0 } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
@@ -1229,7 +1230,7 @@ fn evaluateStatement(mut inStatement: Arc<DAE::Statement>, mut inCache: FCore::C
             }
             (cache.clone(), env.clone(), crate::CevalFunction::LoopControl::RETURN)
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             (cache.clone(), env.clone(), crate::CevalFunction::LoopControl::NEXT)
         },
@@ -1366,7 +1367,7 @@ fn evaluateIfStatement2(mut inCondition: bool, mut inStatements: Arc<metamodelic
             (cache, env, loop_ctrl) = evaluateIfStatement2(bool_condition.clone(), statements.clone(), else_branch.clone(), cache.clone(), env.clone())?;
             (cache.clone(), env.clone(), loop_ctrl.clone())
         },
-        (false, _, Deref @ DAE::Else::NOELSE, _) => {
+        (false, _, Deref @ DAE::Else::NOELSE { .. }, _) => {
             (inCache.clone(), inEnv.clone(), crate::CevalFunction::LoopControl::NEXT)
         },
         _ => bail!("match: no arm matched"),
@@ -1734,7 +1735,7 @@ fn extendEnvWithRecordVar(mut inVar: Arc<DAE::Var>, mut inOptValue: Option<Arc<V
             outEnv = (cache.clone(), env.clone());
             outEnv.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outEnv)
 }
@@ -1773,7 +1774,7 @@ fn appendDimensions2(mut inType: Arc<DAE::Type>, mut inDims: Arc<metamodelica::L
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (ty, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_UNKNOWN, tail: rest_dims }, Deref @ metamodelica::List::Cons { head: dim_int, tail: bind_dims }) => {
+                (ty, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_UNKNOWN { .. }, tail: rest_dims }, Deref @ metamodelica::List::Cons { head: dim_int, tail: bind_dims }) => {
                     let mut dim: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
                     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
                     let mut ty = (*ty).clone();
@@ -1786,7 +1787,7 @@ fn appendDimensions2(mut inType: Arc<DAE::Type>, mut inDims: Arc<metamodelica::L
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (ty, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_UNKNOWN, tail: rest_dims }, bind_dims) => {
+                (ty, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_UNKNOWN { .. }, tail: rest_dims }, bind_dims) => {
                     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
                     let mut ty = (*ty).clone();
                     (cache, ty) = appendDimensions2(ty.clone(), rest_dims.clone(), bind_dims.clone(), inCache.clone(), inEnv.clone())?;
@@ -1812,7 +1813,7 @@ fn appendDimensions2(mut inType: Arc<DAE::Type>, mut inDims: Arc<metamodelica::L
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (ty, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_BOOLEAN, tail: rest_dims }, bind_dims) => {
+                (ty, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Dimension::DIM_BOOLEAN { .. }, tail: rest_dims }, bind_dims) => {
                     let mut dim: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
                     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
                     let mut ty = (*ty).clone();
@@ -1882,7 +1883,7 @@ fn assignVariable(mut inCref: Arc<DAE::ComponentRef>, mut inNewValue: Arc<Values
         let __mc_input = inCref.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::ComponentRef::WILD => {
+                Deref @ DAE::ComponentRef::WILD { .. } => {
                     Ok((inCache.clone(), inEnv.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2069,7 +2070,7 @@ pub fn assignVector(mut inNewValue: Arc<Values::Value>, mut inOldValue: Arc<Valu
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ Values::Value::ARRAY { valueLst: values, .. }, Deref @ Values::Value::ARRAY { dimLst: dims, valueLst: values2 }, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM, tail: rest_subs }) => {
+                (Deref @ Values::Value::ARRAY { valueLst: values, .. }, Deref @ Values::Value::ARRAY { dimLst: dims, valueLst: values2 }, Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::WHOLEDIM { .. }, tail: rest_subs }) => {
                     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
                     let mut values = (*values).clone();
                     (cache, values) = assignWholeDim(values.clone(), values2.clone(), rest_subs.clone(), inCache.clone(), inEnv.clone())?;
@@ -2462,7 +2463,7 @@ fn getRecordComponentValue(mut inVars: Arc<DAE::Var>, mut inEnv: FCore::Graph) -
             }
             val.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outValues)
 }

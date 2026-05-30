@@ -50,6 +50,7 @@ use crate::NFCeval as Ceval;
 use crate::NFClass as Class;
 use crate::NFComponentRef as ComponentRef;
 use crate::NFConnection as Connection;
+use crate::NFConnections as Connections;
 use crate::NFConnections;
 use crate::NFConnector as Connector;
 use crate::NFDimension as Dimension;
@@ -224,7 +225,7 @@ pub mod CrefSets {
         let mut sets: Sets = sets;
         let mut index: i32 = 0;
         let mut nodes: metamodelica::Array<i32>;
-        let mut elements: IndexTable;
+        let mut elements: IndexTable = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
         let mut node_count: i32 = 0;
         let Sets { nodes: __pa0, elements: __pa1, nodeCount: __pa2 } = (sets.clone()) else { bail!("pattern mismatch") };
         nodes = __pa0.clone();
@@ -242,7 +243,7 @@ pub mod CrefSets {
     pub fn addList(mut entries: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut sets: Sets) -> Result<Sets> {
         let mut sets: Sets = sets;
         let mut nodes: metamodelica::Array<i32>;
-        let mut elements: IndexTable;
+        let mut elements: IndexTable = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
         let mut node_count: i32 = 0;
         let mut sz: i32 = 0;
         let mut index: i32 = 0;
@@ -274,7 +275,7 @@ pub mod CrefSets {
     pub fn emptySets(mut setCount: i32) -> Sets {
         let mut sets: Sets = <Sets as ::std::default::Default>::default();
         let mut nodes: metamodelica::Array<i32>;
-        let mut elements: IndexTable;
+        let mut elements: IndexTable = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
         let mut sz: i32 = 0;
         sz = std::cmp::max(setCount.clone(), 3);
         nodes = arrayCreate(sz.clone(), -1);
@@ -564,7 +565,7 @@ fn addRootsAndBranches(mut equations: Arc<metamodelica::List<Arc<Equation::NFEqu
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    outEquations = outEquations.clone().reverse();
+    outEquations = metamodelica::Dangerous::listReverseInPlace(outEquations.clone());
     Ok((outEquations, graph))
 }
 
@@ -647,7 +648,7 @@ fn handleOverconstrainedConnections_dispatch(mut graph: NFOCConnectionGraph, mut
     let mut connected: FlatEdges = metamodelica::nil();
     let mut broken: FlatEdges = metamodelica::nil();
     let mut roots: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-    let mut rooted: CrefIndexTable;
+    let mut rooted: CrefIndexTable = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
     match '__try0: {
         if unwrap_break_err!(Flags::isSet(Flags::CGRAPH.clone()), '__try0) {
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Summary:\n\t")); __mm_s.push_str(&*literal!("Nr Roots:           ")); __mm_s.push_str(&*intString((getDefiniteRoots(graph.clone())?.len() as i32))); __mm_s.push_str(&*literal!("\n\t")); __mm_s.push_str(&*literal!("Nr Potential Roots: ")); __mm_s.push_str(&*intString((getPotentialRoots(graph.clone())?.len() as i32))); __mm_s.push_str(&*literal!("\n\t")); __mm_s.push_str(&*literal!("Nr Unique Roots:    ")); __mm_s.push_str(&*intString((getUniqueRoots(graph.clone())?.len() as i32))); __mm_s.push_str(&*literal!("\n\t")); __mm_s.push_str(&*literal!("Nr Branches:        ")); __mm_s.push_str(&*intString((getBranches(graph.clone())?.len() as i32))); __mm_s.push_str(&*literal!("\n\t")); __mm_s.push_str(&*literal!("Nr Connections:     ")); __mm_s.push_str(&*intString((getConnections(graph.clone())?.len() as i32))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -819,7 +820,7 @@ fn addRootsToTable(mut table: CrefCrefTable, mut roots: Arc<metamodelica::List<A
 }
 
 fn resultGraphWithRoots(mut roots: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>) -> Result<CrefCrefTable> {
-    let mut outTable: CrefCrefTable;
+    let mut outTable: CrefCrefTable = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
     let mut dummyRoot: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     dummyRoot = NFBuiltin::TIME_CREF().clone();
     outTable = newCrefCrefTable();
@@ -940,7 +941,7 @@ fn findResultGraph(mut inGraph: NFOCConnectionGraph, mut modelNameQualified: Arc
             let mut orderedPotentialRoots: PotentialRoots = metamodelica::nil();
             let mut broken: FlatEdges = metamodelica::nil();
             let mut connected: FlatEdges = metamodelica::nil();
-            let mut table: CrefCrefTable;
+            let mut table: CrefCrefTable = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
             let mut dummyRoot: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
             let mut brokenConnectsViaGraphViz: ArcStr = arcstr::literal!("");
             let mut userBrokenLst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -972,7 +973,7 @@ fn findResultGraph(mut inGraph: NFOCConnectionGraph, mut modelNameQualified: Arc
             }
             (finalRoots.clone(), connected.clone(), broken.clone())
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((outRoots, outConnectedConnections, outBrokenConnections))
 }
@@ -1081,8 +1082,8 @@ fn printPotentialRootTuple(mut potentialRoot: PotentialRoot) -> Result<ArcStr> {
 }
 
 fn buildRootedTable(mut roots: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut graph: NFOCConnectionGraph) -> Result<CrefIndexTable> {
-    let mut rooted: CrefIndexTable;
-    let mut table: CrefRootsTable;
+    let mut rooted: CrefIndexTable = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
+    let mut table: CrefRootsTable = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>> as ::std::default::Default>::default();
     table = UnorderedMap::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
     List::map1_0(getBranches(graph.clone())?, (std::sync::Arc::new(addBranches) as std::sync::Arc<dyn ::std::ops::Fn((Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>), Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>) -> Result<()> + 'static>), table.clone());
     List::map1_0(getConnections(graph.clone())?, (std::sync::Arc::new(addConnectionsRooted) as std::sync::Arc<dyn ::std::ops::Fn(NFConnections::BrokenEdge, Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>) -> Result<()> + 'static>), table.clone());
@@ -1371,7 +1372,6 @@ fn printNFOCConnectionGraph(mut inGraph: NFOCConnectionGraph) -> Result<()> {
             printEdges(branches.clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(())
 }
@@ -1382,7 +1382,6 @@ fn getDefiniteRoots(mut inGraph: NFOCConnectionGraph) -> Result<DefiniteRoots> {
         NFOCConnectionGraph { definiteRoots: ref result, .. } => {
             result.clone()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(outResult)
 }
@@ -1393,7 +1392,6 @@ fn getUniqueRoots(mut inGraph: NFOCConnectionGraph) -> Result<UniqueRoots> {
         NFOCConnectionGraph { uniqueRoots: ref result, .. } => {
             result.clone()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(outResult)
 }
@@ -1404,7 +1402,6 @@ fn getPotentialRoots(mut inGraph: NFOCConnectionGraph) -> Result<PotentialRoots>
         NFOCConnectionGraph { potentialRoots: ref result, .. } => {
             result.clone()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(outResult)
 }
@@ -1415,7 +1412,6 @@ fn getBranches(mut inGraph: NFOCConnectionGraph) -> Result<Edges> {
         NFOCConnectionGraph { branches: ref result, .. } => {
             result.clone()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(outResult)
 }
@@ -1426,7 +1422,6 @@ fn getConnections(mut inGraph: NFOCConnectionGraph) -> Result<FlatEdges> {
         NFOCConnectionGraph { connections: ref result, .. } => {
             result.clone()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(outResult)
 }
@@ -1718,7 +1713,7 @@ fn removeBrokenConnects(mut inEquations: Arc<metamodelica::List<Arc<Equation::NF
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             }
-            eql = eql.clone().reverse();
+            eql = metamodelica::Dangerous::listReverseInPlace(eql.clone());
             if Flags::isSet(Flags::CGRAPH.clone())? {
                 r#str = (literal!("")).clone();
                 for mut b in &*inBroken.clone() {
@@ -1763,7 +1758,7 @@ fn identifyConnectionsOperator(mut functionName: Arc<Absyn::Path>) -> Connection
 }
 
 fn newCrefCrefTable() -> CrefCrefTable {
-    let mut table: CrefCrefTable;
+    let mut table: CrefCrefTable = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
     table = UnorderedMap::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
     table
 }

@@ -54,7 +54,7 @@ pub type UseTable = Arc<UnorderedSet::UnorderedSet<ArcStr>>;
 
 pub fn getTotalModel(mut program: Arc<metamodelica::List<Arc<SCode::Element>>>, mut classPath: Arc<Absyn::Path>) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
     let mut program: Arc<metamodelica::List<Arc<SCode::Element>>> = program;
-    let mut used: UseTable;
+    let mut used: UseTable = <Arc<UnorderedSet::UnorderedSet<ArcStr>> as ::std::default::Default>::default();
     let mut prev_size: i32 = 0;
     used = UnorderedSet::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), 13);
     analysePath(classPath.clone(), used.clone())?;
@@ -247,7 +247,7 @@ pub fn analyseTypeSpec(mut ty: Arc<Absyn::TypeSpec>, mut used: UseTable) -> Resu
             }
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(())
 }
@@ -338,7 +338,7 @@ pub fn analyseEquation(mut eq: Arc<SCode::Equation>, mut used: UseTable) -> Resu
             analyseComment(var_field!((*eq).comment, SCode::Equation::EQ_NORETCALL).clone(), used.clone())?;
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(())
 }
@@ -559,7 +559,7 @@ pub fn saveElements(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>, 
         let mut e = e.clone();
         outElements = saveElement(e.clone(), used.clone(), outElements.clone())?;
     }
-    outElements = outElements.clone().reverse();
+    outElements = metamodelica::Dangerous::listReverseInPlace(outElements.clone());
     Ok(outElements)
 }
 

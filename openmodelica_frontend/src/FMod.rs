@@ -212,7 +212,6 @@ fn printModScope(mut inModScope: ModScope) -> Result<ArcStr> {
         FCore::ModScope::MS_CONSTRAINEDBY { path: mut path } => {
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("constrainedby class ")); __mm_s.push_str(&*AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }
         },
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(outString)
 }

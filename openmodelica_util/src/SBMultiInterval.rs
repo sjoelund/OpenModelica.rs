@@ -153,9 +153,9 @@ pub fn complement(mut mi1: Arc<SBMultiInterval>, mut mi2: Arc<SBMultiInterval>) 
         Ok(res)
     }
 
-    let mut res: Arc<UnorderedSet::UnorderedSet<Arc<SBMultiInterval>>>;
+    let mut res: Arc<UnorderedSet::UnorderedSet<Arc<SBMultiInterval>>> = <Arc<UnorderedSet::UnorderedSet<Arc<SBMultiInterval>>> as ::std::default::Default>::default();
     let mut tmp_mi: Arc<SBMultiInterval> = Arc::new(<SBMultiInterval as ::std::default::Default>::default());
-    let mut dummys: Arc<UnorderedSet::UnorderedSet<Arc<SBInterval::SBInterval>>>;
+    let mut dummys: Arc<UnorderedSet::UnorderedSet<Arc<SBInterval::SBInterval>>> = <Arc<UnorderedSet::UnorderedSet<Arc<SBInterval::SBInterval>>> as ::std::default::Default>::default();
     let mut diffs: metamodelica::Array<Arc<UnorderedSet::UnorderedSet<Arc<SBInterval::SBInterval>>>>;
     let mut count: i32 = 0;
     let mut mi1_size: i32 = 0;
@@ -173,7 +173,7 @@ pub fn complement(mut mi1: Arc<SBMultiInterval>, mut mi2: Arc<SBMultiInterval>) 
         return Ok(res.clone());
     }
     mi1_size = (mi1.intervals.clone().borrow().len() as i32);
-    diffs = metamodelica::arrayCreateDefault(mi1_size.clone());
+    diffs = metamodelica::arrayCreate(mi1_size.clone(), dummys.clone());
     for mut i in 1..=mi1_size.clone() {
         {
             let __cell0 = SBInterval::complement(mi1.intervals.clone().borrow()[(i.clone()-1) as usize].clone(), tmp_mi.intervals.clone().borrow()[(i.clone()-1) as usize].clone())?;

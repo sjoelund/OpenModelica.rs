@@ -403,7 +403,7 @@ pub fn makeTopNode(mut topClasses: Arc<metamodelica::List<Arc<SCode::Element>>>,
     let mut elems: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
     let mut node_ty: Arc<InstNodeType> = Arc::new(InstNodeType::BUILTIN_CLASS);
     let mut ann_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut generated_inners: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<InstNode::InstNode>>>;
+    let mut generated_inners: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<InstNode::InstNode>>> = <Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<InstNode::InstNode>>> as ::std::default::Default>::default();
     top_classes = topClasses.clone();
     if Flags::getConfigBool(Flags::BASE_MODELICA.clone())? {
         top_classes = cons(NFBuiltinFuncs::BASE_MODELICA_POSITIVE_MAX_SIMPLE.clone(), top_classes.clone());
@@ -497,7 +497,7 @@ pub fn instClassPrefixes(mut cls: Arc<SCode::Element>) -> Result<Arc<Class::Pref
     let mut prefixes: Arc<Class::Prefixes::Prefixes> = Arc::new(<Class::Prefixes::Prefixes as ::std::default::Default>::default());
     let mut prefs: Arc<SCode::Prefixes> = Arc::new(<SCode::Prefixes as ::std::default::Default>::default());
     prefixes = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ SCode::Element::CLASS { prefixes: Deref @ SCode::Prefixes { replaceablePrefix: Deref @ SCode::Replaceable::NOT_REPLACEABLE, innerOuter: Absyn::InnerOuter::NOT_INNER_OUTER { .. }, finalPrefix: SCode::Final::NOT_FINAL { .. }, .. }, partialPrefix: SCode::Partial::NOT_PARTIAL { .. }, encapsulatedPrefix: SCode::Encapsulated::NOT_ENCAPSULATED { .. }, .. } => Class::DEFAULT_PREFIXES.clone(),
+        Deref @ SCode::Element::CLASS { prefixes: Deref @ SCode::Prefixes { replaceablePrefix: Deref @ SCode::Replaceable::NOT_REPLACEABLE { .. }, innerOuter: Absyn::InnerOuter::NOT_INNER_OUTER { .. }, finalPrefix: SCode::Final::NOT_FINAL { .. }, .. }, partialPrefix: SCode::Partial::NOT_PARTIAL { .. }, encapsulatedPrefix: SCode::Encapsulated::NOT_ENCAPSULATED { .. }, .. } => Class::DEFAULT_PREFIXES.clone(),
         Deref @ SCode::Element::CLASS { prefixes: prefs, .. } => Arc::new(Class::Prefixes::Prefixes { encapsulatedPrefix: var_field!((*cls).encapsulatedPrefix, SCode::Element::CLASS).clone(), partialPrefix: var_field!((*cls).partialPrefix, SCode::Element::CLASS).clone(), finalPrefix: prefs.finalPrefix.clone(), innerOuter: prefs.innerOuter.clone(), replaceablePrefix: prefs.replaceablePrefix.clone() }),
         _ => bail!("match: no arm matched"),
     } });
@@ -584,7 +584,7 @@ pub fn expandClassParts(mut def: Arc<SCode::Element>, mut node: Arc<InstNode::In
     let mut builtin_ext: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut prefs: Arc<Class::Prefixes::Prefixes> = Arc::new(<Class::Prefixes::Prefixes as ::std::default::Default>::default());
     let mut res: Arc<Restriction::NFRestriction> = Arc::new(Restriction::BLOCK);
-    let mut name_map: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<Absyn::ComponentRef>>>;
+    let mut name_map: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<Absyn::ComponentRef>>> = <Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<Absyn::ComponentRef>>> as ::std::default::Default>::default();
     cls = InstNode::getClass(node.clone())?;
     cls = Class::initExpandedClass(cls.clone())?;
     node = InstNode::updateClass(cls.clone(), node.clone())?;
@@ -1753,8 +1753,8 @@ pub fn instTypeSpec(mut typeSpec: Arc<Absyn::TypeSpec>, mut modifier: Arc<Modifi
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::TypeSpec::TPATH { .. } => {
-                    let mut node: Arc<InstNode::InstNode> = node.clone();
                     let mut outAttributes: Arc<Attributes::NFAttributes> = outAttributes.clone();
+                    let mut node: Arc<InstNode::InstNode> = node.clone();
                     node = Lookup::lookupClassName(var_field!((*typeSpec).path, Absyn::TypeSpec::TPATH).clone(), scope.clone(), context.clone(), info.clone(), true)?;
                     if instLevel.clone() >= 100 {
                         checkRecursiveDefinition(node.clone(), parent.clone(), true)?;
@@ -1847,7 +1847,7 @@ pub fn instDimension(mut dimension: Arc<Dimension::NFDimension>, mut context: i3
         let __mc_input = dim.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
-                Deref @ Absyn::Subscript::NOSUB => {
+                Deref @ Absyn::Subscript::NOSUB { .. } => {
                     Ok(Arc::new(crate::NFDimension::UNKNOWN))
                 }
                 _ => bail!("nomatch"),
@@ -2469,7 +2469,7 @@ pub fn instSubscript(mut subscript: Arc<Subscript::NFSubscript>, mut scope: Arc<
             exp = instExp(var_field!((*absynSub).subscript, Absyn::Subscript::SUBSCRIPT).clone(), scope.clone(), context.clone(), info.clone())?;
             Subscript::fromExp(exp.clone())
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outSubscript)
 }
@@ -2585,7 +2585,7 @@ pub fn instExternalDecl(mut extDecl: Arc<SCode::ExternalDecl>, mut scope: Arc<In
             }
             Arc::new(Sections::NFSections::EXTERNAL { name: (name.clone()).clone(), args: args.clone(), outputRef: ret_cref.clone(), language: (lang.clone()).clone(), ann: extDecl.annotation_.clone(), explicit: isSome(extDecl.funcName.clone()), info: info.clone() })
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(sections)
 }
@@ -2622,7 +2622,7 @@ pub fn instEquations(mut scodeEql: Arc<metamodelica::List<Arc<SCode::Equation>>>
             instEql = instEquation(eq.clone(), scope.clone(), connectBreaks.clone(), context.clone(), instEql.clone())?;
         }
     }
-    instEql = instEql.clone().reverse();
+    instEql = metamodelica::Dangerous::listReverseInPlace(instEql.clone());
     Ok(instEql)
 }
 
@@ -2656,7 +2656,7 @@ pub fn filterInstanceAPIEquations(mut eql: Arc<metamodelica::List<Arc<SCode::Equ
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    outEql = outEql.clone().reverse();
+    outEql = metamodelica::Dangerous::listReverseInPlace(outEql.clone());
     outEql
 }
 
@@ -3077,7 +3077,7 @@ pub fn checkIteratorShadowing(mut name: ArcStr, mut scope: Arc<InstNode::InstNod
 }
 
 pub fn insertGeneratedInners(mut node: Arc<InstNode::InstNode>, mut topScope: Arc<InstNode::InstNode>, mut context: i32) -> Result<()> {
-    let mut generated_inners: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<InstNode::InstNode>>>;
+    let mut generated_inners: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<InstNode::InstNode>>> = <Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<InstNode::InstNode>>> as ::std::default::Default>::default();
     let mut inner_comps: Arc<metamodelica::List<Mutable::Mutable<Arc<InstNode::InstNode>>>> = metamodelica::nil();
     let mut n: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut name: ArcStr = arcstr::literal!("");

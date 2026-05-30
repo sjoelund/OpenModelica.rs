@@ -535,7 +535,7 @@ pub fn dumpNodeLabel(mut in_txt: Tpl::Text, mut in_a_nodeLabel: GraphML::NodeLab
 fn fun_22(mut in_txt: Tpl::Text, mut in_mArg: GraphML::Attribute, mut in_a_val: ArcStr, mut in_a_idx: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_val.clone(), in_a_idx.clone()) {
-        (mut txt, GraphML::Attribute { attType: GraphML::AttributeType::TYPE_STRING, .. }, mut a_val, mut a_idx) => {
+        (mut txt, GraphML::Attribute { attType: GraphML::AttributeType::TYPE_STRING { .. }, .. }, mut a_val, mut a_idx) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<data key=\"cust")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(a_idx.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"><![CDATA[")).clone() }))?;
@@ -599,19 +599,19 @@ pub fn dumpAttDef(mut in_txt: Tpl::Text, mut in_a_attribute: GraphML::Attribute)
 pub fn dumpAttType(mut in_txt: Tpl::Text, mut in_a_type: GraphML::AttributeType) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_type.clone()) {
-        (mut txt, GraphML::AttributeType::TYPE_STRING) => {
+        (mut txt, GraphML::AttributeType::TYPE_STRING { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("string")).clone() }))?;
             txt.clone()
         },
-        (mut txt, GraphML::AttributeType::TYPE_BOOLEAN) => {
+        (mut txt, GraphML::AttributeType::TYPE_BOOLEAN { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("boolean")).clone() }))?;
             txt.clone()
         },
-        (mut txt, GraphML::AttributeType::TYPE_INTEGER) => {
+        (mut txt, GraphML::AttributeType::TYPE_INTEGER { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("int")).clone() }))?;
             txt.clone()
         },
-        (mut txt, GraphML::AttributeType::TYPE_DOUBLE) => {
+        (mut txt, GraphML::AttributeType::TYPE_DOUBLE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("double")).clone() }))?;
             txt.clone()
         },
@@ -625,15 +625,15 @@ pub fn dumpAttType(mut in_txt: Tpl::Text, mut in_a_type: GraphML::AttributeType)
 pub fn dumpAttTarget(mut in_txt: Tpl::Text, mut in_a_target: GraphML::AttributeTarget) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_target.clone()) {
-        (mut txt, GraphML::AttributeTarget::TARGET_NODE) => {
+        (mut txt, GraphML::AttributeTarget::TARGET_NODE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("node")).clone() }))?;
             txt.clone()
         },
-        (mut txt, GraphML::AttributeTarget::TARGET_EDGE) => {
+        (mut txt, GraphML::AttributeTarget::TARGET_EDGE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("edge")).clone() }))?;
             txt.clone()
         },
-        (mut txt, GraphML::AttributeTarget::TARGET_GRAPH) => {
+        (mut txt, GraphML::AttributeTarget::TARGET_GRAPH { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("graph")).clone() }))?;
             txt.clone()
         },
@@ -681,19 +681,19 @@ pub fn dumpColorOpt(mut in_txt: Tpl::Text, mut in_a_colorOpt: Option<ArcStr>) ->
 pub fn dumpFontStyle(mut in_txt: Tpl::Text, mut in_a_fontStyle: GraphML::FontStyle) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_fontStyle.clone()) {
-        (mut txt, GraphML::FontStyle::FONTPLAIN) => {
+        (mut txt, GraphML::FontStyle::FONTPLAIN { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("plain")).clone() }))?;
             txt.clone()
         },
-        (mut txt, GraphML::FontStyle::FONTBOLD) => {
+        (mut txt, GraphML::FontStyle::FONTBOLD { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("bold")).clone() }))?;
             txt.clone()
         },
-        (mut txt, GraphML::FontStyle::FONTITALIC) => {
+        (mut txt, GraphML::FontStyle::FONTITALIC { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("italic")).clone() }))?;
             txt.clone()
         },
-        (mut txt, GraphML::FontStyle::FONTBOLDITALIC) => {
+        (mut txt, GraphML::FontStyle::FONTBOLDITALIC { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("bolditalic")).clone() }))?;
             txt.clone()
         },
@@ -707,15 +707,15 @@ pub fn dumpFontStyle(mut in_txt: Tpl::Text, mut in_a_fontStyle: GraphML::FontSty
 pub fn dumpLineType(mut in_txt: Tpl::Text, mut in_a_lineType: GraphML::LineType) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_lineType.clone()) {
-        (mut txt, GraphML::LineType::LINE) => {
+        (mut txt, GraphML::LineType::LINE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("line")).clone() }))?;
             txt.clone()
         },
-        (mut txt, GraphML::LineType::DASHED) => {
+        (mut txt, GraphML::LineType::DASHED { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("dashed")).clone() }))?;
             txt.clone()
         },
-        (mut txt, GraphML::LineType::DASHEDDOTTED) => {
+        (mut txt, GraphML::LineType::DASHEDDOTTED { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("dasheddotted")).clone() }))?;
             txt.clone()
         },
@@ -729,15 +729,15 @@ pub fn dumpLineType(mut in_txt: Tpl::Text, mut in_a_lineType: GraphML::LineType)
 pub fn dumpArrowType(mut in_txt: Tpl::Text, mut in_a_arrowType: GraphML::ArrowType) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_arrowType.clone()) {
-        (mut txt, GraphML::ArrowType::ARROWSTANDART) => {
+        (mut txt, GraphML::ArrowType::ARROWSTANDART { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("standard")).clone() }))?;
             txt.clone()
         },
-        (mut txt, GraphML::ArrowType::ARROWNONE) => {
+        (mut txt, GraphML::ArrowType::ARROWNONE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("none")).clone() }))?;
             txt.clone()
         },
-        (mut txt, GraphML::ArrowType::ARROWCONCAVE) => {
+        (mut txt, GraphML::ArrowType::ARROWCONCAVE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("concave")).clone() }))?;
             txt.clone()
         },
@@ -751,43 +751,43 @@ pub fn dumpArrowType(mut in_txt: Tpl::Text, mut in_a_arrowType: GraphML::ArrowTy
 pub fn dumpShapeType(mut in_txt: Tpl::Text, mut in_a_shape: GraphML::ShapeType) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_shape.clone()) {
-        (mut txt, GraphML::ShapeType::RECTANGLE) => {
+        (mut txt, GraphML::ShapeType::RECTANGLE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("rectangle")).clone() }))?;
             txt.clone()
         },
-        (mut txt, GraphML::ShapeType::ROUNDRECTANGLE) => {
+        (mut txt, GraphML::ShapeType::ROUNDRECTANGLE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("roundrectangle")).clone() }))?;
             txt.clone()
         },
-        (mut txt, GraphML::ShapeType::ELLIPSE) => {
+        (mut txt, GraphML::ShapeType::ELLIPSE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("ellipse")).clone() }))?;
             txt.clone()
         },
-        (mut txt, GraphML::ShapeType::PARALLELOGRAM) => {
+        (mut txt, GraphML::ShapeType::PARALLELOGRAM { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("parallelogram")).clone() }))?;
             txt.clone()
         },
-        (mut txt, GraphML::ShapeType::HEXAGON) => {
+        (mut txt, GraphML::ShapeType::HEXAGON { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("hexagon")).clone() }))?;
             txt.clone()
         },
-        (mut txt, GraphML::ShapeType::TRIANGLE) => {
+        (mut txt, GraphML::ShapeType::TRIANGLE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("triangle")).clone() }))?;
             txt.clone()
         },
-        (mut txt, GraphML::ShapeType::OCTAGON) => {
+        (mut txt, GraphML::ShapeType::OCTAGON { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("octagon")).clone() }))?;
             txt.clone()
         },
-        (mut txt, GraphML::ShapeType::DIAMOND) => {
+        (mut txt, GraphML::ShapeType::DIAMOND { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("diamond")).clone() }))?;
             txt.clone()
         },
-        (mut txt, GraphML::ShapeType::TRAPEZOID) => {
+        (mut txt, GraphML::ShapeType::TRAPEZOID { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("trapezoid")).clone() }))?;
             txt.clone()
         },
-        (mut txt, GraphML::ShapeType::TRAPEZOID2) => {
+        (mut txt, GraphML::ShapeType::TRAPEZOID2 { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("trapezoid2")).clone() }))?;
             txt.clone()
         },

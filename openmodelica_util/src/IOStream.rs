@@ -125,7 +125,6 @@ pub fn create(mut streamName: ArcStr, mut streamType: IOStreamType) -> Result<IO
             bufferID = IOStreamExt::createBuffer()?;
             IOStream { name: (streamName.clone()).clone(), ty: streamType.clone(), data: IOStreamData::BUFFER_DATA { data: bufferID.clone() } }
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(outStream)
 }
@@ -181,7 +180,6 @@ pub fn appendListReverse(mut s: IOStream, mut data: Arc<metamodelica::List<ArcSt
             }
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(s)
 }

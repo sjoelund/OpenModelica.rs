@@ -7687,7 +7687,7 @@ fn fun_314(mut in_txt: Tpl::Text, mut in_a_kind: DAE::VarKind, mut in_a_extraFun
     let mut out_a_extraFuncsDecl: Tpl::Text;
     let mut out_a_extraFuncs: Tpl::Text;
     (out_txt, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_kind.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_var.clone())) {
-        (txt, DAE::VarKind::PARAM, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_var) => {
+        (txt, DAE::VarKind::PARAM { .. }, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_var) => {
             let mut txt = (*txt).clone();
             let mut a_extraFuncsNamespace = (*a_extraFuncsNamespace).clone();
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
@@ -7859,7 +7859,7 @@ fn fun_321(mut in_txt: Tpl::Text, mut in_a_kind: DAE::VarKind, mut in_a_stateDer
     let mut out_a_varInits: Tpl::Text;
     let mut out_a_varDecls: Tpl::Text;
     (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varInits, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_kind.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varInits.clone(), in_a_varDecls.clone(), in_a_i.clone(), in_a_var.clone())) {
-        (txt, DAE::VarKind::PARAM, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varInits, a_varDecls, a_i, a_var) => {
+        (txt, DAE::VarKind::PARAM { .. }, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varInits, a_varDecls, a_i, a_var) => {
             let mut txt = (*txt).clone();
             let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
             let mut a_extraFuncsNamespace = (*a_extraFuncsNamespace).clone();
@@ -12923,7 +12923,7 @@ pub fn extReturnType(mut in_txt: Tpl::Text, mut in_a_extArg: Arc<SimCodeFunction
             txt = extType2(txt.clone(), i_type__.clone(), true, false)?;
             txt.clone()
         },
-        (txt, Deref @ SimCodeFunction::SimExtArg::SIMNOEXTARG) => {
+        (txt, Deref @ SimCodeFunction::SimExtArg::SIMNOEXTARG { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("void")).clone() }))?;
             txt.clone()
@@ -21496,7 +21496,7 @@ fn fun_772(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar, mut in_a_use
             txt = Tpl::writeText(txt.clone(), l_expPart.clone())?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
         },
-        (txt, SimCodeVar::SimVar { name: Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: i_stateCref, .. }, varKind: BackendDAE::VarKind::STATE_DER, .. }, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_preExp, a_context) => {
+        (txt, SimCodeVar::SimVar { name: Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: i_stateCref, .. }, varKind: BackendDAE::VarKind::STATE_DER { .. }, .. }, a_useFlatArrayNotation, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_preExp, a_context) => {
             let mut ret_1: SimCodeVar::SimVar = <SimCodeVar::SimVar as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
@@ -21528,7 +21528,7 @@ fn fun_773(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar, mut in_a_use
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_var.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_context.clone())) {
-        (txt, SimCodeVar::SimVar { varKind: BackendDAE::VarKind::STATE_DER, .. }, _, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, a_preExp, _) => {
+        (txt, SimCodeVar::SimVar { varKind: BackendDAE::VarKind::STATE_DER { .. }, .. }, _, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, a_preExp, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("-HUGE_VAL")).clone() }))?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
@@ -21565,7 +21565,7 @@ fn fun_774(mut in_txt: Tpl::Text, mut in_a_var: SimCodeVar::SimVar, mut in_a_use
     let mut out_a_varDecls: Tpl::Text;
     let mut out_a_preExp: Tpl::Text;
     (out_txt, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls, out_a_preExp) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_var.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_preExp.clone(), in_a_context.clone())) {
-        (txt, SimCodeVar::SimVar { varKind: BackendDAE::VarKind::STATE_DER, .. }, _, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, a_preExp, _) => {
+        (txt, SimCodeVar::SimVar { varKind: BackendDAE::VarKind::STATE_DER { .. }, .. }, _, a_stateDerVectorName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, a_preExp, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("HUGE_VAL")).clone() }))?;
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone(), a_preExp.clone())
@@ -31191,7 +31191,7 @@ pub fn outputIndices(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelIn
 fn fun_1139(mut in_txt: Tpl::Text, mut in_a_c: SimCodeVar::Causality) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_c.clone()) {
-        (mut txt, SimCodeVar::Causality::OUTPUT) => {
+        (mut txt, SimCodeVar::Causality::OUTPUT { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("output")).clone() }))?;
             txt.clone()
         },
@@ -36288,17 +36288,17 @@ pub fn equationArrayCallAssign(mut txt: Tpl::Text, mut a_eq: Arc<SimCode::SimEqS
 fn fun_1331(mut in_txt: Tpl::Text, mut in_a_varKind: BackendDAE::VarKind, mut in_a_ty: Arc<DAE::Type>, mut in_a_arr: ArcStr, mut in_a_lhsStr: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_varKind.clone(), in_a_ty.clone(), in_a_arr.clone(), in_a_lhsStr.clone())) {
-        (txt, BackendDAE::VarKind::JAC_VAR, a_ty, a_arr, a_lhsStr) => {
+        (txt, BackendDAE::VarKind::JAC_VAR { .. }, a_ty, a_arr, a_lhsStr) => {
             let mut txt = (*txt).clone();
             txt = CodegenCppCommon::assignJacArray(txt.clone(), (Tpl::textString(a_lhsStr.clone())?).clone(), (a_arr.clone()).clone(), a_ty.clone())?;
             txt.clone()
         },
-        (txt, BackendDAE::VarKind::JAC_TMP_VAR, a_ty, a_arr, a_lhsStr) => {
+        (txt, BackendDAE::VarKind::JAC_TMP_VAR { .. }, a_ty, a_arr, a_lhsStr) => {
             let mut txt = (*txt).clone();
             txt = CodegenCppCommon::assignJacArray(txt.clone(), (Tpl::textString(a_lhsStr.clone())?).clone(), (a_arr.clone()).clone(), a_ty.clone())?;
             txt.clone()
         },
-        (txt, BackendDAE::VarKind::SEED_VAR, a_ty, a_arr, a_lhsStr) => {
+        (txt, BackendDAE::VarKind::SEED_VAR { .. }, a_ty, a_arr, a_lhsStr) => {
             let mut txt = (*txt).clone();
             txt = CodegenCppCommon::assignJacArray(txt.clone(), (Tpl::textString(a_lhsStr.clone())?).clone(), (a_arr.clone()).clone(), a_ty.clone())?;
             txt.clone()
@@ -43338,19 +43338,19 @@ pub fn variableDefinitionsJacobians2(mut txt: Tpl::Text, mut a_indexJacobian: i3
 fn fun_1597(mut in_txt: Tpl::Text, mut in_a_varKind: BackendDAE::VarKind, mut in_a_index0: i32, mut in_a_index: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_varKind.clone(), in_a_index0.clone(), in_a_index.clone()) {
-        (mut txt, BackendDAE::VarKind::JAC_VAR, _, mut a_index) => {
+        (mut txt, BackendDAE::VarKind::JAC_VAR { .. }, _, mut a_index) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("jac_y(")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(a_index.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
             txt.clone()
         },
-        (mut txt, BackendDAE::VarKind::JAC_TMP_VAR, _, mut a_index) => {
+        (mut txt, BackendDAE::VarKind::JAC_TMP_VAR { .. }, _, mut a_index) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("jac_tmp(")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(a_index.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
             txt.clone()
         },
-        (mut txt, BackendDAE::VarKind::SEED_VAR, mut a_index0, _) => {
+        (mut txt, BackendDAE::VarKind::SEED_VAR { .. }, mut a_index0, _) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("jac_x(")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (intString(a_index0.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
@@ -43437,7 +43437,7 @@ fn fun_1602(mut in_txt: Tpl::Text, mut in_a_simVar: SimCodeVar::SimVar, mut in_a
     let mut out_txt: Tpl::Text;
     let mut out_a_jacobianVarsInit: Tpl::Text;
     (out_txt, out_a_jacobianVarsInit) = (match (in_txt.clone(), in_a_simVar.clone(), in_a_index0.clone(), in_a_jacobianVarsInit.clone(), in_a_createDebugCode.clone()) {
-        (mut txt, SimCodeVar::SimVar { matrixName: mut i_matrixName, varKind: mut i_varKind, index: mut i_index, name: ref i_name, aliasvar: SimCodeVar::AliasVariable::NOALIAS, .. }, mut a_index0, mut a_jacobianVarsInit, mut a_createDebugCode) => {
+        (mut txt, SimCodeVar::SimVar { matrixName: mut i_matrixName, varKind: mut i_varKind, index: mut i_index, name: ref i_name, aliasvar: SimCodeVar::AliasVariable::NOALIAS { .. }, .. }, mut a_index0, mut a_jacobianVarsInit, mut a_createDebugCode) => {
             let mut l_typeName: Tpl::Text;
             let mut l_jacobianVar: Tpl::Text;
             l_jacobianVar = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
@@ -44120,7 +44120,7 @@ pub fn algStmtAssign(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, 
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
     (out_txt, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_stmt.clone(), in_a_context.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
-        (txt, Deref @ DAE::Statement::STMT_ASSIGN { exp: i_e, exp1: Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD, .. }, .. }, a_context, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
+        (txt, Deref @ DAE::Statement::STMT_ASSIGN { exp: i_e, exp1: Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD { .. }, .. }, .. }, a_context, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
             let mut l_expPart: Tpl::Text;
             let mut l_preExp: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -44736,7 +44736,7 @@ fn fun_1637(mut in_txt: Tpl::Text, mut in_a_it: Arc<DAE::Else>, mut in_a_context
     let mut out_a_extraFuncsNamespace: Tpl::Text;
     let mut out_a_stateDerVectorName: Tpl::Text;
     (out_txt, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_it.clone(), in_a_context.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_stateDerVectorName.clone(), in_a_useFlatArrayNotation.clone())) {
-        (txt, Deref @ DAE::Else::NOELSE, _, a_varDecls, _, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, _) => {
+        (txt, Deref @ DAE::Else::NOELSE { .. }, _, a_varDecls, _, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, _) => {
             (txt.clone(), a_varDecls.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone())
         },
         (txt, Deref @ DAE::Else::ELSEIF { else_: i_else__, statementLst: i_statementLst, exp: i_exp }, a_context, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName, a_useFlatArrayNotation) => {
@@ -46824,7 +46824,7 @@ pub fn equationResidualFunctions(mut txt: Tpl::Text, mut a_daeEquations: Arc<met
 pub fn defineSimVarArray(mut in_txt: Tpl::Text, mut in_a_simVar: SimCodeVar::SimVar) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_simVar.clone())) {
-        (txt, SimCodeVar::SimVar { name: i_name, index: i_index, aliasvar: SimCodeVar::AliasVariable::NOALIAS, arrayCref: Some(i_c), .. }) => {
+        (txt, SimCodeVar::SimVar { name: i_name, index: i_index, aliasvar: SimCodeVar::AliasVariable::NOALIAS { .. }, arrayCref: Some(i_c), .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/* ")).clone() }))?;
             txt = CodegenUtil::crefStrNoUnderscore(txt.clone(), i_c.clone())?;
@@ -46841,7 +46841,7 @@ pub fn defineSimVarArray(mut in_txt: Tpl::Text, mut in_a_simVar: SimCodeVar::Sim
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("]\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
             txt.clone()
         },
-        (txt, SimCodeVar::SimVar { index: i_index, name: i_name, aliasvar: SimCodeVar::AliasVariable::NOALIAS, .. }) => {
+        (txt, SimCodeVar::SimVar { index: i_index, name: i_name, aliasvar: SimCodeVar::AliasVariable::NOALIAS { .. }, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/* ")).clone() }))?;
             txt = CodegenUtil::crefStrNoUnderscore(txt.clone(), i_name.clone())?;

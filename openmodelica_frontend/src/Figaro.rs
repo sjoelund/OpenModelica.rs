@@ -339,7 +339,7 @@ fn fcMod1(mut inMod: Arc<SCode::Mod>) -> Result<ArcStr> {
         Deref @ SCode::Mod::MOD { subModLst: sml, .. } => {
             fcSubModList(sml.clone())?
         },
-        Deref @ SCode::Mod::NOMOD => {
+        Deref @ SCode::Mod::NOMOD { .. } => {
             literal!("")
         },
         _ => bail!("match: no arm matched"),
@@ -389,7 +389,7 @@ fn fcSubMod(mut inSubMod: Arc<SCode::SubMod>) -> Result<ArcStr> {
             let true = (n.clone() == literal!("fullClassName")) else { bail!("pattern mismatch") };
             fcMod2(m.clone())?
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(outTypeName)
 }
@@ -541,7 +541,7 @@ fn getFigaroTypeName(mut inClassPath: Path, mut inFigaroClass: FigaroClass) -> R
             let true = (getLastIdent(p.clone())? == cn.clone()) else { bail!("pattern mismatch") };
             tn.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(outTypeName)
 }
@@ -552,7 +552,7 @@ fn foMod1(mut inMod: Arc<SCode::Mod>, mut name: ArcStr) -> Result<ArcStr> {
         Deref @ SCode::Mod::MOD { subModLst: sml, .. } => {
             foSubModList(sml.clone(), (name.clone()).clone())?
         },
-        Deref @ SCode::Mod::NOMOD => {
+        Deref @ SCode::Mod::NOMOD { .. } => {
             literal!("")
         },
         _ => bail!("match: no arm matched"),
@@ -602,7 +602,7 @@ fn foSubMod(mut inSubMod: Arc<SCode::SubMod>, mut name: ArcStr) -> Result<ArcStr
             let true = (n.clone() == name.clone()) else { bail!("pattern mismatch") };
             foMod2(m.clone())?
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(outCode)
 }
@@ -646,7 +646,7 @@ fn getLastIdent(mut inPath: Path) -> Result<Ident> {
         Deref @ Absyn::Path::FULLYQUALIFIED { path: p } => {
             getLastIdent(p.clone())?
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(outIdent)
 }
@@ -677,7 +677,6 @@ fn figaroObjectToString(mut inFigaroObject: FigaroObject) -> Result<ArcStr> {
             middle = (if (fc.clone() == literal!("")) {literal!("")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*fc.clone()); ArcStr::from(__mm_s) }}).clone();
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("OBJECT ")); __mm_s.push_str(&*on.clone()); __mm_s.push_str(&*literal!(" IS_A ")); __mm_s.push_str(&*tn.clone()); __mm_s.push_str(&*literal!(";")); __mm_s.push_str(&*middle.clone()); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }
         },
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(outString)
 }
@@ -1303,7 +1302,6 @@ fn printFigaroClass(mut inFigaroClass: FigaroClass) -> Result<()> {
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*cn.clone()); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*tn.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(())
 }
@@ -1393,7 +1391,6 @@ fn printToken(mut inToken: Token) -> Result<()> {
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\"")); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*literal!("\"")); ArcStr::from(__mm_s) }).clone());
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(())
 }

@@ -210,7 +210,7 @@ fn traverseExpBidirSubExps<Arg: Clone + 'static>(mut exp: Arc<Absyn::Exp>, mut e
             (e2m, arg) = traverseExpBidir(e2.clone(), enterFunc.clone(), exitFunc.clone(), arg.clone())?;
             (if (referenceEq(&e1.clone(),&e1m.clone()) && referenceEq(&e2.clone(),&e2m.clone()) && referenceEq(&oe1.clone(),&oe1m.clone())) {exp.clone()} else {Arc::new(Absyn::Exp::RANGE { start: e1m.clone(), step: oe1m.clone(), stop: e2m.clone() })}, arg.clone())
         },
-        Deref @ Absyn::Exp::END => {
+        Deref @ Absyn::Exp::END { .. } => {
             (exp.clone(), arg.clone())
         },
         Deref @ Absyn::Exp::TUPLE { expressions: expl1 } => {
@@ -264,7 +264,7 @@ fn traverseExpBidirSubExps<Arg: Clone + 'static>(mut exp: Arc<Absyn::Exp>, mut e
             (subs, arg) = traverseExpBidirSubs(var_field!((*exp).subscripts, Absyn::Exp::SUBSCRIPTED_EXP).clone(), enterFunc.clone(), exitFunc.clone(), arg.clone());
             (if (referenceEq(&var_field!((*exp).exp, Absyn::Exp::SUBSCRIPTED_EXP).clone(),&e1.clone()) && referenceEq(&var_field!((*exp).subscripts, Absyn::Exp::SUBSCRIPTED_EXP).clone(),&subs.clone())) {exp.clone()} else {Arc::new(Absyn::Exp::SUBSCRIPTED_EXP { exp: e1.clone(), subscripts: subs.clone() })}, arg.clone())
         },
-        Deref @ Absyn::Exp::BREAK => {
+        Deref @ Absyn::Exp::BREAK { .. } => {
             (exp.clone(), arg.clone())
         },
         _ => {
@@ -306,13 +306,13 @@ pub fn traverseExpBidirCref<Arg: Clone + 'static>(mut cref: Arc<Absyn::Component
             (subs2, arg) = traverseExpBidirSubs(subs1.clone(), enterFunc.clone(), exitFunc.clone(), arg.clone());
             (if (referenceEq(&subs1.clone(),&subs2.clone())) {cref.clone()} else {Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (name.clone()).clone(), subscripts: subs2.clone() })}, arg.clone())
         },
-        Deref @ Absyn::ComponentRef::ALLWILD => {
+        Deref @ Absyn::ComponentRef::ALLWILD { .. } => {
             (cref.clone(), arg.clone())
         },
-        Deref @ Absyn::ComponentRef::WILD => {
+        Deref @ Absyn::ComponentRef::WILD { .. } => {
             (cref.clone(), arg.clone())
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((cref, arg))
 }
@@ -337,10 +337,10 @@ pub fn traverseExpBidirSub<Arg: Clone + 'static>(mut subscript: Arc<Absyn::Subsc
             (e2, arg) = traverseExpBidir(e1.clone(), enterFunc.clone(), exitFunc.clone(), arg.clone())?;
             (if (referenceEq(&e1.clone(),&e2.clone())) {subscript.clone()} else {Arc::new(Absyn::Subscript::SUBSCRIPT { subscript: e2.clone() })}, arg.clone())
         },
-        Deref @ Absyn::Subscript::NOSUB => {
+        Deref @ Absyn::Subscript::NOSUB { .. } => {
             (subscript.clone(), arg.clone())
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((subscript, arg))
 }
@@ -379,7 +379,7 @@ pub fn traverseExpBidirFunctionArgs<Arg: Clone + 'static>(mut args: Arc<Absyn::F
             (iters2, arg) = List::map2FoldCheckReferenceEq(iters1.clone(), (std::sync::Arc::new(traverseExpBidirIterator) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ForIterator>, _, _, _) -> Result<_> + 'static>), enterFunc.clone(), exitFunc.clone(), arg.clone());
             (if (referenceEq(&e1.clone(),&e2.clone()) && referenceEq(&iters1.clone(),&iters2.clone())) {args.clone()} else {Arc::new(Absyn::FunctionArgs::FOR_ITER_FARG { exp: e2.clone(), iterType: iterType.clone(), iterators: iters2.clone() })}, arg.clone())
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((args, arg))
 }
@@ -450,7 +450,7 @@ pub fn traverseMatchCase<Arg: Clone + 'static>(mut matchCase: Arc<Absyn::Case>, 
             (result, arg) = traverseExpBidir(result.clone(), enterFunc.clone(), exitFunc.clone(), arg.clone())?;
             (Arc::new(Absyn::Case::ELSE { localDecls: ldecls.clone(), classPart: cp.clone(), result: result.clone(), resultInfo: resultInfo.clone(), comment: cmt.clone(), info: info.clone() }), arg.clone())
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((matchCase, arg))
 }
@@ -509,7 +509,7 @@ fn traverseAlgorithmItemBidir<Arg: Clone + 'static>(mut algorithmItem: Arc<Absyn
         Deref @ Absyn::AlgorithmItem::ALGORITHMITEMCOMMENT { .. } => {
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((algorithmItem, arg))
 }
@@ -529,7 +529,7 @@ fn traverseEquationItemBidir<Arg: Clone + 'static>(mut equationItem: Arc<Absyn::
         Deref @ Absyn::EquationItem::EQUATIONITEMCOMMENT { .. } => {
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((equationItem, arg))
 }
@@ -602,7 +602,7 @@ pub fn traverseEquationBidir<Arg: Clone + 'static>(mut eq: Arc<Absyn::Equation>,
             (eq1, arg) = traverseEquationItemBidir(eq1.clone(), enterFunc.clone(), exitFunc.clone(), arg.clone())?;
             Arc::new(Absyn::Equation::EQ_FAILURE { equ: eq1.clone() })
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((eq, arg))
 }
@@ -696,13 +696,13 @@ fn traverseAlgorithmBidir<Arg: Clone + 'static>(mut alg: Arc<Absyn::Algorithm>, 
             (func_args, arg) = traverseExpBidirFunctionArgs(func_args.clone(), enterFunc.clone(), exitFunc.clone(), arg.clone())?;
             Arc::new(Absyn::Algorithm::ALG_NORETCALL { functionCall: cref1.clone(), functionArgs: func_args.clone() })
         },
-        Deref @ Absyn::Algorithm::ALG_RETURN => {
+        Deref @ Absyn::Algorithm::ALG_RETURN { .. } => {
             alg.clone()
         },
-        Deref @ Absyn::Algorithm::ALG_BREAK => {
+        Deref @ Absyn::Algorithm::ALG_BREAK { .. } => {
             alg.clone()
         },
-        Deref @ Absyn::Algorithm::ALG_CONTINUE => {
+        Deref @ Absyn::Algorithm::ALG_CONTINUE { .. } => {
             alg.clone()
         },
         Deref @ Absyn::Algorithm::ALG_FAILURE { equ: algs1 } => {
@@ -717,7 +717,7 @@ fn traverseAlgorithmBidir<Arg: Clone + 'static>(mut alg: Arc<Absyn::Algorithm>, 
             (algs2, arg) = traverseAlgorithmItemListBidir(algs2.clone(), enterFunc.clone(), exitFunc.clone(), arg.clone());
             Arc::new(Absyn::Algorithm::ALG_TRY { body: algs1.clone(), elseBody: algs2.clone() })
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((alg, arg))
 }
@@ -931,7 +931,7 @@ pub fn typeSpecPath(mut tp: Arc<Absyn::TypeSpec>) -> Result<Arc<Absyn::Path>> {
     op = (::match_deref::match_deref! { match &(tp.clone()) {
         Deref @ Absyn::TypeSpec::TCOMPLEX { .. } => var_field!((*tp).path, Absyn::TypeSpec::TCOMPLEX).clone(),
         Deref @ Absyn::TypeSpec::TPATH { .. } => var_field!((*tp).path, Absyn::TypeSpec::TPATH).clone(),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(op)
 }
@@ -978,7 +978,7 @@ pub fn pathString(mut path: Arc<Absyn::Path>, mut delimiter: ArcStr, mut usefq: 
         Deref @ Absyn::Path::IDENT { .. } => (p2.clone(), len.clone() + 1, count.clone() + ((var_field!((*p2).name, Absyn::Path::IDENT).clone()).clone().len() as i32), false),
         Deref @ Absyn::Path::QUALIFIED { .. } => (var_field!((*p2).path, Absyn::Path::QUALIFIED).clone(), len.clone() + 1, count.clone() + ((var_field!((*p2).name, Absyn::Path::QUALIFIED).clone()).clone().len() as i32), true),
         Deref @ Absyn::Path::FULLYQUALIFIED { .. } => (var_field!((*p2).path, Absyn::Path::FULLYQUALIFIED).clone(), len.clone() + 1, count.clone(), true),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
     s = (pathStringWork(p1.clone(), (len.clone() - 1) * dlen.clone() + count.clone(), (delimiter.clone()).clone(), dlen.clone(), reverse.clone())?).clone();
@@ -1006,7 +1006,7 @@ fn pathStringWork(mut inPath: Arc<Absyn::Path>, mut len: i32, mut delimiter: Arc
             System::stringAllocatorStringCopy(sb.clone(), (delimiter.clone()).clone(), if (reverse.clone()) {len.clone() - count.clone() - dlen.clone()} else {count.clone()});
             (var_field!((*p).path, Absyn::Path::FULLYQUALIFIED).clone(), count.clone() + dlen.clone(), true)
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
     s = (System::stringAllocatorResult(sb.clone(), (s.clone()).clone())).clone();
@@ -1116,7 +1116,7 @@ pub fn pathHashContinue(mut path: Arc<Absyn::Path>, mut hash: i32) -> Result<i32
             hash = stringHashDjb2Continue((var_field!((*path).name, Absyn::Path::IDENT).clone()).clone(), hash.clone());
             hash.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(hash)
 }
@@ -1186,7 +1186,7 @@ pub fn pathLastIdent(mut path: Arc<Absyn::Path>) -> Result<ArcStr> {
         Deref @ Absyn::Path::QUALIFIED { .. } => pathLastIdent(var_field!((*path).path, Absyn::Path::QUALIFIED).clone())?,
         Deref @ Absyn::Path::IDENT { .. } => var_field!((*path).name, Absyn::Path::IDENT).clone(),
         Deref @ Absyn::Path::FULLYQUALIFIED { .. } => pathLastIdent(var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone())?,
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(outIdent)
 }
@@ -1197,7 +1197,7 @@ pub fn pathSetLastIdent(mut path: Arc<Absyn::Path>, mut ident: ArcStr) -> Result
         Deref @ Absyn::Path::IDENT { .. } => Arc::new(Absyn::Path::IDENT { name: (ident.clone()).clone() }),
         Deref @ Absyn::Path::QUALIFIED { .. } => Arc::new(Absyn::Path::QUALIFIED { name: (var_field!((*path).name, Absyn::Path::QUALIFIED).clone()).clone(), path: pathSetLastIdent(var_field!((*path).path, Absyn::Path::QUALIFIED).clone(), (ident.clone()).clone())? }),
         Deref @ Absyn::Path::FULLYQUALIFIED { .. } => Arc::new(Absyn::Path::FULLYQUALIFIED { path: pathSetLastIdent(var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone(), (ident.clone()).clone())? }),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outPath)
 }
@@ -1208,7 +1208,7 @@ pub fn pathLast(mut path: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
         Deref @ Absyn::Path::QUALIFIED { .. } => pathLast(var_field!((*path).path, Absyn::Path::QUALIFIED).clone())?,
         Deref @ Absyn::Path::IDENT { .. } => path.clone(),
         Deref @ Absyn::Path::FULLYQUALIFIED { .. } => pathLast(var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone())?,
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(path)
 }
@@ -1221,7 +1221,7 @@ pub fn pathFirstIdent(mut path: Arc<Absyn::Path>) -> Result<ArcStr> {
         Deref @ Absyn::Path::FULLYQUALIFIED { .. } => pathFirstIdent(var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone())?,
         Deref @ Absyn::Path::QUALIFIED { .. } => var_field!((*path).name, Absyn::Path::QUALIFIED).clone(),
         Deref @ Absyn::Path::IDENT { .. } => var_field!((*path).name, Absyn::Path::IDENT).clone(),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(outIdent)
 }
@@ -1232,7 +1232,7 @@ pub fn pathSetFirstIdent(mut path: Arc<Absyn::Path>, mut ident: ArcStr) -> Resul
         Deref @ Absyn::Path::IDENT { .. } => Arc::new(Absyn::Path::IDENT { name: (ident.clone()).clone() }),
         Deref @ Absyn::Path::QUALIFIED { .. } => Arc::new(Absyn::Path::QUALIFIED { name: (ident.clone()).clone(), path: var_field!((*path).path, Absyn::Path::QUALIFIED).clone() }),
         Deref @ Absyn::Path::FULLYQUALIFIED { .. } => Arc::new(Absyn::Path::FULLYQUALIFIED { path: pathSetFirstIdent(var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone(), (ident.clone()).clone())? }),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outPath)
 }
@@ -1245,7 +1245,7 @@ pub fn pathFirstPath(mut path: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
         Deref @ Absyn::Path::IDENT { .. } => path.clone(),
         Deref @ Absyn::Path::QUALIFIED { .. } => Arc::new(Absyn::Path::IDENT { name: (var_field!((*path).name, Absyn::Path::QUALIFIED).clone()).clone() }),
         Deref @ Absyn::Path::FULLYQUALIFIED { .. } => pathFirstPath(var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone())?,
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outPath)
 }
@@ -1361,7 +1361,7 @@ pub fn suffixPath(mut inPath: Arc<Absyn::Path>, mut inSuffix: ArcStr) -> Result<
             path = suffixPath(path.clone(), (inSuffix.clone()).clone())?;
             Arc::new(Absyn::Path::FULLYQUALIFIED { path: path.clone() })
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outPath)
 }
@@ -1430,7 +1430,7 @@ pub fn pathToStringListReverse(mut path: Arc<Absyn::Path>, mut acc: Arc<metamode
         Deref @ Absyn::Path::IDENT { .. } => cons((var_field!((*path).name, Absyn::Path::IDENT).clone()).clone(), acc.clone()),
         Deref @ Absyn::Path::QUALIFIED { .. } => pathToStringListReverse(var_field!((*path).path, Absyn::Path::QUALIFIED).clone(), cons((var_field!((*path).name, Absyn::Path::QUALIFIED).clone()).clone(), acc.clone()))?,
         Deref @ Absyn::Path::FULLYQUALIFIED { .. } => pathToStringListReverse(var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone(), acc.clone())?,
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outPaths)
 }
@@ -1604,7 +1604,7 @@ pub fn getCrefsFromSubs(mut isubs: Arc<metamodelica::List<Arc<Absyn::Subscript>>
         Deref @ metamodelica::List::Nil => {
             metamodelica::nil()
         },
-        Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Subscript::NOSUB, tail: subs } => {
+        Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Subscript::NOSUB { .. }, tail: subs } => {
             getCrefsFromSubs(subs.clone(), includeSubs.clone(), includeFunctions.clone())?
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Subscript::SUBSCRIPT { subscript: exp }, tail: subs } => {
@@ -1635,10 +1635,10 @@ pub fn getCrefFromExp(mut inExp: Arc<Absyn::Exp>, mut includeSubs: bool, mut inc
         Deref @ Absyn::Exp::BOOL { .. } => {
             metamodelica::nil()
         },
-        Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::ALLWILD } => {
+        Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::ALLWILD { .. } } => {
             metamodelica::nil()
         },
-        Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::WILD } => {
+        Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::WILD { .. } } => {
             metamodelica::nil()
         },
         Deref @ Absyn::Exp::CREF { componentRef: cr } if (!(includeSubs.clone())) => {
@@ -1735,7 +1735,7 @@ pub fn getCrefFromExp(mut inExp: Arc<Absyn::Exp>, mut includeSubs: bool, mut inc
             res = listAppend(l1.clone(), l2.clone());
             res.clone()
         },
-        Deref @ Absyn::Exp::END => {
+        Deref @ Absyn::Exp::END { .. } => {
             metamodelica::nil()
         },
         Deref @ Absyn::Exp::TUPLE { expressions: expl } => {
@@ -1786,7 +1786,7 @@ pub fn getCrefFromExp(mut inExp: Arc<Absyn::Exp>, mut includeSubs: bool, mut inc
             }
             l1.clone()
         },
-        Deref @ Absyn::Exp::BREAK => {
+        Deref @ Absyn::Exp::BREAK { .. } => {
             metamodelica::nil()
         },
         _ => {
@@ -1829,7 +1829,7 @@ pub fn getCrefFromFarg(mut inFunctionArgs: Arc<Absyn::FunctionArgs>, mut include
             res = listAppend(fl1.clone(), listAppend(fl2.clone(), fl3.clone()));
             res.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outComponentRefLst)
 }
@@ -2081,7 +2081,7 @@ pub fn pathToCref(mut inPath: Arc<Absyn::Path>) -> Result<Arc<Absyn::ComponentRe
             c = pathToCref(p.clone())?;
             crefMakeFullyQualified(c.clone())
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outComponentRef)
 }
@@ -2102,7 +2102,7 @@ pub fn pathToCrefWithSubs(mut inPath: Arc<Absyn::Path>, mut inSubs: Arc<metamode
             c = pathToCrefWithSubs(p.clone(), inSubs.clone())?;
             crefMakeFullyQualified(c.clone())
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outComponentRef)
 }
@@ -2228,8 +2228,8 @@ pub fn crefHasSubscripts(mut cref: Arc<Absyn::ComponentRef>) -> bool {
         Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => !(var_field!((*cref).subscripts, Absyn::ComponentRef::CREF_IDENT).clone().is_empty()),
         Deref @ Absyn::ComponentRef::CREF_QUAL { subscripts: Deref @ metamodelica::List::Nil, .. } => crefHasSubscripts(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_QUAL).clone()),
         Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => crefHasSubscripts(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone()),
-        Deref @ Absyn::ComponentRef::WILD => false,
-        Deref @ Absyn::ComponentRef::ALLWILD => false,
+        Deref @ Absyn::ComponentRef::WILD { .. } => false,
+        Deref @ Absyn::ComponentRef::ALLWILD { .. } => false,
         _ => true,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2457,25 +2457,25 @@ pub fn crefMakeFullyQualified(mut inComponentRef: Arc<Absyn::ComponentRef>) -> A
 pub fn restrString(mut inRestriction: Absyn::Restriction) -> ArcStr {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inRestriction.clone() {
-        Absyn::Restriction::R_CLASS => literal!("CLASS"),
-        Absyn::Restriction::R_OPTIMIZATION => literal!("OPTIMIZATION"),
-        Absyn::Restriction::R_MODEL => literal!("MODEL"),
-        Absyn::Restriction::R_RECORD => literal!("RECORD"),
-        Absyn::Restriction::R_BLOCK => literal!("BLOCK"),
-        Absyn::Restriction::R_CONNECTOR => literal!("CONNECTOR"),
-        Absyn::Restriction::R_EXP_CONNECTOR => literal!("EXPANDABLE CONNECTOR"),
-        Absyn::Restriction::R_TYPE => literal!("TYPE"),
-        Absyn::Restriction::R_PACKAGE => literal!("PACKAGE"),
-        Absyn::Restriction::R_FUNCTION { functionRestriction: Absyn::FunctionRestriction::FR_NORMAL_FUNCTION { purity: Absyn::FunctionPurity::PURE } } => literal!("PURE FUNCTION"),
-        Absyn::Restriction::R_FUNCTION { functionRestriction: Absyn::FunctionRestriction::FR_NORMAL_FUNCTION { purity: Absyn::FunctionPurity::IMPURE } } => literal!("IMPURE FUNCTION"),
-        Absyn::Restriction::R_FUNCTION { functionRestriction: Absyn::FunctionRestriction::FR_NORMAL_FUNCTION { purity: Absyn::FunctionPurity::NO_PURITY } } => literal!("FUNCTION"),
-        Absyn::Restriction::R_FUNCTION { functionRestriction: Absyn::FunctionRestriction::FR_OPERATOR_FUNCTION } => literal!("OPERATOR FUNCTION"),
-        Absyn::Restriction::R_PREDEFINED_INTEGER => literal!("PREDEFINED_INT"),
-        Absyn::Restriction::R_PREDEFINED_REAL => literal!("PREDEFINED_REAL"),
-        Absyn::Restriction::R_PREDEFINED_STRING => literal!("PREDEFINED_STRING"),
-        Absyn::Restriction::R_PREDEFINED_BOOLEAN => literal!("PREDEFINED_BOOL"),
-        Absyn::Restriction::R_PREDEFINED_CLOCK => literal!("PREDEFINED_CLOCK"),
-        Absyn::Restriction::R_UNIONTYPE => literal!("UNIONTYPE"),
+        Absyn::Restriction::R_CLASS { .. } => literal!("CLASS"),
+        Absyn::Restriction::R_OPTIMIZATION { .. } => literal!("OPTIMIZATION"),
+        Absyn::Restriction::R_MODEL { .. } => literal!("MODEL"),
+        Absyn::Restriction::R_RECORD { .. } => literal!("RECORD"),
+        Absyn::Restriction::R_BLOCK { .. } => literal!("BLOCK"),
+        Absyn::Restriction::R_CONNECTOR { .. } => literal!("CONNECTOR"),
+        Absyn::Restriction::R_EXP_CONNECTOR { .. } => literal!("EXPANDABLE CONNECTOR"),
+        Absyn::Restriction::R_TYPE { .. } => literal!("TYPE"),
+        Absyn::Restriction::R_PACKAGE { .. } => literal!("PACKAGE"),
+        Absyn::Restriction::R_FUNCTION { functionRestriction: Absyn::FunctionRestriction::FR_NORMAL_FUNCTION { purity: Absyn::FunctionPurity::PURE { .. } } } => literal!("PURE FUNCTION"),
+        Absyn::Restriction::R_FUNCTION { functionRestriction: Absyn::FunctionRestriction::FR_NORMAL_FUNCTION { purity: Absyn::FunctionPurity::IMPURE { .. } } } => literal!("IMPURE FUNCTION"),
+        Absyn::Restriction::R_FUNCTION { functionRestriction: Absyn::FunctionRestriction::FR_NORMAL_FUNCTION { purity: Absyn::FunctionPurity::NO_PURITY { .. } } } => literal!("FUNCTION"),
+        Absyn::Restriction::R_FUNCTION { functionRestriction: Absyn::FunctionRestriction::FR_OPERATOR_FUNCTION { .. } } => literal!("OPERATOR FUNCTION"),
+        Absyn::Restriction::R_PREDEFINED_INTEGER { .. } => literal!("PREDEFINED_INT"),
+        Absyn::Restriction::R_PREDEFINED_REAL { .. } => literal!("PREDEFINED_REAL"),
+        Absyn::Restriction::R_PREDEFINED_STRING { .. } => literal!("PREDEFINED_STRING"),
+        Absyn::Restriction::R_PREDEFINED_BOOLEAN { .. } => literal!("PREDEFINED_BOOL"),
+        Absyn::Restriction::R_PREDEFINED_CLOCK { .. } => literal!("PREDEFINED_CLOCK"),
+        Absyn::Restriction::R_UNIONTYPE { .. } => literal!("UNIONTYPE"),
         _ => literal!("* Unknown restriction *"),
     })).clone();
     outString
@@ -2528,7 +2528,7 @@ pub fn setClassName(mut inClass: Arc<Absyn::Class>, mut newName: ArcStr) -> Resu
             assign_field!(outClass.name = newName.clone());
             outClass.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outClass)
 }
@@ -2540,7 +2540,7 @@ pub fn setClassBody(mut inClass: Arc<Absyn::Class>, mut inBody: Arc<Absyn::Class
             assign_field!(outClass.body = inBody.clone());
             outClass.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outClass)
 }
@@ -2568,7 +2568,7 @@ pub fn crefFirstEqual(mut iCr1: Arc<Absyn::ComponentRef>, mut iCr2: Arc<Absyn::C
 pub fn subscriptEqual(mut inSubscript1: Arc<Absyn::Subscript>, mut inSubscript2: Arc<Absyn::Subscript>) -> Result<bool> {
     let mut outIsEqual: bool = false;
     outIsEqual = (::match_deref::match_deref! { match &((inSubscript1.clone(), inSubscript2.clone())) {
-        (Deref @ Absyn::Subscript::NOSUB, Deref @ Absyn::Subscript::NOSUB) => {
+        (Deref @ Absyn::Subscript::NOSUB { .. }, Deref @ Absyn::Subscript::NOSUB { .. }) => {
             true
         },
         (Deref @ Absyn::Subscript::SUBSCRIPT { subscript: e1 }, Deref @ Absyn::Subscript::SUBSCRIPT { subscript: e2 }) => {
@@ -2674,7 +2674,7 @@ pub fn subscriptCompare(mut sub1: Arc<Absyn::Subscript>, mut sub2: Arc<Absyn::Su
             exp = __pa0.clone();
             stringCompare((Dump::printExpStr(var_field!((*sub1).subscript, Absyn::Subscript::SUBSCRIPT).clone())?).clone(), (Dump::printExpStr(exp.clone())?).clone())
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(comp)
 }
@@ -2682,7 +2682,7 @@ pub fn subscriptCompare(mut sub1: Arc<Absyn::Subscript>, mut sub2: Arc<Absyn::Su
 pub fn isPackageRestriction(mut inRestriction: Absyn::Restriction) -> bool {
     let mut outIsPackage: bool = false;
     outIsPackage = (match inRestriction.clone() {
-        Absyn::Restriction::R_PACKAGE => true,
+        Absyn::Restriction::R_PACKAGE { .. } => true,
         _ => false,
     });
     outIsPackage
@@ -2814,8 +2814,8 @@ pub fn getFileNameFromInfo(mut inInfo: SourceInfo) -> Result<ArcStr> {
 pub fn isOuter(mut io: Absyn::InnerOuter) -> bool {
     let mut isItAnOuter: bool = false;
     isItAnOuter = (match io.clone() {
-        Absyn::InnerOuter::INNER_OUTER => true,
-        Absyn::InnerOuter::OUTER => true,
+        Absyn::InnerOuter::INNER_OUTER { .. } => true,
+        Absyn::InnerOuter::OUTER { .. } => true,
         _ => false,
     });
     isItAnOuter
@@ -2824,8 +2824,8 @@ pub fn isOuter(mut io: Absyn::InnerOuter) -> bool {
 pub fn isInner(mut io: Absyn::InnerOuter) -> bool {
     let mut isItAnInner: bool = false;
     isItAnInner = (match io.clone() {
-        Absyn::InnerOuter::INNER_OUTER => true,
-        Absyn::InnerOuter::INNER => true,
+        Absyn::InnerOuter::INNER_OUTER { .. } => true,
+        Absyn::InnerOuter::INNER { .. } => true,
         _ => false,
     });
     isItAnInner
@@ -2834,7 +2834,7 @@ pub fn isInner(mut io: Absyn::InnerOuter) -> bool {
 pub fn isOnlyInner(mut inIO: Absyn::InnerOuter) -> bool {
     let mut outOnlyInner: bool = false;
     outOnlyInner = (match inIO.clone() {
-        Absyn::InnerOuter::INNER => true,
+        Absyn::InnerOuter::INNER { .. } => true,
         _ => false,
     });
     outOnlyInner
@@ -2843,7 +2843,7 @@ pub fn isOnlyInner(mut inIO: Absyn::InnerOuter) -> bool {
 pub fn isOnlyOuter(mut inIO: Absyn::InnerOuter) -> bool {
     let mut outOnlyOuter: bool = false;
     outOnlyOuter = (match inIO.clone() {
-        Absyn::InnerOuter::OUTER => true,
+        Absyn::InnerOuter::OUTER { .. } => true,
         _ => false,
     });
     outOnlyOuter
@@ -2852,7 +2852,7 @@ pub fn isOnlyOuter(mut inIO: Absyn::InnerOuter) -> bool {
 pub fn isInnerOuter(mut inIO: Absyn::InnerOuter) -> bool {
     let mut outIsInnerOuter: bool = false;
     outIsInnerOuter = (match inIO.clone() {
-        Absyn::InnerOuter::INNER_OUTER => true,
+        Absyn::InnerOuter::INNER_OUTER { .. } => true,
         _ => false,
     });
     outIsInnerOuter
@@ -2861,7 +2861,7 @@ pub fn isInnerOuter(mut inIO: Absyn::InnerOuter) -> bool {
 pub fn isNotInnerOuter(mut inIO: Absyn::InnerOuter) -> bool {
     let mut outIsNotInnerOuter: bool = false;
     outIsNotInnerOuter = (match inIO.clone() {
-        Absyn::InnerOuter::NOT_INNER_OUTER => true,
+        Absyn::InnerOuter::NOT_INNER_OUTER { .. } => true,
         _ => false,
     });
     outIsNotInnerOuter
@@ -2870,10 +2870,10 @@ pub fn isNotInnerOuter(mut inIO: Absyn::InnerOuter) -> bool {
 pub fn innerOuterEqual(mut io1: Absyn::InnerOuter, mut io2: Absyn::InnerOuter) -> bool {
     let mut res: bool = false;
     res = (match (io1.clone(), io2.clone()) {
-        (Absyn::InnerOuter::INNER, Absyn::InnerOuter::INNER) => true,
-        (Absyn::InnerOuter::OUTER, Absyn::InnerOuter::OUTER) => true,
-        (Absyn::InnerOuter::INNER_OUTER, Absyn::InnerOuter::INNER_OUTER) => true,
-        (Absyn::InnerOuter::NOT_INNER_OUTER, Absyn::InnerOuter::NOT_INNER_OUTER) => true,
+        (Absyn::InnerOuter::INNER { .. }, Absyn::InnerOuter::INNER { .. }) => true,
+        (Absyn::InnerOuter::OUTER { .. }, Absyn::InnerOuter::OUTER { .. }) => true,
+        (Absyn::InnerOuter::INNER_OUTER { .. }, Absyn::InnerOuter::INNER_OUTER { .. }) => true,
+        (Absyn::InnerOuter::NOT_INNER_OUTER { .. }, Absyn::InnerOuter::NOT_INNER_OUTER { .. }) => true,
         _ => false,
     });
     res
@@ -2984,9 +2984,9 @@ pub fn onlyLiteralsInAnnotationMod(mut inMod: Arc<metamodelica::List<Arc<Absyn::
 pub fn onlyLiteralsInEqMod(mut eqMod: Arc<Absyn::EqMod>) -> Result<bool> {
     let mut onlyLiterals: bool = false;
     onlyLiterals = (::match_deref::match_deref! { match &(eqMod.clone()) {
-        Deref @ Absyn::EqMod::NOMOD => true,
+        Deref @ Absyn::EqMod::NOMOD { .. } => true,
         Deref @ Absyn::EqMod::EQMOD { .. } => onlyLiteralsInExp(var_field!((*eqMod).exp, Absyn::EqMod::EQMOD).clone())?,
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(onlyLiterals)
 }
@@ -3105,7 +3105,7 @@ pub fn pathIsQual(mut inPath: Arc<Absyn::Path>) -> bool {
 pub fn withinEqual(mut within1: Absyn::Within, mut within2: Absyn::Within) -> bool {
     let mut b: bool = false;
     b = (match (within1.clone(), within2.clone()) {
-        (Absyn::Within::TOP, Absyn::Within::TOP) => true,
+        (Absyn::Within::TOP { .. }, Absyn::Within::TOP { .. }) => true,
         (Absyn::Within::WITHIN { .. }, Absyn::Within::WITHIN { .. }) => pathEqual(var_field!(within1.path, Absyn::Within::WITHIN).clone(), var_field!(within2.path, Absyn::Within::WITHIN).clone()),
         _ => false,
     });
@@ -3115,7 +3115,7 @@ pub fn withinEqual(mut within1: Absyn::Within, mut within2: Absyn::Within) -> bo
 pub fn withinEqualCaseInsensitive(mut within1: Absyn::Within, mut within2: Absyn::Within) -> bool {
     let mut b: bool = false;
     b = (match (within1.clone(), within2.clone()) {
-        (Absyn::Within::TOP, Absyn::Within::TOP) => true,
+        (Absyn::Within::TOP { .. }, Absyn::Within::TOP { .. }) => true,
         (Absyn::Within::WITHIN { .. }, Absyn::Within::WITHIN { .. }) => pathEqualCaseInsensitive(var_field!(within1.path, Absyn::Within::WITHIN).clone(), var_field!(within2.path, Absyn::Within::WITHIN).clone()),
         _ => false,
     });
@@ -3125,9 +3125,8 @@ pub fn withinEqualCaseInsensitive(mut within1: Absyn::Within, mut within2: Absyn
 pub fn withinString(mut w1: Absyn::Within) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((match w1.clone() {
-        Absyn::Within::TOP => literal!("within ;"),
+        Absyn::Within::TOP { .. } => literal!("within ;"),
         Absyn::Within::WITHIN { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("within ")); __mm_s.push_str(&*pathString(var_field!(w1.path, Absyn::Within::WITHIN).clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(";")); ArcStr::from(__mm_s) },
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(r#str)
 }
@@ -3135,9 +3134,8 @@ pub fn withinString(mut w1: Absyn::Within) -> Result<ArcStr> {
 pub fn joinWithinPath(mut within_: Absyn::Within, mut path: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
     let mut outPath: Arc<Absyn::Path>;
     outPath = (match within_.clone() {
-        Absyn::Within::TOP => path.clone(),
+        Absyn::Within::TOP { .. } => path.clone(),
         Absyn::Within::WITHIN { .. } => joinPaths(var_field!(within_.path, Absyn::Within::WITHIN).clone(), path.clone())?,
-        _ => bail!("match: no arm matched"),
     });
     Ok(outPath)
 }
@@ -3145,11 +3143,10 @@ pub fn joinWithinPath(mut within_: Absyn::Within, mut path: Arc<Absyn::Path>) ->
 pub fn innerOuterStr(mut io: Absyn::InnerOuter) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((match io.clone() {
-        Absyn::InnerOuter::INNER_OUTER => literal!("inner outer"),
-        Absyn::InnerOuter::INNER => literal!("inner"),
-        Absyn::InnerOuter::OUTER => literal!("outer"),
-        Absyn::InnerOuter::NOT_INNER_OUTER => literal!(""),
-        _ => bail!("match: no arm matched"),
+        Absyn::InnerOuter::INNER_OUTER { .. } => literal!("inner outer"),
+        Absyn::InnerOuter::INNER { .. } => literal!("inner"),
+        Absyn::InnerOuter::OUTER { .. } => literal!("outer"),
+        Absyn::InnerOuter::NOT_INNER_OUTER { .. } => literal!(""),
     })).clone();
     Ok(r#str)
 }
@@ -3158,8 +3155,8 @@ pub fn subscriptExpOpt(mut inSub: Arc<Absyn::Subscript>) -> Result<Option<Arc<Ab
     let mut outExpOpt: Option<Arc<Absyn::Exp>> = None;
     outExpOpt = (::match_deref::match_deref! { match &(inSub.clone()) {
         Deref @ Absyn::Subscript::SUBSCRIPT { .. } => Some(var_field!((*inSub).subscript, Absyn::Subscript::SUBSCRIPT).clone()),
-        Deref @ Absyn::Subscript::NOSUB => None,
-        _ => bail!("match: no arm matched"),
+        Deref @ Absyn::Subscript::NOSUB { .. } => None,
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outExpOpt)
 }
@@ -3327,7 +3324,7 @@ pub fn getExpsFromArrayDim_tail(mut inAd: Arc<metamodelica::List<Arc<Absyn::Subs
             (b, exps) = getExpsFromArrayDim_tail(rest.clone(), cons(e.clone(), acc.clone()))?;
             (b.clone(), exps.clone())
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Subscript::NOSUB, tail: rest }, acc) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Subscript::NOSUB { .. }, tail: rest }, acc) => {
             let mut exps: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
             (_, exps) = getExpsFromArrayDim_tail(rest.clone(), acc.clone())?;
             (true, exps.clone())
@@ -3340,11 +3337,10 @@ pub fn getExpsFromArrayDim_tail(mut inAd: Arc<metamodelica::List<Arc<Absyn::Subs
 pub fn isInputOrOutput(mut direction: Absyn::Direction) -> Result<bool> {
     let mut isIorO: bool = false;
     isIorO = (match direction.clone() {
-        Absyn::Direction::INPUT => true,
-        Absyn::Direction::OUTPUT => true,
-        Absyn::Direction::INPUT_OUTPUT => true,
-        Absyn::Direction::BIDIR => false,
-        _ => bail!("match: no arm matched"),
+        Absyn::Direction::INPUT { .. } => true,
+        Absyn::Direction::OUTPUT { .. } => true,
+        Absyn::Direction::INPUT_OUTPUT { .. } => true,
+        Absyn::Direction::BIDIR { .. } => false,
     });
     Ok(isIorO)
 }
@@ -3352,8 +3348,8 @@ pub fn isInputOrOutput(mut direction: Absyn::Direction) -> Result<bool> {
 pub fn isInput(mut inDirection: Absyn::Direction) -> bool {
     let mut outIsInput: bool = false;
     outIsInput = (match inDirection.clone() {
-        Absyn::Direction::INPUT => true,
-        Absyn::Direction::INPUT_OUTPUT => true,
+        Absyn::Direction::INPUT { .. } => true,
+        Absyn::Direction::INPUT_OUTPUT { .. } => true,
         _ => false,
     });
     outIsInput
@@ -3362,8 +3358,8 @@ pub fn isInput(mut inDirection: Absyn::Direction) -> bool {
 pub fn isOutput(mut inDirection: Absyn::Direction) -> bool {
     let mut outIsOutput: bool = false;
     outIsOutput = (match inDirection.clone() {
-        Absyn::Direction::OUTPUT => true,
-        Absyn::Direction::INPUT_OUTPUT => true,
+        Absyn::Direction::OUTPUT { .. } => true,
+        Absyn::Direction::INPUT_OUTPUT { .. } => true,
         _ => false,
     });
     outIsOutput
@@ -3372,10 +3368,10 @@ pub fn isOutput(mut inDirection: Absyn::Direction) -> bool {
 pub fn directionEqual(mut inDirection1: Absyn::Direction, mut inDirection2: Absyn::Direction) -> bool {
     let mut outEqual: bool = false;
     outEqual = (match (inDirection1.clone(), inDirection2.clone()) {
-        (Absyn::Direction::BIDIR, Absyn::Direction::BIDIR) => true,
-        (Absyn::Direction::INPUT, Absyn::Direction::INPUT) => true,
-        (Absyn::Direction::OUTPUT, Absyn::Direction::OUTPUT) => true,
-        (Absyn::Direction::INPUT_OUTPUT, Absyn::Direction::INPUT_OUTPUT) => true,
+        (Absyn::Direction::BIDIR { .. }, Absyn::Direction::BIDIR { .. }) => true,
+        (Absyn::Direction::INPUT { .. }, Absyn::Direction::INPUT { .. }) => true,
+        (Absyn::Direction::OUTPUT { .. }, Absyn::Direction::OUTPUT { .. }) => true,
+        (Absyn::Direction::INPUT_OUTPUT { .. }, Absyn::Direction::INPUT_OUTPUT { .. }) => true,
         _ => false,
     });
     outEqual
@@ -3384,8 +3380,8 @@ pub fn directionEqual(mut inDirection1: Absyn::Direction, mut inDirection2: Absy
 pub fn isFieldEqual(mut isField1: Absyn::IsField, mut isField2: Absyn::IsField) -> bool {
     let mut outEqual: bool = false;
     outEqual = (match (isField1.clone(), isField2.clone()) {
-        (Absyn::IsField::NONFIELD, Absyn::IsField::NONFIELD) => true,
-        (Absyn::IsField::FIELD, Absyn::IsField::FIELD) => true,
+        (Absyn::IsField::NONFIELD { .. }, Absyn::IsField::NONFIELD { .. }) => true,
+        (Absyn::IsField::FIELD { .. }, Absyn::IsField::FIELD { .. }) => true,
         _ => false,
     });
     outEqual
@@ -3412,7 +3408,7 @@ pub fn getShortClass(mut cl: Arc<Absyn::Class>) -> Result<Arc<Absyn::Class>> {
             assign_field!(cl.body = stripClassDefComment(cl.body.clone()));
             ()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(cl)
 }
@@ -3621,7 +3617,7 @@ fn isInitialTraverseHelper(mut inExp: Arc<Absyn::Exp>, mut inBool: bool) -> (Arc
     let mut outExp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut outBool: bool = false;
     (outExp, outBool) = (::match_deref::match_deref! { match &(inExp.clone()) {
-        Deref @ Absyn::Exp::UNARY { op: Absyn::Operator::NOT, exp: _ } => {
+        Deref @ Absyn::Exp::UNARY { op: Absyn::Operator::NOT { .. }, exp: _ } => {
             (inExp.clone(), inBool.clone())
         },
         e => {
@@ -3663,7 +3659,6 @@ pub fn importPath(mut inImport: Absyn::Import) -> Result<Arc<Absyn::Path>> {
         Absyn::Import::GROUP_IMPORT { prefix: ref path, .. } => {
             path.clone()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(outPath)
 }
@@ -3699,7 +3694,6 @@ pub fn setImportPath(mut imp: Absyn::Import, mut path: Arc<Absyn::Path>) -> Resu
             } else { panic!("owned-variant field-assign: value held a different variant than Absyn::Import::GROUP_IMPORT"); }
             ()
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(imp)
 }
@@ -3745,7 +3739,7 @@ fn mergeAnnotations2(mut oldArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>
             new_args = cons(arg.clone(), new_args.clone());
         }
     }
-    outArgs = listAppend(outArgs.clone(), new_args.clone().reverse());
+    outArgs = listAppend(outArgs.clone(), metamodelica::Dangerous::listReverseInPlace(new_args.clone()));
     Ok(outArgs)
 }
 
@@ -3918,7 +3912,7 @@ pub fn typeSpecStringNoQualNoDims(mut inTs: Arc<Absyn::TypeSpec>) -> Result<ArcS
             str2 = (typeSpecStringNoQualNoDimsLst(typeSpecLst.clone())?).clone();
             stringAppendList(list![(str1.clone()).clone(), (literal!("<")).clone(), (str2.clone()).clone(), (literal!(">")).clone()])
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(outStr)
 }
@@ -3949,7 +3943,6 @@ pub fn refString(mut inRef: Absyn::Ref) -> Result<ArcStr> {
         Absyn::Ref::RCR { .. } => crefString(var_field!(inRef.cr, Absyn::Ref::RCR).clone())?,
         Absyn::Ref::RTS { .. } => typeSpecString(var_field!(inRef.ts, Absyn::Ref::RTS).clone())?,
         Absyn::Ref::RIM { .. } => importString(var_field!(inRef.im, Absyn::Ref::RIM).clone())?,
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(outStr)
 }
@@ -3960,7 +3953,6 @@ pub fn refStringBrief(mut inRef: Absyn::Ref) -> Result<ArcStr> {
         Absyn::Ref::RCR { .. } => crefStringIgnoreSubs(var_field!(inRef.cr, Absyn::Ref::RCR).clone())?,
         Absyn::Ref::RTS { .. } => typeSpecStringNoQualNoDims(var_field!(inRef.ts, Absyn::Ref::RTS).clone())?,
         Absyn::Ref::RIM { .. } => importString(var_field!(inRef.im, Absyn::Ref::RIM).clone())?,
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(outStr)
 }
@@ -4314,13 +4306,13 @@ pub fn opEqual(mut op1: Absyn::Operator, mut op2: Absyn::Operator) -> bool {
 pub fn opIsElementWise(mut op: Absyn::Operator) -> bool {
     let mut isElementWise: bool = false;
     isElementWise = (match op.clone() {
-        Absyn::Operator::ADD_EW => true,
-        Absyn::Operator::SUB_EW => true,
-        Absyn::Operator::MUL_EW => true,
-        Absyn::Operator::DIV_EW => true,
-        Absyn::Operator::POW_EW => true,
-        Absyn::Operator::UPLUS_EW => true,
-        Absyn::Operator::UMINUS_EW => true,
+        Absyn::Operator::ADD_EW { .. } => true,
+        Absyn::Operator::SUB_EW { .. } => true,
+        Absyn::Operator::MUL_EW { .. } => true,
+        Absyn::Operator::DIV_EW { .. } => true,
+        Absyn::Operator::POW_EW { .. } => true,
+        Absyn::Operator::UPLUS_EW { .. } => true,
+        Absyn::Operator::UMINUS_EW { .. } => true,
         _ => false,
     });
     isElementWise
@@ -4344,7 +4336,7 @@ pub fn getDefineUnitsInElements(mut elts: Arc<metamodelica::List<Arc<Absyn::Elem
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    outElts = outElts.clone().reverse();
+    outElts = metamodelica::Dangerous::listReverseInPlace(outElts.clone());
     outElts
 }
 
@@ -4430,12 +4422,12 @@ pub fn traverseClassComponents<ArgT: Clone + 'static>(mut inClass: Arc<Absyn::Cl
             }
             outClass.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((outClass, outArg))
 }
 
-fn traverseListGeneric<T: Clone + 'static + PartialEq, ArgT: Clone + 'static>(mut inList: Arc<metamodelica::List<T>>, mut inFunc: Arc<dyn ::std::ops::Fn(T, ArgT) -> Result<(T, ArgT, bool)> + 'static>, mut inArg: ArgT) -> Result<(Arc<metamodelica::List<T>>, ArgT, bool)> {
+fn traverseListGeneric<T: Clone + 'static, ArgT: Clone + 'static>(mut inList: Arc<metamodelica::List<T>>, mut inFunc: Arc<dyn ::std::ops::Fn(T, ArgT) -> Result<(T, ArgT, bool)> + 'static>, mut inArg: ArgT) -> Result<(Arc<metamodelica::List<T>>, ArgT, bool)> {
     pub type FuncType<T: Clone + 'static, ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T, ArgT) -> Result<(T, ArgT, bool)> + 'static>;
 
     let mut outList: Arc<metamodelica::List<T>> = metamodelica::nil();
@@ -4593,7 +4585,7 @@ fn traverseClassDef<ArgT: Clone + 'static>(mut inClassDef: Arc<Absyn::ClassDef>,
 pub fn isEmptyMod(mut inMod: Arc<Absyn::Modification>) -> bool {
     let mut outIsEmpty: bool = false;
     outIsEmpty = (::match_deref::match_deref! { match &(inMod.clone()) {
-        Deref @ Absyn::Modification { elementArgLst: Deref @ metamodelica::List::Nil, eqMod: Deref @ Absyn::EqMod::NOMOD } => true,
+        Deref @ Absyn::Modification { elementArgLst: Deref @ metamodelica::List::Nil, eqMod: Deref @ Absyn::EqMod::NOMOD { .. } } => true,
         Deref @ Absyn::Modification { elementArgLst: Deref @ metamodelica::List::Nil, eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::TUPLE { expressions: Deref @ metamodelica::List::Nil }, .. } } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -4870,7 +4862,7 @@ fn traverseExpShallowFuncArgs<ArgT: Clone + 'static>(mut inArgs: Arc<Absyn::Func
             );
             outArgs.clone()
         },
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outArgs)
 }
@@ -5035,7 +5027,7 @@ pub fn isInvariantExpNoTraverse(mut e: Arc<Absyn::Exp>, mut b: bool) -> (Arc<Abs
         Deref @ Absyn::Exp::RANGE { .. } => true,
         Deref @ Absyn::Exp::CONS { .. } => true,
         Deref @ Absyn::Exp::LIST { .. } => true,
-        Deref @ Absyn::Exp::BREAK => true,
+        Deref @ Absyn::Exp::BREAK { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -5050,7 +5042,7 @@ pub fn pathPartCount(mut path: Arc<Absyn::Path>, mut partsAccum: i32) -> Result<
         Deref @ Absyn::Path::IDENT { .. } => partsAccum.clone() + 1,
         Deref @ Absyn::Path::QUALIFIED { .. } => pathPartCount(var_field!((*path).path, Absyn::Path::QUALIFIED).clone(), partsAccum.clone() + 1)?,
         Deref @ Absyn::Path::FULLYQUALIFIED { .. } => pathPartCount(var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone(), partsAccum.clone())?,
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(parts)
 }
@@ -5166,7 +5158,6 @@ pub fn traverseClasses<Arg: Clone + 'static>(mut inProgram: Absyn::Program, mut 
             p.classes = classes.clone();
             (p.clone(), pa.clone(), arg.clone())
         },
-        _ => bail!("match: no arm matched"),
     });
     Ok(outTpl)
 }
@@ -5357,10 +5348,10 @@ fn traverseInnerClass<Arg: Clone + 'static>(mut inClass: Arc<Absyn::Class>, mut 
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ClassDef::PARTS { .. }, Some(pa)) => {
                     let mut pa = (*pa).clone();
-                    let mut args: Arg;
                     let mut parts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = parts.clone();
                     let mut opt_pa: Option<Arc<Absyn::Path>> = opt_pa.clone();
                     let mut cdef: Arc<Absyn::ClassDef> = cdef.clone();
+                    let mut args: Arg;
                     pa = joinPaths(pa.clone(), Arc::new(Absyn::Path::IDENT { name: (cls.name.clone()).clone() }))?;
                     (parts, opt_pa, args) = traverseInnerClassParts(var_field!((*cdef).classParts, Absyn::ClassDef::PARTS).clone(), Some(pa.clone()), visitor.clone(), arg.clone(), visitProtected.clone())?;
                     assign_variant_field!(cdef => Absyn::ClassDef::PARTS; classParts = parts.clone());
@@ -5372,8 +5363,8 @@ fn traverseInnerClass<Arg: Clone + 'static>(mut inClass: Arc<Absyn::Class>, mut 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ClassDef::PARTS { .. }, None) => {
-                    let mut opt_pa: Option<Arc<Absyn::Path>> = opt_pa.clone();
                     let mut parts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = parts.clone();
+                    let mut opt_pa: Option<Arc<Absyn::Path>> = opt_pa.clone();
                     let mut args: Arg;
                     let mut cdef: Arc<Absyn::ClassDef> = cdef.clone();
                     (parts, opt_pa, args) = traverseInnerClassParts(var_field!((*cdef).classParts, Absyn::ClassDef::PARTS).clone(), Some(Arc::new(Absyn::Path::IDENT { name: (cls.name.clone()).clone() })), visitor.clone(), arg.clone(), visitProtected.clone())?;
@@ -5387,9 +5378,9 @@ fn traverseInnerClass<Arg: Clone + 'static>(mut inClass: Arc<Absyn::Class>, mut 
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ClassDef::PARTS { .. }, opt_pa) => {
                     let mut opt_pa = (*opt_pa).clone();
+                    let mut cdef: Arc<Absyn::ClassDef> = cdef.clone();
                     let mut parts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = parts.clone();
                     let mut args: Arg;
-                    let mut cdef: Arc<Absyn::ClassDef> = cdef.clone();
                     (parts, opt_pa, args) = traverseInnerClassParts(var_field!((*cdef).classParts, Absyn::ClassDef::PARTS).clone(), opt_pa.clone(), visitor.clone(), arg.clone(), visitProtected.clone())?;
                     assign_variant_field!(cdef => Absyn::ClassDef::PARTS; classParts = parts.clone());
                     Ok((cdef.clone(), opt_pa.clone(), args.clone()))
@@ -5401,10 +5392,10 @@ fn traverseInnerClass<Arg: Clone + 'static>(mut inClass: Arc<Absyn::Class>, mut 
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ClassDef::CLASS_EXTENDS { .. }, Some(pa)) => {
                     let mut pa = (*pa).clone();
-                    let mut args: Arg;
-                    let mut opt_pa: Option<Arc<Absyn::Path>> = opt_pa.clone();
                     let mut parts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = parts.clone();
                     let mut cdef: Arc<Absyn::ClassDef> = cdef.clone();
+                    let mut args: Arg;
+                    let mut opt_pa: Option<Arc<Absyn::Path>> = opt_pa.clone();
                     pa = joinPaths(pa.clone(), Arc::new(Absyn::Path::IDENT { name: (cls.name.clone()).clone() }))?;
                     (parts, opt_pa, args) = traverseInnerClassParts(var_field!((*cdef).parts, Absyn::ClassDef::CLASS_EXTENDS).clone(), Some(pa.clone()), visitor.clone(), arg.clone(), visitProtected.clone())?;
                     assign_variant_field!(cdef => Absyn::ClassDef::CLASS_EXTENDS; parts = parts.clone());
@@ -5416,10 +5407,10 @@ fn traverseInnerClass<Arg: Clone + 'static>(mut inClass: Arc<Absyn::Class>, mut 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ClassDef::CLASS_EXTENDS { .. }, None) => {
-                    let mut parts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = parts.clone();
-                    let mut args: Arg;
-                    let mut opt_pa: Option<Arc<Absyn::Path>> = opt_pa.clone();
                     let mut cdef: Arc<Absyn::ClassDef> = cdef.clone();
+                    let mut parts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = parts.clone();
+                    let mut opt_pa: Option<Arc<Absyn::Path>> = opt_pa.clone();
+                    let mut args: Arg;
                     (parts, opt_pa, args) = traverseInnerClassParts(var_field!((*cdef).parts, Absyn::ClassDef::CLASS_EXTENDS).clone(), Some(Arc::new(Absyn::Path::IDENT { name: (cls.name.clone()).clone() })), visitor.clone(), arg.clone(), visitProtected.clone())?;
                     assign_variant_field!(cdef => Absyn::ClassDef::CLASS_EXTENDS; parts = parts.clone());
                     Ok((cdef.clone(), opt_pa.clone(), args.clone()))
@@ -5431,8 +5422,8 @@ fn traverseInnerClass<Arg: Clone + 'static>(mut inClass: Arc<Absyn::Class>, mut 
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ClassDef::CLASS_EXTENDS { .. }, opt_pa) => {
                     let mut opt_pa = (*opt_pa).clone();
-                    let mut parts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = parts.clone();
                     let mut args: Arg;
+                    let mut parts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = parts.clone();
                     let mut cdef: Arc<Absyn::ClassDef> = cdef.clone();
                     (parts, opt_pa, args) = traverseInnerClassParts(var_field!((*cdef).parts, Absyn::ClassDef::CLASS_EXTENDS).clone(), opt_pa.clone(), visitor.clone(), arg.clone(), visitProtected.clone())?;
                     assign_variant_field!(cdef => Absyn::ClassDef::CLASS_EXTENDS; parts = parts.clone());
@@ -5520,7 +5511,7 @@ fn traverseInnerClassElements<Arg: Clone + 'static>(mut inElements: Arc<metamode
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    elts = elts.clone().reverse();
+    elts = metamodelica::Dangerous::listReverseInPlace(elts.clone());
     outTpl = (elts.clone(), inPath.clone(), arg.clone());
     Ok(outTpl)
 }
@@ -5753,8 +5744,8 @@ pub fn isNotPartial(mut inClass: Arc<Absyn::Class>) -> Result<bool> {
 pub fn crefIsWild(mut cref: Arc<Absyn::ComponentRef>) -> bool {
     let mut wild: bool = false;
     wild = (::match_deref::match_deref! { match &(cref.clone()) {
-        Deref @ Absyn::ComponentRef::WILD => true,
-        Deref @ Absyn::ComponentRef::ALLWILD => true,
+        Deref @ Absyn::ComponentRef::WILD { .. } => true,
+        Deref @ Absyn::ComponentRef::ALLWILD { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -5779,7 +5770,7 @@ pub fn pathReplaceFirst(mut path: Arc<Absyn::Path>, mut prefix: Arc<Absyn::Path>
         Deref @ Absyn::Path::IDENT { .. } => prefix.clone(),
         Deref @ Absyn::Path::QUALIFIED { .. } => joinPaths(prefix.clone(), var_field!((*path).path, Absyn::Path::QUALIFIED).clone())?,
         Deref @ Absyn::Path::FULLYQUALIFIED { .. } => Arc::new(Absyn::Path::FULLYQUALIFIED { path: pathReplaceFirst(var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone(), prefix.clone())? }),
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outPath)
 }
@@ -5792,7 +5783,7 @@ pub fn pathContains(mut path: Arc<Absyn::Path>, mut name: ArcStr) -> Result<bool
         Deref @ Absyn::Path::IDENT { .. } => var_field!((*path).name, Absyn::Path::IDENT).clone() == name.clone(),
         Deref @ Absyn::Path::QUALIFIED { .. } => var_field!((*path).name, Absyn::Path::QUALIFIED).clone() == name.clone() || pathContains(var_field!((*path).path, Absyn::Path::QUALIFIED).clone(), (name.clone()).clone())?,
         Deref @ Absyn::Path::FULLYQUALIFIED { .. } => pathContains(var_field!((*path).path, Absyn::Path::FULLYQUALIFIED).clone(), (name.clone()).clone())?,
-        _ => bail!("match: no arm matched"),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(res)
 }
@@ -5985,11 +5976,11 @@ pub fn createChoiceArray(mut inChoices: Arc<Absyn::ElementArg>) -> Result<Arc<Ab
     let mut s: ArcStr = arcstr::literal!("");
     let mut e: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     outChoices = (::match_deref::match_deref! { match &(inChoices.clone()) {
-        Deref @ Absyn::ElementArg::MODIFICATION { info: info1, comment: cmt1, modification: Some(Deref @ Absyn::Modification { elementArgLst: choice, eqMod: Deref @ Absyn::EqMod::NOMOD }), path: Deref @ Absyn::Path::IDENT { name: Deref @ "choices" }, eachPrefix: ep1, finalPrefix: fp1 } => {
+        Deref @ Absyn::ElementArg::MODIFICATION { info: info1, comment: cmt1, modification: Some(Deref @ Absyn::Modification { elementArgLst: choice, eqMod: Deref @ Absyn::EqMod::NOMOD { .. } }), path: Deref @ Absyn::Path::IDENT { name: Deref @ "choices" }, eachPrefix: ep1, finalPrefix: fp1 } => {
             for mut m in &*choice.clone() {
                 let mut m = m.clone();
                 (choiceArray, acc) = (::match_deref::match_deref! { match &(m.clone()) {
-        Deref @ Absyn::ElementArg::MODIFICATION { finalPrefix: fp2, eachPrefix: ep2, path: Deref @ Absyn::Path::IDENT { name: Deref @ "choice" }, modification: Some(Deref @ Absyn::Modification { elementArgLst: Deref @ metamodelica::List::Cons { head: el, tail: Deref @ metamodelica::List::Nil }, eqMod: Deref @ Absyn::EqMod::NOMOD }), comment: cmt2, info: info2 } => {
+        Deref @ Absyn::ElementArg::MODIFICATION { finalPrefix: fp2, eachPrefix: ep2, path: Deref @ Absyn::Path::IDENT { name: Deref @ "choice" }, modification: Some(Deref @ Absyn::Modification { elementArgLst: Deref @ metamodelica::List::Cons { head: el, tail: Deref @ metamodelica::List::Nil }, eqMod: Deref @ Absyn::EqMod::NOMOD { .. } }), comment: cmt2, info: info2 } => {
             s = (Dump::unparseElementArgStr(el.clone())?).clone();
             (cons((s.clone()).clone(), choiceArray.clone()), acc.clone())
         },

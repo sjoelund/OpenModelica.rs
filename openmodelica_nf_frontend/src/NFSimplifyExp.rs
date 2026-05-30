@@ -649,11 +649,11 @@ pub fn simplifyArrayConstructor(mut call: Arc<Call::NFCall>) -> Result<Arc<Expre
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: (iter, e), tail: Deref @ metamodelica::List::Nil } => {
                     let mut e = (*e).clone();
-                    let mut expanded: bool = expanded.clone();
                     let mut dim: Arc<Dimension::NFDimension> = dim.clone();
+                    let mut expanded: bool = expanded.clone();
                     let mut exp: Arc<Expression::NFExpression> = exp.clone();
-                    let mut dim_size: i32 = dim_size.clone();
                     let mut outExp: Arc<Expression::NFExpression> = outExp.clone();
+                    let mut dim_size: i32 = dim_size.clone();
                     let __pa0 = ::match_deref::match_deref! { match &(Expression::typeOf(e.clone())) {
                         Deref @ Type::ARRAY { dimensions: Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil }, .. } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -731,9 +731,9 @@ pub fn simplifyReduction(mut call: Arc<Call::NFCall>) -> Result<Arc<Expression::
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: (iter, e), tail: Deref @ metamodelica::List::Nil } => {
                     let mut e = (*e).clone();
-                    let mut dim_size: i32;
-                    let mut outExp: Arc<Expression::NFExpression> = outExp.clone();
                     let mut dim: Arc<Dimension::NFDimension>;
+                    let mut outExp: Arc<Expression::NFExpression> = outExp.clone();
+                    let mut dim_size: i32;
                     let __pa0 = ::match_deref::match_deref! { match &(Expression::typeOf(e.clone())) {
                         Deref @ Type::ARRAY { dimensions: Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil }, .. } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -823,7 +823,7 @@ pub fn simplifyReduction2(mut name: ArcStr, mut exp: Arc<Expression::NFExpressio
         range = __pa0.clone();
         iters = cons((iter.clone(), range.clone()), iters.clone());
     }
-    outExp = Expression::foldReduction(simplify(exp.clone(), false)?, iters.clone().reverse(), default_exp.clone(), Arc::new({ let __pe_b1 = false; move |__pe_a0| simplify(__pe_a0, __pe_b1.clone()) }), Arc::new({ let __pe_b1 = op.clone(); move |__pe_a0, __pe_a2| simplifyBinaryOp(__pe_a0, __pe_b1.clone(), __pe_a2) }))?;
+    outExp = Expression::foldReduction(simplify(exp.clone(), false)?, metamodelica::Dangerous::listReverseInPlace(iters.clone()), default_exp.clone(), Arc::new({ let __pe_b1 = false; move |__pe_a0| simplify(__pe_a0, __pe_b1.clone()) }), Arc::new({ let __pe_b1 = op.clone(); move |__pe_a0, __pe_a2| simplifyBinaryOp(__pe_a0, __pe_b1.clone(), __pe_a2) }))?;
     Ok(outExp)
 }
 
@@ -1551,7 +1551,7 @@ fn cancelTermsInMultary(mut inArguments: Arc<metamodelica::List<Arc<Expression::
 
     let mut outArguments: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut outInv_arguments: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut counter: Arc<UnorderedMap::UnorderedMap<Arc<Expression::NFExpression>, i32>>;
+    let mut counter: Arc<UnorderedMap::UnorderedMap<Arc<Expression::NFExpression>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<Expression::NFExpression>, i32>> as ::std::default::Default>::default();
     let mut arg: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut count: i32 = 0;
     if inArguments.clone().is_empty() || inInv_arguments.clone().is_empty() {
@@ -1581,8 +1581,8 @@ fn cancelTermsInMultary(mut inArguments: Arc<metamodelica::List<Arc<Expression::
             }
         }
     }
-    outArguments = outArguments.clone().reverse();
-    outInv_arguments = outInv_arguments.clone().reverse();
+    outArguments = metamodelica::Dangerous::listReverseInPlace(outArguments.clone());
+    outInv_arguments = metamodelica::Dangerous::listReverseInPlace(outInv_arguments.clone());
     Ok((outArguments, outInv_arguments))
 }
 

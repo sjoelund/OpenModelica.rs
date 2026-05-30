@@ -111,7 +111,6 @@ pub fn callingScopeStr(mut inCallingScope: CallingScope) -> Result<ArcStr> {
         CallingScope::TOP_CALL { .. } => literal!("topCall"),
         CallingScope::INNER_CALL { .. } => literal!("innerCall"),
         CallingScope::TYPE_CALL { .. } => literal!("typeCall"),
-        _ => bail!("match: no arm matched"),
     })).clone();
     Ok(r#str)
 }

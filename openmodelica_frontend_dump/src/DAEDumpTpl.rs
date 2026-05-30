@@ -721,17 +721,17 @@ pub fn dumpRecordVar(mut in_txt: Tpl::Text, mut in_a_v: Arc<DAE::Var>) -> Result
 pub fn dumpRecordConstructorInputAttr(mut in_txt: Tpl::Text, mut in_a_attr: Arc<DAE::Attributes>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_attr.clone())) {
-        (txt, Deref @ DAE::Attributes { direction: Absyn::Direction::INPUT, .. }) => {
+        (txt, Deref @ DAE::Attributes { direction: Absyn::Direction::INPUT { .. }, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("input ")).clone() }))?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Attributes { visibility: SCode::Visibility::PROTECTED, .. }) => {
+        (txt, Deref @ DAE::Attributes { visibility: SCode::Visibility::PROTECTED { .. }, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("protected ")).clone() }))?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Attributes { variability: SCode::Variability::CONST, .. }) => {
+        (txt, Deref @ DAE::Attributes { variability: SCode::Variability::CONST { .. }, .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("constant ")).clone() }))?;
             txt.clone()
@@ -749,7 +749,7 @@ pub fn dumpRecordConstructorInputAttr(mut in_txt: Tpl::Text, mut in_a_attr: Arc<
 pub fn dumpRecordConstructorBinding(mut in_txt: Tpl::Text, mut in_a_binding: Arc<DAE::Binding>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_binding.clone())) {
-        (txt, Deref @ DAE::Binding::UNBOUND) => {
+        (txt, Deref @ DAE::Binding::UNBOUND { .. }) => {
             txt.clone()
         },
         (txt, Deref @ DAE::Binding::EQBOUND { exp: i_exp, .. }) => {
@@ -771,7 +771,7 @@ pub fn dumpRecordConstructorBinding(mut in_txt: Tpl::Text, mut in_a_binding: Arc
 pub fn dumpRecordVarBinding(mut in_txt: Tpl::Text, mut in_a_binding: Arc<DAE::Binding>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_binding.clone())) {
-        (txt, Deref @ DAE::Binding::UNBOUND) => {
+        (txt, Deref @ DAE::Binding::UNBOUND { .. }) => {
             txt.clone()
         },
         (txt, Deref @ DAE::Binding::EQBOUND { exp: i_exp, .. }) => {
@@ -1140,7 +1140,7 @@ pub fn dumpFinalPrefix(mut in_txt: Tpl::Text, mut in_a_varAttr: Arc<DAE::Variabl
 pub fn dumpVarVisibility(mut in_txt: Tpl::Text, mut in_a_protection: DAE::VarVisibility) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_protection.clone()) {
-        (mut txt, DAE::VarVisibility::PROTECTED) => {
+        (mut txt, DAE::VarVisibility::PROTECTED { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" protected")).clone() }))?;
             txt.clone()
         },
@@ -1154,11 +1154,11 @@ pub fn dumpVarVisibility(mut in_txt: Tpl::Text, mut in_a_protection: DAE::VarVis
 pub fn dumpVarParallelism(mut in_txt: Tpl::Text, mut in_a_parallelism: DAE::VarParallelism) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_parallelism.clone()) {
-        (mut txt, DAE::VarParallelism::PARGLOBAL) => {
+        (mut txt, DAE::VarParallelism::PARGLOBAL { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" parglobal")).clone() }))?;
             txt.clone()
         },
-        (mut txt, DAE::VarParallelism::PARLOCAL) => {
+        (mut txt, DAE::VarParallelism::PARLOCAL { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" parlocal")).clone() }))?;
             txt.clone()
         },
@@ -1172,15 +1172,15 @@ pub fn dumpVarParallelism(mut in_txt: Tpl::Text, mut in_a_parallelism: DAE::VarP
 pub fn dumpVarKind(mut in_txt: Tpl::Text, mut in_a_kind: DAE::VarKind) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_kind.clone()) {
-        (mut txt, DAE::VarKind::CONST) => {
+        (mut txt, DAE::VarKind::CONST { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" constant")).clone() }))?;
             txt.clone()
         },
-        (mut txt, DAE::VarKind::PARAM) => {
+        (mut txt, DAE::VarKind::PARAM { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" parameter")).clone() }))?;
             txt.clone()
         },
-        (mut txt, DAE::VarKind::DISCRETE) => {
+        (mut txt, DAE::VarKind::DISCRETE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" discrete")).clone() }))?;
             txt.clone()
         },
@@ -1194,11 +1194,11 @@ pub fn dumpVarKind(mut in_txt: Tpl::Text, mut in_a_kind: DAE::VarKind) -> Result
 pub fn dumpVarDirection(mut in_txt: Tpl::Text, mut in_a_direction: DAE::VarDirection) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_direction.clone()) {
-        (mut txt, DAE::VarDirection::INPUT) => {
+        (mut txt, DAE::VarDirection::INPUT { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" input")).clone() }))?;
             txt.clone()
         },
-        (mut txt, DAE::VarDirection::OUTPUT) => {
+        (mut txt, DAE::VarDirection::OUTPUT { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" output")).clone() }))?;
             txt.clone()
         },
@@ -1360,7 +1360,7 @@ pub fn dumpType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_att
             (txt, a_attributes) = dumpType(txt.clone(), i_ty.clone(), a_attributes.clone())?;
             (txt.clone(), a_attributes.clone())
         },
-        (txt, Deref @ DAE::Type::T_METAOPTION { ty: Deref @ DAE::Type::T_UNKNOWN }, a_attributes) => {
+        (txt, Deref @ DAE::Type::T_METAOPTION { ty: Deref @ DAE::Type::T_UNKNOWN { .. } }, a_attributes) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Option<Any>")).clone() }))?;
             (txt.clone(), a_attributes.clone())
@@ -1379,12 +1379,12 @@ pub fn dumpType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_att
             (txt, a_attributes) = dumpType(txt.clone(), i_ty.clone(), a_attributes.clone())?;
             (txt.clone(), a_attributes.clone())
         },
-        (txt, Deref @ DAE::Type::T_NORETCALL, a_attributes) => {
+        (txt, Deref @ DAE::Type::T_NORETCALL { .. }, a_attributes) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("#T_NORETCALL#")).clone() }))?;
             (txt.clone(), a_attributes.clone())
         },
-        (txt, Deref @ DAE::Type::T_UNKNOWN, a_attributes) => {
+        (txt, Deref @ DAE::Type::T_UNKNOWN { .. }, a_attributes) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("#T_UNKNOWN#")).clone() }))?;
             (txt.clone(), a_attributes.clone())
@@ -1645,11 +1645,11 @@ pub fn dumpRecordType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Res
 pub fn dumpConst(mut in_txt: Tpl::Text, mut in_a_c: DAE::Const) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_c.clone()) {
-        (mut txt, DAE::Const::C_PARAM) => {
+        (mut txt, DAE::Const::C_PARAM { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("parameter ")).clone() }))?;
             txt.clone()
         },
-        (mut txt, DAE::Const::C_CONST) => {
+        (mut txt, DAE::Const::C_CONST { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("constant ")).clone() }))?;
             txt.clone()
         },
@@ -1663,11 +1663,11 @@ pub fn dumpConst(mut in_txt: Tpl::Text, mut in_a_c: DAE::Const) -> Result<Tpl::T
 pub fn dumpParallelism(mut in_txt: Tpl::Text, mut in_a_p: DAE::VarParallelism) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_p.clone()) {
-        (mut txt, DAE::VarParallelism::PARGLOBAL) => {
+        (mut txt, DAE::VarParallelism::PARGLOBAL { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("parglobal ")).clone() }))?;
             txt.clone()
         },
-        (mut txt, DAE::VarParallelism::PARLOCAL) => {
+        (mut txt, DAE::VarParallelism::PARLOCAL { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("parlocal ")).clone() }))?;
             txt.clone()
         },
@@ -1792,7 +1792,7 @@ pub fn dumpDimension(mut in_txt: Tpl::Text, mut in_a_dim: Arc<DAE::Dimension>) -
             txt = dumpExp(txt.clone(), i_exp.clone())?;
             txt.clone()
         },
-        (txt, Deref @ DAE::Dimension::DIM_UNKNOWN) => {
+        (txt, Deref @ DAE::Dimension::DIM_UNKNOWN { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(":")).clone() }))?;
             txt.clone()
@@ -2483,23 +2483,23 @@ pub fn dumpStateSelectAttr(mut txt: Tpl::Text, mut a_stateSelect: DAE::StateSele
 pub fn dumpStateSelect(mut in_txt: Tpl::Text, mut in_a_stateSelect: DAE::StateSelect) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_stateSelect.clone()) {
-        (mut txt, DAE::StateSelect::NEVER) => {
+        (mut txt, DAE::StateSelect::NEVER { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("StateSelect.never")).clone() }))?;
             txt.clone()
         },
-        (mut txt, DAE::StateSelect::AVOID) => {
+        (mut txt, DAE::StateSelect::AVOID { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("StateSelect.avoid")).clone() }))?;
             txt.clone()
         },
-        (mut txt, DAE::StateSelect::DEFAULT) => {
+        (mut txt, DAE::StateSelect::DEFAULT { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("StateSelect.default")).clone() }))?;
             txt.clone()
         },
-        (mut txt, DAE::StateSelect::PREFER) => {
+        (mut txt, DAE::StateSelect::PREFER { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("StateSelect.prefer")).clone() }))?;
             txt.clone()
         },
-        (mut txt, DAE::StateSelect::ALWAYS) => {
+        (mut txt, DAE::StateSelect::ALWAYS { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("StateSelect.always")).clone() }))?;
             txt.clone()
         },
@@ -2534,19 +2534,19 @@ pub fn dumpUncertaintyAttr(mut txt: Tpl::Text, mut a_uncertainty: DAE::Uncertain
 pub fn dumpUncertainty(mut in_txt: Tpl::Text, mut in_a_uncertainty: DAE::Uncertainty) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (match (in_txt.clone(), in_a_uncertainty.clone()) {
-        (mut txt, DAE::Uncertainty::GIVEN) => {
+        (mut txt, DAE::Uncertainty::GIVEN { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Uncertainty.given")).clone() }))?;
             txt.clone()
         },
-        (mut txt, DAE::Uncertainty::SOUGHT) => {
+        (mut txt, DAE::Uncertainty::SOUGHT { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Uncertainty.sought")).clone() }))?;
             txt.clone()
         },
-        (mut txt, DAE::Uncertainty::REFINE) => {
+        (mut txt, DAE::Uncertainty::REFINE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Uncertainty.refine")).clone() }))?;
             txt.clone()
         },
-        (mut txt, DAE::Uncertainty::PROPAGATE) => {
+        (mut txt, DAE::Uncertainty::PROPAGATE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Uncertainty.propagate")).clone() }))?;
             txt.clone()
         },
@@ -2820,7 +2820,7 @@ pub fn dumpSubscripts(mut in_txt: Tpl::Text, mut in_a_subscriptLst: Arc<metamode
 pub fn dumpSubscript(mut in_txt: Tpl::Text, mut in_a_subscript: Arc<DAE::Subscript>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_subscript.clone())) {
-        (txt, Deref @ DAE::Subscript::WHOLEDIM) => {
+        (txt, Deref @ DAE::Subscript::WHOLEDIM { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(":")).clone() }))?;
             txt.clone()

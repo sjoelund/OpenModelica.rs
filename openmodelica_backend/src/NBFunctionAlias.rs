@@ -73,6 +73,7 @@ use openmodelica_nf_frontend::NFSubscript as Subscript;
 use openmodelica_nf_frontend::NFType as Type;
 use openmodelica_nf_frontend::NFVariable as Variable;
 use openmodelica_util::Error;
+use openmodelica_util::Flags;
 use openmodelica_util::StringUtil;
 use openmodelica_util::UnorderedMap;
 use openmodelica_util::UnorderedSet;
@@ -84,15 +85,89 @@ use openmodelica_util_datatypes_basic::Pointer;
 // NF imports
 // Backend imports
 // Util imports
+pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>, mut kind: Partition::Kind) -> Result<Arc<BackendDAE::NBackendDAE>> {
+    let mut bdae: Arc<BackendDAE::NBackendDAE> = bdae;
+    let mut func: Module::aliasInterface;
+    func = getModule()?;
+    bdae = (::match_deref::match_deref! { match &(bdae.clone()) {
+        Deref @ BackendDAE::MAIN { eqData, varData, .. } => {
+            let mut eqData = (*eqData).clone();
+            let mut varData = (*varData).clone();
+            (varData, eqData) = func(varData.clone(), eqData.clone(), kind.clone())?;
+            assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN;
+                varData = varData.clone(),
+                eqData = eqData.clone()
+            );
+            bdae.clone()
+        },
+        Deref @ BackendDAE::HESSIAN { eqData, varData } => {
+            let mut eqData = (*eqData).clone();
+            let mut varData = (*varData).clone();
+            (varData, eqData) = func(varData.clone(), eqData.clone(), kind.clone())?;
+            assign_variant_field!(bdae => BackendDAE::NBackendDAE::HESSIAN;
+                varData = varData.clone(),
+                eqData = eqData.clone()
+            );
+            bdae.clone()
+        },
+        _ => {
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBFunctionAlias.main")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
+            bail!("fail")
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    Ok(bdae)
+}
+
 pub fn getModule() -> Result<Arc<dyn ::std::ops::Fn(Arc<VarData::VarData>, Arc<EqData::EqData>, Partition::Kind) -> Result<(Arc<VarData::VarData>, Arc<EqData::EqData>)> + 'static>> {
     let mut func: Module::functionAliasInterface;
     let mut flag: ArcStr = literal!("default");
     func = (::match_deref::match_deref! { match &(flag.clone()) {
-        Deref @ "default" => functionAliasDefault.clone(),
+        Deref @ "default" => (std::sync::Arc::new(functionAliasDefault) as std::sync::Arc<dyn ::std::ops::Fn(Arc<VarData::VarData>, Arc<EqData::EqData>, Partition::Kind) -> Result<(Arc<VarData::VarData>, Arc<EqData::EqData>)> + 'static>),
         _ => bail!("fail"),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(func)
+}
+
+pub fn introduceSlicedStateAlias(mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>, mut kind: Partition::Kind) -> Result<(Arc<VarData::VarData>, Arc<EqData::EqData>)> {
+    let mut varData: Arc<VarData::VarData> = varData;
+    let mut eqData: Arc<EqData::EqData> = eqData;
+    let mut aux_map: Arc<UnorderedMap::UnorderedMap<Arc<Call_Id::Call_Id>, Arc<Call_Aux::Call_Aux>>> = UnorderedMap::new((std::sync::Arc::new(Call_Id::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Call_Id::Call_Id>) -> Result<i32> + 'static>), (std::sync::Arc::new(Call_Id::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Call_Id::Call_Id>, Arc<Call_Id::Call_Id>) -> Result<bool> + 'static>), 1);
+    let mut new_vars_cont: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+    let mut new_vars_recd: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+    let mut new_eqns_cont: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+    let () = ({
+        let mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<i32>>>> = UnorderedMap::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
+        let mut aux_index: Pointer::Pointer<i32> = Pointer::create(1);
+        (::match_deref::match_deref! { match &((eqData.clone(), varData.clone())) {
+        (Deref @ BEquation::EqData::EQ_DATA_SIM { .. }, Deref @ BVariable::VarData::VAR_DATA_SIM { .. }) => {
+            let mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+            BEquation::EquationPointers::map(var_field!((*eqData).simulation, EqData::EqData::EQ_DATA_SIM).clone(), Arc::new({ let __pe_b1 = map.clone(); move |__pe_a0| collectSlicedStatesAliasEquation(__pe_a0, __pe_b1.clone()) }))?;
+            set = getSlicedStatesSet(map.clone())?;
+            if !(UnorderedSet::isEmpty(set.clone())) {
+                assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM; simulation = BEquation::EquationPointers::map(var_field!((*eqData).simulation, EqData::EqData::EQ_DATA_SIM).clone(), Arc::new({ let __pe_b1 = set.clone(); let __pe_b2 = aux_map.clone(); let __pe_b3 = aux_index.clone(); move |__pe_a0| introduceSlicedStateAliasEquation(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }))?);
+                (_, new_vars_cont, _, new_vars_recd, _, new_eqns_cont, _) = resolveAux(aux_map.clone(), var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(), false, metamodelica::nil(), new_vars_cont.clone(), metamodelica::nil(), new_vars_recd.clone(), metamodelica::nil(), new_eqns_cont.clone(), metamodelica::nil())?;
+            }
+            ()
+        },
+        _ => {
+            ()
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } })
+    });
+    varData = BVariable::VarData::addTypedList(varData.clone(), new_vars_cont.clone(), VarData::VarType::ALGEBRAIC.clone())?;
+    varData = BVariable::VarData::addTypedList(varData.clone(), new_vars_recd.clone(), VarData::VarType::RECORD.clone())?;
+    eqData = BEquation::EqData::addTypedList(eqData.clone(), new_eqns_cont.clone(), EqData::EqType::CONTINUOUS.clone(), false)?;
+    for mut var in &*new_vars_recd.clone() {
+        let mut var = var.clone();
+        BackendDAE::lowerRecordChildren(var.clone(), BVariable::VarData::getVariables(varData.clone())?)?;
+    }
+    if Flags::isSet(Flags::DUMP_CSE.clone())? {
+        println!("{}", (aliasListToString(UnorderedMap::toList(aux_map.clone()), (std::sync::Arc::new(Call_Id::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Call_Id::Call_Id>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(fnptr!(Call_Aux::toString, Arc<Call_Aux::Call_Aux>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Call_Aux::Call_Aux>) -> Result<ArcStr> + 'static>), (literal!("Sliced State")).clone())?).clone());
+    }
+    Ok((varData, eqData))
 }
 
 pub mod Call_Id {
@@ -216,6 +291,77 @@ fn functionAliasTplString(mut tpl: (ArcStr, ArcStr), mut max_length: i32) -> Arc
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*Util::tuple21(tpl.clone())); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), max_length.clone() - ((Util::tuple21(tpl.clone())).clone().len() as i32))); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*Util::tuple22(tpl.clone())); ArcStr::from(__mm_s) }).clone();
     r#str
+}
+
+fn functionAliasDefault(mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>, mut kind: Partition::Kind) -> Result<(Arc<VarData::VarData>, Arc<EqData::EqData>)> {
+    let mut varData: Arc<VarData::VarData> = varData;
+    let mut eqData: Arc<EqData::EqData> = eqData;
+    let mut map: Arc<UnorderedMap::UnorderedMap<Arc<Call_Id::Call_Id>, Arc<Call_Aux::Call_Aux>>> = UnorderedMap::new((std::sync::Arc::new(Call_Id::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Call_Id::Call_Id>) -> Result<i32> + 'static>), (std::sync::Arc::new(Call_Id::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Call_Id::Call_Id>, Arc<Call_Id::Call_Id>) -> Result<bool> + 'static>), 1);
+    let mut variables: Arc<VariablePointers::VariablePointers> = BVariable::VarData::getVariables(varData.clone())?;
+    let mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>> = UnorderedSet::new((std::sync::Arc::new(fnptr!(BVariable::hash, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(BVariable::equalName, Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 13);
+    let mut clock_map: Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+    let mut infer_map: Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
+    let mut aux_index: Pointer::Pointer<i32> = Pointer::create(1);
+    let mut new_vars_disc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+    let mut new_vars_cont: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+    let mut new_vars_init: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+    let mut new_vars_recd: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+    let mut new_vars_clck: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+    let mut new_vars_infr: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
+    let mut new_eqns_disc: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+    let mut new_eqns_cont: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+    let mut new_eqns_init: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+    let mut new_eqns_clck: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+    let mut new_eqns_infr: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
+    let mut debug_lst_sim: Arc<metamodelica::List<(Arc<Call_Id::Call_Id>, Arc<Call_Aux::Call_Aux>)>> = metamodelica::nil();
+    let mut debug_lst_ini: Arc<metamodelica::List<(Arc<Call_Id::Call_Id>, Arc<Call_Aux::Call_Aux>)>> = metamodelica::nil();
+    let () = (::match_deref::match_deref! { match &((eqData.clone(), varData.clone())) {
+        (Deref @ BEquation::EqData::EQ_DATA_SIM { .. }, Deref @ BVariable::VarData::VAR_DATA_SIM { .. }) => {
+            assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM;
+                simulation = BEquation::EquationPointers::map(var_field!((*eqData).simulation, EqData::EqData::EQ_DATA_SIM).clone(), Arc::new({ let __pe_b1 = map.clone(); let __pe_b2 = variables.clone(); let __pe_b3 = set.clone(); let __pe_b4 = aux_index.clone(); let __pe_b5 = var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(); let __pe_b6 = false; move |__pe_a0| introduceFunctionAliasEquation(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone()) }))?,
+                removed = BEquation::EquationPointers::map(var_field!((*eqData).removed, EqData::EqData::EQ_DATA_SIM).clone(), Arc::new({ let __pe_b1 = map.clone(); let __pe_b2 = variables.clone(); let __pe_b3 = set.clone(); let __pe_b4 = aux_index.clone(); let __pe_b5 = var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(); let __pe_b6 = false; move |__pe_a0| introduceFunctionAliasEquation(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone()) }))?
+            );
+            (new_vars_disc, new_vars_cont, new_vars_init, new_vars_recd, new_eqns_disc, new_eqns_cont, new_eqns_init) = resolveAux(map.clone(), var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(), false, new_vars_disc.clone(), new_vars_cont.clone(), new_vars_init.clone(), new_vars_recd.clone(), new_eqns_disc.clone(), new_eqns_cont.clone(), new_eqns_init.clone())?;
+            if Flags::isSet(Flags::DUMP_CSE.clone())? {
+                debug_lst_sim = UnorderedMap::toList(map.clone());
+            }
+            assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM; initials = BEquation::EquationPointers::map(var_field!((*eqData).initials, EqData::EqData::EQ_DATA_SIM).clone(), Arc::new({ let __pe_b1 = map.clone(); let __pe_b2 = variables.clone(); let __pe_b3 = set.clone(); let __pe_b4 = aux_index.clone(); let __pe_b5 = var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(); let __pe_b6 = true; move |__pe_a0| introduceFunctionAliasEquation(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone()) }))?);
+            assign_variant_field!(varData => VarData::VarData::VAR_DATA_SIM; parameters = BVariable::VariablePointers::mapPtr(var_field!((*varData).parameters, VarData::VarData::VAR_DATA_SIM).clone(), Arc::new({ let __pe_b1 = Arc::new({ let __pe_b1 = map.clone(); let __pe_b2 = aux_index.clone(); let __pe_b3 = Arc::new(crate::NBEquation::Iterator::EMPTY); let __pe_b4 = true; move |__pe_a0| introduceFunctionAlias(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }); let __pe_b2 = (std::sync::Arc::new(fnptr!(Expression::fakeMap, Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| BVariable::mapExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }))?);
+            (new_vars_disc, new_vars_cont, new_vars_init, new_vars_recd, new_eqns_disc, new_eqns_cont, new_eqns_init) = resolveAux(map.clone(), var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(), true, new_vars_disc.clone(), new_vars_cont.clone(), new_vars_init.clone(), new_vars_recd.clone(), new_eqns_disc.clone(), new_eqns_cont.clone(), new_eqns_init.clone())?;
+            (new_eqns_clck, new_eqns_infr, new_vars_clck, new_vars_infr, clock_map, infer_map) = addClockedAlias(var_field!((*eqData).simulation, EqData::EqData::EQ_DATA_SIM).clone(), var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone())?;
+            ()
+        },
+        _ => (),
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    varData = BVariable::VarData::addTypedList(varData.clone(), new_vars_cont.clone(), VarData::VarType::ALGEBRAIC.clone())?;
+    varData = BVariable::VarData::addTypedList(varData.clone(), new_vars_disc.clone(), VarData::VarType::DISCRETE.clone())?;
+    varData = BVariable::VarData::addTypedList(varData.clone(), new_vars_init.clone(), VarData::VarType::PARAMETER.clone())?;
+    varData = BVariable::VarData::addTypedList(varData.clone(), new_vars_recd.clone(), VarData::VarType::RECORD.clone())?;
+    varData = BVariable::VarData::addTypedList(varData.clone(), new_vars_clck.clone(), VarData::VarType::CLOCK.clone())?;
+    varData = BVariable::VarData::addTypedList(varData.clone(), new_vars_infr.clone(), VarData::VarType::DISCRETE.clone())?;
+    varData = BVariable::VarData::addTypedList(varData.clone(), UnorderedSet::toList(set.clone()), VarData::VarType::ITERATOR.clone())?;
+    eqData = BEquation::EqData::addTypedList(eqData.clone(), new_eqns_cont.clone(), EqData::EqType::CONTINUOUS.clone(), false)?;
+    eqData = BEquation::EqData::addTypedList(eqData.clone(), new_eqns_disc.clone(), EqData::EqType::DISCRETE.clone(), false)?;
+    eqData = BEquation::EqData::addTypedList(eqData.clone(), new_eqns_init.clone(), EqData::EqType::INITIAL.clone(), false)?;
+    eqData = BEquation::EqData::addTypedList(eqData.clone(), new_eqns_clck.clone(), EqData::EqType::CLOCKED.clone(), false)?;
+    eqData = BEquation::EqData::addTypedList(eqData.clone(), new_eqns_infr.clone(), EqData::EqType::DISCRETE.clone(), false)?;
+    for mut var in &*new_vars_recd.clone() {
+        let mut var = var.clone();
+        BackendDAE::lowerRecordChildren(var.clone(), BVariable::VarData::getVariables(varData.clone())?)?;
+    }
+    if Flags::isSet(Flags::DUMP_CSE.clone())? {
+        for mut tpl in &*debug_lst_sim.clone() {
+            let mut tpl = tpl.clone();
+            UnorderedMap::remove(Util::tuple21(tpl.clone()), map.clone())?;
+        }
+        debug_lst_ini = UnorderedMap::toList(map.clone());
+        println!("{}", (aliasListToString(debug_lst_sim.clone(), (std::sync::Arc::new(Call_Id::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Call_Id::Call_Id>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(fnptr!(Call_Aux::toString, Arc<Call_Aux::Call_Aux>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Call_Aux::Call_Aux>) -> Result<ArcStr> + 'static>), (literal!("Simulation Function")).clone())?).clone());
+        println!("{}", (aliasListToString(debug_lst_ini.clone(), (std::sync::Arc::new(Call_Id::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Call_Id::Call_Id>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(fnptr!(Call_Aux::toString, Arc<Call_Aux::Call_Aux>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Call_Aux::Call_Aux>) -> Result<ArcStr> + 'static>), (literal!("Initial Function")).clone())?).clone());
+        println!("{}", (aliasListToString(UnorderedMap::toList(clock_map.clone()), (std::sync::Arc::new(BClock::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("Clocked Function")).clone())?).clone());
+        println!("{}", (aliasListToString(UnorderedMap::toList(infer_map.clone()), (std::sync::Arc::new(BClock::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("Inferred Clocked Function")).clone())?).clone());
+    }
+    Ok((varData, eqData))
 }
 
 fn aliasListToString<T1: Clone + 'static, T2: Clone + 'static>(mut aux_lst: Arc<metamodelica::List<(T1, T2)>>, mut func1: Arc<dyn ::std::ops::Fn(T1) -> Result<ArcStr> + 'static>, mut func2: Arc<dyn ::std::ops::Fn(T2) -> Result<ArcStr> + 'static>, mut name: ArcStr) -> Result<ArcStr> {
@@ -503,7 +649,7 @@ fn introduceAlias(mut exp: Arc<Expression::NFExpression>, mut map: Arc<Unordered
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        if Util::isNone(aux_opt.clone()) {
+        if isNone(aux_opt.clone()) {
             aux = Arc::new(Call_Aux::Call_Aux { replacer: exp.clone(), kind: if (Type::isDiscrete(ty.clone())) {EquationKind::DISCRETE.clone()} else {EquationKind::CONTINUOUS.clone()}, parsed: false });
             UnorderedMap::add(id.clone(), aux.clone(), map.clone())?;
         }
@@ -664,9 +810,9 @@ fn collectSlicedStatesAlias(mut exp: Arc<Expression::NFExpression>, mut iter: Ar
             let mut iter_size: i32 = 0;
             let mut cref_size: i32 = 0;
             let mut var_size: i32 = 0;
-            let mut call_crefs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>;
+            let mut call_crefs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
             let mut stripped_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-            let mut indices: Arc<UnorderedSet::UnorderedSet<i32>>;
+            let mut indices: Arc<UnorderedSet::UnorderedSet<i32>> = <Arc<UnorderedSet::UnorderedSet<i32>> as ::std::default::Default>::default();
             let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
             let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
             let mut maps: Arc<metamodelica::List<Option<Arc<Iterator::Iterator>>>> = metamodelica::nil();
@@ -710,7 +856,7 @@ fn collectSlicedStatesAlias(mut exp: Arc<Expression::NFExpression>, mut iter: Ar
 fn getSlicedStatesSet(mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<i32>>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> {
     let mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
     let mut state: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut indices: Arc<UnorderedSet::UnorderedSet<i32>>;
+    let mut indices: Arc<UnorderedSet::UnorderedSet<i32>> = <Arc<UnorderedSet::UnorderedSet<i32>> as ::std::default::Default>::default();
     for mut tpl in &*UnorderedMap::toList(map.clone()) {
         let mut tpl = tpl.clone();
         (state, indices) = tpl.clone();

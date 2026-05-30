@@ -933,32 +933,32 @@ pub fn typeSig(mut in_txt: Tpl::Text, mut in_a_it: Arc<TplAbsyn::TypeSignature>)
             txt = pathIdent(txt.clone(), i_name.clone())?;
             txt.clone()
         },
-        (txt, Deref @ TplAbsyn::TypeSignature::STRING_TYPE) => {
+        (txt, Deref @ TplAbsyn::TypeSignature::STRING_TYPE { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("String")).clone() }))?;
             txt.clone()
         },
-        (txt, Deref @ TplAbsyn::TypeSignature::TEXT_TYPE) => {
+        (txt, Deref @ TplAbsyn::TypeSignature::TEXT_TYPE { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Tpl.Text")).clone() }))?;
             txt.clone()
         },
-        (txt, Deref @ TplAbsyn::TypeSignature::STRING_TOKEN_TYPE) => {
+        (txt, Deref @ TplAbsyn::TypeSignature::STRING_TOKEN_TYPE { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Tpl.StringToken")).clone() }))?;
             txt.clone()
         },
-        (txt, Deref @ TplAbsyn::TypeSignature::INTEGER_TYPE) => {
+        (txt, Deref @ TplAbsyn::TypeSignature::INTEGER_TYPE { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Integer")).clone() }))?;
             txt.clone()
         },
-        (txt, Deref @ TplAbsyn::TypeSignature::REAL_TYPE) => {
+        (txt, Deref @ TplAbsyn::TypeSignature::REAL_TYPE { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Real")).clone() }))?;
             txt.clone()
         },
-        (txt, Deref @ TplAbsyn::TypeSignature::BOOLEAN_TYPE) => {
+        (txt, Deref @ TplAbsyn::TypeSignature::BOOLEAN_TYPE { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Boolean")).clone() }))?;
             txt.clone()
@@ -1003,7 +1003,7 @@ fn lm_45(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -
 pub fn mmStringTokenConstant(mut in_txt: Tpl::Text, mut in_a_it: Arc<Tpl::StringToken>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_it.clone())) {
-        (txt, Deref @ Tpl::StringToken::ST_NEW_LINE) => {
+        (txt, Deref @ Tpl::StringToken::ST_NEW_LINE { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Tpl.ST_NEW_LINE()")).clone() }))?;
             txt.clone()
@@ -1342,7 +1342,7 @@ pub fn mmMatchingExp(mut in_txt: Tpl::Text, mut in_a_it: Arc<TplAbsyn::MatchingE
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
             txt.clone()
         },
-        (txt, Deref @ TplAbsyn::MatchingExp::NONE_MATCH) => {
+        (txt, Deref @ TplAbsyn::MatchingExp::NONE_MATCH { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("NONE()")).clone() }))?;
             txt.clone()
@@ -1384,7 +1384,7 @@ pub fn mmMatchingExp(mut in_txt: Tpl::Text, mut in_a_it: Arc<TplAbsyn::MatchingE
             txt = Tpl::writeStr(txt.clone(), (i_value_1.clone()).clone())?;
             txt.clone()
         },
-        (txt, Deref @ TplAbsyn::MatchingExp::REST_MATCH) => {
+        (txt, Deref @ TplAbsyn::MatchingExp::REST_MATCH { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
             txt.clone()
@@ -1860,7 +1860,7 @@ fn fun_79(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_sl: Arc<metamodelic
 pub fn sConstStringToken(mut in_txt: Tpl::Text, mut in_a_it: Arc<Tpl::StringToken>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_it.clone())) {
-        (txt, Deref @ Tpl::StringToken::ST_NEW_LINE) => {
+        (txt, Deref @ Tpl::StringToken::ST_NEW_LINE { .. }) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\\n")).clone() }))?;
             txt.clone()
