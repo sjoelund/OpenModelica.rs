@@ -8046,10 +8046,22 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
     // fall back to the prior non-coercing behavior, which is fine for them.
     match func {
         "SOME" => {
-            let arg = args
-                .first()
+            let a = args.first();
+            let mut arg = a
                 .map(|a| emit_builtin_call_arg(func, 0, a, is_const, ctx, top_level))
                 .unwrap_or_default();
+            // A multi-output call wrapped in SOME yields only its FIRST output in
+            // scalar context (e.g. `SOME(ExpressionSimplify.simplify(e))`, where
+            // `simplify` returns `(Exp, Boolean)`); the Option must wrap that
+            // first output, not the whole tuple. Take `.0` when the argument is a
+            // tuple-typed call/partial-application. A first-class `tuple<..>`
+            // value (a Var/field) is wrapped whole, so it is left intact.
+            if let Some(a) = a
+                && matches!(a, TypedExp::Call { .. } | TypedExp::PartEval { .. })
+                && matches!(a.ty(), Ty::Tuple(_))
+            {
+                arg = format!("({arg}).0");
+            }
             Ok(format!("Some({arg})"))
         }
         "NONE" => Ok("None".to_owned()),
