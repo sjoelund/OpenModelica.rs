@@ -9428,14 +9428,27 @@ fn emit_call_arg_with_formal<'a>(
                 name.clone()
             };
             let bare = dotted.rsplit('.').next().unwrap_or(&dotted);
-            let infallible = is_infallible_builtin(bare)
+            // A builtin whose *call* form lowers to a method/operator (no
+            // nameable `fn` item) but which has a dedicated runtime free
+            // function for its value form (e.g. `listReverse` →
+            // `metamodelica::listReverse`). These are infallible by
+            // construction (see `builtin_value_fn`), so they take the same
+            // `fnptr!` Ok-wrapping path as other infallible references — but the
+            // referenced path must be the runtime free fn, not the bare
+            // (un-nameable) builtin name recovered from `raw`.
+            let value_fn_path: Option<&'static str> =
+                builtin_value_fn(bare).map(|(p, _, _)| p);
+            let infallible = value_fn_path.is_some()
+                || is_infallible_builtin(bare)
                 || resolve_call_qname(&dotted, ctx, top_level)
                     .as_deref()
                     .is_some_and(|q| ctx.is_known_infallible_user_fn(q, top_level));
             if infallible {
                 // `raw` is the cloned form (`<path>.clone()` for a fn-item Var);
                 // strip the trailing `.clone()` to recover the path expression.
-                let path = raw.strip_suffix(".clone()").unwrap_or(&raw);
+                // For builtin value forms, use the dedicated runtime free fn.
+                let path = value_fn_path
+                    .unwrap_or_else(|| raw.strip_suffix(".clone()").unwrap_or(&raw));
                 let in_tys: Vec<String> = inputs.iter().map(|i| {
                     // Emit `_` for any input type that is not fully concrete — a
                     // type variable, or one whose rendering still contains the
@@ -13066,6 +13079,25 @@ fn is_infallible_builtin(func: &str) -> bool {
     // and plain "intMul" → "intMul".
     let bare = func.rsplit('.').next().unwrap_or(func);
     matches!(builtin_fallibility(bare), Some(Fallibility::Infallible))
+}
+
+/// Builtins whose *direct call* form lowers to something that is not a nameable
+/// Rust `fn` item (a method, an operator, a macro), but which can still appear
+/// as a first-class function value (e.g. `Array.map(arr, listReverse)`). For
+/// those we reference a dedicated free function in the runtime instead, wrapped
+/// through `fnptr!`. Returns `(runtime fn path, arity, infallible)`.
+///
+/// Only list builtins that genuinely show up as higher-order values and whose
+/// call lowering is *not* already a free `fn`. Builtins that already lower to a
+/// free function (`listAppend`, `listLength`, …) reference that path directly
+/// via the normal `Ty::Function` resolution and need no entry here.
+fn builtin_value_fn(name: &str) -> Option<(&'static str, usize, bool)> {
+    match name {
+        // `listReverse(x)` lowers to the `x.reverse()` method; the free
+        // `metamodelica::listReverse` exists solely for the value form.
+        "listReverse" => Some(("metamodelica::listReverse", 1, true)),
+        _ => None,
+    }
 }
 
 /// True if `pat` contains any identifier binding (Var or nested As). Used by

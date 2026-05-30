@@ -1202,6 +1202,15 @@ pub fn listAppend<T: Clone>(lst1: Arc<List<T>>, lst2: Arc<List<T>>) -> Arc<List<
     lst1.append(&lst2)
 }
 
+/// Free-function form of the `listReverse` builtin (the `List::reverse` method).
+/// Direct calls lower to `x.reverse()`, but when `listReverse` is used as a
+/// first-class value (e.g. `Array.map(arr, listReverse)`) there must be a real
+/// function path to reference — methods cannot be named as `fn` items. Codegen
+/// emits `fnptr!(metamodelica::listReverse, _)` for that case.
+pub fn listReverse<T: Clone>(lst: Arc<List<T>>) -> Arc<List<T>> {
+    lst.reverse()
+}
+
 pub fn listMember<T: Clone+PartialEq>(element: T, lst: Arc<List<T>>) -> bool {
     lst.contains(&element)
 }
