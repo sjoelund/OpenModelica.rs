@@ -1319,18 +1319,12 @@ fn record_field_tys<'a>(
         MM::ClassDef::Parts { members, .. } | MM::ClassDef::ClassExtends { members, .. } => members,
         _ => return vec![],
     };
-    let direct: Vec<(String, Ty)> = members.iter().filter_map(|m| {
-        let MM::ClassMember::Component(cm) = m else { return None };
-        let child = node.children.get(&cm.name)?;
-        Some((cm.name.clone(), child.ty.clone()))
-    }).collect();
-    if !direct.is_empty() {
-        return direct;
-    }
     // Single-record uniontype: hierarchy seeding emits the record under the
     // uniontype's own qname (no separate record struct + alias), so direct
     // field lookup on the uniontype node finds no components — the components
-    // live on the sole record child. Forward to it.
+    // live on the sole record child. A uniontype's *own* component members
+    // (e.g. a `constant Matching EMPTY_MATCHING = ...`) are NOT record fields,
+    // so handle the uniontype case before collecting them.
     if matches!(c.restriction, Absyn::Restriction::R_UNIONTYPE) {
         let record_children: Vec<&NameNode> = node.children.values()
             .filter(|child| matches!(&child.kind, NodeKind::Class(cc)
@@ -1350,8 +1344,14 @@ fn record_field_tys<'a>(
                 }).collect();
             }
         }
+        // Multi-record uniontype has no flat field list.
+        return vec![];
     }
-    direct
+    members.iter().filter_map(|m| {
+        let MM::ClassMember::Component(cm) = m else { return None };
+        let child = node.children.get(&cm.name)?;
+        Some((cm.name.clone(), child.ty.clone()))
+    }).collect()
 }
 
 /// Return the formal type-parameter names declared on a user-defined class

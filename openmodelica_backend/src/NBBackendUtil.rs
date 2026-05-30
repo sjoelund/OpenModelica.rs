@@ -397,7 +397,7 @@ pub fn getLocalSystem(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, 
             let __cell0 = i.clone();
             map_back.clone().borrow_mut()[(j.clone()-1) as usize] = __cell0;
         }
-        UnorderedMap::addUnique(matching.eqn_to_var[(i.clone()-1) as usize].clone(), j.clone(), var_loc.clone())?;
+        UnorderedMap::addUnique(matching.eqn_to_var.borrow()[(i.clone()-1) as usize].clone(), j.clone(), var_loc.clone())?;
         {
             let __cell1 = j.clone();
             eqn_to_var.clone().borrow_mut()[(j.clone()-1) as usize] = __cell1;

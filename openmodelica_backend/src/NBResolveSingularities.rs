@@ -88,7 +88,7 @@ fn getMSSS(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: met
     let mut color: i32 = 0;
     let __range0 = 1..=(matching.eqn_to_var.clone().borrow().len() as i32);
     for mut eqn in __range0 {
-        if matching.eqn_to_var[(eqn.clone()-1) as usize].clone() == -1 {
+        if matching.eqn_to_var.borrow()[(eqn.clone()-1) as usize].clone() == -1 {
             eqn_candidates = cons(eqn.clone(), eqn_candidates.clone());
         }
     }
@@ -142,7 +142,7 @@ fn fillColorEqn(mut eqn: i32, mut color: i32, mut eqn_coloring: metamodelica::Ar
 }
 
 fn fillColorVar(mut var: i32, mut color: i32, mut eqn_coloring: metamodelica::Array<i32>, mut var_coloring: metamodelica::Array<i32>, mut color_clustering: metamodelica::Array<i32>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut matching: Arc<Matching::NBMatching>, mut mapping: Arc<Adjacency::Mapping::Mapping>) -> Result<()> {
-    let mut eqn: i32 = matching.var_to_eqn[(var.clone()-1) as usize].clone();
+    let mut eqn: i32 = matching.var_to_eqn.borrow()[(var.clone()-1) as usize].clone();
     if var_coloring.borrow()[(var.clone()-1) as usize].clone() == -1 {
         {let _arr = var_coloring.clone(); _arr.borrow_mut()[(var.clone()-1) as usize] = color.clone(); _arr};
         if eqn.clone() != -1 {

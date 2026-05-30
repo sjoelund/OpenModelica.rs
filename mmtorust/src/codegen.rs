@@ -13199,18 +13199,12 @@ fn record_field_tys<'a>(
         MM::ClassDef::Parts { members, .. } | MM::ClassDef::ClassExtends { members, .. } => members,
         _ => return None,
     };
-    let direct: Vec<(String, Ty)> = members.iter().filter_map(|m| {
-        let MM::ClassMember::Component(cm) = m else { return None };
-        let child = node.children.get(&cm.name)?;
-        Some((cm.name.clone(), child.ty.clone()))
-    }).collect();
-    if !direct.is_empty() {
-        return Some(direct);
-    }
-    // Single-record uniontype: the parent uniontype's body holds the record
-    // declaration rather than components — the actual fields live on the
-    // sole record child. Mirror the lookup walk in
-    // `typedexp::record_field_tys`.
+    // Single-record uniontype: the uniontype's own body holds the record
+    // declaration plus any constants/functions — its direct component members
+    // (e.g. `constant Matching EMPTY_MATCHING = ...`) are NOT record fields.
+    // The actual fields live on the sole record child. Handle this *before*
+    // collecting direct components so a uniontype-level constant isn't mistaken
+    // for a field. Mirror the lookup walk in `typedexp::record_field_tys`.
     if matches!(c.restriction, Absyn::Restriction::R_UNIONTYPE) {
         let record_children: Vec<&NameNode> = node.children.values()
             .filter(|child| matches!(&child.kind, NodeKind::Class(cc)
@@ -13221,7 +13215,7 @@ fn record_field_tys<'a>(
             if let NodeKind::Class(rc) = &rec_node.kind {
                 let rec_members: &[MM::ClassMember] = match &rc.body {
                     MM::ClassDef::Parts { members, .. } | MM::ClassDef::ClassExtends { members, .. } => members,
-                    _ => return Some(direct),
+                    _ => return None,
                 };
                 let from_rec: Vec<(String, Ty)> = rec_members.iter().filter_map(|m| {
                     let MM::ClassMember::Component(cm) = m else { return None };
@@ -13231,7 +13225,17 @@ fn record_field_tys<'a>(
                 return Some(from_rec);
             }
         }
+        // Multi-record (or zero-record) uniontype: not a single struct, so it
+        // has no flat field list. Returning `None` lets callers fall back to
+        // their variant-aware paths rather than treating uniontype-level
+        // constants as fields.
+        return None;
     }
+    let direct: Vec<(String, Ty)> = members.iter().filter_map(|m| {
+        let MM::ClassMember::Component(cm) = m else { return None };
+        let child = node.children.get(&cm.name)?;
+        Some((cm.name.clone(), child.ty.clone()))
+    }).collect();
     Some(direct)
 }
 

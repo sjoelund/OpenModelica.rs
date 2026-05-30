@@ -233,7 +233,7 @@ pub fn getMatches(mut matching: Arc<NBMatching>, mut mapping_opt: Option<Arc<Adj
         for mut var in __range0 {
             arr_var = ExpandableArray::get(mapping.var_StA.borrow()[(var.clone()-1) as usize].clone(), variables.varArr.clone())?;
             (start_idx, _) = mapping.var_AtS.borrow()[(mapping.var_StA.borrow()[(var.clone()-1) as usize].clone()-1) as usize].clone();
-            if matching.var_to_eqn[(var.clone()-1) as usize].clone() > 0 {
+            if matching.var_to_eqn.borrow()[(var.clone()-1) as usize].clone() > 0 {
                 Slice::addToSliceMap(arr_var.clone(), var.clone() - start_idx.clone(), var_map_matched.clone())?;
             } else {
                 Slice::addToSliceMap(arr_var.clone(), var.clone() - start_idx.clone(), var_map_unmatched.clone())?;
@@ -243,7 +243,7 @@ pub fn getMatches(mut matching: Arc<NBMatching>, mut mapping_opt: Option<Arc<Adj
         for mut eqn in __range1 {
             arr_eqn = ExpandableArray::get(mapping.eqn_StA.borrow()[(eqn.clone()-1) as usize].clone(), equations.eqArr.clone())?;
             (start_idx, _) = mapping.eqn_AtS.borrow()[(mapping.eqn_StA.borrow()[(eqn.clone()-1) as usize].clone()-1) as usize].clone();
-            if matching.eqn_to_var[(eqn.clone()-1) as usize].clone() > 0 {
+            if matching.eqn_to_var.borrow()[(eqn.clone()-1) as usize].clone() > 0 {
                 Slice::addToSliceMap(arr_eqn.clone(), eqn.clone() - start_idx.clone(), eqn_map_matched.clone())?;
             } else {
                 Slice::addToSliceMap(arr_eqn.clone(), eqn.clone() - start_idx.clone(), eqn_map_unmatched.clone())?;
@@ -284,7 +284,7 @@ pub fn getMatches(mut matching: Arc<NBMatching>, mut mapping_opt: Option<Arc<Adj
     } else {
         let __range2 = 1..=(matching.var_to_eqn.clone().borrow().len() as i32);
         for mut var in __range2 {
-            if matching.var_to_eqn[(var.clone()-1) as usize].clone() > 0 {
+            if matching.var_to_eqn.borrow()[(var.clone()-1) as usize].clone() > 0 {
                 matched_vars = cons(Arc::new(Slice::NBSlice { t: ExpandableArray::get(var.clone(), variables.varArr.clone())?, indices: metamodelica::nil() }), matched_vars.clone());
             } else {
                 unmatched_vars = cons(Arc::new(Slice::NBSlice { t: ExpandableArray::get(var.clone(), variables.varArr.clone())?, indices: metamodelica::nil() }), unmatched_vars.clone());
@@ -292,7 +292,7 @@ pub fn getMatches(mut matching: Arc<NBMatching>, mut mapping_opt: Option<Arc<Adj
         }
         let __range3 = 1..=(matching.eqn_to_var.clone().borrow().len() as i32);
         for mut eqn in __range3 {
-            if matching.eqn_to_var[(eqn.clone()-1) as usize].clone() > 0 {
+            if matching.eqn_to_var.borrow()[(eqn.clone()-1) as usize].clone() > 0 {
                 matched_eqns = cons(Arc::new(Slice::NBSlice { t: ExpandableArray::get(eqn.clone(), equations.eqArr.clone())?, indices: metamodelica::nil() }), matched_eqns.clone());
             } else {
                 unmatched_eqns = cons(Arc::new(Slice::NBSlice { t: ExpandableArray::get(eqn.clone(), equations.eqArr.clone())?, indices: metamodelica::nil() }), unmatched_eqns.clone());
