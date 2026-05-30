@@ -6904,9 +6904,9 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
                 // would fail to coerce. Wrap each PartEval arg eagerly in
                 // `Arc::new(...)`; everything else flows through the normal
                 // owned-clone path.
-                let wrap_part_eval = |a: &TypedExp, raw: String| -> String {
-                    if matches!(a, TypedExp::PartEval { .. }) { format!("Arc::new({raw})") } else { raw }
-                };
+                // A PartEval already self-wraps as `Arc<dyn Fn(..)>` in
+                // `emit_parteval`, so it's forwarded unchanged here.
+                let wrap_part_eval = |_a: &TypedExp, raw: String| -> String { raw };
                 let mut parts: Vec<String> = args.iter().map(|a| {
                     let raw = emit_cloned_call_arg(a, is_const, ctx, top_level);
                     wrap_part_eval(a, raw)
@@ -7128,7 +7128,8 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
                         } else if field_is_fn_callback(fname)
                             && matches!(fa, TypedExp::PartEval { .. })
                         {
-                            format!("Arc::new({val})")
+                            // PartEval self-wraps as `Arc<dyn Fn(..)>`; use as-is.
+                            val
                         } else {
                             // Apply Integer→Real / tuple→first coercion based on
                             // the declared field type. Without this, MetaModelica
@@ -7153,7 +7154,8 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
                     } else if field_is_fn_callback(&n)
                         && matches!(&na, TypedExp::PartEval { .. })
                     {
-                        format!("Arc::new({val})")
+                        // PartEval self-wraps as `Arc<dyn Fn(..)>`; use as-is.
+                        val
                     } else {
                         let ft = field_ty_lookup(&n);
                         coerce_assign_expr_pub(val, &na.ty(), ft.as_ref())
@@ -7399,10 +7401,11 @@ fn emit_parteval<'a>(
         }
     }
     let sig_ty = &effective_sig;
-    let (formal_names, formal_tys): (Vec<String>, Vec<Ty>) = match sig_ty {
-        Ty::Function { inputs, .. } => (
+    let (formal_names, formal_tys, fn_output): (Vec<String>, Vec<Ty>, Ty) = match sig_ty {
+        Ty::Function { inputs, output, .. } => (
             inputs.iter().map(|i| i.name.clone()).collect(),
             inputs.iter().map(|i| i.ty.clone()).collect(),
+            (**output).clone(),
         ),
         _ => {
             // We have no signature info, so we can't tell how many formals
@@ -7431,6 +7434,10 @@ fn emit_parteval<'a>(
     // a fresh closure parameter name (forwarded to the call).
     let mut call_arg_exprs: Vec<String> = Vec::new();
     let mut closure_params: Vec<String> = Vec::new();
+    // Types of the unbound formals, in closure-parameter order — used to build
+    // the `Arc<dyn Fn(..)>` cast on the finished closure (see the self-wrap at
+    // the end of this function).
+    let mut closure_param_tys: Vec<Ty> = Vec::new();
 
     // When the formal is an anonymous callback slot (`Arc<dyn Fn(...) -> Result<_>>`),
     // give the capture an explicit `Arc<dyn Fn(...)>` annotation so the
@@ -7478,6 +7485,7 @@ fn emit_parteval<'a>(
             // Unbound — becomes a closure parameter.
             let p = format!("__pe_a{i}");
             closure_params.push(p.clone());
+            closure_param_tys.push(formal_tys.get(i).cloned().unwrap_or(Ty::Unknown));
             call_arg_exprs.push(p);
         }
     }
@@ -7520,11 +7528,27 @@ fn emit_parteval<'a>(
     };
     let closure = format!("move |{params_list}| {body_expr}");
 
-    if captures.is_empty() {
+    let closure_block = if captures.is_empty() {
         closure
     } else {
         format!("{{ {} {closure} }}", captures.join(" "))
-    }
+    };
+
+    // A partial application is a function *value*; its Rust representation is a
+    // boxed trait object, the same `Arc<dyn Fn(..) -> Result<..>>` shape every
+    // callback slot (and every function-typed `Var` value, see the `Ty::Function`
+    // arm in `emit_exp`) uses. Self-wrap here so a PartEval works uniformly in
+    // any value position — list/tuple/array elements, assignments, call args —
+    // without each context needing its own `Arc::new(..)` coercion. The unbound
+    // formals are the closure's parameters; the underlying function's output is
+    // the closure's result. Type variables not pinned at this site become `_`
+    // (inferred from the inner call), mirroring the function-`Var` wrap.
+    let param_ty_strs: Vec<String> = closure_param_tys.iter()
+        .map(|t| if ty_mentions_typevar(t) { "_".to_owned() } else { fmt_param_ty(t, ctx) })
+        .collect();
+    let out_ty_str = if ty_mentions_typevar(&fn_output) { "_".to_owned() } else { fmt_param_ty(&fn_output, ctx) };
+    format!("(std::sync::Arc::new({closure_block}) as std::sync::Arc<dyn ::std::ops::Fn({}) -> Result<{out_ty_str}> + 'static>)",
+        param_ty_strs.join(", "))
 }
 
 /// Emit a reduction expression as a Rust iterator pipeline.
@@ -9566,6 +9590,13 @@ fn emit_call_arg_with_formal<'a>(
         {
             return raw;
         }
+        // A PartEval self-wraps as `Arc::new(closure) as Arc<dyn Fn(..)>` in
+        // `emit_parteval` (a partial application *is* a boxed function value),
+        // so it already has the trait-object shape this slot wants. Wrapping
+        // again would produce `Arc<Arc<dyn Fn>>`; forward it as-is.
+        if matches!(arg, TypedExp::PartEval { .. }) {
+            return raw;
+        }
         // Same case 1b shape, but the Var's `ty` is still Ty::Unknown because
         // typedexp didn't promote the bare reference to its function type
         // (the inference pass only consults the leading segment). The Var
@@ -9631,11 +9662,12 @@ fn emit_call_arg_with_formal<'a>(
     // the actual is itself a synthesised closure (PartEval or anonymous
     // Function value), the surrounding callback slot is necessarily
     // `Arc<dyn Fn>` — passing a bare closure value fails with E0308.
-    // Wrap eagerly; if the formal turns out to be a fn-pointer slot
+    // A PartEval already self-wraps as `Arc<dyn Fn(..)>` (see `emit_parteval`),
+    // so forward it unchanged; if the formal turns out to be a fn-pointer slot
     // instead, that's a separate codegen bug at the receiver side worth
     // surfacing explicitly.
     if matches!(arg, TypedExp::PartEval { .. }) {
-        return format!("Arc::new({raw})");
+        return raw;
     }
     // Implicit Integer→Real promotion: MetaModelica silently widens i32 actuals
     // to f64 when the formal is declared `Real`. Without this the generated
@@ -15523,18 +15555,11 @@ fn emit_stmt<'a>(
         if matches!(lhs_ty, Some(Ty::F64)) && *scrut_ty == Ty::I32 {
             expr = format!("metamodelica::OrderedFloat(({expr}) as f64)");
         }
-        // Partial-application closures (`function f(...)`) are emitted as bare
-        // `move |..| ..` expressions by `emit_parteval`. When the assignment
-        // target is a function-typed slot (e.g. `LookupTree.ConflictFunc`,
-        // lowered to `Arc<dyn Fn(..) -> Result<..>>`), the closure must be
-        // wrapped in `Arc::new(...)` so the unsizing coercion to the trait
-        // object can fire at the assignment site. Mirror the same coercion
-        // `emit_call_arg_with_formal` applies for function-typed call args.
-        if matches!(lhs_ty, Some(Ty::Function { .. }) | Some(Ty::FunctionAlias { .. }))
-            && matches!(rhs, TypedExp::PartEval { .. })
-        {
-            expr = format!("Arc::new({expr})");
-        }
+        // Partial-application closures (`function f(...)`) self-wrap as
+        // `Arc::new(closure) as Arc<dyn Fn(..) -> Result<..>>` in `emit_parteval`
+        // (a partial application is a boxed function value), so a PartEval RHS
+        // already matches a function-typed slot (e.g. `LookupTree.ConflictFunc`)
+        // with no extra coercion needed here.
         // A range can't be stored in an Array/List binding without
         // materialising it. We haven't lowered that path yet; emit a TODO so
         // the failure shows up at the call site rather than as opaque type
