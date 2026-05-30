@@ -7023,7 +7023,12 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
             };
             let head_s = emit_call_arg_with_formal(head, elem_ty.as_ref(), is_const, ctx, top_level);
             let tail_s = emit_call_arg_with_formal(tail, Some(ty), is_const, ctx, top_level);
-            format!("cons({head_s}, {tail_s})")
+            // Always use the fully-qualified path: the `::` cons operator is
+            // unconditionally `metamodelica::cons`, and a glob-imported bare
+            // `cons` is shadowed when the function has a local binding named
+            // `cons` (e.g. a `Constraint` list in BackendDAEUtil), turning the
+            // call into `Arc<List<..>>(..)` — E0618 "expected function".
+            format!("metamodelica::cons({head_s}, {tail_s})")
         }
 
         TypedExp::Tuple(elems) => {
