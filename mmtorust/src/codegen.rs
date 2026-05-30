@@ -6445,10 +6445,22 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
             // unpacked — they could be instantiated as a tuple downstream.
             let lhs_is_tuple = matches!(lhs.ty(), Ty::Tuple(_));
             let rhs_is_tuple = matches!(rhs.ty(), Ty::Tuple(_));
-            if lhs_is_tuple && !rhs_is_tuple && !matches!(rhs.ty(), Ty::Unknown | Ty::TypeVar(_)) {
+            // Logical operators (`and`/`or`) require boolean operands, so a
+            // tuple-returning call in either slot takes its first element —
+            // even when *both* operands are tuples (e.g. `isSimpleExp(a) and
+            // isSimpleExp(b)`, where `isSimpleExp` returns `(Boolean, Integer)`),
+            // a case the asymmetric "other side is a known scalar" rule below
+            // can't detect. Compute each side's coercion once to avoid a double
+            // `.0`.
+            let logical = matches!(op, BinOpKind::And | BinOpKind::Or);
+            let l_needs_first = lhs_is_tuple
+                && (logical || (!rhs_is_tuple && !matches!(rhs.ty(), Ty::Unknown | Ty::TypeVar(_))));
+            let r_needs_first = rhs_is_tuple
+                && (logical || (!lhs_is_tuple && !matches!(lhs.ty(), Ty::Unknown | Ty::TypeVar(_))));
+            if l_needs_first {
                 l = format!("({l}).0");
             }
-            if rhs_is_tuple && !lhs_is_tuple && !matches!(lhs.ty(), Ty::Unknown | Ty::TypeVar(_)) {
+            if r_needs_first {
                 r = format!("({r}).0");
             }
             if lhs.ty() == Ty::I32 && rhs.ty() == Ty::F64 {

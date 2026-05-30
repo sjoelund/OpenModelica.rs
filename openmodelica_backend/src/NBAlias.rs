@@ -523,12 +523,12 @@ fn findSimpleEquation(mut eq_ptr: Pointer::Pointer<Arc<Equation::Equation>>, mut
     let mut crefTpl: CrefTpl = EMPTY_CREF_TPL().clone();
     eq = Pointer::access(eq_ptr.clone());
     crefTpl = (::match_deref::match_deref! { match &(eq.clone()) {
-        Deref @ BEquation::Equation::SCALAR_EQUATION { .. } if (isSimpleExp(var_field!((*eq).lhs, Equation::Equation::SCALAR_EQUATION).clone(), true) && isSimpleExp(var_field!((*eq).rhs, Equation::Equation::SCALAR_EQUATION).clone(), true)) => {
+        Deref @ BEquation::Equation::SCALAR_EQUATION { .. } if ((isSimpleExp(var_field!((*eq).lhs, Equation::Equation::SCALAR_EQUATION).clone(), true)).0 && (isSimpleExp(var_field!((*eq).rhs, Equation::Equation::SCALAR_EQUATION).clone(), true)).0) => {
             crefTpl = Expression::fold(var_field!((*eq).rhs, Equation::Equation::SCALAR_EQUATION).clone(), (std::sync::Arc::new(findCrefs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, CrefTpl) -> Result<CrefTpl> + 'static>), crefTpl.clone())?;
             crefTpl = Expression::fold(var_field!((*eq).lhs, Equation::Equation::SCALAR_EQUATION).clone(), (std::sync::Arc::new(findCrefs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, CrefTpl) -> Result<CrefTpl> + 'static>), crefTpl.clone())?;
             crefTpl.clone()
         },
-        Deref @ BEquation::Equation::ARRAY_EQUATION { .. } if (isSimpleExp(var_field!((*eq).lhs, Equation::Equation::ARRAY_EQUATION).clone(), true) && isSimpleExp(var_field!((*eq).rhs, Equation::Equation::ARRAY_EQUATION).clone(), true)) => {
+        Deref @ BEquation::Equation::ARRAY_EQUATION { .. } if ((isSimpleExp(var_field!((*eq).lhs, Equation::Equation::ARRAY_EQUATION).clone(), true)).0 && (isSimpleExp(var_field!((*eq).rhs, Equation::Equation::ARRAY_EQUATION).clone(), true)).0) => {
             crefTpl = Expression::fold(var_field!((*eq).rhs, Equation::Equation::ARRAY_EQUATION).clone(), (std::sync::Arc::new(findCrefs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, CrefTpl) -> Result<CrefTpl> + 'static>), crefTpl.clone())?;
             crefTpl = Expression::fold(var_field!((*eq).lhs, Equation::Equation::ARRAY_EQUATION).clone(), (std::sync::Arc::new(findCrefs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, CrefTpl) -> Result<CrefTpl> + 'static>), crefTpl.clone())?;
             crefTpl.clone()
