@@ -558,11 +558,11 @@ pub fn getModule() -> Result<Arc<dyn ::std::ops::Fn(Partition::Kind, Arc<Variabl
 pub fn categorize(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NBackendDAE>> {
     let mut bdae: Arc<BackendDAE::NBackendDAE> = bdae;
     bdae = ({
-        let mut ode: DoubleEnded::MutableList<Arc<Partition::Partition::Partition>> = DoubleEnded::MutableList::fromList(metamodelica::nil())?;
-        let mut alg: DoubleEnded::MutableList<Arc<Partition::Partition::Partition>> = DoubleEnded::MutableList::fromList(metamodelica::nil())?;
-        let mut ode_evt: DoubleEnded::MutableList<Arc<Partition::Partition::Partition>> = DoubleEnded::MutableList::fromList(metamodelica::nil())?;
-        let mut alg_evt: DoubleEnded::MutableList<Arc<Partition::Partition::Partition>> = DoubleEnded::MutableList::fromList(metamodelica::nil())?;
-        let mut clocked: DoubleEnded::MutableList<Arc<Partition::Partition::Partition>> = DoubleEnded::MutableList::fromList(metamodelica::nil())?;
+        let mut ode: DoubleEnded::MutableList<Arc<Partition::Partition::Partition>> = DoubleEnded::fromList(metamodelica::nil())?;
+        let mut alg: DoubleEnded::MutableList<Arc<Partition::Partition::Partition>> = DoubleEnded::fromList(metamodelica::nil())?;
+        let mut ode_evt: DoubleEnded::MutableList<Arc<Partition::Partition::Partition>> = DoubleEnded::fromList(metamodelica::nil())?;
+        let mut alg_evt: DoubleEnded::MutableList<Arc<Partition::Partition::Partition>> = DoubleEnded::fromList(metamodelica::nil())?;
+        let mut clocked: DoubleEnded::MutableList<Arc<Partition::Partition::Partition>> = DoubleEnded::fromList(metamodelica::nil())?;
         (::match_deref::match_deref! { match &(bdae.clone()) {
         Deref @ BackendDAE::MAIN { .. } => {
             for mut syst in &*var_field!((*bdae).ode, BackendDAE::NBackendDAE::MAIN).clone() {
@@ -570,11 +570,11 @@ pub fn categorize(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendD
                 Partition::Partition::categorize(syst.clone(), ode.clone(), alg.clone(), ode_evt.clone(), alg_evt.clone(), clocked.clone())?;
             }
             assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN;
-                ode = DoubleEnded::MutableList::toListAndClear(ode.clone())?,
-                algebraic = DoubleEnded::MutableList::toListAndClear(alg.clone())?,
-                ode_event = DoubleEnded::MutableList::toListAndClear(ode_evt.clone())?,
-                alg_event = DoubleEnded::MutableList::toListAndClear(alg_evt.clone())?,
-                clocked = DoubleEnded::MutableList::toListAndClear(clocked.clone())?
+                ode = DoubleEnded::toListAndClear(ode.clone(), metamodelica::nil()),
+                algebraic = DoubleEnded::toListAndClear(alg.clone(), metamodelica::nil()),
+                ode_event = DoubleEnded::toListAndClear(ode_evt.clone(), metamodelica::nil()),
+                alg_event = DoubleEnded::toListAndClear(alg_evt.clone(), metamodelica::nil()),
+                clocked = DoubleEnded::toListAndClear(clocked.clone(), metamodelica::nil())
             );
             bdae.clone()
         },

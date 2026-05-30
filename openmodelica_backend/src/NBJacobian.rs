@@ -1294,7 +1294,7 @@ fn makeAdjointComponent(mut lhsKey: Arc<ComponentRef::NFComponentRef>, mut adjoi
     let mut lhsVarPtr: Pointer::Pointer<Arc<Variable::NFVariable>>;
     terms = UnorderedMap::getOrFail(lhsKey.clone(), adjoint_map.clone());
     rhsExpr = buildAdjointRhs(lhsKey.clone(), terms.clone())?;
-    eqPtr = NBEquation::Equation::makeAssignment(Expression::fromCref(lhsKey.clone(), false)?, rhsExpr.clone(), Pointer::create(eqIndex.clone()), (contextName.clone()).clone(), Arc::new(crate::NBEquation::Iterator::EMPTY), NBEquation::EquationAttributes::default(NBEquation::EquationKind::CONTINUOUS.clone(), false)?)?;
+    eqPtr = NBEquation::Equation::makeAssignment(Expression::fromCref(lhsKey.clone(), false)?, rhsExpr.clone(), Pointer::create(eqIndex.clone()), (contextName.clone()).clone(), Arc::new(crate::NBEquation::Iterator::EMPTY), NBEquation::default(NBEquation::EquationKind::CONTINUOUS.clone(), false, None, None))?;
     lhsVarPtr = NBVariable::getVarPointer(lhsKey.clone(), metamodelica::sourceInfo!())?;
     eq = Pointer::access(eqPtr.clone());
     diffed_comp = (::match_deref::match_deref! { match &(eq.clone()) {
@@ -1552,7 +1552,7 @@ fn jacobianSymbolicAdjoint(mut name: ArcStr, mut jacType: JacobianType, mut seed
                     terms_j = UnorderedMap::getOrDefault(ySeedCref.clone(), loop_product_adjoint_map.clone(), metamodelica::nil());
                     lhs_j = buildAdjointRhs(ySeedCref.clone(), terms_j.clone())?;
                     rhs_j = Expression::fromCref(ySeedCref.clone(), false)?;
-                    resid_j = NBEquation::Equation::makeAssignment(lhs_j.clone(), rhs_j.clone(), idx.clone(), (newName.clone()).clone(), Arc::new(crate::NBEquation::Iterator::EMPTY), NBEquation::EquationAttributes::default(NBEquation::EquationKind::CONTINUOUS.clone(), false)?)?;
+                    resid_j = NBEquation::Equation::makeAssignment(lhs_j.clone(), rhs_j.clone(), idx.clone(), (newName.clone()).clone(), Arc::new(crate::NBEquation::Iterator::EMPTY), NBEquation::default(NBEquation::EquationKind::CONTINUOUS.clone(), false, None, None))?;
                     linResEqnPtrs = cons(NBEquation::Equation::createResidual(resid_j.clone(), None, false, false)?, linResEqnPtrs.clone());
                 } else {
                     continue;

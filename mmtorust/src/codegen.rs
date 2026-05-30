@@ -10002,6 +10002,36 @@ fn resolve_call_qname<'a>(
                 }
             }
         }
+        // MetaModelica: a package-level function referenced *through a type* in
+        // that package. `DoubleEnded.MutableList.fromList` names the function
+        // `fromList`, a sibling of the uniontype `MutableList` inside the
+        // generic package `DoubleEnded` (the call form OMC uses for generic
+        // containers). The whole-path lookup fails because `fromList` is not a
+        // member of `MutableList`; resolve it in the type's enclosing package.
+        //
+        // Generalises the 2-segment "enclosing-scope fallback" above (which
+        // only strips when the *head* segment is the type): here the prefix is
+        // `Pkg.Type`, so we strip the trailing type segment to reach `Pkg`.
+        // Only fires when the prefix resolves to a class that is a
+        // type/uniontype/record (never a package or function), so a genuine
+        // nested-package path (`Pkg.SubPkg.f`) is left untouched.
+        if let Some((prefix, last)) = func.rsplit_once('.')
+            && let Some(prefix_node) = lookup_node(prefix, top_level)
+            && let NodeKind::Class(c) = &prefix_node.kind
+            && matches!(c.restriction,
+                Absyn::Restriction::R_UNIONTYPE
+                | Absyn::Restriction::R_RECORD
+                | Absyn::Restriction::R_METARECORD { .. }
+                | Absyn::Restriction::R_TYPE
+                | Absyn::Restriction::R_ENUMERATION
+                | Absyn::Restriction::R_OPERATOR_RECORD)
+            && let Some((enclosing, _)) = prefix.rsplit_once('.')
+        {
+            let candidate = format!("{enclosing}.{last}");
+            if exists(&candidate) {
+                return Some(candidate);
+            }
+        }
         return None;
     }
 
