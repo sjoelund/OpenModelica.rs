@@ -16531,6 +16531,19 @@ pub fn analyze_default<'a>(
     // First pass: compute the "ever_assigned" snapshot for each function and
     // collect direct requirements.
     for (qname, node) in &all_fns {
+        // Hand-written runtime packages (Vector, Pointer, Mutable, …) ship their
+        // own Rust signatures, whose type parameters do NOT carry the `Default`
+        // bound the MetaModelica source's `arrayCreateNoInit` would imply (e.g.
+        // `Vector::push<T: Clone + 'static>`). Analysing their `.mo` would
+        // propagate a spurious `Default` requirement into every caller —
+        // `UnorderedMap.add` then demands `V: Default`, rejecting legitimate
+        // non-Default values like `NBSlice<Pointer<Variable>>`. Treat them as
+        // requiring no Default so the generated bounds match the real impls.
+        let top_pkg = qname.split('.').next().unwrap_or("");
+        if HANDWRITTEN_TOP_PACKAGES.contains(&top_pkg) {
+            required.insert(qname.clone(), HashSet::new());
+            continue;
+        }
         let has_type_vars = matches!(&node.ty, Ty::Function { inputs, output, type_vars, .. }
             if !type_vars.is_empty()
                 || inputs.iter().any(|inp| ty_has_type_var(&inp.ty))
