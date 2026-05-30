@@ -1312,8 +1312,8 @@ fn getOperatorFuncsOrEmpty(mut inCache: FCore::Cache, mut env: FCore::Graph, mut
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
-                    let mut funcs: Arc<metamodelica::List<Arc<DAE::Type>>> = funcs.clone();
                     let mut cache: FCore::Cache = cache.clone();
+                    let mut funcs: Arc<metamodelica::List<Arc<DAE::Type>>> = funcs.clone();
                     (cache, funcs) = getOperatorFuncsOrEmpty(inCache.clone(), env.clone(), rest.clone(), (opName.clone()).clone(), info.clone(), acc.clone())?;
                     Ok((cache.clone(), funcs.clone()))
                 }
@@ -1323,8 +1323,8 @@ fn getOperatorFuncsOrEmpty(mut inCache: FCore::Cache, mut env: FCore::Graph, mut
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Nil => {
-                    let mut cache: FCore::Cache = cache.clone();
                     let mut funcs: Arc<metamodelica::List<Arc<DAE::Type>>> = funcs.clone();
+                    let mut cache: FCore::Cache = cache.clone();
                     let (__pa0, Util::SUCCESS { .. }) = (Static::instantiateDaeFunctionFromTypes(inCache.clone(), env.clone(), acc.clone(), false, None, true, openmodelica_util::Util::Status::SUCCESS)?) else { bail!("pattern mismatch") };
                     cache = __pa0.clone();
                     let __pa1 = ::match_deref::match_deref! { match &(Types::traverseType(Arc::new(DAE::Type::T_TUPLE { types: acc.clone(), names: None }), -1, (std::sync::Arc::new(fnptr!(Types::makeExpDimensionsUnknown, Arc<DAE::Type>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, i32) -> Result<(Arc<DAE::Type>, i32)> + 'static>))?) {

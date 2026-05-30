@@ -2794,8 +2794,8 @@ pub fn getClassModifier(mut inEnv: FCore::Graph, mut inName: ArcStr) -> Result<A
         let __mc_input = inName.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut n: FCore::Node = n.clone();
             let mut r#mod: Arc<DAE::Mod> = r#mod.clone();
+            let mut n: FCore::Node = n.clone();
             n = FNode::fromRef(FNode::child(FGraph::lastScopeRef(inEnv.clone())?, (inName.clone()).clone())?)?;
             if !(FNode::isInstance(FNode::fromRef(FGraph::lastScopeRef(inEnv.clone())?)?)) {
                 let FCore::N { data: FCore::CL { r#mod: __pa0, .. }, .. } = (n.clone()) else { bail!("pattern mismatch") };

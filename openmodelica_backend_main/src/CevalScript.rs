@@ -1619,9 +1619,9 @@ pub fn cevalInteractiveFunctions2(mut cache: FCore::Cache, mut env: FCore::Graph
         if let Ok(__v) = (|| -> Result<_> {
                     ::match_deref::match_deref! { match &__mc_input {
                         Deref @ SCode::Element::CLASS { restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { .. } }, partialPrefix: SCode::Partial::NOT_PARTIAL { .. }, .. } => {
-                            let mut ty: Arc<DAE::Type>;
-                            let mut outCache: FCore::Cache = outCache.clone();
                             let mut tys: Arc<metamodelica::List<Arc<DAE::Type>>> = tys.clone();
+                            let mut outCache: FCore::Cache = outCache.clone();
+                            let mut ty: Arc<DAE::Type>;
                             (outCache, ty, _) = Lookup::lookupType(outCache.clone(), env.clone(), AbsynUtil::suffixPath(className.clone(), (var_field!((*elt).name, SCode::Element::CLASS).clone()).clone())?, None)?;
                             if isSimpleAPIFunction(ty.clone())? {
                                         tys = cons(ty.clone(), tys.clone());
@@ -3806,10 +3806,10 @@ fn listClass(mut args: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: className } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: interface_only }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: short_only }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ENUM_LITERAL { name: path, .. }, tail: Deref @ metamodelica::List::Nil } } } } => {
-                    let mut absynClass: Arc<Absyn::Class> = absynClass.clone();
+                    let mut scodeP: Arc<metamodelica::List<Arc<SCode::Element>>> = scodeP.clone();
                     let mut cl: Arc<SCode::Element>;
                     let mut p: Absyn::Program = p.clone();
-                    let mut scodeP: Arc<metamodelica::List<Arc<SCode::Element>>> = scodeP.clone();
+                    let mut absynClass: Arc<Absyn::Class> = absynClass.clone();
                     let false = (Arc::new(Absyn::Path::IDENT { name: (literal!("AllLoadedClasses")).clone() }) == className.clone()) else { bail!("pattern mismatch") };
                     p = SymbolTable::getAbsyn();
                     scodeP = SymbolTable::getSCode()?;
@@ -3858,11 +3858,11 @@ fn listFile(mut args: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: className } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: nested }, tail: Deref @ metamodelica::List::Nil } } => {
-                    let mut absynClass: Arc<Absyn::Class> = absynClass.clone();
-                    let mut access: Access = access.clone();
-                    let mut r#str: ArcStr = r#str.clone();
                     let mut path: Arc<Absyn::Path>;
                     let mut restriction: Absyn::Restriction = restriction.clone();
+                    let mut absynClass: Arc<Absyn::Class> = absynClass.clone();
+                    let mut r#str: ArcStr = r#str.clone();
+                    let mut access: Access = access.clone();
                     path = (::match_deref::match_deref! { match &(className.clone()) {
         Deref @ Absyn::Path::FULLYQUALIFIED { .. } => var_field!((**className).path, Absyn::Path::FULLYQUALIFIED).clone(),
         _ => className.clone(),
@@ -4117,11 +4117,11 @@ fn generateSeparateCode(mut args: Arc<metamodelica::List<Arc<Values::Value>>>, m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: v, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: b }, tail: Deref @ metamodelica::List::Nil } } => {
-                    let mut name: ArcStr = name.clone();
-                    let mut p: Absyn::Program = p.clone();
                     let mut outCache: FCore::Cache = outCache.clone();
                     let mut cl: Arc<SCode::Element>;
                     let mut sp: Arc<metamodelica::List<Arc<SCode::Element>>> = sp.clone();
+                    let mut name: ArcStr = name.clone();
+                    let mut p: Absyn::Program = p.clone();
                     p = SymbolTable::getAbsyn();
                     sp = SymbolTable::getSCode()?;
                     name = (getTypeNameIdent(v.clone())?).clone();
@@ -4137,8 +4137,8 @@ fn generateSeparateCode(mut args: Arc<metamodelica::List<Arc<Values::Value>>>, m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: v, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: _ }, tail: Deref @ metamodelica::List::Nil } } => {
-                    let mut sp: Arc<metamodelica::List<Arc<SCode::Element>>> = sp.clone();
                     let mut name: ArcStr = name.clone();
+                    let mut sp: Arc<metamodelica::List<Arc<SCode::Element>>> = sp.clone();
                     sp = SymbolTable::getSCode()?;
                     name = (getTypeNameIdent(v.clone())?).clone();
                     let false = (List::isMemberOnTrue((name.clone()).clone(), sp.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::isClassNamed, ArcStr, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<SCode::Element>) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };

@@ -93,6 +93,7 @@ use crate::NFSections as Sections;
 use crate::NFSimplifyExp as SimplifyExp;
 use crate::NFSimplifyModel as SimplifyModel;
 use crate::NFStatement as Statement;
+use crate::NFStreamFlowAlias as StreamFlowAlias;
 use crate::NFStructural as Structural;
 use crate::NFSubscript as Subscript;
 use crate::NFType as Type;

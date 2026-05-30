@@ -199,8 +199,8 @@ pub fn inlineCallsInFunctions(mut inElementList: Arc<metamodelica::List<DAE::Fun
             ::match_deref::match_deref! { match &__mc_input {
                 DAE::Function::FUNCTION { functions: Deref @ metamodelica::List::Cons { head: fn_def @ DAE::FunctionDefinition::FUNCTION_DEF { .. }, tail: fn_defs }, .. } => {
                     let mut fn_def = (*fn_def).clone();
-                    let mut body: Arc<metamodelica::List<Arc<DAE::Element>>> = body.clone();
                     let mut r#fn: DAE::Function = r#fn.clone();
+                    let mut body: Arc<metamodelica::List<Arc<DAE::Element>>> = body.clone();
                     let __pa0 = ::match_deref::match_deref! { match &(inlineDAEElements(var_field!(fn_def.body, DAE::FunctionDefinition::FUNCTION_DEF).clone(), inFunctions.clone(), metamodelica::nil(), false)?) {
                         (__pa0, true) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),

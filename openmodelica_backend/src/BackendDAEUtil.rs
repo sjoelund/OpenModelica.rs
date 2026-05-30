@@ -174,8 +174,8 @@ pub fn checkBackendDAEWithErrorMsg(mut inBackendDAE: Arc<BackendDAE::BackendDAE>
                     let mut nVars: i32 = 0;
                     let mut nEqns: i32 = 0;
                     let mut samesize: bool = false;
-                    let mut wrongEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = wrongEqns.clone();
                     let mut expCrefs: Arc<metamodelica::List<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>> = expCrefs.clone();
+                    let mut wrongEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = wrongEqns.clone();
                     nVars = BackendVariable::varsSize(vars.clone());
                     nEqns = BackendEquation::equationArraySize(orderedEqs.clone())?;
                     samesize = nVars.clone() == nEqns.clone();
@@ -4857,8 +4857,8 @@ fn traverseStmts<ArgT: Clone + 'static>(mut inStmts: Arc<metamodelica::List<Arc<
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Statement::STMT_FOR { statementLst: stmts, range: e, iter: id1, type_: tp, .. } => {
                     let mut stmts = (*stmts).clone();
-                    let mut cr: Arc<DAE::ComponentRef> = cr.clone();
                     let mut extraArg: ArgT = extraArg.clone();
+                    let mut cr: Arc<DAE::ComponentRef> = cr.clone();
                     extraArg = func(e.clone(), extraArg.clone())?;
                     cr = ComponentReferenceBasics::makeCrefIdent((id1.clone()).clone(), tp.clone(), metamodelica::nil());
                     (stmts, _) = DAEUtil::traverseDAEEquationsStmts(stmts.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(Expression::replaceCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<DAE::ComponentRef>, Arc<DAE::Exp>)) -> Result<(Arc<DAE::Exp>, (Arc<DAE::ComponentRef>, Arc<DAE::Exp>))> + 'static>), (cr.clone(), e.clone())));

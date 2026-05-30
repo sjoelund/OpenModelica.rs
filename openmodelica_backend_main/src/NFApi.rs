@@ -188,14 +188,14 @@ fn evaluateAnnotation_dispatch(mut absynProgram: Absyn::Program, mut classPath: 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::ElementArg::MODIFICATION { info, modification: Some(Deref @ Absyn::Modification { elementArgLst: Deref @ metamodelica::List::Nil, eqMod: eqmod @ Deref @ Absyn::EqMod::EQMOD { exp: absynExp, .. } }), path: Deref @ Absyn::Path::IDENT { name: annName }, .. } => {
-                    let mut top: Arc<InstNode::InstNode> = top.clone();
                     let mut name: ArcStr = name.clone();
-                    let mut r#str: ArcStr = r#str.clone();
-                    let mut var: Variability = var.clone();
                     let mut exp: Arc<Expression::NFExpression> = exp.clone();
+                    let mut r#str: ArcStr = r#str.clone();
+                    let mut ty: Arc<Type::NFType> = ty.clone();
+                    let mut var: Variability = var.clone();
                     let mut inst_cls: Arc<InstNode::InstNode> = inst_cls.clone();
                     let mut program: Arc<metamodelica::List<Arc<SCode::Element>>> = program.clone();
-                    let mut ty: Arc<Type::NFType> = ty.clone();
+                    let mut top: Arc<InstNode::InstNode> = top.clone();
                     if AbsynUtil::onlyLiteralsInEqMod(eqmod.clone())? {
                         (program, top) = mkTop(absynProgram.clone(), (annName.clone()).clone())?;
                         inst_cls = top.clone();
@@ -215,20 +215,20 @@ fn evaluateAnnotation_dispatch(mut absynProgram: Absyn::Program, mut classPath: 
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::ElementArg::MODIFICATION { info, modification: Some(Deref @ Absyn::Modification { elementArgLst: r#mod, eqMod: Deref @ Absyn::EqMod::NOMOD { .. } }), path: Deref @ Absyn::Path::IDENT { name: annName }, .. } => {
                     let mut stripped_mod: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = stripped_mod.clone();
-                    let mut r#str: ArcStr = r#str.clone();
                     let mut smod: Arc<SCode::Mod> = smod.clone();
                     let mut program: Arc<metamodelica::List<Arc<SCode::Element>>> = program.clone();
-                    let mut anncls: Arc<InstNode::InstNode> = anncls.clone();
-                    let mut graphics_mod: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = graphics_mod.clone();
                     let mut inst_anncls: Arc<InstNode::InstNode> = inst_anncls.clone();
+                    let mut absynExp: Arc<Absyn::Exp> = absynExp.clone();
+                    let mut name: ArcStr = name.clone();
+                    let mut var: Variability = var.clone();
                     let mut top: Arc<InstNode::InstNode> = top.clone();
                     let mut save: Arc<Expression::NFExpression> = save.clone();
-                    let mut name: ArcStr = name.clone();
-                    let mut inst_cls: Arc<InstNode::InstNode> = inst_cls.clone();
-                    let mut dae: DAE::DAElist = dae.clone();
-                    let mut absynExp: Arc<Absyn::Exp> = absynExp.clone();
-                    let mut var: Variability = var.clone();
+                    let mut graphics_mod: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = graphics_mod.clone();
                     let mut ty: Arc<Type::NFType> = ty.clone();
+                    let mut dae: DAE::DAElist = dae.clone();
+                    let mut inst_cls: Arc<InstNode::InstNode> = inst_cls.clone();
+                    let mut anncls: Arc<InstNode::InstNode> = anncls.clone();
+                    let mut r#str: ArcStr = r#str.clone();
                     let mut exp: Arc<Expression::NFExpression> = exp.clone();
                     if AbsynUtil::onlyLiteralsInAnnotationMod(r#mod.clone())? {
                         (program, top) = mkTop(absynProgram.clone(), (annName.clone()).clone())?;
@@ -280,13 +280,13 @@ fn evaluateAnnotation_dispatch(mut absynProgram: Absyn::Program, mut classPath: 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::ElementArg::MODIFICATION { info, modification: None, path: Deref @ Absyn::Path::IDENT { name: annName }, .. } => {
-                    let mut inst_anncls: Arc<InstNode::InstNode> = inst_anncls.clone();
-                    let mut program: Arc<metamodelica::List<Arc<SCode::Element>>> = program.clone();
                     let mut top: Arc<InstNode::InstNode> = top.clone();
-                    let mut inst_cls: Arc<InstNode::InstNode> = inst_cls.clone();
+                    let mut r#str: ArcStr = r#str.clone();
+                    let mut program: Arc<metamodelica::List<Arc<SCode::Element>>> = program.clone();
                     let mut anncls: Arc<InstNode::InstNode> = anncls.clone();
                     let mut dae: DAE::DAElist = dae.clone();
-                    let mut r#str: ArcStr = r#str.clone();
+                    let mut inst_cls: Arc<InstNode::InstNode> = inst_cls.clone();
+                    let mut inst_anncls: Arc<InstNode::InstNode> = inst_anncls.clone();
                     (program, top) = mkTop(absynProgram.clone(), (annName.clone()).clone())?;
                     inst_cls = top.clone();
                     anncls = Lookup::lookupClassName(Arc::new(Path::IDENT { name: (annName.clone()).clone() }), inst_cls.clone(), ANNOTATION_CONTEXT.clone(), Absyn::dummyInfo.clone(), false)?;
@@ -2034,9 +2034,9 @@ pub fn dumpJSONRedeclareType(mut element: Arc<SCode::Element>, mut scope: Arc<In
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Element::COMPONENT { .. } => {
-                    let mut cls: Arc<InstNode::InstNode> = cls.clone();
-                    let mut json: Arc<JSON::JSON> = json.clone();
                     let mut path: Arc<Path>;
+                    let mut json: Arc<JSON::JSON> = json.clone();
+                    let mut cls: Arc<InstNode::InstNode> = cls.clone();
                     let mut context: i32 = context.clone();
                     path = AbsynUtil::typeSpecPath(var_field!((*element).typeSpec, SCode::Element::COMPONENT).clone())?;
                     context = InstContext::set(InstContext::RELAXED.clone(), InstContext::FAST_LOOKUP.clone());

@@ -1456,8 +1456,8 @@ fn getVars(mut cr: Arc<DAE::ComponentRef>, mut vars: BackendDAE::Variables, mut 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut oIndexs: Arc<metamodelica::List<i32>> = oIndexs.clone();
                     let mut oVars: Arc<metamodelica::List<BackendDAE::Var>> = oVars.clone();
+                    let mut oIndexs: Arc<metamodelica::List<i32>> = oIndexs.clone();
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(BackendVariable::getVarShared(cr.clone(), shared.clone())?) {
                         (__pa0 @ Deref @ metamodelica::List::Cons { head: _, tail: _ }, __pa1) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
@@ -5010,8 +5010,8 @@ fn addToCrToExp(mut cr: Arc<DAE::ComponentRef>, mut eq: Arc<BackendDAE::Equation
         let __mc_input = ();
         if let Ok(__v) = (|| -> Result<_> {
             let () = __mc_input.clone() else { bail!("nomatch") };
-            let mut value: Arc<DAE::Exp>;
             let mut outHTCrToExp: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (HashTableCrToExp::FuncHashCref, HashTableCrToExp::FuncCrefEqual, HashTableCrToExp::FuncCrefStr, HashTableCrToExp::FuncExpStr));
+            let mut value: Arc<DAE::Exp>;
             let __pa0 = ::match_deref::match_deref! { match &(BackendEquation::solveEquation(eq.clone(), Expression::crefExp(cr.clone())?, None)?) {
                 Deref @ BackendDAE::Equation::EQUATION { scalar: __pa0, .. } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),

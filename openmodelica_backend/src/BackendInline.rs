@@ -761,8 +761,8 @@ fn inlineEqAppend(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Ar
                     let mut source = (*source).clone();
                     let mut e2 = (*e2).clone();
                     let mut e1 = (*e1).clone();
-                    let mut shared: Arc<BackendDAE::Shared> = shared.clone();
                     let mut outEqs: Arc<BackendDAE::EqSystem> = outEqs.clone();
+                    let mut shared: Arc<BackendDAE::Shared> = shared.clone();
                     (e1, source, outEqs, b1, shared) = inlineCallsAppend(e1.clone(), fns.clone(), source.clone(), inEqs.clone(), shared.clone())?;
                     (e2, source, outEqs, b2, shared) = inlineCallsAppend(e2.clone(), fns.clone(), source.clone(), outEqs.clone(), shared.clone())?;
                     b3 = b1.clone() || b2.clone();
@@ -799,8 +799,8 @@ fn inlineEqAppend(mut inEquation: Arc<BackendDAE::Equation>, mut fns: (Option<Ar
                     let mut b2: bool = false;
                     let mut e2 = (*e2).clone();
                     let mut source = (*source).clone();
-                    let mut outEqs: Arc<BackendDAE::EqSystem> = outEqs.clone();
                     let mut shared: Arc<BackendDAE::Shared> = shared.clone();
+                    let mut outEqs: Arc<BackendDAE::EqSystem> = outEqs.clone();
                     (e2, source, outEqs, b2, shared) = inlineCallsAppend(e2.clone(), fns.clone(), source.clone(), inEqs.clone(), shared.clone())?;
                     Ok((Arc::new(BackendDAE::Equation::SOLVED_EQUATION { componentRef: cref.clone(), exp: e2.clone(), source: source.clone(), attr: attr.clone() }), outEqs.clone(), b2.clone()))
                 }

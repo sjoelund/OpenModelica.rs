@@ -2075,8 +2075,8 @@ fn elementName(mut inElement: (Arc<SCode::Element>, Arc<DAE::Mod>)) -> Result<Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut elem: Arc<SCode::Element>;
                     let mut outName: ArcStr = outName.clone();
+                    let mut elem: Arc<SCode::Element>;
                     (elem, _) = inElement.clone();
                     outName = (SCodeUtil::elementName(elem.clone())?).clone();
                     Ok(outName.clone())
@@ -2369,17 +2369,17 @@ pub fn addComponentsToEnv(mut cache: FCore::Cache, mut env: FCore::Graph, mut ih
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Element::COMPONENT { attributes: attr @ SCode::Attributes { .. }, prefixes: prefs @ Deref @ SCode::Prefixes { .. }, .. } => {
-                    let mut ih: Arc<metamodelica::List<InnerOuter::TopInstance>> = ih.clone();
-                    let mut comp2: Arc<SCode::Element>;
-                    let mut local_mod: Arc<DAE::Mod> = local_mod.clone();
                     let mut cache: FCore::Cache = cache.clone();
-                    let mut mod2: Arc<DAE::Mod> = mod2.clone();
-                    let mut comp_mod: Arc<DAE::Mod> = comp_mod.clone();
-                    let mut cmod: Arc<DAE::Mod> = cmod.clone();
-                    let mut ty_path: Arc<Absyn::Path>;
                     let mut dattr: Arc<DAE::Attributes> = dattr.clone();
-                    let mut comp: Arc<SCode::Element> = comp.clone();
+                    let mut local_mod: Arc<DAE::Mod> = local_mod.clone();
+                    let mut comp2: Arc<SCode::Element>;
                     let mut env: FCore::Graph = env.clone();
+                    let mut ty_path: Arc<Absyn::Path>;
+                    let mut comp: Arc<SCode::Element> = comp.clone();
+                    let mut mod2: Arc<DAE::Mod> = mod2.clone();
+                    let mut cmod: Arc<DAE::Mod> = cmod.clone();
+                    let mut ih: Arc<metamodelica::List<InnerOuter::TopInstance>> = ih.clone();
+                    let mut comp_mod: Arc<DAE::Mod> = comp_mod.clone();
                     ty_path = AbsynUtil::typeSpecPath(var_field!((*comp).typeSpec, SCode::Element::COMPONENT).clone())?;
                     local_mod = Mod::lookupModificationP(r#mod.clone(), ty_path.clone())?;
                     if SCodeUtil::finalBool(SCodeUtil::prefixesFinal(prefs.clone())?)? {
@@ -6740,8 +6740,8 @@ pub fn propagateBinding(mut inVarsDae: DAE::DAElist, mut inEquationsDae: DAE::DA
             ::match_deref::match_deref! { match &__mc_input {
                 v1 @ Deref @ DAE::Element::VAR { .. } => {
                     let mut v1 = (*v1).clone();
-                    let mut is: Arc<metamodelica::List<i32>> = is.clone();
                     let mut i: i32 = i.clone();
+                    let mut is: Arc<metamodelica::List<i32>> = is.clone();
                     let mut e: Arc<DAE::Exp>;
                     (e, i) = findCorrespondingBinding(var_field!((*v1).componentRef, DAE::Element::VAR).clone(), equations.clone(), 1)?;
                     assign_variant_field!(v1 => DAE::Element::VAR; binding = Some(e.clone()));
@@ -6944,11 +6944,11 @@ fn getFunctionAttributes(mut cl: Arc<SCode::Element>, mut vl: Arc<metamodelica::
         let __mc_input = fres.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { purity: mut purity } = __mc_input.clone() else { bail!("nomatch") };
-            let mut inVars: Arc<metamodelica::List<Arc<DAE::Var>>> = inVars.clone();
-            let mut outVars: Arc<metamodelica::List<Arc<DAE::Var>>> = outVars.clone();
-            let mut name: ArcStr = name.clone();
-            let mut inlineType: DAE::InlineType = inlineType.clone();
             let mut isImpure: bool = isImpure.clone();
+            let mut name: ArcStr = name.clone();
+            let mut outVars: Arc<metamodelica::List<Arc<DAE::Var>>> = outVars.clone();
+            let mut inVars: Arc<metamodelica::List<Arc<DAE::Var>>> = inVars.clone();
+            let mut inlineType: DAE::InlineType = inlineType.clone();
             let mut unboxArgs: bool = unboxArgs.clone();
             isImpure = AbsynUtil::isImpure(purity.clone(), false);
             inVars = List::select(vl.clone(), (std::sync::Arc::new(Types::isInputVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<bool> + 'static>));
@@ -6960,8 +6960,8 @@ fn getFunctionAttributes(mut cl: Arc<SCode::Element>, mut vl: Arc<metamodelica::
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let SCode::FunctionRestriction::FR_PARALLEL_FUNCTION { .. } = __mc_input.clone() else { bail!("nomatch") };
-            let mut inVars: Arc<metamodelica::List<Arc<DAE::Var>>> = inVars.clone();
             let mut inlineType: DAE::InlineType = inlineType.clone();
+            let mut inVars: Arc<metamodelica::List<Arc<DAE::Var>>> = inVars.clone();
             let mut isOpenModelicaPure: bool = isOpenModelicaPure.clone();
             let mut outVars: Arc<metamodelica::List<Arc<DAE::Var>>> = outVars.clone();
             let mut name: ArcStr = name.clone();
@@ -6976,9 +6976,9 @@ fn getFunctionAttributes(mut cl: Arc<SCode::Element>, mut vl: Arc<metamodelica::
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let SCode::FunctionRestriction::FR_PARALLEL_FUNCTION { .. } = __mc_input.clone() else { bail!("nomatch") };
-            let mut isBuiltin: DAE::FunctionBuiltin = isBuiltin.clone();
             let mut isOpenModelicaPure: bool = isOpenModelicaPure.clone();
             let mut inlineType: DAE::InlineType = inlineType.clone();
+            let mut isBuiltin: DAE::FunctionBuiltin = isBuiltin.clone();
             inlineType = InstBasics::commentIsInlineFunc(inheritedComment.clone())?;
             isBuiltin = if (SCodeUtil::commentHasBooleanNamedAnnotation(inheritedComment.clone(), (literal!("__OpenModelica_BuiltinPtr")).clone())?) {openmodelica_frontend_types::DAE::FunctionBuiltin::FUNCTION_BUILTIN_PTR} else {openmodelica_frontend_types::DAE::FunctionBuiltin::FUNCTION_NOT_BUILTIN};
             isOpenModelicaPure = !(SCodeUtil::commentHasBooleanNamedAnnotation(inheritedComment.clone(), (literal!("__OpenModelica_Impure")).clone())?);
@@ -6990,10 +6990,10 @@ fn getFunctionAttributes(mut cl: Arc<SCode::Element>, mut vl: Arc<metamodelica::
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut isBuiltin: DAE::FunctionBuiltin = isBuiltin.clone();
+            let mut hasOutVars: bool = hasOutVars.clone();
             let mut inlineType: DAE::InlineType = inlineType.clone();
             let mut daePurity: DAE::Purity = daePurity.clone();
-            let mut hasOutVars: bool = hasOutVars.clone();
+            let mut isBuiltin: DAE::FunctionBuiltin = isBuiltin.clone();
             inlineType = InstBasics::commentIsInlineFunc(inheritedComment.clone())?;
             hasOutVars = List::any(vl.clone(), (std::sync::Arc::new(Types::isOutputVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<bool> + 'static>));
             isBuiltin = if (SCodeUtil::commentHasBooleanNamedAnnotation(inheritedComment.clone(), (literal!("__OpenModelica_BuiltinPtr")).clone())?) {openmodelica_frontend_types::DAE::FunctionBuiltin::FUNCTION_BUILTIN_PTR} else {openmodelica_frontend_types::DAE::FunctionBuiltin::FUNCTION_NOT_BUILTIN};
