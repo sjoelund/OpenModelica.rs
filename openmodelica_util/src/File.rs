@@ -161,7 +161,11 @@ pub fn writeInt(file: File, data: i32, format: ArcStr) -> Result<()> {
     guard.write_bytes(s.as_bytes(), "writeInt")
 }
 
-pub fn writeReal(file: File, data: f64, format: ArcStr) -> Result<()> {
+pub fn writeReal(file: File, data: metamodelica::Real, format: ArcStr) -> Result<()> {
+    // The MetaModelica formal is `input Real data`; `Real` maps to
+    // `metamodelica::Real` (`OrderedFloat<f64>`) in generated code, so callers
+    // pass that. Operate on the inner `f64` via `.0`.
+    let data = data.0;
     let mut guard = file.inner.lock().unwrap();
     let s = match format.as_str() {
         "%.15g" => format!("{:.15e}", data).replace("e0", ""),
