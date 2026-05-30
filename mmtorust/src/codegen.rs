@@ -8352,9 +8352,24 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
             Ok(format!("{}.borrow()[({}-1) as usize].clone()", arg1, arg2))
         },
         "valueEq" => {
-            let arg1 = args.first().map(|a| emit_builtin_call_arg(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();
-            let arg2 = args.get(1).map(|a| emit_builtin_call_arg_raw(func, 1, a, is_const, ctx, top_level)).unwrap_or_default();
-            Ok(format!("{} == {}", arg1, arg2))
+            // `valueEq` is structural equality. When one operand is a literal
+            // `NONE()`, the call is testing "is the other operand None" — emit
+            // `.is_none()` rather than `==`. This both matches the semantics and
+            // avoids requiring the Option's element to be `PartialEq`, which it
+            // need not be (e.g. `valueEq(NONE(), printFunc)` in AvlTree, where
+            // the element is an `Arc<dyn Fn(..)>` that has no `PartialEq`).
+            let is_none = |a: Option<&TypedExp>| matches!(a, Some(TypedExp::Call { func: f, .. }) if f == "NONE");
+            if is_none(args.first()) && !is_none(args.get(1)) {
+                let arg2 = args.get(1).map(|a| emit_builtin_call_arg(func, 1, a, is_const, ctx, top_level)).unwrap_or_default();
+                Ok(format!("({arg2}).is_none()"))
+            } else if is_none(args.get(1)) && !is_none(args.first()) {
+                let arg1 = args.first().map(|a| emit_builtin_call_arg(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();
+                Ok(format!("({arg1}).is_none()"))
+            } else {
+                let arg1 = args.first().map(|a| emit_builtin_call_arg(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();
+                let arg2 = args.get(1).map(|a| emit_builtin_call_arg_raw(func, 1, a, is_const, ctx, top_level)).unwrap_or_default();
+                Ok(format!("{} == {}", arg1, arg2))
+            }
         },
         "arrayLength" => {
             // `Array<T>` is `Rc<RefCell<Vec<T>>>` so we go through `.borrow()`.
