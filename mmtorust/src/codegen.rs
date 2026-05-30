@@ -8504,6 +8504,15 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
             // calls it `log`.
             let arg = args.first().map(|a| emit_builtin_call_arg_raw(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();
             let method = match func { "log" => "ln", other => other };
+            // These are Real→Real intrinsics (provided by `num_traits::Float`
+            // on `Real` = `OrderedFloat<f64>`). MetaModelica implicitly converts
+            // an Integer argument to Real, so coerce an `i32` actual to Real
+            // first — otherwise `(x: i32).sqrt()` fails (i32 has no such method).
+            let arg = if matches!(args.first().map(|a| a.ty()), Some(Ty::I32)) {
+                format!("metamodelica::OrderedFloat(({arg}) as f64)")
+            } else {
+                arg
+            };
             Ok(format!("({arg}).{method}()"))
         },
         "atan2" if args.len() == 2 => {

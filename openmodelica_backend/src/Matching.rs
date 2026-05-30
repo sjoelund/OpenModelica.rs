@@ -3028,7 +3028,7 @@ fn ABMP1(mut i: i32, mut unmatched: Arc<metamodelica::List<i32>>, mut rowmarks: 
             let mut collummarks1: metamodelica::Array<i32>;
             let mut level1: metamodelica::Array<i32>;
             let mut rlevel1: metamodelica::Array<i32>;
-            lim = ((metamodelica::OrderedFloat(0.1_f64) * ((ass1.clone().borrow().len() as i32)).sqrt()).0.floor() as i32);
+            lim = ((metamodelica::OrderedFloat(0.1_f64) * (metamodelica::OrderedFloat(((ass1.clone().borrow().len() as i32)) as f64)).sqrt()).0.floor() as i32);
             unmatched1 = ABMPphase(unmatched.clone(), i.clone(), nv.clone(), ne.clone(), m.clone(), mt.clone(), rowmarks.clone(), rlevel.clone(), colptrs.clone(), lim.clone(), ass1.clone(), ass2.clone())?;
             (i_1, unmatched1) = HKphase(i.clone() + 1, unmatched.clone(), nv.clone(), ne.clone(), m.clone(), mt.clone(), rowmarks.clone(), collummarks.clone(), level.clone(), ass1.clone(), ass2.clone(), (unmatched.clone().len() as i32), metamodelica::nil())?;
             meqns = getEqnsforIndexReduction(unmatched1.clone(), ne.clone(), m.clone(), mt.clone(), ass1.clone(), ass2.clone(), inArg.clone())?;

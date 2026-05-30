@@ -2765,7 +2765,7 @@ fn expLog(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFEx
             Arc::new(Expression::NFExpression::REAL { value: (r.clone()).ln() })
         },
         Deref @ Expression::INTEGER { value: i } => {
-            Arc::new(Expression::NFExpression::REAL { value: (i.clone()).ln() })
+            Arc::new(Expression::NFExpression::REAL { value: (metamodelica::OrderedFloat((i.clone()) as f64)).ln() })
         },
         _ => {
             Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(BuiltinFuncs::LOG_REAL().clone(), list![exp.clone()], Expression::variability(exp.clone())?, Prefixes::Purity::PURE.clone(), BuiltinFuncs::LOG_REAL().returnType.clone()) })

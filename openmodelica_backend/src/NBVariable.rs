@@ -2212,7 +2212,7 @@ pub mod VariablePointers {
         let mut hash_lst_ptr: Pointer::Pointer<Arc<metamodelica::List<(i32, Pointer::Pointer<Arc<Variable::NFVariable>>)>>> = Pointer::create(metamodelica::nil());
         let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>;
         size = ExpandableArray::getNumberOfElements(variables.varArr.clone());
-        mapPtr(variables.clone(), Arc::new({ let __pe_b1 = ((metamodelica::OrderedFloat((size.clone()) as f64) * (size.clone()).ln()).0 as i32); let __pe_b2 = hash_lst_ptr.clone(); move |__pe_a0| createSortHashTpl(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }))?;
+        mapPtr(variables.clone(), Arc::new({ let __pe_b1 = ((metamodelica::OrderedFloat((size.clone()) as f64) * (metamodelica::OrderedFloat((size.clone()) as f64)).ln()).0 as i32); let __pe_b2 = hash_lst_ptr.clone(); move |__pe_a0| createSortHashTpl(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }))?;
         hash_lst = List::sort(Pointer::access(hash_lst_ptr.clone()), std::sync::Arc::new(fnptr!(BackendUtil::indexTplGt, _, _)))?;
         variables = empty(size.clone(), variables.scalarized.clone());
         for mut tpl in &*hash_lst.clone() {
