@@ -818,13 +818,13 @@ fn gauss(mut A: metamodelica::Array<metamodelica::Array<metamodelica::Real>>, mu
         let __mc_input = permutation.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut range: Arc<metamodelica::List<i32>> = range.clone();
-            let mut pivotIdx: i32 = pivotIdx.clone();
-            let mut b_entry: metamodelica::Real = b_entry.clone();
-            let mut pivot: metamodelica::Real = pivot.clone();
             let mut first: metamodelica::Real = first.clone();
-            let mut pos: i32 = pos.clone();
+            let mut range: Arc<metamodelica::List<i32>> = range.clone();
+            let mut b_entry: metamodelica::Real = b_entry.clone();
             let mut entry: metamodelica::Real = entry.clone();
+            let mut pivotIdx: i32 = pivotIdx.clone();
+            let mut pos: i32 = pos.clone();
+            let mut pivot: metamodelica::Real = pivot.clone();
             let true = (intLe(indxIn.clone(), n.clone())) else { bail!("pattern mismatch") };
             (pivotIdx, pivot) = getPivotElement(A.clone(), rangeIn.clone(), indxIn.clone(), n.clone())?;
             {let _arr = permutation.clone(); _arr.borrow_mut()[(indxIn.clone()-1) as usize] = pivotIdx.clone(); _arr};

@@ -93,7 +93,6 @@ use crate::NFSections as Sections;
 use crate::NFSimplifyExp as SimplifyExp;
 use crate::NFSimplifyModel as SimplifyModel;
 use crate::NFStatement as Statement;
-use crate::NFStreamFlowAlias as StreamFlowAlias;
 use crate::NFStructural as Structural;
 use crate::NFSubscript as Subscript;
 use crate::NFType as Type;
@@ -2153,6 +2152,8 @@ pub fn flattenCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut prefix: Arc<
 }
 
 pub fn flattenCrefSplitSubscripts(mut cref: Arc<ComponentRef::NFComponentRef>, mut prefix: Arc<Prefix::Prefix>) -> Result<Arc<ComponentRef::NFComponentRef>> {
+    pub type SubscriptList = Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
+
     let mut cref: Arc<ComponentRef::NFComponentRef> = cref;
     let mut sub_map: Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>> = <Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>> as ::std::default::Default>::default();
     sub_map = UnorderedMap::new((std::sync::Arc::new(fnptr!(InstNode::hash, Arc<InstNode::InstNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(InstNode::refEqual, Arc<InstNode::InstNode>, Arc<InstNode::InstNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<InstNode::InstNode>) -> Result<bool> + 'static>), 1);

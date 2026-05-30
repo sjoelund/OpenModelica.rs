@@ -402,6 +402,8 @@ pub fn valueArray<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<Unordered
 }
 
 pub fn toVector<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<K, V>>) -> Arc<Vector::Vector<(K, V)>> {
+    pub type EntryT<K, V> = (K, V);
+
     let mut entries: Arc<Vector::Vector<(K, V)>>;
     let mut keys: Arc<Vector::Vector<K>> = map.keys.clone();
     let mut values: Arc<Vector::Vector<V>> = map.values.clone();

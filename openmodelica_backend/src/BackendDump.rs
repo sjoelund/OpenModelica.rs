@@ -269,8 +269,8 @@ pub fn printBasePartitions(mut basePartitions: metamodelica::Array<BackendDAE::B
     let mut nSubClocksStr: ArcStr = arcstr::literal!("");
     let __range0 = 1..=(basePartitions.clone().borrow().len() as i32);
     for mut i in __range0 {
-        clkExpStr = (Tpl::tplString2((std::sync::Arc::new(ExpressionDumpTpl::dumpClockKind) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<DAE::ClockKind>, ArcStr) -> Result<Tpl::Text> + 'static>), basePartitions[(i.clone()-1) as usize].clock.clone(), (literal!("")).clone())?).clone();
-        nSubClocksStr = (intString(basePartitions[(i.clone()-1) as usize].nSubClocks.clone())).clone();
+        clkExpStr = (Tpl::tplString2((std::sync::Arc::new(ExpressionDumpTpl::dumpClockKind) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<DAE::ClockKind>, ArcStr) -> Result<Tpl::Text> + 'static>), basePartitions.borrow()[(i.clone()-1) as usize].clock.clone(), (literal!("")).clone())?).clone();
+        nSubClocksStr = (intString(basePartitions.borrow()[(i.clone()-1) as usize].nSubClocks.clone())).clone();
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*clkExpStr.clone()); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*nSubClocksStr.clone()); __mm_s.push_str(&*literal!("]")); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     Ok(())
@@ -281,8 +281,8 @@ pub fn printSubPartitions(mut subPartitions: metamodelica::Array<BackendDAE::Sub
     let mut eventStr: ArcStr = arcstr::literal!("");
     let __range0 = 1..=(subPartitions.clone().borrow().len() as i32);
     for mut i in __range0 {
-        subClockStr = (subClockString(subPartitions[(i.clone()-1) as usize].clock.clone())?).clone();
-        eventStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("event(")); __mm_s.push_str(&*boolString(subPartitions[(i.clone()-1) as usize].holdEvents.clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
+        subClockStr = (subClockString(subPartitions.borrow()[(i.clone()-1) as usize].clock.clone())?).clone();
+        eventStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("event(")); __mm_s.push_str(&*boolString(subPartitions.borrow()[(i.clone()-1) as usize].holdEvents.clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*subClockStr.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*eventStr.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     Ok(())
@@ -2817,7 +2817,7 @@ fn equationKindString(mut inEqKind: BackendDAE::EquationKind) -> Result<ArcStr> 
         BackendDAE::EquationKind::CLOCKED_EQUATION { clk: mut i } => {
             let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             cr = Arc::new(DAE::ComponentRef::CREF_IDENT { ident: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(BackendDAE::WHENCLK_PRREFIX)); __mm_s.push_str(&*intString(i.clone())); ArcStr::from(__mm_s) }).clone(), identType: DAE::T_CLOCK_DEFAULT().clone(), subscriptLst: metamodelica::nil() });
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("clocked(")); __mm_s.push_str(&*DAE::ComponentReferenceBasics::printComponentRefStr(cr.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("clocked(")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cr.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }
         },
         _ => {
             Error::addInternalError((literal!("function equationKindString failed")).clone(), metamodelica::sourceInfo!())?;

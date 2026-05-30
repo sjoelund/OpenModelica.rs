@@ -480,6 +480,8 @@ pub fn subscriptBinding(mut exp: Arc<Expression::NFExpression>, mut cref: Arc<Co
 }
 
 pub fn subscriptBinding2(mut exp: Arc<Expression::NFExpression>, mut cref: Arc<ComponentRef::NFComponentRef>, mut evalSubscripts: bool, mut subMap: Option<Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>>) -> Result<(Arc<Expression::NFExpression>, Option<Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>>)> {
+    pub type SubscriptList = Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>;
+
     let mut exp: Arc<Expression::NFExpression> = exp;
     let mut subMap: Option<Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>>> = subMap;
     let mut sub_map: Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>> = <Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>>> as ::std::default::Default>::default();
@@ -632,8 +634,8 @@ pub fn makeComponentBinding(mut component: Arc<Component::NFComponent>, mut node
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Component::COMPONENT { ty: Deref @ Type::COMPLEX { complexTy: Deref @ ComplexType::RECORD { constructor: rec_node, .. }, .. }, .. } => {
-                    let mut binding: Arc<Binding::NFBinding> = binding.clone();
                     let mut exp: Arc<Expression::NFExpression> = exp.clone();
+                    let mut binding: Arc<Binding::NFBinding> = binding.clone();
                     exp = makeRecordBindingExp(var_field!((*component).classInst, Component::NFComponent::COMPONENT).clone(), rec_node.clone(), var_field!((*component).ty, Component::NFComponent::COMPONENT).clone(), cref.clone(), target.clone())?;
                     binding = Arc::new(Binding::NFBinding::CEVAL_BINDING { bindingExp: exp.clone() });
                     if !(ComponentRef::hasSubscripts(cref.clone())) {

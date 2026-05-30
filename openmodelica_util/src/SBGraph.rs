@@ -128,6 +128,8 @@ pub mod IncidenceList {
     pub type INCIDENCE_LIST<VertexT, EdgeT> = IncidenceList<VertexT, EdgeT>;
 
     pub fn new<VertexT: Clone + 'static, EdgeT: Clone + 'static>(mut vertexEq: Arc<dyn ::std::ops::Fn(VertexT, VertexT) -> Result<bool> + 'static>, mut edgeEq: Arc<dyn ::std::ops::Fn(EdgeT, EdgeT) -> Result<bool> + 'static>, mut vertexStr: Arc<dyn ::std::ops::Fn(VertexT) -> Result<ArcStr> + 'static>, mut edgeStr: Arc<dyn ::std::ops::Fn(EdgeT) -> Result<ArcStr> + 'static>) -> Arc<IncidenceList<VertexT, EdgeT>> {
+        pub type Indices = Arc<metamodelica::List<i32>>;
+
         let mut il: Arc<IncidenceList<VertexT, EdgeT>>;
         il = Arc::new(IncidenceList { vertices: Vector::new(0), edges: Vector::new(0), graph: Vector::new(0), vertEqFn: vertexEq.clone(), edgeEqFn: edgeEq.clone(), vertToString: vertexStr.clone(), edgeToString: edgeStr.clone() });
         il
@@ -295,6 +297,8 @@ pub mod BipartiteIncidenceList {
     pub type BIPARTITE_INCIDENCE_LIST<VertexT, EdgeT> = BipartiteIncidenceList<VertexT, EdgeT>;
 
     pub fn new<VertexT: Clone + 'static, EdgeT: Clone + 'static>(mut vertexEq: Arc<dyn ::std::ops::Fn(VertexT, VertexT) -> Result<bool> + 'static>, mut edgeEq: Arc<dyn ::std::ops::Fn(EdgeT, EdgeT) -> Result<bool> + 'static>, mut vertexStr: Arc<dyn ::std::ops::Fn(VertexT) -> Result<ArcStr> + 'static>, mut edgeStr: Arc<dyn ::std::ops::Fn(EdgeT) -> Result<ArcStr> + 'static>) -> Arc<BipartiteIncidenceList<VertexT, EdgeT>> {
+        pub type Indices = Arc<metamodelica::List<i32>>;
+
         let mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>;
         il = Arc::new(BipartiteIncidenceList { F_vertices: Vector::new(0), U_vertices: Vector::new(0), edges: Vector::new(0), graph: Vector::new(0), vertEqFn: vertexEq.clone(), edgeEqFn: edgeEq.clone(), vertToString: vertexStr.clone(), edgeToString: edgeStr.clone() });
         il

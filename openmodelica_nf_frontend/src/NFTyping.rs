@@ -376,8 +376,8 @@ pub fn makeRecordType(mut constructor: Arc<InstNode::InstNode>) -> Result<Arc<Co
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ CachedData::FUNCTION { .. } => {
-                    let mut r#fn: Arc<Function::Function> = r#fn.clone();
                     let mut fields: metamodelica::Array<Arc<Record::Field::Field>>;
+                    let mut r#fn: Arc<Function::Function> = r#fn.clone();
                     let mut indexMap: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>> = indexMap.clone();
                     r#fn = List::find(var_field!((*cache).funcs, CachedData::CachedData::FUNCTION).clone(), (std::sync::Arc::new(fnptr!(Function::isDefaultRecordConstructor, Arc<Function::Function>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Function::Function>) -> Result<bool> + 'static>))?;
                     (fields, indexMap) = Record::collectRecordFields(r#fn.node.clone())?;

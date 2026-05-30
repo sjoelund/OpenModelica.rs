@@ -199,8 +199,8 @@ pub fn inlineCallsInFunctions(mut inElementList: Arc<metamodelica::List<DAE::Fun
             ::match_deref::match_deref! { match &__mc_input {
                 DAE::Function::FUNCTION { functions: Deref @ metamodelica::List::Cons { head: fn_def @ DAE::FunctionDefinition::FUNCTION_DEF { .. }, tail: fn_defs }, .. } => {
                     let mut fn_def = (*fn_def).clone();
-                    let mut r#fn: DAE::Function = r#fn.clone();
                     let mut body: Arc<metamodelica::List<Arc<DAE::Element>>> = body.clone();
+                    let mut r#fn: DAE::Function = r#fn.clone();
                     let __pa0 = ::match_deref::match_deref! { match &(inlineDAEElements(var_field!(fn_def.body, DAE::FunctionDefinition::FUNCTION_DEF).clone(), inFunctions.clone(), metamodelica::nil(), false)?) {
                         (__pa0, true) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -223,8 +223,8 @@ pub fn inlineCallsInFunctions(mut inElementList: Arc<metamodelica::List<DAE::Fun
             ::match_deref::match_deref! { match &__mc_input {
                 DAE::Function::FUNCTION { functions: Deref @ metamodelica::List::Cons { head: fn_def @ DAE::FunctionDefinition::FUNCTION_EXT { .. }, tail: fn_defs }, .. } => {
                     let mut fn_def = (*fn_def).clone();
-                    let mut r#fn: DAE::Function = r#fn.clone();
                     let mut body: Arc<metamodelica::List<Arc<DAE::Element>>> = body.clone();
+                    let mut r#fn: DAE::Function = r#fn.clone();
                     let __pa0 = ::match_deref::match_deref! { match &(inlineDAEElements(var_field!(fn_def.body, DAE::FunctionDefinition::FUNCTION_EXT).clone(), inFunctions.clone(), metamodelica::nil(), false)?) {
                         (__pa0, true) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -2319,6 +2319,8 @@ pub fn simplifyAndForceInlineEquationExp(mut inExp: Arc<DAE::EquationExp>, mut f
 
 pub fn inlineEquationExp(mut inExp: Arc<DAE::EquationExp>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Statement>>>)> + 'static>, mut inSource: Arc<DAE::ElementSource>) -> Result<(Arc<DAE::EquationExp>, Arc<DAE::ElementSource>)> {
     pub type Func = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Statement>>>)> + 'static>;
+
+    pub type Functiontuple = (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>);
 
     let mut outExp: Arc<DAE::EquationExp>;
     let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());

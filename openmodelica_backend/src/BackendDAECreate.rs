@@ -1032,8 +1032,8 @@ fn lowerVar(mut inElement: Arc<DAE::Element>, mut inFunctions: Arc<AvlTreePathFu
                     let mut attr: BackendDAE::EquationAttributes = <BackendDAE::EquationAttributes as ::std::default::Default>::default();
                     let mut recordSize: Option<i32> = None;
                     let mut e2 = (*e2).clone();
-                    let mut outEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = outEqns.clone();
                     let mut outVars: Arc<metamodelica::List<BackendDAE::Var>> = outVars.clone();
+                    let mut outEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = outEqns.clone();
                     outVars = cons(lowerDynamicVar(inElement.clone(), inFunctions.clone())?, outVars.clone());
                     attr = BackendDAE::EQ_ATTR_DEFAULT_BINDING.clone();
                     (tp, dims) = ComponentReference::crefTypeFull2(cr.clone(), metamodelica::nil())?;
@@ -1074,9 +1074,9 @@ fn lowerVar(mut inElement: Arc<DAE::Element>, mut inFunctions: Arc<AvlTreePathFu
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Element::VAR { .. } => {
                     let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
+                    let mut outREqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = outREqns.clone();
                     let mut outGlobalKnownVars: Arc<metamodelica::List<BackendDAE::Var>> = outGlobalKnownVars.clone();
                     let mut outInlineHT: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, Arc<DAE::Exp>)>>), i32, (HashTableExpToExp::FuncHashCref, HashTableExpToExp::FuncCrefEqual, HashTableExpToExp::FuncCrefStr, HashTableExpToExp::FuncExpStr)) = outInlineHT.clone();
-                    let mut outREqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = outREqns.clone();
                     (var, outInlineHT, outREqns) = lowerKnownVar(inElement.clone(), inFunctions.clone(), outInlineHT.clone(), outREqns.clone())?;
                     outGlobalKnownVars = cons(var.clone(), outGlobalKnownVars.clone());
                     Ok(())
@@ -3156,8 +3156,8 @@ fn mergeWhenEqns(mut trueEqnList: Arc<metamodelica::List<Arc<BackendDAE::Equatio
                     let BackendDAE::WhenOperator::ASSIGN { left: ref eleft2, .. } = __mc_input.clone() else { bail!("nomatch") };
                     let mut whenEqRes: Arc<BackendDAE::WhenEquation>;
                     let mut res: Arc<BackendDAE::Equation>;
-                    let mut result: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = result.clone();
                     let mut added: bool = added.clone();
+                    let mut result: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = result.clone();
                     let true = (ExpressionBasics::expEqual(eleft.clone(), eleft2.clone())?) else { bail!("pattern mismatch") };
                     whenEqRes = BackendEquation::setWhenElsePart(whenEq.clone(), eq.clone())?;
                     res = Arc::new(BackendDAE::Equation::WHEN_EQUATION { size: size.clone(), whenEquation: whenEqRes.clone(), source: source.clone(), attr: attr.clone() });
@@ -3184,9 +3184,9 @@ fn mergeWhenEqns(mut trueEqnList: Arc<metamodelica::List<Arc<BackendDAE::Equatio
         if let Ok(__v) = (|| -> Result<_> {
                     let BackendDAE::WhenOperator::REINIT { stateVar: ref crleft2, .. } = __mc_input.clone() else { bail!("nomatch") };
                     let mut whenEqRes: Arc<BackendDAE::WhenEquation>;
-                    let mut added: bool = added.clone();
                     let mut result: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = result.clone();
                     let mut res: Arc<BackendDAE::Equation>;
+                    let mut added: bool = added.clone();
                     let true = (ComponentReferenceBasics::crefEqualNoStringCompare(crleft.clone(), crleft2.clone())?) else { bail!("pattern mismatch") };
                     whenEqRes = BackendEquation::setWhenElsePart(whenEq.clone(), eq.clone())?;
                     res = Arc::new(BackendDAE::Equation::WHEN_EQUATION { size: size.clone(), whenEquation: whenEqRes.clone(), source: source.clone(), attr: attr.clone() });

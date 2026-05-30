@@ -138,6 +138,8 @@ pub fn statusString(mut status: Status) -> ArcStr {
 }
 
 pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NBackendDAE>> {
+    pub type StrongComponentLst = Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>;
+
     let mut bdae: Arc<BackendDAE::NBackendDAE> = bdae;
     let mut implicit_index_ptr: Pointer::Pointer<i32> = Pointer::create(1);
     let mut duplicate_map: Arc<UnorderedMap::UnorderedMap<Arc<StrongComponent::NBStrongComponent>, Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>>> = UnorderedMap::new((std::sync::Arc::new(StrongComponent::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>) -> Result<i32> + 'static>), (std::sync::Arc::new(StrongComponent::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>, Arc<StrongComponent::NBStrongComponent>) -> Result<bool> + 'static>), 1);
@@ -225,6 +227,8 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NB
 }
 
 pub fn solvePartition(mut partition: Arc<Partition::Partition>, mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, mut implicit_index_ptr: Pointer::Pointer<i32>, mut duplicate_map: Arc<UnorderedMap::UnorderedMap<Arc<StrongComponent::NBStrongComponent>, Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>>>, mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqData::EqData>) -> Result<Arc<Partition::Partition>> {
+    pub type EquationPointerList = Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>;
+
     let mut partition: Arc<Partition::Partition> = partition;
     let mut kind: BPartition::Kind = BPartition::Partition::getKind(partition.clone());
     let mut slicing_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>>>> = UnorderedMap::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);

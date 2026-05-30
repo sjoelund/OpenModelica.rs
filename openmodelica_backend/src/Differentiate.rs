@@ -3308,8 +3308,8 @@ fn checkDerFunctionConds(mut inbarr: metamodelica::Array<bool>, mut icrlst: Arc<
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 DAE::derivativeCond::ZERO_DERIVATIVE { .. } => {
-                    let mut functionTree: Arc<AvlTreePathFunction::Tree> = functionTree.clone();
                     let mut e: Arc<DAE::Exp>;
+                    let mut functionTree: Arc<AvlTreePathFunction::Tree> = functionTree.clone();
                     e = (expl.clone()).get(i.clone())?;
                     (e, functionTree) = differentiateExp(e.clone(), diffwrtCref.clone(), inputData.clone(), diffType.clone(), functionTree.clone(), defaultMaxIter.clone())?;
                     let true = (Expression::isZero(e.clone())) else { bail!("pattern mismatch") };

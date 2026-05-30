@@ -491,10 +491,10 @@ fn evalFunctions_findFuncs(mut eqIn: Arc<BackendDAE::Equation>, mut shared: Arc<
                     let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
                     let mut addEqs1: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
                     let mut addEqs2: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
-                    let mut addEqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = addEqs.clone();
+                    let mut idx: i32 = idx.clone();
                     let mut changed: bool = changed.clone();
                     let mut callSign: Arc<metamodelica::List<CallSignature>> = callSign.clone();
-                    let mut idx: i32 = idx.clone();
+                    let mut addEqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = addEqs.clone();
                     b1 = Expression::containFunctioncall(exp1.clone());
                     b2 = Expression::containFunctioncall(exp2.clone());
                     let true = (b1.clone() || b2.clone()) else { bail!("pattern mismatch") };
@@ -540,9 +540,9 @@ fn evalFunctions_findFuncs(mut eqIn: Arc<BackendDAE::Equation>, mut shared: Arc<
                     let mut addEqs1: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
                     let mut callSign: Arc<metamodelica::List<CallSignature>> = callSign.clone();
                     let mut idx: i32 = idx.clone();
-                    let mut shared: Arc<BackendDAE::Shared> = shared.clone();
                     let mut changed: bool = changed.clone();
                     let mut addEqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = addEqs.clone();
+                    let mut shared: Arc<BackendDAE::Shared> = shared.clone();
                     b1 = Expression::containFunctioncall(exp1.clone());
                     b2 = Expression::containFunctioncall(exp2.clone());
                     let true = (b1.clone() || b2.clone()) else { bail!("pattern mismatch") };
@@ -836,58 +836,58 @@ pub fn evaluateConstantFunction(mut rhsExpIn: Arc<DAE::Exp>, mut lhsExpIn: Arc<D
                     let mut attr1 = (*attr1).clone();
                     let mut path = (*path).clone();
                     let mut callSignLst = (*callSignLst).clone();
-                    let mut funcIsPartConst: bool = funcIsPartConst.clone();
-                    let mut repl: BackendVarTransform::VariableReplacements = repl.clone();
-                    let mut hasAssert: bool = hasAssert.clone();
-                    let mut varScalarCrefsInFunc: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = varScalarCrefsInFunc.clone();
-                    let mut isNDimArray: bool = isNDimArray.clone();
-                    let mut isUnknownType: bool = isUnknownType.clone();
-                    let mut scalarOutputs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>> = scalarOutputs.clone();
-                    let mut outputCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = outputCrefs.clone();
-                    let mut constExps: Arc<metamodelica::List<Arc<DAE::Exp>>> = constExps.clone();
-                    let mut attr2: Arc<DAE::CallAttributes> = attr2.clone();
-                    let mut scalarExp: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>> = scalarExp.clone();
-                    let mut funcIsConst: bool = funcIsConst.clone();
-                    let mut abort: bool = abort.clone();
-                    let mut allOutputs: Arc<metamodelica::List<Arc<DAE::Element>>> = allOutputs.clone();
-                    let mut constInputCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = constInputCrefs.clone();
-                    let mut hasTerminate: bool = hasTerminate.clone();
-                    let mut func: DAE::Function;
-                    let mut elements: Arc<metamodelica::List<Arc<DAE::Element>>> = elements.clone();
-                    let mut scalarInputs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>> = scalarInputs.clone();
+                    let mut allOutputCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = allOutputCrefs.clone();
+                    let mut hasReturn: bool = hasReturn.clone();
+                    let mut signature: CallSignature = signature.clone();
                     let mut algs: Arc<metamodelica::List<Arc<DAE::Element>>> = algs.clone();
                     let mut constComplexCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = constComplexCrefs.clone();
-                    let mut continueEval: bool = continueEval.clone();
-                    let mut constInputExps: Arc<metamodelica::List<Arc<DAE::Exp>>> = constInputExps.clone();
-                    let mut varComplexCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = varComplexCrefs.clone();
-                    let mut constScalarExps: Arc<metamodelica::List<Arc<DAE::Exp>>> = constScalarExps.clone();
-                    let mut outputExp: Arc<DAE::Exp>;
-                    let mut funcs: Arc<AvlTreePathFunction::Tree> = funcs.clone();
+                    let mut abort: bool = abort.clone();
                     let mut constEqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = constEqs.clone();
-                    let mut singleOutputType: Arc<DAE::Type> = singleOutputType.clone();
-                    let mut exp: Arc<DAE::Exp>;
-                    let mut constCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = constCrefs.clone();
-                    let mut varScalarCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = varScalarCrefs.clone();
-                    let mut allInputs: Arc<metamodelica::List<Arc<DAE::Element>>> = allInputs.clone();
-                    let mut constScalarCrefsLhs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = constScalarCrefsLhs.clone();
-                    let mut updatedVarOutputs: Arc<metamodelica::List<Arc<DAE::Element>>> = updatedVarOutputs.clone();
-                    let mut hasReturn: bool = hasReturn.clone();
-                    let mut allInputExps: Arc<metamodelica::List<Arc<DAE::Exp>>> = allInputExps.clone();
-                    let mut constComplexExps: Arc<metamodelica::List<Arc<DAE::Exp>>> = constComplexExps.clone();
-                    let mut signature: CallSignature = signature.clone();
-                    let mut allOutputCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = allOutputCrefs.clone();
-                    let mut protectVars: Arc<metamodelica::List<Arc<DAE::Element>>> = protectVars.clone();
-                    let mut changed: bool = changed.clone();
-                    let mut idx: i32 = idx.clone();
                     let mut outputVarNames: Arc<metamodelica::List<ArcStr>> = outputVarNames.clone();
-                    let mut constScalarCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = constScalarCrefs.clone();
+                    let mut funcIsConst: bool = funcIsConst.clone();
+                    let mut hasAssert: bool = hasAssert.clone();
+                    let mut constCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = constCrefs.clone();
+                    let mut funcs: Arc<AvlTreePathFunction::Tree> = funcs.clone();
+                    let mut singleOutputType: Arc<DAE::Type> = singleOutputType.clone();
+                    let mut varScalarCrefsInFunc: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = varScalarCrefsInFunc.clone();
+                    let mut continueEval: bool = continueEval.clone();
+                    let mut outputCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = outputCrefs.clone();
+                    let mut constInputCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = constInputCrefs.clone();
+                    let mut repl: BackendVarTransform::VariableReplacements = repl.clone();
+                    let mut funcIsPartConst: bool = funcIsPartConst.clone();
+                    let mut scalarExp: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>> = scalarExp.clone();
+                    let mut constInputExps: Arc<metamodelica::List<Arc<DAE::Exp>>> = constInputExps.clone();
+                    let mut scalarInputs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>> = scalarInputs.clone();
+                    let mut exps: Arc<metamodelica::List<Arc<DAE::Exp>>> = exps.clone();
+                    let mut varComplexCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = varComplexCrefs.clone();
+                    let mut allInputCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = allInputCrefs.clone();
+                    let mut constComplexExps: Arc<metamodelica::List<Arc<DAE::Exp>>> = constComplexExps.clone();
+                    let mut changed: bool = changed.clone();
                     let mut lhsExps: Arc<metamodelica::List<Arc<DAE::Exp>>> = lhsExps.clone();
                     let mut newOutputVars: Arc<metamodelica::List<Arc<DAE::Element>>> = newOutputVars.clone();
+                    let mut allOutputs: Arc<metamodelica::List<Arc<DAE::Element>>> = allOutputs.clone();
+                    let mut hasTerminate: bool = hasTerminate.clone();
+                    let mut exp: Arc<DAE::Exp>;
+                    let mut constExps: Arc<metamodelica::List<Arc<DAE::Exp>>> = constExps.clone();
+                    let mut varScalarCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = varScalarCrefs.clone();
                     let mut outputVarTypes: Arc<metamodelica::List<Arc<DAE::Type>>> = outputVarTypes.clone();
-                    let mut isConstRec: bool = isConstRec.clone();
-                    let mut exps: Arc<metamodelica::List<Arc<DAE::Exp>>> = exps.clone();
-                    let mut allInputCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = allInputCrefs.clone();
+                    let mut attr2: Arc<DAE::CallAttributes> = attr2.clone();
+                    let mut updatedVarOutputs: Arc<metamodelica::List<Arc<DAE::Element>>> = updatedVarOutputs.clone();
+                    let mut protectVars: Arc<metamodelica::List<Arc<DAE::Element>>> = protectVars.clone();
+                    let mut constScalarCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = constScalarCrefs.clone();
+                    let mut allInputExps: Arc<metamodelica::List<Arc<DAE::Exp>>> = allInputExps.clone();
+                    let mut elements: Arc<metamodelica::List<Arc<DAE::Element>>> = elements.clone();
                     let mut hasReinit: bool = hasReinit.clone();
+                    let mut outputExp: Arc<DAE::Exp>;
+                    let mut idx: i32 = idx.clone();
+                    let mut isConstRec: bool = isConstRec.clone();
+                    let mut isUnknownType: bool = isUnknownType.clone();
+                    let mut scalarOutputs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>> = scalarOutputs.clone();
+                    let mut constScalarExps: Arc<metamodelica::List<Arc<DAE::Exp>>> = constScalarExps.clone();
+                    let mut constScalarCrefsLhs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = constScalarCrefsLhs.clone();
+                    let mut allInputs: Arc<metamodelica::List<Arc<DAE::Element>>> = allInputs.clone();
+                    let mut isNDimArray: bool = isNDimArray.clone();
+                    let mut func: DAE::Function;
                     if Flags::isSet(Flags::EVAL_FUNC_DUMP.clone())? {
                         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nStart function evaluation of:\n")); __mm_s.push_str(&*ExpressionBasics::printExpStr(lhsExpIn.clone())?); __mm_s.push_str(&*literal!(" := ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(rhsExpIn.clone())?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
                     }
@@ -1029,8 +1029,8 @@ pub fn evaluateConstantFunction(mut rhsExpIn: Arc<DAE::Exp>, mut lhsExpIn: Arc<D
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::ASUB { exp: Deref @ DAE::Exp::CALL { attr: attr1, expLst: exps, path }, sub }, callSignLst) => {
                     let mut exp: Arc<DAE::Exp>;
-                    let mut continueEval: bool = continueEval.clone();
                     let mut changed: bool = changed.clone();
+                    let mut continueEval: bool = continueEval.clone();
                     exp = Arc::new(DAE::Exp::CALL { attr: attr1.clone(), expLst: exps.clone(), path: path.clone() });
                     continueEval = checkCallSignatureForExp(exp.clone(), callSignLst.clone())?;
                     if !(continueEval.clone()) && Flags::isSet(Flags::EVAL_FUNC_DUMP.clone())? {
@@ -1380,16 +1380,16 @@ fn buildVariableFunctionParts(mut scalarOutputs: Arc<metamodelica::List<Arc<meta
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil, Deref @ DAE::Exp::TUPLE { PR: expLst }) => {
+                    let mut funcOutputs: Arc<metamodelica::List<Arc<DAE::Element>>> = funcOutputs.clone();
                     let mut funcProts: Arc<metamodelica::List<Arc<DAE::Element>>> = funcProts.clone();
                     let mut varOutputs: Arc<metamodelica::List<Arc<DAE::Element>>> = varOutputs.clone();
-                    let mut funcOutputs: Arc<metamodelica::List<Arc<DAE::Element>>> = funcOutputs.clone();
                     let mut varScalarExps: Arc<metamodelica::List<Arc<DAE::Exp>>> = varScalarExps.clone();
-                    let mut protCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = protCrefs.clone();
-                    let mut allOutputCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = allOutputCrefs.clone();
                     let mut outputExp: Arc<DAE::Exp>;
-                    let mut varScalarCrefsInFunc: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = varScalarCrefsInFunc.clone();
+                    let mut allOutputCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = allOutputCrefs.clone();
                     let mut outputCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = outputCrefs.clone();
+                    let mut protCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = protCrefs.clone();
                     let mut pos: Arc<metamodelica::List<i32>> = pos.clone();
+                    let mut varScalarCrefsInFunc: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = varScalarCrefsInFunc.clone();
                     varScalarCrefsInFunc = metamodelica::nil();
                     allOutputCrefs = List::map(allOutputs.clone(), (std::sync::Arc::new(DAEUtil::varCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<DAE::ComponentRef>> + 'static>));
                     (protCrefs, _, outputCrefs) = List::intersection1OnTrue(constComplexCrefs.clone(), allOutputCrefs.clone(), (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
@@ -1415,17 +1415,17 @@ fn buildVariableFunctionParts(mut scalarOutputs: Arc<metamodelica::List<Arc<meta
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, _, _, Deref @ DAE::Exp::TUPLE { PR: expLst }) => {
-                    let mut varScalarCrefsInFunc: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = varScalarCrefsInFunc.clone();
+                    let mut allOutputCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = allOutputCrefs.clone();
                     let mut outputCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = outputCrefs.clone();
-                    let mut funcOutputs: Arc<metamodelica::List<Arc<DAE::Element>>> = funcOutputs.clone();
-                    let mut allOutputCrefs2: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = allOutputCrefs2.clone();
-                    let mut funcProts: Arc<metamodelica::List<Arc<DAE::Element>>> = funcProts.clone();
                     let mut protCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = protCrefs.clone();
+                    let mut funcOutputs: Arc<metamodelica::List<Arc<DAE::Element>>> = funcOutputs.clone();
+                    let mut varScalarCrefsInFunc: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = varScalarCrefsInFunc.clone();
                     let mut varScalarExps: Arc<metamodelica::List<Arc<DAE::Exp>>> = varScalarExps.clone();
+                    let mut funcProts: Arc<metamodelica::List<Arc<DAE::Element>>> = funcProts.clone();
+                    let mut allOutputCrefs2: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = allOutputCrefs2.clone();
+                    let mut pos: Arc<metamodelica::List<i32>> = pos.clone();
                     let mut outputExp: Arc<DAE::Exp>;
                     let mut varOutputs: Arc<metamodelica::List<Arc<DAE::Element>>> = varOutputs.clone();
-                    let mut allOutputCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = allOutputCrefs.clone();
-                    let mut pos: Arc<metamodelica::List<i32>> = pos.clone();
                     allOutputCrefs = List::map(allOutputs.clone(), (std::sync::Arc::new(DAEUtil::varCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<DAE::ComponentRef>> + 'static>));
                     allOutputCrefs2 = List::map(allOutputCrefs.clone(), (std::sync::Arc::new(scalarRecCrefsForOneDimRec) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> + 'static>));
                     (_, _, varScalarCrefsInFunc) = List::intersection1OnTrue(allOutputCrefs.clone(), allOutputCrefs2.clone(), (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
@@ -1452,16 +1452,16 @@ fn buildVariableFunctionParts(mut scalarOutputs: Arc<metamodelica::List<Arc<meta
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, _, _, Deref @ DAE::Exp::TUPLE { PR: expLst }) => {
-                    let mut varScalarExps: Arc<metamodelica::List<Arc<DAE::Exp>>> = varScalarExps.clone();
-                    let mut protCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = protCrefs.clone();
                     let mut outputCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = outputCrefs.clone();
-                    let mut varOutputs: Arc<metamodelica::List<Arc<DAE::Element>>> = varOutputs.clone();
-                    let mut outputExp: Arc<DAE::Exp>;
-                    let mut varScalarCrefsInFunc: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = varScalarCrefsInFunc.clone();
-                    let mut funcOutputs: Arc<metamodelica::List<Arc<DAE::Element>>> = funcOutputs.clone();
-                    let mut funcProts: Arc<metamodelica::List<Arc<DAE::Element>>> = funcProts.clone();
-                    let mut pos: Arc<metamodelica::List<i32>> = pos.clone();
                     let mut allOutputCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = allOutputCrefs.clone();
+                    let mut pos: Arc<metamodelica::List<i32>> = pos.clone();
+                    let mut funcProts: Arc<metamodelica::List<Arc<DAE::Element>>> = funcProts.clone();
+                    let mut outputExp: Arc<DAE::Exp>;
+                    let mut funcOutputs: Arc<metamodelica::List<Arc<DAE::Element>>> = funcOutputs.clone();
+                    let mut varScalarExps: Arc<metamodelica::List<Arc<DAE::Exp>>> = varScalarExps.clone();
+                    let mut varScalarCrefsInFunc: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = varScalarCrefsInFunc.clone();
+                    let mut protCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = protCrefs.clone();
+                    let mut varOutputs: Arc<metamodelica::List<Arc<DAE::Element>>> = varOutputs.clone();
                     let true = (List::flatten(scalarOutputs.clone()).is_empty()) else { bail!("pattern mismatch") };
                     let true = (!(constScalarCrefs.clone().is_empty())) else { bail!("pattern mismatch") };
                     varScalarCrefsInFunc = metamodelica::nil();
@@ -1481,10 +1481,10 @@ fn buildVariableFunctionParts(mut scalarOutputs: Arc<metamodelica::List<Arc<meta
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil, _, Deref @ metamodelica::List::Nil, _) => {
-                    let mut outputExp: Arc<DAE::Exp>;
-                    let mut lhsCref: Arc<DAE::ComponentRef> = lhsCref.clone();
                     let mut expLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = expLst.clone();
+                    let mut lhsCref: Arc<DAE::ComponentRef> = lhsCref.clone();
                     let mut outputCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = outputCrefs.clone();
+                    let mut outputExp: Arc<DAE::Exp>;
                     lhsCref = Expression::expCref(lhsExpIn.clone())?;
                     outputCrefs = List::map(constScalarCrefs.clone(), (std::sync::Arc::new(ComponentReference::crefStripFirstIdent) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> + 'static>));
                     outputCrefs = List::map1(outputCrefs.clone(), (std::sync::Arc::new(ComponentReference::joinCrefsR) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> + 'static>), lhsCref.clone());
@@ -1498,16 +1498,16 @@ fn buildVariableFunctionParts(mut scalarOutputs: Arc<metamodelica::List<Arc<meta
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _, _, _, _) => {
+                    let mut allOutputCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = allOutputCrefs.clone();
                     let mut varOutputs: Arc<metamodelica::List<Arc<DAE::Element>>> = varOutputs.clone();
                     let mut funcSOutputs: Arc<metamodelica::List<Arc<DAE::Element>>> = funcSOutputs.clone();
-                    let mut varScalarCrefs1: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = varScalarCrefs1.clone();
-                    let mut funcSProts: Arc<metamodelica::List<Arc<DAE::Element>>> = funcSProts.clone();
-                    let mut allOutputCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = allOutputCrefs.clone();
                     let mut funcProts: Arc<metamodelica::List<Arc<DAE::Element>>> = funcProts.clone();
-                    let mut funcOutputs: Arc<metamodelica::List<Arc<DAE::Element>>> = funcOutputs.clone();
                     let mut lhsCref: Arc<DAE::ComponentRef> = lhsCref.clone();
-                    let mut outputExp: Arc<DAE::Exp>;
+                    let mut funcSProts: Arc<metamodelica::List<Arc<DAE::Element>>> = funcSProts.clone();
                     let mut varScalarExps: Arc<metamodelica::List<Arc<DAE::Exp>>> = varScalarExps.clone();
+                    let mut outputExp: Arc<DAE::Exp>;
+                    let mut varScalarCrefs1: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = varScalarCrefs1.clone();
+                    let mut funcOutputs: Arc<metamodelica::List<Arc<DAE::Element>>> = funcOutputs.clone();
                     lhsCref = Expression::expCref(lhsExpIn.clone())?;
                     allOutputCrefs = List::map(allOutputs.clone(), (std::sync::Arc::new(DAEUtil::varCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<DAE::ComponentRef>> + 'static>));
                     funcOutputs = List::map2(varComplexCrefs.clone(), (std::sync::Arc::new(generateOutputElements) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::Element>>>, Arc<DAE::Exp>) -> Result<Arc<DAE::Element>> + 'static>), allOutputs.clone(), lhsExpIn.clone());

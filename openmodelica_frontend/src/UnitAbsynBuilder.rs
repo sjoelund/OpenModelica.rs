@@ -81,8 +81,8 @@ pub fn registerUnitWeights(mut cache: FCore::Cache, mut env: FCore::Graph, mut d
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let DAE::DAElist { elementLst: ref elts } = __mc_input.clone() else { bail!("nomatch") };
-            let mut du: Arc<metamodelica::List<Arc<SCode::Element>>> = du.clone();
             let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>> = paths.clone();
+            let mut du: Arc<metamodelica::List<Arc<SCode::Element>>> = du.clone();
             paths = List::unionList(List::map(elts.clone(), (std::sync::Arc::new(fnptr!(DAEUtil::getClassList, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> + 'static>)))?;
             du = List::unionList(List::map1(paths.clone(), (std::sync::Arc::new(retrieveUnitsFromEnv) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, (FCore::Cache, FCore::Graph)) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> + 'static>), (cache.clone(), env.clone())))?;
             registerUnitWeightDefineunits(du.clone())?;
@@ -1538,8 +1538,8 @@ fn buildTermExpList(mut env: FCore::Graph, mut iexpl: Arc<metamodelica::List<Arc
                     let mut eterms2: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
                     let mut ut: Arc<UnitAbsyn::UnitTerm>;
                     let mut store = (*store).clone();
-                    let mut extraTerms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = extraTerms.clone();
                     let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = terms.clone();
+                    let mut extraTerms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = extraTerms.clone();
                     (ut, eterms1, store) = buildTermExp(env.clone(), e.clone(), false, ht.clone(), store.clone())?;
                     (terms, eterms2, store) = buildTermExpList(env.clone(), expl.clone(), ht.clone(), store.clone())?;
                     extraTerms = listAppend(eterms1.clone(), eterms2.clone());

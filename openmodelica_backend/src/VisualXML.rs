@@ -217,7 +217,7 @@ fn getConstCrefBinding(mut cr: Arc<DAE::ComponentRef>, mut vars: BackendDAE::Var
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    if !((unwrap_break_err!(Expression::isConst(e.clone()), '__try0))) { bail!("guard") }
+                    if !((Expression::isConst(e.clone())?)) { bail!("guard") }
                     Ok(e.clone())
                 }
                 _ => bail!("nomatch"),
@@ -226,7 +226,7 @@ fn getConstCrefBinding(mut cr: Arc<DAE::ComponentRef>, mut vars: BackendDAE::Var
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CREF { componentRef: _, .. } => {
-                    Ok(unwrap_break_err!(getConstCrefBinding(Expression::expCref(e.clone())?, vars.clone()), '__try0))
+                    Ok(getConstCrefBinding(Expression::expCref(e.clone())?, vars.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -234,7 +234,7 @@ fn getConstCrefBinding(mut cr: Arc<DAE::ComponentRef>, mut vars: BackendDAE::Var
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    unwrap_break_err!(Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("The binding expression ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!(" of the visualization type component ")); __mm_s.push_str(&*ComponentReference::crefStr(cr.clone())?); __mm_s.push_str(&*literal!("  cannot be evaluated. Please specify a visualization type (CAD files are specified as modelica://packagename/filename.stl)")); ArcStr::from(__mm_s) }).clone()), '__try0);
+                    Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("The binding expression ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!(" of the visualization type component ")); __mm_s.push_str(&*ComponentReference::crefStr(cr.clone())?); __mm_s.push_str(&*literal!("  cannot be evaluated. Please specify a visualization type (CAD files are specified as modelica://packagename/filename.stl)")); ArcStr::from(__mm_s) }).clone())?;
                     Ok(e.clone())
                 }
                 _ => bail!("nomatch"),

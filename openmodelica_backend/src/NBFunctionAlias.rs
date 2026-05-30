@@ -436,31 +436,45 @@ fn resolveAux(mut map: Arc<UnorderedMap::UnorderedMap<Arc<Call_Id::Call_Id>, Arc
 }
 
 fn introduceFunctionAliasEquation(mut eqn: Arc<Equation::Equation>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<Call_Id::Call_Id>, Arc<Call_Aux::Call_Aux>>>, mut variables: Arc<VariablePointers::VariablePointers>, mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut aux_index: Pointer::Pointer<i32>, mut eqn_index: Pointer::Pointer<i32>, mut init: bool) -> Result<Arc<Equation::Equation>> {
+    #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
+    #[repr(i32)]
+    pub enum Depth {
+        FULL = 1,
+        CONDITION = 2,
+        STOP = 3,
+    }
+    impl PartialOrd for Depth {
+        fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> { Some(self.cmp(other)) }
+    }
+    impl Ord for Depth {
+        fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
+    }
+
     let mut eqn: Arc<Equation::Equation> = eqn;
     let mut iter: Arc<Iterator::Iterator> = Arc::new(Iterator::EMPTY);
-    let mut depth: introduceFunctionAliasEquation::Depth = introduceFunctionAliasEquation::Depth::FULL;
+    let mut depth: Depth = Depth::FULL;
     (eqn, _) = Inline::inlineArrayConstructorSingle(eqn.clone(), Arc::new(crate::NBEquation::Iterator::EMPTY), variables.clone(), set.clone(), eqn_index.clone(), Pointer::create(metamodelica::nil()))?;
     (iter, depth) = (::match_deref::match_deref! { match &(eqn.clone()) {
         Deref @ BEquation::Equation::FOR_EQUATION { body: Deref @ metamodelica::List::Cons { head: body, tail: Deref @ metamodelica::List::Nil }, .. } => {
-            (var_field!((*eqn).iter, Equation::Equation::FOR_EQUATION).clone(), if (BEquation::Equation::isWhenEquation(Pointer::create(body.clone())) || BEquation::Equation::isIfEquation(Pointer::create(body.clone()))) {Depth.CONDITION.clone()} else {Depth.FULL.clone()})
+            (var_field!((*eqn).iter, Equation::Equation::FOR_EQUATION).clone(), if (BEquation::Equation::isWhenEquation(Pointer::create(body.clone())) || BEquation::Equation::isIfEquation(Pointer::create(body.clone()))) {Depth::CONDITION.clone()} else {Depth::FULL.clone()})
         },
         Deref @ BEquation::Equation::WHEN_EQUATION { .. } => {
-            (Arc::new(crate::NBEquation::Iterator::EMPTY), Depth.CONDITION.clone())
+            (Arc::new(crate::NBEquation::Iterator::EMPTY), Depth::CONDITION.clone())
         },
         Deref @ BEquation::Equation::IF_EQUATION { .. } => {
-            (Arc::new(crate::NBEquation::Iterator::EMPTY), Depth.CONDITION.clone())
+            (Arc::new(crate::NBEquation::Iterator::EMPTY), Depth::CONDITION.clone())
         },
         Deref @ BEquation::Equation::ALGORITHM { .. } => {
-            (Arc::new(crate::NBEquation::Iterator::EMPTY), Depth.STOP.clone())
+            (Arc::new(crate::NBEquation::Iterator::EMPTY), Depth::STOP.clone())
         },
         _ => {
-            (Arc::new(crate::NBEquation::Iterator::EMPTY), Depth.FULL.clone())
+            (Arc::new(crate::NBEquation::Iterator::EMPTY), Depth::FULL.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    if depth.clone() == Depth.FULL.clone() {
+    if depth.clone() == Depth::FULL.clone() {
         eqn = BEquation::Equation::map(eqn.clone(), Arc::new({ let __pe_b1 = map.clone(); let __pe_b2 = aux_index.clone(); let __pe_b3 = iter.clone(); let __pe_b4 = init.clone(); move |__pe_a0| introduceFunctionAlias(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }), None, (std::sync::Arc::new(fnptr!(Expression::fakeMap, Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
-    } else if depth.clone() == Depth.CONDITION.clone() {
+    } else if depth.clone() == Depth::CONDITION.clone() {
         eqn = BEquation::Equation::mapCondition(eqn.clone(), Arc::new({ let __pe_b1 = map.clone(); let __pe_b2 = aux_index.clone(); let __pe_b3 = iter.clone(); let __pe_b4 = init.clone(); move |__pe_a0| introduceFunctionAlias(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }), None, (std::sync::Arc::new(fnptr!(Expression::fakeMap, Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>));
     }
     Ok(eqn)

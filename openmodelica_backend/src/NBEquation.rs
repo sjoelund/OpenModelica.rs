@@ -809,6 +809,8 @@ pub mod Iterator {
     }
 
     pub fn simplifyRangeCondition(mut iter: Arc<Iterator>, mut condition: Arc<Expression::NFExpression>) -> Result<(Arc<Iterator>, Solve::Status)> {
+        pub type IterOpt = Option<Arc<Iterator>>;
+
         let mut iter: Arc<Iterator> = iter;
         let mut status: Solve::Status = Solve::Status::UNPROCESSED;
         let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();

@@ -966,7 +966,7 @@ fn fun_89(mut in_txt: Tpl::Text, mut in_a_type__: Arc<DAE::Type>, mut in_a_simCo
             l_fixed__ = Tpl::popBlock(l_fixed__.clone())?;
             l_nom__ = Tpl::pushBlock(Tpl::emptyTxt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
             l_nom__ = Tpl::writeTok(l_nom__.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("useNominal=\"")).clone() }))?;
-            ret_7 = isSome(a_nominalValue.clone());
+            ret_7 = Util::isSome(a_nominalValue.clone());
             l_nom__ = Tpl::writeStr(l_nom__.clone(), (Tpl::booleanString(ret_7.clone())).clone())?;
             l_nom__ = Tpl::writeTok(l_nom__.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\"")).clone() }))?;
             l_nom__ = attributeOptionString(l_nom__.clone(), a_nominalValue.clone(), (literal!("nominal")).clone())?;

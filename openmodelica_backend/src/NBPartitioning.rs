@@ -1097,6 +1097,8 @@ fn partitioningClocked(mut kind: Partition::Kind, mut variables: Arc<VariablePoi
 }
 
 fn sortAndMergeClockedPartitions(mut partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>, mut info: Arc<ClockedInfo::ClockedInfo>) -> Result<Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>> {
+    pub type SubMap = Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<Partition::Partition::Partition>>>;
+
     let mut partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>> = partitions;
     let mut clocked_partitions: Arc<metamodelica::List<Arc<Partition::Partition::Partition>>> = metamodelica::nil();
     let mut new_clocked: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>>> = metamodelica::nil();

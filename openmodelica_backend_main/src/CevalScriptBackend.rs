@@ -5330,13 +5330,13 @@ fn runFrontEndWork(mut cache: FCore::Cache, mut env: FCore::Graph, mut className
         let __mc_input = (graph_inst.clone(), nf_inst.clone());
         if let Ok(__v) = (|| -> Result<_> {
             let (false, true) = __mc_input.clone() else { bail!("nomatch") };
-            let mut nf_funcs: Arc<NFFlatten::FunctionTreeImpl::Tree> = nf_funcs.clone();
-            let mut flatString: ArcStr = flatString.clone();
             let mut flat_model: Arc<NFFlatModel::NFFlatModel> = flat_model.clone();
+            let mut env: FCore::Graph = env.clone();
+            let mut flatString: ArcStr = flatString.clone();
             let mut cache: FCore::Cache = cache.clone();
             let mut dae: DAE::DAElist = dae.clone();
+            let mut nf_funcs: Arc<NFFlatten::FunctionTreeImpl::Tree> = nf_funcs.clone();
             let mut funcs: Arc<AvlTreePathFunction::Tree> = funcs.clone();
-            let mut env: FCore::Graph = env.clone();
             (flat_model, nf_funcs, flatString) = runFrontEndWorkNF(className.clone(), relaxedFrontEnd.clone(), dumpFlat.clone())?;
             (dae, funcs) = NFConvertDAE::convert(flat_model.clone(), nf_funcs.clone())?;
             cache = FCore::emptyCache();
@@ -5354,9 +5354,9 @@ fn runFrontEndWork(mut cache: FCore::Cache, mut env: FCore::Graph, mut className
         if let Ok(__v) = (|| -> Result<_> {
             let (false, false) = __mc_input.clone() else { bail!("nomatch") };
             let mut scodeP: Arc<metamodelica::List<Arc<SCode::Element>>> = scodeP.clone();
+            let mut env: FCore::Graph = env.clone();
             let mut dae: DAE::DAElist = dae.clone();
             let mut cache: FCore::Cache = cache.clone();
-            let mut env: FCore::Graph = env.clone();
             scodeP = SymbolTable::getSCode()?;
             ExecStat::execStat((literal!("FrontEnd - Absyn->SCode")).clone())?;
             (cache, env, _, dae) = Inst::instantiateClass(cache.clone(), InnerOuter::emptyInstHierarchy().clone(), scodeP.clone(), className.clone(), true, relaxedFrontEnd.clone(), true)?;
@@ -7167,10 +7167,10 @@ fn buildModel(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inValues: 
                     let mut simflags_mod: Option<Arc<Absyn::Modification>> = None;
                     let mut cache = (*cache).clone();
                     let mut vals = (*vals).clone();
-                    let mut outputFormat_str: ArcStr = outputFormat_str.clone();
-                    let mut resultValues: Arc<metamodelica::List<(ArcStr, Arc<Values::Value>)>> = resultValues.clone();
                     let mut compileDir: ArcStr = compileDir.clone();
+                    let mut outputFormat_str: ArcStr = outputFormat_str.clone();
                     let mut success: bool = success.clone();
+                    let mut resultValues: Arc<metamodelica::List<(ArcStr, Arc<Values::Value>)>> = resultValues.clone();
                     values = vals.clone();
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(getListFirstShowError(vals.clone(), (literal!("while retrieving the className (1 arg) from the buildModel arguments")).clone())?) {
                         (Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: __pa0 } }, __pa1) => (__pa0.clone(), __pa1.clone()),
@@ -7786,15 +7786,15 @@ pub fn checkAll(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut allClass
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: className, tail: rest } => {
-                    let mut t2: metamodelica::Real = t2.clone();
-                    let mut elapsedTime: metamodelica::Real = elapsedTime.clone();
-                    let mut smsg: ArcStr = smsg.clone();
-                    let mut failed: i32 = failed.clone();
-                    let mut s: ArcStr = s.clone();
                     let mut t1: metamodelica::Real = t1.clone();
+                    let mut elapsedTime: metamodelica::Real = elapsedTime.clone();
+                    let mut s: ArcStr = s.clone();
+                    let mut smsg: ArcStr = smsg.clone();
                     let mut r#str: ArcStr = r#str.clone();
+                    let mut t2: metamodelica::Real = t2.clone();
                     let mut c: Arc<Absyn::Class> = c.clone();
                     let mut f: bool = f.clone();
+                    let mut failed: i32 = failed.clone();
                     c = ProgramUtil::getPathedClassInProgram(className.clone(), p.clone(), false, false)?;
                     let false = (Interactive::isPackage(className.clone(), p.clone())) else { bail!("pattern mismatch") };
                     let false = (Interactive::isType(className.clone(), p.clone())) else { bail!("pattern mismatch") };
@@ -7835,8 +7835,8 @@ pub fn checkAll(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut allClass
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: className, tail: rest } => {
-                    let mut c: Arc<Absyn::Class> = c.clone();
                     let mut failed: i32 = failed.clone();
+                    let mut c: Arc<Absyn::Class> = c.clone();
                     c = ProgramUtil::getPathedClassInProgram(className.clone(), p.clone(), false, false)?;
                     println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Checking skipped: ")); __mm_s.push_str(&*Dump::unparseClassAttributesStr(c.clone())?); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*AbsynUtil::pathString(className.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("...\n")); ArcStr::from(__mm_s) }).clone());
                     failed = checkAll(inCache.clone(), inEnv.clone(), rest.clone(), inMsg.clone(), reportTimes.clone(), failed.clone())?;
@@ -10096,10 +10096,10 @@ fn instantiateModel(mut cache: FCore::Cache, mut env: FCore::Graph, mut path: Ar
         let __mc_input = ();
         if let Ok(__v) = (|| -> Result<_> {
             let () = __mc_input.clone() else { bail!("nomatch") };
-            let mut flags: Flags::Flag = flags.clone();
-            let mut cache: FCore::Cache = cache.clone();
-            let mut odae: Option<DAE::DAElist> = odae.clone();
             let mut r#str: ArcStr = r#str.clone();
+            let mut flags: Flags::Flag = flags.clone();
+            let mut odae: Option<DAE::DAElist> = odae.clone();
+            let mut cache: FCore::Cache = cache.clone();
             ExecStat::execStatReset()?;
             flags = loadCommandLineOptionsFromModel(path.clone())?;
             match '__try0: {
