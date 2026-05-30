@@ -13567,6 +13567,18 @@ fn is_static_const_emittable(exp: &TypedExp, ctx: &GenCtx, top_level: &BTreeMap<
                 if let Some((parent, _)) = qname.rsplit_once('.')
                     && ctx.recursive_types.contains(parent) { return false; }
             }
+            // A *unit* variant of a recursive uniontype (`Ty::UnionTypeVariant`)
+            // is also Arc::new-wrapped at emit time — see the `parent_recursive`
+            // logic in emit_exp's Constructor arm, whose parent comes from the
+            // variant `ty` or, failing that, the constructor `name`'s prefix.
+            // `Arc::new` is not const, so such a value cannot be `pub const`
+            // (e.g. `Expression.END()` inside the `END_TPL` tuple constant in
+            // NBResizable). Mirror that exact check.
+            let parent_recursive = match ty {
+                Ty::UnionTypeVariant(parent, _) => ctx.recursive_types.contains(parent.as_str()),
+                _ => name.rsplit_once('.').map(|(parent, _)| ctx.recursive_types.contains(parent)).unwrap_or(false),
+            };
+            if parent_recursive { return false; }
             // Field-by-field: a field whose *declared* type is Arc-wrapped but
             // whose value is not already an Arc gets an `Arc::new(...)` wrap in
             // emit_exp's constructor arm — and `Arc::new` is not a const fn. Such
