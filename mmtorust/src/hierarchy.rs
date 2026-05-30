@@ -1993,7 +1993,7 @@ fn fmt_cref(cref: &Absyn::ComponentRef) -> String {
         // Keep arrayCreateNoInit distinct from arrayCreate; codegen lowers it
         // to `metamodelica::Dangerous::arrayCreateNoInit(size)` (dropping the
         // dummy type-witness argument).
-        "MetaModelica.Dangerous.arrayCreateNoInit" | "Dangerous.arrayCreateNoInit" | ".MetaModelica.Dangerous.arrayCreateNoInit" => "arrayCreateNoInit".to_owned(),
+        "MetaModelica.Dangerous.arrayCreateNoInit" | "Dangerous.arrayCreateNoInit" | ".MetaModelica.Dangerous.arrayCreateNoInit" | "MetaModelica.arrayCreateNoInit" => "arrayCreateNoInit".to_owned(),
         "MetaModelica.Dangerous.listArrayLiteral" | "Dangerous.listArrayLiteral" | ".MetaModelica.Dangerous.listArrayLiteral" | "listArrayLiteral" => "listArray".to_owned(),
         // Destructive append: kept distinct from `listAppend` so codegen routes
         // it to the runtime's in-place implementation (see typedexp::cref_to_dotted).

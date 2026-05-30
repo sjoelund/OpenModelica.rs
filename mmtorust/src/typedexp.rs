@@ -217,7 +217,10 @@ pub fn cref_to_dotted(cref: &Absyn::ComponentRef) -> String {
         // `metamodelica::Dangerous::arrayCreateNoInit(size)` which takes only the
         // size (the MetaModelica `dummy` second argument is a type witness only
         // and is dropped at codegen time).
-        "MetaModelica.Dangerous.arrayCreateNoInit" | "Dangerous.arrayCreateNoInit" => "arrayCreateNoInit".to_owned(),
+        // The 2-segment `MetaModelica.arrayCreateNoInit` form appears when the
+        // Absyn strips the intermediate `Dangerous` package (as it does for
+        // these builtins in SimpleModelicaParser).
+        "MetaModelica.Dangerous.arrayCreateNoInit" | "Dangerous.arrayCreateNoInit" | "MetaModelica.arrayCreateNoInit" => "arrayCreateNoInit".to_owned(),
         "MetaModelica.Dangerous.listArrayLiteral" | "Dangerous.listArrayLiteral" | "listArrayLiteral" => "listArray".to_owned(),
         // `listAppendDestroy(first, second)` destructively splices `second` onto
         // the end of `first` with no allocation. Kept distinct from `listAppend`
