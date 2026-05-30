@@ -10933,7 +10933,39 @@ fn emit_range<'a>(start: &TypedExp, step: Option<&TypedExp>, stop: &TypedExp, is
 
 fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_binding: Option<&str>, is_const: bool, ctx: &mut GenCtx, top_level: &'a BTreeMap<String, NameNode<'a>>) -> String {
     let raw_input_str = emit_exp(input, is_const, ctx, top_level);
-    let input_ty = input.ty();
+    let mut input_ty = input.ty();
+    // MetaModelica scalar-context rule: a multi-output (tuple-typed) call whose
+    // result is matched against patterns that *structurally require a non-tuple
+    // type* yields only its FIRST output — the remaining outputs are discarded
+    // (e.g. `match getVarStart(..) case SOME(start) ...`, where `getVarStart`
+    // `extends getVarPartner` and returns `(Option<Pointer>, String)`; `SOME`
+    // can only match an Option, i.e. the first output). Take `.0` and narrow the
+    // scrutinee type to the first element so it lines up with the patterns.
+    //
+    // The trigger is a pattern that *cannot* match a tuple — a constructor,
+    // `SOME`/`NONE`, cons, an empty-list or a literal. A `Var`/`Wildcard`
+    // pattern binds the whole value (so a genuine first-class `tuple<..>` value,
+    // e.g. a HashTable bound as `case ht`, must keep all elements), and a
+    // `Tuple` pattern already destructures every output — neither triggers the
+    // first-output coercion. Mirrors the first-output coercion already applied
+    // to binary operands and scalar call arguments.
+    fn pat_requires_non_tuple(p: &TypedPat) -> bool {
+        match p {
+            TypedPat::Constructor { .. } | TypedPat::Some_(_) | TypedPat::None_
+            | TypedPat::Cons { .. } | TypedPat::Lit(_) | TypedPat::EmptyList => true,
+            TypedPat::As { pat, .. } => pat_requires_non_tuple(pat),
+            _ => false,
+        }
+    }
+    let first_elem_ty = if let Ty::Tuple(elems) = &input_ty { elems.first().cloned() } else { None };
+    let take_first = first_elem_ty.is_some()
+        && cases.iter().any(|c| pat_requires_non_tuple(&c.pattern));
+    let raw_input_str = if take_first {
+        input_ty = first_elem_ty.unwrap();
+        format!("({raw_input_str}).0")
+    } else {
+        raw_input_str
+    };
     // When the source wrote `match id as expr`, materialize the scrutinee
     // into a local named `id` so that arm bodies can read fields off it.
     // We wrap the whole match in a block: `{ let id = expr; (match id.clone() { ... }) }`.
