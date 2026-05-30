@@ -574,4 +574,15 @@ om:=OpenModelica.Scripting.getSourceFile(OpenModelica);
 s:=stringDelimitList(list(s for s in OpenModelica.Scripting.getSourceFile(OpenModelica.Scripting.getClassNames())),"\n");
 OpenModelica.Scripting.writeFile("compilerSources.txt.unsorted", s + "\n" + om + "\n");
 getErrorString();
-system("sh -c 'ls -laS `cat compilerSources.txt.unsorted` | grep -o \"/home/.*\" - > compilerSources.txt'");
+// `ls -laS` sorts the sources by size (largest first, for codegen load
+// balancing); we then re-extract just the path from each line. None of the
+// preceding fields (mode, links, owner, group, size, month, day, time) contain a
+// '/', so matching from the first '/' to end-of-line captures the full path,
+// including spaces, regardless of where the sources are checked out (/home,
+// /projects, ...). Do not hardcode an environment-specific prefix here.
+//
+// getClassNames() also reports classes loaded transitively from the *installed*
+// omc (e.g. /usr/lib/omc/NFModelicaBuiltin.mo); those are not part of the
+// compiler checkout and must not be transpiled, so restrict the result to files
+// under the OpenModelica source tree via the stable "/OMCompiler/" path marker.
+system("sh -c 'ls -laS `cat compilerSources.txt.unsorted` | grep -o \"/.*\" | grep \"/OMCompiler/\" > compilerSources.txt'");
