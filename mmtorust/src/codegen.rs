@@ -18070,15 +18070,45 @@ fn ty_default_init_with_hier<'a>(ty: &Ty, ctx: &mut GenCtx, top_level: &'a BTree
                 let MM::ClassDef::Parts { members, .. } = &c.body else { return None };
                 let has_component = members.iter().any(|m| matches!(m, MM::ClassMember::Component(_)));
                 if has_component { None } else { Some(name.clone()) }
-            })?;
-            let enum_path = ctx.shorten(qname);
-            let bare = format!("{enum_path}::{}", escape_ident(&first_unit_variant));
-            // Recursive uniontypes are stored as `Arc<Enum>` everywhere they're
-            // referenced; wrap the unit-variant in `Arc::new(...)` to match.
-            if ctx.recursive_types.contains(qname.as_str()) {
-                Some(format!("Arc::new({bare})"))
+            });
+            if let Some(v) = first_unit_variant {
+                let enum_path = ctx.shorten(qname);
+                let bare = format!("{enum_path}::{}", escape_ident(&v));
+                // Recursive uniontypes are stored as `Arc<Enum>` everywhere
+                // they're referenced; wrap the unit-variant in `Arc::new(...)`.
+                return Some(if ctx.recursive_types.contains(qname.as_str()) {
+                    format!("Arc::new({bare})")
+                } else {
+                    bare
+                });
+            }
+            // No unit-variant sentinel. Fall back to the uniontype's derived
+            // `Default` impl — `pick_default_variant_for_enum` selects the
+            // fewest-field defaultable variant (e.g. `DAE.Exp` → `ICONST(0)`).
+            // That impl is emitted only when the type is in
+            // `types_needing_default` ∩ `defaultable_struct_qnames` (same gate
+            // as the RustStruct arm below); otherwise calling `::default()`
+            // would not compile, so bail and leave the local bare (its MM body
+            // must assign it before use).
+            //
+            // Render the type path through `fmt_ty` (not `ctx.shorten`): it
+            // handles the `Mod::T` doubling for single-record uniontypes whose
+            // module and type share a name (e.g. `Entry` → `Entry::Entry`,
+            // where a bare `Entry` is the *module*, not the type) and the
+            // Arc-wrapping for recursive uniontypes — exactly like the
+            // RustStruct/AliasTo arm.
+            if ctx.types_needing_default.contains(qname.as_str())
+                && ctx.defaultable_struct_qnames.contains(qname.as_str())
+            {
+                let rendered = fmt_ty(ty, ctx);
+                let is_arc = ctx.recursive_types.contains(qname.as_str())
+                    && rendered.starts_with("Arc<")
+                    && rendered.ends_with('>');
+                let inner = if is_arc { rendered[4..rendered.len()-1].to_owned() } else { rendered };
+                let bare = format!("<{inner} as ::std::default::Default>::default()");
+                Some(if is_arc { format!("Arc::new({bare})") } else { bare })
             } else {
-                Some(bare)
+                None
             }
         }
         // Single-record uniontypes (lowered to a Rust `struct`) and type
