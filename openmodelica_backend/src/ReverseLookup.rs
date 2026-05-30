@@ -888,8 +888,8 @@ fn lookupPath(mut path: Arc<Absyn::Path>, mut paths: Arc<PathTree::Tree>, mut ex
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Path::QUALIFIED { .. } => {
-                    let mut found: bool = found.clone();
                     let mut entry: Arc<PathEntry> = entry.clone();
+                    let mut found: bool = found.clone();
                     entry = PathTree::get(paths.clone(), (var_field!((*path).name, Absyn::Path::QUALIFIED).clone()).clone())?;
                     if entry.shadowed.clone() && !(fullyQualified.clone()) {
                         found = false;

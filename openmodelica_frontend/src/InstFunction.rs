@@ -487,8 +487,8 @@ fn instantiateDerivativeFuncs2(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
                     let _ = __mc_input.clone() else { bail!("nomatch") };
-                    let mut funcs: Arc<metamodelica::List<DAE::Function>>;
                     let mut cache: FCore::Cache = cache.clone();
+                    let mut funcs: Arc<metamodelica::List<DAE::Function>>;
                     let mut ih: Arc<metamodelica::List<InnerOuter::TopInstance>> = ih.clone();
                     cache = FCore::addCachedInstFuncGuard(cache.clone(), p.clone())?;
                     (cache, _, ih, funcs) = implicitFunctionInstantiation2(cache.clone(), cenv.clone(), ih.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_types::DAE::Prefix::NOPRE, cdef.clone(), metamodelica::nil(), false)?;

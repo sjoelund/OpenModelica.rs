@@ -2292,10 +2292,16 @@ fn infer_case<'a>(
             // Discover any new variables first assigned inside the arm body (not declared
             // anywhere). These arise when the MetaModelica source omits explicit local
             // declarations for intermediate variables that are only assigned once.
-            for (n, t) in case_env.iter() {
-                if !inner_env.contains_key(n) && !locals.iter().any(|(ln, _, _, _)| ln == n) {
-                    locals.push((n.clone(), t.clone(), None, None));
-                }
+            // `case_env` is a `HashMap`, whose iteration order is randomised
+            // per process. Collect the newly-discovered locals and sort by name
+            // before appending so the emitted `let mut` declaration order — and
+            // hence the generated Rust — is deterministic across codegen runs.
+            let mut discovered: Vec<(&String, &Ty)> = case_env.iter()
+                .filter(|(n, _)| !inner_env.contains_key(*n) && !locals.iter().any(|(ln, _, _, _)| &ln == n))
+                .collect();
+            discovered.sort_by(|a, b| a.0.cmp(b.0));
+            for (n, t) in discovered {
+                locals.push((n.clone(), t.clone(), None, None));
             }
             TypedCase { pattern: pat, guard, locals, stmts, result: infer_exp(result, &case_env, top_level, pkg_prefix, type_vars) }
         }
@@ -2322,10 +2328,14 @@ fn infer_case<'a>(
                 case_env.insert(n.clone(), t.clone());
             }
             let stmts = infer_case_class_part(classPart, &mut case_env, top_level, pkg_prefix, type_vars);
-            for (n, t) in case_env.iter() {
-                if !env.contains_key(n) && !locals.iter().any(|(ln, _, _, _)| ln == n) {
-                    locals.push((n.clone(), t.clone(), None, None));
-                }
+            // See the MATCH-case branch above: sort the HashMap-discovered
+            // locals by name so the generated declaration order is stable.
+            let mut discovered: Vec<(&String, &Ty)> = case_env.iter()
+                .filter(|(n, _)| !env.contains_key(*n) && !locals.iter().any(|(ln, _, _, _)| &ln == n))
+                .collect();
+            discovered.sort_by(|a, b| a.0.cmp(b.0));
+            for (n, t) in discovered {
+                locals.push((n.clone(), t.clone(), None, None));
             }
             TypedCase { pattern: TypedPat::Wildcard, guard: None, locals, stmts, result: infer_exp(result, &case_env, top_level, pkg_prefix, type_vars) }
         }

@@ -1257,9 +1257,9 @@ fn getResidualExpressions1(mut i: i32, mut resExpsIn: Arc<metamodelica::List<Arc
         let __mc_input = h_iArrIn.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut repl: BackendVarTransform::VariableReplacements = repl.clone();
             let mut h_i: Arc<metamodelica::List<Arc<DAE::Exp>>> = h_i.clone();
             let mut h_iArr: metamodelica::Array<Arc<metamodelica::List<Arc<DAE::Exp>>>>;
+            let mut repl: BackendVarTransform::VariableReplacements = repl.clone();
             repl = replArr.clone().borrow()[(i.clone() + 1-1) as usize].clone();
             (h_i, _) = BackendVarTransform::replaceExpList1(resExpsIn.clone(), repl.clone(), None)?;
             h_iArr = {let _arr = h_iArrIn.clone(); _arr.borrow_mut()[(i.clone() + 1-1) as usize] = h_i.clone(); _arr};

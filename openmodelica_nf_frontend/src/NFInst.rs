@@ -1753,8 +1753,8 @@ pub fn instTypeSpec(mut typeSpec: Arc<Absyn::TypeSpec>, mut modifier: Arc<Modifi
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::TypeSpec::TPATH { .. } => {
-                    let mut outAttributes: Arc<Attributes::NFAttributes> = outAttributes.clone();
                     let mut node: Arc<InstNode::InstNode> = node.clone();
+                    let mut outAttributes: Arc<Attributes::NFAttributes> = outAttributes.clone();
                     node = Lookup::lookupClassName(var_field!((*typeSpec).path, Absyn::TypeSpec::TPATH).clone(), scope.clone(), context.clone(), info.clone(), true)?;
                     if instLevel.clone() >= 100 {
                         checkRecursiveDefinition(node.clone(), parent.clone(), true)?;

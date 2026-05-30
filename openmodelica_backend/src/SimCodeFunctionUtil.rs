@@ -2630,8 +2630,8 @@ fn getLibraryStringInGccFormat(mut exp: Arc<Absyn::Exp>) -> Result<(Arc<metamode
                     let mut names1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut names2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut names3: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut strs: Arc<metamodelica::List<ArcStr>> = strs.clone();
                     let mut names: Arc<metamodelica::List<ArcStr>> = names.clone();
+                    let mut strs: Arc<metamodelica::List<ArcStr>> = strs.clone();
                     if r#str.clone() == literal!("ModelicaStandardTables") {
                         (strs1, names1) = getLibraryStringInGccFormat(Arc::new(Absyn::Exp::STRING { value: (literal!("ModelicaIO")).clone() }))?;
                         (strs2, names2) = getLibraryStringInGccFormat(Arc::new(Absyn::Exp::STRING { value: (literal!("ModelicaMatIO")).clone() }))?;

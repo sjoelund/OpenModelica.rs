@@ -232,8 +232,8 @@ fn cevalWork2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc
         let __mc_input = ();
         if let Ok(__v) = (|| -> Result<_> {
                     let () = __mc_input.clone() else { bail!("nomatch") };
-                    let mut v: Arc<Values::Value>;
                     let mut dims: Arc<metamodelica::List<i32>>;
+                    let mut v: Arc<Values::Value>;
                     dims = list![1];
                     v = Arc::new(Values::Value::ARRAY { valueLst: es_1.clone(), dimLst: dims.clone() });
                     Ok(v.clone())

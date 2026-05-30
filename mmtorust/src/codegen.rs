@@ -11754,7 +11754,13 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                     for (case_local_name, _, _, _) in &case.locals { shadow_seen.insert(case_local_name.clone()); }
                     for n in &deref_names { shadow_seen.insert(n.clone()); }
                     for (n, _) in typedexp::pat_bindings(&case.pattern) { shadow_seen.insert(n); }
-                    for name in &assigned {
+                    // `assigned` is a `HashSet`, so its iteration order varies
+                    // per process. Emit the outer-local shadows in sorted name
+                    // order so the generated declaration sequence is stable
+                    // across codegen runs (deterministic output).
+                    let mut assigned_sorted: Vec<&String> = assigned.iter().collect();
+                    assigned_sorted.sort();
+                    for name in assigned_sorted {
                         if shadow_seen.contains(name) { continue; }
                         let Some(ty) = ctx.fn_env_vars.get(name).cloned() else { continue };
                         let id = escape_ident(name);

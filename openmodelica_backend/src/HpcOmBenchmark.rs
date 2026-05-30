@@ -144,8 +144,8 @@ fn expandCalcTimes(mut iList: Arc<metamodelica::List<metamodelica::Real>>, mut i
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: numOfCalcs, tail: Deref @ metamodelica::List::Cons { head: calcTimeSum, tail: Deref @ metamodelica::List::Cons { head: eqIdx, tail: rest } } } => {
-                    let mut intNumOfCalcs: i32 = intNumOfCalcs.clone();
                     let mut intEqIdx: i32 = intEqIdx.clone();
+                    let mut intNumOfCalcs: i32 = intNumOfCalcs.clone();
                     let mut tmpTuples: Arc<metamodelica::List<(i32, i32, metamodelica::Real)>> = tmpTuples.clone();
                     intNumOfCalcs = ((numOfCalcs.clone()).0 as i32);
                     intEqIdx = ((eqIdx.clone()).0 as i32);

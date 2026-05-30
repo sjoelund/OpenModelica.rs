@@ -649,10 +649,10 @@ pub fn simplifyArrayConstructor(mut call: Arc<Call::NFCall>) -> Result<Arc<Expre
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: (iter, e), tail: Deref @ metamodelica::List::Nil } => {
                     let mut e = (*e).clone();
-                    let mut exp: Arc<Expression::NFExpression> = exp.clone();
                     let mut dim: Arc<Dimension::NFDimension> = dim.clone();
-                    let mut expanded: bool = expanded.clone();
                     let mut dim_size: i32 = dim_size.clone();
+                    let mut exp: Arc<Expression::NFExpression> = exp.clone();
+                    let mut expanded: bool = expanded.clone();
                     let mut outExp: Arc<Expression::NFExpression> = outExp.clone();
                     let __pa0 = ::match_deref::match_deref! { match &(Expression::typeOf(e.clone())) {
                         Deref @ Type::ARRAY { dimensions: Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil }, .. } => __pa0.clone(),

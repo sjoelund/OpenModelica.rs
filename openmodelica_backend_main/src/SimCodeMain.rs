@@ -1234,11 +1234,11 @@ pub fn translateModelCallBackendOBDAEMode(mut cache: FCore::Cache, mut inEnv: FC
             let mut initDAE: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
             let mut initDAE_lambda0_option: Option<Arc<BackendDAE::BackendDAE>> = None;
             let mut removedInitialEquationLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
+            let mut cache: FCore::Cache = cache.clone();
             let mut generateFunctions: bool = generateFunctions.clone();
             let mut timeBackend: metamodelica::Real = timeBackend.clone();
-            let mut cache: FCore::Cache = cache.clone();
-            let mut timeTemplates: metamodelica::Real = timeTemplates.clone();
             let mut timeSimCode: metamodelica::Real = timeSimCode.clone();
+            let mut timeTemplates: metamodelica::Real = timeTemplates.clone();
             System::realtimeTick(ClockIndexes::RT_CLOCK_BACKEND.clone())?;
             dae = DAEUtil::transformationsBeforeBackend(cache.clone(), graph.clone(), inDae.clone())?;
             ExecStat::execStat((literal!("Transformations before backend")).clone())?;

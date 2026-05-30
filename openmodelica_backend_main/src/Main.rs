@@ -413,9 +413,9 @@ fn translateFile(mut inStringLst: Arc<metamodelica::List<ArcStr>>) -> Result<()>
                 libs => {
                     let mut cls: ArcStr = cls.clone();
                     let mut cname: Arc<Absyn::Path>;
-                    let mut runSilent: bool = runSilent.clone();
                     let mut fileNamePrefix: ArcStr = fileNamePrefix.clone();
                     let mut runBackend: bool = runBackend.clone();
+                    let mut runSilent: bool = runSilent.clone();
                     isEmptyOrFirstIsModelicaFile(libs.clone())?;
                     execStatReset()?;
                     for mut lib in &*libs.clone() {
