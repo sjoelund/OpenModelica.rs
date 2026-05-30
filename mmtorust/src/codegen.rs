@@ -11498,6 +11498,17 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                         }
                     }
                 }
+                // Each matchcontinue arm is lowered to its own closure
+                // (`(|| -> Result<_> { … })()`) whose `Err` makes the arm
+                // fail and the next arm run — exactly MM matchcontinue
+                // semantics. A fallible call inside an arm must therefore
+                // propagate via `?` to *this closure* (QMode::Function), not
+                // `break` to an enclosing `try`'s label: labels are
+                // unreachable across a closure boundary (E0767), and breaking
+                // to the outer try would also wrongly skip the remaining
+                // arms. Override any inherited QMode::TryBlock for the arm's
+                // guard, body and result emission; restore afterwards.
+                let saved_qmode_mc_arm = std::mem::replace(&mut ctx.qmode, QMode::Function);
                 let guard_check = {
                     let mut parts: Vec<String> = pat_extra_guards.clone();
                     if let Some(g) = case.guard.as_ref() {
@@ -11729,6 +11740,7 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                     emit_stmts(&mut body, "            ", &case.stmts, FailureMode::Function, ctx, &mut local_env, top_level, &mut fresh_local);
                 }
                 let result = emit_exp(&case.result, is_const, ctx, top_level);
+                ctx.qmode = saved_qmode_mc_arm;
                 s.push_str("        if let Ok(__v) = (|| -> Result<_> {\n");
                 // Whole-input Var binding under an Arc-wrapped scrutinee: bind
                 // directly to the Arc instead of going through `.as_ref()`.
