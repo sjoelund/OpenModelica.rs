@@ -18169,6 +18169,16 @@ fn ty_default_init_with_hier<'a>(ty: &Ty, ctx: &mut GenCtx, top_level: &'a BTree
             let rendered = fmt_ty(ty, ctx);
             Some(format!("<{rendered} as ::std::default::Default>::default()"))
         }
+        // A tuple local (e.g. a multi-output destructure target assigned only on
+        // some branches) defaults element-wise when every element type has a
+        // default. MetaModelica gives the tuple no special default beyond its
+        // components', so this matches the implicit-default semantics.
+        Ty::Tuple(elems) => {
+            let parts: Option<Vec<String>> = elems.iter()
+                .map(|e| ty_default_init_with_hier(e, ctx, top_level))
+                .collect();
+            parts.map(|p| format!("({})", p.join(", ")))
+        }
         _ => None,
     }
 }
