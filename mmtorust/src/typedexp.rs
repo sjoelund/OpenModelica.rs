@@ -982,6 +982,25 @@ fn call_ty(func: &str, args: &[TypedExp], top_level: &BTreeMap<String, NameNode<
         "realAdd" | "realSub" | "realMul" | "realDiv" | "realAbs"
         | "realMax" | "realMin" | "realNeg" | "realFloor" | "realCeil"
         | "realMod" | "realPow" | "intReal" | "stringReal" => Ty::F64,
+        // Source-level Modelica/MetaModelica math builtins (the bare names, as
+        // opposed to the `realFloor`/`realAbs` runtime spellings above). The
+        // emission side (`emit_builtin_call`) dispatches these by name with these
+        // same arities, so we mirror their result types here. `floor`/`ceil`/
+        // `sqrt` and the trig/exp/log family are Real -> Real. Without an entry
+        // their result infers as `Ty::Unknown`, and an enclosing
+        // `Integer + floor(..)` is then mistyped Integer by `binop_ty`'s
+        // `(I32, _) => I32` arm — which makes a Real context (e.g. `step * (..)`)
+        // wrap the whole subexpression in `OrderedFloat((.. ) as f64)`, producing
+        // `1 + OrderedFloat<f64>` that fails to compile.
+        "floor" | "ceil" | "sqrt"
+        | "sin" | "cos" | "tan" | "asin" | "acos" | "atan"
+        | "sinh" | "cosh" | "tanh" | "exp" | "log" | "log10"
+            if args.len() == 1 => Ty::F64,
+        "atan2" if args.len() == 2 => Ty::F64,
+        // `integer(Real)` truncates toward -inf, yielding an Integer.
+        "integer" if args.len() == 1 => Ty::I32,
+        // `sign(v)` is `input Real v; output Integer` (ModelicaBuiltin.mo).
+        "sign" if args.len() == 1 => Ty::I32,
         "stringBool" => Ty::Bool,
         "intString" | "realString" | "boolString" | "anyString"
         | "stringAppend" | "stringCharAt" | "stringGetStringChar" => Ty::Str,

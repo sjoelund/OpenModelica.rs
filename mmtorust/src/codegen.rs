@@ -8342,6 +8342,20 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
             let arg = args.first().map(|a| emit_builtin_call_arg(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();
             Ok(format!("(({arg}).0.floor() as i32)"))
         },
+        "sign" if args.len() == 1 => {
+            // Modelica `sign(v)` is `input Real v; output Integer` — the single
+            // Real overload coerces an Integer actual to Real at the call site
+            // (ModelicaBuiltin.mo). The runtime `metamodelica::sign(Real) -> i32`
+            // implements the Modelica semantics (`sign(0) == 0`, unlike
+            // `f64::signum`). Coerce an i32 actual to Real to match the formal.
+            let arg = args.first().map(|a| emit_builtin_call_arg_raw(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();
+            let arg = if matches!(args.first().map(|a| a.ty()), Some(Ty::I32)) {
+                format!("metamodelica::OrderedFloat(({arg}) as f64)")
+            } else {
+                arg
+            };
+            Ok(format!("sign({arg})"))
+        },
         "listHead" => {
             let arg = args.first().map(|a| emit_builtin_call_arg(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();
             Ok(ctx.q(&format!("listHead({})", arg)))
