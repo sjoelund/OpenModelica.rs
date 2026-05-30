@@ -1891,7 +1891,7 @@ pub fn reduceEqSystem(mut iSyst: Arc<BackendDAE::EqSystem>, mut shared: Arc<Back
             }
             indx_lst_v = BackendVariable::getVarIndexFromVariables(iVars.clone(), vars.clone())?;
             indx_lst_v = listAppend(indx_lst_v.clone(), statevarindx_lst.clone());
-            indx_lst_e = List::map1r(indx_lst_v.clone(), Arc::new(arrayGet.clone()), ass1.clone());
+            indx_lst_e = List::map1r(indx_lst_v.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), ass1.clone());
             indx_arr = arrayCreate(equationArraySizeDAE(iSyst.clone()), 0);
             funcs = getFunctions(shared.clone())?;
             (_, m, _) = getAdjacencyMatrix(iSyst.clone(), crate::BackendDAE::IndexType::SPARSE, Some(funcs.clone()), isInitializationDAE(shared.clone()))?;

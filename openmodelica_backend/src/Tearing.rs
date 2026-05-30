@@ -642,7 +642,7 @@ fn getDependenciesOfVars(mut iComps: Arc<metamodelica::List<Arc<metamodelica::Li
         Deref @ metamodelica::List::Cons { head: comp, tail: comps } => {
             let mut tvars: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut vars: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            vars = List::map1r(comp.clone(), Arc::new(arrayGet.clone()), ass2.clone());
+            vars = List::map1r(comp.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), ass2.clone());
             tvars = tVarsofEqns(comp.clone(), m.clone(), ass1.clone(), mT.clone(), visited.clone(), iMark.clone())?;
             List::fold1r(vars.clone(), Arc::new(arrayUpdate.clone()), tvars.clone(), mT.clone());
             getDependenciesOfVars(comps.clone(), ass1.clone(), ass2.clone(), m.clone(), mT.clone(), visited.clone(), iMark.clone() + 1)?
@@ -733,7 +733,7 @@ fn tVarsofResidualEqns(mut iEqns: Arc<metamodelica::List<i32>>, mut m: metamodel
             let mut tvars: Arc<metamodelica::List<i32>> = metamodelica::nil();
             vars = List::select(m.borrow()[(e.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>));
             tvars = tVarsofEqn(vars.clone(), ass1.clone(), mT.clone(), visited.clone(), oMark.clone(), metamodelica::nil())?;
-            tvars = List::map1r(tvars.clone(), Arc::new(arrayGet.clone()), varGlobalLocal.clone());
+            tvars = List::map1r(tvars.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), varGlobalLocal.clone());
             oMark = oMark.clone() + 1;
             tvars.clone()
         },
@@ -1330,12 +1330,12 @@ fn omcTearing4(mut jacType: BackendDAE::JacobianType, mut isyst: Arc<BackendDAE:
             if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
                 println!("{}", (literal!("handle torn System\n")).clone());
             }
-            residual1 = List::map1r(residual.clone(), Arc::new(arrayGet.clone()), mapIncRowEqn.clone());
+            residual1 = List::map1r(residual.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), mapIncRowEqn.clone());
             residual1 = List::fold2(residual1.clone(), (std::sync::Arc::new(uniqueIntLst) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32, metamodelica::Array<i32>, Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), mark.clone(), columark.clone(), metamodelica::nil());
             eindxarr = metamodelica::arrayFromVec(eindex.clone().into_iter().cloned().collect());
-            ores = List::map1r(residual1.clone(), Arc::new(arrayGet.clone()), eindxarr.clone());
+            ores = List::map1r(residual1.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), eindxarr.clone());
             varindxarr = metamodelica::arrayFromVec(vindx.clone().into_iter().cloned().collect());
-            ovars = List::map1r(tvars.clone(), Arc::new(arrayGet.clone()), varindxarr.clone());
+            ovars = List::map1r(tvars.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), varindxarr.clone());
             innerEquations = omcTearing4_1(othercomps.clone(), ass2.clone(), mapIncRowEqn.clone(), eindxarr.clone(), varindxarr.clone(), columark.clone(), mark.clone())?;
             linear = BackendDAEUtil::getLinearfromJacType(jacType.clone())?;
             Ok((Arc::new(BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: BackendDAE::TearingSet { tearingvars: ovars.clone(), residualequations: ores.clone(), innerEquations: innerEquations.clone(), jac: Arc::new(crate::BackendDAE::Jacobian::EMPTY_JACOBIAN) }, casualTearingSet: None, linear: linear.clone(), mixedSystem: mixedSystem.clone() }), true))
@@ -1368,7 +1368,7 @@ fn omcTearing4_1(mut othercomps: Arc<metamodelica::List<Arc<metamodelica::List<i
             let mut vlst: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut elst: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut e: i32 = 0;
-            elst = List::map1r(clst.clone(), Arc::new(arrayGet.clone()), mapIncRowEqn.clone());
+            elst = List::map1r(clst.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), mapIncRowEqn.clone());
             elst = List::fold2(elst.clone(), (std::sync::Arc::new(uniqueIntLst) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32, metamodelica::Array<i32>, Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), mark.clone(), columark.clone(), metamodelica::nil());
             let __pa0 = ::match_deref::match_deref! { match &(elst.clone()) {
                 Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil } => __pa0.clone(),
@@ -1376,8 +1376,8 @@ fn omcTearing4_1(mut othercomps: Arc<metamodelica::List<Arc<metamodelica::List<i
             } };
             e = __pa0.clone();
             e = eindxarr.borrow()[(e.clone()-1) as usize].clone();
-            vlst = List::map1r(clst.clone(), Arc::new(arrayGet.clone()), ass2.clone());
-            vlst = List::map1r(vlst.clone(), Arc::new(arrayGet.clone()), varindxarr.clone());
+            vlst = List::map1r(clst.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), ass2.clone());
+            vlst = List::map1r(vlst.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), varindxarr.clone());
             BackendDAE::InnerEquation::INNEREQUATION { vars: vlst.clone(), eqn: e.clone() }
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1785,7 +1785,7 @@ fn CellierTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backend
     if debug.clone() {
         execStat((literal!("Tearing.CellierTearing -> 3.3")).clone())?;
     }
-    residual_coll = List::map1r(residual.clone(), Arc::new(arrayGet.clone()), mapIncRowEqn.clone());
+    residual_coll = List::map1r(residual.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), mapIncRowEqn.clone());
     if debug.clone() {
         execStat((literal!("Tearing.CellierTearing -> 3.4")).clone())?;
     }
@@ -1844,7 +1844,7 @@ fn CellierTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backend
         }
         if intLt((OutTVars.clone().len() as i32), tornsize.clone()) {
             residual = getUnassigned(ass2.clone());
-            residual_coll = List::map1r(residual.clone(), Arc::new(arrayGet.clone()), mapIncRowEqn.clone());
+            residual_coll = List::map1r(residual.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), mapIncRowEqn.clone());
             residual_coll = List::unique(residual_coll.clone());
             if Flags::isSet(Flags::TEARING_DUMP.clone())? || Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
                 dumpTearingSetLocalIndexes(OutTVars.clone(), residual_coll.clone(), order.clone(), ass2.clone(), size.clone(), mapEqnIncRow.clone(), vars.clone(), eqns.clone(), (literal!(" - CASUAL SET")).clone())?;
@@ -3188,7 +3188,7 @@ fn assignInnerEquations(mut inEqns: Arc<metamodelica::List<i32>>, mut eindex: Ar
             let mut otherEqn: i32 = 0;
             let mut vars: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut otherVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            vars = List::map1r(mapEqnIncRow.borrow()[(eq.clone()-1) as usize].clone(), Arc::new(arrayGet.clone()), ass2.clone());
+            vars = List::map1r(mapEqnIncRow.borrow()[(eq.clone()-1) as usize].clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), ass2.clone());
             otherEqn = (eindex.clone()).get(eq.clone())?;
             otherVars = selectFromList_rev(vindex.clone(), vars.clone());
             BackendDAE::InnerEquation::INNEREQUATION { vars: otherVars.clone(), eqn: otherEqn.clone() }
@@ -3201,7 +3201,7 @@ fn assignInnerEquations(mut inEqns: Arc<metamodelica::List<i32>>, mut eindex: Ar
             let mut innerEquation: BackendDAE::InnerEquation;
             let mut constraints: Arc<metamodelica::List<Arc<DAE::Constraint>>> = metamodelica::nil();
             eqns = mapEqnIncRow.borrow()[(eq.clone()-1) as usize].clone();
-            vars = List::map1r(eqns.clone(), Arc::new(arrayGet.clone()), ass2.clone());
+            vars = List::map1r(eqns.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), ass2.clone());
             otherEqn = (eindex.clone()).get(eq.clone())?;
             otherVars = selectFromList_rev(vindex.clone(), vars.clone());
             constraints = findConstraintForInnerEquation(me.borrow()[(listHead(eqns.clone())?-1) as usize].clone(), listHead(vars.clone())?);
@@ -3882,7 +3882,7 @@ fn dumpTearingSetLocalIndexes(mut tVars: Arc<metamodelica::List<i32>>, mut resid
     s = ({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut e in (order.clone()).into_iter().cloned() {
-            let __x = { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*intString(e.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*stringDelimitList(List::map(List::map1r(mapEqnIncRow.borrow()[(e.clone()-1) as usize].clone(), Arc::new(arrayGet.clone()), ass2.clone()), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), (literal!(",")).clone())); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) };
+            let __x = { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*intString(e.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*stringDelimitList(List::map(List::map1r(mapEqnIncRow.borrow()[(e.clone()-1) as usize].clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), ass2.clone()), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), (literal!(",")).clone())); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) };
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -4120,7 +4120,7 @@ fn createTearingSets(mut tVarsIn: Arc<metamodelica::List<i32>>, mut matchingList
         let mut matching = matching.clone();
         (ass1, ass2, order) = matching.clone();
         residual = getUnassigned(ass2.clone());
-        residual_coll = List::map1r(residual.clone(), Arc::new(arrayGet.clone()), mapIncRowEqn.clone());
+        residual_coll = List::map1r(residual.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), mapIncRowEqn.clone());
         residual_coll = List::unique(residual_coll.clone());
         tVars = selectFromList_rev(vindx.clone(), tVarsIn.clone());
         residual = selectFromList_rev(eindex.clone(), residual_coll.clone());

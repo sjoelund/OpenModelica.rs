@@ -194,7 +194,7 @@ fn relaxSystem1(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDA
                     eorphans = getOrphans(1, size.clone(), ass2.clone(), metamodelica::nil())?;
                     ass1 = BackendDAETransform::varAssignmentNonScalar(ass1.clone(), mapIncRowEqn.clone());
                     ass22 = BackendDAETransform::eqnAssignmentNonScalar(mapEqnIncRow.clone(), ass2.clone())?;
-                    eorphans = List::uniqueIntN(List::map1r(eorphans.clone(), Arc::new(arrayGet.clone()), mapIncRowEqn.clone()), (mapIncRowEqn.clone().borrow().len() as i32))?;
+                    eorphans = List::uniqueIntN(List::map1r(eorphans.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), mapIncRowEqn.clone()), (mapIncRowEqn.clone().borrow().len() as i32))?;
                     (subsyst, m, mt) = BackendDAEUtil::getAdjacencyMatrix(subsyst.clone(), crate::BackendDAE::IndexType::ABSOLUTE, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(ishared.clone()))?;
                     rowmarks = arrayCreate(size.clone(), -1);
                     colummarks = arrayCreate(size.clone(), -1);
@@ -456,7 +456,7 @@ fn generateCliquesResidual(mut inOrphans: Arc<metamodelica::List<i32>>, mut ass1
                     let false = (intEq(colummarks.borrow()[(o.clone()-1) as usize].clone(), mark.clone())) else { bail!("pattern mismatch") };
                     {let _arr = colummarks.clone(); _arr.borrow_mut()[(o.clone()-1) as usize] = mark.clone(); _arr};
                     rlst = m.borrow()[(o.clone()-1) as usize].clone();
-                    elst = List::select1(List::flatten(List::map1r(rlst.clone(), Arc::new(arrayGet.clone()), mt.clone())), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
+                    elst = List::select1(List::flatten(List::map1r(rlst.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), mt.clone())), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
                     partner = List::select1(elst.clone(), (std::sync::Arc::new(fnptr!(isResOrphan, i32, metamodelica::Array<Arc<metamodelica::List<i32>>>)) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<bool> + 'static>), ass2.clone());
                     partner = List::uniqueIntN(List::removeOnTrue(o.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), partner.clone()), (colummarks.clone().borrow().len() as i32))?;
                     List::map2_0(partner.clone(), (std::sync::Arc::new(doMark) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>, i32) -> Result<()> + 'static>), colummarks.clone(), mark.clone());
@@ -592,7 +592,7 @@ fn prepairOrphansOrder(mut inOrphans: Arc<metamodelica::List<i32>>, mut ass1: me
             let mut vlst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
             {let _arr = rowmarks.clone(); _arr.borrow_mut()[(o.clone()-1) as usize] = mark.clone(); _arr};
             elst = mt.borrow()[(o.clone()-1) as usize].clone();
-            rlst = List::flatten(List::map1r(elst.clone(), Arc::new(arrayGet.clone()), ass2.clone()));
+            rlst = List::flatten(List::map1r(elst.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), ass2.clone()));
             vlst = List::map1r(rlst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), vars.clone());
             constr = List::all(vlst.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isFlowVar, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>));
             constraints = List::consOnTrue(constr.clone(), o.clone(), iconstraints.clone());
@@ -629,8 +629,8 @@ fn prepairOrphansOrder1(mut eqns: Arc<metamodelica::List<i32>>, mut ass1: metamo
                 {let _arr = colummarks.clone(); _arr.borrow_mut()[(e.clone()-1) as usize] = mark.clone(); _arr};
                 r = ass2.borrow()[(e.clone()-1) as usize].clone();
                 List::map2_0(r.clone(), (std::sync::Arc::new(doMark) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>, i32) -> Result<()> + 'static>), rowmarks.clone(), mark.clone());
-                elst = List::select1(List::map1r(r.clone(), Arc::new(arrayGet.clone()), ass1.clone()), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
-                next = List::flatten(List::map1r(r.clone(), Arc::new(arrayGet.clone()), mt.clone()));
+                elst = List::select1(List::map1r(r.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), ass1.clone()), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
+                next = List::flatten(List::map1r(r.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), mt.clone()));
                 next = List::fold1(elst.clone(), std::sync::Arc::new(fnptr!(List::removeOnTrue, _, _, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), next.clone());
                 List::map2_0(r.clone(), (std::sync::Arc::new(addPreOrphan) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<()> + 'static>), preorphan.clone(), orphans.clone());
                 vlst = List::map1r(r.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), vars.clone());
@@ -665,7 +665,7 @@ fn prepairOrphansOrder2(mut inOrphans: Arc<metamodelica::List<i32>>, mut ass1: m
                     let false = (intEq(rowmarks.borrow()[(o.clone()-1) as usize].clone(), imark.clone())) else { bail!("pattern mismatch") };
                     {let _arr = rowmarks.clone(); _arr.borrow_mut()[(o.clone()-1) as usize] = imark.clone(); _arr};
                     elst = List::select1(mt.borrow()[(o.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
-                    rlst = List::select1(List::flatten(List::map1r(elst.clone(), Arc::new(arrayGet.clone()), m.clone())), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
+                    rlst = List::select1(List::flatten(List::map1r(elst.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), m.clone())), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
                     partner = List::select1(rlst.clone(), (std::sync::Arc::new(fnptr!(isOrphan, i32, metamodelica::Array<i32>)) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>) -> Result<bool> + 'static>), ass1.clone());
                     partner = List::unique(partner.clone());
                     List::map2_0(partner.clone(), (std::sync::Arc::new(doMark) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>, i32) -> Result<()> + 'static>), rowmarks.clone(), imark.clone());
@@ -708,12 +708,12 @@ fn prepairOrphansOrder3(mut eqns: Arc<metamodelica::List<i32>>, mut ass1: metamo
                     let mut lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let false = (intEq(colummarks.borrow()[(e.clone()-1) as usize].clone(), mark.clone())) else { bail!("pattern mismatch") };
                     r = ass2.borrow()[(e.clone()-1) as usize].clone();
-                    lst = List::unique(List::flatten(List::map1r(r.clone(), Arc::new(arrayGet.clone()), orphans.clone())));
+                    lst = List::unique(List::flatten(List::map1r(r.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), orphans.clone())));
                     let true = (listMember(preorphan.clone(), lst.clone())) else { bail!("pattern mismatch") };
                     {let _arr = colummarks.clone(); _arr.borrow_mut()[(e.clone()-1) as usize] = mark.clone(); _arr};
                     List::map2_0(r.clone(), (std::sync::Arc::new(doMark) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>, i32) -> Result<()> + 'static>), rowmarks.clone(), mark.clone());
-                    elst = List::select1(List::map1r(r.clone(), Arc::new(arrayGet.clone()), ass1.clone()), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
-                    next = List::flatten(List::map1r(r.clone(), Arc::new(arrayGet.clone()), mt.clone()));
+                    elst = List::select1(List::map1r(r.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), ass1.clone()), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
+                    next = List::flatten(List::map1r(r.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), mt.clone()));
                     next = List::fold1(elst.clone(), std::sync::Arc::new(fnptr!(List::removeOnTrue, _, _, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), next.clone());
                     prepairOrphansOrder3(next.clone(), ass1.clone(), ass2.clone(), m.clone(), mt.clone(), mark.clone(), rowmarks.clone(), colummarks.clone(), preorphan.clone(), partner.clone(), orphans.clone(), r.clone())?;
                     prepairOrphansOrder3(rest.clone(), ass1.clone(), ass2.clone(), m.clone(), mt.clone(), mark.clone(), rowmarks.clone(), colummarks.clone(), preorphan.clone(), partner.clone(), orphans.clone(), prer.clone())?;
@@ -920,7 +920,7 @@ fn getOrphansOrderEdvanced1(mut eqns: Arc<metamodelica::List<i32>>, mut ass1: me
                     r = List::removeOnTrue(preorphan.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), m.borrow()[(e.clone()-1) as usize].clone());
                     r1 = List::select1(ass2.borrow()[(e.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
                     r = List::fold1(r1.clone(), std::sync::Arc::new(fnptr!(List::removeOnTrue, _, _, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), r.clone());
-                    elst = List::select1(List::map1r(r.clone(), Arc::new(arrayGet.clone()), ass1.clone()), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
+                    elst = List::select1(List::map1r(r.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), ass1.clone()), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
                     next = listAppend(nextQueue.clone(), elst.clone());
                     {let _arr = colummarks.clone(); _arr.borrow_mut()[(e.clone()-1) as usize] = mark.clone(); _arr};
                     getOrphansOrderEdvanced1(rest.clone(), ass1.clone(), ass2.clone(), m.clone(), mt.clone(), mark.clone(), rowmarks.clone(), colummarks.clone(), preorphan.clone(), orphans.clone(), next.clone())?;
@@ -1016,7 +1016,7 @@ fn getConstraintesOrphansOrderEdvanced1(mut eqns: Arc<metamodelica::List<i32>>, 
                     addPreOrphans(preorphan.clone(), olst.clone(), orphans.clone())?;
                     r1 = ass2.borrow()[(e.clone()-1) as usize].clone();
                     r = List::fold1(r1.clone(), std::sync::Arc::new(fnptr!(List::removeOnTrue, _, _, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), r.clone());
-                    elst = List::select1(List::map1r(r.clone(), Arc::new(arrayGet.clone()), ass1.clone()), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
+                    elst = List::select1(List::map1r(r.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), ass1.clone()), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
                     next = listAppend(nextQueue.clone(), elst.clone());
                     getConstraintesOrphansOrderEdvanced1(rest.clone(), ass1.clone(), ass2.clone(), m.clone(), mt.clone(), mark.clone(), rowmarks.clone(), colummarks.clone(), preorphan.clone(), orphans.clone(), next.clone())?;
                     Ok(())
@@ -1035,7 +1035,7 @@ fn getConstraintesOrphansOrderEdvanced1(mut eqns: Arc<metamodelica::List<i32>>, 
                     r = List::removeOnTrue(preorphan.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), m.borrow()[(e.clone()-1) as usize].clone());
                     r1 = ass2.borrow()[(e.clone()-1) as usize].clone();
                     r = List::fold1(r1.clone(), std::sync::Arc::new(fnptr!(List::removeOnTrue, _, _, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), r.clone());
-                    elst = List::select1(List::map1r(r.clone(), Arc::new(arrayGet.clone()), ass1.clone()), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
+                    elst = List::select1(List::map1r(r.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), ass1.clone()), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
                     next = listAppend(nextQueue.clone(), elst.clone());
                     {let _arr = colummarks.clone(); _arr.borrow_mut()[(e.clone()-1) as usize] = mark.clone(); _arr};
                     getConstraintesOrphansOrderEdvanced1(rest.clone(), ass1.clone(), ass2.clone(), m.clone(), mt.clone(), mark.clone(), rowmarks.clone(), colummarks.clone(), preorphan.clone(), orphans.clone(), next.clone())?;
@@ -1216,7 +1216,7 @@ fn getOrphansOrderEdvanced6(mut linklst: Arc<metamodelica::List<Arc<metamodelica
         },
         (Deref @ metamodelica::List::Cons { head: links, tail: rest }, Deref @ metamodelica::List::Cons { head: childs, tail: acc }) => {
             let mut lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            lst = List::unique(List::flatten(List::map1r(childs.clone(), Arc::new(arrayGet.clone()), m.clone())));
+            lst = List::unique(List::flatten(List::map1r(childs.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), m.clone())));
             List::map2_0(links.clone(), (std::sync::Arc::new(doAssign) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, Arc<metamodelica::List<i32>>) -> Result<()> + 'static>), m.clone(), lst.clone());
             List::map2_0(childs.clone(), (std::sync::Arc::new(doAssign) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, Arc<metamodelica::List<i32>>) -> Result<()> + 'static>), m.clone(), links.clone());
             getOrphansOrderEdvanced6(rest.clone(), acc.clone(), m.clone())?;
@@ -1250,7 +1250,7 @@ fn getOrphansAdjacencyMatrix(mut orphans: Arc<metamodelica::List<i32>>, mut invm
     let mut i: i32 = 0;
     for mut o in &*orphans.clone() {
         let mut o = o.clone();
-        lst = List::map1r(vorphansarray.borrow()[(o.clone()-1) as usize].clone(), Arc::new(arrayGet.clone()), invmap.clone());
+        lst = List::map1r(vorphansarray.borrow()[(o.clone()-1) as usize].clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), invmap.clone());
         i = invmap.borrow()[(o.clone()-1) as usize].clone();
         lst = List::consOnTrue(addself.clone(), i.clone(), lst.clone());
         outMT = List::fold1(lst.clone(), (std::sync::Arc::new(Array::consToElement) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<_> + 'static>), i.clone(), outMT.clone());
@@ -1303,7 +1303,7 @@ fn getOrphansOrderEdvanced3(mut roots: Arc<metamodelica::List<i32>>, mut otheror
     mt = AdjacencyMatrix::transposeAdjacencyMatrix(m.clone(), (mt.clone().borrow().len() as i32))?;
     comps = Sorting::TarjanTransposed(mt.clone(), ass.clone())?;
     sortvorphans = List::flattenReverse(comps.clone());
-    sortvorphans = List::map1r(sortvorphans.clone(), Arc::new(arrayGet.clone()), map.clone());
+    sortvorphans = List::map1r(sortvorphans.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), map.clone());
     Ok((sortvorphans, omark))
 }
 
@@ -2329,7 +2329,7 @@ fn getOrphansPairs1(mut rows: Arc<metamodelica::List<i32>>, mut ass1: metamodeli
                     let mut elst: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let false = (intEq(rowmarks.borrow()[(r.clone()-1) as usize].clone(), mark.clone())) else { bail!("pattern mismatch") };
                     elst = List::select1(mt.borrow()[(r.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
-                    next = List::select1(List::flatten(List::map1r(elst.clone(), Arc::new(arrayGet.clone()), ass2.clone())), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
+                    next = List::select1(List::flatten(List::map1r(elst.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), ass2.clone())), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
                     next = listAppend(nextQueue.clone(), next.clone());
                     {let _arr = rowmarks.clone(); _arr.borrow_mut()[(r.clone()-1) as usize] = mark.clone(); _arr};
                     getOrphansPairs1(rest.clone(), ass1.clone(), ass2.clone(), m.clone(), mt.clone(), mark.clone(), rowmarks.clone(), colummarks.clone(), orphan.clone(), next.clone())?;
@@ -2421,7 +2421,7 @@ fn getOrphansPairsConstraints1(mut eqns: Arc<metamodelica::List<i32>>, mut ass1:
                     let false = (intEq(colummarks.borrow()[(e.clone()-1) as usize].clone(), mark.clone())) else { bail!("pattern mismatch") };
                     rlst = List::select1(m.borrow()[(e.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
                     rlst = List::fold1(ass2.borrow()[(e.clone()-1) as usize].clone(), std::sync::Arc::new(fnptr!(List::removeOnTrue, _, _, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), rlst.clone());
-                    next = List::select1(List::flatten(List::map1r(rlst.clone(), Arc::new(arrayGet.clone()), mt.clone())), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
+                    next = List::select1(List::flatten(List::map1r(rlst.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), mt.clone())), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
                     o = hasResidualOrphan1(next.clone(), ass2.clone(), eqnsarr.clone())?;
                     {let _arr = ass1.clone(); _arr.borrow_mut()[(orphan.clone()-1) as usize] = o.clone(); _arr};
                     ass2lst = ass2.borrow()[(o.clone()-1) as usize].clone();
@@ -2440,9 +2440,9 @@ fn getOrphansPairsConstraints1(mut eqns: Arc<metamodelica::List<i32>>, mut ass1:
                     let mut lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let false = (intEq(colummarks.borrow()[(e.clone()-1) as usize].clone(), mark.clone())) else { bail!("pattern mismatch") };
                     rlst = List::select1(m.borrow()[(e.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
-                    lst = List::select1(List::map1r(rlst.clone(), Arc::new(arrayGet.clone()), ass1.clone()), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
+                    lst = List::select1(List::map1r(rlst.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), ass1.clone()), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
                     rlst = List::fold1(lst.clone(), std::sync::Arc::new(fnptr!(List::removeOnTrue, _, _, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), rlst.clone());
-                    next = List::select1(List::map1r(rlst.clone(), Arc::new(arrayGet.clone()), ass1.clone()), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
+                    next = List::select1(List::map1r(rlst.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), ass1.clone()), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
                     next = listAppend(nextQueue.clone(), next.clone());
                     {let _arr = colummarks.clone(); _arr.borrow_mut()[(e.clone()-1) as usize] = mark.clone(); _arr};
                     getOrphansPairsConstraints1(rest.clone(), ass1.clone(), ass2.clone(), m.clone(), mt.clone(), mark.clone(), rowmarks.clone(), colummarks.clone(), eqnsarr.clone(), orphan.clone(), next.clone())?;
@@ -2500,7 +2500,7 @@ fn getIndexesForEqnsAdvanced(mut orphans: Arc<metamodelica::List<i32>>, mut inde
                     rows = List::select(m.borrow()[(eorphan.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>));
                     rows = List::fold1(ass2.borrow()[(eorphan.clone()-1) as usize].clone(), std::sync::Arc::new(fnptr!(List::removeOnTrue, _, _, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), rows.clone());
                     getIndexSubGraph(rows.clone(), vorphans.clone(), m.clone(), mT.clone(), imark.clone(), rowmarks.clone(), colummarks.clone(), orowmarks.clone(), ocolummarks.clone(), ass1.clone(), ass2.clone(), false)?;
-                    vorphanseqns = List::unique(List::flatten(List::map1r(vorphans.clone(), Arc::new(arrayGet.clone()), mT.clone())));
+                    vorphanseqns = List::unique(List::flatten(List::map1r(vorphans.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), mT.clone())));
                     queuelst = getIndexQueque(vorphanseqns.clone(), m.clone(), mT.clone(), imark.clone(), rowmarks.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), vec2.clone(), queuemark.clone(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil())?;
                     queue = List::flatten(queuelst.clone());
                     mark = imark.clone() + 2;

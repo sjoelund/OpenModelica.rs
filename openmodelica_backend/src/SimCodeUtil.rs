@@ -2069,7 +2069,7 @@ fn convertListMappingToArray1(mut iMapping: (i32, i32), mut iMappingArray: metam
 
 fn convertListIndx(mut iIntList: Arc<metamodelica::List<i32>>, mut iMappingArray: metamodelica::Array<i32>) -> Arc<metamodelica::List<i32>> {
     let mut oIntList: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    oIntList = List::map1r(iIntList.clone(), Arc::new(arrayGet.clone()), iMappingArray.clone());
+    oIntList = List::map1r(iIntList.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), iMappingArray.clone());
     oIntList
 }
 

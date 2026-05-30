@@ -173,10 +173,10 @@ fn analyseStrongComponentScalar(mut inComp: Arc<metamodelica::List<i32>>, mut sy
         } };
         eqns = __pa1.clone();
         vars = __pa2.clone();
-        vlst = List::map1r(inComp.clone(), Arc::new(arrayGet.clone()), inAss2.clone());
+        vlst = List::map1r(inComp.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), inAss2.clone());
         vlst = List::select1(vlst.clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
         varlst = List::map1r(vlst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), vars.clone());
-        comp = List::map1r(inComp.clone(), Arc::new(arrayGet.clone()), mapIncRowEqn.clone());
+        comp = List::map1r(inComp.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), mapIncRowEqn.clone());
         comp = List::fold2(comp.clone(), (std::sync::Arc::new(uniqueComp) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32, metamodelica::Array<i32>, Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), imark.clone(), markarray.clone(), metamodelica::nil());
         eqn_lst = List::map1r(comp.clone(), (std::sync::Arc::new(fnptr!(BackendEquation::get, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, i32) -> Result<Arc<BackendDAE::Equation>> + 'static>), eqns.clone());
         outComp = unwrap_break_err!(analyseStrongComponentBlock(comp.clone(), eqn_lst.clone(), varlst.clone(), vlst.clone(), syst.clone(), shared.clone(), mapEqnIncRow.clone()), '__try0);

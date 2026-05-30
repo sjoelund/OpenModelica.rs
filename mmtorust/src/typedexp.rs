@@ -862,6 +862,12 @@ pub fn builtin_function_ty(name: &str) -> Option<Ty> {
             Some(f(vec![inp("lst", Ty::List(Box::new(tv("T")))), inp("index", Ty::I32)], tv("T"), vec!["T".to_owned()])),
         "arrayEmpty" =>
             Some(f(vec![inp("arr", Ty::Array(Box::new(tv("T"))))], Ty::Bool, vec!["T".to_owned()])),
+        // `arrayGet(array<A>, Integer) -> A`. Needed so a partial application
+        // `function arrayGet(arr = ...)` (common as a `List.map` mapper, e.g.
+        // HpcOmMemory) resolves its signature and lowers to a real closure
+        // rather than a `todo!()`. Formal names mirror MetaModelicaBuiltin.mo.
+        "arrayGet" =>
+            Some(f(vec![inp("arr", Ty::Array(Box::new(tv("A")))), inp("index", Ty::I32)], tv("A"), vec!["A".to_owned()])),
 
         // Length-style: container -> Integer
         "listLength" =>

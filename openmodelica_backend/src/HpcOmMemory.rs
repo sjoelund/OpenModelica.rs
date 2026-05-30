@@ -513,10 +513,10 @@ pub fn createMemoryMap(mut iModelInfo: SimCode::ModelInfo, mut iVarToArrayIndexM
             }
             (clTaskMapping, _) = getCacheLineTaskMapping(iTaskGraphMeta.clone(), iEqSystems.clone(), simVarIdxMappingHashTable.clone(), numCL.clone(), scVarCLMapping.clone())?;
             notOptimizedVars = getNotOptimizedVarsByCacheLineMapping(scVarCLMapping.clone(), allVarsMapping.clone(), simCodeVarTypes.clone());
-            notOptimizedVarsFloatOpt = List::map(Util::tuple41(notOptimizedVars.clone()), Arc::new(todo!("PARTEVALFUNCTION of arrayGet: function signature not resolved")));
-            notOptimizedVarsIntOpt = List::map(Util::tuple42(notOptimizedVars.clone()), Arc::new(todo!("PARTEVALFUNCTION of arrayGet: function signature not resolved")));
-            notOptimizedVarsBoolOpt = List::map(Util::tuple43(notOptimizedVars.clone()), Arc::new(todo!("PARTEVALFUNCTION of arrayGet: function signature not resolved")));
-            notOptimizedVarsStringOpt = List::map(Util::tuple44(notOptimizedVars.clone()), Arc::new(todo!("PARTEVALFUNCTION of arrayGet: function signature not resolved")));
+            notOptimizedVarsFloatOpt = List::map(Util::tuple41(notOptimizedVars.clone()), Arc::new({ let __pe_b0 = allVarsMapping.clone(); move |__pe_a1| metamodelica::arrayGet(__pe_b0.clone(), __pe_a1) }));
+            notOptimizedVarsIntOpt = List::map(Util::tuple42(notOptimizedVars.clone()), Arc::new({ let __pe_b0 = allVarsMapping.clone(); move |__pe_a1| metamodelica::arrayGet(__pe_b0.clone(), __pe_a1) }));
+            notOptimizedVarsBoolOpt = List::map(Util::tuple43(notOptimizedVars.clone()), Arc::new({ let __pe_b0 = allVarsMapping.clone(); move |__pe_a1| metamodelica::arrayGet(__pe_b0.clone(), __pe_a1) }));
+            notOptimizedVarsStringOpt = List::map(Util::tuple44(notOptimizedVars.clone()), Arc::new({ let __pe_b0 = allVarsMapping.clone(); move |__pe_a1| metamodelica::arrayGet(__pe_b0.clone(), __pe_a1) }));
             notOptimizedVarsFloat = List::map(notOptimizedVarsFloatOpt.clone(), (std::sync::Arc::new(Util::getOption) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>));
             notOptimizedVarsInt = List::map(notOptimizedVarsIntOpt.clone(), (std::sync::Arc::new(Util::getOption) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>));
             notOptimizedVarsBool = List::map(notOptimizedVarsBoolOpt.clone(), (std::sync::Arc::new(Util::getOption) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>));
@@ -746,7 +746,7 @@ fn createCacheMapLevelFixedOptimizedForTask(mut iTask: Arc<HpcOmSimCode::Task>, 
     let mut cacheVariables: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
     oInfo = (::match_deref::match_deref! { match &((iTask.clone(), iInfo.clone())) {
         (Deref @ HpcOmSimCode::Task::CALCTASK_LEVEL { threadIdx: Some(threadIdx), nodeIdc, .. }, (cacheMap, cacheMapMeta @ CacheMapMeta { allSCVarsMapping, .. }, numNewCL)) => {
-            solvedVars = List::flatten(List::map(nodeIdc.clone(), Arc::new(todo!("PARTEVALFUNCTION of arrayGet: function signature not resolved"))));
+            solvedVars = List::flatten(List::map(nodeIdc.clone(), Arc::new({ let __pe_b0 = iTaskSolvedVarsMapping.clone(); move |__pe_a1| metamodelica::arrayGet(__pe_b0.clone(), __pe_a1) })));
             unsolvedVars = getUnsolvedVarsByNodeList(nodeIdc.clone(), (iScVarInfos.clone().borrow().len() as i32), iTaskUnsolvedVarsMapping.clone())?;
             tmpInfo = List::fold(listAppend(solvedVars.clone(), unsolvedVars.clone()), Arc::new({ let __pe_b1 = threadIdx.clone(); let __pe_b2 = iScVarInfos.clone(); let __pe_b3 = iHandledVariables.clone(); let __pe_b4: Arc<dyn ::std::ops::Fn(i32, i32, i32, i32, _, metamodelica::Array<((Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>), (Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>))>) -> Result<Option<(PartlyFilledCacheLine, i32)>> + 'static> = (std::sync::Arc::new(findMatchingSharedCLLevelfix) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32, i32, i32, (i32, i32), metamodelica::Array<((Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>), (Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>))>) -> Result<Option<(PartlyFilledCacheLine, i32)>> + 'static>); let __pe_b5 = (iLevel.clone(), threadIdx.clone()); let __pe_b6: Arc<dyn ::std::ops::Fn(Option<PartlyFilledCacheLine>, CacheLineMap, _) -> Result<PartlyFilledCacheLine> + 'static> = (std::sync::Arc::new(createSharedClLevelFix) as std::sync::Arc<dyn ::std::ops::Fn(Option<PartlyFilledCacheLine>, CacheLineMap, (i32, i32)) -> Result<PartlyFilledCacheLine> + 'static>); let __pe_b7 = iThreadCacheLines.clone(); let __pe_b8 = iSharedCacheLines.clone(); move |__pe_a0, __pe_a9| createCacheMapOptimizedForTask1(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone(), __pe_b7.clone(), __pe_b8.clone(), __pe_a9) }), (cacheMap.clone(), cacheMapMeta.clone(), numNewCL.clone()));
             let CacheMap::CACHEMAP { cacheVariables: __pa0, .. } = (Util::tuple31(tmpInfo.clone())) else { bail!("pattern mismatch") };
@@ -912,7 +912,7 @@ fn getVarInfoByScVarIdx(mut iScVarIdx: i32, mut iScVarSolvedTaskMapping: metamod
         threads = cons(owner.clone(), threads.clone());
     }
     listLen = (unsolvingTaskIdc.clone().len() as i32);
-    unsolvingThreadIdc = List::map(List::map(unsolvingTaskIdc.clone(), Arc::new(todo!("PARTEVALFUNCTION of arrayGet: function signature not resolved"))), std::sync::Arc::new(fnptr!(Util::tuple31, _)));
+    unsolvingThreadIdc = List::map(List::map(unsolvingTaskIdc.clone(), Arc::new({ let __pe_b0 = iSchedulerInfo.clone(); move |__pe_a1| metamodelica::arrayGet(__pe_b0.clone(), __pe_a1) })), std::sync::Arc::new(fnptr!(Util::tuple31, _)));
     if intEq(listLen.clone(), 1) {
         if intLt(owner.clone(), 0) {
             owner = listHead(unsolvingThreadIdc.clone())?;

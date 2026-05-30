@@ -192,7 +192,7 @@ fn foundSingularSystem(mut eqns: Arc<metamodelica::List<Arc<metamodelica::List<i
         (_, _, _, mapIncRowEqn, _) = inArg.clone();
         n = BackendDAEUtil::systemSize(isyst.clone());
         unmatched = List::flatten(eqns.clone());
-        unmatched1 = List::map1r(unmatched.clone(), Arc::new(arrayGet.clone()), mapIncRowEqn.clone());
+        unmatched1 = List::map1r(unmatched.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), mapIncRowEqn.clone());
         unmatched1 = List::uniqueIntN(unmatched1.clone(), (mapIncRowEqn.clone().borrow().len() as i32))?;
         eqn_str = (BackendDump::dumpMarkedEqns(isyst.clone(), List::sort(unmatched1.clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?)?).clone();
         vars = Matching::getUnassigned(n.clone(), inAssignments2.clone(), metamodelica::nil());

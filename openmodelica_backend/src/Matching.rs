@@ -3697,7 +3697,7 @@ fn PR_FIFO_FAIR1(mut unmatched: Arc<metamodelica::List<i32>>, mut l_label: metam
                     let mut var_str: ArcStr = arcstr::literal!("");
                     let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
                     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-                    unmatched1 = List::map1r(unmatched.clone(), Arc::new(arrayGet.clone()), mapIncRowEqn.clone());
+                    unmatched1 = List::map1r(unmatched.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), mapIncRowEqn.clone());
                     unmatched1 = List::uniqueIntN(unmatched1.clone(), (mapIncRowEqn.clone().borrow().len() as i32))?;
                     eqn_str = (BackendDump::dumpMarkedEqns(isyst.clone(), unmatched1.clone())?).clone();
                     unmatched1 = getUnassigned(nv.clone(), ass2.clone(), metamodelica::nil());
@@ -6040,7 +6040,7 @@ fn singularSystemError(mut eqns: Arc<metamodelica::List<Arc<metamodelica::List<i
     (_, _, _, mapIncRowEqn, _) = inArg.clone();
     n = BackendDAEUtil::systemSize(isyst.clone());
     unmatched = List::flatten(eqns.clone());
-    unmatched1 = List::map1r(unmatched.clone(), Arc::new(arrayGet.clone()), mapIncRowEqn.clone());
+    unmatched1 = List::map1r(unmatched.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), mapIncRowEqn.clone());
     unmatched1 = List::uniqueIntN(unmatched1.clone(), (mapIncRowEqn.clone().borrow().len() as i32))?;
     eqn_str = (BackendDump::dumpMarkedEqns(isyst.clone(), unmatched1.clone())?).clone();
     vars = getUnassigned(n.clone(), inAssignments2.clone(), metamodelica::nil());

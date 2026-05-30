@@ -7342,12 +7342,15 @@ fn emit_parteval<'a>(
     ctx: &mut GenCtx,
     top_level: &'a BTreeMap<String, NameNode<'a>>,
 ) -> String {
-    let func_str = if func.contains('.') {
-        ctx.shorten(func)
+    // A builtin whose call form lowers to a method/index (no nameable `fn`)
+    // must reference its runtime free-function backing (see `builtin_value_fn`)
+    // when the closure body calls it — `arrayGet` → `metamodelica::arrayGet`.
+    let func_str = if let Some((path, _, _)) = builtin_value_fn(func) {
+        path.to_owned()
     } else {
-        func.to_owned()
+        let s = if func.contains('.') { ctx.shorten(func) } else { func.to_owned() };
+        escape_ident(&s)
     };
-    let func_str = escape_ident(&func_str);
 
     // Pull the formal-name order *and* declared types from the resolved
     // signature. The types let us route each captured binding through
@@ -9457,8 +9460,12 @@ fn emit_call_arg_with_formal<'a>(
             // `fnptr!` Ok-wrapping path as other infallible references — but the
             // referenced path must be the runtime free fn, not the bare
             // (un-nameable) builtin name recovered from `raw`.
+            // Only the *infallible* value-form builtins belong on this
+            // `fnptr!`-wrapping path (which adds `Ok(..)`); a fallible one
+            // (e.g. `arrayGet`) already returns `Result` and is handled via
+            // partial application / other paths, never wrongly Ok-wrapped here.
             let value_fn_path: Option<&'static str> =
-                builtin_value_fn(bare).map(|(p, _, _)| p);
+                builtin_value_fn(bare).filter(|(_, _, inf)| *inf).map(|(p, _, _)| p);
             let infallible = value_fn_path.is_some()
                 || is_infallible_builtin(bare)
                 || resolve_call_qname(&dotted, ctx, top_level)
@@ -13153,6 +13160,11 @@ fn builtin_value_fn(name: &str) -> Option<(&'static str, usize, bool)> {
         // `listReverse(x)` lowers to the `x.reverse()` method; the free
         // `metamodelica::listReverse` exists solely for the value form.
         "listReverse" => Some(("metamodelica::listReverse", 1, true)),
+        // `arrayGet(arr, i)` lowers to `arr.borrow()[i-1]` (an index op, not a
+        // nameable fn). The free `metamodelica::arrayGet` (1-based, bounds-
+        // checked → `Result`) backs the value/partial-application form, e.g.
+        // `function arrayGet(arr = m)` as a `List.map` mapper. Fallible.
+        "arrayGet" => Some(("metamodelica::arrayGet", 2, false)),
         _ => None,
     }
 }
