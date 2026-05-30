@@ -7079,6 +7079,14 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
                 (Ty::UnionTypeVariant(_, _), Some(p)) if !(args.is_empty() && named_args.is_empty() && field_names.is_empty()) => {
                     Ty::RustEnum(p.clone())
                 }
+                // A generic instantiation (e.g. `Slice::NBSlice<T>`, produced by
+                // `generic_constructor_ty`) emits its constructor exactly like the
+                // un-parameterised record — the type arguments don't change the
+                // field/variant spelling. Strip them to the nominal qname so the
+                // `RustStruct`/`RustEnum` branch below handles it; otherwise it
+                // falls through to the variant-call fallback and mis-emits a
+                // single-record struct like `MutableList` as `MutableList::LIST(..)`.
+                (Ty::Generic(gname, _), _) => Ty::RustStruct(gname.replace("::", ".")),
                 _ => ty.clone(),
             };
             let ty: &Ty = &ty_for_emit;

@@ -647,7 +647,7 @@ fn is_type_var_decl(class: &MM::Class) -> bool {
 
 /// Collect all type-variable names declared in a class:
 /// from `<T, U>` (typeVars list), `replaceable type T subtypeof Any`, and `type T = polymorphic<Any>`.
-fn class_type_vars(c: &MM::Class) -> Vec<String> {
+pub fn class_type_vars(c: &MM::Class) -> Vec<String> {
     match &c.body {
         MM::ClassDef::Parts { type_vars, members, .. } => {
             let mut vars: Vec<String> = type_vars.clone();

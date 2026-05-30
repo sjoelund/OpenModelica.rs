@@ -758,6 +758,64 @@ fn canonical_ctor_qname<'a>(
         .unwrap_or_else(|| func.to_owned())
 }
 
+/// When a record constructor belongs to a generic uniontype (e.g. `record SLICE
+/// T t; ... end SLICE;` inside `uniontype Slice<T>`), the constructor's static
+/// type must carry the bound type arguments — otherwise downstream codegen
+/// renders the bare, under-applied generic (`Slice::NBSlice`) and rustc rejects
+/// it (E0107). Unify the record's declared field types against the actual
+/// argument types to bind the parent uniontype's type parameters (in
+/// declaration order), then build `Ty::Generic`. Returns `None` when the type
+/// isn't generic or a parameter can't be pinned from the arguments — in which
+/// case the caller keeps the un-parameterised base type (no behaviour change).
+fn generic_constructor_ty<'a>(
+    canonical: &str,
+    base_ty: &Ty,
+    args: &[TypedExp],
+    named_args: &[(String, TypedExp)],
+    field_names: &[String],
+    top_level: &'a BTreeMap<String, NameNode<'a>>,
+) -> Option<Ty> {
+    // The type parameters live on the enclosing uniontype (or on the record
+    // itself for a top-level generic record). Collect them in declaration order.
+    let mut type_vars: Vec<String> = Vec::new();
+    if let Some(node) = lookup_node(canonical, top_level)
+        && let NodeKind::Class(c) = &node.kind {
+        type_vars.extend(crate::hierarchy::class_type_vars(c));
+    }
+    if let Some((parent, _)) = canonical.rsplit_once('.')
+        && let Some(pnode) = lookup_node(parent, top_level)
+        && let NodeKind::Class(pc) = &pnode.kind {
+        for v in crate::hierarchy::class_type_vars(pc) {
+            if !type_vars.contains(&v) { type_vars.push(v); }
+        }
+    }
+    if type_vars.is_empty() { return None; }
+    let rust_name = ty_rust_name(base_ty).unwrap_or_else(|| canonical.replace('.', "::"));
+    let decl_fields = record_field_tys(canonical, top_level);
+    let mut subst: HashMap<String, Ty> = HashMap::new();
+    // Positional args align with `field_names` (declaration order).
+    for (i, arg) in args.iter().enumerate() {
+        if let Some(fname) = field_names.get(i)
+            && let Some((_, fty)) = decl_fields.iter().find(|(n, _)| n == fname) {
+            unify_collect(fty, &arg.ty(), &type_vars, &mut subst);
+        }
+    }
+    // Named args match by field name.
+    for (n, v) in named_args {
+        if let Some((_, fty)) = decl_fields.iter().find(|(fname, _)| fname == n) {
+            unify_collect(fty, &v.ty(), &type_vars, &mut subst);
+        }
+    }
+    let ty_args: Vec<Ty> = type_vars.iter()
+        .map(|tv| subst.get(tv).cloned().unwrap_or(Ty::Unknown))
+        .collect();
+    // Only commit to a parameterised type when every parameter was pinned; an
+    // `Unknown` arg would render as an invalid type. Falling back to the base
+    // type preserves today's behaviour for the unpinnable case.
+    if ty_args.iter().any(|t| matches!(t, Ty::Unknown)) { return None; }
+    Some(Ty::Generic(rust_name, ty_args))
+}
+
 /// Extract the Rust-form (`::`-separated) name from a resolved nominal type,
 /// matching `hierarchy::ty_rust_name`. Used when wrapping a user-defined
 /// generic instantiation in `Ty::Generic` so that downstream `fmt_ty`
@@ -1697,7 +1755,7 @@ pub fn infer_exp<'a>(
                     }
                     other => other,
                 };
-                let field_names = match &sig_ty {
+                let field_names: Vec<String> = match &sig_ty {
                     Ty::RustStruct(qname) | Ty::RustEnum(qname) => {
                         record_field_tys(qname, top_level).into_iter().map(|(n, _)| n).collect()
                     }
@@ -1705,6 +1763,11 @@ pub fn infer_exp<'a>(
                         record_field_tys(&canonical, top_level).into_iter().map(|(n, _)| n).collect()
                     }
                 };
+                // Bind the parent uniontype's type parameters from the actual
+                // arguments so a generic record (`Slice<T>`) keeps its type
+                // argument in the value's static type (see `generic_constructor_ty`).
+                let ty = generic_constructor_ty(&canonical, &ty, &args, &named_args, &field_names, top_level)
+                    .unwrap_or(ty);
                 TypedExp::Constructor { name: canonical, args, named_args, ty, field_names }
             } else {
                 // A call whose callee is a function-typed LOCAL variable — e.g.
