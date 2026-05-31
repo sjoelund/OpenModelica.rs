@@ -51,6 +51,7 @@ use crate::NBEquation::EquationPointers;
 use crate::NBEvents::EventInfo;
 use crate::NBInline as Inline;
 use crate::NBJacobian::JacobianType;
+use crate::NBMatching as Matching;
 use crate::NBPartition as Partition;
 use crate::NBPartitioning::ClockedInfo;
 use crate::NBStrongComponent as StrongComponent;
@@ -96,6 +97,8 @@ pub type causalizeInterface = std::sync::Arc<dyn ::std::ops::Fn(Arc<Partition::P
 //                           RESOLVING SINGULARITIES
 //                  Index Reduction + Balance Initialization
 // *************************************************************************
+pub type resolveSingularitiesInterface = std::sync::Arc<dyn ::std::ops::Fn(Arc<Adjacency::Matrix::Matrix>, Arc<Adjacency::Matrix::Matrix>, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Arc<VarData::VarData>, Arc<EqData::EqData>, Partition::Kind, Arc<UnorderedMap::UnorderedMap<Arc<Path>, Arc<Function::Function>>>, Arc<Matching::NBMatching>, Option<Arc<Adjacency::Mapping::Mapping>>) -> Result<(Arc<Adjacency::Matrix::Matrix>, Arc<Adjacency::Matrix::Matrix>, Arc<VariablePointers::VariablePointers>, Arc<EquationPointers::EquationPointers>, Arc<VarData::VarData>, Arc<EqData::EqData>, bool)> + 'static>;
+
 //                               DAEMODE
 // *************************************************************************
 pub type daeModeInterface = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>, Arc<VariablePointers::VariablePointers>, Pointer::Pointer<i32>) -> Result<Arc<metamodelica::List<Arc<Partition::Partition::Partition>>>> + 'static>;
