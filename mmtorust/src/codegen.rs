@@ -10647,6 +10647,35 @@ fn resolve_call_formals<'a>(
     // implicit tuple→first coercion when a tuple-returning call is passed in a
     // scalar context (e.g. `isSome(find(...))` where `find` returns `(Option<T>, i32)`).
     // The registry in typedexp::builtin_function_ty is the single source of truth.
+    // A bare callee that names a function-typed LOCAL (a `partial function`
+    // parameter, or a variable of partial-function type — e.g.
+    // `Module.jacobianInterface func` in NBJacobian.nonlinear) shadows any
+    // hierarchy name in Rust, so its formals come from the variable's declared
+    // type. Such a callee can still be invoked with named arguments
+    // (`func(name = .., jacType = .., ..)`), which Rust does not support —
+    // codegen must reorder them into positional order using the function type's
+    // formal names. Those names live on the variable's type in `fn_env_vars`.
+    // This runs *before* `resolve_call_qname`, because the local is also
+    // registered as a (non-Class) component node in the hierarchy
+    // (`NBJacobian.nonlinear.func`) that the qname-driven path below would
+    // resolve to and then bail on (its node is a Component, not a function
+    // Class). Defaults never apply through a function pointer, so all slots are
+    // `None`.
+    if !func.contains('.') {
+        match ctx.fn_env_vars.get(func) {
+            Some(Ty::Function { inputs, .. }) => {
+                return Some(inputs.iter()
+                    .map(|inp| (inp.name.clone(), inp.ty.clone(), None))
+                    .collect());
+            }
+            Some(Ty::FunctionAlias { base, .. }) => {
+                // The variable's type is an alias to a named (partial)
+                // function; resolve that function's formals.
+                return resolve_call_formals(base, ctx, top_level);
+            }
+            _ => {}
+        }
+    }
     let qname = match resolve_call_qname(func, ctx, top_level) {
         Some(q) => q,
         None => {
