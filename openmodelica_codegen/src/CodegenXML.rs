@@ -7459,7 +7459,7 @@ fn lm_313(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::V
             (txt.clone(), a_varDecls.clone(), a_preExp.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_v, tail: rest }, a_varDecls, a_preExp, a_context, a_cr) => {
-            let mut ret_0: Arc<DAE::Exp>;
+            let mut ret_0: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -7975,7 +7975,7 @@ fn lm_329(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::V
             (txt.clone(), a_varDecls.clone(), a_afterExp.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_v, tail: rest }, a_varDecls, a_afterExp, a_context, a_cr) => {
-            let mut ret_0: Arc<DAE::Exp>;
+            let mut ret_0: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_afterExp = (*a_afterExp).clone();
@@ -7998,7 +7998,7 @@ pub fn daeExpRecordCrefLhsXml(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>
         (txt, Deref @ DAE::Type::T_COMPLEX { varLst: i_var__lst, complexClassType: i_record__state, .. }, a_cr, a_context, a_afterExp, a_varDecls) => {
             let mut l_ret__var: Tpl::Text;
             let mut l_ret__type: Tpl::Text;
-            let mut ret_2: Arc<Absyn::Path>;
+            let mut ret_2: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut l_record__type__name: Tpl::Text;
             let mut l_vars: Tpl::Text;
             let mut txt = (*txt).clone();
@@ -9886,8 +9886,8 @@ pub fn daeExpCallXml(mut in_txt: Tpl::Text, mut in_a_call: Arc<DAE::Exp>, mut in
         },
         (txt, Deref @ DAE::Exp::CALL { attr: Deref @ DAE::CallAttributes { ty: _, .. }, expLst: Deref @ metamodelica::List::Cons { head: i_e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "sqrt" } }, a_context, a_preExp, a_varDecls) => {
             let mut l_argStr: Tpl::Text;
-            let mut ret_15: Arc<DAE::Exp>;
-            let mut ret_14: Arc<DAE::Exp>;
+            let mut ret_15: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut ret_14: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut l_retPre: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -11053,7 +11053,7 @@ fn fun_393(mut in_txt: Tpl::Text, mut in_a_inExp: Arc<DAE::Exp>, mut in_a_preExp
             (txt.clone(), a_preExp.clone(), a_varDecls.clone())
         },
         (txt, Deref @ DAE::Exp::ASUB { sub: i_subs, exp: i_ecr @ Deref @ DAE::Exp::CREF { ty: i_ecr_ty, .. } }, a_preExp, a_context, a_varDecls) => {
-            let mut ret_7: Arc<DAE::Exp>;
+            let mut ret_7: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut l_arrName: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_preExp = (*a_preExp).clone();
@@ -11628,7 +11628,7 @@ pub fn expTypeShortXml(mut in_txt: Tpl::Text, mut in_a_type: Arc<DAE::Type>) -> 
             txt.clone()
         },
         (txt, Deref @ DAE::Type::T_COMPLEX { complexClassType: i_complexClassType, .. }) => {
-            let mut ret_1: Arc<Absyn::Path>;
+            let mut ret_1: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut txt = (*txt).clone();
             ret_1 = ClassInfUtil::getStateName(i_complexClassType.clone());
             txt = underscorePathXml(txt.clone(), ret_1.clone())?;
@@ -11747,7 +11747,7 @@ fn fun_426(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Te
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
         (txt, Deref @ DAE::Type::T_COMPLEX { complexClassType: i_complexClassType, .. }) => {
-            let mut ret_0: Arc<Absyn::Path>;
+            let mut ret_0: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut txt = (*txt).clone();
             ret_0 = ClassInfUtil::getStateName(i_complexClassType.clone());
             txt = underscorePathXml(txt.clone(), ret_0.clone())?;

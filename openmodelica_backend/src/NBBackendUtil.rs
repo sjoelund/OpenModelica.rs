@@ -365,7 +365,7 @@ pub fn isOnlyTimeDependentFold(mut exp: Arc<Expression::NFExpression>, mut b: bo
 
 pub fn isContinuous(mut exp: Arc<Expression::NFExpression>, mut init: bool) -> Result<bool> {
     let mut b: bool = false;
-    b = Expression::fold(exp.clone(), Arc::new({ let __pe_b1 = init.clone(); move |__pe_a0, __pe_a2| Ok(isContinuousFold(__pe_a0, __pe_b1.clone(), __pe_a2)) }), true)?;
+    b = Expression::fold(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = init.clone(); move |__pe_a0, __pe_a2| Ok(isContinuousFold(__pe_a0, __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, bool) -> Result<bool> + 'static>), true)?;
     Ok(b)
 }
 
@@ -373,7 +373,7 @@ pub fn isContinuousFold(mut exp: Arc<Expression::NFExpression>, mut init: bool, 
     let mut b: bool = b;
     if b.clone() {
         b = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CREF { .. } => BVariable::checkCref(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), Arc::new({ let __pe_b1 = init.clone(); move |__pe_a0| BVariable::isContinuous(__pe_a0, __pe_b1.clone()) }), metamodelica::sourceInfo!()),
+        Deref @ Expression::CREF { .. } => BVariable::checkCref(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), (std::sync::Arc::new({ let __pe_b1 = init.clone(); move |__pe_a0| BVariable::isContinuous(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!()),
         _ => true,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -382,9 +382,9 @@ pub fn isContinuousFold(mut exp: Arc<Expression::NFExpression>, mut init: bool, 
 }
 
 pub fn getLocalSystem(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut matching: Arc<Matching::NBMatching>, mut eqn_indices: Arc<metamodelica::List<i32>>) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, Arc<Matching::NBMatching>, metamodelica::Array<i32>)> {
-    let mut m_loc: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut m_loc: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut matching_loc: Arc<Matching::NBMatching> = Arc::new(<Matching::NBMatching as ::std::default::Default>::default());
-    let mut map_back: metamodelica::Array<i32>;
+    let mut map_back: metamodelica::Array<i32> = Default::default();
     let N: i32 = (eqn_indices.clone().len() as i32);
     let mut var_to_eqn: metamodelica::Array<i32> = arrayCreate(N.clone(), -1);
     let mut eqn_to_var: metamodelica::Array<i32> = arrayCreate(N.clone(), -1);

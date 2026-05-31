@@ -168,7 +168,7 @@ pub fn hasPrintingFunctions<Key: Clone + 'static + PartialEq, Val: Clone + 'stat
     let Tree { valStrFuncOpt: __pa0, keyStrFuncOpt: __pa1, .. } = (tree.clone()) else { bail!("pattern mismatch") };
     vf = __pa0.clone();
     kf = __pa1.clone();
-    hasPrinting = boolNot(boolOr(None == kf.clone(), None == vf.clone()));
+    hasPrinting = boolNot(boolOr((kf.clone()).is_none(), (vf.clone()).is_none()));
     Ok(hasPrinting)
 }
 
@@ -177,7 +177,7 @@ pub fn hasUpdateCheckFunction<Key: Clone + 'static + PartialEq, Val: Clone + 'st
     let mut uf: Option<FuncTypeItemUpdateCheck<Key, Val>> = None;
     let Tree { updateCheckFuncOpt: __pa0, .. } = (tree.clone()) else { bail!("pattern mismatch") };
     uf = __pa0.clone();
-    hasUpdateCheck = boolNot(None == uf.clone());
+    hasUpdateCheck = boolNot((uf.clone()).is_none());
     Ok(hasUpdateCheck)
 }
 

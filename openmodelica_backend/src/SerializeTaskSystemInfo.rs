@@ -932,7 +932,7 @@ fn serializeEquationIndex(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem
 }
 
 fn serializeIfBranch(mut file: File::File, mut branch: (Arc<DAE::Exp>, Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>)) -> Result<()> {
-    let mut exp: Arc<DAE::Exp>;
+    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
     (exp, eqs) = branch.clone();
     File::write(file.clone(), (literal!("[")).clone());

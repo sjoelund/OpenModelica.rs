@@ -117,13 +117,13 @@ pub fn fromConnectionList(mut connl: Arc<metamodelica::List<Arc<Connection::NFCo
 
 pub fn addConnection(mut conn: Arc<Connection::NFConnection>, mut conns: Arc<NFConnections>) -> Arc<NFConnections> {
     let mut conns: Arc<NFConnections> = conns;
-    assign_field!(conns.connections = cons(conn.clone(), conns.connections.clone()));
+    assign_field!(conns.connections = metamodelica::cons(conn.clone(), conns.connections.clone()));
     conns
 }
 
 pub fn addFlow(mut conn: Arc<Connector::NFConnector>, mut conns: Arc<NFConnections>) -> Arc<NFConnections> {
     let mut conns: Arc<NFConnections> = conns;
-    assign_field!(conns.flows = cons(conn.clone(), conns.flows.clone()));
+    assign_field!(conns.flows = metamodelica::cons(conn.clone(), conns.flows.clone()));
     conns
 }
 
@@ -155,7 +155,7 @@ pub fn collectConnections(mut flatModel: Arc<FlatModel::NFFlatModel>, mut isDele
             assign_field!(conns.connections = makeConnections(lhs.clone(), ty1.clone(), rhs.clone(), ty2.clone(), source.clone(), isDeleted.clone(), conns.connections.clone())?);
             eql.clone()
         },
-        _ => cons(eq.clone(), eql.clone()),
+        _ => metamodelica::cons(eq.clone(), eql.clone()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
@@ -210,7 +210,7 @@ pub fn makeConnections(mut lhsCref: Arc<ComponentRef::NFComponentRef>, mut lhsTy
         c2 = __pa0.clone();
         cl2 = __pa1.clone();
         if !(isDeleted(c1.name.clone())? || isDeleted(c2.name.clone())?) {
-            connections = cons(Arc::new(Connection::NFConnection { lhs: c1.clone(), rhs: c2.clone() }), connections.clone());
+            connections = metamodelica::cons(Arc::new(Connection::NFConnection { lhs: c1.clone(), rhs: c2.clone() }), connections.clone());
         }
     }
     Ok(connections)
@@ -261,7 +261,7 @@ pub fn scalarize(mut conns: Arc<NFConnections>, mut keepSingleConnectedArrays: b
             let mut f = f.clone();
             count = connectCount(f.clone(), connect_counts.clone());
             if count.clone() == 0 {
-                flows = cons(f.clone(), flows.clone());
+                flows = metamodelica::cons(f.clone(), flows.clone());
             } else if count.clone() > 1 || count.clone() == -1 {
                 flows = listAppend(Connector::scalarize(f.clone())?, flows.clone());
             }
@@ -269,7 +269,7 @@ pub fn scalarize(mut conns: Arc<NFConnections>, mut keepSingleConnectedArrays: b
         for mut c in &*conns.connections.clone() {
             let mut c = c.clone();
             if !(ConnectorType::isStream(c.lhs.cty.clone())) && connectCount(c.lhs.clone(), connect_counts.clone()) == 1 && connectCount(c.rhs.clone(), connect_counts.clone()) == 1 {
-                connections = cons(c.clone(), connections.clone());
+                connections = metamodelica::cons(c.clone(), connections.clone());
             } else {
                 connections = listAppend(Connection::scalarize(c.clone())?, connections.clone());
             }
@@ -319,15 +319,15 @@ pub fn analyseArrayConnector(mut conn: Arc<Connector::NFConnector>, mut connectC
 pub fn toString(mut conns: Arc<NFConnections>) -> ArcStr {
     let mut r#str: ArcStr = arcstr::literal!("");
     let mut strl: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    strl = cons((literal!("FLOWS:")).clone(), strl.clone());
+    strl = metamodelica::cons((literal!("FLOWS:")).clone(), strl.clone());
     for mut f in &*conns.flows.clone() {
         let mut f = f.clone();
-        strl = cons((Connector::toString(f.clone())).clone(), strl.clone());
+        strl = metamodelica::cons((Connector::toString(f.clone())).clone(), strl.clone());
     }
-    strl = cons((literal!("\nCONNECTIONS:")).clone(), strl.clone());
+    strl = metamodelica::cons((literal!("\nCONNECTIONS:")).clone(), strl.clone());
     for mut c in &*conns.connections.clone() {
         let mut c = c.clone();
-        strl = cons((Connection::toString(c.clone())).clone(), strl.clone());
+        strl = metamodelica::cons((Connection::toString(c.clone())).clone(), strl.clone());
     }
     strl = metamodelica::Dangerous::listReverseInPlace(strl.clone());
     r#str = stringDelimitList(strl.clone(), (literal!("\n")).clone());

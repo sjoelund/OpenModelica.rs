@@ -73,10 +73,10 @@ pub type TaskAssignment = metamodelica::Array<i32>;
 // No Scheduling
 //--------------
 pub fn createEmptySchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
-    let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
-    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut oSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
+    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut allTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
-    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
+    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = Default::default();
     let mut taskIdx: i32 = 0;
     let mut weighting: i32 = 0;
     let mut index: i32 = 0;
@@ -100,7 +100,7 @@ pub fn createEmptySchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica:
         threadIdx = __pa5.clone();
         eqIdc = __pa6.clone();
         eqIdc = List::map(List::map1(eqIdc.clone(), (std::sync::Arc::new(getSimEqSysIdxForComp) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), iSccSimEqMapping.clone()), (std::sync::Arc::new(List::last) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>));
-        allTasks = cons(Arc::new(HpcOmSimCode::Task::CALCTASK { weighting: weighting.clone(), index: index.clone(), calcTime: calcTime.clone(), timeFinished: timeFinished.clone(), threadIdx: threadIdx.clone(), eqIdc: eqIdc.clone() }), allTasks.clone());
+        allTasks = metamodelica::cons(Arc::new(HpcOmSimCode::Task::CALCTASK { weighting: weighting.clone(), index: index.clone(), calcTime: calcTime.clone(), timeFinished: timeFinished.clone(), threadIdx: threadIdx.clone(), eqIdc: eqIdc.clone() }), allTasks.clone());
     }
     allTasks = List::sort(allTasks.clone(), (std::sync::Arc::new(compareTasksByEqIdc) as std::sync::Arc<dyn ::std::ops::Fn(Arc<HpcOmSimCode::Task>, Arc<HpcOmSimCode::Task>) -> Result<bool> + 'static>))?;
     oSchedule = Arc::new(HpcOmSimCode::Schedule::EMPTYSCHEDULE { tasks: HpcOmSimCode::TaskList::SERIALTASKLIST { tasks: allTasks.clone(), masterOnly: true } });
@@ -111,17 +111,17 @@ pub fn createEmptySchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica:
 // List Scheduling
 //----------------
 pub fn createListSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iNumberOfThreads: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
-    let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
-    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut oSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
+    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut nodeList_refCount: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32)>> = metamodelica::nil();
     let mut nodeList: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     let mut rootNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut threadReadyTimes: metamodelica::Array<metamodelica::Real>;
-    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
-    let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
-    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>;
-    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule>;
+    let mut threadReadyTimes: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = Default::default();
+    let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
+    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>> = Default::default();
+    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
     let HpcOmTaskGraph::TASKGRAPHMETA { inComps: __pa0, commCosts: __pa1, .. } = (iTaskGraphMeta.clone()) else { bail!("pattern mismatch") };
     inComps = __pa0.clone();
     commCosts = __pa1.clone();
@@ -143,8 +143,8 @@ pub fn createListSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::
 fn createListSchedule1(mut iNodeList: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut iThreadReadyTimes: metamodelica::Array<metamodelica::Real>, mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iCommCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>, mut iCompTaskMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>, mut iLockWithPredecessorHandler: Arc<dyn ::std::ops::Fn(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32)>>, i32, metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<(Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>)> + 'static>, mut iSchedule: Arc<HpcOmSimCode::Schedule>) -> Result<(Arc<HpcOmSimCode::Schedule>, metamodelica::Array<metamodelica::Real>)> {
     pub type FuncType = std::sync::Arc<dyn ::std::ops::Fn(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32)>>, i32, metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<(Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>)> + 'static>;
 
-    let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
-    let mut oThreadReadyTimes: metamodelica::Array<metamodelica::Real>;
+    let mut oSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
+    let mut oThreadReadyTimes: metamodelica::Array<metamodelica::Real> = Default::default();
     let mut head: Arc<HpcOmSimCode::Task> = Arc::new(HpcOmSimCode::Task::TASKEMPTY);
     let mut newTask: Arc<HpcOmSimCode::Task> = Arc::new(HpcOmSimCode::Task::TASKEMPTY);
     let mut newTaskRefCount: i32 = 0;
@@ -156,22 +156,22 @@ fn createListSchedule1(mut iNodeList: Arc<metamodelica::List<Arc<HpcOmSimCode::T
     let mut successorIdc: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut outgoingDepTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     let mut newOutgoingDepTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
-    let mut threadFinishTimes: metamodelica::Array<metamodelica::Real>;
+    let mut threadFinishTimes: metamodelica::Array<metamodelica::Real> = Default::default();
     let mut firstEq: i32 = 0;
-    let mut allThreadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
+    let mut allThreadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
     let mut threadTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     let mut lockTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     let mut threadId: i32 = 0;
     let mut threadFinishTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut tmpThreadReadyTimes: metamodelica::Array<metamodelica::Real>;
+    let mut tmpThreadReadyTimes: metamodelica::Array<metamodelica::Real> = Default::default();
     let mut tmpNodeList: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     let mut weighting: i32 = 0;
     let mut index: i32 = 0;
     let mut calcTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut eqIdc: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut simEqIdc: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule>;
-    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
+    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
+    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = Default::default();
     (oSchedule, oThreadReadyTimes) = (::match_deref::match_deref! { match &((iNodeList.clone(), iSchedule.clone())) {
         (Deref @ metamodelica::List::Cons { head: head @ Deref @ HpcOmSimCode::Task::CALCTASK { eqIdc: eqIdc @ Deref @ metamodelica::List::Cons { head: firstEq, tail: _ }, calcTime, index, weighting, .. }, tail: rest }, Deref @ HpcOmSimCode::Schedule::THREADSCHEDULE { allCalcTasks, outgoingDepTasks, threadTasks: allThreadTasks, .. }) => {
             let mut allCalcTasks = (*allCalcTasks).clone();
@@ -202,7 +202,7 @@ fn createListSchedule1(mut iNodeList: Arc<metamodelica::List<Arc<HpcOmSimCode::T
                 simEqIdc = List::flatten(List::map1(eqIdc.clone(), (std::sync::Arc::new(getSimEqSysIdxForComp) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), iSccSimEqMapping.clone()));
             }
             newTask = Arc::new(HpcOmSimCode::Task::CALCTASK { weighting: weighting.clone(), index: index.clone(), calcTime: calcTime.clone(), timeFinished: threadFinishTime.clone(), threadIdx: threadId.clone(), eqIdc: simEqIdc.clone() });
-            threadTasks = cons(newTask.clone(), threadTasks.clone());
+            threadTasks = metamodelica::cons(newTask.clone(), threadTasks.clone());
             allThreadTasks = {let _arr = allThreadTasks.clone(); _arr.borrow_mut()[(threadId.clone()-1) as usize] = threadTasks.clone(); _arr};
             (allCalcTasks, tmpNodeList) = updateRefCounterBySuccessorIdc(allCalcTasks.clone(), successorIdc.clone(), metamodelica::nil())?;
             tmpNodeList = listAppend(tmpNodeList.clone(), rest.clone());
@@ -226,17 +226,17 @@ fn createListSchedule1(mut iNodeList: Arc<metamodelica::List<Arc<HpcOmSimCode::T
 // Random Scheduling
 //----------------
 pub fn createRandomSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iNumberOfThreads: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
-    let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
-    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut oSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
+    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut nodeList_refCount: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32)>> = metamodelica::nil();
     let mut nodeList: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     let mut rootNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut threadReadyTimes: metamodelica::Array<metamodelica::Real>;
-    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
-    let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
-    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>;
-    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule>;
+    let mut threadReadyTimes: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = Default::default();
+    let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
+    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>> = Default::default();
+    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
     let HpcOmTaskGraph::TASKGRAPHMETA { inComps: __pa0, commCosts: __pa1, .. } = (iTaskGraphMeta.clone()) else { bail!("pattern mismatch") };
     inComps = __pa0.clone();
     commCosts = __pa1.clone();
@@ -258,8 +258,8 @@ pub fn createRandomSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica
 fn createRandomSchedule1(mut iNodeList: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut iThreadReadyTimes: metamodelica::Array<metamodelica::Real>, mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iCommCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>, mut iCompTaskMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>, mut iLockWithPredecessorHandler: Arc<dyn ::std::ops::Fn(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32)>>, i32, metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<(Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>)> + 'static>, mut iNumberOfThreads: i32, mut iSchedule: Arc<HpcOmSimCode::Schedule>) -> Result<(Arc<HpcOmSimCode::Schedule>, metamodelica::Array<metamodelica::Real>)> {
     pub type FuncType = std::sync::Arc<dyn ::std::ops::Fn(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32)>>, i32, metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<(Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>)> + 'static>;
 
-    let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
-    let mut oThreadReadyTimes: metamodelica::Array<metamodelica::Real>;
+    let mut oSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
+    let mut oThreadReadyTimes: metamodelica::Array<metamodelica::Real> = Default::default();
     let mut head: Arc<HpcOmSimCode::Task> = Arc::new(HpcOmSimCode::Task::TASKEMPTY);
     let mut newTask: Arc<HpcOmSimCode::Task> = Arc::new(HpcOmSimCode::Task::TASKEMPTY);
     let mut newTaskRefCount: i32 = 0;
@@ -269,22 +269,22 @@ fn createRandomSchedule1(mut iNodeList: Arc<metamodelica::List<Arc<HpcOmSimCode:
     let mut successorIdc: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut outgoingDepTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     let mut newOutgoingDepTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
-    let mut threadFinishTimes: metamodelica::Array<metamodelica::Real>;
+    let mut threadFinishTimes: metamodelica::Array<metamodelica::Real> = Default::default();
     let mut firstEq: i32 = 0;
-    let mut allThreadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
+    let mut allThreadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
     let mut threadTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     let mut lockTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     let mut threadId: i32 = 0;
     let mut threadFinishTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut tmpThreadReadyTimes: metamodelica::Array<metamodelica::Real>;
+    let mut tmpThreadReadyTimes: metamodelica::Array<metamodelica::Real> = Default::default();
     let mut tmpNodeList: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     let mut weighting: i32 = 0;
     let mut index: i32 = 0;
     let mut calcTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut eqIdc: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut simEqIdc: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule>;
-    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
+    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
+    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = Default::default();
     (oSchedule, oThreadReadyTimes) = 'mc: {
         let __mc_input = (iNodeList.clone(), iSchedule.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -302,12 +302,12 @@ fn createRandomSchedule1(mut iNodeList: Arc<metamodelica::List<Arc<HpcOmSimCode:
                     let mut successorIdc: Arc<metamodelica::List<i32>> = successorIdc.clone();
                     let mut successors: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32)>> = successors.clone();
                     let mut threadFinishTime: metamodelica::Real = threadFinishTime.clone();
-                    let mut threadFinishTimes: metamodelica::Array<metamodelica::Real>;
+                    let mut threadFinishTimes: metamodelica::Array<metamodelica::Real> = threadFinishTimes.clone();
                     let mut threadId: i32 = threadId.clone();
                     let mut threadTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = threadTasks.clone();
                     let mut tmpNodeList: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = tmpNodeList.clone();
-                    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule>;
-                    let mut tmpThreadReadyTimes: metamodelica::Array<metamodelica::Real>;
+                    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule> = tmpSchedule.clone();
+                    let mut tmpThreadReadyTimes: metamodelica::Array<metamodelica::Real> = tmpThreadReadyTimes.clone();
                     (predecessors, _) = getSuccessorsByTask(head.clone(), iTaskGraphT.clone(), allCalcTasks.clone())?;
                     (successors, successorIdc) = getSuccessorsByTask(head.clone(), iTaskGraph.clone(), allCalcTasks.clone())?;
                     let false = (predecessors.clone().is_empty()) else { bail!("pattern mismatch") };
@@ -321,7 +321,7 @@ fn createRandomSchedule1(mut iNodeList: Arc<metamodelica::List<Arc<HpcOmSimCode:
                     threadTasks = listAppend(lockTasks.clone(), threadTasks.clone());
                     simEqIdc = List::map(List::map1(eqIdc.clone(), (std::sync::Arc::new(getSimEqSysIdxForComp) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), iSccSimEqMapping.clone()), (std::sync::Arc::new(List::last) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>));
                     newTask = Arc::new(HpcOmSimCode::Task::CALCTASK { weighting: weighting.clone(), index: index.clone(), calcTime: calcTime.clone(), timeFinished: threadFinishTime.clone(), threadIdx: threadId.clone(), eqIdc: simEqIdc.clone() });
-                    threadTasks = cons(newTask.clone(), threadTasks.clone());
+                    threadTasks = metamodelica::cons(newTask.clone(), threadTasks.clone());
                     allThreadTasks = {let _arr = allThreadTasks.clone(); _arr.borrow_mut()[(threadId.clone()-1) as usize] = threadTasks.clone(); _arr};
                     (allCalcTasks, tmpNodeList) = updateRefCounterBySuccessorIdc(allCalcTasks.clone(), successorIdc.clone(), metamodelica::nil())?;
                     tmpNodeList = listAppend(tmpNodeList.clone(), rest.clone());
@@ -345,12 +345,12 @@ fn createRandomSchedule1(mut iNodeList: Arc<metamodelica::List<Arc<HpcOmSimCode:
                     let mut successorIdc: Arc<metamodelica::List<i32>> = successorIdc.clone();
                     let mut successors: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32)>> = successors.clone();
                     let mut threadFinishTime: metamodelica::Real = threadFinishTime.clone();
-                    let mut threadFinishTimes: metamodelica::Array<metamodelica::Real>;
+                    let mut threadFinishTimes: metamodelica::Array<metamodelica::Real> = threadFinishTimes.clone();
                     let mut threadId: i32 = threadId.clone();
                     let mut threadTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = threadTasks.clone();
                     let mut tmpNodeList: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = tmpNodeList.clone();
-                    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule>;
-                    let mut tmpThreadReadyTimes: metamodelica::Array<metamodelica::Real>;
+                    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule> = tmpSchedule.clone();
+                    let mut tmpThreadReadyTimes: metamodelica::Array<metamodelica::Real> = tmpThreadReadyTimes.clone();
                     (successors, successorIdc) = getSuccessorsByTask(head.clone(), iTaskGraph.clone(), allCalcTasks.clone())?;
                     threadId = System::intRandom(iNumberOfThreads.clone()) + 1;
                     threadFinishTimes = calculateFinishTimes(metamodelica::OrderedFloat(0.0_f64), head.clone(), metamodelica::nil(), iCommCosts.clone(), iThreadReadyTimes.clone())?;
@@ -359,7 +359,7 @@ fn createRandomSchedule1(mut iNodeList: Arc<metamodelica::List<Arc<HpcOmSimCode:
                     threadTasks = allThreadTasks.clone().borrow()[(threadId.clone()-1) as usize].clone();
                     simEqIdc = List::flatten(List::map1(eqIdc.clone(), (std::sync::Arc::new(getSimEqSysIdxForComp) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), iSccSimEqMapping.clone()));
                     newTask = Arc::new(HpcOmSimCode::Task::CALCTASK { weighting: weighting.clone(), index: index.clone(), calcTime: calcTime.clone(), timeFinished: threadFinishTime.clone(), threadIdx: threadId.clone(), eqIdc: simEqIdc.clone() });
-                    allThreadTasks = {let _arr = allThreadTasks.clone(); _arr.borrow_mut()[(threadId.clone()-1) as usize] = cons(newTask.clone(), threadTasks.clone()); _arr};
+                    allThreadTasks = {let _arr = allThreadTasks.clone(); _arr.borrow_mut()[(threadId.clone()-1) as usize] = metamodelica::cons(newTask.clone(), threadTasks.clone()); _arr};
                     (allCalcTasks, tmpNodeList) = updateRefCounterBySuccessorIdc(allCalcTasks.clone(), successorIdc.clone(), metamodelica::nil())?;
                     tmpNodeList = listAppend(tmpNodeList.clone(), rest.clone());
                     tmpNodeList = List::sort(tmpNodeList.clone(), (std::sync::Arc::new(compareTasksByWeighting) as std::sync::Arc<dyn ::std::ops::Fn(Arc<HpcOmSimCode::Task>, Arc<HpcOmSimCode::Task>) -> Result<bool> + 'static>))?;
@@ -397,19 +397,19 @@ fn createRandomSchedule1(mut iNodeList: Arc<metamodelica::List<Arc<HpcOmSimCode:
 // List Scheduling reverse
 //------------------------
 pub fn createListScheduleReverse(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iNumberOfThreads: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
-    let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
-    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut oSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
+    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut nodeList_refCount: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32)>> = metamodelica::nil();
     let mut nodeList: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     let mut leaveNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut threadReadyTimes: metamodelica::Array<metamodelica::Real>;
-    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
-    let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
-    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>;
-    let mut commCostsT: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>;
-    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule>;
+    let mut threadReadyTimes: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = Default::default();
+    let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
+    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>> = Default::default();
+    let mut commCostsT: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>> = Default::default();
+    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
     let mut outgoingDepTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let HpcOmTaskGraph::TASKGRAPHMETA { inComps: __pa0, commCosts: __pa1, .. } = (iTaskGraphMeta.clone()) else { bail!("pattern mismatch") };
     inComps = __pa0.clone();
     commCosts = __pa1.clone();
@@ -440,15 +440,15 @@ pub fn createListScheduleReverse(mut iTaskGraph: metamodelica::Array<Arc<metamod
 fn addSuccessorLocksToSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iCreateLockFunction: Arc<dyn ::std::ops::Fn((Arc<HpcOmSimCode::Task>, i32), Arc<HpcOmSimCode::Task>, metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>) -> Result<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> + 'static>, mut iCommCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>, mut iCompTaskMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>, mut iSchedule: Arc<HpcOmSimCode::Schedule>) -> Result<Arc<HpcOmSimCode::Schedule>> {
     pub type FuncType = std::sync::Arc<dyn ::std::ops::Fn((Arc<HpcOmSimCode::Task>, i32), Arc<HpcOmSimCode::Task>, metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>) -> Result<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> + 'static>;
 
-    let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
-    let mut allThreadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
-    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule>;
+    let mut oSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
+    let mut allThreadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
+    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
     let mut outgoingDepTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
-    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
+    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = Default::default();
     oSchedule = (::match_deref::match_deref! { match &(iSchedule.clone()) {
         Deref @ HpcOmSimCode::Schedule::THREADSCHEDULE { allCalcTasks, outgoingDepTasks, threadTasks: allThreadTasks, .. } => {
             let mut allThreadTasks = (*allThreadTasks).clone();
-            (allThreadTasks, _) = Array::fold(allThreadTasks.clone(), Arc::new({ let __pe_b1 = iTaskGraph.clone(); let __pe_b2 = allCalcTasks.clone(); let __pe_b3 = iSimVarMapping.clone(); let __pe_b4 = iCommCosts.clone(); let __pe_b5 = iCompTaskMapping.clone(); let __pe_b6: Arc<dyn ::std::ops::Fn((Arc<HpcOmSimCode::Task>, i32), Arc<HpcOmSimCode::Task>, metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>) -> Result<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> + 'static> = iCreateLockFunction.clone(); move |__pe_a0, __pe_a7| addSuccessorLocksToSchedule0(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone(), __pe_a7) }), (allThreadTasks.clone(), 1));
+            (allThreadTasks, _) = Array::fold(allThreadTasks.clone(), (std::sync::Arc::new({ let __pe_b1 = iTaskGraph.clone(); let __pe_b2 = allCalcTasks.clone(); let __pe_b3 = iSimVarMapping.clone(); let __pe_b4 = iCommCosts.clone(); let __pe_b5 = iCompTaskMapping.clone(); let __pe_b6: Arc<dyn ::std::ops::Fn((Arc<HpcOmSimCode::Task>, i32), Arc<HpcOmSimCode::Task>, metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>) -> Result<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> + 'static> = iCreateLockFunction.clone(); move |__pe_a0, __pe_a7| addSuccessorLocksToSchedule0(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone(), __pe_a7) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, (metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, i32)) -> Result<(metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, i32)> + 'static>), (allThreadTasks.clone(), 1));
             tmpSchedule = Arc::new(HpcOmSimCode::Schedule::THREADSCHEDULE { threadTasks: allThreadTasks.clone(), outgoingDepTasks: outgoingDepTasks.clone(), scheduledTasks: metamodelica::nil(), allCalcTasks: allCalcTasks.clone() });
             tmpSchedule.clone()
         },
@@ -464,12 +464,12 @@ fn addSuccessorLocksToSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodel
 fn addSuccessorLocksToSchedule0(mut iThreadTaskList: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iAllCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>, mut iCommCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>, mut iCompTaskMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iCreateLockFunction: Arc<dyn ::std::ops::Fn((Arc<HpcOmSimCode::Task>, i32), Arc<HpcOmSimCode::Task>, metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>) -> Result<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> + 'static>, mut iThreadTasks: (metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, i32)) -> Result<(metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, i32)> {
     pub type FuncType = std::sync::Arc<dyn ::std::ops::Fn((Arc<HpcOmSimCode::Task>, i32), Arc<HpcOmSimCode::Task>, metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>) -> Result<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> + 'static>;
 
-    let mut oThreadTasks: (metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, i32);
+    let mut oThreadTasks: (metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, i32) = (Default::default(), 0);
     let mut threadId: i32 = 0;
-    let mut allThreadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
+    let mut allThreadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
     let mut threadTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     (allThreadTasks, threadId) = iThreadTasks.clone();
-    threadTasks = List::fold(iThreadTaskList.clone(), Arc::new({ let __pe_b1 = iTaskGraph.clone(); let __pe_b2 = iAllCalcTasks.clone(); let __pe_b3 = iSimVarMapping.clone(); let __pe_b4 = iCommCosts.clone(); let __pe_b5 = iCompTaskMapping.clone(); let __pe_b6 = (threadId.clone(), iCreateLockFunction.clone()); move |__pe_a0, __pe_a7| addSuccessorLocksToSchedule1(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone(), __pe_a7) }), metamodelica::nil());
+    threadTasks = List::fold(iThreadTaskList.clone(), (std::sync::Arc::new({ let __pe_b1 = iTaskGraph.clone(); let __pe_b2 = iAllCalcTasks.clone(); let __pe_b3 = iSimVarMapping.clone(); let __pe_b4 = iCommCosts.clone(); let __pe_b5 = iCompTaskMapping.clone(); let __pe_b6 = (threadId.clone(), iCreateLockFunction.clone()); move |__pe_a0, __pe_a7| addSuccessorLocksToSchedule1(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone(), __pe_a7) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>) -> Result<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> + 'static>), metamodelica::nil());
     allThreadTasks = {let _arr = allThreadTasks.clone(); _arr.borrow_mut()[(threadId.clone()-1) as usize] = threadTasks.clone(); _arr};
     oThreadTasks = (allThreadTasks.clone(), threadId.clone() + 1);
     Ok(oThreadTasks)
@@ -492,12 +492,12 @@ fn addSuccessorLocksToSchedule1(mut iTask: Arc<HpcOmSimCode::Task>, mut iTaskGra
             successors = List::removeOnTrue(threadIdx.clone(), (std::sync::Arc::new(compareTaskWithThreadIdx) as std::sync::Arc<dyn ::std::ops::Fn(i32, (Arc<HpcOmSimCode::Task>, i32)) -> Result<bool> + 'static>), successors.clone());
             releaseTasks = List::fold4(successors.clone(), iCreateLockFunction.clone(), iTask.clone(), iCommCosts.clone(), iCompTaskMapping.clone(), iSimVarMapping.clone(), metamodelica::nil());
             tmpThreadTasks = listAppend(releaseTasks.clone(), tmpThreadTasks.clone());
-            tmpThreadTasks = cons(iTask.clone(), tmpThreadTasks.clone());
+            tmpThreadTasks = metamodelica::cons(iTask.clone(), tmpThreadTasks.clone());
             tmpThreadTasks.clone()
         },
         (_, _, tmpThreadTasks) => {
             let mut tmpThreadTasks = (*tmpThreadTasks).clone();
-            tmpThreadTasks = cons(iTask.clone(), tmpThreadTasks.clone());
+            tmpThreadTasks = metamodelica::cons(iTask.clone(), tmpThreadTasks.clone());
             tmpThreadTasks.clone()
         },
         _ => {
@@ -515,7 +515,7 @@ fn addReleaseLocksToSchedule(mut iSuccessorTask: (Arc<HpcOmSimCode::Task>, i32),
     let mut successorTask: Arc<HpcOmSimCode::Task> = Arc::new(HpcOmSimCode::Task::TASKEMPTY);
     (successorTask, _) = iSuccessorTask.clone();
     tmpTask = createDepTaskAndCommunicationInfo(iTask.clone(), successorTask.clone(), true, iCommCosts.clone(), iCompTaskMapping.clone(), iSimVarMapping.clone())?;
-    oReleaseTasks = cons(tmpTask.clone(), iReleaseTasks.clone());
+    oReleaseTasks = metamodelica::cons(tmpTask.clone(), iReleaseTasks.clone());
     Ok(oReleaseTasks)
 }
 
@@ -525,7 +525,7 @@ fn addAssignLocksToSchedule(mut iSuccessorTask: (Arc<HpcOmSimCode::Task>, i32), 
     let mut successorTask: Arc<HpcOmSimCode::Task> = Arc::new(HpcOmSimCode::Task::TASKEMPTY);
     (successorTask, _) = iSuccessorTask.clone();
     tmpTask = createDepTaskAndCommunicationInfo(successorTask.clone(), iTask.clone(), false, iCommCosts.clone(), iCompTaskMapping.clone(), iSimVarMapping.clone())?;
-    oReleaseTasks = cons(tmpTask.clone(), iReleaseTasks.clone());
+    oReleaseTasks = metamodelica::cons(tmpTask.clone(), iReleaseTasks.clone());
     Ok(oReleaseTasks)
 }
 
@@ -550,7 +550,7 @@ pub fn getSimEqSysIdcsForNodeLst(mut nodeIdcs: Arc<metamodelica::List<Arc<metamo
 fn getLocksByPredecessorList(mut iTask: Arc<HpcOmSimCode::Task>, mut iPredecessorList: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32)>>, mut iThreadIdx: i32, mut iCommCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>, mut iCompTaskMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> (Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>) {
     let mut oLockTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     let mut oOutgoingDepTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
-    oLockTasks = List::fold(iPredecessorList.clone(), Arc::new({ let __pe_b1 = iTask.clone(); let __pe_b2 = iThreadIdx.clone(); let __pe_b3 = iCommCosts.clone(); let __pe_b4 = iCompTaskMapping.clone(); let __pe_b5 = iSimVarMapping.clone(); move |__pe_a0, __pe_a6| getLockTasksByPredecessorList(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_a6) }), metamodelica::nil());
+    oLockTasks = List::fold(iPredecessorList.clone(), (std::sync::Arc::new({ let __pe_b1 = iTask.clone(); let __pe_b2 = iThreadIdx.clone(); let __pe_b3 = iCommCosts.clone(); let __pe_b4 = iCompTaskMapping.clone(); let __pe_b5 = iSimVarMapping.clone(); move |__pe_a0, __pe_a6| getLockTasksByPredecessorList(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_a6) }) as std::sync::Arc<dyn ::std::ops::Fn((Arc<HpcOmSimCode::Task>, i32), Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>) -> Result<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> + 'static>), metamodelica::nil());
     oOutgoingDepTasks = oLockTasks.clone();
     (oLockTasks, oOutgoingDepTasks)
 }
@@ -570,7 +570,7 @@ fn getLockTasksByPredecessorList(mut iPredecessorTask: (Arc<HpcOmSimCode::Task>,
                     let mut tmpTask: Arc<HpcOmSimCode::Task> = tmpTask.clone();
                     let true = (intNe(iThreadIdx.clone(), threadIdx.clone())) else { bail!("pattern mismatch") };
                     tmpTask = createDepTaskAndCommunicationInfo(predTask.clone(), iTask.clone(), false, iCommCosts.clone(), iCompTaskMapping.clone(), iSimVarMapping.clone())?;
-                    tmpLockTasks = cons(tmpTask.clone(), tmpLockTasks.clone());
+                    tmpLockTasks = metamodelica::cons(tmpTask.clone(), tmpLockTasks.clone());
                     Ok(tmpLockTasks.clone())
                 }
                 _ => bail!("nomatch"),
@@ -592,7 +592,7 @@ fn getLockTasksByPredecessorList(mut iPredecessorTask: (Arc<HpcOmSimCode::Task>,
 fn getLockTasksByPredecessorListReverse(mut iTask: Arc<HpcOmSimCode::Task>, mut iPredecessorList: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32)>>, mut iThreadIdx: i32, mut iCommCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>, mut iCompTaskMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> (Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>) {
     let mut oLockTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     let mut oOutgoingDepTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
-    oLockTasks = List::fold(iPredecessorList.clone(), Arc::new({ let __pe_b1 = iTask.clone(); let __pe_b2 = iThreadIdx.clone(); let __pe_b3 = iCommCosts.clone(); let __pe_b4 = iCompTaskMapping.clone(); let __pe_b5 = iSimVarMapping.clone(); move |__pe_a0, __pe_a6| getLockTasksByPredecessorListReverse0(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_a6) }), metamodelica::nil());
+    oLockTasks = List::fold(iPredecessorList.clone(), (std::sync::Arc::new({ let __pe_b1 = iTask.clone(); let __pe_b2 = iThreadIdx.clone(); let __pe_b3 = iCommCosts.clone(); let __pe_b4 = iCompTaskMapping.clone(); let __pe_b5 = iSimVarMapping.clone(); move |__pe_a0, __pe_a6| getLockTasksByPredecessorListReverse0(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_a6) }) as std::sync::Arc<dyn ::std::ops::Fn((Arc<HpcOmSimCode::Task>, i32), Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>) -> Result<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> + 'static>), metamodelica::nil());
     oOutgoingDepTasks = oLockTasks.clone();
     (oLockTasks, oOutgoingDepTasks)
 }
@@ -613,7 +613,7 @@ fn getLockTasksByPredecessorListReverse0(mut iPredecessorTask: (Arc<HpcOmSimCode
                     let mut tmpTask: Arc<HpcOmSimCode::Task> = tmpTask.clone();
                     let true = (intNe(iThreadIdx.clone(), threadIdx.clone())) else { bail!("pattern mismatch") };
                     tmpTask = createDepTaskAndCommunicationInfo(iTask.clone(), predTask.clone(), true, iCommCosts.clone(), iCompTaskMapping.clone(), iSimVarMapping.clone())?;
-                    tmpLockTasks = cons(tmpTask.clone(), iLockTasks.clone());
+                    tmpLockTasks = metamodelica::cons(tmpTask.clone(), iLockTasks.clone());
                     Ok(tmpLockTasks.clone())
                 }
                 _ => bail!("nomatch"),
@@ -642,7 +642,7 @@ fn getCommunicationObjBetweenMergedTasks(mut parentNode: i32, mut node: i32, mut
     parentTasks = inComps.clone().borrow()[(parentNode.clone()-1) as usize].clone();
     commFold = HpcOmTaskGraph::Communication { numberOfVars: 0, integerVars: metamodelica::nil(), floatVars: metamodelica::nil(), booleanVars: metamodelica::nil(), stringVars: metamodelica::nil(), childNode: node.clone(), requiredTime: metamodelica::OrderedFloat(-1.0_f64) };
     edgesFromParents = List::flatten(List::map1(parentTasks.clone(), std::sync::Arc::new(fnptr!(Array::getIndexFirst, i32, _)), inCommCosts.clone()));
-    oCommunication = List::fold(edgesFromParents.clone(), Arc::new({ let __pe_b1 = nodeTasks.clone(); move |__pe_a0, __pe_a2| getCommunicationObjBetweenMergedTasks1(__pe_a0, __pe_b1.clone(), __pe_a2) }), commFold.clone());
+    oCommunication = List::fold(edgesFromParents.clone(), (std::sync::Arc::new({ let __pe_b1 = nodeTasks.clone(); move |__pe_a0, __pe_a2| getCommunicationObjBetweenMergedTasks1(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(HpcOmTaskGraph::Communication, HpcOmTaskGraph::Communication) -> Result<HpcOmTaskGraph::Communication> + 'static>), commFold.clone());
     Ok(oCommunication)
 }
 
@@ -751,14 +751,14 @@ fn createDepTaskByTaskIdcR(mut iSourceTaskIdx: i32, mut iTargetTaskIdx: i32, mut
 }
 
 fn updateRefCounterBySuccessorIdc(mut iAllCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>, mut iSuccessorIdc: Arc<metamodelica::List<i32>>, mut iRefZeroTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>) -> Result<(metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>)> {
-    let mut oAllCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
+    let mut oAllCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = Default::default();
     let mut oRefZeroTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     let mut head: i32 = 0;
     let mut currentRefCount: i32 = 0;
     let mut rest: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut tmpRefZeroTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     let mut currentTask: Arc<HpcOmSimCode::Task> = Arc::new(HpcOmSimCode::Task::TASKEMPTY);
-    let mut tmpAllCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
+    let mut tmpAllCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = Default::default();
     (oAllCalcTasks, oRefZeroTasks) = 'mc: {
         let __mc_input = iSuccessorIdc.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -766,12 +766,12 @@ fn updateRefCounterBySuccessorIdc(mut iAllCalcTasks: metamodelica::Array<(Arc<Hp
                 Deref @ metamodelica::List::Cons { head: head, tail: rest } => {
                     let mut currentRefCount: i32 = currentRefCount.clone();
                     let mut currentTask: Arc<HpcOmSimCode::Task> = currentTask.clone();
-                    let mut tmpAllCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
+                    let mut tmpAllCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = tmpAllCalcTasks.clone();
                     let mut tmpRefZeroTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = tmpRefZeroTasks.clone();
                     (currentTask, currentRefCount) = iAllCalcTasks.clone().borrow()[(head.clone()-1) as usize].clone();
                     let true = (intEq(currentRefCount.clone(), 1)) else { bail!("pattern mismatch") };
                     tmpAllCalcTasks = {let _arr = iAllCalcTasks.clone(); _arr.borrow_mut()[(head.clone()-1) as usize] = (currentTask.clone(), 0); _arr};
-                    tmpRefZeroTasks = cons(currentTask.clone(), iRefZeroTasks.clone());
+                    tmpRefZeroTasks = metamodelica::cons(currentTask.clone(), iRefZeroTasks.clone());
                     (tmpAllCalcTasks, tmpRefZeroTasks) = updateRefCounterBySuccessorIdc(tmpAllCalcTasks.clone(), rest.clone(), tmpRefZeroTasks.clone())?;
                     Ok((tmpAllCalcTasks.clone(), tmpRefZeroTasks.clone()))
                 }
@@ -783,7 +783,7 @@ fn updateRefCounterBySuccessorIdc(mut iAllCalcTasks: metamodelica::Array<(Arc<Hp
                 Deref @ metamodelica::List::Cons { head: head, tail: rest } => {
                     let mut currentRefCount: i32 = currentRefCount.clone();
                     let mut currentTask: Arc<HpcOmSimCode::Task> = currentTask.clone();
-                    let mut tmpAllCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
+                    let mut tmpAllCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = tmpAllCalcTasks.clone();
                     let mut tmpRefZeroTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = tmpRefZeroTasks.clone();
                     (currentTask, currentRefCount) = iAllCalcTasks.clone().borrow()[(head.clone()-1) as usize].clone();
                     tmpAllCalcTasks = {let _arr = iAllCalcTasks.clone(); _arr.borrow_mut()[(head.clone()-1) as usize] = (currentTask.clone(), currentRefCount.clone() - 1); _arr};
@@ -807,7 +807,7 @@ fn updateRefCounterBySuccessorIdc(mut iAllCalcTasks: metamodelica::Array<(Arc<Hp
 }
 
 fn getThreadFinishTimesMin(mut iThreadIdx: i32, mut iThreadFinishTimes: metamodelica::Array<metamodelica::Real>, mut iCurrentMinThreadIdx: i32, mut iCurrentMinFinishTime: metamodelica::Real) -> Result<(i32, metamodelica::Real)> {
-    let mut minThreadTime_Idx: (i32, metamodelica::Real);
+    let mut minThreadTime_Idx: (i32, metamodelica::Real) = (0, metamodelica::OrderedFloat(0.0_f64));
     let mut threadFinishTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     minThreadTime_Idx = 'mc: {
         let __mc_input = iCurrentMinFinishTime.clone();
@@ -893,8 +893,8 @@ fn getTaskWithHighestFinishTime(mut iTasks: Arc<metamodelica::List<(Arc<HpcOmSim
 fn convertTaskGraphToTasks(mut iTaskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iConverterFunc: Arc<dyn ::std::ops::Fn(i32, HpcOmTaskGraph::TaskGraphMeta) -> Result<Arc<HpcOmSimCode::Task>> + 'static>) -> Result<metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>> {
     pub type FuncType = std::sync::Arc<dyn ::std::ops::Fn(i32, HpcOmTaskGraph::TaskGraphMeta) -> Result<Arc<HpcOmSimCode::Task>> + 'static>;
 
-    let mut oTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
-    let mut tmpTaskArray: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
+    let mut oTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = Default::default();
+    let mut tmpTaskArray: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = Default::default();
     tmpTaskArray = arrayCreate((iTaskGraphT.clone().borrow().len() as i32), (Arc::new(crate::HpcOmSimCode::Task::TASKEMPTY), 0));
     oTasks = convertTaskGraphToTasks1(iTaskGraphMeta.clone(), iTaskGraphT.clone(), 1, iConverterFunc.clone(), tmpTaskArray.clone())?;
     Ok(oTasks)
@@ -903,8 +903,8 @@ fn convertTaskGraphToTasks(mut iTaskGraphT: metamodelica::Array<Arc<metamodelica
 fn convertTaskGraphToTasks1(mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iTaskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iIndex: i32, mut iConverterFunc: Arc<dyn ::std::ops::Fn(i32, HpcOmTaskGraph::TaskGraphMeta) -> Result<Arc<HpcOmSimCode::Task>> + 'static>, mut iTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>) -> Result<metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>> {
     pub type FuncType = std::sync::Arc<dyn ::std::ops::Fn(i32, HpcOmTaskGraph::TaskGraphMeta) -> Result<Arc<HpcOmSimCode::Task>> + 'static>;
 
-    let mut oTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
-    let mut tmpTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
+    let mut oTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = Default::default();
+    let mut tmpTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = Default::default();
     let mut refCount: i32 = 0;
     let mut newTask: Arc<HpcOmSimCode::Task> = Arc::new(HpcOmSimCode::Task::TASKEMPTY);
     oTasks = 'mc: {
@@ -913,7 +913,7 @@ fn convertTaskGraphToTasks1(mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, m
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut newTask: Arc<HpcOmSimCode::Task> = newTask.clone();
             let mut refCount: i32 = refCount.clone();
-            let mut tmpTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
+            let mut tmpTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = tmpTasks.clone();
             let true = (intLe(iIndex.clone(), (iTaskGraphT.clone().borrow().len() as i32))) else { bail!("pattern mismatch") };
             refCount = (iTaskGraphT.clone().borrow()[(iIndex.clone()-1) as usize].clone().len() as i32);
             newTask = iConverterFunc(iIndex.clone(), iTaskGraphMeta.clone())?;
@@ -936,9 +936,9 @@ fn convertNodeToTask(mut iNodeIdx: i32, mut iTaskGraphMeta: HpcOmTaskGraph::Task
     let mut primalComp: i32 = 0;
     let mut components: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut exeCost: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut nodeMarks: metamodelica::Array<i32>;
-    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)>;
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut nodeMarks: metamodelica::Array<i32> = Default::default();
+    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     oTask = (match iTaskGraphMeta.clone() {
         HpcOmTaskGraph::TaskGraphMeta { exeCosts: mut exeCosts, nodeMark: mut nodeMarks, inComps: mut inComps, .. } => {
             components = inComps.clone().borrow()[(iNodeIdx.clone()-1) as usize].clone();
@@ -961,9 +961,9 @@ fn convertNodeToTaskReverse(mut iNodeIdx: i32, mut iTaskGraphMeta: HpcOmTaskGrap
     let mut primalComp: i32 = 0;
     let mut components: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut exeCost: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut nodeMarks: metamodelica::Array<i32>;
-    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)>;
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut nodeMarks: metamodelica::Array<i32> = Default::default();
+    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     oTask = (match iTaskGraphMeta.clone() {
         HpcOmTaskGraph::TaskGraphMeta { exeCosts: mut exeCosts, nodeMark: mut nodeMarks, inComps: mut inComps, .. } => {
             components = inComps.clone().borrow()[(iNodeIdx.clone()-1) as usize].clone();
@@ -982,8 +982,8 @@ fn convertNodeToTaskReverse(mut iNodeIdx: i32, mut iTaskGraphMeta: HpcOmTaskGrap
 }
 
 fn calculateFinishTimes(mut iPredecessorTaskLastFinished: metamodelica::Real, mut iTask: Arc<HpcOmSimCode::Task>, mut iPredecessorTasks: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32)>>, mut iCommCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>, mut iThreadReadyTimes: metamodelica::Array<metamodelica::Real>) -> Result<metamodelica::Array<metamodelica::Real>> {
-    let mut oFinishTimes: metamodelica::Array<metamodelica::Real>;
-    let mut tmpFinishTimes: metamodelica::Array<metamodelica::Real>;
+    let mut oFinishTimes: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut tmpFinishTimes: metamodelica::Array<metamodelica::Real> = Default::default();
     tmpFinishTimes = arrayCreate((iThreadReadyTimes.clone().borrow().len() as i32), metamodelica::OrderedFloat(0.0_f64));
     tmpFinishTimes = calculateFinishTimes1(iPredecessorTaskLastFinished.clone(), iTask.clone(), iPredecessorTasks.clone(), iCommCosts.clone(), iThreadReadyTimes.clone(), 1, tmpFinishTimes.clone())?;
     oFinishTimes = tmpFinishTimes.clone();
@@ -991,17 +991,17 @@ fn calculateFinishTimes(mut iPredecessorTaskLastFinished: metamodelica::Real, mu
 }
 
 fn calculateFinishTimes1(mut iPredecessorTaskLastFinished: metamodelica::Real, mut iTask: Arc<HpcOmSimCode::Task>, mut iPredecessorTasks: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32)>>, mut iCommCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>, mut iThreadReadyTimes: metamodelica::Array<metamodelica::Real>, mut iThreadIdx: i32, mut iFinishTimes: metamodelica::Array<metamodelica::Real>) -> Result<metamodelica::Array<metamodelica::Real>> {
-    let mut oFinishTimes: metamodelica::Array<metamodelica::Real>;
+    let mut oFinishTimes: metamodelica::Array<metamodelica::Real> = Default::default();
     let mut thFinishTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut thReadyTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut tmpFinishTimes: metamodelica::Array<metamodelica::Real>;
+    let mut tmpFinishTimes: metamodelica::Array<metamodelica::Real> = Default::default();
     oFinishTimes = 'mc: {
         let __mc_input = iFinishTimes.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut thFinishTime: metamodelica::Real = thFinishTime.clone();
             let mut thReadyTime: metamodelica::Real = thReadyTime.clone();
-            let mut tmpFinishTimes: metamodelica::Array<metamodelica::Real>;
+            let mut tmpFinishTimes: metamodelica::Array<metamodelica::Real> = tmpFinishTimes.clone();
             let true = (intLe(iThreadIdx.clone(), (iThreadReadyTimes.clone().borrow().len() as i32))) else { bail!("pattern mismatch") };
             thReadyTime = iThreadReadyTimes.clone().borrow()[(iThreadIdx.clone()-1) as usize].clone();
             thFinishTime = calculateFinishTimeByThreadId(thReadyTime.clone(), iPredecessorTaskLastFinished.clone(), iThreadIdx.clone(), iTask.clone(), iPredecessorTasks.clone(), iCommCosts.clone())?;
@@ -1121,7 +1121,7 @@ fn getMaxCommCostsByTaskList2(mut iCommCosts: Arc<metamodelica::List<HpcOmTaskGr
 }
 
 fn getTaskByIndex(mut iTaskIdx: i32, mut iAllCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>) -> Result<(Arc<HpcOmSimCode::Task>, i32)> {
-    let mut oTask: (Arc<HpcOmSimCode::Task>, i32);
+    let mut oTask: (Arc<HpcOmSimCode::Task>, i32) = (Arc::new(HpcOmSimCode::Task::TASKEMPTY), 0);
     oTask = iAllCalcTasks.clone().borrow()[(iTaskIdx.clone()-1) as usize].clone();
     Ok(oTask)
 }
@@ -1252,7 +1252,7 @@ fn dumpTask(mut iTask: Arc<HpcOmSimCode::Task>) -> Result<ArcStr> {
     let mut nodeIdc: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut timeFinished: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut s: ArcStr = arcstr::literal!("");
-    let mut taskSchedule: Arc<HpcOmSimCode::Schedule>;
+    let mut taskSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
     let mut outgoing: bool = false;
     let mut threadIdx: i32 = 0;
     oString = ((::match_deref::match_deref! { match &(iTask.clone()) {
@@ -1287,9 +1287,9 @@ pub fn printTask(mut iTask: Arc<HpcOmSimCode::Task>) -> Result<()> {
 }
 
 pub fn convertScheduleStrucToInfo(mut iSchedule: Arc<HpcOmSimCode::Schedule>, mut iTaskCount: i32) -> Result<metamodelica::Array<(i32, i32, metamodelica::Real)>> {
-    let mut oScheduleInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>;
-    let mut tmpScheduleInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>;
-    let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
+    let mut oScheduleInfo: metamodelica::Array<(i32, i32, metamodelica::Real)> = Default::default();
+    let mut tmpScheduleInfo: metamodelica::Array<(i32, i32, metamodelica::Real)> = Default::default();
+    let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
     let mut tasksOfLevels: Arc<metamodelica::List<HpcOmSimCode::TaskList>> = metamodelica::nil();
     let mut allTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     oScheduleInfo = (::match_deref::match_deref! { match &(iSchedule.clone()) {
@@ -1323,17 +1323,17 @@ pub fn convertScheduleStrucToInfo(mut iSchedule: Arc<HpcOmSimCode::Schedule>, mu
 }
 
 fn convertScheduleStrucToInfo0(mut iTaskList: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut iScheduleInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>) -> metamodelica::Array<(i32, i32, metamodelica::Real)> {
-    let mut oScheduleInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>;
+    let mut oScheduleInfo: metamodelica::Array<(i32, i32, metamodelica::Real)> = Default::default();
     (oScheduleInfo, _) = List::fold(iTaskList.clone(), (std::sync::Arc::new(convertScheduleStrucToInfo1) as std::sync::Arc<dyn ::std::ops::Fn(Arc<HpcOmSimCode::Task>, (metamodelica::Array<(i32, i32, metamodelica::Real)>, i32)) -> Result<(metamodelica::Array<(i32, i32, metamodelica::Real)>, i32)> + 'static>), (iScheduleInfo.clone(), 1));
     oScheduleInfo
 }
 
 fn convertScheduleStrucToInfo1(mut iTask: Arc<HpcOmSimCode::Task>, mut iScheduleInfo: (metamodelica::Array<(i32, i32, metamodelica::Real)>, i32)) -> Result<(metamodelica::Array<(i32, i32, metamodelica::Real)>, i32)> {
-    let mut oScheduleInfo: (metamodelica::Array<(i32, i32, metamodelica::Real)>, i32);
+    let mut oScheduleInfo: (metamodelica::Array<(i32, i32, metamodelica::Real)>, i32) = (Default::default(), 0);
     let mut taskIdx: i32 = 0;
     let mut taskNumber: i32 = 0;
     let mut threadIdx: i32 = 0;
-    let mut tmpScheduleInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>;
+    let mut tmpScheduleInfo: metamodelica::Array<(i32, i32, metamodelica::Real)> = Default::default();
     let mut timeFinished: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     oScheduleInfo = (::match_deref::match_deref! { match &((iTask.clone(), iScheduleInfo.clone())) {
         (Deref @ HpcOmSimCode::Task::CALCTASK { timeFinished, threadIdx, index: taskIdx, .. }, (tmpScheduleInfo, taskNumber)) => {
@@ -1354,7 +1354,7 @@ fn convertScheduleStrucToInfo1(mut iTask: Arc<HpcOmSimCode::Task>, mut iSchedule
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn convertScheduleStrucToInfoLevel(mut taskLst: Arc<metamodelica::List<HpcOmSimCode::TaskList>>, mut sectionsNumber: i32, mut iScheduleInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>) -> Result<metamodelica::Array<(i32, i32, metamodelica::Real)>> {
-    let mut oScheduleInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>;
+    let mut oScheduleInfo: metamodelica::Array<(i32, i32, metamodelica::Real)> = Default::default();
     oScheduleInfo = 'mc: {
         let __mc_input = taskLst.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -1368,7 +1368,7 @@ fn convertScheduleStrucToInfoLevel(mut taskLst: Arc<metamodelica::List<HpcOmSimC
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: HpcOmSimCode::TaskList::PARALLELTASKLIST { tasks }, tail: rest } => {
-                    let mut scheduleInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>;
+                    let mut scheduleInfo: metamodelica::Array<(i32, i32, metamodelica::Real)> = Default::default();
                     scheduleInfo = convertScheduleStrucToInfoLevel1(tasks.clone(), sectionsNumber.clone(), 1, iScheduleInfo.clone())?;
                     Ok(convertScheduleStrucToInfoLevel(rest.clone(), sectionsNumber.clone() + 1, scheduleInfo.clone())?)
                 }
@@ -1378,7 +1378,7 @@ fn convertScheduleStrucToInfoLevel(mut taskLst: Arc<metamodelica::List<HpcOmSimC
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: HpcOmSimCode::TaskList::SERIALTASKLIST { tasks, .. }, tail: rest } => {
-                    let mut scheduleInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>;
+                    let mut scheduleInfo: metamodelica::Array<(i32, i32, metamodelica::Real)> = Default::default();
                     scheduleInfo = convertScheduleStrucToInfoLevel1(tasks.clone(), sectionsNumber.clone(), 1, iScheduleInfo.clone())?;
                     Ok(convertScheduleStrucToInfoLevel(rest.clone(), sectionsNumber.clone() + 1, scheduleInfo.clone())?)
                 }
@@ -1402,7 +1402,7 @@ fn convertScheduleStrucToInfoLevel(mut taskLst: Arc<metamodelica::List<HpcOmSimC
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn convertScheduleStrucToInfoLevel1(mut tasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut sectionsNumber: i32, mut sectionIdx: i32, mut iScheduleInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>) -> Result<metamodelica::Array<(i32, i32, metamodelica::Real)>> {
-    let mut oScheduleInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>;
+    let mut oScheduleInfo: metamodelica::Array<(i32, i32, metamodelica::Real)> = Default::default();
     oScheduleInfo = (::match_deref::match_deref! { match &(tasks.clone()) {
         Deref @ metamodelica::List::Nil => {
             iScheduleInfo.clone()
@@ -1426,26 +1426,26 @@ fn convertScheduleStrucToInfoLevel1(mut tasks: Arc<metamodelica::List<Arc<HpcOmS
 // Balanced Level Scheduling
 //-----------------
 pub fn createBalancedLevelScheduling(mut iGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iMeta: HpcOmTaskGraph::TaskGraphMeta, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<(Arc<HpcOmSimCode::Schedule>, HpcOmTaskGraph::TaskGraphMeta)> {
-    let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
+    let mut oSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
     let mut oMeta: HpcOmTaskGraph::TaskGraphMeta = <HpcOmTaskGraph::TaskGraphMeta as ::std::default::Default>::default();
     let mut targetCost: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut levelAss: metamodelica::Array<i32>;
-    let mut nodeMark: metamodelica::Array<i32>;
+    let mut levelAss: metamodelica::Array<i32> = Default::default();
+    let mut nodeMark: metamodelica::Array<i32> = Default::default();
     let mut critPathNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut critPathCosts: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
     let mut level: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut allSections: Arc<metamodelica::List<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>>> = metamodelica::nil();
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut graphT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut graphT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut levelTasks: Arc<metamodelica::List<HpcOmSimCode::TaskList>> = metamodelica::nil();
-    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut compNames: metamodelica::Array<ArcStr>;
-    let mut compDescs: metamodelica::Array<ArcStr>;
-    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)>;
-    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>;
-    let mut compParamMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut compInformations: metamodelica::Array<HpcOmTaskGraph::ComponentInfo>;
+    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut compNames: metamodelica::Array<ArcStr> = Default::default();
+    let mut compDescs: metamodelica::Array<ArcStr> = Default::default();
+    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
+    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>> = Default::default();
+    let mut compParamMapping: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut compInformations: metamodelica::Array<HpcOmTaskGraph::ComponentInfo> = Default::default();
     targetCost = metamodelica::OrderedFloat(1000.0_f64);
     let HpcOmTaskGraph::TASKGRAPHMETA { inComps: __pa0, .. } = (iMeta.clone()) else { bail!("pattern mismatch") };
     inComps = __pa0.clone();
@@ -1561,7 +1561,7 @@ fn BLS_fillParallelSections(mut levelIn: Arc<metamodelica::List<Arc<metamodelica
                     levelNodes = List::flatten(followingLevel.clone());
                     unassNodes = listAppend(levelNodes.clone(), unassNodesIn.clone());
                     levelNodeCluster = BLS_mergeDependentLevelTask(unassNodes.clone(), iGraph.clone(), iGraphT.clone(), metamodelica::nil())?;
-                    sectionLst = cons(levelNodeCluster.clone(), sectionsIn.clone());
+                    sectionLst = metamodelica::cons(levelNodeCluster.clone(), sectionsIn.clone());
                     sectionLst = BLS_fillParallelSections(levelIn.clone(), levelAssIn.clone(), metamodelica::nil(), critNodeLevel.clone() + 1, targetCosts.clone(), iGraph.clone(), iGraphT.clone(), iMeta.clone(), unassNodes.clone(), sectionLst.clone())?;
                     Ok(sectionLst.clone())
                 }
@@ -1589,9 +1589,9 @@ fn BLS_fillParallelSections(mut levelIn: Arc<metamodelica::List<Arc<metamodelica
                     necessaryPredecessors = List::flatten(List::map4(List::map(necessaryPredecessors.clone(), std::sync::Arc::new(fnptr!(List::create, _))), (std::sync::Arc::new(BLS_getDependentGroups) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), iGraph.clone(), iGraphT.clone(), unassNodes.clone(), metamodelica::nil()));
                     necessaryPredecessors = List::unique(necessaryPredecessors.clone());
                     (necessaryPredecessors, _, unassNodes) = List::intersection1OnTrue(necessaryPredecessors.clone(), unassNodes.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
-                    section = cons(critPathNode.clone(), necessaryPredecessors.clone());
+                    section = metamodelica::cons(critPathNode.clone(), necessaryPredecessors.clone());
                     section = List::unique(section.clone());
-                    sectionLst = cons(list![section.clone()], sectionsIn.clone());
+                    sectionLst = metamodelica::cons(list![section.clone()], sectionsIn.clone());
                     List::map2_0(section.clone(), (std::sync::Arc::new(Array::updateIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<()> + 'static>), critNodeLevel.clone(), levelAssIn.clone());
                     level = List::map1(levelIn.clone(), (std::sync::Arc::new(deleteIntListMembers) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), section.clone());
                     level = List::set(level.clone(), critNodeLevel.clone(), section.clone())?;
@@ -1618,11 +1618,11 @@ fn BLS_fillParallelSections(mut levelIn: Arc<metamodelica::List<Arc<metamodelica
                     (levelNodes, _) = List::deleteMemberOnTrue(critPathNode.clone(), levelNodes.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
                     iGraphT.clone().borrow()[(listHead(restCritNodes.clone())?-1) as usize].clone();
                     unassNodes = listAppend(unassNodesIn.clone(), levelNodes.clone());
-                    unassNodes = cons(critPathNode.clone(), unassNodes.clone());
+                    unassNodes = metamodelica::cons(critPathNode.clone(), unassNodes.clone());
                     unassNodes = List::unique(unassNodes.clone());
                     levelNodeCluster = BLS_mergeDependentLevelTask(unassNodes.clone(), iGraph.clone(), iGraphT.clone(), metamodelica::nil())?;
                     (_, unassNodes, _) = List::intersection1OnTrue(unassNodes.clone(), List::flatten(levelNodeCluster.clone()), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
-                    sectionLst = cons(levelNodeCluster.clone(), sectionsIn.clone());
+                    sectionLst = metamodelica::cons(levelNodeCluster.clone(), sectionsIn.clone());
                     List::map2_0(List::flatten(levelNodeCluster.clone()), (std::sync::Arc::new(Array::updateIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<()> + 'static>), critNodeLevel.clone(), levelAssIn.clone());
                     level = List::map1(levelIn.clone(), (std::sync::Arc::new(deleteIntListMembers) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), List::flatten(levelNodeCluster.clone()));
                     level = List::set(level.clone(), critNodeLevel.clone(), List::flatten(levelNodeCluster.clone()))?;
@@ -1651,11 +1651,11 @@ fn BLS_mergeDependentLevelTask(mut nodesIn: Arc<metamodelica::List<i32>>, mut iG
             let mut sections: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
             let mut rest = (*rest).clone();
             dependentNodes = BLS_getDependentGroups(list![node.clone()], iGraph.clone(), iGraphT.clone(), nodesIn.clone(), metamodelica::nil())?;
-            section = cons(node.clone(), dependentNodes.clone());
+            section = metamodelica::cons(node.clone(), dependentNodes.clone());
             section = List::unique(section.clone());
             (_, rest, _) = List::intersection1OnTrue(rest.clone(), dependentNodes.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
             section = section.clone().reverse();
-            sections = BLS_mergeDependentLevelTask(rest.clone(), iGraph.clone(), iGraphT.clone(), cons(section.clone(), sectionsIn.clone()))?;
+            sections = BLS_mergeDependentLevelTask(rest.clone(), iGraph.clone(), iGraphT.clone(), metamodelica::cons(section.clone(), sectionsIn.clone()))?;
             sections.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1690,7 +1690,7 @@ fn BLS_getDependentGroups(mut nodes: Arc<metamodelica::List<i32>>, mut iGraph: m
                     (successors, _, referenceNodes) = List::intersection1OnTrue(successors.clone(), referenceNodesIn.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
                     (predecessors, _, referenceNodes) = List::intersection1OnTrue(predecessors.clone(), referenceNodes.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
                     dependentNodes = listAppend(predecessors.clone(), successors.clone());
-                    allNodes = cons(node.clone(), dependentNodes.clone());
+                    allNodes = metamodelica::cons(node.clone(), dependentNodes.clone());
                     dependentNodes = BLS_getDependentGroups(listAppend(rest.clone(), dependentNodes.clone()), iGraph.clone(), iGraphT.clone(), referenceNodes.clone(), listAppend(allNodes.clone(), dependentsIn.clone()))?;
                     Ok(dependentNodes.clone())
                 }
@@ -1739,7 +1739,7 @@ fn BLS_mergeToTargetSize(mut nodesIn: Arc<metamodelica::List<i32>>, mut costsIn:
                     cluster = __pa0.clone();
                     clusterTmp = __pa1.clone();
                     cluster = if (clusterTmp.clone().is_empty()) {cluster.clone().reverse()} else {cluster.clone()};
-                    clusterTmp = cons(cluster.clone(), clusterTmp.clone());
+                    clusterTmp = metamodelica::cons(cluster.clone(), clusterTmp.clone());
                     Ok((clusterTmp.clone(), clusterCostsTmp.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1766,8 +1766,8 @@ fn BLS_mergeToTargetSize(mut nodesIn: Arc<metamodelica::List<i32>>, mut costsIn:
                     let mut group = (*group).clone();
                     (cluster, clusterCost) = group.clone();
                     let true = (clusterCost.clone() + cost.clone() < targetSize.clone()) else { bail!("pattern mismatch") };
-                    group = (cons(node.clone(), cluster.clone()), cost.clone() + clusterCost.clone());
-                    (clusterTmp, clusterCostsTmp) = BLS_mergeToTargetSize(nodeRest.clone(), costRest.clone(), targetSize.clone(), cons(group.clone(), restGroups.clone()))?;
+                    group = (metamodelica::cons(node.clone(), cluster.clone()), cost.clone() + clusterCost.clone());
+                    (clusterTmp, clusterCostsTmp) = BLS_mergeToTargetSize(nodeRest.clone(), costRest.clone(), targetSize.clone(), metamodelica::cons(group.clone(), restGroups.clone()))?;
                     Ok((clusterTmp.clone(), clusterCostsTmp.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1785,9 +1785,9 @@ fn BLS_mergeToTargetSize(mut nodesIn: Arc<metamodelica::List<i32>>, mut costsIn:
                     (cluster, clusterCost) = group.clone();
                     let true = (clusterCost.clone() + cost.clone() >= targetSize.clone()) else { bail!("pattern mismatch") };
                     cluster = cluster.clone().reverse();
-                    restGroups = cons((cluster.clone(), clusterCost.clone()), restGroups.clone());
+                    restGroups = metamodelica::cons((cluster.clone(), clusterCost.clone()), restGroups.clone());
                     group = (list![node.clone()], cost.clone());
-                    (clusterTmp, clusterCostsTmp) = BLS_mergeToTargetSize(nodeRest.clone(), costRest.clone(), targetSize.clone(), cons(group.clone(), restGroups.clone()))?;
+                    (clusterTmp, clusterCostsTmp) = BLS_mergeToTargetSize(nodeRest.clone(), costRest.clone(), targetSize.clone(), metamodelica::cons(group.clone(), restGroups.clone()))?;
                     Ok((clusterTmp.clone(), clusterCostsTmp.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1823,12 +1823,12 @@ fn deleteIntListMembers(mut lst1: Arc<metamodelica::List<i32>>, mut lst2: Arc<me
 // Level Scheduling
 //-----------------
 pub fn createLevelSchedule(mut iGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iMeta: HpcOmTaskGraph::TaskGraphMeta, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> (Arc<HpcOmSimCode::Schedule>, HpcOmTaskGraph::TaskGraphMeta) {
-    let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
+    let mut oSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
     let mut oMeta: HpcOmTaskGraph::TaskGraphMeta = <HpcOmTaskGraph::TaskGraphMeta as ::std::default::Default>::default();
     let mut levelTasks: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut levelTaskLists: Arc<metamodelica::List<HpcOmSimCode::TaskList>> = metamodelica::nil();
     levelTasks = HpcOmTaskGraph::getLevelNodes(iGraph.clone());
-    levelTaskLists = List::fold(levelTasks.clone(), Arc::new({ let __pe_b1 = iGraph.clone(); let __pe_b2 = iMeta.clone(); let __pe_b3 = iSccSimEqMapping.clone(); move |__pe_a0, __pe_a4| createLevelScheduleForLevel(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_a4) }), metamodelica::nil());
+    levelTaskLists = List::fold(levelTasks.clone(), (std::sync::Arc::new({ let __pe_b1 = iGraph.clone(); let __pe_b2 = iMeta.clone(); let __pe_b3 = iSccSimEqMapping.clone(); move |__pe_a0, __pe_a4| createLevelScheduleForLevel(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_a4) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<HpcOmSimCode::TaskList>>) -> Result<Arc<metamodelica::List<HpcOmSimCode::TaskList>>> + 'static>), metamodelica::nil());
     levelTaskLists = levelTaskLists.clone().reverse();
     oSchedule = Arc::new(HpcOmSimCode::Schedule::LEVELSCHEDULE { tasksOfLevels: levelTaskLists.clone(), useFixedAssignments: false });
     oMeta = iMeta.clone();
@@ -1837,23 +1837,23 @@ pub fn createLevelSchedule(mut iGraph: metamodelica::Array<Arc<metamodelica::Lis
 
 fn createLevelScheduleForLevel(mut iTasksOfLevel: Arc<metamodelica::List<i32>>, mut iGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iMeta: HpcOmTaskGraph::TaskGraphMeta, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iLevelTaskLists: Arc<metamodelica::List<HpcOmSimCode::TaskList>>) -> Result<Arc<metamodelica::List<HpcOmSimCode::TaskList>>> {
     let mut oLevelTaskLists: Arc<metamodelica::List<HpcOmSimCode::TaskList>> = metamodelica::nil();
-    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)>;
+    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
     let mut taskList: HpcOmSimCode::TaskList;
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut sortedTasksOfLevel: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let HpcOmTaskGraph::TASKGRAPHMETA { inComps: __pa0, exeCosts: __pa1, .. } = (iMeta.clone()) else { bail!("pattern mismatch") };
     inComps = __pa0.clone();
     exeCosts = __pa1.clone();
     sortedTasksOfLevel = iTasksOfLevel.clone();
     taskList = makeCalcLevelParTaskLst(sortedTasksOfLevel.clone(), iSccSimEqMapping.clone(), inComps.clone());
-    oLevelTaskLists = cons(taskList.clone(), iLevelTaskLists.clone());
+    oLevelTaskLists = metamodelica::cons(taskList.clone(), iLevelTaskLists.clone());
     Ok(oLevelTaskLists)
 }
 
 fn getLevelAssignment(mut level: Arc<metamodelica::List<i32>>, mut tplIn: (i32, metamodelica::Array<i32>)) -> (i32, metamodelica::Array<i32>) {
-    let mut tplOut: (i32, metamodelica::Array<i32>);
+    let mut tplOut: (i32, metamodelica::Array<i32>) = (0, Default::default());
     let mut idx: i32 = 0;
-    let mut ass: metamodelica::Array<i32>;
+    let mut ass: metamodelica::Array<i32> = Default::default();
     (idx, ass) = tplIn.clone();
     List::map2_0(level.clone(), (std::sync::Arc::new(Array::updateIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<()> + 'static>), idx.clone(), ass.clone());
     tplOut = (idx.clone() + 1, ass.clone());
@@ -1866,7 +1866,7 @@ fn makeCalcLevelParTaskLst(mut iNodeIdc: Arc<metamodelica::List<i32>>, mut iSccS
     let mut nodeIdx: i32 = 0;
     for mut nodeIdx in &*iNodeIdc.clone().reverse() {
         let mut nodeIdx = nodeIdx.clone();
-        tmpList = cons(list![nodeIdx.clone()], tmpList.clone());
+        tmpList = metamodelica::cons(list![nodeIdx.clone()], tmpList.clone());
     }
     oTasks = makeCalcLevelParTaskLstForMergedNodes(tmpList.clone(), iSccSimEqMapping.clone(), iNodeSccMapping.clone());
     oTasks
@@ -1875,7 +1875,7 @@ fn makeCalcLevelParTaskLst(mut iNodeIdc: Arc<metamodelica::List<i32>>, mut iSccS
 fn makeCalcLevelParTaskLstForMergedNodes(mut iNodeIdc: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iNodeSccMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> HpcOmSimCode::TaskList {
     let mut oTasks: HpcOmSimCode::TaskList;
     let mut tmpList: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
-    tmpList = List::map(iNodeIdc.clone(), Arc::new({ let __pe_b1 = iNodeSccMapping.clone(); let __pe_b2 = iSccSimEqMapping.clone(); move |__pe_a0| makeCalcTaskLevel(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }));
+    tmpList = List::map(iNodeIdc.clone(), (std::sync::Arc::new({ let __pe_b1 = iNodeSccMapping.clone(); let __pe_b2 = iSccSimEqMapping.clone(); move |__pe_a0| makeCalcTaskLevel(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>) -> Result<Arc<HpcOmSimCode::Task>> + 'static>));
     oTasks = HpcOmSimCode::TaskList::PARALLELTASKLIST { tasks: tmpList.clone() };
     oTasks
 }
@@ -1937,14 +1937,14 @@ fn dumpLevelSchedule(mut iLevelInfo: HpcOmSimCode::TaskList, mut iLevel: i32) ->
 // Fixed level Scheduling
 //-----------------------
 pub fn createFixedLevelSchedule(mut iGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iMeta: HpcOmTaskGraph::TaskGraphMeta, mut iNumberOfThreads: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> (Arc<HpcOmSimCode::Schedule>, HpcOmTaskGraph::TaskGraphMeta) {
-    let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
+    let mut oSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
     let mut oMeta: HpcOmTaskGraph::TaskGraphMeta = <HpcOmTaskGraph::TaskGraphMeta as ::std::default::Default>::default();
     let mut levelTasks: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-    let mut adviceLists: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut adviceLists: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut levelTaskLists: Arc<metamodelica::List<HpcOmSimCode::TaskList>> = metamodelica::nil();
     levelTasks = HpcOmTaskGraph::getLevelNodes(iGraph.clone());
     adviceLists = arrayCreate((iGraph.clone().borrow().len() as i32), metamodelica::nil());
-    levelTaskLists = List::fold(levelTasks.clone(), Arc::new({ let __pe_b1 = adviceLists.clone(); let __pe_b2 = iGraph.clone(); let __pe_b3 = iMeta.clone(); let __pe_b4 = iNumberOfThreads.clone(); let __pe_b5 = iSccSimEqMapping.clone(); move |__pe_a0, __pe_a6| createFixedLevelScheduleForLevel(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_a6) }), metamodelica::nil());
+    levelTaskLists = List::fold(levelTasks.clone(), (std::sync::Arc::new({ let __pe_b1 = adviceLists.clone(); let __pe_b2 = iGraph.clone(); let __pe_b3 = iMeta.clone(); let __pe_b4 = iNumberOfThreads.clone(); let __pe_b5 = iSccSimEqMapping.clone(); move |__pe_a0, __pe_a6| createFixedLevelScheduleForLevel(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_a6) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<HpcOmSimCode::TaskList>>) -> Result<Arc<metamodelica::List<HpcOmSimCode::TaskList>>> + 'static>), metamodelica::nil());
     levelTaskLists = levelTaskLists.clone().reverse();
     oSchedule = Arc::new(HpcOmSimCode::Schedule::LEVELSCHEDULE { tasksOfLevels: levelTaskLists.clone(), useFixedAssignments: true });
     oMeta = iMeta.clone();
@@ -1954,12 +1954,12 @@ pub fn createFixedLevelSchedule(mut iGraph: metamodelica::Array<Arc<metamodelica
 fn createFixedLevelScheduleForLevel(mut iTasksOfLevel: Arc<metamodelica::List<i32>>, mut iAdviceList: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iMeta: HpcOmTaskGraph::TaskGraphMeta, mut iNumberOfThreads: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iLevelTaskLists: Arc<metamodelica::List<HpcOmSimCode::TaskList>>) -> Result<Arc<metamodelica::List<HpcOmSimCode::TaskList>>> {
     let mut oLevelTaskLists: Arc<metamodelica::List<HpcOmSimCode::TaskList>> = metamodelica::nil();
     let mut levelExecCosts: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut threadReadyList: metamodelica::Array<metamodelica::Real>;
-    let mut threadTaskList: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)>;
+    let mut threadReadyList: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut threadTaskList: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
     let mut taskList: HpcOmSimCode::TaskList;
     let mut tasksOfLevel: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut sortedTasksOfLevel: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let HpcOmTaskGraph::TASKGRAPHMETA { inComps: __pa0, exeCosts: __pa1, .. } = (iMeta.clone()) else { bail!("pattern mismatch") };
     inComps = __pa0.clone();
@@ -1967,17 +1967,17 @@ fn createFixedLevelScheduleForLevel(mut iTasksOfLevel: Arc<metamodelica::List<i3
     levelExecCosts = HpcOmTaskGraph::getCostsForContractedNodes(iTasksOfLevel.clone(), exeCosts.clone());
     threadReadyList = arrayCreate(iNumberOfThreads.clone(), metamodelica::OrderedFloat(0.0_f64));
     threadTaskList = arrayCreate(iNumberOfThreads.clone(), metamodelica::nil());
-    sortedTasksOfLevel = List::sort(iTasksOfLevel.clone(), Arc::new({ let __pe_b2 = inComps.clone(); let __pe_b3 = exeCosts.clone(); let __pe_b4 = true; move |__pe_a0, __pe_a1| HpcOmTaskGraph::compareTasksByExecTime(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }))?;
-    List::fold(sortedTasksOfLevel.clone(), Arc::new({ let __pe_b1 = levelExecCosts.clone(); let __pe_b2 = iAdviceList.clone(); let __pe_b3 = threadReadyList.clone(); let __pe_b4 = iGraph.clone(); let __pe_b5 = iMeta.clone(); move |__pe_a0, __pe_a6| createFixedLevelScheduleForTask(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_a6) }), threadTaskList.clone());
+    sortedTasksOfLevel = List::sort(iTasksOfLevel.clone(), (std::sync::Arc::new({ let __pe_b2 = inComps.clone(); let __pe_b3 = exeCosts.clone(); let __pe_b4 = true; move |__pe_a0, __pe_a1| HpcOmTaskGraph::compareTasksByExecTime(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
+    List::fold(sortedTasksOfLevel.clone(), (std::sync::Arc::new({ let __pe_b1 = levelExecCosts.clone(); let __pe_b2 = iAdviceList.clone(); let __pe_b3 = threadReadyList.clone(); let __pe_b4 = iGraph.clone(); let __pe_b5 = iMeta.clone(); move |__pe_a0, __pe_a6| createFixedLevelScheduleForTask(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_a6) }) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> + 'static>), threadTaskList.clone());
     threadTaskList = Array::map(threadTaskList.clone(), Arc::new(fnptr!(metamodelica::listReverse, Arc<metamodelica::List<i32>>)));
-    (_, tasksOfLevel) = Array::fold(threadTaskList.clone(), Arc::new({ let __pe_b1 = inComps.clone(); let __pe_b2 = iSccSimEqMapping.clone(); move |__pe_a0, __pe_a3| createFixedLevelScheduleForLevel0(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3) }), (1, metamodelica::nil()));
+    (_, tasksOfLevel) = Array::fold(threadTaskList.clone(), (std::sync::Arc::new({ let __pe_b1 = inComps.clone(); let __pe_b2 = iSccSimEqMapping.clone(); move |__pe_a0, __pe_a3| createFixedLevelScheduleForLevel0(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, (i32, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>)) -> Result<(i32, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>)> + 'static>), (1, metamodelica::nil()));
     taskList = HpcOmSimCode::TaskList::PARALLELTASKLIST { tasks: tasksOfLevel.clone() };
-    oLevelTaskLists = cons(taskList.clone(), iLevelTaskLists.clone());
+    oLevelTaskLists = metamodelica::cons(taskList.clone(), iLevelTaskLists.clone());
     Ok(oLevelTaskLists)
 }
 
 fn createFixedLevelScheduleForLevel0(mut iTaskList: Arc<metamodelica::List<i32>>, mut iComps: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iIdxTaskList: (i32, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>)) -> Result<(i32, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>)> {
-    let mut oIdxTaskList: (i32, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>);
+    let mut oIdxTaskList: (i32, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>) = (0, metamodelica::nil());
     let mut threadIdx: i32 = 0;
     let mut taskList: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     let mut newTask: Arc<HpcOmSimCode::Task> = Arc::new(HpcOmSimCode::Task::TASKEMPTY);
@@ -1992,7 +1992,7 @@ fn createFixedLevelScheduleForLevel0(mut iTaskList: Arc<metamodelica::List<i32>>
         if !(simEqs.clone().is_empty()) {
             simEqs = simEqs.clone();
             newTask = Arc::new(HpcOmSimCode::Task::CALCTASK_LEVEL { eqIdc: simEqs.clone(), nodeIdc: list![taskIdx.clone()], threadIdx: Some(threadIdx.clone()) });
-            taskList = cons(newTask.clone(), taskList.clone());
+            taskList = metamodelica::cons(newTask.clone(), taskList.clone());
         }
     }
     oIdxTaskList = (threadIdx.clone() + 1, taskList.clone());
@@ -2000,7 +2000,7 @@ fn createFixedLevelScheduleForLevel0(mut iTaskList: Arc<metamodelica::List<i32>>
 }
 
 fn createFixedLevelScheduleForTask(mut iTaskIdx: i32, mut iLevelExecCosts: metamodelica::Real, mut iAdviceList: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iThreadReadyList: metamodelica::Array<metamodelica::Real>, mut iGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iMeta: HpcOmTaskGraph::TaskGraphMeta, mut iThreadTasks: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
-    let mut oThreadTasks: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut oThreadTasks: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut adviceElem: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut threadTasks: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut successorList: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -2017,23 +2017,23 @@ fn createFixedLevelScheduleForTask(mut iTaskIdx: i32, mut iLevelExecCosts: metam
     (_, exeCost) = HpcOmTaskGraph::getExeCost(iTaskIdx.clone(), iMeta.clone())?;
     threadReadyTime = (threadReadyTime.clone()) + (exeCost.clone());
     {let _arr = iThreadReadyList.clone(); _arr.borrow_mut()[(threadIdx.clone()-1) as usize] = threadReadyTime.clone(); _arr};
-    threadTasks = cons(iTaskIdx.clone(), threadTasks.clone());
+    threadTasks = metamodelica::cons(iTaskIdx.clone(), threadTasks.clone());
     oThreadTasks = {let _arr = iThreadTasks.clone(); _arr.borrow_mut()[(threadIdx.clone()-1) as usize] = threadTasks.clone(); _arr};
     Ok(oThreadTasks)
 }
 
 fn createFixedLevelScheduleForTask0(mut iSuccessor: i32, mut iThreadAdvice: i32, mut iAdviceList: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
-    let mut oAdviceList: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut oAdviceList: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut adviceElem: Arc<metamodelica::List<i32>> = metamodelica::nil();
     adviceElem = iAdviceList.clone().borrow()[(iSuccessor.clone()-1) as usize].clone();
-    adviceElem = cons(iThreadAdvice.clone(), adviceElem.clone());
+    adviceElem = metamodelica::cons(iThreadAdvice.clone(), adviceElem.clone());
     oAdviceList = {let _arr = iAdviceList.clone(); _arr.borrow_mut()[(iSuccessor.clone()-1) as usize] = adviceElem.clone(); _arr};
     Ok(oAdviceList)
 }
 
 fn flattenAdviceList(mut iAdviceList: Arc<metamodelica::List<i32>>, mut iNumOfThreads: i32) -> Result<Arc<metamodelica::List<i32>>> {
     let mut oAdviceList: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut counterArray: metamodelica::Array<i32>;
+    let mut counterArray: metamodelica::Array<i32> = Default::default();
     let mut tupleList: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
     counterArray = arrayCreate(iNumOfThreads.clone(), 0);
     counterArray = List::fold(iAdviceList.clone(), (std::sync::Arc::new(flattenAdviceListElem) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> + 'static>), counterArray.clone());
@@ -2043,7 +2043,7 @@ fn flattenAdviceList(mut iAdviceList: Arc<metamodelica::List<i32>>, mut iNumOfTh
 }
 
 fn flattenAdviceListElem(mut iAdviceElem: i32, mut iCounterArray: metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> {
-    let mut oCounterArray: metamodelica::Array<i32>;
+    let mut oCounterArray: metamodelica::Array<i32> = Default::default();
     let mut counter: i32 = 0;
     counter = iCounterArray.clone().borrow()[(iAdviceElem.clone()-1) as usize].clone();
     counter = counter.clone() + 1;
@@ -2067,7 +2067,7 @@ fn arrayToTupleListZeroRemoved(mut iArray: metamodelica::Array<i32>, mut iCurren
                     let true = (intLe(iCurrentIdx.clone(), (iArray.clone().borrow().len() as i32))) else { bail!("pattern mismatch") };
                     currentValue = iArray.clone().borrow()[(iCurrentIdx.clone()-1) as usize].clone();
                     let true = (intNe(currentValue.clone(), 0)) else { bail!("pattern mismatch") };
-                    tmpTupleList = cons((iCurrentIdx.clone(), currentValue.clone()), iTupleList.clone());
+                    tmpTupleList = metamodelica::cons((iCurrentIdx.clone(), currentValue.clone()), iTupleList.clone());
                     tmpTupleList = arrayToTupleListZeroRemoved(iArray.clone(), iCurrentIdx.clone() + 1, tmpTupleList.clone())?;
                     Ok(tmpTupleList.clone())
                 }
@@ -2165,7 +2165,7 @@ fn getFirstReadyThread(mut iThreadReadyList: metamodelica::Array<metamodelica::R
 }
 
 fn getFirstReadyThread0(mut iThreadReadyTime: metamodelica::Real, mut iFirstReadyThread: (i32, metamodelica::Real, i32)) -> (i32, metamodelica::Real, i32) {
-    let mut oFirstReadyThread: (i32, metamodelica::Real, i32);
+    let mut oFirstReadyThread: (i32, metamodelica::Real, i32) = (0, metamodelica::OrderedFloat(0.0_f64), 0);
     let mut firstThreadIdx: i32 = 0;
     let mut currentThreadIdx: i32 = 0;
     let mut readyTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
@@ -2190,11 +2190,11 @@ fn getFirstReadyThread0(mut iThreadReadyTime: metamodelica::Real, mut iFirstRead
 // Task Dependency Scheduling
 //---------------------------
 pub fn createTaskDepSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
-    let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
-    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule>;
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut nodeMark: metamodelica::Array<i32>;
-    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut oSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
+    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut nodeMark: metamodelica::Array<i32> = Default::default();
+    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut nodeLevelMap: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32, Arc<metamodelica::List<i32>>)>> = metamodelica::nil();
     let mut filteredNodeLevelMap: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>> = metamodelica::nil();
     oSchedule = 'mc: {
@@ -2203,10 +2203,10 @@ pub fn createTaskDepSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelic
             let HpcOmTaskGraph::TaskGraphMeta { nodeMark: mut nodeMark, inComps: mut inComps, .. } = __mc_input.clone() else { bail!("nomatch") };
             let mut filteredNodeLevelMap: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>> = filteredNodeLevelMap.clone();
             let mut nodeLevelMap: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32, Arc<metamodelica::List<i32>>)>> = nodeLevelMap.clone();
-            let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut tmpSchedule: Arc<HpcOmSimCode::Schedule>;
+            let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>> = taskGraphT.clone();
+            let mut tmpSchedule: Arc<HpcOmSimCode::Schedule> = tmpSchedule.clone();
             taskGraphT = AdjacencyMatrix::transposeAdjacencyMatrix(iTaskGraph.clone(), (iTaskGraph.clone().borrow().len() as i32))?;
-            (_, nodeLevelMap) = Array::fold(taskGraphT.clone(), Arc::new({ let __pe_b1 = nodeMark.clone(); let __pe_b2 = inComps.clone(); let __pe_b3 = iSccSimEqMapping.clone(); move |__pe_a0, __pe_a4| createNodeLevelMapping(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_a4) }), (1, metamodelica::nil()));
+            (_, nodeLevelMap) = Array::fold(taskGraphT.clone(), (std::sync::Arc::new({ let __pe_b1 = nodeMark.clone(); let __pe_b2 = inComps.clone(); let __pe_b3 = iSccSimEqMapping.clone(); move |__pe_a0, __pe_a4| createNodeLevelMapping(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_a4) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, (i32, Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32, Arc<metamodelica::List<i32>>)>>)) -> Result<(i32, Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32, Arc<metamodelica::List<i32>>)>>)> + 'static>), (1, metamodelica::nil()));
             nodeLevelMap = List::sort(nodeLevelMap.clone(), (std::sync::Arc::new(sortNodeLevelMapping) as std::sync::Arc<dyn ::std::ops::Fn((Arc<HpcOmSimCode::Task>, i32, Arc<metamodelica::List<i32>>), (Arc<HpcOmSimCode::Task>, i32, Arc<metamodelica::List<i32>>)) -> Result<bool> + 'static>))?;
             filteredNodeLevelMap = List::map(nodeLevelMap.clone(), (std::sync::Arc::new(fnptr!(filterNodeLevelMapping, (Arc<HpcOmSimCode::Task>, i32, Arc<metamodelica::List<i32>>))) as std::sync::Arc<dyn ::std::ops::Fn((Arc<HpcOmSimCode::Task>, i32, Arc<metamodelica::List<i32>>)) -> Result<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)> + 'static>));
             filteredNodeLevelMap = filteredNodeLevelMap.clone().reverse();
@@ -2224,7 +2224,7 @@ pub fn createTaskDepSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelic
 }
 
 fn createNodeLevelMapping(mut iNodeDependenciesT: Arc<metamodelica::List<i32>>, mut nodeMarks: metamodelica::Array<i32>, mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iNodeInfo: (i32, Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32, Arc<metamodelica::List<i32>>)>>)) -> Result<(i32, Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32, Arc<metamodelica::List<i32>>)>>)> {
-    let mut oNodeInfo: (i32, Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32, Arc<metamodelica::List<i32>>)>>);
+    let mut oNodeInfo: (i32, Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32, Arc<metamodelica::List<i32>>)>>) = (0, metamodelica::nil());
     let mut task: Arc<HpcOmSimCode::Task> = Arc::new(HpcOmSimCode::Task::TASKEMPTY);
     let mut nodeIdx: i32 = 0;
     let mut nodeMark: i32 = 0;
@@ -2236,7 +2236,7 @@ fn createNodeLevelMapping(mut iNodeDependenciesT: Arc<metamodelica::List<i32>>, 
     nodeMark = nodeMarks.clone().borrow()[(List::last(components.clone())?-1) as usize].clone();
     simEqIdc = List::map(List::map1(components.clone(), (std::sync::Arc::new(getSimEqSysIdxForComp) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), iSccSimEqMapping.clone()), (std::sync::Arc::new(List::last) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>));
     task = Arc::new(HpcOmSimCode::Task::CALCTASK { weighting: -1, index: nodeIdx.clone(), calcTime: metamodelica::OrderedFloat(-1.0_f64), timeFinished: metamodelica::OrderedFloat(-1.0_f64), threadIdx: -1, eqIdc: simEqIdc.clone() });
-    nodeLevelMap = cons((task.clone(), nodeMark.clone(), iNodeDependenciesT.clone()), nodeLevelMap.clone());
+    nodeLevelMap = metamodelica::cons((task.clone(), nodeMark.clone(), iNodeDependenciesT.clone()), nodeLevelMap.clone());
     oNodeInfo = (nodeIdx.clone() + 1, nodeLevelMap.clone());
     Ok(oNodeInfo)
 }
@@ -2258,7 +2258,7 @@ fn sortNodeLevelMapping(mut iElem1: (Arc<HpcOmSimCode::Task>, i32, Arc<metamodel
 }
 
 fn filterNodeLevelMapping(mut iElem: (Arc<HpcOmSimCode::Task>, i32, Arc<metamodelica::List<i32>>)) -> (Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>) {
-    let mut oElem: (Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>);
+    let mut oElem: (Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>) = (Arc::new(HpcOmSimCode::Task::TASKEMPTY), metamodelica::nil());
     let mut task: Arc<HpcOmSimCode::Task> = Arc::new(HpcOmSimCode::Task::TASKEMPTY);
     let mut childTasks: Arc<metamodelica::List<i32>> = metamodelica::nil();
     (task, _, childTasks) = iElem.clone();
@@ -2270,23 +2270,23 @@ fn filterNodeLevelMapping(mut iElem: (Arc<HpcOmSimCode::Task>, i32, Arc<metamode
 // Metis Scheduling
 //-----------------
 pub fn createMetisSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iNumberOfThreads: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
-    let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
+    let mut oSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
     let mut extInfo: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut xadj: metamodelica::Array<i32>;
-    let mut adjncy: metamodelica::Array<i32>;
-    let mut vwgt: metamodelica::Array<i32>;
-    let mut adjwgt: metamodelica::Array<i32>;
-    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule>;
-    let mut extInfoArr: metamodelica::Array<i32>;
-    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
+    let mut xadj: metamodelica::Array<i32> = Default::default();
+    let mut adjncy: metamodelica::Array<i32> = Default::default();
+    let mut vwgt: metamodelica::Array<i32> = Default::default();
+    let mut adjwgt: metamodelica::Array<i32> = Default::default();
+    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
+    let mut extInfoArr: metamodelica::Array<i32> = Default::default();
+    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
     let mut rootNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
-    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>;
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut priorityArr: metamodelica::Array<i32>;
+    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = Default::default();
+    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>> = Default::default();
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut priorityArr: metamodelica::Array<i32> = Default::default();
     let mut levelNodes: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-    let mut procAss: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut procAss: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut priorityTasks: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut otherTasks: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut order: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -2295,24 +2295,24 @@ pub fn createMetisSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica:
         let __mc_input = iTaskGraphMeta.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let HpcOmTaskGraph::TaskGraphMeta { inComps: mut inComps, commCosts: mut commCosts, .. } = __mc_input.clone() else { bail!("nomatch") };
-            let mut adjncy: metamodelica::Array<i32>;
-            let mut adjwgt: metamodelica::Array<i32>;
-            let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
+            let mut adjncy: metamodelica::Array<i32> = adjncy.clone();
+            let mut adjwgt: metamodelica::Array<i32> = adjwgt.clone();
+            let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = allCalcTasks.clone();
             let mut extInfo: Arc<metamodelica::List<i32>> = extInfo.clone();
-            let mut extInfoArr: metamodelica::Array<i32>;
+            let mut extInfoArr: metamodelica::Array<i32> = extInfoArr.clone();
             let mut levelNodes: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = levelNodes.clone();
             let mut order: Arc<metamodelica::List<i32>> = order.clone();
             let mut otherTasks: Arc<metamodelica::List<i32>> = otherTasks.clone();
-            let mut priorityArr: metamodelica::Array<i32>;
+            let mut priorityArr: metamodelica::Array<i32> = priorityArr.clone();
             let mut priorityTasks: Arc<metamodelica::List<i32>> = priorityTasks.clone();
-            let mut procAss: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+            let mut procAss: metamodelica::Array<Arc<metamodelica::List<i32>>> = procAss.clone();
             let mut removeLocks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = removeLocks.clone();
             let mut rootNodes: Arc<metamodelica::List<i32>> = rootNodes.clone();
-            let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
-            let mut tmpSchedule: Arc<HpcOmSimCode::Schedule>;
-            let mut vwgt: metamodelica::Array<i32>;
-            let mut xadj: metamodelica::Array<i32>;
+            let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>> = taskGraphT.clone();
+            let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = threadTasks.clone();
+            let mut tmpSchedule: Arc<HpcOmSimCode::Schedule> = tmpSchedule.clone();
+            let mut vwgt: metamodelica::Array<i32> = vwgt.clone();
+            let mut xadj: metamodelica::Array<i32> = xadj.clone();
             (xadj, adjncy, vwgt, adjwgt) = prepareMetis(iTaskGraph.clone(), iTaskGraphMeta.clone())?;
             if intGt(iNumberOfThreads.clone(), 1) {
                 extInfo = HpcOmSchedulerExt::scheduleMetis(xadj.clone(), adjncy.clone(), vwgt.clone(), adjwgt.clone(), iNumberOfThreads.clone())?;
@@ -2449,39 +2449,39 @@ fn arrayIntIsNotOne(mut idx: i32, mut arr: metamodelica::Array<i32>) -> Result<b
 }
 
 pub fn createHMetisSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iNumberOfThreads: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
-    let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
+    let mut oSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
     let mut extInfo: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut xadj: metamodelica::Array<i32>;
-    let mut adjncy: metamodelica::Array<i32>;
-    let mut vwgt: metamodelica::Array<i32>;
-    let mut adjwgt: metamodelica::Array<i32>;
-    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule>;
-    let mut extInfoArr: metamodelica::Array<i32>;
-    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
+    let mut xadj: metamodelica::Array<i32> = Default::default();
+    let mut adjncy: metamodelica::Array<i32> = Default::default();
+    let mut vwgt: metamodelica::Array<i32> = Default::default();
+    let mut adjwgt: metamodelica::Array<i32> = Default::default();
+    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
+    let mut extInfoArr: metamodelica::Array<i32> = Default::default();
+    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
     let mut rootNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
+    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = Default::default();
     let mut nodeList_refCount: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32)>> = metamodelica::nil();
     let mut nodeList: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
-    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>;
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>> = Default::default();
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     oSchedule = 'mc: {
         let __mc_input = iTaskGraphMeta.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let HpcOmTaskGraph::TaskGraphMeta { inComps: mut inComps, commCosts: mut commCosts, .. } = __mc_input.clone() else { bail!("nomatch") };
-            let mut adjncy: metamodelica::Array<i32>;
-            let mut adjwgt: metamodelica::Array<i32>;
-            let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
+            let mut adjncy: metamodelica::Array<i32> = adjncy.clone();
+            let mut adjwgt: metamodelica::Array<i32> = adjwgt.clone();
+            let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = allCalcTasks.clone();
             let mut extInfo: Arc<metamodelica::List<i32>> = extInfo.clone();
-            let mut extInfoArr: metamodelica::Array<i32>;
+            let mut extInfoArr: metamodelica::Array<i32> = extInfoArr.clone();
             let mut nodeList: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = nodeList.clone();
             let mut nodeList_refCount: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32)>> = nodeList_refCount.clone();
             let mut rootNodes: Arc<metamodelica::List<i32>> = rootNodes.clone();
-            let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
-            let mut tmpSchedule: Arc<HpcOmSimCode::Schedule>;
-            let mut vwgt: metamodelica::Array<i32>;
-            let mut xadj: metamodelica::Array<i32>;
+            let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>> = taskGraphT.clone();
+            let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = threadTasks.clone();
+            let mut tmpSchedule: Arc<HpcOmSimCode::Schedule> = tmpSchedule.clone();
+            let mut vwgt: metamodelica::Array<i32> = vwgt.clone();
+            let mut xadj: metamodelica::Array<i32> = xadj.clone();
             println!("{}", (literal!("Funktionsaufruf!")).clone());
             (xadj, adjncy, vwgt, adjwgt) = preparehMetis(iTaskGraph.clone(), iTaskGraphMeta.clone());
             extInfo = HpcOmSchedulerExt::schedulehMetis(xadj.clone(), adjncy.clone(), vwgt.clone(), adjwgt.clone(), iNumberOfThreads.clone())?;
@@ -2529,7 +2529,7 @@ fn getSingleRelations(mut edge: i32, mut n: i32, mut iTaskGraphMeta: HpcOmTaskGr
 }
 
 fn getRelations(mut edges: Arc<metamodelica::List<i32>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut irelations: (Arc<metamodelica::List<(i32, i32, i32)>>, i32)) -> (Arc<metamodelica::List<(i32, i32, i32)>>, i32) {
-    let mut orelations: (Arc<metamodelica::List<(i32, i32, i32)>>, i32);
+    let mut orelations: (Arc<metamodelica::List<(i32, i32, i32)>>, i32) = (metamodelica::nil(), 0);
     let mut n: i32 = 0;
     let mut relations: Arc<metamodelica::List<(i32, i32, i32)>> = metamodelica::nil();
     let mut orel: Arc<metamodelica::List<(i32, i32, i32)>> = metamodelica::nil();
@@ -2567,7 +2567,7 @@ fn sortEdge(mut actnode: i32, mut xadj: metamodelica::Array<i32>, mut adjncy: me
 }
 
 fn setVwgt(mut node: i32, mut vwgt: metamodelica::Array<i32>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta) -> Result<()> {
-    let mut value: (i32, metamodelica::Real);
+    let mut value: (i32, metamodelica::Real) = (0, metamodelica::OrderedFloat(0.0_f64));
     let mut rv: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     value = HpcOmTaskGraph::getExeCost(node.clone(), iTaskGraphMeta.clone())?;
     (_, rv) = value.clone();
@@ -2576,13 +2576,13 @@ fn setVwgt(mut node: i32, mut vwgt: metamodelica::Array<i32>, mut iTaskGraphMeta
 }
 
 fn prepareMetis(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta) -> Result<(metamodelica::Array<i32>, metamodelica::Array<i32>, metamodelica::Array<i32>, metamodelica::Array<i32>)> {
-    let mut xadj: metamodelica::Array<i32>;
-    let mut adjncy: metamodelica::Array<i32>;
-    let mut vwgt: metamodelica::Array<i32>;
-    let mut adjwgt: metamodelica::Array<i32>;
+    let mut xadj: metamodelica::Array<i32> = Default::default();
+    let mut adjncy: metamodelica::Array<i32> = Default::default();
+    let mut vwgt: metamodelica::Array<i32> = Default::default();
+    let mut adjwgt: metamodelica::Array<i32> = Default::default();
     let mut n: i32 = 0;
     let mut m: i32 = 0;
-    let mut adjundirected: (Arc<metamodelica::List<(i32, i32, i32)>>, i32);
+    let mut adjundirected: (Arc<metamodelica::List<(i32, i32, i32)>>, i32) = (metamodelica::nil(), 0);
     let mut help: Arc<metamodelica::List<(i32, i32, i32)>> = metamodelica::nil();
     let mut allTheNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
     help = metamodelica::nil();
@@ -2590,7 +2590,7 @@ fn prepareMetis(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>
     xadj = arrayCreate(n.clone() + 1, 0);
     m = Array::fold(iTaskGraph.clone(), (std::sync::Arc::new(fnptr!(sumEdge, Arc<metamodelica::List<i32>>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, i32) -> Result<i32> + 'static>), 0);
     adjwgt = arrayCreate(2 * m.clone(), 0);
-    adjundirected = Array::fold(iTaskGraph.clone(), Arc::new({ let __pe_b1 = iTaskGraphMeta.clone(); move |__pe_a0, __pe_a2| Ok(getRelations(__pe_a0, __pe_b1.clone(), __pe_a2)) }), (metamodelica::nil(), 1));
+    adjundirected = Array::fold(iTaskGraph.clone(), (std::sync::Arc::new({ let __pe_b1 = iTaskGraphMeta.clone(); move |__pe_a0, __pe_a2| Ok(getRelations(__pe_a0, __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, (Arc<metamodelica::List<(i32, i32, i32)>>, i32)) -> Result<(Arc<metamodelica::List<(i32, i32, i32)>>, i32)> + 'static>), (metamodelica::nil(), 1));
     (help, _) = adjundirected.clone();
     allTheNodes = List::intRange(n.clone());
     adjncy = arrayCreate(2 * m.clone(), 0);
@@ -2611,16 +2611,16 @@ fn listNodes(mut node: i32, mut l_eint: Arc<metamodelica::List<i32>>) -> Arc<met
 }
 
 fn getHedge(mut childnodes: Arc<metamodelica::List<i32>>, mut actnode: (i32, i32, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)) -> (i32, i32, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) {
-    let mut actnode_out: (i32, i32, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>);
+    let mut actnode_out: (i32, i32, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) = (0, 0, metamodelica::nil(), metamodelica::nil(), metamodelica::nil());
     actnode_out = (::match_deref::match_deref! { match &((childnodes.clone(), actnode.clone())) {
         (Deref @ metamodelica::List::Nil, (node, position, l_eptr, l_eint, l_hewgts)) => {
-            let mut help: (i32, i32, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>);
+            let mut help: (i32, i32, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) = (0, 0, metamodelica::nil(), metamodelica::nil(), metamodelica::nil());
             help = (node.clone() + 1, position.clone(), l_eptr.clone(), l_eint.clone(), l_hewgts.clone());
             help.clone()
         },
         (_, (node, position, l_eptr, l_eint, l_hewgts)) => {
             let mut n: i32 = 0;
-            let mut help: (i32, i32, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>);
+            let mut help: (i32, i32, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) = (0, 0, metamodelica::nil(), metamodelica::nil(), metamodelica::nil());
             let mut l_eptr = (*l_eptr).clone();
             let mut l_eint = (*l_eint).clone();
             n = node.clone() - 1;
@@ -2637,16 +2637,16 @@ fn getHedge(mut childnodes: Arc<metamodelica::List<i32>>, mut actnode: (i32, i32
 }
 
 fn preparehMetis(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta) -> (metamodelica::Array<i32>, metamodelica::Array<i32>, metamodelica::Array<i32>, metamodelica::Array<i32>) {
-    let mut vwgts: metamodelica::Array<i32>;
-    let mut eptr: metamodelica::Array<i32>;
-    let mut eint: metamodelica::Array<i32>;
-    let mut hewgts: metamodelica::Array<i32>;
+    let mut vwgts: metamodelica::Array<i32> = Default::default();
+    let mut eptr: metamodelica::Array<i32> = Default::default();
+    let mut eint: metamodelica::Array<i32> = Default::default();
+    let mut hewgts: metamodelica::Array<i32> = Default::default();
     let mut n: i32 = 0;
     let mut l_eptr: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut l_eint: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut l_hewgts: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut allTheNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut result: (i32, i32, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>);
+    let mut result: (i32, i32, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) = (0, 0, metamodelica::nil(), metamodelica::nil(), metamodelica::nil());
     n = (iTaskGraph.clone().borrow().len() as i32);
     result = Array::fold(iTaskGraph.clone(), (std::sync::Arc::new(fnptr!(getHedge, Arc<metamodelica::List<i32>>, (i32, i32, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, (i32, i32, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)) -> Result<(i32, i32, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)> + 'static>), (1, 0, list![0], metamodelica::nil(), metamodelica::nil()));
     (_, _, l_eptr, l_eint, l_hewgts) = result.clone();
@@ -2664,31 +2664,31 @@ fn preparehMetis(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>
 // External Scheduling //TODO: Rename to Yed Scheduling
 //--------------------
 pub fn createExtSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iNumberOfThreads: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>, mut iGraphMLFile: ArcStr) -> Result<Arc<HpcOmSimCode::Schedule>> {
-    let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
+    let mut oSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
     let mut extInfo: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut extInfoArr: metamodelica::Array<i32>;
-    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule>;
-    let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
-    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>;
+    let mut extInfoArr: metamodelica::Array<i32> = Default::default();
+    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
+    let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
+    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>> = Default::default();
     let mut rootNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
+    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = Default::default();
     let mut nodeList_refCount: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32)>> = metamodelica::nil();
     let mut nodeList: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     oSchedule = 'mc: {
         let __mc_input = iTaskGraphMeta.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let HpcOmTaskGraph::TaskGraphMeta { inComps: mut inComps, commCosts: mut commCosts, .. } = __mc_input.clone() else { bail!("nomatch") };
-            let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
+            let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = allCalcTasks.clone();
             let mut extInfo: Arc<metamodelica::List<i32>> = extInfo.clone();
-            let mut extInfoArr: metamodelica::Array<i32>;
+            let mut extInfoArr: metamodelica::Array<i32> = extInfoArr.clone();
             let mut nodeList: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = nodeList.clone();
             let mut nodeList_refCount: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32)>> = nodeList_refCount.clone();
             let mut rootNodes: Arc<metamodelica::List<i32>> = rootNodes.clone();
-            let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
-            let mut tmpSchedule: Arc<HpcOmSimCode::Schedule>;
+            let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>> = taskGraphT.clone();
+            let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = threadTasks.clone();
+            let mut tmpSchedule: Arc<HpcOmSimCode::Schedule> = tmpSchedule.clone();
             extInfo = HpcOmSchedulerExt::readScheduleFromGraphMl((iGraphMLFile.clone()).clone())?;
             extInfoArr = metamodelica::arrayFromVec(extInfo.clone().into_iter().cloned().collect());
             let true = (intEq((iTaskGraph.clone().borrow().len() as i32), (extInfoArr.clone().borrow().len() as i32))) else { bail!("pattern mismatch") };
@@ -2719,7 +2719,7 @@ pub fn createExtSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::L
 fn createExtSchedule1(mut iNodeList: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut iThreadAssignments: metamodelica::Array<i32>, mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iCommCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>, mut iCompTaskMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>, mut iLockWithPredecessorHandler: Arc<dyn ::std::ops::Fn(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32)>>, i32, metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<(Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>)> + 'static>, mut iSchedule: Arc<HpcOmSimCode::Schedule>) -> Result<Arc<HpcOmSimCode::Schedule>> {
     pub type FuncType = std::sync::Arc<dyn ::std::ops::Fn(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, i32)>>, i32, metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<(Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>)> + 'static>;
 
-    let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
+    let mut oSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
     let mut head: Arc<HpcOmSimCode::Task> = Arc::new(HpcOmSimCode::Task::TASKEMPTY);
     let mut newTask: Arc<HpcOmSimCode::Task> = Arc::new(HpcOmSimCode::Task::TASKEMPTY);
     let mut newTaskRefCount: i32 = 0;
@@ -2730,7 +2730,7 @@ fn createExtSchedule1(mut iNodeList: Arc<metamodelica::List<Arc<HpcOmSimCode::Ta
     let mut outgoingDepTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     let mut newOutgoingDepTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     let mut firstEq: i32 = 0;
-    let mut allThreadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
+    let mut allThreadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
     let mut threadTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     let mut lockTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     let mut threadId: i32 = 0;
@@ -2741,8 +2741,8 @@ fn createExtSchedule1(mut iNodeList: Arc<metamodelica::List<Arc<HpcOmSimCode::Ta
     let mut calcTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut eqIdc: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut simEqIdc: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
-    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule>;
+    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = Default::default();
+    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
     oSchedule = 'mc: {
         let __mc_input = (iNodeList.clone(), iSchedule.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -2763,7 +2763,7 @@ fn createExtSchedule1(mut iNodeList: Arc<metamodelica::List<Arc<HpcOmSimCode::Ta
                     let mut threadId: i32 = threadId.clone();
                     let mut threadTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = threadTasks.clone();
                     let mut tmpNodeList: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = tmpNodeList.clone();
-                    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule>;
+                    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule> = tmpSchedule.clone();
                     (predecessors, _) = getSuccessorsByTask(head.clone(), iTaskGraphT.clone(), allCalcTasks.clone())?;
                     (successors, successorIdc) = getSuccessorsByTask(head.clone(), iTaskGraph.clone(), allCalcTasks.clone())?;
                     let false = (predecessors.clone().is_empty()) else { bail!("pattern mismatch") };
@@ -2775,7 +2775,7 @@ fn createExtSchedule1(mut iNodeList: Arc<metamodelica::List<Arc<HpcOmSimCode::Ta
                     threadTasks = listAppend(lockTasks.clone(), threadTasks.clone());
                     simEqIdc = List::map(List::map1(eqIdc.clone(), (std::sync::Arc::new(getSimEqSysIdxForComp) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), iSccSimEqMapping.clone()), (std::sync::Arc::new(List::last) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>));
                     newTask = Arc::new(HpcOmSimCode::Task::CALCTASK { weighting: weighting.clone(), index: index.clone(), calcTime: calcTime.clone(), timeFinished: threadFinishTime.clone(), threadIdx: threadId.clone(), eqIdc: simEqIdc.clone() });
-                    threadTasks = cons(newTask.clone(), threadTasks.clone());
+                    threadTasks = metamodelica::cons(newTask.clone(), threadTasks.clone());
                     allThreadTasks = {let _arr = allThreadTasks.clone(); _arr.borrow_mut()[(threadId.clone()-1) as usize] = threadTasks.clone(); _arr};
                     (allCalcTasks, tmpNodeList) = updateRefCounterBySuccessorIdc(allCalcTasks.clone(), successorIdc.clone(), metamodelica::nil())?;
                     tmpNodeList = listAppend(tmpNodeList.clone(), rest.clone());
@@ -2802,14 +2802,14 @@ fn createExtSchedule1(mut iNodeList: Arc<metamodelica::List<Arc<HpcOmSimCode::Ta
                     let mut threadId: i32 = threadId.clone();
                     let mut threadTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = threadTasks.clone();
                     let mut tmpNodeList: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = tmpNodeList.clone();
-                    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule>;
+                    let mut tmpSchedule: Arc<HpcOmSimCode::Schedule> = tmpSchedule.clone();
                     (successors, successorIdc) = getSuccessorsByTask(head.clone(), iTaskGraph.clone(), allCalcTasks.clone())?;
                     threadId = iThreadAssignments.clone().borrow()[(index.clone()-1) as usize].clone();
                     threadFinishTime = metamodelica::OrderedFloat(-1.0_f64);
                     threadTasks = allThreadTasks.clone().borrow()[(threadId.clone()-1) as usize].clone();
                     simEqIdc = List::flatten(List::map1(eqIdc.clone(), (std::sync::Arc::new(getSimEqSysIdxForComp) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), iSccSimEqMapping.clone()));
                     newTask = Arc::new(HpcOmSimCode::Task::CALCTASK { weighting: weighting.clone(), index: index.clone(), calcTime: calcTime.clone(), timeFinished: threadFinishTime.clone(), threadIdx: threadId.clone(), eqIdc: simEqIdc.clone() });
-                    allThreadTasks = {let _arr = allThreadTasks.clone(); _arr.borrow_mut()[(threadId.clone()-1) as usize] = cons(newTask.clone(), threadTasks.clone()); _arr};
+                    allThreadTasks = {let _arr = allThreadTasks.clone(); _arr.borrow_mut()[(threadId.clone()-1) as usize] = metamodelica::cons(newTask.clone(), threadTasks.clone()); _arr};
                     (allCalcTasks, tmpNodeList) = updateRefCounterBySuccessorIdc(allCalcTasks.clone(), successorIdc.clone(), metamodelica::nil())?;
                     tmpNodeList = listAppend(tmpNodeList.clone(), rest.clone());
                     tmpNodeList = List::sort(tmpNodeList.clone(), (std::sync::Arc::new(compareTasksByWeighting) as std::sync::Arc<dyn ::std::ops::Fn(Arc<HpcOmSimCode::Task>, Arc<HpcOmSimCode::Task>) -> Result<bool> + 'static>))?;
@@ -2848,23 +2848,23 @@ fn createExtSchedule1(mut iNodeList: Arc<metamodelica::List<Arc<HpcOmSimCode::Ta
 // Task Duplication-based Scheduler
 //---------------------------------
 pub fn TDS_schedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut numProc: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>, mut iSimCode: SimCode::SimCode) -> Result<(Arc<HpcOmSimCode::Schedule>, SimCode::SimCode, metamodelica::Array<Arc<metamodelica::List<i32>>>, HpcOmTaskGraph::TaskGraphMeta, metamodelica::Array<Arc<metamodelica::List<i32>>>)> {
-    let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
+    let mut oSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
     let mut oSimCode: SimCode::SimCode = <SimCode::SimCode as ::std::default::Default>::default();
-    let mut oTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut oTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut oTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta = <HpcOmTaskGraph::TaskGraphMeta as ::std::default::Default>::default();
-    let mut oSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut oSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut size: i32 = 0;
     let mut queue: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut levels: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut ectArray: metamodelica::Array<metamodelica::Real>;
-    let mut tdsLevelArray: metamodelica::Array<metamodelica::Real>;
-    let mut lastArray: metamodelica::Array<metamodelica::Real>;
-    let mut lactArray: metamodelica::Array<metamodelica::Real>;
-    let mut fpredArray: metamodelica::Array<i32>;
+    let mut ectArray: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut tdsLevelArray: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut lastArray: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut lactArray: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut fpredArray: metamodelica::Array<i32> = Default::default();
     let mut initClusters: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>;
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>> = Default::default();
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let HpcOmTaskGraph::TASKGRAPHMETA { inComps: __pa0, commCosts: __pa1, .. } = (iTaskGraphMeta.clone()) else { bail!("pattern mismatch") };
     inComps = __pa0.clone();
     commCosts = __pa1.clone();
@@ -2880,11 +2880,11 @@ pub fn TDS_schedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i
 }
 
 fn insertLocksInSchedule(mut iSchedule: Arc<HpcOmSimCode::Schedule>, mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut taskAss: metamodelica::Array<i32>, mut procAss: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iCommCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>, mut iCompTaskMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
-    let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
-    let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
+    let mut oSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
+    let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
     let mut threads: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
     let mut outgoingDepTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
-    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
+    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = Default::default();
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(iSchedule.clone()) {
         Deref @ HpcOmSimCode::Schedule::THREADSCHEDULE { allCalcTasks: __pa0, threadTasks: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
@@ -2892,7 +2892,7 @@ fn insertLocksInSchedule(mut iSchedule: Arc<HpcOmSimCode::Schedule>, mut iTaskGr
     allCalcTasks = __pa0.clone();
     threadTasks = __pa1.clone();
     threads = Arc::new(threadTasks.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
-    (threads, outgoingDepTasks) = List::fold(threads.clone(), Arc::new({ let __pe_b1 = (iTaskGraph.clone(), iTaskGraphT.clone()); let __pe_b2 = (taskAss.clone(), procAss.clone()); let __pe_b3 = allCalcTasks.clone(); let __pe_b4 = iCommCosts.clone(); let __pe_b5 = iCompTaskMapping.clone(); let __pe_b6 = iSimVarMapping.clone(); move |__pe_a0, __pe_a7| insertLocksInSchedule1(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone(), __pe_a7) }), (metamodelica::nil(), metamodelica::nil()));
+    (threads, outgoingDepTasks) = List::fold(threads.clone(), (std::sync::Arc::new({ let __pe_b1 = (iTaskGraph.clone(), iTaskGraphT.clone()); let __pe_b2 = (taskAss.clone(), procAss.clone()); let __pe_b3 = allCalcTasks.clone(); let __pe_b4 = iCommCosts.clone(); let __pe_b5 = iCompTaskMapping.clone(); let __pe_b6 = iSimVarMapping.clone(); move |__pe_a0, __pe_a7| insertLocksInSchedule1(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone(), __pe_a7) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, (Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>)) -> Result<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>)> + 'static>), (metamodelica::nil(), metamodelica::nil()));
     threads = List::filterOnFalse(threads.clone(), std::sync::Arc::new(fnptr!(listEmpty, _)));
     threads = List::map(threads.clone(), Arc::new(fnptr!(metamodelica::listReverse, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>)));
     threads = threads.clone().reverse();
@@ -2903,11 +2903,11 @@ fn insertLocksInSchedule(mut iSchedule: Arc<HpcOmSimCode::Schedule>, mut iTaskGr
 }
 
 fn insertLocksInSchedule1(mut threadsIn: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut iTaskGraphTransposed: (metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>), mut taskProcAss: (metamodelica::Array<i32>, metamodelica::Array<Arc<metamodelica::List<i32>>>), mut iAllCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>, mut iCommCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>, mut iCompTaskMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>, mut foldIn: (Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>)) -> Result<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>)> {
-    let mut foldOut: (Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>);
+    let mut foldOut: (Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>) = (metamodelica::nil(), metamodelica::nil());
     foldOut = (::match_deref::match_deref! { match &((threadsIn.clone(), iTaskGraphTransposed.clone(), taskProcAss.clone(), foldIn.clone())) {
         (Deref @ metamodelica::List::Nil, _, _, (threads, outgoingDepTasks)) => {
             let mut threads = (*threads).clone();
-            threads = cons(metamodelica::nil(), threads.clone());
+            threads = metamodelica::cons(metamodelica::nil(), threads.clone());
             (threads.clone(), outgoingDepTasks.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ HpcOmSimCode::Task::CALCTASK { threadIdx: thr, index: idx, .. }, tail: rest }, (iTaskGraph, iTaskGraphT), (taskAss, _), (threads, outgoingDepTasks)) => {
@@ -2946,19 +2946,19 @@ fn insertLocksInSchedule1(mut threadsIn: Arc<metamodelica::List<Arc<HpcOmSimCode
 }
 
 fn TDS_schedule1(mut clustersIn: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut TDSLevel: metamodelica::Array<metamodelica::Real>, mut numProc: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimCode: SimCode::SimCode, mut iCommCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>, mut iCompTaskMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<(Arc<HpcOmSimCode::Schedule>, SimCode::SimCode, metamodelica::Array<Arc<metamodelica::List<i32>>>, HpcOmTaskGraph::TaskGraphMeta, metamodelica::Array<Arc<metamodelica::List<i32>>>)> {
-    let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
+    let mut oSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
     let mut oSimCode: SimCode::SimCode = <SimCode::SimCode as ::std::default::Default>::default();
-    let mut oTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut oTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut oTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta = <HpcOmTaskGraph::TaskGraphMeta as ::std::default::Default>::default();
-    let mut oSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut oSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     (oSchedule, oSimCode, oTaskGraph, oTaskGraphMeta, oSccSimEqMapping) = 'mc: {
         let __mc_input = iSimVarMapping.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut sccSimEqMap: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+            let mut sccSimEqMap: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
             let mut clusters: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-            let mut schedule: Arc<HpcOmSimCode::Schedule>;
-            let mut taskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+            let mut schedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
+            let mut taskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
             let mut meta: HpcOmTaskGraph::TaskGraphMeta = <HpcOmTaskGraph::TaskGraphMeta as ::std::default::Default>::default();
             let mut simCode: SimCode::SimCode = <SimCode::SimCode as ::std::default::Default>::default();
             let true = ((clustersIn.clone().len() as i32) < numProc.clone()) else { bail!("pattern mismatch") };
@@ -2970,10 +2970,10 @@ fn TDS_schedule1(mut clustersIn: Arc<metamodelica::List<Arc<metamodelica::List<i
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut sccSimEqMap: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+            let mut sccSimEqMap: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
             let mut clusters: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-            let mut schedule: Arc<HpcOmSimCode::Schedule>;
-            let mut taskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+            let mut schedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
+            let mut taskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
             let mut meta: HpcOmTaskGraph::TaskGraphMeta = <HpcOmTaskGraph::TaskGraphMeta as ::std::default::Default>::default();
             let mut simCode: SimCode::SimCode = <SimCode::SimCode as ::std::default::Default>::default();
             let true = ((clustersIn.clone().len() as i32) > numProc.clone()) else { bail!("pattern mismatch") };
@@ -2993,36 +2993,36 @@ fn TDS_schedule1(mut clustersIn: Arc<metamodelica::List<Arc<metamodelica::List<i
             let mut lsIdx: i32 = 0;
             let mut nlsIdx: i32 = 0;
             let mut mIdx: i32 = 0;
-            let mut taskAss: metamodelica::Array<i32>;
-            let mut taskDuplAss: metamodelica::Array<i32>;
-            let mut nodeMark: metamodelica::Array<i32>;
-            let mut newIdxAss: metamodelica::Array<i32>;
-            let mut procAss: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut sccSimEqMap: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut comps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)>;
-            let mut commCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>;
-            let mut varCompMapping: metamodelica::Array<(i32, i32, i32)>;
-            let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)>;
-            let mut idcs: (i32, i32, i32, i32, i32, i32, i32, i32);
-            let mut compNames: metamodelica::Array<ArcStr>;
-            let mut compDescs: metamodelica::Array<ArcStr>;
+            let mut taskAss: metamodelica::Array<i32> = Default::default();
+            let mut taskDuplAss: metamodelica::Array<i32> = Default::default();
+            let mut nodeMark: metamodelica::Array<i32> = Default::default();
+            let mut newIdxAss: metamodelica::Array<i32> = Default::default();
+            let mut procAss: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut sccSimEqMap: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut comps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
+            let mut commCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>> = Default::default();
+            let mut varCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+            let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+            let mut idcs: (i32, i32, i32, i32, i32, i32, i32, i32) = (0, 0, 0, 0, 0, 0, 0, 0);
+            let mut compNames: metamodelica::Array<ArcStr> = Default::default();
+            let mut compDescs: metamodelica::Array<ArcStr> = Default::default();
             let mut clusters: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
             let mut duplSccSimEqMap: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
             let mut duplComps: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-            let mut schedule: Arc<HpcOmSimCode::Schedule>;
-            let mut taskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+            let mut schedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
+            let mut taskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
             let mut meta: HpcOmTaskGraph::TaskGraphMeta = <HpcOmTaskGraph::TaskGraphMeta as ::std::default::Default>::default();
             let mut simCode: SimCode::SimCode = <SimCode::SimCode as ::std::default::Default>::default();
             let mut simVars: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
             let mut algVars: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
-            let mut threadTask: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
+            let mut threadTask: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
             let mut odes: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>>> = metamodelica::nil();
-            let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
-            let mut compParamMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut compInformations: metamodelica::Array<HpcOmTaskGraph::ComponentInfo>;
+            let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = Default::default();
+            let mut compParamMapping: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut compInformations: metamodelica::Array<HpcOmTaskGraph::ComponentInfo> = Default::default();
             let true = ((clustersIn.clone().len() as i32) == numProc.clone()) else { bail!("pattern mismatch") };
             clusters = List::map1(clustersIn.clone(), (std::sync::Arc::new(TDS_SortCompactClusters) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, metamodelica::Array<metamodelica::Real>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), TDSLevel.clone());
             let SimCode::SIMCODE { odeEquations: __pa0, modelInfo: SimCode::MODELINFO { vars: __pa1, .. }, .. } = (iSimCode.clone()) else { bail!("pattern mismatch") };
@@ -3098,7 +3098,7 @@ fn TDS_schedule1(mut clustersIn: Arc<metamodelica::List<Arc<metamodelica::List<i
 }
 
 fn TDS_replaceSimEqSysIdxsInSchedule(mut scheduleIn: Arc<HpcOmSimCode::Schedule>, mut assIn: metamodelica::Array<i32>) -> Result<Arc<HpcOmSimCode::Schedule>> {
-    let mut scheduleOut: Arc<HpcOmSimCode::Schedule>;
+    let mut scheduleOut: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
     scheduleOut = (::match_deref::match_deref! { match &(scheduleIn.clone()) {
         Deref @ HpcOmSimCode::Schedule::THREADSCHEDULE { allCalcTasks, scheduledTasks, outgoingDepTasks, threadTasks } => {
             let mut scheduledTasks = (*scheduledTasks).clone();
@@ -3147,13 +3147,13 @@ fn TDS_replaceSimEqSysIdxsInTaskLst(mut taskLstIn: Arc<metamodelica::List<Arc<Hp
 
 fn TDS_assignNewSimEqSysIdxs(mut simCodeIn: SimCode::SimCode, mut idxAssIn: metamodelica::Array<i32>) -> (SimCode::SimCode, metamodelica::Array<i32>) {
     let mut simCodeOut: SimCode::SimCode = simCodeIn.clone();
-    let mut idxAssOut: metamodelica::Array<i32>;
+    let mut idxAssOut: metamodelica::Array<i32> = Default::default();
     let mut modelInfo: SimCode::ModelInfo = <SimCode::ModelInfo as ::std::default::Default>::default();
     let mut varInfo: SimCode::VarInfo = <SimCode::VarInfo as ::std::default::Default>::default();
     let mut jacObts: Arc<metamodelica::List<Option<Arc<SimCode::JacobianMatrix>>>> = metamodelica::nil();
     let mut eqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
     let mut idx: i32 = 0;
-    let mut ass: metamodelica::Array<i32>;
+    let mut ass: metamodelica::Array<i32> = Default::default();
     modelInfo = simCodeOut.modelInfo.clone();
     varInfo = modelInfo.varInfo.clone();
     let (__pa0, (__pa1, __pa2)) = List::mapFold(simCodeOut.initialEquations.clone(), (std::sync::Arc::new(TDS_replaceSimEqSysIndexWithUpdate) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimCode::SimEqSystem>, (i32, metamodelica::Array<i32>)) -> Result<(Arc<SimCode::SimEqSystem>, (i32, metamodelica::Array<i32>))> + 'static>), (1, idxAssIn.clone()));
@@ -3210,7 +3210,7 @@ fn TDS_assignNewSimEqSysIdxs(mut simCodeIn: SimCode::SimCode, mut idxAssIn: meta
 }
 
 fn TDS_replaceSimEqSysIndex(mut simEqIn: Arc<SimCode::SimEqSystem>, mut assIn: metamodelica::Array<i32>) -> Result<Arc<SimCode::SimEqSystem>> {
-    let mut simEqOut: Arc<SimCode::SimEqSystem>;
+    let mut simEqOut: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
     simEqOut = 'mc: {
         let __mc_input = simEqIn.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -3266,7 +3266,7 @@ fn TDS_replaceSimEqSysIndex(mut simEqIn: Arc<SimCode::SimEqSystem>, mut assIn: m
                 _ => {
                     let mut newIdx: i32 = 0;
                     let mut oldIdx: i32 = 0;
-                    let mut simEqSys: Arc<SimCode::SimEqSystem>;
+                    let mut simEqSys: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
                     oldIdx = SimCodeUtil::simEqSystemIndex(simEqIn.clone())?;
                     newIdx = assIn.clone().borrow()[(oldIdx.clone()-1) as usize].clone();
                     simEqSys = SimCodeUtil::replaceSimEqSysIndex(simEqIn.clone(), newIdx.clone())?;
@@ -3281,8 +3281,8 @@ fn TDS_replaceSimEqSysIndex(mut simEqIn: Arc<SimCode::SimEqSystem>, mut assIn: m
 }
 
 fn TDS_replaceSimEqSysIndexWithUpdate(mut simEqIn: Arc<SimCode::SimEqSystem>, mut tplIn: (i32, metamodelica::Array<i32>)) -> Result<(Arc<SimCode::SimEqSystem>, (i32, metamodelica::Array<i32>))> {
-    let mut simEqOut: Arc<SimCode::SimEqSystem>;
-    let mut tplOut: (i32, metamodelica::Array<i32>);
+    let mut simEqOut: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
+    let mut tplOut: (i32, metamodelica::Array<i32>) = (0, Default::default());
     (simEqOut, tplOut) = 'mc: {
         let __mc_input = (simEqIn.clone(), tplIn.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -3373,7 +3373,7 @@ fn TDS_replaceSimEqSysIndexWithUpdate(mut simEqIn: Arc<SimCode::SimEqSystem>, mu
             ::match_deref::match_deref! { match &__mc_input {
                 (_, (newIdx, ass)) => {
                     let mut oldIdx: i32 = 0;
-                    let mut simEqSys: Arc<SimCode::SimEqSystem>;
+                    let mut simEqSys: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
                     let mut ass = (*ass).clone();
                     oldIdx = SimCodeUtil::simEqSystemIndex(simEqIn.clone())?;
                     ass = {let _arr = ass.clone(); _arr.borrow_mut()[(oldIdx.clone()-1) as usize] = newIdx.clone(); _arr};
@@ -3390,7 +3390,7 @@ fn TDS_replaceSimEqSysIndexWithUpdate(mut simEqIn: Arc<SimCode::SimEqSystem>, mu
 
 fn TDS_replaceSimEqSysIdxInJacobianMatrixWithUpdate(mut jacIn: Option<Arc<SimCode::JacobianMatrix>>, mut tplIn: (i32, metamodelica::Array<i32>)) -> Result<(Option<Arc<SimCode::JacobianMatrix>>, (i32, metamodelica::Array<i32>))> {
     let mut jacOut: Option<Arc<SimCode::JacobianMatrix>> = None;
-    let mut tplOut: (i32, metamodelica::Array<i32>);
+    let mut tplOut: (i32, metamodelica::Array<i32>) = (0, Default::default());
     (jacOut, tplOut) = 'mc: {
         let __mc_input = (jacIn.clone(), tplIn.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -3423,7 +3423,7 @@ fn TDS_replaceSimEqSysIdxInJacobianMatrixWithUpdate(mut jacIn: Option<Arc<SimCod
 
 fn TDS_replaceSimEqSysIdxInJacobianColumnWithUpdate(mut jacIn: Arc<SimCode::JacobianColumn>, mut tplIn: (i32, metamodelica::Array<i32>)) -> Result<(Arc<SimCode::JacobianColumn>, (i32, metamodelica::Array<i32>))> {
     let mut jacOut: Arc<SimCode::JacobianColumn> = Arc::new(<SimCode::JacobianColumn as ::std::default::Default>::default());
-    let mut tplOut: (i32, metamodelica::Array<i32>);
+    let mut tplOut: (i32, metamodelica::Array<i32>) = (0, Default::default());
     (jacOut, tplOut) = 'mc: {
         let __mc_input = (jacIn.clone(), tplIn.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -3507,13 +3507,13 @@ fn TDS_updateModelInfo(mut simCodeIn: SimCode::SimCode, mut idcs: (i32, i32, i32
 }
 
 fn TDS_duplicateTasks(mut clustersIn: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut taskAssIn: metamodelica::Array<i32>, mut procAssIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut idcsIn: (i32, i32, i32, i32, i32, i32, i32, i32), mut taskGraphOrig: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut taskGraphTOrig: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut taskGraphIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut taskDuplAssIn: metamodelica::Array<i32>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut simCodeIn: SimCode::SimCode, mut scheduleIn: Arc<HpcOmSimCode::Schedule>, mut sccSimEqMappingIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut duplSccSimEqMapIn: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut duplCompsIn: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<(metamodelica::Array<i32>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, (i32, i32, i32, i32, i32, i32, i32, i32), SimCode::SimCode, Arc<HpcOmSimCode::Schedule>, Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>)> {
-    let mut taskAssOut: metamodelica::Array<i32>;
-    let mut procAssOut: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut taskGraphOut: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut taskDuplAssOut: metamodelica::Array<i32>;
-    let mut idcsOut: (i32, i32, i32, i32, i32, i32, i32, i32);
+    let mut taskAssOut: metamodelica::Array<i32> = Default::default();
+    let mut procAssOut: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut taskGraphOut: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut taskDuplAssOut: metamodelica::Array<i32> = Default::default();
+    let mut idcsOut: (i32, i32, i32, i32, i32, i32, i32, i32) = (0, 0, 0, 0, 0, 0, 0, 0);
     let mut simCodeOut: SimCode::SimCode = <SimCode::SimCode as ::std::default::Default>::default();
-    let mut scheduleOut: Arc<HpcOmSimCode::Schedule>;
+    let mut scheduleOut: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
     let mut duplSccSimEqMapOut: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut duplCompsOut: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     (taskAssOut, procAssOut, taskGraphOut, taskDuplAssOut, idcsOut, simCodeOut, scheduleOut, duplSccSimEqMapOut, duplCompsOut) = (::match_deref::match_deref! { match &(clustersIn.clone()) {
@@ -3531,18 +3531,18 @@ fn TDS_duplicateTasks(mut clustersIn: Arc<metamodelica::List<Arc<metamodelica::L
             let mut mIdx: i32 = 0;
             let mut duplSccSimEqMap: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
             let mut duplComps: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-            let mut taskAss: metamodelica::Array<i32>;
-            let mut taskDuplAss: metamodelica::Array<i32>;
-            let mut procAss: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut idcs: (i32, i32, i32, i32, i32, i32, i32, i32);
+            let mut taskAss: metamodelica::Array<i32> = Default::default();
+            let mut taskDuplAss: metamodelica::Array<i32> = Default::default();
+            let mut procAss: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut idcs: (i32, i32, i32, i32, i32, i32, i32, i32) = (0, 0, 0, 0, 0, 0, 0, 0);
             let mut repl: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
             let mut simCode: SimCode::SimCode = <SimCode::SimCode as ::std::default::Default>::default();
-            let mut schedule: Arc<HpcOmSimCode::Schedule>;
-            let mut taskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+            let mut schedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
+            let mut taskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
             let mut thread: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
             let mut outgoingDepTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
-            let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
-            let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
+            let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
+            let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = Default::default();
             repl = BackendVarTransform::emptyReplacements();
             let (__pa0, __pa1, __pa2, __pa3, __pa4, (__pa5, __pa6, __pa7, __pa8, __pa9, __pa10, __pa11, __pa12), __pa13, __pa14, __pa15) = TDS_duplicateTasks1(cluster.clone(), clustersIn.clone(), repl.clone(), taskAssIn.clone(), procAssIn.clone(), metamodelica::nil(), idcsIn.clone(), taskGraphOrig.clone(), taskGraphTOrig.clone(), taskGraphIn.clone(), taskDuplAssIn.clone(), iTaskGraphMeta.clone(), simCodeIn.clone(), sccSimEqMappingIn.clone(), duplSccSimEqMapIn.clone(), duplCompsIn.clone())?;
             taskAss = __pa0.clone();
@@ -3581,12 +3581,12 @@ fn TDS_duplicateTasks(mut clustersIn: Arc<metamodelica::List<Arc<metamodelica::L
 }
 
 fn TDS_duplicateTasks1(mut clusterIn: Arc<metamodelica::List<i32>>, mut allCluster: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut replIn: BackendVarTransform::VariableReplacements, mut taskAssIn: metamodelica::Array<i32>, mut procAssIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut threadIn: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut idcsIn: (i32, i32, i32, i32, i32, i32, i32, i32), mut taskGraphOrig: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut taskGraphTOrig: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut taskGraphIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut taskDuplAssIn: metamodelica::Array<i32>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut simCodeIn: SimCode::SimCode, mut sccSimEqMappingIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut duplSccSimEqMapIn: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut duplCompsIn: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<(metamodelica::Array<i32>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, (i32, i32, i32, i32, i32, i32, i32, i32), SimCode::SimCode, Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>)> {
-    let mut taskAssOut: metamodelica::Array<i32>;
-    let mut procAssOut: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut taskGraphOut: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut taskDuplAssOut: metamodelica::Array<i32>;
+    let mut taskAssOut: metamodelica::Array<i32> = Default::default();
+    let mut procAssOut: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut taskGraphOut: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut taskDuplAssOut: metamodelica::Array<i32> = Default::default();
     let mut threadOut: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
-    let mut idcsOut: (i32, i32, i32, i32, i32, i32, i32, i32);
+    let mut idcsOut: (i32, i32, i32, i32, i32, i32, i32, i32) = (0, 0, 0, 0, 0, 0, 0, 0);
     let mut simCodeOut: SimCode::SimCode = <SimCode::SimCode as ::std::default::Default>::default();
     let mut duplSccSimEqMapOut: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut duplCompsOut: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
@@ -3606,12 +3606,12 @@ fn TDS_duplicateTasks1(mut clusterIn: Arc<metamodelica::List<i32>>, mut allClust
                     let mut ass: i32 = 0;
                     let mut duplSccSimEqMap: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
                     let mut duplComps: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-                    let mut taskAss: metamodelica::Array<i32>;
-                    let mut taskDuplAss: metamodelica::Array<i32>;
-                    let mut procAss: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-                    let mut idcs: (i32, i32, i32, i32, i32, i32, i32, i32);
+                    let mut taskAss: metamodelica::Array<i32> = Default::default();
+                    let mut taskDuplAss: metamodelica::Array<i32> = Default::default();
+                    let mut procAss: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+                    let mut idcs: (i32, i32, i32, i32, i32, i32, i32, i32) = (0, 0, 0, 0, 0, 0, 0, 0);
                     let mut repl: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
-                    let mut taskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+                    let mut taskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
                     let mut simCode: SimCode::SimCode = <SimCode::SimCode as ::std::default::Default>::default();
                     let mut thread: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
                     ass = taskAssIn.clone().borrow()[(node.clone()-1) as usize].clone();
@@ -3639,19 +3639,19 @@ fn TDS_duplicateTasks1(mut clusterIn: Arc<metamodelica::List<i32>>, mut allClust
                     let mut duplSccSimEqMap: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
                     let mut duplComps: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
                     let mut simEqsLst: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-                    let mut taskAss: metamodelica::Array<i32>;
-                    let mut taskDuplAss: metamodelica::Array<i32>;
-                    let mut procAss: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-                    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-                    let mut idcs: (i32, i32, i32, i32, i32, i32, i32, i32);
+                    let mut taskAss: metamodelica::Array<i32> = Default::default();
+                    let mut taskDuplAss: metamodelica::Array<i32> = Default::default();
+                    let mut procAss: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+                    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+                    let mut idcs: (i32, i32, i32, i32, i32, i32, i32, i32) = (0, 0, 0, 0, 0, 0, 0, 0);
                     let mut task: Arc<HpcOmSimCode::Task> = Arc::new(HpcOmSimCode::Task::TASKEMPTY);
-                    let mut taskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+                    let mut taskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
                     let mut simCode: SimCode::SimCode = <SimCode::SimCode as ::std::default::Default>::default();
                     let mut thread: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
                     let mut odes: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>>> = metamodelica::nil();
                     let mut simEqSysts: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
                     let mut allEqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
-                    let mut taskGraphOut: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+                    let mut taskGraphOut: metamodelica::Array<Arc<metamodelica::List<i32>>> = taskGraphOut.clone();
                     ass = taskAssIn.clone().borrow()[(node.clone()-1) as usize].clone();
                     let true = (intEq(ass.clone(), -1)) else { bail!("pattern mismatch") };
                     (threadIdx, _, _, _, _, _, _, _) = idcsIn.clone();
@@ -3659,7 +3659,7 @@ fn TDS_duplicateTasks1(mut clusterIn: Arc<metamodelica::List<i32>>, mut allClust
                     inComps = __pa0.clone();
                     taskAss = {let _arr = taskAssIn.clone(); _arr.borrow_mut()[(node.clone()-1) as usize] = threadIdx.clone(); _arr};
                     taskLst = procAssIn.clone().borrow()[(threadIdx.clone()-1) as usize].clone();
-                    procAss = {let _arr = procAssIn.clone(); _arr.borrow_mut()[(threadIdx.clone()-1) as usize] = cons(node.clone(), taskLst.clone()); _arr};
+                    procAss = {let _arr = procAssIn.clone(); _arr.borrow_mut()[(threadIdx.clone()-1) as usize] = metamodelica::cons(node.clone(), taskLst.clone()); _arr};
                     comps = inComps.clone().borrow()[(node.clone()-1) as usize].clone();
                     simEqsLst = List::map1(comps.clone(), std::sync::Arc::new(fnptr!(Array::getIndexFirst, i32, _)), sccSimEqMappingIn.clone());
                     simEqs = List::flatten(simEqsLst.clone());
@@ -3683,7 +3683,7 @@ fn TDS_duplicateTasks1(mut clusterIn: Arc<metamodelica::List<i32>>, mut allClust
                     taskGraph = List::fold1(duplPredTasks.clone(), (std::sync::Arc::new(Array::appendToElement) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<_> + 'static>), list![node.clone()], taskGraphIn.clone());
                     taskGraphOut = List::fold1(origPredTasks.clone(), (std::sync::Arc::new(Array::appendToElement) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<_> + 'static>), list![node.clone()], taskGraph.clone());
                     task = Arc::new(HpcOmSimCode::Task::CALCTASK { weighting: 1, index: node.clone(), calcTime: metamodelica::OrderedFloat(0.0_f64), timeFinished: metamodelica::OrderedFloat(-1.0_f64), threadIdx: threadIdx.clone(), eqIdc: simEqs.clone() });
-                    thread = cons(task.clone(), threadIn.clone());
+                    thread = metamodelica::cons(task.clone(), threadIn.clone());
                     taskDuplAss = {let _arr = taskDuplAssIn.clone(); _arr.borrow_mut()[(node.clone()-1) as usize] = node.clone(); _arr};
                     (taskAss, procAss, taskGraph, taskDuplAss, thread, idcs, simCode, duplSccSimEqMap, duplComps) = TDS_duplicateTasks1(rest.clone(), allCluster.clone(), replIn.clone(), taskAss.clone(), procAss.clone(), thread.clone(), idcsIn.clone(), taskGraphOrig.clone(), taskGraphTOrig.clone(), taskGraph.clone(), taskDuplAss.clone(), iTaskGraphMeta.clone(), simCode.clone(), sccSimEqMappingIn.clone(), duplSccSimEqMapIn.clone(), duplCompsIn.clone())?;
                     Ok((taskAss.clone(), procAss.clone(), taskGraph.clone(), taskDuplAss.clone(), thread.clone(), idcs.clone(), simCode.clone(), duplSccSimEqMap.clone(), duplComps.clone()))
@@ -3698,12 +3698,12 @@ fn TDS_duplicateTasks1(mut clusterIn: Arc<metamodelica::List<i32>>, mut allClust
 
 fn TDS_duplicateTasks2(mut node: i32, mut allCluster: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut replIn: BackendVarTransform::VariableReplacements, mut taskAssIn: metamodelica::Array<i32>, mut procAssIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut threadIn: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut idcsIn: (i32, i32, i32, i32, i32, i32, i32, i32), mut taskGraphOrig: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut taskGraphTOrig: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut taskGraphIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut taskDuplAssIn: metamodelica::Array<i32>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut simCodeIn: SimCode::SimCode, mut sccSimEqMappingIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut duplSccSimEqMapIn: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut duplCompsIn: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<(BackendVarTransform::VariableReplacements, metamodelica::Array<i32>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, (i32, i32, i32, i32, i32, i32, i32, i32), SimCode::SimCode, Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>)> {
     let mut replOut: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
-    let mut taskAssOut: metamodelica::Array<i32>;
-    let mut procAssOut: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut taskGraphOut: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut taskDuplAssOut: metamodelica::Array<i32>;
+    let mut taskAssOut: metamodelica::Array<i32> = Default::default();
+    let mut procAssOut: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut taskGraphOut: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut taskDuplAssOut: metamodelica::Array<i32> = Default::default();
     let mut threadOut: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
-    let mut idcsOut: (i32, i32, i32, i32, i32, i32, i32, i32);
+    let mut idcsOut: (i32, i32, i32, i32, i32, i32, i32, i32) = (0, 0, 0, 0, 0, 0, 0, 0);
     let mut simCodeOut: SimCode::SimCode = <SimCode::SimCode as ::std::default::Default>::default();
     let mut duplSccSimEqMapOut: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut duplCompsOut: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
@@ -3734,9 +3734,9 @@ fn TDS_duplicateTasks2(mut node: i32, mut allCluster: Arc<metamodelica::List<Arc
     let mut duplPredTasks: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut pos: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut simEqIdxLst: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut repl: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
-    let mut taskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut taskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut ht: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, SimCodeVar::SimVar)>>), i32, (HashTableCrefSimVar::FuncHashCref, HashTableCrefSimVar::FuncCrefEqual, HashTableCrefSimVar::FuncCrefStr, HashTableCrefSimVar::FuncExpStr));
     let mut simVars: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
     let mut simCode: SimCode::SimCode = <SimCode::SimCode as ::std::default::Default>::default();
@@ -3790,7 +3790,7 @@ fn TDS_duplicateTasks2(mut node: i32, mut allCluster: Arc<metamodelica::List<Arc
     (simEqSystsDupl, simEqSysIdx2) = TDS_duplicateSystemOfEquations(simEqSystsDupl.clone(), simEqSysIdx2.clone(), repl.clone(), metamodelica::nil())?;
     duplSccSimEqMapOut = listAppend(List::map(simEqSysIdcs2.clone(), std::sync::Arc::new(fnptr!(List::create, _))), duplSccSimEqMapIn.clone());
     simCode = List::fold1(simEqSystsDupl.clone(), (std::sync::Arc::new(SimCodeUtil::addSimEqSysToODEquations) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimCode::SimEqSystem>, i32, SimCode::SimCode) -> Result<SimCode::SimCode> + 'static>), 1, simCode.clone());
-    threadOut = cons(Arc::new(HpcOmSimCode::Task::CALCTASK { weighting: 1, index: taskIdx.clone(), calcTime: metamodelica::OrderedFloat(0.0_f64), timeFinished: metamodelica::OrderedFloat(-1.0_f64), threadIdx: threadIdx.clone(), eqIdc: simEqSysIdcs2.clone() }), threadIn.clone());
+    threadOut = metamodelica::cons(Arc::new(HpcOmSimCode::Task::CALCTASK { weighting: 1, index: taskIdx.clone(), calcTime: metamodelica::OrderedFloat(0.0_f64), timeFinished: metamodelica::OrderedFloat(-1.0_f64), threadIdx: threadIdx.clone(), eqIdc: simEqSysIdcs2.clone() }), threadIn.clone());
     numInitEqs = (crefs.clone().len() as i32);
     simEqSysIdcsInit = List::intRange2(simEqSysIdx2.clone(), simEqSysIdx2.clone() + numInitEqs.clone() - 1);
     initEqs = List::thread3Map(crefsDupl.clone(), crefs.clone(), simEqSysIdcsInit.clone(), (std::sync::Arc::new(makeSEScrefAssignment) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>, i32) -> Result<Arc<SimCode::SimEqSystem>> + 'static>));
@@ -3800,11 +3800,11 @@ fn TDS_duplicateTasks2(mut node: i32, mut allCluster: Arc<metamodelica::List<Arc
     odes = __pa8.clone();
     taskAssOut = {let _arr = taskAssIn.clone(); _arr.borrow_mut()[(taskIdx.clone()-1) as usize] = threadIdx.clone(); _arr};
     thread = procAssIn.clone().borrow()[(threadIdx.clone()-1) as usize].clone();
-    thread = cons(taskIdx.clone(), thread.clone());
+    thread = metamodelica::cons(taskIdx.clone(), thread.clone());
     procAssOut = {let _arr = procAssIn.clone(); _arr.borrow_mut()[(threadIdx.clone()-1) as usize] = thread.clone(); _arr};
     comps = List::intRange2(compIdx.clone(), compIdx.clone() + (comps.clone().len() as i32) - 1);
     compIdx = compIdx.clone() + (comps.clone().len() as i32);
-    duplCompsOut = cons(comps.clone(), duplCompsIn.clone());
+    duplCompsOut = metamodelica::cons(comps.clone(), duplCompsIn.clone());
     taskDuplAssOut = {let _arr = taskDuplAssIn.clone(); _arr.borrow_mut()[(taskIdx.clone()-1) as usize] = node.clone(); _arr};
     clTasks = listHead(allCluster.clone())?;
     origPredTasks = taskGraphTOrig.clone().borrow()[(node.clone()-1) as usize].clone();
@@ -3851,7 +3851,7 @@ fn TDS_duplicateSystemOfEquations(mut simEqsIn: Arc<metamodelica::List<Arc<SimCo
                     assign_field!(lSystem.residual = duplicated.clone());
                     assign_variant_field!(simEqSys => SimCode::SimEqSystem::SES_LINEAR; lSystem = lSystem.clone());
                     simEqSysIdx = simEqSysIdxIn.clone() + numEqs.clone();
-                    (duplicated, simEqSysIdx) = TDS_duplicateSystemOfEquations(rest.clone(), simEqSysIdx.clone(), repl.clone(), cons(simEqSys.clone(), simEqsFold.clone()))?;
+                    (duplicated, simEqSysIdx) = TDS_duplicateSystemOfEquations(rest.clone(), simEqSysIdx.clone(), repl.clone(), metamodelica::cons(simEqSys.clone(), simEqsFold.clone()))?;
                     Ok((duplicated.clone(), simEqSysIdx.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -3861,7 +3861,7 @@ fn TDS_duplicateSystemOfEquations(mut simEqsIn: Arc<metamodelica::List<Arc<SimCo
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut simEqSysIdx: i32 = 0;
-                    let mut simEqSys: Arc<SimCode::SimEqSystem>;
+                    let mut simEqSys: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
                     let mut rest: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
                     let mut duplicated: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(simEqsIn.clone()) {
@@ -3870,7 +3870,7 @@ fn TDS_duplicateSystemOfEquations(mut simEqsIn: Arc<metamodelica::List<Arc<SimCo
                     } };
                     simEqSys = __pa0.clone();
                     rest = __pa1.clone();
-                    (duplicated, simEqSysIdx) = TDS_duplicateSystemOfEquations(rest.clone(), simEqSysIdxIn.clone(), repl.clone(), cons(simEqSys.clone(), simEqsFold.clone()))?;
+                    (duplicated, simEqSysIdx) = TDS_duplicateSystemOfEquations(rest.clone(), simEqSysIdxIn.clone(), repl.clone(), metamodelica::cons(simEqSys.clone(), simEqsFold.clone()))?;
                     Ok((duplicated.clone(), simEqSysIdx.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -3882,7 +3882,7 @@ fn TDS_duplicateSystemOfEquations(mut simEqsIn: Arc<metamodelica::List<Arc<SimCo
 }
 
 fn makeSEScrefAssignment(mut lhs: Arc<DAE::ComponentRef>, mut rhs: Arc<DAE::ComponentRef>, mut idx: i32) -> Result<Arc<SimCode::SimEqSystem>> {
-    let mut sesOut: Arc<SimCode::SimEqSystem>;
+    let mut sesOut: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     ty = ComponentReference::crefType(rhs.clone())?;
     sesOut = Arc::new(SimCode::SimEqSystem::SES_SIMPLE_ASSIGN { index: idx.clone(), cref: lhs.clone(), exp: Arc::new(DAE::Exp::CREF { componentRef: rhs.clone(), ty: ty.clone() }), source: DAE::emptyElementSource().clone(), eqAttr: BackendDAE::EQ_ATTR_DEFAULT_UNKNOWN.clone() });
@@ -3925,8 +3925,8 @@ fn replaceSimEqSystemWithSameIndex(mut eqSysIn: Arc<SimCode::SimEqSystem>, mut e
 }
 
 fn replaceSystemIndex(mut simEqSysIn: Arc<SimCode::SimEqSystem>, mut idcsIn: (i32, i32, i32)) -> (Arc<SimCode::SimEqSystem>, (i32, i32, i32)) {
-    let mut simEqSysOut: Arc<SimCode::SimEqSystem>;
-    let mut idcsOut: (i32, i32, i32);
+    let mut simEqSysOut: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
+    let mut idcsOut: (i32, i32, i32) = (0, 0, 0);
     (simEqSysOut, idcsOut) = (::match_deref::match_deref! { match &(simEqSysIn.clone()) {
         simEqSys @ Deref @ SimCode::SimEqSystem::SES_LINEAR { lSystem, .. } => {
             let mut lsIdx: i32 = 0;
@@ -3975,7 +3975,7 @@ fn replaceInSimEqSystemLst(mut simEqSysLstIn: Arc<metamodelica::List<Arc<SimCode
 }
 
 fn replaceExpsInSimEqSystem(mut simEqSysIn: Arc<SimCode::SimEqSystem>, mut replIn: BackendVarTransform::VariableReplacements) -> Result<(Arc<SimCode::SimEqSystem>, bool)> {
-    let mut simEqSysOut: Arc<SimCode::SimEqSystem>;
+    let mut simEqSysOut: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
     let mut changedOut: bool = false;
     (simEqSysOut, changedOut) = 'mc: {
         let __mc_input = simEqSysIn.clone();
@@ -3983,7 +3983,7 @@ fn replaceExpsInSimEqSystem(mut simEqSysIn: Arc<SimCode::SimEqSystem>, mut replI
             ::match_deref::match_deref! { match &__mc_input {
                 simEqSys @ Deref @ SimCode::SimEqSystem::SES_RESIDUAL { .. } => {
                     let mut changed: bool = false;
-                    let mut exp: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut simEqSys = (*simEqSys).clone();
                     (exp, changed) = BackendVarTransform::replaceExp(var_field!((*simEqSys).exp, SimCode::SimEqSystem::SES_RESIDUAL).clone(), replIn.clone(), None)?;
                     assign_variant_field!(simEqSys => SimCode::SimEqSystem::SES_RESIDUAL; exp = exp.clone());
@@ -4274,10 +4274,10 @@ fn replaceCrefInSimVar(mut simVarIn: SimCodeVar::SimVar, mut replIn: BackendVarT
 }
 
 fn replaceInSimJac(mut simJacRowIn: (i32, i32, Arc<SimCode::SimEqSystem>), mut replIn: BackendVarTransform::VariableReplacements) -> Result<(i32, i32, Arc<SimCode::SimEqSystem>)> {
-    let mut simJacRowOut: (i32, i32, Arc<SimCode::SimEqSystem>);
+    let mut simJacRowOut: (i32, i32, Arc<SimCode::SimEqSystem>) = (0, 0, Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default()));
     let mut int1: i32 = 0;
     let mut int2: i32 = 0;
-    let mut simEqSys: Arc<SimCode::SimEqSystem>;
+    let mut simEqSys: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
     (int1, int2, simEqSys) = simJacRowIn.clone();
     (simEqSys, _) = replaceExpsInSimEqSystem(simEqSys.clone(), replIn.clone())?;
     simJacRowOut = (int1.clone(), int2.clone(), simEqSys.clone());
@@ -4337,7 +4337,7 @@ fn TDS_computeClusterCosts(mut clusters: Arc<metamodelica::List<i32>>, mut iTask
 
 fn TDS_InitialCluster(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut lastArrayIn: metamodelica::Array<metamodelica::Real>, mut lactArrayIn: metamodelica::Array<metamodelica::Real>, mut fpredArrayIn: metamodelica::Array<i32>, mut queue: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {
     let mut clustersOut: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-    let mut taskAssignments: metamodelica::Array<i32>;
+    let mut taskAssignments: metamodelica::Array<i32> = Default::default();
     let mut rootNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
     taskAssignments = arrayCreate((iTaskGraph.clone().borrow().len() as i32), -1);
     rootNodes = HpcOmTaskGraph::getRootNodes(iTaskGraph.clone())?;
@@ -4369,7 +4369,7 @@ fn TDS_InitialCluster1(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::Lis
                     let mut clusters: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
                     let true = (List::isMemberOnTrue(front.clone(), rootNodes.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
                     thread = (clustersIn.clone()).get(currThread.clone())?;
-                    thread = cons(front.clone(), thread.clone());
+                    thread = metamodelica::cons(front.clone(), thread.clone());
                     clusters = List::replaceAt(thread.clone(), currThread.clone(), clustersIn.clone())?;
                     clusters = List::appendElt(metamodelica::nil(), clusters.clone());
                     clusters = TDS_InitialCluster1(iTaskGraph.clone(), iTaskGraphT.clone(), iTaskGraphMeta.clone(), lastArrayIn.clone(), lactArrayIn.clone(), fpredArrayIn.clone(), rootNodes.clone(), taskAssIn.clone(), currThread.clone() + 1, rest.clone(), clusters.clone())?;
@@ -4390,11 +4390,11 @@ fn TDS_InitialCluster1(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::Lis
                     isCritical = TDSpredIsCritical(front.clone(), fpred.clone(), iTaskGraphMeta.clone(), lastArrayIn.clone(), lactArrayIn.clone())?;
                     let true = (isCritical.clone()) else { bail!("pattern mismatch") };
                     thread = (clustersIn.clone()).get(currThread.clone())?;
-                    thread = cons(front.clone(), thread.clone());
+                    thread = metamodelica::cons(front.clone(), thread.clone());
                     clusters = List::replaceAt(thread.clone(), currThread.clone(), clustersIn.clone())?;
                     {let _arr = taskAssIn.clone(); _arr.borrow_mut()[(front.clone()-1) as usize] = currThread.clone(); _arr};
                     rest = List::removeOnTrue(fpred.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), rest.clone());
-                    rest = cons(fpred.clone(), rest.clone());
+                    rest = metamodelica::cons(fpred.clone(), rest.clone());
                     clusters = TDS_InitialCluster1(iTaskGraph.clone(), iTaskGraphT.clone(), iTaskGraphMeta.clone(), lastArrayIn.clone(), lactArrayIn.clone(), fpredArrayIn.clone(), rootNodes.clone(), taskAssIn.clone(), currThread.clone(), rest.clone(), clusters.clone())?;
                     Ok(clusters.clone())
                 }
@@ -4420,7 +4420,7 @@ fn TDS_InitialCluster1(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::Lis
                     isCritical = TDSpredIsCritical(front.clone(), fpred.clone(), iTaskGraphMeta.clone(), lastArrayIn.clone(), lactArrayIn.clone())?;
                     let true = (!(isCritical.clone())) else { bail!("pattern mismatch") };
                     thread = (clustersIn.clone()).get(currThread.clone())?;
-                    thread = cons(front.clone(), thread.clone());
+                    thread = metamodelica::cons(front.clone(), thread.clone());
                     clusters = List::replaceAt(thread.clone(), currThread.clone(), clustersIn.clone())?;
                     {let _arr = taskAssIn.clone(); _arr.borrow_mut()[(front.clone()-1) as usize] = currThread.clone(); _arr};
                     parents = iTaskGraphT.clone().borrow()[(front.clone()-1) as usize].clone();
@@ -4433,7 +4433,7 @@ fn TDS_InitialCluster1(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::Lis
                     pos = List::position(maxExeCost.clone(), parentExeCost.clone())?;
                     fpred = (parents.clone()).get(pos.clone())?;
                     rest = List::removeOnTrue(fpred.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), rest.clone());
-                    rest = cons(fpred.clone(), rest.clone());
+                    rest = metamodelica::cons(fpred.clone(), rest.clone());
                     clusters = TDS_InitialCluster1(iTaskGraph.clone(), iTaskGraphT.clone(), iTaskGraphMeta.clone(), lastArrayIn.clone(), lactArrayIn.clone(), fpredArrayIn.clone(), rootNodes.clone(), taskAssIn.clone(), currThread.clone(), rest.clone(), clusters.clone())?;
                     Ok(clusters.clone())
                 }
@@ -4467,10 +4467,10 @@ fn TDSpredIsCritical(mut node: i32, mut pred: i32, mut iTaskGraphMeta: HpcOmTask
 }
 
 fn computeFavouritePred(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut ect: metamodelica::Array<metamodelica::Real>) -> Result<metamodelica::Array<i32>> {
-    let mut fpredOut: metamodelica::Array<i32>;
+    let mut fpredOut: metamodelica::Array<i32> = Default::default();
     let mut size: i32 = 0;
-    let mut fpred: metamodelica::Array<i32>;
-    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut fpred: metamodelica::Array<i32> = Default::default();
+    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     size = (iTaskGraph.clone().borrow().len() as i32);
     taskGraphT = AdjacencyMatrix::transposeAdjacencyMatrix(iTaskGraph.clone(), size.clone())?;
     fpred = arrayCreate(size.clone(), -1);
@@ -4479,7 +4479,7 @@ fn computeFavouritePred(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::Li
 }
 
 fn computeFavouritePred1(mut nodeIdx: i32, mut graphT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut ect: metamodelica::Array<metamodelica::Real>, mut fpredIn: metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> {
-    let mut fpredOut: metamodelica::Array<i32>;
+    let mut fpredOut: metamodelica::Array<i32> = Default::default();
     fpredOut = 'mc: {
         let __mc_input = fpredIn.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -4491,7 +4491,7 @@ fn computeFavouritePred1(mut nodeIdx: i32, mut graphT: metamodelica::Array<Arc<m
             let mut parentECTs: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
             let mut commCosts: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
             let mut costs: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-            let mut fpredOut: metamodelica::Array<i32>;
+            let mut fpredOut: metamodelica::Array<i32> = fpredOut.clone();
             parents = graphT.clone().borrow()[(nodeIdx.clone()-1) as usize].clone();
             let false = (parents.clone().is_empty()) else { bail!("pattern mismatch") };
             parentECTs = List::map1(parents.clone(), std::sync::Arc::new(fnptr!(Array::getIndexFirst, i32, _)), ect.clone());
@@ -4506,7 +4506,7 @@ fn computeFavouritePred1(mut nodeIdx: i32, mut graphT: metamodelica::Array<Arc<m
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut parents: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            let mut fpredOut: metamodelica::Array<i32>;
+            let mut fpredOut: metamodelica::Array<i32> = fpredOut.clone();
             parents = graphT.clone().borrow()[(nodeIdx.clone()-1) as usize].clone();
             let true = (parents.clone().is_empty()) else { bail!("pattern mismatch") };
             fpredOut = {let _arr = fpredIn.clone(); _arr.borrow_mut()[(nodeIdx.clone()-1) as usize] = 0; _arr};
@@ -4521,22 +4521,22 @@ fn computeFavouritePred1(mut nodeIdx: i32, mut graphT: metamodelica::Array<Arc<m
 // Partition Scheduler
 //---------------------------------
 pub fn createPartSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut numProc: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
-    let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
+    let mut oSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
     oSchedule = 'mc: {
         let __mc_input = iTaskGraphMeta.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let HpcOmTaskGraph::TaskGraphMeta { .. } = __mc_input.clone() else { bail!("nomatch") };
             let mut nTasks: i32 = 0;
             let mut rootNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            let mut taskMap: metamodelica::Array<i32>;
-            let mut partitions: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut partMap: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut graphT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut threadTask: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
-            let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
-            let mut schedule: Arc<HpcOmSimCode::Schedule>;
+            let mut taskMap: metamodelica::Array<i32> = Default::default();
+            let mut partitions: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut partMap: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut graphT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut threadTask: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
+            let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = Default::default();
+            let mut schedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
             let mut order: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
+            let mut oSchedule: Arc<HpcOmSimCode::Schedule> = oSchedule.clone();
             let true = (intNe((iTaskGraph.clone().borrow().len() as i32), 0)) else { bail!("pattern mismatch") };
             nTasks = (iTaskGraph.clone().borrow().len() as i32);
             rootNodes = HpcOmTaskGraph::getRootNodes(iTaskGraph.clone())?;
@@ -4575,8 +4575,8 @@ pub fn createPartSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::
 }
 
 fn distributePartitions(mut taskMapIn: metamodelica::Array<i32>, mut partMap: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut metaIn: HpcOmTaskGraph::TaskGraphMeta, mut n: i32) -> Result<(metamodelica::Array<i32>, metamodelica::Array<Arc<metamodelica::List<i32>>>)> {
-    let mut taskMapOut: metamodelica::Array<i32>;
-    let mut partitions: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut taskMapOut: metamodelica::Array<i32> = Default::default();
+    let mut partitions: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut partIdx: i32 = 0;
     let mut costs: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut part: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -4585,7 +4585,7 @@ fn distributePartitions(mut taskMapIn: metamodelica::Array<i32>, mut partMap: me
     let __range0 = partMap.clone().borrow().iter().cloned().collect::<Vec<_>>();
     for mut part in __range0 {
         costs = List::fold(List::map1(part.clone(), (std::sync::Arc::new(HpcOmTaskGraph::getExeCostReqCycles) as std::sync::Arc<dyn ::std::ops::Fn(i32, HpcOmTaskGraph::TaskGraphMeta) -> Result<metamodelica::Real> + 'static>), metaIn.clone()), (std::sync::Arc::new(fnptr!(realAdd, metamodelica::Real, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real, metamodelica::Real) -> Result<metamodelica::Real> + 'static>), metamodelica::OrderedFloat(0.0_f64));
-        partCosts = cons(costs.clone(), partCosts.clone());
+        partCosts = metamodelica::cons(costs.clone(), partCosts.clone());
     }
     partCosts = partCosts.clone().reverse();
     (partitions, _) = HpcOmTaskGraph::distributeToClusters(List::intRange((partMap.clone().borrow().len() as i32)), partCosts.clone(), n.clone())?;
@@ -4601,11 +4601,11 @@ fn distributePartitions(mut taskMapIn: metamodelica::Array<i32>, mut partMap: me
 }
 
 fn assignPartitions(mut rootNode: i32, mut graph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut tplIn: (metamodelica::Array<i32>, metamodelica::Array<Arc<metamodelica::List<i32>>>, i32)) -> Result<(metamodelica::Array<i32>, metamodelica::Array<Arc<metamodelica::List<i32>>>, i32)> {
-    let mut tplOut: (metamodelica::Array<i32>, metamodelica::Array<Arc<metamodelica::List<i32>>>, i32);
+    let mut tplOut: (metamodelica::Array<i32>, metamodelica::Array<Arc<metamodelica::List<i32>>>, i32) = (Default::default(), Default::default(), 0);
     let mut node: i32 = 0;
     let mut idx: i32 = 0;
-    let mut taskAss: metamodelica::Array<i32>;
-    let mut partAss: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut taskAss: metamodelica::Array<i32> = Default::default();
+    let mut partAss: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut nodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut successors: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut unassTasks: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -4650,7 +4650,7 @@ fn isUnAssigned(mut task: i32, mut ass: metamodelica::Array<i32>) -> Result<bool
 }
 
 fn reassignPartitions(mut tplIn: (i32, (Arc<metamodelica::List<i32>>, i32))) -> (i32, (Arc<metamodelica::List<i32>>, i32)) {
-    let mut tplOut: (i32, (Arc<metamodelica::List<i32>>, i32));
+    let mut tplOut: (i32, (Arc<metamodelica::List<i32>>, i32)) = (0, (metamodelica::nil(), 0));
     let mut value: i32 = 0;
     let mut newAss: i32 = 0;
     let mut oldAss: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -4669,14 +4669,14 @@ fn reassignPartitions(mut tplIn: (i32, (Arc<metamodelica::List<i32>>, i32))) -> 
 // SingleThread Schedule
 //---------------------------------
 pub fn createSingleThreadSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut numProc: i32) -> Result<Arc<HpcOmSimCode::Schedule>> {
-    let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
+    let mut oSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
     let mut nTasks: i32 = 0;
     let mut size: i32 = 0;
     let mut order: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut allTasksLst: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
-    let mut thread2TaskAss: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
-    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
+    let mut thread2TaskAss: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
+    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = Default::default();
     nTasks = (iTaskGraph.clone().borrow().len() as i32);
     size = (iTaskGraph.clone().borrow().len() as i32);
     taskGraphT = AdjacencyMatrix::transposeAdjacencyMatrix(iTaskGraph.clone(), size.clone())?;
@@ -4684,7 +4684,7 @@ pub fn createSingleThreadSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamo
     order = List::flatten(HpcOmTaskGraph::getLevelNodes(iTaskGraph.clone()));
     for mut i in &*order.clone() {
         let mut i = i.clone();
-        allTasksLst = cons(setSimEqIdcsInTask(Util::tuple21(allCalcTasks.clone().borrow()[(i.clone()-1) as usize].clone()), iSccSimEqMapping.clone())?, allTasksLst.clone());
+        allTasksLst = metamodelica::cons(setSimEqIdcsInTask(Util::tuple21(allCalcTasks.clone().borrow()[(i.clone()-1) as usize].clone()), iSccSimEqMapping.clone())?, allTasksLst.clone());
     }
     allTasksLst = allTasksLst.clone().reverse();
     allTasksLst = List::map1(allTasksLst.clone(), (std::sync::Arc::new(setThreadIdxInTask) as std::sync::Arc<dyn ::std::ops::Fn(Arc<HpcOmSimCode::Task>, i32) -> Result<Arc<HpcOmSimCode::Task>> + 'static>), 1);
@@ -4698,21 +4698,21 @@ pub fn createSingleThreadSchedule(mut iTaskGraph: metamodelica::Array<Arc<metamo
 // Modified Critical Path Scheduler
 //---------------------------------
 pub fn createMCPschedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut numProc: i32, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>) -> Result<Arc<HpcOmSimCode::Schedule>> {
-    let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
+    let mut oSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
     let mut size: i32 = 0;
     let mut numSfLocks: i32 = 0;
-    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut alapArray: metamodelica::Array<metamodelica::Real>;
+    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut alapArray: metamodelica::Array<metamodelica::Real> = Default::default();
     let mut priorityLst: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
     let mut order: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut taskAss: metamodelica::Array<i32>;
-    let mut procAss: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut schedule: Arc<HpcOmSimCode::Schedule>;
+    let mut taskAss: metamodelica::Array<i32> = Default::default();
+    let mut procAss: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut schedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
     let mut removeLocks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
-    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>;
-    let mut threadTask: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
-    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>> = Default::default();
+    let mut threadTask: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
+    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = Default::default();
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let HpcOmTaskGraph::TASKGRAPHMETA { inComps: __pa0, commCosts: __pa1, .. } = (iTaskGraphMeta.clone()) else { bail!("pattern mismatch") };
     inComps = __pa0.clone();
     commCosts = __pa1.clone();
@@ -4737,11 +4737,11 @@ pub fn createMCPschedule(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::L
 }
 
 fn MCP_getTaskAssignment(mut orderIn: Arc<metamodelica::List<i32>>, mut alapIn: metamodelica::Array<metamodelica::Real>, mut numProc: i32, mut taskGraphIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut taskGraphMetaIn: HpcOmTaskGraph::TaskGraphMeta) -> Result<(metamodelica::Array<i32>, metamodelica::Array<Arc<metamodelica::List<i32>>>)> {
-    let mut taskAssOut: metamodelica::Array<i32>;
-    let mut procAssOut: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut taskAssOut: metamodelica::Array<i32> = Default::default();
+    let mut procAssOut: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut processorTime: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut taskAss: metamodelica::Array<i32>;
-    let mut procAss: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut taskAss: metamodelica::Array<i32> = Default::default();
+    let mut procAss: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     processorTime = List::fill(metamodelica::OrderedFloat(0.0_f64), numProc.clone());
     taskAss = arrayCreate((orderIn.clone().len() as i32), 0);
     procAss = arrayCreate(numProc.clone(), metamodelica::nil());
@@ -4750,8 +4750,8 @@ fn MCP_getTaskAssignment(mut orderIn: Arc<metamodelica::List<i32>>, mut alapIn: 
 }
 
 fn MCP_getTaskAssignment1(mut orderIn: Arc<metamodelica::List<i32>>, mut taskAssIn: metamodelica::Array<i32>, mut procAssIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut processorTimeIn: Arc<metamodelica::List<metamodelica::Real>>, mut taskGraphIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut taskGraphMetaIn: HpcOmTaskGraph::TaskGraphMeta) -> Result<(metamodelica::Array<i32>, metamodelica::Array<Arc<metamodelica::List<i32>>>)> {
-    let mut taskAssOut: metamodelica::Array<i32>;
-    let mut procAssOut: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut taskAssOut: metamodelica::Array<i32> = Default::default();
+    let mut procAssOut: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     (taskAssOut, procAssOut) = 'mc: {
         let __mc_input = orderIn.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -4771,13 +4771,13 @@ fn MCP_getTaskAssignment1(mut orderIn: Arc<metamodelica::List<i32>>, mut taskAss
                     let mut newTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     let mut taskLst: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut processorTime: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-                    let mut taskAss: metamodelica::Array<i32>;
-                    let mut procAss: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+                    let mut taskAss: metamodelica::Array<i32> = Default::default();
+                    let mut procAss: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
                     eft = List::fold(processorTimeIn.clone(), (std::sync::Arc::new(fnptr!(realMin, metamodelica::Real, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real, metamodelica::Real) -> Result<metamodelica::Real> + 'static>), (processorTimeIn.clone()).get(1)?);
                     processor = List::position(eft.clone(), processorTimeIn.clone())?;
                     taskAss = {let _arr = taskAssIn.clone(); _arr.borrow_mut()[(node.clone()-1) as usize] = processor.clone(); _arr};
                     taskLst = procAssIn.clone().borrow()[(processor.clone()-1) as usize].clone();
-                    taskLst = cons(node.clone(), taskLst.clone());
+                    taskLst = metamodelica::cons(node.clone(), taskLst.clone());
                     procAss = {let _arr = procAssIn.clone(); _arr.borrow_mut()[(processor.clone()-1) as usize] = taskLst.clone(); _arr};
                     (_, exeCost) = HpcOmTaskGraph::getExeCost(node.clone(), taskGraphMetaIn.clone())?;
                     newTime = eft.clone() + exeCost.clone();
@@ -4805,10 +4805,10 @@ fn MCP_getTaskAssignment1(mut orderIn: Arc<metamodelica::List<i32>>, mut taskAss
 fn updateLockIdcsInThreadschedule<ArgType: Clone + 'static>(mut scheduleIn: Arc<HpcOmSimCode::Schedule>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, ArgType) -> Result<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> + 'static>, mut extraArg: ArgType) -> Arc<HpcOmSimCode::Schedule> {
     pub type FuncType<ArgType: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, ArgType) -> Result<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> + 'static>;
 
-    let mut scheduleOut: Arc<HpcOmSimCode::Schedule>;
+    let mut scheduleOut: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
     scheduleOut = (::match_deref::match_deref! { match &(scheduleIn.clone()) {
         Deref @ HpcOmSimCode::Schedule::THREADSCHEDULE { allCalcTasks, outgoingDepTasks, threadTasks, .. } => {
-            let mut schedule: Arc<HpcOmSimCode::Schedule>;
+            let mut schedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
             let mut outgoingDepTasks = (*outgoingDepTasks).clone();
             outgoingDepTasks = inFunc(outgoingDepTasks.clone(), extraArg.clone()).unwrap();
             schedule = Arc::new(HpcOmSimCode::Schedule::THREADSCHEDULE { threadTasks: threadTasks.clone(), outgoingDepTasks: outgoingDepTasks.clone(), scheduledTasks: metamodelica::nil(), allCalcTasks: allCalcTasks.clone() });
@@ -4826,13 +4826,13 @@ fn updateLockIdcsInThreadschedule<ArgType: Clone + 'static>(mut scheduleIn: Arc<
 fn traverseAndUpdateThreadsInSchedule<ArgType: Clone + 'static>(mut scheduleIn: Arc<HpcOmSimCode::Schedule>, mut funcIn: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, ArgType) -> Result<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> + 'static>, mut extraArg: ArgType) -> Result<Arc<HpcOmSimCode::Schedule>> {
     pub type FuncType<ArgType: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, ArgType) -> Result<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> + 'static>;
 
-    let mut scheduleOut: Arc<HpcOmSimCode::Schedule>;
+    let mut scheduleOut: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
     scheduleOut = (::match_deref::match_deref! { match &(scheduleIn.clone()) {
         Deref @ HpcOmSimCode::Schedule::LEVELSCHEDULE { .. } => {
             scheduleIn.clone()
         },
         Deref @ HpcOmSimCode::Schedule::THREADSCHEDULE { allCalcTasks, outgoingDepTasks, threadTasks, .. } => {
-            let mut schedule: Arc<HpcOmSimCode::Schedule>;
+            let mut schedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
             let mut threadTasks = (*threadTasks).clone();
             threadTasks = Array::map1(threadTasks.clone(), funcIn.clone(), extraArg.clone())?;
             schedule = Arc::new(HpcOmSimCode::Schedule::THREADSCHEDULE { threadTasks: threadTasks.clone(), outgoingDepTasks: outgoingDepTasks.clone(), scheduledTasks: metamodelica::nil(), allCalcTasks: allCalcTasks.clone() });
@@ -4847,7 +4847,7 @@ fn traverseAndUpdateThreadsInSchedule<ArgType: Clone + 'static>(mut scheduleIn: 
 }
 
 fn createScheduleFromAssignments(mut taskAss: metamodelica::Array<i32>, mut procAss: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut orderOpt: Option<Arc<metamodelica::List<i32>>>, mut taskGraphIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut taskGraphTIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut taskGraphMetaIn: HpcOmTaskGraph::TaskGraphMeta, mut SccSimEqMappingIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut removeLocksIn: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut orderIn: Arc<metamodelica::List<i32>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>, mut scheduleIn: Arc<HpcOmSimCode::Schedule>) -> Result<(Arc<HpcOmSimCode::Schedule>, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>)> {
-    let mut scheduleOut: Arc<HpcOmSimCode::Schedule>;
+    let mut scheduleOut: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
     let mut removeLocksOut: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     (scheduleOut, removeLocksOut) = (::match_deref::match_deref! { match &((orderOpt.clone(), taskGraphMetaIn.clone(), scheduleIn.clone())) {
         (Some(Deref @ metamodelica::List::Nil), _, Deref @ HpcOmSimCode::Schedule::THREADSCHEDULE { .. }) => {
@@ -4872,7 +4872,7 @@ fn createScheduleFromAssignments(mut taskAss: metamodelica::Array<i32>, mut proc
             let mut taskLstAss: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
             let mut taskLstRel: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
             let mut removeLocks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
-            let mut schedule: Arc<HpcOmSimCode::Schedule>;
+            let mut schedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
             let mut task: Arc<HpcOmSimCode::Task> = Arc::new(HpcOmSimCode::Task::TASKEMPTY);
             let mut outgoingDepTasks = (*outgoingDepTasks).clone();
             let mut threadTasks = (*threadTasks).clone();
@@ -4898,7 +4898,7 @@ fn createScheduleFromAssignments(mut taskAss: metamodelica::Array<i32>, mut proc
             (_, exeCost) = HpcOmTaskGraph::getExeCost(node.clone(), taskGraphMetaIn.clone())?;
             simEqIdc = List::map(List::map1(components.clone(), (std::sync::Arc::new(getSimEqSysIdxForComp) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), SccSimEqMappingIn.clone()), (std::sync::Arc::new(List::last) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>));
             task = Arc::new(HpcOmSimCode::Task::CALCTASK { weighting: mark.clone(), index: node.clone(), calcTime: exeCost.clone(), timeFinished: metamodelica::OrderedFloat(-1.0_f64), threadIdx: proc.clone(), eqIdc: simEqIdc.clone() });
-            taskLst1 = cons(task.clone(), taskLstRel.clone());
+            taskLst1 = metamodelica::cons(task.clone(), taskLstRel.clone());
             taskLst1 = listAppend(taskLstAss.clone(), taskLst1.clone());
             taskLst1 = listAppend(taskLst.clone(), taskLst1.clone());
             threadTasks = {let _arr = threadTasks.clone(); _arr.borrow_mut()[(proc.clone()-1) as usize] = taskLst1.clone(); _arr};
@@ -5012,7 +5012,7 @@ fn removeLocksFromThread(mut threadIn: Arc<metamodelica::List<Arc<HpcOmSimCode::
 
 fn getSuperfluousLocks(mut otherParentsIn: Arc<metamodelica::List<i32>>, mut nodeIn: i32, mut taskAssIn: metamodelica::Array<i32>, mut orderIn: Arc<metamodelica::List<i32>>, mut numProc: i32, mut iAllCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>, mut iCommCosts: metamodelica::Array<Arc<metamodelica::List<HpcOmTaskGraph::Communication>>>, mut iCompTaskMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSimVarMapping: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>>, mut removeLocksIn: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>) -> Result<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> {
     let mut removeLocksOut: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
-    let mut parentsOnThreads: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut parentsOnThreads: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut otherParentsProcs: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut lockCandidatesFlat: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut lockCandidates: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
@@ -5068,12 +5068,12 @@ fn mapListGet(mut mapLstIn: Arc<metamodelica::List<i32>>, mut argLst: Arc<metamo
 }
 
 fn listIndecesForValues(mut idx: i32, mut lstIn: Arc<metamodelica::List<i32>>, mut arrayIn: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
-    let mut arrayOut: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut arrayOut: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut value: i32 = 0;
     let mut valueLst: Arc<metamodelica::List<i32>> = metamodelica::nil();
     value = (lstIn.clone()).get(idx.clone())?;
     valueLst = arrayIn.clone().borrow()[(value.clone()-1) as usize].clone();
-    valueLst = cons(idx.clone(), valueLst.clone());
+    valueLst = metamodelica::cons(idx.clone(), valueLst.clone());
     arrayOut = {let _arr = arrayIn.clone(); _arr.borrow_mut()[(value.clone()-1) as usize] = valueLst.clone(); _arr};
     Ok(arrayOut)
 }
@@ -5289,15 +5289,15 @@ fn getMedian3(mut r1: metamodelica::Real, mut r2: metamodelica::Real, mut r3: me
 // traverse the task graph bottoms up (beginning at the root nodes)
 //----------------------------
 fn computeGraphValuesBottomUp(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta) -> Result<(metamodelica::Array<metamodelica::Real>, metamodelica::Array<metamodelica::Real>, metamodelica::Array<metamodelica::Real>)> {
-    let mut asapOut: metamodelica::Array<metamodelica::Real>;
-    let mut estOut: metamodelica::Array<metamodelica::Real>;
-    let mut ectOut: metamodelica::Array<metamodelica::Real>;
+    let mut asapOut: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut estOut: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut ectOut: metamodelica::Array<metamodelica::Real> = Default::default();
     let mut size: i32 = 0;
     let mut rootNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut asap: metamodelica::Array<metamodelica::Real>;
-    let mut ect: metamodelica::Array<metamodelica::Real>;
-    let mut est: metamodelica::Array<metamodelica::Real>;
-    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut asap: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut ect: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut est: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     size = (iTaskGraph.clone().borrow().len() as i32);
     rootNodes = HpcOmTaskGraph::getRootNodes(iTaskGraph.clone())?;
     taskGraphT = AdjacencyMatrix::transposeAdjacencyMatrix(iTaskGraph.clone(), size.clone())?;
@@ -5309,9 +5309,9 @@ fn computeGraphValuesBottomUp(mut iTaskGraph: metamodelica::Array<Arc<metamodeli
 }
 
 fn computeGraphValuesBottomUp1(mut parentsIn: Arc<metamodelica::List<i32>>, mut graph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut graphT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut asapIn: metamodelica::Array<metamodelica::Real>, mut estIn: metamodelica::Array<metamodelica::Real>, mut ectIn: metamodelica::Array<metamodelica::Real>) -> Result<(metamodelica::Array<metamodelica::Real>, metamodelica::Array<metamodelica::Real>, metamodelica::Array<metamodelica::Real>)> {
-    let mut asapOut: metamodelica::Array<metamodelica::Real>;
-    let mut estOut: metamodelica::Array<metamodelica::Real>;
-    let mut ectOut: metamodelica::Array<metamodelica::Real>;
+    let mut asapOut: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut estOut: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut ectOut: metamodelica::Array<metamodelica::Real> = Default::default();
     (asapOut, estOut, ectOut) = (::match_deref::match_deref! { match &((parentsIn.clone(), asapIn.clone(), estIn.clone(), ectIn.clone())) {
         (Deref @ metamodelica::List::Cons { head: node, tail: rest }, asap, est, ect) => {
             let mut children: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -5331,9 +5331,9 @@ fn computeGraphValuesBottomUp1(mut parentsIn: Arc<metamodelica::List<i32>>, mut 
 }
 
 fn computeGraphValuesBottomUp2(mut node: i32, mut graph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut graphT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut asapIn: metamodelica::Array<metamodelica::Real>, mut estIn: metamodelica::Array<metamodelica::Real>, mut ectIn: metamodelica::Array<metamodelica::Real>) -> Result<(metamodelica::Array<metamodelica::Real>, metamodelica::Array<metamodelica::Real>, metamodelica::Array<metamodelica::Real>, Arc<metamodelica::List<i32>>)> {
-    let mut asapOut: metamodelica::Array<metamodelica::Real>;
-    let mut estOut: metamodelica::Array<metamodelica::Real>;
-    let mut ectOut: metamodelica::Array<metamodelica::Real>;
+    let mut asapOut: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut estOut: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut ectOut: metamodelica::Array<metamodelica::Real> = Default::default();
     let mut children: Arc<metamodelica::List<i32>> = metamodelica::nil();
     (asapOut, estOut, ectOut, children) = 'mc: {
         let __mc_input = ectIn.clone();
@@ -5342,9 +5342,9 @@ fn computeGraphValuesBottomUp2(mut node: i32, mut graph: metamodelica::Array<Arc
             let mut maxASAP: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
             let mut maxEct: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
             let mut exeCost: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut asap: metamodelica::Array<metamodelica::Real>;
-            let mut ect: metamodelica::Array<metamodelica::Real>;
-            let mut est: metamodelica::Array<metamodelica::Real>;
+            let mut asap: metamodelica::Array<metamodelica::Real> = Default::default();
+            let mut ect: metamodelica::Array<metamodelica::Real> = Default::default();
+            let mut est: metamodelica::Array<metamodelica::Real> = Default::default();
             let mut parents: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut parentEcts: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
             let mut parentAsaps: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
@@ -5392,21 +5392,21 @@ fn computeGraphValuesBottomUp2(mut node: i32, mut graph: metamodelica::Array<Arc
 // traverse the task graph top down (beginning at the leaf nodes)
 //----------------------------
 fn computeGraphValuesTopDown(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta) -> Result<(metamodelica::Array<metamodelica::Real>, metamodelica::Array<metamodelica::Real>, metamodelica::Array<metamodelica::Real>, metamodelica::Array<metamodelica::Real>)> {
-    let mut alapOut: metamodelica::Array<metamodelica::Real>;
-    let mut lastOut: metamodelica::Array<metamodelica::Real>;
-    let mut lactOut: metamodelica::Array<metamodelica::Real>;
-    let mut tdsLevelOut: metamodelica::Array<metamodelica::Real>;
+    let mut alapOut: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut lastOut: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut lactOut: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut tdsLevelOut: metamodelica::Array<metamodelica::Real> = Default::default();
     let mut size: i32 = 0;
     let mut lastNodeInCP: i32 = 0;
     let mut cp: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut cpWithComm: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut endNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut alap: metamodelica::Array<metamodelica::Real>;
-    let mut lact: metamodelica::Array<metamodelica::Real>;
-    let mut last: metamodelica::Array<metamodelica::Real>;
-    let mut tdsLevel: metamodelica::Array<metamodelica::Real>;
-    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut visitedNodes: metamodelica::Array<bool>;
+    let mut alap: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut lact: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut last: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut tdsLevel: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut visitedNodes: metamodelica::Array<bool> = Default::default();
     size = (iTaskGraph.clone().borrow().len() as i32);
     taskGraphT = AdjacencyMatrix::transposeAdjacencyMatrix(iTaskGraph.clone(), size.clone())?;
     endNodes = HpcOmTaskGraph::getLeafNodes(iTaskGraph.clone())?;
@@ -5457,10 +5457,10 @@ fn computeGraphValuesTopDown2(mut nodesIn: Arc<metamodelica::List<i32>>, mut iTa
     let mut childLasts: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
     let mut childLacts: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
     let mut commCostsToChilds: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut alap: metamodelica::Array<metamodelica::Real>;
-    let mut last: metamodelica::Array<metamodelica::Real>;
-    let mut lact: metamodelica::Array<metamodelica::Real>;
-    let mut tdsLevel: metamodelica::Array<metamodelica::Real>;
+    let mut alap: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut last: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut lact: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut tdsLevel: metamodelica::Array<metamodelica::Real> = Default::default();
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(nodesIn.clone()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
@@ -5529,7 +5529,7 @@ fn dumpSchedule(mut iSchedule: Arc<HpcOmSimCode::Schedule>) -> Result<ArcStr> {
     let mut sLst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut outgoingDepTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     let mut allTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
-    let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
+    let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
     let mut tasksOfLevels: Arc<metamodelica::List<HpcOmSimCode::TaskList>> = metamodelica::nil();
     let mut taskDepTasks: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>> = metamodelica::nil();
     r#str = ((::match_deref::match_deref! { match &(iSchedule.clone()) {
@@ -5705,7 +5705,7 @@ fn analyseScheduledTaskGraphLevel(mut iLevelTasks: Arc<metamodelica::List<HpcOmS
     levelSectionCosts = List::map1(iLevelTasks.clone(), (std::sync::Arc::new(fnptr!(getLevelListTaskCosts, HpcOmSimCode::TaskList, HpcOmTaskGraph::TaskGraphMeta)) as std::sync::Arc<dyn ::std::ops::Fn(HpcOmSimCode::TaskList, HpcOmTaskGraph::TaskGraphMeta) -> Result<Arc<metamodelica::List<metamodelica::Real>>> + 'static>), iTaskGraphMeta.clone());
     serTime = realSum(List::map(levelSectionCosts.clone(), (std::sync::Arc::new(fnptr!(realSum, Arc<metamodelica::List<metamodelica::Real>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<metamodelica::Real>>) -> Result<metamodelica::Real> + 'static>)));
     serTime = HpcOmTaskGraph::roundReal(serTime.clone(), 2);
-    levelCosts = List::map(iLevelTasks.clone(), Arc::new({ let __pe_b1 = iTaskGraph.clone(); let __pe_b2 = iTaskGraphMeta.clone(); let __pe_b3 = iNumProc.clone(); move |__pe_a0| iParallelSectionCalculator(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }));
+    levelCosts = List::map(iLevelTasks.clone(), (std::sync::Arc::new({ let __pe_b1 = iTaskGraph.clone(); let __pe_b2 = iTaskGraphMeta.clone(); let __pe_b3 = iNumProc.clone(); move |__pe_a0| iParallelSectionCalculator(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(HpcOmSimCode::TaskList) -> Result<metamodelica::Real> + 'static>));
     parTime = realSum(levelCosts.clone());
     parTime = HpcOmTaskGraph::roundReal(parTime.clone(), 2);
     oCriticalPathInfo = (HpcOmTaskGraph::dumpCriticalPathInfo((criticalPaths.clone(), cpCosts.clone()), (criticalPathsWoC.clone(), cpCostsWoC.clone()))?).clone();
@@ -5736,21 +5736,21 @@ fn analyseScheduledTaskGraphLevel(mut iLevelTasks: Arc<metamodelica::List<HpcOmS
 
 fn getLevelParallelTime(mut iLevelTaskList: HpcOmSimCode::TaskList, mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iNumProc: i32) -> metamodelica::Real {
     let mut oLevelCost: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut workload: metamodelica::Array<metamodelica::Real>;
+    let mut workload: metamodelica::Array<metamodelica::Real> = Default::default();
     let mut levelTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     levelTasks = getTasksOfTaskList(iLevelTaskList.clone());
     workload = arrayCreate(iNumProc.clone(), metamodelica::OrderedFloat(0.0_f64));
-    workload = List::fold(levelTasks.clone(), Arc::new({ let __pe_b1 = iTaskGraphMeta.clone(); move |__pe_a0, __pe_a2| getLevelParallelTime1(__pe_a0, __pe_b1.clone(), __pe_a2) }), workload.clone());
+    workload = List::fold(levelTasks.clone(), (std::sync::Arc::new({ let __pe_b1 = iTaskGraphMeta.clone(); move |__pe_a0, __pe_a2| getLevelParallelTime1(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<HpcOmSimCode::Task>, metamodelica::Array<metamodelica::Real>) -> Result<metamodelica::Array<metamodelica::Real>> + 'static>), workload.clone());
     oLevelCost = Array::fold(workload.clone(), (std::sync::Arc::new(fnptr!(realMax, metamodelica::Real, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real, metamodelica::Real) -> Result<metamodelica::Real> + 'static>), metamodelica::OrderedFloat(0.0_f64));
     oLevelCost
 }
 
 fn getLevelParallelTime1(mut iTask: Arc<HpcOmSimCode::Task>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iThreadWorkLoad: metamodelica::Array<metamodelica::Real>) -> Result<metamodelica::Array<metamodelica::Real>> {
-    let mut oThreadWorkLoad: metamodelica::Array<metamodelica::Real>;
+    let mut oThreadWorkLoad: metamodelica::Array<metamodelica::Real> = Default::default();
     let mut minWorkLoad: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut taskCosts: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut threadIdx: i32 = 0;
-    let mut tmpThreadWorkLoad: metamodelica::Array<metamodelica::Real>;
+    let mut tmpThreadWorkLoad: metamodelica::Array<metamodelica::Real> = Default::default();
     oThreadWorkLoad = (::match_deref::match_deref! { match &(iTask.clone()) {
         Deref @ HpcOmSimCode::Task::CALCTASK_LEVEL { threadIdx: None, .. } => {
             taskCosts = getLevelTaskCosts(iTask.clone(), iTaskGraphMeta.clone())?;
@@ -5870,9 +5870,9 @@ pub fn getSerialExecutionTime(mut taskGraphMetaIn: HpcOmTaskGraph::TaskGraphMeta
     let mut serialTimeOut: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut odeComps: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut exeCostsReal: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-    let mut exeCosts1: metamodelica::Array<metamodelica::Real>;
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)>;
+    let mut exeCosts1: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
     let HpcOmTaskGraph::TASKGRAPHMETA { inComps: __pa0, exeCosts: __pa1, .. } = (taskGraphMetaIn.clone()) else { bail!("pattern mismatch") };
     inComps = __pa0.clone();
     exeCosts = __pa1.clone();
@@ -5884,7 +5884,7 @@ pub fn getSerialExecutionTime(mut taskGraphMetaIn: HpcOmTaskGraph::TaskGraphMeta
 }
 
 fn getFinishingTimesForSchedule(mut scheduleIn: Arc<HpcOmSimCode::Schedule>, mut numProc: i32, mut taskGraphIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut taskGraphMetaIn: HpcOmTaskGraph::TaskGraphMeta) -> Result<(Arc<HpcOmSimCode::Schedule>, metamodelica::Real)> {
-    let mut scheduleOut: Arc<HpcOmSimCode::Schedule>;
+    let mut scheduleOut: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
     let mut finishingTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     (scheduleOut, finishingTime) = 'mc: {
         let __mc_input = scheduleIn.clone();
@@ -5892,11 +5892,11 @@ fn getFinishingTimesForSchedule(mut scheduleIn: Arc<HpcOmSimCode::Schedule>, mut
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ HpcOmSimCode::Schedule::THREADSCHEDULE { allCalcTasks, outgoingDepTasks, threadTasks, .. } => {
                     let mut finTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-                    let mut taskIdcs: metamodelica::Array<i32>;
-                    let mut finTimes: metamodelica::Array<metamodelica::Real>;
-                    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-                    let mut checkedTasks: metamodelica::Array<Arc<HpcOmSimCode::Task>>;
-                    let mut schedule: Arc<HpcOmSimCode::Schedule>;
+                    let mut taskIdcs: metamodelica::Array<i32> = Default::default();
+                    let mut finTimes: metamodelica::Array<metamodelica::Real> = Default::default();
+                    let mut taskGraphT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+                    let mut checkedTasks: metamodelica::Array<Arc<HpcOmSimCode::Task>> = Default::default();
+                    let mut schedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
                     taskIdcs = arrayCreate((threadTasks.clone().borrow().len() as i32), 1);
                     taskGraphT = AdjacencyMatrix::transposeAdjacencyMatrix(taskGraphIn.clone(), (taskGraphIn.clone().borrow().len() as i32))?;
                     checkedTasks = arrayCreate((taskGraphIn.clone().borrow().len() as i32), Arc::new(crate::HpcOmSimCode::Task::TASKEMPTY));
@@ -5913,7 +5913,7 @@ fn getFinishingTimesForSchedule(mut scheduleIn: Arc<HpcOmSimCode::Schedule>, mut
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ HpcOmSimCode::Schedule::LEVELSCHEDULE { tasksOfLevels: _, useFixedAssignments: _ } => {
                     let mut finTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-                    let mut schedule: Arc<HpcOmSimCode::Schedule>;
+                    let mut schedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
                     schedule = scheduleIn.clone();
                     finTime = metamodelica::OrderedFloat(0.0_f64);
                     Ok((schedule.clone(), finTime.clone()))
@@ -5925,7 +5925,7 @@ fn getFinishingTimesForSchedule(mut scheduleIn: Arc<HpcOmSimCode::Schedule>, mut
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ HpcOmSimCode::Schedule::EMPTYSCHEDULE { .. } => {
                     let mut finTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-                    let mut schedule: Arc<HpcOmSimCode::Schedule>;
+                    let mut schedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
                     schedule = scheduleIn.clone();
                     finTime = metamodelica::OrderedFloat(-1.0_f64);
                     Ok((schedule.clone(), finTime.clone()))
@@ -6035,7 +6035,7 @@ fn computeTimeFinished1(mut threadTasksIn: metamodelica::Array<Arc<metamodelica:
                     thread = threadTasksIn.clone().borrow()[(threadIdxIn.clone()-1) as usize].clone();
                     let true = (taskIdx.clone() > (thread.clone().len() as i32)) else { bail!("pattern mismatch") };
                     nextThreadIdx = if (intGe(threadIdxIn.clone(), numProc.clone())) {1} else {threadIdxIn.clone() + 1};
-                    closedThreads1 = cons(threadIdxIn.clone(), closedThreadsIn.clone());
+                    closedThreads1 = metamodelica::cons(threadIdxIn.clone(), closedThreadsIn.clone());
                     closedThreads1 = List::unique(closedThreads1.clone());
                     Ok((nextThreadIdx.clone(), closedThreads1.clone()))
                 }
@@ -6068,8 +6068,8 @@ fn getNextThreadIdx(mut threadId: i32, mut closedThreads: Arc<metamodelica::List
 }
 
 fn updateFinishingTime(mut taskIn: Arc<HpcOmSimCode::Task>, mut taskIdxIn: i32, mut threadIdxIn: i32, mut threadTasksIn: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, mut checkedTasksIn: metamodelica::Array<Arc<HpcOmSimCode::Task>>, mut taskGraphTIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut taskGraphMetaIn: HpcOmTaskGraph::TaskGraphMeta) -> Result<(metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, metamodelica::Array<Arc<HpcOmSimCode::Task>>, i32)> {
-    let mut threadTasksOut: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
-    let mut checkedTasksOut: metamodelica::Array<Arc<HpcOmSimCode::Task>>;
+    let mut threadTasksOut: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
+    let mut checkedTasksOut: metamodelica::Array<Arc<HpcOmSimCode::Task>> = Default::default();
     let mut taskIdxOut: i32 = 0;
     (threadTasksOut, checkedTasksOut, taskIdxOut) = (::match_deref::match_deref! { match &(taskIn.clone()) {
         Deref @ HpcOmSimCode::Task::CALCTASK { index: taskID, .. } => {
@@ -6077,8 +6077,8 @@ fn updateFinishingTime(mut taskIn: Arc<HpcOmSimCode::Task>, mut taskIdxIn: i32, 
             let mut taskIdxNew: i32 = 0;
             let mut parentLst: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut latestTask: Arc<HpcOmSimCode::Task> = Arc::new(HpcOmSimCode::Task::TASKEMPTY);
-            let mut checkedTasks: metamodelica::Array<Arc<HpcOmSimCode::Task>>;
-            let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
+            let mut checkedTasks: metamodelica::Array<Arc<HpcOmSimCode::Task>> = Default::default();
+            let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
             parentLst = taskGraphTIn.clone().borrow()[(taskID.clone()-1) as usize].clone();
             (parentLst, latestTask) = List::fold1(parentLst.clone(), (std::sync::Arc::new(updateFinishingTime1) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<HpcOmSimCode::Task>>, (Arc<metamodelica::List<i32>>, Arc<HpcOmSimCode::Task>)) -> Result<(Arc<metamodelica::List<i32>>, Arc<HpcOmSimCode::Task>)> + 'static>), checkedTasksIn.clone(), (metamodelica::nil(), Arc::new(crate::HpcOmSimCode::Task::TASKEMPTY)));
             isComputable = parentLst.clone().is_empty();
@@ -6097,7 +6097,7 @@ fn updateFinishingTime(mut taskIn: Arc<HpcOmSimCode::Task>, mut taskIdxIn: i32, 
 }
 
 fn updateFinishingTime1(mut parentIdx: i32, mut checkedTaskIn: metamodelica::Array<Arc<HpcOmSimCode::Task>>, mut tplIn: (Arc<metamodelica::List<i32>>, Arc<HpcOmSimCode::Task>)) -> Result<(Arc<metamodelica::List<i32>>, Arc<HpcOmSimCode::Task>)> {
-    let mut tplOut: (Arc<metamodelica::List<i32>>, Arc<HpcOmSimCode::Task>);
+    let mut tplOut: (Arc<metamodelica::List<i32>>, Arc<HpcOmSimCode::Task>) = (metamodelica::nil(), Arc::new(HpcOmSimCode::Task::TASKEMPTY));
     let mut isCalc: bool = false;
     let mut finishingTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut finishingTimeIn: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
@@ -6111,20 +6111,20 @@ fn updateFinishingTime1(mut parentIdx: i32, mut checkedTaskIn: metamodelica::Arr
     isCalc = isCalcTask(task.clone());
     finishingTime = if (isCalc.clone()) {getTimeFinished(task.clone())} else {metamodelica::OrderedFloat(-1.0_f64)};
     task = if (realGt(finishingTime.clone(), finishingTimeIn.clone())) {task.clone()} else {taskIn.clone()};
-    parentLst = if (isCalc.clone()) {parentLstIn.clone()} else {cons(parentIdx.clone(), parentLstIn.clone())};
+    parentLst = if (isCalc.clone()) {parentLstIn.clone()} else {metamodelica::cons(parentIdx.clone(), parentLstIn.clone())};
     tplOut = (parentLst.clone(), task.clone());
     Ok(tplOut)
 }
 
 fn computeFinishingTimeForOneTask(mut tplIn: (metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, metamodelica::Array<Arc<HpcOmSimCode::Task>>, i32, i32, Arc<HpcOmSimCode::Task>, HpcOmTaskGraph::TaskGraphMeta)) -> Result<(metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, metamodelica::Array<Arc<HpcOmSimCode::Task>>)> {
-    let mut tplOut: (metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, metamodelica::Array<Arc<HpcOmSimCode::Task>>);
+    let mut tplOut: (metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, metamodelica::Array<Arc<HpcOmSimCode::Task>>) = (Default::default(), Default::default());
     tplOut = 'mc: {
         let __mc_input = tplIn.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (threadTasksIn, checkedTasksIn, taskNum, threadIdx, latestTask, taskGraphMeta) => {
-                    let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
-                    let mut checkedTasks: metamodelica::Array<Arc<HpcOmSimCode::Task>>;
+                    let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
+                    let mut checkedTasks: metamodelica::Array<Arc<HpcOmSimCode::Task>> = Default::default();
                     let mut taskIdx: i32 = 0;
                     let mut finishingTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     let mut exeCost: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
@@ -6153,8 +6153,8 @@ fn computeFinishingTimeForOneTask(mut tplIn: (metamodelica::Array<Arc<metamodeli
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (threadTasksIn, checkedTasksIn, taskNum, threadIdx, latestTask, taskGraphMeta) => {
-                    let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
-                    let mut checkedTasks: metamodelica::Array<Arc<HpcOmSimCode::Task>>;
+                    let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
+                    let mut checkedTasks: metamodelica::Array<Arc<HpcOmSimCode::Task>> = Default::default();
                     let mut taskIdx: i32 = 0;
                     let mut taskIdxLatest: i32 = 0;
                     let mut threadIdxLatest: i32 = 0;
@@ -6330,7 +6330,7 @@ pub fn convertFixedLevelScheduleToLevelThreadLists(mut iSchedule: Arc<HpcOmSimCo
     let mut tmpLevelThreadLists: Arc<metamodelica::List<metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>> = metamodelica::nil();
     oLevelThreadLists = (::match_deref::match_deref! { match &(iSchedule.clone()) {
         Deref @ HpcOmSimCode::Schedule::LEVELSCHEDULE { useFixedAssignments: true, tasksOfLevels } => {
-            tmpLevelThreadLists = List::map(tasksOfLevels.clone(), Arc::new({ let __pe_b1 = iNumOfThreads.clone(); move |__pe_a0| convertFixedLevelScheduleToLevelThreadLists0(__pe_a0, __pe_b1.clone()) }));
+            tmpLevelThreadLists = List::map(tasksOfLevels.clone(), (std::sync::Arc::new({ let __pe_b1 = iNumOfThreads.clone(); move |__pe_a0| convertFixedLevelScheduleToLevelThreadLists0(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(HpcOmSimCode::TaskList) -> Result<metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> + 'static>));
             tmpLevelThreadLists.clone()
         },
         _ => metamodelica::nil(),
@@ -6340,11 +6340,11 @@ pub fn convertFixedLevelScheduleToLevelThreadLists(mut iSchedule: Arc<HpcOmSimCo
 }
 
 fn convertFixedLevelScheduleToLevelThreadLists0(mut iTasksOfLevel: HpcOmSimCode::TaskList, mut iNumOfThreads: i32) -> Result<metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> {
-    let mut oLevelThreadLists: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
+    let mut oLevelThreadLists: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
     let mut tasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     let mut task: Arc<HpcOmSimCode::Task> = Arc::new(HpcOmSimCode::Task::TASKEMPTY);
     let mut threadIdx: i32 = 0;
-    let mut tmpLevelThreadLists: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
+    let mut tmpLevelThreadLists: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
     tasks = getTasksOfTaskList(iTasksOfLevel.clone());
     tmpLevelThreadLists = arrayCreate(iNumOfThreads.clone(), metamodelica::nil());
     for mut task in &*tasks.clone().reverse() {
@@ -6354,30 +6354,30 @@ fn convertFixedLevelScheduleToLevelThreadLists0(mut iTasksOfLevel: HpcOmSimCode:
             _ => bail!("pattern mismatch"),
         } };
         threadIdx = __pa0.clone();
-        tmpLevelThreadLists = {let _arr = tmpLevelThreadLists.clone(); let _val = cons(task.clone(), tmpLevelThreadLists.clone().borrow()[(threadIdx.clone()-1) as usize].clone()); _arr.borrow_mut()[(threadIdx.clone()-1) as usize] = _val; _arr};
+        tmpLevelThreadLists = {let _arr = tmpLevelThreadLists.clone(); let _val = metamodelica::cons(task.clone(), tmpLevelThreadLists.clone().borrow()[(threadIdx.clone()-1) as usize].clone()); _arr.borrow_mut()[(threadIdx.clone()-1) as usize] = _val; _arr};
     }
     oLevelThreadLists = tmpLevelThreadLists.clone();
     Ok(oLevelThreadLists)
 }
 
 pub fn convertFixedLevelScheduleToTaskLists(mut iOdeSchedule: Arc<HpcOmSimCode::Schedule>, mut iDaeSchedule: Arc<HpcOmSimCode::Schedule>, mut iZeroFuncSchedule: Arc<HpcOmSimCode::Schedule>, mut iNumOfThreads: i32) -> Result<metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)>> {
-    let mut oThreadLevelTasks: metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)>;
+    let mut oThreadLevelTasks: metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)> = Default::default();
     let mut tasksOfLevelsOde: Arc<metamodelica::List<HpcOmSimCode::TaskList>> = metamodelica::nil();
     let mut tasksOfLevelsDae: Arc<metamodelica::List<HpcOmSimCode::TaskList>> = metamodelica::nil();
     let mut tasksOfLevelsZeroFunc: Arc<metamodelica::List<HpcOmSimCode::TaskList>> = metamodelica::nil();
     let mut tmpThreadLevelTasksDae: Arc<metamodelica::List<metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>> = metamodelica::nil();
     let mut tmpThreadLevelTasksOde: Arc<metamodelica::List<metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>> = metamodelica::nil();
     let mut tmpThreadLevelTasksZeroFunc: Arc<metamodelica::List<metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>> = metamodelica::nil();
-    let mut tmpResultLists: metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)>;
+    let mut tmpResultLists: metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)> = Default::default();
     oThreadLevelTasks = (::match_deref::match_deref! { match &((iOdeSchedule.clone(), iDaeSchedule.clone(), iZeroFuncSchedule.clone())) {
         (Deref @ HpcOmSimCode::Schedule::LEVELSCHEDULE { useFixedAssignments: true, tasksOfLevels: tasksOfLevelsOde }, Deref @ HpcOmSimCode::Schedule::LEVELSCHEDULE { useFixedAssignments: true, tasksOfLevels: tasksOfLevelsDae }, Deref @ HpcOmSimCode::Schedule::LEVELSCHEDULE { useFixedAssignments: true, tasksOfLevels: tasksOfLevelsZeroFunc }) => {
             tmpResultLists = arrayCreate(iNumOfThreads.clone(), (metamodelica::nil(), metamodelica::nil(), metamodelica::nil()));
             tmpThreadLevelTasksOde = List::map1(tasksOfLevelsOde.clone(), (std::sync::Arc::new(convertFixedLevelScheduleToTaskListsForLevel) as std::sync::Arc<dyn ::std::ops::Fn(HpcOmSimCode::TaskList, i32) -> Result<metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> + 'static>), iNumOfThreads.clone());
             tmpThreadLevelTasksDae = List::map1(tasksOfLevelsDae.clone(), (std::sync::Arc::new(convertFixedLevelScheduleToTaskListsForLevel) as std::sync::Arc<dyn ::std::ops::Fn(HpcOmSimCode::TaskList, i32) -> Result<metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> + 'static>), iNumOfThreads.clone());
             tmpThreadLevelTasksZeroFunc = List::map1(tasksOfLevelsZeroFunc.clone(), (std::sync::Arc::new(convertFixedLevelScheduleToTaskListsForLevel) as std::sync::Arc<dyn ::std::ops::Fn(HpcOmSimCode::TaskList, i32) -> Result<metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> + 'static>), iNumOfThreads.clone());
-            tmpResultLists = List::fold(tmpThreadLevelTasksOde.clone(), Arc::new({ let __pe_b1 = 1; let __pe_b2 = 0; move |__pe_a0, __pe_a3| convertFixedLevelScheduleToTaskLists1(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3) }), tmpResultLists.clone());
-            tmpResultLists = List::fold(tmpThreadLevelTasksDae.clone(), Arc::new({ let __pe_b1 = 1; let __pe_b2 = 1; move |__pe_a0, __pe_a3| convertFixedLevelScheduleToTaskLists1(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3) }), tmpResultLists.clone());
-            tmpResultLists = List::fold(tmpThreadLevelTasksZeroFunc.clone(), Arc::new({ let __pe_b1 = 1; let __pe_b2 = 2; move |__pe_a0, __pe_a3| convertFixedLevelScheduleToTaskLists1(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3) }), tmpResultLists.clone());
+            tmpResultLists = List::fold(tmpThreadLevelTasksOde.clone(), (std::sync::Arc::new({ let __pe_b1 = 1; let __pe_b2 = 0; move |__pe_a0, __pe_a3| convertFixedLevelScheduleToTaskLists1(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3) }) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)>) -> Result<metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)>> + 'static>), tmpResultLists.clone());
+            tmpResultLists = List::fold(tmpThreadLevelTasksDae.clone(), (std::sync::Arc::new({ let __pe_b1 = 1; let __pe_b2 = 1; move |__pe_a0, __pe_a3| convertFixedLevelScheduleToTaskLists1(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3) }) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)>) -> Result<metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)>> + 'static>), tmpResultLists.clone());
+            tmpResultLists = List::fold(tmpThreadLevelTasksZeroFunc.clone(), (std::sync::Arc::new({ let __pe_b1 = 1; let __pe_b2 = 2; move |__pe_a0, __pe_a3| convertFixedLevelScheduleToTaskLists1(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3) }) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)>) -> Result<metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)>> + 'static>), tmpResultLists.clone());
             tmpResultLists = revertTaskLists(1, tmpResultLists.clone())?;
             tmpResultLists.clone()
         },
@@ -6391,8 +6391,8 @@ pub fn convertFixedLevelScheduleToTaskLists(mut iOdeSchedule: Arc<HpcOmSimCode::
 }
 
 fn convertFixedLevelScheduleToTaskLists1(mut iLevelTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, mut iCurrentThreadIdx: i32, mut iModifiedSystemIdx: i32, mut iResultList: metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)>) -> Result<metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)>> {
-    let mut oResultList: metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)>;
-    let mut tmpResultList: metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)>;
+    let mut oResultList: metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)> = Default::default();
+    let mut tmpResultList: metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)> = Default::default();
     let mut entryOde: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
     let mut entryDae: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
     let mut entryZeroFunc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
@@ -6403,16 +6403,16 @@ fn convertFixedLevelScheduleToTaskLists1(mut iLevelTasks: metamodelica::Array<Ar
             let mut entryDae: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = entryDae.clone();
             let mut entryOde: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = entryOde.clone();
             let mut entryZeroFunc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = entryZeroFunc.clone();
-            let mut tmpResultList: metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)>;
+            let mut tmpResultList: metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)> = tmpResultList.clone();
             let true = (intLe(iCurrentThreadIdx.clone(), (iLevelTasks.clone().borrow().len() as i32))) else { bail!("pattern mismatch") };
             (entryOde, entryDae, entryZeroFunc) = iResultList.clone().borrow()[(iCurrentThreadIdx.clone()-1) as usize].clone();
             if intEq(iModifiedSystemIdx.clone(), 0) {
-                entryOde = cons(iLevelTasks.clone().borrow()[(iCurrentThreadIdx.clone()-1) as usize].clone(), entryOde.clone());
+                entryOde = metamodelica::cons(iLevelTasks.clone().borrow()[(iCurrentThreadIdx.clone()-1) as usize].clone(), entryOde.clone());
             } else {
                 if intEq(iModifiedSystemIdx.clone(), 1) {
-                    entryDae = cons(iLevelTasks.clone().borrow()[(iCurrentThreadIdx.clone()-1) as usize].clone(), entryDae.clone());
+                    entryDae = metamodelica::cons(iLevelTasks.clone().borrow()[(iCurrentThreadIdx.clone()-1) as usize].clone(), entryDae.clone());
                 } else {
-                    entryZeroFunc = cons(iLevelTasks.clone().borrow()[(iCurrentThreadIdx.clone()-1) as usize].clone(), entryZeroFunc.clone());
+                    entryZeroFunc = metamodelica::cons(iLevelTasks.clone().borrow()[(iCurrentThreadIdx.clone()-1) as usize].clone(), entryZeroFunc.clone());
                 }
             }
             tmpResultList = {let _arr = iResultList.clone(); _arr.borrow_mut()[(iCurrentThreadIdx.clone()-1) as usize] = (entryOde.clone(), entryDae.clone(), entryZeroFunc.clone()); _arr};
@@ -6429,11 +6429,11 @@ fn convertFixedLevelScheduleToTaskLists1(mut iLevelTasks: metamodelica::Array<Ar
 }
 
 fn revertTaskLists(mut iCurrentArrayIdx: i32, mut iResultList: metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)>) -> Result<metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)>> {
-    let mut oResultList: metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)>;
+    let mut oResultList: metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)> = Default::default();
     let mut entryOde: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
     let mut entryDae: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
     let mut entryZeroFunc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-    let mut tmpResultList: metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)>;
+    let mut tmpResultList: metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)> = Default::default();
     oResultList = 'mc: {
         let __mc_input = iResultList.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -6441,7 +6441,7 @@ fn revertTaskLists(mut iCurrentArrayIdx: i32, mut iResultList: metamodelica::Arr
             let mut entryDae: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = entryDae.clone();
             let mut entryOde: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = entryOde.clone();
             let mut entryZeroFunc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = entryZeroFunc.clone();
-            let mut tmpResultList: metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)>;
+            let mut tmpResultList: metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)> = tmpResultList.clone();
             let true = (intLe(iCurrentArrayIdx.clone(), (iResultList.clone().borrow().len() as i32))) else { bail!("pattern mismatch") };
             (entryOde, entryDae, entryZeroFunc) = iResultList.clone().borrow()[(iCurrentArrayIdx.clone()-1) as usize].clone();
             entryOde = entryOde.clone().reverse();
@@ -6461,15 +6461,15 @@ fn revertTaskLists(mut iCurrentArrayIdx: i32, mut iResultList: metamodelica::Arr
 }
 
 fn revertTaskList(mut iCurrentArrayIdx: i32, mut iResultList: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> {
-    let mut oResultList: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
+    let mut oResultList: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
     let mut entry: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
-    let mut tmpResultList: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
+    let mut tmpResultList: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
     oResultList = 'mc: {
         let __mc_input = iResultList.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut entry: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = entry.clone();
-            let mut tmpResultList: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
+            let mut tmpResultList: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = tmpResultList.clone();
             let true = (intLe(iCurrentArrayIdx.clone(), (iResultList.clone().borrow().len() as i32))) else { bail!("pattern mismatch") };
             entry = iResultList.clone().borrow()[(iCurrentArrayIdx.clone()-1) as usize].clone();
             entry = entry.clone().reverse();
@@ -6489,16 +6489,16 @@ fn revertTaskList(mut iCurrentArrayIdx: i32, mut iResultList: metamodelica::Arra
 //  LockIdSetter
 //----------------
 fn setScheduleLockIds(mut iSchedule: Arc<HpcOmSimCode::Schedule>) -> Result<Arc<HpcOmSimCode::Schedule>> {
-    let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
-    let mut allThreadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
-    let mut tmpFoldArray: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
-    let mut newAllThreadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
+    let mut oSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
+    let mut allThreadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
+    let mut tmpFoldArray: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
+    let mut newAllThreadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
     let mut scheduledTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
-    let mut lockIds: metamodelica::Array<Arc<metamodelica::List<(i32, i32)>>>;
+    let mut lockIds: metamodelica::Array<Arc<metamodelica::List<(i32, i32)>>> = Default::default();
     let mut outgoingDepTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     let mut newOutgoingDepTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
-    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
-    let mut newTuple: (i32, i32);
+    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = Default::default();
+    let mut newTuple: (i32, i32) = (0, 0);
     let mut sourceTask: Arc<HpcOmSimCode::Task> = Arc::new(HpcOmSimCode::Task::TASKEMPTY);
     let mut targetTask: Arc<HpcOmSimCode::Task> = Arc::new(HpcOmSimCode::Task::TASKEMPTY);
     let mut iterTask: Arc<HpcOmSimCode::Task> = Arc::new(HpcOmSimCode::Task::TASKEMPTY);
@@ -6542,22 +6542,22 @@ fn setScheduleLockIds(mut iSchedule: Arc<HpcOmSimCode::Schedule>) -> Result<Arc<
         targetTaskId = __pa10.clone();
         newTuple = (targetTaskId.clone(), counter.clone());
         {let _arr = lockIds.clone(); let _val = listAppend(lockIds.clone().borrow()[(sourceTaskId.clone()-1) as usize].clone(), list![newTuple.clone()]); _arr.borrow_mut()[(sourceTaskId.clone()-1) as usize] = _val; _arr};
-        newOutgoingDepTasks = cons(Arc::new(HpcOmSimCode::Task::DEPTASK { sourceTask: sourceTask.clone(), targetTask: targetTask.clone(), outgoing: outgoing.clone(), id: counter.clone(), communicationInfo: communicationInfo.clone() }), newOutgoingDepTasks.clone());
+        newOutgoingDepTasks = metamodelica::cons(Arc::new(HpcOmSimCode::Task::DEPTASK { sourceTask: sourceTask.clone(), targetTask: targetTask.clone(), outgoing: outgoing.clone(), id: counter.clone(), communicationInfo: communicationInfo.clone() }), newOutgoingDepTasks.clone());
         counter = counter.clone() + 1;
     }
     tmpFoldArray = arrayCreate((allThreadTasks.clone().borrow().len() as i32), metamodelica::nil());
-    (newAllThreadTasks, _) = Array::fold(allThreadTasks.clone(), Arc::new({ let __pe_b1 = lockIds.clone(); move |__pe_a0, __pe_a2| replaceDepTaskIdsByLockIds(__pe_a0, __pe_b1.clone(), __pe_a2) }), (tmpFoldArray.clone(), 1));
+    (newAllThreadTasks, _) = Array::fold(allThreadTasks.clone(), (std::sync::Arc::new({ let __pe_b1 = lockIds.clone(); move |__pe_a0, __pe_a2| replaceDepTaskIdsByLockIds(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, (metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, i32)) -> Result<(metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, i32)> + 'static>), (tmpFoldArray.clone(), 1));
     oSchedule = Arc::new(HpcOmSimCode::Schedule::THREADSCHEDULE { threadTasks: newAllThreadTasks.clone(), outgoingDepTasks: newOutgoingDepTasks.clone(), scheduledTasks: scheduledTasks.clone(), allCalcTasks: allCalcTasks.clone() });
     Ok(oSchedule)
 }
 
 fn replaceDepTaskIdsByLockIds(mut inTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut lockIds: metamodelica::Array<Arc<metamodelica::List<(i32, i32)>>>, mut iAllThreadTasks: (metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, i32)) -> Result<(metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, i32)> {
-    let mut oTasks: (metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, i32);
-    let mut allThreadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
+    let mut oTasks: (metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, i32) = (Default::default(), 0);
+    let mut allThreadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
     let mut tmpList: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     let mut threadId: i32 = 0;
     (allThreadTasks, threadId) = iAllThreadTasks.clone();
-    tmpList = List::fold(inTasks.clone(), Arc::new({ let __pe_b1 = lockIds.clone(); move |__pe_a0, __pe_a2| replaceDepTasksInListByLockIds(__pe_a0, __pe_b1.clone(), __pe_a2) }), metamodelica::nil()).reverse();
+    tmpList = List::fold(inTasks.clone(), (std::sync::Arc::new({ let __pe_b1 = lockIds.clone(); move |__pe_a0, __pe_a2| replaceDepTasksInListByLockIds(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>) -> Result<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> + 'static>), metamodelica::nil()).reverse();
     {let _arr = allThreadTasks.clone(); _arr.borrow_mut()[(threadId.clone()-1) as usize] = tmpList.clone(); _arr};
     oTasks = (allThreadTasks.clone(), threadId.clone() + 1);
     Ok(oTasks)
@@ -6567,7 +6567,7 @@ fn replaceDepTasksInListByLockIds(mut inTask: Arc<HpcOmSimCode::Task>, mut lockI
     let mut oList: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     let mut tmpTask: Arc<HpcOmSimCode::Task> = Arc::new(HpcOmSimCode::Task::TASKEMPTY);
     tmpTask = findTaskWithLockId(lockIds.clone(), inTask.clone())?;
-    oList = cons(tmpTask.clone(), tmpTaskList.clone());
+    oList = metamodelica::cons(tmpTask.clone(), tmpTaskList.clone());
     Ok(oList)
 }
 
@@ -6607,7 +6607,7 @@ fn findInIntTuple1(mut liste: Arc<metamodelica::List<(i32, i32)>>, mut toFind: i
     let mut secondElement: i32 = 0;
     let mut first: i32 = 0;
     let mut second: i32 = 0;
-    let mut iter: (i32, i32);
+    let mut iter: (i32, i32) = (0, 0);
     for mut iter in &*liste.clone() {
         let mut iter = iter.clone();
         (first, second) = iter.clone();
@@ -6620,8 +6620,8 @@ fn findInIntTuple1(mut liste: Arc<metamodelica::List<(i32, i32)>>, mut toFind: i
 }
 
 fn convertFixedLevelScheduleToTaskListsForLevel(mut iTasksOfLevel: HpcOmSimCode::TaskList, mut iThreadCount: i32) -> Result<metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> {
-    let mut oThreadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
-    let mut tmpTaskLists: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
+    let mut oThreadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
+    let mut tmpTaskLists: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
     let mut tasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     oThreadTasks = (match iTasksOfLevel.clone() {
         HpcOmSimCode::TaskList::PARALLELTASKLIST { tasks: mut tasks } => {
@@ -6640,14 +6640,14 @@ fn convertFixedLevelScheduleToTaskListsForLevel(mut iTasksOfLevel: HpcOmSimCode:
 }
 
 fn convertFixedLevelScheduleToTaskListsForTask(mut iTask: Arc<HpcOmSimCode::Task>, mut iThreadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> {
-    let mut oThreadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
-    let mut tmpTaskLists: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
+    let mut oThreadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
+    let mut tmpTaskLists: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
     let mut threadIdx: i32 = 0;
     let mut oldTaskList: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     oThreadTasks = (::match_deref::match_deref! { match &(iTask.clone()) {
         Deref @ HpcOmSimCode::Task::CALCTASK_LEVEL { threadIdx: Some(threadIdx), .. } => {
             oldTaskList = iThreadTasks.clone().borrow()[(threadIdx.clone()-1) as usize].clone();
-            tmpTaskLists = {let _arr = iThreadTasks.clone(); _arr.borrow_mut()[(threadIdx.clone()-1) as usize] = cons(iTask.clone(), oldTaskList.clone()); _arr};
+            tmpTaskLists = {let _arr = iThreadTasks.clone(); _arr.borrow_mut()[(threadIdx.clone()-1) as usize] = metamodelica::cons(iTask.clone(), oldTaskList.clone()); _arr};
             tmpTaskLists.clone()
         },
         _ => {
@@ -6662,7 +6662,7 @@ fn convertFixedLevelScheduleToTaskListsForTask(mut iTask: Arc<HpcOmSimCode::Task
 fn printRealArray(mut inArray: metamodelica::Array<metamodelica::Real>, mut header: ArcStr) -> () {
     println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("The ")); __mm_s.push_str(&*header.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     println!("{}", (literal!("-----------------------------------------\n")).clone());
-    Array::fold(inArray.clone(), Arc::new({ let __pe_b1 = (header.clone()).clone(); move |__pe_a0, __pe_a2| Ok(printRealArray1(__pe_a0, __pe_b1.clone(), __pe_a2)) }), 1);
+    Array::fold(inArray.clone(), (std::sync::Arc::new({ let __pe_b1 = (header.clone()).clone(); move |__pe_a0, __pe_a2| Ok(printRealArray1(__pe_a0, __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real, i32) -> Result<i32> + 'static>), 1);
     println!("{}", (literal!("\n")).clone());
     ()
 }
@@ -6688,11 +6688,11 @@ fn intListListString(mut lstIn: Arc<metamodelica::List<Arc<metamodelica::List<i3
 }
 
 pub fn expandSchedule(mut iNumProc: i32, mut iNumUsedProc: i32, mut iSchedule: Arc<HpcOmSimCode::Schedule>) -> Result<Arc<HpcOmSimCode::Schedule>> {
-    let mut oSchedule: Arc<HpcOmSimCode::Schedule>;
-    let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>;
+    let mut oSchedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
+    let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
     let mut outgoingDepTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     let mut scheduledTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
-    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)>;
+    let mut allCalcTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = Default::default();
     oSchedule = (::match_deref::match_deref! { match &(iSchedule.clone()) {
         Deref @ HpcOmSimCode::Schedule::LEVELSCHEDULE { .. } => iSchedule.clone(),
         Deref @ HpcOmSimCode::Schedule::THREADSCHEDULE { allCalcTasks, scheduledTasks, outgoingDepTasks, threadTasks } => {

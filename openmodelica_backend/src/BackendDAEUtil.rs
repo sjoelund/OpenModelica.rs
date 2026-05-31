@@ -332,8 +332,8 @@ pub fn checkBackendDAE(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<
 }
 
 fn checkBackendDAEExp(mut inExp: Arc<DAE::Exp>, mut inTpl: (BackendDAE::Variables, Arc<metamodelica::List<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>)) -> Result<(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<metamodelica::List<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>))> {
-    let mut outExp: Arc<DAE::Exp>;
-    let mut outTpl: (BackendDAE::Variables, Arc<metamodelica::List<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>);
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outTpl: (BackendDAE::Variables, Arc<metamodelica::List<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>) = (<BackendDAE::Variables as ::std::default::Default>::default(), metamodelica::nil());
     (outExp, outTpl) = 'mc: {
         let __mc_input = (inExp.clone(), inTpl.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -342,7 +342,7 @@ fn checkBackendDAEExp(mut inExp: Arc<DAE::Exp>, mut inTpl: (BackendDAE::Variable
                     let mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
                     let (_, (_, __pa0)) = Expression::traverseExpBottomUp(exp.clone(), (std::sync::Arc::new(traversecheckBackendDAEExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)) -> Result<(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>))> + 'static>), (vars.clone(), metamodelica::nil()))?;
                     crefs = __pa0.clone();
-                    Ok((exp.clone(), if (!(crefs.clone().is_empty())) {(vars.clone(), cons((exp.clone(), crefs.clone()), lstExpCrefs.clone()))} else {inTpl.clone()}))
+                    Ok((exp.clone(), if (!(crefs.clone().is_empty())) {(vars.clone(), metamodelica::cons((exp.clone(), crefs.clone()), lstExpCrefs.clone()))} else {inTpl.clone()}))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -361,8 +361,8 @@ fn checkBackendDAEExp(mut inExp: Arc<DAE::Exp>, mut inTpl: (BackendDAE::Variable
 }
 
 fn traversecheckBackendDAEExp(mut inExp: Arc<DAE::Exp>, mut inTuple: (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)) -> Result<(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>))> {
-    let mut outExp: Arc<DAE::Exp>;
-    let mut outTuple: (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>);
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outTuple: (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) = (<BackendDAE::Variables as ::std::default::Default>::default(), metamodelica::nil());
     (outExp, outTuple) = 'mc: {
         let __mc_input = (inExp.clone(), inTuple.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -377,7 +377,7 @@ fn traversecheckBackendDAEExp(mut inExp: Arc<DAE::Exp>, mut inTuple: (BackendDAE
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CREF { ty: Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: _ }, varLst, .. }, componentRef: cr }, _) => {
                     let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut tp: (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>);
+                    let mut tp: (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) = (<BackendDAE::Variables as ::std::default::Default>::default(), metamodelica::nil());
                     expl = List::map1(varLst.clone(), (std::sync::Arc::new(Expression::generateCrefsExpFromExpVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> + 'static>), cr.clone());
                     (_, tp) = Expression::traverseExpList(expl.clone(), (std::sync::Arc::new(traversecheckBackendDAEExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)) -> Result<(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>))> + 'static>), inTuple.clone())?;
                     Ok((e.clone(), tp.clone()))
@@ -388,8 +388,8 @@ fn traversecheckBackendDAEExp(mut inExp: Arc<DAE::Exp>, mut inTuple: (BackendDAE
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CREF { ty: Deref @ DAE::Type::T_ARRAY { .. }, .. }, _) => {
-                    let mut e1: Arc<DAE::Exp>;
-                    let mut tp: (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>);
+                    let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut tp: (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) = (<BackendDAE::Variables as ::std::default::Default>::default(), metamodelica::nil());
                     let __pa0 = ::match_deref::match_deref! { match &(Expression::extendArrExp(e.clone(), false)?) {
                         (__pa0, true) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -433,7 +433,7 @@ fn traversecheckBackendDAEExp(mut inExp: Arc<DAE::Exp>, mut inTuple: (BackendDAE
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CREF { componentRef: cr, .. }, (vars, crefs)) => {
-                    Ok((e.clone(), (vars.clone(), cons(cr.clone(), crefs.clone()))))
+                    Ok((e.clone(), (vars.clone(), metamodelica::cons(cr.clone(), crefs.clone()))))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -587,7 +587,7 @@ pub fn copyEqSystems(mut inSystems: Arc<metamodelica::List<Arc<BackendDAE::EqSys
     let mut outSystems: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = metamodelica::nil();
     for mut e in &*inSystems.clone() {
         let mut e = e.clone();
-        outSystems = cons(copyEqSystem(e.clone())?, outSystems.clone());
+        outSystems = metamodelica::cons(copyEqSystem(e.clone())?, outSystems.clone());
     }
     Ok(outSystems)
 }
@@ -626,8 +626,8 @@ pub fn copyMatching(mut inMatching: Arc<BackendDAE::Matching>) -> Result<Arc<Bac
             Arc::new(crate::BackendDAE::Matching::NO_MATCHING)
         },
         Deref @ BackendDAE::Matching::MATCHING { comps, ass2, ass1 } => {
-            let mut cass1: metamodelica::Array<i32>;
-            let mut cass2: metamodelica::Array<i32>;
+            let mut cass1: metamodelica::Array<i32> = Default::default();
+            let mut cass2: metamodelica::Array<i32> = Default::default();
             cass1 = metamodelica::arrayFromVec(ass1.clone().borrow().clone());
             cass2 = metamodelica::arrayFromVec(ass2.clone().borrow().clone());
             Arc::new(BackendDAE::Matching::MATCHING { ass1: cass1.clone(), ass2: cass2.clone(), comps: comps.clone() })
@@ -743,15 +743,15 @@ fn countDiscreteVars3(mut var: BackendDAE::Var, mut nDiscreteVars: i32) -> (Back
 }
 
 pub fn replaceCrefsWithValues(mut inExp: Arc<DAE::Exp>, mut inTuple: (BackendDAE::Variables, Arc<DAE::ComponentRef>)) -> Result<(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<DAE::ComponentRef>))> {
-    let mut outExp: Arc<DAE::Exp>;
-    let mut outTuple: (BackendDAE::Variables, Arc<DAE::ComponentRef>);
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outTuple: (BackendDAE::Variables, Arc<DAE::ComponentRef>) = (<BackendDAE::Variables as ::std::default::Default>::default(), Arc::new(DAE::ComponentRef::WILD));
     (outExp, outTuple) = 'mc: {
         let __mc_input = (inExp.clone(), inTuple.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CREF { componentRef: cr, ty: _ }, (vars, cr_orign)) => {
                     if !((!(ComponentReferenceBasics::crefEqualNoStringCompare(cr.clone(), cr_orign.clone())?))) { bail!("guard") }
-                    let mut e: Arc<DAE::Exp>;
+                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let __pa0 = ::match_deref::match_deref! { match &(BackendVariable::getVar(cr.clone(), vars.clone())?) {
                         (Deref @ metamodelica::List::Cons { head: BackendDAE::Var { bindExp: Some(__pa0), .. }, tail: Deref @ metamodelica::List::Nil }, _) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -790,9 +790,9 @@ pub fn hasExpContinuousParts(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendD
 }
 
 fn traversingContinuousExpFinder(mut inExp: Arc<DAE::Exp>, mut inTpl: (BackendDAE::Variables, BackendDAE::Variables, bool)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, BackendDAE::Variables, bool))> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cont: bool = false;
-    let mut outTpl: (BackendDAE::Variables, BackendDAE::Variables, bool);
+    let mut outTpl: (BackendDAE::Variables, BackendDAE::Variables, bool) = (<BackendDAE::Variables as ::std::default::Default>::default(), <BackendDAE::Variables as ::std::default::Default>::default(), false);
     (outExp, cont, outTpl) = 'mc: {
         let __mc_input = (inExp.clone(), inTpl.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -871,9 +871,9 @@ pub fn statesAndVarsExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::V
 }
 
 pub fn traversingstatesAndVarsExpFinder(mut inExp: Arc<DAE::Exp>, mut inTpl: (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::Exp>>>)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::Exp>>>))> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cont: bool = false;
-    let mut outTpl: (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::Exp>>>);
+    let mut outTpl: (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::Exp>>>) = (<BackendDAE::Variables as ::std::default::Default>::default(), metamodelica::nil());
     (outExp, cont, outTpl) = 'mc: {
         let __mc_input = (inExp.clone(), inTpl.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -893,7 +893,7 @@ pub fn traversingstatesAndVarsExpFinder(mut inExp: Arc<DAE::Exp>, mut inTpl: (Ba
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CREF { ty: Deref @ DAE::Type::T_ARRAY { .. }, .. }, (vars, _)) => {
                     let mut res: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut e1: Arc<DAE::Exp>;
+                    let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let __pa0 = ::match_deref::match_deref! { match &(Expression::extendArrExp(e.clone(), false)?) {
                         (__pa0, true) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -910,7 +910,7 @@ pub fn traversingstatesAndVarsExpFinder(mut inExp: Arc<DAE::Exp>, mut inTpl: (Ba
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CREF { componentRef: cr, .. }, (vars, expl)) => {
                     BackendVariable::getVar(cr.clone(), vars.clone())?;
-                    Ok((e.clone(), false, (vars.clone(), cons(e.clone(), expl.clone()))))
+                    Ok((e.clone(), false, (vars.clone(), metamodelica::cons(e.clone(), expl.clone()))))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -922,7 +922,7 @@ pub fn traversingstatesAndVarsExpFinder(mut inExp: Arc<DAE::Exp>, mut inTpl: (Ba
                         (Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varKind: BackendDAE::VarKind::STATE { .. }, .. }, tail: _ }, _) => (),
                         _ => bail!("pattern mismatch"),
                     } };
-                    Ok((e.clone(), false, (vars.clone(), cons(e.clone(), expl.clone()))))
+                    Ok((e.clone(), false, (vars.clone(), metamodelica::cons(e.clone(), expl.clone()))))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1006,13 +1006,13 @@ fn isLoopDependentHelper(mut subscripts: Arc<metamodelica::List<Arc<DAE::Exp>>>,
 }
 
 pub fn devectorizeArrayVar(mut arrayVar: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
-    let mut newArrayVar: Arc<DAE::Exp>;
+    let mut newArrayVar: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     newArrayVar = 'mc: {
         let __mc_input = arrayVar.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::ASUB { sub: subs, exp: Deref @ DAE::Exp::ARRAY { array: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: _ }, .. } } => {
-                    let mut e: Arc<DAE::Exp>;
+                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut cr = (*cr).clone();
                     cr = ComponentReferenceBasics::crefStripLastSubs(cr.clone())?;
                     e = Expression::crefExp(cr.clone())?;
@@ -1031,7 +1031,7 @@ pub fn devectorizeArrayVar(mut arrayVar: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>>
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::ASUB { sub: subs, exp: Deref @ DAE::Exp::MATRIX { matrix: Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: _ }, tail: _ }, .. } } => {
-                    let mut e: Arc<DAE::Exp>;
+                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut cr = (*cr).clone();
                     cr = ComponentReferenceBasics::crefStripLastSubs(cr.clone())?;
                     e = Expression::crefExp(cr.clone())?;
@@ -1222,13 +1222,13 @@ fn generateArrayElements(mut clones: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut
             metamodelica::nil()
         },
         (Deref @ metamodelica::List::Cons { head: clone, tail: restClones }, Deref @ metamodelica::List::Cons { head: index, tail: restIndices }) => {
-            let mut newElement: Arc<DAE::Exp>;
-            let mut newElement2: Arc<DAE::Exp>;
+            let mut newElement: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut newElement2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut elements: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             (newElement, _) = Expression::replaceExp(clone.clone(), iteratorExp.clone(), index.clone())?;
             newElement2 = simplifySubscripts(newElement.clone())?;
             elements = generateArrayElements(restClones.clone(), restIndices.clone(), iteratorExp.clone())?;
-            cons(newElement2.clone(), elements.clone())
+            metamodelica::cons(newElement2.clone(), elements.clone())
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1236,13 +1236,13 @@ fn generateArrayElements(mut clones: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut
 }
 
 fn simplifySubscripts(mut asub: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
-    let mut maybeCref: Arc<DAE::Exp>;
+    let mut maybeCref: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     maybeCref = 'mc: {
         let __mc_input = asub.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::CREF_IDENT { ident: varIdent, identType: arrayType, subscriptLst: subscripts }, ty: varType } => {
-                    let mut newCrefExp: Arc<DAE::Exp>;
+                    let mut newCrefExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut cref_: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     let mut subscripts = (*subscripts).clone();
                     subscripts = List::map(subscripts.clone(), (std::sync::Arc::new(simplifySubscript) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Subscript>) -> Result<Arc<DAE::Subscript>> + 'static>));
@@ -1258,7 +1258,7 @@ fn simplifySubscripts(mut asub: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
                 Deref @ DAE::Exp::ASUB { exp: Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::CREF_IDENT { ident: varIdent, identType: arrayType, subscriptLst: _ }, ty: varType }, sub: subscripts } => {
                     let mut subExprs: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut subExprsSimplified: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    let mut newCrefExp: Arc<DAE::Exp>;
+                    let mut newCrefExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut cref_: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     let mut subscripts = (*subscripts).clone();
                     subExprs = List::map(subscripts.clone(), (std::sync::Arc::new(Expression::getSubscriptExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Subscript>) -> Result<Arc<DAE::Exp>> + 'static>));
@@ -1295,7 +1295,7 @@ fn simplifySubscript(mut sub: Arc<DAE::Subscript>) -> Result<Arc<DAE::Subscript>
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Subscript::INDEX { exp: e } => {
-                    let mut e1: Arc<DAE::Exp>;
+                    let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     (e1, _) = ExpressionSimplify::simplify(e.clone())?;
                     Ok(if (referenceEq(&e1.clone(),&e.clone())) {sub.clone()} else {Arc::new(DAE::Subscript::INDEX { exp: e.clone() })})
                 }
@@ -1388,7 +1388,7 @@ fn lookupTearingSelectMember(mut name: ArcStr) -> Option<BackendDAE::TearingSele
 
 pub fn setHideResultAttribute(mut comment: Option<Arc<SCode::Comment>>, mut inCref: Arc<DAE::ComponentRef>) -> Option<Arc<DAE::Exp>> {
     let mut hideResult: Option<Arc<DAE::Exp>> = None;
-    let mut hr: Arc<DAE::Exp>;
+    let mut hr: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut ann: Arc<SCode::Annotation> = Arc::new(<SCode::Annotation as ::std::default::Default>::default());
     let mut val: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut crefRoot: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -1441,10 +1441,10 @@ pub fn blockIsDynamic(mut lst: Arc<metamodelica::List<i32>>, mut arr: metamodeli
 }
 
 pub fn markStateEquations(mut syst: Arc<BackendDAE::EqSystem>, mut arr: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> {
-    let mut outIntegerArray: metamodelica::Array<i32>;
+    let mut outIntegerArray: metamodelica::Array<i32> = Default::default();
     let mut statevarindx_lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut eqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut v: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(syst.clone()) {
         Deref @ BackendDAE::EqSystem { m: Some(__pa0), orderedVars: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
@@ -1473,10 +1473,10 @@ pub fn markStateEquations(mut syst: Arc<BackendDAE::EqSystem>, mut arr: metamode
 pub fn markZeroCrossingEquations(mut syst: Arc<BackendDAE::EqSystem>, mut inZeroCross: Arc<metamodelica::List<BackendDAE::ZeroCrossing>>, mut arr: metamodelica::Array<i32>, mut ass1: metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> {
     type CheckEquationsVarsExpTopDownFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<AvlSetInt::Tree>) -> Result<(Arc<DAE::Exp>, bool, Arc<AvlSetInt::Tree>)> + 'static>;
 
-    let mut outIntegerArray: metamodelica::Array<i32>;
+    let mut outIntegerArray: metamodelica::Array<i32> = Default::default();
     let mut varindx_lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut eqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut v: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     let mut tree: Arc<AvlSetInt::Tree> = Arc::new(AvlSetInt::Tree::EMPTY);
     let mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<AvlSetInt::Tree>) -> Result<(Arc<DAE::Exp>, bool, Arc<AvlSetInt::Tree>)> + 'static>;
@@ -1487,7 +1487,7 @@ pub fn markZeroCrossingEquations(mut syst: Arc<BackendDAE::EqSystem>, mut inZero
     m = __pa0.clone();
     v = __pa1.clone();
     tree = AvlSetInt::new();
-    func = Arc::new({ let __pe_b2 = v.clone(); move |__pe_a0, __pe_a1| Ok(BackendEquation::checkEquationsVarsExpTopDown(__pe_a0, __pe_a1, __pe_b2.clone())) });
+    func = (std::sync::Arc::new({ let __pe_b2 = v.clone(); move |__pe_a0, __pe_a1| Ok(BackendEquation::checkEquationsVarsExpTopDown(__pe_a0, __pe_a1, __pe_b2.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<AvlSetInt::Tree>) -> Result<(Arc<DAE::Exp>, bool, Arc<AvlSetInt::Tree>)> + 'static>);
     for mut zc in &*inZeroCross.clone() {
         let mut zc = zc.clone();
         tree = varsCollector(zc.relation_.clone(), tree.clone(), func.clone())?;
@@ -1537,7 +1537,7 @@ fn markStateEquationsWork(mut inEqns: Arc<metamodelica::List<i32>>, mut m: metam
                     j = Dangerous::arrayGet(ass1.clone(), i.clone())?;
                     positiveAndUnmarked = if (j.clone() > 0) {oMark.clone().borrow()[(j.clone()-1) as usize].clone() == 0} else {false};
                     if positiveAndUnmarked.clone() {
-                        queue = cons(j.clone(), queue.clone());
+                        queue = metamodelica::cons(j.clone(), queue.clone());
                     }
                 }
             }
@@ -1608,13 +1608,13 @@ pub fn setEvaluationStage(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Resu
     let mut indicesDynamic: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut indicesDiscrete: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut indicesAlgebraic: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut traverseArgs: TraverseIndicesTuple;
-    let mut assigndEqn: metamodelica::Array<i32>;
-    let mut assigndVar: metamodelica::Array<i32>;
-    let mut markedEqns: metamodelica::Array<i32>;
+    let mut traverseArgs: TraverseIndicesTuple = (metamodelica::nil(), metamodelica::nil(), metamodelica::nil());
+    let mut assigndEqn: metamodelica::Array<i32> = Default::default();
+    let mut assigndVar: metamodelica::Array<i32> = Default::default();
+    let mut markedEqns: metamodelica::Array<i32> = Default::default();
     let mut newEqs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = metamodelica::nil();
-    let mut adjMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut adjMatrixT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut adjMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut adjMatrixT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut zeroCrossings: Arc<metamodelica::List<BackendDAE::ZeroCrossing>> = metamodelica::nil();
     let debug: bool = false;
     zeroCrossings = ZeroCrossings::toList(inBackendDAE.shared.eventInfo.zeroCrossings.clone());
@@ -1676,7 +1676,7 @@ pub fn setEvaluationStage(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Resu
         if debug.clone() {
             BackendDump::dumpEquationArray(eqns.clone(), (literal!("Updated equations")).clone())?;
         }
-        newEqs = cons(eqSystem.clone(), newEqs.clone());
+        newEqs = metamodelica::cons(eqSystem.clone(), newEqs.clone());
     }
     outBackendDAE = Arc::new(BackendDAE::BackendDAE { eqs: newEqs.clone(), shared: inBackendDAE.shared.clone() });
     Ok(outBackendDAE)
@@ -1754,7 +1754,7 @@ fn subscript2dCombinations2(mut inExpSubscriptLst: Arc<metamodelica::List<Arc<DA
             let mut elt1: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
             lst1 = subscript2dCombinations2(ss.clone(), ss2.clone())?;
             elt1 = listAppend(ss.clone(), s2.clone());
-            cons(elt1.clone(), lst1.clone())
+            metamodelica::cons(elt1.clone(), lst1.clone())
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1866,8 +1866,8 @@ pub fn tryReduceEqSystem(mut iSyst: Arc<BackendDAE::EqSystem>, mut shared: Arc<B
 
 pub fn reduceEqSystem(mut iSyst: Arc<BackendDAE::EqSystem>, mut shared: Arc<BackendDAE::Shared>, mut iVarlst: Arc<metamodelica::List<BackendDAE::Var>>, mut filterDiscretes: bool) -> Result<Arc<BackendDAE::EqSystem>> {
     let mut oSyst: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    let mut ass1: metamodelica::Array<i32>;
-    let mut ass2: metamodelica::Array<i32>;
+    let mut ass1: metamodelica::Array<i32> = Default::default();
+    let mut ass2: metamodelica::Array<i32> = Default::default();
     let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     let mut syst: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
     let mut iVars: BackendDAE::Variables = BackendVariable::listVar(iVarlst.clone());
@@ -1876,11 +1876,11 @@ pub fn reduceEqSystem(mut iSyst: Arc<BackendDAE::EqSystem>, mut shared: Arc<Back
     let mut indx_lst_v: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut indx_lst_e: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut statevarindx_lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut indx_arr: metamodelica::Array<i32>;
+    let mut indx_arr: metamodelica::Array<i32> = Default::default();
     let mut el: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut vl: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
     let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
-    let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     oSyst = (::match_deref::match_deref! { match &(iSyst.clone()) {
         syst @ Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::MATCHING { ass2, ass1, .. }, orderedVars: vars, orderedEqs: ordererdEqs, .. } => {
             let mut syst = (*syst).clone();
@@ -1938,8 +1938,8 @@ pub fn introduceOutputRealDerivatives(mut inDAE: Arc<BackendDAE::BackendDAE>) ->
     let mut outDAE: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
     let mut currentSystem: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
     let mut newCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut lhs: Arc<DAE::Exp>;
-    let mut rhs: Arc<DAE::Exp>;
+    let mut lhs: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut rhs: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut newEqnlst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut daeVarsLst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
     let __pa0 = ::match_deref::match_deref! { match &(inDAE.eqs.clone()) {
@@ -1954,10 +1954,10 @@ pub fn introduceOutputRealDerivatives(mut inDAE: Arc<BackendDAE::BackendDAE>) ->
         if BackendVariable::isOutputVar(var.clone()) && BackendVariable::isRealVar(var.clone()) {
             newCref = ComponentReference::appendStringLastIdent((literal!("_der")).clone(), var.varName.clone())?;
             newCref = ComponentReference::prependStringCref((literal!("$")).clone(), newCref.clone())?;
-            daeVarsLst = cons(BackendVariable::makeVar(newCref.clone()), daeVarsLst.clone());
+            daeVarsLst = metamodelica::cons(BackendVariable::makeVar(newCref.clone()), daeVarsLst.clone());
             lhs = Expression::crefExp(newCref.clone())?;
             rhs = IndexReduction::makeder(BackendVariable::varExp(var.clone())?)?;
-            newEqnlst = cons(BackendEquation::generateEquation(lhs.clone(), rhs.clone(), DAE::emptyElementSource().clone(), BackendDAE::EQ_ATTR_DEFAULT_BINDING.clone())?, newEqnlst.clone());
+            newEqnlst = metamodelica::cons(BackendEquation::generateEquation(lhs.clone(), rhs.clone(), DAE::emptyElementSource().clone(), BackendDAE::EQ_ATTR_DEFAULT_BINDING.clone())?, newEqnlst.clone());
         }
     }
     currentSystem = BackendVariable::addVarsDAE(daeVarsLst.clone(), currentSystem.clone());
@@ -2012,7 +2012,7 @@ pub fn introduceOutputAliases(mut dae: Arc<BackendDAE::BackendDAE>) -> Result<Ar
                 v = BackendVariable::removeStartAttribute(v.clone())?;
                 newVars = BackendVariable::addVar(v.clone(), newVars.clone())?;
                 newEqn = BackendEquation::generateEquation(Expression::crefToExp(cref.clone())?, Expression::crefToExp(newCref.clone())?, DAE::emptyElementSource().clone(), BackendDAE::EQ_ATTR_DEFAULT_BINDING.clone())?;
-                newEqns = cons(newEqn.clone(), newEqns.clone());
+                newEqns = metamodelica::cons(newEqn.clone(), newEqns.clone());
             }
         }
         traverseBackendDAEExpsEqns(eqs.clone(), (std::sync::Arc::new(introduceOutputAliases_eqs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))> + 'static>), topLevelOutputs.clone())?;
@@ -2024,7 +2024,7 @@ pub fn introduceOutputAliases(mut dae: Arc<BackendDAE::BackendDAE>) -> Result<Ar
             system.orderedEqs = eqs.clone(),
             system.removedEqs = removedEqs.clone()
         );
-        returnSysts = cons(system.clone(), returnSysts.clone());
+        returnSysts = metamodelica::cons(system.clone(), returnSysts.clone());
     }
     returnSysts = returnSysts.clone().reverse();
     assign_field!(dae.eqs = returnSysts.clone());
@@ -2032,14 +2032,14 @@ pub fn introduceOutputAliases(mut dae: Arc<BackendDAE::BackendDAE>) -> Result<Ar
 }
 
 fn introduceOutputAliases_eqs(mut inExp: Arc<DAE::Exp>, mut inStates: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outStates: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
     (outExp, outStates) = Expression::traverseExpBottomUp(inExp.clone(), (std::sync::Arc::new(introduceOutputAliases_eqs2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))> + 'static>), inStates.clone())?;
     Ok((outExp, outStates))
 }
 
 fn introduceOutputAliases_eqs2(mut inExp: Arc<DAE::Exp>, mut inStates: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)))> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outStates: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr)) = inStates.clone();
     outExp = (::match_deref::match_deref! { match &(inExp.clone()) {
         e1 @ Deref @ DAE::Exp::CREF { componentRef: cr, .. } if (BaseHashSet::has(cr.clone(), inStates.clone())?) => {
@@ -2059,7 +2059,7 @@ fn introduceOutputAliases_eqs2(mut inExp: Arc<DAE::Exp>, mut inStates: (metamode
 
 fn translateArrayList(mut inElement: i32, mut inIndex: i32, mut inFoldArg: Arc<metamodelica::List<i32>>) -> Arc<metamodelica::List<i32>> {
     let mut outFoldArg: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    outFoldArg = if (intEq(inElement.clone(), 1)) {cons(inIndex.clone(), inFoldArg.clone())} else {inFoldArg.clone()};
+    outFoldArg = if (intEq(inElement.clone(), 1)) {metamodelica::cons(inIndex.clone(), inFoldArg.clone())} else {inFoldArg.clone()};
     outFoldArg
 }
 
@@ -2124,7 +2124,7 @@ pub fn removeDiscreteAssignments(mut inStmts: Arc<metamodelica::List<Arc<DAE::St
                     stmts = removeDiscreteAssignments(stmts.clone(), vars.clone())?;
                     algElse = removediscreteAssingmentsElse(algElse.clone(), vars.clone())?;
                     xs = removeDiscreteAssignments(rest.clone(), vars.clone())?;
-                    Ok(cons(Arc::new(DAE::Statement::STMT_IF { exp: e.clone(), statementLst: stmts.clone(), else_: algElse.clone(), source: source.clone() }), xs.clone()))
+                    Ok(metamodelica::cons(Arc::new(DAE::Statement::STMT_IF { exp: e.clone(), statementLst: stmts.clone(), else_: algElse.clone(), source: source.clone() }), xs.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2136,7 +2136,7 @@ pub fn removeDiscreteAssignments(mut inStmts: Arc<metamodelica::List<Arc<DAE::St
                     let mut stmts = (*stmts).clone();
                     stmts = removeDiscreteAssignments(stmts.clone(), vars.clone())?;
                     xs = removeDiscreteAssignments(rest.clone(), vars.clone())?;
-                    Ok(cons(Arc::new(DAE::Statement::STMT_FOR { type_: tp.clone(), iterIsArray: b1.clone(), iter: (id1.clone()).clone(), range: e.clone(), statementLst: stmts.clone(), source: source.clone() }), xs.clone()))
+                    Ok(metamodelica::cons(Arc::new(DAE::Statement::STMT_FOR { type_: tp.clone(), iterIsArray: b1.clone(), iter: (id1.clone()).clone(), range: e.clone(), statementLst: stmts.clone(), source: source.clone() }), xs.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2148,7 +2148,7 @@ pub fn removeDiscreteAssignments(mut inStmts: Arc<metamodelica::List<Arc<DAE::St
                     let mut stmts = (*stmts).clone();
                     stmts = removeDiscreteAssignments(stmts.clone(), vars.clone())?;
                     xs = removeDiscreteAssignments(rest.clone(), vars.clone())?;
-                    Ok(cons(Arc::new(DAE::Statement::STMT_WHILE { exp: e.clone(), statementLst: stmts.clone(), source: source.clone() }), xs.clone()))
+                    Ok(metamodelica::cons(Arc::new(DAE::Statement::STMT_WHILE { exp: e.clone(), statementLst: stmts.clone(), source: source.clone() }), xs.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2160,7 +2160,7 @@ pub fn removeDiscreteAssignments(mut inStmts: Arc<metamodelica::List<Arc<DAE::St
                     let mut stmts = (*stmts).clone();
                     stmts = removeDiscreteAssignments(stmts.clone(), vars.clone())?;
                     xs = removeDiscreteAssignments(rest.clone(), vars.clone())?;
-                    Ok(cons(Arc::new(DAE::Statement::STMT_WHEN { exp: e.clone(), conditions: conditions.clone(), initialCall: initialCall.clone(), statementLst: stmts.clone(), elseWhen: None, source: source.clone() }), xs.clone()))
+                    Ok(metamodelica::cons(Arc::new(DAE::Statement::STMT_WHEN { exp: e.clone(), conditions: conditions.clone(), initialCall: initialCall.clone(), statementLst: stmts.clone(), elseWhen: None, source: source.clone() }), xs.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2178,7 +2178,7 @@ pub fn removeDiscreteAssignments(mut inStmts: Arc<metamodelica::List<Arc<DAE::St
                     } };
                     ew = __pa0.clone();
                     xs = removeDiscreteAssignments(rest.clone(), vars.clone())?;
-                    Ok(cons(Arc::new(DAE::Statement::STMT_WHEN { exp: e.clone(), conditions: conditions.clone(), initialCall: initialCall.clone(), statementLst: stmts.clone(), elseWhen: Some(ew.clone()), source: source.clone() }), xs.clone()))
+                    Ok(metamodelica::cons(Arc::new(DAE::Statement::STMT_WHEN { exp: e.clone(), conditions: conditions.clone(), initialCall: initialCall.clone(), statementLst: stmts.clone(), elseWhen: Some(ew.clone()), source: source.clone() }), xs.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2188,7 +2188,7 @@ pub fn removeDiscreteAssignments(mut inStmts: Arc<metamodelica::List<Arc<DAE::St
                 (Deref @ metamodelica::List::Cons { head: stmt, tail: rest }, vars) => {
                     let mut xs: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     xs = removeDiscreteAssignments(rest.clone(), vars.clone())?;
-                    Ok(cons(stmt.clone(), xs.clone()))
+                    Ok(metamodelica::cons(stmt.clone(), xs.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2260,8 +2260,8 @@ fn collateArrExpStmt(mut inExp: Arc<DAE::Exp>, mut inStmt: Arc<DAE::Statement>, 
 }
 
 fn traversingcollateArrExpStmt(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<DAE::Statement>, Option<Arc<AvlTreePathFunction::Tree>>)) -> Result<(Arc<DAE::Exp>, (Arc<DAE::Statement>, Option<Arc<AvlTreePathFunction::Tree>>))> {
-    let mut outExp: Arc<DAE::Exp>;
-    let mut outTpl: (Arc<DAE::Statement>, Option<Arc<AvlTreePathFunction::Tree>>);
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outTpl: (Arc<DAE::Statement>, Option<Arc<AvlTreePathFunction::Tree>>) = (Arc::new(<DAE::Statement as ::std::default::Default>::default()), None);
     (outExp, outTpl) = 'mc: {
         let __mc_input = (inExp.clone(), inTpl.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -2299,8 +2299,8 @@ fn traversingcollateArrExpStmt(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<DAE::St
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::MATRIX { matrix: Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: e1 @ Deref @ DAE::Exp::CREF { .. }, tail: _ }, tail: _ }, .. }, _) => {
-                    let mut e1_1: Arc<DAE::Exp>;
-                    let mut e1_2: Arc<DAE::Exp>;
+                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e1_2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     e1_1 = Expression::expStripLastSubs(e1.clone())?;
                     let __pa0 = ::match_deref::match_deref! { match &(Expression::extendArrExp(e1_1.clone(), false)?) {
                         (__pa0, true) => __pa0.clone(),
@@ -2316,8 +2316,8 @@ fn traversingcollateArrExpStmt(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<DAE::St
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::MATRIX { matrix: Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: e1 @ Deref @ DAE::Exp::UNARY { exp: Deref @ DAE::Exp::CREF { .. }, .. }, tail: _ }, tail: _ }, .. }, _) => {
-                    let mut e1_1: Arc<DAE::Exp>;
-                    let mut e1_2: Arc<DAE::Exp>;
+                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e1_2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     e1_1 = Expression::expStripLastSubs(e1.clone())?;
                     let __pa0 = ::match_deref::match_deref! { match &(Expression::extendArrExp(e1_1.clone(), false)?) {
                         (__pa0, true) => __pa0.clone(),
@@ -2333,8 +2333,8 @@ fn traversingcollateArrExpStmt(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<DAE::St
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::ARRAY { array: Deref @ metamodelica::List::Cons { head: e1 @ Deref @ DAE::Exp::CREF { .. }, tail: _ }, .. }, _) => {
-                    let mut e1_1: Arc<DAE::Exp>;
-                    let mut e1_2: Arc<DAE::Exp>;
+                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e1_2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     e1_1 = Expression::expStripLastSubs(e1.clone())?;
                     let __pa0 = ::match_deref::match_deref! { match &(Expression::extendArrExp(e1_1.clone(), false)?) {
                         (__pa0, true) => __pa0.clone(),
@@ -2350,8 +2350,8 @@ fn traversingcollateArrExpStmt(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<DAE::St
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::ARRAY { array: Deref @ metamodelica::List::Cons { head: e1 @ Deref @ DAE::Exp::UNARY { exp: Deref @ DAE::Exp::CREF { .. }, .. }, tail: _ }, .. }, _) => {
-                    let mut e1_1: Arc<DAE::Exp>;
-                    let mut e1_2: Arc<DAE::Exp>;
+                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e1_2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     e1_1 = Expression::expStripLastSubs(e1.clone())?;
                     let __pa0 = ::match_deref::match_deref! { match &(Expression::extendArrExp(e1_1.clone(), false)?) {
                         (__pa0, true) => __pa0.clone(),
@@ -2384,11 +2384,11 @@ pub fn collateArrExpList(mut iexpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut 
             metamodelica::nil()
         },
         Deref @ metamodelica::List::Cons { head: e, tail: expl } => {
-            let mut e1: Arc<DAE::Exp>;
+            let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut expl1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             (e1, _) = collateArrExp(e.clone(), optfunc.clone())?;
             expl1 = collateArrExpList(expl.clone(), optfunc.clone())?;
-            cons(e1.clone(), expl1.clone())
+            metamodelica::cons(e1.clone(), expl1.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2396,22 +2396,22 @@ pub fn collateArrExpList(mut iexpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut 
 }
 
 pub fn collateArrExp(mut inExp: Arc<DAE::Exp>, mut inFuncs: Option<Arc<AvlTreePathFunction::Tree>>) -> Result<(Arc<DAE::Exp>, Option<Arc<AvlTreePathFunction::Tree>>)> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outFuncs: Option<Arc<AvlTreePathFunction::Tree>> = None;
     (outExp, outFuncs) = Expression::traverseExpBottomUp(inExp.clone(), (std::sync::Arc::new(traversingcollateArrExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Option<Arc<AvlTreePathFunction::Tree>>) -> Result<(Arc<DAE::Exp>, Option<Arc<AvlTreePathFunction::Tree>>)> + 'static>), inFuncs.clone())?;
     Ok((outExp, outFuncs))
 }
 
 fn traversingcollateArrExp(mut inExp: Arc<DAE::Exp>, mut inFuncs: Option<Arc<AvlTreePathFunction::Tree>>) -> Result<(Arc<DAE::Exp>, Option<Arc<AvlTreePathFunction::Tree>>)> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut funcs: Option<Arc<AvlTreePathFunction::Tree>> = None;
     (outExp, funcs) = 'mc: {
         let __mc_input = (inExp.clone(), inFuncs.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::MATRIX { matrix: Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: e1 @ Deref @ DAE::Exp::CREF { .. }, tail: _ }, tail: _ }, .. }, funcs) => {
-                    let mut e1_1: Arc<DAE::Exp>;
-                    let mut e1_2: Arc<DAE::Exp>;
+                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e1_2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     e1_1 = Expression::expStripLastSubs(e1.clone())?;
                     let __pa0 = ::match_deref::match_deref! { match &(Expression::extendArrExp(e1_1.clone(), false)?) {
                         (__pa0, true) => __pa0.clone(),
@@ -2427,8 +2427,8 @@ fn traversingcollateArrExp(mut inExp: Arc<DAE::Exp>, mut inFuncs: Option<Arc<Avl
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::MATRIX { matrix: Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: e1 @ Deref @ DAE::Exp::UNARY { exp: Deref @ DAE::Exp::CREF { .. }, .. }, tail: _ }, tail: _ }, .. }, funcs) => {
-                    let mut e1_1: Arc<DAE::Exp>;
-                    let mut e1_2: Arc<DAE::Exp>;
+                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e1_2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     e1_1 = Expression::expStripLastSubs(e1.clone())?;
                     let __pa0 = ::match_deref::match_deref! { match &(Expression::extendArrExp(e1_1.clone(), false)?) {
                         (__pa0, true) => __pa0.clone(),
@@ -2444,8 +2444,8 @@ fn traversingcollateArrExp(mut inExp: Arc<DAE::Exp>, mut inFuncs: Option<Arc<Avl
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::ARRAY { array: Deref @ metamodelica::List::Cons { head: e1 @ Deref @ DAE::Exp::CREF { .. }, tail: _ }, .. }, funcs) => {
-                    let mut e1_1: Arc<DAE::Exp>;
-                    let mut e1_2: Arc<DAE::Exp>;
+                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e1_2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     e1_1 = Expression::expStripLastSubs(e1.clone())?;
                     let __pa0 = ::match_deref::match_deref! { match &(Expression::extendArrExp(e1_1.clone(), false)?) {
                         (__pa0, true) => __pa0.clone(),
@@ -2461,8 +2461,8 @@ fn traversingcollateArrExp(mut inExp: Arc<DAE::Exp>, mut inFuncs: Option<Arc<Avl
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::ARRAY { array: Deref @ metamodelica::List::Cons { head: e1 @ Deref @ DAE::Exp::UNARY { exp: Deref @ DAE::Exp::CREF { .. }, .. }, tail: _ }, .. }, funcs) => {
-                    let mut e1_1: Arc<DAE::Exp>;
-                    let mut e1_2: Arc<DAE::Exp>;
+                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e1_2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     e1_1 = Expression::expStripLastSubs(e1.clone())?;
                     let __pa0 = ::match_deref::match_deref! { match &(Expression::extendArrExp(e1_1.clone(), false)?) {
                         (__pa0, true) => __pa0.clone(),
@@ -2529,8 +2529,8 @@ pub fn getEquationBlock(mut inInteger: i32, mut inComps: Arc<metamodelica::List<
     knots of a bigraph.
 ******************************************************************/
 pub fn adjacencyMatrix(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inIndexType: BackendDAE::IndexType, mut functionTree: Option<Arc<AvlTreePathFunction::Tree>>, mut isInitial: bool) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>)> {
-    let mut outAdjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut outAdjacencyMatrixT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut outAdjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut outAdjacencyMatrixT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     match '__try0: {
@@ -2558,8 +2558,8 @@ pub fn adjacencyMatrix(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inIndexTyp
 }
 
 pub fn adjacencyMatrixMasked(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inIndexType: BackendDAE::IndexType, mut inMask: metamodelica::Array<bool>, mut functionTree: Option<Arc<AvlTreePathFunction::Tree>>, mut isInitial: bool) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>)> {
-    let mut outAdjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut outAdjacencyMatrixT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut outAdjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut outAdjacencyMatrixT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     match '__try0: {
@@ -2587,10 +2587,10 @@ pub fn adjacencyMatrixMasked(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inIn
 }
 
 pub fn adjacencyMatrixScalar(mut syst: Arc<BackendDAE::EqSystem>, mut inIndexType: BackendDAE::IndexType, mut functionTree: Option<Arc<AvlTreePathFunction::Tree>>, mut isInitial: bool) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>)> {
-    let mut outAdjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut outAdjacencyMatrixT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut outMapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut outMapIncRowEqn: metamodelica::Array<i32>;
+    let mut outAdjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut outAdjacencyMatrixT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut outMapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut outMapIncRowEqn: metamodelica::Array<i32> = Default::default();
     let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     match '__try0: {
@@ -2675,8 +2675,8 @@ pub fn hasScalarAdjacencyMatrix(mut syst: Arc<BackendDAE::EqSystem>) -> Result<b
 
 pub fn setAnalyticalToStructuralProcessed(mut syst: Arc<BackendDAE::EqSystem>, mut processed: bool) -> Result<Arc<BackendDAE::EqSystem>> {
     let mut syst: Arc<BackendDAE::EqSystem> = syst;
-    let mut mapArrayToScalar: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut mapScalarToArray: metamodelica::Array<i32>;
+    let mut mapArrayToScalar: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut mapScalarToArray: metamodelica::Array<i32> = Default::default();
     let mut indexType: BackendDAE::IndexType = BackendDAE::IndexType::ABSOLUTE;
     let mut scalar: bool = false;
     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(syst.mapping.clone()) {
@@ -2692,8 +2692,8 @@ pub fn setAnalyticalToStructuralProcessed(mut syst: Arc<BackendDAE::EqSystem>, m
 }
 
 pub fn adjacencyMatrixDispatch(mut inVars: BackendDAE::Variables, mut inEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut inIndexType: BackendDAE::IndexType, mut functionTree: Option<Arc<AvlTreePathFunction::Tree>>, mut isInitial: bool) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>)> {
-    let mut outAdjacencyArray: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut outAdjacencyArrayT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut outAdjacencyArray: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut outAdjacencyArrayT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut num_eqs: i32 = 0;
     let mut num_vars: i32 = 0;
     let mut eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
@@ -2714,8 +2714,8 @@ pub fn adjacencyMatrixDispatch(mut inVars: BackendDAE::Variables, mut inEqns: Ar
 }
 
 pub fn adjacencyMatrixDispatchMasked(mut inVars: BackendDAE::Variables, mut inEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut inIndexType: BackendDAE::IndexType, mut inMask: metamodelica::Array<bool>, mut functionTree: Option<Arc<AvlTreePathFunction::Tree>>, mut isInitial: bool) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>)> {
-    let mut outAdjacencyArray: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut outAdjacencyArrayT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut outAdjacencyArray: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut outAdjacencyArrayT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut num_eqs: i32 = 0;
     let mut num_vars: i32 = 0;
     let mut eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
@@ -2738,10 +2738,10 @@ pub fn adjacencyMatrixDispatchMasked(mut inVars: BackendDAE::Variables, mut inEq
 }
 
 fn adjacencyMatrixDispatchScalar(mut inVars: BackendDAE::Variables, mut inEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut inIndexType: BackendDAE::IndexType, mut functionTree: Option<Arc<AvlTreePathFunction::Tree>>, mut isInitial: bool) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>)> {
-    let mut outAdjacencyArray: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut outAdjacencyArrayT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut omapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut omapIncRowEqn: metamodelica::Array<i32>;
+    let mut outAdjacencyArray: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut outAdjacencyArrayT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut omapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut omapIncRowEqn: metamodelica::Array<i32> = Default::default();
     let mut num_eqs: i32 = 0;
     let mut num_vars: i32 = 0;
     let mut size: i32 = 0;
@@ -2885,7 +2885,7 @@ pub fn adjacencyRow(mut inEquation: Arc<BackendDAE::Equation>, mut vars: Backend
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::FOR_EQUATION { iter: Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::CREF_IDENT { ident: r#str, .. }, .. }, body: eqn, .. } => {
                     let mut eqn = (*eqn).clone();
-                    (eqn, _) = BackendEquation::traverseExpsOfEquation(eqn.clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static> = (std::sync::Arc::new(fnptr!(stripIterSub, Arc<DAE::Exp>, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArcStr) -> Result<(Arc<DAE::Exp>, bool, ArcStr)> + 'static>); move |__pe_a0, __pe_a2| Expression::traverseExpTopDown(__pe_a0, __pe_b1.clone(), __pe_a2) }), (r#str.clone()).clone())?;
+                    (eqn, _) = BackendEquation::traverseExpsOfEquation(eqn.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static> = (std::sync::Arc::new(fnptr!(stripIterSub, Arc<DAE::Exp>, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArcStr) -> Result<(Arc<DAE::Exp>, bool, ArcStr)> + 'static>); move |__pe_a0, __pe_a2| Expression::traverseExpTopDown(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), (r#str.clone()).clone())?;
                     Ok(adjacencyRow(eqn.clone(), vars.clone(), inIndexType.clone(), functionTree.clone(), iRow.clone(), isInitial.clone())?)
                 }
                 _ => bail!("nomatch"),
@@ -2896,7 +2896,7 @@ pub fn adjacencyRow(mut inEquation: Arc<BackendDAE::Equation>, mut vars: Backend
                 Deref @ BackendDAE::Equation::SOLVED_EQUATION { exp: e, componentRef: cr, .. } => {
                     let mut lst1: Arc<AvlSetInt::Tree> = Arc::new(AvlSetInt::Tree::EMPTY);
                     let mut res: Arc<AvlSetInt::Tree> = Arc::new(AvlSetInt::Tree::EMPTY);
-                    let mut expCref: Arc<DAE::Exp>;
+                    let mut expCref: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     expCref = Expression::crefExp(cr.clone())?;
                     lst1 = adjacencyRowExp(expCref.clone(), vars.clone(), iRow.clone(), functionTree.clone(), inIndexType.clone(), isInitial.clone())?;
                     res = adjacencyRowExp(e.clone(), vars.clone(), lst1.clone(), functionTree.clone(), inIndexType.clone(), isInitial.clone())?;
@@ -2933,7 +2933,7 @@ pub fn adjacencyRow(mut inEquation: Arc<BackendDAE::Equation>, mut vars: Backend
                     let mut crefLst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
                     let mut varslst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
                     let mut p: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    res = traverseStmts(statementLst.clone(), Arc::new({ let __pe_b2 = vars.clone(); let __pe_b3 = functionTree.clone(); let __pe_b4 = inIndexType.clone(); let __pe_b5 = isInitial.clone(); move |__pe_a0, __pe_a1| adjacencyRowAlgorithm(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone()) }), iRow.clone())?;
+                    res = traverseStmts(statementLst.clone(), (std::sync::Arc::new({ let __pe_b2 = vars.clone(); let __pe_b3 = functionTree.clone(); let __pe_b4 = inIndexType.clone(); let __pe_b5 = isInitial.clone(); move |__pe_a0, __pe_a1| adjacencyRowAlgorithm(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<AvlSetInt::Tree>) -> Result<Arc<AvlSetInt::Tree>> + 'static>), iRow.clone())?;
                     crefLst = CheckModel::algorithmStatementListOutputs(statementLst.clone(), openmodelica_frontend_types::DAE::Expand::EXPAND)?;
                     for mut cr in &*crefLst.clone() {
                         let mut cr = cr.clone();
@@ -3026,7 +3026,7 @@ pub fn adjacencyRow(mut inEquation: Arc<BackendDAE::Equation>, mut vars: Backend
 }
 
 fn stripIterSub(mut inExp: Arc<DAE::Exp>, mut inIter: ArcStr) -> (Arc<DAE::Exp>, bool, ArcStr) {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cont: bool = false;
     let mut outIter: ArcStr = inIter.clone();
     (outExp, cont) = (::match_deref::match_deref! { match &(inExp.clone()) {
@@ -3105,7 +3105,7 @@ fn adjacencyRowWhenOps(mut inWhenOps: Arc<metamodelica::List<BackendDAE::WhenOpe
             outRow.clone()
         },
         Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::REINIT { value: e2, stateVar: cr, .. }, tail: rest } => {
-            let mut e1: Arc<DAE::Exp>;
+            let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             e1 = Expression::crefExp(cr.clone())?;
             outRow = adjacencyRowExp(e1.clone(), inVariables.clone(), inRow.clone(), functionTree.clone(), inIndexType.clone(), isInitial.clone())?;
             outRow = adjacencyRowExp(e2.clone(), inVariables.clone(), outRow.clone(), functionTree.clone(), inIndexType.clone(), isInitial.clone())?;
@@ -3200,9 +3200,9 @@ pub fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Va
 }
 
 pub fn traversingadjacencyRowExpSolvableFinder(mut inExp: Arc<DAE::Exp>, mut inTpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, Arc<AvlSetPath::Tree>, bool, Option<Arc<AvlTreePathFunction::Tree>>)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, Arc<AvlSetPath::Tree>, bool, Option<Arc<AvlTreePathFunction::Tree>>))> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cont: bool = false;
-    let mut outTpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, Arc<AvlSetPath::Tree>, bool, Option<Arc<AvlTreePathFunction::Tree>>);
+    let mut outTpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, Arc<AvlSetPath::Tree>, bool, Option<Arc<AvlTreePathFunction::Tree>>) = (<BackendDAE::Variables as ::std::default::Default>::default(), Arc::new(AvlSetInt::Tree::EMPTY), Arc::new(AvlSetPath::Tree::EMPTY), false, None);
     (outExp, cont, outTpl) = 'mc: {
         let __mc_input = (inExp.clone(), inTpl.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -3241,7 +3241,7 @@ pub fn traversingadjacencyRowExpSolvableFinder(mut inExp: Arc<DAE::Exp>, mut inT
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::ASUB { sub: subs, exp: Deref @ DAE::Exp::CREF { componentRef: cr, .. } }, (vars, pa, visitedPaths, isInitial, ofunctionTree)) => {
                     let mut p: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    let mut e1: Arc<DAE::Exp>;
+                    let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut varslst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
                     let mut explst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut crlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
@@ -3393,7 +3393,7 @@ pub fn traversingadjacencyRowExpSolvableFinder(mut inExp: Arc<DAE::Exp>, mut inT
                 (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "homotopy" }, .. }, (_, _, _, true, _)) => {
                     let mut b1: bool = false;
                     let mut b2: bool = false;
-                    let mut tpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, Arc<AvlSetPath::Tree>, bool, Option<Arc<AvlTreePathFunction::Tree>>);
+                    let mut tpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, Arc<AvlSetPath::Tree>, bool, Option<Arc<AvlTreePathFunction::Tree>>) = (<BackendDAE::Variables as ::std::default::Default>::default(), Arc::new(AvlSetInt::Tree::EMPTY), Arc::new(AvlSetPath::Tree::EMPTY), false, None);
                     (_, b1, tpl) = traversingadjacencyRowExpSolvableFinder(e1.clone(), inTpl.clone())?;
                     (_, b2, tpl) = traversingadjacencyRowExpSolvableFinder(e2.clone(), tpl.clone())?;
                     Ok((inExp.clone(), b1.clone() && b2.clone(), tpl.clone()))
@@ -3404,7 +3404,7 @@ pub fn traversingadjacencyRowExpSolvableFinder(mut inExp: Arc<DAE::Exp>, mut inT
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } } } } } } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "spatialDistribution" }, .. }, _) => {
-                    let mut tpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, Arc<AvlSetPath::Tree>, bool, Option<Arc<AvlTreePathFunction::Tree>>);
+                    let mut tpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, Arc<AvlSetPath::Tree>, bool, Option<Arc<AvlTreePathFunction::Tree>>) = (<BackendDAE::Variables as ::std::default::Default>::default(), Arc::new(AvlSetInt::Tree::EMPTY), Arc::new(AvlSetPath::Tree::EMPTY), false, None);
                     (_, _, tpl) = traversingadjacencyRowExpSolvableFinder(e2.clone(), inTpl.clone())?;
                     Ok(traversingadjacencyRowExpSolvableFinder(e1.clone(), tpl.clone())?)
                 }
@@ -3415,8 +3415,8 @@ pub fn traversingadjacencyRowExpSolvableFinder(mut inExp: Arc<DAE::Exp>, mut inT
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { .. }, .. }, (vars, pa, visitedPaths, isInitial, ofunctionTree @ Some(functionTree))) => {
                     if !((!(AvlSetPath::hasKey(visitedPaths.clone(), var_field!((*inExp).path, DAE::Exp::CALL).clone())?))) { bail!("guard") }
-                    let mut e1: Arc<DAE::Exp>;
-                    let mut tpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, Arc<AvlSetPath::Tree>, bool, Option<Arc<AvlTreePathFunction::Tree>>);
+                    let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut tpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, Arc<AvlSetPath::Tree>, bool, Option<Arc<AvlTreePathFunction::Tree>>) = (<BackendDAE::Variables as ::std::default::Default>::default(), Arc::new(AvlSetInt::Tree::EMPTY), Arc::new(AvlSetPath::Tree::EMPTY), false, None);
                     (e1, _) = Inline::forceInlineCall(inExp.clone(), metamodelica::nil(), (Some(functionTree.clone()), list![openmodelica_frontend_types::DAE::InlineType::NORM_INLINE, openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE]), Arc::new(openmodelica_ast_collections::AvlSetPath::Tree::EMPTY))?;
                     let false = (referenceEq(&inExp.clone(),&e1.clone())) else { bail!("pattern mismatch") };
                     (_, tpl) = Expression::traverseExpTopDown(e1.clone(), (std::sync::Arc::new(traversingadjacencyRowExpSolvableFinder) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, Arc<AvlSetPath::Tree>, bool, Option<Arc<AvlTreePathFunction::Tree>>)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, Arc<AvlSetPath::Tree>, bool, Option<Arc<AvlTreePathFunction::Tree>>))> + 'static>), (vars.clone(), pa.clone(), AvlSetPath::add(visitedPaths.clone(), var_field!((*inExp).path, DAE::Exp::CALL).clone())?, isInitial.clone(), ofunctionTree.clone()))?;
@@ -3627,8 +3627,8 @@ fn traversingAdjacencyRowIfExpEnhanced(mut e: Arc<DAE::Exp>, mut tpl: (BackendDA
                     let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
                     let mut it: i32 = 0;
                     let mut mark: i32 = 0;
-                    let mut at: metamodelica::Array<i32>;
-                    let mut rowmark: metamodelica::Array<i32>;
+                    let mut at: metamodelica::Array<i32> = Default::default();
+                    let mut rowmark: metamodelica::Array<i32> = Default::default();
                     let mut pa: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut bt: Arc<BinaryTree::BinTree> = Arc::new(<BinaryTree::BinTree as ::std::default::Default>::default());
                     let mut expCond = (*expCond).clone();
@@ -3685,9 +3685,9 @@ fn traversingAdjacencyRowIfExpEnhanced(mut e: Arc<DAE::Exp>, mut tpl: (BackendDA
 }
 
 pub fn traversingAdjacencyRowExpFinderBaseClock(mut inExp: Arc<DAE::Exp>, mut inTpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool))> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cont: bool = false;
-    let mut outTpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool);
+    let mut outTpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool) = (<BackendDAE::Variables as ::std::default::Default>::default(), Arc::new(AvlSetInt::Tree::EMPTY), false);
     (outExp, cont, outTpl) = 'mc: {
         let __mc_input = (inExp.clone(), inTpl.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -3718,7 +3718,7 @@ pub fn traversingAdjacencyRowExpFinderBaseClock(mut inExp: Arc<DAE::Exp>, mut in
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "sample" }, .. }, _) => {
-                    let mut outTpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool);
+                    let mut outTpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool) = outTpl.clone();
                     (_, outTpl) = Expression::traverseExpTopDown(e.clone(), (std::sync::Arc::new(traversingAdjacencyRowExpFinderBaseClock) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool))> + 'static>), inTpl.clone())?;
                     Ok((inExp.clone(), false, outTpl.clone()))
                 }
@@ -3728,7 +3728,7 @@ pub fn traversingAdjacencyRowExpFinderBaseClock(mut inExp: Arc<DAE::Exp>, mut in
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CLKCONST { clk: Deref @ DAE::ClockKind::SOLVER_CLOCK { c: e, .. } }, _) => {
-                    let mut outTpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool);
+                    let mut outTpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool) = outTpl.clone();
                     (_, outTpl) = Expression::traverseExpTopDown(e.clone(), (std::sync::Arc::new(traversingAdjacencyRowExpFinderBaseClock) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool))> + 'static>), inTpl.clone())?;
                     Ok((inExp.clone(), true, outTpl.clone()))
                 }
@@ -3773,9 +3773,9 @@ pub fn traversingAdjacencyRowExpFinderBaseClock(mut inExp: Arc<DAE::Exp>, mut in
 }
 
 pub fn traversingAdjacencyRowExpFinderSubClock(mut inExp: Arc<DAE::Exp>, mut inTpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool))> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cont: bool = false;
-    let mut outTpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool);
+    let mut outTpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool) = (<BackendDAE::Variables as ::std::default::Default>::default(), Arc::new(AvlSetInt::Tree::EMPTY), false);
     (outExp, cont, outTpl) = 'mc: {
         let __mc_input = (inExp.clone(), inTpl.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -3867,9 +3867,9 @@ pub fn traversingAdjacencyRowExpFinderSubClock(mut inExp: Arc<DAE::Exp>, mut inT
 }
 
 pub fn traversingadjacencyRowExpFinder(mut inExp: Arc<DAE::Exp>, mut inTpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool))> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cont: bool = false;
-    let mut outTpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool);
+    let mut outTpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool) = (<BackendDAE::Variables as ::std::default::Default>::default(), Arc::new(AvlSetInt::Tree::EMPTY), false);
     (outExp, cont, outTpl) = 'mc: {
         let __mc_input = (inExp.clone(), inTpl.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -3972,7 +3972,7 @@ pub fn traversingadjacencyRowExpFinder(mut inExp: Arc<DAE::Exp>, mut inTpl: (Bac
                 (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "homotopy" }, .. }, (_, _, true)) => {
                     let mut b1: bool = false;
                     let mut b2: bool = false;
-                    let mut tpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool);
+                    let mut tpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool) = (<BackendDAE::Variables as ::std::default::Default>::default(), Arc::new(AvlSetInt::Tree::EMPTY), false);
                     (_, b1, tpl) = traversingadjacencyRowExpFinder(e1.clone(), inTpl.clone())?;
                     (_, b2, tpl) = traversingadjacencyRowExpFinder(e2.clone(), tpl.clone())?;
                     Ok((inExp.clone(), b1.clone() && b2.clone(), tpl.clone()))
@@ -3983,7 +3983,7 @@ pub fn traversingadjacencyRowExpFinder(mut inExp: Arc<DAE::Exp>, mut inTpl: (Bac
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } } } } } } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "spatialDistribution" }, .. }, _) => {
-                    let mut tpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool);
+                    let mut tpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool) = (<BackendDAE::Variables as ::std::default::Default>::default(), Arc::new(AvlSetInt::Tree::EMPTY), false);
                     (_, _, tpl) = traversingadjacencyRowExpFinder(e2.clone(), inTpl.clone())?;
                     Ok(traversingadjacencyRowExpFinder(e1.clone(), tpl.clone())?)
                 }
@@ -4101,9 +4101,9 @@ fn adjacencyRowExp1DiscreteOrArray(mut inVarLst: Arc<metamodelica::List<BackendD
 }
 
 pub fn traversingadjacencyRowExpFinderwithInput(mut inExp: Arc<DAE::Exp>, mut inTpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool))> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cont: bool = false;
-    let mut outTpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool);
+    let mut outTpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool) = (<BackendDAE::Variables as ::std::default::Default>::default(), Arc::new(AvlSetInt::Tree::EMPTY), false);
     (outExp, cont, outTpl) = 'mc: {
         let __mc_input = (inExp.clone(), inTpl.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -4203,7 +4203,7 @@ pub fn traversingadjacencyRowExpFinderwithInput(mut inExp: Arc<DAE::Exp>, mut in
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "homotopy" }, .. }, (_, _, true)) => {
-                    let mut tpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool);
+                    let mut tpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool) = (<BackendDAE::Variables as ::std::default::Default>::default(), Arc::new(AvlSetInt::Tree::EMPTY), false);
                     let mut b1: bool = false;
                     let mut b2: bool = false;
                     (_, b1, tpl) = traversingadjacencyRowExpFinderwithInput(e1.clone(), inTpl.clone())?;
@@ -4216,7 +4216,7 @@ pub fn traversingadjacencyRowExpFinderwithInput(mut inExp: Arc<DAE::Exp>, mut in
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } } } } } } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "spatialDistribution" }, .. }, _) => {
-                    let mut tpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool);
+                    let mut tpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, bool) = (<BackendDAE::Variables as ::std::default::Default>::default(), Arc::new(AvlSetInt::Tree::EMPTY), false);
                     (_, _, tpl) = traversingadjacencyRowExpFinderwithInput(e2.clone(), inTpl.clone())?;
                     Ok(traversingadjacencyRowExpFinderwithInput(e1.clone(), tpl.clone())?)
                 }
@@ -4335,18 +4335,18 @@ pub fn updateAdjacencyMatrix(mut syst: Arc<BackendDAE::EqSystem>, mut inIndxType
 }
 
 fn updateAdjacencyMatrix1(mut vars: BackendDAE::Variables, mut daeeqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut inIndxType: BackendDAE::IndexType, mut functionTree: Option<Arc<AvlTreePathFunction::Tree>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mt: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut inIntegerLst: Arc<metamodelica::List<i32>>, mut isInitial: bool) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>)> {
-    let mut outAdjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut outAdjacencyMatrixT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut outAdjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut outAdjacencyMatrixT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     (outAdjacencyMatrix, outAdjacencyMatrixT) = (::match_deref::match_deref! { match &(inIntegerLst.clone()) {
         Deref @ metamodelica::List::Nil => {
             (m.clone(), mt.clone())
         },
         Deref @ metamodelica::List::Cons { head: e, tail: eqns } => {
-            let mut m_1: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut m_2: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut mt_1: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut mt_2: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut mt_3: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+            let mut m_1: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut m_2: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut mt_1: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut mt_2: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut mt_3: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
             let mut abse: i32 = 0;
             let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
             let mut row: Arc<AvlSetInt::Tree> = Arc::new(AvlSetInt::Tree::EMPTY);
@@ -4371,8 +4371,8 @@ fn updateAdjacencyMatrix1(mut vars: BackendDAE::Variables, mut daeeqns: Arc<Expa
 
 pub fn updateAdjacencyMatrixScalar(mut syst: Arc<BackendDAE::EqSystem>, mut inIndxType: BackendDAE::IndexType, mut functionTree: Option<Arc<AvlTreePathFunction::Tree>>, mut inIntegerLst: Arc<metamodelica::List<i32>>, mut iMapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iMapIncRowEqn: metamodelica::Array<i32>, mut isInitial: bool) -> Result<(Arc<BackendDAE::EqSystem>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>)> {
     let mut osyst: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    let mut oMapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut oMapIncRowEqn: metamodelica::Array<i32>;
+    let mut oMapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut oMapIncRowEqn: metamodelica::Array<i32> = Default::default();
     (osyst, oMapEqnIncRow, oMapIncRowEqn) = 'mc: {
         let __mc_input = syst.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -4384,8 +4384,8 @@ pub fn updateAdjacencyMatrixScalar(mut syst: Arc<BackendDAE::EqSystem>, mut inIn
                     let mut newsize1: i32 = 0;
                     let mut deltasize: i32 = 0;
                     let mut eqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    let mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-                    let mut mapIncRowEqn: metamodelica::Array<i32>;
+                    let mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+                    let mut mapIncRowEqn: metamodelica::Array<i32> = Default::default();
                     let mut mt = (*mt).clone();
                     let mut m = (*m).clone();
                     oldsize = (iMapEqnIncRow.clone().borrow().len() as i32);
@@ -4420,20 +4420,20 @@ pub fn updateAdjacencyMatrixScalar(mut syst: Arc<BackendDAE::EqSystem>, mut inIn
 }
 
 fn updateAdjacencyMatrixScalar1(mut vars: BackendDAE::Variables, mut daeeqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mt: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut inIntegerLst: Arc<metamodelica::List<i32>>, mut iMapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iMapIncRowEqn: metamodelica::Array<i32>, mut inIndxType: BackendDAE::IndexType, mut functionTree: Option<Arc<AvlTreePathFunction::Tree>>, mut isInitial: bool) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>)> {
-    let mut outAdjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut outAdjacencyMatrixT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut oMapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut oMapIncRowEqn: metamodelica::Array<i32>;
+    let mut outAdjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut outAdjacencyMatrixT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut oMapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut oMapIncRowEqn: metamodelica::Array<i32> = Default::default();
     (outAdjacencyMatrix, outAdjacencyMatrixT, oMapEqnIncRow, oMapIncRowEqn) = (::match_deref::match_deref! { match &(inIntegerLst.clone()) {
         Deref @ metamodelica::List::Nil => {
             (m.clone(), mt.clone(), iMapEqnIncRow.clone(), iMapIncRowEqn.clone())
         },
         Deref @ metamodelica::List::Cons { head: e, tail: eqns } if (BackendEquation::has(daeeqns.clone(), intAbs(e.clone()))) => {
-            let mut m_1: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut m_2: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut mt_1: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut mt_2: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut mt_3: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+            let mut m_1: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut m_2: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut mt_1: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut mt_2: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut mt_3: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
             let mut abse: i32 = 0;
             let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
             let mut row: Arc<AvlSetInt::Tree> = Arc::new(AvlSetInt::Tree::EMPTY);
@@ -4443,8 +4443,8 @@ fn updateAdjacencyMatrixScalar1(mut vars: BackendDAE::Variables, mut daeeqns: Ar
             let mut outvars: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut oldvars: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut scalarindxs: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            let mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut mapIncRowEqn: metamodelica::Array<i32>;
+            let mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut mapIncRowEqn: metamodelica::Array<i32> = Default::default();
             abse = intAbs(e.clone());
             eqn = BackendEquation::get(daeeqns.clone(), abse.clone());
             (row, _) = adjacencyRow(eqn.clone(), vars.clone(), inIndxType.clone(), functionTree.clone(), Arc::new(crate::AvlSetInt::Tree::EMPTY), isInitial.clone())?;
@@ -4460,11 +4460,11 @@ fn updateAdjacencyMatrixScalar1(mut vars: BackendDAE::Variables, mut daeeqns: Ar
             (m_2.clone(), mt_3.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone())
         },
         Deref @ metamodelica::List::Cons { head: e, tail: eqns } => {
-            let mut m_1: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut m_2: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut mt_1: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut mt_2: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut mt_3: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+            let mut m_1: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut m_2: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut mt_1: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut mt_2: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut mt_3: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
             let mut abse: i32 = 0;
             let mut row: Arc<AvlSetInt::Tree> = Arc::new(AvlSetInt::Tree::EMPTY);
             let mut invarsTree: Arc<AvlSetInt::Tree> = Arc::new(AvlSetInt::Tree::EMPTY);
@@ -4473,8 +4473,8 @@ fn updateAdjacencyMatrixScalar1(mut vars: BackendDAE::Variables, mut daeeqns: Ar
             let mut outvars: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut oldvars: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut scalarindxs: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            let mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut mapIncRowEqn: metamodelica::Array<i32>;
+            let mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut mapIncRowEqn: metamodelica::Array<i32> = Default::default();
             abse = intAbs(e.clone());
             row = Arc::new(crate::AvlSetInt::Tree::EMPTY);
             scalarindxs = iMapEqnIncRow.borrow()[(abse.clone()-1) as usize].clone();
@@ -4494,18 +4494,18 @@ fn updateAdjacencyMatrixScalar1(mut vars: BackendDAE::Variables, mut daeeqns: Ar
 }
 
 fn updateAdjacencyMatrixScalar2(mut index: i32, mut n: i32, mut size: i32, mut vars: BackendDAE::Variables, mut daeeqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mt: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iMapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iMapIncRowEqn: metamodelica::Array<i32>, mut inIndxType: BackendDAE::IndexType, mut functionTree: Option<Arc<AvlTreePathFunction::Tree>>, mut isInitial: bool) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>)> {
-    let mut outAdjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut outAdjacencyMatrixT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut oMapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut oMapIncRowEqn: metamodelica::Array<i32>;
+    let mut outAdjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut outAdjacencyMatrixT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut oMapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut oMapIncRowEqn: metamodelica::Array<i32> = Default::default();
     (outAdjacencyMatrix, outAdjacencyMatrixT, oMapEqnIncRow, oMapIncRowEqn) = 'mc: {
         let __mc_input = functionTree.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     if !((!(intGt(index.clone(), n.clone())) && BackendEquation::has(daeeqns.clone(), intAbs(index.clone())))) { bail!("guard") }
-                    let mut m1: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-                    let mut mt1: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+                    let mut m1: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+                    let mut mt1: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
                     let mut abse: i32 = 0;
                     let mut rowsize: i32 = 0;
                     let mut new_size: i32 = 0;
@@ -4513,8 +4513,8 @@ fn updateAdjacencyMatrixScalar2(mut index: i32, mut n: i32, mut size: i32, mut v
                     let mut row: Arc<AvlSetInt::Tree> = Arc::new(AvlSetInt::Tree::EMPTY);
                     let mut scalarindxs: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut row_lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    let mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-                    let mut mapIncRowEqn: metamodelica::Array<i32>;
+                    let mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+                    let mut mapIncRowEqn: metamodelica::Array<i32> = Default::default();
                     abse = intAbs(index.clone());
                     eqn = BackendEquation::get(daeeqns.clone(), abse.clone());
                     rowsize = BackendEquation::equationSize(eqn.clone())?;
@@ -4543,16 +4543,16 @@ fn updateAdjacencyMatrixScalar2(mut index: i32, mut n: i32, mut size: i32, mut v
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut m1: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-                    let mut mt1: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+                    let mut m1: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+                    let mut mt1: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
                     let mut abse: i32 = 0;
                     let mut rowsize: i32 = 0;
                     let mut new_size: i32 = 0;
                     let mut row: Arc<AvlSetInt::Tree> = Arc::new(AvlSetInt::Tree::EMPTY);
                     let mut scalarindxs: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut row_lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    let mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-                    let mut mapIncRowEqn: metamodelica::Array<i32>;
+                    let mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+                    let mut mapIncRowEqn: metamodelica::Array<i32> = Default::default();
                     abse = intAbs(index.clone());
                     rowsize = 1;
                     row = Arc::new(crate::AvlSetInt::Tree::EMPTY);
@@ -4583,7 +4583,7 @@ fn getOldVars(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut pos:
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn removeValuefromMatrix(mut inValue: i32, mut inIntegerLst: Arc<metamodelica::List<i32>>, mut inAdjacencyMatrixT: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
-    let mut outAdjacencyMatrixT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut outAdjacencyMatrixT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     outAdjacencyMatrixT = 'mc: {
         let __mc_input = (inValue.clone(), inIntegerLst.clone(), inAdjacencyMatrixT.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -4597,8 +4597,8 @@ fn removeValuefromMatrix(mut inValue: i32, mut inIntegerLst: Arc<metamodelica::L
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (v, Deref @ metamodelica::List::Cons { head: k, tail: keys }, mt) => {
-                    let mut mt_1: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-                    let mut mt_2: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+                    let mut mt_1: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+                    let mut mt_2: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
                     let mut mlst: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut mlst1: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut kabs: i32 = 0;
@@ -4617,7 +4617,7 @@ fn removeValuefromMatrix(mut inValue: i32, mut inIntegerLst: Arc<metamodelica::L
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (v, Deref @ metamodelica::List::Cons { head: _, tail: keys }, mt) => {
-                    let mut mt_2: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+                    let mut mt_2: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
                     mt_2 = removeValuefromMatrix(v.clone(), keys.clone(), mt.clone())?;
                     Ok(mt_2.clone())
                 }
@@ -4641,7 +4641,7 @@ fn removeValuefromMatrix(mut inValue: i32, mut inIntegerLst: Arc<metamodelica::L
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn addValuetoMatrix(mut inValue: i32, mut inIntegerLst: Arc<metamodelica::List<i32>>, mut inAdjacencyMatrixT: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
-    let mut outAdjacencyMatrixT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut outAdjacencyMatrixT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     outAdjacencyMatrixT = 'mc: {
         let __mc_input = (inValue.clone(), inIntegerLst.clone(), inAdjacencyMatrixT.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -4655,8 +4655,8 @@ fn addValuetoMatrix(mut inValue: i32, mut inIntegerLst: Arc<metamodelica::List<i
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (v, Deref @ metamodelica::List::Cons { head: k, tail: keys }, mt) => {
-                    let mut mt_1: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-                    let mut mt_2: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+                    let mut mt_1: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+                    let mut mt_2: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
                     let mut mlst: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut kabs: i32 = 0;
                     let mut v_1: i32 = 0;
@@ -4664,7 +4664,7 @@ fn addValuetoMatrix(mut inValue: i32, mut inIntegerLst: Arc<metamodelica::List<i
                     mlst = getOldVars(mt.clone(), kabs.clone());
                     v_1 = if (intGt(k.clone(), 0)) {v.clone()} else {-(v.clone())};
                     let false = (listMember(v_1.clone(), mlst.clone())) else { bail!("pattern mismatch") };
-                    mt_1 = Array::replaceAtWithFill(kabs.clone(), cons(v_1.clone(), mlst.clone()), metamodelica::nil(), mt.clone())?;
+                    mt_1 = Array::replaceAtWithFill(kabs.clone(), metamodelica::cons(v_1.clone(), mlst.clone()), metamodelica::nil(), mt.clone())?;
                     mt_2 = addValuetoMatrix(v.clone(), keys.clone(), mt_1.clone())?;
                     Ok(mt_2.clone())
                 }
@@ -4674,7 +4674,7 @@ fn addValuetoMatrix(mut inValue: i32, mut inIntegerLst: Arc<metamodelica::List<i
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (v, Deref @ metamodelica::List::Cons { head: _, tail: keys }, mt) => {
-                    let mut mt_2: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+                    let mut mt_2: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
                     mt_2 = addValuetoMatrix(v.clone(), keys.clone(), mt.clone())?;
                     Ok(mt_2.clone())
                 }
@@ -4707,24 +4707,24 @@ pub fn getAdjacencyMatrixfromOptionForMapEqSystem(mut syst: Arc<BackendDAE::EqSy
 
 pub fn getAdjacencyMatrixfromOption(mut inSyst: Arc<BackendDAE::EqSystem>, mut inIndxType: BackendDAE::IndexType, mut inFunctionTree: Option<Arc<AvlTreePathFunction::Tree>>, mut isInitial: bool) -> Result<(Arc<BackendDAE::EqSystem>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>)> {
     let mut outSyst: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    let mut outM: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut outMT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut outM: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut outMT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     (outSyst, outM, outMT) = (::match_deref::match_deref! { match &(inSyst.clone()) {
         Deref @ BackendDAE::EqSystem { m: None, .. } => {
-            let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut mapping: (metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, BackendDAE::IndexType, bool, bool);
+            let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut mapping: (metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, BackendDAE::IndexType, bool, bool) = (Default::default(), Default::default(), BackendDAE::IndexType::ABSOLUTE, false, false);
             (m, mT) = adjacencyMatrix(inSyst.clone(), inIndxType.clone(), inFunctionTree.clone(), isInitial.clone())?;
             mapping = getArrayAdjacencyMatrixMapping(ExpandableArray::getNumberOfElements(inSyst.orderedEqs.clone()), inIndxType.clone(), false);
             (setEqSystMatrices(inSyst.clone(), Some(m.clone()), Some(mT.clone()), Some(mapping.clone()))?, m.clone(), mT.clone())
         },
         Deref @ BackendDAE::EqSystem { mapping: None, mT: None, m: Some(m), orderedVars: v, .. } => {
-            let mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+            let mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
             mT = AdjacencyMatrix::transposeAdjacencyMatrix(m.clone(), BackendVariable::varsSize(v.clone()))?;
             (setEqSystMatrices(inSyst.clone(), Some(m.clone()), Some(mT.clone()), None)?, m.clone(), mT.clone())
         },
         Deref @ BackendDAE::EqSystem { mapping: Some(mapping), mT: None, m: Some(m), orderedVars: v, .. } => {
-            let mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+            let mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
             mT = AdjacencyMatrix::transposeAdjacencyMatrix(m.clone(), BackendVariable::varsSize(v.clone()))?;
             (setEqSystMatrices(inSyst.clone(), Some(m.clone()), Some(mT.clone()), Some(mapping.clone()))?, m.clone(), mT.clone())
         },
@@ -4737,7 +4737,7 @@ pub fn getAdjacencyMatrixfromOption(mut inSyst: Arc<BackendDAE::EqSystem>, mut i
 }
 
 pub fn getArrayAdjacencyMatrixMapping(mut size: i32, mut indexType: BackendDAE::IndexType, mut scalar: bool) -> (metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, BackendDAE::IndexType, bool, bool) {
-    let mut mapping: (metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, BackendDAE::IndexType, bool, bool);
+    let mut mapping: (metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, BackendDAE::IndexType, bool, bool) = (Default::default(), Default::default(), BackendDAE::IndexType::ABSOLUTE, false, false);
     let mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>> = arrayCreate(size.clone(), list![-1]);
     let mut mapIncRowEqn: metamodelica::Array<i32> = arrayCreate(size.clone(), -1);
     for mut i in 1..=size.clone() {
@@ -4756,9 +4756,9 @@ pub fn getArrayAdjacencyMatrixMapping(mut size: i32, mut indexType: BackendDAE::
 
 pub fn getAdjacencyMatrix(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inIndxType: BackendDAE::IndexType, mut functionTree: Option<Arc<AvlTreePathFunction::Tree>>, mut isInitial: bool) -> Result<(Arc<BackendDAE::EqSystem>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>)> {
     let mut outEqSystem: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    let mut outM: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut outMT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut mapping: (metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, BackendDAE::IndexType, bool, bool);
+    let mut outM: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut outMT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut mapping: (metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, BackendDAE::IndexType, bool, bool) = (Default::default(), Default::default(), BackendDAE::IndexType::ABSOLUTE, false, false);
     (outM, outMT) = adjacencyMatrix(inEqSystem.clone(), inIndxType.clone(), functionTree.clone(), isInitial.clone())?;
     mapping = getArrayAdjacencyMatrixMapping(ExpandableArray::getNumberOfElements(inEqSystem.orderedEqs.clone()), inIndxType.clone(), false);
     outEqSystem = setEqSystMatrices(inEqSystem.clone(), Some(outM.clone()), Some(outMT.clone()), Some(mapping.clone()))?;
@@ -4767,25 +4767,25 @@ pub fn getAdjacencyMatrix(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inIndxT
 
 pub fn getAdjacencyMatrixScalar(mut syst: Arc<BackendDAE::EqSystem>, mut inIndxType: BackendDAE::IndexType, mut functionTree: Option<Arc<AvlTreePathFunction::Tree>>, mut isInitial: bool) -> Result<(Arc<BackendDAE::EqSystem>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>)> {
     let mut osyst: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    let mut outM: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut outMT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut outMapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut outMapIncRowEqn: metamodelica::Array<i32>;
+    let mut outM: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut outMT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut outMapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut outMapIncRowEqn: metamodelica::Array<i32> = Default::default();
     (outM, outMT, outMapEqnIncRow, outMapIncRowEqn) = adjacencyMatrixScalar(syst.clone(), inIndxType.clone(), functionTree.clone(), isInitial.clone())?;
     osyst = setEqSystMatrices(syst.clone(), Some(outM.clone()), Some(outMT.clone()), Some((outMapEqnIncRow.clone(), outMapIncRowEqn.clone(), inIndxType.clone(), true, false)))?;
     Ok((osyst, outM, outMT, outMapEqnIncRow, outMapIncRowEqn))
 }
 
 pub fn removedAdjacencyMatrix(mut inSyst: Arc<BackendDAE::EqSystem>, mut inIndxType: BackendDAE::IndexType, mut inFunctionTree: Option<Arc<AvlTreePathFunction::Tree>>, mut isInitial: bool) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>)> {
-    let mut outM: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut outMT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut outM: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut outMT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     (outM, outMT) = adjacencyMatrixDispatch(inSyst.orderedVars.clone(), inSyst.removedEqs.clone(), inIndxType.clone(), inFunctionTree.clone(), isInitial.clone())?;
     Ok((outM, outMT))
 }
 
 pub fn removedAdjacencyMatrixMasked(mut inSyst: Arc<BackendDAE::EqSystem>, mut inIndxType: BackendDAE::IndexType, mut inMask: metamodelica::Array<bool>, mut inFunctionTree: Option<Arc<AvlTreePathFunction::Tree>>, mut isInitial: bool) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>)> {
-    let mut outM: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut outMT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut outM: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut outMT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     (outM, outMT) = adjacencyMatrixDispatchMasked(inSyst.orderedVars.clone(), inSyst.removedEqs.clone(), inIndxType.clone(), inMask.clone(), inFunctionTree.clone(), isInitial.clone())?;
     Ok((outM, outMT))
 }
@@ -4794,13 +4794,13 @@ fn traverseStmts<ArgT: Clone + 'static>(mut inStmts: Arc<metamodelica::List<Arc<
     pub type FuncExpType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut extraArg: ArgT = extraArg;
-    let mut e: Arc<DAE::Exp>;
-    let mut e2: Arc<DAE::Exp>;
+    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut expl1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
     let mut tp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    let mut ew: Arc<DAE::Statement>;
+    let mut ew: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
     let mut id1: ArcStr = arcstr::literal!("");
     let mut r#str: ArcStr = arcstr::literal!("");
     let mut algElse: Arc<DAE::Else> = Arc::new(DAE::Else::NOELSE);
@@ -5028,7 +5028,7 @@ fn traverseStmtsElse<Type_a: Clone + 'static>(mut inElse: Arc<DAE::Else>, mut fu
 }
 
 pub fn adjacencyMatrixToSparsePattern(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> metamodelica::Array<Arc<metamodelica::List<i32>>> {
-    let mut res: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut res: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut lst: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut lst_1: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     lst = Arc::new(m.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
@@ -5047,23 +5047,23 @@ pub fn adjacencyMatrixToSparsePattern(mut m: metamodelica::Array<Arc<metamodelic
  of a variable are available.
 ******************************************************************/
 pub fn getAdjacencyMatrixEnhancedScalar(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<BackendDAE::Shared>, mut trytosolve: bool) -> Result<(metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>)> {
-    let mut outAdjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>;
-    let mut outAdjacencyMatrixT: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>;
-    let mut outMapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut outMapIncRowEqn: metamodelica::Array<i32>;
+    let mut outAdjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> = Default::default();
+    let mut outAdjacencyMatrixT: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> = Default::default();
+    let mut outMapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut outMapIncRowEqn: metamodelica::Array<i32> = Default::default();
     let mut varsSolvedInWhenEqnsTupleList: Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>> = metamodelica::nil();
     (outAdjacencyMatrix, outAdjacencyMatrixT, outMapEqnIncRow, outMapIncRowEqn) = 'mc: {
         let __mc_input = (syst.clone(), shared.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ BackendDAE::EqSystem { orderedEqs: eqns, orderedVars: vars, .. }, Deref @ BackendDAE::Shared { globalKnownVars, .. }) => {
-                    let mut arr: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>;
-                    let mut arrT: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>;
+                    let mut arr: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> = Default::default();
+                    let mut arrT: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> = Default::default();
                     let mut numberOfEqs: i32 = 0;
                     let mut numberofVars: i32 = 0;
-                    let mut rowmark: metamodelica::Array<i32>;
-                    let mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-                    let mut mapIncRowEqn: metamodelica::Array<i32>;
+                    let mut rowmark: metamodelica::Array<i32> = Default::default();
+                    let mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+                    let mut mapIncRowEqn: metamodelica::Array<i32> = Default::default();
                     let mut varsSolvedInWhenEqnsTupleList: Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>> = varsSolvedInWhenEqnsTupleList.clone();
                     numberOfEqs = BackendEquation::getNumberOfEquations(eqns.clone());
                     numberofVars = BackendVariable::varsSize(vars.clone());
@@ -5161,10 +5161,10 @@ pub fn makeWhenEqnVarsUnsolvable(mut m: metamodelica::Array<Arc<metamodelica::Li
 }
 
 fn adjacencyMatrixDispatchEnhancedScalar(mut vars: BackendDAE::Variables, mut eqArr: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut adjacencyArrayT: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, mut numberOfEqs: i32, mut rowmark: metamodelica::Array<i32>, mut globalKnownVars: BackendDAE::Variables, mut trytosolve: bool, mut shared: Arc<BackendDAE::Shared>) -> Result<(metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>>)> {
-    let mut outAdjacencyArray: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>;
+    let mut outAdjacencyArray: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> = Default::default();
     let mut adjacencyArrayT: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> = adjacencyArrayT;
-    let mut omapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut omapIncRowEqn: metamodelica::Array<i32>;
+    let mut omapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut omapIncRowEqn: metamodelica::Array<i32> = Default::default();
     let mut varsSolvedInWhenEqnsTupleListOut: Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>> = metamodelica::nil();
     let mut inAdjacencyArray: Arc<metamodelica::List<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>> = metamodelica::nil();
     let mut mapEqnIncRow: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
@@ -5184,7 +5184,7 @@ fn adjacencyMatrixDispatchEnhancedScalar(mut vars: BackendDAE::Variables, mut eq
         inAdjacencyArray = List::consN(size.clone(), row.clone(), inAdjacencyArray.clone());
         adjacencyArrayT = fillincAdjacencyMatrixTEnhanced(row.clone(), rowindxs.clone(), adjacencyArrayT.clone())?;
         varsSolvedInWhenEqnsTupleListOut = listAppend(varsSolvedInWhenEqnsTuple.clone(), varsSolvedInWhenEqnsTupleListOut.clone());
-        mapEqnIncRow = cons(rowindxs.clone(), mapEqnIncRow.clone());
+        mapEqnIncRow = metamodelica::cons(rowindxs.clone(), mapEqnIncRow.clone());
     }
     outAdjacencyArray = List::listArrayReverse(inAdjacencyArray.clone())?;
     omapEqnIncRow = List::listArrayReverse(mapEqnIncRow.clone())?;
@@ -5193,18 +5193,18 @@ fn adjacencyMatrixDispatchEnhancedScalar(mut vars: BackendDAE::Variables, mut eq
 }
 
 pub fn getAdjacencyMatrixEnhanced(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<BackendDAE::Shared>, mut trytosolve: bool) -> Result<(metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>)> {
-    let mut outAdjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>;
-    let mut outAdjacencyMatrixT: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>;
+    let mut outAdjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> = Default::default();
+    let mut outAdjacencyMatrixT: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> = Default::default();
     (outAdjacencyMatrix, outAdjacencyMatrixT) = 'mc: {
         let __mc_input = (syst.clone(), shared.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ BackendDAE::EqSystem { orderedEqs: eqns, orderedVars: vars, .. }, Deref @ BackendDAE::Shared { globalKnownVars, .. }) => {
-                    let mut arr: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>;
-                    let mut arrT: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>;
+                    let mut arr: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> = Default::default();
+                    let mut arrT: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> = Default::default();
                     let mut numberOfEqs: i32 = 0;
                     let mut numberofVars: i32 = 0;
-                    let mut rowmark: metamodelica::Array<i32>;
+                    let mut rowmark: metamodelica::Array<i32> = Default::default();
                     numberOfEqs = BackendEquation::getNumberOfEquations(eqns.clone());
                     numberofVars = BackendVariable::varsSize(vars.clone());
                     arr = arrayCreate(BackendEquation::equationArraySize(eqns.clone())?, metamodelica::nil());
@@ -5231,8 +5231,8 @@ pub fn getAdjacencyMatrixEnhanced(mut syst: Arc<BackendDAE::EqSystem>, mut share
 }
 
 fn adjacencyMatrixDispatchEnhanced(mut vars: BackendDAE::Variables, mut eqArr: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut inAdjacencyArray: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, mut inAdjacencyArrayT: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, mut index: i32, mut numberOfEqs: i32, mut stop: bool, mut rowmark: metamodelica::Array<i32>, mut globalKnownVars: BackendDAE::Variables, mut trytosolve: bool, mut shared: Arc<BackendDAE::Shared>) -> Result<(metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>, metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>)> {
-    let mut outAdjacencyArray: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>;
-    let mut outAdjacencyArrayT: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>;
+    let mut outAdjacencyArray: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> = Default::default();
+    let mut outAdjacencyArrayT: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> = Default::default();
     (outAdjacencyArray, outAdjacencyArrayT) = (match stop.clone() {
         false => {
             (inAdjacencyArray.clone(), inAdjacencyArrayT.clone())
@@ -5240,8 +5240,8 @@ fn adjacencyMatrixDispatchEnhanced(mut vars: BackendDAE::Variables, mut eqArr: A
         true => {
             let mut row: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>> = metamodelica::nil();
             let mut e: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
-            let mut iArr: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>;
-            let mut iArrT: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>;
+            let mut iArr: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> = Default::default();
+            let mut iArrT: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> = Default::default();
             let mut i1: i32 = 0;
             i1 = index.clone() + 1;
             e = BackendEquation::get(eqArr.clone(), i1.clone());
@@ -5258,7 +5258,7 @@ fn adjacencyMatrixDispatchEnhanced(mut vars: BackendDAE::Variables, mut eqArr: A
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn fillincAdjacencyMatrixTEnhanced(mut eqns: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>, mut eqnsindxs: Arc<metamodelica::List<i32>>, mut inAdjacencyArrayT: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>> {
-    let mut outAdjacencyArrayT: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>;
+    let mut outAdjacencyArrayT: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> = Default::default();
     outAdjacencyArrayT = 'mc: {
         let __mc_input = eqns.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -5275,7 +5275,7 @@ fn fillincAdjacencyMatrixTEnhanced(mut eqns: Arc<metamodelica::List<(i32, Backen
                     if !((intLt(0, v.clone()))) { bail!("guard") }
                     let mut row: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>> = metamodelica::nil();
                     let mut newrow: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>> = metamodelica::nil();
-                    let mut mT: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>;
+                    let mut mT: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> = Default::default();
                     row = inAdjacencyArrayT.borrow()[(v.clone()-1) as usize].clone();
                     newrow = List::map2(eqnsindxs.clone(), std::sync::Arc::new(fnptr!(Util::make3Tuple, _, _, _)), solva.clone(), cons.clone());
                     row = listAppend(newrow.clone(), row.clone());
@@ -5291,7 +5291,7 @@ fn fillincAdjacencyMatrixTEnhanced(mut eqns: Arc<metamodelica::List<(i32, Backen
                     let mut row: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>> = metamodelica::nil();
                     let mut newrow: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>> = metamodelica::nil();
                     let mut vabs: i32 = 0;
-                    let mut mT: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>>;
+                    let mut mT: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>> = Default::default();
                     let mut eqnsindxs1: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     vabs = intAbs(v.clone());
                     row = inAdjacencyArrayT.borrow()[(vabs.clone()-1) as usize].clone();
@@ -5371,7 +5371,7 @@ fn adjacencyRowEnhanced(mut inVariables: BackendDAE::Variables, mut inEquation: 
             ::match_deref::match_deref! { match &__mc_input {
                 (vars, Deref @ BackendDAE::Equation::SOLVED_EQUATION { exp: e, componentRef: cr, .. }) => {
                     let mut lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    let mut expCref: Arc<DAE::Exp>;
+                    let mut expCref: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut row: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>> = metamodelica::nil();
                     expCref = Expression::crefExp(cr.clone())?;
                     lst = adjacencyRowExpEnhanced(expCref.clone(), vars.clone(), mark.clone(), rowmark.clone(), isInitial.clone(), metamodelica::nil())?;
@@ -5497,7 +5497,7 @@ fn adjacencyRowEnhanced(mut inVariables: BackendDAE::Variables, mut inEquation: 
 }
 
 fn adjacencyRowEnhancedEqnLstIfBranches(mut iEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inVariables: BackendDAE::Variables, mut mark: i32, mut rowmark: metamodelica::Array<i32>, mut globalKnownVars: BackendDAE::Variables, mut trytosolve: bool, mut shared: Arc<BackendDAE::Shared>, mut intpl: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>, i32)) -> Result<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>, i32)> {
-    let mut outtpl: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>, i32);
+    let mut outtpl: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>, i32) = (metamodelica::nil(), metamodelica::nil(), 0);
     let mut row: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>> = metamodelica::nil();
     let mut iRow: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>> = metamodelica::nil();
     let mut lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -5561,7 +5561,7 @@ fn adjacencyRowAlgorithmOutputs1(mut vindx: Arc<metamodelica::List<i32>>, mut ma
         },
         Deref @ metamodelica::List::Cons { head: i, tail: rest } => {
             {let _arr = rowmark.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = mark.clone(); _arr};
-            adjacencyRowAlgorithmOutputs1(rest.clone(), mark.clone(), rowmark.clone(), cons((i.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), iRow.clone()))?
+            adjacencyRowAlgorithmOutputs1(rest.clone(), mark.clone(), rowmark.clone(), metamodelica::cons((i.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), iRow.clone()))?
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -5569,8 +5569,8 @@ fn adjacencyRowAlgorithmOutputs1(mut vindx: Arc<metamodelica::List<i32>>, mut ma
 }
 
 fn adjacencyRowAlgorithmInputs(mut inExp: Arc<DAE::Exp>, mut iTpl: (BackendDAE::Variables, i32, metamodelica::Array<i32>, Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>)) -> Result<(Arc<DAE::Exp>, (BackendDAE::Variables, i32, metamodelica::Array<i32>, Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>))> {
-    let mut outExp: Arc<DAE::Exp>;
-    let mut oTpl: (BackendDAE::Variables, i32, metamodelica::Array<i32>, Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>);
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut oTpl: (BackendDAE::Variables, i32, metamodelica::Array<i32>, Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>) = (<BackendDAE::Variables as ::std::default::Default>::default(), 0, Default::default(), metamodelica::nil());
     (outExp, oTpl) = 'mc: {
         let __mc_input = (inExp.clone(), iTpl.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -5608,7 +5608,7 @@ fn adjacencyRowAlgorithmInputs1(mut vindx: Arc<metamodelica::List<i32>>, mut mar
         },
         Deref @ metamodelica::List::Cons { head: i, tail: rest } if (!(intEq(intAbs(rowmark.borrow()[(i.clone()-1) as usize].clone()), mark.clone()))) => {
             {let _arr = rowmark.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = -(mark.clone()); _arr};
-            adjacencyRowAlgorithmInputs1(rest.clone(), mark.clone(), rowmark.clone(), cons((i.clone(), crate::BackendDAE::Solvability::SOLVABILITY_UNSOLVABLE, metamodelica::nil()), iRow.clone()))?
+            adjacencyRowAlgorithmInputs1(rest.clone(), mark.clone(), rowmark.clone(), metamodelica::cons((i.clone(), crate::BackendDAE::Solvability::SOLVABILITY_UNSOLVABLE, metamodelica::nil()), iRow.clone()))?
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
             adjacencyRowAlgorithmInputs1(rest.clone(), mark.clone(), rowmark.clone(), iRow.clone())?
@@ -5621,7 +5621,7 @@ fn adjacencyRowAlgorithmInputs1(mut vindx: Arc<metamodelica::List<i32>>, mut mar
 fn adjacencyRowWhenEnhanced(mut inEquation: Arc<BackendDAE::WhenEquation>, mut mark: i32, mut rowmark: metamodelica::Array<i32>, mut vars: BackendDAE::Variables, mut globalKnownVars: BackendDAE::Variables, mut iLst: Arc<metamodelica::List<i32>>, mut iRow: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>, mut shared: Arc<BackendDAE::Shared>) -> Result<(Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>>, Arc<metamodelica::List<i32>>)> {
     let mut outRow: Arc<metamodelica::List<(i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>)>> = iRow.clone();
     let mut varsSolvedInWhenEqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut condition: Arc<DAE::Exp>;
+    let mut condition: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut whenStmtLst: Arc<metamodelica::List<BackendDAE::WhenOperator>> = metamodelica::nil();
     let mut oelsepart: Option<Arc<BackendDAE::WhenEquation>> = None;
     let mut lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -5646,7 +5646,7 @@ fn adjacencyRowWhenEnhanced(mut inEquation: Arc<BackendDAE::WhenEquation>, mut m
                 _ => bail!("pattern mismatch"),
             } };
             varIndx = __pa0.clone();
-            varsSolvedInWhenEqns = cons(varIndx.clone(), varsSolvedInWhenEqns.clone());
+            varsSolvedInWhenEqns = metamodelica::cons(varIndx.clone(), varsSolvedInWhenEqns.clone());
             lst = adjacencyRowExpEnhanced(right.clone(), vars.clone(), mark.clone(), rowmark.clone(), isInitial.clone(), lst.clone())?;
             List::fold1(lst.clone(), (std::sync::Arc::new(markNegativ) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>, i32) -> Result<i32> + 'static>), rowmark.clone(), mark.clone());
             lst = adjacencyRowExpEnhanced(leftexp.clone(), vars.clone(), mark.clone(), rowmark.clone(), isInitial.clone(), lst.clone())?;
@@ -5713,7 +5713,7 @@ fn adjacencyRowEnhanced1(mut lst: Arc<metamodelica::List<i32>>, mut e1: Arc<DAE:
                     cr1 = __pa0.clone();
                     let true = (ComponentReferenceBasics::crefEqualNoStringCompare(cr.clone(), cr1.clone())?) else { bail!("pattern mismatch") };
                     let false = (Expression::expHasDerCref(e2.clone(), cr.clone())?) else { bail!("pattern mismatch") };
-                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
+                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), metamodelica::cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5729,7 +5729,7 @@ fn adjacencyRowEnhanced1(mut lst: Arc<metamodelica::List<i32>>, mut e1: Arc<DAE:
                     cr1 = __pa0.clone();
                     let true = (ComponentReferenceBasics::crefEqualNoStringCompare(cr.clone(), cr1.clone())?) else { bail!("pattern mismatch") };
                     let false = (Expression::expHasDerCref(e1.clone(), cr.clone())?) else { bail!("pattern mismatch") };
-                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
+                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), metamodelica::cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5745,7 +5745,7 @@ fn adjacencyRowEnhanced1(mut lst: Arc<metamodelica::List<i32>>, mut e1: Arc<DAE:
                     cr1 = __pa0.clone();
                     let true = (ComponentReferenceBasics::crefEqualNoStringCompare(cr.clone(), cr1.clone())?) else { bail!("pattern mismatch") };
                     let false = (Expression::expHasCrefNoPreorDer(e2.clone(), cr.clone())?) else { bail!("pattern mismatch") };
-                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
+                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), metamodelica::cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5763,7 +5763,7 @@ fn adjacencyRowEnhanced1(mut lst: Arc<metamodelica::List<i32>>, mut e1: Arc<DAE:
                     crarr = ComponentReferenceBasics::crefStripLastSubs(cr1.clone())?;
                     let true = (ComponentReferenceBasics::crefEqualNoStringCompare(cr.clone(), crarr.clone())?) else { bail!("pattern mismatch") };
                     let false = (Expression::expHasCrefNoPreorDer(e2.clone(), cr.clone())?) else { bail!("pattern mismatch") };
-                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
+                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), metamodelica::cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5779,7 +5779,7 @@ fn adjacencyRowEnhanced1(mut lst: Arc<metamodelica::List<i32>>, mut e1: Arc<DAE:
                     cr1 = __pa0.clone();
                     let true = (ComponentReferenceBasics::crefEqualNoStringCompare(cr.clone(), cr1.clone())?) else { bail!("pattern mismatch") };
                     let false = (Expression::expHasCrefNoPreorDer(e2.clone(), cr.clone())?) else { bail!("pattern mismatch") };
-                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
+                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), metamodelica::cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5795,7 +5795,7 @@ fn adjacencyRowEnhanced1(mut lst: Arc<metamodelica::List<i32>>, mut e1: Arc<DAE:
                     cr1 = __pa0.clone();
                     let true = (ComponentReferenceBasics::crefEqualNoStringCompare(cr.clone(), cr1.clone())?) else { bail!("pattern mismatch") };
                     let false = (Expression::expHasCrefNoPreorDer(e2.clone(), cr.clone())?) else { bail!("pattern mismatch") };
-                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
+                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), metamodelica::cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5813,7 +5813,7 @@ fn adjacencyRowEnhanced1(mut lst: Arc<metamodelica::List<i32>>, mut e1: Arc<DAE:
                     crarr = ComponentReferenceBasics::crefStripLastSubs(cr1.clone())?;
                     let true = (ComponentReferenceBasics::crefEqualNoStringCompare(cr.clone(), crarr.clone())?) else { bail!("pattern mismatch") };
                     let false = (Expression::expHasCrefNoPreorDer(e2.clone(), cr.clone())?) else { bail!("pattern mismatch") };
-                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
+                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), metamodelica::cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5829,7 +5829,7 @@ fn adjacencyRowEnhanced1(mut lst: Arc<metamodelica::List<i32>>, mut e1: Arc<DAE:
                     cr1 = __pa0.clone();
                     let true = (ComponentReferenceBasics::crefEqualNoStringCompare(cr.clone(), cr1.clone())?) else { bail!("pattern mismatch") };
                     let false = (Expression::expHasCrefNoPreorDer(e1.clone(), cr.clone())?) else { bail!("pattern mismatch") };
-                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
+                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), metamodelica::cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5847,7 +5847,7 @@ fn adjacencyRowEnhanced1(mut lst: Arc<metamodelica::List<i32>>, mut e1: Arc<DAE:
                     crarr = ComponentReferenceBasics::crefStripLastSubs(cr1.clone())?;
                     let true = (ComponentReferenceBasics::crefEqualNoStringCompare(cr.clone(), crarr.clone())?) else { bail!("pattern mismatch") };
                     let false = (Expression::expHasCrefNoPreorDer(e1.clone(), cr.clone())?) else { bail!("pattern mismatch") };
-                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
+                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), metamodelica::cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5863,7 +5863,7 @@ fn adjacencyRowEnhanced1(mut lst: Arc<metamodelica::List<i32>>, mut e1: Arc<DAE:
                     cr1 = __pa0.clone();
                     let true = (ComponentReferenceBasics::crefEqualNoStringCompare(cr.clone(), cr1.clone())?) else { bail!("pattern mismatch") };
                     let false = (Expression::expHasCrefNoPreorDer(e1.clone(), cr.clone())?) else { bail!("pattern mismatch") };
-                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
+                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), metamodelica::cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5879,7 +5879,7 @@ fn adjacencyRowEnhanced1(mut lst: Arc<metamodelica::List<i32>>, mut e1: Arc<DAE:
                     cr1 = __pa0.clone();
                     let true = (ComponentReferenceBasics::crefEqualNoStringCompare(cr.clone(), cr1.clone())?) else { bail!("pattern mismatch") };
                     let false = (Expression::expHasCrefNoPreorDer(e1.clone(), cr.clone())?) else { bail!("pattern mismatch") };
-                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
+                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), metamodelica::cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5897,7 +5897,7 @@ fn adjacencyRowEnhanced1(mut lst: Arc<metamodelica::List<i32>>, mut e1: Arc<DAE:
                     crarr = ComponentReferenceBasics::crefStripLastSubs(cr1.clone())?;
                     let true = (ComponentReferenceBasics::crefEqualNoStringCompare(cr.clone(), crarr.clone())?) else { bail!("pattern mismatch") };
                     let false = (Expression::expHasCrefNoPreorDer(e1.clone(), cr.clone())?) else { bail!("pattern mismatch") };
-                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
+                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), metamodelica::cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5913,7 +5913,7 @@ fn adjacencyRowEnhanced1(mut lst: Arc<metamodelica::List<i32>>, mut e1: Arc<DAE:
                     cr1 = __pa0.clone();
                     let true = (ComponentReferenceBasics::crefPrefixOf(cr.clone(), cr1.clone())?) else { bail!("pattern mismatch") };
                     let false = (Expression::expHasCrefNoPreorDer(e2.clone(), cr.clone())?) else { bail!("pattern mismatch") };
-                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
+                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), metamodelica::cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5929,7 +5929,7 @@ fn adjacencyRowEnhanced1(mut lst: Arc<metamodelica::List<i32>>, mut e1: Arc<DAE:
                     cr1 = __pa0.clone();
                     let true = (ComponentReferenceBasics::crefPrefixOf(cr.clone(), cr1.clone())?) else { bail!("pattern mismatch") };
                     let false = (Expression::expHasCrefNoPreorDer(e1.clone(), cr.clone())?) else { bail!("pattern mismatch") };
-                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
+                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), metamodelica::cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5946,7 +5946,7 @@ fn adjacencyRowEnhanced1(mut lst: Arc<metamodelica::List<i32>>, mut e1: Arc<DAE:
                     cr1 = __pa0.clone();
                     let true = (expCrefLstHasCref(explst.clone(), cr1.clone())?) else { bail!("pattern mismatch") };
                     let false = (Expression::expHasCrefNoPreorDer(e2.clone(), cr1.clone())?) else { bail!("pattern mismatch") };
-                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
+                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), metamodelica::cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5963,7 +5963,7 @@ fn adjacencyRowEnhanced1(mut lst: Arc<metamodelica::List<i32>>, mut e1: Arc<DAE:
                     cr1 = __pa0.clone();
                     let true = (expCrefLstHasCref(explst.clone(), cr1.clone())?) else { bail!("pattern mismatch") };
                     let false = (Expression::expHasCrefNoPreorDer(e1.clone(), cr1.clone())?) else { bail!("pattern mismatch") };
-                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
+                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), metamodelica::cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5979,7 +5979,7 @@ fn adjacencyRowEnhanced1(mut lst: Arc<metamodelica::List<i32>>, mut e1: Arc<DAE:
                     cr1 = __pa0.clone();
                     let true = (expCrefLstHasCref(explst.clone(), cr1.clone())?) else { bail!("pattern mismatch") };
                     let false = (Expression::expHasCrefNoPreorDer(e2.clone(), cr1.clone())?) else { bail!("pattern mismatch") };
-                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
+                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), metamodelica::cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -5995,7 +5995,7 @@ fn adjacencyRowEnhanced1(mut lst: Arc<metamodelica::List<i32>>, mut e1: Arc<DAE:
                     cr1 = __pa0.clone();
                     let true = (expCrefLstHasCref(explst.clone(), cr1.clone())?) else { bail!("pattern mismatch") };
                     let false = (Expression::expHasCrefNoPreorDer(e1.clone(), cr1.clone())?) else { bail!("pattern mismatch") };
-                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
+                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), metamodelica::cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -6018,7 +6018,7 @@ fn adjacencyRowEnhanced1(mut lst: Arc<metamodelica::List<i32>>, mut e1: Arc<DAE:
                     crexplst = List::map(crlst.clone(), (std::sync::Arc::new(Expression::crefExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> + 'static>));
                     let true = (expCrefLstHasCref(crexplst.clone(), cr1.clone())?) else { bail!("pattern mismatch") };
                     let false = (Expression::expHasCrefNoPreorDer(e2.clone(), cr1.clone())?) else { bail!("pattern mismatch") };
-                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
+                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), metamodelica::cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_SOLVED, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -6026,9 +6026,9 @@ fn adjacencyRowEnhanced1(mut lst: Arc<metamodelica::List<i32>>, mut e1: Arc<DAE:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: r, tail: rest }, _, _) => {
-                    let mut de: Arc<DAE::Exp>;
-                    let mut e: Arc<DAE::Exp>;
-                    let mut e_derAlias: Arc<DAE::Exp>;
+                    let mut de: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e_derAlias: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     let mut cr1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     let mut solvab: BackendDAE::Solvability = BackendDAE::Solvability::SOLVABILITY_CONSTONE;
@@ -6060,7 +6060,7 @@ fn adjacencyRowEnhanced1(mut lst: Arc<metamodelica::List<i32>>, mut e1: Arc<DAE:
                             solvab = crate::BackendDAE::Solvability::SOLVABILITY_SOLVABLE;
                         }
                     }
-                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), cons((r.clone(), solvab.clone(), cons.clone()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
+                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), metamodelica::cons((r.clone(), solvab.clone(), cons.clone()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -6069,9 +6069,9 @@ fn adjacencyRowEnhanced1(mut lst: Arc<metamodelica::List<i32>>, mut e1: Arc<DAE:
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: r, tail: rest }, _, _) => {
                     let mut rabs: i32 = 0;
-                    let mut de: Arc<DAE::Exp>;
-                    let mut e: Arc<DAE::Exp>;
-                    let mut e_derAlias: Arc<DAE::Exp>;
+                    let mut de: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e_derAlias: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     let mut solvab: BackendDAE::Solvability = BackendDAE::Solvability::SOLVABILITY_CONSTONE;
                     let mut crlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
@@ -6105,7 +6105,7 @@ fn adjacencyRowEnhanced1(mut lst: Arc<metamodelica::List<i32>>, mut e1: Arc<DAE:
                             }
                         }
                     }
-                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), cons((r.clone(), solvab.clone(), cons.clone()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
+                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), metamodelica::cons((r.clone(), solvab.clone(), cons.clone()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -6113,7 +6113,7 @@ fn adjacencyRowEnhanced1(mut lst: Arc<metamodelica::List<i32>>, mut e1: Arc<DAE:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: r, tail: rest }, _, _) => {
-                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_UNSOLVABLE, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
+                    Ok(adjacencyRowEnhanced1(rest.clone(), e1.clone(), e2.clone(), vars.clone(), globalKnownVars.clone(), mark.clone(), rowmark.clone(), metamodelica::cons((r.clone(), crate::BackendDAE::Solvability::SOLVABILITY_UNSOLVABLE, metamodelica::nil()), inRow.clone()), trytosolve.clone(), size.clone(), shared.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -6124,7 +6124,7 @@ fn adjacencyRowEnhanced1(mut lst: Arc<metamodelica::List<i32>>, mut e1: Arc<DAE:
 }
 
 fn replaceDerCall(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     outExp = 'mc: {
         let __mc_input = inExp.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -6132,7 +6132,7 @@ fn replaceDerCall(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
                 Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { ty, componentRef: cr }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. } => {
                     let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
                     let mut cr = (*cr).clone();
-                    let mut outExp: Arc<DAE::Exp>;
+                    let mut outExp: Arc<DAE::Exp> = outExp.clone();
                     v = BackendVariable::createAliasDerVar(cr.clone())?;
                     cr = BackendVariable::varCref(v.clone())?;
                     outExp = Arc::new(DAE::Exp::CREF { componentRef: cr.clone(), ty: ty.clone() });
@@ -6164,21 +6164,21 @@ fn replaceDerCall(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
 }
 
 fn tryToSolveOrDerive(mut e: Arc<DAE::Exp>, mut cr: Arc<DAE::ComponentRef>, mut vars: BackendDAE::Variables, mut functions: Option<Arc<AvlTreePathFunction::Tree>>, mut trytosolve1: bool) -> Result<(Arc<DAE::Exp>, bool, bool, Arc<metamodelica::List<Arc<DAE::Constraint>>>)> {
-    let mut f: Arc<DAE::Exp>;
+    let mut f: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut solved: bool = false;
     let mut derived: bool = false;
     let mut outCons: Arc<metamodelica::List<Arc<DAE::Constraint>>> = metamodelica::nil();
     let mut tp: Arc<DAE::Type> = Expression::r#typeof(e.clone())?;
     let mut trytosolve2: bool = stringEqual((Flags::getConfigString(Flags::TEARING_STRICTNESS.clone())?).clone(), (literal!("casual")).clone());
     let mut localCon: bool = false;
-    let mut one: Arc<DAE::Exp>;
-    let mut tmpEqn: Arc<DAE::Exp>;
-    let mut solvedExp: Arc<DAE::Exp>;
-    let mut con: Arc<DAE::Exp>;
+    let mut one: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut tmpEqn: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut solvedExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut con: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut eqnForNewVars: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut newVarsCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     let mut tmpVar: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut constraint: Arc<DAE::Constraint>;
+    let mut constraint: Arc<DAE::Constraint> = Arc::new(<DAE::Constraint as ::std::default::Default>::default());
     let mut constraints: Arc<metamodelica::List<Arc<DAE::Constraint>>> = metamodelica::nil();
     let debug: bool = false;
     if trytosolve1.clone() || trytosolve2.clone() {
@@ -6189,7 +6189,7 @@ fn tryToSolveOrDerive(mut e: Arc<DAE::Exp>, mut cr: Arc<DAE::ComponentRef>, mut 
                 println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("for variable: ")); __mm_s.push_str(&*unwrap_break_err!(ExpressionBasics::printExpStr(Expression::crefExp(cr.clone())?), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Solved expression:\n")); __mm_s.push_str(&*unwrap_break_err!(ExpressionBasics::printExpStr(solvedExp.clone()), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 ComponentReference::printComponentRefList(newVarsCrefs.clone());
-                BackendDump::dumpEquationList(eqnForNewVars.clone(), (literal!("eqnForNewVars")).clone());
+                unwrap_break_err!(BackendDump::dumpEquationList(eqnForNewVars.clone(), (literal!("eqnForNewVars")).clone()), '__try0);
                 unwrap_break_err!(ExpressionDump::dumpExp(solvedExp.clone()), '__try0);
                 println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("listLength(eqnForNewVars): ")); __mm_s.push_str(&*intString((eqnForNewVars.clone().len() as i32))); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
             }
@@ -6225,7 +6225,7 @@ fn tryToSolveOrDerive(mut e: Arc<DAE::Exp>, mut cr: Arc<DAE::ComponentRef>, mut 
                         tmpVar = __pa8.clone();
                         con = unwrap_break_err!(Expression::replaceCrefBottomUp(con.clone(), tmpVar.clone(), tmpEqn.clone()), '__try0);
                     }
-                    outCons = cons(Arc::new(DAE::Constraint::CONSTRAINT_DT { constraint: con.clone(), localCon: localCon.clone() }), outCons.clone());
+                    outCons = metamodelica::cons(Arc::new(DAE::Constraint::CONSTRAINT_DT { constraint: con.clone(), localCon: localCon.clone() }), outCons.clone());
                 }
                 if debug.clone() {
                     println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Constraints before substitution: ")); __mm_s.push_str(&*unwrap_break_err!(ExpressionDump::constraintDTlistToString(constraints.clone(), (literal!("\n")).clone()), '__try0)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
@@ -6298,100 +6298,100 @@ pub fn isSolvable(mut solvability: BackendDAE::Solvability, mut strict: bool) ->
 }
 
 fn getConstraints(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<metamodelica::List<Arc<DAE::Constraint>>>, BackendDAE::Variables)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<Arc<DAE::Constraint>>>, BackendDAE::Variables))> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cont: bool = true;
-    let mut outTpl: (Arc<metamodelica::List<Arc<DAE::Constraint>>>, BackendDAE::Variables);
+    let mut outTpl: (Arc<metamodelica::List<Arc<DAE::Constraint>>>, BackendDAE::Variables) = (metamodelica::nil(), <BackendDAE::Variables as ::std::default::Default>::default());
     let mut inCons: Arc<metamodelica::List<Arc<DAE::Constraint>>> = metamodelica::nil();
     let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     (inCons, vars) = inTpl.clone();
     (outExp, outTpl) = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::BINARY { exp2: e, operator: DAE::Operator::DIV { .. }, .. } => {
-            let mut rel: Arc<DAE::Exp>;
-            let mut con: Arc<DAE::Constraint>;
+            let mut rel: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut con: Arc<DAE::Constraint> = Arc::new(<DAE::Constraint as ::std::default::Default>::default());
             let mut crlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
             let mut localCon: bool = false;
             rel = Arc::new(DAE::Exp::RELATION { exp1: Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("abs")).clone() }), expLst: list![e.clone()], attr: DAE::callAttrBuiltinOther().clone() }), operator: DAE::Operator::GREATER { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1e-12_f64) }), index: -1, optionExpisASUB: None });
             (_, crlst) = Expression::traverseExpTopDown(rel.clone(), (std::sync::Arc::new(fnptr!(Expression::traversingComponentRefFinderNoPreDer, Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(Arc<DAE::Exp>, bool, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> + 'static>), metamodelica::nil())?;
             localCon = containAnyVarWithoutStates(crlst.clone(), vars.clone())?;
             con = Arc::new(DAE::Constraint::CONSTRAINT_DT { constraint: rel.clone(), localCon: localCon.clone() });
-            (inExp.clone(), (cons(con.clone(), inCons.clone()), vars.clone()))
+            (inExp.clone(), (metamodelica::cons(con.clone(), inCons.clone()), vars.clone()))
         },
         Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "sqrt" }, .. } => {
-            let mut rel: Arc<DAE::Exp>;
-            let mut con: Arc<DAE::Constraint>;
+            let mut rel: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut con: Arc<DAE::Constraint> = Arc::new(<DAE::Constraint as ::std::default::Default>::default());
             let mut crlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
             let mut localCon: bool = false;
             rel = Arc::new(DAE::Exp::RELATION { exp1: e.clone(), operator: DAE::Operator::GREATEREQ { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), index: -1, optionExpisASUB: None });
             (_, crlst) = Expression::traverseExpTopDown(rel.clone(), (std::sync::Arc::new(fnptr!(Expression::traversingComponentRefFinderNoPreDer, Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(Arc<DAE::Exp>, bool, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> + 'static>), metamodelica::nil())?;
             localCon = containAnyVarWithoutStates(crlst.clone(), vars.clone())?;
             con = Arc::new(DAE::Constraint::CONSTRAINT_DT { constraint: rel.clone(), localCon: localCon.clone() });
-            (inExp.clone(), (cons(con.clone(), inCons.clone()), vars.clone()))
+            (inExp.clone(), (metamodelica::cons(con.clone(), inCons.clone()), vars.clone()))
         },
         Deref @ DAE::Exp::BINARY { exp2: Deref @ DAE::Exp::RCONST { real: __rlit_0 }, operator: DAE::Operator::POW { .. }, exp1: e } if __rlit_0.eq(&metamodelica::OrderedFloat((0.5) as f64)) => {
-            let mut rel: Arc<DAE::Exp>;
-            let mut con: Arc<DAE::Constraint>;
+            let mut rel: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut con: Arc<DAE::Constraint> = Arc::new(<DAE::Constraint as ::std::default::Default>::default());
             let mut crlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
             let mut localCon: bool = false;
             rel = Arc::new(DAE::Exp::RELATION { exp1: e.clone(), operator: DAE::Operator::GREATEREQ { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), index: -1, optionExpisASUB: None });
             (_, crlst) = Expression::traverseExpTopDown(rel.clone(), (std::sync::Arc::new(fnptr!(Expression::traversingComponentRefFinderNoPreDer, Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(Arc<DAE::Exp>, bool, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> + 'static>), metamodelica::nil())?;
             localCon = containAnyVarWithoutStates(crlst.clone(), vars.clone())?;
             con = Arc::new(DAE::Constraint::CONSTRAINT_DT { constraint: rel.clone(), localCon: localCon.clone() });
-            (inExp.clone(), (cons(con.clone(), inCons.clone()), vars.clone()))
+            (inExp.clone(), (metamodelica::cons(con.clone(), inCons.clone()), vars.clone()))
         },
         Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "log" }, .. } => {
-            let mut rel: Arc<DAE::Exp>;
-            let mut con: Arc<DAE::Constraint>;
+            let mut rel: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut con: Arc<DAE::Constraint> = Arc::new(<DAE::Constraint as ::std::default::Default>::default());
             let mut crlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
             let mut localCon: bool = false;
             rel = Arc::new(DAE::Exp::RELATION { exp1: e.clone(), operator: DAE::Operator::GREATER { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1e-12_f64) }), index: -1, optionExpisASUB: None });
             (_, crlst) = Expression::traverseExpTopDown(rel.clone(), (std::sync::Arc::new(fnptr!(Expression::traversingComponentRefFinderNoPreDer, Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(Arc<DAE::Exp>, bool, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> + 'static>), metamodelica::nil())?;
             localCon = containAnyVarWithoutStates(crlst.clone(), vars.clone())?;
             con = Arc::new(DAE::Constraint::CONSTRAINT_DT { constraint: rel.clone(), localCon: localCon.clone() });
-            (inExp.clone(), (cons(con.clone(), inCons.clone()), vars.clone()))
+            (inExp.clone(), (metamodelica::cons(con.clone(), inCons.clone()), vars.clone()))
         },
         Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "log10" }, .. } => {
-            let mut rel: Arc<DAE::Exp>;
-            let mut con: Arc<DAE::Constraint>;
+            let mut rel: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut con: Arc<DAE::Constraint> = Arc::new(<DAE::Constraint as ::std::default::Default>::default());
             let mut crlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
             let mut localCon: bool = false;
             rel = Arc::new(DAE::Exp::RELATION { exp1: e.clone(), operator: DAE::Operator::GREATER { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1e-12_f64) }), index: -1, optionExpisASUB: None });
             (_, crlst) = Expression::traverseExpTopDown(rel.clone(), (std::sync::Arc::new(fnptr!(Expression::traversingComponentRefFinderNoPreDer, Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(Arc<DAE::Exp>, bool, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> + 'static>), metamodelica::nil())?;
             localCon = containAnyVarWithoutStates(crlst.clone(), vars.clone())?;
             con = Arc::new(DAE::Constraint::CONSTRAINT_DT { constraint: rel.clone(), localCon: localCon.clone() });
-            (inExp.clone(), (cons(con.clone(), inCons.clone()), vars.clone()))
+            (inExp.clone(), (metamodelica::cons(con.clone(), inCons.clone()), vars.clone()))
         },
         Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "asin" }, .. } => {
-            let mut rel: Arc<DAE::Exp>;
-            let mut con: Arc<DAE::Constraint>;
+            let mut rel: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut con: Arc<DAE::Constraint> = Arc::new(<DAE::Constraint as ::std::default::Default>::default());
             let mut crlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
             let mut localCon: bool = false;
             rel = Arc::new(DAE::Exp::RELATION { exp1: Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("abs")).clone() }), expLst: list![e.clone()], attr: DAE::callAttrBuiltinOther().clone() }), operator: DAE::Operator::LESSEQ { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) }), index: -1, optionExpisASUB: None });
             (_, crlst) = Expression::traverseExpTopDown(rel.clone(), (std::sync::Arc::new(fnptr!(Expression::traversingComponentRefFinderNoPreDer, Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(Arc<DAE::Exp>, bool, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> + 'static>), metamodelica::nil())?;
             localCon = containAnyVarWithoutStates(crlst.clone(), vars.clone())?;
             con = Arc::new(DAE::Constraint::CONSTRAINT_DT { constraint: rel.clone(), localCon: localCon.clone() });
-            (inExp.clone(), (cons(con.clone(), inCons.clone()), vars.clone()))
+            (inExp.clone(), (metamodelica::cons(con.clone(), inCons.clone()), vars.clone()))
         },
         Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "acos" }, .. } => {
-            let mut rel: Arc<DAE::Exp>;
-            let mut con: Arc<DAE::Constraint>;
+            let mut rel: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut con: Arc<DAE::Constraint> = Arc::new(<DAE::Constraint as ::std::default::Default>::default());
             let mut crlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
             let mut localCon: bool = false;
             rel = Arc::new(DAE::Exp::RELATION { exp1: Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("abs")).clone() }), expLst: list![e.clone()], attr: DAE::callAttrBuiltinOther().clone() }), operator: DAE::Operator::LESSEQ { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) }), index: -1, optionExpisASUB: None });
             (_, crlst) = Expression::traverseExpTopDown(rel.clone(), (std::sync::Arc::new(fnptr!(Expression::traversingComponentRefFinderNoPreDer, Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(Arc<DAE::Exp>, bool, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> + 'static>), metamodelica::nil())?;
             localCon = containAnyVarWithoutStates(crlst.clone(), vars.clone())?;
             con = Arc::new(DAE::Constraint::CONSTRAINT_DT { constraint: rel.clone(), localCon: localCon.clone() });
-            (inExp.clone(), (cons(con.clone(), inCons.clone()), vars.clone()))
+            (inExp.clone(), (metamodelica::cons(con.clone(), inCons.clone()), vars.clone()))
         },
         Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "tan" }, .. } => {
-            let mut rel: Arc<DAE::Exp>;
-            let mut con: Arc<DAE::Constraint>;
+            let mut rel: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut con: Arc<DAE::Constraint> = Arc::new(<DAE::Constraint as ::std::default::Default>::default());
             let mut crlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
             let mut localCon: bool = false;
             rel = Arc::new(DAE::Exp::RELATION { exp1: Arc::new(DAE::Exp::BINARY { exp2: Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("floor")).clone() }), expLst: list![Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("abs")).clone() }), expLst: list![Arc::new(DAE::Exp::BINARY { exp2: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(2.0_f64) }), operator: DAE::Operator::MUL { ty: DAE::T_REAL_DEFAULT().clone() }, exp1: Arc::new(DAE::Exp::BINARY { exp2: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(3.14159265358979_f64) }), operator: DAE::Operator::DIV { ty: DAE::T_REAL_DEFAULT().clone() }, exp1: e.clone() }) })], attr: DAE::callAttrBuiltinOther().clone() })], attr: DAE::callAttrBuiltinOther().clone() }), operator: DAE::Operator::SUB { ty: DAE::T_REAL_DEFAULT().clone() }, exp1: Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("abs")).clone() }), expLst: list![Arc::new(DAE::Exp::BINARY { exp2: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(2.0_f64) }), operator: DAE::Operator::MUL { ty: DAE::T_REAL_DEFAULT().clone() }, exp1: Arc::new(DAE::Exp::BINARY { exp2: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(3.14159265358979_f64) }), operator: DAE::Operator::DIV { ty: DAE::T_REAL_DEFAULT().clone() }, exp1: e.clone() }) })], attr: DAE::callAttrBuiltinOther().clone() }) }), operator: DAE::Operator::GREATER { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1e-12_f64) }), index: -1, optionExpisASUB: None });
             (_, crlst) = Expression::traverseExpTopDown(rel.clone(), (std::sync::Arc::new(fnptr!(Expression::traversingComponentRefFinderNoPreDer, Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(Arc<DAE::Exp>, bool, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> + 'static>), metamodelica::nil())?;
             localCon = containAnyVarWithoutStates(crlst.clone(), vars.clone())?;
             con = Arc::new(DAE::Constraint::CONSTRAINT_DT { constraint: rel.clone(), localCon: localCon.clone() });
-            (inExp.clone(), (cons(con.clone(), inCons.clone()), vars.clone()))
+            (inExp.clone(), (metamodelica::cons(con.clone(), inCons.clone()), vars.clone()))
         },
         _ => {
             (inExp.clone(), inTpl.clone())
@@ -6426,12 +6426,12 @@ pub fn getEqnAndVarsFromInnerEquationLst(mut innerEquations: Arc<metamodelica::L
     for mut innerEq in &*innerEquations.clone() {
         let mut innerEq = innerEq.clone();
         (eqn, vars, constraints) = getEqnAndVarsFromInnerEquation(innerEq.clone())?;
-        eqns = cons(eqn.clone(), eqns.clone());
+        eqns = metamodelica::cons(eqn.clone(), eqns.clone());
         if true /* isPresent not implemented in Rust */ {
-            allVars = cons(vars.clone(), allVars.clone());
+            allVars = metamodelica::cons(vars.clone(), allVars.clone());
         }
         if true /* isPresent not implemented in Rust */ {
-            allConstraints = cons(constraints.clone(), allConstraints.clone());
+            allConstraints = metamodelica::cons(constraints.clone(), allConstraints.clone());
         }
     }
     Ok((eqns, allVars, allConstraints))
@@ -6516,7 +6516,7 @@ fn adjacencyRowEnhanced3(mut b1: bool, mut b2: bool, mut cr: Arc<DAE::ComponentR
     oSolvab = (match (b1.clone(), b2.clone()) {
         (true, true) => {
             let mut b: bool = false;
-            let mut e1: Arc<DAE::Exp>;
+            let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             (e1, _) = Expression::traverseExpBottomUp(e.clone(), (std::sync::Arc::new(replaceVarWithValue) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables) -> Result<(Arc<DAE::Exp>, BackendDAE::Variables)> + 'static>), globalKnownVars.clone())?;
             (e1, _) = ExpressionSimplify::simplify(e1.clone())?;
             b = !(Expression::isZeroOrAlmostZero(e1.clone(), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) })));
@@ -6530,8 +6530,8 @@ fn adjacencyRowEnhanced3(mut b1: bool, mut b2: bool, mut cr: Arc<DAE::ComponentR
         (true, _) => {
             let mut b: bool = false;
             let mut b_1: bool = false;
-            let mut e1: Arc<DAE::Exp>;
-            let mut nominal: Arc<DAE::Exp>;
+            let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut nominal: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             (nominal, _) = Expression::traverseExpBottomUp(e.clone(), (std::sync::Arc::new(replaceVarWithNominal) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables) -> Result<(Arc<DAE::Exp>, BackendDAE::Variables)> + 'static>), globalKnownVars.clone())?;
             (nominal, _) = ExpressionSimplify::simplify(nominal.clone())?;
             (e1, _) = Expression::traverseExpBottomUp(e.clone(), (std::sync::Arc::new(replaceVarWithValue) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables) -> Result<(Arc<DAE::Exp>, BackendDAE::Variables)> + 'static>), globalKnownVars.clone())?;
@@ -6550,7 +6550,7 @@ fn adjacencyRowEnhanced3(mut b1: bool, mut b2: bool, mut cr: Arc<DAE::ComponentR
 }
 
 fn replaceVarWithValue(mut inExp: Arc<DAE::Exp>, mut inVars: BackendDAE::Variables) -> Result<(Arc<DAE::Exp>, BackendDAE::Variables)> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outVars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     (outExp, outVars) = 'mc: {
         let __mc_input = (inExp.clone(), inVars.clone());
@@ -6558,7 +6558,7 @@ fn replaceVarWithValue(mut inExp: Arc<DAE::Exp>, mut inVars: BackendDAE::Variabl
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CREF { componentRef: cr, .. }, vars) => {
                     let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
-                    let mut e: Arc<DAE::Exp>;
+                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let __pa0 = ::match_deref::match_deref! { match &(BackendVariable::getVar(cr.clone(), vars.clone())?) {
                         (Deref @ metamodelica::List::Cons { head: __pa0, tail: _ }, _) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -6575,7 +6575,7 @@ fn replaceVarWithValue(mut inExp: Arc<DAE::Exp>, mut inVars: BackendDAE::Variabl
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CREF { componentRef: cr, .. }, vars) => {
                     let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
-                    let mut e: Arc<DAE::Exp>;
+                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let __pa0 = ::match_deref::match_deref! { match &(BackendVariable::getVar(cr.clone(), vars.clone())?) {
                         (Deref @ metamodelica::List::Cons { head: __pa0, tail: _ }, _) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -6603,7 +6603,7 @@ fn replaceVarWithValue(mut inExp: Arc<DAE::Exp>, mut inVars: BackendDAE::Variabl
 }
 
 fn replaceVarWithNominal(mut inExp: Arc<DAE::Exp>, mut inVars: BackendDAE::Variables) -> Result<(Arc<DAE::Exp>, BackendDAE::Variables)> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outVars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     (outExp, outVars) = 'mc: {
         let __mc_input = (inExp.clone(), inVars.clone());
@@ -6611,7 +6611,7 @@ fn replaceVarWithNominal(mut inExp: Arc<DAE::Exp>, mut inVars: BackendDAE::Varia
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CREF { componentRef: cr, .. }, vars) => {
                     let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
-                    let mut nom: Arc<DAE::Exp>;
+                    let mut nom: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let __pa0 = ::match_deref::match_deref! { match &(BackendVariable::getVar(cr.clone(), vars.clone())?) {
                         (Deref @ metamodelica::List::Cons { head: __pa0, tail: _ }, _) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -6645,9 +6645,9 @@ fn adjacencyRowExpEnhanced(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE
 }
 
 fn traversingAdjacencyRowExpSolvableEnhancedFinder(mut inExp: Arc<DAE::Exp>, mut inTpl: (BackendDAE::Variables, bool, bool, i32, metamodelica::Array<i32>, Arc<metamodelica::List<i32>>)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, bool, bool, i32, metamodelica::Array<i32>, Arc<metamodelica::List<i32>>))> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cont: bool = false;
-    let mut outTpl: (BackendDAE::Variables, bool, bool, i32, metamodelica::Array<i32>, Arc<metamodelica::List<i32>>);
+    let mut outTpl: (BackendDAE::Variables, bool, bool, i32, metamodelica::Array<i32>, Arc<metamodelica::List<i32>>) = (<BackendDAE::Variables as ::std::default::Default>::default(), false, false, 0, Default::default(), metamodelica::nil());
     (outExp, cont, outTpl) = 'mc: {
         let __mc_input = (inExp.clone(), inTpl.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -6768,7 +6768,7 @@ fn traversingAdjacencyRowExpSolvableEnhancedFinder(mut inExp: Arc<DAE::Exp>, mut
                     let mut res: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut varslst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
                     let mut mark: i32 = 0;
-                    let mut rowmark: metamodelica::Array<i32>;
+                    let mut rowmark: metamodelica::Array<i32> = Default::default();
                     mark = it.clone();
                     rowmark = at.clone();
                     (varslst, p) = BackendVariable::getVar(cr.clone(), vars.clone())?;
@@ -6785,7 +6785,7 @@ fn traversingAdjacencyRowExpSolvableEnhancedFinder(mut inExp: Arc<DAE::Exp>, mut
                     let mut res: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut varslst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
                     let mut mark: i32 = 0;
-                    let mut rowmark: metamodelica::Array<i32>;
+                    let mut rowmark: metamodelica::Array<i32> = Default::default();
                     mark = it.clone();
                     rowmark = at.clone();
                     (varslst, p) = BackendVariable::getVar(cr.clone(), vars.clone())?;
@@ -6802,7 +6802,7 @@ fn traversingAdjacencyRowExpSolvableEnhancedFinder(mut inExp: Arc<DAE::Exp>, mut
                     let mut res: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut varslst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
                     let mut mark: i32 = 0;
-                    let mut rowmark: metamodelica::Array<i32>;
+                    let mut rowmark: metamodelica::Array<i32> = Default::default();
                     mark = it.clone();
                     rowmark = at.clone();
                     (varslst, p) = BackendVariable::getVar(cr.clone(), vars.clone())?;
@@ -6851,7 +6851,7 @@ fn traversingAdjacencyRowExpSolvableEnhancedFinder(mut inExp: Arc<DAE::Exp>, mut
                 (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "homotopy" }, .. }, (_, _, true, _, _, _)) => {
                     let mut b1: bool = false;
                     let mut b2: bool = false;
-                    let mut tpl: (BackendDAE::Variables, bool, bool, i32, metamodelica::Array<i32>, Arc<metamodelica::List<i32>>);
+                    let mut tpl: (BackendDAE::Variables, bool, bool, i32, metamodelica::Array<i32>, Arc<metamodelica::List<i32>>) = (<BackendDAE::Variables as ::std::default::Default>::default(), false, false, 0, Default::default(), metamodelica::nil());
                     (_, b1, tpl) = traversingAdjacencyRowExpSolvableEnhancedFinder(e1.clone(), inTpl.clone())?;
                     (_, b2, tpl) = traversingAdjacencyRowExpSolvableEnhancedFinder(e2.clone(), tpl.clone())?;
                     Ok((inExp.clone(), b1.clone() && b2.clone(), tpl.clone()))
@@ -6862,7 +6862,7 @@ fn traversingAdjacencyRowExpSolvableEnhancedFinder(mut inExp: Arc<DAE::Exp>, mut
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } } } } } } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "spatialDistribution" }, .. }, _) => {
-                    let mut tpl: (BackendDAE::Variables, bool, bool, i32, metamodelica::Array<i32>, Arc<metamodelica::List<i32>>);
+                    let mut tpl: (BackendDAE::Variables, bool, bool, i32, metamodelica::Array<i32>, Arc<metamodelica::List<i32>>) = (<BackendDAE::Variables as ::std::default::Default>::default(), false, false, 0, Default::default(), metamodelica::nil());
                     (_, _, tpl) = traversingAdjacencyRowExpSolvableEnhancedFinder(e2.clone(), inTpl.clone())?;
                     Ok(traversingAdjacencyRowExpSolvableEnhancedFinder(e1.clone(), tpl.clone())?)
                 }
@@ -6883,9 +6883,9 @@ fn traversingAdjacencyRowExpSolvableEnhancedFinder(mut inExp: Arc<DAE::Exp>, mut
 }
 
 fn markBranchVars(mut inExp: Arc<DAE::Exp>, mut inTuple: (i32, metamodelica::Array<i32>, BackendDAE::Variables, Arc<BinaryTree::BinTree>)) -> Result<(Arc<DAE::Exp>, bool, (i32, metamodelica::Array<i32>, BackendDAE::Variables, Arc<BinaryTree::BinTree>))> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cont: bool = true;
-    let mut outTuple: (i32, metamodelica::Array<i32>, BackendDAE::Variables, Arc<BinaryTree::BinTree>);
+    let mut outTuple: (i32, metamodelica::Array<i32>, BackendDAE::Variables, Arc<BinaryTree::BinTree>) = (0, Default::default(), <BackendDAE::Variables as ::std::default::Default>::default(), Arc::new(<BinaryTree::BinTree as ::std::default::Default>::default()));
     (outExp, cont, outTuple) = 'mc: {
         let __mc_input = (inExp.clone(), inTuple.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -6982,7 +6982,7 @@ fn markBranchVars1(mut varlst: Arc<metamodelica::List<BackendDAE::Var>>, mut iIl
 }
 
 fn getIfExpBranchVarOccurency(mut inExp: Arc<DAE::Exp>, mut inBt: Arc<BinaryTree::BinTree>) -> Result<(Arc<DAE::Exp>, bool, Arc<BinaryTree::BinTree>)> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cont: bool = false;
     let mut bt: Arc<BinaryTree::BinTree> = Arc::new(<BinaryTree::BinTree as ::std::default::Default>::default());
     (outExp, cont, bt) = (::match_deref::match_deref! { match &((inExp.clone(), inBt.clone())) {
@@ -7072,7 +7072,7 @@ fn adjacencyRowExpEnhanced1(mut inVarLst: Arc<metamodelica::List<BackendDAE::Var
                     if !((!(intEq(intAbs(rowmark.borrow()[(i.clone()-1) as usize].clone()), mark.clone())))) { bail!("guard") }
                     let mut res: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     {let _arr = rowmark.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = if (unsolvable.clone()) {-(mark.clone())} else {mark.clone()}; _arr};
-                    res = adjacencyRowExpEnhanced1(rest.clone(), irest.clone(), cons(i.clone(), vars.clone()), notinder.clone(), mark.clone(), rowmark.clone(), unsolvable.clone())?;
+                    res = adjacencyRowExpEnhanced1(rest.clone(), irest.clone(), metamodelica::cons(i.clone(), vars.clone()), notinder.clone(), mark.clone(), rowmark.clone(), unsolvable.clone())?;
                     Ok(res.clone())
                 }
                 _ => bail!("nomatch"),
@@ -7088,7 +7088,7 @@ fn adjacencyRowExpEnhanced1(mut inVarLst: Arc<metamodelica::List<BackendDAE::Var
                         unwrap_break_err!(List::getMemberOnTrue(i1.clone(), vars.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>)), '__try0);
                         Ok::<(), anyhow::Error>(())
                     }.is_ok() { bail!("failure(): body succeeded") }
-                    res = adjacencyRowExpEnhanced1(rest.clone(), irest.clone(), cons(i1.clone(), vars.clone()), notinder.clone(), mark.clone(), rowmark.clone(), unsolvable.clone())?;
+                    res = adjacencyRowExpEnhanced1(rest.clone(), irest.clone(), metamodelica::cons(i1.clone(), vars.clone()), notinder.clone(), mark.clone(), rowmark.clone(), unsolvable.clone())?;
                     Ok(res.clone())
                 }
                 _ => bail!("nomatch"),
@@ -7100,7 +7100,7 @@ fn adjacencyRowExpEnhanced1(mut inVarLst: Arc<metamodelica::List<BackendDAE::Var
                     if !((!(intEq(intAbs(rowmark.borrow()[(i.clone()-1) as usize].clone()), mark.clone())))) { bail!("guard") }
                     let mut res: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     {let _arr = rowmark.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = if (unsolvable.clone()) {-(mark.clone())} else {mark.clone()}; _arr};
-                    res = adjacencyRowExpEnhanced1(rest.clone(), irest.clone(), cons(i.clone(), vars.clone()), notinder.clone(), mark.clone(), rowmark.clone(), unsolvable.clone())?;
+                    res = adjacencyRowExpEnhanced1(rest.clone(), irest.clone(), metamodelica::cons(i.clone(), vars.clone()), notinder.clone(), mark.clone(), rowmark.clone(), unsolvable.clone())?;
                     Ok(res.clone())
                 }
                 _ => bail!("nomatch"),
@@ -7129,7 +7129,7 @@ fn adjacencyRowExpEnhanced1(mut inVarLst: Arc<metamodelica::List<BackendDAE::Var
                     if !((!(intEq(intAbs(rowmark.borrow()[(i.clone()-1) as usize].clone()), mark.clone())))) { bail!("guard") }
                     let mut res: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     {let _arr = rowmark.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = if (unsolvable.clone()) {-(mark.clone())} else {mark.clone()}; _arr};
-                    res = adjacencyRowExpEnhanced1(rest.clone(), irest.clone(), cons(i.clone(), vars.clone()), notinder.clone(), mark.clone(), rowmark.clone(), unsolvable.clone())?;
+                    res = adjacencyRowExpEnhanced1(rest.clone(), irest.clone(), metamodelica::cons(i.clone(), vars.clone()), notinder.clone(), mark.clone(), rowmark.clone(), unsolvable.clone())?;
                     Ok(res.clone())
                 }
                 _ => bail!("nomatch"),
@@ -7158,7 +7158,7 @@ fn adjacencyRowExpEnhanced1(mut inVarLst: Arc<metamodelica::List<BackendDAE::Var
                     if !((!(intEq(intAbs(rowmark.borrow()[(i.clone()-1) as usize].clone()), mark.clone())))) { bail!("guard") }
                     let mut res: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     {let _arr = rowmark.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = if (unsolvable.clone()) {-(mark.clone())} else {mark.clone()}; _arr};
-                    res = adjacencyRowExpEnhanced1(rest.clone(), irest.clone(), cons(i.clone(), vars.clone()), notinder.clone(), mark.clone(), rowmark.clone(), unsolvable.clone())?;
+                    res = adjacencyRowExpEnhanced1(rest.clone(), irest.clone(), metamodelica::cons(i.clone(), vars.clone()), notinder.clone(), mark.clone(), rowmark.clone(), unsolvable.clone())?;
                     Ok(res.clone())
                 }
                 _ => bail!("nomatch"),
@@ -7187,7 +7187,7 @@ fn adjacencyRowExpEnhanced1(mut inVarLst: Arc<metamodelica::List<BackendDAE::Var
                     if !((!(intEq(intAbs(rowmark.borrow()[(i.clone()-1) as usize].clone()), mark.clone())))) { bail!("guard") }
                     let mut res: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     {let _arr = rowmark.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = if (unsolvable.clone()) {-(mark.clone())} else {mark.clone()}; _arr};
-                    res = adjacencyRowExpEnhanced1(rest.clone(), irest.clone(), cons(i.clone(), vars.clone()), notinder.clone(), mark.clone(), rowmark.clone(), unsolvable.clone())?;
+                    res = adjacencyRowExpEnhanced1(rest.clone(), irest.clone(), metamodelica::cons(i.clone(), vars.clone()), notinder.clone(), mark.clone(), rowmark.clone(), unsolvable.clone())?;
                     Ok(res.clone())
                 }
                 _ => bail!("nomatch"),
@@ -7216,7 +7216,7 @@ fn adjacencyRowExpEnhanced1(mut inVarLst: Arc<metamodelica::List<BackendDAE::Var
                     if !((!(intEq(intAbs(rowmark.borrow()[(i.clone()-1) as usize].clone()), mark.clone())))) { bail!("guard") }
                     let mut res: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     {let _arr = rowmark.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = if (unsolvable.clone()) {-(mark.clone())} else {mark.clone()}; _arr};
-                    res = adjacencyRowExpEnhanced1(rest.clone(), irest.clone(), cons(i.clone(), vars.clone()), notinder.clone(), mark.clone(), rowmark.clone(), unsolvable.clone())?;
+                    res = adjacencyRowExpEnhanced1(rest.clone(), irest.clone(), metamodelica::cons(i.clone(), vars.clone()), notinder.clone(), mark.clone(), rowmark.clone(), unsolvable.clone())?;
                     Ok(res.clone())
                 }
                 _ => bail!("nomatch"),
@@ -7245,7 +7245,7 @@ fn adjacencyRowExpEnhanced1(mut inVarLst: Arc<metamodelica::List<BackendDAE::Var
                     if !((!(intEq(intAbs(rowmark.borrow()[(i.clone()-1) as usize].clone()), mark.clone())))) { bail!("guard") }
                     let mut res: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     {let _arr = rowmark.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = if (unsolvable.clone()) {-(mark.clone())} else {mark.clone()}; _arr};
-                    res = adjacencyRowExpEnhanced1(rest.clone(), irest.clone(), cons(i.clone(), vars.clone()), notinder.clone(), mark.clone(), rowmark.clone(), unsolvable.clone())?;
+                    res = adjacencyRowExpEnhanced1(rest.clone(), irest.clone(), metamodelica::cons(i.clone(), vars.clone()), notinder.clone(), mark.clone(), rowmark.clone(), unsolvable.clone())?;
                     Ok(res.clone())
                 }
                 _ => bail!("nomatch"),
@@ -7373,7 +7373,7 @@ pub fn getArrayEquationSub(mut Index: i32, mut inAD: Arc<metamodelica::List<Opti
             ::match_deref::match_deref! { match &__mc_input {
                 (i, _, Deref @ metamodelica::List::Cons { head: (ie, Deref @ metamodelica::List::Cons { head: subs, tail: subslst }), tail: rest }) => {
                     if !((intEq(i.clone(), ie.clone()))) { bail!("guard") }
-                    Ok((subs.clone(), cons((ie.clone(), subslst.clone()), rest.clone())))
+                    Ok((subs.clone(), metamodelica::cons((ie.clone(), subslst.clone()), rest.clone())))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -7385,7 +7385,7 @@ pub fn getArrayEquationSub(mut Index: i32, mut inAD: Arc<metamodelica::List<Opti
                     let mut subs1: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
                     let mut entrylst: Arc<metamodelica::List<(i32, Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Subscript>>>>>)>> = metamodelica::nil();
                     (subs1, entrylst) = getArrayEquationSub(i.clone(), ad.clone(), rest.clone())?;
-                    Ok((subs1.clone(), cons(entry.clone(), entrylst.clone())))
+                    Ok((subs1.clone(), metamodelica::cons(entry.clone(), entrylst.clone())))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -7494,15 +7494,15 @@ pub fn getEqnSysRhs(mut inEqns: Arc<ExpandableArray::ExpandableArray<Arc<Backend
 
 fn equationToExp(mut inEq: Arc<BackendDAE::Equation>, mut inTpl: (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<metamodelica::List<Arc<DAE::ElementSource>>>, Option<Arc<AvlTreePathFunction::Tree>>, BackendVarTransform::VariableReplacements)) -> Result<(Arc<BackendDAE::Equation>, (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<metamodelica::List<Arc<DAE::ElementSource>>>, Option<Arc<AvlTreePathFunction::Tree>>, BackendVarTransform::VariableReplacements))> {
     let mut outEq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
-    let mut outTpl: (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<metamodelica::List<Arc<DAE::ElementSource>>>, Option<Arc<AvlTreePathFunction::Tree>>, BackendVarTransform::VariableReplacements);
+    let mut outTpl: (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<metamodelica::List<Arc<DAE::ElementSource>>>, Option<Arc<AvlTreePathFunction::Tree>>, BackendVarTransform::VariableReplacements) = (<BackendDAE::Variables as ::std::default::Default>::default(), metamodelica::nil(), metamodelica::nil(), None, <BackendVarTransform::VariableReplacements as ::std::default::Default>::default());
     (outEq, outTpl) = 'mc: {
         let __mc_input = (inEq.clone(), inTpl.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (eqn @ Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { source, exp: e, .. }, (v, explst, sources, funcs, repl)) => {
-                    let mut rhs_exp: Arc<DAE::Exp>;
+                    let mut rhs_exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     rhs_exp = getEqnsysRhsExp(e.clone(), v.clone(), funcs.clone(), Some(repl.clone()))?;
-                    Ok((eqn.clone(), (v.clone(), cons(rhs_exp.clone(), explst.clone()), cons(source.clone(), sources.clone()), funcs.clone(), repl.clone())))
+                    Ok((eqn.clone(), (v.clone(), metamodelica::cons(rhs_exp.clone(), explst.clone()), metamodelica::cons(source.clone(), sources.clone()), funcs.clone(), repl.clone())))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -7510,15 +7510,15 @@ fn equationToExp(mut inEq: Arc<BackendDAE::Equation>, mut inTpl: (BackendDAE::Va
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (eqn @ Deref @ BackendDAE::Equation::EQUATION { source, scalar: e2, exp: e1, .. }, (v, explst, sources, funcs, repl)) => {
-                    let mut new_exp: Arc<DAE::Exp>;
-                    let mut rhs_exp: Arc<DAE::Exp>;
-                    let mut rhs_exp_1: Arc<DAE::Exp>;
-                    let mut rhs_exp_2: Arc<DAE::Exp>;
+                    let mut new_exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut rhs_exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut rhs_exp_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut rhs_exp_2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     new_exp = Expression::expSub(e1.clone(), e2.clone())?;
                     rhs_exp = getEqnsysRhsExp(new_exp.clone(), v.clone(), funcs.clone(), Some(repl.clone()))?;
                     rhs_exp_1 = Expression::negate(rhs_exp.clone())?;
                     (rhs_exp_2, _) = ExpressionSimplify::simplify(rhs_exp_1.clone())?;
-                    Ok((eqn.clone(), (v.clone(), cons(rhs_exp_2.clone(), explst.clone()), cons(source.clone(), sources.clone()), funcs.clone(), repl.clone())))
+                    Ok((eqn.clone(), (v.clone(), metamodelica::cons(rhs_exp_2.clone(), explst.clone()), metamodelica::cons(source.clone(), sources.clone()), funcs.clone(), repl.clone())))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -7526,7 +7526,7 @@ fn equationToExp(mut inEq: Arc<BackendDAE::Equation>, mut inTpl: (BackendDAE::Va
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (eqn @ Deref @ BackendDAE::Equation::ARRAY_EQUATION { source, right: e2, left: e1, dimSize: ds, .. }, (v, explst, sources, funcs, repl)) => {
-                    let mut new_exp: Arc<DAE::Exp>;
+                    let mut new_exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut explst1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut subslst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Subscript>>>>> = metamodelica::nil();
                     let mut explst = (*explst).clone();
@@ -7548,17 +7548,17 @@ fn equationToExp(mut inEq: Arc<BackendDAE::Equation>, mut inTpl: (BackendDAE::Va
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (eqn @ Deref @ BackendDAE::Equation::SOLVED_EQUATION { source, exp: e2, componentRef, .. }, (v, explst, sources, funcs, repl)) => {
-                    let mut e1: Arc<DAE::Exp>;
-                    let mut new_exp: Arc<DAE::Exp>;
-                    let mut rhs_exp: Arc<DAE::Exp>;
-                    let mut rhs_exp_1: Arc<DAE::Exp>;
-                    let mut rhs_exp_2: Arc<DAE::Exp>;
+                    let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut new_exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut rhs_exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut rhs_exp_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut rhs_exp_2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     e1 = Expression::crefExp(componentRef.clone())?;
                     new_exp = Expression::expSub(e1.clone(), e2.clone())?;
                     rhs_exp = getEqnsysRhsExp(new_exp.clone(), v.clone(), funcs.clone(), Some(repl.clone()))?;
                     rhs_exp_1 = Expression::negate(rhs_exp.clone())?;
                     (rhs_exp_2, _) = ExpressionSimplify::simplify(rhs_exp_1.clone())?;
-                    Ok((eqn.clone(), (v.clone(), cons(rhs_exp_2.clone(), explst.clone()), cons(source.clone(), sources.clone()), funcs.clone(), repl.clone())))
+                    Ok((eqn.clone(), (v.clone(), metamodelica::cons(rhs_exp_2.clone(), explst.clone()), metamodelica::cons(source.clone(), sources.clone()), funcs.clone(), repl.clone())))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -7593,7 +7593,7 @@ fn equationToExp(mut inEq: Arc<BackendDAE::Equation>, mut inTpl: (BackendDAE::Va
 }
 
 pub fn getEqnsysRhsExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variables, mut funcs: Option<Arc<AvlTreePathFunction::Tree>>, mut oRepl: Option<BackendVarTransform::VariableReplacements>) -> Result<Arc<DAE::Exp>> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     outExp = (match oRepl.clone() {
         Some(mut repl) => {
             let __pa0 = ::match_deref::match_deref! { match &(Expression::traverseExpTopDown(inExp.clone(), (std::sync::Arc::new(getEqnsysRhsExp1) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendVarTransform::VariableReplacements, BackendDAE::Variables, Option<Arc<AvlTreePathFunction::Tree>>, bool)) -> Result<(Arc<DAE::Exp>, bool, (BackendVarTransform::VariableReplacements, BackendDAE::Variables, Option<Arc<AvlTreePathFunction::Tree>>, bool))> + 'static>), (repl.clone(), inVariables.clone(), funcs.clone(), true))?) {
@@ -7620,19 +7620,19 @@ pub fn getEqnsysRhsExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Va
 }
 
 fn getEqnsysRhsExp1(mut inExp: Arc<DAE::Exp>, mut inTpl: (BackendVarTransform::VariableReplacements, BackendDAE::Variables, Option<Arc<AvlTreePathFunction::Tree>>, bool)) -> Result<(Arc<DAE::Exp>, bool, (BackendVarTransform::VariableReplacements, BackendDAE::Variables, Option<Arc<AvlTreePathFunction::Tree>>, bool))> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cont: bool = false;
-    let mut outTpl: (BackendVarTransform::VariableReplacements, BackendDAE::Variables, Option<Arc<AvlTreePathFunction::Tree>>, bool);
+    let mut outTpl: (BackendVarTransform::VariableReplacements, BackendDAE::Variables, Option<Arc<AvlTreePathFunction::Tree>>, bool) = (<BackendVarTransform::VariableReplacements as ::std::default::Default>::default(), <BackendDAE::Variables as ::std::default::Default>::default(), None, false);
     (outExp, cont, outTpl) = (::match_deref::match_deref! { match &((inExp.clone(), inTpl.clone())) {
         (e @ Deref @ DAE::Exp::CREF { .. }, (repl, _, _, _)) => {
-            let mut e1: Arc<DAE::Exp>;
+            let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut b1: bool = false;
             (e1, b1) = BackendVarTransform::replaceExp(e.clone(), repl.clone(), None)?;
             e1 = if (b1.clone()) {e1.clone()} else {e.clone()};
             (e1.clone(), false, inTpl.clone())
         },
         (Deref @ DAE::Exp::IFEXP { expCond: cond, expThen: t, expElse: f }, (repl, vars, funcs, b)) => {
-            let mut tpl: (BackendVarTransform::VariableReplacements, BackendDAE::Variables, Option<Arc<AvlTreePathFunction::Tree>>, bool);
+            let mut tpl: (BackendVarTransform::VariableReplacements, BackendDAE::Variables, Option<Arc<AvlTreePathFunction::Tree>>, bool) = (<BackendVarTransform::VariableReplacements as ::std::default::Default>::default(), <BackendDAE::Variables as ::std::default::Default>::default(), None, false);
             let mut t = (*t).clone();
             let mut f = (*f).clone();
             let mut b = (*b).clone();
@@ -7652,12 +7652,12 @@ fn getEqnsysRhsExp1(mut inExp: Arc<DAE::Exp>, mut inTpl: (BackendVarTransform::V
             (e.clone(), false, inTpl.clone())
         },
         (e @ Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: cond, tail: Deref @ metamodelica::List::Cons { head: t, tail: Deref @ metamodelica::List::Cons { head: f, tail: Deref @ metamodelica::List::Nil } } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "semiLinear" }, .. }, _) => {
-            let mut e1: Arc<DAE::Exp>;
-            let mut e2: Arc<DAE::Exp>;
-            let mut zero: Arc<DAE::Exp>;
-            let mut exp: Arc<DAE::Exp>;
+            let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut zero: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut tp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut tpl: (BackendVarTransform::VariableReplacements, BackendDAE::Variables, Option<Arc<AvlTreePathFunction::Tree>>, bool);
+            let mut tpl: (BackendVarTransform::VariableReplacements, BackendDAE::Variables, Option<Arc<AvlTreePathFunction::Tree>>, bool) = (<BackendVarTransform::VariableReplacements as ::std::default::Default>::default(), <BackendDAE::Variables as ::std::default::Default>::default(), None, false);
             tp = Expression::r#typeof(e.clone())?;
             (zero, _) = Expression::makeZeroExpression(Expression::arrayDimension(tp.clone()))?;
             e1 = Expression::expMul(cond.clone(), t.clone())?;
@@ -7683,14 +7683,14 @@ fn getEqnsysRhsExp1(mut inExp: Arc<DAE::Exp>, mut inTpl: (BackendVarTransform::V
 }
 
 fn getEqnsysRhsExp3(mut b: bool, mut inExp: Arc<DAE::Exp>, mut iTpl: (BackendVarTransform::VariableReplacements, BackendDAE::Variables, Option<Arc<AvlTreePathFunction::Tree>>, bool)) -> Result<(Arc<DAE::Exp>, bool)> {
-    let mut oExp: Arc<DAE::Exp>;
+    let mut oExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut notfound: bool = false;
     (oExp, notfound) = 'mc: {
         let __mc_input = (b.clone(), iTpl.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (false, (_, _, funcs, _)) => {
-                    let mut e: Arc<DAE::Exp>;
+                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut notfound: bool = notfound.clone();
                     let __pa0 = ::match_deref::match_deref! { match &(Inline::forceInlineExp(inExp.clone(), (funcs.clone(), list![openmodelica_frontend_types::DAE::InlineType::NORM_INLINE, openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE]), DAE::emptyElementSource().clone())?) {
                         (__pa0, _, true) => __pa0.clone(),
@@ -7719,9 +7719,9 @@ fn getEqnsysRhsExp3(mut b: bool, mut inExp: Arc<DAE::Exp>, mut iTpl: (BackendVar
 }
 
 pub fn getEqnsysRhsExp2(mut inExp: Arc<DAE::Exp>, mut inTpl: (BackendDAE::Variables, bool)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, bool))> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cont: bool = false;
-    let mut outTpl: (BackendDAE::Variables, bool);
+    let mut outTpl: (BackendDAE::Variables, bool) = (<BackendDAE::Variables as ::std::default::Default>::default(), false);
     (outExp, cont, outTpl) = 'mc: {
         let __mc_input = (inExp.clone(), inTpl.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -8120,7 +8120,7 @@ fn traverseBackendDAEExpsVarWithUpdate<Type_a: Clone + 'static>(mut inVar: Optio
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Some(BackendDAE::Var { varName: cref, varKind, varDirection, varParallelism, varType, bindExp: Some(e1), tplExp, arryDim: instdims, source, values: attr, tearingSelectOption: ts, hideResult, comment, connectorType: ct, innerOuter: io, unreplaceable, initNonlinear, encrypted }) => {
-                    let mut e1_: Arc<DAE::Exp>;
+                    let mut e1_: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut attr_: Option<Arc<DAE::VariableAttributes>> = None;
                     let mut ext_arg_1: Type_a;
                     let mut ext_arg_2: Type_a;
@@ -8305,9 +8305,9 @@ fn traverseBackendDAEAttrDistribution<Type_a: Clone + 'static>(mut distOpt: Opti
             (None, outExtraArg.clone())
         },
         (Some(Deref @ DAE::Distribution { name, params: arr, paramNames: sarr }), _) => {
-            let mut name_: Arc<DAE::Exp>;
-            let mut arr_: Arc<DAE::Exp>;
-            let mut sarr_: Arc<DAE::Exp>;
+            let mut name_: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut arr_: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut sarr_: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut d: Option<Arc<DAE::Distribution>> = None;
             (arr_, _) = Expression::extendArrExp(arr.clone(), false)?;
             (sarr_, _) = Expression::extendArrExp(sarr.clone(), false)?;
@@ -8439,11 +8439,11 @@ fn traverseZeroCrossingExps<Type_a: Clone + 'static>(mut iZeroCrossing: Arc<meta
             (iAcc.clone().reverse(), inTypeA.clone())
         },
         Deref @ metamodelica::List::Cons { head: zc @ BackendDAE::ZeroCrossing { .. }, tail: zeroCrossing } => {
-            let mut relation1: Arc<DAE::Exp>;
+            let mut relation1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut arg: Type_a;
             let mut zeroCrossing = (*zeroCrossing).clone();
             (relation1, arg) = Expression::traverseExpBottomUp(zc.relation_.clone(), func.clone(), inTypeA.clone())?;
-            (zeroCrossing, arg) = traverseZeroCrossingExps(zeroCrossing.clone(), func.clone(), arg.clone(), cons(if (referenceEq(&relation1.clone(),&zc.relation_.clone())) {zc.clone()} else {BackendDAE::ZeroCrossing { index: zc.index.clone(), relation_: relation1.clone(), occurEquLst: zc.occurEquLst.clone(), iter: zc.iter.clone() }}, iAcc.clone()))?;
+            (zeroCrossing, arg) = traverseZeroCrossingExps(zeroCrossing.clone(), func.clone(), arg.clone(), metamodelica::cons(if (referenceEq(&relation1.clone(),&zc.relation_.clone())) {zc.clone()} else {BackendDAE::ZeroCrossing { index: zc.index.clone(), relation_: relation1.clone(), occurEquLst: zc.occurEquLst.clone(), iter: zc.iter.clone() }}, iAcc.clone()))?;
             (zeroCrossing.clone(), arg.clone())
         },
         _ => bail!("match: no arm matched"),
@@ -8670,7 +8670,7 @@ fn mapCausalizeDAE(mut isysts: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>
             let mut syst = (*syst).clone();
             let mut systs = (*systs).clone();
             (syst, shared, arg, causalized) = causalizeDAEWork(syst.clone(), ishared.clone(), inMatchingOptions.clone(), matchingAlgorithm.clone(), stateDeselection.clone(), iCausalized.clone())?;
-            (systs, shared, args, causalized) = mapCausalizeDAE(systs.clone(), shared.clone(), inMatchingOptions.clone(), matchingAlgorithm.clone(), stateDeselection.clone(), cons(syst.clone(), acc.clone()), cons(arg.clone(), acc1.clone()), causalized.clone())?;
+            (systs, shared, args, causalized) = mapCausalizeDAE(systs.clone(), shared.clone(), inMatchingOptions.clone(), matchingAlgorithm.clone(), stateDeselection.clone(), metamodelica::cons(syst.clone(), acc.clone()), metamodelica::cons(arg.clone(), acc1.clone()), causalized.clone())?;
             (systs.clone(), shared.clone(), args.clone(), causalized.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -8696,12 +8696,12 @@ fn causalizeDAEWork(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backe
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::NO_MATCHING { .. }, .. }, (matchingAlgorithmfunc, _), (sssHandler, _, _, _)) => {
-                    let mut mapIncRowEqn: metamodelica::Array<i32>;
-                    let mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+                    let mut mapIncRowEqn: metamodelica::Array<i32> = Default::default();
+                    let mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
                     let mut syst: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-                    let mut match_opts: (BackendDAE::IndexReduction, BackendDAE::EquationConstraints);
+                    let mut match_opts: (BackendDAE::IndexReduction, BackendDAE::EquationConstraints) = (BackendDAE::IndexReduction::INDEX_REDUCTION, BackendDAE::EquationConstraints::ALLOW_UNDERCONSTRAINED);
                     let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
-                    let mut arg: (BackendDAE::StateOrder, metamodelica::Array<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, i32);
+                    let mut arg: (BackendDAE::StateOrder, metamodelica::Array<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, i32) = (BackendDAE::StateOrder::NOSTATEORDER, Default::default(), Default::default(), Default::default(), 0);
                     let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
                     let mut nvars: i32 = 0;
                     let mut neqns: i32 = 0;
@@ -8765,8 +8765,8 @@ fn mapSortEqnsDAE(mut inSystem: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>
 fn sortEqnsDAEWork(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<BackendDAE::Shared>) -> Result<Arc<BackendDAE::EqSystem>> {
     let mut outSystem: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
     let mut syst: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    let mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut mapIncRowEqn: metamodelica::Array<i32>;
+    let mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut mapIncRowEqn: metamodelica::Array<i32> = Default::default();
     let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
     match '__try0: {
         funcs = unwrap_break_err!(getFunctions(inShared.clone()), '__try0);
@@ -8880,10 +8880,10 @@ pub fn sortGlobalKnownVarsInDAE(mut backendDAE: Arc<BackendDAE::BackendDAE>) -> 
     let mut globalKnownVars_sorted: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     let mut parameterEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     let mut paramSystem: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
-    let mut ass1: metamodelica::Array<i32>;
-    let mut ass2: metamodelica::Array<i32>;
+    let mut ass1: metamodelica::Array<i32> = Default::default();
+    let mut ass2: metamodelica::Array<i32> = Default::default();
     let mut comps: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut flatComps: Arc<metamodelica::List<i32>> = metamodelica::nil();
     globalKnownVars = backendDAE.shared.globalKnownVars.clone();
@@ -8915,8 +8915,8 @@ pub fn sortGlobalKnownVarsInDAE(mut backendDAE: Arc<BackendDAE::BackendDAE>) -> 
 fn createGlobalKnownVarsEquations(mut var: BackendDAE::Var, mut parameterEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>) -> Result<(BackendDAE::Var, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>)> {
     let mut var: BackendDAE::Var = var;
     let mut parameterEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = parameterEqns;
-    let mut lhs: Arc<DAE::Exp>;
-    let mut rhs: Arc<DAE::Exp>;
+    let mut lhs: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut rhs: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
     lhs = BackendVariable::varExp(var.clone())?;
     rhs = BackendVariable::varBindExpStartValueNoFail(var.clone())?;
@@ -8926,7 +8926,7 @@ fn createGlobalKnownVarsEquations(mut var: BackendDAE::Var, mut parameterEqns: A
 }
 
 pub fn getEqnIndexArray(mut eqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
-    let mut eqIdxArray: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut eqIdxArray: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut idx: i32 = 1;
     let mut idx2: i32 = 0;
     let mut size: i32 = 0;
@@ -8948,8 +8948,8 @@ pub fn analyticalToStructuralSingularity(mut comp: Arc<metamodelica::List<i32>>,
     let mut ass2: metamodelica::Array<i32> = ass2;
     let mut syst: Arc<BackendDAE::EqSystem> = syst;
     let mut changed: bool = changed;
-    let mut mapArrayToScalar: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut mapScalarToArray: metamodelica::Array<i32>;
+    let mut mapArrayToScalar: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut mapScalarToArray: metamodelica::Array<i32> = Default::default();
     let mut loopEqs: Arc<metamodelica::List<(Arc<BackendDAE::Equation>, (i32, i32))>> = metamodelica::nil();
     let mut loopVars: Arc<metamodelica::List<(BackendDAE::Var, i32)>> = metamodelica::nil();
     let mut tmp_eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
@@ -8965,9 +8965,9 @@ pub fn analyticalToStructuralSingularity(mut comp: Arc<metamodelica::List<i32>>,
             let mut eqnIndex = eqnIndex.clone();
             if (mapArrayToScalar.borrow()[(mapScalarToArray.borrow()[(eqnIndex.clone()-1) as usize].clone()-1) as usize].clone().len() as i32) == 1 {
                 tmp_eq = BackendEquation::get(syst.orderedEqs.clone(), mapScalarToArray.borrow()[(eqnIndex.clone()-1) as usize].clone());
-                loopEqs = cons((tmp_eq.clone(), (mapScalarToArray.borrow()[(eqnIndex.clone()-1) as usize].clone(), eqnIndex.clone())), loopEqs.clone());
+                loopEqs = metamodelica::cons((tmp_eq.clone(), (mapScalarToArray.borrow()[(eqnIndex.clone()-1) as usize].clone(), eqnIndex.clone())), loopEqs.clone());
             }
-            loopVars = cons((BackendVariable::getVarAt(syst.orderedVars.clone(), ass1.borrow()[(eqnIndex.clone()-1) as usize].clone())?, ass1.borrow()[(eqnIndex.clone()-1) as usize].clone()), loopVars.clone());
+            loopVars = metamodelica::cons((BackendVariable::getVarAt(syst.orderedVars.clone(), ass1.borrow()[(eqnIndex.clone()-1) as usize].clone())?, ass1.borrow()[(eqnIndex.clone()-1) as usize].clone()), loopVars.clone());
         }
         if !(loopEqs.clone().is_empty()) && (loopEqs.clone().len() as i32) <= Flags::getConfigInt(Flags::MAX_SIZE_ASSC.clone())? {
             if '__try2: {
@@ -9141,7 +9141,7 @@ pub fn getPreOptModulesString() -> Result<Arc<metamodelica::List<ArcStr>>> {
 fn deprecatedDebugFlag(mut inFlag: Flags::DebugFlag, mut inModuleList: Arc<metamodelica::List<ArcStr>>, mut inModule: ArcStr, mut inPhase: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut outModuleList: Arc<metamodelica::List<ArcStr>> = inModuleList.clone();
     if Flags::isSet(inFlag.clone())? {
-        outModuleList = cons((inModule.clone()).clone(), inModuleList.clone());
+        outModuleList = metamodelica::cons((inModule.clone()).clone(), inModuleList.clone());
         Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Deprecated debug flag -d=")); __mm_s.push_str(&*FlagsUtil::debugFlagName(inFlag.clone())?); __mm_s.push_str(&*literal!(" detected. Use --")); __mm_s.push_str(&*inPhase.clone()); __mm_s.push_str(&*literal!("=")); __mm_s.push_str(&*inModule.clone()); __mm_s.push_str(&*literal!(" instead.")); ArcStr::from(__mm_s) }).clone())?;
     }
     Ok(outModuleList)
@@ -9150,7 +9150,7 @@ fn deprecatedDebugFlag(mut inFlag: Flags::DebugFlag, mut inModuleList: Arc<metam
 fn deprecatedConfigFlag(mut inFlag: Flags::ConfigFlag, mut inModuleList: Arc<metamodelica::List<ArcStr>>, mut inModule: ArcStr, mut inPhase: ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut outModuleList: Arc<metamodelica::List<ArcStr>> = inModuleList.clone();
     if Flags::getConfigBool(inFlag.clone())? {
-        outModuleList = cons((inModule.clone()).clone(), inModuleList.clone());
+        outModuleList = metamodelica::cons((inModule.clone()).clone(), inModuleList.clone());
         Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Deprecated flag --")); __mm_s.push_str(&*FlagsUtil::configFlagName(inFlag.clone())?); __mm_s.push_str(&*literal!(" detected. Use --")); __mm_s.push_str(&*inPhase.clone()); __mm_s.push_str(&*literal!("=")); __mm_s.push_str(&*inModule.clone()); __mm_s.push_str(&*literal!(" instead.")); ArcStr::from(__mm_s) }).clone())?;
     }
     Ok(outModuleList)
@@ -9164,19 +9164,19 @@ pub fn getPreOptModules(mut inPreOptModules: Option<Arc<metamodelica::List<ArcSt
     preOptModules = getPreOptModulesString()?;
     preOptModules = Util::getOptionOrDefault(inPreOptModules.clone(), preOptModules.clone());
     if isSome(openmodelica_util::Globals::isInStream.with(|__root| __root.borrow().clone())) {
-        enabledModules = cons((literal!("simplifyInStream")).clone(), enabledModules.clone());
+        enabledModules = metamodelica::cons((literal!("simplifyInStream")).clone(), enabledModules.clone());
     }
     if Flags::getConfigBool(Flags::DEFAULT_OPT_MODULES_ORDERING.clone())? {
         enabledModules = deprecatedDebugFlag(Flags::SORT_EQNS_AND_VARS.clone(), enabledModules.clone(), (literal!("sortEqnsVars")).clone(), (literal!("preOptModules+")).clone())?;
         if Config::acceptOptimicaGrammar()? || Flags::getConfigBool(Flags::GENERATE_DYN_OPTIMIZATION_PROBLEM.clone())? {
-            enabledModules = cons((literal!("inputDerivativesForDynOpt")).clone(), enabledModules.clone());
-            enabledModules = cons((literal!("createDynamicOptimization")).clone(), enabledModules.clone());
+            enabledModules = metamodelica::cons((literal!("inputDerivativesForDynOpt")).clone(), enabledModules.clone());
+            enabledModules = metamodelica::cons((literal!("createDynamicOptimization")).clone(), enabledModules.clone());
         }
         if Flags::getConfigString(Flags::REMOVE_SIMPLE_EQUATIONS.clone())? == literal!("causal") || Flags::getConfigString(Flags::REMOVE_SIMPLE_EQUATIONS.clone())? == literal!("none") {
-            disabledModules = cons((literal!("removeSimpleEquations")).clone(), disabledModules.clone());
+            disabledModules = metamodelica::cons((literal!("removeSimpleEquations")).clone(), disabledModules.clone());
         }
         if !(Flags::isSet(Flags::NF_SCALARIZE.clone())?) {
-            disabledModules = cons((literal!("inlineArrayEqn")).clone(), disabledModules.clone());
+            disabledModules = metamodelica::cons((literal!("inlineArrayEqn")).clone(), disabledModules.clone());
         }
     }
     if !(Flags::getConfigBool(Flags::DEFAULT_OPT_MODULES_ORDERING.clone())?) && !(enabledModules.clone().is_empty()) {
@@ -9206,40 +9206,40 @@ pub fn getPostOptModules(mut inPostOptModules: Option<Arc<metamodelica::List<Arc
     postOptModules = Util::getOptionOrDefault(inPostOptModules.clone(), postOptModules.clone());
     if Flags::getConfigBool(Flags::DEFAULT_OPT_MODULES_ORDERING.clone())? {
         if Flags::getConfigBool(Flags::GENERATE_DYN_OPTIMIZATION_PROBLEM.clone())? {
-            enabledModules = cons((literal!("simplifyConstraints")).clone(), enabledModules.clone());
+            enabledModules = metamodelica::cons((literal!("simplifyConstraints")).clone(), enabledModules.clone());
         }
         if !(Flags::getConfigString(Flags::LOOP2CON.clone())? == literal!("none")) {
-            enabledModules = cons((literal!("extendDynamicOptimization")).clone(), enabledModules.clone());
+            enabledModules = metamodelica::cons((literal!("extendDynamicOptimization")).clone(), enabledModules.clone());
         }
         if Flags::getConfigBool(Flags::GENERATE_SYMBOLIC_LINEARIZATION.clone())? || Config::acceptOptimicaGrammar()? || Flags::getConfigBool(Flags::GENERATE_DYN_OPTIMIZATION_PROBLEM.clone())? {
-            enabledModules = cons((literal!("generateSymbolicLinearization")).clone(), enabledModules.clone());
+            enabledModules = metamodelica::cons((literal!("generateSymbolicLinearization")).clone(), enabledModules.clone());
         }
         if Flags::getConfigInt(Flags::SIMPLIFY_LOOPS.clone())? > 0 {
-            enabledModules = cons((literal!("simplifyLoops")).clone(), enabledModules.clone());
+            enabledModules = metamodelica::cons((literal!("simplifyLoops")).clone(), enabledModules.clone());
         }
         if Flags::getConfigString(Flags::HETS.clone())? != literal!("none") {
-            enabledModules = cons((literal!("hets")).clone(), enabledModules.clone());
+            enabledModules = metamodelica::cons((literal!("hets")).clone(), enabledModules.clone());
         }
         if Flags::isSet(Flags::COUNT_OPERATIONS.clone())? {
-            enabledModules = cons((literal!("countOperations")).clone(), enabledModules.clone());
+            enabledModules = metamodelica::cons((literal!("countOperations")).clone(), enabledModules.clone());
         }
         if 1 < Flags::getConfigInt(Flags::MAX_SIZE_FOR_SOLVE_LINIEAR_SYSTEM.clone())? {
-            enabledModules = cons((literal!("solveLinearSystem")).clone(), enabledModules.clone());
+            enabledModules = metamodelica::cons((literal!("solveLinearSystem")).clone(), enabledModules.clone());
         }
         if Flags::isSet(Flags::RESHUFFLE_POST.clone())? {
-            enabledModules = cons((literal!("reshufflePost")).clone(), enabledModules.clone());
+            enabledModules = metamodelica::cons((literal!("reshufflePost")).clone(), enabledModules.clone());
         }
         if Flags::getConfigInt(Flags::RTEARING.clone())? > 0 {
-            enabledModules = cons((literal!("recursiveTearing")).clone(), enabledModules.clone());
+            enabledModules = metamodelica::cons((literal!("recursiveTearing")).clone(), enabledModules.clone());
         }
         if Flags::getConfigInt(Flags::PARTLINTORN.clone())? > 0 {
-            enabledModules = cons((literal!("partlintornsystem")).clone(), enabledModules.clone());
+            enabledModules = metamodelica::cons((literal!("partlintornsystem")).clone(), enabledModules.clone());
         }
         if Flags::getConfigString(Flags::REMOVE_SIMPLE_EQUATIONS.clone())? == literal!("none") || Flags::getConfigString(Flags::REMOVE_SIMPLE_EQUATIONS.clone())? == literal!("fastAcausal") || Flags::getConfigString(Flags::REMOVE_SIMPLE_EQUATIONS.clone())? == literal!("allAcausal") {
-            disabledModules = cons((literal!("removeSimpleEquations")).clone(), disabledModules.clone());
+            disabledModules = metamodelica::cons((literal!("removeSimpleEquations")).clone(), disabledModules.clone());
         }
         if !(Flags::isSet(Flags::NF_SCALARIZE.clone())?) {
-            disabledModules = cons((literal!("inlineArrayEqn")).clone(), disabledModules.clone());
+            disabledModules = metamodelica::cons((literal!("inlineArrayEqn")).clone(), disabledModules.clone());
         }
     }
     if !(Flags::getConfigBool(Flags::DEFAULT_OPT_MODULES_ORDERING.clone())?) && !(enabledModules.clone().is_empty()) {
@@ -9263,10 +9263,10 @@ pub fn getInitOptModules(mut inInitOptModules: Option<Arc<metamodelica::List<Arc
     initOptModules = Util::getOptionOrDefault(inInitOptModules.clone(), initOptModules.clone());
     if Flags::getConfigBool(Flags::DEFAULT_OPT_MODULES_ORDERING.clone())? {
         if Flags::getConfigInt(Flags::SIMPLIFY_LOOPS.clone())? > 0 {
-            enabledModules = cons((literal!("simplifyLoops")).clone(), enabledModules.clone());
+            enabledModules = metamodelica::cons((literal!("simplifyLoops")).clone(), enabledModules.clone());
         }
         if Flags::getConfigInt(Flags::RTEARING.clone())? > 0 {
-            enabledModules = cons((literal!("recursiveTearing")).clone(), enabledModules.clone());
+            enabledModules = metamodelica::cons((literal!("recursiveTearing")).clone(), enabledModules.clone());
         }
     }
     if !(Flags::getConfigBool(Flags::DEFAULT_OPT_MODULES_ORDERING.clone())?) && !(enabledModules.clone().is_empty()) {
@@ -9330,13 +9330,13 @@ fn selectOptModules(mut inStrOptModules: Arc<metamodelica::List<ArcStr>>, mut in
         }
         for mut i in 1..=numModules.clone() {
             if activeModules.borrow()[(i.clone()-1) as usize].clone() {
-                outOptModules = cons((inOptModules.clone()).get(i.clone())?, outOptModules.clone());
+                outOptModules = metamodelica::cons((inOptModules.clone()).get(i.clone())?, outOptModules.clone());
             }
         }
     } else {
         for mut name in &*inStrOptModules.clone() {
             let mut name = name.clone();
-            outOptModules = cons(selectOptModules1((name.clone()).clone(), inOptModules.clone())?, outOptModules.clone());
+            outOptModules = metamodelica::cons(selectOptModules1((name.clone()).clone(), inOptModules.clone())?, outOptModules.clone());
         }
     }
     outOptModules = outOptModules.clone().reverse();
@@ -9351,7 +9351,7 @@ fn getModuleIndexes(mut inModuleName: ArcStr, mut inModuleList: Arc<metamodelica
         let mut module = module.clone();
         (_, name) = module.clone();
         if stringEqual((inModuleName.clone()).clone(), (name.clone()).clone()) {
-            outIndexes = cons(index.clone(), outIndexes.clone());
+            outIndexes = metamodelica::cons(index.clone(), outIndexes.clone());
         }
         index = index.clone() + 1;
     }
@@ -9502,7 +9502,7 @@ fn filterEmptySystem(mut inSyst: Arc<BackendDAE::EqSystem>, mut reqs: Arc<metamo
     let mut reqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = reqs;
     let mut systs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = systs;
     if BackendVariable::varsSize(inSyst.orderedVars.clone()) != 0 || isClockedSyst(inSyst.clone()) && BackendEquation::getNumberOfEquations(inSyst.removedEqs.clone()) != 0 {
-        systs = cons(inSyst.clone(), systs.clone());
+        systs = metamodelica::cons(inSyst.clone(), systs.clone());
     } else {
         reqs = listAppend(BackendEquation::equationList(inSyst.removedEqs.clone()), reqs.clone());
     }
@@ -9519,7 +9519,7 @@ pub fn getAllVarLst(mut dae: Arc<BackendDAE::BackendDAE>) -> Result<Arc<metamode
     } };
     globalKnownVars = __pa0.clone();
     eqs = __pa1.clone();
-    varLst = List::flatten(List::map(cons(globalKnownVars.clone(), List::map(eqs.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::daeVars, Arc<BackendDAE::EqSystem>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>) -> Result<BackendDAE::Variables> + 'static>))), (std::sync::Arc::new(BackendVariable::varList) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> + 'static>)));
+    varLst = List::flatten(List::map(metamodelica::cons(globalKnownVars.clone(), List::map(eqs.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::daeVars, Arc<BackendDAE::EqSystem>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>) -> Result<BackendDAE::Variables> + 'static>))), (std::sync::Arc::new(BackendVariable::varList) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> + 'static>)));
     Ok(varLst)
 }
 
@@ -9534,7 +9534,7 @@ pub fn isClockedSyst(mut inSyst: Arc<BackendDAE::EqSystem>) -> bool {
 }
 
 pub fn getAlgorithms(mut dae: Arc<BackendDAE::BackendDAE>) -> Result<metamodelica::Array<Arc<DAE::Algorithm>>> {
-    let mut algs: metamodelica::Array<Arc<DAE::Algorithm>>;
+    let mut algs: metamodelica::Array<Arc<DAE::Algorithm>> = Default::default();
     let mut systs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = metamodelica::nil();
     let mut alglst: Arc<metamodelica::List<Arc<DAE::Algorithm>>> = metamodelica::nil();
     let __pa0 = ::match_deref::match_deref! { match &(dae.clone()) {
@@ -9564,7 +9564,7 @@ fn collectAlgorithms(mut inEq: Arc<BackendDAE::Equation>, mut inAlgs: Arc<metamo
     let mut algs: Arc<metamodelica::List<Arc<DAE::Algorithm>>> = metamodelica::nil();
     (outEq, algs) = (::match_deref::match_deref! { match &((inEq.clone(), inAlgs.clone())) {
         (Deref @ BackendDAE::Equation::ALGORITHM { alg, .. }, algs) => {
-            (inEq.clone(), cons(alg.clone(), algs.clone()))
+            (inEq.clone(), metamodelica::cons(alg.clone(), algs.clone()))
         },
         _ => {
             (inEq.clone(), inAlgs.clone())
@@ -9621,7 +9621,7 @@ fn getConditionList1(mut inConditionList: Arc<metamodelica::List<Arc<DAE::Exp>>>
         Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef, .. }, tail: conditionList } => {
             let mut conditionVarList: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
             let mut initialCall: bool = false;
-            (conditionVarList, initialCall) = getConditionList1(conditionList.clone(), cons(componentRef.clone(), inConditionVarList.clone()), inInitialCall.clone())?;
+            (conditionVarList, initialCall) = getConditionList1(conditionList.clone(), metamodelica::cons(componentRef.clone(), inConditionVarList.clone()), inInitialCall.clone())?;
             (conditionVarList.clone(), initialCall.clone())
         },
         Deref @ metamodelica::List::Cons { head: exp, tail: _ } => {
@@ -9705,9 +9705,9 @@ pub fn isNonLinearTornSystemComp(mut comp: Arc<BackendDAE::StrongComponent>) -> 
 
 pub fn extendRange(mut inRangeExp: Arc<DAE::Exp>, mut inKnVariables: BackendDAE::Variables) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
     let mut outExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-    let mut start: Arc<DAE::Exp>;
-    let mut step: Arc<DAE::Exp>;
-    let mut stop: Arc<DAE::Exp>;
+    let mut start: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut step: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut stop: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut ostep: Option<Arc<DAE::Exp>> = None;
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     if '__try0: {
@@ -9740,10 +9740,10 @@ pub fn extendRange(mut inRangeExp: Arc<DAE::Exp>, mut inKnVariables: BackendDAE:
 }
 
 pub fn evalExp(mut inExp: Arc<DAE::Exp>, mut inKnVariables: BackendDAE::Variables) -> Result<Arc<DAE::Exp>> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     outExp = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::CREF { .. } => {
-            let mut e: Arc<DAE::Exp>;
+            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let __pa0 = ::match_deref::match_deref! { match &(BackendVariable::getVar(var_field!((*inExp).componentRef, DAE::Exp::CREF).clone(), inKnVariables.clone())?) {
                 (Deref @ metamodelica::List::Cons { head: BackendDAE::Var { bindExp: Some(__pa0), .. }, tail: _ }, _) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
@@ -9752,15 +9752,15 @@ pub fn evalExp(mut inExp: Arc<DAE::Exp>, mut inKnVariables: BackendDAE::Variable
             e.clone()
         },
         Deref @ DAE::Exp::BINARY { operator: DAE::Operator::ADD { ty: Deref @ DAE::Type::T_INTEGER { .. } }, .. } => {
-            let mut e1: Arc<DAE::Exp>;
-            let mut e2: Arc<DAE::Exp>;
+            let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             e1 = evalExp(var_field!((*inExp).exp1, DAE::Exp::BINARY).clone(), inKnVariables.clone())?;
             e2 = evalExp(var_field!((*inExp).exp2, DAE::Exp::BINARY).clone(), inKnVariables.clone())?;
             Arc::new(DAE::Exp::ICONST { integer: Expression::expInt(e1.clone())? + Expression::expInt(e2.clone())? })
         },
         Deref @ DAE::Exp::BINARY { operator: DAE::Operator::SUB { ty: Deref @ DAE::Type::T_INTEGER { .. } }, .. } => {
-            let mut e1: Arc<DAE::Exp>;
-            let mut e2: Arc<DAE::Exp>;
+            let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             e1 = evalExp(var_field!((*inExp).exp1, DAE::Exp::BINARY).clone(), inKnVariables.clone())?;
             e2 = evalExp(var_field!((*inExp).exp2, DAE::Exp::BINARY).clone(), inKnVariables.clone())?;
             Arc::new(DAE::Exp::ICONST { integer: Expression::expInt(e1.clone())? - Expression::expInt(e2.clone())? })
@@ -9784,7 +9784,7 @@ pub fn expInt(mut inExp: Arc<DAE::Exp>, mut inKnVariables: BackendDAE::Variables
         },
         Deref @ DAE::Exp::CREF { componentRef: cr, .. } => {
             let mut i2: i32 = 0;
-            let mut e: Arc<DAE::Exp>;
+            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let __pa0 = ::match_deref::match_deref! { match &(BackendVariable::getVar(cr.clone(), inKnVariables.clone())?) {
                 (Deref @ metamodelica::List::Cons { head: BackendDAE::Var { bindExp: Some(__pa0), .. }, tail: _ }, _) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
@@ -9828,8 +9828,8 @@ pub fn createEmptyShared(mut backendDAEType: BackendDAE::BackendDAEType, mut ei:
 
 pub fn emptyPartitionsInfo() -> BackendDAE::PartitionsInfo {
     let mut partitionsInfo: BackendDAE::PartitionsInfo = <BackendDAE::PartitionsInfo as ::std::default::Default>::default();
-    let mut basePartitions: metamodelica::Array<BackendDAE::BasePartition>;
-    let mut subPartitions: metamodelica::Array<BackendDAE::SubPartition>;
+    let mut basePartitions: metamodelica::Array<BackendDAE::BasePartition> = Default::default();
+    let mut subPartitions: metamodelica::Array<BackendDAE::SubPartition> = Default::default();
     basePartitions = arrayCreate(0, BackendDAE::BasePartition { clock: Arc::new(openmodelica_frontend_types::DAE::ClockKind::INFERRED_CLOCK), nSubClocks: 0 });
     subPartitions = arrayCreate(0, BackendDAE::SubPartition { clock: BackendDAE::DEFAULT_SUBCLOCK.clone(), holdEvents: false, prevVars: metamodelica::nil() });
     partitionsInfo = BackendDAE::PartitionsInfo { basePartitions: basePartitions.clone(), subPartitions: subPartitions.clone() };
@@ -9875,7 +9875,7 @@ pub fn setVars(mut inDAE: Arc<BackendDAE::BackendDAE>, mut inVars: BackendDAE::V
     systs = __pa1.clone();
     shared = __pa2.clone();
     syst = setEqSystVars(syst.clone(), inVars.clone())?;
-    outDAE = Arc::new(BackendDAE::BackendDAE { eqs: cons(syst.clone(), systs.clone()), shared: shared.clone() });
+    outDAE = Arc::new(BackendDAE::BackendDAE { eqs: metamodelica::cons(syst.clone(), systs.clone()), shared: shared.clone() });
     Ok(outDAE)
 }
 
@@ -9892,7 +9892,7 @@ pub fn setEqs(mut inDAE: Arc<BackendDAE::BackendDAE>, mut inEqs: Arc<ExpandableA
     systs = __pa1.clone();
     shared = __pa2.clone();
     syst = setEqSystEqs(syst.clone(), inEqs.clone());
-    outDAE = Arc::new(BackendDAE::BackendDAE { eqs: cons(syst.clone(), systs.clone()), shared: shared.clone() });
+    outDAE = Arc::new(BackendDAE::BackendDAE { eqs: metamodelica::cons(syst.clone(), systs.clone()), shared: shared.clone() });
     Ok(outDAE)
 }
 
@@ -10227,12 +10227,12 @@ fn innerEquationsEqual(mut innerEquation1: BackendDAE::InnerEquation, mut innerE
 
 pub fn causalizeVarBindSystem(mut varLstIn: Arc<metamodelica::List<BackendDAE::Var>>, mut isInitial: bool) -> Result<(Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, metamodelica::Array<i32>, metamodelica::Array<i32>)> {
     let mut comps: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-    let mut ass1: metamodelica::Array<i32>;
-    let mut ass2: metamodelica::Array<i32>;
+    let mut ass1: metamodelica::Array<i32> = Default::default();
+    let mut ass2: metamodelica::Array<i32> = Default::default();
     let mut nVars: i32 = 0;
     let mut nEqs: i32 = 0;
-    let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut bindExps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut eqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     bindExps = List::map(varLstIn.clone(), (std::sync::Arc::new(BackendVariable::varBindExp) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<Arc<DAE::Exp>> + 'static>));
@@ -10407,16 +10407,16 @@ pub fn getStrongComponentEquations(mut comps: Arc<metamodelica::List<Arc<Backend
 pub fn isFuncCallWithNoDerAnnotation(mut eq: Arc<BackendDAE::Equation>, mut functionTree: Arc<AvlTreePathFunction::Tree>) -> Result<(bool, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> {
     let mut isFuncCallWithNoDerAnno: bool = false;
     let mut noDerivativeInputs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-    let (_, (_, __pa0)) = BackendEquation::traverseExpsOfEquation(eq.clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static> = (std::sync::Arc::new(isFuncCallWithNoDerAnnotation1) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<AvlTreePathFunction::Tree>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)) -> Result<(Arc<DAE::Exp>, bool, (Arc<AvlTreePathFunction::Tree>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>))> + 'static>); move |__pe_a0, __pe_a2| Expression::traverseExpTopDown(__pe_a0, __pe_b1.clone(), __pe_a2) }), (functionTree.clone(), metamodelica::nil()))?;
+    let (_, (_, __pa0)) = BackendEquation::traverseExpsOfEquation(eq.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static> = (std::sync::Arc::new(isFuncCallWithNoDerAnnotation1) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<AvlTreePathFunction::Tree>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)) -> Result<(Arc<DAE::Exp>, bool, (Arc<AvlTreePathFunction::Tree>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>))> + 'static>); move |__pe_a0, __pe_a2| Expression::traverseExpTopDown(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), (functionTree.clone(), metamodelica::nil()))?;
     noDerivativeInputs = __pa0.clone();
     isFuncCallWithNoDerAnno = !(noDerivativeInputs.clone().is_empty());
     Ok((isFuncCallWithNoDerAnno, noDerivativeInputs))
 }
 
 pub fn isFuncCallWithNoDerAnnotation1(mut expIn: Arc<DAE::Exp>, mut tplIn: (Arc<AvlTreePathFunction::Tree>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)) -> Result<(Arc<DAE::Exp>, bool, (Arc<AvlTreePathFunction::Tree>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>))> {
-    let mut expOut: Arc<DAE::Exp>;
+    let mut expOut: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cont: bool = false;
-    let mut tplOut: (Arc<AvlTreePathFunction::Tree>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>);
+    let mut tplOut: (Arc<AvlTreePathFunction::Tree>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) = (Arc::new(AvlTreePathFunction::Tree::EMPTY), metamodelica::nil());
     (expOut, cont, tplOut) = 'mc: {
         let __mc_input = (expIn.clone(), tplIn.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -10459,7 +10459,7 @@ pub fn isNotFunctionCall(mut inExp: Arc<DAE::Exp>, mut funcsIn: Arc<AvlTreePathF
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CALL { path, .. } => {
-                    let mut func: DAE::Function;
+                    let mut func: DAE::Function = <DAE::Function as ::std::default::Default>::default();
                     let __pa0 = ::match_deref::match_deref! { match &(AvlTreePathFunction::get(funcsIn.clone(), path.clone())?) {
                         Some(__pa0) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -10489,7 +10489,7 @@ fn getNoDerivativeInputPosition(mut conds: Arc<metamodelica::List<(i32, DAE::der
         let mut c = c.clone();
         IdxsOut = (match c.clone() {
         (mut idx, DAE::derivativeCond::NO_DERIVATIVE { binding: _ }) => {
-            cons(idx.clone(), IdxsOut.clone())
+            metamodelica::cons(idx.clone(), IdxsOut.clone())
         },
         _ => {
             IdxsOut.clone()
@@ -10505,14 +10505,14 @@ pub fn checkAdjacencyMatrixSolvability(mut syst: Arc<BackendDAE::EqSystem>, mut 
     let mut v: i32 = 0;
     let mut eq: i32 = 0;
     let mut count: i32 = 0;
-    let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut mOrig: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut mTOrig: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut mOrig: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut mTOrig: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut vars: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut eqs: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut solvedVars: metamodelica::Array<i32>;
-    let mut solvedEqs: metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>;
+    let mut solvedVars: metamodelica::Array<i32> = Default::default();
+    let mut solvedEqs: metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>> = Default::default();
     let mut names: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>> = metamodelica::nil();
     let mut errors: i32 = 0;
     let mut numSolved: i32 = 0;
@@ -10587,13 +10587,13 @@ pub fn checkAdjacencyMatrixSolvability(mut syst: Arc<BackendDAE::EqSystem>, mut 
                     variableDoesNotFitInEquation(i.clone(), vars.clone(), mOrig.clone(), eqsArray.clone(), varsArray.clone(), solvedVars.clone())?;
                     errors = errors.clone() + 1;
                     if lenVars.clone() == 0 {
-                        {let _arr = solvedEqs.clone(); let _val = cons((DAE::emptyCref().clone(), 0), solvedEqs.clone().borrow()[(i.clone()-1) as usize].clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+                        {let _arr = solvedEqs.clone(); let _val = metamodelica::cons((DAE::emptyCref().clone(), 0), solvedEqs.clone().borrow()[(i.clone()-1) as usize].clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
                     }
                 }
                 for mut v in &*vars.clone() {
                     let mut v = v.clone();
                     var = BackendVariable::getVarAt(varsArray.clone(), v.clone())?;
-                    {let _arr = solvedEqs.clone(); let _val = cons((var.varName.clone(), v.clone()), solvedEqs.clone().borrow()[(i.clone()-1) as usize].clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+                    {let _arr = solvedEqs.clone(); let _val = metamodelica::cons((var.varName.clone(), v.clone()), solvedEqs.clone().borrow()[(i.clone()-1) as usize].clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
                     {let _arr = solvedVars.clone(); _arr.borrow_mut()[(v.clone()-1) as usize] = i.clone(); _arr};
                     eqs = mT.clone().borrow()[(v.clone()-1) as usize].clone();
                     for mut eq in &*eqs.clone() {
@@ -10644,7 +10644,7 @@ pub fn checkAdjacencyMatrixSolvability(mut syst: Arc<BackendDAE::EqSystem>, mut 
                 names = solvedEqs.clone().borrow()[(eq.clone()-1) as usize].clone();
                 lenInfos = (names.clone().len() as i32);
                 {let _arr = solvedVars.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = eq.clone(); _arr};
-                {let _arr = solvedEqs.clone(); _arr.borrow_mut()[(eq.clone()-1) as usize] = cons((var.varName.clone(), i.clone()), names.clone()); _arr};
+                {let _arr = solvedEqs.clone(); _arr.borrow_mut()[(eq.clone()-1) as usize] = metamodelica::cons((var.varName.clone(), i.clone()), names.clone()); _arr};
                 if lenInfos.clone() >= eqSize.clone() {
                     variableDoesNotFitInEquation(eq.clone(), list![i.clone()], mOrig.clone(), eqsArray.clone(), varsArray.clone(), solvedVars.clone())?;
                     errors = errors.clone() + 1;
@@ -10822,7 +10822,7 @@ pub fn getLinearfromJacType(mut jacType: BackendDAE::JacobianType) -> Result<boo
 }
 
 pub fn containsHomotopyCall(mut inExp: Arc<DAE::Exp>, mut inHomotopy: bool) -> Result<(Arc<DAE::Exp>, bool)> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outHomotopy: bool = false;
     (outExp, outHomotopy) = Expression::traverseExpTopDown(inExp.clone(), (std::sync::Arc::new(fnptr!(containsHomotopyCall2, Arc<DAE::Exp>, bool)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, bool) -> Result<(Arc<DAE::Exp>, bool, bool)> + 'static>), inHomotopy.clone())?;
     Ok((outExp, outHomotopy))

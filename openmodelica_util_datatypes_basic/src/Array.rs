@@ -156,7 +156,7 @@ pub fn findFirstOnTrueWithIdx<T: Clone + 'static>(mut inArray: metamodelica::Arr
 }
 
 pub fn select<T: Clone + 'static>(mut inArray: metamodelica::Array<T>, mut inIndices: Arc<metamodelica::List<i32>>) -> Result<metamodelica::Array<T>> {
-    let mut outArray: metamodelica::Array<T>;
+    let mut outArray: metamodelica::Array<T> = Default::default();
     let mut i: i32 = 1;
     outArray = metamodelica::arrayCreate((inIndices.clone().len() as i32), inArray.borrow()[(1-1) as usize].clone());
     for mut e in &*inIndices.clone() {
@@ -170,7 +170,7 @@ pub fn select<T: Clone + 'static>(mut inArray: metamodelica::Array<T>, mut inInd
 pub fn map<TI: Clone + 'static, TO: Clone + 'static>(mut inArray: metamodelica::Array<TI>, mut inFunc: Arc<dyn ::std::ops::Fn(TI) -> Result<TO> + 'static>) -> metamodelica::Array<TO> {
     pub type FuncType<TI: Clone + 'static, TO: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(TI) -> Result<TO> + 'static>;
 
-    let mut outArray: metamodelica::Array<TO>;
+    let mut outArray: metamodelica::Array<TO> = Default::default();
     let mut len: i32 = (inArray.clone().borrow().len() as i32);
     let mut res: TO;
     if len.clone() == 0 {
@@ -189,7 +189,7 @@ pub fn map<TI: Clone + 'static, TO: Clone + 'static>(mut inArray: metamodelica::
 pub fn map1<TI: Clone + 'static, ArgT: Clone + 'static, TO: Clone + 'static>(mut inArray: metamodelica::Array<TI>, mut inFunc: Arc<dyn ::std::ops::Fn(TI, ArgT) -> Result<TO> + 'static>, mut inArg: ArgT) -> Result<metamodelica::Array<TO>> {
     pub type FuncType<TI: Clone + 'static, ArgT: Clone + 'static, TO: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(TI, ArgT) -> Result<TO> + 'static>;
 
-    let mut outArray: metamodelica::Array<TO>;
+    let mut outArray: metamodelica::Array<TO> = Default::default();
     let mut len: i32 = (inArray.clone().borrow().len() as i32);
     let mut res: TO;
     if len.clone() == 0 {
@@ -208,7 +208,7 @@ pub fn map1<TI: Clone + 'static, ArgT: Clone + 'static, TO: Clone + 'static>(mut
 pub fn map1Ind<TI: Clone + 'static, ArgT: Clone + 'static, TO: Clone + 'static>(mut inArray: metamodelica::Array<TI>, mut inFunc: Arc<dyn ::std::ops::Fn(TI, i32, ArgT) -> Result<TO> + 'static>, mut inArg: ArgT) -> Result<metamodelica::Array<TO>> {
     pub type FuncType<TI: Clone + 'static, ArgT: Clone + 'static, TO: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(TI, i32, ArgT) -> Result<TO> + 'static>;
 
-    let mut outArray: metamodelica::Array<TO>;
+    let mut outArray: metamodelica::Array<TO> = Default::default();
     let mut len: i32 = (inArray.clone().borrow().len() as i32);
     let mut res: TO;
     if len.clone() == 0 {
@@ -227,7 +227,7 @@ pub fn map1Ind<TI: Clone + 'static, ArgT: Clone + 'static, TO: Clone + 'static>(
 pub fn mapList<TI: Clone + 'static, TO: Clone + 'static>(mut inList: Arc<metamodelica::List<TI>>, mut inFunc: Arc<dyn ::std::ops::Fn(TI) -> Result<TO> + 'static>) -> Result<metamodelica::Array<TO>> {
     pub type FuncType<TI: Clone + 'static, TO: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(TI) -> Result<TO> + 'static>;
 
-    let mut outArray: metamodelica::Array<TO>;
+    let mut outArray: metamodelica::Array<TO> = Default::default();
     let mut i: i32 = 2;
     let mut len: i32 = (inList.clone().len() as i32);
     let mut res: TO;
@@ -293,14 +293,14 @@ pub fn getIndexFirst<T: Clone + 'static>(mut inIndex: i32, mut inArray: metamode
 }
 
 pub fn replaceAtWithFill<T: Clone + 'static>(mut inPos: i32, mut inTypeReplace: T, mut inTypeFill: T, mut inArray: metamodelica::Array<T>) -> Result<metamodelica::Array<T>> {
-    let mut outArray: metamodelica::Array<T>;
+    let mut outArray: metamodelica::Array<T> = Default::default();
     outArray = expandToSize(inPos.clone(), inArray.clone(), inTypeFill.clone())?;
     {let _arr = outArray.clone(); _arr.borrow_mut()[(inPos.clone()-1) as usize] = inTypeReplace.clone(); _arr};
     Ok(outArray)
 }
 
 pub fn expandToSize<T: Clone + 'static>(mut inNewSize: i32, mut inArray: metamodelica::Array<T>, mut inFill: T) -> Result<metamodelica::Array<T>> {
-    let mut outArray: metamodelica::Array<T>;
+    let mut outArray: metamodelica::Array<T> = Default::default();
     if inNewSize.clone() <= (inArray.clone().borrow().len() as i32) {
         outArray = inArray.clone();
     } else {
@@ -311,7 +311,7 @@ pub fn expandToSize<T: Clone + 'static>(mut inNewSize: i32, mut inArray: metamod
 }
 
 pub fn expand<T: Clone + 'static>(mut inN: i32, mut inArray: metamodelica::Array<T>, mut inFill: T) -> Result<metamodelica::Array<T>> {
-    let mut outArray: metamodelica::Array<T>;
+    let mut outArray: metamodelica::Array<T> = Default::default();
     let mut len: i32 = 0;
     if inN.clone() < 1 {
         outArray = inArray.clone();
@@ -325,7 +325,7 @@ pub fn expand<T: Clone + 'static>(mut inN: i32, mut inArray: metamodelica::Array
 }
 
 pub fn expandOnDemand<T: Clone + 'static>(mut inNewSize: i32, mut inArray: metamodelica::Array<T>, mut inExpansionFactor: metamodelica::Real, mut inFillValue: T) -> Result<metamodelica::Array<T>> {
-    let mut outArray: metamodelica::Array<T>;
+    let mut outArray: metamodelica::Array<T> = Default::default();
     let mut new_size: i32 = 0;
     let mut len: i32 = (inArray.clone().borrow().len() as i32);
     if inNewSize.clone() <= len.clone() {
@@ -340,19 +340,19 @@ pub fn expandOnDemand<T: Clone + 'static>(mut inNewSize: i32, mut inArray: metam
 }
 
 pub fn consToElement<T: Clone + 'static>(mut inIndex: i32, mut inElement: T, mut inArray: metamodelica::Array<Arc<metamodelica::List<T>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<T>>>> {
-    let mut outArray: metamodelica::Array<Arc<metamodelica::List<T>>>;
-    outArray = {let _arr = inArray.clone(); let _val = cons(inElement.clone(), inArray.borrow()[(inIndex.clone()-1) as usize].clone()); _arr.borrow_mut()[(inIndex.clone()-1) as usize] = _val; _arr};
+    let mut outArray: metamodelica::Array<Arc<metamodelica::List<T>>> = Default::default();
+    outArray = {let _arr = inArray.clone(); let _val = metamodelica::cons(inElement.clone(), inArray.borrow()[(inIndex.clone()-1) as usize].clone()); _arr.borrow_mut()[(inIndex.clone()-1) as usize] = _val; _arr};
     Ok(outArray)
 }
 
 pub fn appendToElement<T: Clone + 'static>(mut inIndex: i32, mut inElements: Arc<metamodelica::List<T>>, mut inArray: metamodelica::Array<Arc<metamodelica::List<T>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<T>>>> {
-    let mut outArray: metamodelica::Array<Arc<metamodelica::List<T>>>;
+    let mut outArray: metamodelica::Array<Arc<metamodelica::List<T>>> = Default::default();
     outArray = {let _arr = inArray.clone(); let _val = listAppend(inArray.borrow()[(inIndex.clone()-1) as usize].clone(), inElements.clone()); _arr.borrow_mut()[(inIndex.clone()-1) as usize] = _val; _arr};
     Ok(outArray)
 }
 
 pub fn appendList<T: Clone + 'static>(mut arr: metamodelica::Array<T>, mut lst: Arc<metamodelica::List<T>>) -> Result<metamodelica::Array<T>> {
-    let mut outArray: metamodelica::Array<T>;
+    let mut outArray: metamodelica::Array<T> = Default::default();
     let mut arr_len: i32 = (arr.clone().borrow().len() as i32);
     let mut lst_len: i32 = 0;
     let mut e: T;
@@ -380,7 +380,7 @@ pub fn appendList<T: Clone + 'static>(mut arr: metamodelica::Array<T>, mut lst: 
 }
 
 pub fn join<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut arr2: metamodelica::Array<T>) -> Result<metamodelica::Array<T>> {
-    let mut outArray: metamodelica::Array<T>;
+    let mut outArray: metamodelica::Array<T> = Default::default();
     let mut len1: i32 = (arr1.clone().borrow().len() as i32);
     let mut len2: i32 = (arr2.clone().borrow().len() as i32);
     if len1.clone() == 0 {
@@ -430,7 +430,7 @@ pub fn copyRange<T: Clone + 'static>(mut srcArray: metamodelica::Array<T>, mut d
 }
 
 pub fn createIntRange(mut inLen: i32) -> metamodelica::Array<i32> {
-    let mut outArray: metamodelica::Array<i32>;
+    let mut outArray: metamodelica::Array<i32> = Default::default();
     outArray = metamodelica::arrayCreate(inLen.clone(), 0);
     for mut i in 1..=inLen.clone() {
         unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), i.clone(), i.clone()) };
@@ -457,7 +457,7 @@ pub fn getRange<T: Clone + 'static>(mut inStart: i32, mut inEnd: i32, mut inArra
     }
     for mut i in inStart.clone()..=inEnd.clone() {
         value = inArray.clone().borrow()[(i.clone()-1) as usize].clone();
-        outList = cons(value.clone(), outList.clone());
+        outList = metamodelica::cons(value.clone(), outList.clone());
     }
     Ok(outList)
 }
@@ -492,7 +492,7 @@ pub fn getMemberOnTrue<VT: Clone + 'static, ET: Clone + 'static>(mut inValue: VT
 }
 
 pub fn reverse<T: Clone + 'static>(mut inArray: metamodelica::Array<T>) -> Result<metamodelica::Array<T>> {
-    let mut outArray: metamodelica::Array<T>;
+    let mut outArray: metamodelica::Array<T> = Default::default();
     let mut size: i32 = 0;
     let mut i: i32 = 0;
     let mut elem1: T;
@@ -629,7 +629,7 @@ pub fn insertList<T: Clone + 'static>(mut arr: metamodelica::Array<T>, mut lst: 
 }
 
 pub fn remove<T: Clone + 'static>(mut arr: metamodelica::Array<T>, mut index: i32) -> Result<metamodelica::Array<T>> {
-    let mut outArr: metamodelica::Array<T>;
+    let mut outArr: metamodelica::Array<T> = Default::default();
     let mut len: i32 = (arr.clone().borrow().len() as i32);
     let true = (index.clone() <= len.clone() && index.clone() >= 1) else { bail!("pattern mismatch") };
     if len.clone() <= 1 {
@@ -732,7 +732,7 @@ pub fn compare<T1: Clone + 'static, T2: Clone + 'static>(mut arr1: metamodelica:
 pub fn mapFold<TI: Clone + 'static, ArgT: Clone + 'static, TO: Clone + 'static>(mut arr: metamodelica::Array<TI>, mut func: Arc<dyn ::std::ops::Fn(TI, ArgT) -> Result<(TO, ArgT)> + 'static>, mut arg: ArgT) -> (metamodelica::Array<TO>, ArgT) {
     pub type FuncType<TI: Clone + 'static, ArgT: Clone + 'static, TO: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(TI, ArgT) -> Result<(TO, ArgT)> + 'static>;
 
-    let mut outArray: metamodelica::Array<TO>;
+    let mut outArray: metamodelica::Array<TO> = Default::default();
     let mut outArg: ArgT = arg.clone();
     let mut len: i32 = (arr.clone().borrow().len() as i32);
     let mut res: TO;
@@ -751,11 +751,11 @@ pub fn mapFold<TI: Clone + 'static, ArgT: Clone + 'static, TO: Clone + 'static>(
 }
 
 pub fn transpose<T: Clone + 'static>(mut arr: metamodelica::Array<metamodelica::Array<T>>) -> metamodelica::Array<metamodelica::Array<T>> {
-    let mut outArray: metamodelica::Array<metamodelica::Array<T>>;
+    let mut outArray: metamodelica::Array<metamodelica::Array<T>> = Default::default();
     let mut c_len: i32 = 0;
     let mut r_len: i32 = 0;
     let mut val: T;
-    let mut row: metamodelica::Array<T>;
+    let mut row: metamodelica::Array<T> = Default::default();
     if arr.clone().borrow().is_empty() {
         outArray = arr.clone();
         return outArray.clone();
@@ -784,7 +784,7 @@ pub fn transpose<T: Clone + 'static>(mut arr: metamodelica::Array<metamodelica::
 pub fn threadMap<T1: Clone + 'static, T2: Clone + 'static, TO: Clone + 'static>(mut arr1: metamodelica::Array<T1>, mut arr2: metamodelica::Array<T2>, mut func: Arc<dyn ::std::ops::Fn(T1, T2) -> Result<TO> + 'static>) -> Result<metamodelica::Array<TO>> {
     pub type MapFunc<T1: Clone + 'static, T2: Clone + 'static, TO: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T1, T2) -> Result<TO> + 'static>;
 
-    let mut outArray: metamodelica::Array<TO>;
+    let mut outArray: metamodelica::Array<TO> = Default::default();
     let mut res: TO;
     let mut len1: i32 = 0;
     let mut len2: i32 = 0;
@@ -809,7 +809,7 @@ pub fn threadMap<T1: Clone + 'static, T2: Clone + 'static, TO: Clone + 'static>(
 pub fn generate<T: Clone + 'static>(mut n: i32, mut generator: Arc<dyn ::std::ops::Fn() -> Result<T> + 'static>) -> metamodelica::Array<T> {
     pub type Generator<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn() -> Result<T> + 'static>;
 
-    let mut arr: metamodelica::Array<T>;
+    let mut arr: metamodelica::Array<T> = Default::default();
     let mut e: T;
     if n.clone() <= 0 {
         arr = metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect());
@@ -827,7 +827,7 @@ pub fn generate<T: Clone + 'static>(mut n: i32, mut generator: Arc<dyn ::std::op
 pub fn filter<T: Clone + 'static + Default>(mut arr: metamodelica::Array<T>, mut fun: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>) -> metamodelica::Array<T> {
     pub type filterFunc<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>;
 
-    let mut new_arr: metamodelica::Array<T>;
+    let mut new_arr: metamodelica::Array<T> = Default::default();
     let mut new_size: i32 = 0;
     let mut dummy: T;
     let mut index: i32 = 1;

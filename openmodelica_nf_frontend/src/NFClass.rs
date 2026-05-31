@@ -561,7 +561,7 @@ pub fn getAttributes(mut cls: Arc<NFClass>) -> Arc<Attributes::NFAttributes> {
 
 pub fn getTypeAttributes(mut cls: Arc<NFClass>) -> Arc<metamodelica::List<Arc<Modifier::Modifier>>> {
     let mut attributes: Arc<metamodelica::List<Arc<Modifier::Modifier>>> = metamodelica::nil();
-    let mut comps: metamodelica::Array<Arc<InstNode::InstNode>>;
+    let mut comps: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
     let mut r#mod: Arc<Modifier::Modifier> = Arc::new(Modifier::NOMOD);
     if '__try0: {
         comps = unwrap_break_err!(ClassTree::getComponents(classTree(cls.clone()).unwrap()), '__try0);
@@ -569,7 +569,7 @@ pub fn getTypeAttributes(mut cls: Arc<NFClass>) -> Arc<metamodelica::List<Arc<Mo
         for mut c in __range1 {
             r#mod = Component::getModifier(InstNode::component(c.clone()).unwrap());
             if !(Modifier::isEmpty(r#mod.clone())) {
-                attributes = cons(r#mod.clone(), attributes.clone());
+                attributes = metamodelica::cons(r#mod.clone(), attributes.clone());
             }
         }
         Ok::<(), anyhow::Error>(())
@@ -831,7 +831,7 @@ pub fn getDerivedComments(mut cls: Arc<NFClass>, mut cmts: Arc<metamodelica::Lis
 }
 
 pub fn constrainingClassPath(mut clsNode: Arc<InstNode::InstNode>) -> Result<Arc<Absyn::Path>> {
-    let mut path: Arc<Absyn::Path>;
+    let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut cls_node: Arc<InstNode::InstNode> = lastBaseClass(clsNode.clone());
     let mut prefs: Arc<Prefixes::Prefixes> = getPrefixes(InstNode::getClass(cls_node.clone())?)?;
     path = (::match_deref::match_deref! { match &(prefs.clone()) {
@@ -870,7 +870,7 @@ pub fn makeRecordExp(mut clsNode: Arc<InstNode::InstNode>, mut scope: Arc<InstNo
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut ty_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut fields: Arc<metamodelica::List<Arc<Record::Field::Field>>> = metamodelica::nil();
-    let mut comps: metamodelica::Array<Arc<InstNode::InstNode>>;
+    let mut comps: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
     let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     cls = InstNode::getClass(clsNode.clone())?;
     let (__pa1, __pa0) = ::match_deref::match_deref! { match &(getType(cls.clone(), clsNode.clone())?) {
@@ -896,7 +896,7 @@ pub fn makeRecordExp(mut clsNode: Arc<InstNode::InstNode>, mut scope: Arc<InstNo
         for mut c in __range3 {
             fields = Record::collectRecordField(c.clone(), metamodelica::nil())?;
             if !(fields.clone().is_empty()) && Record::Field::isInput(listHead(fields.clone())?) {
-                args = cons(Binding::getExp(Component::getImplicitBinding(InstNode::component(c.clone())?, scope.clone()))?, args.clone());
+                args = metamodelica::cons(Binding::getExp(Component::getImplicitBinding(InstNode::component(c.clone())?, scope.clone()))?, args.clone());
             }
         }
         args = metamodelica::Dangerous::listReverseInPlace(args.clone());
@@ -951,7 +951,7 @@ pub fn toFlatStream(mut cls: Arc<NFClass>, mut clsNode: Arc<InstNode::InstNode>,
 pub fn toFlatString(mut cls: Arc<NFClass>, mut clsNode: Arc<InstNode::InstNode>, mut format: BaseModelica::OutputFormat, mut indent: ArcStr) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     let mut s: IOStream::IOStream = <IOStream::IOStream as ::std::default::Default>::default();
-    s = IOStream::create((literal!("NFClass.toFlatString")).clone(), openmodelica_util::IOStream::IOStreamType::LIST)?;
+    s = IOStream::create(literal!("NFClass.toFlatString"), openmodelica_util::IOStream::IOStreamType::LIST)?;
     s = toFlatStream(cls.clone(), clsNode.clone(), format.clone(), (indent.clone()).clone(), s.clone())?;
     r#str = (IOStream::string(s.clone())?).clone();
     IOStream::delete(s.clone())?;

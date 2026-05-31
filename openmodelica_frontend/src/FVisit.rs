@@ -132,7 +132,7 @@ pub fn seq(mut v: Visit) -> Result<Seq> {
 }
 
 pub fn r#ref(mut v: Visit) -> Result<Ref> {
-    let mut r: Ref;
+    let mut r: Ref = Default::default();
     let FCore::VN { r#ref: __pa0, .. } = (v.clone()) else { bail!("pattern mismatch") };
     r = __pa0.clone();
     Ok(r)
@@ -690,7 +690,7 @@ pub fn getAvlTreeValues(mut tree: Arc<metamodelica::List<Option<Arc<FCore::VAvlT
             acc.clone()
         },
         Deref @ metamodelica::List::Cons { head: Some(Deref @ FCore::VAvlTree { right, left, value, .. }), tail: rest } => {
-            getAvlTreeValues(cons(left.clone(), cons(right.clone(), rest.clone())), List::consOption(value.clone(), acc.clone()))?
+            getAvlTreeValues(metamodelica::cons(left.clone(), metamodelica::cons(right.clone(), rest.clone())), List::consOption(value.clone(), acc.clone()))?
         },
         Deref @ metamodelica::List::Cons { head: None, tail: rest } => {
             getAvlTreeValues(rest.clone(), acc.clone())?

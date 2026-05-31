@@ -74,7 +74,7 @@ pub fn parse(mut filename: ArcStr, mut encoding: ArcStr, mut libraryPath: ArcStr
         for mut cs in &*classes.clone() {
             let mut cs = cs.clone();
             if checkLicenseAndFeatures(cs.clone(), lveInstance.clone())? {
-                classes1 = cons(cs.clone(), classes1.clone());
+                classes1 = metamodelica::cons(cs.clone(), classes1.clone());
             }
         }
         outProgram = Absyn::Program { classes: classes1.clone(), within_: w.clone() };
@@ -101,7 +101,7 @@ pub fn parsestringexp(mut r#str: ArcStr, mut infoFilename: ArcStr) -> Result<Glo
 }
 
 pub fn stringPath(mut r#str: ArcStr) -> Result<Arc<Absyn::Path>> {
-    let mut path: Arc<Absyn::Path>;
+    let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     path = ParserExt::stringPath((r#str.clone()).clone(), (literal!("<internal>")).clone(), Config::acceptedGrammar()?, Flags::getConfigEnum(Flags::LANGUAGE_STANDARD.clone())?, Testsuite::isRunning()?)?;
     Ok(path)
 }
@@ -113,7 +113,7 @@ pub fn stringCref(mut r#str: ArcStr) -> Result<Arc<Absyn::ComponentRef>> {
 }
 
 pub fn stringMod(mut r#str: ArcStr, mut filename: ArcStr) -> Result<Arc<Absyn::ElementArg>> {
-    let mut r#mod: Arc<Absyn::ElementArg>;
+    let mut r#mod: Arc<Absyn::ElementArg> = Arc::new(<Absyn::ElementArg as ::std::default::Default>::default());
     r#mod = ParserExt::stringMod((r#str.clone()).clone(), (filename.clone()).clone(), Config::acceptedGrammar()?, Flags::getConfigEnum(Flags::LANGUAGE_STANDARD.clone())?, Testsuite::isRunning()?)?;
     Ok(r#mod)
 }
@@ -145,7 +145,7 @@ pub fn parallelParseFilesToProgramList(mut filenames: Arc<metamodelica::List<Arc
     let mut result: Arc<metamodelica::List<Absyn::Program>> = metamodelica::nil();
     for mut r in &*parallelParseFilesWork(filenames.clone(), (encoding.clone()).clone(), numThreads.clone(), (literal!("")).clone(), None)? {
         let mut r = r.clone();
-        result = cons((match r.clone() {
+        result = metamodelica::cons((match r.clone() {
         ParserResult { program: Some(mut p), .. } => {
             p.clone()
         },
@@ -268,7 +268,7 @@ pub fn checkLicenseAndFeatures(mut c1: Arc<Absyn::Class>, mut lveInstance: Optio
 }
 
 fn getLicenseAnnotation(mut className: Arc<Absyn::Class>) -> Result<(ArcStr, ArcStr)> {
-    let mut license: (ArcStr, ArcStr);
+    let mut license: (ArcStr, ArcStr) = (arcstr::literal!(""), arcstr::literal!(""));
     let mut opt_license: Option<(ArcStr, ArcStr)> = None;
     opt_license = AbsynUtil::getNamedAnnotationInClass(className.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("Protection")).clone() }), (std::sync::Arc::new(getLicenseAnnotationWork1) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<(ArcStr, ArcStr)> + 'static>))?;
     license = Util::getOptionOrDefault(opt_license.clone(), (literal!(""), literal!("")));
@@ -276,7 +276,7 @@ fn getLicenseAnnotation(mut className: Arc<Absyn::Class>) -> Result<(ArcStr, Arc
 }
 
 fn getLicenseAnnotationWork1(mut r#mod: Option<Arc<Absyn::Modification>>) -> Result<(ArcStr, ArcStr)> {
-    let mut license: (ArcStr, ArcStr);
+    let mut license: (ArcStr, ArcStr) = (arcstr::literal!(""), arcstr::literal!(""));
     license = (::match_deref::match_deref! { match &(r#mod.clone()) {
         Some(Deref @ Absyn::Modification { elementArgLst: arglst, .. }) => {
             let mut libraryKey: ArcStr = arcstr::literal!("");
@@ -290,7 +290,7 @@ fn getLicenseAnnotationWork1(mut r#mod: Option<Arc<Absyn::Modification>>) -> Res
 }
 
 fn getLicenseAnnotationWork2(mut eltArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Result<(ArcStr, ArcStr)> {
-    let mut license: (ArcStr, ArcStr);
+    let mut license: (ArcStr, ArcStr) = (arcstr::literal!(""), arcstr::literal!(""));
     license = (::match_deref::match_deref! { match &(eltArgs.clone()) {
         Deref @ metamodelica::List::Nil => {
             (literal!(""), literal!(""))
@@ -313,7 +313,7 @@ fn getLicenseAnnotationWork2(mut eltArgs: Arc<metamodelica::List<Arc<Absyn::Elem
 }
 
 fn getLicenseAnnotationTuple(mut r#mod: Option<Arc<Absyn::Modification>>) -> Result<(ArcStr, ArcStr)> {
-    let mut license: (ArcStr, ArcStr);
+    let mut license: (ArcStr, ArcStr) = (arcstr::literal!(""), arcstr::literal!(""));
     license = (::match_deref::match_deref! { match &(r#mod.clone()) {
         Some(Deref @ Absyn::Modification { elementArgLst: arglst, .. }) => {
             let mut libraryKey: ArcStr = arcstr::literal!("");

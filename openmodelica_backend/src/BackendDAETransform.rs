@@ -82,7 +82,7 @@ pub fn strongComponentsScalar(mut inSystem: Arc<BackendDAE::EqSystem>, mut inSha
             ::match_deref::match_deref! { match &__mc_input {
                 syst @ Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::MATCHING { ass2, ass1, .. }, mT: Some(mt), .. } => {
                     let mut comps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
-                    let mut markarray: metamodelica::Array<i32>;
+                    let mut markarray: metamodelica::Array<i32> = Default::default();
                     let mut comps_m: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
                     let mut syst = (*syst).clone();
                     let mut ass1 = (*ass1).clone();
@@ -112,7 +112,7 @@ pub fn strongComponentsScalar(mut inSystem: Arc<BackendDAE::EqSystem>, mut inSha
 }
 
 pub fn eqnAssignmentNonScalar(mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut ass2: metamodelica::Array<i32>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
-    let mut outAcc: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut outAcc: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut elst: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut vlst: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut acc: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
@@ -128,14 +128,14 @@ pub fn eqnAssignmentNonScalar(mut mapEqnIncRow: metamodelica::Array<Arc<metamode
         }
         __acc.reverse()
     });
-        acc = cons(vlst.clone(), acc.clone());
+        acc = metamodelica::cons(vlst.clone(), acc.clone());
     }
     outAcc = List::listArrayReverse(acc.clone())?;
     Ok(outAcc)
 }
 
 pub fn varAssignmentNonScalar(mut ass1: metamodelica::Array<i32>, mut mapIncRowEqn: metamodelica::Array<i32>) -> metamodelica::Array<i32> {
-    let mut outAcc: metamodelica::Array<i32>;
+    let mut outAcc: metamodelica::Array<i32> = Default::default();
     outAcc = metamodelica::arrayCreate((ass1.clone().borrow().len() as i32), -1);
     let __range0 = 1..=(ass1.clone().borrow().len() as i32);
     for mut i in __range0 {
@@ -203,7 +203,7 @@ fn uniqueComp(mut c: i32, mut mark: i32, mut markarray: metamodelica::Array<i32>
     let mut oAcc: Arc<metamodelica::List<i32>> = iAcc.clone();
     if mark.clone() != markarray.borrow()[(c.clone()-1) as usize].clone() {
         {let _arr = markarray.clone(); _arr.borrow_mut()[(c.clone()-1) as usize] = mark.clone(); _arr};
-        oAcc = cons(c.clone(), iAcc.clone());
+        oAcc = metamodelica::cons(c.clone(), iAcc.clone());
     }
     Ok(oAcc)
 }
@@ -272,8 +272,8 @@ fn analyseStrongComponentBlock(mut inComp: Arc<metamodelica::List<i32>>, mut inE
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (comp, eqn_lst, var_lst, varindxs) => {
-                    let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-                    let mut mt: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+                    let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+                    let mut mt: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
                     let mut vars_1: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
                     let mut eqn_lst1: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
                     let mut var_lst_1: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
@@ -311,7 +311,7 @@ fn analyseStrongComponentBlock(mut inComp: Arc<metamodelica::List<i32>>, mut inE
             ::match_deref::match_deref! { match &__mc_input {
                 (comp, eqn_lst, var_lst, _) => {
                     if !((BackendEquation::allAlgorithmsLst(eqn_lst.clone()))) { bail!("guard") }
-                    let mut ass2: metamodelica::Array<i32>;
+                    let mut ass2: metamodelica::Array<i32> = Default::default();
                     let mut indxdisc_var: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut algorithmComp: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
                     let true = (BackendVariable::hasDiscreteVar(var_lst.clone())) else { bail!("pattern mismatch") };
@@ -328,9 +328,9 @@ fn analyseStrongComponentBlock(mut inComp: Arc<metamodelica::List<i32>>, mut inE
                         let __range1 = &*mapEqnIncRow.borrow()[(c.clone()-1) as usize].clone();
                         for mut j in __range1 {
                             let mut j = j.clone();
-                            indxdisc_var = cons(ass2.borrow()[(j.clone()-1) as usize].clone(), indxdisc_var.clone());
+                            indxdisc_var = metamodelica::cons(ass2.borrow()[(j.clone()-1) as usize].clone(), indxdisc_var.clone());
                         }
-                        algorithmComp = cons(Arc::new(BackendDAE::StrongComponent::SINGLEALGORITHM { eqn: c.clone(), vars: indxdisc_var.clone() }), algorithmComp.clone());
+                        algorithmComp = metamodelica::cons(Arc::new(BackendDAE::StrongComponent::SINGLEALGORITHM { eqn: c.clone(), vars: indxdisc_var.clone() }), algorithmComp.clone());
                     }
                     Ok(algorithmComp.clone())
                 }
@@ -677,8 +677,8 @@ pub fn traverseBackendDAEExpsEqnWithSymbolicOperation<Type_a: Clone + 'static>(m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::EQUATION { attr: eqAttr, source, scalar: e2, exp: e1 } => {
-                    let mut e1_1: Arc<DAE::Exp>;
-                    let mut e2_1: Arc<DAE::Exp>;
+                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut ops: Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>> = metamodelica::nil();
                     let mut ext_arg_1: Type_a;
                     let mut ext_arg_2: Type_a;
@@ -700,8 +700,8 @@ pub fn traverseBackendDAEExpsEqnWithSymbolicOperation<Type_a: Clone + 'static>(m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::ARRAY_EQUATION { recordSize, attr: eqAttr, source, right: e2, left: e1, dimSize } => {
-                    let mut e1_1: Arc<DAE::Exp>;
-                    let mut e2_1: Arc<DAE::Exp>;
+                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut ops: Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>> = metamodelica::nil();
                     let mut ext_arg_1: Type_a;
                     let mut ext_arg_2: Type_a;
@@ -734,8 +734,8 @@ pub fn traverseBackendDAEExpsEqnWithSymbolicOperation<Type_a: Clone + 'static>(m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::SOLVED_EQUATION { attr: eqAttr, source, exp: e2, componentRef: cr } => {
-                    let mut e2_1: Arc<DAE::Exp>;
-                    let mut e1: Arc<DAE::Exp>;
+                    let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut cr1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     let mut ops: Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>> = metamodelica::nil();
                     let mut ext_arg_1: Type_a;
@@ -760,7 +760,7 @@ pub fn traverseBackendDAEExpsEqnWithSymbolicOperation<Type_a: Clone + 'static>(m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::RESIDUAL_EQUATION { attr: eqAttr, source, exp: e1 } => {
-                    let mut e1_1: Arc<DAE::Exp>;
+                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut ops: Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>> = metamodelica::nil();
                     let mut ext_arg_1: Type_a;
                     let mut source = (*source).clone();
@@ -838,8 +838,8 @@ pub fn traverseBackendDAEExpsEqnWithSymbolicOperation<Type_a: Clone + 'static>(m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::Equation::COMPLEX_EQUATION { attr: eqAttr, source, right: e2, left: e1, size } => {
-                    let mut e1_1: Arc<DAE::Exp>;
-                    let mut e2_1: Arc<DAE::Exp>;
+                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut ops: Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>> = metamodelica::nil();
                     let mut ext_arg_1: Type_a;
                     let mut ext_arg_2: Type_a;
@@ -907,7 +907,7 @@ fn traverseBackendDAEExpsLstEqnWithSymbolicOperation<Type_a: Clone + 'static>(mu
             let mut arg: Type_a;
             let mut exp = (*exp).clone();
             (exp, arg) = func(exp.clone(), inTypeA.clone()).unwrap();
-            (exps, arg) = traverseBackendDAEExpsLstEqnWithSymbolicOperation(rest.clone(), func.clone(), arg.clone(), cons(exp.clone(), iAcc.clone()));
+            (exps, arg) = traverseBackendDAEExpsLstEqnWithSymbolicOperation(rest.clone(), func.clone(), arg.clone(), metamodelica::cons(exp.clone(), iAcc.clone()));
             (exps.clone(), arg.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -929,7 +929,7 @@ pub fn traverseBackendDAEExpsEqnLstWithSymbolicOperation<Type_a: Clone + 'static
             let mut arg: Type_a;
             let mut eqn = (*eqn).clone();
             (eqn, arg) = traverseBackendDAEExpsEqnWithSymbolicOperation(eqn.clone(), func.clone(), inTypeA.clone())?;
-            (eqns, arg) = traverseBackendDAEExpsEqnLstWithSymbolicOperation(rest.clone(), func.clone(), arg.clone(), cons(eqn.clone(), iAcc.clone()))?;
+            (eqns, arg) = traverseBackendDAEExpsEqnLstWithSymbolicOperation(rest.clone(), func.clone(), arg.clone(), metamodelica::cons(eqn.clone(), iAcc.clone()))?;
             (eqns.clone(), arg.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -951,7 +951,7 @@ fn traverseBackendDAEExpsEqnLstLstWithSymbolicOperation<Type_a: Clone + 'static>
             let mut arg: Type_a;
             let mut eqn = (*eqn).clone();
             (eqn, arg) = traverseBackendDAEExpsEqnLstWithSymbolicOperation(eqn.clone(), func.clone(), inTypeA.clone(), metamodelica::nil())?;
-            (eqnslst, arg) = traverseBackendDAEExpsEqnLstLstWithSymbolicOperation(rest.clone(), func.clone(), arg.clone(), cons(eqn.clone(), iAcc.clone()))?;
+            (eqnslst, arg) = traverseBackendDAEExpsEqnLstLstWithSymbolicOperation(rest.clone(), func.clone(), arg.clone(), metamodelica::cons(eqn.clone(), iAcc.clone()))?;
             (eqnslst.clone(), arg.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1028,7 +1028,7 @@ fn traverseBackendDAEExpsWhenOperatorWithSymbolicOperation<ArgT: Clone + 'static
             rs.clone()
         },
     });
-        outStmtLst = cons(rs.clone(), outStmtLst.clone());
+        outStmtLst = metamodelica::cons(rs.clone(), outStmtLst.clone());
     }
     outStmtLst = outStmtLst.clone().reverse();
     Ok((outStmtLst, outArg))
@@ -1038,21 +1038,21 @@ pub fn collapseArrayExpressions(mut dae: Arc<BackendDAE::BackendDAE>) -> Result<
     let mut dae: Arc<BackendDAE::BackendDAE> = dae;
     for mut syst in &*dae.eqs.clone() {
         let mut syst = syst.clone();
-        BackendEquation::traverseEquationArray_WithUpdate(syst.orderedEqs.clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static> = (std::sync::Arc::new(collapseArrayCrefExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>); move |__pe_a0, __pe_a2| traverseBackendDAEExpsEqnWithSymbolicOperation(__pe_a0, __pe_b1.clone(), __pe_a2) }), 0)?;
-        BackendEquation::traverseEquationArray_WithUpdate(syst.removedEqs.clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static> = (std::sync::Arc::new(collapseArrayCrefExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>); move |__pe_a0, __pe_a2| traverseBackendDAEExpsEqnWithSymbolicOperation(__pe_a0, __pe_b1.clone(), __pe_a2) }), 0)?;
+        BackendEquation::traverseEquationArray_WithUpdate(syst.orderedEqs.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static> = (std::sync::Arc::new(collapseArrayCrefExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>); move |__pe_a0, __pe_a2| traverseBackendDAEExpsEqnWithSymbolicOperation(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, _) -> Result<_> + 'static>), 0)?;
+        BackendEquation::traverseEquationArray_WithUpdate(syst.removedEqs.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static> = (std::sync::Arc::new(collapseArrayCrefExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>); move |__pe_a0, __pe_a2| traverseBackendDAEExpsEqnWithSymbolicOperation(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, _) -> Result<_> + 'static>), 0)?;
     }
     Ok(dae)
 }
 
 pub fn collapseArrayCrefExp<T: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, T)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, T))> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outTpl: (Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>>, T);
     let mut ops: Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>> = metamodelica::nil();
     let mut t: T;
     (ops, t) = inTpl.clone();
     (outExp, t) = Expression::traverseExpTopDown(inExp.clone(), (std::sync::Arc::new(collapseArrayCrefExpWork) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), t.clone())?;
     if !(ExpressionBasics::expEqual(inExp.clone(), outExp.clone())?) {
-        outTpl = (cons(Arc::new(DAE::SymbolicOperation::SIMPLIFY { before: Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: inExp.clone() }), after: Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: outExp.clone() }) }), ops.clone()), t.clone());
+        outTpl = (metamodelica::cons(Arc::new(DAE::SymbolicOperation::SIMPLIFY { before: Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: inExp.clone() }), after: Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: outExp.clone() }) }), ops.clone()), t.clone());
     } else {
         outTpl = inTpl.clone();
     }
@@ -1102,7 +1102,7 @@ fn collapseArrayCrefExpWork2(mut e: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     let mut len: i32 = 0;
     let mut exp_count: i32 = 0;
     let mut exps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-    let mut exp1: Arc<DAE::Exp>;
+    let mut exp1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cr1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut cr2: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();

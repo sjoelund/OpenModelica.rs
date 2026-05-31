@@ -119,7 +119,7 @@ pub fn resolveList(mut imps: metamodelica::Array<Arc<NFImport>>) -> Arc<metamode
             (_, _, imp) = unwrap_break_err!(resolve(imp.clone()), '__try1);
             resolvedImps = (::match_deref::match_deref! { match &(imp.clone()) {
         Deref @ UNRESOLVED_IMPORT { imp: Absyn::Import::UNQUAL_IMPORT { .. }, .. } => unwrap_break_err!(instUnqualified(imp.clone(), resolvedImps.clone()), '__try1),
-        _ => cons(imp.clone(), resolvedImps.clone()),
+        _ => metamodelica::cons(imp.clone(), resolvedImps.clone()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             Ok::<(), anyhow::Error>(())
@@ -148,7 +148,7 @@ pub fn instQualified(mut imp: Absyn::Import, mut scope: Arc<InstNode::InstNode>,
 
 pub fn instUnqualified(mut imp: Arc<NFImport>, mut imps: Arc<metamodelica::List<Arc<NFImport>>>) -> Result<Arc<metamodelica::List<Arc<NFImport>>>> {
     let mut imps: Arc<metamodelica::List<Arc<NFImport>>> = imps;
-    let mut path: Arc<Absyn::Path>;
+    let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut scope: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
@@ -167,11 +167,11 @@ pub fn instUnqualified(mut imp: Arc<NFImport>, mut imps: Arc<metamodelica::List<
         Deref @ ClassTree::FLAT_TREE { .. } => {
             let __range0 = var_field!((*tree).classes, ClassTree::ClassTree::FLAT_TREE).clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut cls in __range0 {
-                imps = cons(Arc::new(NFImport::RESOLVED_IMPORT { node: cls.clone(), shortName: (literal!("")).clone(), info: info.clone() }), imps.clone());
+                imps = metamodelica::cons(Arc::new(NFImport::RESOLVED_IMPORT { node: cls.clone(), shortName: (literal!("")).clone(), info: info.clone() }), imps.clone());
             }
             let __range1 = var_field!((*tree).components, ClassTree::ClassTree::FLAT_TREE).clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut comp in __range1 {
-                imps = cons(Arc::new(NFImport::RESOLVED_IMPORT { node: comp.clone(), shortName: (literal!("")).clone(), info: info.clone() }), imps.clone());
+                imps = metamodelica::cons(Arc::new(NFImport::RESOLVED_IMPORT { node: comp.clone(), shortName: (literal!("")).clone(), info: info.clone() }), imps.clone());
             }
             ()
         },

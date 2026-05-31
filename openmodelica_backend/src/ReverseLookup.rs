@@ -497,12 +497,12 @@ pub mod PathTree {
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { key, .. } => {
             lst = listKeys(var_field!((*tree).right, Tree::NODE).clone(), lst.clone());
-            lst = cons((key.clone()).clone(), lst.clone());
+            lst = metamodelica::cons((key.clone()).clone(), lst.clone());
             lst = listKeys(var_field!((*tree).left, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
         Deref @ Tree::LEAF { key, .. } => {
-            cons((key.clone()).clone(), lst.clone())
+            metamodelica::cons((key.clone()).clone(), lst.clone())
         },
         _ => {
             lst.clone()
@@ -515,10 +515,10 @@ pub mod PathTree {
     pub fn listKeysReverse(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<ArcStr>>) -> Arc<metamodelica::List<ArcStr>> {
         let mut lst: Arc<metamodelica::List<ArcStr>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::LEAF { .. } => cons((var_field!((*inTree).key, Tree::LEAF).clone()).clone(), lst.clone()),
+        Deref @ Tree::LEAF { .. } => metamodelica::cons((var_field!((*inTree).key, Tree::LEAF).clone()).clone(), lst.clone()),
         Deref @ Tree::NODE { .. } => {
             lst = listKeysReverse(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
-            lst = cons((var_field!((*inTree).key, Tree::NODE).clone()).clone(), lst.clone());
+            lst = metamodelica::cons((var_field!((*inTree).key, Tree::NODE).clone()).clone(), lst.clone());
             lst = listKeysReverse(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
@@ -533,12 +533,12 @@ pub mod PathTree {
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { value, .. } => {
             lst = listValues(var_field!((*tree).right, Tree::NODE).clone(), lst.clone());
-            lst = cons(value.clone(), lst.clone());
+            lst = metamodelica::cons(value.clone(), lst.clone());
             lst = listValues(var_field!((*tree).left, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
         Deref @ Tree::LEAF { value, .. } => {
-            cons(value.clone(), lst.clone())
+            metamodelica::cons(value.clone(), lst.clone())
         },
         _ => {
             lst.clone()
@@ -738,12 +738,12 @@ pub mod PathTree {
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { value, key, .. } => {
             lst = toList(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
-            lst = cons((key.clone(), value.clone()), lst.clone());
+            lst = metamodelica::cons((key.clone(), value.clone()), lst.clone());
             lst = toList(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
         Deref @ Tree::LEAF { value, key } => {
-            cons((key.clone(), value.clone()), lst.clone())
+            metamodelica::cons((key.clone(), value.clone()), lst.clone())
         },
         _ => {
             lst.clone()
@@ -817,7 +817,7 @@ pub fn lookup(mut path: Arc<Absyn::Path>, mut scope: Arc<Absyn::Path>, mut progr
     let mut paths: Arc<Paths::Paths> = Arc::new(<Paths::Paths as ::std::default::Default>::default());
     let mut cls: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
     let mut opt_path: Option<Arc<Absyn::Path>> = None;
-    let mut relative_path: Arc<Absyn::Path>;
+    let mut relative_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut grouped_matches: Arc<metamodelica::List<Arc<metamodelica::List<Match>>>> = metamodelica::nil();
     ExecStat::execStatReset()?;
     if AbsynUtil::pathEqual(scope.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("AllLoadedClasses")).clone() })) {
@@ -927,7 +927,7 @@ fn lookupPath(mut path: Arc<Absyn::Path>, mut paths: Arc<PathTree::Tree>, mut ex
 fn matchPath(mut path: Arc<Absyn::Path>, mut paths: Arc<Paths::Paths>, mut exactMatch: bool, mut info: SourceInfo, mut matches: Matches) -> Result<Matches> {
     let mut matches: Matches = matches;
     if lookupPath(path.clone(), paths.tree.clone(), exactMatch.clone(), false)? {
-        matches = cons(Match { name: AbsynUtil::pathToCref(path.clone())?, scope: (Paths::currentPathStr(paths.clone())).clone(), info: info.clone() }, matches.clone());
+        matches = metamodelica::cons(Match { name: AbsynUtil::pathToCref(path.clone())?, scope: (Paths::currentPathStr(paths.clone())).clone(), info: info.clone() }, matches.clone());
     }
     Ok(matches)
 }
@@ -989,7 +989,7 @@ fn lookupCref(mut cref: Arc<Absyn::ComponentRef>, mut paths: Arc<PathTree::Tree>
 fn matchCref(mut cref: Arc<Absyn::ComponentRef>, mut paths: Arc<Paths::Paths>, mut exactMatch: bool, mut info: SourceInfo, mut matches: Matches) -> Result<Matches> {
     let mut matches: Matches = matches;
     if lookupCref(cref.clone(), paths.tree.clone(), exactMatch.clone(), false)? {
-        matches = cons(Match { name: cref.clone(), scope: (Paths::currentPathStr(paths.clone())).clone(), info: info.clone() }, matches.clone());
+        matches = metamodelica::cons(Match { name: cref.clone(), scope: (Paths::currentPathStr(paths.clone())).clone(), info: info.clone() }, matches.clone());
     }
     Ok(matches)
 }
@@ -1008,7 +1008,7 @@ fn shadowLocalNames(mut cls: Arc<Absyn::Class>, mut paths: Arc<Paths::Paths>) ->
 
 fn shadowLocalNamesInElementItem(mut item: Arc<Absyn::ElementItem>, mut paths: Arc<Paths::Paths>) -> Result<Arc<Paths::Paths>> {
     let mut paths: Arc<Paths::Paths> = paths;
-    let mut spec: Arc<Absyn::ElementSpec>;
+    let mut spec: Arc<Absyn::ElementSpec> = Arc::new(<Absyn::ElementSpec as ::std::default::Default>::default());
     paths = (::match_deref::match_deref! { match &(item.clone()) {
         Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: spec, .. } } => shadowLocalNamesInElementSpec(spec.clone(), paths.clone())?,
         _ => paths.clone(),
@@ -1077,7 +1077,7 @@ fn lookupInClassDef(mut cdef: Arc<Absyn::ClassDef>, mut name: ArcStr, mut paths:
     let mut local_paths: Arc<Paths::Paths> = paths.clone();
     matches = (::match_deref::match_deref! { match &(cdef.clone()) {
         Deref @ Absyn::ClassDef::PARTS { .. } => {
-            assign_field!(local_paths.currentPath = cons((name.clone()).clone(), local_paths.currentPath.clone()));
+            assign_field!(local_paths.currentPath = metamodelica::cons((name.clone()).clone(), local_paths.currentPath.clone()));
             for mut part in &*var_field!((*cdef).classParts, Absyn::ClassDef::PARTS).clone() {
                 let mut part = part.clone();
                 matches = lookupInClassPart(part.clone(), local_paths.clone(), exactMatch.clone(), info.clone(), matches.clone())?;
@@ -1102,7 +1102,7 @@ fn lookupInClassDef(mut cdef: Arc<Absyn::ClassDef>, mut name: ArcStr, mut paths:
         },
         Deref @ Absyn::ClassDef::OVERLOAD { .. } => lookupInCommentOpt(var_field!((*cdef).comment, Absyn::ClassDef::OVERLOAD).clone(), paths.clone(), exactMatch.clone(), matches.clone())?,
         Deref @ Absyn::ClassDef::CLASS_EXTENDS { .. } => {
-            assign_field!(local_paths.currentPath = cons((name.clone()).clone(), local_paths.currentPath.clone()));
+            assign_field!(local_paths.currentPath = metamodelica::cons((name.clone()).clone(), local_paths.currentPath.clone()));
             for mut arg in &*var_field!((*cdef).modifications, Absyn::ClassDef::CLASS_EXTENDS).clone() {
                 let mut arg = arg.clone();
                 matches = lookupInElementArg(arg.clone(), local_paths.clone(), exactMatch.clone(), matches.clone())?;
@@ -1712,10 +1712,10 @@ fn serializeMatches(mut groupedMatches: Arc<metamodelica::List<Arc<metamodelica:
             json_elem = JSON::dumpJSONSourceInfo(m.info.clone(), false)?;
             json_elem = JSON::addPair((literal!("name")).clone(), JSON::makeString((Dump::printComponentRefStr(m.name.clone())?).clone()), json_elem.clone())?;
             json_elem = JSON::addPair((literal!("class")).clone(), JSON::makeString((m.scope.clone()).clone()), json_elem.clone())?;
-            json_elems = cons(json_elem.clone(), json_elems.clone());
+            json_elems = metamodelica::cons(json_elem.clone(), json_elems.clone());
         }
         json_group = JSON::addPair((literal!("matches")).clone(), JSON::makeArray(json_elems.clone()), json_group.clone())?;
-        json_groups = cons(json_group.clone(), json_groups.clone());
+        json_groups = metamodelica::cons(json_group.clone(), json_groups.clone());
     }
     r#str = (JSON::toString(JSON::makeArray(json_groups.clone()), prettyPrint.clone())?).clone();
     Ok(r#str)
@@ -1730,7 +1730,7 @@ fn groupMatches(mut matches: Matches) -> Result<Arc<metamodelica::List<Arc<metam
                 _ => bail!("pattern mismatch"),
             } };
             outMatches = __pa0.clone();
-            outMatches = cons(newMatch.clone(), outMatches.clone());
+            outMatches = metamodelica::cons(newMatch.clone(), outMatches.clone());
         } else {
             outMatches = list![newMatch.clone()];
         }
@@ -1742,7 +1742,7 @@ fn groupMatches(mut matches: Matches) -> Result<Arc<metamodelica::List<Arc<metam
     grouped_matches = UnorderedMap::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), 1);
     for mut m in &*matches.clone() {
         let mut m = m.clone();
-        UnorderedMap::addUpdate(m.info.fileName.clone(), Arc::new({ let __pe_b1 = m.clone(); move |__pe_a0| add_match(__pe_a0, __pe_b1.clone()) }), grouped_matches.clone())?;
+        UnorderedMap::addUpdate(m.info.fileName.clone(), (std::sync::Arc::new({ let __pe_b1 = m.clone(); move |__pe_a0| add_match(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<metamodelica::List<Match>>>) -> Result<Arc<metamodelica::List<Match>>> + 'static>), grouped_matches.clone())?;
     }
     outMatches = UnorderedMap::valueList(grouped_matches.clone());
     outMatches = ({

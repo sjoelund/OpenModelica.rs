@@ -59,14 +59,14 @@ pub type Env = Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>;
 
 pub fn flattenProgram(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
     let mut outProgram: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-    let mut cls_path: Arc<Absyn::Path>;
+    let mut cls_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     cls_path = getLastClassNameInProgram(inProgram.clone())?;
     (outProgram, _) = flattenClassInProgram(cls_path.clone(), inProgram.clone())?;
     Ok(outProgram)
 }
 
 fn getLastClassNameInProgram(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<Absyn::Path>> {
-    let mut outClassName: Arc<Absyn::Path>;
+    let mut outClassName: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut prog: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     let mut name: ArcStr = arcstr::literal!("");
     prog = inProgram.clone().reverse();
@@ -90,7 +90,7 @@ fn isClass(mut inClass: Arc<SCode::Element>) -> bool {
 }
 
 pub fn flattenClass(mut inClass: Arc<SCode::Element>) -> Result<Arc<SCode::Element>> {
-    let mut outClass: Arc<SCode::Element>;
+    let mut outClass: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     let __pa0 = ::match_deref::match_deref! { match &(flattenProgram(list![inClass.clone()])?) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil } => __pa0.clone(),
         _ => bail!("pattern mismatch"),

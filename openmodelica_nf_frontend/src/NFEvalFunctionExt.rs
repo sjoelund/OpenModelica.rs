@@ -1021,7 +1021,7 @@ fn evaluateExtRealArrayArg(mut arg: Arc<Expression::NFExpression>) -> Result<Arc
 
 fn evaluateExtRealMatrixArg(mut arg: Arc<Expression::NFExpression>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>>> {
     let mut value: Arc<metamodelica::List<Arc<metamodelica::List<metamodelica::Real>>>> = metamodelica::nil();
-    let mut expl: metamodelica::Array<Arc<Expression::NFExpression>>;
+    let mut expl: metamodelica::Array<Arc<Expression::NFExpression>> = Default::default();
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(Ceval::evalExp(arg.clone(), Ceval::noTarget().clone())?) {
         Deref @ Expression::ARRAY { elements: __pa0, ty: __pa1, .. } => (__pa0.clone(), __pa1.clone()),

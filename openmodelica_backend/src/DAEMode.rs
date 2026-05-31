@@ -614,12 +614,12 @@ fn getDiscAndContEqns(mut inAllVars: Arc<metamodelica::List<BackendDAE::Var>>, m
     let mut discEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut contEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut syst: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    let mut adjMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut adjMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut varsIndex: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut eqnIndex: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut assignVarEqn: metamodelica::Array<i32>;
-    let mut assignEqnVar: metamodelica::Array<i32>;
-    let mut mapEqnScalarArray: metamodelica::Array<i32>;
+    let mut assignVarEqn: metamodelica::Array<i32> = Default::default();
+    let mut assignEqnVar: metamodelica::Array<i32> = Default::default();
+    let mut mapEqnScalarArray: metamodelica::Array<i32> = Default::default();
     let debug: bool = false;
     match '__try0: {
         syst = BackendDAEUtil::createEqSystem(BackendVariable::listVar1(inAllVars.clone()), BackendEquation::listEquation(inAllEqns.clone())?, metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
@@ -628,7 +628,7 @@ fn getDiscAndContEqns(mut inAllVars: Arc<metamodelica::List<BackendDAE::Var>>, m
         }
         (adjMatrix, _, _, mapEqnScalarArray) = unwrap_break_err!(BackendDAEUtil::adjacencyMatrixScalar(syst.clone(), crate::BackendDAE::IndexType::NORMAL, Some(functionTree.clone()), isInitial.clone()), '__try0);
         if debug.clone() {
-            BackendDump::dumpAdjacencyMatrix(adjMatrix.clone());
+            unwrap_break_err!(BackendDump::dumpAdjacencyMatrix(adjMatrix.clone()), '__try0);
         }
         let (__pa1, __pa2, true, _, _) = (unwrap_break_err!(Matching::RegularMatching(adjMatrix.clone(), BackendDAEUtil::systemSize(syst.clone()), BackendDAEUtil::systemSize(syst.clone())), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
         assignVarEqn = __pa1.clone();
@@ -639,12 +639,12 @@ fn getDiscAndContEqns(mut inAllVars: Arc<metamodelica::List<BackendDAE::Var>>, m
         varsIndex = BackendVariable::getVarIndexFromVars(inDiscVars.clone(), syst.orderedVars.clone());
         if debug.clone() {
             println!("{}", (literal!("discVarsIndex: ")).clone());
-            BackendDump::dumpAdjacencyRow(varsIndex.clone());
+            unwrap_break_err!(BackendDump::dumpAdjacencyRow(varsIndex.clone()), '__try0);
         }
         eqnIndex = List::map1(varsIndex.clone(), std::sync::Arc::new(fnptr!(Array::getIndexFirst, i32, _)), assignVarEqn.clone());
         if debug.clone() {
             println!("{}", (literal!("discEqnIndex: ")).clone());
-            BackendDump::dumpAdjacencyRow(eqnIndex.clone());
+            unwrap_break_err!(BackendDump::dumpAdjacencyRow(eqnIndex.clone()), '__try0);
         }
         eqnIndex = List::unique(({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -670,7 +670,7 @@ fn getDiscAndContEqns(mut inAllVars: Arc<metamodelica::List<BackendDAE::Var>>, m
     }));
         if debug.clone() {
             println!("{}", (literal!("contEqnIndex: ")).clone());
-            BackendDump::dumpAdjacencyRow(eqnIndex.clone());
+            unwrap_break_err!(BackendDump::dumpAdjacencyRow(eqnIndex.clone()), '__try0);
         }
         contEqns = BackendEquation::getList(eqnIndex.clone(), syst.orderedEqs.clone());
         if debug.clone() {

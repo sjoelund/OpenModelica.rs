@@ -54,6 +54,7 @@ use openmodelica_dump_extra::AbsynJLDumpTpl;
 use openmodelica_dump_extra::DumpGraphviz;
 use openmodelica_frontend::FCore;
 use openmodelica_frontend::FGraph;
+use openmodelica_frontend::InteractiveTypes;
 use openmodelica_frontend::Parser;
 use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_dump::Dump;
@@ -168,8 +169,8 @@ fn handleCommand2(mut inStatements: Option<GlobalScript::Statements>, mut inProg
             let mut prog2: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
             let mut ast: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
             let mut result: ArcStr = arcstr::literal!("");
-            let mut vars: Arc<metamodelica::List</* ? */>> = metamodelica::nil();
-            let mut table: Arc<SymbolTable::SymbolTable>;
+            let mut vars: Arc<metamodelica::List<InteractiveTypes::Variable>> = metamodelica::nil();
+            let mut table: Arc<SymbolTable::SymbolTable> = Arc::new(<SymbolTable::SymbolTable as ::std::default::Default>::default());
             table = SymbolTable::get();
             ast = table.ast.clone();
             vars = table.vars.clone();
@@ -365,7 +366,7 @@ fn loadLib(mut inLib: ArcStr) -> Result<()> {
             let mut mp: ArcStr = arcstr::literal!("");
             let mut pnew: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
             let mut p: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
-            let mut path: Arc<Absyn::Path>;
+            let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             path = AbsynUtil::stringPath((inLib.clone()).clone())?;
             mp = (Settings::getModelicaPath(Testsuite::isRunning()?)?).clone();
             p = SymbolTable::getAbsyn();
@@ -392,7 +393,7 @@ fn loadLib(mut inLib: ArcStr) -> Result<()> {
 fn translateFile(mut inStringLst: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
     let mut f: ArcStr = arcstr::literal!("");
     let mut libs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut cname: Arc<Absyn::Path>;
+    let mut cname: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut runBackend: bool = false;
     let mut runSilent: bool = false;
     let mut stmts: GlobalScript::Statements = <GlobalScript::Statements as ::std::default::Default>::default();
@@ -412,7 +413,7 @@ fn translateFile(mut inStringLst: Arc<metamodelica::List<ArcStr>>) -> Result<()>
             ::match_deref::match_deref! { match &__mc_input {
                 libs => {
                     let mut cls: ArcStr = cls.clone();
-                    let mut cname: Arc<Absyn::Path>;
+                    let mut cname: Arc<Absyn::Path> = cname.clone();
                     let mut fileNamePrefix: ArcStr = fileNamePrefix.clone();
                     let mut runBackend: bool = runBackend.clone();
                     let mut runSilent: bool = runSilent.clone();

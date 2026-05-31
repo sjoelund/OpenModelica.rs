@@ -89,13 +89,13 @@ pub fn translateAbsyn2SCode(mut inProgram: Absyn::Program) -> Result<Arc<metamod
 }
 
 pub fn translateClass(mut inClass: Arc<Absyn::Class>) -> Result<Arc<SCode::Element>> {
-    let mut outClass: Arc<SCode::Element>;
+    let mut outClass: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     outClass = translateClass2(inClass.clone(), Error::getNumMessages())?;
     Ok(outClass)
 }
 
 fn translateClass2(mut inClass: Arc<Absyn::Class>, mut inNumMessages: i32) -> Result<Arc<SCode::Element>> {
-    let mut outClass: Arc<SCode::Element>;
+    let mut outClass: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     outClass = 'mc: {
         let __mc_input = inClass.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -103,7 +103,7 @@ fn translateClass2(mut inClass: Arc<Absyn::Class>, mut inNumMessages: i32) -> Re
                 c @ Deref @ Absyn::Class { info: file_info, body: d, restriction: r, encapsulatedPrefix: e, finalPrefix: f, partialPrefix: p, name: n, .. } => {
                     let mut d_1: Arc<SCode::ClassDef>;
                     let mut r_1: SCode::Restriction = SCode::Restriction::R_BLOCK;
-                    let mut scodeClass: Arc<SCode::Element>;
+                    let mut scodeClass: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
                     let mut sFin: SCode::Final = SCode::Final::FINAL;
                     let mut sEnc: SCode::Encapsulated = SCode::Encapsulated::ENCAPSULATED;
                     let mut sPar: SCode::Partial = SCode::Partial::NOT_PARTIAL;
@@ -158,7 +158,7 @@ pub fn translateOperatorDef(mut inClassDef: Arc<Absyn::ClassDef>, mut operatorNa
 }
 
 pub fn getOperatorGivenName(mut inOperatorFunction: Arc<SCode::Element>) -> Result<Arc<Absyn::Path>> {
-    let mut outName: Arc<Absyn::Path>;
+    let mut outName: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     outName = (::match_deref::match_deref! { match &(inOperatorFunction.clone()) {
         Deref @ SCode::Element::CLASS { name, prefixes: _, encapsulatedPrefix: _, partialPrefix: _, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_OPERATOR_FUNCTION { .. } }, classDef: _, cmt: _, info: _ } => {
             Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() })
@@ -169,7 +169,7 @@ pub fn getOperatorGivenName(mut inOperatorFunction: Arc<SCode::Element>) -> Resu
 }
 
 pub fn getOperatorQualName(mut inOperatorFunction: Arc<SCode::Element>, mut operName: ArcStr) -> Result<Arc<Absyn::Path>> {
-    let mut outName: Arc<Absyn::Path>;
+    let mut outName: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     outName = (::match_deref::match_deref! { match &((inOperatorFunction.clone(), operName.clone())) {
         (Deref @ SCode::Element::CLASS { name, prefixes: _, encapsulatedPrefix: _, partialPrefix: _, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: _ }, classDef: _, cmt: _, info: _ }, opname) => {
             AbsynUtil::joinPaths(Arc::new(Absyn::Path::IDENT { name: (opname.clone()).clone() }), Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() }))?
@@ -476,7 +476,7 @@ fn translateEnumlist(mut inAbsynEnumLiteralLst: Arc<metamodelica::List<Arc<Absyn
             let mut cmt: Arc<SCode::Comment> = Arc::new(<SCode::Comment as ::std::default::Default>::default());
             cmt = translateComment(cmtOpt.clone())?;
             res = translateEnumlist(rest.clone())?;
-            cons(Arc::new(SCode::Enum { literal: (id.clone()).clone(), comment: cmt.clone() }), res.clone())
+            metamodelica::cons(Arc::new(SCode::Enum { literal: (id.clone()).clone(), comment: cmt.clone() }), res.clone())
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -583,7 +583,7 @@ fn translateClassdefAlgorithms(mut inAbsynClassPartLst: Arc<metamodelica::List<A
             let mut al_1: Arc<metamodelica::List<Arc<SCode::Statement>>> = metamodelica::nil();
             al_1 = translateClassdefAlgorithmitems(al.clone())?;
             als = translateClassdefAlgorithms(rest.clone())?;
-            als_1 = cons(Arc::new(SCode::AlgorithmSection { statements: al_1.clone() }), als.clone());
+            als_1 = metamodelica::cons(Arc::new(SCode::AlgorithmSection { statements: al_1.clone() }), als.clone());
             als_1.clone()
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
@@ -613,7 +613,7 @@ fn translateClassdefConstraints(mut inAbsynClassPartLst: Arc<metamodelica::List<
             let mut cos: Arc<metamodelica::List<SCode::ConstraintSection>> = metamodelica::nil();
             let mut cos_1: Arc<metamodelica::List<SCode::ConstraintSection>> = metamodelica::nil();
             cos = translateClassdefConstraints(rest.clone())?;
-            cos_1 = cons(SCode::ConstraintSection { constraints: consts.clone() }, cos.clone());
+            cos_1 = metamodelica::cons(SCode::ConstraintSection { constraints: consts.clone() }, cos.clone());
             cos_1.clone()
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
@@ -645,7 +645,7 @@ fn translateClassdefInitialalgorithms(mut inAbsynClassPartLst: Arc<metamodelica:
             let mut stmts: Arc<metamodelica::List<Arc<SCode::Statement>>> = metamodelica::nil();
             stmts = translateClassdefAlgorithmitems(al.clone())?;
             als = translateClassdefInitialalgorithms(rest.clone())?;
-            als_1 = cons(Arc::new(SCode::AlgorithmSection { statements: stmts.clone() }), als.clone());
+            als_1 = metamodelica::cons(Arc::new(SCode::AlgorithmSection { statements: stmts.clone() }), als.clone());
             als_1.clone()
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
@@ -673,7 +673,7 @@ pub fn translateClassdefAlgorithmitems(mut inStatements: Arc<metamodelica::List<
 }
 
 fn translateClassdefAlgorithmItem(mut inAlgorithm: Arc<Absyn::AlgorithmItem>) -> Result<Arc<SCode::Statement>> {
-    let mut outStatement: Arc<SCode::Statement>;
+    let mut outStatement: Arc<SCode::Statement> = Arc::new(<SCode::Statement as ::std::default::Default>::default());
     let mut absynComment: Option<Arc<Absyn::Comment>> = None;
     let mut comment: Arc<SCode::Comment> = Arc::new(<SCode::Comment as ::std::default::Default>::default());
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
@@ -730,7 +730,7 @@ fn translateClassdefAlgorithmItem(mut inAlgorithm: Arc<Absyn::AlgorithmItem>) ->
         },
         Deref @ Absyn::Algorithm::ALG_WHEN_A { .. } => {
             let mut branches: Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>)>> = metamodelica::nil();
-            branches = translateAlgBranches(cons((var_field!((*alg).boolExpr, Absyn::Algorithm::ALG_WHEN_A).clone(), var_field!((*alg).whenBody, Absyn::Algorithm::ALG_WHEN_A).clone()), var_field!((*alg).elseWhenAlgorithmBranch, Absyn::Algorithm::ALG_WHEN_A).clone()))?;
+            branches = translateAlgBranches(metamodelica::cons((var_field!((*alg).boolExpr, Absyn::Algorithm::ALG_WHEN_A).clone(), var_field!((*alg).whenBody, Absyn::Algorithm::ALG_WHEN_A).clone()), var_field!((*alg).elseWhenAlgorithmBranch, Absyn::Algorithm::ALG_WHEN_A).clone()))?;
             Arc::new(SCode::Statement::ALG_WHEN_A { branches: branches.clone(), comment: comment.clone(), info: info.clone() })
         },
         Deref @ Absyn::Algorithm::ALG_NORETCALL { functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { argNames: Deref @ metamodelica::List::Nil, args: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } } }, functionCall: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "assert", .. } } => {
@@ -943,7 +943,7 @@ fn translateElementspec(mut cc: Option<Arc<Absyn::ConstrainClass>>, mut finalPre
             let mut de_1: Arc<SCode::ClassDef>;
             let mut redecl: bool = false;
             let mut cmt: Arc<SCode::Comment> = Arc::new(<SCode::Comment as ::std::default::Default>::default());
-            let mut cls: Arc<SCode::Element>;
+            let mut cls: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
             let mut sRed: SCode::Redeclare = SCode::Redeclare::NOT_REDECLARE;
             let mut sFin: SCode::Final = SCode::Final::FINAL;
             let mut sRep: Arc<SCode::Replaceable> = Arc::new(SCode::Replaceable::NOT_REPLACEABLE);
@@ -966,7 +966,7 @@ fn translateElementspec(mut cc: Option<Arc<Absyn::ConstrainClass>>, mut finalPre
             let mut re_1: SCode::Restriction = SCode::Restriction::R_BLOCK;
             let mut redecl: bool = false;
             let mut cmt: Arc<SCode::Comment> = Arc::new(<SCode::Comment as ::std::default::Default>::default());
-            let mut cls: Arc<SCode::Element>;
+            let mut cls: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
             let mut sRed: SCode::Redeclare = SCode::Redeclare::NOT_REDECLARE;
             let mut sFin: SCode::Final = SCode::Final::FINAL;
             let mut sRep: Arc<SCode::Replaceable> = Arc::new(SCode::Replaceable::NOT_REPLACEABLE);
@@ -1058,10 +1058,10 @@ fn translateElementspec(mut cc: Option<Arc<Absyn::ConstrainClass>>, mut finalPre
             attr1 = SCode::Attributes { arrayDims: tot_dim.clone(), connectorType: ct.clone(), parallelism: prl1.clone(), variability: var1.clone(), direction: openmodelica_ast::Absyn::Direction::INPUT, isField: isf.clone() };
             attr2 = SCode::Attributes { arrayDims: tot_dim.clone(), connectorType: ct.clone(), parallelism: prl1.clone(), variability: var1.clone(), direction: openmodelica_ast::Absyn::Direction::OUTPUT, isField: isf.clone() };
             mod2 = Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: metamodelica::nil(), binding: Some(Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (inName.clone()).clone(), subscripts: metamodelica::nil() }) })), comment: None, info: info.clone() });
-            cons(Arc::new(SCode::Element::COMPONENT { name: (n.clone()).clone(), prefixes: prefixes.clone(), attributes: attr2.clone(), typeSpec: t.clone(), modifications: mod2.clone(), comment: cmt.clone(), condition: cond.clone(), info: info.clone() }), cons(Arc::new(SCode::Element::COMPONENT { name: (inName.clone()).clone(), prefixes: prefixes.clone(), attributes: attr1.clone(), typeSpec: t.clone(), modifications: r#mod.clone(), comment: cmt.clone(), condition: cond.clone(), info: info.clone() }), xs_1.clone()))
+            metamodelica::cons(Arc::new(SCode::Element::COMPONENT { name: (n.clone()).clone(), prefixes: prefixes.clone(), attributes: attr2.clone(), typeSpec: t.clone(), modifications: mod2.clone(), comment: cmt.clone(), condition: cond.clone(), info: info.clone() }), metamodelica::cons(Arc::new(SCode::Element::COMPONENT { name: (inName.clone()).clone(), prefixes: prefixes.clone(), attributes: attr1.clone(), typeSpec: t.clone(), modifications: r#mod.clone(), comment: cmt.clone(), condition: cond.clone(), info: info.clone() }), xs_1.clone()))
         },
         _ => {
-            cons(Arc::new(SCode::Element::COMPONENT { name: (n.clone()).clone(), prefixes: prefixes.clone(), attributes: SCode::Attributes { arrayDims: tot_dim.clone(), connectorType: ct.clone(), parallelism: prl1.clone(), variability: var1.clone(), direction: di.clone(), isField: isf.clone() }, typeSpec: t.clone(), modifications: r#mod.clone(), comment: cmt.clone(), condition: cond.clone(), info: info.clone() }), xs_1.clone())
+            metamodelica::cons(Arc::new(SCode::Element::COMPONENT { name: (n.clone()).clone(), prefixes: prefixes.clone(), attributes: SCode::Attributes { arrayDims: tot_dim.clone(), connectorType: ct.clone(), parallelism: prl1.clone(), variability: var1.clone(), direction: di.clone(), isField: isf.clone() }, typeSpec: t.clone(), modifications: r#mod.clone(), comment: cmt.clone(), condition: cond.clone(), info: info.clone() }), xs_1.clone())
         },
     });
             }
@@ -1108,15 +1108,15 @@ fn translateImports(mut imp: Absyn::Import, mut visibility: SCode::Visibility, m
 }
 
 fn translateGroupImport(mut gimp: Absyn::GroupImport, mut prefix: Arc<Absyn::Path>, mut visibility: SCode::Visibility, mut info: SourceInfo) -> Result<Arc<SCode::Element>> {
-    let mut elt: Arc<SCode::Element>;
+    let mut elt: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     elt = (match (gimp.clone(), visibility.clone()) {
         (Absyn::GroupImport::GROUP_IMPORT_NAME { name: mut name }, mut vis) => {
-            let mut path: Arc<Absyn::Path>;
+            let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             path = AbsynUtil::joinPaths(prefix.clone(), Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() }))?;
             Arc::new(SCode::Element::IMPORT { imp: Absyn::Import::QUAL_IMPORT { path: path.clone() }, visibility: vis.clone(), info: info.clone() })
         },
         (Absyn::GroupImport::GROUP_IMPORT_RENAME { name: mut name, rename: mut rename }, mut vis) => {
-            let mut path: Arc<Absyn::Path>;
+            let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             path = AbsynUtil::joinPaths(prefix.clone(), Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() }))?;
             Arc::new(SCode::Element::IMPORT { imp: Absyn::Import::NAMED_IMPORT { name: (rename.clone()).clone(), path: path.clone() }, visibility: vis.clone(), info: info.clone() })
         },
@@ -1341,7 +1341,7 @@ fn translateCommentSeparate(mut inComment: Option<Arc<Absyn::Comment>>) -> Resul
 }
 
 fn translateEquation(mut inEquation: Arc<Absyn::Equation>, mut inComment: Arc<SCode::Comment>, mut inInfo: SourceInfo, mut inIsInitial: bool) -> Result<Arc<SCode::Equation>> {
-    let mut outEquation: Arc<SCode::Equation>;
+    let mut outEquation: Arc<SCode::Equation> = Arc::new(<SCode::Equation as ::std::default::Default>::default());
     outEquation = (::match_deref::match_deref! { match &(inEquation.clone()) {
         Deref @ Absyn::Equation::EQ_IF { .. } => {
             let mut else_branch: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
@@ -1350,9 +1350,9 @@ fn translateEquation(mut inEquation: Arc<Absyn::Equation>, mut inComment: Arc<SC
             let mut bodies: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SCode::Equation>>>>> = metamodelica::nil();
             body = translateEquations(var_field!((*inEquation).equationTrueItems, Absyn::Equation::EQ_IF).clone(), inIsInitial.clone())?;
             (conditions, bodies) = List::map1_2(var_field!((*inEquation).elseIfBranches, Absyn::Equation::EQ_IF).clone(), (std::sync::Arc::new(translateEqBranch) as std::sync::Arc<dyn ::std::ops::Fn((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<Absyn::EquationItem>>>), bool) -> Result<(Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>)> + 'static>), inIsInitial.clone());
-            conditions = cons(var_field!((*inEquation).ifExp, Absyn::Equation::EQ_IF).clone(), conditions.clone());
+            conditions = metamodelica::cons(var_field!((*inEquation).ifExp, Absyn::Equation::EQ_IF).clone(), conditions.clone());
             else_branch = translateEquations(var_field!((*inEquation).equationElseItems, Absyn::Equation::EQ_IF).clone(), inIsInitial.clone())?;
-            Arc::new(SCode::Equation::EQ_IF { condition: conditions.clone(), thenBranch: cons(body.clone(), bodies.clone()), elseBranch: else_branch.clone(), comment: inComment.clone(), info: inInfo.clone() })
+            Arc::new(SCode::Equation::EQ_IF { condition: conditions.clone(), thenBranch: metamodelica::cons(body.clone(), bodies.clone()), elseBranch: else_branch.clone(), comment: inComment.clone(), info: inInfo.clone() })
         },
         Deref @ Absyn::Equation::EQ_WHEN_E { .. } => {
             let mut body: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
@@ -1443,7 +1443,7 @@ fn translateIterator(mut inIterator: Arc<Absyn::ForIterator>, mut inInfo: Source
 }
 
 fn translateElementAddinfo(mut elem: Arc<SCode::Element>, mut nfo: SourceInfo) -> Arc<SCode::Element> {
-    let mut oelem: Arc<SCode::Element>;
+    let mut oelem: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     oelem = (::match_deref::match_deref! { match &(elem.clone()) {
         Deref @ SCode::Element::COMPONENT { name: a1, prefixes: p, attributes: a6, typeSpec: a7, modifications: a8, comment: a10, condition: a11, info: _ } => {
             Arc::new(SCode::Element::COMPONENT { name: (a1.clone()).clone(), prefixes: p.clone(), attributes: a6.clone(), typeSpec: a7.clone(), modifications: a8.clone(), comment: a10.clone(), condition: a11.clone(), info: nfo.clone() })
@@ -1485,7 +1485,7 @@ pub fn translateMod(mut inMod: Option<Arc<Absyn::Modification>>, mut finalPrefix
 fn translateArgs(mut args: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut keepEmpty: bool) -> Result<Arc<metamodelica::List<Arc<SCode::SubMod>>>> {
     let mut subMods: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
     let mut smod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
-    let mut elem: Arc<SCode::Element>;
+    let mut elem: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     let mut sub: Arc<SCode::SubMod> = Arc::new(<SCode::SubMod as ::std::default::Default>::default());
     let mut cr1: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
     let mut cr2: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
@@ -1497,7 +1497,7 @@ fn translateArgs(mut args: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut 
             smod = translateMod(var_field!((*arg).modification, Absyn::ElementArg::MODIFICATION).clone(), SCodeUtil::boolFinal(var_field!((*arg).finalPrefix, Absyn::ElementArg::MODIFICATION).clone()), translateEach(var_field!((*arg).eachPrefix, Absyn::ElementArg::MODIFICATION).clone())?, var_field!((*arg).comment, Absyn::ElementArg::MODIFICATION).clone(), var_field!((*arg).info, Absyn::ElementArg::MODIFICATION).clone(), false)?;
             if !(SCodeUtil::isEmptyMod(smod.clone())) || keepEmpty.clone() {
                 sub = translateSub(var_field!((*arg).path, Absyn::ElementArg::MODIFICATION).clone(), smod.clone(), var_field!((*arg).info, Absyn::ElementArg::MODIFICATION).clone())?;
-                subMods = cons(sub.clone(), subMods.clone());
+                subMods = metamodelica::cons(sub.clone(), subMods.clone());
             }
             subMods.clone()
         },
@@ -1508,11 +1508,11 @@ fn translateArgs(mut args: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, mut 
             } };
             elem = __pa0.clone();
             sub = Arc::new(SCode::SubMod { ident: (AbsynUtil::elementSpecName(var_field!((*arg).elementSpec, Absyn::ElementArg::REDECLARATION).clone())?).clone(), r#mod: Arc::new(SCode::Mod::REDECL { finalPrefix: SCodeUtil::boolFinal(var_field!((*arg).finalPrefix, Absyn::ElementArg::REDECLARATION).clone()), eachPrefix: translateEach(var_field!((*arg).eachPrefix, Absyn::ElementArg::REDECLARATION).clone())?, element: elem.clone() }) });
-            cons(sub.clone(), subMods.clone())
+            metamodelica::cons(sub.clone(), subMods.clone())
         },
         Deref @ Absyn::ElementArg::ELEMENTARGCOMMENT { .. } => subMods.clone(),
-        Deref @ Absyn::ElementArg::INHERITANCEBREAK { cnct: Deref @ Absyn::Equation::EQ_CONNECT { connector2: Deref @ Absyn::ComponentRef::CREF_IDENT { name, .. }, connector1: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "break", .. } }, .. } => cons(Arc::new(SCode::SubMod { ident: (name.clone()).clone(), r#mod: Arc::new(SCode::Mod::BREAK_COMPONENT { info: var_field!((*arg).info, Absyn::ElementArg::INHERITANCEBREAK).clone() }) }), subMods.clone()),
-        Deref @ Absyn::ElementArg::INHERITANCEBREAK { cnct: Deref @ Absyn::Equation::EQ_CONNECT { connector2: cr2, connector1: cr1 }, .. } => cons(Arc::new(SCode::SubMod { ident: (literal!("")).clone(), r#mod: Arc::new(SCode::Mod::BREAK_CONNECT { lhs: cr1.clone(), rhs: cr2.clone(), info: var_field!((*arg).info, Absyn::ElementArg::INHERITANCEBREAK).clone() }) }), subMods.clone()),
+        Deref @ Absyn::ElementArg::INHERITANCEBREAK { cnct: Deref @ Absyn::Equation::EQ_CONNECT { connector2: Deref @ Absyn::ComponentRef::CREF_IDENT { name, .. }, connector1: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "break", .. } }, .. } => metamodelica::cons(Arc::new(SCode::SubMod { ident: (name.clone()).clone(), r#mod: Arc::new(SCode::Mod::BREAK_COMPONENT { info: var_field!((*arg).info, Absyn::ElementArg::INHERITANCEBREAK).clone() }) }), subMods.clone()),
+        Deref @ Absyn::ElementArg::INHERITANCEBREAK { cnct: Deref @ Absyn::Equation::EQ_CONNECT { connector2: cr2, connector1: cr1 }, .. } => metamodelica::cons(Arc::new(SCode::SubMod { ident: (literal!("")).clone(), r#mod: Arc::new(SCode::Mod::BREAK_CONNECT { lhs: cr1.clone(), rhs: cr2.clone(), info: var_field!((*arg).info, Absyn::ElementArg::INHERITANCEBREAK).clone() }) }), subMods.clone()),
         _ => bail!("match: no arm matched"),
     } });
     }
@@ -1539,7 +1539,7 @@ fn translateSub(mut inPath: Arc<Absyn::Path>, mut inMod: Arc<SCode::Mod>, mut in
 }
 
 fn makeTypeVarElement(mut r#str: ArcStr, mut info: SourceInfo) -> Arc<SCode::Element> {
-    let mut elt: Arc<SCode::Element>;
+    let mut elt: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     let mut cd: Arc<SCode::ClassDef>;
     let mut ts: Arc<Absyn::TypeSpec>;
     ts = Arc::new(Absyn::TypeSpec::TCOMPLEX { path: Arc::new(Absyn::Path::IDENT { name: (literal!("polymorphic")).clone() }), typeSpecs: list![Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("Any")).clone() }), arrayDim: None })], arrayDim: None });

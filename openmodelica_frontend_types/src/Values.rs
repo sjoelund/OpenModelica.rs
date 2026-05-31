@@ -122,6 +122,9 @@ pub enum Value {
         tyStr: ArcStr,
     },
 }
+impl Default for Value {
+    fn default() -> Self { Self::NORETCALL }
+}
 pub use self::Value::{INTEGER,REAL,STRING,BOOL,ENUM_LITERAL,ARRAY,LIST,META_ARRAY,TUPLE,META_TUPLE,RECORD,OPTION,CODE,NORETCALL,META_BOX,META_FAIL,EMPTY};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]

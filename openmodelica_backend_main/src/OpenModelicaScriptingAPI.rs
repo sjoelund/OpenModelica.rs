@@ -794,7 +794,7 @@ pub fn getDefinitions(mut addFunctions: bool) -> Result<ArcStr> {
 
 pub fn qualifyPath(mut classPath: ArcStr, mut path: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr = arcstr::literal!("");
-    let mut res_path: Arc<Absyn::Path>;
+    let mut res_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("qualifyPath")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((classPath.clone()).clone())? }) }), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((path.clone()).clone())? }) })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: __pa0 } }) => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -1527,7 +1527,7 @@ pub fn isExperiment(mut name: ArcStr) -> Result<bool> {
 
 pub fn getNthInheritedClass(mut className: ArcStr, mut n: i32) -> Result<ArcStr> {
     let mut res: ArcStr = arcstr::literal!("");
-    let mut res_path: Arc<Absyn::Path>;
+    let mut res_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("getNthInheritedClass")).clone(), list![Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_TYPENAME { path: Parser::stringPath((className.clone()).clone())? }) }), Arc::new(Values::Value::INTEGER { integer: n.clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: __pa0 } }) => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -1862,7 +1862,7 @@ pub fn typeNameString(mut cl: ArcStr) -> Result<ArcStr> {
 
 pub fn stringTypeName(mut r#str: ArcStr) -> Result<ArcStr> {
     let mut res: ArcStr = arcstr::literal!("");
-    let mut res_path: Arc<Absyn::Path>;
+    let mut res_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let __pa0 = ::match_deref::match_deref! { match &(CevalScript::cevalInteractiveFunctions2(FCore::emptyCache(), FGraph::empty(), (literal!("stringTypeName")).clone(), list![Arc::new(Values::Value::STRING { string: (r#str.clone()).clone() })], dummyMsg.clone())?) {
         (_, Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: __pa0 } }) => __pa0.clone(),
         _ => bail!("pattern mismatch"),

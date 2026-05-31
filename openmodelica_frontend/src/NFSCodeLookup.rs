@@ -206,7 +206,7 @@ pub static BUILTIN_CLOCK: std::sync::LazyLock<Arc<NFSCodeEnv::Item>> = std::sync
 
 pub fn lookupSimpleName(mut inName: ArcStr, mut inEnv: Env) -> Result<(Item, Arc<Absyn::Path>, Env)> {
     let mut outItem: Item;
-    let mut outPath: Arc<Absyn::Path>;
+    let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut outEnv: Env = metamodelica::nil();
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(lookupSimpleName2((inName.clone()).clone(), inEnv.clone(), metamodelica::nil())?) {
         (Some(__pa0), Some(__pa1), Some(__pa2)) => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
@@ -243,7 +243,7 @@ fn lookupSimpleName2(mut inName: ArcStr, mut inEnv: Env, mut inVisitedScopes: Ar
                     let mut opt_path: Option<Arc<Absyn::Path>> = None;
                     let mut opt_env: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>> = None;
                     frameNotEncapsulated(frame_type.clone())?;
-                    (opt_item, opt_path, opt_env) = lookupSimpleName2((inName.clone()).clone(), rest_env.clone(), cons((scope_name.clone()).clone(), inVisitedScopes.clone()))?;
+                    (opt_item, opt_path, opt_env) = lookupSimpleName2((inName.clone()).clone(), rest_env.clone(), metamodelica::cons((scope_name.clone()).clone(), inVisitedScopes.clone()))?;
                     Ok((opt_item.clone(), opt_path.clone(), opt_env.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -332,7 +332,7 @@ pub fn lookupInLocalScope(mut inName: ArcStr, mut inEnv: Env, mut inVisitedScope
                 Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Frame { importTable: NFSCodeEnv::ImportTable { unqualifiedImports: imps, hidden: false, .. }, .. }, tail: _ } => {
                     let mut env: Env = metamodelica::nil();
                     let mut item: Item;
-                    let mut path: Arc<Absyn::Path>;
+                    let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     (item, path, env) = lookupInUnqualifiedImports((inName.clone()).clone(), imps.clone(), inEnv.clone())?;
                     Ok((Some(item.clone()), Some(path.clone()), Some(env.clone())))
                 }
@@ -466,7 +466,7 @@ pub fn lookupInBaseClasses3(mut inName: ArcStr, mut inBaseClass: Extends, mut in
             (None, None, None)
         },
         Deref @ NFSCodeEnv::Extends { info, redeclareModifiers: redecls, baseClass: bc, .. } => {
-            let mut path: Arc<Absyn::Path>;
+            let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut item: Item;
             let mut env: Env = metamodelica::nil();
             let mut opt_path: Option<Arc<Absyn::Path>> = None;
@@ -499,9 +499,9 @@ fn checkVisitedScopes(mut inVisitedScopes: Arc<metamodelica::List<ArcStr>>, mut 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut env_path: Arc<Absyn::Path>;
-                    let mut visited_path: Arc<Absyn::Path>;
-                    let mut bc_path: Arc<Absyn::Path>;
+                    let mut env_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+                    let mut visited_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+                    let mut bc_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     env_path = NFSCodeEnv::getEnvPath(inEnv.clone())?;
                     bc_path = AbsynUtil::removePrefix(env_path.clone(), inBaseClass.clone())?;
                     visited_path = AbsynUtil::stringListPath(inVisitedScopes.clone());
@@ -533,7 +533,7 @@ fn lookupInBaseClasses4(mut inName: Arc<Absyn::Path>, mut inItem: Option<Arc<NFS
             (None, None, None)
         },
         (Some(item), Some(env)) => {
-            let mut path: Arc<Absyn::Path>;
+            let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut item = (*item).clone();
             let mut env = (*env).clone();
             (item, path, env) = lookupNameInItem(inName.clone(), item.clone(), env.clone())?;
@@ -592,7 +592,7 @@ pub fn lookupInQualifiedImports(mut inName: ArcStr, mut inImports: Arc<metamodel
 
 pub fn lookupInUnqualifiedImports(mut inName: ArcStr, mut inImports: Arc<metamodelica::List<Absyn::Import>>, mut inEnv: Env) -> Result<(Item, Arc<Absyn::Path>, Env)> {
     let mut outItem: Item;
-    let mut outPath: Arc<Absyn::Path>;
+    let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut outEnv: Env = metamodelica::nil();
     (outItem, outPath, outEnv) = 'mc: {
         let __mc_input = inImports.clone();
@@ -600,7 +600,7 @@ pub fn lookupInUnqualifiedImports(mut inName: ArcStr, mut inImports: Arc<metamod
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Absyn::Import::UNQUAL_IMPORT { path }, tail: _ } => {
                     let mut item: Item;
-                    let mut path2: Arc<Absyn::Path>;
+                    let mut path2: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut env: Env = metamodelica::nil();
                     let mut path = (*path).clone();
                     (item, path, env) = lookupFullyQualified(path.clone(), inEnv.clone())?;
@@ -615,7 +615,7 @@ pub fn lookupInUnqualifiedImports(mut inName: ArcStr, mut inImports: Arc<metamod
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest_imps } => {
                     let mut item: Item;
-                    let mut path: Arc<Absyn::Path>;
+                    let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut env: Env = metamodelica::nil();
                     (item, path, env) = lookupInUnqualifiedImports((inName.clone()).clone(), rest_imps.clone(), inEnv.clone())?;
                     Ok((item.clone(), path.clone(), env.clone()))
@@ -630,7 +630,7 @@ pub fn lookupInUnqualifiedImports(mut inName: ArcStr, mut inImports: Arc<metamod
 
 pub fn lookupFullyQualified(mut inName: Arc<Absyn::Path>, mut inEnv: Env) -> Result<(Item, Arc<Absyn::Path>, Env)> {
     let mut outItem: Item;
-    let mut outPath: Arc<Absyn::Path>;
+    let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut outEnv: Env = metamodelica::nil();
     let mut env: Env = metamodelica::nil();
     env = NFSCodeEnv::getEnvTopScope(inEnv.clone())?;
@@ -641,11 +641,11 @@ pub fn lookupFullyQualified(mut inName: Arc<Absyn::Path>, mut inEnv: Env) -> Res
 
 pub fn lookupNameInPackage(mut inName: Arc<Absyn::Path>, mut inEnv: Env) -> Result<(Item, Arc<Absyn::Path>, Env)> {
     let mut outItem: Item;
-    let mut outPath: Arc<Absyn::Path>;
+    let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut outEnv: Env = metamodelica::nil();
     (outItem, outPath, outEnv) = (::match_deref::match_deref! { match &((inName.clone(), inEnv.clone())) {
         (Deref @ Absyn::Path::IDENT { name }, _) => {
-            let mut path: Arc<Absyn::Path>;
+            let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut env: Env = metamodelica::nil();
             let mut item: Item;
             let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(lookupInLocalScope((name.clone()).clone(), inEnv.clone(), metamodelica::nil())?) {
@@ -659,7 +659,7 @@ pub fn lookupNameInPackage(mut inName: Arc<Absyn::Path>, mut inEnv: Env) -> Resu
             (item.clone(), path.clone(), env.clone())
         },
         (Deref @ Absyn::Path::QUALIFIED { path, name }, Deref @ metamodelica::List::Cons { head: _, tail: _ }) => {
-            let mut new_path: Arc<Absyn::Path>;
+            let mut new_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut env: Env = metamodelica::nil();
             let mut item: Item;
             let mut path = (*path).clone();
@@ -688,7 +688,7 @@ pub fn lookupCrefInPackage(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv: Env)
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::ComponentRef::CREF_IDENT { subscripts: subs, name } => {
-                    let mut new_path: Arc<Absyn::Path>;
+                    let mut new_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut cref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
                     let mut item: Item;
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(lookupInLocalScope((name.clone()).clone(), inEnv.clone(), metamodelica::nil())?) {
@@ -706,7 +706,7 @@ pub fn lookupCrefInPackage(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv: Env)
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::ComponentRef::CREF_QUAL { componentRef: cref_rest, subscripts: subs, name } => {
-                    let mut new_path: Arc<Absyn::Path>;
+                    let mut new_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut cref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
                     let mut item: Item;
                     let mut env: Env = metamodelica::nil();
@@ -765,12 +765,12 @@ pub fn lookupCrefInPackage(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv: Env)
 
 pub fn lookupNameInItem(mut inName: Arc<Absyn::Path>, mut inItem: Item, mut inEnv: Env) -> Result<(Item, Arc<Absyn::Path>, Env)> {
     let mut outItem: Item;
-    let mut outPath: Arc<Absyn::Path>;
+    let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut outEnv: Env = metamodelica::nil();
     (outItem, outPath, outEnv) = (::match_deref::match_deref! { match &((inItem.clone(), inEnv.clone())) {
         (Deref @ NFSCodeEnv::Item::VAR { var: Deref @ SCode::Element::COMPONENT { info, modifications: mods, typeSpec: type_spec, .. }, .. }, env) => {
             let mut item: Item;
-            let mut path: Arc<Absyn::Path>;
+            let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut type_env: Env = metamodelica::nil();
             let mut redeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>> = metamodelica::nil();
             let mut env = (*env).clone();
@@ -782,14 +782,14 @@ pub fn lookupNameInItem(mut inName: Arc<Absyn::Path>, mut inItem: Item, mut inEn
         },
         (Deref @ NFSCodeEnv::Item::CLASS { env: Deref @ metamodelica::List::Cons { head: class_env, tail: Deref @ metamodelica::List::Nil }, .. }, _) => {
             let mut item: Item;
-            let mut path: Arc<Absyn::Path>;
+            let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut env: Env = metamodelica::nil();
             env = NFSCodeEnv::enterFrame(class_env.clone(), inEnv.clone());
             (item, path, env) = lookupNameInPackage(inName.clone(), env.clone())?;
             (item.clone(), path.clone(), env.clone())
         },
         (Deref @ NFSCodeEnv::Item::REDECLARED_ITEM { declaredEnv: env, item }, _) => {
-            let mut path: Arc<Absyn::Path>;
+            let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut env = (*env).clone();
             let mut item = (*item).clone();
             (item, path, env) = lookupNameInItem(inName.clone(), item.clone(), env.clone())?;
@@ -861,7 +861,7 @@ fn lookupBaseClasses2(mut inBaseClass: Extends, mut inName: ArcStr, mut inEnv: E
                     (item, _, env) = lookupBaseClassName(bc.clone(), inEnv.clone(), info.clone())?;
                     item = NFSCodeEnv::setImportsInItemHidden(item.clone(), true)?;
                     (item, _, _) = lookupNameInItem(Arc::new(Absyn::Path::IDENT { name: (inName.clone()).clone() }), item.clone(), env.clone())?;
-                    Ok((cons(item.clone(), items.clone()), cons(bc.clone(), bcl.clone())))
+                    Ok((metamodelica::cons(item.clone(), items.clone()), metamodelica::cons(bc.clone(), bcl.clone())))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1079,7 +1079,7 @@ fn lookupBuiltinName(mut inName: Arc<Absyn::Path>) -> Result<(Item, Env)> {
 
 fn lookupName(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inLookupStrategy: LookupStrategy, mut inInfo: SourceInfo, mut inErrorType: Option<ErrorTypes::Message>) -> Result<(Item, Arc<Absyn::Path>, Env)> {
     let mut outItem: Item;
-    let mut outName: Arc<Absyn::Path>;
+    let mut outName: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut outEnv: Env = metamodelica::nil();
     (outItem, outName, outEnv) = 'mc: {
         let __mc_input = (inName.clone(), inLookupStrategy.clone(), inErrorType.clone());
@@ -1098,7 +1098,7 @@ fn lookupName(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inLookupStrategy
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::Path::IDENT { name: id }, _, _) => {
                     let mut item: Item;
-                    let mut new_path: Arc<Absyn::Path>;
+                    let mut new_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut env: Env = metamodelica::nil();
                     (item, new_path, env) = lookupSimpleName((id.clone()).clone(), inEnv.clone())?;
                     Ok((item.clone(), new_path.clone(), env.clone()))
@@ -1110,7 +1110,7 @@ fn lookupName(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inLookupStrategy
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::Path::QUALIFIED { path, name: id }, _, _) => {
                     let mut item: Item;
-                    let mut new_path: Arc<Absyn::Path>;
+                    let mut new_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut env: Env = metamodelica::nil();
                     let mut path = (*path).clone();
                     (item, new_path, env) = lookupSimpleName((id.clone()).clone(), inEnv.clone())?;
@@ -1152,7 +1152,7 @@ fn lookupName(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inLookupStrategy
 }
 
 fn joinPaths(mut inPath1: Arc<Absyn::Path>, mut inPath2: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
-    let mut outPath: Arc<Absyn::Path>;
+    let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     outPath = (::match_deref::match_deref! { match &((inPath1.clone(), inPath2.clone())) {
         (_, Deref @ Absyn::Path::FULLYQUALIFIED { .. }) => {
             inPath2.clone()
@@ -1177,7 +1177,7 @@ fn joinPaths(mut inPath1: Arc<Absyn::Path>, mut inPath2: Arc<Absyn::Path>) -> Re
 
 pub fn lookupNameSilent(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<(Item, Arc<Absyn::Path>, Env)> {
     let mut outItem: Item;
-    let mut outName: Arc<Absyn::Path>;
+    let mut outName: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut outEnv: Env = metamodelica::nil();
     (outItem, outName, outEnv) = lookupName(inName.clone(), inEnv.clone(), crate::NFSCodeLookup::LookupStrategy::LOOKUP_ANY, inInfo.clone(), None)?;
     Ok((outItem, outName, outEnv))
@@ -1185,7 +1185,7 @@ pub fn lookupNameSilent(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inInfo
 
 pub fn lookupNameSilentNoBuiltin(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<(Item, Arc<Absyn::Path>, Env)> {
     let mut outItem: Item;
-    let mut outName: Arc<Absyn::Path>;
+    let mut outName: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut outEnv: Env = metamodelica::nil();
     (outItem, outName, outEnv) = lookupName(inName.clone(), inEnv.clone(), crate::NFSCodeLookup::LookupStrategy::NO_BUILTIN_TYPES, inInfo.clone(), None)?;
     Ok((outItem, outName, outEnv))
@@ -1193,7 +1193,7 @@ pub fn lookupNameSilentNoBuiltin(mut inName: Arc<Absyn::Path>, mut inEnv: Env, m
 
 pub fn lookupClassName(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<(Item, Arc<Absyn::Path>, Env)> {
     let mut outItem: Item;
-    let mut outName: Arc<Absyn::Path>;
+    let mut outName: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut outEnv: Env = metamodelica::nil();
     (outItem, outName, outEnv) = lookupName(inName.clone(), inEnv.clone(), crate::NFSCodeLookup::LookupStrategy::LOOKUP_ANY, inInfo.clone(), Some(Error::LOOKUP_ERROR.clone()))?;
     Ok((outItem, outName, outEnv))
@@ -1201,7 +1201,7 @@ pub fn lookupClassName(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inInfo:
 
 pub fn lookupBaseClassName(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<(Item, Arc<Absyn::Path>, Env)> {
     let mut outItem: Item;
-    let mut outName: Arc<Absyn::Path>;
+    let mut outName: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut outEnv: Env = metamodelica::nil();
     (outItem, outName, outEnv) = (::match_deref::match_deref! { match &((inName.clone(), inEnv.clone())) {
         (Deref @ Absyn::Path::QUALIFIED { path: path @ Deref @ Absyn::Path::IDENT { name: id }, name: Deref @ "$ce" }, Deref @ metamodelica::List::Cons { head: _, tail: env }) => {
@@ -1217,7 +1217,7 @@ pub fn lookupBaseClassName(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inI
         _ => {
             let mut env: Env = metamodelica::nil();
             let mut item: Item;
-            let mut path: Arc<Absyn::Path>;
+            let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             (item, path, env) = lookupName(inName.clone(), inEnv.clone(), crate::NFSCodeLookup::LookupStrategy::LOOKUP_ANY, inInfo.clone(), Some(Error::LOOKUP_BASECLASS_ERROR.clone()))?;
             (item.clone(), path.clone(), env.clone())
         },
@@ -1228,7 +1228,7 @@ pub fn lookupBaseClassName(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inI
 
 pub fn lookupVariableName(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<(Item, Arc<Absyn::Path>, Env)> {
     let mut outItem: Item;
-    let mut outName: Arc<Absyn::Path>;
+    let mut outName: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut outEnv: Env = metamodelica::nil();
     (outItem, outName, outEnv) = lookupName(inName.clone(), inEnv.clone(), crate::NFSCodeLookup::LookupStrategy::NO_BUILTIN_TYPES, inInfo.clone(), Some(Error::LOOKUP_VARIABLE_ERROR.clone()))?;
     Ok((outItem, outName, outEnv))
@@ -1236,7 +1236,7 @@ pub fn lookupVariableName(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inIn
 
 pub fn lookupFunctionName(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<(Item, Arc<Absyn::Path>, Env)> {
     let mut outItem: Item;
-    let mut outName: Arc<Absyn::Path>;
+    let mut outName: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut outEnv: Env = metamodelica::nil();
     (outItem, outName, outEnv) = lookupName(inName.clone(), inEnv.clone(), crate::NFSCodeLookup::LookupStrategy::NO_BUILTIN_TYPES, inInfo.clone(), Some(Error::LOOKUP_FUNCTION_ERROR.clone()))?;
     Ok((outItem, outName, outEnv))
@@ -1258,7 +1258,7 @@ fn crefStripEnvPrefix(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv: Env) -> R
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut env_path: Arc<Absyn::Path>;
+                    let mut env_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut cref1: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
                     let mut cref2: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
                     let false = (Flags::isSet(Flags::SCODE_INST.clone())?) else { bail!("pattern mismatch") };
@@ -1373,7 +1373,7 @@ fn lookupComponentRef2(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv: Env) -> 
     (outCref, outEnv) = (::match_deref::match_deref! { match &(inCref.clone()) {
         Deref @ Absyn::ComponentRef::CREF_IDENT { name, subscripts: subs } => {
             let mut cref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
-            let mut path: Arc<Absyn::Path>;
+            let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut env: Env = metamodelica::nil();
             (_, path, env) = lookupSimpleName((name.clone()).clone(), inEnv.clone())?;
             cref = AbsynUtil::pathToCrefWithSubs(path.clone(), subs.clone())?;
@@ -1381,7 +1381,7 @@ fn lookupComponentRef2(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv: Env) -> 
         },
         Deref @ Absyn::ComponentRef::CREF_QUAL { name, subscripts: subs, componentRef: rest_cref } => {
             let mut cref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
-            let mut new_path: Arc<Absyn::Path>;
+            let mut new_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut env: Env = metamodelica::nil();
             let mut item: Item;
             let mut rest_cref = (*rest_cref).clone();
@@ -1428,14 +1428,14 @@ pub fn lookupTypeSpec(mut inTypeSpec: Arc<Absyn::TypeSpec>, mut inEnv: Env, mut 
     let mut outTypeEnv: Env = metamodelica::nil();
     (outItem, outTypeSpec, outTypeEnv) = (::match_deref::match_deref! { match &(inTypeSpec.clone()) {
         Deref @ Absyn::TypeSpec::TPATH { path, arrayDim: ad } => {
-            let mut newpath: Arc<Absyn::Path>;
+            let mut newpath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut item: Item;
             let mut env: Env = metamodelica::nil();
             (item, newpath, env) = lookupClassName(path.clone(), inEnv.clone(), inInfo.clone())?;
             (item.clone(), Arc::new(Absyn::TypeSpec::TPATH { path: newpath.clone(), arrayDim: ad.clone() }), env.clone())
         },
         Deref @ Absyn::TypeSpec::TCOMPLEX { path: Deref @ Absyn::Path::IDENT { name }, .. } => {
-            let mut cls: Arc<SCode::Element>;
+            let mut cls: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
             cls = makeDummyMetaType((name.clone()).clone());
             (Arc::new(NFSCodeEnv::Item::CLASS { cls: cls.clone(), env: NFSCodeEnv::emptyEnv.clone(), classType: crate::NFSCodeEnv::ClassType::BASIC_TYPE }), inTypeSpec.clone(), NFSCodeEnv::emptyEnv.clone())
         },
@@ -1445,13 +1445,13 @@ pub fn lookupTypeSpec(mut inTypeSpec: Arc<Absyn::TypeSpec>, mut inEnv: Env, mut 
 }
 
 fn makeDummyMetaType(mut inTypeName: ArcStr) -> Arc<SCode::Element> {
-    let mut outClass: Arc<SCode::Element>;
+    let mut outClass: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     outClass = Arc::new(SCode::Element::CLASS { name: (inTypeName.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), encapsulatedPrefix: openmodelica_frontend_types::SCode::Encapsulated::NOT_ENCAPSULATED, partialPrefix: openmodelica_frontend_types::SCode::Partial::NOT_PARTIAL, restriction: openmodelica_frontend_types::SCode::Restriction::R_TYPE, classDef: Arc::new(SCode::ClassDef::PARTS { elementLst: metamodelica::nil(), normalEquationLst: metamodelica::nil(), initialEquationLst: metamodelica::nil(), normalAlgorithmLst: metamodelica::nil(), initialAlgorithmLst: metamodelica::nil(), constraintLst: metamodelica::nil(), clsattrs: metamodelica::nil(), externalDecl: None }), cmt: SCode::noComment.clone(), info: Absyn::dummyInfo.clone() });
     outClass
 }
 
 pub fn qualifyPath(mut inPath: Arc<Absyn::Path>, mut inEnv: Env, mut inInfo: SourceInfo, mut inErrorType: Option<ErrorTypes::Message>) -> Result<Arc<Absyn::Path>> {
-    let mut outPath: Arc<Absyn::Path>;
+    let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     outPath = 'mc: {
         let __mc_input = inPath.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -1466,7 +1466,7 @@ pub fn qualifyPath(mut inPath: Arc<Absyn::Path>, mut inEnv: Env, mut inInfo: Sou
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut path: Arc<Absyn::Path>;
+                    let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut env: Env = metamodelica::nil();
                     (_, path, env) = lookupName(inPath.clone(), inEnv.clone(), crate::NFSCodeLookup::LookupStrategy::NO_BUILTIN_TYPES, inInfo.clone(), inErrorType.clone())?;
                     path = NFSCodeEnv::mergePathWithEnvPath(path.clone(), env.clone())?;

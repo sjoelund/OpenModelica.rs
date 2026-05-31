@@ -483,12 +483,12 @@ pub mod ZeroCrossingTree {
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { key, .. } => {
             lst = listKeys(var_field!((*tree).right, Tree::NODE).clone(), lst.clone());
-            lst = cons(key.clone(), lst.clone());
+            lst = metamodelica::cons(key.clone(), lst.clone());
             lst = listKeys(var_field!((*tree).left, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
         Deref @ Tree::LEAF { key, .. } => {
-            cons(key.clone(), lst.clone())
+            metamodelica::cons(key.clone(), lst.clone())
         },
         _ => {
             lst.clone()
@@ -501,10 +501,10 @@ pub mod ZeroCrossingTree {
     pub fn listKeysReverse(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<ZeroCrossing>>) -> Arc<metamodelica::List<ZeroCrossing>> {
         let mut lst: Arc<metamodelica::List<ZeroCrossing>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::LEAF { .. } => cons(var_field!((*inTree).key, Tree::LEAF).clone(), lst.clone()),
+        Deref @ Tree::LEAF { .. } => metamodelica::cons(var_field!((*inTree).key, Tree::LEAF).clone(), lst.clone()),
         Deref @ Tree::NODE { .. } => {
             lst = listKeysReverse(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
-            lst = cons(var_field!((*inTree).key, Tree::NODE).clone(), lst.clone());
+            lst = metamodelica::cons(var_field!((*inTree).key, Tree::NODE).clone(), lst.clone());
             lst = listKeysReverse(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
@@ -519,12 +519,12 @@ pub mod ZeroCrossingTree {
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { value, .. } => {
             lst = listValues(var_field!((*tree).right, Tree::NODE).clone(), lst.clone());
-            lst = cons(value.clone(), lst.clone());
+            lst = metamodelica::cons(value.clone(), lst.clone());
             lst = listValues(var_field!((*tree).left, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
         Deref @ Tree::LEAF { value, .. } => {
-            cons(value.clone(), lst.clone())
+            metamodelica::cons(value.clone(), lst.clone())
         },
         _ => {
             lst.clone()
@@ -724,12 +724,12 @@ pub mod ZeroCrossingTree {
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { value, key, .. } => {
             lst = toList(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
-            lst = cons((key.clone(), value.clone()), lst.clone());
+            lst = metamodelica::cons((key.clone(), value.clone()), lst.clone());
             lst = toList(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
         Deref @ Tree::LEAF { value, key } => {
-            cons((key.clone(), value.clone()), lst.clone())
+            metamodelica::cons((key.clone(), value.clone()), lst.clone())
         },
         _ => {
             lst.clone()
@@ -810,7 +810,7 @@ pub fn updateIndices(mut ilst: Arc<metamodelica::List<ZeroCrossing>>) -> Arc<met
     for mut zc in &*ilst.clone() {
         let mut zc = zc.clone();
         zc.index = i.clone();
-        olst = cons(zc.clone(), olst.clone());
+        olst = metamodelica::cons(zc.clone(), olst.clone());
         i = i.clone() + 1;
     }
     olst = olst.clone().reverse();

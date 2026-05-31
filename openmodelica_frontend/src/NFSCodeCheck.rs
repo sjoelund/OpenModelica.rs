@@ -72,8 +72,8 @@ pub fn checkRecursiveShortDefinition(mut inTypeSpec: Arc<Absyn::TypeSpec>, mut i
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: _ } => {
-                    let mut ts_path: Arc<Absyn::Path>;
-                    let mut ty_path: Arc<Absyn::Path>;
+                    let mut ts_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+                    let mut ty_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     ts_path = AbsynUtil::typeSpecPath(inTypeSpec.clone())?;
                     ty_path = NFSCodeEnv::getEnvPath(inTypeEnv.clone())?;
                     let false = (isSelfReference((inTypeName.clone()).clone(), ty_path.clone(), ts_path.clone())?) else { bail!("pattern mismatch") };
@@ -140,7 +140,7 @@ pub fn checkRedeclareModifier2(mut inModifier: Arc<SCode::Element>, mut inBaseCl
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::DERIVED { typeSpec: ty, .. }, name, .. } => {
-                    let mut ty_path: Arc<Absyn::Path>;
+                    let mut ty_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     ty_path = AbsynUtil::typeSpecPath(ty.clone())?;
                     let false = (isSelfReference((name.clone()).clone(), inBaseClass.clone(), ty_path.clone())?) else { bail!("pattern mismatch") };
                     Ok(())
@@ -359,7 +359,7 @@ pub fn checkRecursiveComponentDeclaration(mut inComponentName: ArcStr, mut inCom
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Frame { name: Some(cls_name), .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Frame { clsAndVars: tree, .. }, tail: _ } }) => {
-                    let mut el: Arc<SCode::Element>;
+                    let mut el: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
                     let __pa0 = ::match_deref::match_deref! { match &(NFSCodeEnv::EnvTree::get(tree.clone(), (cls_name.clone()).clone())?) {
                         Deref @ NFSCodeEnv::Item::CLASS { cls: __pa0, .. } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -374,7 +374,7 @@ pub fn checkRecursiveComponentDeclaration(mut inComponentName: ArcStr, mut inCom
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Frame { name: Some(cls_name), .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Frame { clsAndVars: tree, .. }, tail: _ } }) => {
-                    let mut el: Arc<SCode::Element>;
+                    let mut el: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
                     let __pa0 = ::match_deref::match_deref! { match &(NFSCodeEnv::EnvTree::get(tree.clone(), (cls_name.clone()).clone())?) {
                         Deref @ NFSCodeEnv::Item::CLASS { cls: __pa0, .. } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),

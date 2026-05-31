@@ -155,7 +155,7 @@ pub fn fromModel(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<(Arc<Flat
             assign_field!(alias.variable = Some(v.clone()));
             UnorderedMap::updateKey(alias.clone(), sets.elements.clone())?;
         } else {
-            vars = cons(v.clone(), vars.clone());
+            vars = metamodelica::cons(v.clone(), vars.clone());
         }
     }
     for mut alias in &*UnorderedMap::keyList(sets.elements.clone()) {
@@ -178,13 +178,13 @@ pub fn sortEquations(mut eqs: Arc<metamodelica::List<Arc<Equation::NFEquation>>>
         let mut eq = eq.clone();
         aliases = getAliasVarsFromEq(eq.clone())?;
         if aliases.clone().is_empty() {
-            otherEqs = cons(eq.clone(), otherEqs.clone());
+            otherEqs = metamodelica::cons(eq.clone(), otherEqs.clone());
         } else {
             src = Equation::source(eq.clone())?;
             src = ElementSource::addAdditionalComment(src.clone(), (literal!("alias equation")).clone())?;
             eq = Equation::setSource(src.clone(), eq.clone())?;
-            aliasEqs = cons(eq.clone(), aliasEqs.clone());
-            flowAliases = cons(aliases.clone(), flowAliases.clone());
+            aliasEqs = metamodelica::cons(eq.clone(), aliasEqs.clone());
+            flowAliases = metamodelica::cons(aliases.clone(), flowAliases.clone());
         }
     }
     aliasEqs = metamodelica::Dangerous::listReverseInPlace(aliasEqs.clone());
@@ -302,8 +302,8 @@ pub fn getAliasVarsFromExp(mut exp: Arc<Expression::NFExpression>, mut otherExp:
     let mut alias1: Arc<FlowAlias::FlowAlias> = Arc::new(<FlowAlias::FlowAlias as ::std::default::Default>::default());
     let mut alias2: Arc<FlowAlias::FlowAlias> = Arc::new(<FlowAlias::FlowAlias as ::std::default::Default>::default());
     aliases = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CREF { .. } if (ComponentRef::nodeVariability(var_field!((*exp).cref, Expression::NFExpression::CREF).clone())? > Variability::DISCRETE.clone()) => cons(Arc::new(FlowAlias::FlowAlias { name: var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), negative: false, variable: None }), aliases.clone()),
-        Deref @ Expression::UNARY { exp: e @ Deref @ Expression::CREF { .. }, .. } if (ComponentRef::nodeVariability(var_field!((**e).cref, Expression::NFExpression::CREF).clone())? > Variability::DISCRETE.clone()) => cons(Arc::new(FlowAlias::FlowAlias { name: var_field!((**e).cref, Expression::NFExpression::CREF).clone(), negative: true, variable: None }), aliases.clone()),
+        Deref @ Expression::CREF { .. } if (ComponentRef::nodeVariability(var_field!((*exp).cref, Expression::NFExpression::CREF).clone())? > Variability::DISCRETE.clone()) => metamodelica::cons(Arc::new(FlowAlias::FlowAlias { name: var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), negative: false, variable: None }), aliases.clone()),
+        Deref @ Expression::UNARY { exp: e @ Deref @ Expression::CREF { .. }, .. } if (ComponentRef::nodeVariability(var_field!((**e).cref, Expression::NFExpression::CREF).clone())? > Variability::DISCRETE.clone()) => metamodelica::cons(Arc::new(FlowAlias::FlowAlias { name: var_field!((**e).cref, Expression::NFExpression::CREF).clone(), negative: true, variable: None }), aliases.clone()),
         Deref @ Expression::BINARY { operator: Deref @ Operator::OPERATOR { op: Operator::Op::ADD, .. }, .. } if (Expression::isZero(otherExp.clone())) => {
             aliases1 = getAliasVarsFromExp(var_field!((*exp).exp1, Expression::NFExpression::BINARY).clone(), var_field!((*exp).exp2, Expression::NFExpression::BINARY).clone(), metamodelica::nil())?;
             aliases2 = getAliasVarsFromExp(var_field!((*exp).exp2, Expression::NFExpression::BINARY).clone(), var_field!((*exp).exp1, Expression::NFExpression::BINARY).clone(), metamodelica::nil())?;
@@ -319,7 +319,7 @@ pub fn getAliasVarsFromExp(mut exp: Arc<Expression::NFExpression>, mut otherExp:
                 } };
                 alias2 = __pa2.clone();
                 assign_field!(alias2.negative = !(alias2.negative.clone()));
-                aliases = cons(alias1.clone(), cons(alias2.clone(), aliases.clone()));
+                aliases = metamodelica::cons(alias1.clone(), metamodelica::cons(alias2.clone(), aliases.clone()));
             }
             aliases.clone()
         },
@@ -352,15 +352,15 @@ pub fn scalarizeAlias(mut alias: Arc<FlowAlias::FlowAlias>) -> Result<Arc<metamo
     crefs = metamodelica::Dangerous::listReverseInPlace(crefs.clone());
     for mut cr in &*crefs.clone() {
         let mut cr = cr.clone();
-        scalarAliases = cons(Arc::new(FlowAlias::FlowAlias { name: cr.clone(), negative: alias.negative.clone(), variable: None }), scalarAliases.clone());
+        scalarAliases = metamodelica::cons(Arc::new(FlowAlias::FlowAlias { name: cr.clone(), negative: alias.negative.clone(), variable: None }), scalarAliases.clone());
     }
     Ok(scalarAliases)
 }
 
 pub fn negateSet(mut set: i32, mut sets: Sets) -> Result<Sets> {
     let mut sets: Sets = sets;
-    let mut nodes: metamodelica::Array<i32>;
-    let mut indices: metamodelica::Array<i32>;
+    let mut nodes: metamodelica::Array<i32> = Default::default();
+    let mut indices: metamodelica::Array<i32> = Default::default();
     let mut elements: Arc<UnorderedMap::UnorderedMap<Arc<FlowAlias::FlowAlias>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<FlowAlias::FlowAlias>, i32>> as ::std::default::Default>::default();
     let mut root: i32 = 0;
     let mut alias: Arc<FlowAlias::FlowAlias> = Arc::new(<FlowAlias::FlowAlias as ::std::default::Default>::default());
@@ -382,7 +382,7 @@ pub fn negateSet(mut set: i32, mut sets: Sets) -> Result<Sets> {
 pub fn createAliases(mut sets: Sets, mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<(Arc<FlatModel::NFFlatModel>, Arc<metamodelica::List<(Arc<FlowAlias::FlowAlias>, Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>)>>)> {
     let mut flatModel: Arc<FlatModel::NFFlatModel> = flatModel;
     let mut aliases: Arc<metamodelica::List<(Arc<FlowAlias::FlowAlias>, Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>)>> = metamodelica::nil();
-    let mut extracted_sets: metamodelica::Array<Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>>;
+    let mut extracted_sets: metamodelica::Array<Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>> = Default::default();
     let mut representative: Arc<FlowAlias::FlowAlias> = Arc::new(<FlowAlias::FlowAlias as ::std::default::Default>::default());
     let mut repr_var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
     let mut rest_aliases: Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>> = metamodelica::nil();
@@ -398,14 +398,14 @@ pub fn createAliases(mut sets: Sets, mut flatModel: Arc<FlatModel::NFFlatModel>)
             _ => bail!("pattern mismatch"),
         } };
         repr_var = __pa1.clone();
-        alias_vars = cons(repr_var.clone(), alias_vars.clone());
+        alias_vars = metamodelica::cons(repr_var.clone(), alias_vars.clone());
         repr_binding = Variable::asBinding(repr_var.clone(), Binding::Source::GENERATED.clone());
         for mut alias in &*rest_aliases.clone() {
             let mut alias = alias.clone();
             (alias, alias_eqs) = defineAlias(alias.clone(), repr_binding.clone(), alias_eqs.clone())?;
-            alias_vars = cons(Util::getOption(alias.variable.clone())?, alias_vars.clone());
+            alias_vars = metamodelica::cons(Util::getOption(alias.variable.clone())?, alias_vars.clone());
         }
-        aliases = cons((representative.clone(), rest_aliases.clone()), aliases.clone());
+        aliases = metamodelica::cons((representative.clone(), rest_aliases.clone()), aliases.clone());
     }
     aliases = metamodelica::Dangerous::listReverseInPlace(aliases.clone());
     assign_field!(
@@ -438,7 +438,7 @@ pub fn buildReplacements(mut aliases: Arc<metamodelica::List<(Arc<FlowAlias::Flo
 
 pub fn applyReplacements(mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>, mut flatModel: Arc<FlatModel::NFFlatModel>) -> Arc<FlatModel::NFFlatModel> {
     let mut flatModel: Arc<FlatModel::NFFlatModel> = flatModel;
-    flatModel = FlatModel::mapExp(flatModel.clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = Arc::new({ let __pe_b0 = replacements.clone(); move |__pe_a1| applyReplacementsInExp(__pe_b0.clone(), __pe_a1) }); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }));
+    flatModel = FlatModel::mapExp(flatModel.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new({ let __pe_b0 = replacements.clone(); move |__pe_a1| applyReplacementsInExp(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>));
     flatModel
 }
 
@@ -471,7 +471,7 @@ pub fn defineRepresentative(mut aliases: Arc<metamodelica::List<Arc<FlowAlias::F
     for mut alias in &*aliases.clone() {
         let mut alias = alias.clone();
         (alias, start_values, nominal_values, min_values, max_values) = evalAliasAttributes(alias.clone(), start_values.clone(), nominal_values.clone(), min_values.clone(), max_values.clone())?;
-        accum_aliases = cons(alias.clone(), accum_aliases.clone());
+        accum_aliases = metamodelica::cons(alias.clone(), accum_aliases.clone());
     }
     (representative, restAliases) = List::findAndRemove(aliases.clone(), (std::sync::Arc::new(fnptr!(FlowAlias::isFlow, Arc<FlowAlias::FlowAlias>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<FlowAlias::FlowAlias>) -> Result<bool> + 'static>))?;
     start_binding = if (start_values.clone().is_empty()) {Binding::EMPTY_BINDING().clone()} else {listHead(start_values.clone())?};
@@ -502,7 +502,7 @@ pub fn defineAlias(mut alias: Arc<FlowAlias::FlowAlias>, mut binding: Arc<Bindin
     let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
     let mut var_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut bind_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut bind_eq: Arc<Equation::NFEquation>;
+    let mut bind_eq: Arc<Equation::NFEquation> = Arc::new(<Equation::NFEquation as ::std::default::Default>::default());
     let __pa0 = ::match_deref::match_deref! { match &(alias.variable.clone()) {
         Some(__pa0) => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -512,7 +512,7 @@ pub fn defineAlias(mut alias: Arc<FlowAlias::FlowAlias>, mut binding: Arc<Bindin
         var_exp = Expression::fromTypedCref(var.name.clone(), var.ty.clone());
         bind_exp = Binding::getExp(var.binding.clone())?;
         bind_eq = Equation::makeEquality(var_exp.clone(), bind_exp.clone(), var.ty.clone(), DAE::emptyElementSource().clone(), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), Equation::ScalarizeMode::NO_PREFERENCE.clone());
-        equations = cons(bind_eq.clone(), equations.clone());
+        equations = metamodelica::cons(bind_eq.clone(), equations.clone());
     }
     assign_field!(
         var.binding = binding.clone(),
@@ -547,29 +547,29 @@ pub fn evalAliasAttributes(mut alias: Arc<FlowAlias::FlowAlias>, mut startValues
             attr = (::match_deref::match_deref! { match &(attr_name.clone()) {
         Deref @ "start" => {
             (attr_binding, _) = evalAliasAttribute(attr_binding.clone())?;
-            startValues = cons(attr_binding.clone(), startValues.clone());
+            startValues = metamodelica::cons(attr_binding.clone(), startValues.clone());
             (attr_name.clone(), attr_binding.clone())
         },
         Deref @ "nominal" => {
             (attr_binding, _) = evalAliasAttribute(attr_binding.clone())?;
-            nominalValues = cons(attr_binding.clone(), nominalValues.clone());
+            nominalValues = metamodelica::cons(attr_binding.clone(), nominalValues.clone());
             (attr_name.clone(), attr_binding.clone())
         },
         Deref @ "min" => {
             (attr_binding, attr_exp) = evalAliasAttribute(attr_binding.clone())?;
-            minValues = cons(attr_exp.clone(), minValues.clone());
+            minValues = metamodelica::cons(attr_exp.clone(), minValues.clone());
             (attr_name.clone(), attr_binding.clone())
         },
         Deref @ "max" => {
             (attr_binding, attr_exp) = evalAliasAttribute(attr_binding.clone())?;
-            maxValues = cons(attr_exp.clone(), maxValues.clone());
+            maxValues = metamodelica::cons(attr_exp.clone(), maxValues.clone());
             (attr_name.clone(), attr_binding.clone())
         },
         _ => attr.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         }
-        accum_attrs = cons(attr.clone(), accum_attrs.clone());
+        accum_attrs = metamodelica::cons(attr.clone(), accum_attrs.clone());
     }
     attrs = metamodelica::Dangerous::listReverseInPlace(attrs.clone());
     assign_field!(var.typeAttributes = attrs.clone());
@@ -591,7 +591,7 @@ pub fn setRepresentativeAttributes(mut alias: Arc<FlowAlias::FlowAlias>, mut sta
     fn add_attribute(mut name: ArcStr, mut binding: Arc<Binding::NFBinding>, mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Binding::NFBinding>)>>) -> Arc<metamodelica::List<(ArcStr, Arc<Binding::NFBinding>)>> {
         let mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Binding::NFBinding>)>> = attrs;
         if Binding::isBound(binding.clone()) {
-            attrs = cons((name.clone(), binding.clone()), attrs.clone());
+            attrs = metamodelica::cons((name.clone(), binding.clone()), attrs.clone());
         }
         attrs
     }
@@ -657,7 +657,7 @@ pub type DISJOINT_SETS = Sets;
 pub fn add(mut entry: Entry, mut sets: Sets) -> Result<(Sets, i32)> {
     let mut sets: Sets = sets;
     let mut index: i32 = 0;
-    let mut nodes: metamodelica::Array<i32>;
+    let mut nodes: metamodelica::Array<i32> = Default::default();
     let mut elements: IndexTable = <Arc<UnorderedMap::UnorderedMap<Arc<FlowAlias::FlowAlias>, i32>> as ::std::default::Default>::default();
     let mut node_count: i32 = 0;
     let Sets { nodes: __pa0, elements: __pa1, nodeCount: __pa2 } = (sets.clone()) else { bail!("pattern mismatch") };
@@ -675,7 +675,7 @@ pub fn add(mut entry: Entry, mut sets: Sets) -> Result<(Sets, i32)> {
 
 pub fn addList(mut entries: Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>, mut sets: Sets) -> Result<Sets> {
     let mut sets: Sets = sets;
-    let mut nodes: metamodelica::Array<i32>;
+    let mut nodes: metamodelica::Array<i32> = Default::default();
     let mut elements: IndexTable = <Arc<UnorderedMap::UnorderedMap<Arc<FlowAlias::FlowAlias>, i32>> as ::std::default::Default>::default();
     let mut node_count: i32 = 0;
     let mut sz: i32 = 0;
@@ -707,7 +707,7 @@ pub fn contains(mut entry: Entry, mut sets: Sets) -> bool {
 
 pub fn emptySets(mut setCount: i32) -> Sets {
     let mut sets: Sets = <Sets as ::std::default::Default>::default();
-    let mut nodes: metamodelica::Array<i32>;
+    let mut nodes: metamodelica::Array<i32> = Default::default();
     let mut elements: IndexTable = <Arc<UnorderedMap::UnorderedMap<Arc<FlowAlias::FlowAlias>, i32>> as ::std::default::Default>::default();
     let mut sz: i32 = 0;
     sz = std::cmp::max(setCount.clone(), 3);
@@ -718,12 +718,12 @@ pub fn emptySets(mut setCount: i32) -> Sets {
 }
 
 pub fn extractSets(mut sets: Sets) -> (metamodelica::Array<Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>>, Sets) {
-    let mut setsArray: metamodelica::Array<Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>>;
+    let mut setsArray: metamodelica::Array<Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>> = Default::default();
     let mut assignedSets: Sets = <Sets as ::std::default::Default>::default();
-    let mut nodes: metamodelica::Array<i32>;
+    let mut nodes: metamodelica::Array<i32> = Default::default();
     let mut set_idx: i32 = 0;
     let mut idx: i32 = 0;
-    let mut entries: metamodelica::Array<(Arc<FlowAlias::FlowAlias>, i32)>;
+    let mut entries: metamodelica::Array<(Arc<FlowAlias::FlowAlias>, i32)> = Default::default();
     let mut e: Entry = Arc::new(<FlowAlias::FlowAlias as ::std::default::Default>::default());
     nodes = sets.nodes.clone();
     for mut i in 1..=sets.nodeCount.clone() {
@@ -746,7 +746,7 @@ pub fn extractSets(mut sets: Sets) -> (metamodelica::Array<Arc<metamodelica::Lis
         }
         set_idx = -(set_idx.clone());
         {
-            let __cell2 = cons(e.clone(), setsArray.borrow()[(set_idx.clone()-1) as usize].clone());
+            let __cell2 = metamodelica::cons(e.clone(), setsArray.borrow()[(set_idx.clone()-1) as usize].clone());
             setsArray.clone().borrow_mut()[(set_idx.clone()-1) as usize] = __cell2;
         }
     }
@@ -829,7 +829,7 @@ pub fn merge(mut entry1: Entry, mut entry2: Entry, mut sets: Sets) -> Result<Set
 }
 
 pub fn printSets(mut sets: Sets) -> Result<()> {
-    let mut nodes: metamodelica::Array<i32>;
+    let mut nodes: metamodelica::Array<i32> = Default::default();
     let mut entries: Arc<metamodelica::List<(Arc<FlowAlias::FlowAlias>, i32)>> = metamodelica::nil();
     let mut e: Entry = Arc::new(<FlowAlias::FlowAlias as ::std::default::Default>::default());
     let mut i: i32 = 0;

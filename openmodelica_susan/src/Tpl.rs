@@ -171,7 +171,7 @@ pub fn writeStr(mut inText: Text, mut inStr: ArcStr) -> Result<Text> {
             txt.clone()
         },
         (Text::MEM_TEXT { blocksStack: blstack, tokens: toks }, r#str) if (-1 == System::stringFind((r#str.clone()).clone(), (literal!("\n")).clone())?) => {
-            Text::MEM_TEXT { tokens: cons(Arc::new(StringToken::ST_STRING { value: (r#str.clone()).clone() }), toks.clone()), blocksStack: blstack.clone() }
+            Text::MEM_TEXT { tokens: metamodelica::cons(Arc::new(StringToken::ST_STRING { value: (r#str.clone()).clone() }), toks.clone()), blocksStack: blstack.clone() }
         },
         (Text::FILE_TEXT { .. }, r#str) if (-1 == System::stringFind((r#str.clone()).clone(), (literal!("\n")).clone())?) => {
             stringFile(inText.clone(), (r#str.clone()).clone(), false, true)?;
@@ -195,7 +195,7 @@ pub fn writeTok(mut inText: Text, mut inToken: Arc<StringToken>) -> Result<Text>
             txt.clone()
         },
         (Text::MEM_TEXT { blocksStack: blstack, tokens: toks }, tok) => {
-            Text::MEM_TEXT { tokens: cons(tok.clone(), toks.clone()), blocksStack: blstack.clone() }
+            Text::MEM_TEXT { tokens: metamodelica::cons(tok.clone(), toks.clone()), blocksStack: blstack.clone() }
         },
         (Text::FILE_TEXT { .. }, tok) => {
             tokFileText(inText.clone(), tok.clone(), true)?;
@@ -213,7 +213,7 @@ pub fn writeText(mut inText: Text, mut inTextToWrite: Text) -> Result<Text> {
             txt.clone()
         },
         (Text::MEM_TEXT { blocksStack: blstack, tokens: toks }, Text::MEM_TEXT { blocksStack: Deref @ metamodelica::List::Nil, tokens: txttoks }) => {
-            Text::MEM_TEXT { tokens: cons(Arc::new(StringToken::ST_BLOCK { tokens: txttoks.clone(), blockType: Arc::new(crate::Tpl::BlockType::BT_TEXT) }), toks.clone()), blocksStack: blstack.clone() }
+            Text::MEM_TEXT { tokens: metamodelica::cons(Arc::new(StringToken::ST_BLOCK { tokens: txttoks.clone(), blockType: Arc::new(crate::Tpl::BlockType::BT_TEXT) }), toks.clone()), blocksStack: blstack.clone() }
         },
         (Text::FILE_TEXT { .. }, Text::MEM_TEXT { blocksStack: Deref @ metamodelica::List::Nil, tokens: txttoks }) => {
             for mut tok in &*txttoks.clone().reverse() {
@@ -256,7 +256,7 @@ fn writeChars(mut inText: Text, mut inChars: Arc<metamodelica::List<ArcStr>>) ->
             let mut txt = (*txt).clone();
             let mut chars = (*chars).clone();
             (lschars, chars, isline) = takeLineOrString(chars.clone());
-            txt = writeLineOrStr(txt.clone(), stringAppendList(cons((c.clone()).clone(), lschars.clone())), isline.clone())?;
+            txt = writeLineOrStr(txt.clone(), stringAppendList(metamodelica::cons((c.clone()).clone(), lschars.clone())), isline.clone())?;
             writeChars(txt.clone(), chars.clone())?
         },
         (_, _) => {
@@ -276,10 +276,10 @@ fn writeLineOrStr(mut inText: Text, mut inStr: ArcStr, mut inIsLine: bool) -> Re
             txt.clone()
         },
         (Text::MEM_TEXT { blocksStack: blstack, tokens: toks }, r#str, false) => {
-            Text::MEM_TEXT { tokens: cons(Arc::new(StringToken::ST_STRING { value: (r#str.clone()).clone() }), toks.clone()), blocksStack: blstack.clone() }
+            Text::MEM_TEXT { tokens: metamodelica::cons(Arc::new(StringToken::ST_STRING { value: (r#str.clone()).clone() }), toks.clone()), blocksStack: blstack.clone() }
         },
         (Text::MEM_TEXT { blocksStack: blstack, tokens: toks }, r#str, true) => {
-            Text::MEM_TEXT { tokens: cons(Arc::new(StringToken::ST_LINE { line: (r#str.clone()).clone() }), toks.clone()), blocksStack: blstack.clone() }
+            Text::MEM_TEXT { tokens: metamodelica::cons(Arc::new(StringToken::ST_LINE { line: (r#str.clone()).clone() }), toks.clone()), blocksStack: blstack.clone() }
         },
         (Text::FILE_TEXT { .. }, r#str, _) => {
             stringFile(inText.clone(), (r#str.clone()).clone(), inIsLine.clone(), true)?;
@@ -309,7 +309,7 @@ fn takeLineOrString(mut inChars: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamo
             let mut restchars: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let mut isline: bool = false;
             (tnlchars, restchars, isline) = takeLineOrString(chars.clone());
-            (cons((char.clone()).clone(), tnlchars.clone()), restchars.clone(), isline.clone())
+            (metamodelica::cons((char.clone()).clone(), tnlchars.clone()), restchars.clone(), isline.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -325,7 +325,7 @@ pub fn softNewLine(mut inText: Text) -> Result<Text> {
         txt @ Text::MEM_TEXT { tokens: toks, .. } => {
             let mut txt = (*txt).clone();
             if !(isAtStartOfLine(txt.clone())?) {
-                let __owned_variant_tokens_0 = cons(Arc::new(crate::Tpl::StringToken::ST_NEW_LINE), toks.clone());
+                let __owned_variant_tokens_0 = metamodelica::cons(Arc::new(crate::Tpl::StringToken::ST_NEW_LINE), toks.clone());
                 if let Text::MEM_TEXT { tokens, .. } = &mut txt {
                     *tokens = __owned_variant_tokens_0;
                 } else { panic!("owned-variant field-assign: value held a different variant than Text::MEM_TEXT"); }
@@ -391,7 +391,7 @@ pub fn newLine(mut inText: Text) -> Result<Text> {
     let mut outText: Text;
     outText = (match inText.clone() {
         Text::MEM_TEXT { blocksStack: ref blstack, tokens: ref toks } => {
-            Text::MEM_TEXT { tokens: cons(Arc::new(crate::Tpl::StringToken::ST_NEW_LINE), toks.clone()), blocksStack: blstack.clone() }
+            Text::MEM_TEXT { tokens: metamodelica::cons(Arc::new(crate::Tpl::StringToken::ST_NEW_LINE), toks.clone()), blocksStack: blstack.clone() }
         },
         Text::FILE_TEXT { .. } => {
             newlineFile(inText.clone())?;
@@ -405,7 +405,7 @@ pub fn pushBlock(mut txt: Text, mut inBlockType: Arc<BlockType>) -> Result<Text>
     let mut txt: Text = txt;
     txt = (match txt.clone() {
         Text::MEM_TEXT { blocksStack: ref blstack, tokens: ref toks } => {
-            Text::MEM_TEXT { tokens: metamodelica::nil(), blocksStack: cons((toks.clone(), inBlockType.clone()), blstack.clone()) }
+            Text::MEM_TEXT { tokens: metamodelica::nil(), blocksStack: metamodelica::cons((toks.clone(), inBlockType.clone()), blstack.clone()) }
         },
         Text::FILE_TEXT { .. } => {
             let mut nchars: i32 = 0;
@@ -415,7 +415,7 @@ pub fn pushBlock(mut txt: Text, mut inBlockType: Arc<BlockType>) -> Result<Text>
             nchars = Mutable::access(var_field!(txt.nchars, Text::FILE_TEXT).clone());
             aind = Mutable::access(var_field!(txt.aind, Text::FILE_TEXT).clone());
             isstart = Mutable::access(var_field!(txt.isstart, Text::FILE_TEXT).clone());
-            Mutable::update(var_field!(txt.blocksStack, Text::FILE_TEXT).clone(), cons(BlockTypeFileText { bt: inBlockType.clone(), nchars: nchars.clone(), aind: aind.clone(), isstart: isstart.clone(), tell: Mutable::create(textFileTell(txt.clone())), septok: Mutable::create(None) }, Mutable::access(var_field!(txt.blocksStack, Text::FILE_TEXT).clone())));
+            Mutable::update(var_field!(txt.blocksStack, Text::FILE_TEXT).clone(), metamodelica::cons(BlockTypeFileText { bt: inBlockType.clone(), nchars: nchars.clone(), aind: aind.clone(), isstart: isstart.clone(), tell: Mutable::create(textFileTell(txt.clone())), septok: Mutable::create(None) }, Mutable::access(var_field!(txt.blocksStack, Text::FILE_TEXT).clone())));
             let () = (::match_deref::match_deref! { match &(inBlockType.clone()) {
         Deref @ BlockType::BT_INDENT { width: w } => {
             Mutable::update(var_field!(txt.nchars, Text::FILE_TEXT).clone(), nchars.clone() + w.clone());
@@ -458,7 +458,7 @@ pub fn popBlock(mut txt: Text) -> Result<Text> {
             Text::MEM_TEXT { tokens: stacktoks.clone(), blocksStack: blstack.clone() }
         },
         Text::MEM_TEXT { blocksStack: Deref @ metamodelica::List::Cons { head: (stacktoks, blType), tail: blstack }, tokens: toks } => {
-            Text::MEM_TEXT { tokens: cons(Arc::new(StringToken::ST_BLOCK { tokens: toks.clone(), blockType: blType.clone() }), stacktoks.clone()), blocksStack: blstack.clone() }
+            Text::MEM_TEXT { tokens: metamodelica::cons(Arc::new(StringToken::ST_BLOCK { tokens: toks.clone(), blockType: blType.clone() }), stacktoks.clone()), blocksStack: blstack.clone() }
         },
         Text::FILE_TEXT { .. } => {
             let mut rest: Arc<metamodelica::List<BlockTypeFileText>> = metamodelica::nil();
@@ -521,7 +521,7 @@ pub fn pushIter(mut txt: Text, mut inIterOptions: Arc<IterOptions>) -> Result<Te
     let mut txt: Text = txt;
     txt = (::match_deref::match_deref! { match &((txt.clone(), inIterOptions.clone())) {
         (Text::MEM_TEXT { blocksStack: blstack, tokens: toks }, iopts @ Deref @ IterOptions { startIndex0: i0, .. }) => {
-            Text::MEM_TEXT { tokens: metamodelica::nil(), blocksStack: cons((metamodelica::nil(), Arc::new(BlockType::BT_ITER { options: iopts.clone(), index0: Mutable::create(i0.clone()) })), cons((toks.clone(), Arc::new(crate::Tpl::BlockType::BT_TEXT)), blstack.clone())) }
+            Text::MEM_TEXT { tokens: metamodelica::nil(), blocksStack: metamodelica::cons((metamodelica::nil(), Arc::new(BlockType::BT_ITER { options: iopts.clone(), index0: Mutable::create(i0.clone()) })), metamodelica::cons((toks.clone(), Arc::new(crate::Tpl::BlockType::BT_TEXT)), blstack.clone())) }
         },
         (Text::FILE_TEXT { .. }, iopts @ Deref @ IterOptions { startIndex0: i0, .. }) => {
             let () = (::match_deref::match_deref! { match &(iopts.clone()) {
@@ -552,7 +552,7 @@ pub fn popIter(mut txt: Text) -> Result<Text> {
             Text::MEM_TEXT { tokens: stacktoks.clone(), blocksStack: blstack.clone() }
         },
         Text::MEM_TEXT { blocksStack: Deref @ metamodelica::List::Cons { head: (itertoks, blType), tail: Deref @ metamodelica::List::Cons { head: (stacktoks, _), tail: blstack } }, tokens: Deref @ metamodelica::List::Nil } => {
-            Text::MEM_TEXT { tokens: cons(Arc::new(StringToken::ST_BLOCK { tokens: itertoks.clone(), blockType: blType.clone() }), stacktoks.clone()), blocksStack: blstack.clone() }
+            Text::MEM_TEXT { tokens: metamodelica::cons(Arc::new(StringToken::ST_BLOCK { tokens: itertoks.clone(), blockType: blType.clone() }), stacktoks.clone()), blocksStack: blstack.clone() }
         },
         Text::FILE_TEXT { .. } => {
             Mutable::update(var_field!(txt.blocksStack, Text::FILE_TEXT).clone(), listRest(Mutable::access(var_field!(txt.blocksStack, Text::FILE_TEXT).clone()))?);
@@ -576,15 +576,15 @@ pub fn nextIter(mut txt: Text) -> Result<Text> {
         },
         Text::MEM_TEXT { blocksStack: Deref @ metamodelica::List::Cons { head: (itertoks, bt @ Deref @ BlockType::BT_ITER { index0: i0, options: Deref @ IterOptions { empty: Some(emptok), .. } }), tail: blstack }, tokens: Deref @ metamodelica::List::Nil } => {
             Mutable::update(i0.clone(), Mutable::access(i0.clone()) + 1);
-            Text::MEM_TEXT { tokens: metamodelica::nil(), blocksStack: cons((cons(emptok.clone(), itertoks.clone()), bt.clone()), blstack.clone()) }
+            Text::MEM_TEXT { tokens: metamodelica::nil(), blocksStack: metamodelica::cons((metamodelica::cons(emptok.clone(), itertoks.clone()), bt.clone()), blstack.clone()) }
         },
         Text::MEM_TEXT { blocksStack: Deref @ metamodelica::List::Cons { head: (itertoks, bt @ Deref @ BlockType::BT_ITER { index0: i0, .. }), tail: blstack }, tokens: Deref @ metamodelica::List::Cons { head: tok, tail: Deref @ metamodelica::List::Nil } } => {
             Mutable::update(i0.clone(), Mutable::access(i0.clone()) + 1);
-            Text::MEM_TEXT { tokens: metamodelica::nil(), blocksStack: cons((cons(tok.clone(), itertoks.clone()), bt.clone()), blstack.clone()) }
+            Text::MEM_TEXT { tokens: metamodelica::nil(), blocksStack: metamodelica::cons((metamodelica::cons(tok.clone(), itertoks.clone()), bt.clone()), blstack.clone()) }
         },
         Text::MEM_TEXT { blocksStack: Deref @ metamodelica::List::Cons { head: (itertoks, bt @ Deref @ BlockType::BT_ITER { index0: i0, .. }), tail: blstack }, tokens: toks } => {
             Mutable::update(i0.clone(), Mutable::access(i0.clone()) + 1);
-            Text::MEM_TEXT { tokens: metamodelica::nil(), blocksStack: cons((cons(Arc::new(StringToken::ST_BLOCK { tokens: toks.clone(), blockType: Arc::new(crate::Tpl::BlockType::BT_TEXT) }), itertoks.clone()), bt.clone()), blstack.clone()) }
+            Text::MEM_TEXT { tokens: metamodelica::nil(), blocksStack: metamodelica::cons((metamodelica::cons(Arc::new(StringToken::ST_BLOCK { tokens: toks.clone(), blockType: Arc::new(crate::Tpl::BlockType::BT_TEXT) }), itertoks.clone()), bt.clone()), blstack.clone()) }
         },
         Text::FILE_TEXT { .. } => {
             let mut emptok: Arc<StringToken> = Arc::new(StringToken::ST_NEW_LINE);
@@ -1521,7 +1521,7 @@ pub fn tplCallWithFailError<ArgType1: Clone + 'static>(mut inFun: Arc<dyn ::std:
     pub type Tpl_Fun<ArgType1: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Text, ArgType1) -> Result<Text> + 'static>;
 
     let mut txt: Text = txt;
-    txt = tplCallHandleErrors(Arc::new({ let __pe_b1 = inArg.clone(); move |__pe_a0| inFun(__pe_a0, __pe_b1.clone()) }), txt.clone())?;
+    txt = tplCallHandleErrors((std::sync::Arc::new({ let __pe_b1 = inArg.clone(); move |__pe_a0| inFun(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Text) -> Result<Text> + 'static>), txt.clone())?;
     Ok(txt)
 }
 
@@ -1529,7 +1529,7 @@ pub fn tplCallWithFailError2<ArgType1: Clone + 'static, ArgType2: Clone + 'stati
     pub type Tpl_Fun<ArgType1: Clone + 'static, ArgType2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2) -> Result<Text> + 'static>;
 
     let mut txt: Text = txt;
-    txt = tplCallHandleErrors(Arc::new({ let __pe_b1 = inArgA.clone(); let __pe_b2 = inArgB.clone(); move |__pe_a0| inFun(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }), txt.clone())?;
+    txt = tplCallHandleErrors((std::sync::Arc::new({ let __pe_b1 = inArgA.clone(); let __pe_b2 = inArgB.clone(); move |__pe_a0| inFun(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Text) -> Result<Text> + 'static>), txt.clone())?;
     Ok(txt)
 }
 
@@ -1537,7 +1537,7 @@ pub fn tplCallWithFailError3<ArgType1: Clone + 'static, ArgType2: Clone + 'stati
     pub type Tpl_Fun<ArgType1: Clone + 'static, ArgType2: Clone + 'static, ArgType3: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2, ArgType3) -> Result<Text> + 'static>;
 
     let mut txt: Text = txt;
-    txt = tplCallHandleErrors(Arc::new({ let __pe_b1 = inArgA.clone(); let __pe_b2 = inArgB.clone(); let __pe_b3 = inArgC.clone(); move |__pe_a0| inFun(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }), txt.clone())?;
+    txt = tplCallHandleErrors((std::sync::Arc::new({ let __pe_b1 = inArgA.clone(); let __pe_b2 = inArgB.clone(); let __pe_b3 = inArgC.clone(); move |__pe_a0| inFun(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Text) -> Result<Text> + 'static>), txt.clone())?;
     Ok(txt)
 }
 

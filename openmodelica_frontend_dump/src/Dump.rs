@@ -194,7 +194,7 @@ pub fn shouldSeparateAfterElementArg(mut args: Arc<metamodelica::List<Arc<Absyn:
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        outArgs = cons((arg.clone(), b.clone()), outArgs.clone());
+        outArgs = metamodelica::cons((arg.clone(), b.clone()), outArgs.clone());
     }
     outArgs = outArgs.clone().reverse();
     outArgs

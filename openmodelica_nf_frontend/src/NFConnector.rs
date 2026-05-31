@@ -125,7 +125,7 @@ pub fn fromFacedCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut ty: Arc<Ty
 pub fn fromExp(mut exp: Arc<Expression::NFExpression>, mut source: Arc<DAE::ElementSource>, mut conns: Arc<metamodelica::List<Arc<NFConnector>>>) -> Result<Arc<metamodelica::List<Arc<NFConnector>>>> {
     let mut conns: Arc<metamodelica::List<Arc<NFConnector>>> = conns;
     conns = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CREF { .. } => cons(fromCref(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), var_field!((*exp).ty, Expression::NFExpression::CREF).clone(), source.clone()), conns.clone()),
+        Deref @ Expression::CREF { .. } => metamodelica::cons(fromCref(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), var_field!((*exp).ty, Expression::NFExpression::CREF).clone(), source.clone()), conns.clone()),
         Deref @ Expression::ARRAY { .. } => {
             let __range0 = (1..=(var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone().borrow().len() as i32)).rev();
             for mut i in __range0 {
@@ -268,7 +268,7 @@ pub fn scalarize(mut conn: Arc<NFConnector>) -> Result<Arc<metamodelica::List<Ar
     ty = Type::arrayElementType(ty.clone());
     for mut n in &*names.clone() {
         let mut n = n.clone();
-        connl = cons(Arc::new(NFConnector { name: n.clone(), ty: ty.clone(), face: face.clone(), cty: cty.clone(), source: source.clone() }), connl.clone());
+        connl = metamodelica::cons(Arc::new(NFConnector { name: n.clone(), ty: ty.clone(), face: face.clone(), cty: cty.clone(), source: source.clone() }), connl.clone());
     }
     Ok(connl)
 }
@@ -301,7 +301,7 @@ pub fn scalarizePrefix(mut conn: Arc<NFConnector>) -> Result<Arc<metamodelica::L
     for mut p in &*prefixes.clone() {
         let mut p = p.clone();
         name = ComponentRef::prepend(p.clone(), name.clone())?;
-        connl = cons(Arc::new(NFConnector { name: name.clone(), ty: ty.clone(), face: face.clone(), cty: cty.clone(), source: source.clone() }), connl.clone());
+        connl = metamodelica::cons(Arc::new(NFConnector { name: name.clone(), ty: ty.clone(), face: face.clone(), cty: cty.clone(), source: source.clone() }), connl.clone());
     }
     connl = metamodelica::Dangerous::listReverseInPlace(connl.clone());
     Ok(connl)
@@ -337,14 +337,14 @@ fn splitImpl(mut name: Arc<ComponentRef::NFComponentRef>, mut ty: Arc<Type::NFTy
             conns = splitImpl2(name.clone(), face.clone(), source.clone(), var_field!((**ct).streams, ComplexType::NFComplexType::CONNECTOR).clone(), dims.clone(), conns.clone())?;
             conns.clone()
         },
-        Deref @ Type::COMPLEX { complexTy: Deref @ ComplexType::EXTERNAL_OBJECT { .. }, .. } => cons(Arc::new(NFConnector { name: name.clone(), ty: Type::liftArrayLeftList(ty.clone(), dims.clone()), face: face.clone(), cty: cty.clone(), source: source.clone() }), conns.clone()),
+        Deref @ Type::COMPLEX { complexTy: Deref @ ComplexType::EXTERNAL_OBJECT { .. }, .. } => metamodelica::cons(Arc::new(NFConnector { name: name.clone(), ty: Type::liftArrayLeftList(ty.clone(), dims.clone()), face: face.clone(), cty: cty.clone(), source: source.clone() }), conns.clone()),
         Deref @ Type::COMPLEX { .. } => {
             tree = Class::classTree(InstNode::getClass(var_field!((*ty).cls, Type::NFType::COMPLEX).clone())?)?;
             conns = splitImpl2(name.clone(), face.clone(), source.clone(), Arc::new(ClassTree::getComponents(tree.clone())?.borrow().iter().cloned().collect::<metamodelica::List<_>>()), dims.clone(), conns.clone())?;
             conns.clone()
         },
         Deref @ Type::ARRAY { .. } => splitImpl(name.clone(), var_field!((*ty).elementType, Type::NFType::ARRAY).clone(), face.clone(), source.clone(), cty.clone(), listAppend(dims.clone(), var_field!((*ty).dimensions, Type::NFType::ARRAY).clone()), conns.clone())?,
-        _ => cons(Arc::new(NFConnector { name: name.clone(), ty: Type::liftArrayLeftList(ty.clone(), dims.clone()), face: face.clone(), cty: cty.clone(), source: source.clone() }), conns.clone()),
+        _ => metamodelica::cons(Arc::new(NFConnector { name: name.clone(), ty: Type::liftArrayLeftList(ty.clone(), dims.clone()), face: face.clone(), cty: cty.clone(), source: source.clone() }), conns.clone()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(conns)

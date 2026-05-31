@@ -939,7 +939,7 @@ pub fn getFlags(mut initialize: bool) -> Flag {
 
 pub fn isSet(mut inFlag: DebugFlag) -> Result<bool> {
     let mut outValue: bool = false;
-    let mut debug_flags: metamodelica::Array<bool>;
+    let mut debug_flags: metamodelica::Array<bool> = Default::default();
     let mut flags: Flag = Flag::NO_FLAGS;
     let mut index: i32 = 0;
     let DebugFlag { index: __pa0, .. } = (inFlag.clone()) else { bail!("pattern mismatch") };
@@ -966,7 +966,7 @@ pub fn getConfigName(mut inFlag: ConfigFlag) -> Result<ArcStr> {
 
 pub fn getConfigValue(mut inFlag: ConfigFlag) -> Result<FlagData> {
     let mut outValue: FlagData = FlagData::EMPTY_FLAG;
-    let mut config_flags: metamodelica::Array<FlagData>;
+    let mut config_flags: metamodelica::Array<FlagData> = Default::default();
     let mut index: i32 = 0;
     let mut flags: Flag = Flag::NO_FLAGS;
     let mut name: ArcStr = arcstr::literal!("");

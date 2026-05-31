@@ -202,8 +202,8 @@ pub fn repairMultary(mut operator: Arc<NFOperator>, mut types: Arc<metamodelica:
     let mut mc: MathClassification = getMathClassification(operator.clone())?;
     let mut sc: SizeClassification = SizeClassification::SCALAR;
     let mut lst: Arc<metamodelica::List<(TypeRestriction, Arc<Type::NFType>)>> = metamodelica::nil();
-    let mut min_: (TypeRestriction, Arc<Type::NFType>);
-    let mut max_: (TypeRestriction, Arc<Type::NFType>);
+    let mut min_: (TypeRestriction, Arc<Type::NFType>) = (TypeRestriction::SCALAR, Arc::new(Type::ANY));
+    let mut max_: (TypeRestriction, Arc<Type::NFType>) = (TypeRestriction::SCALAR, Arc::new(Type::ANY));
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     lst = ({
         let mut __acc: Arc<metamodelica::List<(TypeRestriction, Arc<Type::NFType>)>> = metamodelica::nil();
@@ -867,7 +867,7 @@ pub fn sizeClassificationString(mut scl: SizeClassification) -> Result<ArcStr> {
 }
 
 pub fn classify(mut op: Arc<NFOperator>) -> Result<Classification> {
-    let mut cl: Classification;
+    let mut cl: Classification = (MathClassification::ADDITION, SizeClassification::SCALAR);
     cl = (match op.op.clone() {
         Op::ADD => (MathClassification::ADDITION.clone(), SizeClassification::SCALAR.clone()),
         Op::SUB => (MathClassification::SUBTRACTION.clone(), SizeClassification::SCALAR.clone()),
@@ -1030,7 +1030,7 @@ pub fn isSoftCommutative(mut operator: Arc<NFOperator>) -> bool {
 }
 
 pub fn repetition(mut operator: Arc<NFOperator>) -> (bool, bool) {
-    let mut b: (bool, bool);
+    let mut b: (bool, bool) = (false, false);
     b = (match operator.op.clone() {
         Op::ADD_SCALAR_ARRAY => (true, false),
         Op::ADD_ARRAY_SCALAR { .. } => (false, true),

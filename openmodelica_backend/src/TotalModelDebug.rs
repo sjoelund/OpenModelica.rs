@@ -569,11 +569,11 @@ pub fn saveElement(mut element: Arc<SCode::Element>, mut used: UseTable, mut ele
     elements = (::match_deref::match_deref! { match &(elem.clone()) {
         Deref @ SCode::Element::CLASS { .. } if (UnorderedSet::contains((var_field!((*elem).name, SCode::Element::CLASS).clone()).clone(), used.clone())?) => {
             assign_variant_field!(elem => SCode::Element::CLASS; classDef = saveClassDef(var_field!((*elem).classDef, SCode::Element::CLASS).clone(), used.clone())?);
-            cons(elem.clone(), elements.clone())
+            metamodelica::cons(elem.clone(), elements.clone())
         },
         Deref @ SCode::Element::CLASS { .. } => elements.clone(),
         Deref @ SCode::Element::EXTENDS { .. } if (AbsynUtil::pathContains(var_field!((*elem).baseClassPath, SCode::Element::EXTENDS).clone(), (literal!("Icons")).clone())?) => elements.clone(),
-        _ => cons(element.clone(), elements.clone()),
+        _ => metamodelica::cons(element.clone(), elements.clone()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(elements)

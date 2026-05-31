@@ -176,7 +176,7 @@ fn calculateBalance(mut inNode: Arc<Tree>) -> i32 {
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn hasKey(mut inTree: Arc<Tree>, mut inKey: Key) -> Result<bool> {
     let mut comp: bool = false;
-    let mut key: Key;
+    let mut key: Key = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut key_comp: i32 = 0;
     let mut tree: Arc<Tree> = Arc::new(Tree::EMPTY);
     key = (::match_deref::match_deref! { match &(inTree.clone()) {
@@ -216,8 +216,8 @@ pub fn intersection(mut tree1: Arc<Tree>, mut tree2: Arc<Tree>) -> Result<(Arc<T
     let mut rest2: Arc<Tree> = Arc::new(crate::AvlSetPath::Tree::EMPTY);
     let mut keylist1: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
     let mut keylist2: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
-    let mut k1: Key;
-    let mut k2: Key;
+    let mut k1: Key = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+    let mut k2: Key = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut key_comp: i32 = 0;
     if isEmpty(tree1.clone()) {
         rest2 = tree2.clone();
@@ -330,10 +330,10 @@ pub fn join(mut tree: Arc<Tree>, mut treeToJoin: Arc<Tree>) -> Result<Arc<Tree>>
 pub fn listKeys(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Arc<metamodelica::List<Arc<Absyn::Path>>> {
     let mut lst: Arc<metamodelica::List<Arc<Absyn::Path>>> = lst;
     lst = (::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::LEAF { .. } => cons(var_field!((*inTree).key, Tree::LEAF).clone(), lst.clone()),
+        Deref @ Tree::LEAF { .. } => metamodelica::cons(var_field!((*inTree).key, Tree::LEAF).clone(), lst.clone()),
         Deref @ Tree::NODE { .. } => {
             lst = listKeys(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
-            lst = cons(var_field!((*inTree).key, Tree::NODE).clone(), lst.clone());
+            lst = metamodelica::cons(var_field!((*inTree).key, Tree::NODE).clone(), lst.clone());
             lst = listKeys(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
@@ -346,10 +346,10 @@ pub fn listKeys(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<Absyn
 pub fn listKeysReverse(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Arc<metamodelica::List<Arc<Absyn::Path>>> {
     let mut lst: Arc<metamodelica::List<Arc<Absyn::Path>>> = lst;
     lst = (::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::LEAF { .. } => cons(var_field!((*inTree).key, Tree::LEAF).clone(), lst.clone()),
+        Deref @ Tree::LEAF { .. } => metamodelica::cons(var_field!((*inTree).key, Tree::LEAF).clone(), lst.clone()),
         Deref @ Tree::NODE { .. } => {
             lst = listKeysReverse(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
-            lst = cons(var_field!((*inTree).key, Tree::NODE).clone(), lst.clone());
+            lst = metamodelica::cons(var_field!((*inTree).key, Tree::NODE).clone(), lst.clone());
             lst = listKeysReverse(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
@@ -467,7 +467,7 @@ pub fn setTreeLeftRight(mut orig: Arc<Tree>, mut left: Arc<Tree>, mut right: Arc
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn smallestKey(mut tree: Arc<Tree>) -> Result<Key> {
-    let mut key: Key;
+    let mut key: Key = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     key = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { right: Deref @ Tree::EMPTY { .. }, .. } => var_field!((*tree).key, Tree::NODE).clone(),
         Deref @ Tree::NODE { .. } => smallestKey(var_field!((*tree).right, Tree::NODE).clone())?,

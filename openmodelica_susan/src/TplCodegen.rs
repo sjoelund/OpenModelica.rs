@@ -759,7 +759,7 @@ fn fun_35(mut in_txt: Tpl::Text, mut in_mArg: (Arc<metamodelica::List<(ArcStr, A
 
 pub fn inOutArgs(mut txt: Tpl::Text, mut a_inArgs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, mut a_outArgs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    let mut ret_0: (Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>);
+    let mut ret_0: (Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>, Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>>) = (metamodelica::nil(), metamodelica::nil(), metamodelica::nil());
     ret_0 = TplAbsyn::intersectInOutArgs(a_inArgs.clone(), a_outArgs.clone())?;
     out_txt = fun_35(txt.clone(), ret_0.clone())?;
     Ok(out_txt)

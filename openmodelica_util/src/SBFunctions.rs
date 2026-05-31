@@ -58,8 +58,8 @@ use openmodelica_util_datatypes_basic::Array;
 pub fn minAtomPW(mut dom: Arc<SBAtomicSet::SBAtomicSet>, mut lm1: Arc<SBLinearMap::SBLinearMap>, mut lm2: Arc<SBLinearMap::SBLinearMap>) -> Result<Arc<SBPWLinearMap::SBPWLinearMap>> {
     fn make_result(mut aset: Arc<SBAtomicSet::SBAtomicSet>, mut map: Arc<SBLinearMap::SBLinearMap>) -> Result<Arc<SBPWLinearMap::SBPWLinearMap>> {
         let mut outMap: Arc<SBPWLinearMap::SBPWLinearMap> = Arc::new(<SBPWLinearMap::SBPWLinearMap as ::std::default::Default>::default());
-        let mut dom: metamodelica::Array<Arc<SBSet::SBSet>>;
-        let mut lm: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>>;
+        let mut dom: metamodelica::Array<Arc<SBSet::SBSet>> = Default::default();
+        let mut lm: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>> = Default::default();
         dom = arrayCreate(1, SBSet::addAtomicSet(aset.clone(), SBSet::newEmpty())?);
         lm = arrayCreate(1, map.clone());
         outMap = SBPWLinearMap::new(dom.clone(), lm.clone());
@@ -67,17 +67,17 @@ pub fn minAtomPW(mut dom: Arc<SBAtomicSet::SBAtomicSet>, mut lm1: Arc<SBLinearMa
     }
 
     let mut outMap: Arc<SBPWLinearMap::SBPWLinearMap> = Arc::new(<SBPWLinearMap::SBPWLinearMap as ::std::default::Default>::default());
-    let mut g1: metamodelica::Array<metamodelica::Real>;
-    let mut g2: metamodelica::Array<metamodelica::Real>;
-    let mut resg: metamodelica::Array<metamodelica::Real>;
-    let mut o1: metamodelica::Array<metamodelica::Real>;
-    let mut o2: metamodelica::Array<metamodelica::Real>;
-    let mut reso: metamodelica::Array<metamodelica::Real>;
-    let mut ints: metamodelica::Array<Arc<SBInterval::SBInterval>>;
+    let mut g1: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut g2: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut resg: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut o1: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut o2: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut reso: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut ints: metamodelica::Array<Arc<SBInterval::SBInterval>> = Default::default();
     let mut as_aux: Arc<SBAtomicSet::SBAtomicSet> = Arc::new(<SBAtomicSet::SBAtomicSet as ::std::default::Default>::default());
     let mut lm_aux: Arc<SBLinearMap::SBLinearMap> = Arc::new(<SBLinearMap::SBLinearMap as ::std::default::Default>::default());
-    let mut dom_res: metamodelica::Array<Arc<SBSet::SBSet>>;
-    let mut lm_res: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>>;
+    let mut dom_res: metamodelica::Array<Arc<SBSet::SBSet>> = Default::default();
+    let mut lm_res: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>> = Default::default();
     let mut d1: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
     let mut d2: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
     let mut g1i: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
@@ -144,15 +144,15 @@ pub fn minAtomPW(mut dom: Arc<SBAtomicSet::SBAtomicSet>, mut lm1: Arc<SBLinearMa
 
 pub fn minPW(mut dom: Arc<SBSet::SBSet>, mut lm1: Arc<SBLinearMap::SBLinearMap>, mut lm2: Arc<SBLinearMap::SBLinearMap>) -> Result<Arc<SBPWLinearMap::SBPWLinearMap>> {
     let mut outMap: Arc<SBPWLinearMap::SBPWLinearMap> = Arc::new(<SBPWLinearMap::SBPWLinearMap as ::std::default::Default>::default());
-    let mut aux_dom: metamodelica::Array<Arc<SBSet::SBSet>>;
-    let mut aux_lm: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>>;
+    let mut aux_dom: metamodelica::Array<Arc<SBSet::SBSet>> = Default::default();
+    let mut aux_lm: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>> = Default::default();
     let mut sres1: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
     let mut sres2: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
     let mut d: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
     let mut lres1: Arc<SBLinearMap::SBLinearMap> = Arc::new(<SBLinearMap::SBLinearMap as ::std::default::Default>::default());
     let mut lres2: Arc<SBLinearMap::SBLinearMap> = Arc::new(<SBLinearMap::SBLinearMap as ::std::default::Default>::default());
     let mut l: Arc<SBLinearMap::SBLinearMap> = Arc::new(<SBLinearMap::SBLinearMap as ::std::default::Default>::default());
-    let mut asets: metamodelica::Array<Arc<SBAtomicSet::SBAtomicSet>>;
+    let mut asets: metamodelica::Array<Arc<SBAtomicSet::SBAtomicSet>> = Default::default();
     let mut aux: Arc<SBPWLinearMap::SBPWLinearMap> = Arc::new(<SBPWLinearMap::SBPWLinearMap as ::std::default::Default>::default());
     let mut as_aux: Arc<SBAtomicSet::SBAtomicSet> = Arc::new(<SBAtomicSet::SBAtomicSet as ::std::default::Default>::default());
     let mut sres: Arc<metamodelica::List<Arc<SBSet::SBSet>>> = metamodelica::nil();
@@ -192,12 +192,12 @@ pub fn minPW(mut dom: Arc<SBSet::SBSet>, mut lm1: Arc<SBLinearMap::SBLinearMap>,
         }
     }
     if !(SBSet::isEmpty(sres2.clone())) && !(SBLinearMap::isEmpty(lres2.clone())) {
-        sres = cons(sres2.clone(), sres.clone());
-        lres = cons(lres2.clone(), lres.clone());
+        sres = metamodelica::cons(sres2.clone(), sres.clone());
+        lres = metamodelica::cons(lres2.clone(), lres.clone());
     }
     if !(SBSet::isEmpty(sres1.clone())) && !(SBLinearMap::isEmpty(lres1.clone())) {
-        sres = cons(sres1.clone(), sres.clone());
-        lres = cons(lres1.clone(), lres.clone());
+        sres = metamodelica::cons(sres1.clone(), sres.clone());
+        lres = metamodelica::cons(lres1.clone(), lres.clone());
     }
     outMap = SBPWLinearMap::new(metamodelica::arrayFromVec(sres.clone().into_iter().cloned().collect()), metamodelica::arrayFromVec(lres.clone().into_iter().cloned().collect()));
     Ok(outMap)
@@ -205,10 +205,10 @@ pub fn minPW(mut dom: Arc<SBSet::SBSet>, mut lm1: Arc<SBLinearMap::SBLinearMap>,
 
 pub fn minMap(mut pw1: Arc<SBPWLinearMap::SBPWLinearMap>, mut pw2: Arc<SBPWLinearMap::SBPWLinearMap>) -> Result<Arc<SBPWLinearMap::SBPWLinearMap>> {
     let mut outMap: Arc<SBPWLinearMap::SBPWLinearMap> = SBPWLinearMap::newEmpty();
-    let mut d1: metamodelica::Array<Arc<SBSet::SBSet>>;
-    let mut d2: metamodelica::Array<Arc<SBSet::SBSet>>;
-    let mut lm1: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>>;
-    let mut lm2: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>>;
+    let mut d1: metamodelica::Array<Arc<SBSet::SBSet>> = Default::default();
+    let mut d2: metamodelica::Array<Arc<SBSet::SBSet>> = Default::default();
+    let mut lm1: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>> = Default::default();
+    let mut lm2: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>> = Default::default();
     let mut d1i: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
     let mut dom: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
     let mut lm1i: Arc<SBLinearMap::SBLinearMap> = Arc::new(<SBLinearMap::SBLinearMap as ::std::default::Default>::default());
@@ -238,11 +238,11 @@ pub fn minMap(mut pw1: Arc<SBPWLinearMap::SBPWLinearMap>, mut pw2: Arc<SBPWLinea
 
 pub fn reduceMapN(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>, mut dim: i32) -> Result<Arc<SBPWLinearMap::SBPWLinearMap>> {
     let mut outMap: Arc<SBPWLinearMap::SBPWLinearMap> = Arc::new(<SBPWLinearMap::SBPWLinearMap as ::std::default::Default>::default());
-    let mut dom: metamodelica::Array<Arc<SBSet::SBSet>>;
-    let mut new_s: metamodelica::Array<Arc<SBSet::SBSet>>;
+    let mut dom: metamodelica::Array<Arc<SBSet::SBSet>> = Default::default();
+    let mut new_s: metamodelica::Array<Arc<SBSet::SBSet>> = Default::default();
     let mut sres: Arc<Vector::Vector<Arc<SBSet::SBSet>>>;
-    let mut lmap: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>>;
-    let mut new_l: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>>;
+    let mut lmap: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>> = Default::default();
+    let mut new_l: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>> = Default::default();
     let mut lres: Arc<Vector::Vector<Arc<SBLinearMap::SBLinearMap>>>;
     let mut pw_copy: Arc<SBPWLinearMap::SBPWLinearMap> = Arc::new(<SBPWLinearMap::SBPWLinearMap as ::std::default::Default>::default());
     let mut new_map: Arc<SBPWLinearMap::SBPWLinearMap> = Arc::new(<SBPWLinearMap::SBPWLinearMap as ::std::default::Default>::default());
@@ -257,11 +257,11 @@ pub fn reduceMapN(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>, mut dim: i32) -> Re
     let mut new_inter: Arc<SBInterval::SBInterval> = Arc::new(<SBInterval::SBInterval as ::std::default::Default>::default());
     let mut loint: i32 = 0;
     let mut hiint: i32 = 0;
-    let mut resg: metamodelica::Array<metamodelica::Real>;
-    let mut reso: metamodelica::Array<metamodelica::Real>;
+    let mut resg: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut reso: metamodelica::Array<metamodelica::Real> = Default::default();
     let mut aux_as: Arc<SBAtomicSet::SBAtomicSet> = Arc::new(<SBAtomicSet::SBAtomicSet as ::std::default::Default>::default());
     let mut aux_newd: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>> = <Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>> as ::std::default::Default>::default();
-    let mut asets: metamodelica::Array<Arc<SBAtomicSet::SBAtomicSet>>;
+    let mut asets: metamodelica::Array<Arc<SBAtomicSet::SBAtomicSet>> = Default::default();
     dom = SBPWLinearMap::dom(pw.clone());
     lmap = SBPWLinearMap::lmap(pw.clone());
     pw_copy = SBPWLinearMap::copy(pw.clone());
@@ -340,7 +340,7 @@ pub fn reduceMapN(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>, mut dim: i32) -> Re
 pub fn mapInf(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>) -> Result<Arc<SBPWLinearMap::SBPWLinearMap>> {
     fn max_inter(mut aset: Arc<SBAtomicSet::SBAtomicSet>, mut offset: metamodelica::Real, mut dim: i32, mut its: metamodelica::Real) -> metamodelica::Real {
         let mut its: metamodelica::Real = its;
-        let mut is: metamodelica::Array<Arc<SBInterval::SBInterval>>;
+        let mut is: metamodelica::Array<Arc<SBInterval::SBInterval>> = Default::default();
         let mut i: Arc<SBInterval::SBInterval> = Arc::new(<SBInterval::SBInterval as ::std::default::Default>::default());
         let mut hi: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
         let mut lo: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
@@ -354,12 +354,12 @@ pub fn mapInf(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>) -> Result<Arc<SBPWLinea
 
     let mut outMap: Arc<SBPWLinearMap::SBPWLinearMap> = Arc::new(<SBPWLinearMap::SBPWLinearMap as ::std::default::Default>::default());
     let mut max_it: i32 = 0;
-    let mut dom: metamodelica::Array<Arc<SBSet::SBSet>>;
-    let mut lmap: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>>;
+    let mut dom: metamodelica::Array<Arc<SBSet::SBSet>> = Default::default();
+    let mut lmap: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>> = Default::default();
     let mut d: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
     let mut lm: Arc<SBLinearMap::SBLinearMap> = Arc::new(<SBLinearMap::SBLinearMap as ::std::default::Default>::default());
-    let mut gain: metamodelica::Array<metamodelica::Real>;
-    let mut off: metamodelica::Array<metamodelica::Real>;
+    let mut gain: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut off: metamodelica::Array<metamodelica::Real> = Default::default();
     let mut a: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut b: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut its: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
@@ -391,7 +391,7 @@ pub fn mapInf(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>) -> Result<Arc<SBPWLinea
             its = metamodelica::OrderedFloat((0) as f64);
             for mut dim in 1..=SBPWLinearMap::ndim(outMap.clone()) {
                 if gain.borrow()[(dim.clone()-1) as usize].clone() == metamodelica::OrderedFloat((1) as f64) && off.borrow()[(dim.clone()-1) as usize].clone() < metamodelica::OrderedFloat((0) as f64) {
-                    its = UnorderedSet::fold(SBSet::asets(d.clone()), Arc::new({ let __pe_b1 = off.borrow()[(dim.clone()-1) as usize].clone(); let __pe_b2 = dim.clone(); move |__pe_a0, __pe_a3| Ok(max_inter(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3)) }), its.clone());
+                    its = UnorderedSet::fold(SBSet::asets(d.clone()), (std::sync::Arc::new({ let __pe_b1 = off.borrow()[(dim.clone()-1) as usize].clone(); let __pe_b2 = dim.clone(); move |__pe_a0, __pe_a3| Ok(max_inter(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>, metamodelica::Real) -> Result<metamodelica::Real> + 'static>), its.clone());
                 }
             }
             max_it = max_it.clone() + ((its.clone()).0 as i32);
@@ -407,8 +407,8 @@ pub fn mapInf(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>) -> Result<Arc<SBPWLinea
 
 pub fn minAdjCompMap(mut pw2: Arc<SBPWLinearMap::SBPWLinearMap>, mut pw1: Arc<SBPWLinearMap::SBPWLinearMap>) -> Result<Arc<SBPWLinearMap::SBPWLinearMap>> {
     let mut outMap: Arc<SBPWLinearMap::SBPWLinearMap> = Arc::new(<SBPWLinearMap::SBPWLinearMap as ::std::default::Default>::default());
-    let mut dom: metamodelica::Array<Arc<SBSet::SBSet>>;
-    let mut lmap: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>>;
+    let mut dom: metamodelica::Array<Arc<SBSet::SBSet>> = Default::default();
+    let mut lmap: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>> = Default::default();
     let mut d: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
     let mut dom_inv: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
     let mut aux: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
@@ -421,14 +421,14 @@ pub fn minAdjCompMap(mut pw2: Arc<SBPWLinearMap::SBPWLinearMap>, mut pw1: Arc<SB
     let mut aux_res: Arc<SBPWLinearMap::SBPWLinearMap> = Arc::new(<SBPWLinearMap::SBPWLinearMap as ::std::default::Default>::default());
     let mut inf: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut g: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut min_aux: metamodelica::Array<i32>;
-    let mut resg: metamodelica::Array<metamodelica::Real>;
-    let mut reso: metamodelica::Array<metamodelica::Real>;
-    let mut gain: metamodelica::Array<metamodelica::Real>;
-    let mut off: metamodelica::Array<metamodelica::Real>;
-    let mut gres: metamodelica::Array<metamodelica::Real>;
-    let mut oi: metamodelica::Array<metamodelica::Real>;
-    let mut ginv: metamodelica::Array<metamodelica::Real>;
+    let mut min_aux: metamodelica::Array<i32> = Default::default();
+    let mut resg: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut reso: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut gain: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut off: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut gres: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut oi: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut ginv: metamodelica::Array<metamodelica::Real> = Default::default();
     dom = SBPWLinearMap::dom(pw2.clone());
     lmap = SBPWLinearMap::lmap(pw2.clone());
     if (dom.clone().borrow().len() as i32) != 1 {
@@ -526,8 +526,8 @@ pub fn minAdjCompMap(mut pw2: Arc<SBPWLinearMap::SBPWLinearMap>, mut pw1: Arc<SB
 
 pub fn minAdjMap(mut pw2: Arc<SBPWLinearMap::SBPWLinearMap>, mut pw1: Arc<SBPWLinearMap::SBPWLinearMap>) -> Result<Arc<SBPWLinearMap::SBPWLinearMap>> {
     let mut outMap: Arc<SBPWLinearMap::SBPWLinearMap> = Arc::new(<SBPWLinearMap::SBPWLinearMap as ::std::default::Default>::default());
-    let mut dom2: metamodelica::Array<Arc<SBSet::SBSet>>;
-    let mut lm2: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>>;
+    let mut dom2: metamodelica::Array<Arc<SBSet::SBSet>> = Default::default();
+    let mut lm2: metamodelica::Array<Arc<SBLinearMap::SBLinearMap>> = Default::default();
     let mut map1: Arc<SBPWLinearMap::SBPWLinearMap> = Arc::new(<SBPWLinearMap::SBPWLinearMap as ::std::default::Default>::default());
     let mut mapi: Arc<SBPWLinearMap::SBPWLinearMap> = Arc::new(<SBPWLinearMap::SBPWLinearMap as ::std::default::Default>::default());
     let mut min_adj: Arc<SBPWLinearMap::SBPWLinearMap> = Arc::new(<SBPWLinearMap::SBPWLinearMap as ::std::default::Default>::default());

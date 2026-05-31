@@ -154,7 +154,7 @@ impl Ord for Branch {
 pub fn liftArrayLeft(mut ty: Arc<NFType>, mut dim: Arc<Dimension::NFDimension>) -> Arc<NFType> {
     let mut ty: Arc<NFType> = ty;
     ty = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ ARRAY { .. } => Arc::new(NFType::ARRAY { elementType: var_field!((*ty).elementType, NFType::ARRAY).clone(), dimensions: cons(dim.clone(), var_field!((*ty).dimensions, NFType::ARRAY).clone()) }),
+        Deref @ ARRAY { .. } => Arc::new(NFType::ARRAY { elementType: var_field!((*ty).elementType, NFType::ARRAY).clone(), dimensions: metamodelica::cons(dim.clone(), var_field!((*ty).dimensions, NFType::ARRAY).clone()) }),
         Deref @ CONDITIONAL_ARRAY { .. } => Arc::new(NFType::CONDITIONAL_ARRAY { trueType: liftArrayLeft(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone(), dim.clone()), falseType: liftArrayLeft(var_field!((*ty).falseType, NFType::CONDITIONAL_ARRAY).clone(), dim.clone()), matchedBranch: var_field!((*ty).matchedBranch, NFType::CONDITIONAL_ARRAY).clone() }),
         _ => Arc::new(NFType::ARRAY { elementType: ty.clone(), dimensions: list![dim.clone()] }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -576,7 +576,7 @@ pub fn complexNode(mut ty: Arc<NFType>) -> Result<Arc<InstNode::InstNode>> {
 }
 
 pub fn complexComponents(mut ty: Arc<NFType>) -> Result<metamodelica::Array<Arc<InstNode::InstNode>>> {
-    let mut comps: metamodelica::Array<Arc<InstNode::InstNode>>;
+    let mut comps: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
     comps = ClassTree::getComponents(Class::classTree(InstNode::getClass(complexNode(ty.clone())?)?)?)?;
     Ok(comps)
 }
@@ -923,7 +923,7 @@ pub fn dimensionDiff(mut ty1: Arc<NFType>, mut ty2: Arc<NFType>) -> i32 {
 pub fn hasKnownSize(mut ty: Arc<NFType>) -> bool {
     let mut isKnown: bool = false;
     isKnown = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ ARRAY { .. } => List::all(var_field!((*ty).dimensions, NFType::ARRAY).clone(), Arc::new({ let __pe_b1 = false; move |__pe_a0| Ok(Dimension::isKnown(__pe_a0, __pe_b1.clone())) })),
+        Deref @ ARRAY { .. } => List::all(var_field!((*ty).dimensions, NFType::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = false; move |__pe_a0| Ok(Dimension::isKnown(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<bool> + 'static>)),
         Deref @ CONDITIONAL_ARRAY { .. } => false,
         Deref @ FUNCTION { .. } => hasKnownSize(Function::returnType(var_field!((*ty).r#fn, NFType::FUNCTION).clone())),
         _ => true,
@@ -999,7 +999,7 @@ pub fn foldDims<ArgT: Clone + 'static>(mut ty: Arc<NFType>, mut func: Arc<dyn ::
     let mut arg: ArgT = arg;
     arg = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ ARRAY { .. } => List::fold(var_field!((*ty).dimensions, NFType::ARRAY).clone(), func.clone(), arg.clone()),
-        Deref @ TUPLE { .. } => List::fold(var_field!((*ty).types, NFType::TUPLE).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>, _) -> Result<_> + 'static> = func.clone(); move |__pe_a0, __pe_a2| Ok(foldDims(__pe_a0, __pe_b1.clone(), __pe_a2)) }), arg.clone()),
+        Deref @ TUPLE { .. } => List::fold(var_field!((*ty).types, NFType::TUPLE).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>, _) -> Result<_> + 'static> = func.clone(); move |__pe_a0, __pe_a2| Ok(foldDims(__pe_a0, __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFType>, _) -> Result<_> + 'static>), arg.clone()),
         Deref @ FUNCTION { .. } => foldDims(Function::returnType(var_field!((*ty).r#fn, NFType::FUNCTION).clone()), func.clone(), arg.clone()),
         Deref @ METABOXED { .. } => foldDims(var_field!((*ty).ty, NFType::METABOXED).clone(), func.clone(), arg.clone()),
         _ => arg.clone(),
@@ -1063,7 +1063,7 @@ pub fn toFlatString(mut ty: Arc<NFType>, mut format: BaseModelica::OutputFormat)
         Deref @ CLOCK => literal!("Clock"),
         Deref @ ENUMERATION { .. } => if (var_field!((*ty).literals, NFType::ENUMERATION).clone().is_empty()) {literal!("enumeration(:)")} else if (isBuiltinEnumeration(ty.clone())) {AbsynUtil::pathString(var_field!((*ty).typePath, NFType::ENUMERATION).clone(), (literal!(".")).clone(), true, false)?} else {Util::makeQuotedIdentifier((AbsynUtil::pathString(var_field!((*ty).typePath, NFType::ENUMERATION).clone(), (literal!(".")).clone(), true, false)?).clone())?},
         Deref @ ARRAY { .. } => Dimension::toFlatStringList(var_field!((*ty).dimensions, NFType::ARRAY).clone(), format.clone(), (toFlatString(var_field!((*ty).elementType, NFType::ARRAY).clone(), format.clone())?).clone())?,
-        Deref @ TUPLE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*stringDelimitList(List::map(var_field!((*ty).types, NFType::TUPLE).clone(), Arc::new({ let __pe_b1 = format.clone(); move |__pe_a0| toFlatString(__pe_a0, __pe_b1.clone()) })), (literal!(", ")).clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) },
+        Deref @ TUPLE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*stringDelimitList(List::map(var_field!((*ty).types, NFType::TUPLE).clone(), (std::sync::Arc::new({ let __pe_b1 = format.clone(); move |__pe_a0| toFlatString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFType>) -> Result<ArcStr> + 'static>)), (literal!(", ")).clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) },
         Deref @ NORETCALL => literal!("()"),
         Deref @ UNKNOWN => literal!("unknown()"),
         Deref @ COMPLEX { .. } => Util::makeQuotedIdentifier((AbsynUtil::pathString(InstNode::scopePath(var_field!((*ty).cls, NFType::COMPLEX).clone(), InstNode::ScopeType::RELATIVE.clone(), false)?, (literal!(".")).clone(), true, false)?).clone())?,
@@ -1072,7 +1072,7 @@ pub fn toFlatString(mut ty: Arc<NFType>, mut format: BaseModelica::OutputFormat)
         Deref @ POLYMORPHIC { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("<")); __mm_s.push_str(&*var_field!((*ty).name, NFType::POLYMORPHIC).clone()); __mm_s.push_str(&*literal!(">")); ArcStr::from(__mm_s) },
         Deref @ ANY => literal!("$ANY$"),
         Deref @ CONDITIONAL_ARRAY { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*toFlatString(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone(), format.clone())?); __mm_s.push_str(&*literal!("|")); __mm_s.push_str(&*toFlatString(var_field!((*ty).falseType, NFType::CONDITIONAL_ARRAY).clone(), format.clone())?); ArcStr::from(__mm_s) },
-        Deref @ UNTYPED { .. } => Array::toString(var_field!((*ty).dimensions, NFType::UNTYPED).clone(), Arc::new({ let __pe_b1 = format.clone(); move |__pe_a0| Dimension::toFlatString(__pe_a0, __pe_b1.clone()) }), (InstNode::name(var_field!((*ty).typeNode, NFType::UNTYPED).clone())?).clone(), (literal!("[")).clone(), (literal!(", ")).clone(), (literal!("]")).clone(), false, 0)?,
+        Deref @ UNTYPED { .. } => Array::toString(var_field!((*ty).dimensions, NFType::UNTYPED).clone(), (std::sync::Arc::new({ let __pe_b1 = format.clone(); move |__pe_a0| Dimension::toFlatString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<ArcStr> + 'static>), (InstNode::name(var_field!((*ty).typeNode, NFType::UNTYPED).clone())?).clone(), (literal!("[")).clone(), (literal!(", ")).clone(), (literal!("]")).clone(), false, 0)?,
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFType.toFlatString")); __mm_s.push_str(&*literal!(" got unknown type: ")); __mm_s.push_str(&*anyString(ty.clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
             bail!("fail")
@@ -1085,7 +1085,7 @@ pub fn toFlatString(mut ty: Arc<NFType>, mut format: BaseModelica::OutputFormat)
 pub fn dimensionsToFlatString(mut ty: Arc<NFType>, mut format: BaseModelica::OutputFormat) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ ARRAY { .. } => stringDelimitList(List::map(var_field!((*ty).dimensions, NFType::ARRAY).clone(), Arc::new({ let __pe_b1 = format.clone(); move |__pe_a0| Dimension::toFlatString(__pe_a0, __pe_b1.clone()) })), (literal!(", ")).clone()),
+        Deref @ ARRAY { .. } => stringDelimitList(List::map(var_field!((*ty).dimensions, NFType::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = format.clone(); move |__pe_a0| Dimension::toFlatString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<ArcStr> + 'static>)), (literal!(", ")).clone()),
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFType.dimensionsToFlatString")); __mm_s.push_str(&*literal!(" got unknown or not array type: ")); __mm_s.push_str(&*anyString(ty.clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
             bail!("fail")
@@ -1099,7 +1099,7 @@ pub fn toFlatDeclarationStream(mut ty: Arc<NFType>, mut format: BaseModelica::Ou
     let mut s: IOStream::IOStream = s;
     let mut name: ArcStr = arcstr::literal!("");
     let mut complexTy: Arc<ComplexType::NFComplexType> = Arc::new(ComplexType::CLASS);
-    let mut path: Arc<Absyn::Path>;
+    let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut constructor: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut destructor: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut f: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
@@ -1230,8 +1230,8 @@ pub fn subscript(mut ty: Arc<NFType>, mut subs: Arc<metamodelica::List<Arc<Subsc
                 dims = __pa1.clone();
                 subbed_dims = (::match_deref::match_deref! { match &(sub.clone()) {
         Deref @ Subscript::INDEX { .. } => subbed_dims.clone(),
-        Deref @ Subscript::SLICE { .. } => cons(Subscript::toDimension(sub.clone())?, subbed_dims.clone()),
-        Deref @ Subscript::WHOLE => cons(dim.clone(), subbed_dims.clone()),
+        Deref @ Subscript::SLICE { .. } => metamodelica::cons(Subscript::toDimension(sub.clone())?, subbed_dims.clone()),
+        Deref @ Subscript::WHOLE => metamodelica::cons(dim.clone(), subbed_dims.clone()),
         Deref @ Subscript::SPLIT_INDEX { .. } => subbed_dims.clone(),
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFType.subscript")); __mm_s.push_str(&*literal!(" got wrong subscript ")); __mm_s.push_str(&*Subscript::toString(sub.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
@@ -1406,7 +1406,7 @@ pub fn lookupRecordFieldType(mut name: ArcStr, mut recordType: Arc<NFType>) -> R
 
 pub fn recordFieldCount(mut recordType: Arc<NFType>) -> i32 {
     let mut fieldCount: i32 = 0;
-    let mut fields: metamodelica::Array<Arc<Record::Field::Field>>;
+    let mut fields: metamodelica::Array<Arc<Record::Field::Field>> = Default::default();
     fieldCount = (::match_deref::match_deref! { match &(recordType.clone()) {
         Deref @ COMPLEX { complexTy: Deref @ ComplexType::RECORD { fields, .. }, .. } => (fields.clone().borrow().len() as i32),
         _ => 0,
@@ -1468,7 +1468,7 @@ pub fn tupleFieldCount(mut tupleType: Arc<NFType>) -> i32 {
 }
 
 pub fn enumName(mut ty: Arc<NFType>) -> Result<Arc<Absyn::Path>> {
-    let mut name: Arc<Absyn::Path>;
+    let mut name: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let __pa0 = ::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ ENUMERATION { typePath: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),

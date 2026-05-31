@@ -791,10 +791,10 @@ pub fn setAttr(mut ty_attr: Arc<metamodelica::List<(ArcStr, Arc<NFBinding>)>>, m
     let mut ty_attr: Arc<metamodelica::List<(ArcStr, Arc<NFBinding>)>> = ty_attr;
     ty_attr = (::match_deref::match_deref! { match &(ty_attr.clone()) {
         Deref @ metamodelica::List::Cons { head: (name, _), tail: rest } if (name.clone() == attr_name.clone()) => {
-            cons((attr_name.clone(), attr_value.clone()), rest.clone())
+            metamodelica::cons((attr_name.clone(), attr_value.clone()), rest.clone())
         },
         Deref @ metamodelica::List::Cons { head: at, tail: rest } => {
-            cons(at.clone(), setAttr(rest.clone(), (attr_name.clone()).clone(), attr_value.clone()))
+            metamodelica::cons(at.clone(), setAttr(rest.clone(), (attr_name.clone()).clone(), attr_value.clone()))
         },
         Deref @ metamodelica::List::Nil => {
             list![(attr_name.clone(), attr_value.clone())]
@@ -929,9 +929,9 @@ pub fn expandEach(mut binding: Arc<NFBinding>, mut node: Arc<InstNode::InstNode>
             node_exp = Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (InstNode::name(node.clone())?).clone(), subscripts: metamodelica::nil() }) });
             args = metamodelica::nil();
             for mut i in (1..=InstNode::dimensionCount(node.clone())).rev() {
-                args = cons(AbsynUtil::makeCall(size_name.clone(), list![node_exp.clone(), Arc::new(Absyn::Exp::INTEGER { value: i.clone() })], metamodelica::nil()), args.clone());
+                args = metamodelica::cons(AbsynUtil::makeCall(size_name.clone(), list![node_exp.clone(), Arc::new(Absyn::Exp::INTEGER { value: i.clone() })], metamodelica::nil()), args.clone());
             }
-            args = cons(var_field!((*binding).bindingExp, NFBinding::RAW_BINDING).clone(), args.clone());
+            args = metamodelica::cons(var_field!((*binding).bindingExp, NFBinding::RAW_BINDING).clone(), args.clone());
             assign_variant_field!(binding => NFBinding::RAW_BINDING; bindingExp = AbsynUtil::makeCall(fill_name.clone(), args.clone(), metamodelica::nil()));
             ()
         },

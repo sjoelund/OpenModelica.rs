@@ -162,7 +162,7 @@ pub mod ConnectionSets {
     pub fn add(mut entry: Entry, mut sets: Sets) -> Result<(Sets, i32)> {
         let mut sets: Sets = sets;
         let mut index: i32 = 0;
-        let mut nodes: metamodelica::Array<i32>;
+        let mut nodes: metamodelica::Array<i32> = Default::default();
         let mut elements: IndexTable = <Arc<UnorderedMap::UnorderedMap<Arc<Connector::NFConnector>, i32>> as ::std::default::Default>::default();
         let mut node_count: i32 = 0;
         let Sets { nodes: __pa0, elements: __pa1, nodeCount: __pa2 } = (sets.clone()) else { bail!("pattern mismatch") };
@@ -180,7 +180,7 @@ pub mod ConnectionSets {
 
     pub fn addList(mut entries: Arc<metamodelica::List<Arc<Connector::NFConnector>>>, mut sets: Sets) -> Result<Sets> {
         let mut sets: Sets = sets;
-        let mut nodes: metamodelica::Array<i32>;
+        let mut nodes: metamodelica::Array<i32> = Default::default();
         let mut elements: IndexTable = <Arc<UnorderedMap::UnorderedMap<Arc<Connector::NFConnector>, i32>> as ::std::default::Default>::default();
         let mut node_count: i32 = 0;
         let mut sz: i32 = 0;
@@ -212,7 +212,7 @@ pub mod ConnectionSets {
 
     pub fn emptySets(mut setCount: i32) -> Sets {
         let mut sets: Sets = <Sets as ::std::default::Default>::default();
-        let mut nodes: metamodelica::Array<i32>;
+        let mut nodes: metamodelica::Array<i32> = Default::default();
         let mut elements: IndexTable = <Arc<UnorderedMap::UnorderedMap<Arc<Connector::NFConnector>, i32>> as ::std::default::Default>::default();
         let mut sz: i32 = 0;
         sz = std::cmp::max(setCount.clone(), 3);
@@ -223,12 +223,12 @@ pub mod ConnectionSets {
     }
 
     pub fn extractSets(mut sets: Sets) -> (metamodelica::Array<Arc<metamodelica::List<Arc<Connector::NFConnector>>>>, Sets) {
-        let mut setsArray: metamodelica::Array<Arc<metamodelica::List<Arc<Connector::NFConnector>>>>;
+        let mut setsArray: metamodelica::Array<Arc<metamodelica::List<Arc<Connector::NFConnector>>>> = Default::default();
         let mut assignedSets: Sets = <Sets as ::std::default::Default>::default();
-        let mut nodes: metamodelica::Array<i32>;
+        let mut nodes: metamodelica::Array<i32> = Default::default();
         let mut set_idx: i32 = 0;
         let mut idx: i32 = 0;
-        let mut entries: metamodelica::Array<(Arc<Connector::NFConnector>, i32)>;
+        let mut entries: metamodelica::Array<(Arc<Connector::NFConnector>, i32)> = Default::default();
         let mut e: Entry = Arc::new(<Connector::NFConnector as ::std::default::Default>::default());
         nodes = sets.nodes.clone();
         for mut i in 1..=sets.nodeCount.clone() {
@@ -251,7 +251,7 @@ pub mod ConnectionSets {
             }
             set_idx = -(set_idx.clone());
             {
-                let __cell2 = cons(e.clone(), setsArray.borrow()[(set_idx.clone()-1) as usize].clone());
+                let __cell2 = metamodelica::cons(e.clone(), setsArray.borrow()[(set_idx.clone()-1) as usize].clone());
                 setsArray.clone().borrow_mut()[(set_idx.clone()-1) as usize] = __cell2;
             }
         }
@@ -334,7 +334,7 @@ pub mod ConnectionSets {
     }
 
     pub fn printSets(mut sets: Sets) -> () {
-        let mut nodes: metamodelica::Array<i32>;
+        let mut nodes: metamodelica::Array<i32> = Default::default();
         let mut entries: Arc<metamodelica::List<(Arc<Connector::NFConnector>, i32)>> = metamodelica::nil();
         let mut e: Entry = Arc::new(<Connector::NFConnector as ::std::default::Default>::default());
         let mut i: i32 = 0;

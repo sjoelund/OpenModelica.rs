@@ -103,9 +103,6 @@ pub enum NFDimension {
     },
     UNKNOWN,
 }
-impl Default for NFDimension {
-    fn default() -> Self { Self::BOOLEAN }
-}
 pub use self::NFDimension::{RAW_DIM,UNTYPED,INTEGER,BOOLEAN,ENUM,EXP,RESIZABLE,UNKNOWN};
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
@@ -524,7 +521,7 @@ pub fn toFlatString(mut dim: Arc<NFDimension>, mut format: BaseModelica::OutputF
 
 pub fn toFlatStringList(mut dims: Arc<metamodelica::List<Arc<NFDimension>>>, mut format: BaseModelica::OutputFormat, mut name: ArcStr) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
-    r#str = (List::toString(dims.clone(), Arc::new({ let __pe_b1 = format.clone(); move |__pe_a0| toFlatString(__pe_a0, __pe_b1.clone()) }), (name.clone()).clone(), (literal!("[")).clone(), (literal!(", ")).clone(), (literal!("]")).clone(), false, 0)?).clone();
+    r#str = (List::toString(dims.clone(), (std::sync::Arc::new({ let __pe_b1 = format.clone(); move |__pe_a0| toFlatString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFDimension>) -> Result<ArcStr> + 'static>), (name.clone()).clone(), (literal!("[")).clone(), (literal!(", ")).clone(), (literal!("]")).clone(), false, 0)?).clone();
     Ok(r#str)
 }
 

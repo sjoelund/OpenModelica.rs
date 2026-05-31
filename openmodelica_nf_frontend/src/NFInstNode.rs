@@ -313,7 +313,7 @@ pub mod InstNode {
 
     pub fn newExtends(mut definition: Arc<SCode::Element>, mut parent: Arc<InstNode>) -> Result<Arc<InstNode>> {
         let mut node: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
-        let mut base_path: Arc<Absyn::Path>;
+        let mut base_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
         let mut name: ArcStr = arcstr::literal!("");
         let mut vis: SCode::Visibility = SCode::Visibility::PROTECTED;
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(definition.clone()) {
@@ -716,7 +716,7 @@ pub mod InstNode {
     }
 
     pub fn enclosingScopePath(mut node: Arc<InstNode>, mut ignoreRedeclare: bool, mut ignoreBaseClass: bool) -> Result<Arc<Absyn::Path>> {
-        let mut path: Arc<Absyn::Path>;
+        let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
         path = AbsynUtil::stringListPath(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut n in (enclosingScopeList(node.clone(), ignoreRedeclare.clone(), ignoreBaseClass.clone())?).into_iter().cloned() {
@@ -732,7 +732,7 @@ pub mod InstNode {
         let mut res: Arc<metamodelica::List<Arc<InstNode>>> = metamodelica::nil();
         let mut scope: Arc<InstNode> = node.clone();
         while !(isTopScope(scope.clone())) {
-            res = cons(scope.clone(), res.clone());
+            res = metamodelica::cons(scope.clone(), res.clone());
             scope = enclosingScope(scope.clone(), ignoreRedeclare.clone(), ignoreBaseClass.clone())?;
             if isEmpty(scope.clone()) {
                 break;
@@ -1001,7 +1001,7 @@ pub mod InstNode {
     }
 
     pub fn definition(mut node: Arc<InstNode>) -> Result<Arc<SCode::Element>> {
-        let mut definition: Arc<SCode::Element>;
+        let mut definition: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
         definition = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => var_field!((*node).definition, InstNode::CLASS_NODE).clone(),
         Deref @ COMPONENT_NODE { definition: Some(definition), .. } => definition.clone(),
@@ -1017,7 +1017,7 @@ pub mod InstNode {
     // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
     // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
     pub fn classDefinition(mut node: Arc<InstNode>) -> Result<Arc<SCode::Element>> {
-        let mut definition: Arc<SCode::Element>;
+        let mut definition: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
         definition = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => var_field!((*node).definition, InstNode::CLASS_NODE).clone(),
         Deref @ COMPONENT_NODE { .. } => classDefinition(Component::classInstance(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone())))?,
@@ -1181,10 +1181,10 @@ pub mod InstNode {
             accumScopes.clone()
         },
         Deref @ COMPONENT_NODE { nodeType: Deref @ InstNodeType::REDECLARED_COMP { parent }, .. } => {
-            scopeList(parent.clone(), includeRoot.clone(), cons(node.clone(), accumScopes.clone()))?
+            scopeList(parent.clone(), includeRoot.clone(), metamodelica::cons(node.clone(), accumScopes.clone()))?
         },
         Deref @ COMPONENT_NODE { .. } => {
-            scopeList(var_field!((*node).parent, InstNode::COMPONENT_NODE).clone(), includeRoot.clone(), cons(node.clone(), accumScopes.clone()))?
+            scopeList(var_field!((*node).parent, InstNode::COMPONENT_NODE).clone(), includeRoot.clone(), metamodelica::cons(node.clone(), accumScopes.clone()))?
         },
         Deref @ IMPLICIT_SCOPE { .. } => {
             scopeList(var_field!((*node).parentScope, InstNode::IMPLICIT_SCOPE).clone(), includeRoot.clone(), accumScopes.clone())?
@@ -1202,13 +1202,13 @@ pub mod InstNode {
     pub fn scopeListClass(mut clsNode: Arc<InstNode>, mut ty: Arc<InstNodeType>, mut includeRoot: bool, mut accumScopes: Arc<metamodelica::List<Arc<InstNode>>>) -> Result<Arc<metamodelica::List<Arc<InstNode>>>> {
         let mut scopes: Arc<metamodelica::List<Arc<InstNode>>> = metamodelica::nil();
         scopes = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ InstNodeType::NORMAL_CLASS => scopeList(parent(clsNode.clone()), includeRoot.clone(), cons(clsNode.clone(), accumScopes.clone()))?,
+        Deref @ InstNodeType::NORMAL_CLASS => scopeList(parent(clsNode.clone()), includeRoot.clone(), metamodelica::cons(clsNode.clone(), accumScopes.clone()))?,
         Deref @ InstNodeType::BASE_CLASS { .. } => scopeList(var_field!((*ty).parent, InstNodeType::BASE_CLASS).clone(), includeRoot.clone(), accumScopes.clone())?,
         Deref @ InstNodeType::DERIVED_CLASS { .. } => scopeListClass(clsNode.clone(), var_field!((*ty).ty, InstNodeType::DERIVED_CLASS).clone(), includeRoot.clone(), accumScopes.clone())?,
-        Deref @ InstNodeType::BUILTIN_CLASS => cons(clsNode.clone(), accumScopes.clone()),
+        Deref @ InstNodeType::BUILTIN_CLASS => metamodelica::cons(clsNode.clone(), accumScopes.clone()),
         Deref @ InstNodeType::TOP_SCOPE { .. } => accumScopes.clone(),
-        Deref @ InstNodeType::ROOT_CLASS { .. } => if (includeRoot.clone()) {scopeList(parent(clsNode.clone()), includeRoot.clone(), cons(clsNode.clone(), accumScopes.clone()))?} else {accumScopes.clone()},
-        Deref @ InstNodeType::REDECLARED_CLASS { .. } => scopeList(var_field!((*ty).parent, InstNodeType::REDECLARED_CLASS).clone(), includeRoot.clone(), cons(getDerivedNode(clsNode.clone(), true), accumScopes.clone()))?,
+        Deref @ InstNodeType::ROOT_CLASS { .. } => if (includeRoot.clone()) {scopeList(parent(clsNode.clone()), includeRoot.clone(), metamodelica::cons(clsNode.clone(), accumScopes.clone()))?} else {accumScopes.clone()},
+        Deref @ InstNodeType::REDECLARED_CLASS { .. } => scopeList(var_field!((*ty).parent, InstNodeType::REDECLARED_CLASS).clone(), includeRoot.clone(), metamodelica::cons(getDerivedNode(clsNode.clone(), true), accumScopes.clone()))?,
         Deref @ InstNodeType::IMPLICIT_SCOPE => scopeList(parent(clsNode.clone()), includeRoot.clone(), accumScopes.clone())?,
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.scopeListClass")); __mm_s.push_str(&*literal!(" got unknown node type")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
@@ -1268,7 +1268,7 @@ pub mod InstNode {
     // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
     // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
     pub fn scopePath(mut node: Arc<InstNode>, mut scopeType: ScopeType, mut ignoreBaseClass: bool) -> Result<Arc<Absyn::Path>> {
-        let mut path: Arc<Absyn::Path>;
+        let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
         path = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { nodeType: it, .. } => {
             (::match_deref::match_deref! { match &(it.clone()) {
@@ -1294,7 +1294,7 @@ pub mod InstNode {
     // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
     // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
     pub fn scopePath2(mut node: Arc<InstNode>, mut scopeType: ScopeType, mut accumPath: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
-        let mut path: Arc<Absyn::Path>;
+        let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
         path = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => scopePathClass(node.clone(), var_field!((*node).nodeType, InstNode::CLASS_NODE).clone(), scopeType.clone(), accumPath.clone())?,
         Deref @ COMPONENT_NODE { .. } => scopePath2(var_field!((*node).parent, InstNode::COMPONENT_NODE).clone(), scopeType.clone(), Arc::new(Absyn::Path::QUALIFIED { name: (var_field!((*node).name, InstNode::COMPONENT_NODE).clone()).clone(), path: accumPath.clone() }))?,
@@ -1307,7 +1307,7 @@ pub mod InstNode {
     // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
     // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
     pub fn scopePathClass(mut node: Arc<InstNode>, mut ty: Arc<InstNodeType>, mut scopeType: ScopeType, mut accumPath: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
-        let mut path: Arc<Absyn::Path>;
+        let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
         path = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ InstNodeType::NORMAL_CLASS => scopePath2(classParent(node.clone())?, scopeType.clone(), Arc::new(Absyn::Path::QUALIFIED { name: (className(node.clone())?).clone(), path: accumPath.clone() }))?,
         Deref @ InstNodeType::BASE_CLASS { .. } => scopePath2(var_field!((*ty).parent, InstNodeType::BASE_CLASS).clone(), scopeType.clone(), accumPath.clone())?,
@@ -1576,7 +1576,7 @@ pub mod InstNode {
     pub fn addIterator(mut iterator: Arc<InstNode>, mut scope: Arc<InstNode>) -> Result<Arc<InstNode>> {
         let mut scope: Arc<InstNode> = scope;
         scope = (::match_deref::match_deref! { match &(scope.clone()) {
-        Deref @ IMPLICIT_SCOPE { .. } => Arc::new(InstNode::IMPLICIT_SCOPE { parentScope: scope.clone(), locals: cons(iterator.clone(), var_field!((*scope).locals, InstNode::IMPLICIT_SCOPE).clone()) }),
+        Deref @ IMPLICIT_SCOPE { .. } => Arc::new(InstNode::IMPLICIT_SCOPE { parentScope: scope.clone(), locals: metamodelica::cons(iterator.clone(), var_field!((*scope).locals, InstNode::IMPLICIT_SCOPE).clone()) }),
         _ => bail!("match: no arm matched"),
     } });
         Ok(scope)
@@ -1740,7 +1740,7 @@ pub mod InstNode {
 
     pub fn isReplaceable(mut node: Arc<InstNode>) -> Result<bool> {
         let mut repl: bool = false;
-        let mut elem: Arc<SCode::Element>;
+        let mut elem: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
         repl = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => SCodeUtil::isElementReplaceable(var_field!((*node).definition, InstNode::CLASS_NODE).clone())?,
         Deref @ COMPONENT_NODE { definition: Some(elem), .. } => SCodeUtil::isElementReplaceable(elem.clone())?,
@@ -2023,7 +2023,7 @@ pub mod InstNode {
         let mut cmts: Arc<metamodelica::List<Arc<SCode::Comment>>> = metamodelica::nil();
         cmts = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { definition: Deref @ SCode::Element::CLASS { cmt, .. }, .. } => {
-            cons(cmt.clone(), Class::getDerivedComments(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()), accumCmts.clone()))
+            metamodelica::cons(cmt.clone(), Class::getDerivedComments(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()), accumCmts.clone()))
         },
         _ => {
             accumCmts.clone()
@@ -2202,7 +2202,7 @@ pub mod InstNode {
         let mut isDiscrete: bool = false;
         let mut base_node: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
         let mut cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
-        let mut exts: metamodelica::Array<Arc<InstNode>>;
+        let mut exts: metamodelica::Array<Arc<InstNode>> = Default::default();
         base_node = Class::lastBaseClass(clsNode.clone());
         cls = getClass(base_node.clone())?;
         isDiscrete = (::match_deref::match_deref! { match &(cls.clone()) {

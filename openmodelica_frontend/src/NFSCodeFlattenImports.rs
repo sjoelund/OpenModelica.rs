@@ -73,7 +73,7 @@ pub fn flattenProgram(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>
 }
 
 pub fn flattenClass(mut inClass: Arc<SCode::Element>, mut inEnv: Env) -> Result<(Arc<SCode::Element>, Env)> {
-    let mut outClass: Arc<SCode::Element>;
+    let mut outClass: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     let mut outEnv: Env = metamodelica::nil();
     (outClass, outEnv) = 'mc: {
         let __mc_input = inClass.clone();
@@ -83,7 +83,7 @@ pub fn flattenClass(mut inClass: Arc<SCode::Element>, mut inEnv: Env) -> Result<
                     let mut item: Item;
                     let mut env: Env = metamodelica::nil();
                     let mut cls_env: Arc<NFSCodeEnv::Frame> = Arc::new(<NFSCodeEnv::Frame as ::std::default::Default>::default());
-                    let mut cls: Arc<SCode::Element>;
+                    let mut cls: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
                     let mut cls_ty: NFSCodeEnv::ClassType = NFSCodeEnv::ClassType::BASIC_TYPE;
                     let mut cdef = (*cdef).clone();
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(NFSCodeLookup::lookupInClass((name.clone()).clone(), inEnv.clone())?) {
@@ -198,12 +198,12 @@ fn isNotImport(mut inElement: Arc<SCode::Element>) -> bool {
 }
 
 fn flattenElement(mut inElement: Arc<SCode::Element>, mut inEnv: Env) -> Result<(Arc<SCode::Element>, Env)> {
-    let mut outElement: Arc<SCode::Element>;
+    let mut outElement: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     let mut outEnv: Env = metamodelica::nil();
     (outElement, outEnv) = (::match_deref::match_deref! { match &(inElement.clone()) {
         Deref @ SCode::Element::COMPONENT { name, .. } => {
             let mut env: Env = metamodelica::nil();
-            let mut elem: Arc<SCode::Element>;
+            let mut elem: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
             let mut item: Item;
             elem = flattenComponent(inElement.clone(), inEnv.clone())?;
             item = NFSCodeEnv::newVarItem(elem.clone(), true);
@@ -212,7 +212,7 @@ fn flattenElement(mut inElement: Arc<SCode::Element>, mut inEnv: Env) -> Result<
         },
         Deref @ SCode::Element::CLASS { .. } => {
             let mut env: Env = metamodelica::nil();
-            let mut elem: Arc<SCode::Element>;
+            let mut elem: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
             (elem, env) = flattenClass(inElement.clone(), inEnv.clone())?;
             (elem.clone(), env.clone())
         },
@@ -228,7 +228,7 @@ fn flattenElement(mut inElement: Arc<SCode::Element>, mut inEnv: Env) -> Result<
 }
 
 fn flattenComponent(mut inComponent: Arc<SCode::Element>, mut inEnv: Env) -> Result<Arc<SCode::Element>> {
-    let mut outComponent: Arc<SCode::Element>;
+    let mut outComponent: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     let mut name: ArcStr = arcstr::literal!("");
     let mut prefixes: Arc<SCode::Prefixes> = Arc::new(<SCode::Prefixes as ::std::default::Default>::default());
     let mut attr: SCode::Attributes = <SCode::Attributes as ::std::default::Default>::default();
@@ -299,8 +299,8 @@ fn flattenTypeSpec(mut inTypeSpec: Arc<Absyn::TypeSpec>, mut inEnv: Env, mut inI
 }
 
 fn flattenExtends(mut inExtends: Arc<SCode::Element>, mut inEnv: Env) -> Result<Arc<SCode::Element>> {
-    let mut outExtends: Arc<SCode::Element>;
-    let mut path: Arc<Absyn::Path>;
+    let mut outExtends: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
+    let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
     let mut ann: Option<Arc<SCode::Annotation>> = None;
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
@@ -323,7 +323,7 @@ fn flattenExtends(mut inExtends: Arc<SCode::Element>, mut inEnv: Env) -> Result<
 }
 
 fn flattenEquation(mut inEquation: Arc<SCode::Equation>, mut inEnv: Env) -> Arc<SCode::Equation> {
-    let mut outEquation: Arc<SCode::Equation>;
+    let mut outEquation: Arc<SCode::Equation> = Arc::new(<SCode::Equation as ::std::default::Default>::default());
     (outEquation, _) = SCodeUtil::mapFoldEquations(inEquation.clone(), (std::sync::Arc::new(flattenEquationTraverser) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>) -> Result<(Arc<SCode::Equation>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>)> + 'static>), inEnv.clone());
     outEquation
 }
@@ -357,7 +357,7 @@ fn flattenEquationTraverser(mut eq: Arc<SCode::Equation>, mut env: Env) -> Resul
 
 fn traverseExp(mut inExp: Arc<Absyn::Exp>, mut inTuple: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo)) -> Result<(Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo))> {
     let mut outExp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-    let mut outTuple: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo);
+    let mut outTuple: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo) = (metamodelica::nil(), <SourceInfo as ::std::default::Default>::default());
     (outExp, outTuple) = AbsynUtil::traverseExpBidir(inExp.clone(), (std::sync::Arc::new(flattenExpTraverserEnter) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo)) -> Result<(Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo))> + 'static>), (std::sync::Arc::new(fnptr!(flattenExpTraverserExit, Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo)) -> Result<(Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo))> + 'static>), inTuple.clone())?;
     Ok((outExp, outTuple))
 }
@@ -386,7 +386,7 @@ fn flattenAlgorithm(mut inAlgorithm: Arc<SCode::AlgorithmSection>, mut inEnv: En
 }
 
 fn flattenStatement(mut inStatement: Arc<SCode::Statement>, mut inEnv: Env) -> Arc<SCode::Statement> {
-    let mut outStatement: Arc<SCode::Statement>;
+    let mut outStatement: Arc<SCode::Statement> = Arc::new(<SCode::Statement as ::std::default::Default>::default());
     (outStatement, _) = SCodeUtil::mapFoldStatements(inStatement.clone(), (std::sync::Arc::new(flattenStatementTraverser) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>) -> Result<(Arc<SCode::Statement>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>)> + 'static>), inEnv.clone());
     outStatement
 }
@@ -469,7 +469,7 @@ fn flattenSubMod(mut inSubMod: Arc<SCode::SubMod>, mut inEnv: Env, mut inInfo: S
 }
 
 fn flattenRedeclare(mut inElement: Arc<SCode::Element>, mut inEnv: Env) -> Result<Arc<SCode::Element>> {
-    let mut outElement: Arc<SCode::Element>;
+    let mut outElement: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     outElement = (::match_deref::match_deref! { match &(inElement.clone()) {
         Deref @ SCode::Element::CLASS { name, prefixes, encapsulatedPrefix: ep, partialPrefix: pp, restriction: res, classDef: cdef @ Deref @ SCode::ClassDef::DERIVED { .. }, cmt, info } => {
             let mut cdef2: Arc<SCode::ClassDef>;
@@ -480,7 +480,7 @@ fn flattenRedeclare(mut inElement: Arc<SCode::Element>, mut inEnv: Env) -> Resul
             inElement.clone()
         },
         Deref @ SCode::Element::COMPONENT { .. } => {
-            let mut element: Arc<SCode::Element>;
+            let mut element: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
             element = flattenComponent(inElement.clone(), inEnv.clone())?;
             element.clone()
         },
@@ -533,7 +533,7 @@ fn flattenOptExp(mut inExp: Option<Arc<Absyn::Exp>>, mut inEnv: Env, mut inInfo:
 
 fn flattenExpTraverserEnter(mut inExp: Arc<Absyn::Exp>, mut inTuple: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo)) -> Result<(Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo))> {
     let mut outExp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-    let mut outTuple: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo);
+    let mut outTuple: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo) = (metamodelica::nil(), <SourceInfo as ::std::default::Default>::default());
     (outExp, outTuple) = (::match_deref::match_deref! { match &((inExp.clone(), inTuple.clone())) {
         (Deref @ Absyn::Exp::CREF { componentRef: cref }, tup @ (env, info)) => {
             let mut cref = (*cref).clone();
@@ -577,7 +577,7 @@ fn flattenExpTraverserEnter(mut inExp: Arc<Absyn::Exp>, mut inTuple: (Arc<metamo
 
 fn flattenExpTraverserExit(mut inExp: Arc<Absyn::Exp>, mut inTuple: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo)) -> (Arc<Absyn::Exp>, (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo)) {
     let mut outExp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-    let mut outTuple: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo);
+    let mut outTuple: (Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, SourceInfo) = (metamodelica::nil(), <SourceInfo as ::std::default::Default>::default());
     (outExp, outTuple) = (::match_deref::match_deref! { match &((inExp.clone(), inTuple.clone())) {
         (Deref @ Absyn::Exp::CALL { functionArgs: Deref @ Absyn::FunctionArgs::FOR_ITER_FARG { .. }, .. }, (Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Frame { frameType: NFSCodeEnv::FrameType::IMPLICIT_SCOPE { .. }, .. }, tail: env }, info)) => {
             (inExp.clone(), (env.clone(), info.clone()))

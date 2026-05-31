@@ -93,7 +93,7 @@ pub fn isNotAssertStatement(mut stmt: Arc<DAE::Statement>) -> bool {
 }
 
 pub fn makeAssignmentNoTypeCheck(mut ty: Arc<DAE::Type>, mut lhs: Arc<DAE::Exp>, mut rhs: Arc<DAE::Exp>, mut source: Arc<DAE::ElementSource>) -> Arc<DAE::Statement> {
-    let mut outStatement: Arc<DAE::Statement>;
+    let mut outStatement: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
     outStatement = (::match_deref::match_deref! { match &(lhs.clone()) {
         Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD { .. }, .. } => Arc::new(DAE::Statement::STMT_NORETCALL { exp: rhs.clone(), source: source.clone() }),
         Deref @ DAE::Exp::PATTERN { pattern: Deref @ DAE::Pattern::PAT_WILD { .. } } => Arc::new(DAE::Statement::STMT_NORETCALL { exp: rhs.clone(), source: source.clone() }),
@@ -104,7 +104,7 @@ pub fn makeAssignmentNoTypeCheck(mut ty: Arc<DAE::Type>, mut lhs: Arc<DAE::Exp>,
 }
 
 pub fn makeArrayAssignmentNoTypeCheck(mut ty: Arc<DAE::Type>, mut lhs: Arc<DAE::Exp>, mut rhs: Arc<DAE::Exp>, mut source: Arc<DAE::ElementSource>) -> Arc<DAE::Statement> {
-    let mut outStatement: Arc<DAE::Statement>;
+    let mut outStatement: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
     outStatement = (::match_deref::match_deref! { match &(lhs.clone()) {
         Deref @ DAE::Exp::CREF { componentRef: Deref @ DAE::ComponentRef::WILD { .. }, .. } => Arc::new(DAE::Statement::STMT_NORETCALL { exp: rhs.clone(), source: source.clone() }),
         _ => Arc::new(DAE::Statement::STMT_ASSIGN_ARR { type_: ty.clone(), lhs: lhs.clone(), exp: rhs.clone(), source: source.clone() }),
@@ -114,7 +114,7 @@ pub fn makeArrayAssignmentNoTypeCheck(mut ty: Arc<DAE::Type>, mut lhs: Arc<DAE::
 }
 
 pub fn makeTupleAssignmentNoTypeCheck(mut ty: Arc<DAE::Type>, mut lhs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut rhs: Arc<DAE::Exp>, mut source: Arc<DAE::ElementSource>) -> Result<Arc<DAE::Statement>> {
-    let mut outStatement: Arc<DAE::Statement>;
+    let mut outStatement: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
     let mut b1: bool = false;
     let mut b2: bool = false;
     b1 = List::all(lhs.clone(), (std::sync::Arc::new(fnptr!(Expression::isWild, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>));
@@ -124,7 +124,7 @@ pub fn makeTupleAssignmentNoTypeCheck(mut ty: Arc<DAE::Type>, mut lhs: Arc<metam
 }
 
 fn makeTupleAssignmentNoTypeCheck2(mut allWild: bool, mut singleAssign: bool, mut ty: Arc<DAE::Type>, mut lhs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut rhs: Arc<DAE::Exp>, mut source: Arc<DAE::ElementSource>) -> Arc<DAE::Statement> {
-    let mut outStatement: Arc<DAE::Statement>;
+    let mut outStatement: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
     outStatement = (::match_deref::match_deref! { match &((allWild.clone(), singleAssign.clone(), ty.clone(), lhs.clone())) {
         (true, _, _, _) => {
             Arc::new(DAE::Statement::STMT_NORETCALL { exp: rhs.clone(), source: source.clone() })
@@ -144,7 +144,7 @@ fn makeTupleAssignmentNoTypeCheck2(mut allWild: bool, mut singleAssign: bool, mu
 }
 
 pub fn makeAssignment(mut inExp1: Arc<DAE::Exp>, mut inProperties2: DAE::Properties, mut inExp3: Arc<DAE::Exp>, mut inProperties4: DAE::Properties, mut inAttributes: Arc<DAE::Attributes>, mut initial_: SCode::Initial, mut source: Arc<DAE::ElementSource>) -> Result<Arc<DAE::Statement>> {
-    let mut outStatement: Arc<DAE::Statement>;
+    let mut outStatement: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
     outStatement = 'mc: {
         let __mc_input = (inExp1.clone(), inProperties2.clone(), inExp3.clone(), inProperties4.clone(), inAttributes.clone(), initial_.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -158,7 +158,7 @@ pub fn makeAssignment(mut inExp1: Arc<DAE::Exp>, mut inProperties2: DAE::Propert
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (lhs @ Deref @ DAE::Exp::CREF { componentRef: cr, .. }, lhprop, rhs, rhprop, _, SCode::Initial::NON_INITIAL { .. }) => {
-                    let mut outStatement: Arc<DAE::Statement>;
+                    let mut outStatement: Arc<DAE::Statement> = outStatement.clone();
                     let DAE::C_PARAM { .. } = (Types::propAnyConst(lhprop.clone())?) else { bail!("pattern mismatch") };
                     let true = (ComponentReference::isRecord(cr.clone())) else { bail!("pattern mismatch") };
                     outStatement = makeAssignment2(lhs.clone(), lhprop.clone(), rhs.clone(), rhprop.clone(), source.clone())?;
@@ -195,7 +195,7 @@ pub fn makeAssignment(mut inExp1: Arc<DAE::Exp>, mut inProperties2: DAE::Propert
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (lhs, lhprop, rhs, rhprop, _, SCode::Initial::INITIAL { .. }) => {
-                    let mut outStatement: Arc<DAE::Statement>;
+                    let mut outStatement: Arc<DAE::Statement> = outStatement.clone();
                     let DAE::C_PARAM { .. } = (Types::propAnyConst(lhprop.clone())?) else { bail!("pattern mismatch") };
                     outStatement = makeAssignment2(lhs.clone(), lhprop.clone(), rhs.clone(), rhprop.clone(), source.clone())?;
                     Ok(outStatement.clone())
@@ -206,7 +206,7 @@ pub fn makeAssignment(mut inExp1: Arc<DAE::Exp>, mut inProperties2: DAE::Propert
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (lhs, lhprop, rhs, rhprop, Deref @ DAE::Attributes { .. }, _) => {
-                    let mut outStatement: Arc<DAE::Statement>;
+                    let mut outStatement: Arc<DAE::Statement> = outStatement.clone();
                     let DAE::C_VAR { .. } = (Types::propAnyConst(lhprop.clone())?) else { bail!("pattern mismatch") };
                     outStatement = makeAssignment2(lhs.clone(), lhprop.clone(), rhs.clone(), rhprop.clone(), source.clone())?;
                     Ok(outStatement.clone())
@@ -259,11 +259,11 @@ pub fn makeAssignment(mut inExp1: Arc<DAE::Exp>, mut inProperties2: DAE::Propert
 }
 
 fn makeAssignment2(mut lhs: Arc<DAE::Exp>, mut lhprop: DAE::Properties, mut rhs: Arc<DAE::Exp>, mut rhprop: DAE::Properties, mut source: Arc<DAE::ElementSource>) -> Result<Arc<DAE::Statement>> {
-    let mut outStatement: Arc<DAE::Statement>;
+    let mut outStatement: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
     outStatement = (::match_deref::match_deref! { match &(lhs.clone()) {
         Deref @ DAE::Exp::CREF { .. } if (!(Types::isPropArray(lhprop.clone())?)) => {
-            let mut rhs_1: Arc<DAE::Exp>;
-            let mut e1: Arc<DAE::Exp>;
+            let mut rhs_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut t: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             (rhs_1, _) = Types::matchProp(rhs.clone(), rhprop.clone(), lhprop.clone(), true)?;
             t = getPropExpType(lhprop.clone())?;
@@ -288,7 +288,7 @@ fn makeAssignment2(mut lhs: Arc<DAE::Exp>, mut lhprop: DAE::Properties, mut rhs:
             Arc::new(DAE::Statement::STMT_ASSIGN { type_: t.clone(), exp1: lhs.clone(), exp: rhs_1.clone(), source: source.clone() })
         },
         Deref @ DAE::Exp::CREF { .. } => {
-            let mut rhs_1: Arc<DAE::Exp>;
+            let mut rhs_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut t: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             (rhs_1, _) = Types::matchProp(rhs.clone(), rhprop.clone(), lhprop.clone(), false)?;
@@ -297,7 +297,7 @@ fn makeAssignment2(mut lhs: Arc<DAE::Exp>, mut lhprop: DAE::Properties, mut rhs:
             Arc::new(DAE::Statement::STMT_ASSIGN_ARR { type_: t.clone(), lhs: lhs.clone(), exp: rhs_1.clone(), source: source.clone() })
         },
         e3 @ Deref @ DAE::Exp::ASUB { exp: _, sub: _ } => {
-            let mut rhs_1: Arc<DAE::Exp>;
+            let mut rhs_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut t: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             (rhs_1, _) = Types::matchProp(rhs.clone(), rhprop.clone(), lhprop.clone(), true)?;
             t = getPropExpType(lhprop.clone())?;
@@ -309,9 +309,9 @@ fn makeAssignment2(mut lhs: Arc<DAE::Exp>, mut lhprop: DAE::Properties, mut rhs:
 }
 
 pub fn makeSimpleAssignment(mut inTpl: (Arc<DAE::Exp>, Arc<DAE::Exp>), mut source: Arc<DAE::ElementSource>) -> Result<Arc<DAE::Statement>> {
-    let mut outStmt: Arc<DAE::Statement>;
-    let mut e1: Arc<DAE::Exp>;
-    let mut e2: Arc<DAE::Exp>;
+    let mut outStmt: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
+    let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut tp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let (__pa1, __pa0, __pa2) = ::match_deref::match_deref! { match &(inTpl.clone()) {
         (__pa1 @ Deref @ DAE::Exp::CREF { ty: __pa0, .. }, __pa2) => (__pa1.clone(), __pa0.clone(), __pa2.clone()),
@@ -336,11 +336,11 @@ pub fn makeAssignmentsList(mut lhsExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, 
             makeAssignmentsList(rest_lhs.clone(), rest_lhs_prop.clone(), rest_rhs.clone(), rest_rhs_prop.clone(), attributes.clone(), initial_.clone(), source.clone())?
         },
         (Deref @ metamodelica::List::Cons { head: lhs, tail: rest_lhs }, Deref @ metamodelica::List::Cons { head: lhs_prop, tail: rest_lhs_prop }, Deref @ metamodelica::List::Cons { head: rhs, tail: rest_rhs }, Deref @ metamodelica::List::Cons { head: rhs_prop, tail: rest_rhs_prop }) => {
-            let mut ass: Arc<DAE::Statement>;
+            let mut ass: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
             let mut rest_ass: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
             ass = makeAssignment(lhs.clone(), lhs_prop.clone(), rhs.clone(), rhs_prop.clone(), attributes.clone(), initial_.clone(), source.clone())?;
             rest_ass = makeAssignmentsList(rest_lhs.clone(), rest_lhs_prop.clone(), rest_rhs.clone(), rest_rhs_prop.clone(), attributes.clone(), initial_.clone(), source.clone())?;
-            cons(ass.clone(), rest_ass.clone())
+            metamodelica::cons(ass.clone(), rest_ass.clone())
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -383,7 +383,7 @@ pub fn checkLHSWritable(mut lhs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut pro
 }
 
 pub fn makeTupleAssignment(mut inExpExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inTypesPropertiesLst: Arc<metamodelica::List<DAE::Properties>>, mut inExp: Arc<DAE::Exp>, mut inProperties: DAE::Properties, mut initial_: SCode::Initial, mut source: Arc<DAE::ElementSource>) -> Result<Arc<DAE::Statement>> {
-    let mut outStatement: Arc<DAE::Statement>;
+    let mut outStatement: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
     outStatement = 'mc: {
         let __mc_input = (inExpExpLst.clone(), inTypesPropertiesLst.clone(), inExp.clone(), inProperties.clone(), initial_.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -600,7 +600,7 @@ pub fn optimizeIf(mut icond: Arc<DAE::Exp>, mut istmts: Arc<metamodelica::List<A
             (ostmts.clone(), true)
         },
         _ => {
-            (cons(Arc::new(DAE::Statement::STMT_IF { exp: icond.clone(), statementLst: istmts.clone(), else_: iels.clone(), source: isource.clone() }), metamodelica::nil()), false)
+            (metamodelica::cons(Arc::new(DAE::Statement::STMT_IF { exp: icond.clone(), statementLst: istmts.clone(), else_: iels.clone(), source: isource.clone() }), metamodelica::nil()), false)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -689,7 +689,7 @@ fn makeElse(mut inTuple: Arc<metamodelica::List<(Arc<DAE::Exp>, DAE::Properties,
 }
 
 pub fn makeFor(mut inIdent: ArcStr, mut inExp: Arc<DAE::Exp>, mut inProperties: DAE::Properties, mut inStatementLst: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut source: Arc<DAE::ElementSource>) -> Result<Arc<DAE::Statement>> {
-    let mut outStatement: Arc<DAE::Statement>;
+    let mut outStatement: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
     outStatement = 'mc: {
         let __mc_input = (inIdent.clone(), inExp.clone(), inProperties.clone(), inStatementLst.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -741,7 +741,7 @@ pub fn makeFor(mut inIdent: ArcStr, mut inExp: Arc<DAE::Exp>, mut inProperties: 
 }
 
 pub fn makeParFor(mut inIdent: ArcStr, mut inExp: Arc<DAE::Exp>, mut inProperties: DAE::Properties, mut inStatementLst: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut inLoopPrlVars: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, SourceInfo)>>, mut source: Arc<DAE::ElementSource>) -> Result<Arc<DAE::Statement>> {
-    let mut outStatement: Arc<DAE::Statement>;
+    let mut outStatement: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
     outStatement = 'mc: {
         let __mc_input = (inIdent.clone(), inExp.clone(), inProperties.clone(), inStatementLst.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -773,7 +773,7 @@ pub fn makeParFor(mut inIdent: ArcStr, mut inExp: Arc<DAE::Exp>, mut inPropertie
 }
 
 pub fn makeWhile(mut inExp: Arc<DAE::Exp>, mut inProperties: DAE::Properties, mut inStatementLst: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut source: Arc<DAE::ElementSource>) -> Result<Arc<DAE::Statement>> {
-    let mut outStatement: Arc<DAE::Statement>;
+    let mut outStatement: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
     outStatement = 'mc: {
         let __mc_input = (inExp.clone(), inProperties.clone(), inStatementLst.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -803,7 +803,7 @@ pub fn makeWhile(mut inExp: Arc<DAE::Exp>, mut inProperties: DAE::Properties, mu
 }
 
 pub fn makeWhenA(mut inExp: Arc<DAE::Exp>, mut inProperties: DAE::Properties, mut inStatementLst: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut elseWhenStmt: Option<Arc<DAE::Statement>>, mut source: Arc<DAE::ElementSource>) -> Result<Arc<DAE::Statement>> {
-    let mut outStatement: Arc<DAE::Statement>;
+    let mut outStatement: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
     outStatement = 'mc: {
         let __mc_input = (inExp.clone(), inProperties.clone(), inStatementLst.clone(), elseWhenStmt.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -847,8 +847,8 @@ pub fn makeReinit(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut inPr
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (var @ Deref @ DAE::Exp::CREF { .. }, val, DAE::Properties::PROP { type_: tp1, constFlag: _ }, DAE::Properties::PROP { type_: tp2, constFlag: _ }) => {
-                    let mut var_1: Arc<DAE::Exp>;
-                    let mut val_1: Arc<DAE::Exp>;
+                    let mut var_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut val_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     (val_1, _) = Types::matchType(val.clone(), tp2.clone(), DAE::T_REAL_DEFAULT().clone(), true)?;
                     (var_1, _) = Types::matchType(var.clone(), tp1.clone(), DAE::T_REAL_DEFAULT().clone(), true)?;
                     Ok(list![Arc::new(DAE::Statement::STMT_REINIT { var: var_1.clone(), value: val_1.clone(), source: source.clone() })])

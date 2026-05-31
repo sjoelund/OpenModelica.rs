@@ -87,7 +87,7 @@ pub fn emptyHashTableSized(mut size: i32) -> HashTable {
 
 pub fn printExpSourceTplStr(mut v: Value) -> Result<ArcStr> {
     let mut res: ArcStr = arcstr::literal!("");
-    let mut e: Arc<DAE::Exp>;
+    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     (e, _) = v.clone();
     res = (ExpressionBasics::printExpStr(e.clone())?).clone();
     Ok(res)

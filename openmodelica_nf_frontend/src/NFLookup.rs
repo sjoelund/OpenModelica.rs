@@ -423,7 +423,7 @@ pub fn lookupSimpleName(mut name: ArcStr, mut scope: Arc<InstNode::InstNode>, mu
 }
 
 pub fn lookupSimpleNameRootPath(mut name: ArcStr, mut scope: Arc<InstNode::InstNode>, mut context: i32) -> Result<Arc<Absyn::Path>> {
-    let mut path: Arc<Absyn::Path>;
+    let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut cur_scope: Arc<InstNode::InstNode> = scope.clone();
     let mut in_root_class: bool = true;
@@ -609,12 +609,12 @@ pub fn lookupLocalNames(mut name: Arc<Absyn::Path>, mut scope: Arc<InstNode::Ins
         Deref @ Absyn::Path::IDENT { .. } => {
             (node, _) = lookupLocalSimpleName((var_field!((*name).name, Absyn::Path::IDENT).clone()).clone(), node.clone())?;
             state = LookupState::next(node.clone(), state.clone(), context.clone(), true)?;
-            (cons(node.clone(), nodes.clone()), state.clone())
+            (metamodelica::cons(node.clone(), nodes.clone()), state.clone())
         },
         Deref @ Absyn::Path::QUALIFIED { .. } => {
             (node, _) = lookupLocalSimpleName((var_field!((*name).name, Absyn::Path::QUALIFIED).clone()).clone(), node.clone())?;
             state = LookupState::next(node.clone(), state.clone(), context.clone(), true)?;
-            lookupLocalNames(var_field!((*name).path, Absyn::Path::QUALIFIED).clone(), node.clone(), cons(node.clone(), nodes.clone()), state.clone(), context.clone(), false)?
+            lookupLocalNames(var_field!((*name).path, Absyn::Path::QUALIFIED).clone(), node.clone(), metamodelica::cons(node.clone(), nodes.clone()), state.clone(), context.clone(), false)?
         },
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFLookup.lookupLocalNames")); __mm_s.push_str(&*literal!(" was called with an invalid path.")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
@@ -884,7 +884,7 @@ pub fn makeInnerNode(mut node: Arc<InstNode::InstNode>) -> Result<Arc<InstNode::
             node.clone()
         },
         Deref @ InstNode::COMPONENT_NODE { .. } => {
-            let mut def: Arc<SCode::Element>;
+            let mut def: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
             let mut prefs: Arc<SCode::Prefixes> = Arc::new(<SCode::Prefixes as ::std::default::Default>::default());
             let mut comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);
             comp = InstNode::component(node.clone())?;
@@ -916,16 +916,16 @@ pub fn makeInnerNode(mut node: Arc<InstNode::InstNode>) -> Result<Arc<InstNode::
 
 pub fn loadLibrary(mut name: ArcStr, mut scope: Arc<InstNode::InstNode>) -> () {
     let mut version: ArcStr = arcstr::literal!("");
-    ErrorExt::setCheckpoint((literal!("NFLookup.loadLibrary")).clone());
+    ErrorExt::setCheckpoint(literal!("NFLookup.loadLibrary"));
     if '__try0: {
         let true = (unwrap_break_err!(Flags::getConfigBool(Flags::LOAD_MISSING_LIBRARIES.clone()), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
         version = (unwrap_break_err!(loadLibrary_work((name.clone()).clone(), scope.clone()), '__try0)).clone();
         unwrap_break_err!(Error::addMessage(Error::NOTIFY_IMPLICIT_LOAD.clone(), list![(name.clone()).clone(), (version.clone()).clone()]), '__try0);
         System::loadModelCallBack((name.clone()).clone());
-        ErrorExt::delCheckpoint((literal!("NFLookup.loadLibrary")).clone());
+        ErrorExt::delCheckpoint(literal!("NFLookup.loadLibrary"));
         Ok::<(), anyhow::Error>(())
     }.is_err() {
-        ErrorExt::rollBack((literal!("NFLookup.loadLibrary")).clone());
+        ErrorExt::rollBack(literal!("NFLookup.loadLibrary"));
     }
     ()
 }
@@ -934,7 +934,7 @@ pub fn loadLibrary_work(mut name: ArcStr, mut scope: Arc<InstNode::InstNode>) ->
     let mut version: ArcStr = literal!("(default)");
     let mut modelica_path: ArcStr = arcstr::literal!("");
     let mut aprog: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
-    let mut scls: Arc<SCode::Element>;
+    let mut scls: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     let mut cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
     let mut lib_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut new_libs: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
@@ -949,7 +949,7 @@ pub fn loadLibrary_work(mut name: ArcStr, mut scope: Arc<InstNode::InstNode>) ->
         }.is_err() {
             scls = AbsynToSCode::translateClass(c.clone())?;
             lib_node = InstNode::new(scls.clone(), scope.clone())?;
-            new_libs = cons(lib_node.clone(), new_libs.clone());
+            new_libs = metamodelica::cons(lib_node.clone(), new_libs.clone());
             if name.clone() == SCodeUtil::getElementName(scls.clone())? {
                 if '__try2: {
                     let __pa3 = ::match_deref::match_deref! { match &(unwrap_break_err!(SCodeUtil::lookupElementAnnotationBinding(scls.clone(), (literal!("version")).clone()), '__try2)) {
@@ -964,7 +964,7 @@ pub fn loadLibrary_work(mut name: ArcStr, mut scope: Arc<InstNode::InstNode>) ->
         }
     }
     cls = InstNode::getClass(scope.clone())?;
-    cls = Class::classTreeApply(cls.clone(), Arc::new({ let __pe_b0 = new_libs.clone(); move |__pe_a1| ClassTree::appendClasses(__pe_b0.clone(), __pe_a1) }));
+    cls = Class::classTreeApply(cls.clone(), (std::sync::Arc::new({ let __pe_b0 = new_libs.clone(); move |__pe_a1| ClassTree::appendClasses(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ClassTree::ClassTree>) -> Result<Arc<ClassTree::ClassTree>> + 'static>));
     InstNode::updateClass(cls.clone(), scope.clone())?;
     Ok(version)
 }

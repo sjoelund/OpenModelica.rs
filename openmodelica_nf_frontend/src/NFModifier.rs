@@ -483,12 +483,12 @@ pub mod ModTable {
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { key, .. } => {
             lst = listKeys(var_field!((*tree).right, Tree::NODE).clone(), lst.clone());
-            lst = cons((key.clone()).clone(), lst.clone());
+            lst = metamodelica::cons((key.clone()).clone(), lst.clone());
             lst = listKeys(var_field!((*tree).left, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
         Deref @ Tree::LEAF { key, .. } => {
-            cons((key.clone()).clone(), lst.clone())
+            metamodelica::cons((key.clone()).clone(), lst.clone())
         },
         _ => {
             lst.clone()
@@ -501,10 +501,10 @@ pub mod ModTable {
     pub fn listKeysReverse(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<ArcStr>>) -> Arc<metamodelica::List<ArcStr>> {
         let mut lst: Arc<metamodelica::List<ArcStr>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::LEAF { .. } => cons((var_field!((*inTree).key, Tree::LEAF).clone()).clone(), lst.clone()),
+        Deref @ Tree::LEAF { .. } => metamodelica::cons((var_field!((*inTree).key, Tree::LEAF).clone()).clone(), lst.clone()),
         Deref @ Tree::NODE { .. } => {
             lst = listKeysReverse(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
-            lst = cons((var_field!((*inTree).key, Tree::NODE).clone()).clone(), lst.clone());
+            lst = metamodelica::cons((var_field!((*inTree).key, Tree::NODE).clone()).clone(), lst.clone());
             lst = listKeysReverse(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
@@ -519,12 +519,12 @@ pub mod ModTable {
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { value, .. } => {
             lst = listValues(var_field!((*tree).right, Tree::NODE).clone(), lst.clone());
-            lst = cons(value.clone(), lst.clone());
+            lst = metamodelica::cons(value.clone(), lst.clone());
             lst = listValues(var_field!((*tree).left, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
         Deref @ Tree::LEAF { value, .. } => {
-            cons(value.clone(), lst.clone())
+            metamodelica::cons(value.clone(), lst.clone())
         },
         _ => {
             lst.clone()
@@ -724,12 +724,12 @@ pub mod ModTable {
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { value, key, .. } => {
             lst = toList(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
-            lst = cons((key.clone(), value.clone()), lst.clone());
+            lst = metamodelica::cons((key.clone(), value.clone()), lst.clone());
             lst = toList(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
         Deref @ Tree::LEAF { value, key } => {
-            cons((key.clone(), value.clone()), lst.clone())
+            metamodelica::cons((key.clone(), value.clone()), lst.clone())
         },
         _ => {
             lst.clone()
@@ -853,7 +853,7 @@ pub mod Modifier {
         }
         __acc.reverse()
     });
-            submod_table = ModTable::fromList(submod_lst.clone(), Arc::new({ let __pe_b3 = modScope.clone(); let __pe_b4 = metamodelica::nil(); move |__pe_a0, __pe_a1, __pe_a2| mergeLocal(__pe_a0, __pe_a1, __pe_a2, __pe_b3.clone(), __pe_b4.clone()) }))?;
+            submod_table = ModTable::fromList(submod_lst.clone(), (std::sync::Arc::new({ let __pe_b3 = modScope.clone(); let __pe_b4 = metamodelica::nil(); move |__pe_a0, __pe_a1, __pe_a2| mergeLocal(__pe_a0, __pe_a1, __pe_a2, __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Modifier>, Arc<Modifier>, ArcStr) -> Result<Arc<Modifier>> + 'static>))?;
             Arc::new(Modifier::MODIFIER { name: (name.clone()).clone(), finalPrefix: var_field!((*r#mod).finalPrefix, SCode::Mod::MOD).clone(), eachPrefix: var_field!((*r#mod).eachPrefix, SCode::Mod::MOD).clone(), binding: binding.clone(), subModifiers: submod_table.clone(), info: var_field!((*r#mod).info, SCode::Mod::MOD).clone() })
         },
         Deref @ SCode::Mod::REDECL { element: elem, .. } => {
@@ -1083,7 +1083,7 @@ pub mod Modifier {
         let mut r#mod: Arc<Modifier> = r#mod;
         let () = (::match_deref::match_deref! { match &(r#mod.clone()) {
         Deref @ MODIFIER { .. } => {
-            assign_variant_field!(r#mod => Modifier::MODIFIER; subModifiers = ModTable::map(var_field!((*r#mod).subModifiers, Modifier::MODIFIER).clone(), Arc::new({ let __pe_b2 = subs.clone(); move |__pe_a0, __pe_a1| Ok(propagateSubMod(__pe_a0, __pe_a1, __pe_b2.clone())) })));
+            assign_variant_field!(r#mod => Modifier::MODIFIER; subModifiers = ModTable::map(var_field!((*r#mod).subModifiers, Modifier::MODIFIER).clone(), (std::sync::Arc::new({ let __pe_b2 = subs.clone(); move |__pe_a0, __pe_a1| Ok(propagateSubMod(__pe_a0, __pe_a1, __pe_b2.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<Modifier>) -> Result<Arc<Modifier>> + 'static>)));
             ()
         },
         _ => (),
@@ -1113,7 +1113,7 @@ pub mod Modifier {
         Deref @ MODIFIER { eachPrefix: SCode::Each::NOT_EACH { .. }, .. } => {
             assign_variant_field!(submod => Modifier::MODIFIER;
                 binding = Binding::propagate(var_field!((*submod).binding, Modifier::MODIFIER).clone(), subs.clone()),
-                subModifiers = ModTable::map(var_field!((*submod).subModifiers, Modifier::MODIFIER).clone(), Arc::new({ let __pe_b2 = subs.clone(); move |__pe_a0, __pe_a1| Ok(propagateSubMod(__pe_a0, __pe_a1, __pe_b2.clone())) }))
+                subModifiers = ModTable::map(var_field!((*submod).subModifiers, Modifier::MODIFIER).clone(), (std::sync::Arc::new({ let __pe_b2 = subs.clone(); move |__pe_a0, __pe_a1| Ok(propagateSubMod(__pe_a0, __pe_a1, __pe_b2.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<Modifier>) -> Result<Arc<Modifier>> + 'static>))
             );
             ()
         },
@@ -1280,7 +1280,7 @@ pub mod Modifier {
     pub fn toFlatString(mut r#mod: Arc<Modifier>, mut format: BaseModelica::OutputFormat, mut printName: bool) -> Result<ArcStr> {
         let mut r#str: ArcStr = arcstr::literal!("");
         let mut s: IOStream::IOStream = <IOStream::IOStream as ::std::default::Default>::default();
-        s = IOStream::create((literal!("NFModifier.Modifier.toFlatString")).clone(), openmodelica_util::IOStream::IOStreamType::LIST)?;
+        s = IOStream::create(literal!("NFModifier.Modifier.toFlatString"), openmodelica_util::IOStream::IOStreamType::LIST)?;
         s = toFlatStream(r#mod.clone(), format.clone(), s.clone(), printName.clone())?;
         r#str = (IOStream::string(s.clone())?).clone();
         IOStream::delete(s.clone())?;
@@ -1308,15 +1308,15 @@ pub mod Modifier {
         let mut comp_name: ArcStr = arcstr::literal!("");
         r#mod = (::match_deref::match_deref! { match &((mod1.clone(), mod2.clone())) {
         (Deref @ MODIFIER { .. }, Deref @ MODIFIER { binding: Deref @ Binding::UNBOUND, .. }) => {
-            assign_variant_field!(mod1 => Modifier::MODIFIER; subModifiers = ModTable::join(var_field!((*mod1).subModifiers, Modifier::MODIFIER).clone(), var_field!((*mod2).subModifiers, Modifier::MODIFIER).clone(), Arc::new({ let __pe_b3 = scope.clone(); let __pe_b4 = cons((var_field!((*mod1).name, Modifier::MODIFIER).clone()).clone(), prefix.clone()); move |__pe_a0, __pe_a1, __pe_a2| mergeLocal(__pe_a0, __pe_a1, __pe_a2, __pe_b3.clone(), __pe_b4.clone()) }))?);
+            assign_variant_field!(mod1 => Modifier::MODIFIER; subModifiers = ModTable::join(var_field!((*mod1).subModifiers, Modifier::MODIFIER).clone(), var_field!((*mod2).subModifiers, Modifier::MODIFIER).clone(), (std::sync::Arc::new({ let __pe_b3 = scope.clone(); let __pe_b4 = metamodelica::cons((var_field!((*mod1).name, Modifier::MODIFIER).clone()).clone(), prefix.clone()); move |__pe_a0, __pe_a1, __pe_a2| mergeLocal(__pe_a0, __pe_a1, __pe_a2, __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Modifier>, Arc<Modifier>, ArcStr) -> Result<Arc<Modifier>> + 'static>))?);
             mod1.clone()
         },
         (Deref @ MODIFIER { binding: Deref @ Binding::UNBOUND, .. }, Deref @ MODIFIER { .. }) => {
-            assign_variant_field!(mod2 => Modifier::MODIFIER; subModifiers = ModTable::join(var_field!((*mod2).subModifiers, Modifier::MODIFIER).clone(), var_field!((*mod1).subModifiers, Modifier::MODIFIER).clone(), Arc::new({ let __pe_b3 = scope.clone(); let __pe_b4 = cons((var_field!((*mod1).name, Modifier::MODIFIER).clone()).clone(), prefix.clone()); move |__pe_a0, __pe_a1, __pe_a2| mergeLocal(__pe_a0, __pe_a1, __pe_a2, __pe_b3.clone(), __pe_b4.clone()) }))?);
+            assign_variant_field!(mod2 => Modifier::MODIFIER; subModifiers = ModTable::join(var_field!((*mod2).subModifiers, Modifier::MODIFIER).clone(), var_field!((*mod1).subModifiers, Modifier::MODIFIER).clone(), (std::sync::Arc::new({ let __pe_b3 = scope.clone(); let __pe_b4 = metamodelica::cons((var_field!((*mod1).name, Modifier::MODIFIER).clone()).clone(), prefix.clone()); move |__pe_a0, __pe_a1, __pe_a2| mergeLocal(__pe_a0, __pe_a1, __pe_a2, __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Modifier>, Arc<Modifier>, ArcStr) -> Result<Arc<Modifier>> + 'static>))?);
             mod2.clone()
         },
         _ => {
-            comp_name = stringDelimitList(cons((self::name(mod1.clone())?).clone(), prefix.clone()).reverse(), (literal!(".")).clone());
+            comp_name = stringDelimitList(metamodelica::cons((self::name(mod1.clone())?).clone(), prefix.clone()).reverse(), (literal!(".")).clone());
             Error::addMultiSourceMessage(Error::DUPLICATE_MODIFICATIONS.clone(), list![(comp_name.clone()).clone(), (ModifierScope::toString(scope.clone())?).clone()], list![info(mod1.clone())?, info(mod2.clone())?])?;
             bail!("fail")
         },

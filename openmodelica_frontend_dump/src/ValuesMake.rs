@@ -103,7 +103,7 @@ pub fn makeArray(mut inValueLst: Arc<metamodelica::List<Arc<Values::Value>>>) ->
                 vlst @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { dimLst: il, .. }, tail: _ } => {
                     let mut i1: i32 = 0;
                     i1 = (vlst.clone().len() as i32);
-                    Ok(Arc::new(Values::Value::ARRAY { valueLst: vlst.clone(), dimLst: cons(i1.clone(), il.clone()) }))
+                    Ok(Arc::new(Values::Value::ARRAY { valueLst: vlst.clone(), dimLst: metamodelica::cons(i1.clone(), il.clone()) }))
                 }
                 _ => bail!("nomatch"),
             }}

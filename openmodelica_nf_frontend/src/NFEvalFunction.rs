@@ -246,7 +246,7 @@ pub fn evaluateRecordConstructor(mut r#fn: Arc<Function::Function>, mut ty: Arc<
     out_ty = __pa0.clone();
     let __range1 = ClassTree::getComponents(Class::classTree(InstNode::getClass(out_ty.clone())?)?)?.borrow().iter().cloned().collect::<Vec<_>>();
     for mut c in __range1 {
-        expl = cons(UnorderedMap::getOrFail(c.clone(), arg_map.clone()), expl.clone());
+        expl = metamodelica::cons(UnorderedMap::getOrFail(c.clone(), arg_map.clone()), expl.clone());
     }
     result = Expression::makeRecord(Function::name(r#fn.clone()), ty.clone(), metamodelica::Dangerous::listReverseInPlace(expl.clone()));
     if evaluate.clone() {
@@ -278,13 +278,13 @@ fn createArgumentMap(mut inputs: Arc<metamodelica::List<Arc<InstNode::InstNode>>
         }
     }
     if mutableParams.clone() {
-        List::fold(outputs.clone(), Arc::new({ let __pe_b2 = buildArrayBinding.clone(); move |__pe_a0, __pe_a1| addMutableArgument(__pe_a0, __pe_a1, __pe_b2.clone()) }), map.clone());
-        List::fold(locals.clone(), Arc::new({ let __pe_b2 = buildArrayBinding.clone(); move |__pe_a0, __pe_a1| addMutableArgument(__pe_a0, __pe_a1, __pe_b2.clone()) }), map.clone());
+        List::fold(outputs.clone(), (std::sync::Arc::new({ let __pe_b2 = buildArrayBinding.clone(); move |__pe_a0, __pe_a1| addMutableArgument(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<Expression::NFExpression>>>) -> Result<Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<Expression::NFExpression>>>> + 'static>), map.clone());
+        List::fold(locals.clone(), (std::sync::Arc::new({ let __pe_b2 = buildArrayBinding.clone(); move |__pe_a0, __pe_a1| addMutableArgument(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<Expression::NFExpression>>>) -> Result<Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<Expression::NFExpression>>>> + 'static>), map.clone());
     } else {
-        List::fold(outputs.clone(), Arc::new({ let __pe_b2 = buildArrayBinding.clone(); move |__pe_a0, __pe_a1| addImmutableArgument(__pe_a0, __pe_a1, __pe_b2.clone()) }), map.clone());
-        List::fold(locals.clone(), Arc::new({ let __pe_b2 = buildArrayBinding.clone(); move |__pe_a0, __pe_a1| addImmutableArgument(__pe_a0, __pe_a1, __pe_b2.clone()) }), map.clone());
+        List::fold(outputs.clone(), (std::sync::Arc::new({ let __pe_b2 = buildArrayBinding.clone(); move |__pe_a0, __pe_a1| addImmutableArgument(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<Expression::NFExpression>>>) -> Result<Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<Expression::NFExpression>>>> + 'static>), map.clone());
+        List::fold(locals.clone(), (std::sync::Arc::new({ let __pe_b2 = buildArrayBinding.clone(); move |__pe_a0, __pe_a1| addImmutableArgument(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<Expression::NFExpression>>>) -> Result<Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<Expression::NFExpression>>>> + 'static>), map.clone());
     }
-    UnorderedMap::apply(map.clone(), Arc::new({ let __pe_b1 = map.clone(); move |__pe_a0| applyBindingReplacement(__pe_a0, __pe_b1.clone()) }));
+    UnorderedMap::apply(map.clone(), (std::sync::Arc::new({ let __pe_b1 = map.clone(); move |__pe_a0| applyBindingReplacement(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>));
     UnorderedMap::apply(map.clone(), (std::sync::Arc::new(evaluateReplacement) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>));
     Ok(map)
 }
@@ -325,7 +325,7 @@ fn buildBinding(mut node: Arc<InstNode::InstNode>, mut map: ArgumentMap, mut mut
     let mut result: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     ty = InstNode::getType(node.clone())?;
-    ty = Type::mapDims(ty.clone(), Arc::new({ let __pe_b0 = map.clone(); move |__pe_a1| applyReplacementsDim(__pe_b0.clone(), __pe_a1) }));
+    ty = Type::mapDims(ty.clone(), (std::sync::Arc::new({ let __pe_b0 = map.clone(); move |__pe_a1| applyReplacementsDim(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>));
     result = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ Type::ARRAY { .. } if (buildArrayBinding.clone()) => if (Type::hasKnownSize(ty.clone())) {Expression::fillType(ty.clone(), Arc::new(Expression::NFExpression::EMPTY { ty: Type::arrayElementType(ty.clone()) }))?} else {Expression::makeEmptyArray(ty.clone())},
         Deref @ Type::COMPLEX { .. } => buildRecordBinding(node.clone(), map.clone(), mutableParams.clone())?,
@@ -340,7 +340,7 @@ fn applyReplacementsDim(mut map: ArgumentMap, mut dim: Arc<Dimension::NFDimensio
     dim = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ Dimension::EXP { .. } => {
             let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            exp = Expression::map(var_field!((*dim).exp, Dimension::NFDimension::EXP).clone(), Arc::new({ let __pe_b0 = map.clone(); move |__pe_a1| applyReplacements2(__pe_b0.clone(), __pe_a1) }))?;
+            exp = Expression::map(var_field!((*dim).exp, Dimension::NFDimension::EXP).clone(), (std::sync::Arc::new({ let __pe_b0 = map.clone(); move |__pe_a1| applyReplacements2(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             exp = Ceval::evalExp(exp.clone(), Ceval::noTarget().clone())?;
             Dimension::fromExp(exp.clone(), Variability::CONSTANT.clone())?
         },
@@ -358,7 +358,7 @@ fn buildRecordBinding(mut recordNode: Arc<InstNode::InstNode>, mut map: Argument
     let mut result: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut cls_node: Arc<InstNode::InstNode> = InstNode::classScope(recordNode.clone());
     let mut cls: Arc<Class::NFClass> = InstNode::getClass(cls_node.clone())?;
-    let mut comps: metamodelica::Array<Arc<InstNode::InstNode>>;
+    let mut comps: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
     let mut bindings: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut local_map: ArgumentMap = <Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
@@ -374,7 +374,7 @@ fn buildRecordBinding(mut recordNode: Arc<InstNode::InstNode>, mut map: Argument
                 }
                 UnorderedMap::add(comp.clone(), exp.clone(), local_map.clone())?;
             }
-            UnorderedMap::apply(local_map.clone(), Arc::new({ let __pe_b1 = local_map.clone(); move |__pe_a0| applyBindingReplacement(__pe_a0, __pe_b1.clone()) }));
+            UnorderedMap::apply(local_map.clone(), (std::sync::Arc::new({ let __pe_b1 = local_map.clone(); move |__pe_a0| applyBindingReplacement(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>));
             bindings = UnorderedMap::valueList(local_map.clone());
             Expression::makeRecord(InstNode::fullPath(cls_node.clone(), false), var_field!((*cls).ty, Class::NFClass::INSTANCED_CLASS).clone(), bindings.clone())
         },
@@ -386,13 +386,13 @@ fn buildRecordBinding(mut recordNode: Arc<InstNode::InstNode>, mut map: Argument
 
 fn applyBindingReplacement(mut exp: Arc<Expression::NFExpression>, mut map: ArgumentMap) -> Result<Arc<Expression::NFExpression>> {
     let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    outExp = Expression::map(exp.clone(), Arc::new({ let __pe_b0 = map.clone(); move |__pe_a1| applyReplacements2(__pe_b0.clone(), __pe_a1) }))?;
+    outExp = Expression::map(exp.clone(), (std::sync::Arc::new({ let __pe_b0 = map.clone(); move |__pe_a1| applyReplacements2(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     Ok(outExp)
 }
 
 fn applyReplacements(mut map: ArgumentMap, mut fnBody: Arc<metamodelica::List<Arc<Statement::NFStatement>>>) -> Arc<metamodelica::List<Arc<Statement::NFStatement>>> {
     let mut fnBody: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = fnBody;
-    fnBody = Statement::mapExpList(fnBody.clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = Arc::new({ let __pe_b0 = map.clone(); move |__pe_a1| applyReplacements2(__pe_b0.clone(), __pe_a1) }); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }));
+    fnBody = Statement::mapExpList(fnBody.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new({ let __pe_b0 = map.clone(); move |__pe_a1| applyReplacements2(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>));
     fnBody
 }
 
@@ -446,7 +446,7 @@ fn applyReplacementCref(mut map: ArgumentMap, mut cref: Arc<ComponentRef::NFComp
                 Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFEvalFunction.applyReplacementCref")); __mm_s.push_str(&*literal!(" could not find replacement for ")); __mm_s.push_str(&*ComponentRef::toString(cref.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
             }
         }
-        outExp = Expression::map(outExp.clone(), Arc::new({ let __pe_b0 = map.clone(); move |__pe_a1| applyReplacements2(__pe_b0.clone(), __pe_a1) }))?;
+        outExp = Expression::map(outExp.clone(), (std::sync::Arc::new({ let __pe_b0 = map.clone(); move |__pe_a1| applyReplacements2(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     }
     Ok(outExp)
 }
@@ -558,7 +558,7 @@ fn mergeFunctionApplicationArgs(mut oldFn: Arc<Function::Function>, mut oldArgs:
     }
     for mut i in &*newFn.inputs.clone() {
         let mut i = i.clone();
-        outArgs = cons(UnorderedMap::getOrFail((InstNode::name(i.clone())?).clone(), arg_map.clone()), outArgs.clone());
+        outArgs = metamodelica::cons(UnorderedMap::getOrFail((InstNode::name(i.clone())?).clone(), arg_map.clone()), outArgs.clone());
     }
     outArgs = metamodelica::Dangerous::listReverseInPlace(outArgs.clone());
     Ok(outArgs)
@@ -612,7 +612,7 @@ fn createResult(mut map: ArgumentMap, mut outputs: Arc<metamodelica::List<Arc<In
             let mut o = o.clone();
             e = Ceval::evalExp(UnorderedMap::getOrFail(o.clone(), map.clone()), Ceval::noTarget().clone())?;
             assertAssignedOutput(o.clone(), e.clone())?;
-            expl = cons(e.clone(), expl.clone());
+            expl = metamodelica::cons(e.clone(), expl.clone());
         }
         expl = metamodelica::Dangerous::listReverseInPlace(expl.clone());
         types = ({
@@ -739,8 +739,8 @@ fn assignArrayElement(mut arrayExp: Arc<Expression::NFExpression>, mut subscript
     let mut val: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut rest_subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
     let mut idx: i32 = 0;
-    let mut subs: metamodelica::Array<Arc<Expression::NFExpression>>;
-    let mut vals: metamodelica::Array<Arc<Expression::NFExpression>>;
+    let mut subs: metamodelica::Array<Arc<Expression::NFExpression>> = Default::default();
+    let mut vals: metamodelica::Array<Arc<Expression::NFExpression>> = Default::default();
     result = (::match_deref::match_deref! { match &((arrayExp.clone(), subscripts.clone())) {
         (Deref @ Expression::ARRAY { .. }, Deref @ metamodelica::List::Cons { head: Deref @ Subscript::INDEX { index: sub }, tail: rest_subs }) if (Expression::isScalarLiteral(sub.clone())) => {
             idx = Expression::toInteger(sub.clone())?;
@@ -839,7 +839,7 @@ fn assignRecord(mut lhs: Arc<Expression::NFExpression>, mut rhs: Arc<Expression:
             let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut val: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut cls_tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
-            let mut comps: metamodelica::Array<Arc<InstNode::InstNode>>;
+            let mut comps: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
             let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
             let __pa0 = ::match_deref::match_deref! { match &(lhs.clone()) {
                 Deref @ Expression::RECORD { elements: __pa0, .. } => __pa0.clone(),
@@ -998,7 +998,7 @@ fn evaluateExternal2(mut name: ArcStr, mut r#fn: Arc<Function::Function>, mut ar
     ext_args = ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
         for mut e in (extArgs.clone()).into_iter().cloned() {
-            let __x = Expression::map(e.clone(), Arc::new({ let __pe_b0 = map.clone(); move |__pe_a1| applyReplacements2(__pe_b0.clone(), __pe_a1) }))?;
+            let __x = Expression::map(e.clone(), (std::sync::Arc::new({ let __pe_b0 = map.clone(); move |__pe_a1| applyReplacements2(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -1084,8 +1084,8 @@ fn callExternalFunction(mut extName: ArcStr, mut r#fn: Arc<Function::Function>, 
     let mut result: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     let mut pkg_name: ArcStr = arcstr::literal!("");
-    let mut mapped_args: metamodelica::Array<Arc<Expression::NFExpression>>;
-    let mut specs: metamodelica::Array<FFI::ArgSpec>;
+    let mut mapped_args: metamodelica::Array<Arc<Expression::NFExpression>> = Default::default();
+    let mut specs: metamodelica::Array<FFI::ArgSpec> = Default::default();
     let mut ret_ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut res: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut output_vals: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
@@ -1116,7 +1116,7 @@ fn callExternalFunction(mut extName: ArcStr, mut r#fn: Arc<Function::Function>, 
     if output_vals.clone().is_empty() {
         result = res.clone();
     } else {
-        result = makeExternalResult(cons(res.clone(), output_vals.clone()), outputRef.clone(), extArgs.clone(), r#fn.outputs.clone())?;
+        result = makeExternalResult(metamodelica::cons(res.clone(), output_vals.clone()), outputRef.clone(), extArgs.clone(), r#fn.outputs.clone())?;
     }
     Ok(result)
 }
@@ -1140,7 +1140,7 @@ fn lookupLibraryInCache(mut libName: ArcStr) -> i32 {
 fn cacheLibrary(mut libName: ArcStr, mut libHandle: i32) -> () {
     let mut cache: Arc<metamodelica::List<(ArcStr, i32)>> = metamodelica::nil();
     cache = openmodelica_util::Globals::sharedLibraryCacheIndex.with(|__root| __root.borrow().clone());
-    cache = cons((libName.clone(), libHandle.clone()), cache.clone());
+    cache = metamodelica::cons((libName.clone(), libHandle.clone()), cache.clone());
     { let __v = cache.clone(); openmodelica_util::Globals::sharedLibraryCacheIndex.with(|__root| *__root.borrow_mut() = __v) };
     ()
 }
@@ -1182,42 +1182,42 @@ fn loadLibraryFunction(mut libName: ArcStr, mut fnName: ArcStr, mut extAnnotatio
         libs = parseExternalAnnotation((literal!("Library")).clone(), ann.clone())?;
         dirs = parseExternalAnnotation((literal!("LibraryDirectory")).clone(), ann.clone())?;
     }
-    dirs = cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("modelica://")); __mm_s.push_str(&*libName.clone()); __mm_s.push_str(&*literal!("/Resources/Library")); ArcStr::from(__mm_s) }).clone(), dirs.clone());
+    dirs = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("modelica://")); __mm_s.push_str(&*libName.clone()); __mm_s.push_str(&*literal!("/Resources/Library")); ArcStr::from(__mm_s) }).clone(), dirs.clone());
     libs = List::unique(libs.clone());
     dirs = List::unique(dirs.clone());
     for mut lib in &*libs.clone() {
         let mut lib = lib.clone();
         if !(stringEmpty((lib.clone()).clone())) {
-            libs2 = cons((lib.clone()).clone(), libs2.clone());
-            libs2 = cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("lib")); __mm_s.push_str(&*lib.clone()); ArcStr::from(__mm_s) }).clone(), libs2.clone());
+            libs2 = metamodelica::cons((lib.clone()).clone(), libs2.clone());
+            libs2 = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("lib")); __mm_s.push_str(&*lib.clone()); ArcStr::from(__mm_s) }).clone(), libs2.clone());
         }
     }
     libs = libs2.clone();
     for mut lib in &*libs.clone() {
         let mut lib = lib.clone();
-        paths = cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*installLibDir.clone()); __mm_s.push_str(&*literal!("/ffi/")); __mm_s.push_str(&*lib.clone()); __mm_s.push_str(&*arcstr::literal!(Autoconf::dllExt)); ArcStr::from(__mm_s) }).clone(), paths.clone());
+        paths = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*installLibDir.clone()); __mm_s.push_str(&*literal!("/ffi/")); __mm_s.push_str(&*lib.clone()); __mm_s.push_str(&*arcstr::literal!(Autoconf::dllExt)); ArcStr::from(__mm_s) }).clone(), paths.clone());
     }
     for mut lib in &*libs.clone() {
         let mut lib = lib.clone();
         if stringEmpty((lib.clone()).clone()) {
-            paths = cons((literal!("")).clone(), paths.clone());
+            paths = metamodelica::cons((literal!("")).clone(), paths.clone());
             continue;
         }
         lib = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*lib.clone()); __mm_s.push_str(&*arcstr::literal!(Autoconf::dllExt)); ArcStr::from(__mm_s) }).clone();
         for mut dir in &*dirs.clone() {
             let mut dir = dir.clone();
-            paths = cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*dir.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*lib.clone()); ArcStr::from(__mm_s) }).clone(), paths.clone());
-            paths = cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*dir.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*System::modelicaPlatform()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*lib.clone()); ArcStr::from(__mm_s) }).clone(), paths.clone());
+            paths = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*dir.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*lib.clone()); ArcStr::from(__mm_s) }).clone(), paths.clone());
+            paths = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*dir.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*System::modelicaPlatform()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*lib.clone()); ArcStr::from(__mm_s) }).clone(), paths.clone());
             if arcstr::literal!(Autoconf::os) == literal!("Windows_NT") {
-                paths = cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*dir.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*System::openModelicaPlatform()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*lib.clone()); ArcStr::from(__mm_s) }).clone(), cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*dir.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*System::openModelicaPlatformAlternative()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*lib.clone()); ArcStr::from(__mm_s) }).clone(), paths.clone()));
+                paths = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*dir.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*System::openModelicaPlatform()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*lib.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*dir.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*System::openModelicaPlatformAlternative()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*lib.clone()); ArcStr::from(__mm_s) }).clone(), paths.clone()));
             }
         }
-        paths = cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*installLibDir.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*lib.clone()); ArcStr::from(__mm_s) }).clone(), paths.clone());
+        paths = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*installLibDir.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*lib.clone()); ArcStr::from(__mm_s) }).clone(), paths.clone());
     }
     if libs.clone().is_empty() {
-        paths = cons((literal!("")).clone(), paths.clone());
+        paths = metamodelica::cons((literal!("")).clone(), paths.clone());
     }
-    ErrorExt::setCheckpoint((literal!("NFEvalFunction.loadLibraryFunction")).clone());
+    ErrorExt::setCheckpoint(literal!("NFEvalFunction.loadLibraryFunction"));
     for mut path in &*paths.clone() {
         let mut path = path.clone();
         match '__try1: {
@@ -1246,7 +1246,7 @@ fn loadLibraryFunction(mut libName: ArcStr, mut fnName: ArcStr, mut extAnnotatio
             break;
         }
     }
-    ErrorExt::rollBack((literal!("NFEvalFunction.loadLibraryFunction")).clone());
+    ErrorExt::rollBack(literal!("NFEvalFunction.loadLibraryFunction"));
     if !(found.clone()) {
         paths = ({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -1282,7 +1282,7 @@ fn parseExternalAnnotation(mut name: ArcStr, mut ann: Arc<SCode::Annotation>) ->
 fn parseExternalAnnotationExp(mut exp: Arc<Absyn::Exp>, mut strl: Arc<metamodelica::List<ArcStr>>) -> Arc<metamodelica::List<ArcStr>> {
     let mut strl: Arc<metamodelica::List<ArcStr>> = strl;
     strl = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Absyn::Exp::STRING { .. } => cons((var_field!((*exp).value, Absyn::Exp::STRING).clone()).clone(), strl.clone()),
+        Deref @ Absyn::Exp::STRING { .. } => metamodelica::cons((var_field!((*exp).value, Absyn::Exp::STRING).clone()).clone(), strl.clone()),
         Deref @ Absyn::Exp::ARRAY { .. } => List::fold(var_field!((*exp).arrayExp, Absyn::Exp::ARRAY).clone(), (std::sync::Arc::new(fnptr!(parseExternalAnnotationExp, Arc<Absyn::Exp>, Arc<metamodelica::List<ArcStr>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), strl.clone()),
         _ => strl.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1296,8 +1296,8 @@ fn freeLibraryFunction(mut fnHandle: i32, mut debug: bool) -> Result<()> {
 }
 
 fn mapExternalArgs(mut r#fn: Arc<Function::Function>, mut inputArgs: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut extArgs: Arc<metamodelica::List<Arc<Expression::NFExpression>>>) -> Result<(metamodelica::Array<Arc<Expression::NFExpression>>, metamodelica::Array<FFI::ArgSpec>)> {
-    let mut mappedArgs: metamodelica::Array<Arc<Expression::NFExpression>>;
-    let mut argSpecs: metamodelica::Array<FFI::ArgSpec>;
+    let mut mappedArgs: metamodelica::Array<Arc<Expression::NFExpression>> = Default::default();
+    let mut argSpecs: metamodelica::Array<FFI::ArgSpec> = Default::default();
     let mut arg_map: ArgumentMap = <Arc<UnorderedMap::UnorderedMap<Arc<InstNode::InstNode>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
     let mut marg: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut arg_spec: FFI::ArgSpec = FFI::ArgSpec::INPUT;
@@ -1415,7 +1415,7 @@ fn makeExternalResult(mut values: Arc<metamodelica::List<Arc<Expression::NFExpre
 fn getExternalOutputResult(mut outputNode: Arc<InstNode::InstNode>, mut map: ArgumentMap) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut oexp: Option<Arc<Expression::NFExpression>> = None;
-    let mut comps: metamodelica::Array<Arc<InstNode::InstNode>>;
+    let mut comps: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
     let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut cls_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     oexp = UnorderedMap::get(outputNode.clone(), map.clone());
@@ -1431,7 +1431,7 @@ fn getExternalOutputResult(mut outputNode: Arc<InstNode::InstNode>, mut map: Arg
         expl = metamodelica::nil();
         let __range1 = comps.clone().borrow().iter().cloned().collect::<Vec<_>>();
         for mut c in __range1 {
-            expl = cons(getExternalOutputResult(c.clone(), map.clone())?, expl.clone());
+            expl = metamodelica::cons(getExternalOutputResult(c.clone(), map.clone())?, expl.clone());
         }
         exp = Expression::makeRecord(InstNode::fullPath(cls_node.clone(), false), InstNode::getType(cls_node.clone())?, metamodelica::Dangerous::listReverseInPlace(expl.clone()));
     } else {

@@ -162,13 +162,13 @@ pub fn prefixCref(mut inCref: Arc<DAE::ComponentRef>, mut inPrefix: Arc<Prefix>)
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn prefixPath(mut inPath: Arc<Absyn::Path>, mut inPrefix: Arc<Prefix>) -> Result<Arc<Absyn::Path>> {
-    let mut outPath: Arc<Absyn::Path>;
+    let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     outPath = (::match_deref::match_deref! { match &(inPrefix.clone()) {
         Deref @ Prefix::EMPTY_PREFIX { .. } => {
             inPath.clone()
         },
         Deref @ Prefix::PREFIX { restPrefix: rest_prefix, name, .. } => {
-            let mut path: Arc<Absyn::Path>;
+            let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             path = Arc::new(Absyn::Path::QUALIFIED { name: (name.clone()).clone(), path: inPath.clone() });
             prefixPath(path.clone(), rest_prefix.clone())?
         },
@@ -211,13 +211,13 @@ pub fn toCref(mut inPrefix: Arc<Prefix>) -> Result<Arc<DAE::ComponentRef>> {
 }
 
 pub fn toPath(mut inPrefix: Arc<Prefix>) -> Result<Arc<Absyn::Path>> {
-    let mut outPath: Arc<Absyn::Path>;
+    let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     outPath = (::match_deref::match_deref! { match &(inPrefix.clone()) {
         Deref @ Prefix::PREFIX { restPrefix: Deref @ Prefix::EMPTY_PREFIX { .. }, name, .. } => {
             Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() })
         },
         Deref @ Prefix::PREFIX { restPrefix: rest_prefix, name, .. } => {
-            let mut path: Arc<Absyn::Path>;
+            let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             path = Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() });
             prefixPath(path.clone(), rest_prefix.clone())?
         },

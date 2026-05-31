@@ -114,9 +114,9 @@ pub fn prependEquation(mut eq: Arc<Equation::NFEquation>, mut sections: Arc<NFSe
     sections = (::match_deref::match_deref! { match &(sections.clone()) {
         Deref @ SECTIONS { .. } => {
             if isInitial.clone() {
-                assign_variant_field!(sections => NFSections::SECTIONS; initialEquations = cons(eq.clone(), var_field!((*sections).initialEquations, NFSections::SECTIONS).clone()));
+                assign_variant_field!(sections => NFSections::SECTIONS; initialEquations = metamodelica::cons(eq.clone(), var_field!((*sections).initialEquations, NFSections::SECTIONS).clone()));
             } else {
-                assign_variant_field!(sections => NFSections::SECTIONS; equations = cons(eq.clone(), var_field!((*sections).equations, NFSections::SECTIONS).clone()));
+                assign_variant_field!(sections => NFSections::SECTIONS; equations = metamodelica::cons(eq.clone(), var_field!((*sections).equations, NFSections::SECTIONS).clone()));
             }
             sections.clone()
         },
@@ -135,9 +135,9 @@ pub fn prependAlgorithm(mut alg: Arc<Algorithm::NFAlgorithm>, mut sections: Arc<
     sections = (::match_deref::match_deref! { match &(sections.clone()) {
         Deref @ SECTIONS { .. } => {
             if isInitial.clone() {
-                assign_variant_field!(sections => NFSections::SECTIONS; initialAlgorithms = cons(alg.clone(), var_field!((*sections).initialAlgorithms, NFSections::SECTIONS).clone()));
+                assign_variant_field!(sections => NFSections::SECTIONS; initialAlgorithms = metamodelica::cons(alg.clone(), var_field!((*sections).initialAlgorithms, NFSections::SECTIONS).clone()));
             } else {
-                assign_variant_field!(sections => NFSections::SECTIONS; algorithms = cons(alg.clone(), var_field!((*sections).algorithms, NFSections::SECTIONS).clone()));
+                assign_variant_field!(sections => NFSections::SECTIONS; algorithms = metamodelica::cons(alg.clone(), var_field!((*sections).algorithms, NFSections::SECTIONS).clone()));
             }
             sections.clone()
         },
@@ -478,12 +478,12 @@ pub fn toFlatStream(mut sections: Arc<NFSections>, mut scopeName: Arc<Absyn::Pat
                 } };
                 ann = __pa0.clone();
                 r#mod = ann.modification.clone();
-                modLib = SCodeUtil::filterSubMods(r#mod.clone(), Arc::new({ let __pe_b1 = list![(literal!("Library")).clone()]; move |__pe_a0| Ok(SCodeUtil::filterGivenSubModNames(__pe_a0, __pe_b1.clone())) }));
-                modInc = SCodeUtil::filterSubMods(r#mod.clone(), Arc::new({ let __pe_b1 = list![(literal!("Include")).clone()]; move |__pe_a0| Ok(SCodeUtil::filterGivenSubModNames(__pe_a0, __pe_b1.clone())) }));
+                modLib = SCodeUtil::filterSubMods(r#mod.clone(), (std::sync::Arc::new({ let __pe_b1 = list![(literal!("Library")).clone()]; move |__pe_a0| Ok(SCodeUtil::filterGivenSubModNames(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>));
+                modInc = SCodeUtil::filterSubMods(r#mod.clone(), (std::sync::Arc::new({ let __pe_b1 = list![(literal!("Include")).clone()]; move |__pe_a0| Ok(SCodeUtil::filterGivenSubModNames(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>));
                 if SCodeUtil::isEmptyMod(modLib.clone()) {
                     modLibDir = Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD);
                 } else {
-                    modLibDir = SCodeUtil::filterSubMods(r#mod.clone(), Arc::new({ let __pe_b1 = list![(literal!("LibraryDirectory")).clone()]; move |__pe_a0| Ok(SCodeUtil::filterGivenSubModNames(__pe_a0, __pe_b1.clone())) }));
+                    modLibDir = SCodeUtil::filterSubMods(r#mod.clone(), (std::sync::Arc::new({ let __pe_b1 = list![(literal!("LibraryDirectory")).clone()]; move |__pe_a0| Ok(SCodeUtil::filterGivenSubModNames(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>));
                     if SCodeUtil::isEmptyMod(modLibDir.clone()) {
                         modLibDir = Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: list![Arc::new(SCode::SubMod { ident: (literal!("LibraryDirectory")).clone(), r#mod: Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: metamodelica::nil(), binding: Some(Arc::new(Absyn::Exp::STRING { value: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("modelica://")); __mm_s.push_str(&*AbsynUtil::pathFirstIdent(scopeName.clone())?); __mm_s.push_str(&*literal!("/Resources/Library")); ArcStr::from(__mm_s) }).clone() })), comment: None, info: Error::dummyInfo.clone() }) })], binding: None, comment: None, info: Error::dummyInfo.clone() });
                     }
@@ -491,7 +491,7 @@ pub fn toFlatStream(mut sections: Arc<NFSections>, mut scopeName: Arc<Absyn::Pat
                 if SCodeUtil::isEmptyMod(modInc.clone()) {
                     modIncDir = Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD);
                 } else {
-                    modIncDir = SCodeUtil::filterSubMods(r#mod.clone(), Arc::new({ let __pe_b1 = list![(literal!("IncludeDirectory")).clone()]; move |__pe_a0| Ok(SCodeUtil::filterGivenSubModNames(__pe_a0, __pe_b1.clone())) }));
+                    modIncDir = SCodeUtil::filterSubMods(r#mod.clone(), (std::sync::Arc::new({ let __pe_b1 = list![(literal!("IncludeDirectory")).clone()]; move |__pe_a0| Ok(SCodeUtil::filterGivenSubModNames(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>));
                     if SCodeUtil::isEmptyMod(modLibDir.clone()) {
                         modLibDir = Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: list![Arc::new(SCode::SubMod { ident: (literal!("IncludeDirectory")).clone(), r#mod: Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: metamodelica::nil(), binding: Some(Arc::new(Absyn::Exp::STRING { value: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("modelica://")); __mm_s.push_str(&*AbsynUtil::pathFirstIdent(scopeName.clone())?); __mm_s.push_str(&*literal!("/Resources/Include")); ArcStr::from(__mm_s) }).clone() })), comment: None, info: Error::dummyInfo.clone() }) })], binding: None, comment: None, info: Error::dummyInfo.clone() });
                     }

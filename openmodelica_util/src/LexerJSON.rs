@@ -152,7 +152,7 @@ pub fn action(mut act: i32, mut startSt: i32, mut mm_currSt: i32, mut mm_pos: i3
         16 => {
             let mut tok: Token = <Token as ::std::default::Default>::default();
             tok = Token { fileName: (fileNm.clone()).clone(), id: TokenId::_NO_TOKEN.clone(), fileContents: (fileContents.clone()).clone(), byteOffset: mm_pos.clone() - buffer.clone(), length: buffer.clone(), lineNumberStart: lineNrStart.clone(), columnNumberStart: mm_ePos.clone() + 1, lineNumberEnd: mm_linenr.clone(), columnNumberEnd: mm_sPos.clone() + 1 };
-            errorTokens = cons(tok.clone(), errorTokens.clone());
+            errorTokens = metamodelica::cons(tok.clone(), errorTokens.clone());
             noToken.clone()
         },
         _ => {
@@ -386,7 +386,7 @@ fn consume(mut cp: i32, mut tokens: Arc<metamodelica::List<Token>>, mut fileCont
     } else {
         mm_currSt = LexTable::yy_nxt.borrow()[(c.clone()-1) as usize].clone();
     }
-    states = cons(mm_currSt.clone(), states.clone());
+    states = metamodelica::cons(mm_currSt.clone(), states.clone());
     baseCond = LexTable::yy_base.borrow()[(mm_currSt.clone()-1) as usize].clone();
     if baseCond.clone() == LexTable::yy_finish.clone() {
         if debug.clone() == true {
@@ -409,7 +409,7 @@ fn consume(mut cp: i32, mut tokens: Arc<metamodelica::List<Token>>, mut fileCont
         buffer = buffer2.clone();
         resToken = (match tok.clone() {
         Token { id: TokenId::_NO_TOKEN, .. } => tokens.clone(),
-        _ => cons(tok.clone(), tokens.clone()),
+        _ => metamodelica::cons(tok.clone(), tokens.clone()),
     });
         if debug.clone() {
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n CountTokens:")); __mm_s.push_str(&*intString((resToken.clone().len() as i32))); ArcStr::from(__mm_s) }).clone());

@@ -72,7 +72,7 @@ impl Default for Version {
 pub use self::Version::{SEMVER,NONSEMVER};
 
 pub fn parse(mut s: ArcStr, mut nonsemverAsZeroZeroZero: bool) -> Result<Version> {
-    let mut v: Version;
+    let mut v: Version = <Version as ::std::default::Default>::default();
     let mut n: i32 = 0;
     let mut major: ArcStr = arcstr::literal!("");
     let mut minor: ArcStr = arcstr::literal!("");

@@ -72,7 +72,7 @@ pub fn multiIntervalFromDimensions(mut dims: Arc<metamodelica::List<Arc<Dimensio
     let mut vc: i32 = 0;
     let mut dim_size: i32 = 0;
     let mut index: i32 = 0;
-    let mut ints: metamodelica::Array<Arc<SBInterval::SBInterval>>;
+    let mut ints: metamodelica::Array<Arc<SBInterval::SBInterval>> = Default::default();
     let mut int: Arc<SBInterval::SBInterval> = Arc::new(<SBInterval::SBInterval as ::std::default::Default>::default());
     if dims.clone().is_empty() {
         vc = Vector::get(vCount.clone(), 1)?;
@@ -119,8 +119,8 @@ pub fn multiIntervalFromDimensions(mut dims: Arc<metamodelica::List<Arc<Dimensio
 
 pub fn multiIntervalFromSubscripts(mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>, mut vCount: Arc<Vector::Vector<i32>>, mut multiInt: Arc<SBMultiInterval::SBMultiInterval>) -> Result<Arc<SBMultiInterval::SBMultiInterval>> {
     let mut multiInt: Arc<SBMultiInterval::SBMultiInterval> = multiInt;
-    let mut mi: metamodelica::Array<Arc<SBInterval::SBInterval>>;
-    let mut miv: metamodelica::Array<Arc<SBInterval::SBInterval>>;
+    let mut mi: metamodelica::Array<Arc<SBInterval::SBInterval>> = Default::default();
+    let mut miv: metamodelica::Array<Arc<SBInterval::SBInterval>> = Default::default();
     let mut int: Arc<SBInterval::SBInterval> = Arc::new(<SBInterval::SBInterval as ::std::default::Default>::default());
     let mut index: i32 = 0;
     let mut aux_lo: i32 = 0;
@@ -283,9 +283,9 @@ pub fn linearMapFromIntervals(mut d1: i32, mut d2: i32, mut mi1: Arc<SBMultiInte
     let mut name: ArcStr = arcstr::literal!("");
     let mut pw1: Arc<SBPWLinearMap::SBPWLinearMap> = Arc::new(<SBPWLinearMap::SBPWLinearMap as ::std::default::Default>::default());
     let mut pw2: Arc<SBPWLinearMap::SBPWLinearMap> = Arc::new(<SBPWLinearMap::SBPWLinearMap as ::std::default::Default>::default());
-    let mut ints1: metamodelica::Array<Arc<SBInterval::SBInterval>>;
-    let mut ints2: metamodelica::Array<Arc<SBInterval::SBInterval>>;
-    let mut mi: metamodelica::Array<Arc<SBInterval::SBInterval>>;
+    let mut ints1: metamodelica::Array<Arc<SBInterval::SBInterval>> = Default::default();
+    let mut ints2: metamodelica::Array<Arc<SBInterval::SBInterval>> = Default::default();
+    let mut mi: metamodelica::Array<Arc<SBInterval::SBInterval>> = Default::default();
     let mut mi1_sz: i32 = 0;
     let mut mi2_sz: i32 = 0;
     let mut sz: i32 = 0;
@@ -293,10 +293,10 @@ pub fn linearMapFromIntervals(mut d1: i32, mut d2: i32, mut mi1: Arc<SBMultiInte
     let mut sz2: i32 = 0;
     let mut count: i32 = 0;
     let mut aux_ec: i32 = 0;
-    let mut g1: metamodelica::Array<metamodelica::Real>;
-    let mut g2: metamodelica::Array<metamodelica::Real>;
-    let mut o1: metamodelica::Array<metamodelica::Real>;
-    let mut o2: metamodelica::Array<metamodelica::Real>;
+    let mut g1: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut g2: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut o1: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut o2: metamodelica::Array<metamodelica::Real> = Default::default();
     let mut g1i: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut g2i: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut o1i: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);

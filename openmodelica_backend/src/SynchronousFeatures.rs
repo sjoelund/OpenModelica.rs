@@ -109,7 +109,7 @@ pub fn synchronousFeatures(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
         outDAE = Arc::new(BackendDAE::BackendDAE { eqs: systs.clone(), shared: shared.clone() });
         if Flags::isSet(Flags::DUMP_SYNCHRONOUS.clone())? {
             println!("{}", (literal!("synchronous features post-phase: synchronousFeatures\n\n")).clone());
-            BackendDump::dumpEqSystems(systs.clone(), (literal!("clock partitioning")).clone());
+            BackendDump::dumpEqSystems(systs.clone(), (literal!("clock partitioning")).clone())?;
             BackendDump::dumpBasePartitions(shared.partitionsInfo.basePartitions.clone(), (literal!("Base clocks")).clone())?;
             BackendDump::dumpSubPartitions(shared.partitionsInfo.subPartitions.clone(), (literal!("Sub clocks")).clone())?;
         }
@@ -164,7 +164,7 @@ fn clockPartitioning1(mut inSyst: Arc<BackendDAE::EqSystem>, mut inShared: Arc<B
     if !(clockedSysts.clone().is_empty()) {
         if Flags::isSet(Flags::DUMP_SYNCHRONOUS.clone())? {
             println!("{}", (literal!("synchronous features pre-phase: synchronousFeatures\n\n")).clone());
-            BackendDump::dumpEqSystems(systs.clone(), (literal!("clock partitioning")).clone());
+            BackendDump::dumpEqSystems(systs.clone(), (literal!("clock partitioning")).clone())?;
             BackendDump::dumpBasePartitions(shared.partitionsInfo.basePartitions.clone(), (literal!("Base clocks")).clone())?;
             BackendDump::dumpSubPartitions(shared.partitionsInfo.subPartitions.clone(), (literal!("Sub clocks")).clone())?;
         }
@@ -180,13 +180,13 @@ fn createBoolClockWhenClauses(mut inShared: Arc<BackendDAE::Shared>, mut inRemov
         basePartition = inShared.partitionsInfo.basePartitions.borrow()[(i.clone()-1) as usize].clone();
         outRemovedEqs = (::match_deref::match_deref! { match &(basePartition.clock.clone()) {
         Deref @ DAE::ClockKind::EVENT_CLOCK { condition: c, startInterval: _ } => {
-            let mut e: Arc<DAE::Exp>;
+            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut whenEq: Arc<BackendDAE::WhenEquation> = Arc::new(<BackendDAE::WhenEquation as ::std::default::Default>::default());
             let mut eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
             e = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("$_clkfire")).clone() }), expLst: list![Arc::new(DAE::Exp::ICONST { integer: i.clone() })], attr: DAE::callAttrBuiltinOther().clone() });
             whenEq = Arc::new(BackendDAE::WhenEquation { condition: c.clone(), whenStmtLst: list![BackendDAE::WhenOperator::NORETCALL { exp: e.clone(), source: DAE::emptyElementSource().clone() }], elsewhenPart: None });
             eq = Arc::new(BackendDAE::Equation::WHEN_EQUATION { size: 0, whenEquation: whenEq.clone(), source: DAE::emptyElementSource().clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_DYNAMIC.clone() });
-            cons(eq.clone(), outRemovedEqs.clone())
+            metamodelica::cons(eq.clone(), outRemovedEqs.clone())
         },
         _ => {
             outRemovedEqs.clone()
@@ -201,7 +201,7 @@ pub fn getBoolClockWhenClauses(mut eq: Arc<BackendDAE::Equation>, mut eqLst: Arc
     let mut eq: Arc<BackendDAE::Equation> = eq;
     let mut eqLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = eqLst;
     if hasBoolClockWhenClause(eq.clone()) {
-        eqLst = cons(eq.clone(), eqLst.clone());
+        eqLst = metamodelica::cons(eq.clone(), eqLst.clone());
     }
     (eq, eqLst)
 }
@@ -235,8 +235,8 @@ fn treatClockedStates(mut inSysts: Arc<metamodelica::List<Arc<BackendDAE::EqSyst
             let mut solverMethod: ArcStr = arcstr::literal!("");
             let mut eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
             let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
-            let mut exp: Arc<DAE::Exp>;
-            let mut exp2: Arc<DAE::Exp>;
+            let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut exp2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let mut eqs = (*eqs).clone();
             let BackendDAE::CLOCKED_PARTITION { subPartIdx: __pa0 } = (syst.partitionKind.clone()) else { bail!("pattern mismatch") };
@@ -257,7 +257,7 @@ fn treatClockedStates(mut inSysts: Arc<metamodelica::List<Arc<BackendDAE::EqSyst
                 let (__pa1, (__pa2, _)) = BackendEquation::traverseExpsOfEquation(eq.clone(), (std::sync::Arc::new(getDerVars1) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Option<ArcStr>)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Option<ArcStr>))> + 'static>), (derVars.clone(), BackendEquation::getForEquationIterIdent(eq.clone())))?;
                 eq = __pa1.clone();
                 derVars = __pa2.clone();
-                lstEqs = cons(eq.clone(), lstEqs.clone());
+                lstEqs = metamodelica::cons(eq.clone(), lstEqs.clone());
             }
             for mut derVar in &*derVars.clone() {
                 let mut derVar = derVar.clone();
@@ -293,7 +293,7 @@ fn treatClockedStates(mut inSysts: Arc<metamodelica::List<Arc<BackendDAE::EqSyst
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-                lstEqs = cons(eq.clone(), lstEqs.clone());
+                lstEqs = metamodelica::cons(eq.clone(), lstEqs.clone());
             }
             assign_field!(syst.orderedEqs = BackendEquation::listEquation(lstEqs.clone().reverse())?);
             if solverMethod.clone() == literal!("SemiImplicitEuler") {
@@ -317,21 +317,21 @@ fn treatClockedStates(mut inSysts: Arc<metamodelica::List<Arc<BackendDAE::EqSyst
 }
 
 fn getDerVars1(mut inExp: Arc<DAE::Exp>, mut inDerVars: (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Option<ArcStr>)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Option<ArcStr>))> {
-    let mut outExp: Arc<DAE::Exp>;
-    let mut outDerVars: (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Option<ArcStr>);
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outDerVars: (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Option<ArcStr>) = (metamodelica::nil(), None);
     (outExp, outDerVars) = Expression::traverseExpBottomUp(inExp.clone(), (std::sync::Arc::new(fnptr!(getDerVars, Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Option<ArcStr>))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Option<ArcStr>)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Option<ArcStr>))> + 'static>), inDerVars.clone())?;
     Ok((outExp, outDerVars))
 }
 
 fn getDerVars(mut inExp: Arc<DAE::Exp>, mut inDerVars: (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Option<ArcStr>)) -> (Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Option<ArcStr>)) {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outDerVars: (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Option<ArcStr>) = inDerVars.clone();
     outExp = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { ty, componentRef: x }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. } => {
             let mut derVars: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
             let mut optForIter: Option<ArcStr> = None;
             let mut forIter: ArcStr = arcstr::literal!("");
-            let mut der_x: Arc<DAE::Exp>;
+            let mut der_x: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut x = (*x).clone();
             der_x = Arc::new(DAE::Exp::CREF { componentRef: ComponentReference::crefPrefixDer(x.clone()), ty: ty.clone() });
             (derVars, optForIter) = inDerVars.clone();
@@ -343,7 +343,7 @@ fn getDerVars(mut inExp: Arc<DAE::Exp>, mut inDerVars: (Arc<metamodelica::List<A
         _ => (),
     });
             if !(ComponentReferenceBasics::crefInLst(x.clone(), derVars.clone())) {
-                derVars = cons(x.clone(), derVars.clone());
+                derVars = metamodelica::cons(x.clone(), derVars.clone());
             }
             outDerVars = (derVars.clone(), optForIter.clone());
             der_x.clone()
@@ -357,28 +357,28 @@ fn getDerVars(mut inExp: Arc<DAE::Exp>, mut inDerVars: (Arc<metamodelica::List<A
 }
 
 fn shiftDerVars1(mut inExp: Arc<DAE::Exp>, mut inDerVars: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outDerVars: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     (outExp, outDerVars) = Expression::traverseExpBottomUp(inExp.clone(), (std::sync::Arc::new(fnptr!(shiftDerVars, Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> + 'static>), inDerVars.clone())?;
     Ok((outExp, outDerVars))
 }
 
 fn shiftDerVars(mut inExp: Arc<DAE::Exp>, mut inDerVars: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> (Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outDerVars: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = inDerVars.clone();
     outExp = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::CREF { componentRef: x, .. } if (ComponentReferenceBasics::crefInLst(x.clone(), inDerVars.clone())) => {
-            let mut exp: Arc<DAE::Exp>;
+            let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             exp = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("previous")).clone() }), expLst: list![inExp.clone()], attr: DAE::callAttrBuiltinImpureReal().clone() });
             exp.clone()
         },
         Deref @ DAE::Exp::CALL { attr: attr @ Deref @ DAE::CallAttributes { .. }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CALL { expLst, path: Deref @ Absyn::Path::IDENT { name: Deref @ "previous" }, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" } } => {
-            let mut exp: Arc<DAE::Exp>;
+            let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             exp = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("der")).clone() }), expLst: expLst.clone(), attr: attr.clone() });
             exp.clone()
         },
         Deref @ DAE::Exp::CALL { attr: attr @ Deref @ DAE::CallAttributes { .. }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CALL { expLst, path: Deref @ Absyn::Path::IDENT { name: Deref @ "previous" }, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "previous" } } => {
-            let mut exp: Arc<DAE::Exp>;
+            let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             exp = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("previous")).clone() }), expLst: expLst.clone(), attr: attr.clone() });
             exp.clone()
         },
@@ -391,22 +391,22 @@ fn shiftDerVars(mut inExp: Arc<DAE::Exp>, mut inDerVars: Arc<metamodelica::List<
 }
 
 fn substituteFiniteDifference1(mut inExp: Arc<DAE::Exp>, mut inDerVars: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outDerVars: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     (outExp, outDerVars) = Expression::traverseExpBottomUp(inExp.clone(), (std::sync::Arc::new(fnptr!(substituteFiniteDifference, Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> + 'static>), inDerVars.clone())?;
     Ok((outExp, outDerVars))
 }
 
 fn substituteFiniteDifference(mut inExp: Arc<DAE::Exp>, mut inDerVars: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> (Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outDerVars: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     (outExp, outDerVars) = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::CALL { attr: attr @ Deref @ DAE::CallAttributes { ty, .. }, expLst: expLst @ Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: x, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" } } => {
-            let mut exp: Arc<DAE::Exp>;
+            let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             exp = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("previous")).clone() }), expLst: expLst.clone(), attr: attr.clone() });
             exp = Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::CREF { componentRef: x.clone(), ty: ty.clone() }), operator: DAE::Operator::SUB { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: exp.clone() });
             exp = Arc::new(DAE::Exp::BINARY { exp1: exp.clone(), operator: DAE::Operator::DIV { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("interval")).clone() }), expLst: metamodelica::nil(), attr: DAE::callAttrBuiltinImpureReal().clone() }) });
-            (exp.clone(), cons(x.clone(), inDerVars.clone()))
+            (exp.clone(), metamodelica::cons(x.clone(), inDerVars.clone()))
         },
         _ => {
             (inExp.clone(), inDerVars.clone())
@@ -420,8 +420,8 @@ fn markClockedStates(mut inSyst: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Ba
     let mut outShared: Arc<BackendDAE::Shared> = inShared.clone();
     let mut eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
     let mut prevVars: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-    let mut isPrevVarArr: metamodelica::Array<bool>;
-    let mut isDerVarArr: metamodelica::Array<bool>;
+    let mut isPrevVarArr: metamodelica::Array<bool> = Default::default();
+    let mut isDerVarArr: metamodelica::Array<bool> = Default::default();
     let mut varIxs: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
     let mut idx: i32 = 0;
@@ -475,7 +475,7 @@ fn markClockedStates(mut inSyst: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Ba
             var = BackendVariable::setVarKind(var.clone(), BackendDAE::VarKind::CLOCKED_STATE { isStartFixed: isDerVarArr.borrow()[(i.clone()-1) as usize].clone(), previousName: ComponentReference::crefPrefixPrevious(var.varName.clone()) })?;
             var = BackendVariable::setVarFixed(var.clone(), true)?;
             BackendVariable::setVarAt(inSyst.orderedVars.clone(), i.clone(), var.clone())?;
-            prevVars = cons(var.varName.clone(), prevVars.clone());
+            prevVars = metamodelica::cons(var.varName.clone(), prevVars.clone());
         }
     }
     subPartition.prevVars = prevVars.clone();
@@ -484,15 +484,15 @@ fn markClockedStates(mut inSyst: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Ba
 }
 
 fn collectPrevVars(mut inExp: Arc<DAE::Exp>, mut inPrevVars: (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Option<ArcStr>)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Option<ArcStr>))> {
-    let mut outExp: Arc<DAE::Exp>;
-    let mut outPrevVars: (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Option<ArcStr>);
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outPrevVars: (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Option<ArcStr>) = (metamodelica::nil(), None);
     (outExp, outPrevVars) = Expression::traverseExpBottomUp(inExp.clone(), (std::sync::Arc::new(fnptr!(collectPrevVars1, Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Option<ArcStr>))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Option<ArcStr>)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Option<ArcStr>))> + 'static>), inPrevVars.clone())?;
     Ok((outExp, outPrevVars))
 }
 
 fn collectPrevVars1(mut inExp: Arc<DAE::Exp>, mut inPrevVars: (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Option<ArcStr>)) -> (Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Option<ArcStr>)) {
     let mut outExp: Arc<DAE::Exp> = inExp.clone();
-    let mut outPrevVars: (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Option<ArcStr>);
+    let mut outPrevVars: (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Option<ArcStr>) = (metamodelica::nil(), None);
     outPrevVars = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, ty: _ }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "previous" }, .. } => {
             let mut inPrevCompRefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
@@ -507,7 +507,7 @@ fn collectPrevVars1(mut inExp: Arc<DAE::Exp>, mut inPrevVars: (Arc<metamodelica:
         },
         _ => (),
     });
-            (cons(cr.clone(), inPrevCompRefs.clone()), inForIter.clone())
+            (metamodelica::cons(cr.clone(), inPrevCompRefs.clone()), inForIter.clone())
         },
         _ => {
             inPrevVars.clone()
@@ -527,13 +527,13 @@ fn subClockPartitioning1(mut inSysts: Arc<metamodelica::List<Arc<BackendDAE::EqS
     let mut n: i32 = 0;
     let mut nBaseClocks: i32 = 0;
     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut hasHoldOperator: metamodelica::Array<bool>;
+    let mut hasHoldOperator: metamodelica::Array<bool> = Default::default();
     let mut systs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = metamodelica::nil();
     let mut lstSubClocks1: Arc<metamodelica::List<BackendDAE::SubClock>> = metamodelica::nil();
     let mut lstSubClocks: Arc<metamodelica::List<BackendDAE::SubClock>> = metamodelica::nil();
     let mut partitionsInfo: BackendDAE::PartitionsInfo = <BackendDAE::PartitionsInfo as ::std::default::Default>::default();
-    let mut basePartitions: metamodelica::Array<BackendDAE::BasePartition>;
-    let mut subPartitions: metamodelica::Array<BackendDAE::SubPartition>;
+    let mut basePartitions: metamodelica::Array<BackendDAE::BasePartition> = Default::default();
+    let mut subPartitions: metamodelica::Array<BackendDAE::SubPartition> = Default::default();
     nBaseClocks = (inSysts.clone().len() as i32);
     basePartitions = arrayCreate(nBaseClocks.clone(), BackendDAE::BasePartition { clock: Arc::new(openmodelica_frontend_types::DAE::ClockKind::INFERRED_CLOCK), nSubClocks: 0 });
     varsPartition = HashTable::emptyHashTable();
@@ -596,27 +596,27 @@ fn removeHoldExpsSyst(mut inSysts: Arc<metamodelica::List<Arc<BackendDAE::EqSyst
             for mut i in 1..=BackendEquation::getNumberOfEquations(eqs.clone()) {
                 eq = BackendEquation::get(eqs.clone(), i.clone());
                 (eq, outHoldComps) = BackendEquation::traverseExpsOfEquation(eq.clone(), (std::sync::Arc::new(removeHoldExp1) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> + 'static>), outHoldComps.clone())?;
-                lstEqs = cons(eq.clone(), lstEqs.clone());
+                lstEqs = metamodelica::cons(eq.clone(), lstEqs.clone());
             }
             assign_field!(syst.orderedEqs = BackendEquation::listEquation(lstEqs.clone().reverse())?);
             syst.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        outSysts = cons(BackendDAEUtil::clearEqSyst(syst1.clone())?, outSysts.clone());
+        outSysts = metamodelica::cons(BackendDAEUtil::clearEqSyst(syst1.clone())?, outSysts.clone());
     }
     Ok((outSysts, outHoldComps))
 }
 
 fn removeHoldExp1(mut inExp: Arc<DAE::Exp>, mut inComps: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outComps: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     (outExp, outComps) = Expression::traverseExpBottomUp(inExp.clone(), (std::sync::Arc::new(removeHoldExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> + 'static>), inComps.clone())?;
     Ok((outExp, outComps))
 }
 
 fn removeHoldExp(mut inExp: Arc<DAE::Exp>, mut inComps: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outComps: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     (outExp, outComps) = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "hold" }, expLst: Deref @ metamodelica::List::Cons { head: e, tail: Deref @ metamodelica::List::Nil }, attr: _ } => {
@@ -626,7 +626,7 @@ fn removeHoldExp(mut inExp: Arc<DAE::Exp>, mut inComps: Arc<metamodelica::List<A
                 _ => bail!("pattern mismatch"),
             } };
             cr = __pa0.clone();
-            (substGetPartition(e.clone())?, cons(cr.clone(), inComps.clone()))
+            (substGetPartition(e.clone())?, metamodelica::cons(cr.clone(), inComps.clone()))
         },
         _ => {
             (inExp.clone(), inComps.clone())
@@ -637,8 +637,8 @@ fn removeHoldExp(mut inExp: Arc<DAE::Exp>, mut inComps: Arc<metamodelica::List<A
 }
 
 fn getSubPartitionAdjacency(mut numPartitions: i32, mut baseClockEq: i32, mut subPartitionInterfaceEqs: Arc<metamodelica::List<i32>>, mut eqPartMap: metamodelica::Array<i32>, mut varPartMap: metamodelica::Array<i32>, mut clockedVarsMask: metamodelica::Array<bool>, mut eqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut vars: BackendDAE::Variables) -> Result<(metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::SubClock)>>>, metamodelica::Array<i32>)> {
-    let mut partAdjacency: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::SubClock)>>>;
-    let mut order: metamodelica::Array<i32>;
+    let mut partAdjacency: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::SubClock)>>> = Default::default();
+    let mut order: metamodelica::Array<i32> = Default::default();
     let mut infered: bool = false;
     let mut part: i32 = 0;
     let mut part1: i32 = 0;
@@ -649,9 +649,9 @@ fn getSubPartitionAdjacency(mut numPartitions: i32, mut baseClockEq: i32, mut su
     let mut orderLst: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut subClk1: BackendDAE::SubClock = BackendDAE::SubClock::INFERED_SUBCLOCK;
     let mut subClk2: BackendDAE::SubClock = BackendDAE::SubClock::INFERED_SUBCLOCK;
-    let mut partitionParents: metamodelica::Array<i32>;
-    let mut partitionParentsVisited: metamodelica::Array<bool>;
-    let mut partitionInterfacesClockVars: metamodelica::Array<bool>;
+    let mut partitionParents: metamodelica::Array<i32> = Default::default();
+    let mut partitionParentsVisited: metamodelica::Array<bool> = Default::default();
+    let mut partitionInterfacesClockVars: metamodelica::Array<bool> = Default::default();
     partAdjacency = arrayCreate(numPartitions.clone(), metamodelica::nil());
     partitionParents = arrayCreate(numPartitions.clone(), -1);
     partitionInterfacesClockVars = arrayCreate(numPartitions.clone(), false);
@@ -690,20 +690,20 @@ fn getSubPartitionAdjacency(mut numPartitions: i32, mut baseClockEq: i32, mut su
         partLst = __pa4.clone();
         if !(partitionParentsVisited.borrow()[(part.clone()-1) as usize].clone()) {
             if partitionParents.borrow()[(part.clone()-1) as usize].clone() == -1 || partitionParents.borrow()[(part.clone()-1) as usize].clone() == part.clone() {
-                orderLst = cons(part.clone(), orderLst.clone());
+                orderLst = metamodelica::cons(part.clone(), orderLst.clone());
                 {
                     let __cell5 = true;
                     partitionParentsVisited.clone().borrow_mut()[(part.clone()-1) as usize] = __cell5;
                 }
             } else if partitionParentsVisited.borrow()[(partitionParents.borrow()[(part.clone()-1) as usize].clone()-1) as usize].clone() {
-                orderLst = cons(part.clone(), orderLst.clone());
+                orderLst = metamodelica::cons(part.clone(), orderLst.clone());
                 {
                     let __cell6 = true;
                     partitionParentsVisited.clone().borrow_mut()[(part.clone()-1) as usize] = __cell6;
                 }
             } else {
-                partLst = cons(part.clone(), partLst.clone());
-                partLst = cons(partitionParents.borrow()[(part.clone()-1) as usize].clone(), partLst.clone());
+                partLst = metamodelica::cons(part.clone(), partLst.clone());
+                partLst = metamodelica::cons(partitionParents.borrow()[(part.clone()-1) as usize].clone(), partLst.clone());
             }
         }
     }
@@ -753,14 +753,14 @@ fn setSolverSubClock(mut baseClkIn: Arc<DAE::ClockKind>, mut inSubClock: Backend
 
 fn findSubClocks(mut numPartitions: i32, mut baseClockEq: i32, mut baseClk: Arc<DAE::ClockKind>, mut baseClockConstructors: Arc<metamodelica::List<i32>>, mut subPartitionInterfaceEqs: Arc<metamodelica::List<i32>>, mut eqPartMap: metamodelica::Array<i32>, mut varPartMap: metamodelica::Array<i32>, mut eqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut partAdjacency: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::SubClock)>>>) -> Result<(Arc<DAE::ClockKind>, metamodelica::Array<BackendDAE::SubClock>)> {
     let mut baseClkOut: Arc<DAE::ClockKind> = Arc::new(DAE::ClockKind::INFERRED_CLOCK);
-    let mut outSubClocks: metamodelica::Array<BackendDAE::SubClock>;
+    let mut outSubClocks: metamodelica::Array<BackendDAE::SubClock> = Default::default();
     let mut part1: i32 = 0;
     let mut part2: i32 = 0;
     let mut partLst: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut subClk1: BackendDAE::SubClock = BackendDAE::SubClock::INFERED_SUBCLOCK;
     let mut subClk2: BackendDAE::SubClock = BackendDAE::SubClock::INFERED_SUBCLOCK;
     let mut clk: Arc<DAE::ClockKind> = Arc::new(DAE::ClockKind::INFERRED_CLOCK);
-    let mut partIsAssigned: metamodelica::Array<bool>;
+    let mut partIsAssigned: metamodelica::Array<bool> = Default::default();
     let mut adjParts: Arc<metamodelica::List<(i32, BackendDAE::SubClock)>> = metamodelica::nil();
     outSubClocks = arrayCreate(numPartitions.clone(), BackendDAE::DEFAULT_SUBCLOCK.clone());
     partIsAssigned = arrayCreate(numPartitions.clone(), false);
@@ -781,7 +781,7 @@ fn findSubClocks(mut numPartitions: i32, mut baseClockEq: i32, mut baseClk: Arc<
         partLst = List::intRange(numPartitions.clone());
     } else {
         part1 = eqPartMap.clone().borrow()[(baseClockEq.clone()-1) as usize].clone();
-        partLst = cons(part1.clone(), List::intRange(numPartitions.clone()));
+        partLst = metamodelica::cons(part1.clone(), List::intRange(numPartitions.clone()));
         (baseClkOut, subClk1) = setSolverSubClock(baseClk.clone(), outSubClocks.borrow()[(part1.clone()-1) as usize].clone());
         {let _arr = outSubClocks.clone(); _arr.borrow_mut()[(part1.clone()-1) as usize] = subClk1.clone(); _arr};
         {let _arr = partIsAssigned.clone(); _arr.borrow_mut()[(part1.clone()-1) as usize] = true; _arr};
@@ -804,7 +804,7 @@ fn findSubClocks(mut numPartitions: i32, mut baseClockEq: i32, mut baseClk: Arc<
                 if !(isInferedSubClock(subClk2.clone())) {
                     {let _arr = outSubClocks.clone(); _arr.borrow_mut()[(part2.clone()-1) as usize] = subClk2.clone(); _arr};
                     {let _arr = partIsAssigned.clone(); _arr.borrow_mut()[(part2.clone()-1) as usize] = true; _arr};
-                    partLst = cons(part2.clone(), partLst.clone());
+                    partLst = metamodelica::cons(part2.clone(), partLst.clone());
                 }
             }
         }
@@ -861,9 +861,9 @@ fn addPartAdjacencyEdge(mut part1: i32, mut sub1: BackendDAE::SubClock, mut part
             if intEq(Util::tuple21(edge.clone()), part2.clone()) {
             }
         }
-        {let _arr = partAdjacency.clone(); _arr.borrow_mut()[(part1.clone()-1) as usize] = cons((part2.clone(), sub1.clone()), partEdges.clone()); _arr};
+        {let _arr = partAdjacency.clone(); _arr.borrow_mut()[(part1.clone()-1) as usize] = metamodelica::cons((part2.clone(), sub1.clone()), partEdges.clone()); _arr};
         partEdges = partAdjacency.clone().borrow()[(part2.clone()-1) as usize].clone();
-        {let _arr = partAdjacency.clone(); _arr.borrow_mut()[(part2.clone()-1) as usize] = cons((part1.clone(), sub2.clone()), partEdges.clone()); _arr};
+        {let _arr = partAdjacency.clone(); _arr.borrow_mut()[(part2.clone()-1) as usize] = metamodelica::cons((part1.clone(), sub2.clone()), partEdges.clone()); _arr};
     }
     Ok(())
 }
@@ -1073,7 +1073,7 @@ fn getConnectedSubPartitions(mut eq: Arc<BackendDAE::Equation>, mut varPartMap: 
 fn chooseBaseClock(mut clockEqs: Arc<metamodelica::List<i32>>, mut numPartitions: i32, mut eqPartMap: metamodelica::Array<i32>, mut eqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>) -> (Arc<DAE::ClockKind>, i32) {
     let mut outBaseClock: Arc<DAE::ClockKind> = Arc::new(openmodelica_frontend_types::DAE::ClockKind::INFERRED_CLOCK);
     let mut baseClockEqIdx: i32 = -1;
-    let mut subClkPartMap: metamodelica::Array<BackendDAE::SubClock>;
+    let mut subClkPartMap: metamodelica::Array<BackendDAE::SubClock> = Default::default();
     let mut eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
     subClkPartMap = arrayCreate(numPartitions.clone(), BackendDAE::DEFAULT_SUBCLOCK.clone());
     for mut clockEq in &*clockEqs.clone() {
@@ -1151,22 +1151,22 @@ fn findBaseClockInterfaces1(mut eq: Arc<BackendDAE::Equation>, mut eqIdx: i32, m
     let mut subClockInterfaceEqsOut: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     (clockEqsOut, subClockInterfaceEqIdxsOut, subClockInterfaceEqsOut) = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ BackendDAE::Equation::EQUATION { scalar: Deref @ DAE::Exp::CLKCONST { clk: Deref @ DAE::ClockKind::INFERRED_CLOCK { .. } }, .. } => {
-            (cons(eqIdx.clone(), clockEqsIn.clone()), subClockInterfaceEqIdxsIn.clone(), subClockInterfaceEqsIn.clone())
+            (metamodelica::cons(eqIdx.clone(), clockEqsIn.clone()), subClockInterfaceEqIdxsIn.clone(), subClockInterfaceEqsIn.clone())
         },
         Deref @ BackendDAE::Equation::EQUATION { scalar: Deref @ DAE::Exp::CLKCONST { clk: Deref @ DAE::ClockKind::RATIONAL_CLOCK { intervalCounter: _, .. } }, .. } => {
-            (cons(eqIdx.clone(), clockEqsIn.clone()), subClockInterfaceEqIdxsIn.clone(), subClockInterfaceEqsIn.clone())
+            (metamodelica::cons(eqIdx.clone(), clockEqsIn.clone()), subClockInterfaceEqIdxsIn.clone(), subClockInterfaceEqsIn.clone())
         },
         Deref @ BackendDAE::Equation::EQUATION { scalar: Deref @ DAE::Exp::CLKCONST { clk: Deref @ DAE::ClockKind::REAL_CLOCK { interval: _ } }, .. } => {
-            (cons(eqIdx.clone(), clockEqsIn.clone()), subClockInterfaceEqIdxsIn.clone(), subClockInterfaceEqsIn.clone())
+            (metamodelica::cons(eqIdx.clone(), clockEqsIn.clone()), subClockInterfaceEqIdxsIn.clone(), subClockInterfaceEqsIn.clone())
         },
         Deref @ BackendDAE::Equation::EQUATION { scalar: Deref @ DAE::Exp::CLKCONST { clk: Deref @ DAE::ClockKind::EVENT_CLOCK { condition: _, .. } }, .. } => {
-            (cons(eqIdx.clone(), clockEqsIn.clone()), subClockInterfaceEqIdxsIn.clone(), subClockInterfaceEqsIn.clone())
+            (metamodelica::cons(eqIdx.clone(), clockEqsIn.clone()), subClockInterfaceEqIdxsIn.clone(), subClockInterfaceEqsIn.clone())
         },
         Deref @ BackendDAE::Equation::EQUATION { scalar: Deref @ DAE::Exp::CLKCONST { clk: Deref @ DAE::ClockKind::SOLVER_CLOCK { c: Deref @ DAE::Exp::CREF { componentRef: _, .. }, solverMethod: _ } }, .. } => {
-            (clockEqsIn.clone(), cons(eqIdx.clone(), subClockInterfaceEqIdxsIn.clone()), cons(eq.clone(), subClockInterfaceEqsIn.clone()))
+            (clockEqsIn.clone(), metamodelica::cons(eqIdx.clone(), subClockInterfaceEqIdxsIn.clone()), metamodelica::cons(eq.clone(), subClockInterfaceEqsIn.clone()))
         },
         Deref @ BackendDAE::Equation::EQUATION { scalar: Deref @ DAE::Exp::CLKCONST { clk: Deref @ DAE::ClockKind::SOLVER_CLOCK { c: Deref @ DAE::Exp::CLKCONST { clk: _ }, solverMethod: _ } }, .. } => {
-            (cons(eqIdx.clone(), clockEqsIn.clone()), subClockInterfaceEqIdxsIn.clone(), subClockInterfaceEqsIn.clone())
+            (metamodelica::cons(eqIdx.clone(), clockEqsIn.clone()), subClockInterfaceEqIdxsIn.clone(), subClockInterfaceEqsIn.clone())
         },
         Deref @ BackendDAE::Equation::EQUATION { scalar: Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cref1, .. }, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "superSample" }, .. }, .. } => {
             let mut varIdx: i32 = 0;
@@ -1176,7 +1176,7 @@ fn findBaseClockInterfaces1(mut eq: Arc<BackendDAE::Equation>, mut eqIdx: i32, m
             } };
             varIdx = __pa0.clone();
             removeEdge(eqIdx.clone(), varIdx.clone(), m.clone(), mT.clone())?;
-            (clockEqsIn.clone(), cons(eqIdx.clone(), subClockInterfaceEqIdxsIn.clone()), cons(eq.clone(), subClockInterfaceEqsIn.clone()))
+            (clockEqsIn.clone(), metamodelica::cons(eqIdx.clone(), subClockInterfaceEqIdxsIn.clone()), metamodelica::cons(eq.clone(), subClockInterfaceEqsIn.clone()))
         },
         Deref @ BackendDAE::Equation::EQUATION { scalar: Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cref1, .. }, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "subSample" }, .. }, .. } => {
             let mut varIdx: i32 = 0;
@@ -1186,7 +1186,7 @@ fn findBaseClockInterfaces1(mut eq: Arc<BackendDAE::Equation>, mut eqIdx: i32, m
             } };
             varIdx = __pa0.clone();
             removeEdge(eqIdx.clone(), varIdx.clone(), m.clone(), mT.clone())?;
-            (clockEqsIn.clone(), cons(eqIdx.clone(), subClockInterfaceEqIdxsIn.clone()), cons(eq.clone(), subClockInterfaceEqsIn.clone()))
+            (clockEqsIn.clone(), metamodelica::cons(eqIdx.clone(), subClockInterfaceEqIdxsIn.clone()), metamodelica::cons(eq.clone(), subClockInterfaceEqsIn.clone()))
         },
         Deref @ BackendDAE::Equation::EQUATION { scalar: Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cref1, .. }, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "shiftSample" }, .. }, .. } => {
             let mut varIdx: i32 = 0;
@@ -1196,7 +1196,7 @@ fn findBaseClockInterfaces1(mut eq: Arc<BackendDAE::Equation>, mut eqIdx: i32, m
             } };
             varIdx = __pa0.clone();
             removeEdge(eqIdx.clone(), varIdx.clone(), m.clone(), mT.clone())?;
-            (clockEqsIn.clone(), cons(eqIdx.clone(), subClockInterfaceEqIdxsIn.clone()), cons(eq.clone(), subClockInterfaceEqsIn.clone()))
+            (clockEqsIn.clone(), metamodelica::cons(eqIdx.clone(), subClockInterfaceEqIdxsIn.clone()), metamodelica::cons(eq.clone(), subClockInterfaceEqsIn.clone()))
         },
         Deref @ BackendDAE::Equation::EQUATION { scalar: Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cref1, .. }, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "shiftSample" }, .. }, .. } => {
             let mut varIdx: i32 = 0;
@@ -1206,7 +1206,7 @@ fn findBaseClockInterfaces1(mut eq: Arc<BackendDAE::Equation>, mut eqIdx: i32, m
             } };
             varIdx = __pa0.clone();
             removeEdge(eqIdx.clone(), varIdx.clone(), m.clone(), mT.clone())?;
-            (clockEqsIn.clone(), cons(eqIdx.clone(), subClockInterfaceEqIdxsIn.clone()), cons(eq.clone(), subClockInterfaceEqsIn.clone()))
+            (clockEqsIn.clone(), metamodelica::cons(eqIdx.clone(), subClockInterfaceEqIdxsIn.clone()), metamodelica::cons(eq.clone(), subClockInterfaceEqsIn.clone()))
         },
         Deref @ BackendDAE::Equation::EQUATION { scalar: Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cref1, .. }, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "backSample" }, .. }, .. } => {
             let mut varIdx: i32 = 0;
@@ -1216,7 +1216,7 @@ fn findBaseClockInterfaces1(mut eq: Arc<BackendDAE::Equation>, mut eqIdx: i32, m
             } };
             varIdx = __pa0.clone();
             removeEdge(eqIdx.clone(), varIdx.clone(), m.clone(), mT.clone())?;
-            (clockEqsIn.clone(), cons(eqIdx.clone(), subClockInterfaceEqIdxsIn.clone()), cons(eq.clone(), subClockInterfaceEqsIn.clone()))
+            (clockEqsIn.clone(), metamodelica::cons(eqIdx.clone(), subClockInterfaceEqIdxsIn.clone()), metamodelica::cons(eq.clone(), subClockInterfaceEqsIn.clone()))
         },
         Deref @ BackendDAE::Equation::EQUATION { scalar: Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cref1, .. }, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "backSample" }, .. }, .. } => {
             let mut varIdx: i32 = 0;
@@ -1226,7 +1226,7 @@ fn findBaseClockInterfaces1(mut eq: Arc<BackendDAE::Equation>, mut eqIdx: i32, m
             } };
             varIdx = __pa0.clone();
             removeEdge(eqIdx.clone(), varIdx.clone(), m.clone(), mT.clone())?;
-            (clockEqsIn.clone(), cons(eqIdx.clone(), subClockInterfaceEqIdxsIn.clone()), cons(eq.clone(), subClockInterfaceEqsIn.clone()))
+            (clockEqsIn.clone(), metamodelica::cons(eqIdx.clone(), subClockInterfaceEqIdxsIn.clone()), metamodelica::cons(eq.clone(), subClockInterfaceEqsIn.clone()))
         },
         Deref @ BackendDAE::Equation::EQUATION { .. } => {
             (clockEqsIn.clone(), subClockInterfaceEqIdxsIn.clone(), subClockInterfaceEqsIn.clone())
@@ -1276,7 +1276,7 @@ fn replaceSampledClocks(mut eqsIn: Arc<ExpandableArray::ExpandableArray<Arc<Back
 
 fn replaceSampledClocks1(mut eqIn: Arc<BackendDAE::Equation>, mut tplIn: (BackendDAE::Variables, i32, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)) -> Result<(Arc<BackendDAE::Equation>, (BackendDAE::Variables, i32, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>))> {
     let mut eqOut: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
-    let mut tplOut: (BackendDAE::Variables, i32, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>);
+    let mut tplOut: (BackendDAE::Variables, i32, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>) = (<BackendDAE::Variables as ::std::default::Default>::default(), 0, metamodelica::nil(), metamodelica::nil());
     (eqOut, tplOut) = (::match_deref::match_deref! { match &((eqIn.clone(), tplIn.clone())) {
         (Deref @ BackendDAE::Equation::EQUATION { exp: e1, scalar: e2, source, attr: BackendDAE::EquationAttributes { kind: BackendDAE::EquationKind::DYNAMIC_EQUATION { .. }, .. } }, (vars, suffixIdx0, newEqs, newVars)) => {
             let mut suffixIdx: i32 = 0;
@@ -1335,9 +1335,9 @@ fn replaceSampledClocks1(mut eqIn: Arc<BackendDAE::Equation>, mut tplIn: (Backen
 }
 
 fn replaceSampledClocks2(mut inExp: Arc<DAE::Exp>, mut tplIn: (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, i32)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, i32))> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cont: bool = false;
-    let mut tplOut: (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, i32);
+    let mut tplOut: (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, i32) = (metamodelica::nil(), metamodelica::nil(), 0);
     (outExp, cont, tplOut) = (::match_deref::match_deref! { match &((inExp.clone(), tplIn.clone())) {
         (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: varExp @ Deref @ DAE::Exp::CREF { componentRef: _, .. }, tail: Deref @ metamodelica::List::Cons { head: clk @ Deref @ DAE::Exp::CLKCONST { clk: _ }, tail: Deref @ metamodelica::List::Nil } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "sample" }, .. }, (newEqs, newVars, suffixIdx)) => {
             let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -1346,7 +1346,7 @@ fn replaceSampledClocks2(mut inExp: Arc<DAE::Exp>, mut tplIn: (Arc<metamodelica:
             cr = Arc::new(DAE::ComponentRef::CREF_IDENT { ident: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(BackendDAE::WHENCLK_PRREFIX)); __mm_s.push_str(&*intString(suffixIdx.clone())); ArcStr::from(__mm_s) }).clone(), identType: DAE::T_CLOCK_DEFAULT().clone(), subscriptLst: metamodelica::nil() });
             addVar = BackendVariable::makeVar(cr.clone());
             addEq = Arc::new(BackendDAE::Equation::EQUATION { exp: Expression::crefToExp(cr.clone())?, scalar: clk.clone(), source: DAE::emptyElementSource().clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_DYNAMIC.clone() });
-            (substGetPartition(varExp.clone())?, false, (cons(addEq.clone(), newEqs.clone()), cons(addVar.clone(), newVars.clone()), suffixIdx.clone() + 1))
+            (substGetPartition(varExp.clone())?, false, (metamodelica::cons(addEq.clone(), newEqs.clone()), metamodelica::cons(addVar.clone(), newVars.clone()), suffixIdx.clone() + 1))
         },
         _ => {
             (inExp.clone(), true, tplIn.clone())
@@ -1366,31 +1366,31 @@ fn subClockPartitioning(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared:
     let mut clockEqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     let mut clockVars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
-    let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut rm: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut rmT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut rm: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut rmT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut partitionsCnt: i32 = 0;
-    let mut remEqPartMap: metamodelica::Array<i32>;
+    let mut remEqPartMap: metamodelica::Array<i32> = Default::default();
     let mut newClockEqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut newClockVars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-    let mut contPartitions: metamodelica::Array<Option<bool>>;
-    let mut subclksCnt: metamodelica::Array<i32>;
-    let mut order: metamodelica::Array<i32>;
-    let mut subclocks: metamodelica::Array<BackendDAE::SubClock>;
-    let mut clockedEqsMask: metamodelica::Array<bool>;
-    let mut clockedVarsMask: metamodelica::Array<bool>;
-    let mut usedVars: metamodelica::Array<bool>;
-    let mut usedRemovedVars: metamodelica::Array<bool>;
+    let mut contPartitions: metamodelica::Array<Option<bool>> = Default::default();
+    let mut subclksCnt: metamodelica::Array<i32> = Default::default();
+    let mut order: metamodelica::Array<i32> = Default::default();
+    let mut subclocks: metamodelica::Array<BackendDAE::SubClock> = Default::default();
+    let mut clockedEqsMask: metamodelica::Array<bool> = Default::default();
+    let mut clockedVarsMask: metamodelica::Array<bool> = Default::default();
+    let mut usedVars: metamodelica::Array<bool> = Default::default();
+    let mut usedRemovedVars: metamodelica::Array<bool> = Default::default();
     let mut baseClockEqIdx: i32 = 0;
     let mut eqIdx: i32 = 0;
     let mut varIdx: i32 = 0;
     let mut baseClockEquations: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut subClockInterfaceEqIdxs: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut subClockInterfaceEqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
-    let mut varPartMap: metamodelica::Array<i32>;
-    let mut eqPartMap: metamodelica::Array<i32>;
-    let mut partAdjacency: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::SubClock)>>>;
+    let mut varPartMap: metamodelica::Array<i32> = Default::default();
+    let mut eqPartMap: metamodelica::Array<i32> = Default::default();
+    let mut partAdjacency: metamodelica::Array<Arc<metamodelica::List<(i32, BackendDAE::SubClock)>>> = Default::default();
     let mut sys: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
     funcs = BackendDAEUtil::getFunctions(inShared.clone())?;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(inEqSystem.clone()) {
@@ -1441,9 +1441,9 @@ fn orderSubPartitions(mut numParts: i32, mut subclocks: metamodelica::Array<Back
     let mut considerRemovedEqs: bool = false;
     let mut part: i32 = 0;
     let mut mergedParts: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut partVarMap: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut partEqMap: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut partRemEqMap: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut partVarMap: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut partEqMap: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut partRemEqMap: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut sys: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
     let mut clk: BackendDAE::SubClock = BackendDAE::SubClock::INFERED_SUBCLOCK;
     let mut clk2: BackendDAE::SubClock = BackendDAE::SubClock::INFERED_SUBCLOCK;
@@ -1485,14 +1485,14 @@ fn orderSubPartitions(mut numParts: i32, mut subclocks: metamodelica::Array<Back
     for mut part in __range3 {
         clk2 = subclocks.clone().borrow()[(part.clone()-1) as usize].clone();
         if subClkEqual(clk.clone(), clk2.clone())? {
-            mergedParts = cons(part.clone(), mergedParts.clone());
+            mergedParts = metamodelica::cons(part.clone(), mergedParts.clone());
         } else {
-            mergedOrder = cons(mergedParts.clone().reverse(), mergedOrder.clone());
+            mergedOrder = metamodelica::cons(mergedParts.clone().reverse(), mergedOrder.clone());
             mergedParts = list![part.clone()];
             clk = subclocks.clone().borrow()[(part.clone()-1) as usize].clone();
         }
     }
-    mergedOrder = cons(mergedParts.clone().reverse(), mergedOrder.clone());
+    mergedOrder = metamodelica::cons(mergedParts.clone().reverse(), mergedOrder.clone());
     mergedOrder = mergedOrder.clone().reverse();
     part = 1;
     for mut mergedParts in &*mergedOrder.clone() {
@@ -1505,25 +1505,25 @@ fn orderSubPartitions(mut numParts: i32, mut subclocks: metamodelica::Array<Back
             let __range4 = &*partEqMap.clone().borrow()[(partIdx.clone()-1) as usize].clone();
             for mut e in __range4 {
                 let mut e = e.clone();
-                eqLst = cons(BackendEquation::get(eqs.clone(), e.clone()), eqLst.clone());
+                eqLst = metamodelica::cons(BackendEquation::get(eqs.clone(), e.clone()), eqLst.clone());
             }
             let __range5 = &*partVarMap.clone().borrow()[(partIdx.clone()-1) as usize].clone();
             for mut v in __range5 {
                 let mut v = v.clone();
-                varLst = cons(BackendVariable::getVarAt(vars.clone(), v.clone())?, varLst.clone());
+                varLst = metamodelica::cons(BackendVariable::getVarAt(vars.clone(), v.clone())?, varLst.clone());
             }
             let __range6 = &*partRemEqMap.clone().borrow()[(partIdx.clone()-1) as usize].clone();
             for mut r in __range6 {
                 let mut r = r.clone();
-                remEqLst = cons(BackendEquation::get(remEqs.clone(), r.clone()), remEqLst.clone());
+                remEqLst = metamodelica::cons(BackendEquation::get(remEqs.clone(), r.clone()), remEqLst.clone());
             }
             clk = subclocks.clone().borrow()[(partIdx.clone()-1) as usize].clone();
         }
         if !(eqLst.clone().is_empty()) || !(remEqLst.clone().is_empty()) {
             (sys, _) = createEqSystem(eqLst.clone().reverse(), varLst.clone().reverse(), remEqLst.clone(), (true, true))?;
             assign_field!(sys.partitionKind = BackendDAE::BaseClockPartitionKind::CLOCKED_PARTITION { subPartIdx: partitionOffset.clone() + part.clone() });
-            subClksOut = cons(clk.clone(), subClksOut.clone());
-            systs = cons(sys.clone(), systs.clone());
+            subClksOut = metamodelica::cons(clk.clone(), subClksOut.clone());
+            systs = metamodelica::cons(sys.clone(), systs.clone());
             part = part.clone() + 1;
         }
     }
@@ -1584,19 +1584,19 @@ fn setShift(mut oldVal: MMath::Rational, mut newVal: MMath::Rational) -> Result<
 }
 
 fn collectSubclkInfoExp(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, metamodelica::Array<Option<bool>>, SourceInfo, metamodelica::Array<i32>, i32, metamodelica::Array<i32>, BackendDAE::Variables, metamodelica::Array<Arc<metamodelica::List<i32>>>)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, metamodelica::Array<Option<bool>>, SourceInfo, metamodelica::Array<i32>, i32, metamodelica::Array<i32>, BackendDAE::Variables, metamodelica::Array<Arc<metamodelica::List<i32>>>))> {
-    let mut outExp: Arc<DAE::Exp>;
-    let mut outTpl: (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, metamodelica::Array<Option<bool>>, SourceInfo, metamodelica::Array<i32>, i32, metamodelica::Array<i32>, BackendDAE::Variables, metamodelica::Array<Arc<metamodelica::List<i32>>>);
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outTpl: (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, metamodelica::Array<Option<bool>>, SourceInfo, metamodelica::Array<i32>, i32, metamodelica::Array<i32>, BackendDAE::Variables, metamodelica::Array<Arc<metamodelica::List<i32>>>) = (metamodelica::nil(), metamodelica::nil(), Default::default(), <SourceInfo as ::std::default::Default>::default(), Default::default(), 0, Default::default(), <BackendDAE::Variables as ::std::default::Default>::default(), Default::default());
     let mut newEqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut newVars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-    let mut contPartitions: metamodelica::Array<Option<bool>>;
+    let mut contPartitions: metamodelica::Array<Option<bool>> = Default::default();
     let mut partitionIdx: i32 = 0;
-    let mut partitions: metamodelica::Array<i32>;
+    let mut partitions: metamodelica::Array<i32> = Default::default();
     let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
-    let mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut path: Arc<Absyn::Path>;
+    let mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut expLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut attr: Arc<DAE::CallAttributes> = Arc::new(<DAE::CallAttributes as ::std::default::Default>::default());
-    let mut clksCnt: metamodelica::Array<i32>;
+    let mut clksCnt: metamodelica::Array<i32> = Default::default();
     let mut clkCnt: i32 = 0;
     let mut source: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     (newEqs, newVars, contPartitions, source, clksCnt, partitionIdx, partitions, vars, mT) = inTpl.clone();
@@ -1617,8 +1617,8 @@ fn createSubClockVar(mut inPartitionIdx: i32, mut inClkCnt: i32, mut inPath: Arc
     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut varIxs: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut i: i32 = 0;
-    let mut e: Arc<DAE::Exp>;
-    let mut subclk: Arc<DAE::Exp>;
+    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut subclk: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let __pa0 = ::match_deref::match_deref! { match &(listHead(inExpLst.clone())?) {
         Deref @ DAE::Exp::CREF { componentRef: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -1629,7 +1629,7 @@ fn createSubClockVar(mut inPartitionIdx: i32, mut inClkCnt: i32, mut inPath: Arc
     i = listHead(mT.clone().borrow()[(i.clone()-1) as usize].clone())?;
     i = inPartitions.clone().borrow()[(i.clone()-1) as usize].clone();
     subclk = Arc::new(DAE::Exp::CREF { componentRef: getSubClkName(i.clone(), 1, DAE::T_CLOCK_DEFAULT().clone()), ty: DAE::T_CLOCK_DEFAULT().clone() });
-    e = Arc::new(DAE::Exp::CALL { path: inPath.clone(), expLst: cons(subclk.clone(), listRest(inExpLst.clone())?), attr: inAttr.clone() });
+    e = Arc::new(DAE::Exp::CALL { path: inPath.clone(), expLst: metamodelica::cons(subclk.clone(), listRest(inExpLst.clone())?), attr: inAttr.clone() });
     (outVar, outEq) = createSubClock(inPartitionIdx.clone(), inClkCnt.clone(), e.clone())?;
     Ok((outVar, outEq))
 }
@@ -1647,7 +1647,7 @@ fn setContClockedPartition(mut inIsContClockedPartition: bool, mut inPartitionId
 }
 
 fn collectSubclkInfoCall(mut inPath: Arc<Absyn::Path>, mut inExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inAttr: Arc<DAE::CallAttributes>, mut inNewEqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inNewVars: Arc<metamodelica::List<BackendDAE::Var>>, mut inContPartitions: metamodelica::Array<Option<bool>>, mut inPartitionIdx: i32, mut inClkCnt: i32, mut inPartitions: metamodelica::Array<i32>, mut inVars: BackendDAE::Variables, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut source: SourceInfo) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, i32)> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outNewEqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut outNewVars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
     let mut outClkCnt: i32 = 0;
@@ -1712,7 +1712,7 @@ fn collectSubclkInfoCall(mut inPath: Arc<Absyn::Path>, mut inExpLst: Arc<metamod
             let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
             let mut eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
             (var, eq) = createSubClock(inPartitionIdx.clone(), inClkCnt.clone(), (inExpLst.clone()).get(2)?)?;
-            (substGetPartition((inExpLst.clone()).get(1)?)?, cons(eq.clone(), inNewEqs.clone()), cons(var.clone(), inNewVars.clone()), inClkCnt.clone() + 1)
+            (substGetPartition((inExpLst.clone()).get(1)?)?, metamodelica::cons(eq.clone(), inNewEqs.clone()), metamodelica::cons(var.clone(), inNewVars.clone()), inClkCnt.clone() + 1)
         },
         (Deref @ Absyn::Path::IDENT { name: Deref @ "subSample" }, 2) => {
             (substGetPartition((inExpLst.clone()).get(1)?)?, inNewEqs.clone(), inNewVars.clone(), inClkCnt.clone() + 1)
@@ -1738,7 +1738,7 @@ fn collectSubclkInfoCall(mut inPath: Arc<Absyn::Path>, mut inExpLst: Arc<metamod
 }
 
 fn createSubClockVarFactor(mut inPartitionIdx: i32, mut inClkCnt: i32, mut inPath: Arc<Absyn::Path>, mut inExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inAttr: Arc<DAE::CallAttributes>, mut inPartitions: metamodelica::Array<i32>, mut inVars: BackendDAE::Variables, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut inNewEqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inNewVars: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, i32)> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outNewEqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = inNewEqs.clone();
     let mut outNewVars: Arc<metamodelica::List<BackendDAE::Var>> = inNewVars.clone();
     let mut outClkCnt: i32 = inClkCnt.clone();
@@ -1747,7 +1747,7 @@ fn createSubClockVarFactor(mut inPartitionIdx: i32, mut inClkCnt: i32, mut inPat
 }
 
 fn substGetPartition(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut attrs: Arc<DAE::CallAttributes> = Arc::new(<DAE::CallAttributes as ::std::default::Default>::default());
     attrs = Arc::new(DAE::CallAttributes { ty: Expression::r#typeof(inExp.clone())?, tuple_: false, builtin: true, isImpure: true, isFunctionPointerCall: false, inlineType: openmodelica_frontend_types::DAE::InlineType::NO_INLINE, tailCall: openmodelica_frontend_types::DAE::TailCall::NO_TAIL });
     outExp = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("$getPart")).clone() }), expLst: list![inExp.clone()], attr: attrs.clone() });
@@ -1776,8 +1776,8 @@ fn createSubClock(mut inPartitionIdx: i32, mut inCnt: i32, mut inExp: Arc<DAE::E
 fn collectSubclkInfo(mut inEqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut inRemovedEqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut inPartitionCnt: i32, mut inPartitions: metamodelica::Array<i32>, mut inReqsPartitions: metamodelica::Array<i32>, mut inVars: BackendDAE::Variables, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, metamodelica::Array<Option<bool>>, metamodelica::Array<i32>)> {
     let mut outNewEqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut outNewVars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-    let mut outContPartitions: metamodelica::Array<Option<bool>>;
-    let mut oClksCnt: metamodelica::Array<i32>;
+    let mut outContPartitions: metamodelica::Array<Option<bool>> = Default::default();
+    let mut oClksCnt: metamodelica::Array<i32> = Default::default();
     let mut eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
     let mut i: i32 = 0;
     let mut j: i32 = 0;
@@ -1785,7 +1785,7 @@ fn collectSubclkInfo(mut inEqs: Arc<ExpandableArray::ExpandableArray<Arc<Backend
     let mut eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
-    let mut partitionsWhenClocks: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut partitionsWhenClocks: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     outContPartitions = arrayCreate(inPartitionCnt.clone(), None);
     partitionsWhenClocks = arrayCreate(inPartitionCnt.clone(), metamodelica::nil());
     oClksCnt = arrayCreate(inPartitionCnt.clone(), 1);
@@ -1798,14 +1798,14 @@ fn collectSubclkInfo(mut inEqs: Arc<ExpandableArray::ExpandableArray<Arc<Backend
             cnt = oClksCnt.clone().borrow()[(i.clone()-1) as usize].clone();
             cr = Arc::new(DAE::ComponentRef::CREF_IDENT { ident: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(BackendDAE::WHENCLK_PRREFIX)); __mm_s.push_str(&*intString(j.clone())); ArcStr::from(__mm_s) }).clone(), identType: DAE::T_CLOCK_DEFAULT().clone(), subscriptLst: metamodelica::nil() });
             (var, eq) = createSubClock(i.clone(), cnt.clone(), Arc::new(DAE::Exp::CREF { componentRef: cr.clone(), ty: DAE::T_CLOCK_DEFAULT().clone() }))?;
-            outNewEqs = cons(eq.clone(), outNewEqs.clone());
-            outNewVars = cons(var.clone(), outNewVars.clone());
+            outNewEqs = metamodelica::cons(eq.clone(), outNewEqs.clone());
+            outNewVars = metamodelica::cons(var.clone(), outNewVars.clone());
             {let _arr = oClksCnt.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = cnt.clone() + 1; _arr};
         }
         if oClksCnt.clone().borrow()[(i.clone()-1) as usize].clone() == 1 {
             (var, eq) = createSubClock(i.clone(), 1, Arc::new(DAE::Exp::CLKCONST { clk: Arc::new(openmodelica_frontend_types::DAE::ClockKind::INFERRED_CLOCK) }))?;
-            outNewEqs = cons(eq.clone(), outNewEqs.clone());
-            outNewVars = cons(var.clone(), outNewVars.clone());
+            outNewEqs = metamodelica::cons(eq.clone(), outNewEqs.clone());
+            outNewVars = metamodelica::cons(var.clone(), outNewVars.clone());
             {let _arr = oClksCnt.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = 2; _arr};
         }
     }
@@ -1834,7 +1834,7 @@ fn collectEquationArrayClocks(mut eqs: Arc<ExpandableArray::ExpandableArray<Arc<
             let mut partitionsWhenClocksLst: Arc<metamodelica::List<i32>> = metamodelica::nil();
             partitionsWhenClocksLst = partitionsWhenClocks.borrow()[(partitionIdx.clone()-1) as usize].clone();
             if whenIdx.clone() != 0 && List::notMember(whenIdx.clone(), partitionsWhenClocksLst.clone()) {
-                {let _arr = partitionsWhenClocks.clone(); _arr.borrow_mut()[(partitionIdx.clone()-1) as usize] = cons(whenIdx.clone(), partitionsWhenClocksLst.clone()); _arr};
+                {let _arr = partitionsWhenClocks.clone(); _arr.borrow_mut()[(partitionIdx.clone()-1) as usize] = metamodelica::cons(whenIdx.clone(), partitionsWhenClocksLst.clone()); _arr};
             }
             eqAttr.kind = crate::BackendDAE::EquationKind::DYNAMIC_EQUATION;
             eqAttr.clone()
@@ -1855,15 +1855,15 @@ fn collectEquationArrayClocks(mut eqs: Arc<ExpandableArray::ExpandableArray<Arc<
 }
 
 fn collectSubclkInfoExp1(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, metamodelica::Array<Option<bool>>, SourceInfo, metamodelica::Array<i32>, i32, metamodelica::Array<i32>, BackendDAE::Variables, metamodelica::Array<Arc<metamodelica::List<i32>>>)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, metamodelica::Array<Option<bool>>, SourceInfo, metamodelica::Array<i32>, i32, metamodelica::Array<i32>, BackendDAE::Variables, metamodelica::Array<Arc<metamodelica::List<i32>>>))> {
-    let mut outExp: Arc<DAE::Exp>;
-    let mut outTpl: (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, metamodelica::Array<Option<bool>>, SourceInfo, metamodelica::Array<i32>, i32, metamodelica::Array<i32>, BackendDAE::Variables, metamodelica::Array<Arc<metamodelica::List<i32>>>);
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outTpl: (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, metamodelica::Array<Option<bool>>, SourceInfo, metamodelica::Array<i32>, i32, metamodelica::Array<i32>, BackendDAE::Variables, metamodelica::Array<Arc<metamodelica::List<i32>>>) = (metamodelica::nil(), metamodelica::nil(), Default::default(), <SourceInfo as ::std::default::Default>::default(), Default::default(), 0, Default::default(), <BackendDAE::Variables as ::std::default::Default>::default(), Default::default());
     (outExp, outTpl) = Expression::traverseExpBottomUp(inExp.clone(), (std::sync::Arc::new(collectSubclkInfoExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, metamodelica::Array<Option<bool>>, SourceInfo, metamodelica::Array<i32>, i32, metamodelica::Array<i32>, BackendDAE::Variables, metamodelica::Array<Arc<metamodelica::List<i32>>>)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, metamodelica::Array<Option<bool>>, SourceInfo, metamodelica::Array<i32>, i32, metamodelica::Array<i32>, BackendDAE::Variables, metamodelica::Array<Arc<metamodelica::List<i32>>>))> + 'static>), inTpl.clone())?;
     Ok((outExp, outTpl))
 }
 
 fn splitClockEqs(mut inEqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>) -> Result<(Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, metamodelica::Array<bool>)> {
     let mut outClockEqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
-    let mut outClockEqsMask: metamodelica::Array<bool>;
+    let mut outClockEqsMask: metamodelica::Array<bool> = Default::default();
     let mut clockEqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
     let mut i: i32 = 0;
@@ -1871,7 +1871,7 @@ fn splitClockEqs(mut inEqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE:
     for mut i in 1..=BackendEquation::getNumberOfEquations(inEqs.clone()) {
         eq = BackendEquation::get(inEqs.clone(), i.clone());
         if isClockEquation(eq.clone())? {
-            clockEqs = cons(eq.clone(), clockEqs.clone());
+            clockEqs = metamodelica::cons(eq.clone(), clockEqs.clone());
             {let _arr = outClockEqsMask.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = false; _arr};
         }
     }
@@ -1881,14 +1881,14 @@ fn splitClockEqs(mut inEqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE:
 
 fn splitClockVars(mut inVars: BackendDAE::Variables) -> Result<(BackendDAE::Variables, metamodelica::Array<bool>)> {
     let mut outClockVars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
-    let mut outClockVarsMask: metamodelica::Array<bool>;
+    let mut outClockVarsMask: metamodelica::Array<bool> = Default::default();
     let mut clockVars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
     let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
     outClockVarsMask = arrayCreate(BackendVariable::varsSize(inVars.clone()), true);
     for mut i in 1..=BackendVariable::varsSize(inVars.clone()) {
         var = BackendVariable::getVarAt(inVars.clone(), i.clone())?;
         if Types::isClockOrSubTypeClock(var.varType.clone())? {
-            clockVars = cons(var.clone(), clockVars.clone());
+            clockVars = metamodelica::cons(var.clone(), clockVars.clone());
             {let _arr = outClockVarsMask.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = false; _arr};
         }
     }
@@ -1908,7 +1908,7 @@ fn substitutePartitionOpExps(mut inSyst: Arc<BackendDAE::EqSystem>, mut inShared
         newEqs = __pa1.clone();
         newVars = __pa2.clone();
         cnt = __pa3.clone();
-        newEqs = cons(eq.clone(), newEqs.clone());
+        newEqs = metamodelica::cons(eq.clone(), newEqs.clone());
     }
     assign_field!(
         outSyst.orderedEqs = BackendEquation::listEquation(newEqs.clone().reverse())?,
@@ -1919,16 +1919,16 @@ fn substitutePartitionOpExps(mut inSyst: Arc<BackendDAE::EqSystem>, mut inShared
 }
 
 fn substitutePartitionOpExp(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, i32, Arc<BackendDAE::Shared>)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, i32, Arc<BackendDAE::Shared>))> {
-    let mut outExp: Arc<DAE::Exp>;
-    let mut outTpl: (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, i32, Arc<BackendDAE::Shared>);
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outTpl: (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, i32, Arc<BackendDAE::Shared>) = (metamodelica::nil(), metamodelica::nil(), 0, Arc::new(<BackendDAE::Shared as ::std::default::Default>::default()));
     (outExp, outTpl) = Expression::traverseExpBottomUp(inExp.clone(), (std::sync::Arc::new(substitutePartitionOpExp1) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, i32, Arc<BackendDAE::Shared>)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, i32, Arc<BackendDAE::Shared>))> + 'static>), inTpl.clone())?;
     Ok((outExp, outTpl))
 }
 
 fn substitutePartitionOpExp1(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, i32, Arc<BackendDAE::Shared>)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, i32, Arc<BackendDAE::Shared>))> {
-    let mut outExp: Arc<DAE::Exp>;
-    let mut outTpl: (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, i32, Arc<BackendDAE::Shared>);
-    let mut path: Arc<Absyn::Path>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outTpl: (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, i32, Arc<BackendDAE::Shared>) = (metamodelica::nil(), metamodelica::nil(), 0, Arc::new(<BackendDAE::Shared as ::std::default::Default>::default()));
+    let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
     let mut attr: Arc<DAE::CallAttributes> = Arc::new(<DAE::CallAttributes as ::std::default::Default>::default());
     let mut clk: Arc<DAE::ClockKind> = Arc::new(DAE::ClockKind::INFERRED_CLOCK);
@@ -1955,9 +1955,9 @@ fn substClock(mut inClk: Arc<DAE::ClockKind>, mut inNewEqs: Arc<metamodelica::Li
     let mut outNewEqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut outNewVars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
     let mut outCnt: i32 = 0;
-    let mut e: Arc<DAE::Exp>;
-    let mut i: Arc<DAE::Exp>;
-    let mut f: Arc<DAE::Exp>;
+    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut i: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut f: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cnt: i32 = 0;
     let mut eqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut vars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
@@ -2000,7 +2000,7 @@ fn isKnownOrConstantExp(mut inExp: Arc<DAE::Exp>, mut inKnownVars: BackendDAE::V
 fn isKnownOrConstantExp_traverser(mut inExp: Arc<DAE::Exp>, mut inTpl: (bool, BackendDAE::Variables)) -> (Arc<DAE::Exp>, bool, (bool, BackendDAE::Variables)) {
     let mut outExp: Arc<DAE::Exp> = inExp.clone();
     let mut outContinue: bool = false;
-    let mut outTpl: (bool, BackendDAE::Variables);
+    let mut outTpl: (bool, BackendDAE::Variables) = (false, <BackendDAE::Variables as ::std::default::Default>::default());
     let mut globalKnownVars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     let mut isKnown: bool = false;
     (isKnown, globalKnownVars) = inTpl.clone();
@@ -2022,7 +2022,7 @@ fn isKnownOrConstantExp_traverser(mut inExp: Arc<DAE::Exp>, mut inTpl: (bool, Ba
 }
 
 fn substClockExp(mut inExp: Arc<DAE::Exp>, mut inNewEqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inNewVars: Arc<metamodelica::List<BackendDAE::Var>>, mut inCnt: i32, mut inShared: Arc<BackendDAE::Shared>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, i32)> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outNewEqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut outNewVars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
     let mut outCnt: i32 = 0;
@@ -2045,8 +2045,8 @@ fn substClockExp(mut inExp: Arc<DAE::Exp>, mut inNewEqs: Arc<metamodelica::List<
 }
 
 fn substituteExpsCall(mut inPath: Arc<Absyn::Path>, mut inExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inAttr: Arc<DAE::CallAttributes>, mut inEqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inVars: Arc<metamodelica::List<BackendDAE::Var>>, mut inCnt: i32, mut inShared: Arc<BackendDAE::Shared>) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, i32, Arc<BackendDAE::Shared>))> {
-    let mut outExp: Arc<DAE::Exp>;
-    let mut outTpl: (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, i32, Arc<BackendDAE::Shared>);
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outTpl: (Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, i32, Arc<BackendDAE::Shared>) = (metamodelica::nil(), metamodelica::nil(), 0, Arc::new(<BackendDAE::Shared as ::std::default::Default>::default()));
     let mut replace: bool = false;
     let mut exps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut eqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
@@ -2084,9 +2084,9 @@ fn createEqVarPair(mut inComp: Arc<DAE::ComponentRef>, mut inType: Arc<DAE::Type
 }
 
 fn substExp(mut inExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inEqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut inVars: Arc<metamodelica::List<BackendDAE::Var>>, mut inCnt: i32) -> Result<(Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, i32)> {
-    let mut outTpl: (Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, i32);
+    let mut outTpl: (Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, i32) = (metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), 0);
     let mut create: bool = false;
-    let mut e: Arc<DAE::Exp>;
+    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     e = listHead(inExps.clone())?;
     create = (::match_deref::match_deref! { match &(e.clone()) {
         Deref @ DAE::Exp::CREF { .. } => false,
@@ -2107,7 +2107,7 @@ fn substExp(mut inExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inEqs: Arc<m
             ty = Expression::r#typeof(e.clone())?;
             cr = Arc::new(DAE::ComponentRef::CREF_IDENT { ident: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$var")); __mm_s.push_str(&*intString(inCnt.clone())); ArcStr::from(__mm_s) }).clone(), identType: ty.clone(), subscriptLst: metamodelica::nil() });
             (var, eq) = createEqVarPair(cr.clone(), ty.clone(), e.clone())?;
-            (cons(Arc::new(DAE::Exp::CREF { componentRef: cr.clone(), ty: ty.clone() }), listRest(inExps.clone())?), cons(eq.clone(), inEqs.clone()), cons(var.clone(), inVars.clone()), inCnt.clone() + 1)
+            (metamodelica::cons(Arc::new(DAE::Exp::CREF { componentRef: cr.clone(), ty: ty.clone() }), listRest(inExps.clone())?), metamodelica::cons(eq.clone(), inEqs.clone()), metamodelica::cons(var.clone(), inVars.clone()), inCnt.clone() + 1)
         },
         false => {
             (inExps.clone(), inEqs.clone(), inVars.clone(), inCnt.clone())
@@ -2150,10 +2150,10 @@ fn baseClockPartitioning(mut inSyst: Arc<BackendDAE::EqSystem>, mut inShared: Ar
     let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     let mut eqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
-    let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut rm: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut rmT: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut rm: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut rmT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut syst: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
     let mut systs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = metamodelica::nil();
     let mut partitionCnt: i32 = 0;
@@ -2162,20 +2162,20 @@ fn baseClockPartitioning(mut inSyst: Arc<BackendDAE::EqSystem>, mut inShared: Ar
     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut varIxs: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut syst: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    let mut eqPartMap: metamodelica::Array<i32>;
-    let mut varPartMap: metamodelica::Array<i32>;
-    let mut reqsPartition: metamodelica::Array<i32>;
-    let mut varsPartition: metamodelica::Array<bool>;
-    let mut rvarsPartition: metamodelica::Array<bool>;
+    let mut eqPartMap: metamodelica::Array<i32> = Default::default();
+    let mut varPartMap: metamodelica::Array<i32> = Default::default();
+    let mut reqsPartition: metamodelica::Array<i32> = Default::default();
+    let mut varsPartition: metamodelica::Array<bool> = Default::default();
+    let mut rvarsPartition: metamodelica::Array<bool> = Default::default();
     let mut eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
     let mut refsInfo: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, bool)>> = metamodelica::nil();
-    let mut refInfo: (Arc<DAE::ComponentRef>, bool);
+    let mut refInfo: (Arc<DAE::ComponentRef>, bool) = (Arc::new(DAE::ComponentRef::WILD), false);
     let mut partitionType: Option<bool> = None;
     let mut isClocked: bool = false;
     let mut isInitial: bool = false;
-    let mut clockedEqs: metamodelica::Array<Option<bool>>;
-    let mut clockedVars: metamodelica::Array<Option<bool>>;
-    let mut clockedPartitions: metamodelica::Array<Option<bool>>;
+    let mut clockedEqs: metamodelica::Array<Option<bool>> = Default::default();
+    let mut clockedVars: metamodelica::Array<Option<bool>> = Default::default();
+    let mut clockedPartitions: metamodelica::Array<Option<bool>> = Default::default();
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     funcs = BackendDAEUtil::getFunctions(inShared.clone())?;
     isInitial = BackendDAEUtil::isInitializationDAE(inShared.clone());
@@ -2240,9 +2240,9 @@ fn baseClockPartitioning(mut inSyst: Arc<BackendDAE::EqSystem>, mut inShared: Ar
     for mut syst in &*systs.clone() {
         let mut syst = syst.clone();
         (outContSysts, outClockedSysts) = (match clockedPartitions.clone().borrow()[(i.clone()-1) as usize].clone() {
-        Some(false) => (cons(setSystPartition(syst.clone(), crate::BackendDAE::BaseClockPartitionKind::CONTINUOUS_TIME_PARTITION)?, outContSysts.clone()), outClockedSysts.clone()),
-        None => (cons(setSystPartition(syst.clone(), crate::BackendDAE::BaseClockPartitionKind::UNSPECIFIED_PARTITION)?, outContSysts.clone()), outClockedSysts.clone()),
-        Some(true) => (outContSysts.clone(), cons(syst.clone(), outClockedSysts.clone())),
+        Some(false) => (metamodelica::cons(setSystPartition(syst.clone(), crate::BackendDAE::BaseClockPartitionKind::CONTINUOUS_TIME_PARTITION)?, outContSysts.clone()), outClockedSysts.clone()),
+        None => (metamodelica::cons(setSystPartition(syst.clone(), crate::BackendDAE::BaseClockPartitionKind::UNSPECIFIED_PARTITION)?, outContSysts.clone()), outClockedSysts.clone()),
+        Some(true) => (outContSysts.clone(), metamodelica::cons(syst.clone(), outClockedSysts.clone())),
         _ => bail!("match: no arm matched"),
     });
         i = i.clone() + 1;
@@ -2380,8 +2380,8 @@ fn printPartitionType(mut isClockedPartition: Option<bool>) -> ArcStr {
 }
 
 fn detectEqPartitionExp(mut inExp: Arc<DAE::Exp>, mut inTpl: (Option<bool>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, bool)>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, (Option<bool>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, bool)>>, SourceInfo))> {
-    let mut outExp: Arc<DAE::Exp>;
-    let mut outTpl: (Option<bool>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, bool)>>, SourceInfo);
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outTpl: (Option<bool>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, bool)>>, SourceInfo) = (None, metamodelica::nil(), <SourceInfo as ::std::default::Default>::default());
     (outExp, outTpl) = Expression::traverseExpTopDown(inExp.clone(), (std::sync::Arc::new(detectEqPartitionExp1) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Option<bool>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, bool)>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Option<bool>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, bool)>>, SourceInfo))> + 'static>), inTpl.clone())?;
     Ok((outExp, outTpl))
 }
@@ -2389,7 +2389,7 @@ fn detectEqPartitionExp(mut inExp: Arc<DAE::Exp>, mut inTpl: (Option<bool>, Arc<
 fn detectEqPartitionExp1(mut inExp: Arc<DAE::Exp>, mut inTpl: (Option<bool>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, bool)>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Option<bool>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, bool)>>, SourceInfo))> {
     let mut outExp: Arc<DAE::Exp> = inExp.clone();
     let mut cont: bool = false;
-    let mut outTpl: (Option<bool>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, bool)>>, SourceInfo);
+    let mut outTpl: (Option<bool>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, bool)>>, SourceInfo) = (None, metamodelica::nil(), <SourceInfo as ::std::default::Default>::default());
     let mut refs: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, bool)>> = metamodelica::nil();
     let mut partition: Option<bool> = None;
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
@@ -2402,7 +2402,7 @@ fn detectEqPartitionExp1(mut inExp: Arc<DAE::Exp>, mut inTpl: (Option<bool>, Arc
                 _ => bail!("pattern mismatch"),
             } };
             cr = __pa0.clone();
-            (partition.clone(), cons((cr.clone(), false), refs.clone()), false)
+            (partition.clone(), metamodelica::cons((cr.clone(), false), refs.clone()), false)
         },
         Deref @ DAE::Exp::CALL { expLst: exps, path, .. } => {
             detectEqPartitionCall(path.clone(), exps.clone(), refs.clone(), partition.clone(), info.clone())?
@@ -2456,7 +2456,7 @@ fn detectEqPartitionCall1(mut expClocked: bool, mut refClocked: bool, mut inPart
     let mut cont: bool = false;
     (outPartition, outRefs) = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::CREF { componentRef: cr, ty: _ } => {
-            (setClockedPartition(Some(expClocked.clone()), inPartition.clone(), None, info.clone())?, cons((cr.clone(), refClocked.clone()), inRefs.clone()))
+            (setClockedPartition(Some(expClocked.clone()), inPartition.clone(), None, info.clone())?, metamodelica::cons((cr.clone(), refClocked.clone()), inRefs.clone()))
         },
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SynchronousFeatures.detectEqPartitionCall1")); __mm_s.push_str(&*literal!(" failed.\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
@@ -2625,7 +2625,7 @@ fn partitionIndependentBlocksWork(mut idx: i32, mut isRemovedIdx: bool, mut part
                     for mut nextEqIdx in __range3 {
                         let mut nextEqIdx = nextEqIdx.clone();
                         if eqPartMap.clone().borrow()[(intAbs(nextEqIdx.clone())-1) as usize].clone() == 0 {
-                            workListEq = cons(intAbs(nextEqIdx.clone()), workListEq.clone());
+                            workListEq = metamodelica::cons(intAbs(nextEqIdx.clone()), workListEq.clone());
                             {let _arr = eqPartMap.clone(); _arr.borrow_mut()[(intAbs(nextEqIdx.clone())-1) as usize] = partIdx.clone(); _arr};
                         }
                     }
@@ -2633,7 +2633,7 @@ fn partitionIndependentBlocksWork(mut idx: i32, mut isRemovedIdx: bool, mut part
                     for mut nextEqIdx in __range4 {
                         let mut nextEqIdx = nextEqIdx.clone();
                         if rixs.clone().borrow()[(intAbs(nextEqIdx.clone())-1) as usize].clone() == 0 {
-                            workListRm = cons(intAbs(nextEqIdx.clone()), workListRm.clone());
+                            workListRm = metamodelica::cons(intAbs(nextEqIdx.clone()), workListRm.clone());
                             {let _arr = rixs.clone(); _arr.borrow_mut()[(intAbs(nextEqIdx.clone())-1) as usize] = partIdx.clone(); _arr};
                         }
                     }
@@ -2655,7 +2655,7 @@ fn partitionIndependentBlocksWork(mut idx: i32, mut isRemovedIdx: bool, mut part
                     for mut nextEqIdx in __range8 {
                         let mut nextEqIdx = nextEqIdx.clone();
                         if eqPartMap.clone().borrow()[(intAbs(nextEqIdx.clone())-1) as usize].clone() == 0 {
-                            workListEq = cons(intAbs(nextEqIdx.clone()), workListEq.clone());
+                            workListEq = metamodelica::cons(intAbs(nextEqIdx.clone()), workListEq.clone());
                             {let _arr = eqPartMap.clone(); _arr.borrow_mut()[(intAbs(nextEqIdx.clone())-1) as usize] = partIdx.clone(); _arr};
                         }
                     }
@@ -2663,7 +2663,7 @@ fn partitionIndependentBlocksWork(mut idx: i32, mut isRemovedIdx: bool, mut part
                     for mut nextEqIdx in __range9 {
                         let mut nextEqIdx = nextEqIdx.clone();
                         if rixs.clone().borrow()[(intAbs(nextEqIdx.clone())-1) as usize].clone() == 0 {
-                            workListRm = cons(intAbs(nextEqIdx.clone()), workListRm.clone());
+                            workListRm = metamodelica::cons(intAbs(nextEqIdx.clone()), workListRm.clone());
                             {let _arr = rixs.clone(); _arr.borrow_mut()[(intAbs(nextEqIdx.clone())-1) as usize] = partIdx.clone(); _arr};
                         }
                     }
@@ -2677,16 +2677,16 @@ fn partitionIndependentBlocksWork(mut idx: i32, mut isRemovedIdx: bool, mut part
 pub fn partitionIndependentBlocksSplitBlocks(mut n: i32, mut inSyst: Arc<BackendDAE::EqSystem>, mut ixs: metamodelica::Array<i32>, mut rixs: metamodelica::Array<i32>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rmT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut throwNoError: bool, mut funcs: Arc<AvlTreePathFunction::Tree>, mut isInitial: bool) -> Result<(Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, metamodelica::Array<i32>)> {
     let mut systs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = metamodelica::nil();
     let mut unpartRemovedEqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
-    let mut varPartMap: metamodelica::Array<i32>;
-    let mut ea: metamodelica::Array<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>;
-    let mut rea: metamodelica::Array<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>;
-    let mut va: metamodelica::Array<Arc<metamodelica::List<BackendDAE::Var>>>;
+    let mut varPartMap: metamodelica::Array<i32> = Default::default();
+    let mut ea: metamodelica::Array<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>> = Default::default();
+    let mut rea: metamodelica::Array<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>> = Default::default();
+    let mut va: metamodelica::Array<Arc<metamodelica::List<BackendDAE::Var>>> = Default::default();
     let mut i1: i32 = 0;
     let mut i2: i32 = 0;
     let mut b: bool = false;
     let mut b1: bool = true;
     let mut syst: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    let mut varsPartition: metamodelica::Array<i32>;
+    let mut varsPartition: metamodelica::Array<i32> = Default::default();
     let mut lstVars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
     ea = arrayCreate(n.clone(), metamodelica::nil());
     rea = arrayCreate(n.clone(), metamodelica::nil());
@@ -2710,14 +2710,14 @@ pub fn partitionIndependentBlocksSplitBlocks(mut n: i32, mut inSyst: Arc<Backend
     for mut i in __range0 {
         if varsPartition.borrow()[(i.clone()-1) as usize].clone() != 0 {
             lstVars = va.borrow()[(varsPartition.borrow()[(i.clone()-1) as usize].clone()-1) as usize].clone();
-            {let _arr = va.clone(); _arr.borrow_mut()[(varsPartition.borrow()[(i.clone()-1) as usize].clone()-1) as usize] = cons(BackendVariable::getVarAt(inSyst.orderedVars.clone(), i.clone())?, lstVars.clone()); _arr};
+            {let _arr = va.clone(); _arr.borrow_mut()[(varsPartition.borrow()[(i.clone()-1) as usize].clone()-1) as usize] = metamodelica::cons(BackendVariable::getVarAt(inSyst.orderedVars.clone(), i.clone())?, lstVars.clone()); _arr};
         }
     }
     for mut i in 1..=n.clone() {
         let (__pa1, (__pa2, _)) = createEqSystem(ea.borrow()[(i.clone()-1) as usize].clone(), va.borrow()[(i.clone()-1) as usize].clone(), rea.borrow()[(i.clone()-1) as usize].clone(), (true, throwNoError.clone()))?;
         syst = __pa1.clone();
         b = __pa2.clone();
-        systs = cons(syst.clone(), systs.clone());
+        systs = metamodelica::cons(syst.clone(), systs.clone());
         b1 = b1.clone() && b.clone();
     }
     let true = (throwNoError.clone() || b1.clone()) else { bail!("pattern mismatch") };
@@ -2740,7 +2740,7 @@ fn setVarPartition(mut varsPartition: metamodelica::Array<i32>, mut i: i32, mut 
 
 fn createEqSystem(mut el: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut vl: Arc<metamodelica::List<BackendDAE::Var>>, mut rel: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut iTpl: (bool, bool)) -> Result<(Arc<BackendDAE::EqSystem>, (bool, bool))> {
     let mut syst: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    let mut oTpl: (bool, bool);
+    let mut oTpl: (bool, bool) = (false, false);
     let mut arr: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     let mut remArr: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
@@ -2783,10 +2783,10 @@ fn partitionEquations(mut arr: Arc<ExpandableArray::ExpandableArray<Arc<BackendD
         ix = ixs.borrow()[(i.clone()-1) as usize].clone();
         eq = BackendEquation::get(arr.clone(), i.clone());
         if ix.clone() == 0 {
-            restEqs = cons(eq.clone(), restEqs.clone());
+            restEqs = metamodelica::cons(eq.clone(), restEqs.clone());
         } else {
             lst = ea.borrow()[(ix.clone()-1) as usize].clone();
-            lst = cons(eq.clone(), lst.clone());
+            lst = metamodelica::cons(eq.clone(), lst.clone());
             {let _arr = ea.clone(); _arr.borrow_mut()[(ix.clone()-1) as usize] = lst.clone(); _arr};
         }
     }
@@ -2805,7 +2805,7 @@ fn subClkEqual(mut sc1: BackendDAE::SubClock, mut sc2: BackendDAE::SubClock) -> 
 
 fn subClockTreeString(mut treeIn: metamodelica::Array<(BackendDAE::SubClock, i32)>) -> Result<ArcStr> {
     let mut sOut: ArcStr = literal!("");
-    let mut tpl: (BackendDAE::SubClock, i32);
+    let mut tpl: (BackendDAE::SubClock, i32) = (BackendDAE::SubClock::INFERED_SUBCLOCK, 0);
     let mut subClock: BackendDAE::SubClock = BackendDAE::SubClock::INFERED_SUBCLOCK;
     let mut i: i32 = 0;
     let mut idx: i32 = 1;

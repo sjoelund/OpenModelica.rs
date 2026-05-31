@@ -302,7 +302,7 @@ pub fn checkTerm(mut tm: Arc<UnitAbsyn::UnitTerm>, mut st: UnitAbsyn::Store) -> 
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ UnitAbsyn::UnitTerm::LOC { loc, origExp: _ }, st1) => {
                     let UnitAbsyn::UNSPECIFIED { .. } = (UnitAbsynBuilder::find(loc.clone(), st1.clone())?) else { bail!("pattern mismatch") };
-                    Ok((crate::UnitAbsyn::UnitCheckResult::CONSISTENT, UnitAbsyn::SpecUnit { typeParameters: cons((MMath::Rational { nom: 1, denom: 1 }, UnitAbsyn::TypeParameter { name: (literal!("")).clone(), indx: loc.clone() }), metamodelica::nil()), units: metamodelica::nil() }, st1.clone()))
+                    Ok((crate::UnitAbsyn::UnitCheckResult::CONSISTENT, UnitAbsyn::SpecUnit { typeParameters: metamodelica::cons((MMath::Rational { nom: 1, denom: 1 }, UnitAbsyn::TypeParameter { name: (literal!("")).clone(), indx: loc.clone() }), metamodelica::nil()), units: metamodelica::nil() }, st1.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -613,7 +613,7 @@ pub fn mulUnitVec(mut inunitvec1: Arc<metamodelica::List<MMath::Rational>>, mut 
                     let mut rest3: Arc<metamodelica::List<MMath::Rational>> = metamodelica::nil();
                     expo3 = MMath::addRational(expo1.clone(), expo2.clone())?;
                     rest3 = mulUnitVec(rest1.clone(), rest2.clone())?;
-                    Ok(cons(expo3.clone(), rest3.clone()))
+                    Ok(metamodelica::cons(expo3.clone(), rest3.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -623,7 +623,7 @@ pub fn mulUnitVec(mut inunitvec1: Arc<metamodelica::List<MMath::Rational>>, mut 
                 (Deref @ metamodelica::List::Cons { head: expo1, tail: rest1 }, Deref @ metamodelica::List::Nil) => {
                     let mut rest3: Arc<metamodelica::List<MMath::Rational>> = metamodelica::nil();
                     rest3 = mulUnitVec(rest1.clone(), metamodelica::nil())?;
-                    Ok(cons(expo1.clone(), rest3.clone()))
+                    Ok(metamodelica::cons(expo1.clone(), rest3.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -633,7 +633,7 @@ pub fn mulUnitVec(mut inunitvec1: Arc<metamodelica::List<MMath::Rational>>, mut 
                 (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Cons { head: expo1, tail: rest1 }) => {
                     let mut rest3: Arc<metamodelica::List<MMath::Rational>> = metamodelica::nil();
                     rest3 = mulUnitVec(metamodelica::nil(), rest1.clone())?;
-                    Ok(cons(expo1.clone(), rest3.clone()))
+                    Ok(metamodelica::cons(expo1.clone(), rest3.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -699,7 +699,7 @@ pub fn divUnitVec(mut inunitvec1: Arc<metamodelica::List<MMath::Rational>>, mut 
                     let mut rest3: Arc<metamodelica::List<MMath::Rational>> = metamodelica::nil();
                     expo3 = MMath::subRational(expo1.clone(), expo2.clone())?;
                     rest3 = divUnitVec(rest1.clone(), rest2.clone())?;
-                    Ok(cons(expo3.clone(), rest3.clone()))
+                    Ok(metamodelica::cons(expo3.clone(), rest3.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -709,7 +709,7 @@ pub fn divUnitVec(mut inunitvec1: Arc<metamodelica::List<MMath::Rational>>, mut 
                 (Deref @ metamodelica::List::Cons { head: expo1, tail: rest1 }, Deref @ metamodelica::List::Nil) => {
                     let mut rest3: Arc<metamodelica::List<MMath::Rational>> = metamodelica::nil();
                     rest3 = divUnitVec(rest1.clone(), metamodelica::nil())?;
-                    Ok(cons(expo1.clone(), rest3.clone()))
+                    Ok(metamodelica::cons(expo1.clone(), rest3.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -721,7 +721,7 @@ pub fn divUnitVec(mut inunitvec1: Arc<metamodelica::List<MMath::Rational>>, mut 
                     let mut rest3: Arc<metamodelica::List<MMath::Rational>> = metamodelica::nil();
                     expo2 = MMath::subRational(MMath::Rational { nom: 0, denom: 1 }, expo1.clone())?;
                     rest3 = divUnitVec(metamodelica::nil(), rest1.clone())?;
-                    Ok(cons(expo2.clone(), rest3.clone()))
+                    Ok(metamodelica::cons(expo2.clone(), rest3.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -783,7 +783,7 @@ pub fn powUnitParams(mut inparams: Arc<metamodelica::List<(MMath::Rational, Unit
                     let mut rest2: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>> = metamodelica::nil();
                     expo3 = MMath::multRational(expo1.clone(), expo2.clone())?;
                     rest2 = powUnitParams(rest1.clone(), expo2.clone())?;
-                    Ok(cons((expo3.clone(), param.clone()), rest2.clone()))
+                    Ok(metamodelica::cons((expo3.clone(), param.clone()), rest2.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -822,7 +822,7 @@ pub fn powUnitVec(mut inunitvec: Arc<metamodelica::List<MMath::Rational>>, mut e
                     let mut rest2: Arc<metamodelica::List<MMath::Rational>> = metamodelica::nil();
                     expo3 = MMath::multRational(expo1.clone(), expo2.clone())?;
                     rest2 = powUnitVec(rest1.clone(), expo2.clone())?;
-                    Ok(cons(expo3.clone(), rest2.clone()))
+                    Ok(metamodelica::cons(expo3.clone(), rest2.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -862,7 +862,7 @@ fn negParamList(mut ine: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::Typ
                     let mut qr: MMath::Rational = <MMath::Rational as ::std::default::Default>::default();
                     let mut pres: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>> = metamodelica::nil();
                     qr = MMath::multRational(MMath::Rational { nom: -1, denom: 1 }, MMath::Rational { nom: i1.clone(), denom: i2.clone() })?;
-                    pres = negParamList(rest.clone(), cons((qr.clone(), UnitAbsyn::TypeParameter { name: (name.clone()).clone(), indx: indx.clone() }), ac2.clone()))?;
+                    pres = negParamList(rest.clone(), metamodelica::cons((qr.clone(), UnitAbsyn::TypeParameter { name: (name.clone()).clone(), indx: indx.clone() }), ac2.clone()))?;
                     Ok(pres.clone())
                 }
                 _ => bail!("nomatch"),
@@ -957,7 +957,7 @@ fn normalizeParamsExponents(mut inparams: Arc<metamodelica::List<(MMath::Rationa
                     expo2 = __pa0.clone();
                     rest2 = __pa1.clone();
                     expo3 = MMath::addRational(expo1.clone(), expo2.clone())?;
-                    rest3 = normalizeParamsExponents(cons((expo3.clone(), UnitAbsyn::TypeParameter { name: (name.clone()).clone(), indx: loc1.clone() }), rest2.clone()))?;
+                    rest3 = normalizeParamsExponents(metamodelica::cons((expo3.clone(), UnitAbsyn::TypeParameter { name: (name.clone()).clone(), indx: loc1.clone() }), rest2.clone()))?;
                     Ok(rest3.clone())
                 }
                 _ => bail!("nomatch"),
@@ -978,7 +978,7 @@ fn normalizeParamsExponents(mut inparams: Arc<metamodelica::List<(MMath::Rationa
                 Deref @ metamodelica::List::Cons { head: param, tail: rest1 } => {
                     let mut rest2: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::TypeParameter)>> = metamodelica::nil();
                     rest2 = normalizeParamsExponents(rest1.clone())?;
-                    Ok(cons(param.clone(), rest2.clone()))
+                    Ok(metamodelica::cons(param.clone(), rest2.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1028,7 +1028,7 @@ fn getParam(mut inparams: Arc<metamodelica::List<(MMath::Rational, UnitAbsyn::Ty
                     let mut expo: MMath::Rational = <MMath::Rational as ::std::default::Default>::default();
                     let mut found2: bool = false;
                     (found2, expo, rest2) = getParam(rest.clone(), loc.clone())?;
-                    Ok((found2.clone(), expo.clone(), cons(param.clone(), rest2.clone())))
+                    Ok((found2.clone(), expo.clone(), metamodelica::cons(param.clone(), rest2.clone())))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1098,7 +1098,7 @@ fn mulSpecUnitWithNorm(mut suin: UnitAbsyn::SpecUnit, mut normunit: UnitAbsyn::U
         let __mc_input = (suin.clone(), normunit.clone());
         if let Ok(__v) = (|| -> Result<_> {
             let (UnitAbsyn::SpecUnit { typeParameters: ref params, units: ref unitvec }, UnitAbsyn::Unit::UNSPECIFIED { .. }) = __mc_input.clone() else { bail!("nomatch") };
-            Ok(UnitAbsyn::SpecUnit { typeParameters: cons((expo.clone(), UnitAbsyn::TypeParameter { name: (name.clone()).clone(), indx: loc.clone() }), params.clone()), units: unitvec.clone() })
+            Ok(UnitAbsyn::SpecUnit { typeParameters: metamodelica::cons((expo.clone(), UnitAbsyn::TypeParameter { name: (name.clone()).clone(), indx: loc.clone() }), params.clone()), units: unitvec.clone() })
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (mut su2, UnitAbsyn::Unit::SPECIFIED { specified: mut sunorm }) = __mc_input.clone() else { bail!("nomatch") };

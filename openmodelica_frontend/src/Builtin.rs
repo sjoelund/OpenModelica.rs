@@ -99,27 +99,27 @@ pub fn isDer(mut inPath: Arc<Absyn::Path>) -> Result<()> {
 
 pub fn initialGraph(mut inCache: FCore::Cache) -> Result<(FCore::Cache, FCore::Graph)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut graph: FCore::Graph;
+    let mut graph: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
     (outCache, graph) = 'mc: {
         let __mc_input = inCache.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let mut cache = __mc_input.clone() else { bail!("nomatch") };
-            let mut graph: FCore::Graph;
+            let mut graph: FCore::Graph = graph.clone();
             graph = FCore::getCachedInitialGraph(cache.clone())?;
             graph = FGraph::clone(graph.clone())?;
             Ok((cache.clone(), graph.clone()))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let mut cache = __mc_input.clone() else { bail!("nomatch") };
-            let mut graph: FCore::Graph;
+            let mut graph: FCore::Graph = graph.clone();
             graph = getSetInitialGraph(None)?;
             Ok((cache.clone(), graph.clone()))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let mut cache = __mc_input.clone() else { bail!("nomatch") };
             let mut initialProgram: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-            let mut graph: FCore::Graph;
+            let mut graph: FCore::Graph = graph.clone();
             graph = FGraph::new((literal!("graph")).clone(), FCore::dummyTopModel.clone())?;
             graph = FGraphBuildEnv::mkProgramGraph(FBuiltin::getBasicTypes()?, crate::FCore::Kind::BASIC_TYPE, graph.clone())?;
             graph = FBuiltin::initialGraphModelica(graph.clone(), (std::sync::Arc::new(FGraphBuildEnv::mkTypeNode) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Type>>>, metamodelica::Array<FCore::Node>, ArcStr, FCore::Graph) -> Result<FCore::Graph> + 'static>), (std::sync::Arc::new(FGraphBuildEnv::mkCompNode) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>))?;
@@ -138,7 +138,7 @@ pub fn initialGraph(mut inCache: FCore::Cache) -> Result<(FCore::Cache, FCore::G
 }
 
 fn getSetInitialGraph(mut inEnvOpt: Option<FCore::Graph>) -> Result<FCore::Graph> {
-    let mut initialEnv: FCore::Graph;
+    let mut initialEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     initialEnv = 'mc: {
         let __mc_input = inEnvOpt.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -153,7 +153,7 @@ fn getSetInitialGraph(mut inEnvOpt: Option<FCore::Graph>) -> Result<FCore::Graph
         if let Ok(__v) = (|| -> Result<_> {
             let None = __mc_input.clone() else { bail!("nomatch") };
             let mut assocLst: Arc<metamodelica::List<(i32, FCore::Graph)>> = metamodelica::nil();
-            let mut graph: FCore::Graph;
+            let mut graph: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
             assocLst = crate::Globals::builtinGraphIndex.with(|__root| __root.borrow().clone());
             graph = FGraph::clone(Util::assoc(Flags::getConfigEnum(Flags::GRAMMAR.clone())?, assocLst.clone())?)?;
             Ok(graph.clone())
@@ -164,7 +164,7 @@ fn getSetInitialGraph(mut inEnvOpt: Option<FCore::Graph>) -> Result<FCore::Graph
             let mut f: i32 = 0;
             assocLst = crate::Globals::builtinGraphIndex.with(|__root| __root.borrow().clone());
             f = Flags::getConfigEnum(Flags::GRAMMAR.clone())?;
-            assocLst = if (f.clone() == Flags::METAMODELICA.clone()) {cons((Flags::METAMODELICA.clone(), graph.clone()), assocLst.clone())} else {if (f.clone() == Flags::PARMODELICA.clone()) {cons((Flags::PARMODELICA.clone(), graph.clone()), assocLst.clone())} else {if (f.clone() == Flags::MODELICA.clone()) {cons((Flags::MODELICA.clone(), graph.clone()), assocLst.clone())} else {assocLst.clone()}}};
+            assocLst = if (f.clone() == Flags::METAMODELICA.clone()) {metamodelica::cons((Flags::METAMODELICA.clone(), graph.clone()), assocLst.clone())} else {if (f.clone() == Flags::PARMODELICA.clone()) {metamodelica::cons((Flags::PARMODELICA.clone(), graph.clone()), assocLst.clone())} else {if (f.clone() == Flags::MODELICA.clone()) {metamodelica::cons((Flags::MODELICA.clone(), graph.clone()), assocLst.clone())} else {assocLst.clone()}}};
             { let __v = assocLst.clone(); crate::Globals::builtinGraphIndex.with(|__root| *__root.borrow_mut() = __v) };
             Ok(graph.clone())
         })() { break 'mc __v; }

@@ -142,7 +142,7 @@ pub fn isExpressionNotFixed(mut exp: Arc<Expression::NFExpression>, mut requireF
             } else {
                 isNotFixed = true;
             }
-            isNotFixed.clone() || Expression::containsShallow(exp.clone(), Arc::new({ let __pe_b1 = requireFinal.clone(); let __pe_b2 = maxDepth.clone(); move |__pe_a0| isExpressionNotFixed(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }))?
+            isNotFixed.clone() || Expression::containsShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = requireFinal.clone(); let __pe_b2 = maxDepth.clone(); move |__pe_a0| isExpressionNotFixed(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>))?
         },
         Deref @ Expression::SIZE { .. } => {
             if isSome(var_field!((*exp).dimIndex, Expression::NFExpression::SIZE).clone()) {
@@ -156,12 +156,12 @@ pub fn isExpressionNotFixed(mut exp: Arc<Expression::NFExpression>, mut requireF
             if Call::isImpure(var_field!((*exp).call, Expression::NFExpression::CALL).clone())? || Call::isExternal(var_field!((*exp).call, Expression::NFExpression::CALL).clone())? {
                 isNotFixed = true;
             } else {
-                isNotFixed = Expression::containsShallow(exp.clone(), Arc::new({ let __pe_b1 = requireFinal.clone(); let __pe_b2 = maxDepth.clone(); move |__pe_a0| isExpressionNotFixed(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }))?;
+                isNotFixed = Expression::containsShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = requireFinal.clone(); let __pe_b2 = maxDepth.clone(); move |__pe_a0| isExpressionNotFixed(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>))?;
             }
             isNotFixed.clone()
         },
         _ => {
-            Expression::containsShallow(exp.clone(), Arc::new({ let __pe_b1 = requireFinal.clone(); let __pe_b2 = maxDepth.clone(); move |__pe_a0| isExpressionNotFixed(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }))?
+            Expression::containsShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = requireFinal.clone(); let __pe_b2 = maxDepth.clone(); move |__pe_a0| isExpressionNotFixed(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>))?
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

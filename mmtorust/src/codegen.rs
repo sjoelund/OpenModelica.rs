@@ -6129,7 +6129,12 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
             // from the variable's path. We use the dotted segments first; if
             // empty, fall back to the local name resolved against the
             // surrounding scope (mirrors what `emit_var` does for bare names).
-            let resolved_fn_qname: Option<String> = match effective_ty {
+            // `canonical_fn_qname` is the alias-resolved FQN as returned by
+            // `resolve_call_qname` alone (no pre-hoist fallback). It is used to
+            // re-derive the emitted path below; the hoist fallback must not feed
+            // that re-derivation because the fallback names the pre-hoist nested
+            // location, which `shorten` would emit as the wrong (un-hoisted) path.
+            let (resolved_fn_qname, canonical_fn_qname): (Option<String>, Option<String>) = match effective_ty {
                 Ty::Function { .. } | Ty::FunctionAlias { .. } => {
                     let lookup_name: String = if !segments.is_empty() {
                         segments.iter().map(|s| s.name.clone()).collect::<Vec<_>>().join(".")
@@ -6139,11 +6144,45 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
                     // Try the hoisted path first; fall back to the pre-hoist
                     // path so fallibility/typing lookups land on the real
                     // hierarchy node when the path was rewritten above.
-                    resolve_call_qname(&lookup_name, ctx, top_level)
-                        .or_else(|| original_qname.clone())
+                    let canonical = resolve_call_qname(&lookup_name, ctx, top_level);
+                    (canonical.clone().or_else(|| original_qname.clone()), canonical)
                 }
-                _ => None,
+                _ => (None, None),
             };
+
+            // Re-derive the emitted path for a *concrete* function reference from
+            // its canonical FQN. `emit_var` (which produced `var_str`) shortened
+            // the path directly from the *source* dotted name, whose head may be
+            // a local import alias (`import Expression = NFExpression;`). When a
+            // second alias targets a similarly-named module
+            // (`import OldExpression = Expression;`), `shorten`'s target-keyed
+            // alias loop misreads the source head `Expression` as the *old*
+            // module's import target and emits `OldExpression::toString` instead
+            // of `Expression::toString` (E0425: no `toString` in `OldExpression`).
+            // `resolve_call_qname` already resolved the alias head to the
+            // canonical module; shortening THAT binds to the intended alias.
+            // Skipped for local fn-typed bindings (callback parameters), whose
+            // `var_str` is a plain binding name and whose first segment is in
+            // `fn_env_vars`. Restricted to *qualified* source references: the
+            // alias-shadowing only arises when a dotted source head is itself an
+            // import alias. A bare name carries no alias head, and re-deriving it
+            // from `resolve_call_qname`'s scope-walk result would wrongly bind a
+            // builtin (`stringEq`) to a same-named module function that happens
+            // to be in scope (`Parser.stringEq`).
+            let source_is_qualified = segments.len() > 1
+                || (segments.is_empty() && name.contains('.'));
+            if let Some(canonical) = &canonical_fn_qname
+                && source_is_qualified
+                && !ctx.fn_env_vars.contains_key(name.split('.').next().unwrap_or(name))
+            {
+                // `escape_ident` escapes every path segment (e.g. a tail that is
+                // a Rust keyword: `Expression::typeof` → `Expression::r#typeof`),
+                // matching the escaping `emit_var` applies to its own output.
+                let reshortened = escape_ident(&ctx.shorten(canonical));
+                if reshortened != var_str {
+                    var_str = reshortened;
+                }
+            }
 
             // A reference is infallible if:
             //   (a) it resolves to a user-defined function that the fallibility
@@ -7377,9 +7416,21 @@ fn emit_parteval<'a>(
     // when the closure body calls it — `arrayGet` → `metamodelica::arrayGet`.
     let func_str = if let Some((path, _, _)) = builtin_value_fn(func) {
         path.to_owned()
+    } else if func.contains('.') {
+        // Resolve `func` through import aliases to its canonical FQN *before*
+        // shortening. The source head may be a local import alias (e.g.
+        // `import BackendDAE = NBackendDAE;`); passing it to `shorten` directly
+        // lets `shorten`'s target-keyed alias loop misread it as a *different*
+        // alias's import target (`import OldBackendDAE = BackendDAE;` makes the
+        // raw head `BackendDAE` resolve to `OldBackendDAE::f`, an E0425). The
+        // canonical name (`NBackendDAE.f`) shortens unambiguously back to the
+        // intended alias. Mirrors the concrete-function-reference fix in
+        // [`emit_exp`]'s CREF arm.
+        let canonical = resolve_call_qname(func, ctx, top_level)
+            .unwrap_or_else(|| func.to_owned());
+        escape_ident(&ctx.shorten(&canonical))
     } else {
-        let s = if func.contains('.') { ctx.shorten(func) } else { func.to_owned() };
-        escape_ident(&s)
+        escape_ident(func)
     };
 
     // Pull the formal-name order *and* declared types from the resolved

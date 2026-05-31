@@ -104,7 +104,7 @@ pub fn dumpGraph(mut inGraph: Graph, mut fileName: ArcStr) -> Result<()> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut g: i32 = 0;
             let mut gi: GraphML::GraphInfo;
-            let mut nr: Ref;
+            let mut nr: Ref = Default::default();
             gi = GraphML::createGraphInfo();
             let (__pa0, (_, __pa1)) = GraphML::addGraph((literal!("G")).clone(), false, gi.clone())?;
             gi = __pa0.clone();

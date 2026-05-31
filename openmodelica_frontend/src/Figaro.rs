@@ -64,7 +64,7 @@ pub fn run(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inPa
     let mut figaroFile: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*workingDir.clone()); __mm_s.push_str(&*literal!("/Figaro0.fi")); ArcStr::from(__mm_s) };
     let mut argumentFile: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*workingDir.clone()); __mm_s.push_str(&*literal!("/figp_commands.xml")); ArcStr::from(__mm_s) };
     let mut resultFile: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*System::pwd()); __mm_s.push_str(&*literal!("/result.xml")); ArcStr::from(__mm_s) };
-    let mut program: Arc<SCode::Element>;
+    let mut program: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     let mut figaro: ArcStr = arcstr::literal!("");
     let mut database: ArcStr = arcstr::literal!("");
     let mut xml: ArcStr = arcstr::literal!("");
@@ -160,7 +160,7 @@ fn fcElement(mut inFigaroBase: Ident, mut inFigaroType: ArcStr, mut inProgram: A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (fb, ft, program, Some(cn), Deref @ SCode::Element::EXTENDS { modifications: m, baseClassPath: bcp, .. }, e) => {
-                    let mut cdef: Arc<SCode::Element>;
+                    let mut cdef: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
                     let mut tn: ArcStr = arcstr::literal!("");
                     cdef = FBuiltin::getElementWithPathCheckBuiltin(e.clone(), bcp.clone())?;
                     let true = (fcExtends((fb.clone()).clone(), (ft.clone()).clone(), program.clone(), Some((cn.clone()).clone()), cdef.clone(), e.clone())?) else { bail!("pattern mismatch") };
@@ -209,7 +209,7 @@ fn fcExtends(mut inFigaroBase: Ident, mut inFigaroType: ArcStr, mut inProgram: A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (fb, ft, program, Some(cn), Deref @ SCode::Element::EXTENDS { baseClassPath: bcp, .. }, e) => {
-                    let mut cdef: Arc<SCode::Element>;
+                    let mut cdef: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
                     cdef = FBuiltin::getElementWithPathCheckBuiltin(e.clone(), bcp.clone())?;
                     Ok(fcExtends((fb.clone()).clone(), (ft.clone()).clone(), program.clone(), Some((cn.clone()).clone()), cdef.clone(), e.clone())?)
                 }
@@ -271,7 +271,7 @@ fn fcAddFigaroClass(mut inFigaroType: ArcStr, mut inProgram: Arc<SCode::Element>
     let mut fc: FigaroClass = <FigaroClass as ::std::default::Default>::default();
     tn = (if (inTypeName.clone() == literal!("")) {inFigaroType.clone()} else {inTypeName.clone()}).clone();
     fc = FigaroClass { className: (inClassName.clone()).clone(), typeName: (tn.clone()).clone() };
-    outFigaroClassList = cons(fc.clone(), fcElement((inClassName.clone()).clone(), (tn.clone()).clone(), inProgram.clone(), None, inProgram.clone(), env.clone())?);
+    outFigaroClassList = metamodelica::cons(fc.clone(), fcElement((inClassName.clone()).clone(), (tn.clone()).clone(), inProgram.clone(), None, inProgram.clone(), env.clone())?);
     Ok(outFigaroClassList)
 }
 
@@ -282,7 +282,7 @@ fn fcClassDef(mut inFigaroBase: Ident, mut inFigaroType: ArcStr, mut inProgram: 
             fcElementList((fb.clone()).clone(), (ft.clone()).clone(), program.clone(), Some((cn.clone()).clone()), el.clone(), e.clone())?
         },
         (fb, ft, program, cn, Deref @ SCode::ClassDef::DERIVED { modifications: m, typeSpec: ts, .. }, e) => {
-            let mut p: Path;
+            let mut p: Path = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut tn: ArcStr = arcstr::literal!("");
             p = AbsynUtil::typeSpecPath(ts.clone())?;
             let true = (fb.clone() == getLastIdent(p.clone())?) else { bail!("pattern mismatch") };
@@ -428,7 +428,7 @@ fn foElement(mut inFigaroClassList: Arc<metamodelica::List<FigaroClass>>, mut in
             foClassDef(fcl.clone(), cd.clone())?
         },
         (fcl, Deref @ SCode::Element::COMPONENT { modifications: m, typeSpec: ts, name: n, .. }) => {
-            let mut p: Path;
+            let mut p: Path = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut tn: ArcStr = arcstr::literal!("");
             let mut c: ArcStr = arcstr::literal!("");
             let mut tmp: ArcStr = arcstr::literal!("");
@@ -807,7 +807,7 @@ fn scan(mut inStringList: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamod
                     let mut s: ArcStr = arcstr::literal!("");
                     (r, s) = scanTagName(rest.clone(), (literal!("")).clone())?;
                     t = Token::CLOSETAG { tagName: (s.clone()).clone() };
-                    Ok(cons(t.clone(), scan(r.clone())?))
+                    Ok(metamodelica::cons(t.clone(), scan(r.clone())?))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -820,7 +820,7 @@ fn scan(mut inStringList: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamod
                     let mut s: ArcStr = arcstr::literal!("");
                     (r, s) = scanTagName(rest.clone(), (literal!("")).clone())?;
                     t = Token::OPENTAG { tagName: (s.clone()).clone() };
-                    Ok(cons(t.clone(), scan(r.clone())?))
+                    Ok(metamodelica::cons(t.clone(), scan(r.clone())?))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -833,7 +833,7 @@ fn scan(mut inStringList: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamod
                     let mut s: ArcStr = arcstr::literal!("");
                     (r, s) = scanText(rest.clone(), (literal!("")).clone())?;
                     t = Token::TEXT { text: (s.clone()).clone() };
-                    Ok(cons(t.clone(), scan(r.clone())?))
+                    Ok(metamodelica::cons(t.clone(), scan(r.clone())?))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -954,7 +954,7 @@ fn removeTokens(mut inTokenList: Arc<metamodelica::List<Token>>) -> Result<Arc<m
                     let true = (isKnownTag((tn.clone()).clone())) else { bail!("pattern mismatch") };
                     let false = (isInfoTag((tn.clone()).clone())) else { bail!("pattern mismatch") };
                     r = removeFirstIfText(rest.clone());
-                    Ok(cons(Token::OPENTAG { tagName: (tn.clone()).clone() }, removeTokens(r.clone())?))
+                    Ok(metamodelica::cons(Token::OPENTAG { tagName: (tn.clone()).clone() }, removeTokens(r.clone())?))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -975,7 +975,7 @@ fn removeTokens(mut inTokenList: Arc<metamodelica::List<Token>>) -> Result<Arc<m
                 Deref @ metamodelica::List::Cons { head: Token::CLOSETAG { tagName: tn }, tail: rest } => {
                     let mut r: Arc<metamodelica::List<Token>> = metamodelica::nil();
                     r = removeFirstIfText(rest.clone());
-                    Ok(cons(Token::CLOSETAG { tagName: (tn.clone()).clone() }, removeTokens(r.clone())?))
+                    Ok(metamodelica::cons(Token::CLOSETAG { tagName: (tn.clone()).clone() }, removeTokens(r.clone())?))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -983,7 +983,7 @@ fn removeTokens(mut inTokenList: Arc<metamodelica::List<Token>>) -> Result<Arc<m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: first, tail: rest } => {
-                    Ok(cons(first.clone(), removeTokens(rest.clone())?))
+                    Ok(metamodelica::cons(first.clone(), removeTokens(rest.clone())?))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1156,7 +1156,7 @@ fn parseInfoList(mut inTokenList: Arc<metamodelica::List<Token>>) -> Result<(Arc
             let mut tl2: Arc<metamodelica::List<Token>> = metamodelica::nil();
             (s, tl) = parseInfo(rest.clone())?;
             (stl, tl2) = parseInfoList(tl.clone())?;
-            (cons((tn.clone(), s.clone()), stl.clone()), tl2.clone())
+            (metamodelica::cons((tn.clone(), s.clone()), stl.clone()), tl2.clone())
         },
         Deref @ metamodelica::List::Cons { head: Token::CLOSETAG { tagName: tn }, tail: rest } => {
             let true = (tn.clone() == literal!("ERROR")) else { bail!("pattern mismatch") };

@@ -154,7 +154,7 @@ pub fn push_front<T: Clone + 'static>(mut delst: MutableList<T>, mut elt: T) -> 
         return ();
     }
     lst = Mutable::access(delst.front.clone());
-    Mutable::update(delst.front.clone(), cons(elt.clone(), lst.clone()));
+    Mutable::update(delst.front.clone(), metamodelica::cons(elt.clone(), lst.clone()));
     ()
 }
 

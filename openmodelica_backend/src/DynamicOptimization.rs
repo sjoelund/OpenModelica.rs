@@ -199,7 +199,7 @@ fn joinObjectFun(mut obj: (BackendDAE::Var, Arc<metamodelica::List<Arc<BackendDA
 fn makeObject(mut name: ArcStr, mut findObj: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<BackendDAE::Var>>) -> Result<Option<Arc<DAE::Exp>>> + 'static>, mut varlst: Arc<metamodelica::List<BackendDAE::Var>>, mut optimicaExp: Option<Arc<DAE::Exp>>) -> Result<(BackendDAE::Var, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Option<Arc<DAE::Exp>>)> {
     pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<BackendDAE::Var>>) -> Result<Option<Arc<DAE::Exp>>> + 'static>;
 
-    let mut outTpl: (BackendDAE::Var, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Option<Arc<DAE::Exp>>);
+    let mut outTpl: (BackendDAE::Var, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Option<Arc<DAE::Exp>>) = (<BackendDAE::Var as ::std::default::Default>::default(), metamodelica::nil(), None);
     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut annoObj: Option<Arc<DAE::Exp>> = None;
     let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
@@ -285,8 +285,8 @@ fn findObjTerm(mut InVarlst: Arc<metamodelica::List<BackendDAE::Var>>, mut findO
     pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>;
 
     let mut objeExp: Option<Arc<DAE::Exp>> = None;
-    let mut e: Arc<DAE::Exp>;
-    let mut nom: Arc<DAE::Exp>;
+    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut nom: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut varlst: Arc<metamodelica::List<BackendDAE::Var>> = List::select(InVarlst.clone(), findObjTermFun.clone());
     for mut v in &*varlst.clone() {
@@ -304,7 +304,7 @@ fn mergeObjectVars(mut inmayer1: Option<Arc<DAE::Exp>>, mut inmayer2: Option<Arc
     let mut mayer: Option<Arc<DAE::Exp>> = None;
     mayer = (::match_deref::match_deref! { match &((inmayer1.clone(), inmayer2.clone())) {
         (Some(e1), Some(e2)) => {
-            let mut e3: Arc<DAE::Exp>;
+            let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             e3 = Expression::expAdd(e1.clone(), e2.clone())?;
             Some(e3.clone())
         },
@@ -346,12 +346,12 @@ fn addConstraints(mut InVarlst: Arc<metamodelica::List<BackendDAE::Var>>, mut in
 fn addConstraints2(mut inConstraintLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inVarlst: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
     let mut outConstraintLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = inConstraintLst.clone();
     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut e: Arc<DAE::Exp>;
+    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     for mut v in &*inVarlst.clone() {
         let mut v = v.clone();
         cr = BackendVariable::varCref(v.clone())?;
         e = Arc::new(DAE::Exp::CREF { componentRef: cr.clone(), ty: DAE::T_REAL_DEFAULT().clone() });
-        outConstraintLst = cons(e.clone(), outConstraintLst.clone());
+        outConstraintLst = metamodelica::cons(e.clone(), outConstraintLst.clone());
     }
     Ok(outConstraintLst)
 }
@@ -423,22 +423,22 @@ fn inputDerivativesForDynOptWork(mut isyst: Arc<BackendDAE::EqSystem>, mut inSha
 }
 
 fn traverserinputDerivativesForDynOpt(mut inExp: Arc<DAE::Exp>, mut itpl: (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<BackendDAE::Var>>)) -> Result<(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<BackendDAE::Var>>))> {
-    let mut e: Arc<DAE::Exp>;
-    let mut tpl: (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<BackendDAE::Var>>);
+    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut tpl: (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<BackendDAE::Var>>) = (<BackendDAE::Variables as ::std::default::Default>::default(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil());
     (e, tpl) = Expression::traverseExpTopDown(inExp.clone(), (std::sync::Arc::new(traverserExpinputDerivativesForDynOpt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<BackendDAE::Var>>)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<BackendDAE::Var>>))> + 'static>), itpl.clone())?;
     Ok((e, tpl))
 }
 
 fn traverserExpinputDerivativesForDynOpt(mut inExp: Arc<DAE::Exp>, mut tpl: (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<BackendDAE::Var>>)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<BackendDAE::Var>>))> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cont: bool = false;
-    let mut outTpl: (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<BackendDAE::Var>>);
+    let mut outTpl: (BackendDAE::Variables, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, Arc<metamodelica::List<BackendDAE::Var>>) = (<BackendDAE::Variables as ::std::default::Default>::default(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil());
     (outExp, cont, outTpl) = 'mc: {
         let __mc_input = (inExp.clone(), tpl.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, (vars, lst, lst1, varLst)) => {
-                    let mut e: Arc<DAE::Exp>;
+                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut cr1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
                     (var, _) = BackendVariable::getVarSingle(cr.clone(), vars.clone())?;
@@ -561,9 +561,9 @@ fn removeLoopsWork(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backen
             ::match_deref::match_deref! { match &__mc_input {
                 (syst @ Deref @ BackendDAE::EqSystem { orderedEqs: eqns, orderedVars: vars, .. }, shared @ Deref @ BackendDAE::Shared { functionTree: funcs, .. }, Deref @ BackendDAE::StrongComponent::SINGLEEQUATION { var: vindx_, eqn: eindex_ }) => {
                     if !((l2p_all.clone() || !(l2p_l.clone()))) { bail!("guard") }
-                    let mut e1: Arc<DAE::Exp>;
-                    let mut e2: Arc<DAE::Exp>;
-                    let mut varexp: Arc<DAE::Exp>;
+                    let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut varexp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
                     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     let mut syst = (*syst).clone();
@@ -630,8 +630,8 @@ fn res2Con(mut ieqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equat
     let mut cr_lst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = List::map(var_lst.clone(), (std::sync::Arc::new(BackendVariable::varCref) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<Arc<DAE::ComponentRef>> + 'static>));
     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut cr_var: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut e: Arc<DAE::Exp>;
-    let mut res: Arc<DAE::Exp>;
+    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut ind_e: i32 = 0;
     let mut ind_v: i32 = 0;
     let mut ind_lst_v: Arc<metamodelica::List<i32>> = List::map(vindx.clone(), Arc::new(fnptr!(intAbs, i32)));
@@ -714,22 +714,22 @@ pub fn simplifyConstraints(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
     let mut var_lst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
     let mut var_lst_opt: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
     let mut var_lst1: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-    let mut e1: Arc<DAE::Exp>;
-    let mut e2: Arc<DAE::Exp>;
-    let mut e: Arc<DAE::Exp>;
-    let mut c: Arc<DAE::Exp>;
+    let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut c: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     let mut globalKnownVars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
     let mut oMax_con: Option<Arc<DAE::Exp>> = None;
     let mut oMin_con: Option<Arc<DAE::Exp>> = None;
-    let mut max_con: Arc<DAE::Exp>;
-    let mut min_con: Arc<DAE::Exp>;
-    let mut zero: Arc<DAE::Exp>;
-    let mut con2: Arc<DAE::Exp>;
-    let mut z: Arc<DAE::Exp>;
-    let mut der_e: Arc<DAE::Exp>;
+    let mut max_con: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut min_con: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut zero: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut con2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut z: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut der_e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut b1: bool = false;
     let mut b2: bool = false;
     let mut b: bool = false;
@@ -915,9 +915,9 @@ pub fn simplifyConstraints(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
                 }
             }
             if b.clone() {
-                new_systlst = cons(BackendDAEUtil::clearEqSyst(syst.clone())?, new_systlst.clone());
+                new_systlst = metamodelica::cons(BackendDAEUtil::clearEqSyst(syst.clone())?, new_systlst.clone());
             } else {
-                new_systlst = cons(syst.clone(), new_systlst.clone());
+                new_systlst = metamodelica::cons(syst.clone(), new_systlst.clone());
             }
         }
         shared = BackendDAEUtil::setSharedGlobalKnownVars(shared.clone(), globalKnownVars.clone());
@@ -967,7 +967,7 @@ pub fn reduceDynamicOptimization(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Resu
         objLagrange = checkObjectIsSet(v.clone(), (arcstr::literal!(BackendDAE::optimizationLagrangeTermName)).clone());
         opt_varlst = listAppend(conVarsList.clone(), listAppend(fconVarsList.clone(), listAppend(objMayer.clone(), objLagrange.clone())));
         if !(opt_varlst.clone().is_empty()) {
-            newsyst = cons(BackendDAEUtil::tryReduceEqSystem(syst.clone(), shared.clone(), opt_varlst.clone(), false), newsyst.clone());
+            newsyst = metamodelica::cons(BackendDAEUtil::tryReduceEqSystem(syst.clone(), shared.clone(), opt_varlst.clone(), false), newsyst.clone());
         }
     }
     outDAE = Arc::new(BackendDAE::BackendDAE { eqs: newsyst.clone(), shared: shared.clone() });

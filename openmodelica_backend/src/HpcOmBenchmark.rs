@@ -47,7 +47,7 @@ use crate::HpcOmBenchmarkExt;
 use openmodelica_util::System;
 
 pub fn benchSystem() -> Result<((i32, i32), (i32, i32))> {
-    let mut oTime: ((i32, i32), (i32, i32));
+    let mut oTime: ((i32, i32), (i32, i32)) = ((0, 0), (0, 0));
     let mut comCostM: i32 = 0;
     let mut comCostN: i32 = 0;
     let mut opCostM: i32 = 0;
@@ -149,7 +149,7 @@ fn expandCalcTimes(mut iList: Arc<metamodelica::List<metamodelica::Real>>, mut i
                     let mut tmpTuples: Arc<metamodelica::List<(i32, i32, metamodelica::Real)>> = tmpTuples.clone();
                     intNumOfCalcs = ((numOfCalcs.clone()).0 as i32);
                     intEqIdx = ((eqIdx.clone()).0 as i32);
-                    tmpTuples = expandCalcTimes(rest.clone(), cons((intEqIdx.clone(), intNumOfCalcs.clone(), calcTimeSum.clone()), iTuples.clone()))?;
+                    tmpTuples = expandCalcTimes(rest.clone(), metamodelica::cons((intEqIdx.clone(), intNumOfCalcs.clone(), calcTimeSum.clone()), iTuples.clone()))?;
                     Ok(tmpTuples.clone())
                 }
                 _ => bail!("nomatch"),

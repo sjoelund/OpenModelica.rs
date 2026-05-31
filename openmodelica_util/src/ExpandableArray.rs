@@ -259,7 +259,7 @@ pub fn shrink<T: Clone + 'static>(mut exarray: Arc<ExpandableArray<T>>) -> Arc<E
     let mut exarray: Arc<ExpandableArray<T>> = exarray;
     let mut numberOfElements: i32 = Mutable::access(exarray.numberOfElements.clone());
     let mut data: metamodelica::Array<Option<T>> = Mutable::access(exarray.data.clone());
-    let mut newData: metamodelica::Array<Option<T>>;
+    let mut newData: metamodelica::Array<Option<T>> = Default::default();
     exarray = compress(exarray.clone());
     Mutable::update(exarray.capacity.clone(), numberOfElements.clone());
     newData = metamodelica::arrayCreate(numberOfElements.clone(), Dangerous::arrayGet(data.clone(), 1).unwrap());

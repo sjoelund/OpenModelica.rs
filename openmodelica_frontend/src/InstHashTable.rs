@@ -159,7 +159,7 @@ pub fn addToInstCache(mut fullEnvPathPlusClass: Arc<Absyn::Path>, mut fullInstOp
                 _ => bail!("pattern mismatch"),
             } };
             lst = __pa0.clone();
-            instHash = BaseHashTable::add((fullEnvPathPlusClass.clone(), cons(fullInstOpt.clone(), lst.clone())), instHash.clone())?;
+            instHash = BaseHashTable::add((fullEnvPathPlusClass.clone(), metamodelica::cons(fullInstOpt.clone(), lst.clone())), instHash.clone())?;
             { let __v = instHash.clone(); crate::Globals::instHashIndex.with(|__root| *__root.borrow_mut() = __v) };
             Ok(())
         })() { break 'mc __v; }

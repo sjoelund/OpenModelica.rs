@@ -71,7 +71,7 @@ pub fn writeAdjacencyMatrix(mut dlow: Arc<BackendDAE::BackendDAE>, mut fileNameP
             let mut strIMatrix: ArcStr = arcstr::literal!("");
             let mut strVariables: ArcStr = arcstr::literal!("");
             let mut strEquations: ArcStr = arcstr::literal!("");
-            let mut m: metamodelica::Array<Arc<metamodelica::List<ArcStr>>>;
+            let mut m: metamodelica::Array<Arc<metamodelica::List<ArcStr>>> = Default::default();
             file = (stringAppend((fileNamePrefix.clone()).clone(), (literal!("_imatrix.m")).clone())).clone();
             m = adjacencyMatrix(dlow.clone())?;
             strIMatrix = (getAdjacencyMatrix(m.clone())).clone();
@@ -296,7 +296,7 @@ fn dumpVars2(mut inVarLst: Arc<metamodelica::List<BackendDAE::Var>>, mut inInteg
 }
 
 pub fn adjacencyMatrix(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<metamodelica::Array<Arc<metamodelica::List<ArcStr>>>> {
-    let mut outAdjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<ArcStr>>>;
+    let mut outAdjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<ArcStr>>> = Default::default();
     outAdjacencyMatrix = 'mc: {
         let __mc_input = inBackendDAE.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -304,7 +304,7 @@ pub fn adjacencyMatrix(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<
                 Deref @ BackendDAE::BackendDAE { eqs: Deref @ metamodelica::List::Cons { head: Deref @ BackendDAE::EqSystem { orderedEqs: eqns, orderedVars: vars, .. }, tail: Deref @ metamodelica::List::Nil }, .. } => {
                     let mut eqnsl: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
                     let mut lstlst: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
-                    let mut arr: metamodelica::Array<Arc<metamodelica::List<ArcStr>>>;
+                    let mut arr: metamodelica::Array<Arc<metamodelica::List<ArcStr>>> = Default::default();
                     eqnsl = BackendEquation::equationList(eqns.clone());
                     lstlst = adjacencyMatrix2(vars.clone(), eqnsl.clone())?;
                     arr = metamodelica::arrayFromVec(lstlst.clone().into_iter().cloned().collect());
@@ -346,7 +346,7 @@ fn adjacencyMatrix2(mut inVariables: BackendDAE::Variables, mut inEquationLst: A
                     let mut row: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     lst = adjacencyMatrix2(vars.clone(), eqns.clone())?;
                     row = adjacencyRow(vars.clone(), e.clone())?;
-                    Ok(cons(row.clone(), lst.clone()))
+                    Ok(metamodelica::cons(row.clone(), lst.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -455,8 +455,8 @@ fn adjacencyRow(mut inVariables: BackendDAE::Variables, mut inEquation: Arc<Back
                     let mut lst1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut lst2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut res: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut e1: Arc<DAE::Exp>;
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     (cr, e2) = BackendEquation::getWhenEquationExpr(we.clone())?;
                     e1 = Expression::crefExp(cr.clone())?;
@@ -960,7 +960,7 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
                     let mut lst: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
                     s1 = adjacencyRowExp(e1.clone(), vars.clone())?;
                     lst = List::map1(iters.clone(), (std::sync::Arc::new(adjacencyRowIter) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ReductionIterator>, BackendDAE::Variables) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), vars.clone());
-                    pStr = List::flatten(cons(s1.clone(), lst.clone()));
+                    pStr = List::flatten(metamodelica::cons(s1.clone(), lst.clone()));
                     Ok(pStr.clone())
                 }
                 _ => bail!("nomatch"),

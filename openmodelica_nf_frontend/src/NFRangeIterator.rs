@@ -127,7 +127,7 @@ pub fn fromExp(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<NFRangeIter
                     literals = listRest(literals.clone())?;
                 }
                 for mut i in istart.clone()..=istop.clone() {
-                    values = cons(Arc::new(Expression::NFExpression::ENUM_LITERAL { ty: ty.clone(), name: (listHead(literals.clone())?).clone(), index: i.clone() }), values.clone());
+                    values = metamodelica::cons(Arc::new(Expression::NFExpression::ENUM_LITERAL { ty: ty.clone(), name: (listHead(literals.clone())?).clone(), index: i.clone() }), values.clone());
                     literals = listRest(literals.clone())?;
                 }
                 values = values.clone().reverse();
@@ -142,7 +142,7 @@ pub fn fromExp(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<NFRangeIter
             for mut l in &*literals.clone() {
                 let mut l = l.clone();
                 istep = istep.clone() + 1;
-                values = cons(Arc::new(Expression::NFExpression::ENUM_LITERAL { ty: ty.clone(), name: (l.clone()).clone(), index: istep.clone() }), values.clone());
+                values = metamodelica::cons(Arc::new(Expression::NFExpression::ENUM_LITERAL { ty: ty.clone(), name: (l.clone()).clone(), index: istep.clone() }), values.clone());
             }
             Arc::new(NFRangeIterator::ARRAY_RANGE { values: metamodelica::arrayFromVec(values.clone().into_iter().cloned().collect()), index: 1 })
         },
@@ -241,7 +241,7 @@ pub fn toListReverse(mut iterator: Arc<NFRangeIterator>) -> Result<Arc<metamodel
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     while hasNext(iter.clone())? {
         (iter, exp) = next(iter.clone())?;
-        expl = cons(exp.clone(), expl.clone());
+        expl = metamodelica::cons(exp.clone(), expl.clone());
     }
     Ok(expl)
 }
@@ -254,7 +254,7 @@ pub fn map<T: Clone + 'static>(mut iterator: Arc<NFRangeIterator>, mut func: Arc
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     while hasNext(iter.clone())? {
         (iter, exp) = next(iter.clone())?;
-        lst = cons(func(exp.clone())?, lst.clone());
+        lst = metamodelica::cons(func(exp.clone())?, lst.clone());
     }
     lst = lst.clone().reverse();
     Ok(lst)

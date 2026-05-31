@@ -64,6 +64,7 @@ pub mod InstSection;
 pub mod InstStateMachineUtil;
 pub mod InstUtil;
 pub mod InstVar;
+pub mod InteractiveTypes;
 pub mod Lookup;
 pub mod Mod;
 pub mod NFEnvExtends;

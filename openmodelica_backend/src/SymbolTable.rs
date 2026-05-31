@@ -48,9 +48,11 @@ use openmodelica_frontend::CevalFunction;
 use openmodelica_frontend::FCore;
 use openmodelica_frontend::FGraph;
 use openmodelica_frontend::Inst;
+use openmodelica_frontend::InteractiveTypes;
 use openmodelica_frontend::Lookup;
 use openmodelica_frontend_dump::AbsynToSCode;
 use openmodelica_frontend_dump::AbsynUtil;
+use openmodelica_frontend_dump::ComponentReferenceBasics;
 use openmodelica_frontend_dump::SCodeUtil;
 use openmodelica_frontend_types::DAE;
 use openmodelica_frontend_types::SCode;
@@ -73,9 +75,21 @@ pub struct SymbolTable {
     /// the explodedAst is invalidated every time the program is updated
     pub explodedAst: Option<Arc<metamodelica::List<Arc<SCode::Element>>>>,
     /// List of variables with values
-    pub vars: /* ? */,
+    pub vars: Arc<metamodelica::List<InteractiveTypes::Variable>>,
     pub cachedAsts: Arc<Vector::Vector<Absyn::Program>>,
     pub cacheIndex: i32,
+}
+
+impl Default for SymbolTable {
+    fn default() -> Self {
+        Self {
+            ast: Default::default(),
+            explodedAst: Default::default(),
+            vars: Default::default(),
+            cachedAsts: Default::default(),
+            cacheIndex: Default::default(),
+        }
+    }
 }
 
 pub type SYMBOLTABLE = SymbolTable;
@@ -96,21 +110,21 @@ pub fn update(mut table: Arc<SymbolTable>) -> () {
 }
 
 pub fn get() -> Arc<SymbolTable> {
-    let mut table: Arc<SymbolTable>;
+    let mut table: Arc<SymbolTable> = Arc::new(<SymbolTable as ::std::default::Default>::default());
     table = crate::Globals::symbolTable.with(|__root| __root.borrow().clone());
     table
 }
 
 pub fn getAbsyn() -> Absyn::Program {
     let mut ast: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
-    let mut table: Arc<SymbolTable>;
+    let mut table: Arc<SymbolTable> = Arc::new(<SymbolTable as ::std::default::Default>::default());
     table = get();
     ast = table.ast.clone();
     ast
 }
 
 pub fn setAbsyn(mut ast: Absyn::Program) -> Result<()> {
-    let mut table: Arc<SymbolTable>;
+    let mut table: Arc<SymbolTable> = Arc::new(<SymbolTable as ::std::default::Default>::default());
     table = get();
     if referenceEq(&table.ast.clone(),&ast.clone()) {
         return Ok(());
@@ -133,8 +147,8 @@ pub fn setAbsynElement(mut ast: Absyn::Program, mut element: Arc<Absyn::Element>
         Ok(newElement)
     }
 
-    let mut table: Arc<SymbolTable>;
-    let mut scode_elem: Arc<SCode::Element>;
+    let mut table: Arc<SymbolTable> = Arc::new(<SymbolTable as ::std::default::Default>::default());
+    let mut scode_elem: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     let mut scode_elems: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     let mut scode_prog: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     table = get();
@@ -146,7 +160,7 @@ pub fn setAbsynElement(mut ast: Absyn::Program, mut element: Arc<Absyn::Element>
     if isSome(table.explodedAst.clone()) {
         scode_elems = AbsynToSCode::translateElement(element.clone(), openmodelica_frontend_types::SCode::Visibility::PUBLIC)?;
         if (scode_elems.clone().len() as i32) > 1 {
-            let __pa0 = ::match_deref::match_deref! { match &(List::findOption(scode_elems.clone(), Arc::new({ let __pe_b0 = (AbsynUtil::pathLastIdent(path.clone())?).clone(); move |__pe_a1| Ok(SCodeUtil::isElementNamed(__pe_b0.clone(), __pe_a1)) }))) {
+            let __pa0 = ::match_deref::match_deref! { match &(List::findOption(scode_elems.clone(), (std::sync::Arc::new({ let __pe_b0 = (AbsynUtil::pathLastIdent(path.clone())?).clone(); move |__pe_a1| Ok(SCodeUtil::isElementNamed(__pe_b0.clone(), __pe_a1)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>))) {
                 Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
@@ -159,7 +173,7 @@ pub fn setAbsynElement(mut ast: Absyn::Program, mut element: Arc<Absyn::Element>
             _ => bail!("pattern mismatch"),
         } };
         scode_prog = __pa1.clone();
-        let __pa2 = ::match_deref::match_deref! { match &(SCodeUtil::transformPathedElementInProgram(path.clone(), Arc::new({ let __pe_b1 = scode_elem.clone(); move |__pe_a0| update_element(__pe_a0, __pe_b1.clone()) }), scode_prog.clone())?) {
+        let __pa2 = ::match_deref::match_deref! { match &(SCodeUtil::transformPathedElementInProgram(path.clone(), (std::sync::Arc::new({ let __pe_b1 = scode_elem.clone(); move |__pe_a0| update_element(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<Arc<SCode::Element>> + 'static>), scode_prog.clone())?) {
             (__pa2, true) => __pa2.clone(),
             _ => bail!("pattern mismatch"),
         } };
@@ -177,8 +191,8 @@ pub fn setAbsynClass(mut ast: Absyn::Program, mut cls: Arc<Absyn::Class>, mut pa
         Ok(newElement)
     }
 
-    let mut table: Arc<SymbolTable>;
-    let mut scode_elem: Arc<SCode::Element>;
+    let mut table: Arc<SymbolTable> = Arc::new(<SymbolTable as ::std::default::Default>::default());
+    let mut scode_elem: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     let mut scode_prog: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     table = get();
     if referenceEq(&table.ast.clone(),&ast.clone()) {
@@ -193,7 +207,7 @@ pub fn setAbsynClass(mut ast: Absyn::Program, mut cls: Arc<Absyn::Class>, mut pa
             _ => bail!("pattern mismatch"),
         } };
         scode_prog = __pa0.clone();
-        let __pa1 = ::match_deref::match_deref! { match &(SCodeUtil::transformPathedElementInProgram(path.clone(), Arc::new({ let __pe_b1 = scode_elem.clone(); move |__pe_a0| update_element(__pe_a0, __pe_b1.clone()) }), scode_prog.clone())?) {
+        let __pa1 = ::match_deref::match_deref! { match &(SCodeUtil::transformPathedElementInProgram(path.clone(), (std::sync::Arc::new({ let __pe_b1 = scode_elem.clone(); move |__pe_a0| update_element(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<Arc<SCode::Element>> + 'static>), scode_prog.clone())?) {
             (__pa1, true) => __pa1.clone(),
             _ => bail!("pattern mismatch"),
         } };
@@ -206,7 +220,7 @@ pub fn setAbsynClass(mut ast: Absyn::Program, mut cls: Arc<Absyn::Class>, mut pa
 
 pub fn getSCode() -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
     let mut ast: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-    let mut table: Arc<SymbolTable>;
+    let mut table: Arc<SymbolTable> = Arc::new(<SymbolTable as ::std::default::Default>::default());
     table = get();
     if isNone(table.explodedAst.clone()) {
         ast = AbsynToSCode::translateAbsyn2SCode(table.ast.clone())?;
@@ -223,7 +237,7 @@ pub fn getSCode() -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
 }
 
 pub fn setSCode(mut ast: Option<Arc<metamodelica::List<Arc<SCode::Element>>>>) -> () {
-    let mut table: Arc<SymbolTable>;
+    let mut table: Arc<SymbolTable> = Arc::new(<SymbolTable as ::std::default::Default>::default());
     table = get();
     if referenceEq(&table.explodedAst.clone(),&ast.clone()) {
         return ();
@@ -234,7 +248,7 @@ pub fn setSCode(mut ast: Option<Arc<metamodelica::List<Arc<SCode::Element>>>>) -
 }
 
 pub fn clearSCode() -> () {
-    let mut table: Arc<SymbolTable>;
+    let mut table: Arc<SymbolTable> = Arc::new(<SymbolTable as ::std::default::Default>::default());
     table = get();
     if isSome(table.explodedAst.clone()) {
         assign_field!(table.explodedAst = None);
@@ -244,11 +258,27 @@ pub fn clearSCode() -> () {
 }
 
 pub fn clearProgram() -> Result<()> {
-    let mut table: Arc<SymbolTable>;
+    let mut table: Arc<SymbolTable> = Arc::new(<SymbolTable as ::std::default::Default>::default());
     table = get();
     reset()?;
     setVars(table.vars.clone());
     Ok(())
+}
+
+pub fn getVars() -> Arc<metamodelica::List<InteractiveTypes::Variable>> {
+    let mut vars: Arc<metamodelica::List<InteractiveTypes::Variable>> = metamodelica::nil();
+    let mut table: Arc<SymbolTable> = Arc::new(<SymbolTable as ::std::default::Default>::default());
+    table = get();
+    vars = table.vars.clone();
+    vars
+}
+
+pub fn setVars(mut vars: Arc<metamodelica::List<InteractiveTypes::Variable>>) -> () {
+    let mut table: Arc<SymbolTable> = Arc::new(<SymbolTable as ::std::default::Default>::default());
+    table = get();
+    assign_field!(table.vars = vars.clone());
+    update(table.clone());
+    ()
 }
 
 pub fn addVars(mut inCref: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut inValues: Arc<metamodelica::List<Arc<Values::Value>>>, mut inEnv: FCore::Graph) -> Result<()> {
@@ -276,25 +306,35 @@ pub fn addVars(mut inCref: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut 
     Ok(())
 }
 
-pub fn appendVar(mut inIdent: ArcStr, mut inValue: Arc<Values::Value>, mut inType: Arc<DAE::Type>) -> () {
-    let mut table: Arc<SymbolTable>;
+pub fn addVar(mut inCref: Arc<DAE::ComponentRef>, mut inValue: Arc<Values::Value>, mut inEnv: FCore::Graph) -> Result<()> {
+    let mut vars: Arc<metamodelica::List<InteractiveTypes::Variable>> = metamodelica::nil();
+    let mut table: Arc<SymbolTable> = Arc::new(<SymbolTable as ::std::default::Default>::default());
     table = get();
-    assign_field!(table.vars = cons(InteractiveTypes::IVAR((inIdent.clone()).clone(), inValue.clone(), inType.clone()).unwrap(), table.vars.clone()));
+    vars = addVarToVarList(inCref.clone(), inValue.clone(), inEnv.clone(), table.vars.clone())?;
+    assign_field!(table.vars = addVarToVarList(inCref.clone(), inValue.clone(), inEnv.clone(), vars.clone())?);
+    update(table.clone());
+    Ok(())
+}
+
+pub fn appendVar(mut inIdent: ArcStr, mut inValue: Arc<Values::Value>, mut inType: Arc<DAE::Type>) -> () {
+    let mut table: Arc<SymbolTable> = Arc::new(<SymbolTable as ::std::default::Default>::default());
+    table = get();
+    assign_field!(table.vars = metamodelica::cons(InteractiveTypes::Variable { varIdent: (inIdent.clone()).clone(), value: inValue.clone(), type_: inType.clone() }, table.vars.clone()));
     update(table.clone());
     ()
 }
 
 pub fn deleteVarFirstEntry(mut inIdent: ArcStr) -> Result<()> {
-    let mut table: Arc<SymbolTable>;
+    let mut table: Arc<SymbolTable> = Arc::new(<SymbolTable as ::std::default::Default>::default());
     table = get();
-    assign_field!(table.vars = List::deleteMemberOnTrue((inIdent.clone()).clone(), table.vars.clone(), Arc::new(fnptr!(isVarNamed, ArcStr, _)))?.0);
+    assign_field!(table.vars = List::deleteMemberOnTrue((inIdent.clone()).clone(), table.vars.clone(), (std::sync::Arc::new(fnptr!(isVarNamed, ArcStr, InteractiveTypes::Variable)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, InteractiveTypes::Variable) -> Result<bool> + 'static>))?.0);
     update(table.clone());
     Ok(())
 }
 
 pub fn storeAST() -> Result<i32> {
     let mut id: i32 = 0;
-    let mut table: Arc<SymbolTable>;
+    let mut table: Arc<SymbolTable> = Arc::new(<SymbolTable as ::std::default::Default>::default());
     table = get();
     id = table.cacheIndex.clone() + 1;
     if id.clone() < 0 {
@@ -312,7 +352,7 @@ pub fn storeAST() -> Result<i32> {
 
 pub fn restoreAST(mut id: i32) -> Result<bool> {
     let mut success: bool = false;
-    let mut table: Arc<SymbolTable>;
+    let mut table: Arc<SymbolTable> = Arc::new(<SymbolTable as ::std::default::Default>::default());
     table = get();
     success = id.clone() <= table.cacheIndex.clone() && id.clone() > table.cacheIndex.clone() - AST_CACHE_MAX_SIZE.clone() && id.clone() > 0;
     if success.clone() {
@@ -321,13 +361,113 @@ pub fn restoreAST(mut id: i32) -> Result<bool> {
     Ok(success)
 }
 
+fn isVarNamed(mut id: ArcStr, mut v: InteractiveTypes::Variable) -> bool {
+    let mut b: bool = false;
+    b = v.varIdent.clone() == id.clone();
+    b
+}
+
+fn addVarToVarList(mut inCref: Arc<DAE::ComponentRef>, mut inValue: Arc<Values::Value>, mut inEnv: FCore::Graph, mut inVariables: Arc<metamodelica::List<InteractiveTypes::Variable>>) -> Result<Arc<metamodelica::List<InteractiveTypes::Variable>>> {
+    let mut outVariables: Arc<metamodelica::List<InteractiveTypes::Variable>> = metamodelica::nil();
+    let mut found: bool = false;
+    (outVariables, found) = List::findMap(inVariables.clone(), (std::sync::Arc::new({ let __pe_b1 = inCref.clone(); let __pe_b2 = inValue.clone(); let __pe_b3 = inEnv.clone(); move |__pe_a0| addVarToVarList2(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(InteractiveTypes::Variable) -> Result<(InteractiveTypes::Variable, bool)> + 'static>))?;
+    outVariables = addVarToVarList4(found.clone(), inCref.clone(), inValue.clone(), outVariables.clone())?;
+    Ok(outVariables)
+}
+
+fn addVarToVarList2(mut inOldVariable: InteractiveTypes::Variable, mut inCref: Arc<DAE::ComponentRef>, mut inValue: Arc<Values::Value>, mut inEnv: FCore::Graph) -> Result<(InteractiveTypes::Variable, bool)> {
+    let mut outVariable: InteractiveTypes::Variable = <InteractiveTypes::Variable as ::std::default::Default>::default();
+    let mut outFound: bool = false;
+    let mut id1: ArcStr = arcstr::literal!("");
+    let mut id2: ArcStr = arcstr::literal!("");
+    let InteractiveTypes::IVAR { varIdent: __pa0, .. } = (inOldVariable.clone()) else { bail!("pattern mismatch") };
+    id1 = __pa0.clone();
+    let __pa1 = ::match_deref::match_deref! { match &(inCref.clone()) {
+        Deref @ DAE::ComponentRef::CREF_IDENT { ident: __pa1, .. } => __pa1.clone(),
+        _ => bail!("pattern mismatch"),
+    } };
+    id2 = __pa1.clone();
+    outFound = stringEq((id1.clone()).clone(), (id2.clone()).clone());
+    outVariable = addVarToVarList3(outFound.clone(), inOldVariable.clone(), inCref.clone(), inValue.clone(), inEnv.clone())?;
+    Ok((outVariable, outFound))
+}
+
+fn addVarToVarList3(mut inFound: bool, mut inOldVariable: InteractiveTypes::Variable, mut inCref: Arc<DAE::ComponentRef>, mut inValue: Arc<Values::Value>, mut inEnv: FCore::Graph) -> Result<InteractiveTypes::Variable> {
+    let mut outVariable: InteractiveTypes::Variable = <InteractiveTypes::Variable as ::std::default::Default>::default();
+    outVariable = (::match_deref::match_deref! { match &((inFound.clone(), inOldVariable.clone(), inCref.clone())) {
+        (false, _, _) => {
+            inOldVariable.clone()
+        },
+        (true, _, Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, identType: ty, subscriptLst: Deref @ metamodelica::List::Nil }) => {
+            InteractiveTypes::Variable { varIdent: (id.clone()).clone(), value: inValue.clone(), type_: ty.clone() }
+        },
+        (true, InteractiveTypes::Variable { varIdent: id, value: val, type_: ty }, Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: subs, .. }) => {
+            let mut val = (*val).clone();
+            (_, val) = CevalFunction::assignVector(inValue.clone(), val.clone(), subs.clone(), FCore::emptyCache(), inEnv.clone())?;
+            InteractiveTypes::Variable { varIdent: (id.clone()).clone(), value: val.clone(), type_: ty.clone() }
+        },
+        _ => bail!("match: no arm matched"),
+    } });
+    Ok(outVariable)
+}
+
+fn addVarToVarList4(mut inFound: bool, mut inCref: Arc<DAE::ComponentRef>, mut inValue: Arc<Values::Value>, mut inVariables: Arc<metamodelica::List<InteractiveTypes::Variable>>) -> Result<Arc<metamodelica::List<InteractiveTypes::Variable>>> {
+    let mut outVariables: Arc<metamodelica::List<InteractiveTypes::Variable>> = metamodelica::nil();
+    outVariables = (::match_deref::match_deref! { match &((inFound.clone(), inCref.clone())) {
+        (true, _) => {
+            inVariables.clone()
+        },
+        (false, Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, identType: ty, subscriptLst: Deref @ metamodelica::List::Nil }) => {
+            metamodelica::cons(InteractiveTypes::Variable { varIdent: (id.clone()).clone(), value: inValue.clone(), type_: ty.clone() }, inVariables.clone())
+        },
+        (false, Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: Deref @ metamodelica::List::Cons { head: _, tail: _ }, ident: id, .. }) => {
+            Error::addMessage(Error::SLICE_ASSIGN_NON_ARRAY.clone(), list![(id.clone()).clone()])?;
+            bail!("fail")
+        },
+        _ => bail!("match: no arm matched"),
+    } });
+    Ok(outVariables)
+}
+
 pub fn buildEnv() -> Result<FCore::Graph> {
-    let mut env: FCore::Graph;
-    let mut table: Arc<SymbolTable>;
+    let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+    let mut table: Arc<SymbolTable> = Arc::new(<SymbolTable as ::std::default::Default>::default());
     table = get();
     (_, env) = Inst::makeEnvFromProgram(getSCode()?)?;
     env = addVarsToEnv(table.vars.clone().reverse(), env.clone());
     Ok(env)
+}
+
+fn addVarsToEnv(mut inVariableLst: Arc<metamodelica::List<InteractiveTypes::Variable>>, mut inEnv: FCore::Graph) -> FCore::Graph {
+    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+    outEnv = List::fold(inVariableLst.clone(), (std::sync::Arc::new(addVarToEnv) as std::sync::Arc<dyn ::std::ops::Fn(InteractiveTypes::Variable, FCore::Graph) -> Result<FCore::Graph> + 'static>), inEnv.clone());
+    outEnv
+}
+
+fn addVarToEnv(mut inVariable: InteractiveTypes::Variable, mut inEnv: FCore::Graph) -> Result<FCore::Graph> {
+    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+    outEnv = 'mc: {
+        let __mc_input = (inVariable.clone(), inEnv.clone());
+        if let Ok(__v) = (|| -> Result<_> {
+            let (InteractiveTypes::Variable { type_: ref tp, value: ref v, varIdent: mut id }, mut env) = __mc_input.clone() else { bail!("nomatch") };
+            let mut empty_env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+            let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
+            cref = ComponentReferenceBasics::makeCrefIdent((id.clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil());
+            empty_env = FGraph::empty();
+            Lookup::lookupVar(FCore::emptyCache(), env.clone(), cref.clone())?;
+            env = FGraph::updateComp(env.clone(), Arc::new(DAE::Var { name: (id.clone()).clone(), attributes: DAE::dummyAttrVar().clone(), ty: tp.clone(), binding: Arc::new(DAE::Binding::VALBOUND { valBound: v.clone(), source: openmodelica_frontend_types::DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE }), bind_from_outside: false, constOfForIteratorRange: None }), openmodelica_frontend::FCore::Status::VAR_TYPED, empty_env.clone())?;
+            Ok(env.clone())
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            let (InteractiveTypes::Variable { type_: ref tp, value: ref v, varIdent: mut id }, mut env) = __mc_input.clone() else { bail!("nomatch") };
+            let mut empty_env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+            empty_env = FGraph::empty();
+            env = FGraph::mkComponentNode(env.clone(), Arc::new(DAE::Var { name: (id.clone()).clone(), attributes: DAE::dummyAttrVar().clone(), ty: tp.clone(), binding: Arc::new(DAE::Binding::VALBOUND { valBound: v.clone(), source: openmodelica_frontend_types::DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE }), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(SCode::Element::COMPONENT { name: (id.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::Attributes { arrayDims: metamodelica::nil(), connectorType: openmodelica_frontend_types::SCode::ConnectorType::POTENTIAL, parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: openmodelica_frontend_types::SCode::Variability::VAR, direction: openmodelica_ast::Absyn::Direction::BIDIR, isField: openmodelica_ast::Absyn::IsField::NONFIELD }, typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), arrayDim: None }), modifications: Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() }), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend::FCore::Status::VAR_UNTYPED, empty_env.clone())?;
+            Ok(env.clone())
+        })() { break 'mc __v; }
+        bail!("matchcontinue: no arm matched")
+    };
+    Ok(outEnv)
 }
 
 fn updateUriMapping(mut classes: Arc<metamodelica::List<Arc<Absyn::Class>>>) -> Result<()> {
@@ -336,7 +476,7 @@ fn updateUriMapping(mut classes: Arc<metamodelica::List<Arc<Absyn::Class>>>) -> 
     let mut fileName: ArcStr = arcstr::literal!("");
     let mut dir: ArcStr = arcstr::literal!("");
     let mut b: bool = false;
-    let mut namesAndDirs: metamodelica::Array<ArcStr>;
+    let mut namesAndDirs: metamodelica::Array<ArcStr> = Default::default();
     let mut infos: Arc<metamodelica::List<SourceInfo>> = metamodelica::nil();
     tree = Arc::new(openmodelica_util::AvlTreeStringString::Tree::EMPTY);
     for mut cl in &*classes.clone() {

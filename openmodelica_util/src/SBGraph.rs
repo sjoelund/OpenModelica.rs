@@ -141,7 +141,7 @@ pub mod IncidenceList {
         Ok(row)
     }
 
-    pub fn addVertex<VertexT: Clone + 'static + Default, EdgeT: Clone + 'static>(mut il: Arc<IncidenceList<VertexT, EdgeT>>, mut v: VertexT) -> i32 {
+    pub fn addVertex<VertexT: Clone + 'static, EdgeT: Clone + 'static>(mut il: Arc<IncidenceList<VertexT, EdgeT>>, mut v: VertexT) -> i32 {
         let mut d: i32 = 0;
         Vector::push(il.vertices.clone(), v.clone());
         Vector::push(il.graph.clone(), metamodelica::nil());
@@ -172,22 +172,22 @@ pub mod IncidenceList {
         for mut v in &*vertices(il.clone()) {
             let mut v = v.clone();
             if !(SBSet::isEmpty(SBSet::intersection(getSet(v.clone())?, set.clone())?)) {
-                set_vertices = cons(v.clone(), set_vertices.clone());
+                set_vertices = metamodelica::cons(v.clone(), set_vertices.clone());
             }
         }
         Ok(set_vertices)
     }
 
-    pub fn addEdge<VertexT: Clone + 'static, EdgeT: Clone + 'static + Default>(mut il: Arc<IncidenceList<VertexT, EdgeT>>, mut d1: i32, mut d2: i32, mut e: EdgeT) -> Result<i32> {
+    pub fn addEdge<VertexT: Clone + 'static, EdgeT: Clone + 'static>(mut il: Arc<IncidenceList<VertexT, EdgeT>>, mut d1: i32, mut d2: i32, mut e: EdgeT) -> Result<i32> {
         let mut ei: i32 = 0;
         let mut eil: Arc<metamodelica::List<i32>> = metamodelica::nil();
         eil = Vector::get(il.graph.clone(), d1.clone())?;
-        ei = List::positionOnTrue(eil.clone(), Arc::new({ let __pe_b1 = e.clone(); let __pe_b2 = il.edges.clone(); let __pe_b3 = il.edgeEqFn.clone(); move |__pe_a0| Ok(edge_finder(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone())) }));
+        ei = List::positionOnTrue(eil.clone(), (std::sync::Arc::new({ let __pe_b1 = e.clone(); let __pe_b2 = il.edges.clone(); let __pe_b3 = il.edgeEqFn.clone(); move |__pe_a0| Ok(edge_finder(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>));
         if ei.clone() == -1 {
             Vector::push(il.edges.clone(), e.clone());
             ei = Vector::size(il.edges.clone());
-            Vector::update(il.graph.clone(), d1.clone(), cons(ei.clone(), eil.clone()))?;
-            Vector::update(il.graph.clone(), d2.clone(), cons(ei.clone(), Vector::get(il.graph.clone(), d2.clone())?))?;
+            Vector::update(il.graph.clone(), d1.clone(), metamodelica::cons(ei.clone(), eil.clone()))?;
+            Vector::update(il.graph.clone(), d2.clone(), metamodelica::cons(ei.clone(), Vector::get(il.graph.clone(), d2.clone())?))?;
         } else {
             Vector::update(il.edges.clone(), ei.clone(), e.clone())?;
         }
@@ -309,7 +309,7 @@ pub mod BipartiteIncidenceList {
         row
     }
 
-    pub fn addVertex<VertexT: Clone + 'static + Default, EdgeT: Clone + 'static>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut v: VertexT, mut ST: SetType) -> Result<i32> {
+    pub fn addVertex<VertexT: Clone + 'static, EdgeT: Clone + 'static>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut v: VertexT, mut ST: SetType) -> Result<i32> {
         let mut d: i32 = 0;
         d = (match ST.clone() {
         SetType::F => {
@@ -373,22 +373,22 @@ pub mod BipartiteIncidenceList {
         for mut v in &*vertices(il.clone(), ST.clone())? {
             let mut v = v.clone();
             if !(SBSet::isEmpty(SBSet::intersection(getSet(v.clone())?, set.clone())?)) {
-                set_vertices = cons(v.clone(), set_vertices.clone());
+                set_vertices = metamodelica::cons(v.clone(), set_vertices.clone());
             }
         }
         Ok(set_vertices)
     }
 
-    pub fn addEdge<VertexT: Clone + 'static, EdgeT: Clone + 'static + Default>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut d1: i32, mut d2: i32, mut e: EdgeT) -> Result<i32> {
+    pub fn addEdge<VertexT: Clone + 'static, EdgeT: Clone + 'static>(mut il: Arc<BipartiteIncidenceList<VertexT, EdgeT>>, mut d1: i32, mut d2: i32, mut e: EdgeT) -> Result<i32> {
         let mut ei: i32 = 0;
         let mut eil: Arc<metamodelica::List<i32>> = metamodelica::nil();
         eil = getRow(il.clone(), d1.clone());
-        ei = List::positionOnTrue(eil.clone(), Arc::new({ let __pe_b1 = e.clone(); let __pe_b2 = il.edges.clone(); let __pe_b3 = il.edgeEqFn.clone(); move |__pe_a0| Ok(edge_finder(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone())) }));
+        ei = List::positionOnTrue(eil.clone(), (std::sync::Arc::new({ let __pe_b1 = e.clone(); let __pe_b2 = il.edges.clone(); let __pe_b3 = il.edgeEqFn.clone(); move |__pe_a0| Ok(edge_finder(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>));
         if ei.clone() == -1 {
             Vector::push(il.edges.clone(), e.clone());
             ei = Vector::size(il.edges.clone());
-            Vector::update(il.graph.clone(), d1.clone(), cons(ei.clone(), eil.clone()))?;
-            Vector::update(il.graph.clone(), d2.clone(), cons(ei.clone(), Vector::get(il.graph.clone(), d2.clone())?))?;
+            Vector::update(il.graph.clone(), d1.clone(), metamodelica::cons(ei.clone(), eil.clone()))?;
+            Vector::update(il.graph.clone(), d2.clone(), metamodelica::cons(ei.clone(), Vector::get(il.graph.clone(), d2.clone())?))?;
         } else {
             Vector::update(il.edges.clone(), ei.clone(), e.clone())?;
         }
@@ -402,7 +402,7 @@ pub mod BipartiteIncidenceList {
         for mut e in &*edges(il.clone()) {
             let mut e = e.clone();
             if !(SBSet::isEmpty(SBSet::intersection(getSet(e.clone())?, set.clone())?)) {
-                set_edges = cons(e.clone(), set_edges.clone());
+                set_edges = metamodelica::cons(e.clone(), set_edges.clone());
             }
         }
         Ok(set_edges)

@@ -1999,7 +1999,7 @@ pub fn dumpDimension(mut in_txt: Tpl::Text, mut in_a_dim: Arc<DAE::Dimension>) -
 
 pub fn dumpClassState(mut txt: Tpl::Text, mut a_state: ClassInf::State) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    let mut ret_0: Arc<Absyn::Path>;
+    let mut ret_0: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     ret_0 = ClassInfUtil::getStateName(a_state.clone());
     out_txt = AbsynDumpTpl::dumpPath(txt.clone(), ret_0.clone())?;
     Ok(out_txt)

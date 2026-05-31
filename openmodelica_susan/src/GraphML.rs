@@ -343,7 +343,7 @@ pub fn createGraphInfo() -> GraphInfo {
 
 pub fn addGraph(mut id: ArcStr, mut directed: bool, mut iGraphInfo: GraphInfo) -> Result<(GraphInfo, (Graph, i32))> {
     let mut oGraphInfo: GraphInfo;
-    let mut oGraph: (Graph, i32);
+    let mut oGraph: (Graph, i32) = (<Graph as ::std::default::Default>::default(), 0);
     let mut tmpGraph: Graph = <Graph as ::std::default::Default>::default();
     let mut graphs: Arc<metamodelica::List<Graph>> = metamodelica::nil();
     let mut graphCount: i32 = 0;
@@ -366,7 +366,7 @@ pub fn addGraph(mut id: ArcStr, mut directed: bool, mut iGraphInfo: GraphInfo) -
     graphEdgeKey = __pa8.clone();
     graphCount = graphCount.clone() + 1;
     tmpGraph = Graph { id: (id.clone()).clone(), directed: directed.clone(), nodeIdc: metamodelica::nil(), attValues: metamodelica::nil() };
-    graphs = cons(tmpGraph.clone(), graphs.clone());
+    graphs = metamodelica::cons(tmpGraph.clone(), graphs.clone());
     oGraphInfo = GraphInfo::GRAPHINFO { graphs: graphs.clone(), graphCount: graphCount.clone(), nodes: nodes.clone(), nodeCount: nodeCount.clone(), edges: edges.clone(), edgeCount: edgeCount.clone(), attributes: attributes.clone(), graphNodeKey: (graphNodeKey.clone()).clone(), graphEdgeKey: (graphEdgeKey.clone()).clone() };
     oGraph = (tmpGraph.clone(), graphCount.clone());
     Ok((oGraphInfo, oGraph))
@@ -408,8 +408,8 @@ pub fn addNode(mut id: ArcStr, mut backgroundColor: ArcStr, mut borderWidth: met
     gAttValues = __pa12.clone();
     nodeCount = nodeCount.clone() + 1;
     tmpNode = Node::NODE { id: (id.clone()).clone(), color: (backgroundColor.clone()).clone(), border: borderWidth.clone(), nodeLabels: nodeLabels.clone(), shapeType: shapeType.clone(), optDesc: optDesc.clone(), attValues: attValues.clone() };
-    nodes = cons(tmpNode.clone(), nodes.clone());
-    nodeIdc = cons(nodeCount.clone(), nodeIdc.clone());
+    nodes = metamodelica::cons(tmpNode.clone(), nodes.clone());
+    nodeIdc = metamodelica::cons(nodeCount.clone(), nodeIdc.clone());
     iGraph = Graph { id: (gid.clone()).clone(), directed: directed.clone(), nodeIdc: nodeIdc.clone(), attValues: gAttValues.clone() };
     graphs = List::set(graphs.clone(), graphCount.clone() - iGraphIdx.clone() + 1, iGraph.clone())?;
     oGraphInfo = GraphInfo::GRAPHINFO { graphs: graphs.clone(), graphCount: graphCount.clone(), nodes: nodes.clone(), nodeCount: nodeCount.clone(), edges: edges.clone(), edgeCount: edgeCount.clone(), attributes: attributes.clone(), graphNodeKey: (graphNodeKey.clone()).clone(), graphEdgeKey: (graphEdgeKey.clone()).clone() };
@@ -420,7 +420,7 @@ pub fn addNode(mut id: ArcStr, mut backgroundColor: ArcStr, mut borderWidth: met
 pub fn addGroupNode(mut id: ArcStr, mut iGraphIdx: i32, mut isFolded: bool, mut iHeader: ArcStr, mut iGraphInfo: GraphInfo) -> Result<(GraphInfo, (Node, i32), (Graph, i32))> {
     let mut oGraphInfo: GraphInfo;
     let mut oNode: (Node, i32);
-    let mut oGraph: (Graph, i32);
+    let mut oGraph: (Graph, i32) = (<Graph as ::std::default::Default>::default(), 0);
     let mut tmpGraphInfo: GraphInfo;
     let mut tmpNode: Node;
     let mut graphs: Arc<metamodelica::List<Graph>> = metamodelica::nil();
@@ -471,8 +471,8 @@ pub fn addGroupNode(mut id: ArcStr, mut iGraphIdx: i32, mut isFolded: bool, mut 
     graphEdgeKey = __pa24.clone();
     nodeCount = nodeCount.clone() + 1;
     tmpNode = Node::GROUPNODE { id: (id.clone()).clone(), internalGraphIdx: newGraphIdx.clone(), isFolded: isFolded.clone(), header: (iHeader.clone()).clone() };
-    nodes = cons(tmpNode.clone(), nodes.clone());
-    nodeIdc = cons(nodeCount.clone(), nodeIdc.clone());
+    nodes = metamodelica::cons(tmpNode.clone(), nodes.clone());
+    nodeIdc = metamodelica::cons(nodeCount.clone(), nodeIdc.clone());
     iGraph = Graph { id: (gid.clone()).clone(), directed: directed.clone(), nodeIdc: nodeIdc.clone(), attValues: attValues.clone() };
     graphs = List::set(graphs.clone(), graphCount.clone() - iGraphIdx.clone() + 1, iGraph.clone())?;
     oGraphInfo = GraphInfo::GRAPHINFO { graphs: graphs.clone(), graphCount: graphCount.clone(), nodes: nodes.clone(), nodeCount: nodeCount.clone(), edges: edges.clone(), edgeCount: edgeCount.clone(), attributes: attributes.clone(), graphNodeKey: (graphNodeKey.clone()).clone(), graphEdgeKey: (graphEdgeKey.clone()).clone() };
@@ -483,7 +483,7 @@ pub fn addGroupNode(mut id: ArcStr, mut iGraphIdx: i32, mut isFolded: bool, mut 
 
 pub fn addEdge(mut id: ArcStr, mut target: ArcStr, mut source: ArcStr, mut color: ArcStr, mut lineType: LineType, mut lineWidth: metamodelica::Real, mut smooth: bool, mut labels: Arc<metamodelica::List<EdgeLabel>>, mut arrows: (ArrowType, ArrowType), mut attValues: Arc<metamodelica::List<(i32, ArcStr)>>, mut iGraphInfo: GraphInfo) -> Result<(GraphInfo, (Edge, i32))> {
     let mut oGraphInfo: GraphInfo;
-    let mut oEdge: (Edge, i32);
+    let mut oEdge: (Edge, i32) = (<Edge as ::std::default::Default>::default(), 0);
     let mut tmpEdge: Edge = <Edge as ::std::default::Default>::default();
     let mut graphs: Arc<metamodelica::List<Graph>> = metamodelica::nil();
     let mut graphCount: i32 = 0;
@@ -506,7 +506,7 @@ pub fn addEdge(mut id: ArcStr, mut target: ArcStr, mut source: ArcStr, mut color
     graphEdgeKey = __pa8.clone();
     edgeCount = edgeCount.clone() + 1;
     tmpEdge = Edge { id: (id.clone()).clone(), target: (target.clone()).clone(), source: (source.clone()).clone(), color: (color.clone()).clone(), lineType: lineType.clone(), lineWidth: lineWidth.clone(), smooth: smooth.clone(), edgeLabels: labels.clone(), arrows: arrows.clone(), attValues: attValues.clone() };
-    edges = cons(tmpEdge.clone(), edges.clone());
+    edges = metamodelica::cons(tmpEdge.clone(), edges.clone());
     oGraphInfo = GraphInfo::GRAPHINFO { graphs: graphs.clone(), graphCount: graphCount.clone(), nodes: nodes.clone(), nodeCount: nodeCount.clone(), edges: edges.clone(), edgeCount: edgeCount.clone(), attributes: attributes.clone(), graphNodeKey: (graphNodeKey.clone()).clone(), graphEdgeKey: (graphEdgeKey.clone()).clone() };
     oEdge = (tmpEdge.clone(), edgeCount.clone());
     Ok((oGraphInfo, oEdge))
@@ -514,7 +514,7 @@ pub fn addEdge(mut id: ArcStr, mut target: ArcStr, mut source: ArcStr, mut color
 
 pub fn addAttribute(mut defaultValue: ArcStr, mut name: ArcStr, mut attType: AttributeType, mut attTarget: AttributeTarget, mut iGraphInfo: GraphInfo) -> Result<(GraphInfo, (Attribute, i32))> {
     let mut oGraphInfo: GraphInfo;
-    let mut oAttribute: (Attribute, i32);
+    let mut oAttribute: (Attribute, i32) = (<Attribute as ::std::default::Default>::default(), 0);
     let mut tmpAttribute: Attribute = <Attribute as ::std::default::Default>::default();
     let mut attIdx: i32 = 0;
     let mut graphs: Arc<metamodelica::List<Graph>> = metamodelica::nil();
@@ -538,7 +538,7 @@ pub fn addAttribute(mut defaultValue: ArcStr, mut name: ArcStr, mut attType: Att
     graphEdgeKey = __pa8.clone();
     attIdx = (attributes.clone().len() as i32) + 1;
     tmpAttribute = Attribute { attIdx: attIdx.clone(), defaultValue: (defaultValue.clone()).clone(), name: (name.clone()).clone(), attType: attType.clone(), attTarget: attTarget.clone() };
-    attributes = cons(tmpAttribute.clone(), attributes.clone());
+    attributes = metamodelica::cons(tmpAttribute.clone(), attributes.clone());
     oGraphInfo = GraphInfo::GRAPHINFO { graphs: graphs.clone(), graphCount: graphCount.clone(), nodes: nodes.clone(), nodeCount: nodeCount.clone(), edges: edges.clone(), edgeCount: edgeCount.clone(), attributes: attributes.clone(), graphNodeKey: (graphNodeKey.clone()).clone(), graphEdgeKey: (graphEdgeKey.clone()).clone() };
     oAttribute = (tmpAttribute.clone(), attIdx.clone());
     Ok((oGraphInfo, oAttribute))
@@ -576,7 +576,7 @@ pub fn addGraphAttributeValue(mut iValue: (i32, ArcStr), mut iGraphIdx: i32, mut
     directed = __pa10.clone();
     nodeIdc = __pa11.clone();
     attValues = __pa12.clone();
-    attValues = cons(iValue.clone(), attValues.clone());
+    attValues = metamodelica::cons(iValue.clone(), attValues.clone());
     iGraph = Graph { id: (gid.clone()).clone(), directed: directed.clone(), nodeIdc: nodeIdc.clone(), attValues: attValues.clone() };
     graphs = List::set(graphs.clone(), graphCount.clone() - iGraphIdx.clone() + 1, iGraph.clone())?;
     oGraphInfo = GraphInfo::GRAPHINFO { graphs: graphs.clone(), graphCount: graphCount.clone(), nodes: nodes.clone(), nodeCount: nodeCount.clone(), edges: edges.clone(), edgeCount: edgeCount.clone(), attributes: attributes.clone(), graphNodeKey: (graphNodeKey.clone()).clone(), graphEdgeKey: (graphEdgeKey.clone()).clone() };
@@ -697,15 +697,15 @@ pub fn dumpGraph(mut iGraphInfo: GraphInfo, mut iFileName: ArcStr) -> Result<()>
 fn convertToGraphInfoArr(mut iGraphInfo: GraphInfo) -> Result<GraphInfo> {
     let mut oGraphInfo: GraphInfo;
     let mut graphs: Arc<metamodelica::List<Graph>> = metamodelica::nil();
-    let mut graphsArr: metamodelica::Array<Graph>;
+    let mut graphsArr: metamodelica::Array<Graph> = Default::default();
     let mut graphCount: i32 = 0;
     let mut nodes: Arc<metamodelica::List<Node>> = metamodelica::nil();
-    let mut nodesArr: metamodelica::Array<Node>;
+    let mut nodesArr: metamodelica::Array<Node> = Default::default();
     let mut nodeCount: i32 = 0;
     let mut edges: Arc<metamodelica::List<Edge>> = metamodelica::nil();
     let mut edgeCount: i32 = 0;
     let mut attributes: Arc<metamodelica::List<Attribute>> = metamodelica::nil();
-    let mut attributesArr: metamodelica::Array<Attribute>;
+    let mut attributesArr: metamodelica::Array<Attribute> = Default::default();
     let mut graphNodeKey: ArcStr = arcstr::literal!("");
     let mut graphEdgeKey: ArcStr = arcstr::literal!("");
     let GraphInfo::GRAPHINFO { graphs: __pa0, graphCount: __pa1, nodes: __pa2, nodeCount: __pa3, edges: __pa4, edgeCount: __pa5, attributes: __pa6, graphNodeKey: __pa7, graphEdgeKey: __pa8 } = (iGraphInfo.clone()) else { bail!("pattern mismatch") };

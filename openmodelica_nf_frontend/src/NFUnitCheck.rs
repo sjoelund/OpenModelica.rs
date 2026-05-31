@@ -139,7 +139,7 @@ pub fn checkUnits(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<Flat
             bail!("try/else: outputs not set in else branch");
         }
     }
-    execStat((literal!("NFUnitCheck.checkUnits")).clone())?;
+    execStat(literal!("NFUnitCheck.checkUnits"))?;
     Ok(flatModel)
 }
 
@@ -182,7 +182,7 @@ fn updateVariable(mut var: Arc<Variable::NFVariable>, mut htCr2U: Arc<UnorderedM
             if Unit::isUnit(unit.clone()) {
                 unit_str = (unwrap_break_err!(Unit::unitString(unit.clone(), htU2S.clone()), '__try0)).clone();
                 binding = Binding::makeFlat(Arc::new(Expression::NFExpression::STRING { value: (unit_str.clone()).clone() }), Variability::CONSTANT.clone(), Binding::Source::GENERATED.clone(), Binding::NO_CONFIDENCE.clone());
-                assign_field!(var.typeAttributes = cons((literal!("unit"), binding.clone()), var.typeAttributes.clone()));
+                assign_field!(var.typeAttributes = metamodelica::cons((literal!("unit"), binding.clone()), var.typeAttributes.clone()));
             }
             Ok::<(), anyhow::Error>(())
         }.is_err() {
@@ -273,7 +273,7 @@ fn checkModelConsistency(mut variables: Arc<metamodelica::List<Arc<Variable::NFV
 
 fn foldBindingExp(mut var: Arc<Variable::NFVariable>, mut htCr2U: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Unit::Unit>>, mut htS2U: Arc<UnorderedMap::UnorderedMap<ArcStr, Unit::Unit>>, mut htU2S: Arc<UnorderedMap::UnorderedMap<Unit::Unit, ArcStr>>, mut fnCache: FunctionUnitCache, mut dumpEqInitStruct: bool) -> Result<()> {
     let mut binding_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut eq: Arc<Equation::NFEquation>;
+    let mut eq: Arc<Equation::NFEquation> = Arc::new(<Equation::NFEquation as ::std::default::Default>::default());
     if Type::isReal(var.ty.clone()) && Binding::isBound(var.binding.clone()) {
         binding_exp = Binding::getTypedExp(var.binding.clone())?;
         eq = Equation::makeEquality(Expression::fromCref(var.name.clone(), false)?, binding_exp.clone(), var.ty.clone(), ElementSource::createElementSource(var.info.clone(), None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?, Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), Equation::ScalarizeMode::NO_PREFERENCE.clone());
@@ -431,7 +431,7 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
                     icu2 = __pa1.clone();
                     (unit1, icu1) = insertUnitInEquation(exp1.clone(), unit2.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())?;
                     let (false, _) = (unitTypesEqual(unit1.clone(), unit2.clone(), htCr2U.clone())) else { bail!("pattern mismatch") };
-                    Ok((Unit::Unit::MASTER { varList: metamodelica::nil() }, cons(list![(exp1.clone(), unit1.clone()), (exp2.clone(), unit2.clone())], List::append_reverse(icu1.clone(), icu2.clone()))))
+                    Ok((Unit::Unit::MASTER { varList: metamodelica::nil() }, metamodelica::cons(list![(exp1.clone(), unit1.clone()), (exp2.clone(), unit2.clone())], List::append_reverse(icu1.clone(), icu2.clone()))))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -446,7 +446,7 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
                     (unit1, icu2) = insertUnitInEquation(exp1.clone(), unit.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())?;
                     (unit2, icu1) = insertUnitInEquation(exp2.clone(), unit1.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())?;
                     let (false, _) = (unitTypesEqual(unit1.clone(), unit2.clone(), htCr2U.clone())) else { bail!("pattern mismatch") };
-                    Ok((Unit::Unit::MASTER { varList: metamodelica::nil() }, cons(list![(exp1.clone(), unit1.clone()), (exp2.clone(), unit2.clone())], List::append_reverse(icu1.clone(), icu2.clone()))))
+                    Ok((Unit::Unit::MASTER { varList: metamodelica::nil() }, metamodelica::cons(list![(exp1.clone(), unit1.clone()), (exp2.clone(), unit2.clone())], List::append_reverse(icu1.clone(), icu2.clone()))))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -505,7 +505,7 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
                     icu2 = __pa1.clone();
                     (unit1, icu1) = insertUnitInEquation(exp1.clone(), unit2.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())?;
                     let (false, _) = (unitTypesEqual(unit1.clone(), unit2.clone(), htCr2U.clone())) else { bail!("pattern mismatch") };
-                    Ok((Unit::Unit::MASTER { varList: metamodelica::nil() }, cons(list![(exp1.clone(), unit1.clone()), (exp2.clone(), unit2.clone())], List::append_reverse(icu1.clone(), icu2.clone()))))
+                    Ok((Unit::Unit::MASTER { varList: metamodelica::nil() }, metamodelica::cons(list![(exp1.clone(), unit1.clone()), (exp2.clone(), unit2.clone())], List::append_reverse(icu1.clone(), icu2.clone()))))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -520,7 +520,7 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
                     (unit1, icu2) = insertUnitInEquation(exp1.clone(), unit.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())?;
                     (unit2, icu1) = insertUnitInEquation(exp2.clone(), unit1.clone(), htCr2U.clone(), htS2U.clone(), htU2S.clone(), fnCache.clone())?;
                     let (false, _) = (unitTypesEqual(unit1.clone(), unit2.clone(), htCr2U.clone())) else { bail!("pattern mismatch") };
-                    Ok((Unit::Unit::MASTER { varList: metamodelica::nil() }, cons(list![(exp1.clone(), unit1.clone()), (exp2.clone(), unit2.clone())], List::append_reverse(icu1.clone(), icu2.clone()))))
+                    Ok((Unit::Unit::MASTER { varList: metamodelica::nil() }, metamodelica::cons(list![(exp1.clone(), unit1.clone()), (exp2.clone(), unit2.clone())], List::append_reverse(icu1.clone(), icu2.clone()))))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -900,7 +900,7 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
                     (b, op_unit) = unitTypesEqual(unit1.clone(), unit2.clone(), htCr2U.clone());
                     inconsistentUnits = List::append_reverse(icu1.clone(), icu2.clone());
                     if !(b.clone()) {
-                        inconsistentUnits = cons(list![(var_field!((*eq).trueBranch, Expression::NFExpression::IF).clone(), unit1.clone()), (var_field!((*eq).falseBranch, Expression::NFExpression::IF).clone(), unit2.clone())], inconsistentUnits.clone());
+                        inconsistentUnits = metamodelica::cons(list![(var_field!((*eq).trueBranch, Expression::NFExpression::IF).clone(), unit1.clone()), (var_field!((*eq).falseBranch, Expression::NFExpression::IF).clone(), unit2.clone())], inconsistentUnits.clone());
                         op_unit = Unit::Unit::MASTER { varList: metamodelica::nil() };
                     }
                     Ok((op_unit.clone(), inconsistentUnits.clone()))
@@ -923,7 +923,7 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
                     (b, op_unit) = unitTypesEqual(unit1.clone(), unit2.clone(), htCr2U.clone());
                     inconsistentUnits = List::append_reverse(icu1.clone(), icu2.clone());
                     if !(b.clone()) {
-                        inconsistentUnits = cons(list![(var_field!((*eq).exp1, Expression::NFExpression::RELATION).clone(), unit1.clone()), (var_field!((*eq).exp2, Expression::NFExpression::RELATION).clone(), unit2.clone())], inconsistentUnits.clone());
+                        inconsistentUnits = metamodelica::cons(list![(var_field!((*eq).exp1, Expression::NFExpression::RELATION).clone(), unit1.clone()), (var_field!((*eq).exp2, Expression::NFExpression::RELATION).clone(), unit2.clone())], inconsistentUnits.clone());
                         op_unit = Unit::Unit::MASTER { varList: metamodelica::nil() };
                     }
                     Ok((op_unit.clone(), inconsistentUnits.clone()))
@@ -979,7 +979,7 @@ fn insertUnitInEquation(mut eq: Arc<Expression::NFExpression>, mut unit: Unit::U
 fn insertUnitInEquationCall(mut call: Arc<Call::NFCall>, mut unit: Unit::Unit, mut htCr2U: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Unit::Unit>>, mut htS2U: Arc<UnorderedMap::UnorderedMap<ArcStr, Unit::Unit>>, mut htU2S: Arc<UnorderedMap::UnorderedMap<Unit::Unit, ArcStr>>, mut fnCache: FunctionUnitCache) -> Result<(Unit::Unit, Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>>)> {
     let mut unit: Unit::Unit = unit;
     let mut inconsistentUnits: Arc<metamodelica::List<Arc<metamodelica::List<(Arc<Expression::NFExpression>, Unit::Unit)>>>> = metamodelica::nil();
-    let mut fn_path: Arc<Absyn::Path>;
+    let mut fn_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut fn_name: ArcStr = arcstr::literal!("");
     let mut call_args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut op_unit: Unit::Unit;

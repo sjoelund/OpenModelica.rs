@@ -202,8 +202,8 @@ fn replaceVisualBinding(mut vis: Visualization, mut varArray: BackendDAE::Variab
 }
 
 fn getConstCrefBinding(mut cr: Arc<DAE::ComponentRef>, mut vars: BackendDAE::Variables) -> Result<Arc<DAE::Exp>> {
-    let mut eOut: Arc<DAE::Exp>;
-    let mut e: Arc<DAE::Exp>;
+    let mut eOut: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
     match '__try0: {
         let __pa1 = ::match_deref::match_deref! { match &(unwrap_break_err!(BackendVariable::getVar(cr.clone(), vars.clone()), '__try0)) {
@@ -278,7 +278,7 @@ fn makeVarPublicHideResultFalse(mut inVar: BackendDAE::Var) -> Result<BackendDAE
 
 fn setBindingForProtectedVars(mut eqSysIn: Arc<BackendDAE::EqSystem>) -> Arc<BackendDAE::EqSystem> {
     let mut eqSysOut: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    let mut ass1: metamodelica::Array<i32>;
+    let mut ass1: metamodelica::Array<i32> = Default::default();
     let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     let mut eqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     if '__try0: {
@@ -299,7 +299,7 @@ fn setBindingForProtectedVars(mut eqSysIn: Arc<BackendDAE::EqSystem>) -> Arc<Bac
 
 fn setBindingForProtectedVars1(mut varIn: BackendDAE::Var, mut tplIn: (i32, metamodelica::Array<i32>, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>)) -> Result<(BackendDAE::Var, (i32, metamodelica::Array<i32>, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>))> {
     let mut varOut: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
-    let mut tplOut: (i32, metamodelica::Array<i32>, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>);
+    let mut tplOut: (i32, metamodelica::Array<i32>, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>) = (0, Default::default(), <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default());
     (varOut, tplOut) = 'mc: {
         let __mc_input = (varIn.clone(), tplIn.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -308,8 +308,8 @@ fn setBindingForProtectedVars1(mut varIn: BackendDAE::Var, mut tplIn: (i32, meta
                     if !((BackendVariable::isProtectedVar(varIn.clone()) && isVisualizationVar(varIn.clone())?)) { bail!("guard") }
                     let mut eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
                     let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
-                    let mut exp1: Arc<DAE::Exp>;
-                    let mut exp2: Arc<DAE::Exp>;
+                    let mut exp1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut exp2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     eq = BackendEquation::get(eqs.clone(), ass1.clone().borrow()[(idx.clone()-1) as usize].clone());
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(eq.clone()) {
                         Deref @ BackendDAE::Equation::EQUATION { scalar: __pa0, exp: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
@@ -506,7 +506,7 @@ fn fillVisualizationObjects1(mut varIn: BackendDAE::Var, mut storeProtectedCrefs
                     let mut vars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
                     let mut vis: Visualization;
                     (vars, vis) = tplIn.clone();
-                    Ok((cons(varIn.clone(), vars.clone()), vis.clone()))
+                    Ok((metamodelica::cons(varIn.clone(), vars.clone()), vis.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -551,7 +551,7 @@ fn fillShapeObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos1 } }, tail: Deref @ metamodelica::List::Nil } }, ident: Deref @ "T", .. }, ident: Deref @ "R", .. }, Visualization::SHAPE { .. }) => {
-                    let mut exp: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut T0: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
                     T0 = var_field!(vis.T, Visualization::SHAPE).clone().borrow()[(pos.clone()-1) as usize].clone();
@@ -565,7 +565,7 @@ fn fillShapeObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos } }, tail: Deref @ metamodelica::List::Nil }, ident: Deref @ "r", .. }, Visualization::SHAPE { .. }) => {
-                    let mut exp: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
                     {let _arr = var_field!(vis.r, Visualization::SHAPE).clone(); _arr.borrow_mut()[(pos.clone()-1) as usize] = exp.clone(); _arr};
                     Ok(())
@@ -576,7 +576,7 @@ fn fillShapeObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos } }, tail: Deref @ metamodelica::List::Nil }, ident: Deref @ "r_shape", .. }, Visualization::SHAPE { .. }) => {
-                    let mut exp: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
                     {let _arr = var_field!(vis.r_shape, Visualization::SHAPE).clone(); _arr.borrow_mut()[(pos.clone()-1) as usize] = exp.clone(); _arr};
                     Ok(())
@@ -587,7 +587,7 @@ fn fillShapeObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos } }, tail: Deref @ metamodelica::List::Nil }, ident: Deref @ "lengthDirection", .. }, Visualization::SHAPE { .. }) => {
-                    let mut exp: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
                     {let _arr = var_field!(vis.lengthDir, Visualization::SHAPE).clone(); _arr.borrow_mut()[(pos.clone()-1) as usize] = exp.clone(); _arr};
                     Ok(())
@@ -598,7 +598,7 @@ fn fillShapeObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos } }, tail: Deref @ metamodelica::List::Nil }, ident: Deref @ "widthDirection", .. }, Visualization::SHAPE { .. }) => {
-                    let mut exp: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
                     {let _arr = var_field!(vis.widthDir, Visualization::SHAPE).clone(); _arr.borrow_mut()[(pos.clone()-1) as usize] = exp.clone(); _arr};
                     Ok(())
@@ -661,7 +661,7 @@ fn fillShapeObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos } }, tail: Deref @ metamodelica::List::Nil }, ident: Deref @ "color", .. }, Visualization::SHAPE { .. }) => {
-                    let mut exp: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
                     {let _arr = var_field!(vis.color, Visualization::SHAPE).clone(); _arr.borrow_mut()[(pos.clone()-1) as usize] = exp.clone(); _arr};
                     Ok(())
@@ -702,7 +702,7 @@ fn fillVectorObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos1 } }, tail: Deref @ metamodelica::List::Nil } }, ident: Deref @ "T", .. }, ident: Deref @ "R", .. }, Visualization::VECTOR { .. }) => {
-                    let mut exp: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut T0: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
                     T0 = var_field!(vis.T, Visualization::VECTOR).clone().borrow()[(pos.clone()-1) as usize].clone();
@@ -716,7 +716,7 @@ fn fillVectorObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos } }, tail: Deref @ metamodelica::List::Nil }, ident: Deref @ "r", .. }, Visualization::VECTOR { .. }) => {
-                    let mut exp: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
                     {let _arr = var_field!(vis.r, Visualization::VECTOR).clone(); _arr.borrow_mut()[(pos.clone()-1) as usize] = exp.clone(); _arr};
                     Ok(())
@@ -727,7 +727,7 @@ fn fillVectorObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos } }, tail: Deref @ metamodelica::List::Nil }, ident: Deref @ "coordinates", .. }, Visualization::VECTOR { .. }) => {
-                    let mut exp: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
                     {let _arr = var_field!(vis.coordinates, Visualization::VECTOR).clone(); _arr.borrow_mut()[(pos.clone()-1) as usize] = exp.clone(); _arr};
                     Ok(())
@@ -738,7 +738,7 @@ fn fillVectorObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos } }, tail: Deref @ metamodelica::List::Nil }, ident: Deref @ "color", .. }, Visualization::VECTOR { .. }) => {
-                    let mut exp: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
                     {let _arr = var_field!(vis.color, Visualization::VECTOR).clone(); _arr.borrow_mut()[(pos.clone()-1) as usize] = exp.clone(); _arr};
                     Ok(())
@@ -818,7 +818,7 @@ fn fillSurfaceObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var,
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos1 } }, tail: Deref @ metamodelica::List::Nil } }, ident: Deref @ "T", .. }, ident: Deref @ "R", .. }, Visualization::SURFACE { .. }) => {
-                    let mut exp: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut T0: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
                     T0 = var_field!(vis.T, Visualization::SURFACE).clone().borrow()[(pos.clone()-1) as usize].clone();
@@ -832,7 +832,7 @@ fn fillSurfaceObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var,
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos } }, tail: Deref @ metamodelica::List::Nil }, ident: Deref @ "r_0", .. }, Visualization::SURFACE { .. }) => {
-                    let mut exp: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
                     {let _arr = var_field!(vis.r_0, Visualization::SURFACE).clone(); _arr.borrow_mut()[(pos.clone()-1) as usize] = exp.clone(); _arr};
                     Ok(())
@@ -895,7 +895,7 @@ fn fillSurfaceObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var,
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: pos } }, tail: Deref @ metamodelica::List::Nil }, ident: Deref @ "color", .. }, Visualization::SURFACE { .. }) => {
-                    let mut exp: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
                     {let _arr = var_field!(vis.color, Visualization::SURFACE).clone(); _arr.borrow_mut()[(pos.clone()-1) as usize] = exp.clone(); _arr};
                     Ok(())
@@ -943,7 +943,7 @@ fn fillSurfaceObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var,
 }
 
 fn getVariableBinding(mut var: BackendDAE::Var, mut storeProtectedCrefs: bool) -> Result<Arc<DAE::Exp>> {
-    let mut exp: Arc<DAE::Exp>;
+    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut binding: Option<Arc<DAE::Exp>> = None;
     let BackendDAE::VAR { bindExp: __pa0, .. } = (var.clone()) else { bail!("pattern mismatch") };
     binding = __pa0.clone();
@@ -1004,7 +1004,7 @@ fn isVisualizationVar(mut var: BackendDAE::Var) -> Result<bool> {
 }
 
 fn isVisualizationVarFold(mut var: BackendDAE::Var, mut tplIn: (Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>)) -> Result<(Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>)> {
-    let mut tplOut: (Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>);
+    let mut tplOut: (Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<(Arc<DAE::ComponentRef>, ArcStr)>>) = (metamodelica::nil(), metamodelica::nil());
     tplOut = 'mc: {
         let __mc_input = (var.clone(), tplIn.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -1019,8 +1019,8 @@ fn isVisualizationVarFold(mut var: BackendDAE::Var, mut tplIn: (Arc<metamodelica
                     (obj, idx) = hasVisPath(paths.clone(), 1)?;
                     let true = (Util::stringNotEqual((obj.clone()).clone(), (literal!("")).clone())) else { bail!("pattern mismatch") };
                     cref = ComponentReference::firstNCrefs(varName.clone(), idx.clone() - 1)?;
-                    crefs = List::unique(cons((cref.clone(), obj.clone()), crefs.clone()));
-                    Ok((cons(var.clone(), varLst.clone()), crefs.clone()))
+                    crefs = List::unique(metamodelica::cons((cref.clone(), obj.clone()), crefs.clone()));
+                    Ok((metamodelica::cons(var.clone(), varLst.clone()), crefs.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1054,7 +1054,7 @@ fn hasVisPath(mut pathsIn: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut numIn:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Path::FULLYQUALIFIED { path }, tail: rest } => {
-                    Ok(hasVisPath(cons(path.clone(), rest.clone()), numIn.clone())?)
+                    Ok(hasVisPath(metamodelica::cons(path.clone(), rest.clone()), numIn.clone())?)
                 }
                 _ => bail!("nomatch"),
             }}

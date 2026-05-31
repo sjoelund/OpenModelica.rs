@@ -2280,7 +2280,7 @@ pub fn clockKindString(mut inClockKind: Arc<DAE::ClockKind>) -> Result<ArcStr> {
 
 pub fn constraintDTtoString(mut con: Arc<DAE::Constraint>) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
-    let mut c: Arc<DAE::Exp>;
+    let mut c: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut localCon: bool = false;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(con.clone()) {
         Deref @ DAE::Constraint::CONSTRAINT_DT { localCon: __pa0, constraint: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -2295,7 +2295,7 @@ pub fn constraintDTtoString(mut con: Arc<DAE::Constraint>) -> Result<ArcStr> {
 
 pub fn constraintDTlistToString(mut cons: Arc<metamodelica::List<Arc<DAE::Constraint>>>, mut delim: ArcStr) -> Result<ArcStr> {
     let mut r#str: ArcStr = literal!("");
-    let mut con: Arc<DAE::Constraint>;
+    let mut con: Arc<DAE::Constraint> = Arc::new(<DAE::Constraint as ::std::default::Default>::default());
     for mut con in &*cons.clone() {
         let mut con = con.clone();
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*delim.clone()); __mm_s.push_str(&*constraintDTtoString(con.clone())?); ArcStr::from(__mm_s) }).clone();

@@ -81,7 +81,7 @@ impl Default for NFFunctionInverse {
 pub type FUNCTION_INV = NFFunctionInverse;
 
 pub fn instInverses(mut fnNode: Arc<InstNode::InstNode>, mut r#fn: Arc<Function::Function>) -> Result<metamodelica::Array<Arc<NFFunctionInverse>>> {
-    let mut inverses: metamodelica::Array<Arc<NFFunctionInverse>>;
+    let mut inverses: metamodelica::Array<Arc<NFFunctionInverse>> = Default::default();
     let mut inv_mods: Arc<metamodelica::List<Arc<SCode::Mod>>> = metamodelica::nil();
     let mut invs: Arc<metamodelica::List<Arc<NFFunctionInverse>>> = metamodelica::nil();
     inv_mods = getInverseAnnotations(InstNode::definition(fnNode.clone())?)?;
@@ -191,7 +191,7 @@ fn instInverseSubMod(mut submod: Arc<SCode::SubMod>, mut fnNode: Arc<InstNode::I
                 }
             }
             call_exp = Inst::instExp(call_aexp.clone(), fnNode.clone(), NFInstContext::RELAXED.clone(), info.clone())?;
-            cons(Arc::new(NFFunctionInverse { inputParam: param.clone(), inverseCall: call_exp.clone(), info: info.clone() }), fnInvs.clone())
+            metamodelica::cons(Arc::new(NFFunctionInverse { inputParam: param.clone(), inverseCall: call_exp.clone(), info: info.clone() }), fnInvs.clone())
         },
         Deref @ SCode::SubMod { .. } => {
             Error::addStrictMessage(Error::INVALID_FUNCTION_ANNOTATION_ATTR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*submod.ident.clone()); __mm_s.push_str(&*SCodeDump::printModStr(submod.r#mod.clone(), SCodeDump::defaultOptions.clone())?); ArcStr::from(__mm_s) }).clone(), (literal!("inverse")).clone()], info.clone())?;

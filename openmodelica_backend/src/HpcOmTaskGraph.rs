@@ -186,11 +186,11 @@ pub type VariableList = (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i3
 //  Functions to build the task graph from the BLT structure
 //----------------------------------------------------------
 pub fn createTaskGraph(mut iDAE: Arc<BackendDAE::BackendDAE>, mut iAnalyzeParameters: bool) -> Result<(TaskGraph, TaskGraphMeta)> {
-    let mut oGraph: TaskGraph;
+    let mut oGraph: TaskGraph = Default::default();
     let mut oGraphData: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
     let mut systs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = metamodelica::nil();
     let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
-    let mut graph: TaskGraph;
+    let mut graph: TaskGraph = Default::default();
     let mut graphData: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(iDAE.clone()) {
         Deref @ BackendDAE::BackendDAE { eqs: __pa0, shared: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -199,34 +199,34 @@ pub fn createTaskGraph(mut iDAE: Arc<BackendDAE::BackendDAE>, mut iAnalyzeParame
     systs = __pa0.clone();
     shared = __pa1.clone();
     (graph, graphData) = getEmptyTaskGraph(0, 0, 0);
-    (oGraph, oGraphData, _) = List::fold(systs.clone(), Arc::new({ let __pe_b1 = shared.clone(); let __pe_b2 = iAnalyzeParameters.clone(); move |__pe_a0, __pe_a3| createTaskGraph0(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3) }), (graph.clone(), graphData.clone(), 1));
+    (oGraph, oGraphData, _) = List::fold(systs.clone(), (std::sync::Arc::new({ let __pe_b1 = shared.clone(); let __pe_b2 = iAnalyzeParameters.clone(); move |__pe_a0, __pe_a3| createTaskGraph0(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, (metamodelica::Array<Arc<metamodelica::List<i32>>>, TaskGraphMeta, i32)) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, TaskGraphMeta, i32)> + 'static>), (graph.clone(), graphData.clone(), 1));
     Ok((oGraph, oGraphData))
 }
 
 pub fn createTaskGraph0(mut iSyst: Arc<BackendDAE::EqSystem>, mut iShared: Arc<BackendDAE::Shared>, mut iAnalyzeParameters: bool, mut iGraphInfo: (metamodelica::Array<Arc<metamodelica::List<i32>>>, TaskGraphMeta, i32)) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, TaskGraphMeta, i32)> {
-    let mut oGrapInfo: (metamodelica::Array<Arc<metamodelica::List<i32>>>, TaskGraphMeta, i32);
+    let mut oGrapInfo: (metamodelica::Array<Arc<metamodelica::List<i32>>>, TaskGraphMeta, i32) = (Default::default(), <TaskGraphMeta as ::std::default::Default>::default(), 0);
     let mut comps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
     let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     let mut orderedEqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     let mut sharedFuncs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
     let mut iGraphData: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
     let mut tmpGraphData: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
-    let mut iGraph: TaskGraph;
-    let mut tmpGraph: TaskGraph;
-    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut compParamMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)>;
-    let mut nodeMark: metamodelica::Array<i32>;
-    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut compNames: metamodelica::Array<ArcStr>;
-    let mut compDescs: metamodelica::Array<ArcStr>;
+    let mut iGraph: TaskGraph = Default::default();
+    let mut tmpGraph: TaskGraph = Default::default();
+    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut compParamMapping: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
+    let mut nodeMark: metamodelica::Array<i32> = Default::default();
+    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut compNames: metamodelica::Array<ArcStr> = Default::default();
+    let mut compDescs: metamodelica::Array<ArcStr> = Default::default();
     let mut numberOfVars: i32 = 0;
-    let mut compInformations: metamodelica::Array<ComponentInfo>;
+    let mut compInformations: metamodelica::Array<ComponentInfo> = Default::default();
     let mut eqSysIdx: i32 = 0;
     let mut matching: Arc<BackendDAE::Matching> = Arc::new(BackendDAE::Matching::NO_MATCHING);
-    let mut adjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut adjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(iSyst.clone()) {
         Deref @ BackendDAE::EqSystem { orderedEqs: __pa0, orderedVars: __pa1, matching: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
@@ -256,8 +256,8 @@ pub fn createTaskGraph0(mut iSyst: Arc<BackendDAE::EqSystem>, mut iShared: Arc<B
     inComps = __pa12.clone();
     (varCompMapping, eqCompMapping) = getVarEqCompMapping(comps.clone(), eqSysIdx.clone(), 0, 0, varCompMapping.clone(), eqCompMapping.clone());
     compDescs = getEquationStrings(comps.clone(), iSyst.clone());
-    (tmpGraph, inComps, compParamMapping, commCosts, compNames, nodeMark, _) = List::fold(comps.clone(), Arc::new({ let __pe_b1 = (adjacencyMatrix.clone(), iSyst.clone(), iShared.clone(), (comps.clone().len() as i32)); let __pe_b2 = (varCompMapping.clone(), eqCompMapping.clone(), metamodelica::nil()); let __pe_b3 = iAnalyzeParameters.clone(); move |__pe_a0, __pe_a4| createTaskGraph1(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_a4) }), (tmpGraph.clone(), inComps.clone(), compParamMapping.clone(), commCosts.clone(), compNames.clone(), nodeMark.clone(), 1));
-    tmpGraph = Array::mapNoCopy(tmpGraph.clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(_, _) -> Result<bool> + 'static> = (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>); move |__pe_a0| List::sort(__pe_a0, __pe_b1.clone()) }));
+    (tmpGraph, inComps, compParamMapping, commCosts, compNames, nodeMark, _) = List::fold(comps.clone(), (std::sync::Arc::new({ let __pe_b1 = (adjacencyMatrix.clone(), iSyst.clone(), iShared.clone(), (comps.clone().len() as i32)); let __pe_b2 = (varCompMapping.clone(), eqCompMapping.clone(), metamodelica::nil()); let __pe_b3 = iAnalyzeParameters.clone(); move |__pe_a0, __pe_a4| createTaskGraph1(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_a4) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::StrongComponent>, (metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<Communication>>>, metamodelica::Array<ArcStr>, metamodelica::Array<i32>, i32)) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<Communication>>>, metamodelica::Array<ArcStr>, metamodelica::Array<i32>, i32)> + 'static>), (tmpGraph.clone(), inComps.clone(), compParamMapping.clone(), commCosts.clone(), compNames.clone(), nodeMark.clone(), 1));
+    tmpGraph = Array::mapNoCopy(tmpGraph.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(_, _) -> Result<bool> + 'static> = (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>); move |__pe_a0| List::sort(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>));
     tmpGraphData = TaskGraphMeta { inComps: inComps.clone(), varCompMapping: varCompMapping.clone(), eqCompMapping: eqCompMapping.clone(), compParamMapping: compParamMapping.clone(), compNames: compNames.clone(), compDescs: compDescs.clone(), exeCosts: exeCosts.clone(), commCosts: commCosts.clone(), nodeMark: nodeMark.clone(), compInformations: compInformations.clone() };
     if intGt(eqSysIdx.clone(), 1) {
         (tmpGraph, tmpGraphData) = taskGraphAppend(iGraph.clone(), iGraphData.clone(), tmpGraph.clone(), tmpGraphData.clone())?;
@@ -268,7 +268,7 @@ pub fn createTaskGraph0(mut iSyst: Arc<BackendDAE::EqSystem>, mut iShared: Arc<B
 
 pub fn getSystemComponents(mut iDae: Arc<BackendDAE::BackendDAE>) -> Result<(Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, metamodelica::Array<(Arc<BackendDAE::EqSystem>, i32)>)> {
     let mut oComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
-    let mut oMapping: metamodelica::Array<(Arc<BackendDAE::EqSystem>, i32)>;
+    let mut oMapping: metamodelica::Array<(Arc<BackendDAE::EqSystem>, i32)> = Default::default();
     let mut systs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = metamodelica::nil();
     let mut tmpSystems: Arc<metamodelica::List<(Arc<BackendDAE::EqSystem>, i32)>> = metamodelica::nil();
     let mut tmpComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
@@ -284,7 +284,7 @@ pub fn getSystemComponents(mut iDae: Arc<BackendDAE::BackendDAE>) -> Result<(Arc
 }
 
 fn getSystemComponents0(mut iSyst: Arc<BackendDAE::EqSystem>, mut iSystMapping: (Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::EqSystem>, i32)>>, i32)) -> Result<(Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::EqSystem>, i32)>>, i32)> {
-    let mut oSystMapping: (Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::EqSystem>, i32)>>, i32);
+    let mut oSystMapping: (Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::EqSystem>, i32)>>, i32) = (metamodelica::nil(), metamodelica::nil(), 0);
     let mut tmpComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
     let mut comps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
     let mut matching: Arc<BackendDAE::Matching> = Arc::new(BackendDAE::Matching::NO_MATCHING);
@@ -340,18 +340,18 @@ fn getNumberOfEqSystemComponents(mut iEqSystem: Arc<BackendDAE::EqSystem>, mut i
 }
 
 pub fn getEmptyTaskGraph(mut numComps: i32, mut numVars: i32, mut numEqs: i32) -> (TaskGraph, TaskGraphMeta) {
-    let mut graph: TaskGraph;
+    let mut graph: TaskGraph = Default::default();
     let mut graphData: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut compNames: metamodelica::Array<ArcStr>;
-    let mut compDescs: metamodelica::Array<ArcStr>;
-    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)>;
-    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
-    let mut compParamMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut nodeMark: metamodelica::Array<i32>;
-    let mut compInformations: metamodelica::Array<ComponentInfo>;
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut compNames: metamodelica::Array<ArcStr> = Default::default();
+    let mut compDescs: metamodelica::Array<ArcStr> = Default::default();
+    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
+    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
+    let mut compParamMapping: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut nodeMark: metamodelica::Array<i32> = Default::default();
+    let mut compInformations: metamodelica::Array<ComponentInfo> = Default::default();
     graph = arrayCreate(numComps.clone(), metamodelica::nil());
     inComps = arrayCreate(numComps.clone(), metamodelica::nil());
     compParamMapping = arrayCreate(numComps.clone(), metamodelica::nil());
@@ -369,26 +369,26 @@ pub fn getEmptyTaskGraph(mut numComps: i32, mut numVars: i32, mut numEqs: i32) -
 
 pub fn copyTaskGraphMeta(mut graphDataIn: TaskGraphMeta) -> Result<TaskGraphMeta> {
     let mut graphDataOut: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut inComps1: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut varCompMapping1: metamodelica::Array<(i32, i32, i32)>;
-    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut eqCompMapping1: metamodelica::Array<(i32, i32, i32)>;
-    let mut compParamMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut compParamMapping1: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut compNames: metamodelica::Array<ArcStr>;
-    let mut compNames1: metamodelica::Array<ArcStr>;
-    let mut compDescs: metamodelica::Array<ArcStr>;
-    let mut compDescs1: metamodelica::Array<ArcStr>;
-    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)>;
-    let mut exeCosts1: metamodelica::Array<(i32, metamodelica::Real)>;
-    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
-    let mut commCosts1: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
-    let mut nodeMark: metamodelica::Array<i32>;
-    let mut nodeMark1: metamodelica::Array<i32>;
-    let mut compInformations: metamodelica::Array<ComponentInfo>;
-    let mut compInformations1: metamodelica::Array<ComponentInfo>;
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut inComps1: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut varCompMapping1: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut eqCompMapping1: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut compParamMapping: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut compParamMapping1: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut compNames: metamodelica::Array<ArcStr> = Default::default();
+    let mut compNames1: metamodelica::Array<ArcStr> = Default::default();
+    let mut compDescs: metamodelica::Array<ArcStr> = Default::default();
+    let mut compDescs1: metamodelica::Array<ArcStr> = Default::default();
+    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
+    let mut exeCosts1: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
+    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
+    let mut commCosts1: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
+    let mut nodeMark: metamodelica::Array<i32> = Default::default();
+    let mut nodeMark1: metamodelica::Array<i32> = Default::default();
+    let mut compInformations: metamodelica::Array<ComponentInfo> = Default::default();
+    let mut compInformations1: metamodelica::Array<ComponentInfo> = Default::default();
     let TaskGraphMeta { compInformations: __pa0, nodeMark: __pa1, commCosts: __pa2, exeCosts: __pa3, compDescs: __pa4, compNames: __pa5, compParamMapping: __pa6, eqCompMapping: __pa7, varCompMapping: __pa8, inComps: __pa9 } = (graphDataIn.clone()) else { bail!("pattern mismatch") };
     compInformations = __pa0.clone();
     nodeMark = __pa1.clone();
@@ -415,32 +415,32 @@ pub fn copyTaskGraphMeta(mut graphDataIn: TaskGraphMeta) -> Result<TaskGraphMeta
 }
 
 fn taskGraphAppend(mut graph1In: TaskGraph, mut graphData1In: TaskGraphMeta, mut graph2In: TaskGraph, mut graphData2In: TaskGraphMeta) -> Result<(TaskGraph, TaskGraphMeta)> {
-    let mut graphOut: TaskGraph;
+    let mut graphOut: TaskGraph = Default::default();
     let mut graphDataOut: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
     let mut eqOffset: i32 = 0;
     let mut idxOffset: i32 = 0;
     let mut varOffset: i32 = 0;
-    let mut commCosts1: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
-    let mut commCosts2: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
-    let mut inComps1: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut inComps2: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut eqCompMapping1: metamodelica::Array<(i32, i32, i32)>;
-    let mut eqCompMapping2: metamodelica::Array<(i32, i32, i32)>;
-    let mut exeCosts1: metamodelica::Array<(i32, metamodelica::Real)>;
-    let mut exeCosts2: metamodelica::Array<(i32, metamodelica::Real)>;
-    let mut nodeMark1: metamodelica::Array<i32>;
-    let mut nodeMark2: metamodelica::Array<i32>;
-    let mut compParamMapping1: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut compParamMapping2: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut varCompMapping1: metamodelica::Array<(i32, i32, i32)>;
-    let mut varCompMapping2: metamodelica::Array<(i32, i32, i32)>;
-    let mut compNames1: metamodelica::Array<ArcStr>;
-    let mut compNames2: metamodelica::Array<ArcStr>;
-    let mut compDescs1: metamodelica::Array<ArcStr>;
-    let mut compDescs2: metamodelica::Array<ArcStr>;
-    let mut compInformations1: metamodelica::Array<ComponentInfo>;
-    let mut compInformations2: metamodelica::Array<ComponentInfo>;
-    let mut graph2: TaskGraph;
+    let mut commCosts1: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
+    let mut commCosts2: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
+    let mut inComps1: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut inComps2: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut eqCompMapping1: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut eqCompMapping2: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut exeCosts1: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
+    let mut exeCosts2: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
+    let mut nodeMark1: metamodelica::Array<i32> = Default::default();
+    let mut nodeMark2: metamodelica::Array<i32> = Default::default();
+    let mut compParamMapping1: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut compParamMapping2: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut varCompMapping1: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut varCompMapping2: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut compNames1: metamodelica::Array<ArcStr> = Default::default();
+    let mut compNames2: metamodelica::Array<ArcStr> = Default::default();
+    let mut compDescs1: metamodelica::Array<ArcStr> = Default::default();
+    let mut compDescs2: metamodelica::Array<ArcStr> = Default::default();
+    let mut compInformations1: metamodelica::Array<ComponentInfo> = Default::default();
+    let mut compInformations2: metamodelica::Array<ComponentInfo> = Default::default();
+    let mut graph2: TaskGraph = Default::default();
     let TaskGraphMeta { compInformations: __pa0, nodeMark: __pa1, commCosts: __pa2, exeCosts: __pa3, compDescs: __pa4, compNames: __pa5, compParamMapping: __pa6, eqCompMapping: __pa7, varCompMapping: __pa8, inComps: __pa9 } = (graphData1In.clone()) else { bail!("pattern mismatch") };
     compInformations1 = __pa0.clone();
     nodeMark1 = __pa1.clone();
@@ -489,7 +489,7 @@ fn taskGraphAppend(mut graph1In: TaskGraph, mut graphData1In: TaskGraphMeta, mut
 }
 
 fn modifyMapping(mut iMappingTuple: (i32, i32, i32), mut iOffset: i32) -> (i32, i32, i32) {
-    let mut oMappingTuple: (i32, i32, i32);
+    let mut oMappingTuple: (i32, i32, i32) = (0, 0, 0);
     let mut i1: i32 = 0;
     let mut i2: i32 = 0;
     let mut i3: i32 = 0;
@@ -533,8 +533,8 @@ fn updateTaskGraphSystem(mut graphRowIn: Arc<metamodelica::List<i32>>, mut idxOf
 }
 
 fn createTaskGraph1(mut iComponent: Arc<BackendDAE::StrongComponent>, mut iSystInfo: (metamodelica::Array<Arc<metamodelica::List<i32>>>, Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, i32), mut iVarInfo: (metamodelica::Array<(i32, i32, i32)>, metamodelica::Array<(i32, i32, i32)>, Arc<metamodelica::List<i32>>), mut iAnalyzeParameters: bool, mut graphInfoIn: (metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<Communication>>>, metamodelica::Array<ArcStr>, metamodelica::Array<i32>, i32)) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<Communication>>>, metamodelica::Array<ArcStr>, metamodelica::Array<i32>, i32)> {
-    let mut graphInfoOut: (metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<Communication>>>, metamodelica::Array<ArcStr>, metamodelica::Array<i32>, i32);
-    let mut adjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut graphInfoOut: (metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<Communication>>>, metamodelica::Array<ArcStr>, metamodelica::Array<i32>, i32) = (Default::default(), Default::default(), Default::default(), Default::default(), Default::default(), Default::default(), 0);
+    let mut adjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut isyst: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
     let mut ishared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
     let mut orderedVars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
@@ -542,23 +542,23 @@ fn createTaskGraph1(mut iComponent: Arc<BackendDAE::StrongComponent>, mut iSystI
     let mut localKnownVars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     let mut knownVars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     let mut orderedEqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
-    let mut graphIn: TaskGraph;
-    let mut graphTmp: TaskGraph;
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut compNames: metamodelica::Array<ArcStr>;
-    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
+    let mut graphIn: TaskGraph = Default::default();
+    let mut graphTmp: TaskGraph = Default::default();
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut compNames: metamodelica::Array<ArcStr> = Default::default();
+    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
     let mut commCostsOfNode: Communications = metamodelica::nil();
-    let mut nodeMark: metamodelica::Array<i32>;
-    let mut unsolvedVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>);
+    let mut nodeMark: metamodelica::Array<i32> = Default::default();
+    let mut unsolvedVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) = (metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil());
     let mut eventVarLst: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut componentIndex: i32 = 0;
     let mut numberOfComps: i32 = 0;
     let mut requiredSccs_RefCount: Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)>> = metamodelica::nil();
     let mut compName: ArcStr = arcstr::literal!("");
     let mut paramVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut compParamMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut compParamMapping: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut requiredSccs: Arc<UnorderedMap::UnorderedMap<i32, (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)>> = <Arc<UnorderedMap::UnorderedMap<i32, (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)>> as ::std::default::Default>::default();
     (adjacencyMatrix, isyst, ishared, numberOfComps) = iSystInfo.clone();
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(ishared.clone()) {
@@ -625,13 +625,13 @@ fn createRequiredSccsRefCount(mut requiredSccs: Arc<UnorderedMap::UnorderedMap<i
         float_vars = __pa2.clone();
         bool_vars = __pa3.clone();
         string_vars = __pa4.clone();
-        requiredSccsRefCount = cons((scc_idx.clone(), int_vars.clone(), float_vars.clone(), bool_vars.clone(), string_vars.clone()), requiredSccsRefCount.clone());
+        requiredSccsRefCount = metamodelica::cons((scc_idx.clone(), int_vars.clone(), float_vars.clone(), bool_vars.clone(), string_vars.clone()), requiredSccsRefCount.clone());
     }
     requiredSccsRefCount
 }
 
 fn updateCommCostBySccRef(mut requiredSccs_RefCount: Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)>>, mut nodeIdx: i32, mut iCommCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>) -> (metamodelica::Array<Arc<metamodelica::List<Communication>>>, Communications) {
-    let mut oCommCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
+    let mut oCommCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
     let mut oNodeComms: Communications = metamodelica::nil();
     let mut tmpComms: Communications = metamodelica::nil();
     tmpComms = List::map1(requiredSccs_RefCount.clone(), (std::sync::Arc::new(fnptr!(createCommunicationObject, (i32, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>), metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn((i32, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>), metamodelica::Real) -> Result<Communication> + 'static>), metamodelica::OrderedFloat(-1.0_f64));
@@ -655,7 +655,7 @@ fn createCommunicationObject(mut iTuple: (i32, Arc<metamodelica::List<i32>>, Arc
 }
 
 fn updateCommCostBySccRef1(mut iEdgeSource: Communication, mut iEdgeTarget: i32, mut iCommCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<Communication>>>> {
-    let mut oCommCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
+    let mut oCommCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
     let mut oldComms: Communications = metamodelica::nil();
     let mut sourceSccIdx: i32 = 0;
     let mut integerVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -675,26 +675,26 @@ fn updateCommCostBySccRef1(mut iEdgeSource: Communication, mut iEdgeTarget: i32,
     numberOfVars = __pa6.clone();
     oldComms = iCommCosts.clone().borrow()[(sourceSccIdx.clone()-1) as usize].clone();
     tmpComm = Communication { numberOfVars: numberOfVars.clone(), integerVars: integerVars.clone(), floatVars: floatVars.clone(), booleanVars: booleanVars.clone(), stringVars: stringVars.clone(), childNode: iEdgeTarget.clone(), requiredTime: requiredTime.clone() };
-    oCommCosts = {let _arr = iCommCosts.clone(); _arr.borrow_mut()[(sourceSccIdx.clone()-1) as usize] = cons(tmpComm.clone(), oldComms.clone()); _arr};
+    oCommCosts = {let _arr = iCommCosts.clone(); _arr.borrow_mut()[(sourceSccIdx.clone()-1) as usize] = metamodelica::cons(tmpComm.clone(), oldComms.clone()); _arr};
     Ok(oCommCosts)
 }
 
 fn fillAdjacencyList(mut adjLstIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut childNode: i32, mut parentLst: Communications, mut Idx: i32) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
-    let mut adjLstOut: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut adjLstOut: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     adjLstOut = 'mc: {
         let __mc_input = Idx.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut parentNode: Communication = <Communication as ::std::default::Default>::default();
             let mut parentRow: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            let mut adjLst: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+            let mut adjLst: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
             let mut parentNodeIdx: i32 = 0;
             let true = ((parentLst.clone().len() as i32) >= Idx.clone()) else { bail!("pattern mismatch") };
             parentNode = (parentLst.clone()).get(Idx.clone())?;
             let Communication { childNode: __pa0, .. } = (parentNode.clone()) else { bail!("pattern mismatch") };
             parentNodeIdx = __pa0.clone();
             parentRow = adjLstIn.clone().borrow()[(parentNodeIdx.clone()-1) as usize].clone();
-            parentRow = cons(childNode.clone(), parentRow.clone());
+            parentRow = metamodelica::cons(childNode.clone(), parentRow.clone());
             parentRow = List::removeOnTrue(parentNodeIdx.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), parentRow.clone());
             adjLst = {let _arr = adjLstIn.clone(); _arr.borrow_mut()[(parentNodeIdx.clone()-1) as usize] = parentRow.clone(); _arr};
             adjLst = fillAdjacencyList(adjLst.clone(), childNode.clone(), parentLst.clone(), Idx.clone() + 1)?;
@@ -710,7 +710,7 @@ fn fillAdjacencyList(mut adjLstIn: metamodelica::Array<Arc<metamodelica::List<i3
 }
 
 fn getEquationStrings(mut iComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut iEqSystem: Arc<BackendDAE::EqSystem>) -> metamodelica::Array<ArcStr> {
-    let mut eqDescsOut: metamodelica::Array<ArcStr>;
+    let mut eqDescsOut: metamodelica::Array<ArcStr> = Default::default();
     let mut eqDescs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     eqDescs = List::fold1(iComps.clone(), (std::sync::Arc::new(getEquationStrings2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::StrongComponent>, Arc<BackendDAE::EqSystem>, Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), iEqSystem.clone(), metamodelica::nil());
     eqDescs = eqDescs.clone().reverse();
@@ -732,7 +732,7 @@ fn getEquationStrings2(mut comp: Arc<BackendDAE::StrongComponent>, mut iEqSystem
                     eqString = (BackendDump::equationString(BackendEquation::get(orderedEqs.clone(), i.clone()))?).clone();
                     varString = (getVarString(BackendVariable::getVarAt(orderedVars.clone(), v.clone())?)?).clone();
                     desc = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*eqString.clone()); __mm_s.push_str(&*literal!(" FOR ")); __mm_s.push_str(&*varString.clone()); ArcStr::from(__mm_s) }).clone();
-                    descLst = cons((desc.clone()).clone(), iEqDesc.clone());
+                    descLst = metamodelica::cons((desc.clone()).clone(), iEqDesc.clone());
                     Ok(descLst.clone())
                 }
                 _ => bail!("nomatch"),
@@ -744,7 +744,7 @@ fn getEquationStrings2(mut comp: Arc<BackendDAE::StrongComponent>, mut iEqSystem
                     let mut descLst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut desc: ArcStr = arcstr::literal!("");
                     desc = (literal!("Equation System")).clone();
-                    descLst = cons((desc.clone()).clone(), iEqDesc.clone());
+                    descLst = metamodelica::cons((desc.clone()).clone(), iEqDesc.clone());
                     Ok(descLst.clone())
                 }
                 _ => bail!("nomatch"),
@@ -760,7 +760,7 @@ fn getEquationStrings2(mut comp: Arc<BackendDAE::StrongComponent>, mut iEqSystem
                     eqString = (BackendDump::equationString(BackendEquation::get(orderedEqs.clone(), i.clone()))?).clone();
                     varLst = BackendVariable::varList(orderedVars.clone())?;
                     desc = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ARRAY:")); __mm_s.push_str(&*eqString.clone()); __mm_s.push_str(&*literal!(" FOR THE VARS: ")); __mm_s.push_str(&*stringDelimitList(List::map1(vs.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), List::map(varLst.clone(), (std::sync::Arc::new(getVarString) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<ArcStr> + 'static>))), (literal!(" AND ")).clone())); ArcStr::from(__mm_s) }).clone();
-                    descLst = cons((desc.clone()).clone(), iEqDesc.clone());
+                    descLst = metamodelica::cons((desc.clone()).clone(), iEqDesc.clone());
                     Ok(descLst.clone())
                 }
                 _ => bail!("nomatch"),
@@ -776,7 +776,7 @@ fn getEquationStrings2(mut comp: Arc<BackendDAE::StrongComponent>, mut iEqSystem
                     eqString = (BackendDump::equationString(BackendEquation::get(orderedEqs.clone(), i.clone()))?).clone();
                     varLst = BackendVariable::varList(orderedVars.clone())?;
                     desc = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ALGO: ")); __mm_s.push_str(&*eqString.clone()); __mm_s.push_str(&*literal!(" FOR THE VARS: ")); __mm_s.push_str(&*stringDelimitList(List::map1(vs.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), List::map(varLst.clone(), (std::sync::Arc::new(getVarString) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<ArcStr> + 'static>))), (literal!(" AND ")).clone())); ArcStr::from(__mm_s) }).clone();
-                    descLst = cons((desc.clone()).clone(), iEqDesc.clone());
+                    descLst = metamodelica::cons((desc.clone()).clone(), iEqDesc.clone());
                     Ok(descLst.clone())
                 }
                 _ => bail!("nomatch"),
@@ -792,7 +792,7 @@ fn getEquationStrings2(mut comp: Arc<BackendDAE::StrongComponent>, mut iEqSystem
                     eqString = (BackendDump::equationString(BackendEquation::get(orderedEqs.clone(), i.clone()))?).clone();
                     varLst = BackendVariable::varList(orderedVars.clone())?;
                     desc = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("COMPLEX: ")); __mm_s.push_str(&*eqString.clone()); __mm_s.push_str(&*literal!(" FOR THE VARS: ")); __mm_s.push_str(&*stringDelimitList(List::map1(vs.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), List::map(varLst.clone(), (std::sync::Arc::new(getVarString) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<ArcStr> + 'static>))), (literal!(" AND ")).clone())); ArcStr::from(__mm_s) }).clone();
-                    descLst = cons((desc.clone()).clone(), iEqDesc.clone());
+                    descLst = metamodelica::cons((desc.clone()).clone(), iEqDesc.clone());
                     Ok(descLst.clone())
                 }
                 _ => bail!("nomatch"),
@@ -808,7 +808,7 @@ fn getEquationStrings2(mut comp: Arc<BackendDAE::StrongComponent>, mut iEqSystem
                     eqString = (BackendDump::equationString(BackendEquation::get(orderedEqs.clone(), i.clone()))?).clone();
                     varLst = BackendVariable::varList(orderedVars.clone())?;
                     desc = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("WHEN:")); __mm_s.push_str(&*eqString.clone()); __mm_s.push_str(&*literal!(" FOR THE VARS: ")); __mm_s.push_str(&*stringDelimitList(List::map1(vs.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), List::map(varLst.clone(), (std::sync::Arc::new(getVarString) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<ArcStr> + 'static>))), (literal!(" AND ")).clone())); ArcStr::from(__mm_s) }).clone();
-                    descLst = cons((desc.clone()).clone(), iEqDesc.clone());
+                    descLst = metamodelica::cons((desc.clone()).clone(), iEqDesc.clone());
                     Ok(descLst.clone())
                 }
                 _ => bail!("nomatch"),
@@ -824,7 +824,7 @@ fn getEquationStrings2(mut comp: Arc<BackendDAE::StrongComponent>, mut iEqSystem
                     eqString = (BackendDump::equationString(BackendEquation::get(orderedEqs.clone(), i.clone()))?).clone();
                     varLst = BackendVariable::varList(orderedVars.clone())?;
                     desc = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("IFEQ:")); __mm_s.push_str(&*eqString.clone()); __mm_s.push_str(&*literal!(" FOR THE VARS: ")); __mm_s.push_str(&*stringDelimitList(List::map1(vs.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), List::map(varLst.clone(), (std::sync::Arc::new(getVarString) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<ArcStr> + 'static>))), (literal!(" AND ")).clone())); ArcStr::from(__mm_s) }).clone();
-                    descLst = cons((desc.clone()).clone(), iEqDesc.clone());
+                    descLst = metamodelica::cons((desc.clone()).clone(), iEqDesc.clone());
                     Ok(descLst.clone())
                 }
                 _ => bail!("nomatch"),
@@ -836,7 +836,7 @@ fn getEquationStrings2(mut comp: Arc<BackendDAE::StrongComponent>, mut iEqSystem
                     let mut descLst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut desc: ArcStr = arcstr::literal!("");
                     desc = (literal!("Torn linear System")).clone();
-                    descLst = cons((desc.clone()).clone(), iEqDesc.clone());
+                    descLst = metamodelica::cons((desc.clone()).clone(), iEqDesc.clone());
                     Ok(descLst.clone())
                 }
                 _ => bail!("nomatch"),
@@ -848,7 +848,7 @@ fn getEquationStrings2(mut comp: Arc<BackendDAE::StrongComponent>, mut iEqSystem
                     let mut descLst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut desc: ArcStr = arcstr::literal!("");
                     desc = (literal!("Torn nonlinear System")).clone();
-                    descLst = cons((desc.clone()).clone(), iEqDesc.clone());
+                    descLst = metamodelica::cons((desc.clone()).clone(), iEqDesc.clone());
                     Ok(descLst.clone())
                 }
                 _ => bail!("nomatch"),
@@ -860,7 +860,7 @@ fn getEquationStrings2(mut comp: Arc<BackendDAE::StrongComponent>, mut iEqSystem
                     let mut descLst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut desc: ArcStr = arcstr::literal!("");
                     desc = (literal!("no singleEquation")).clone();
-                    descLst = cons((desc.clone()).clone(), iEqDesc.clone());
+                    descLst = metamodelica::cons((desc.clone()).clone(), iEqDesc.clone());
                     Ok(descLst.clone())
                 }
                 _ => bail!("nomatch"),
@@ -926,7 +926,7 @@ fn getEventNodes(mut systIn: Arc<BackendDAE::BackendDAE>, mut eqCompMapping: met
 }
 
 fn getEventNodeEqs(mut systIn: Arc<BackendDAE::EqSystem>, mut eventInfoIn: (Arc<metamodelica::List<i32>>, i32)) -> Result<(Arc<metamodelica::List<i32>>, i32)> {
-    let mut eventInfoOut: (Arc<metamodelica::List<i32>>, i32);
+    let mut eventInfoOut: (Arc<metamodelica::List<i32>>, i32) = (metamodelica::nil(), 0);
     let mut comps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
     let mut matching: Arc<BackendDAE::Matching> = Arc::new(BackendDAE::Matching::NO_MATCHING);
     let mut orderedEqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
@@ -965,7 +965,7 @@ fn getEventNodeEqs1(mut comps: Arc<metamodelica::List<Arc<BackendDAE::StrongComp
                     } };
                     eqn = __pa0.clone();
                     eqn = eqn.clone() + offset.clone();
-                    eventEqs = getEventNodeEqs1(rest.clone(), offset.clone(), cons(eqn.clone(), eventEqsIn.clone()))?;
+                    eventEqs = getEventNodeEqs1(rest.clone(), offset.clone(), metamodelica::cons(eqn.clone(), eventEqsIn.clone()))?;
                     Ok(eventEqs.clone())
                 }
                 _ => bail!("nomatch"),
@@ -1042,19 +1042,19 @@ fn fillRequiredSccs(mut var: (i32, i32), mut varType: VariableType, mut varMappi
         (integerVars, floatVars, booleanVars, stringVars) = UnorderedMap::getOrDefault(scc_idx.clone(), requiredSccs.clone(), (metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil()));
         let () = (match varType.clone() {
         VariableType::INTEGER { .. } => {
-            integerVars = cons(var_idx.clone(), integerVars.clone());
+            integerVars = metamodelica::cons(var_idx.clone(), integerVars.clone());
             ()
         },
         VariableType::REAL { .. } => {
-            floatVars = cons(var_idx.clone(), floatVars.clone());
+            floatVars = metamodelica::cons(var_idx.clone(), floatVars.clone());
             ()
         },
         VariableType::BOOLEAN => {
-            booleanVars = cons(var_idx.clone(), booleanVars.clone());
+            booleanVars = metamodelica::cons(var_idx.clone(), booleanVars.clone());
             ()
         },
         VariableType::STRING { .. } => {
-            stringVars = cons(var_idx.clone(), stringVars.clone());
+            stringVars = metamodelica::cons(var_idx.clone(), stringVars.clone());
             ()
         },
     });
@@ -1064,14 +1064,14 @@ fn fillRequiredSccs(mut var: (i32, i32), mut varType: VariableType, mut varMappi
 }
 
 fn getUnsolvedVarsBySCC(mut iComponent: Arc<BackendDAE::StrongComponent>, mut iAdjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iOrderedVars: BackendDAE::Variables, mut iKnownVars: BackendDAE::Variables, mut iOrderedEquations: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut iEventVarLst: Arc<metamodelica::List<i32>>, mut iAnalyzeParameters: bool) -> Result<((Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>), Arc<metamodelica::List<i32>>)> {
-    let mut oUnsolvedVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>);
+    let mut oUnsolvedVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) = (metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil());
     let mut oParamVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
     (oUnsolvedVars, oParamVars) = 'mc: {
         let __mc_input = iComponent.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::StrongComponent::SINGLEEQUATION { var: varIdx, .. } => {
-                    let mut tmpVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>);
+                    let mut tmpVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) = (metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil());
                     let mut paramVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     (tmpVars, paramVars) = getUnsolvedVarsBySCC0(iComponent.clone(), iAdjacencyMatrix.clone(), iOrderedVars.clone(), iKnownVars.clone(), iOrderedEquations.clone(), list![varIdx.clone()], iEventVarLst.clone(), iAnalyzeParameters.clone())?;
                     Ok((tmpVars.clone(), paramVars.clone()))
@@ -1082,7 +1082,7 @@ fn getUnsolvedVarsBySCC(mut iComponent: Arc<BackendDAE::StrongComponent>, mut iA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { vars: varIdc, .. } => {
-                    let mut tmpVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>);
+                    let mut tmpVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) = (metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil());
                     let mut paramVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     (tmpVars, paramVars) = getUnsolvedVarsBySCC0(iComponent.clone(), iAdjacencyMatrix.clone(), iOrderedVars.clone(), iKnownVars.clone(), iOrderedEquations.clone(), varIdc.clone(), iEventVarLst.clone(), iAnalyzeParameters.clone())?;
                     Ok((tmpVars.clone(), paramVars.clone()))
@@ -1093,7 +1093,7 @@ fn getUnsolvedVarsBySCC(mut iComponent: Arc<BackendDAE::StrongComponent>, mut iA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::StrongComponent::SINGLEARRAY { vars: varIdc, .. } => {
-                    let mut tmpVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>);
+                    let mut tmpVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) = (metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil());
                     let mut paramVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     (tmpVars, paramVars) = getUnsolvedVarsBySCC0(iComponent.clone(), iAdjacencyMatrix.clone(), iOrderedVars.clone(), iKnownVars.clone(), iOrderedEquations.clone(), varIdc.clone(), iEventVarLst.clone(), iAnalyzeParameters.clone())?;
                     Ok((tmpVars.clone(), paramVars.clone()))
@@ -1104,7 +1104,7 @@ fn getUnsolvedVarsBySCC(mut iComponent: Arc<BackendDAE::StrongComponent>, mut iA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::StrongComponent::SINGLEALGORITHM { vars: varIdc, .. } => {
-                    let mut tmpVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>);
+                    let mut tmpVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) = (metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil());
                     let mut paramVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     (tmpVars, paramVars) = getUnsolvedVarsBySCC0(iComponent.clone(), iAdjacencyMatrix.clone(), iOrderedVars.clone(), iKnownVars.clone(), iOrderedEquations.clone(), varIdc.clone(), iEventVarLst.clone(), iAnalyzeParameters.clone())?;
                     Ok((tmpVars.clone(), paramVars.clone()))
@@ -1115,7 +1115,7 @@ fn getUnsolvedVarsBySCC(mut iComponent: Arc<BackendDAE::StrongComponent>, mut iA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::StrongComponent::SINGLECOMPLEXEQUATION { vars: varIdc, .. } => {
-                    let mut tmpVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>);
+                    let mut tmpVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) = (metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil());
                     let mut paramVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     (tmpVars, paramVars) = getUnsolvedVarsBySCC0(iComponent.clone(), iAdjacencyMatrix.clone(), iOrderedVars.clone(), iKnownVars.clone(), iOrderedEquations.clone(), varIdc.clone(), iEventVarLst.clone(), iAnalyzeParameters.clone())?;
                     Ok((tmpVars.clone(), paramVars.clone()))
@@ -1126,7 +1126,7 @@ fn getUnsolvedVarsBySCC(mut iComponent: Arc<BackendDAE::StrongComponent>, mut iA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::StrongComponent::SINGLEWHENEQUATION { vars: varIdc, .. } => {
-                    let mut tmpVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>);
+                    let mut tmpVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) = (metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil());
                     let mut paramVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     (tmpVars, paramVars) = getUnsolvedVarsBySCC0(iComponent.clone(), iAdjacencyMatrix.clone(), iOrderedVars.clone(), iKnownVars.clone(), iOrderedEquations.clone(), varIdc.clone(), iEventVarLst.clone(), iAnalyzeParameters.clone())?;
                     Ok((tmpVars.clone(), paramVars.clone()))
@@ -1137,7 +1137,7 @@ fn getUnsolvedVarsBySCC(mut iComponent: Arc<BackendDAE::StrongComponent>, mut iA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::StrongComponent::SINGLEIFEQUATION { vars: varIdc, .. } => {
-                    let mut tmpVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>);
+                    let mut tmpVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) = (metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil());
                     let mut paramVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     (tmpVars, paramVars) = getUnsolvedVarsBySCC0(iComponent.clone(), iAdjacencyMatrix.clone(), iOrderedVars.clone(), iKnownVars.clone(), iOrderedEquations.clone(), varIdc.clone(), iEventVarLst.clone(), iAnalyzeParameters.clone())?;
                     Ok((tmpVars.clone(), paramVars.clone()))
@@ -1148,7 +1148,7 @@ fn getUnsolvedVarsBySCC(mut iComponent: Arc<BackendDAE::StrongComponent>, mut iA
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: BackendDAE::TearingSet { tearingvars: varIdc, .. }, .. } => {
-                    let mut tmpVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>);
+                    let mut tmpVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) = (metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil());
                     let mut paramVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     (tmpVars, paramVars) = getUnsolvedVarsBySCC0(iComponent.clone(), iAdjacencyMatrix.clone(), iOrderedVars.clone(), iKnownVars.clone(), iOrderedEquations.clone(), varIdc.clone(), iEventVarLst.clone(), iAnalyzeParameters.clone())?;
                     Ok((tmpVars.clone(), paramVars.clone()))
@@ -1171,7 +1171,7 @@ fn getUnsolvedVarsBySCC(mut iComponent: Arc<BackendDAE::StrongComponent>, mut iA
 }
 
 fn getUnsolvedVarsBySCC0(mut iComponent: Arc<BackendDAE::StrongComponent>, mut iAdjacencyMatrix: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iOrderedVars: BackendDAE::Variables, mut iKnownVars: BackendDAE::Variables, mut iOrderedEquations: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut iVarIdc: Arc<metamodelica::List<i32>>, mut iEventVarLst: Arc<metamodelica::List<i32>>, mut iAnalyzeParameters: bool) -> Result<((Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>), Arc<metamodelica::List<i32>>)> {
-    let mut oUnsolvedVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>);
+    let mut oUnsolvedVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) = (metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil());
     let mut oParamVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut tmpVars: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
     (tmpVars, oParamVars) = getVarsBySCC(iComponent.clone(), iAdjacencyMatrix.clone(), iOrderedVars.clone(), iKnownVars.clone(), iOrderedEquations.clone(), iAnalyzeParameters.clone())?;
@@ -1182,7 +1182,7 @@ fn getUnsolvedVarsBySCC0(mut iComponent: Arc<BackendDAE::StrongComponent>, mut i
 }
 
 fn getUnsolvedVarsBySCC1(mut iVarIdx: (i32, i32), mut orderedVars: BackendDAE::Variables, mut iUnsolvedVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)) -> Result<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)> {
-    let mut oUnsolvedVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>);
+    let mut oUnsolvedVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) = (metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil());
     let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
     let mut varType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     var = BackendVariable::getVarAt(orderedVars.clone(), Util::tuple21(iVarIdx.clone()))?;
@@ -1194,7 +1194,7 @@ fn getUnsolvedVarsBySCC1(mut iVarIdx: (i32, i32), mut orderedVars: BackendDAE::V
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getUnsolvedVarsBySCC2(mut iVarType: Arc<DAE::Type>, mut iVarIdx: (i32, i32), mut iUnsolvedVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)) -> (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) {
-    let mut oUnsolvedVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>);
+    let mut oUnsolvedVars: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) = (metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil());
     let mut intVarIdc: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut boolVarIdc: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut stringVarIdc: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -1205,28 +1205,28 @@ fn getUnsolvedVarsBySCC2(mut iVarType: Arc<DAE::Type>, mut iVarIdx: (i32, i32), 
     oUnsolvedVars = (::match_deref::match_deref! { match &((iVarType.clone(), iVarIdx.clone(), iUnsolvedVars.clone())) {
         (Deref @ DAE::Type::T_INTEGER { .. }, (varIdx, derived), (intVarIdc, realVarIdc, boolVarIdc, stringVarIdc)) => {
             let mut intVarIdc = (*intVarIdc).clone();
-            intVarIdc = cons(varIdx.clone(), intVarIdc.clone());
+            intVarIdc = metamodelica::cons(varIdx.clone(), intVarIdc.clone());
             (intVarIdc.clone(), realVarIdc.clone(), boolVarIdc.clone(), stringVarIdc.clone())
         },
         (Deref @ DAE::Type::T_REAL { .. }, (varIdx, derived), (intVarIdc, realVarIdc, boolVarIdc, stringVarIdc)) => {
             let mut realVarIdc = (*realVarIdc).clone();
-            realVarIdc = cons((varIdx.clone(), derived.clone()), realVarIdc.clone());
+            realVarIdc = metamodelica::cons((varIdx.clone(), derived.clone()), realVarIdc.clone());
             (intVarIdc.clone(), realVarIdc.clone(), boolVarIdc.clone(), stringVarIdc.clone())
         },
         (Deref @ DAE::Type::T_BOOL { .. }, (varIdx, derived), (intVarIdc, realVarIdc, boolVarIdc, stringVarIdc)) => {
             let mut boolVarIdc = (*boolVarIdc).clone();
-            boolVarIdc = cons(varIdx.clone(), boolVarIdc.clone());
+            boolVarIdc = metamodelica::cons(varIdx.clone(), boolVarIdc.clone());
             (intVarIdc.clone(), realVarIdc.clone(), boolVarIdc.clone(), stringVarIdc.clone())
         },
         (Deref @ DAE::Type::T_ARRAY { ty, .. }, (varIdx, derived), (intVarIdc, realVarIdc, boolVarIdc, stringVarIdc)) => getUnsolvedVarsBySCC2(ty.clone(), iVarIdx.clone(), iUnsolvedVars.clone()),
         (Deref @ DAE::Type::T_ENUMERATION { .. }, (varIdx, derived), (intVarIdc, realVarIdc, boolVarIdc, stringVarIdc)) => {
             let mut stringVarIdc = (*stringVarIdc).clone();
-            stringVarIdc = cons(varIdx.clone(), stringVarIdc.clone());
+            stringVarIdc = metamodelica::cons(varIdx.clone(), stringVarIdc.clone());
             (intVarIdc.clone(), realVarIdc.clone(), boolVarIdc.clone(), stringVarIdc.clone())
         },
         (Deref @ DAE::Type::T_STRING { .. }, (varIdx, derived), (intVarIdc, realVarIdc, boolVarIdc, stringVarIdc)) => {
             let mut stringVarIdc = (*stringVarIdc).clone();
-            stringVarIdc = cons(varIdx.clone(), stringVarIdc.clone());
+            stringVarIdc = metamodelica::cons(varIdx.clone(), stringVarIdc.clone());
             (intVarIdc.clone(), realVarIdc.clone(), boolVarIdc.clone(), stringVarIdc.clone())
         },
         _ => {
@@ -1244,7 +1244,7 @@ fn removeEventVars(mut eventVarLst: Arc<metamodelica::List<i32>>, mut varLstIn: 
         let __mc_input = varIdx.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut varTpl: (i32, i32);
+            let mut varTpl: (i32, i32) = (0, 0);
             let mut varLst: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
             let mut var: i32 = 0;
             let true = (intLe(varIdx.clone(), (varLstIn.clone().len() as i32))) else { bail!("pattern mismatch") };
@@ -1257,7 +1257,7 @@ fn removeEventVars(mut eventVarLst: Arc<metamodelica::List<i32>>, mut varLstIn: 
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut varTpl: (i32, i32);
+            let mut varTpl: (i32, i32) = (0, 0);
             let mut varLst: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
             let mut var: i32 = 0;
             let true = (intLe(varIdx.clone(), (varLstIn.clone().len() as i32))) else { bail!("pattern mismatch") };
@@ -1416,7 +1416,7 @@ fn getVarsByEqns(mut iEqnIdc: Arc<metamodelica::List<i32>>, mut iAdjacencyMatrix
     for mut eqIdx in &*iEqnIdc.clone() {
         let mut eqIdx = eqIdx.clone();
         adjacencyVars = listAppend(iAdjacencyMatrix.clone().borrow()[(eqIdx.clone()-1) as usize].clone(), adjacencyVars.clone());
-        eqs = cons(BackendEquation::get(iOrderedEquations.clone(), eqIdx.clone()), eqs.clone());
+        eqs = metamodelica::cons(BackendEquation::get(iOrderedEquations.clone(), eqIdx.clone()), eqs.clone());
     }
     oAdjacencyVars = List::map(adjacencyVars.clone(), (std::sync::Arc::new(fnptr!(getVarTuple, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<(i32, i32)> + 'static>));
     if iAnalyzeParameters.clone() {
@@ -1428,7 +1428,7 @@ fn getVarsByEqns(mut iEqnIdc: Arc<metamodelica::List<i32>>, mut iAdjacencyMatrix
 }
 
 fn getVarTuple(mut varIdx: i32) -> (i32, i32) {
-    let mut outIdx: (i32, i32);
+    let mut outIdx: (i32, i32) = (0, 0);
     outIdx = if (intLe(0, varIdx.clone())) {(varIdx.clone(), 1)} else {(-(varIdx.clone()), 0)};
     outIdx
 }
@@ -1447,8 +1447,8 @@ fn compareIntTuple2(mut tuple1: (i32, i32), mut tuple2: (i32, i32)) -> bool {
 }
 
 fn getVarEqCompMapping(mut components: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut iEqSysIdx: i32, mut iVarIdxOffset: i32, mut iEqIdxOffset: i32, mut ivarCompMapping: metamodelica::Array<(i32, i32, i32)>, mut ieqCompMapping: metamodelica::Array<(i32, i32, i32)>) -> (metamodelica::Array<(i32, i32, i32)>, metamodelica::Array<(i32, i32, i32)>) {
-    let mut ovarCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut oeqCompMapping: metamodelica::Array<(i32, i32, i32)>;
+    let mut ovarCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut oeqCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
     List::fold4(components.clone(), (std::sync::Arc::new(getVarEqCompMapping0) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::StrongComponent>, metamodelica::Array<(i32, i32, i32)>, metamodelica::Array<(i32, i32, i32)>, i32, (i32, i32), i32) -> Result<i32> + 'static>), ivarCompMapping.clone(), ieqCompMapping.clone(), iEqSysIdx.clone(), (iVarIdxOffset.clone(), iEqIdxOffset.clone()), 1);
     ovarCompMapping = ivarCompMapping.clone();
     oeqCompMapping = ieqCompMapping.clone();
@@ -1565,21 +1565,21 @@ fn getVarEqCompMapping0(mut component: Arc<BackendDAE::StrongComponent>, mut var
 }
 
 pub fn getSccNodeMapping(mut iNumberOfSccs: i32, mut iTaskGraphMeta: TaskGraphMeta) -> Result<metamodelica::Array<i32>> {
-    let mut oMapping: metamodelica::Array<i32>;
-    let mut tmpMappingArray: metamodelica::Array<i32>;
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut nodeMark: metamodelica::Array<i32>;
+    let mut oMapping: metamodelica::Array<i32> = Default::default();
+    let mut tmpMappingArray: metamodelica::Array<i32> = Default::default();
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut nodeMark: metamodelica::Array<i32> = Default::default();
     tmpMappingArray = arrayCreate(iNumberOfSccs.clone(), -1);
     let TaskGraphMeta { nodeMark: __pa0, inComps: __pa1, .. } = (iTaskGraphMeta.clone()) else { bail!("pattern mismatch") };
     nodeMark = __pa0.clone();
     inComps = __pa1.clone();
-    (oMapping, _) = Array::fold(inComps.clone(), Arc::new({ let __pe_b1 = nodeMark.clone(); move |__pe_a0, __pe_a2| Ok(getSccNodeMapping0(__pe_a0, __pe_b1.clone(), __pe_a2)) }), (tmpMappingArray.clone(), 1));
+    (oMapping, _) = Array::fold(inComps.clone(), (std::sync::Arc::new({ let __pe_b1 = nodeMark.clone(); move |__pe_a0, __pe_a2| Ok(getSccNodeMapping0(__pe_a0, __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, (metamodelica::Array<i32>, i32)) -> Result<(metamodelica::Array<i32>, i32)> + 'static>), (tmpMappingArray.clone(), 1));
     Ok(oMapping)
 }
 
 fn getSccNodeMapping0(mut iCompsOfNode: Arc<metamodelica::List<i32>>, mut iNodeMarks: metamodelica::Array<i32>, mut iArrayNodeIdx: (metamodelica::Array<i32>, i32)) -> (metamodelica::Array<i32>, i32) {
-    let mut oArrayNodeIdx: (metamodelica::Array<i32>, i32);
-    let mut tmpMappingArray: metamodelica::Array<i32>;
+    let mut oArrayNodeIdx: (metamodelica::Array<i32>, i32) = (Default::default(), 0);
+    let mut tmpMappingArray: metamodelica::Array<i32> = Default::default();
     let mut nodeIdx: i32 = 0;
     (tmpMappingArray, nodeIdx) = List::fold1(iCompsOfNode.clone(), (std::sync::Arc::new(getSccNodeMapping1) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>, (metamodelica::Array<i32>, i32)) -> Result<(metamodelica::Array<i32>, i32)> + 'static>), iNodeMarks.clone(), iArrayNodeIdx.clone());
     oArrayNodeIdx = (tmpMappingArray.clone(), nodeIdx.clone() + 1);
@@ -1587,10 +1587,10 @@ fn getSccNodeMapping0(mut iCompsOfNode: Arc<metamodelica::List<i32>>, mut iNodeM
 }
 
 fn getSccNodeMapping1(mut iCompIdx: i32, mut iNodeMark: metamodelica::Array<i32>, mut iArrayNodeIdx: (metamodelica::Array<i32>, i32)) -> Result<(metamodelica::Array<i32>, i32)> {
-    let mut oArrayNodeIdx: (metamodelica::Array<i32>, i32);
+    let mut oArrayNodeIdx: (metamodelica::Array<i32>, i32) = (Default::default(), 0);
     let mut iNodeIdx: i32 = 0;
     let mut nodeMark: i32 = 0;
-    let mut iMappingArray: metamodelica::Array<i32>;
+    let mut iMappingArray: metamodelica::Array<i32> = Default::default();
     oArrayNodeIdx = 'mc: {
         let __mc_input = iArrayNodeIdx.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -1611,7 +1611,7 @@ fn getSccNodeMapping1(mut iCompIdx: i32, mut iNodeMark: metamodelica::Array<i32>
 }
 
 fn othersInTearComp(mut otherEqnVarTpl: (i32, Arc<metamodelica::List<i32>>), mut othersIn: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)) -> Result<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)> {
-    let mut othersOut: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>);
+    let mut othersOut: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) = (metamodelica::nil(), metamodelica::nil());
     othersOut = 'mc: {
         let __mc_input = othersIn.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -1625,7 +1625,7 @@ fn othersInTearComp(mut otherEqnVarTpl: (i32, Arc<metamodelica::List<i32>>), mut
                     (varTplLst.clone()).get(1)?;
                     (eqLst, varLst) = othersIn.clone();
                     varLst = listAppend(varTplLst.clone(), varLst.clone());
-                    eqLst = cons(eq.clone(), eqLst.clone());
+                    eqLst = metamodelica::cons(eq.clone(), eqLst.clone());
                     Ok((eqLst.clone(), varLst.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1646,13 +1646,13 @@ fn othersInTearComp(mut otherEqnVarTpl: (i32, Arc<metamodelica::List<i32>>), mut
 }
 
 fn updateMapping(mut varIdx: i32, mut sccIdx: i32, mut iMapping: metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> {
-    let mut oMapping: metamodelica::Array<i32>;
+    let mut oMapping: metamodelica::Array<i32> = Default::default();
     oMapping = {let _arr = iMapping.clone(); _arr.borrow_mut()[(varIdx.clone()-1) as usize] = sccIdx.clone(); _arr};
     Ok(oMapping)
 }
 
 fn updateMappingTuple(mut varIdx: i32, mut sccIdx: i32, mut iEqSysIdx: i32, mut iVarOffset: i32, mut iMapping: metamodelica::Array<(i32, i32, i32)>) -> Result<metamodelica::Array<(i32, i32, i32)>> {
-    let mut oMapping: metamodelica::Array<(i32, i32, i32)>;
+    let mut oMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
     oMapping = {let _arr = iMapping.clone(); _arr.borrow_mut()[(varIdx.clone() + iVarOffset.clone()-1) as usize] = (sccIdx.clone(), iEqSysIdx.clone(), iVarOffset.clone()); _arr};
     Ok(oMapping)
 }
@@ -1661,17 +1661,17 @@ fn updateMappingTuple(mut varIdx: i32, mut sccIdx: i32, mut iEqSysIdx: i32, mut 
 //  Functions to get the ODEsystem graph and adjacencyList
 //--------------------------------------------------------
 pub fn getOdeSystem(mut graphIn: TaskGraph, mut graphDataIn: TaskGraphMeta, mut systIn: Arc<BackendDAE::BackendDAE>) -> Result<(TaskGraph, TaskGraphMeta)> {
-    let mut graphOdeOut: TaskGraph;
+    let mut graphOdeOut: TaskGraph = Default::default();
     let mut graphDataOdeOut: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
     let mut stateNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut whenNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut cutNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut cutNodeChildren: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut systs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = metamodelica::nil();
-    let mut graphTmp: TaskGraph;
+    let mut graphTmp: TaskGraph = Default::default();
     let TaskGraphMeta { inComps: __pa0, eqCompMapping: __pa1, varCompMapping: __pa2, .. } = (graphDataIn.clone()) else { bail!("pattern mismatch") };
     inComps = __pa0.clone();
     eqCompMapping = __pa1.clone();
@@ -1692,7 +1692,7 @@ pub fn getOdeSystem(mut graphIn: TaskGraph, mut graphDataIn: TaskGraphMeta, mut 
 }
 
 fn getAllStateNodes(mut systIn: Arc<BackendDAE::EqSystem>, mut varCompMapping: metamodelica::Array<(i32, i32, i32)>, mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut stateInfoIn: (Arc<metamodelica::List<i32>>, i32)) -> Result<(Arc<metamodelica::List<i32>>, i32)> {
-    let mut stateInfoOut: (Arc<metamodelica::List<i32>>, i32);
+    let mut stateInfoOut: (Arc<metamodelica::List<i32>>, i32) = (metamodelica::nil(), 0);
     stateInfoOut = 'mc: {
         let __mc_input = stateInfoIn.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -1788,7 +1788,7 @@ fn getStates(mut inVarLst: Arc<metamodelica::List<BackendDAE::Var>>, mut stateVa
                 Deref @ metamodelica::List::Cons { head: head, tail: rest } => {
                     let mut stateVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let true = (BackendVariable::isStateVar(head.clone())) else { bail!("pattern mismatch") };
-                    stateVars = getStates(rest.clone(), cons(Idx.clone(), stateVarsIn.clone()), Idx.clone() + 1)?;
+                    stateVars = getStates(rest.clone(), metamodelica::cons(Idx.clone(), stateVarsIn.clone()), Idx.clone() + 1)?;
                     Ok(stateVars.clone())
                 }
                 _ => bail!("nomatch"),
@@ -1808,7 +1808,7 @@ fn getStates(mut inVarLst: Arc<metamodelica::List<BackendDAE::Var>>, mut stateVa
 }
 
 fn cutTaskGraph(mut graphIn: TaskGraph, mut exceptNodes: Arc<metamodelica::List<i32>>, mut whenNodes: Arc<metamodelica::List<i32>>) -> Result<(TaskGraph, Arc<metamodelica::List<i32>>)> {
-    let mut graphOut: TaskGraph;
+    let mut graphOut: TaskGraph = Default::default();
     let mut cutNodesOut: Arc<metamodelica::List<i32>> = metamodelica::nil();
     (graphOut, cutNodesOut) = 'mc: {
         let __mc_input = exceptNodes.clone();
@@ -1825,11 +1825,11 @@ fn cutTaskGraph(mut graphIn: TaskGraph, mut exceptNodes: Arc<metamodelica::List<
                 _ => {
                     let mut sizeDAE: i32 = 0;
                     let mut sizeODE: i32 = 0;
-                    let mut graphT: TaskGraph;
-                    let mut graphODE: TaskGraph;
+                    let mut graphT: TaskGraph = Default::default();
+                    let mut graphODE: TaskGraph = Default::default();
                     let mut cutNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut odeNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    let mut odeMap: metamodelica::Array<i32>;
+                    let mut odeMap: metamodelica::Array<i32> = Default::default();
                     sizeDAE = (graphIn.clone().borrow().len() as i32);
                     graphT = AdjacencyMatrix::transposeAdjacencyMatrix(graphIn.clone(), sizeDAE.clone())?;
                     odeNodes = listAppend(exceptNodes.clone(), getAllSuccessors(exceptNodes.clone(), graphT.clone())?);
@@ -1861,7 +1861,7 @@ fn cutTaskGraph(mut graphIn: TaskGraph, mut exceptNodes: Arc<metamodelica::List<
 }
 
 fn cutTaskGraph2(mut daeNodes: Arc<metamodelica::List<i32>>, mut graphODE: TaskGraph, mut cutNodesIn: Arc<metamodelica::List<i32>>, mut graphDAE: TaskGraph, mut odeMap: metamodelica::Array<i32>) -> Result<(TaskGraph, Arc<metamodelica::List<i32>>)> {
-    let mut graphOut: TaskGraph;
+    let mut graphOut: TaskGraph = Default::default();
     let mut cutNodesOut: Arc<metamodelica::List<i32>> = metamodelica::nil();
     (graphOut, cutNodesOut) = 'mc: {
         let __mc_input = daeNodes.clone();
@@ -1890,7 +1890,7 @@ fn cutTaskGraph2(mut daeNodes: Arc<metamodelica::List<i32>>, mut graphODE: TaskG
                     let mut cutNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     odeIdx = odeMap.clone().borrow()[(daeIdx.clone()-1) as usize].clone();
                     let true = (intEq(odeIdx.clone(), -1)) else { bail!("pattern mismatch") };
-                    (_, cutNodes) = cutTaskGraph2(rest.clone(), graphODE.clone(), cons(daeIdx.clone(), cutNodesIn.clone()), graphDAE.clone(), odeMap.clone())?;
+                    (_, cutNodes) = cutTaskGraph2(rest.clone(), graphODE.clone(), metamodelica::cons(daeIdx.clone(), cutNodesIn.clone()), graphDAE.clone(), odeMap.clone())?;
                     Ok((graphODE.clone(), cutNodes.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1911,17 +1911,17 @@ fn cutTaskGraph2(mut daeNodes: Arc<metamodelica::List<i32>>, mut graphODE: TaskG
 
 fn cutSystemData(mut graphDataIn: TaskGraphMeta, mut cutNodes: Arc<metamodelica::List<i32>>, mut cutNodeChildren: Arc<metamodelica::List<i32>>) -> Result<TaskGraphMeta> {
     let mut graphDataOut: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut compNames: metamodelica::Array<ArcStr>;
-    let mut compDescs: metamodelica::Array<ArcStr>;
-    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)>;
-    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
-    let mut nodeMark: metamodelica::Array<i32>;
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut compNames: metamodelica::Array<ArcStr> = Default::default();
+    let mut compDescs: metamodelica::Array<ArcStr> = Default::default();
+    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
+    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
+    let mut nodeMark: metamodelica::Array<i32> = Default::default();
     let mut rangeLst: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut compParamMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut compInformations: metamodelica::Array<ComponentInfo>;
+    let mut compParamMapping: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut compInformations: metamodelica::Array<ComponentInfo> = Default::default();
     let TaskGraphMeta { compInformations: __pa0, nodeMark: __pa1, commCosts: __pa2, exeCosts: __pa3, compDescs: __pa4, compNames: __pa5, compParamMapping: __pa6, eqCompMapping: __pa7, varCompMapping: __pa8, inComps: __pa9 } = (graphDataIn.clone()) else { bail!("pattern mismatch") };
     compInformations = __pa0.clone();
     nodeMark = __pa1.clone();
@@ -1941,7 +1941,7 @@ fn cutSystemData(mut graphDataIn: TaskGraphMeta, mut cutNodes: Arc<metamodelica:
 }
 
 fn markRemovedNodes(mut nodeMarkIdx: i32, mut removedNodes: Arc<metamodelica::List<i32>>, mut nodeMarkIn: metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> {
-    let mut nodeMarkOut: metamodelica::Array<i32>;
+    let mut nodeMarkOut: metamodelica::Array<i32> = Default::default();
     nodeMarkOut = 'mc: {
         let __mc_input = nodeMarkIn.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -1956,7 +1956,7 @@ fn markRemovedNodes(mut nodeMarkIdx: i32, mut removedNodes: Arc<metamodelica::Li
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut nodeMarkTmp: metamodelica::Array<i32>;
+            let mut nodeMarkTmp: metamodelica::Array<i32> = Default::default();
             let true = (List::isMemberOnTrue(nodeMarkIdx.clone(), removedNodes.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
             nodeMarkTmp = Array::replaceAtWithFill(nodeMarkIdx.clone(), -1, 999, nodeMarkIn.clone())?;
             Ok(nodeMarkTmp.clone())
@@ -2011,7 +2011,7 @@ pub fn getAllSuccessors(mut nodes: Arc<metamodelica::List<i32>>, mut graph: Task
         let __mc_input = graph.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut alreadyVisited: metamodelica::Array<bool>;
+            let mut alreadyVisited: metamodelica::Array<bool> = Default::default();
             let mut check: Arc<metamodelica::List<bool>> = metamodelica::nil();
             let mut successors1: Arc<metamodelica::List<i32>> = metamodelica::nil();
             alreadyVisited = arrayCreate((graph.clone().borrow().len() as i32), false);
@@ -2091,7 +2091,7 @@ pub fn updateContinuousEntriesInList(mut lstIn: Arc<metamodelica::List<i32>>, mu
         },
         (Deref @ metamodelica::List::Cons { head: start, tail: rest }, _) => {
             let mut lstTmp: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            let mut deleteArr: metamodelica::Array<i32>;
+            let mut deleteArr: metamodelica::Array<i32> = Default::default();
             deleteArr = arrayCreate(List::fold(listAppend(rest.clone(), deleteEntriesIn.clone()), (std::sync::Arc::new(fnptr!(intMax, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), start.clone()), 0);
             List::map2_0(deleteEntriesIn.clone(), (std::sync::Arc::new(Array::updateIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<()> + 'static>), 1, deleteArr.clone());
             (deleteArr, _) = Array::mapFold(deleteArr.clone(), (std::sync::Arc::new(setDeleteArr) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<(i32, i32)> + 'static>), 0);
@@ -2135,9 +2135,9 @@ fn removeContinuousEntries1(mut entryIn: i32, mut deleteEntriesIn: metamodelica:
 }
 
 fn deleteRowInAdjLst(mut adjacencyLstIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut rowsDel: Arc<metamodelica::List<i32>>) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, Arc<metamodelica::List<i32>>)> {
-    let mut adjacencyLstOut: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut adjacencyLstOut: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut odeMapping: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut adjLst: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut adjLst: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut copiedRows: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut size: i32 = 0;
     size = (adjacencyLstIn.clone().borrow().len() as i32) - (rowsDel.clone().len() as i32);
@@ -2150,14 +2150,14 @@ fn deleteRowInAdjLst(mut adjacencyLstIn: metamodelica::Array<Arc<metamodelica::L
 }
 
 fn arrayCopyRows(mut inArray: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut newArray: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut copiedRows: Arc<metamodelica::List<i32>>, mut Idx: i32) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
-    let mut outArray: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut outArray: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     outArray = 'mc: {
         let __mc_input = Idx.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut copyRow: i32 = 0;
             let mut row: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            let mut arrayTmp: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+            let mut arrayTmp: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
             let true = ((copiedRows.clone().len() as i32) >= Idx.clone()) else { bail!("pattern mismatch") };
             copyRow = (copiedRows.clone()).get(Idx.clone())?;
             row = inArray.clone().borrow()[(copyRow.clone()-1) as usize].clone();
@@ -2177,7 +2177,7 @@ fn arrayCopyRows(mut inArray: metamodelica::Array<Arc<metamodelica::List<i32>>>,
 pub fn getRootNodes(mut iTaskGraph: TaskGraph) -> Result<Arc<metamodelica::List<i32>>> {
     let mut rootsOut: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut size: i32 = 0;
-    let mut taskGraphT: TaskGraph;
+    let mut taskGraphT: TaskGraph = Default::default();
     size = (iTaskGraph.clone().borrow().len() as i32);
     taskGraphT = AdjacencyMatrix::transposeAdjacencyMatrix(iTaskGraph.clone(), size.clone())?;
     rootsOut = getLeafNodes(taskGraphT.clone())?;
@@ -2194,7 +2194,7 @@ pub fn getLeafNodes(mut iTaskGraph: TaskGraph) -> Result<Arc<metamodelica::List<
     for mut nodeIdx in __range0 {
         nodeSuccessors = iTaskGraph.clone().borrow()[(nodeIdx.clone()-1) as usize].clone();
         if nodeSuccessors.clone().is_empty() {
-            tmpLeafNodes = cons(nodeIdx.clone(), tmpLeafNodes.clone());
+            tmpLeafNodes = metamodelica::cons(nodeIdx.clone(), tmpLeafNodes.clone());
         }
     }
     oLeafNodes = tmpLeafNodes.clone();
@@ -2203,7 +2203,7 @@ pub fn getLeafNodes(mut iTaskGraph: TaskGraph) -> Result<Arc<metamodelica::List<
 
 pub fn getLevelNodes(mut iTaskGraph: TaskGraph) -> Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> {
     let mut oLevelNodes: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-    let mut refCounter: metamodelica::Array<i32>;
+    let mut refCounter: metamodelica::Array<i32> = Default::default();
     let mut roots: Arc<metamodelica::List<i32>> = metamodelica::nil();
     refCounter = createRefCounter(iTaskGraph.clone());
     roots = getNodesWithRefCountZero(refCounter.clone());
@@ -2224,7 +2224,7 @@ fn getLevelNodes0(mut iTaskGraph: TaskGraph, mut iRefCounter: metamodelica::Arra
         },
         zeroRefNodes => {
             let mut zeroRefNodes = (*zeroRefNodes).clone();
-            tmpLevelNodes = cons(zeroRefNodes.clone(), iLevelNodes.clone());
+            tmpLevelNodes = metamodelica::cons(zeroRefNodes.clone(), iLevelNodes.clone());
             zeroRefNodes = List::fold2(zeroRefNodes.clone(), (std::sync::Arc::new(getLevelNodes1) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), iTaskGraph.clone(), iRefCounter.clone(), metamodelica::nil());
             tmpLevelNodes = getLevelNodes0(iTaskGraph.clone(), iRefCounter.clone(), zeroRefNodes.clone(), tmpLevelNodes.clone());
             tmpLevelNodes.clone()
@@ -2258,7 +2258,7 @@ fn getLevelNodes2(mut iNodeIdx: i32, mut iRefCounter: metamodelica::Array<i32>, 
                     refCounter = iRefCounter.clone().borrow()[(iNodeIdx.clone()-1) as usize].clone() - 1;
                     {let _arr = iRefCounter.clone(); _arr.borrow_mut()[(iNodeIdx.clone()-1) as usize] = refCounter.clone(); _arr};
                     let true = (intEq(refCounter.clone(), 0)) else { bail!("pattern mismatch") };
-                    tmpNodesWithRefZero = cons(iNodeIdx.clone(), tmpNodesWithRefZero.clone());
+                    tmpNodesWithRefZero = metamodelica::cons(iNodeIdx.clone(), tmpNodesWithRefZero.clone());
                     Ok(tmpNodesWithRefZero.clone())
                 }
                 _ => bail!("nomatch"),
@@ -2278,8 +2278,8 @@ fn getLevelNodes2(mut iNodeIdx: i32, mut iRefCounter: metamodelica::Array<i32>, 
 }
 
 fn createRefCounter(mut iTaskGraph: TaskGraph) -> metamodelica::Array<i32> {
-    let mut oRefCounter: metamodelica::Array<i32>;
-    let mut tmpRefCounter: metamodelica::Array<i32>;
+    let mut oRefCounter: metamodelica::Array<i32> = Default::default();
+    let mut tmpRefCounter: metamodelica::Array<i32> = Default::default();
     tmpRefCounter = arrayCreate((iTaskGraph.clone().borrow().len() as i32), 0);
     tmpRefCounter = Array::fold(iTaskGraph.clone(), (std::sync::Arc::new(createRefCounter0) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> + 'static>), tmpRefCounter.clone());
     oRefCounter = tmpRefCounter.clone();
@@ -2289,8 +2289,8 @@ fn createRefCounter(mut iTaskGraph: TaskGraph) -> metamodelica::Array<i32> {
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn createRefCounter0(mut iChildNodes: Arc<metamodelica::List<i32>>, mut iRefCounter: metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> {
-    let mut oRefCounter: metamodelica::Array<i32>;
-    let mut tmpRefCounter: metamodelica::Array<i32>;
+    let mut oRefCounter: metamodelica::Array<i32> = Default::default();
+    let mut tmpRefCounter: metamodelica::Array<i32> = Default::default();
     let mut counter: i32 = 0;
     let mut head: i32 = 0;
     let mut tail: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -2314,13 +2314,13 @@ fn getNodesWithRefCountZero(mut iRefCounter: metamodelica::Array<i32>) -> Arc<me
 }
 
 fn getNodesWithRefCountZero0(mut iRefCount: i32, mut iZeroIdc: (Arc<metamodelica::List<i32>>, i32)) -> (Arc<metamodelica::List<i32>>, i32) {
-    let mut oZeroIdc: (Arc<metamodelica::List<i32>>, i32);
+    let mut oZeroIdc: (Arc<metamodelica::List<i32>>, i32) = (metamodelica::nil(), 0);
     let mut resultList: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut currentNodeIdx: i32 = 0;
     oZeroIdc = (::match_deref::match_deref! { match &((iRefCount.clone(), iZeroIdc.clone())) {
         (0, (resultList, currentNodeIdx)) => {
             let mut resultList = (*resultList).clone();
-            resultList = cons(currentNodeIdx.clone(), resultList.clone());
+            resultList = metamodelica::cons(currentNodeIdx.clone(), resultList.clone());
             (resultList.clone(), currentNodeIdx.clone() + 1)
         },
         (_, (resultList, currentNodeIdx)) => (resultList.clone(), currentNodeIdx.clone() + 1),
@@ -2333,7 +2333,7 @@ fn getNodesWithRefCountZero0(mut iRefCount: i32, mut iZeroIdc: (Arc<metamodelica
 //  Functions to get the event-graph
 //----------------------------------
 pub fn getZeroFuncsSystem(mut iTaskGraph: TaskGraph, mut iTaskGraphMeta: TaskGraphMeta, mut iBackendDAE: Arc<BackendDAE::BackendDAE>, mut iNumberOfSccs: i32, mut iZeroCrossingEquationIdc: Arc<metamodelica::List<i32>>, mut iSimCodeEqCompMapping: metamodelica::Array<i32>) -> Result<(TaskGraph, TaskGraphMeta)> {
-    let mut oTaskGraph: TaskGraph;
+    let mut oTaskGraph: TaskGraph = Default::default();
     let mut oTaskGraphMeta: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
     let mut nodeList: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut newNodeList: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -2341,18 +2341,18 @@ pub fn getZeroFuncsSystem(mut iTaskGraph: TaskGraph, mut iTaskGraphMeta: TaskGra
     let mut successors: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut successorsTmp: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut predecessorsTmp: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut zeroFuncNodeMarks: metamodelica::Array<i32>;
-    let mut sccNodeMapping: metamodelica::Array<i32>;
-    let mut handledNodes: metamodelica::Array<bool>;
-    let mut whenNodeMarks: metamodelica::Array<bool>;
-    let mut iTaskGraphTCopy: TaskGraph;
-    let mut iTaskGraphCopy: TaskGraph;
-    let mut zeroFuncTaskGraph: TaskGraph;
+    let mut zeroFuncNodeMarks: metamodelica::Array<i32> = Default::default();
+    let mut sccNodeMapping: metamodelica::Array<i32> = Default::default();
+    let mut handledNodes: metamodelica::Array<bool> = Default::default();
+    let mut whenNodeMarks: metamodelica::Array<bool> = Default::default();
+    let mut iTaskGraphTCopy: TaskGraph = Default::default();
+    let mut iTaskGraphCopy: TaskGraph = Default::default();
+    let mut zeroFuncTaskGraph: TaskGraph = Default::default();
     let mut zeroFuncTaskGraphMeta: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
     let mut whenNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut zeroFuncInComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)>;
+    let mut zeroFuncInComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
     let mut eqIdx: i32 = 0;
     let mut compIdx: i32 = 0;
     let mut nodeIdx: i32 = 0;
@@ -2362,7 +2362,7 @@ pub fn getZeroFuncsSystem(mut iTaskGraph: TaskGraph, mut iTaskGraphMeta: TaskGra
     let mut successorMark: i32 = 0;
     let mut zeroFuncNodeCount: i32 = 0;
     let mut zeroFuncNodeIdx: i32 = 0;
-    let mut nodeToZeroFuncNodeMapping: metamodelica::Array<i32>;
+    let mut nodeToZeroFuncNodeMapping: metamodelica::Array<i32> = Default::default();
     let mut stop: bool = false;
     let TaskGraphMeta { eqCompMapping: __pa0, inComps: __pa1, .. } = (iTaskGraphMeta.clone()) else { bail!("pattern mismatch") };
     eqCompMapping = __pa0.clone();
@@ -2457,7 +2457,7 @@ pub fn getZeroFuncsSystem(mut iTaskGraph: TaskGraph, mut iTaskGraphMeta: TaskGra
                 successors = __pa5.clone();
                 successor = zeroFuncNodeMarks.clone().borrow()[(successor.clone()-1) as usize].clone();
                 if intGt(successor.clone(), 0) {
-                    newNodeList = cons(successor.clone(), newNodeList.clone());
+                    newNodeList = metamodelica::cons(successor.clone(), newNodeList.clone());
                 }
             }
             newNodeList = List::sort(newNodeList.clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
@@ -2473,20 +2473,20 @@ pub fn getZeroFuncsSystem(mut iTaskGraph: TaskGraph, mut iTaskGraphMeta: TaskGra
 }
 
 fn reverseTaskGraphIndices(mut iTaskGraph: TaskGraph, mut iTaskGraphMeta: TaskGraphMeta) -> Result<(TaskGraph, TaskGraphMeta)> {
-    let mut oTaskGraph: TaskGraph;
+    let mut oTaskGraph: TaskGraph = Default::default();
     let mut oTaskGraphMeta: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
     let mut nTasks: i32 = 0;
-    let mut idxMap: metamodelica::Array<i32>;
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut compParamMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut compNames: metamodelica::Array<ArcStr>;
-    let mut compDescs: metamodelica::Array<ArcStr>;
-    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)>;
-    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
-    let mut nodeMark: metamodelica::Array<i32>;
-    let mut compInformations: metamodelica::Array<ComponentInfo>;
+    let mut idxMap: metamodelica::Array<i32> = Default::default();
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut compParamMapping: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut compNames: metamodelica::Array<ArcStr> = Default::default();
+    let mut compDescs: metamodelica::Array<ArcStr> = Default::default();
+    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
+    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
+    let mut nodeMark: metamodelica::Array<i32> = Default::default();
+    let mut compInformations: metamodelica::Array<ComponentInfo> = Default::default();
     nTasks = (iTaskGraph.clone().borrow().len() as i32);
     idxMap = arrayCreate(nTasks.clone(), -1);
     let TaskGraphMeta { compInformations: __pa0, nodeMark: __pa1, commCosts: __pa2, exeCosts: __pa3, compDescs: __pa4, compNames: __pa5, compParamMapping: __pa6, eqCompMapping: __pa7, varCompMapping: __pa8, inComps: __pa9 } = (iTaskGraphMeta.clone()) else { bail!("pattern mismatch") };
@@ -2511,14 +2511,14 @@ fn reverseTaskGraphIndices(mut iTaskGraph: TaskGraph, mut iTaskGraphMeta: TaskGr
 }
 
 fn mapIntegers(mut iTpl: (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)) -> Result<(Arc<metamodelica::List<i32>>, metamodelica::Array<i32>)> {
-    let mut oTpl: (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>);
-    let mut map: metamodelica::Array<i32>;
+    let mut oTpl: (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>) = (metamodelica::nil(), Default::default());
+    let mut map: metamodelica::Array<i32> = Default::default();
     let mut iLst: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut oLst: Arc<metamodelica::List<i32>> = metamodelica::nil();
     (iLst, map) = iTpl.clone();
     for mut i in &*iLst.clone() {
         let mut i = i.clone();
-        oLst = cons(map.clone().borrow()[(i.clone()-1) as usize].clone(), oLst.clone());
+        oLst = metamodelica::cons(map.clone().borrow()[(i.clone()-1) as usize].clone(), oLst.clone());
     }
     oLst = oLst.clone().reverse();
     oTpl = (oLst.clone(), map.clone());
@@ -2526,11 +2526,11 @@ fn mapIntegers(mut iTpl: (Arc<metamodelica::List<i32>>, metamodelica::Array<i32>
 }
 
 fn getEventSystem(mut iTaskGraph: TaskGraph, mut iTaskGraphMeta: TaskGraphMeta, mut iSyst: Arc<BackendDAE::BackendDAE>, mut iZeroCrossings: Arc<metamodelica::List<BackendDAE::ZeroCrossing>>, mut iSimCodeEqCompMapping: metamodelica::Array<i32>) -> Result<(TaskGraph, TaskGraphMeta)> {
-    let mut oTaskGraph: TaskGraph;
+    let mut oTaskGraph: TaskGraph = Default::default();
     let mut oTaskGraphMeta: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
-    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut discreteNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut cutNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut cutNodeChildren: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -2538,7 +2538,7 @@ fn getEventSystem(mut iTaskGraph: TaskGraph, mut iTaskGraphMeta: TaskGraphMeta, 
     let mut sccsContainingTime: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut systs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = metamodelica::nil();
     let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
-    let mut graphTmp: TaskGraph;
+    let mut graphTmp: TaskGraph = Default::default();
     let TaskGraphMeta { inComps: __pa0, eqCompMapping: __pa1, varCompMapping: __pa2, .. } = (iTaskGraphMeta.clone()) else { bail!("pattern mismatch") };
     inComps = __pa0.clone();
     eqCompMapping = __pa1.clone();
@@ -2589,7 +2589,7 @@ fn getComponentsOfZeroCrossing(mut iZeroCrossing: BackendDAE::ZeroCrossing, mut 
 }
 
 fn getComponentsIncludingTime(mut iSystem: Arc<BackendDAE::EqSystem>, mut iEqCompMapping: metamodelica::Array<(i32, i32, i32)>, mut iOffsetResList: (i32, Arc<metamodelica::List<i32>>)) -> Result<(i32, Arc<metamodelica::List<i32>>)> {
-    let mut oOffsetResList: (i32, Arc<metamodelica::List<i32>>);
+    let mut oOffsetResList: (i32, Arc<metamodelica::List<i32>>) = (0, metamodelica::nil());
     let mut orderedEqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     let mut offset: i32 = 0;
     let mut resultList: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -2606,13 +2606,13 @@ fn getComponentsIncludingTime(mut iSystem: Arc<BackendDAE::EqSystem>, mut iEqCom
 
 fn getComponentsIncludingTime0(mut inEq: Arc<BackendDAE::Equation>, mut iOffsetResList: (i32, Arc<metamodelica::List<i32>>, metamodelica::Array<(i32, i32, i32)>, i32)) -> Result<(Arc<BackendDAE::Equation>, (i32, Arc<metamodelica::List<i32>>, metamodelica::Array<(i32, i32, i32)>, i32))> {
     let mut outEq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
-    let mut oOffsetResList: (i32, Arc<metamodelica::List<i32>>, metamodelica::Array<(i32, i32, i32)>, i32);
+    let mut oOffsetResList: (i32, Arc<metamodelica::List<i32>>, metamodelica::Array<(i32, i32, i32)>, i32) = (0, metamodelica::nil(), Default::default(), 0);
     let mut eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
     let mut offset: i32 = 0;
     let mut eqIdx: i32 = 0;
     let mut sccIdx: i32 = 0;
     let mut resultList: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)>;
+    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
     (outEq, oOffsetResList) = 'mc: {
         let __mc_input = (inEq.clone(), iOffsetResList.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -2622,7 +2622,7 @@ fn getComponentsIncludingTime0(mut inEq: Arc<BackendDAE::Equation>, mut iOffsetR
                     let mut sccIdx: i32 = sccIdx.clone();
                     (sccIdx, _, _) = eqCompMapping.clone().borrow()[(eqIdx.clone() + offset.clone()-1) as usize].clone();
                     let true = (BackendDAEUtil::traverseBackendDAEExpsOptEqn(Some(eq.clone()), (std::sync::Arc::new(getComponentsIncludingTime1) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, bool) -> Result<(Arc<DAE::Exp>, bool)> + 'static>), false)?) else { bail!("pattern mismatch") };
-                    resultList = cons(sccIdx.clone(), resultList.clone());
+                    resultList = metamodelica::cons(sccIdx.clone(), resultList.clone());
                     Ok((eq.clone(), (offset.clone(), resultList.clone(), eqCompMapping.clone(), eqIdx.clone() + 1)))
                 }
                 _ => bail!("nomatch"),
@@ -2642,7 +2642,7 @@ fn getComponentsIncludingTime0(mut inEq: Arc<BackendDAE::Equation>, mut iOffsetR
 }
 
 fn getComponentsIncludingTime1(mut inExp: Arc<DAE::Exp>, mut inB: bool) -> Result<(Arc<DAE::Exp>, bool)> {
-    let mut e: Arc<DAE::Exp>;
+    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut res: bool = false;
     (e, res) = (::match_deref::match_deref! { match &((inExp.clone(), inB.clone())) {
         (e, false) => {
@@ -2680,7 +2680,7 @@ fn getDiscreteNodes(mut systIn: Arc<BackendDAE::BackendDAE>, mut eqCompMapping: 
 }
 
 fn getDiscreteNodesEqs(mut systIn: Arc<BackendDAE::EqSystem>, mut eventInfoIn: (Arc<metamodelica::List<i32>>, i32)) -> Result<(Arc<metamodelica::List<i32>>, i32)> {
-    let mut eventInfoOut: (Arc<metamodelica::List<i32>>, i32);
+    let mut eventInfoOut: (Arc<metamodelica::List<i32>>, i32) = (metamodelica::nil(), 0);
     let mut comps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
     let mut orderedVars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     let mut matching: Arc<BackendDAE::Matching> = Arc::new(BackendDAE::Matching::NO_MATCHING);
@@ -2717,7 +2717,7 @@ fn getDiscreteNodesEqs1(mut comps: Arc<metamodelica::List<Arc<BackendDAE::Strong
                     let (true, __pa0) = (solvesDiscreteValue(head.clone(), iOrderedVars.clone())?) else { bail!("pattern mismatch") };
                     eqn = __pa0.clone();
                     eqn = eqn.clone() + offset.clone();
-                    eventEqs = getDiscreteNodesEqs1(rest.clone(), offset.clone(), iOrderedVars.clone(), cons(eqn.clone(), discreteEqsIn.clone()))?;
+                    eventEqs = getDiscreteNodesEqs1(rest.clone(), offset.clone(), iOrderedVars.clone(), metamodelica::cons(eqn.clone(), discreteEqsIn.clone()))?;
                     Ok(eventEqs.clone())
                 }
                 _ => bail!("nomatch"),
@@ -2866,10 +2866,10 @@ pub type GRAPHDUMPOPTIONS = GraphDumpOptions;
 
 pub fn dumpTaskGraph(mut dae: Arc<BackendDAE::BackendDAE>, mut fileName: ArcStr) -> Result<()> {
     let mut name: ArcStr = arcstr::literal!("");
-    let mut taskGraph: TaskGraph;
+    let mut taskGraph: TaskGraph = Default::default();
     let mut taskGraphData: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
-    let mut schedulerInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>;
-    let mut sccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut schedulerInfo: metamodelica::Array<(i32, i32, metamodelica::Real)> = Default::default();
+    let mut sccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     (taskGraph, taskGraphData) = createTaskGraph(dae.clone(), false)?;
     name = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("TaskGraph_")); __mm_s.push_str(&*fileName.clone()); __mm_s.push_str(&*literal!(".graphml")); ArcStr::from(__mm_s) }).clone();
     schedulerInfo = arrayCreate((taskGraph.clone().borrow().len() as i32), (-1, -1, metamodelica::OrderedFloat(-1.0_f64)));
@@ -2888,7 +2888,7 @@ pub fn dumpAsGraphMLSccLevel(mut iGraph: TaskGraph, mut iGraphData: TaskGraphMet
 pub fn convertToGraphMLSccLevel(mut iGraph: TaskGraph, mut iGraphData: TaskGraphMeta, mut iCriticalPathInfo: ArcStr, mut iCriticalPath: Arc<metamodelica::List<(i32, i32)>>, mut iCriticalPathWoC: Arc<metamodelica::List<(i32, i32)>>, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSchedulerInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>, mut iGraphDumpOptions: GraphDumpOptions) -> Result<GraphML::GraphInfo> {
     let mut oGraphInfo: GraphML::GraphInfo;
     let mut graphIdx: i32 = 0;
-    let mut annotationInfo: metamodelica::Array<ArcStr>;
+    let mut annotationInfo: metamodelica::Array<ArcStr> = Default::default();
     let mut graphInfo: GraphML::GraphInfo;
     graphInfo = GraphML::createGraphInfo();
     let (__pa0, (_, __pa1)) = GraphML::addGraph((literal!("TaskGraph")).clone(), true, graphInfo.clone())?;
@@ -2983,7 +2983,7 @@ pub fn convertToGraphMLSccLevelSubgraph(mut iGraph: TaskGraph, mut iGraphData: T
             removedCompAttIdx = __pa37.clone();
             graphInfo = GraphML::addGraphAttributeValue((critPathAttIdx.clone(), iCriticalPathInfo.clone()), iGraphIdx.clone(), graphInfo.clone())?;
             nodeIdc = List::intRange((iGraph.clone().borrow().len() as i32));
-            (graphInfo, _) = List::fold(nodeIdc.clone(), Arc::new({ let __pe_b1 = (iGraph.clone(), iGraphData.clone()); let __pe_b2 = (nameAttIdx.clone(), opCountAttIdx.clone(), calcTimeAttIdx.clone(), taskIdAttIdx.clone(), compsIdAttIdx.clone(), yCoordAttIdx.clone(), commCostAttIdx.clone(), commVarsAttIdx.clone(), commVarsIntAttIdx.clone(), commVarsFloatAttIdx.clone(), commVarsBoolAttIdx.clone(), simCodeEqAttIdx.clone(), threadIdAttIdx.clone(), taskNumberAttIdx.clone(), annotAttIdx.clone(), partOfEventAttIdx.clone(), partOfOdeAttIdx.clone(), removedCompAttIdx.clone()); let __pe_b3 = iSccSimEqMapping.clone(); let __pe_b4 = (iCriticalPath.clone(), iCriticalPathWoC.clone(), iSchedulerInfo.clone(), iAnnotationInfo.clone()); let __pe_b5 = iGraphDumpOptions.clone(); move |__pe_a0, __pe_a6| addNodeToGraphML(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_a6) }), (graphInfo.clone(), iGraphIdx.clone()));
+            (graphInfo, _) = List::fold(nodeIdc.clone(), (std::sync::Arc::new({ let __pe_b1 = (iGraph.clone(), iGraphData.clone()); let __pe_b2 = (nameAttIdx.clone(), opCountAttIdx.clone(), calcTimeAttIdx.clone(), taskIdAttIdx.clone(), compsIdAttIdx.clone(), yCoordAttIdx.clone(), commCostAttIdx.clone(), commVarsAttIdx.clone(), commVarsIntAttIdx.clone(), commVarsFloatAttIdx.clone(), commVarsBoolAttIdx.clone(), simCodeEqAttIdx.clone(), threadIdAttIdx.clone(), taskNumberAttIdx.clone(), annotAttIdx.clone(), partOfEventAttIdx.clone(), partOfOdeAttIdx.clone(), removedCompAttIdx.clone()); let __pe_b3 = iSccSimEqMapping.clone(); let __pe_b4 = (iCriticalPath.clone(), iCriticalPathWoC.clone(), iSchedulerInfo.clone(), iAnnotationInfo.clone()); let __pe_b5 = iGraphDumpOptions.clone(); move |__pe_a0, __pe_a6| addNodeToGraphML(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_a6) }) as std::sync::Arc<dyn ::std::ops::Fn(i32, (GraphML::GraphInfo, i32)) -> Result<(GraphML::GraphInfo, i32)> + 'static>), (graphInfo.clone(), iGraphIdx.clone()));
             graphInfo.clone()
         },
     });
@@ -2992,7 +2992,7 @@ pub fn convertToGraphMLSccLevelSubgraph(mut iGraph: TaskGraph, mut iGraphData: T
 
 fn addNodeToGraphML(mut nodeIdx: i32, mut tGraphDataTuple: (metamodelica::Array<Arc<metamodelica::List<i32>>>, TaskGraphMeta), mut attIdc: (i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32), mut sccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iSchedulerInfoCritPath: (Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<(i32, i32)>>, metamodelica::Array<(i32, i32, metamodelica::Real)>, metamodelica::Array<ArcStr>), mut iGraphDumpOptions: GraphDumpOptions, mut iGraph: (GraphML::GraphInfo, i32)) -> Result<(GraphML::GraphInfo, i32)> {
     let mut oGraph: (GraphML::GraphInfo, i32);
-    let mut tGraphIn: TaskGraph;
+    let mut tGraphIn: TaskGraph = Default::default();
     let mut tGraphDataIn: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
     let mut tmpGraph: GraphML::GraphInfo;
     let mut graphIdx: i32 = 0;
@@ -3023,12 +3023,12 @@ fn addNodeToGraphML(mut nodeIdx: i32, mut tGraphDataTuple: (metamodelica::Array<
     let mut childNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut components: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut simCodeEqs: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)>;
-    let mut nodeMark: metamodelica::Array<i32>;
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut compNames: metamodelica::Array<ArcStr>;
-    let mut compDescs: metamodelica::Array<ArcStr>;
-    let mut annotationInfo: metamodelica::Array<ArcStr>;
+    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
+    let mut nodeMark: metamodelica::Array<i32> = Default::default();
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut compNames: metamodelica::Array<ArcStr> = Default::default();
+    let mut compDescs: metamodelica::Array<ArcStr> = Default::default();
+    let mut annotationInfo: metamodelica::Array<ArcStr> = Default::default();
     let mut calcTimeString: ArcStr = arcstr::literal!("");
     let mut opCountString: ArcStr = arcstr::literal!("");
     let mut yCoordString: ArcStr = arcstr::literal!("");
@@ -3045,7 +3045,7 @@ fn addNodeToGraphML(mut nodeIdx: i32, mut tGraphDataTuple: (metamodelica::Array<
     let mut schedulerThreadId: i32 = 0;
     let mut schedulerTaskNumber: i32 = 0;
     let mut nodeLabels: Arc<metamodelica::List<GraphML::NodeLabel>> = metamodelica::nil();
-    let mut schedulerInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>;
+    let mut schedulerInfo: metamodelica::Array<(i32, i32, metamodelica::Real)> = Default::default();
     let mut criticalPath: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
     let mut criticalPathWoC: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
     let mut visualizeTaskStartAndFinishTime: bool = false;
@@ -3053,7 +3053,7 @@ fn addNodeToGraphML(mut nodeIdx: i32, mut tGraphDataTuple: (metamodelica::Array<
     let mut isPartOfODESystem: bool = false;
     let mut isPartOfZeroFuncSystem: bool = false;
     let mut isRemovedComponent: bool = false;
-    let mut compInformations: metamodelica::Array<ComponentInfo>;
+    let mut compInformations: metamodelica::Array<ComponentInfo> = Default::default();
     (tmpGraph, graphIdx) = iGraph.clone();
     if intGt(nodeIdx.clone(), 0) {
         (tGraphIn, tGraphDataIn) = tGraphDataTuple.clone();
@@ -3101,10 +3101,10 @@ fn addNodeToGraphML(mut nodeIdx: i32, mut tGraphDataTuple: (metamodelica::Array<
         taskFinishTimeString = (System::snprintff((literal!("%.0f")).clone(), 25, taskFinishTime.clone())?).clone();
         taskStartTimeString = (System::snprintff((literal!("%.0f")).clone(), 25, taskStartTime.clone())?).clone();
         nodeLabels = list![GraphML::NodeLabel::NODELABEL_INTERNAL { text: (componentsString.clone()).clone(), backgroundColor: None, fontStyle: openmodelica_susan::GraphML::FontStyle::FONTPLAIN }];
-        nodeLabels = if (visualizeTaskCalcTime.clone()) {cons(GraphML::NodeLabel::NODELABEL_CORNER { text: (calcTimeString.clone()).clone(), backgroundColor: Some((arcstr::literal!(GraphML::COLOR_YELLOW)).clone()), fontStyle: openmodelica_susan::GraphML::FontStyle::FONTBOLD, position: (literal!("se")).clone() }, nodeLabels.clone())} else {nodeLabels.clone()};
+        nodeLabels = if (visualizeTaskCalcTime.clone()) {metamodelica::cons(GraphML::NodeLabel::NODELABEL_CORNER { text: (calcTimeString.clone()).clone(), backgroundColor: Some((arcstr::literal!(GraphML::COLOR_YELLOW)).clone()), fontStyle: openmodelica_susan::GraphML::FontStyle::FONTBOLD, position: (literal!("se")).clone() }, nodeLabels.clone())} else {nodeLabels.clone()};
         nodeLabels = if (visualizeTaskStartAndFinishTime.clone()) {listAppend(nodeLabels.clone(), list![GraphML::NodeLabel::NODELABEL_CORNER { text: (taskStartTimeString.clone()).clone(), backgroundColor: Some((arcstr::literal!(GraphML::COLOR_CYAN)).clone()), fontStyle: openmodelica_susan::GraphML::FontStyle::FONTBOLD, position: (literal!("nw")).clone() }, GraphML::NodeLabel::NODELABEL_CORNER { text: (taskFinishTimeString.clone()).clone(), backgroundColor: Some((arcstr::literal!(GraphML::COLOR_PINK)).clone()), fontStyle: openmodelica_susan::GraphML::FontStyle::FONTBOLD, position: (literal!("sw")).clone() }])} else {nodeLabels.clone()};
         (tmpGraph, _) = GraphML::addNode(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Node")); __mm_s.push_str(&*intString(nodeIdx.clone())); ArcStr::from(__mm_s) }).clone(), (arcstr::literal!(GraphML::COLOR_ORANGE)).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), nodeLabels.clone(), openmodelica_susan::GraphML::ShapeType::RECTANGLE, Some((nodeDesc.clone()).clone()), list![(nameAttIdx.clone(), compText.clone()), (calcTimeAttIdx.clone(), calcTimeString.clone()), (opCountAttIdx.clone(), opCountString.clone()), (taskIdAttIdx.clone(), componentsString.clone()), (compsIdAttIdx.clone(), compsText.clone()), (yCoordAttIdx.clone(), yCoordString.clone()), (simCodeEqAttIdx.clone(), simCodeEqString.clone()), (threadIdAttIdx.clone(), threadIdxString.clone()), (taskNumberAttIdx.clone(), taskNumberString.clone()), (annotationAttIdx.clone(), annotationString.clone()), (partOfEventAttIdx.clone(), boolString(isPartOfODESystem.clone())), (partOfOdeAttIdx.clone(), boolString(isPartOfZeroFuncSystem.clone())), (removedCompAttIdx.clone(), boolString(isRemovedComponent.clone()))], graphIdx.clone(), tmpGraph.clone())?;
-        tmpGraph = List::fold(childNodes.clone(), Arc::new({ let __pe_b1 = nodeIdx.clone(); let __pe_b2 = tGraphDataIn.clone(); let __pe_b3 = (commCostAttIdx.clone(), commVarsAttIdx.clone(), commVarsAttIntIdx.clone(), commVarsAttFloatIdx.clone(), commVarsAttBoolIdx.clone()); let __pe_b4 = (criticalPath.clone(), criticalPathWoC.clone()); let __pe_b5 = iGraphDumpOptions.clone(); move |__pe_a0, __pe_a6| addDepToGraph(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_a6) }), tmpGraph.clone());
+        tmpGraph = List::fold(childNodes.clone(), (std::sync::Arc::new({ let __pe_b1 = nodeIdx.clone(); let __pe_b2 = tGraphDataIn.clone(); let __pe_b3 = (commCostAttIdx.clone(), commVarsAttIdx.clone(), commVarsAttIntIdx.clone(), commVarsAttFloatIdx.clone(), commVarsAttBoolIdx.clone()); let __pe_b4 = (criticalPath.clone(), criticalPathWoC.clone()); let __pe_b5 = iGraphDumpOptions.clone(); move |__pe_a0, __pe_a6| addDepToGraph(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_a6) }) as std::sync::Arc<dyn ::std::ops::Fn(i32, GraphML::GraphInfo) -> Result<GraphML::GraphInfo> + 'static>), tmpGraph.clone());
     } else {
         Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("function addNodeToGraphML failed.")).clone()])?;
     }
@@ -3113,7 +3113,7 @@ fn addNodeToGraphML(mut nodeIdx: i32, mut tGraphDataTuple: (metamodelica::Array<
 }
 
 fn addNodeToGraphML1(mut compIdx: i32, mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)>, mut exeCostsIn: (i32, metamodelica::Real)) -> Result<(i32, metamodelica::Real)> {
-    let mut exeCostsOut: (i32, metamodelica::Real);
+    let mut exeCostsOut: (i32, metamodelica::Real) = (0, metamodelica::OrderedFloat(0.0_f64));
     let mut opCount: i32 = 0;
     let mut opCountIn: i32 = 0;
     let mut exeTimeIn: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
@@ -3126,7 +3126,7 @@ fn addNodeToGraphML1(mut compIdx: i32, mut exeCosts: metamodelica::Array<(i32, m
 
 fn addDepToGraph(mut childIdx: i32, mut parentIdx: i32, mut tGraphDataIn: TaskGraphMeta, mut iCommAttIdc: (i32, i32, i32, i32, i32), mut iCriticalPathEdges: (Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<(i32, i32)>>), mut iGraphDumpOptions: GraphDumpOptions, mut iGraph: GraphML::GraphInfo) -> Result<GraphML::GraphInfo> {
     let mut oGraph: GraphML::GraphInfo;
-    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
+    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
     let mut integerVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut floatVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut booleanVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -3142,8 +3142,8 @@ fn addDepToGraph(mut childIdx: i32, mut parentIdx: i32, mut tGraphDataIn: TaskGr
     let mut numOfCommVarsIntString: ArcStr = arcstr::literal!("");
     let mut numOfCommVarsFloatString: ArcStr = arcstr::literal!("");
     let mut numOfCommVarsBoolString: ArcStr = arcstr::literal!("");
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut nodeMark: metamodelica::Array<i32>;
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut nodeMark: metamodelica::Array<i32> = Default::default();
     let mut tmpGraph: GraphML::GraphInfo;
     let mut criticalPathEdges: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
     let mut criticalPathEdgesWoC: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
@@ -3185,7 +3185,7 @@ fn addDepToGraph(mut childIdx: i32, mut parentIdx: i32, mut tGraphDataIn: TaskGr
 }
 
 fn getNodeMembershipByComponents(mut iNodeComponents: Arc<metamodelica::List<i32>>, mut iCompInformations: metamodelica::Array<ComponentInfo>) -> Result<(bool, bool, bool)> {
-    let mut oMembership: (bool, bool, bool);
+    let mut oMembership: (bool, bool, bool) = (false, false, false);
     let mut isPartOfODESystem: bool = false;
     let mut isPartOfZeroFuncSystem: bool = false;
     let mut isRemovedComponent: bool = false;
@@ -3256,16 +3256,16 @@ fn dumpAdjacencyRow(mut inIntegerLst: Arc<metamodelica::List<i32>>) -> () {
 }
 
 pub fn printTaskGraphMeta(mut metaDataIn: TaskGraphMeta) -> Result<()> {
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut compNames: metamodelica::Array<ArcStr>;
-    let mut compDescs: metamodelica::Array<ArcStr>;
-    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)>;
-    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
-    let mut nodeMark: metamodelica::Array<i32>;
-    let mut compParamMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut compInformations: metamodelica::Array<ComponentInfo>;
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut compNames: metamodelica::Array<ArcStr> = Default::default();
+    let mut compDescs: metamodelica::Array<ArcStr> = Default::default();
+    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
+    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
+    let mut nodeMark: metamodelica::Array<i32> = Default::default();
+    let mut compParamMapping: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut compInformations: metamodelica::Array<ComponentInfo> = Default::default();
     let TaskGraphMeta { compInformations: __pa0, nodeMark: __pa1, commCosts: __pa2, exeCosts: __pa3, compDescs: __pa4, compNames: __pa5, compParamMapping: __pa6, eqCompMapping: __pa7, varCompMapping: __pa8, inComps: __pa9 } = (metaDataIn.clone()) else { bail!("pattern mismatch") };
     compInformations = __pa0.clone();
     nodeMark = __pa1.clone();
@@ -3550,7 +3550,7 @@ fn printCriticalPathInfo1(mut criticalPathsIn: Arc<metamodelica::List<Arc<metamo
 //  Functions to merge nodes
 //--------------------------
 fn mergeSingleNodes(mut iTaskGraph: TaskGraph, mut iTaskGraphMeta: TaskGraphMeta, mut doNotMergeIn: Arc<metamodelica::List<i32>>) -> Result<(TaskGraph, TaskGraphMeta, bool)> {
-    let mut oTaskGraph: TaskGraph;
+    let mut oTaskGraph: TaskGraph = Default::default();
     let mut oTaskGraphMeta: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
     let mut changed: bool = false;
     (oTaskGraph, oTaskGraphMeta, changed) = 'mc: {
@@ -3563,7 +3563,7 @@ fn mergeSingleNodes(mut iTaskGraph: TaskGraph, mut iTaskGraphMeta: TaskGraphMeta
                     let mut singleNodes1: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut pos: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut exeCosts: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
-                    let mut taskGraphT: TaskGraph;
+                    let mut taskGraphT: TaskGraph = Default::default();
                     let mut changed: bool = changed.clone();
                     numProc = Flags::getConfigInt(Flags::NUM_PROC.clone())?;
                     taskGraphT = AdjacencyMatrix::transposeAdjacencyMatrix(iTaskGraph.clone(), (iTaskGraph.clone().borrow().len() as i32))?;
@@ -3597,13 +3597,13 @@ fn mergeSingleNodes(mut iTaskGraph: TaskGraph, mut iTaskGraphMeta: TaskGraphMeta
 }
 
 pub fn distributeToClusters(mut items: Arc<metamodelica::List<i32>>, mut values: Arc<metamodelica::List<metamodelica::Real>>, mut numClusters: i32) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<metamodelica::Real>)> {
-    let mut clustersOut: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut clusterValuesOut: metamodelica::Array<metamodelica::Real>;
+    let mut clustersOut: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut clusterValuesOut: metamodelica::Array<metamodelica::Real> = Default::default();
     let mut b: bool = false;
-    let mut itemArr: metamodelica::Array<i32>;
-    let mut itemsCopy: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut clusters: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut clusterValues: metamodelica::Array<metamodelica::Real>;
+    let mut itemArr: metamodelica::Array<i32> = Default::default();
+    let mut itemsCopy: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut clusters: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut clusterValues: metamodelica::Array<metamodelica::Real> = Default::default();
     b = intGt((items.clone().len() as i32), numClusters.clone());
     clusters = metamodelica::arrayFromVec(List::map(List::intRange((items.clone().len() as i32)), std::sync::Arc::new(fnptr!(List::create, _))).into_iter().cloned().collect());
     clusterValues = metamodelica::arrayFromVec(values.clone().into_iter().cloned().collect());
@@ -3620,16 +3620,16 @@ pub fn distributeToClusters(mut items: Arc<metamodelica::List<i32>>, mut values:
 }
 
 fn distributeToClusters1(mut tplIn: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<metamodelica::Real>>), mut tplFold: (metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<metamodelica::Real>), mut numClusters: i32) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<metamodelica::Real>)> {
-    let mut clustersOut: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut clusterValuesOut: metamodelica::Array<metamodelica::Real>;
+    let mut clustersOut: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut clusterValuesOut: metamodelica::Array<metamodelica::Real> = Default::default();
     (clustersOut, clusterValuesOut) = 'mc: {
         let __mc_input = (tplIn.clone(), tplFold.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 ((itemsIn, _), (clusters, clusterValues)) => {
                     let mut idcsLst1: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    let mut clustersFinal: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-                    let mut clusterValuesFinal: metamodelica::Array<metamodelica::Real>;
+                    let mut clustersFinal: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+                    let mut clusterValuesFinal: metamodelica::Array<metamodelica::Real> = Default::default();
                     let true = ((itemsIn.clone().len() as i32) <= numClusters.clone()) else { bail!("pattern mismatch") };
                     idcsLst1 = List::intRange(numClusters.clone());
                     clustersFinal = Array::select(clusters.clone(), idcsLst1.clone())?;
@@ -3749,10 +3749,10 @@ fn nextGreaterPowerOf2_impl(mut n: metamodelica::Real, mut pow: i32) -> Result<i
 }
 
 pub fn mergeSimpleNodes(mut graphIn: TaskGraph, mut graphTIn: TaskGraph, mut graphDataIn: TaskGraphMeta, mut contractedTasksIn: metamodelica::Array<i32>) -> Result<(TaskGraph, TaskGraph, TaskGraphMeta, metamodelica::Array<i32>, bool)> {
-    let mut graphOut: TaskGraph;
-    let mut graphTOut: TaskGraph;
+    let mut graphOut: TaskGraph = Default::default();
+    let mut graphTOut: TaskGraph = Default::default();
     let mut graphDataOut: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
-    let mut contractedTasksOut: metamodelica::Array<i32>;
+    let mut contractedTasksOut: metamodelica::Array<i32> = Default::default();
     let mut changed: bool = false;
     let mut allNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut oneChildren: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
@@ -3766,12 +3766,12 @@ pub fn mergeSimpleNodes(mut graphIn: TaskGraph, mut graphTIn: TaskGraph, mut gra
 }
 
 pub fn mergeParentNodes(mut graphIn: TaskGraph, mut graphTIn: TaskGraph, mut graphDataIn: TaskGraphMeta, mut contractedTasksIn: metamodelica::Array<i32>) -> Result<(TaskGraph, TaskGraph, TaskGraphMeta, metamodelica::Array<i32>, bool)> {
-    let mut graphOut: TaskGraph;
-    let mut graphTOut: TaskGraph;
+    let mut graphOut: TaskGraph = Default::default();
+    let mut graphTOut: TaskGraph = Default::default();
     let mut graphDataOut: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
-    let mut contractedTasksOut: metamodelica::Array<i32>;
+    let mut contractedTasksOut: metamodelica::Array<i32> = Default::default();
     let mut changed: bool = false;
-    let mut alreadyMerged: metamodelica::Array<i32>;
+    let mut alreadyMerged: metamodelica::Array<i32> = Default::default();
     let mut mergedNodes: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     alreadyMerged = arrayCreate((graphIn.clone().borrow().len() as i32), 0);
     mergedNodes = mergeParentNodes0(graphIn.clone(), graphTIn.clone(), graphDataIn.clone(), contractedTasksIn.clone(), alreadyMerged.clone(), 1, metamodelica::nil())?;
@@ -3787,9 +3787,9 @@ fn mergeParentNodes0(mut iGraph: TaskGraph, mut iGraphT: TaskGraph, mut iGraphDa
     let mut parentNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut mergeNodeList: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut highestCommCost: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)>;
+    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
     let mut parentExeCosts: Arc<metamodelica::List<(i32, metamodelica::Real)>> = metamodelica::nil();
-    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
+    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
     let mut parentCommCosts: Communications = metamodelica::nil();
     let mut parentChilds: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut tmpMergedNodes: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
@@ -3821,9 +3821,9 @@ fn mergeParentNodes0(mut iGraph: TaskGraph, mut iGraphT: TaskGraph, mut iGraphDa
             let true = (realGt((highestCommCost.clone()) + (highestParentExeCost.clone()), sumParentExeCosts.clone())) else { bail!("pattern mismatch") };
             parentChilds = List::map1(parentNodes.clone(), std::sync::Arc::new(fnptr!(Array::getIndexFirst, i32, _)), iGraph.clone());
             let true = (List::removeOnTrue(1, (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), List::map(parentChilds.clone(), std::sync::Arc::new(fnptr!(listLength, _)))).is_empty()) else { bail!("pattern mismatch") };
-            mergeNodeList = cons(iNodeIdx.clone(), parentNodes.clone());
-            tmpMergedNodes = cons(mergeNodeList.clone(), iMergedNodes.clone());
-            List::map_0(mergeNodeList.clone(), Arc::new({ let __pe_b1 = -1; let __pe_b2 = alreadyMerged.clone(); move |__pe_a0| Array::updateIndexFirst(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }));
+            mergeNodeList = metamodelica::cons(iNodeIdx.clone(), parentNodes.clone());
+            tmpMergedNodes = metamodelica::cons(mergeNodeList.clone(), iMergedNodes.clone());
+            List::map_0(mergeNodeList.clone(), (std::sync::Arc::new({ let __pe_b1 = -1; let __pe_b2 = alreadyMerged.clone(); move |__pe_a0| Array::updateIndexFirst(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<()> + 'static>));
             tmpMergedNodes = mergeParentNodes0(iGraph.clone(), iGraphT.clone(), iGraphData.clone(), contractedTasksIn.clone(), alreadyMerged.clone(), iNodeIdx.clone() + 1, tmpMergedNodes.clone())?;
             Ok(tmpMergedNodes.clone())
         })() { break 'mc __v; }
@@ -3844,12 +3844,12 @@ fn mergeParentNodes0(mut iGraph: TaskGraph, mut iGraphT: TaskGraph, mut iGraphDa
 }
 
 fn mergeSinkNodes(mut graphIn: TaskGraph, mut graphTIn: TaskGraph, mut graphDataIn: TaskGraphMeta, mut contractedTasksIn: metamodelica::Array<i32>) -> Result<(TaskGraph, TaskGraph, TaskGraphMeta, metamodelica::Array<i32>, bool)> {
-    let mut graphOut: TaskGraph;
-    let mut graphTOut: TaskGraph;
+    let mut graphOut: TaskGraph = Default::default();
+    let mut graphTOut: TaskGraph = Default::default();
     let mut graphDataOut: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
-    let mut contractedTasksOut: metamodelica::Array<i32>;
+    let mut contractedTasksOut: metamodelica::Array<i32> = Default::default();
     let mut changed: bool = false;
-    let mut alreadyMerged: metamodelica::Array<i32>;
+    let mut alreadyMerged: metamodelica::Array<i32> = Default::default();
     let mut mergedNodes: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     alreadyMerged = arrayCreate((graphIn.clone().borrow().len() as i32), 0);
     mergedNodes = mergeParentNodes0(graphIn.clone(), graphTIn.clone(), graphDataIn.clone(), contractedTasksIn.clone(), alreadyMerged.clone(), 1, metamodelica::nil())?;
@@ -3860,20 +3860,20 @@ fn mergeSinkNodes(mut graphIn: TaskGraph, mut graphTIn: TaskGraph, mut graphData
 
 pub fn markSystemComponents(mut iTaskGraph: TaskGraph, mut iTaskGraphMeta: TaskGraphMeta, mut iComponentMarks: (bool, bool, bool), mut iTargetTaskGraphMeta: TaskGraphMeta) -> Result<TaskGraphMeta> {
     let mut oTargetTaskGraphMeta: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
-    let mut odeInComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut odeInComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut nodeComps: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut nodeIdx: i32 = 0;
     let mut compIdx: i32 = 0;
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut compParamMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut compNames: metamodelica::Array<ArcStr>;
-    let mut compDescs: metamodelica::Array<ArcStr>;
-    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)>;
-    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
-    let mut nodeMark: metamodelica::Array<i32>;
-    let mut compInformations: metamodelica::Array<ComponentInfo>;
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut compParamMapping: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut compNames: metamodelica::Array<ArcStr> = Default::default();
+    let mut compDescs: metamodelica::Array<ArcStr> = Default::default();
+    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
+    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
+    let mut nodeMark: metamodelica::Array<i32> = Default::default();
+    let mut compInformations: metamodelica::Array<ComponentInfo> = Default::default();
     let mut componentInformation: ComponentInfo = <ComponentInfo as ::std::default::Default>::default();
     let mut iComponentInformation: ComponentInfo = <ComponentInfo as ::std::default::Default>::default();
     iComponentInformation = ComponentInfo { isPartOfODESystem: Util::tuple31(iComponentMarks.clone()), isPartOfZeroFuncSystem: Util::tuple32(iComponentMarks.clone()), isRemovedComponent: Util::tuple33(iComponentMarks.clone()) };
@@ -3924,7 +3924,7 @@ fn combineComponentInformations(mut iComponentInfo: ComponentInfo, mut iComponen
 }
 
 fn addUpExeCosts(mut iExeCost1: (i32, metamodelica::Real), mut iExeCost2: (i32, metamodelica::Real)) -> (i32, metamodelica::Real) {
-    let mut oExeCost: (i32, metamodelica::Real);
+    let mut oExeCost: (i32, metamodelica::Real) = (0, metamodelica::OrderedFloat(0.0_f64));
     let mut ex1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut ex2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut op1: i32 = 0;
@@ -3942,15 +3942,15 @@ pub fn getExeCostReqCycles(mut iNodeIdx: i32, mut iGraphData: TaskGraphMeta) -> 
 }
 
 pub fn getExeCost(mut iNodeIdx: i32, mut iGraphData: TaskGraphMeta) -> Result<(i32, metamodelica::Real)> {
-    let mut oExeCost: (i32, metamodelica::Real);
+    let mut oExeCost: (i32, metamodelica::Real) = (0, metamodelica::OrderedFloat(0.0_f64));
     let mut comp: i32 = 0;
     let mut opCount: i32 = 0;
     let mut opCount1: i32 = 0;
     let mut exeCost: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut exeCost1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut comps: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)>;
+    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
     let TaskGraphMeta { exeCosts: __pa0, inComps: __pa1, .. } = (iGraphData.clone()) else { bail!("pattern mismatch") };
     exeCosts = __pa0.clone();
     inComps = __pa1.clone();
@@ -3970,10 +3970,10 @@ pub fn getExeCost(mut iNodeIdx: i32, mut iGraphData: TaskGraphMeta) -> Result<(i
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getHighestExecCost(mut iExecCosts: Arc<metamodelica::List<(i32, metamodelica::Real)>>, mut iHighestTuple: (i32, metamodelica::Real)) -> Result<(i32, metamodelica::Real)> {
-    let mut oHighestTuple: (i32, metamodelica::Real);
+    let mut oHighestTuple: (i32, metamodelica::Real) = (0, metamodelica::OrderedFloat(0.0_f64));
     let mut highestCost: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut currentCost: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut head: (i32, metamodelica::Real);
+    let mut head: (i32, metamodelica::Real) = (0, metamodelica::OrderedFloat(0.0_f64));
     let mut rest: Arc<metamodelica::List<(i32, metamodelica::Real)>> = metamodelica::nil();
     oHighestTuple = 'mc: {
         let __mc_input = (iExecCosts.clone(), iHighestTuple.clone());
@@ -4009,11 +4009,11 @@ fn getHighestExecCost(mut iExecCosts: Arc<metamodelica::List<(i32, metamodelica:
 }
 
 pub fn contractNodesInGraph(mut iContractNodes: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut iTaskGraph: TaskGraph, mut iTaskGraphT: TaskGraph, mut iTaskGraphMeta: TaskGraphMeta, mut iContractedTasks: metamodelica::Array<i32>) -> Result<(TaskGraph, TaskGraph, TaskGraphMeta, metamodelica::Array<i32>)> {
-    let mut oTaskGraph: TaskGraph;
-    let mut oTaskGraphT: TaskGraph;
+    let mut oTaskGraph: TaskGraph = Default::default();
+    let mut oTaskGraphT: TaskGraph = Default::default();
     let mut oTaskGraphMeta: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
-    let mut oContractedTasks: metamodelica::Array<i32>;
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut oContractedTasks: metamodelica::Array<i32> = Default::default();
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut tmpTaskGraph: TaskGraph = iTaskGraph.clone();
     let mut tmpTaskGraphT: TaskGraph = iTaskGraphT.clone();
     let mut tmpContractedTasks: metamodelica::Array<i32> = iContractedTasks.clone();
@@ -4029,8 +4029,8 @@ pub fn contractNodesInGraph(mut iContractNodes: Arc<metamodelica::List<Arc<metam
     let mut parentNodeChildListNew: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut outgoingEdges: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut incomingEdges: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut nodeMarks: metamodelica::Array<i32>;
-    let mut nodeMarksT: metamodelica::Array<i32>;
+    let mut nodeMarks: metamodelica::Array<i32> = Default::default();
+    let mut nodeMarksT: metamodelica::Array<i32> = Default::default();
     let mut iNodeList: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut nodeList: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut childNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -4053,7 +4053,7 @@ pub fn contractNodesInGraph(mut iContractNodes: Arc<metamodelica::List<Arc<metam
             nodeIdx = getRealTaskIdxOfTask(nodeIdx.clone(), tmpContractedTasks.clone())?;
             if intNe(nodeMarks.clone().borrow()[(nodeIdx.clone()-1) as usize].clone(), nodeListHeadIdx.clone()) {
                 nodeMarks = {let _arr = nodeMarks.clone(); _arr.borrow_mut()[(nodeIdx.clone()-1) as usize] = nodeListHeadIdx.clone(); _arr};
-                nodeList = cons(nodeIdx.clone(), nodeList.clone());
+                nodeList = metamodelica::cons(nodeIdx.clone(), nodeList.clone());
             }
         }
         let (__pa3, __pa4) = ::match_deref::match_deref! { match &(nodeList.clone()) {
@@ -4073,12 +4073,12 @@ pub fn contractNodesInGraph(mut iContractNodes: Arc<metamodelica::List<Arc<metam
         nodeMarks = {let _arr = nodeMarks.clone(); _arr.borrow_mut()[(nodeListHeadIdx.clone()-1) as usize] = nodeListHeadIdx.clone(); _arr};
         nodeMarksT = {let _arr = nodeMarksT.clone(); _arr.borrow_mut()[(nodeListHeadIdx.clone()-1) as usize] = nodeListHeadIdx.clone(); _arr};
         outgoingEdges = tmpTaskGraph.clone().borrow()[(nodeListHeadIdx.clone()-1) as usize].clone();
-        (outgoingEdges, _) = List::deleteMemberOnTrue(negNodeListHeadIdx.clone(), outgoingEdges.clone(), Arc::new({ let __pe_b2 = tmpContractedTasks.clone(); move |__pe_a0, __pe_a1| checkIfNodeBelongsToCluster(__pe_a0, __pe_a1, __pe_b2.clone()) }))?;
+        (outgoingEdges, _) = List::deleteMemberOnTrue(negNodeListHeadIdx.clone(), outgoingEdges.clone(), (std::sync::Arc::new({ let __pe_b2 = tmpContractedTasks.clone(); move |__pe_a0, __pe_a1| checkIfNodeBelongsToCluster(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
         incomingEdges = tmpTaskGraphT.clone().borrow()[(nodeListHeadIdx.clone()-1) as usize].clone();
-        List::map_0(outgoingEdges.clone(), Arc::new({ let __pe_b1 = nodeListHeadIdx.clone(); let __pe_b2 = nodeMarks.clone(); move |__pe_a0| Array::updateIndexFirst(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }));
-        List::map_0(incomingEdges.clone(), Arc::new({ let __pe_b1 = nodeListHeadIdx.clone(); let __pe_b2 = nodeMarksT.clone(); move |__pe_a0| Array::updateIndexFirst(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }));
-        childNodes = List::flatten(List::map(nodeListRestIdc.clone(), Arc::new({ let __pe_b1 = nodeListHeadIdx.clone(); let __pe_b2 = tmpTaskGraph.clone(); let __pe_b3 = tmpContractedTasks.clone(); let __pe_b4 = nodeMarks.clone(); move |__pe_a0| getContractedNodeChildren(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) })));
-        parentNodes = List::flatten(List::map(nodeList.clone(), Arc::new({ let __pe_b1 = nodeListHeadIdx.clone(); let __pe_b2 = iTaskGraphT.clone(); let __pe_b3 = tmpContractedTasks.clone(); let __pe_b4 = nodeMarks.clone(); move |__pe_a0| getContractedNodeChildren(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) })));
+        List::map_0(outgoingEdges.clone(), (std::sync::Arc::new({ let __pe_b1 = nodeListHeadIdx.clone(); let __pe_b2 = nodeMarks.clone(); move |__pe_a0| Array::updateIndexFirst(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<()> + 'static>));
+        List::map_0(incomingEdges.clone(), (std::sync::Arc::new({ let __pe_b1 = nodeListHeadIdx.clone(); let __pe_b2 = nodeMarksT.clone(); move |__pe_a0| Array::updateIndexFirst(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<()> + 'static>));
+        childNodes = List::flatten(List::map(nodeListRestIdc.clone(), (std::sync::Arc::new({ let __pe_b1 = nodeListHeadIdx.clone(); let __pe_b2 = tmpTaskGraph.clone(); let __pe_b3 = tmpContractedTasks.clone(); let __pe_b4 = nodeMarks.clone(); move |__pe_a0| getContractedNodeChildren(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<Arc<metamodelica::List<i32>>> + 'static>)));
+        parentNodes = List::flatten(List::map(nodeList.clone(), (std::sync::Arc::new({ let __pe_b1 = nodeListHeadIdx.clone(); let __pe_b2 = iTaskGraphT.clone(); let __pe_b3 = tmpContractedTasks.clone(); let __pe_b4 = nodeMarks.clone(); move |__pe_a0| getContractedNodeChildren(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<Arc<metamodelica::List<i32>>> + 'static>)));
         headCompIdc = inComps.clone().borrow()[(nodeListHeadIdx.clone()-1) as usize].clone();
         for mut nodeIdx in &*nodeListRestIdc.clone() {
             let mut nodeIdx = nodeIdx.clone();
@@ -4092,7 +4092,7 @@ pub fn contractNodesInGraph(mut iContractNodes: Arc<metamodelica::List<Arc<metam
         for mut nodeIdx in &*parentNodes.clone() {
             let mut nodeIdx = nodeIdx.clone();
             if intNe(nodeMarksT.clone().borrow()[(nodeIdx.clone()-1) as usize].clone(), nodeListHeadIdx.clone()) {
-                incomingEdges = cons(nodeIdx.clone(), incomingEdges.clone());
+                incomingEdges = metamodelica::cons(nodeIdx.clone(), incomingEdges.clone());
             }
         }
         tmpTaskGraphT = {let _arr = tmpTaskGraphT.clone(); _arr.borrow_mut()[(nodeListHeadIdx.clone()-1) as usize] = incomingEdges.clone(); _arr};
@@ -4106,11 +4106,11 @@ pub fn contractNodesInGraph(mut iContractNodes: Arc<metamodelica::List<Arc<metam
                 parentChild = getRealTaskIdxOfTask(parentChild.clone(), tmpContractedTasks.clone())?;
                 if intEq(parentChild.clone(), nodeListHeadIdx.clone()) || intEq(parentChildContractionValue.clone(), negNodeListHeadIdx.clone()) {
                     if intNe(nodeMarksT.clone().borrow()[(parentChild.clone()-1) as usize].clone(), nodeIdx.clone()) {
-                        parentNodeChildListNew = cons(nodeListHeadIdx.clone(), parentNodeChildListNew.clone());
+                        parentNodeChildListNew = metamodelica::cons(nodeListHeadIdx.clone(), parentNodeChildListNew.clone());
                         {let _arr = nodeMarksT.clone(); _arr.borrow_mut()[(parentChild.clone()-1) as usize] = nodeIdx.clone(); _arr};
                     }
                 } else {
-                    parentNodeChildListNew = cons(parentChild.clone(), parentNodeChildListNew.clone());
+                    parentNodeChildListNew = metamodelica::cons(parentChild.clone(), parentNodeChildListNew.clone());
                 }
             }
             tmpTaskGraphT = {let _arr = tmpTaskGraphT.clone(); _arr.borrow_mut()[(nodeIdx.clone()-1) as usize] = parentNodeChildListNew.clone(); _arr};
@@ -4127,11 +4127,11 @@ pub fn contractNodesInGraph(mut iContractNodes: Arc<metamodelica::List<Arc<metam
                 parentChild = getRealTaskIdxOfTask(parentChild.clone(), tmpContractedTasks.clone())?;
                 if intEq(parentChild.clone(), nodeListHeadIdx.clone()) || intEq(parentChildContractionValue.clone(), negNodeListHeadIdx.clone()) {
                     if intNe(nodeMarks.clone().borrow()[(parentChild.clone()-1) as usize].clone(), nodeIdx.clone()) {
-                        parentNodeChildListNew = cons(nodeListHeadIdx.clone(), parentNodeChildListNew.clone());
+                        parentNodeChildListNew = metamodelica::cons(nodeListHeadIdx.clone(), parentNodeChildListNew.clone());
                         {let _arr = nodeMarks.clone(); _arr.borrow_mut()[(parentChild.clone()-1) as usize] = nodeIdx.clone(); _arr};
                     }
                 } else {
-                    parentNodeChildListNew = cons(parentChild.clone(), parentNodeChildListNew.clone());
+                    parentNodeChildListNew = metamodelica::cons(parentChild.clone(), parentNodeChildListNew.clone());
                 }
             }
             tmpTaskGraph = {let _arr = tmpTaskGraph.clone(); _arr.borrow_mut()[(nodeIdx.clone()-1) as usize] = parentNodeChildListNew.clone(); _arr};
@@ -4163,7 +4163,7 @@ fn getContractedNodeChildren(mut iParentTask: i32, mut iRefValue: i32, mut iTask
         task = getRealTaskIdxOfTask(task.clone(), iContractedTasks.clone())?;
         taskMark = iNodeMarks.clone().borrow()[(task.clone()-1) as usize].clone();
         if boolAnd(intNe(taskMark.clone(), iRefValue.clone()), intNe(task.clone(), iRefValue.clone())) {
-            resultTasks = cons(task.clone(), resultTasks.clone());
+            resultTasks = metamodelica::cons(task.clone(), resultTasks.clone());
             {let _arr = iNodeMarks.clone(); _arr.borrow_mut()[(task.clone()-1) as usize] = iRefValue.clone(); _arr};
         }
     }
@@ -4184,15 +4184,15 @@ fn getRealTaskIdxOfTask(mut iTaskIdx: i32, mut iContractedTasks: metamodelica::A
 
 pub fn setInCompsInMeta(mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut metaIn: TaskGraphMeta) -> Result<TaskGraphMeta> {
     let mut metaOut: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
-    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut compNames: metamodelica::Array<ArcStr>;
-    let mut compDescs: metamodelica::Array<ArcStr>;
-    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)>;
-    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
-    let mut compParamMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut nodeMark: metamodelica::Array<i32>;
-    let mut compInformations: metamodelica::Array<ComponentInfo>;
+    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut compNames: metamodelica::Array<ArcStr> = Default::default();
+    let mut compDescs: metamodelica::Array<ArcStr> = Default::default();
+    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
+    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
+    let mut compParamMapping: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut nodeMark: metamodelica::Array<i32> = Default::default();
+    let mut compInformations: metamodelica::Array<ComponentInfo> = Default::default();
     let TaskGraphMeta { compInformations: __pa0, nodeMark: __pa1, commCosts: __pa2, exeCosts: __pa3, compDescs: __pa4, compNames: __pa5, compParamMapping: __pa6, eqCompMapping: __pa7, varCompMapping: __pa8, .. } = (metaIn.clone()) else { bail!("pattern mismatch") };
     compInformations = __pa0.clone();
     nodeMark = __pa1.clone();
@@ -4211,7 +4211,7 @@ fn updateInCompsInfo(mut contrNode: i32, mut removedNodes: Arc<metamodelica::Lis
     let mut comps: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut contrComps: Arc<metamodelica::List<i32>> = metamodelica::nil();
     comps = inComps.clone().borrow()[(contrNode.clone()-1) as usize].clone();
-    contrComps = List::flatten(List::map(removedNodes.clone(), Arc::new({ let __pe_b1 = inComps.clone(); move |__pe_a0| Ok(Array::getIndexFirst(__pe_a0, __pe_b1.clone())) })));
+    contrComps = List::flatten(List::map(removedNodes.clone(), (std::sync::Arc::new({ let __pe_b1 = inComps.clone(); move |__pe_a0| Ok(Array::getIndexFirst(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<_> + 'static>)));
     comps = List::unique(listAppend(contrComps.clone(), comps.clone()));
     {let _arr = inComps.clone(); _arr.borrow_mut()[(contrNode.clone()-1) as usize] = comps.clone(); _arr};
     Ok(())
@@ -4219,13 +4219,13 @@ fn updateInCompsInfo(mut contrNode: i32, mut removedNodes: Arc<metamodelica::Lis
 
 pub fn filterContractedNodes(mut nodesIn: Arc<metamodelica::List<i32>>, mut contrNodes: metamodelica::Array<i32>) -> Arc<metamodelica::List<i32>> {
     let mut nodesOut: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    nodesOut = List::filterOnFalse(nodesIn.clone(), Arc::new({ let __pe_b1 = contrNodes.clone(); move |__pe_a0| isNodeContracted(__pe_a0, __pe_b1.clone()) }));
+    nodesOut = List::filterOnFalse(nodesIn.clone(), (std::sync::Arc::new({ let __pe_b1 = contrNodes.clone(); move |__pe_a0| isNodeContracted(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>));
     nodesOut
 }
 
 pub fn filterNonContractedNodes(mut nodesIn: Arc<metamodelica::List<i32>>, mut contrNodes: metamodelica::Array<i32>) -> Arc<metamodelica::List<i32>> {
     let mut nodesOut: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    nodesOut = List::filterOnTrue(nodesIn.clone(), Arc::new({ let __pe_b1 = contrNodes.clone(); move |__pe_a0| isNodeContracted(__pe_a0, __pe_b1.clone()) }));
+    nodesOut = List::filterOnTrue(nodesIn.clone(), (std::sync::Arc::new({ let __pe_b1 = contrNodes.clone(); move |__pe_a0| isNodeContracted(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>));
     nodesOut
 }
 
@@ -4240,15 +4240,15 @@ pub fn isNodeContracted(mut iNode: i32, mut iContrNodes: metamodelica::Array<i32
 }
 
 fn contractNodesInGraph1(mut contractNodes: Arc<metamodelica::List<i32>>, mut graphIn: TaskGraph) -> Result<TaskGraph> {
-    let mut graphOut: TaskGraph;
-    let mut graphInT: TaskGraph;
+    let mut graphOut: TaskGraph = Default::default();
+    let mut graphInT: TaskGraph = Default::default();
     let mut endNode: i32 = 0;
     let mut startNode: i32 = 0;
     let mut deleteEntries: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut startNodeChildren: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut endChildren: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut deleteNodesParents: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut graphTmp: TaskGraph;
+    let mut graphTmp: TaskGraph = Default::default();
     graphInT = AdjacencyMatrix::transposeAdjacencyMatrix(graphIn.clone(), (graphIn.clone().borrow().len() as i32))?;
     startNode = List::last(contractNodes.clone())?;
     (deleteEntries, _) = List::deleteMemberOnTrue(startNode.clone(), contractNodes.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
@@ -4267,11 +4267,11 @@ fn contractNodesInGraph1(mut contractNodes: Arc<metamodelica::List<i32>>, mut gr
 }
 
 fn contractNodesInGraph2(mut iParentNode: i32, mut iDeletedNodes: Arc<metamodelica::List<i32>>, mut iNewNodeIdx: i32, mut iGraph: TaskGraph) -> Result<TaskGraph> {
-    let mut oGraph: TaskGraph;
+    let mut oGraph: TaskGraph = Default::default();
     let mut adjLstEntry: Arc<metamodelica::List<i32>> = metamodelica::nil();
     adjLstEntry = iGraph.clone().borrow()[(iParentNode.clone()-1) as usize].clone();
     adjLstEntry = List::setDifferenceOnTrue(adjLstEntry.clone(), iDeletedNodes.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
-    adjLstEntry = cons(iNewNodeIdx.clone(), adjLstEntry.clone());
+    adjLstEntry = metamodelica::cons(iNewNodeIdx.clone(), adjLstEntry.clone());
     adjLstEntry = List::sortedUnique(List::sort(adjLstEntry.clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?, (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
     oGraph = {let _arr = iGraph.clone(); _arr.borrow_mut()[(iParentNode.clone()-1) as usize] = adjLstEntry.clone(); _arr};
     Ok(oGraph)
@@ -4305,16 +4305,16 @@ fn compareListLengthOnTrue(mut inValue: i32, mut inLst: Arc<metamodelica::List<i
 
 fn getMergedSystemData(mut graphDataIn: TaskGraphMeta, mut contractNodes: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<TaskGraphMeta> {
     let mut graphDataOut: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut compParamMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut compNames: metamodelica::Array<ArcStr>;
-    let mut compDescs: metamodelica::Array<ArcStr>;
-    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)>;
-    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
-    let mut nodeMark: metamodelica::Array<i32>;
-    let mut compInformations: metamodelica::Array<ComponentInfo>;
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut compParamMapping: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut compNames: metamodelica::Array<ArcStr> = Default::default();
+    let mut compDescs: metamodelica::Array<ArcStr> = Default::default();
+    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
+    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
+    let mut nodeMark: metamodelica::Array<i32> = Default::default();
+    let mut compInformations: metamodelica::Array<ComponentInfo> = Default::default();
     let TaskGraphMeta { compInformations: __pa0, nodeMark: __pa1, commCosts: __pa2, exeCosts: __pa3, compDescs: __pa4, compNames: __pa5, compParamMapping: __pa6, eqCompMapping: __pa7, varCompMapping: __pa8, inComps: __pa9 } = (graphDataIn.clone()) else { bail!("pattern mismatch") };
     compInformations = __pa0.clone();
     nodeMark = __pa1.clone();
@@ -4333,7 +4333,7 @@ fn getMergedSystemData(mut graphDataIn: TaskGraphMeta, mut contractNodes: Arc<me
 }
 
 fn updateCompNamesForMerging(mut compIdx: i32, mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut nodeMark: metamodelica::Array<i32>, mut compNamesIn: metamodelica::Array<ArcStr>) -> Result<metamodelica::Array<ArcStr>> {
-    let mut compNamesOut: metamodelica::Array<ArcStr>;
+    let mut compNamesOut: metamodelica::Array<ArcStr> = Default::default();
     compNamesOut = 'mc: {
         let __mc_input = compNamesIn.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -4351,7 +4351,7 @@ fn updateCompNamesForMerging(mut compIdx: i32, mut inComps: metamodelica::Array<
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut unionNode: i32 = 0;
             let mut mergedComps: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            let mut compNamesTmp: metamodelica::Array<ArcStr>;
+            let mut compNamesTmp: metamodelica::Array<ArcStr> = Default::default();
             let mut compName: ArcStr = arcstr::literal!("");
             let true = (compIdx.clone() <= (compNamesIn.clone().borrow().len() as i32)) else { bail!("pattern mismatch") };
             unionNode = getCompInComps(compIdx.clone(), 1, inComps.clone(), nodeMark.clone())?;
@@ -4381,7 +4381,7 @@ fn updateCompNamesForMerging(mut compIdx: i32, mut inComps: metamodelica::Array<
 }
 
 fn updateInCompsForMerging(mut inCompsIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mergedPaths: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
-    let mut inCompsOut: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut inCompsOut: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut inCompsLst: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut deleteNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut startNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -4536,7 +4536,7 @@ fn findOneChildParents(mut allNodes: Arc<metamodelica::List<i32>>, mut graphIn: 
                     nodeChildren = filterContractedNodes(nodeChildren.clone(), contrNodes.clone());
                     let true = ((nodeChildren.clone().len() as i32) == 1) else { bail!("pattern mismatch") };
                     child = (nodeChildren.clone()).get(1)?;
-                    lstTmp = cons(list![head.clone()], lstIn.clone());
+                    lstTmp = metamodelica::cons(list![head.clone()], lstIn.clone());
                     lstTmp = findOneChildParents(rest.clone(), graphIn.clone(), doNotMerge.clone(), lstTmp.clone(), child.clone(), contrNodes.clone())?;
                     Ok(lstTmp.clone())
                 }
@@ -4572,7 +4572,7 @@ fn findOneChildParents(mut allNodes: Arc<metamodelica::List<i32>>, mut graphIn: 
                     let true = ((nodeChildren.clone().len() as i32) == 1 && !(nodeChildren.clone().is_empty()) && (parents.clone().len() as i32) == 1) else { bail!("pattern mismatch") };
                     child = (nodeChildren.clone()).get(1)?;
                     pathLst = listHead(lstIn.clone())?;
-                    pathLst = cons(inPath.clone(), pathLst.clone());
+                    pathLst = metamodelica::cons(inPath.clone(), pathLst.clone());
                     lstTmp = List::replaceAt(pathLst.clone(), 1, lstIn.clone())?;
                     (rest, _) = List::deleteMemberOnTrue(inPath.clone(), allNodes.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
                     lstTmp = findOneChildParents(rest.clone(), graphIn.clone(), doNotMerge.clone(), lstTmp.clone(), child.clone(), contrNodes.clone())?;
@@ -4595,7 +4595,7 @@ fn findOneChildParents(mut allNodes: Arc<metamodelica::List<i32>>, mut graphIn: 
                     parents = getParentNodes(inPath.clone(), graphIn.clone())?;
                     parents = filterContractedNodes(parents.clone(), contrNodes.clone());
                     pathLst = listHead(lstIn.clone())?;
-                    pathLst = cons(inPath.clone(), pathLst.clone());
+                    pathLst = metamodelica::cons(inPath.clone(), pathLst.clone());
                     lstTmp = List::replaceAt(pathLst.clone(), 1, lstIn.clone())?;
                     (rest, _) = List::deleteMemberOnTrue(inPath.clone(), allNodes.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
                     lstTmp = findOneChildParents(rest.clone(), graphIn.clone(), doNotMerge.clone(), lstTmp.clone(), 0, contrNodes.clone())?;
@@ -4620,7 +4620,7 @@ fn findOneChildParents(mut allNodes: Arc<metamodelica::List<i32>>, mut graphIn: 
 
 fn getParentNodes(mut nodeIdx: i32, mut graphIn: TaskGraph) -> Result<Arc<metamodelica::List<i32>>> {
     let mut parentNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut graphInT: TaskGraph;
+    let mut graphInT: TaskGraph = Default::default();
     graphInT = AdjacencyMatrix::transposeAdjacencyMatrix(graphIn.clone(), (graphIn.clone().borrow().len() as i32))?;
     parentNodes = graphInT.clone().borrow()[(nodeIdx.clone()-1) as usize].clone();
     Ok(parentNodes)
@@ -4644,7 +4644,7 @@ fn checkParentNode(mut lstIdx: i32, mut graphIn: TaskGraph, mut lstIn: Arc<metam
                     let true = (intEq((parents.clone().len() as i32), 1)) else { bail!("pattern mismatch") };
                     parent = (parents.clone()).get(1)?;
                     childLst = childLst.clone().reverse();
-                    childLst = cons(parent.clone(), childLst.clone());
+                    childLst = metamodelica::cons(parent.clone(), childLst.clone());
                     childLst = childLst.clone().reverse();
                     lstTmp = List::replaceAt(childLst.clone(), lstIdx.clone(), lstIn.clone())?;
                     Ok(lstTmp.clone())
@@ -4677,30 +4677,30 @@ fn checkParentNode(mut lstIdx: i32, mut graphIn: TaskGraph, mut lstIn: Arc<metam
 //-----------------------------
 pub fn createCosts(mut iDae: Arc<BackendDAE::BackendDAE>, mut iBenchFilePrefix: ArcStr, mut iSimEqCompMapping: metamodelica::Array<i32>, mut iTaskGraphMeta: TaskGraphMeta) -> Result<TaskGraphMeta> {
     let mut oTaskGraphMeta: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
-    let mut compMapping: metamodelica::Array<Arc<BackendDAE::EqSystem>>;
-    let mut compMapping_withIdx: metamodelica::Array<(Arc<BackendDAE::EqSystem>, i32)>;
+    let mut compMapping: metamodelica::Array<Arc<BackendDAE::EqSystem>> = Default::default();
+    let mut compMapping_withIdx: metamodelica::Array<(Arc<BackendDAE::EqSystem>, i32)> = Default::default();
     let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
     let mut comps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
-    let mut reqTimeCom: (i32, i32);
+    let mut reqTimeCom: (i32, i32) = (0, 0);
     let mut reqTimeOpLstSimCode: Arc<metamodelica::List<(i32, i32, metamodelica::Real)>> = metamodelica::nil();
-    let mut reqTimeOpSimCode: metamodelica::Array<(i32, metamodelica::Real)>;
+    let mut reqTimeOpSimCode: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
     let mut tmpTaskGraphMeta: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
-    let mut reqTimeOp: metamodelica::Array<metamodelica::Real>;
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
+    let mut reqTimeOp: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
     oTaskGraphMeta = 'mc: {
         let __mc_input = (iDae.clone(), iTaskGraphMeta.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ BackendDAE::BackendDAE { shared, .. }, TaskGraphMeta { commCosts, inComps, .. }) => {
                     let mut commCosts = (*commCosts).clone();
-                    let mut compMapping: metamodelica::Array<Arc<BackendDAE::EqSystem>>;
-                    let mut compMapping_withIdx: metamodelica::Array<(Arc<BackendDAE::EqSystem>, i32)>;
+                    let mut compMapping: metamodelica::Array<Arc<BackendDAE::EqSystem>> = compMapping.clone();
+                    let mut compMapping_withIdx: metamodelica::Array<(Arc<BackendDAE::EqSystem>, i32)> = compMapping_withIdx.clone();
                     let mut comps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = comps.clone();
-                    let mut reqTimeCom: (i32, i32);
-                    let mut reqTimeOp: metamodelica::Array<metamodelica::Real>;
+                    let mut reqTimeCom: (i32, i32) = reqTimeCom.clone();
+                    let mut reqTimeOp: metamodelica::Array<metamodelica::Real> = reqTimeOp.clone();
                     let mut reqTimeOpLstSimCode: Arc<metamodelica::List<(i32, i32, metamodelica::Real)>> = reqTimeOpLstSimCode.clone();
-                    let mut reqTimeOpSimCode: metamodelica::Array<(i32, metamodelica::Real)>;
+                    let mut reqTimeOpSimCode: metamodelica::Array<(i32, metamodelica::Real)> = reqTimeOpSimCode.clone();
                     let mut tmpTaskGraphMeta: TaskGraphMeta = tmpTaskGraphMeta.clone();
                     (comps, compMapping_withIdx) = getSystemComponents(iDae.clone())?;
                     compMapping = Array::map(compMapping_withIdx.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)));
@@ -4711,7 +4711,7 @@ pub fn createCosts(mut iDae: Arc<BackendDAE::BackendDAE>, mut iBenchFilePrefix: 
                     reqTimeOp = arrayCreate((comps.clone().len() as i32), metamodelica::OrderedFloat(-1.0_f64));
                     reqTimeOp = convertSimEqToSccCosts(reqTimeOpSimCode.clone(), iSimEqCompMapping.clone(), reqTimeOp.clone());
                     commCosts = createCommCosts(commCosts.clone(), 1, reqTimeCom.clone())?;
-                    (_, tmpTaskGraphMeta) = Array::fold(inComps.clone(), Arc::new({ let __pe_b1 = (comps.clone(), shared.clone()); let __pe_b2 = compMapping.clone(); let __pe_b3 = reqTimeOp.clone(); let __pe_b4 = reqTimeCom.clone(); move |__pe_a0, __pe_a5| createCosts0(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_a5) }), (1, iTaskGraphMeta.clone()));
+                    (_, tmpTaskGraphMeta) = Array::fold(inComps.clone(), (std::sync::Arc::new({ let __pe_b1 = (comps.clone(), shared.clone()); let __pe_b2 = compMapping.clone(); let __pe_b3 = reqTimeOp.clone(); let __pe_b4 = reqTimeCom.clone(); move |__pe_a0, __pe_a5| createCosts0(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_a5) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, (i32, TaskGraphMeta)) -> Result<(i32, TaskGraphMeta)> + 'static>), (1, iTaskGraphMeta.clone()));
                     Ok(tmpTaskGraphMeta.clone())
                 }
                 _ => bail!("nomatch"),
@@ -4735,21 +4735,21 @@ pub fn createCosts(mut iDae: Arc<BackendDAE::BackendDAE>, mut iBenchFilePrefix: 
 
 fn estimateCosts(mut daeIn: Arc<BackendDAE::BackendDAE>, mut taskGraphMetaIn: TaskGraphMeta) -> Result<TaskGraphMeta> {
     let mut taskGraphMetaOut: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut compNames: metamodelica::Array<ArcStr>;
-    let mut compDescs: metamodelica::Array<ArcStr>;
-    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)>;
-    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
-    let mut nodeMark: metamodelica::Array<i32>;
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut compNames: metamodelica::Array<ArcStr> = Default::default();
+    let mut compDescs: metamodelica::Array<ArcStr> = Default::default();
+    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
+    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
+    let mut nodeMark: metamodelica::Array<i32> = Default::default();
     let mut comNumLst: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut exeCostsLst: Arc<metamodelica::List<(i32, metamodelica::Real)>> = metamodelica::nil();
     let mut eqSystems: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = metamodelica::nil();
     let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
     let mut compsLst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>>> = metamodelica::nil();
-    let mut compParamMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut compInformations: metamodelica::Array<ComponentInfo>;
+    let mut compParamMapping: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut compInformations: metamodelica::Array<ComponentInfo> = Default::default();
     let mut compIdx: i32 = 0;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(daeIn.clone()) {
         Deref @ BackendDAE::BackendDAE { shared: __pa0, eqs: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -4795,7 +4795,7 @@ fn estimateCosts0(mut systIdx: i32, mut compsLstIn: Arc<metamodelica::List<Arc<m
 }
 
 pub fn calculateCosts(mut compInfo: Arc<BackendDAE::CompInfo>) -> Result<(i32, metamodelica::Real)> {
-    let mut exeCost: (i32, metamodelica::Real);
+    let mut exeCost: (i32, metamodelica::Real) = (0, metamodelica::OrderedFloat(0.0_f64));
     exeCost = 'mc: {
         let __mc_input = compInfo.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -4876,13 +4876,13 @@ pub fn calculateCosts(mut compInfo: Arc<BackendDAE::CompInfo>) -> Result<(i32, m
 
 pub fn copyCosts(mut iSourceTaskGraphData: TaskGraphMeta, mut iTargetTaskGraphData: TaskGraphMeta) -> Result<TaskGraphMeta> {
     let mut oTaskGraphData: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
-    let mut inCompsSource: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut inCompsTarget: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut exeCostsSource: metamodelica::Array<(i32, metamodelica::Real)>;
-    let mut exeCostsTarget: metamodelica::Array<(i32, metamodelica::Real)>;
+    let mut inCompsSource: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut inCompsTarget: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut exeCostsSource: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
+    let mut exeCostsTarget: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
     let mut compIdx: i32 = 0;
-    let mut commCostsTarget: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
-    let mut reqTimeCom: (i32, i32);
+    let mut commCostsTarget: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
+    let mut reqTimeCom: (i32, i32) = (0, 0);
     let TaskGraphMeta { exeCosts: __pa0, inComps: __pa1, .. } = (iSourceTaskGraphData.clone()) else { bail!("pattern mismatch") };
     exeCostsSource = __pa0.clone();
     inCompsSource = __pa1.clone();
@@ -4902,8 +4902,8 @@ pub fn copyCosts(mut iSourceTaskGraphData: TaskGraphMeta, mut iTargetTaskGraphDa
 }
 
 fn getCommCostsOnly(mut commCostsIn: metamodelica::Array<Arc<metamodelica::List<Communication>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<Communication>>>> {
-    let mut commCostsOut: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
-    let mut reqTimeCom: (i32, i32);
+    let mut commCostsOut: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
+    let mut reqTimeCom: (i32, i32) = (0, 0);
     (_, reqTimeCom) = HpcOmBenchmark::benchSystem()?;
     commCostsOut = createCommCosts(commCostsIn.clone(), 1, reqTimeCom.clone())?;
     Ok(commCostsOut)
@@ -4911,8 +4911,8 @@ fn getCommCostsOnly(mut commCostsIn: metamodelica::Array<Arc<metamodelica::List<
 
 fn checkForExecutionCosts(mut dataIn: TaskGraphMeta) -> Result<bool> {
     let mut isFine: bool = false;
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)>;
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
     let TaskGraphMeta { exeCosts: __pa0, inComps: __pa1, .. } = (dataIn.clone()) else { bail!("pattern mismatch") };
     exeCosts = __pa0.clone();
     inComps = __pa1.clone();
@@ -4957,7 +4957,7 @@ fn checkTpl2ForZero(mut comp: i32, mut exeCosts: metamodelica::Array<(i32, metam
     let mut bOut: bool = false;
     let mut b: bool = false;
     let mut value: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut tpl: (i32, metamodelica::Real);
+    let mut tpl: (i32, metamodelica::Real) = (0, metamodelica::OrderedFloat(0.0_f64));
     tpl = exeCosts.clone().borrow()[(comp.clone()-1) as usize].clone();
     (_, value) = tpl.clone();
     b = realEq(value.clone(), metamodelica::OrderedFloat(0.0_f64));
@@ -4989,7 +4989,7 @@ fn convertNodeListToEdgeTuples0(mut iNodeList: Arc<metamodelica::List<i32>>, mut
                     let true = (intGt(iNodeIdx.clone(), 1)) else { bail!("pattern mismatch") };
                     elem = (iNodeList.clone()).get(iNodeIdx.clone())?;
                     preElem = (iNodeList.clone()).get(iNodeIdx.clone() - 1)?;
-                    tmpEdgeList = cons((preElem.clone(), elem.clone()), tmpEdgeList.clone());
+                    tmpEdgeList = metamodelica::cons((preElem.clone(), elem.clone()), tmpEdgeList.clone());
                     tmpEdgeList = convertNodeListToEdgeTuples0(iNodeList.clone(), iNodeIdx.clone() - 1, tmpEdgeList.clone())?;
                     Ok(tmpEdgeList.clone())
                 }
@@ -5010,18 +5010,18 @@ fn convertNodeListToEdgeTuples0(mut iNodeList: Arc<metamodelica::List<i32>>, mut
 }
 
 fn convertSimEqToSccCosts(mut iReqTimeOpSimCode: metamodelica::Array<(i32, metamodelica::Real)>, mut iSimeqCompMapping: metamodelica::Array<i32>, mut iReqTimeOp: metamodelica::Array<metamodelica::Real>) -> metamodelica::Array<metamodelica::Real> {
-    let mut oReqTimeOp: metamodelica::Array<metamodelica::Real>;
-    (_, oReqTimeOp) = Array::fold(iReqTimeOpSimCode.clone(), Arc::new({ let __pe_b1 = iSimeqCompMapping.clone(); move |__pe_a0, __pe_a2| convertSimEqToSccCosts1(__pe_a0, __pe_b1.clone(), __pe_a2) }), (1, iReqTimeOp.clone()));
+    let mut oReqTimeOp: metamodelica::Array<metamodelica::Real> = Default::default();
+    (_, oReqTimeOp) = Array::fold(iReqTimeOpSimCode.clone(), (std::sync::Arc::new({ let __pe_b1 = iSimeqCompMapping.clone(); move |__pe_a0, __pe_a2| convertSimEqToSccCosts1(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn((i32, metamodelica::Real), (i32, metamodelica::Array<metamodelica::Real>)) -> Result<(i32, metamodelica::Array<metamodelica::Real>)> + 'static>), (1, iReqTimeOp.clone()));
     oReqTimeOp
 }
 
 fn convertSimEqToSccCosts1(mut iReqTimeOpSimCode: (i32, metamodelica::Real), mut iSimeqCompMapping: metamodelica::Array<i32>, mut iReqTimeOp: (i32, metamodelica::Array<metamodelica::Real>)) -> Result<(i32, metamodelica::Array<metamodelica::Real>)> {
-    let mut oReqTimeOp: (i32, metamodelica::Array<metamodelica::Real>);
+    let mut oReqTimeOp: (i32, metamodelica::Array<metamodelica::Real>) = (0, Default::default());
     let mut simEqCalcCount: i32 = 0;
     let mut simEqIdx: i32 = 0;
     let mut simEqCalcTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut realSimEqCalcCount: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut reqTime: metamodelica::Array<metamodelica::Real>;
+    let mut reqTime: metamodelica::Array<metamodelica::Real> = Default::default();
     oReqTimeOp = 'mc: {
         let __mc_input = (iReqTimeOpSimCode.clone(), iReqTimeOp.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -5050,8 +5050,8 @@ fn convertSimEqToSccCosts1(mut iReqTimeOpSimCode: (i32, metamodelica::Real), mut
 }
 
 fn convertSimEqToSccCosts2(mut iReqTime: metamodelica::Array<metamodelica::Real>, mut iSimEqCalcTime: metamodelica::Real, mut iSimEqIdx: i32, mut iSimeqCompMapping: metamodelica::Array<i32>) -> Result<metamodelica::Array<metamodelica::Real>> {
-    let mut oReqTime: metamodelica::Array<metamodelica::Real>;
-    let mut reqTime: metamodelica::Array<metamodelica::Real>;
+    let mut oReqTime: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut reqTime: metamodelica::Array<metamodelica::Real> = Default::default();
     let mut sccIdx: i32 = 0;
     oReqTime = 'mc: {
         let __mc_input = iReqTime.clone();
@@ -5074,19 +5074,19 @@ fn convertSimEqToSccCosts2(mut iReqTime: metamodelica::Array<metamodelica::Real>
 }
 
 fn createCosts0(mut iNode: Arc<metamodelica::List<i32>>, mut iComps_shared: (Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<BackendDAE::Shared>), mut iCompMapping: metamodelica::Array<Arc<BackendDAE::EqSystem>>, mut reqTimeOp: metamodelica::Array<metamodelica::Real>, mut reqTimeCom: (i32, i32), mut iTaskGraphMeta: (i32, TaskGraphMeta)) -> Result<(i32, TaskGraphMeta)> {
-    let mut oTaskGraphMeta: (i32, TaskGraphMeta);
-    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)>;
-    let mut compParamMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut nodeRefCount: metamodelica::Array<i32>;
-    let mut execCosts: metamodelica::Array<(i32, metamodelica::Real)>;
-    let mut compNames: metamodelica::Array<ArcStr>;
-    let mut compDescs: metamodelica::Array<ArcStr>;
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
+    let mut oTaskGraphMeta: (i32, TaskGraphMeta) = (0, <TaskGraphMeta as ::std::default::Default>::default());
+    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
+    let mut compParamMapping: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut nodeRefCount: metamodelica::Array<i32> = Default::default();
+    let mut execCosts: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
+    let mut compNames: metamodelica::Array<ArcStr> = Default::default();
+    let mut compDescs: metamodelica::Array<ArcStr> = Default::default();
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
     let mut nodeNumber: i32 = 0;
     let mut taskGraphMeta: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
-    let mut compInformations: metamodelica::Array<ComponentInfo>;
+    let mut compInformations: metamodelica::Array<ComponentInfo> = Default::default();
     (nodeNumber, taskGraphMeta) = iTaskGraphMeta.clone();
     let TaskGraphMeta { compInformations: __pa0, nodeMark: __pa1, commCosts: __pa2, exeCosts: __pa3, compDescs: __pa4, compNames: __pa5, compParamMapping: __pa6, eqCompMapping: __pa7, varCompMapping: __pa8, inComps: __pa9 } = (taskGraphMeta.clone()) else { bail!("pattern mismatch") };
     compInformations = __pa0.clone();
@@ -5105,8 +5105,8 @@ fn createCosts0(mut iNode: Arc<metamodelica::List<i32>>, mut iComps_shared: (Arc
 }
 
 fn createCosts1(mut iTuple: (i32, i32, metamodelica::Real), mut iReqTime: metamodelica::Array<(i32, metamodelica::Real)>) -> Result<metamodelica::Array<(i32, metamodelica::Real)>> {
-    let mut oReqTime: metamodelica::Array<(i32, metamodelica::Real)>;
-    let mut tmpArray: metamodelica::Array<(i32, metamodelica::Real)>;
+    let mut oReqTime: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
+    let mut tmpArray: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
     let mut simEqIdx: i32 = 0;
     let mut calcTimeCount: i32 = 0;
     let mut calcTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
@@ -5125,7 +5125,7 @@ fn createExecCost(mut iNodeSccs: Arc<metamodelica::List<i32>>, mut icomps_shared
         let __mc_input = iNodeIdx.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut execCost: (i32, metamodelica::Real);
+            let mut execCost: (i32, metamodelica::Real) = (0, metamodelica::OrderedFloat(0.0_f64));
             execCost = List::fold3(iNodeSccs.clone(), (std::sync::Arc::new(createExecCost0) as std::sync::Arc<dyn ::std::ops::Fn(i32, (Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<BackendDAE::Shared>), metamodelica::Array<Arc<BackendDAE::EqSystem>>, metamodelica::Array<metamodelica::Real>, (i32, metamodelica::Real)) -> Result<(i32, metamodelica::Real)> + 'static>), icomps_shared.clone(), compMapping.clone(), iRequiredTime.clone(), (0, metamodelica::OrderedFloat(0.0_f64)));
             {let _arr = iExecCosts.clone(); _arr.borrow_mut()[(iNodeIdx.clone()-1) as usize] = execCost.clone(); _arr};
             Ok(())
@@ -5140,7 +5140,7 @@ fn createExecCost(mut iNodeSccs: Arc<metamodelica::List<i32>>, mut icomps_shared
 }
 
 fn createExecCost0(mut sccIndex: i32, mut icomps_shared: (Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<BackendDAE::Shared>), mut compMapping: metamodelica::Array<Arc<BackendDAE::EqSystem>>, mut iRequiredTime: metamodelica::Array<metamodelica::Real>, mut iCosts: (i32, metamodelica::Real)) -> Result<(i32, metamodelica::Real)> {
-    let mut oCosts: (i32, metamodelica::Real);
+    let mut oCosts: (i32, metamodelica::Real) = (0, metamodelica::OrderedFloat(0.0_f64));
     let mut iCosts_op: i32 = 0;
     let mut iCosts_cyc: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut comp: Arc<BackendDAE::StrongComponent>;
@@ -5158,8 +5158,8 @@ fn createExecCost0(mut sccIndex: i32, mut icomps_shared: (Arc<metamodelica::List
 }
 
 fn createCommCosts(mut iCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>, mut iCurrentIndex: i32, mut iReqTimeCom: (i32, i32)) -> Result<metamodelica::Array<Arc<metamodelica::List<Communication>>>> {
-    let mut oCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
-    let mut tmpCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
+    let mut oCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
+    let mut tmpCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
     let mut currentCom: Communications = metamodelica::nil();
     oCosts = 'mc: {
         let __mc_input = iCosts.clone();
@@ -5219,9 +5219,9 @@ pub fn validateTaskGraphMeta(mut iMeta: TaskGraphMeta, mut iDae: Arc<BackendDAE:
                 _ => {
                     let mut systComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
                     let mut graphComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
-                    let mut systCompsArray: metamodelica::Array<Arc<BackendDAE::StrongComponent>>;
-                    let mut systCompEqSysMapping: metamodelica::Array<(Arc<BackendDAE::EqSystem>, i32)>;
-                    let mut graphCompEqSysMapping: metamodelica::Array<(Arc<BackendDAE::EqSystem>, i32)>;
+                    let mut systCompsArray: metamodelica::Array<Arc<BackendDAE::StrongComponent>> = Default::default();
+                    let mut systCompEqSysMapping: metamodelica::Array<(Arc<BackendDAE::EqSystem>, i32)> = Default::default();
+                    let mut graphCompEqSysMapping: metamodelica::Array<(Arc<BackendDAE::EqSystem>, i32)> = Default::default();
                     let mut systCompEqSysMappingIdx: Arc<metamodelica::List<(Arc<BackendDAE::StrongComponent>, i32)>> = metamodelica::nil();
                     let mut graphCompEqSysMappingIdx: Arc<metamodelica::List<(Arc<BackendDAE::StrongComponent>, i32)>> = metamodelica::nil();
                     (systComps, systCompEqSysMapping) = getSystemComponents(iDae.clone())?;
@@ -5253,18 +5253,18 @@ pub fn validateTaskGraphMeta(mut iMeta: TaskGraphMeta, mut iDae: Arc<BackendDAE:
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn validateTaskGraphMeta0(mut iEqSysMapping: metamodelica::Array<(Arc<BackendDAE::EqSystem>, i32)>, mut iCompsTpl: (i32, Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::StrongComponent>, i32)>>)) -> Result<(i32, Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::StrongComponent>, i32)>>)> {
-    let mut oCompsTpl: (i32, Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::StrongComponent>, i32)>>);
+    let mut oCompsTpl: (i32, Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::StrongComponent>, i32)>>) = (0, metamodelica::nil(), metamodelica::nil());
     let mut currentIdx: i32 = 0;
     let mut eqSysIdx: i32 = 0;
     let mut rest: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
     let mut head: Arc<BackendDAE::StrongComponent>;
     let mut iCompEqSysMapping: Arc<metamodelica::List<(Arc<BackendDAE::StrongComponent>, i32)>> = metamodelica::nil();
     let mut oCompEqSysMapping: Arc<metamodelica::List<(Arc<BackendDAE::StrongComponent>, i32)>> = metamodelica::nil();
-    let mut tmpCompsTpl: (i32, Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::StrongComponent>, i32)>>);
+    let mut tmpCompsTpl: (i32, Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::StrongComponent>, i32)>>) = (0, metamodelica::nil(), metamodelica::nil());
     oCompsTpl = (::match_deref::match_deref! { match &(iCompsTpl.clone()) {
         (currentIdx, Deref @ metamodelica::List::Cons { head: head, tail: rest }, iCompEqSysMapping) => {
             (_, eqSysIdx) = iEqSysMapping.clone().borrow()[(currentIdx.clone()-1) as usize].clone();
-            oCompEqSysMapping = cons((head.clone(), eqSysIdx.clone()), iCompEqSysMapping.clone());
+            oCompEqSysMapping = metamodelica::cons((head.clone(), eqSysIdx.clone()), iCompEqSysMapping.clone());
             tmpCompsTpl = validateTaskGraphMeta0(iEqSysMapping.clone(), (currentIdx.clone() + 1, rest.clone(), oCompEqSysMapping.clone()))?;
             tmpCompsTpl.clone()
         },
@@ -5355,7 +5355,7 @@ fn checkForDuplicates(mut iComps: Arc<metamodelica::List<(Arc<BackendDAE::Strong
 }
 
 fn checkForDuplicates0(mut currentComp_idx: (Arc<BackendDAE::StrongComponent>, i32), mut iLastComp: (bool, Option<(Arc<BackendDAE::StrongComponent>, i32)>)) -> Result<(bool, Option<(Arc<BackendDAE::StrongComponent>, i32)>)> {
-    let mut oLastComp: (bool, Option<(Arc<BackendDAE::StrongComponent>, i32)>);
+    let mut oLastComp: (bool, Option<(Arc<BackendDAE::StrongComponent>, i32)>) = (false, None);
     let mut lastComp: Arc<BackendDAE::StrongComponent>;
     let mut currentComp: Arc<BackendDAE::StrongComponent>;
     let mut lastComp_idx: (Arc<BackendDAE::StrongComponent>, i32);
@@ -5404,18 +5404,18 @@ fn checkForDuplicates0(mut currentComp_idx: (Arc<BackendDAE::StrongComponent>, i
 
 fn getGraphComponents(mut iTaskGraphMeta: TaskGraphMeta, mut iSystComps: metamodelica::Array<Arc<BackendDAE::StrongComponent>>, mut iCompEqSysMapping: metamodelica::Array<(Arc<BackendDAE::EqSystem>, i32)>) -> Result<(Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, metamodelica::Array<(Arc<BackendDAE::EqSystem>, i32)>)> {
     let mut oComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
-    let mut oCompEqGraphMapping: metamodelica::Array<(Arc<BackendDAE::EqSystem>, i32)>;
+    let mut oCompEqGraphMapping: metamodelica::Array<(Arc<BackendDAE::EqSystem>, i32)> = Default::default();
     let mut tmpComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
     let mut tmpMapping: Arc<metamodelica::List<(Arc<BackendDAE::EqSystem>, i32)>> = metamodelica::nil();
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut nodeMarks: metamodelica::Array<i32>;
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut nodeMarks: metamodelica::Array<i32> = Default::default();
     tmpComps = metamodelica::nil();
     tmpMapping = metamodelica::nil();
     let TaskGraphMeta { nodeMark: __pa0, inComps: __pa1, .. } = (iTaskGraphMeta.clone()) else { bail!("pattern mismatch") };
     nodeMarks = __pa0.clone();
     inComps = __pa1.clone();
-    (tmpComps, tmpMapping) = Array::fold(inComps.clone(), Arc::new({ let __pe_b1 = iSystComps.clone(); let __pe_b2 = iCompEqSysMapping.clone(); move |__pe_a0, __pe_a3| Ok(getGraphComponents0(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3)) }), (tmpComps.clone(), tmpMapping.clone()));
-    let (_, (__pa2, __pa3)) = Array::fold(nodeMarks.clone(), Arc::new({ let __pe_b1 = iSystComps.clone(); let __pe_b2 = iCompEqSysMapping.clone(); move |__pe_a0, __pe_a3| getGraphComponents2(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3) }), (1, (tmpComps.clone(), tmpMapping.clone())));
+    (tmpComps, tmpMapping) = Array::fold(inComps.clone(), (std::sync::Arc::new({ let __pe_b1 = iSystComps.clone(); let __pe_b2 = iCompEqSysMapping.clone(); move |__pe_a0, __pe_a3| Ok(getGraphComponents0(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, (Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::EqSystem>, i32)>>)) -> Result<(Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::EqSystem>, i32)>>)> + 'static>), (tmpComps.clone(), tmpMapping.clone()));
+    let (_, (__pa2, __pa3)) = Array::fold(nodeMarks.clone(), (std::sync::Arc::new({ let __pe_b1 = iSystComps.clone(); let __pe_b2 = iCompEqSysMapping.clone(); move |__pe_a0, __pe_a3| getGraphComponents2(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3) }) as std::sync::Arc<dyn ::std::ops::Fn(i32, (i32, (Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::EqSystem>, i32)>>))) -> Result<(i32, (Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::EqSystem>, i32)>>))> + 'static>), (1, (tmpComps.clone(), tmpMapping.clone())));
     tmpComps = __pa2.clone();
     tmpMapping = __pa3.clone();
     oComps = tmpComps.clone();
@@ -5424,7 +5424,7 @@ fn getGraphComponents(mut iTaskGraphMeta: TaskGraphMeta, mut iSystComps: metamod
 }
 
 fn getGraphComponents0(mut inComp: Arc<metamodelica::List<i32>>, mut systComps: metamodelica::Array<Arc<BackendDAE::StrongComponent>>, mut iCompEqSysMapping: metamodelica::Array<(Arc<BackendDAE::EqSystem>, i32)>, mut iNodeComps_Mapping: (Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::EqSystem>, i32)>>)) -> (Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::EqSystem>, i32)>>) {
-    let mut oNodeComps_Mapping: (Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::EqSystem>, i32)>>);
+    let mut oNodeComps_Mapping: (Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::EqSystem>, i32)>>) = (metamodelica::nil(), metamodelica::nil());
     let mut iNodeComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
     let mut tmpNodeComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
     let mut iCompsMapping: Arc<metamodelica::List<(Arc<BackendDAE::EqSystem>, i32)>> = metamodelica::nil();
@@ -5438,25 +5438,25 @@ fn getGraphComponents0(mut inComp: Arc<metamodelica::List<i32>>, mut systComps: 
 }
 
 fn getGraphComponents1(mut compIdx: i32, mut systComps: metamodelica::Array<Arc<BackendDAE::StrongComponent>>, mut iCompEqSysMapping: metamodelica::Array<(Arc<BackendDAE::EqSystem>, i32)>, mut iNodeComps_Mapping: (Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::EqSystem>, i32)>>)) -> Result<(Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::EqSystem>, i32)>>)> {
-    let mut oNodeComps_Mapping: (Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::EqSystem>, i32)>>);
+    let mut oNodeComps_Mapping: (Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::EqSystem>, i32)>>) = (metamodelica::nil(), metamodelica::nil());
     let mut comp: Arc<BackendDAE::StrongComponent>;
-    let mut eqSyst: (Arc<BackendDAE::EqSystem>, i32);
+    let mut eqSyst: (Arc<BackendDAE::EqSystem>, i32) = (Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default()), 0);
     let mut tmpComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
     let mut tmpSysts: Arc<metamodelica::List<(Arc<BackendDAE::EqSystem>, i32)>> = metamodelica::nil();
     (tmpComps, tmpSysts) = iNodeComps_Mapping.clone();
     comp = systComps.clone().borrow()[(compIdx.clone()-1) as usize].clone();
     eqSyst = iCompEqSysMapping.clone().borrow()[(compIdx.clone()-1) as usize].clone();
-    tmpComps = cons(comp.clone(), tmpComps.clone());
-    tmpSysts = cons(eqSyst.clone(), tmpSysts.clone());
+    tmpComps = metamodelica::cons(comp.clone(), tmpComps.clone());
+    tmpSysts = metamodelica::cons(eqSyst.clone(), tmpSysts.clone());
     oNodeComps_Mapping = (tmpComps.clone(), tmpSysts.clone());
     Ok(oNodeComps_Mapping)
 }
 
 fn getGraphComponents2(mut nodeMark: i32, mut systComps: metamodelica::Array<Arc<BackendDAE::StrongComponent>>, mut iCompEqSysMapping: metamodelica::Array<(Arc<BackendDAE::EqSystem>, i32)>, mut iNodeComps_Mapping: (i32, (Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::EqSystem>, i32)>>))) -> Result<(i32, (Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::EqSystem>, i32)>>))> {
-    let mut oNodeComps_Mapping: (i32, (Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::EqSystem>, i32)>>));
+    let mut oNodeComps_Mapping: (i32, (Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, Arc<metamodelica::List<(Arc<BackendDAE::EqSystem>, i32)>>)) = (0, (metamodelica::nil(), metamodelica::nil()));
     let mut nodeIdx: i32 = 0;
     let mut comp: Arc<BackendDAE::StrongComponent>;
-    let mut eqSyst: (Arc<BackendDAE::EqSystem>, i32);
+    let mut eqSyst: (Arc<BackendDAE::EqSystem>, i32) = (Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default()), 0);
     let mut comps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
     let mut eqSysts: Arc<metamodelica::List<(Arc<BackendDAE::EqSystem>, i32)>> = metamodelica::nil();
     oNodeComps_Mapping = 'mc: {
@@ -5485,11 +5485,11 @@ fn getGraphComponents2(mut nodeMark: i32, mut systComps: metamodelica::Array<Arc
                     let mut comps = (*comps).clone();
                     let mut eqSysts = (*eqSysts).clone();
                     let mut comp: Arc<BackendDAE::StrongComponent>;
-                    let mut eqSyst: (Arc<BackendDAE::EqSystem>, i32);
+                    let mut eqSyst: (Arc<BackendDAE::EqSystem>, i32) = eqSyst.clone();
                     comp = systComps.clone().borrow()[(nodeIdx.clone()-1) as usize].clone();
                     eqSyst = iCompEqSysMapping.clone().borrow()[(nodeIdx.clone()-1) as usize].clone();
-                    comps = cons(comp.clone(), comps.clone());
-                    eqSysts = cons(eqSyst.clone(), eqSysts.clone());
+                    comps = metamodelica::cons(comp.clone(), comps.clone());
+                    eqSysts = metamodelica::cons(eqSyst.clone(), eqSysts.clone());
                     Ok((nodeIdx.clone() + 1, (comps.clone(), eqSysts.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -5552,8 +5552,8 @@ fn compareComponents(mut iComp1: (Arc<BackendDAE::StrongComponent>, i32), mut iC
 //  Evaluation and analysing functions
 //------------------------------------
 pub fn getCriticalPaths(mut graphIn: TaskGraph, mut graphDataIn: TaskGraphMeta) -> Result<((Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, metamodelica::Real), (Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, metamodelica::Real))> {
-    let mut criticalPathOut: (Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, metamodelica::Real);
-    let mut criticalPathOutWoC: (Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, metamodelica::Real);
+    let mut criticalPathOut: (Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, metamodelica::Real) = (metamodelica::nil(), metamodelica::OrderedFloat(0.0_f64));
+    let mut criticalPathOutWoC: (Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, metamodelica::Real) = (metamodelica::nil(), metamodelica::OrderedFloat(0.0_f64));
     (criticalPathOut, criticalPathOutWoC) = 'mc: {
         let __mc_input = graphDataIn.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -5589,7 +5589,7 @@ pub fn getCriticalPaths(mut graphIn: TaskGraph, mut graphDataIn: TaskGraphMeta) 
 fn getCriticalPath(mut iGraph: TaskGraph, mut iGraphData: TaskGraphMeta, mut iRootNodes: Arc<metamodelica::List<i32>>, mut iHandleCommCosts: bool) -> Result<(Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, metamodelica::Real)> {
     let mut oCriticalPathsOut: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut oCpCosts: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    let mut nodeCriticalPaths: metamodelica::Array<(metamodelica::Real, Arc<metamodelica::List<i32>>)>;
+    let mut nodeCriticalPaths: metamodelica::Array<(metamodelica::Real, Arc<metamodelica::List<i32>>)> = Default::default();
     let mut criticalPaths: Arc<metamodelica::List<(metamodelica::Real, Arc<metamodelica::List<i32>>)>> = metamodelica::nil();
     let mut criticalPathIdx: i32 = 0;
     let mut criticalPath: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -5602,7 +5602,7 @@ fn getCriticalPath(mut iGraph: TaskGraph, mut iGraphData: TaskGraphMeta, mut iRo
 }
 
 fn getCriticalPath1(mut iNode: i32, mut iGraph: TaskGraph, mut iGraphData: TaskGraphMeta, mut iHandleCommCosts: bool, mut iNodeCriticalPaths: metamodelica::Array<(metamodelica::Real, Arc<metamodelica::List<i32>>)>) -> Result<(metamodelica::Real, Arc<metamodelica::List<i32>>)> {
-    let mut criticalPathOut: (metamodelica::Real, Arc<metamodelica::List<i32>>);
+    let mut criticalPathOut: (metamodelica::Real, Arc<metamodelica::List<i32>>) = (metamodelica::OrderedFloat(0.0_f64), metamodelica::nil());
     let mut cpCalcTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut calcTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut commTime: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
@@ -5613,8 +5613,8 @@ fn getCriticalPath1(mut iNode: i32, mut iGraph: TaskGraph, mut iGraphData: TaskG
     let mut criticalPath: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut nodeComps: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut criticalPaths: Arc<metamodelica::List<(metamodelica::Real, Arc<metamodelica::List<i32>>)>> = metamodelica::nil();
-    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)>;
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     criticalPathOut = 'mc: {
         let __mc_input = iGraphData.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -5642,7 +5642,7 @@ fn getCriticalPath1(mut iNode: i32, mut iGraph: TaskGraph, mut iGraphData: TaskG
             criticalPaths = List::map4(childNodes.clone(), (std::sync::Arc::new(getCriticalPath1) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, TaskGraphMeta, bool, metamodelica::Array<(metamodelica::Real, Arc<metamodelica::List<i32>>)>) -> Result<(metamodelica::Real, Arc<metamodelica::List<i32>>)> + 'static>), iGraph.clone(), iGraphData.clone(), iHandleCommCosts.clone(), iNodeCriticalPaths.clone());
             criticalPathIdx = getCriticalPath2(criticalPaths.clone(), 1, metamodelica::OrderedFloat(-1.0_f64), -1)?;
             (cpCalcTime, criticalPathChild) = (criticalPaths.clone()).get(criticalPathIdx.clone())?;
-            criticalPath = cons(iNode.clone(), criticalPathChild.clone());
+            criticalPath = metamodelica::cons(iNode.clone(), criticalPathChild.clone());
             commCost = if (iHandleCommCosts.clone()) {getCommCostBetweenNodes(iNode.clone(), listHead(criticalPathChild.clone())?, iGraphData.clone())?} else {Communication { numberOfVars: 0, integerVars: metamodelica::nil(), floatVars: metamodelica::nil(), booleanVars: metamodelica::nil(), stringVars: metamodelica::nil(), childNode: -1, requiredTime: metamodelica::OrderedFloat(0.0_f64) }};
             nodeComps = inComps.clone().borrow()[(iNode.clone()-1) as usize].clone();
             calcTime = addUpExeCostsForNode(nodeComps.clone(), exeCosts.clone(), metamodelica::OrderedFloat(0.0_f64))?;
@@ -5661,7 +5661,7 @@ fn getCriticalPath1(mut iNode: i32, mut iGraph: TaskGraph, mut iGraphData: TaskG
             let mut nodeComps: Arc<metamodelica::List<i32>> = nodeComps.clone();
             childNodes = iGraph.clone().borrow()[(iNode.clone()-1) as usize].clone();
             let true = (childNodes.clone().is_empty()) else { bail!("pattern mismatch") };
-            criticalPath = cons(iNode.clone(), metamodelica::nil());
+            criticalPath = metamodelica::cons(iNode.clone(), metamodelica::nil());
             nodeComps = inComps.clone().borrow()[(iNode.clone()-1) as usize].clone();
             calcTime = addUpExeCostsForNode(nodeComps.clone(), exeCosts.clone(), metamodelica::OrderedFloat(0.0_f64))?;
             {let _arr = iNodeCriticalPaths.clone(); _arr.borrow_mut()[(iNode.clone()-1) as usize] = (calcTime.clone(), criticalPath.clone()); _arr};
@@ -5758,7 +5758,7 @@ fn gatherParallelSets1(mut idx: i32, mut nodeInfo: metamodelica::Array<(i32, met
     let mut pSet: Arc<metamodelica::List<i32>> = metamodelica::nil();
     (level, _, _) = nodeInfo.clone().borrow()[(idx.clone()-1) as usize].clone();
     pSet = (parallelSetIn.clone()).get(level.clone())?;
-    pSet = cons(idx.clone(), pSet.clone());
+    pSet = metamodelica::cons(idx.clone(), pSet.clone());
     parallelSetOut = List::replaceAt(pSet.clone(), level.clone(), parallelSetIn.clone())?;
     Ok(parallelSetOut)
 }
@@ -5842,8 +5842,8 @@ fn getCostsForContractedNodes1(mut node: i32, mut exeCosts: metamodelica::Array<
 }
 
 fn getNodeCoords(mut parallelSets: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut graphIn: TaskGraph) -> metamodelica::Array<(i32, i32)> {
-    let mut nodeCoordsOut: metamodelica::Array<(i32, i32)>;
-    let mut nodeCoords: metamodelica::Array<(i32, i32)>;
+    let mut nodeCoordsOut: metamodelica::Array<(i32, i32)> = Default::default();
+    let mut nodeCoords: metamodelica::Array<(i32, i32)> = Default::default();
     let mut size: i32 = 0;
     size = (graphIn.clone().borrow().len() as i32);
     nodeCoords = arrayCreate(size.clone(), (0, 0));
@@ -5853,11 +5853,11 @@ fn getNodeCoords(mut parallelSets: Arc<metamodelica::List<Arc<metamodelica::List
 }
 
 fn getYCoordForNode(mut compIdx: i32, mut parallelSets: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut nodeCoordsIn: metamodelica::Array<(i32, i32)>) -> Result<metamodelica::Array<(i32, i32)>> {
-    let mut nodeCoordsOut: metamodelica::Array<(i32, i32)>;
+    let mut nodeCoordsOut: metamodelica::Array<(i32, i32)> = Default::default();
     let mut parallelSetIdx: i32 = 0;
     let mut xCoord: i32 = 0;
     let mut yCoord: i32 = 0;
-    let mut coords: (i32, i32);
+    let mut coords: (i32, i32) = (0, 0);
     parallelSetIdx = getParallelSetForComp(compIdx.clone(), 1, parallelSets.clone())?;
     (xCoord, yCoord) = nodeCoordsIn.clone().borrow()[(compIdx.clone()-1) as usize].clone();
     coords = (xCoord.clone(), parallelSetIdx.clone());
@@ -5912,7 +5912,7 @@ fn getParallelSetForComp(mut compIn: i32, mut setIdx: i32, mut parallelSets: Arc
 }
 
 fn setLevelInNodeMark(mut nodeIdx: i32, mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut nodeCoords: metamodelica::Array<(i32, i32)>, mut nodeMarkIn: metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> {
-    let mut nodeMarkOut: metamodelica::Array<i32>;
+    let mut nodeMarkOut: metamodelica::Array<i32> = Default::default();
     nodeMarkOut = 'mc: {
         let __mc_input = nodeMarkIn.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -5929,7 +5929,7 @@ fn setLevelInNodeMark(mut nodeIdx: i32, mut inComps: metamodelica::Array<Arc<met
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut nodeMarkTmp: metamodelica::Array<i32>;
+            let mut nodeMarkTmp: metamodelica::Array<i32> = Default::default();
             let mut components: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut primalComp: i32 = 0;
             let mut nodeMarkEntry: i32 = 0;
@@ -5959,8 +5959,8 @@ fn tupleToStringIntRealInt(mut inTuple: (i32, metamodelica::Real, i32)) -> ArcSt
 }
 
 pub fn transposeCommCosts(mut iCommCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>) -> metamodelica::Array<Arc<metamodelica::List<Communication>>> {
-    let mut oCommCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
-    let mut tmpCommCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
+    let mut oCommCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
+    let mut tmpCommCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
     tmpCommCosts = arrayCreate((iCommCosts.clone().borrow().len() as i32), metamodelica::nil());
     (_, tmpCommCosts) = Array::fold(iCommCosts.clone(), (std::sync::Arc::new(fnptr!(transposeCommCosts0, Arc<metamodelica::List<Communication>>, (i32, metamodelica::Array<Arc<metamodelica::List<Communication>>>))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Communication>>, (i32, metamodelica::Array<Arc<metamodelica::List<Communication>>>)) -> Result<(i32, metamodelica::Array<Arc<metamodelica::List<Communication>>>)> + 'static>), (1, tmpCommCosts.clone()));
     oCommCosts = tmpCommCosts.clone();
@@ -5968,9 +5968,9 @@ pub fn transposeCommCosts(mut iCommCosts: metamodelica::Array<Arc<metamodelica::
 }
 
 fn transposeCommCosts0(mut iCosts: Communications, mut iCommCosts: (i32, metamodelica::Array<Arc<metamodelica::List<Communication>>>)) -> (i32, metamodelica::Array<Arc<metamodelica::List<Communication>>>) {
-    let mut oCommCosts: (i32, metamodelica::Array<Arc<metamodelica::List<Communication>>>);
+    let mut oCommCosts: (i32, metamodelica::Array<Arc<metamodelica::List<Communication>>>) = (0, Default::default());
     let mut iParentCompIdx: i32 = 0;
-    let mut tmpCommCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
+    let mut tmpCommCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
     (iParentCompIdx, tmpCommCosts) = iCommCosts.clone();
     tmpCommCosts = List::fold1(iCosts.clone(), (std::sync::Arc::new(transposeCommCosts1) as std::sync::Arc<dyn ::std::ops::Fn(Communication, i32, metamodelica::Array<Arc<metamodelica::List<Communication>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<Communication>>>> + 'static>), iParentCompIdx.clone(), tmpCommCosts.clone());
     oCommCosts = (iParentCompIdx.clone() + 1, tmpCommCosts.clone());
@@ -5978,8 +5978,8 @@ fn transposeCommCosts0(mut iCosts: Communications, mut iCommCosts: (i32, metamod
 }
 
 fn transposeCommCosts1(mut iCost: Communication, mut iParentCompIdx: i32, mut iCommCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<Communication>>>> {
-    let mut oCommCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
-    let mut tmpCommCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
+    let mut oCommCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
+    let mut tmpCommCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
     let mut costs: Communications = metamodelica::nil();
     let mut numberOfVars: i32 = 0;
     let mut nodeIdx: i32 = 0;
@@ -5993,10 +5993,10 @@ fn transposeCommCosts1(mut iCost: Communication, mut iParentCompIdx: i32, mut iC
         if let Ok(__v) = (|| -> Result<_> {
             let Communication { requiredTime: mut requiredTime, childNode: mut nodeIdx, stringVars: mut stringVars, booleanVars: mut booleanVars, floatVars: mut floatVars, integerVars: mut integerVars, numberOfVars: mut numberOfVars } = __mc_input.clone() else { bail!("nomatch") };
             let mut costs: Arc<metamodelica::List<Communication>> = costs.clone();
-            let mut tmpCommCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
+            let mut tmpCommCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>> = tmpCommCosts.clone();
             let true = (intLe(nodeIdx.clone(), (iCommCosts.clone().borrow().len() as i32))) else { bail!("pattern mismatch") };
             costs = iCommCosts.clone().borrow()[(nodeIdx.clone()-1) as usize].clone();
-            costs = cons(Communication { numberOfVars: numberOfVars.clone(), integerVars: integerVars.clone(), floatVars: floatVars.clone(), booleanVars: booleanVars.clone(), stringVars: stringVars.clone(), childNode: iParentCompIdx.clone(), requiredTime: requiredTime.clone() }, costs.clone());
+            costs = metamodelica::cons(Communication { numberOfVars: numberOfVars.clone(), integerVars: integerVars.clone(), floatVars: floatVars.clone(), booleanVars: booleanVars.clone(), stringVars: stringVars.clone(), childNode: iParentCompIdx.clone(), requiredTime: requiredTime.clone() }, costs.clone());
             tmpCommCosts = {let _arr = iCommCosts.clone(); _arr.borrow_mut()[(nodeIdx.clone()-1) as usize] = costs.clone(); _arr};
             Ok(tmpCommCosts.clone())
         })() { break 'mc __v; }
@@ -6073,8 +6073,8 @@ fn getCommCostBetweenNodes(mut iParentNodeIdx: i32, mut iChildNodeIdx: i32, mut 
     let mut oCommCost: Communication = <Communication as ::std::default::Default>::default();
     let mut childComps: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut parentComps: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut commCosts: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
     let mut concreteCommCostsOpt: Arc<metamodelica::List<Option<Communication>>> = metamodelica::nil();
     let mut concreteCommCosts: Communications = metamodelica::nil();
     let TaskGraphMeta { commCosts: __pa0, inComps: __pa1, .. } = (iTaskGraphMeta.clone()) else { bail!("pattern mismatch") };
@@ -6173,12 +6173,12 @@ fn getHighestCommCost(mut iCommCosts: Communications, mut iHighestTuple: Communi
 }
 
 pub fn sumUpExeCosts(mut iGraph: TaskGraph, mut iMeta: TaskGraphMeta) -> (i32, metamodelica::Real) {
-    let mut execCosts: (i32, metamodelica::Real);
+    let mut execCosts: (i32, metamodelica::Real) = (0, metamodelica::OrderedFloat(0.0_f64));
     let mut cost1: i32 = 0;
     let mut cost2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut comps: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)>;
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
     let mut exeCostLst: Arc<metamodelica::List<(i32, metamodelica::Real)>> = metamodelica::nil();
     execCosts = (match iMeta.clone() {
         TaskGraphMeta { exeCosts: mut exeCosts, inComps: mut inComps, .. } => {
@@ -6196,9 +6196,9 @@ pub fn sumUpExeCosts(mut iGraph: TaskGraph, mut iMeta: TaskGraphMeta) -> (i32, m
 pub fn getAllSCCsOfGraph(mut iTaskGraphMeta: TaskGraphMeta) -> Result<Arc<metamodelica::List<i32>>> {
     let mut oSccs: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut taskIdx: i32 = 0;
-    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut comps: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut nodeMark: metamodelica::Array<i32>;
+    let mut nodeMark: metamodelica::Array<i32> = Default::default();
     let mut tmpSccs: Arc<metamodelica::List<i32>> = metamodelica::nil();
     tmpSccs = metamodelica::nil();
     let TaskGraphMeta { nodeMark: __pa0, inComps: __pa1, .. } = (iTaskGraphMeta.clone()) else { bail!("pattern mismatch") };
@@ -6227,7 +6227,7 @@ pub fn roundReal(mut inReal: metamodelica::Real, mut nIn: i32) -> metamodelica::
 //  Get annotations from backendDAE and display in graphML
 //--------------------------------------------------------
 fn setAnnotationsForTasks(mut taskGraphInfo: TaskGraphMeta, mut backendDAE: Arc<BackendDAE::BackendDAE>, mut annotInfoIn: metamodelica::Array<ArcStr>) -> Result<metamodelica::Array<ArcStr>> {
-    let mut annotInfoOut: metamodelica::Array<ArcStr>;
+    let mut annotInfoOut: metamodelica::Array<ArcStr> = Default::default();
     let mut systs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = metamodelica::nil();
     let __pa0 = ::match_deref::match_deref! { match &(backendDAE.clone()) {
         Deref @ BackendDAE::BackendDAE { eqs: __pa0, .. } => __pa0.clone(),
@@ -6239,9 +6239,9 @@ fn setAnnotationsForTasks(mut taskGraphInfo: TaskGraphMeta, mut backendDAE: Arc<
 }
 
 fn setAnnotationsForTasks1(mut syst: Arc<BackendDAE::EqSystem>, mut taskGraphInfo: TaskGraphMeta, mut infoIn: (i32, metamodelica::Array<ArcStr>)) -> Result<(i32, metamodelica::Array<ArcStr>)> {
-    let mut infoOut: (i32, metamodelica::Array<ArcStr>);
+    let mut infoOut: (i32, metamodelica::Array<ArcStr>) = (0, Default::default());
     let mut idx: i32 = 0;
-    let mut annots: metamodelica::Array<ArcStr>;
+    let mut annots: metamodelica::Array<ArcStr> = Default::default();
     let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     let mut eqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     (idx, annots) = infoIn.clone();
@@ -6257,7 +6257,7 @@ fn setAnnotationsForTasks1(mut syst: Arc<BackendDAE::EqSystem>, mut taskGraphInf
 }
 
 fn setAnnotationsForVar(mut backendVarIdx: i32, mut vars: BackendDAE::Variables, mut taskGraphInfo: TaskGraphMeta, mut eqSysOffset: i32, mut annotInfoIn: metamodelica::Array<ArcStr>) -> Result<metamodelica::Array<ArcStr>> {
-    let mut annotInfoOut: metamodelica::Array<ArcStr>;
+    let mut annotInfoOut: metamodelica::Array<ArcStr> = Default::default();
     annotInfoOut = 'mc: {
         let __mc_input = taskGraphInfo.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -6293,7 +6293,7 @@ fn setAnnotationsForVar(mut backendVarIdx: i32, mut vars: BackendDAE::Variables,
 //  Append removed equations like asserts to the DAE graph
 //--------------------------------------------------------
 pub fn appendRemovedEquations(mut dae: Arc<BackendDAE::BackendDAE>, mut graphIn: TaskGraph, mut graphDataIn: TaskGraphMeta) -> Result<(TaskGraph, TaskGraphMeta)> {
-    let mut graphOut: TaskGraph;
+    let mut graphOut: TaskGraph = Default::default();
     let mut graphDataOut: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
     (graphOut, graphDataOut) = 'mc: {
         let __mc_input = graphDataIn.clone();
@@ -6302,29 +6302,29 @@ pub fn appendRemovedEquations(mut dae: Arc<BackendDAE::BackendDAE>, mut graphIn:
             let mut numNewComps: i32 = 0;
             let mut newComps: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut nodeVarLst: Arc<metamodelica::List<Arc<metamodelica::List<(i32, i32)>>>> = metamodelica::nil();
-            let mut varCompMap: metamodelica::Array<(i32, i32, i32)>;
-            let mut graph: TaskGraph;
+            let mut varCompMap: metamodelica::Array<(i32, i32, i32)> = Default::default();
+            let mut graph: TaskGraph = Default::default();
             let mut graphData: TaskGraphMeta = <TaskGraphMeta as ::std::default::Default>::default();
             let mut remEqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
             let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
             let mut eqLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
             let mut crefsLst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>> = metamodelica::nil();
-            let mut inComps1: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut inComps2: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut varCompMapping1: metamodelica::Array<(i32, i32, i32)>;
-            let mut eqCompMapping1: metamodelica::Array<(i32, i32, i32)>;
-            let mut compParamMapping1: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-            let mut compNames1: metamodelica::Array<ArcStr>;
-            let mut compNames2: metamodelica::Array<ArcStr>;
-            let mut compDescs1: metamodelica::Array<ArcStr>;
-            let mut compDescs2: metamodelica::Array<ArcStr>;
-            let mut exeCosts1: metamodelica::Array<(i32, metamodelica::Real)>;
-            let mut exeCosts2: metamodelica::Array<(i32, metamodelica::Real)>;
-            let mut commCosts1: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
-            let mut nodeMark1: metamodelica::Array<i32>;
-            let mut nodeMark2: metamodelica::Array<i32>;
-            let mut compInformations1: metamodelica::Array<ComponentInfo>;
-            let mut compInformations2: metamodelica::Array<ComponentInfo>;
+            let mut inComps1: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut inComps2: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut varCompMapping1: metamodelica::Array<(i32, i32, i32)> = Default::default();
+            let mut eqCompMapping1: metamodelica::Array<(i32, i32, i32)> = Default::default();
+            let mut compParamMapping1: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+            let mut compNames1: metamodelica::Array<ArcStr> = Default::default();
+            let mut compNames2: metamodelica::Array<ArcStr> = Default::default();
+            let mut compDescs1: metamodelica::Array<ArcStr> = Default::default();
+            let mut compDescs2: metamodelica::Array<ArcStr> = Default::default();
+            let mut exeCosts1: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
+            let mut exeCosts2: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
+            let mut commCosts1: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
+            let mut nodeMark1: metamodelica::Array<i32> = Default::default();
+            let mut nodeMark2: metamodelica::Array<i32> = Default::default();
+            let mut compInformations1: metamodelica::Array<ComponentInfo> = Default::default();
+            let mut compInformations2: metamodelica::Array<ComponentInfo> = Default::default();
             let __pa0 = ::match_deref::match_deref! { match &(dae.clone()) {
                 Deref @ BackendDAE::BackendDAE { shared: __pa0, .. } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
@@ -6378,7 +6378,7 @@ pub fn appendRemovedEquations(mut dae: Arc<BackendDAE::BackendDAE>, mut graphIn:
 }
 
 fn estimateEquationCosts(mut eqIn: Arc<BackendDAE::Equation>, mut sharedIn: Arc<BackendDAE::Shared>) -> Result<(i32, metamodelica::Real)> {
-    let mut tplOut: (i32, metamodelica::Real);
+    let mut tplOut: (i32, metamodelica::Real) = (0, metamodelica::OrderedFloat(0.0_f64));
     let mut numAdd: i32 = 0;
     let mut numMul: i32 = 0;
     let mut numDiv: i32 = 0;
@@ -6388,7 +6388,7 @@ fn estimateEquationCosts(mut eqIn: Arc<BackendDAE::Equation>, mut sharedIn: Arc<
     let mut numFuncs: i32 = 0;
     let mut numLog: i32 = 0;
     let mut compInfo: Arc<BackendDAE::CompInfo>;
-    let (_, (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7)) = BackendEquation::traverseExpsOfEquation(eqIn.clone(), Arc::new({ let __pe_b1 = sharedIn.clone(); move |__pe_a0, __pe_a2| BackendDAEOptimize::countOperationsExp(__pe_a0, __pe_b1.clone(), __pe_a2) }), (0, 0, 0, 0, 0, 0, 0, 0))?;
+    let (_, (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7)) = BackendEquation::traverseExpsOfEquation(eqIn.clone(), (std::sync::Arc::new({ let __pe_b1 = sharedIn.clone(); move |__pe_a0, __pe_a2| BackendDAEOptimize::countOperationsExp(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32)) -> Result<(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32))> + 'static>), (0, 0, 0, 0, 0, 0, 0, 0))?;
     numAdd = __pa0.clone();
     numMul = __pa1.clone();
     numDiv = __pa2.clone();
@@ -6415,20 +6415,20 @@ fn printNodeVars1(mut node: (i32, i32)) -> ArcStr {
 }
 
 fn setCommCostsToParent(mut parents: Arc<metamodelica::List<(i32, i32)>>, mut child: i32, mut reqCycles: metamodelica::Real, mut commCostsIn: metamodelica::Array<Arc<metamodelica::List<Communication>>>) -> metamodelica::Array<Arc<metamodelica::List<Communication>>> {
-    let mut commCostsOut: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
+    let mut commCostsOut: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
     commCostsOut = List::fold2(parents.clone(), (std::sync::Arc::new(setCommCosts) as std::sync::Arc<dyn ::std::ops::Fn((i32, i32), i32, metamodelica::Real, metamodelica::Array<Arc<metamodelica::List<Communication>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<Communication>>>> + 'static>), child.clone(), reqCycles.clone(), commCostsIn.clone());
     commCostsOut
 }
 
 fn setCommCosts(mut parent: (i32, i32), mut child: i32, mut reqCycles: metamodelica::Real, mut commCostsIn: metamodelica::Array<Arc<metamodelica::List<Communication>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<Communication>>>> {
-    let mut commCostsOut: metamodelica::Array<Arc<metamodelica::List<Communication>>>;
+    let mut commCostsOut: metamodelica::Array<Arc<metamodelica::List<Communication>>> = Default::default();
     let mut row: Communications = metamodelica::nil();
     let mut parentNodeIdx: i32 = 0;
     let mut varIdx: i32 = 0;
     (parentNodeIdx, varIdx) = parent.clone();
     row = commCostsIn.clone().borrow()[(parentNodeIdx.clone()-1) as usize].clone();
     row = List::filter1OnTrue(row.clone(), (std::sync::Arc::new(isCommunicationChildEqualToIdx) as std::sync::Arc<dyn ::std::ops::Fn(Communication, i32) -> Result<bool> + 'static>), child.clone());
-    row = cons(Communication { numberOfVars: 1, integerVars: metamodelica::nil(), floatVars: list![varIdx.clone()], booleanVars: metamodelica::nil(), stringVars: metamodelica::nil(), childNode: child.clone(), requiredTime: reqCycles.clone() }, row.clone());
+    row = metamodelica::cons(Communication { numberOfVars: 1, integerVars: metamodelica::nil(), floatVars: list![varIdx.clone()], booleanVars: metamodelica::nil(), stringVars: metamodelica::nil(), childNode: child.clone(), requiredTime: reqCycles.clone() }, row.clone());
     commCostsOut = {let _arr = commCostsIn.clone(); _arr.borrow_mut()[(parentNodeIdx.clone()-1) as usize] = row.clone(); _arr};
     Ok(commCostsOut)
 }
@@ -6443,16 +6443,16 @@ fn isCommunicationChildEqualToIdx(mut iComm: Communication, mut iIdx: i32) -> Re
 }
 
 fn addEdgesToGraph(mut parents: Arc<metamodelica::List<(i32, i32)>>, mut child: i32, mut graphIn: TaskGraph) -> TaskGraph {
-    let mut graphOut: TaskGraph;
+    let mut graphOut: TaskGraph = Default::default();
     graphOut = List::fold1(List::map(parents.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _))), (std::sync::Arc::new(addEdgeToGraph) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> + 'static>), child.clone(), graphIn.clone());
     graphOut
 }
 
 fn addEdgeToGraph(mut parent: i32, mut child: i32, mut graphIn: TaskGraph) -> Result<TaskGraph> {
-    let mut graphOut: TaskGraph;
+    let mut graphOut: TaskGraph = Default::default();
     let mut row: Arc<metamodelica::List<i32>> = metamodelica::nil();
     row = graphIn.clone().borrow()[(parent.clone()-1) as usize].clone();
-    row = List::unique(cons(child.clone(), row.clone()));
+    row = List::unique(metamodelica::cons(child.clone(), row.clone()));
     graphOut = {let _arr = graphIn.clone(); _arr.borrow_mut()[(parent.clone()-1) as usize] = row.clone(); _arr};
     Ok(graphOut)
 }
@@ -6474,7 +6474,7 @@ fn nodeIsDependent(mut node: (i32, i32)) -> bool {
 }
 
 fn getNodeForCref(mut iCref: Arc<DAE::ComponentRef>, mut iDae: Arc<BackendDAE::BackendDAE>, mut iVarCompMapping: metamodelica::Array<(i32, i32, i32)>) -> Result<(i32, i32)> {
-    let mut oNodeVarIdx: (i32, i32);
+    let mut oNodeVarIdx: (i32, i32) = (0, 0);
     let mut eqSysIdx: i32 = 0;
     let mut varIdx: i32 = 0;
     let mut nodeIdx: i32 = 0;
@@ -6580,11 +6580,11 @@ fn getNodeForVarIdx(mut varIdx: i32, mut eqSysIdx: i32, mut varCompMapping: meta
 //----------------------------
 pub fn multirate_partitioning(mut odeGraph: TaskGraph, mut odeGraphData: TaskGraphMeta, mut backendDAE: Arc<BackendDAE::BackendDAE>, mut simCode: SimCode::SimCode, mut sccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<SimCode::PartitionData> {
     let mut partitionDataOut: SimCode::PartitionData = <SimCode::PartitionData as ::std::default::Default>::default();
-    let mut stateTaskAssign: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut stateTaskAssign: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut stateTasks: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut tasksPerLevel: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut partitions: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-    let mut odeGraphT: TaskGraph;
+    let mut odeGraphT: TaskGraph = Default::default();
     let mut numPartitions: i32 = 0;
     let mut activatorsForPartitions: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut stateToActivators: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -6598,7 +6598,7 @@ pub fn multirate_partitioning(mut odeGraph: TaskGraph, mut odeGraphData: TaskGra
     dumpStateAssign(stateTaskAssign.clone());
     partitions = multirate_getPartitions(stateTaskAssign.clone(), stateTasks.clone(), odeGraphT.clone())?;
     println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("PARTITIONS :\n")); __mm_s.push_str(&*stringDelimitList(List::map(partitions.clone(), (std::sync::Arc::new(fnptr!(intLstString, Arc<metamodelica::List<i32>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>) -> Result<ArcStr> + 'static>)), (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-    activatorsForPartitions = List::mapMap(partitions.clone(), Arc::new(listHead.clone()), Arc::new({ let __pe_b1 = stateTaskAssign.clone(); move |__pe_a0| Ok(Array::getIndexFirst(__pe_a0, __pe_b1.clone())) }));
+    activatorsForPartitions = List::mapMap(partitions.clone(), Arc::new(listHead.clone()), (std::sync::Arc::new({ let __pe_b1 = stateTaskAssign.clone(); move |__pe_a0| Ok(Array::getIndexFirst(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<_> + 'static>));
     partitions = List::map1(partitions.clone(), (std::sync::Arc::new(fnptr!(getSimEqsIdxLstForSCCIdxLst, Arc<metamodelica::List<i32>>, metamodelica::Array<Arc<metamodelica::List<i32>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), sccSimEqMapping.clone());
     numPartitions = (partitions.clone().len() as i32);
     stateToActivators = List::intRange((stateTasks.clone().len() as i32));
@@ -6617,7 +6617,7 @@ fn multirate_orderStateTasksInSimVarStateOrder(mut stateTasks: Arc<metamodelica:
     let mut simVarIdx: i32 = 0;
     let mut simVarIdxs: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut order: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)>;
+    let mut varCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
     let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
     let mut eqSys: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
     let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -6632,7 +6632,7 @@ fn multirate_orderStateTasksInSimVarStateOrder(mut stateTasks: Arc<metamodelica:
     for mut state in &*stateTasks.clone() {
         let mut state = state.clone();
         compIdx = listHead(taskGraphData.inComps.clone().borrow()[(state.clone()-1) as usize].clone())?;
-        let (__pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(Array::findFirstOnTrueWithIdx(taskGraphData.varCompMapping.clone(), Arc::new({ let __pe_b1 = compIdx.clone(); move |__pe_a0| Ok(varMappingTupleCompEqual(__pe_a0, __pe_b1.clone())) }))) {
+        let (__pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(Array::findFirstOnTrueWithIdx(taskGraphData.varCompMapping.clone(), (std::sync::Arc::new({ let __pe_b1 = compIdx.clone(); move |__pe_a0| Ok(varMappingTupleCompEqual(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn((i32, i32, i32)) -> Result<bool> + 'static>))) {
             (Some((__pa1, __pa2, __pa3)), __pa4) => (__pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
             _ => bail!("pattern mismatch"),
         } };
@@ -6650,7 +6650,7 @@ fn multirate_orderStateTasksInSimVarStateOrder(mut stateTasks: Arc<metamodelica:
         } };
         simVar = __pa5.clone();
         simVarIdx = simVar.index.clone();
-        simVarIdxs = cons(simVarIdx.clone(), simVarIdxs.clone());
+        simVarIdxs = metamodelica::cons(simVarIdx.clone(), simVarIdxs.clone());
     }
     (_, order) = HpcOmScheduler::quicksortWithOrder(List::map(simVarIdxs.clone().reverse(), (std::sync::Arc::new(fnptr!(intReal, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<metamodelica::Real> + 'static>)))?;
     orderedTasks = List::map1(order.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), stateTasks.clone());
@@ -6684,8 +6684,8 @@ fn multirate_getPartitions(mut stateTaskAssign: metamodelica::Array<Arc<metamode
     let mut partition: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut otherPartTasks: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut stateAss: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut visitedTasks: metamodelica::Array<i32>;
-    let mut leaveNodesWithNassigns: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut visitedTasks: metamodelica::Array<i32> = Default::default();
+    let mut leaveNodesWithNassigns: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     visitedTasks = arrayCreate((odeGraphT.clone().borrow().len() as i32), -1);
     numStates = (stateTasks.clone().len() as i32);
     leaveNodesWithNassigns = arrayCreate(numStates.clone(), metamodelica::nil());
@@ -6696,11 +6696,11 @@ fn multirate_getPartitions(mut stateTaskAssign: metamodelica::Array<Arc<metamode
         leaveNodes = List::unique(leaveNodes.clone());
         while !(leaveNodes.clone().is_empty()) {
             stateAss = stateTaskAssign.clone().borrow()[(listHead(leaveNodes.clone())?-1) as usize].clone();
-            (samePartTasks, leaveNodes) = List::separateOnTrue(leaveNodes.clone(), Arc::new({ let __pe_b1 = stateTaskAssign.clone(); let __pe_b2 = stateAss.clone(); move |__pe_a0| hasSameStateAssign(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }));
+            (samePartTasks, leaveNodes) = List::separateOnTrue(leaveNodes.clone(), (std::sync::Arc::new({ let __pe_b1 = stateTaskAssign.clone(); let __pe_b2 = stateAss.clone(); move |__pe_a0| hasSameStateAssign(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>));
             (partition, otherPartTasks) = multirate_getPartitionPredecessors(samePartTasks.clone(), odeGraphT.clone(), stateTaskAssign.clone(), stateAss.clone(), visitedTasks.clone())?;
             partition = List::sort(partition.clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
             multirate_dispatchLeaveNodes(otherPartTasks.clone(), stateTaskAssign.clone(), leaveNodesWithNassigns.clone())?;
-            partitions = cons(partition.clone(), partitions.clone());
+            partitions = metamodelica::cons(partition.clone(), partitions.clone());
         }
     }
     Ok(partitions)
@@ -6715,7 +6715,7 @@ fn multirate_dispatchLeaveNodes(mut tasksIn: Arc<metamodelica::List<i32>>, mut s
         stateAss = stateTaskAssign.clone().borrow()[(task.clone()-1) as usize].clone();
         numAss = (stateAss.clone().len() as i32);
         leaveNodes = leaveNodesWithNassigns.clone().borrow()[(numAss.clone()-1) as usize].clone();
-        leaveNodes = cons(task.clone(), leaveNodes.clone());
+        leaveNodes = metamodelica::cons(task.clone(), leaveNodes.clone());
         {let _arr = leaveNodesWithNassigns.clone(); _arr.borrow_mut()[(numAss.clone()-1) as usize] = leaveNodes.clone(); _arr};
     }
     Ok(())
@@ -6741,8 +6741,8 @@ fn multirate_getPartitionPredecessors(mut leavesIn: Arc<metamodelica::List<i32>>
         tasks = __pa1.clone();
         predecessors = odeGraphT.clone().borrow()[(task.clone()-1) as usize].clone();
         predecessors = List::filter1OnTrue(predecessors.clone(), (std::sync::Arc::new(taskIsNotVisited) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>) -> Result<bool> + 'static>), visitedTasks.clone());
-        (samePartTasks, otherLeaves) = List::separateOnTrue(predecessors.clone(), Arc::new({ let __pe_b1 = stateTaskAssign.clone(); let __pe_b2 = refStateAssign.clone(); move |__pe_a0| hasSameStateAssign(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }));
-        partitionTasks = cons(task.clone(), partitionTasks.clone());
+        (samePartTasks, otherLeaves) = List::separateOnTrue(predecessors.clone(), (std::sync::Arc::new({ let __pe_b1 = stateTaskAssign.clone(); let __pe_b2 = refStateAssign.clone(); move |__pe_a0| hasSameStateAssign(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>));
+        partitionTasks = metamodelica::cons(task.clone(), partitionTasks.clone());
         partitionTasks = listAppend(samePartTasks.clone(), partitionTasks.clone());
         tasks = listAppend(samePartTasks.clone(), tasks.clone());
         otherLeaveNodes = listAppend(otherLeaves.clone(), otherLeaveNodes.clone());
@@ -6771,7 +6771,7 @@ fn hasSameStateAssign(mut task: i32, mut stateTaskAssign: metamodelica::Array<Ar
 }
 
 fn multirate_assignTasksToStates(mut tasksPerLevel: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut stateTasks: Arc<metamodelica::List<i32>>, mut odeGraphT: TaskGraph) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
-    let mut stateTaskAssignOut: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut stateTaskAssignOut: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut taskIdx: i32 = 0;
     let mut assignments: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut predecessors: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -6796,7 +6796,7 @@ fn multirate_assignTasksToStates(mut tasksPerLevel: Arc<metamodelica::List<Arc<m
 }
 
 fn appendToElementUnique<T: Clone + 'static + PartialEq>(mut inIndex: i32, mut inElements: Arc<metamodelica::List<T>>, mut inArray: metamodelica::Array<Arc<metamodelica::List<T>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<T>>>> {
-    let mut outArray: metamodelica::Array<Arc<metamodelica::List<T>>>;
+    let mut outArray: metamodelica::Array<Arc<metamodelica::List<T>>> = Default::default();
     outArray = {let _arr = inArray.clone(); let _val = List::unique(listAppend(inArray.borrow()[(inIndex.clone()-1) as usize].clone(), inElements.clone())); _arr.borrow_mut()[(inIndex.clone()-1) as usize] = _val; _arr};
     Ok(outArray)
 }
@@ -6838,9 +6838,9 @@ fn dumpPartitionData(mut partData: SimCode::PartitionData) -> Result<()> {
 //  MAPPING FUNCTIONS
 //----------------------------
 pub fn setUpHpcOmMapping(mut daeIn: Arc<BackendDAE::BackendDAE>, mut simCodeIn: SimCode::SimCode, mut lastEqMappingIdx: i32, mut equationSccMappingIn: Arc<metamodelica::List<(i32, i32)>>) -> Result<(metamodelica::Array<i32>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>)> {
-    let mut simeqCompMapping: metamodelica::Array<i32>;
-    let mut sccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut daeSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut simeqCompMapping: metamodelica::Array<i32> = Default::default();
+    let mut sccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut daeSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut highestSccIdx: i32 = 0;
     let mut compCountPlusDummy: i32 = 0;
     let mut equationSccMapping: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
@@ -6907,7 +6907,7 @@ fn removeDummyStateFromMapping1(mut iTuple: (i32, i32), mut iNewList: Arc<metamo
     let mut oNewList: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
     let mut eqIdx: i32 = 0;
     let mut sccIdx: i32 = 0;
-    let mut newElem: (i32, i32);
+    let mut newElem: (i32, i32) = (0, 0);
     oNewList = 'mc: {
         let __mc_input = iTuple.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -6917,9 +6917,9 @@ fn removeDummyStateFromMapping1(mut iTuple: (i32, i32), mut iNewList: Arc<metamo
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (mut eqIdx, mut sccIdx) = __mc_input.clone() else { bail!("nomatch") };
-            let mut newElem: (i32, i32);
+            let mut newElem: (i32, i32) = newElem.clone();
             newElem = (eqIdx.clone(), sccIdx.clone() - 1);
-            Ok(cons(newElem.clone(), iNewList.clone()))
+            Ok(metamodelica::cons(newElem.clone(), iNewList.clone()))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
@@ -6932,8 +6932,8 @@ fn removeDummyStateFromMapping1(mut iTuple: (i32, i32), mut iNewList: Arc<metamo
 }
 
 fn convertToSccSimEqMapping(mut iMapping: Arc<metamodelica::List<(i32, i32)>>, mut numOfSccs: i32) -> metamodelica::Array<Arc<metamodelica::List<i32>>> {
-    let mut oMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>;
-    let mut tmpMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut oMapping: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
+    let mut tmpMapping: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     tmpMapping = arrayCreate(numOfSccs.clone(), metamodelica::nil());
     List::fold(iMapping.clone(), (std::sync::Arc::new(convertToSccSimEqMapping1) as std::sync::Arc<dyn ::std::ops::Fn((i32, i32), metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> + 'static>), tmpMapping.clone());
     oMapping = tmpMapping.clone();
@@ -6941,27 +6941,27 @@ fn convertToSccSimEqMapping(mut iMapping: Arc<metamodelica::List<(i32, i32)>>, m
 }
 
 fn convertToSccSimEqMapping1(mut iMapping: (i32, i32), mut iSccMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
-    let mut oSccMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut oSccMapping: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut i1: i32 = 0;
     let mut i2: i32 = 0;
     let mut tmpList: Arc<metamodelica::List<i32>> = metamodelica::nil();
     (i1, i2) = iMapping.clone();
     tmpList = iSccMapping.clone().borrow()[(i2.clone()-1) as usize].clone();
-    tmpList = cons(i1.clone(), tmpList.clone());
+    tmpList = metamodelica::cons(i1.clone(), tmpList.clone());
     oSccMapping = {let _arr = iSccMapping.clone(); _arr.borrow_mut()[(i2.clone()-1) as usize] = tmpList.clone(); _arr};
     Ok(oSccMapping)
 }
 
 fn convertToSimeqCompMapping(mut iMapping: Arc<metamodelica::List<(i32, i32)>>, mut numOfSimEqs: i32) -> metamodelica::Array<i32> {
-    let mut oMapping: metamodelica::Array<i32>;
-    let mut tmpMapping: metamodelica::Array<i32>;
+    let mut oMapping: metamodelica::Array<i32> = Default::default();
+    let mut tmpMapping: metamodelica::Array<i32> = Default::default();
     tmpMapping = arrayCreate(numOfSimEqs.clone(), -1);
     oMapping = List::fold(iMapping.clone(), (std::sync::Arc::new(convertToSimeqCompMapping1) as std::sync::Arc<dyn ::std::ops::Fn((i32, i32), metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> + 'static>), tmpMapping.clone());
     oMapping
 }
 
 fn convertToSimeqCompMapping1(mut iSimEqTuple: (i32, i32), mut iMapping: metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> {
-    let mut oMapping: metamodelica::Array<i32>;
+    let mut oMapping: metamodelica::Array<i32> = Default::default();
     let mut simEqIdx: i32 = 0;
     let mut sccIdx: i32 = 0;
     (simEqIdx, sccIdx) = iSimEqTuple.clone();
@@ -6970,23 +6970,23 @@ fn convertToSimeqCompMapping1(mut iSimEqTuple: (i32, i32), mut iMapping: metamod
 }
 
 fn getSimEqIdxSimEqMapping(mut iAllEquations: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut iSimEqSystemHighestIdx: i32) -> metamodelica::Array<Option<Arc<SimCode::SimEqSystem>>> {
-    let mut oMapping: metamodelica::Array<Option<Arc<SimCode::SimEqSystem>>>;
-    let mut tmpMapping: metamodelica::Array<Option<Arc<SimCode::SimEqSystem>>>;
+    let mut oMapping: metamodelica::Array<Option<Arc<SimCode::SimEqSystem>>> = Default::default();
+    let mut tmpMapping: metamodelica::Array<Option<Arc<SimCode::SimEqSystem>>> = Default::default();
     tmpMapping = arrayCreate(iSimEqSystemHighestIdx.clone(), None);
     oMapping = List::fold(iAllEquations.clone(), (std::sync::Arc::new(getSimEqIdxSimEqMapping1) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimCode::SimEqSystem>, metamodelica::Array<Option<Arc<SimCode::SimEqSystem>>>) -> Result<metamodelica::Array<Option<Arc<SimCode::SimEqSystem>>>> + 'static>), tmpMapping.clone());
     oMapping
 }
 
 fn getSimEqIdxSimEqMapping1(mut iEquation: Arc<SimCode::SimEqSystem>, mut iMapping: metamodelica::Array<Option<Arc<SimCode::SimEqSystem>>>) -> Result<metamodelica::Array<Option<Arc<SimCode::SimEqSystem>>>> {
-    let mut oMapping: metamodelica::Array<Option<Arc<SimCode::SimEqSystem>>>;
+    let mut oMapping: metamodelica::Array<Option<Arc<SimCode::SimEqSystem>>> = Default::default();
     let mut simEqIdx: i32 = 0;
-    let mut tmpMapping: metamodelica::Array<Option<Arc<SimCode::SimEqSystem>>>;
+    let mut tmpMapping: metamodelica::Array<Option<Arc<SimCode::SimEqSystem>>> = Default::default();
     oMapping = 'mc: {
         let __mc_input = iMapping.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut simEqIdx: i32 = simEqIdx.clone();
-            let mut tmpMapping: metamodelica::Array<Option<Arc<SimCode::SimEqSystem>>>;
+            let mut tmpMapping: metamodelica::Array<Option<Arc<SimCode::SimEqSystem>>> = tmpMapping.clone();
             (simEqIdx, _) = getIndexBySimCodeEq(iEquation.clone())?;
             tmpMapping = {let _arr = iMapping.clone(); _arr.borrow_mut()[(simEqIdx.clone()-1) as usize] = Some(iEquation.clone()); _arr};
             Ok(tmpMapping.clone())
@@ -7003,7 +7003,7 @@ fn getSimEqIdxSimEqMapping1(mut iEquation: Arc<SimCode::SimEqSystem>, mut iMappi
 }
 
 fn getSimCodeEqByIndexAndMapping(mut iSimEqIdxSimEqMapping: metamodelica::Array<Option<Arc<SimCode::SimEqSystem>>>, mut iIdx: i32) -> Result<Arc<SimCode::SimEqSystem>> {
-    let mut oSimEqSystem: Arc<SimCode::SimEqSystem>;
+    let mut oSimEqSystem: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
     let mut tmpSimEqSystem: Option<Arc<SimCode::SimEqSystem>> = None;
     tmpSimEqSystem = iSimEqIdxSimEqMapping.clone().borrow()[(iIdx.clone()-1) as usize].clone();
     oSimEqSystem = getSimCodeEqByIndexAndMapping1(tmpSimEqSystem.clone(), iIdx.clone())?;
@@ -7011,8 +7011,8 @@ fn getSimCodeEqByIndexAndMapping(mut iSimEqIdxSimEqMapping: metamodelica::Array<
 }
 
 fn getSimCodeEqByIndexAndMapping1(mut iSimEqSystem: Option<Arc<SimCode::SimEqSystem>>, mut iIdx: i32) -> Result<Arc<SimCode::SimEqSystem>> {
-    let mut oSimEqSystem: Arc<SimCode::SimEqSystem>;
-    let mut tmpSys: Arc<SimCode::SimEqSystem>;
+    let mut oSimEqSystem: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
+    let mut tmpSys: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
     oSimEqSystem = (::match_deref::match_deref! { match &(iSimEqSystem.clone()) {
         Some(tmpSys) => tmpSys.clone(),
         _ => {
@@ -7027,9 +7027,9 @@ fn getSimCodeEqByIndexAndMapping1(mut iSimEqSystem: Option<Arc<SimCode::SimEqSys
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn getSimCodeEqByIndex(mut iEqs: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut iIdx: i32) -> Result<Arc<SimCode::SimEqSystem>> {
-    let mut oEq: Arc<SimCode::SimEqSystem>;
+    let mut oEq: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
     let mut rest: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
-    let mut head: Arc<SimCode::SimEqSystem>;
+    let mut head: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
     let mut headIdx: i32 = 0;
     let mut headIdx2: i32 = 0;
     oEq = 'mc: {
@@ -7132,7 +7132,7 @@ fn dumpSimEqSCCMapping(mut iSccMapping: metamodelica::Array<i32>) -> () {
 }
 
 fn dumpSimEqSCCMapping1(mut iMapping: i32, mut iIndexText: (i32, ArcStr)) -> (i32, ArcStr) {
-    let mut oIndexText: (i32, ArcStr);
+    let mut oIndexText: (i32, ArcStr) = (0, arcstr::literal!(""));
     let mut iIndex: i32 = 0;
     let mut text: ArcStr = arcstr::literal!("");
     let mut iText: ArcStr = arcstr::literal!("");
@@ -7152,7 +7152,7 @@ fn dumpSccSimEqMapping(mut iSccMapping: metamodelica::Array<Arc<metamodelica::Li
 }
 
 fn dumpSccSimEqMapping1(mut iMapping: Arc<metamodelica::List<i32>>, mut iIndexText: (i32, ArcStr)) -> (i32, ArcStr) {
-    let mut oIndexText: (i32, ArcStr);
+    let mut oIndexText: (i32, ArcStr) = (0, arcstr::literal!(""));
     let mut iIndex: i32 = 0;
     let mut text: ArcStr = arcstr::literal!("");
     let mut iText: ArcStr = arcstr::literal!("");

@@ -52,9 +52,9 @@ pub fn Tarjan(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut ass1
     let mut outComponents: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut index: i32 = 0;
     let mut stack: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut number: metamodelica::Array<i32>;
-    let mut lowlink: metamodelica::Array<i32>;
-    let mut onStack: metamodelica::Array<bool>;
+    let mut number: metamodelica::Array<i32> = Default::default();
+    let mut lowlink: metamodelica::Array<i32> = Default::default();
+    let mut onStack: metamodelica::Array<bool> = Default::default();
     let mut eqn: i32 = 0;
     number = arrayCreate(N.clone(), -1);
     lowlink = arrayCreate(N.clone(), -1);
@@ -83,7 +83,7 @@ fn StrongConnect(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut a
     {let _arr = lowlink.clone(); _arr.borrow_mut()[(eqn.clone()-1) as usize] = outIndex.clone(); _arr};
     {let _arr = onStack.clone(); _arr.borrow_mut()[(eqn.clone()-1) as usize] = true; _arr};
     outIndex = outIndex.clone() + 1;
-    outStack = cons(eqn.clone(), outStack.clone());
+    outStack = metamodelica::cons(eqn.clone(), outStack.clone());
     for mut eqn2 in &*Matching::incomingEquations(eqn.clone(), m.clone(), ass1.clone()) {
         let mut eqn2 = eqn2.clone();
         if number.borrow()[(eqn2.clone()-1) as usize].clone() == -1 {
@@ -110,9 +110,9 @@ fn StrongConnect(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut a
             eqn2 = __pa2.clone();
             outStack = __pa3.clone();
             {let _arr = onStack.clone(); _arr.borrow_mut()[(eqn2.clone()-1) as usize] = false; _arr};
-            SCC = cons(eqn2.clone(), SCC.clone());
+            SCC = metamodelica::cons(eqn2.clone(), SCC.clone());
         }
-        outComponents = cons(metamodelica::Dangerous::listReverseInPlace(SCC.clone()), outComponents.clone());
+        outComponents = metamodelica::cons(metamodelica::Dangerous::listReverseInPlace(SCC.clone()), outComponents.clone());
     }
     Ok((outStack, outIndex, outComponents))
 }
@@ -121,9 +121,9 @@ pub fn TarjanTransposed(mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>
     let mut outComponents: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut index: i32 = 0;
     let mut stack: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut number: metamodelica::Array<i32>;
-    let mut lowlink: metamodelica::Array<i32>;
-    let mut onStack: metamodelica::Array<bool>;
+    let mut number: metamodelica::Array<i32> = Default::default();
+    let mut lowlink: metamodelica::Array<i32> = Default::default();
+    let mut onStack: metamodelica::Array<bool> = Default::default();
     let mut N: i32 = (ass2.clone().borrow().len() as i32);
     number = arrayCreate(N.clone(), -1);
     lowlink = arrayCreate(N.clone(), -1);
@@ -147,7 +147,7 @@ fn StrongConnectTransposed(mut mT: metamodelica::Array<Arc<metamodelica::List<i3
     {let _arr = lowlink.clone(); _arr.borrow_mut()[(eqn.clone()-1) as usize] = outIndex.clone(); _arr};
     {let _arr = onStack.clone(); _arr.borrow_mut()[(eqn.clone()-1) as usize] = true; _arr};
     outIndex = outIndex.clone() + 1;
-    outStack = cons(eqn.clone(), outStack.clone());
+    outStack = metamodelica::cons(eqn.clone(), outStack.clone());
     var = ass2.borrow()[(eqn.clone()-1) as usize].clone();
     if var.clone() > 0 {
         let __range0 = &*mT.borrow()[(var.clone()-1) as usize].clone();
@@ -180,9 +180,9 @@ fn StrongConnectTransposed(mut mT: metamodelica::Array<Arc<metamodelica::List<i3
             eqn2 = __pa3.clone();
             outStack = __pa4.clone();
             {let _arr = onStack.clone(); _arr.borrow_mut()[(eqn2.clone()-1) as usize] = false; _arr};
-            SCC = cons(eqn2.clone(), SCC.clone());
+            SCC = metamodelica::cons(eqn2.clone(), SCC.clone());
         }
-        outComponents = cons(metamodelica::Dangerous::listReverseInPlace(SCC.clone()), outComponents.clone());
+        outComponents = metamodelica::cons(metamodelica::Dangerous::listReverseInPlace(SCC.clone()), outComponents.clone());
     }
     Ok((outStack, outIndex, outComponents))
 }

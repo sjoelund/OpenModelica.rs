@@ -191,7 +191,7 @@ pub fn addPair(mut key: ArcStr, mut value: Arc<JSON>, mut obj: Arc<JSON>) -> Res
             UnorderedMap::add((key.clone()).clone(), value.clone(), var_field!((*obj).values, JSON::OBJECT).clone())?;
             obj.clone()
         },
-        Deref @ LIST_OBJECT { .. } => Arc::new(JSON::LIST_OBJECT { values: cons((key.clone(), value.clone()), var_field!((*obj).values, JSON::LIST_OBJECT).clone()) }),
+        Deref @ LIST_OBJECT { .. } => Arc::new(JSON::LIST_OBJECT { values: metamodelica::cons((key.clone(), value.clone()), var_field!((*obj).values, JSON::LIST_OBJECT).clone()) }),
         Deref @ NULL { .. } => addPair((key.clone()).clone(), value.clone(), emptyListObject())?,
         _ => bail!("match: no arm matched"),
     } });

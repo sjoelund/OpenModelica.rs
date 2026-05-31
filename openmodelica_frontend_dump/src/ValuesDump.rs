@@ -345,13 +345,13 @@ fn filterSimulationResults(mut filter: bool, mut inValues: Arc<metamodelica::Lis
             (valacc.clone().reverse(), idacc.clone().reverse())
         },
         (true, Deref @ metamodelica::List::Cons { head: v, tail: vrest }, Deref @ metamodelica::List::Cons { head: id @ Deref @ "messages", tail: idrest }) => {
-            (outValues, outIds) = filterSimulationResults(filter.clone(), vrest.clone(), idrest.clone(), cons(v.clone(), valacc.clone()), cons((id.clone()).clone(), idacc.clone()))?;
+            (outValues, outIds) = filterSimulationResults(filter.clone(), vrest.clone(), idrest.clone(), metamodelica::cons(v.clone(), valacc.clone()), metamodelica::cons((id.clone()).clone(), idacc.clone()))?;
             (outValues.clone(), outIds.clone())
         },
         (true, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: r#str }, tail: vrest }, Deref @ metamodelica::List::Cons { head: id @ Deref @ "resultFile", tail: idrest }) => {
             let mut r#str = (*r#str).clone();
             r#str = (System::basename((r#str.clone()).clone())).clone();
-            (outValues, outIds) = filterSimulationResults(filter.clone(), vrest.clone(), idrest.clone(), cons(Arc::new(Values::Value::STRING { string: (r#str.clone()).clone() }), valacc.clone()), cons((id.clone()).clone(), idacc.clone()))?;
+            (outValues, outIds) = filterSimulationResults(filter.clone(), vrest.clone(), idrest.clone(), metamodelica::cons(Arc::new(Values::Value::STRING { string: (r#str.clone()).clone() }), valacc.clone()), metamodelica::cons((id.clone()).clone(), idacc.clone()))?;
             (outValues.clone(), outIds.clone())
         },
         (true, Deref @ metamodelica::List::Cons { head: _, tail: vrest }, Deref @ metamodelica::List::Cons { head: _, tail: idrest }) => {

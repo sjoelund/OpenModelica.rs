@@ -91,7 +91,7 @@ fn symSolverWork(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<BackendDAE::I
     for mut syst in &*inlineData.inlineSystems.clone() {
         let mut syst = syst.clone();
         (syst_, knownVariables) = symSolverUpdateSyst(syst.clone(), knownVariables.clone())?;
-        osystlst = cons(syst_.clone(), osystlst.clone());
+        osystlst = metamodelica::cons(syst_.clone(), osystlst.clone());
     }
     inlineData.knownVariables = knownVariables.clone();
     shared = inDAE.shared.clone();
@@ -177,8 +177,8 @@ fn symSolverState(mut vars: BackendDAE::Variables, mut knvars: BackendDAE::Varia
 }
 
 fn symSolverUpdateEqn(mut inExp: Arc<DAE::Exp>, mut inTl: (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendDAE::Variables)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendDAE::Variables))> {
-    let mut outExp: Arc<DAE::Exp>;
-    let mut outTpl: (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendDAE::Variables);
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outTpl: (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendDAE::Variables) = (metamodelica::nil(), <BackendDAE::Variables as ::std::default::Default>::default());
     let mut orderedVars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     let mut inTpl: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     (inTpl, orderedVars) = inTl.clone();
@@ -195,23 +195,23 @@ fn symSolverUpdateEqn(mut inExp: Arc<DAE::Exp>, mut inTl: (Arc<metamodelica::Lis
 }
 
 fn symSolverUpdateStates(mut inExp: Arc<DAE::Exp>, mut inTl: (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendDAE::Variables)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendDAE::Variables))> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cont: bool = true;
-    let mut outTl: (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendDAE::Variables);
+    let mut outTl: (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, BackendDAE::Variables) = (metamodelica::nil(), <BackendDAE::Variables as ::std::default::Default>::default());
     let mut inTpl: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     let mut orderedVars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     (inTpl, orderedVars) = inTl.clone();
     (outExp, outTl) = (::match_deref::match_deref! { match &((inTpl.clone(), inExp.clone())) {
         (cr_lst, Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e1 @ Deref @ DAE::Exp::CREF { componentRef: cr, ty: tp }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }) => {
-            let mut e2: Arc<DAE::Exp>;
-            let mut e3: Arc<DAE::Exp>;
+            let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             e2 = Expression::crefExp(ComponentReference::appendStringLastIdent((literal!("$Old")).clone(), cr.clone())?)?;
             e3 = Expression::crefExp(ComponentReferenceBasics::makeCrefIdent((arcstr::literal!(BackendDAE::symSolverDT)).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil()))?;
             cont = false;
             (Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::SUB { ty: tp.clone() }, exp2: e2.clone() }), operator: DAE::Operator::DIV { ty: tp.clone() }, exp2: e3.clone() }), (List::unionElt(cr.clone(), cr_lst.clone()), orderedVars.clone()))
         },
         (cr_lst, Deref @ DAE::Exp::CREF { componentRef: cr, .. }) => {
-            let mut e: Arc<DAE::Exp>;
+            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut cr_lst = (*cr_lst).clone();
             (e, cr_lst) = symSolverAppendStringToStates(cr.clone(), cr_lst.clone(), orderedVars.clone())?;
             (e.clone(), (cr_lst.clone(), orderedVars.clone()))
@@ -236,13 +236,13 @@ fn symSolverAppendStringToStates(mut inCr: Arc<DAE::ComponentRef>, mut incr_lst:
 
 // function changes call "der" to difference quotient
 fn symSolverUpdateDer(mut inExp: Arc<DAE::Exp>, mut inTpl: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<(Arc<DAE::Exp>, bool, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cont: bool = true;
     let mut outTpl: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     (outExp, outTpl) = (::match_deref::match_deref! { match &((inTpl.clone(), inExp.clone())) {
         (cr_lst, Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e1 @ Deref @ DAE::Exp::CREF { componentRef: cr, ty: tp }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }) => {
-            let mut e2: Arc<DAE::Exp>;
-            let mut e3: Arc<DAE::Exp>;
+            let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             e2 = Expression::crefExp(ComponentReference::appendStringLastIdent((literal!("$Old")).clone(), cr.clone())?)?;
             e3 = Expression::crefExp(ComponentReferenceBasics::makeCrefIdent((arcstr::literal!(BackendDAE::symSolverDT)).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil()))?;
             (Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::SUB { ty: tp.clone() }, exp2: e2.clone() }), operator: DAE::Operator::DIV { ty: tp.clone() }, exp2: e3.clone() }), List::unionElt(cr.clone(), cr_lst.clone()))

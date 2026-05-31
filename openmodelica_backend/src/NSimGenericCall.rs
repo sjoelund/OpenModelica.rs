@@ -153,7 +153,7 @@ pub fn toString(mut call: Arc<NSimGenericCall>) -> Result<ArcStr> {
 }
 
 pub fn fromIdentifier(mut ident_tpl: (Arc<Identifier::Identifier>, i32)) -> Result<Arc<NSimGenericCall>> {
-    let mut call: Arc<NSimGenericCall>;
+    let mut call: Arc<NSimGenericCall> = Arc::new(<NSimGenericCall as ::std::default::Default>::default());
     let mut eqn_ptr: Pointer::Pointer<Arc<Equation::Equation>>;
     let mut index: i32 = 0;
     let mut resizable: bool = false;
@@ -193,7 +193,7 @@ pub fn fromIdentifier(mut ident_tpl: (Arc<Identifier::Identifier>, i32)) -> Resu
 }
 
 pub fn convert(mut call: Arc<NSimGenericCall>) -> Result<OldSimCode::SimGenericCall> {
-    let mut old_call: OldSimCode::SimGenericCall;
+    let mut old_call: OldSimCode::SimGenericCall = <OldSimCode::SimGenericCall as ::std::default::Default>::default();
     old_call = (::match_deref::match_deref! { match &(call.clone()) {
         Deref @ SINGLE_GENERIC_CALL { .. } => OldSimCode::SimGenericCall::SINGLE_GENERIC_CALL { resizable: var_field!((*call).resizable, NSimGenericCall::SINGLE_GENERIC_CALL).clone(), rhs: Expression::toDAE(var_field!((*call).rhs, NSimGenericCall::SINGLE_GENERIC_CALL).clone(), false)?, lhs: Expression::toDAE(var_field!((*call).lhs, NSimGenericCall::SINGLE_GENERIC_CALL).clone(), false)?, iters: ({
         let mut __acc: Arc<metamodelica::List<OldBackendDAE::SimIterator>> = metamodelica::nil();
@@ -322,7 +322,7 @@ pub mod SimIterator {
             size = Arc::new(Expression::NFExpression::MULTARY { arguments: list![size.clone(), Arc::new(Expression::NFExpression::INTEGER { value: 1 })], inv_arguments: metamodelica::nil(), operator: addOp.clone() });
             size = SimplifyExp::simplify(size.clone(), false)?;
             sub_iter = if (isSome(map.clone())) {subIterators(Util::getOption(map.clone())?)?} else {metamodelica::nil()};
-            cons(Arc::new(SimIterator::SIM_ITERATOR_RANGE { name: name.clone(), start: var_field!((*range).start, Expression::NFExpression::RANGE).clone(), step: step.clone(), stop: var_field!((*range).stop, Expression::NFExpression::RANGE).clone(), size: size.clone(), sub_iter: sub_iter.clone() }), sim_iter.clone())
+            metamodelica::cons(Arc::new(SimIterator::SIM_ITERATOR_RANGE { name: name.clone(), start: var_field!((*range).start, Expression::NFExpression::RANGE).clone(), step: step.clone(), stop: var_field!((*range).stop, Expression::NFExpression::RANGE).clone(), size: size.clone(), sub_iter: sub_iter.clone() }), sim_iter.clone())
         },
         Deref @ Expression::ARRAY { .. } if (var_field!((*range).literal, Expression::NFExpression::ARRAY).clone()) => {
             lst = ({
@@ -334,7 +334,7 @@ pub mod SimIterator {
         __acc.reverse()
     });
             sub_iter = if (isSome(map.clone())) {subIterators(Util::getOption(map.clone())?)?} else {metamodelica::nil()};
-            cons(Arc::new(SimIterator::SIM_ITERATOR_LIST { name: name.clone(), lst: lst.clone(), size: (lst.clone().len() as i32), sub_iter: sub_iter.clone() }), sim_iter.clone())
+            metamodelica::cons(Arc::new(SimIterator::SIM_ITERATOR_LIST { name: name.clone(), lst: lst.clone(), size: (lst.clone().len() as i32), sub_iter: sub_iter.clone() }), sim_iter.clone())
         },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimGenericCall.SimIterator.fromIterator")); __mm_s.push_str(&*literal!(" failed for incorrect iterator domain: ")); __mm_s.push_str(&*Expression::toString(range.clone())?); ArcStr::from(__mm_s) }).clone()])?;
@@ -357,7 +357,7 @@ pub mod SimIterator {
             let mut tpl = tpl.clone();
             (name, range) = tpl.clone();
             sub_iter = (::match_deref::match_deref! { match &(range.clone()) {
-        Deref @ Expression::ARRAY { .. } => cons((name.clone(), var_field!((*range).elements, Expression::NFExpression::ARRAY).clone()), sub_iter.clone()),
+        Deref @ Expression::ARRAY { .. } => metamodelica::cons((name.clone(), var_field!((*range).elements, Expression::NFExpression::ARRAY).clone()), sub_iter.clone()),
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimGenericCall.SimIterator.subIterators")); __mm_s.push_str(&*literal!(" failed for incorrect iterator domain: ")); __mm_s.push_str(&*Expression::toString(range.clone())?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
@@ -381,7 +381,7 @@ pub mod SimIterator {
             old_sub_iter
         }
 
-        let mut old_iter: OldBackendDAE::SimIterator;
+        let mut old_iter: OldBackendDAE::SimIterator = <OldBackendDAE::SimIterator as ::std::default::Default>::default();
         old_iter = (::match_deref::match_deref! { match &(iter.clone()) {
         Deref @ SIM_ITERATOR_RANGE { .. } => OldBackendDAE::SimIterator::SIM_ITERATOR_RANGE { name: ComponentRef::toDAE(var_field!((*iter).name, SimIterator::SIM_ITERATOR_RANGE).clone())?, start: Expression::toDAE(var_field!((*iter).start, SimIterator::SIM_ITERATOR_RANGE).clone(), false)?, step: Expression::toDAE(var_field!((*iter).step, SimIterator::SIM_ITERATOR_RANGE).clone(), false)?, stop: Expression::toDAE(var_field!((*iter).stop, SimIterator::SIM_ITERATOR_RANGE).clone(), false)?, size: Expression::toDAE(var_field!((*iter).size, SimIterator::SIM_ITERATOR_RANGE).clone(), false)?, non_resizable_size: Expression::getInteger(var_field!((*iter).size, SimIterator::SIM_ITERATOR_RANGE).clone(), false)?, sub_iter: ({
         let mut __acc: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, metamodelica::Array<Arc<DAE::Exp>>)>> = metamodelica::nil();
@@ -480,7 +480,7 @@ pub mod SimBranch {
         },
         Deref @ SIM_BRANCH_STMT { .. } => {
             r#str = (if (Expression::isEnd(var_field!((*branch).condition, SimBranch::SIM_BRANCH_STMT).clone())) {literal!("\n")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("when ")); __mm_s.push_str(&*Expression::toString(var_field!((*branch).condition, SimBranch::SIM_BRANCH_STMT).clone())?); __mm_s.push_str(&*literal!(" then\n")); ArcStr::from(__mm_s) }}).clone();
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*List::toString(var_field!((*branch).body, SimBranch::SIM_BRANCH_STMT).clone(), Arc::new({ let __pe_b1 = (literal!("")).clone(); move |__pe_a0| Statement::toString(__pe_a0, __pe_b1.clone()) }), (literal!("\t  ")).clone(), (literal!("\t  ")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*List::toString(var_field!((*branch).body, SimBranch::SIM_BRANCH_STMT).clone(), (std::sync::Arc::new({ let __pe_b1 = (literal!("")).clone(); move |__pe_a0| Statement::toString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>) -> Result<ArcStr> + 'static>), (literal!("\t  ")).clone(), (literal!("\t  ")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();
             r#str.clone()
         },
         _ => literal!("SIM BRANCH NOT KNOWN"),
@@ -492,14 +492,14 @@ pub mod SimBranch {
     pub fn fromIfBody(mut if_body: Arc<IfEquationBody::IfEquationBody>) -> Result<Arc<metamodelica::List<Arc<SimBranch>>>> {
         let mut branches: Arc<metamodelica::List<Arc<SimBranch>>> = metamodelica::nil();
         let mut body: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
-        let mut branch: Arc<SimBranch>;
+        let mut branch: Arc<SimBranch> = Arc::new(<SimBranch as ::std::default::Default>::default());
         for mut eqn in &*if_body.then_eqns.clone().reverse() {
             let mut eqn = eqn.clone();
-            body = cons((Util::getOption(Equation::getLHS(Pointer::access(eqn.clone()))?)?, Util::getOption(Equation::getRHS(Pointer::access(eqn.clone()))?)?), body.clone());
+            body = metamodelica::cons((Util::getOption(Equation::getLHS(Pointer::access(eqn.clone()))?)?, Util::getOption(Equation::getRHS(Pointer::access(eqn.clone()))?)?), body.clone());
         }
         branch = Arc::new(SimBranch::SIM_BRANCH { condition: if_body.condition.clone(), body: body.clone() });
         if isSome(if_body.else_if.clone()) {
-            branches = cons(branch.clone(), fromIfBody(Util::getOption(if_body.else_if.clone())?)?);
+            branches = metamodelica::cons(branch.clone(), fromIfBody(Util::getOption(if_body.else_if.clone())?)?);
         } else {
             branches = list![branch.clone()];
         }
@@ -508,7 +508,7 @@ pub mod SimBranch {
 
     pub fn fromWhenBody(mut when_body: Arc<WhenEquationBody::WhenEquationBody>) -> Result<Arc<metamodelica::List<Arc<SimBranch>>>> {
         let mut branches: Arc<metamodelica::List<Arc<SimBranch>>> = metamodelica::nil();
-        let mut branch: Arc<SimBranch>;
+        let mut branch: Arc<SimBranch> = Arc::new(<SimBranch as ::std::default::Default>::default());
         branch = Arc::new(SimBranch::SIM_BRANCH_STMT { condition: when_body.condition.clone(), body: ({
         let mut __acc: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
         for mut stmt in (when_body.when_stmts.clone()).into_iter().cloned() {
@@ -518,7 +518,7 @@ pub mod SimBranch {
         __acc.reverse()
     }) });
         if isSome(when_body.else_when.clone()) {
-            branches = cons(branch.clone(), fromWhenBody(Util::getOption(when_body.else_when.clone())?)?);
+            branches = metamodelica::cons(branch.clone(), fromWhenBody(Util::getOption(when_body.else_when.clone())?)?);
         } else {
             branches = list![branch.clone()];
         }
@@ -526,7 +526,7 @@ pub mod SimBranch {
     }
 
     pub fn convert(mut branch: Arc<SimBranch>) -> Result<OldSimCode::SimBranch> {
-        let mut old_branch: OldSimCode::SimBranch;
+        let mut old_branch: OldSimCode::SimBranch = <OldSimCode::SimBranch as ::std::default::Default>::default();
         let mut old_condition: Option<Arc<DAE::Exp>> = None;
         let mut old_body: Arc<metamodelica::List<(Arc<DAE::Exp>, Arc<DAE::Exp>)>> = metamodelica::nil();
         let mut lhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
@@ -541,7 +541,7 @@ pub mod SimBranch {
             for mut tpl in &*var_field!((*branch).body, SimBranch::SIM_BRANCH).clone().reverse() {
                 let mut tpl = tpl.clone();
                 (lhs, rhs) = tpl.clone();
-                old_body = cons((Expression::toDAE(lhs.clone(), false)?, Expression::toDAE(rhs.clone(), false)?), old_body.clone());
+                old_body = metamodelica::cons((Expression::toDAE(lhs.clone(), false)?, Expression::toDAE(rhs.clone(), false)?), old_body.clone());
             }
             OldSimCode::SimBranch::SIM_BRANCH { body: old_body.clone(), condition: old_condition.clone() }
         },

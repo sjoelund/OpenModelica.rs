@@ -76,7 +76,7 @@ pub fn new(mut ss: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>
     let mut dim: i32 = 0;
     if !(UnorderedSet::isEmpty(ss.clone())) {
         dim = SBAtomicSet::ndim(UnorderedSet::first(ss.clone())?);
-        if dim.clone() != 0 && UnorderedSet::all(ss.clone(), Arc::new({ let __pe_b1 = dim.clone(); move |__pe_a0| Ok(is_equal_dim(__pe_a0, __pe_b1.clone())) })) {
+        if dim.clone() != 0 && UnorderedSet::all(ss.clone(), (std::sync::Arc::new({ let __pe_b1 = dim.clone(); move |__pe_a0| Ok(is_equal_dim(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<bool> + 'static>)) {
             set = Arc::new(SBSet { asets: UnorderedSet::copy(ss.clone()), ndim: dim.clone() });
         } else {
             set = newEmpty();
@@ -121,7 +121,7 @@ pub fn asets(mut set: Arc<SBSet>) -> Arc<UnorderedSet::UnorderedSet<Arc<SBAtomic
 
 pub fn contains(mut vals: metamodelica::Array<i32>, mut set: Arc<SBSet>) -> bool {
     let mut res: bool = false;
-    res = UnorderedSet::all(set.asets.clone(), Arc::new({ let __pe_b0 = vals.clone(); move |__pe_a1| Ok(SBAtomicSet::contains(__pe_b0.clone(), __pe_a1)) }));
+    res = UnorderedSet::all(set.asets.clone(), (std::sync::Arc::new({ let __pe_b0 = vals.clone(); move |__pe_a1| Ok(SBAtomicSet::contains(__pe_b0.clone(), __pe_a1)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<bool> + 'static>));
     res
 }
 
@@ -260,7 +260,7 @@ pub fn minElem(mut set: Arc<SBSet>) -> Result<metamodelica::Array<i32>> {
         res
     }
 
-    let mut res: metamodelica::Array<i32>;
+    let mut res: metamodelica::Array<i32> = Default::default();
     let mut min_elems: Arc<metamodelica::List<metamodelica::Array<i32>>> = metamodelica::nil();
     if isEmpty(set.clone()) {
         res = metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect());

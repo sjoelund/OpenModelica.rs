@@ -715,9 +715,9 @@ fn dumpComponents(mut dae: Arc<BackendDAE::BackendDAE>) -> Result<()> {
 }
 
 fn dumpComponentsWork(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<BackendDAE::Shared>, mut inOffset: (i32, i32)) -> Result<(i32, i32)> {
-    let mut outOffset: (i32, i32);
-    let mut v1: metamodelica::Array<i32>;
-    let mut v2: metamodelica::Array<i32>;
+    let mut outOffset: (i32, i32) = (0, 0);
+    let mut v1: metamodelica::Array<i32> = Default::default();
+    let mut v2: metamodelica::Array<i32> = Default::default();
     let mut comps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
     let mut voffset: i32 = 0;
     let mut eoffset: i32 = 0;
@@ -1386,7 +1386,7 @@ fn dumpEqns2(mut inEquationLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: eqn, tail: eqns }, Deref @ metamodelica::List::Cons { head: var, tail: vars }, index, addMMLCode, false, true) => {
                     let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-                    let mut varexp: Arc<DAE::Exp>;
+                    let mut varexp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut eqn = (*eqn).clone();
                     cref = BackendVariable::varCref(var.clone())?;
                     varexp = Expression::crefExp(cref.clone())?;
@@ -2300,7 +2300,7 @@ fn dumpAdjacencyMatrix(mut dae: Arc<BackendDAE::BackendDAE>) -> Result<()> {
 
 fn dumpAdjacencyMatrixWork(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<BackendDAE::Shared>, mut inOffset: i32) -> Result<i32> {
     let mut outOffset: i32 = 0;
-    let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+    let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
     funcs = BackendDAEUtil::getFunctions(shared.clone())?;
     (_, m, _) = BackendDAEUtil::getAdjacencyMatrixfromOption(syst.clone(), crate::BackendDAE::IndexType::NORMAL, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(shared.clone()))?;
@@ -2310,7 +2310,7 @@ fn dumpAdjacencyMatrixWork(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<
 }
 
 fn dumpAdjacencyMatrix2(mut row: Arc<metamodelica::List<i32>>, mut inTpl: (i32, i32)) -> Result<(i32, i32)> {
-    let mut outTpl: (i32, i32);
+    let mut outTpl: (i32, i32) = (0, 0);
     let mut offset: i32 = 0;
     let mut c: i32 = 0;
     (offset, c) = inTpl.clone();
@@ -2528,9 +2528,9 @@ fn dumpMatching(mut dae: Arc<BackendDAE::BackendDAE>) -> Result<()> {
 }
 
 fn dumpMatchingWork(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<BackendDAE::Shared>, mut inOffset: (i32, i32)) -> Result<(i32, i32)> {
-    let mut outOffset: (i32, i32);
-    let mut v1: metamodelica::Array<i32>;
-    let mut v2: metamodelica::Array<i32>;
+    let mut outOffset: (i32, i32) = (0, 0);
+    let mut v1: metamodelica::Array<i32> = Default::default();
+    let mut v2: metamodelica::Array<i32> = Default::default();
     let mut voffset: i32 = 0;
     let mut eoffset: i32 = 0;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(syst.clone()) {
@@ -2565,7 +2565,7 @@ fn dumpMatching1(mut v: metamodelica::Array<i32>, mut voffset: i32, mut eoffset:
 }
 
 fn dumpMatching2(mut eqn: i32, mut inTpl: (i32, i32, i32)) -> Result<(i32, i32, i32)> {
-    let mut outTpl: (i32, i32, i32);
+    let mut outTpl: (i32, i32, i32) = (0, 0, 0);
     let mut v: i32 = 0;
     let mut voffset: i32 = 0;
     let mut eoffset: i32 = 0;
@@ -3405,8 +3405,8 @@ fn dumpWhenOperatorLst(mut inWhenOperators: Arc<metamodelica::List<BackendDAE::W
             ()
         },
         (Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::REINIT { stateVar, value, source: _ }, tail: lst }, _) => {
-            let mut e: Arc<DAE::Exp>;
-            let mut call: Arc<DAE::Exp>;
+            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut call: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut r#str: ArcStr = arcstr::literal!("");
             e = Expression::makeCrefExp(stateVar.clone(), DAE::T_UNKNOWN_DEFAULT().clone())?;
             call = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (arcstr::literal!(REINIT)).clone() }), expLst: list![e.clone(), value.clone()], attr: DAE::callAttrBuiltinOther().clone() });
@@ -3420,7 +3420,7 @@ fn dumpWhenOperatorLst(mut inWhenOperators: Arc<metamodelica::List<BackendDAE::W
             ()
         },
         (Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::ASSERT { condition: cond, message: msg, level, source: _ }, tail: lst }, _) => {
-            let mut call: Arc<DAE::Exp>;
+            let mut call: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut r#str: ArcStr = arcstr::literal!("");
             call = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (arcstr::literal!(ASSERT)).clone() }), expLst: list![cond.clone(), msg.clone(), level.clone()], attr: DAE::callAttrBuiltinOther().clone() });
             r#str = (printExpStr(call.clone())?).clone();
@@ -3433,7 +3433,7 @@ fn dumpWhenOperatorLst(mut inWhenOperators: Arc<metamodelica::List<BackendDAE::W
             ()
         },
         (Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::TERMINATE { message: msg, source: _ }, tail: lst }, _) => {
-            let mut call: Arc<DAE::Exp>;
+            let mut call: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut r#str: ArcStr = arcstr::literal!("");
             call = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (arcstr::literal!(TERMINATE)).clone() }), expLst: list![msg.clone()], attr: DAE::callAttrBuiltinOther().clone() });
             r#str = (printExpStr(call.clone())?).clone();

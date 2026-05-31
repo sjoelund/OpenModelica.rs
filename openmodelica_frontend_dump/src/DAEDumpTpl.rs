@@ -1293,7 +1293,7 @@ pub fn dumpType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_att
             (txt.clone(), a_attributes.clone())
         },
         (txt, Deref @ DAE::Type::T_COMPLEX { complexClassType: i_complexClassType, .. }, a_attributes) => {
-            let mut ret_2: Arc<Absyn::Path>;
+            let mut ret_2: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut txt = (*txt).clone();
             ret_2 = ClassInfUtil::getStateName(i_complexClassType.clone());
             txt = AbsynDumpTpl::dumpPath(txt.clone(), ret_2.clone())?;
@@ -1611,7 +1611,7 @@ pub fn dumpRecordType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Res
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
         (txt, Deref @ DAE::Type::T_COMPLEX { varLst: i_varLst, complexClassType: i_complexClassType, .. }) => {
             let mut l_vars: Tpl::Text;
-            let mut ret_1: Arc<Absyn::Path>;
+            let mut ret_1: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut l_name: Tpl::Text;
             let mut txt = (*txt).clone();
             ret_1 = ClassInfUtil::getStateName(i_complexClassType.clone());

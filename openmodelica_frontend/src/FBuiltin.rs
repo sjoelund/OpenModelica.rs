@@ -337,7 +337,7 @@ pub fn getInitialFunctions() -> Result<(Absyn::Program, Arc<metamodelica::List<A
         __acc.reverse()
     });
             assocLst = crate::Globals::builtinIndex.with(|__root| __root.borrow().clone());
-            { let __v = cons(((Flags::METAMODELICA.clone(), true), (pNF.clone(), spNF.clone())), cons(((Flags::METAMODELICA.clone(), false), (pCF.clone(), spCF.clone())), assocLst.clone())); crate::Globals::builtinIndex.with(|__root| *__root.borrow_mut() = __v) };
+            { let __v = metamodelica::cons(((Flags::METAMODELICA.clone(), true), (pNF.clone(), spNF.clone())), metamodelica::cons(((Flags::METAMODELICA.clone(), false), (pCF.clone(), spCF.clone())), assocLst.clone())); crate::Globals::builtinIndex.with(|__root| *__root.borrow_mut() = __v) };
             (p, sp) = if (Flags::isSet(Flags::SCODE_INST.clone())?) {(pNF.clone(), spNF.clone())} else {(pCF.clone(), spCF.clone())};
             Ok((p.clone(), sp.clone()))
         })() { break 'mc __v; }
@@ -377,7 +377,7 @@ pub fn getInitialFunctions() -> Result<(Absyn::Program, Arc<metamodelica::List<A
         __acc.reverse()
     });
             assocLst = crate::Globals::builtinIndex.with(|__root| __root.borrow().clone());
-            { let __v = cons(((Flags::PARMODELICA.clone(), true), (pNF.clone(), spNF.clone())), cons(((Flags::PARMODELICA.clone(), false), (pCF.clone(), spCF.clone())), assocLst.clone())); crate::Globals::builtinIndex.with(|__root| *__root.borrow_mut() = __v) };
+            { let __v = metamodelica::cons(((Flags::PARMODELICA.clone(), true), (pNF.clone(), spNF.clone())), metamodelica::cons(((Flags::PARMODELICA.clone(), false), (pCF.clone(), spCF.clone())), assocLst.clone())); crate::Globals::builtinIndex.with(|__root| *__root.borrow_mut() = __v) };
             (p, sp) = if (Flags::isSet(Flags::SCODE_INST.clone())?) {(pNF.clone(), spNF.clone())} else {(pCF.clone(), spCF.clone())};
             Ok((p.clone(), sp.clone()))
         })() { break 'mc __v; }
@@ -412,7 +412,7 @@ pub fn getInitialFunctions() -> Result<(Absyn::Program, Arc<metamodelica::List<A
         __acc.reverse()
     });
             assocLst = crate::Globals::builtinIndex.with(|__root| __root.borrow().clone());
-            { let __v = cons(((Flags::MODELICA.clone(), true), (pNF.clone(), spNF.clone())), cons(((Flags::MODELICA.clone(), false), (pCF.clone(), spCF.clone())), assocLst.clone())); crate::Globals::builtinIndex.with(|__root| *__root.borrow_mut() = __v) };
+            { let __v = metamodelica::cons(((Flags::MODELICA.clone(), true), (pNF.clone(), spNF.clone())), metamodelica::cons(((Flags::MODELICA.clone(), false), (pCF.clone(), spCF.clone())), assocLst.clone())); crate::Globals::builtinIndex.with(|__root| *__root.borrow_mut() = __v) };
             (p, sp) = if (Flags::isSet(Flags::SCODE_INST.clone())?) {(pNF.clone(), spNF.clone())} else {(pCF.clone(), spCF.clone())};
             Ok((p.clone(), sp.clone()))
         })() { break 'mc __v; }
@@ -452,7 +452,7 @@ pub fn getInitialFunctions() -> Result<(Absyn::Program, Arc<metamodelica::List<A
         __acc.reverse()
     });
             assocLst = crate::Globals::builtinIndex.with(|__root| __root.borrow().clone());
-            { let __v = cons(((Flags::PDEMODELICA.clone(), true), (pNF.clone(), spNF.clone())), cons(((Flags::PDEMODELICA.clone(), false), (pCF.clone(), spCF.clone())), assocLst.clone())); crate::Globals::builtinIndex.with(|__root| *__root.borrow_mut() = __v) };
+            { let __v = metamodelica::cons(((Flags::PDEMODELICA.clone(), true), (pNF.clone(), spNF.clone())), metamodelica::cons(((Flags::PDEMODELICA.clone(), false), (pCF.clone(), spCF.clone())), assocLst.clone())); crate::Globals::builtinIndex.with(|__root| *__root.borrow_mut() = __v) };
             (p, sp) = if (Flags::isSet(Flags::SCODE_INST.clone())?) {(pNF.clone(), spNF.clone())} else {(pCF.clone(), spCF.clone())};
             Ok((p.clone(), sp.clone()))
         })() { break 'mc __v; }
@@ -468,26 +468,26 @@ pub fn getInitialFunctions() -> Result<(Absyn::Program, Arc<metamodelica::List<A
 
 pub fn initialGraph(mut inCache: FCore::Cache) -> Result<(FCore::Cache, FCore::Graph)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut graph: FCore::Graph;
+    let mut graph: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
     (outCache, graph) = 'mc: {
         let __mc_input = inCache.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let mut cache = __mc_input.clone() else { bail!("nomatch") };
-            let mut graph: FCore::Graph;
+            let mut graph: FCore::Graph = graph.clone();
             graph = FCore::getCachedInitialGraph(cache.clone())?;
             Ok((cache.clone(), graph.clone()))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let mut cache = __mc_input.clone() else { bail!("nomatch") };
-            let mut graph: FCore::Graph;
+            let mut graph: FCore::Graph = graph.clone();
             graph = getSetInitialGraph(None)?;
             Ok((cache.clone(), graph.clone()))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let mut cache = __mc_input.clone() else { bail!("nomatch") };
             let mut initialProgram: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-            let mut graph: FCore::Graph;
+            let mut graph: FCore::Graph = graph.clone();
             graph = FGraph::new((literal!("graph")).clone(), FCore::dummyTopModel.clone())?;
             graph = FGraphBuild::mkProgramGraph(basicTypes.clone(), crate::FCore::Kind::BASIC_TYPE, graph.clone())?;
             graph = initialGraphOptimica(graph.clone(), (std::sync::Arc::new(FGraphBuild::mkCompNode) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>))?;
@@ -505,7 +505,7 @@ pub fn initialGraph(mut inCache: FCore::Cache) -> Result<(FCore::Cache, FCore::G
 }
 
 fn getSetInitialGraph(mut inEnvOpt: Option<FCore::Graph>) -> Result<FCore::Graph> {
-    let mut initialEnv: FCore::Graph;
+    let mut initialEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     initialEnv = 'mc: {
         let __mc_input = inEnvOpt.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -528,7 +528,7 @@ fn getSetInitialGraph(mut inEnvOpt: Option<FCore::Graph>) -> Result<FCore::Graph
             let mut assocLst: Arc<metamodelica::List<(i32, FCore::Graph)>> = metamodelica::nil();
             let true = (intEq(Flags::getConfigEnum(Flags::GRAMMAR.clone())?, Flags::METAMODELICA.clone())) else { bail!("pattern mismatch") };
             assocLst = crate::Globals::builtinGraphIndex.with(|__root| __root.borrow().clone());
-            { let __v = cons((Flags::METAMODELICA.clone(), graph.clone()), assocLst.clone()); crate::Globals::builtinGraphIndex.with(|__root| *__root.borrow_mut() = __v) };
+            { let __v = metamodelica::cons((Flags::METAMODELICA.clone(), graph.clone()), assocLst.clone()); crate::Globals::builtinGraphIndex.with(|__root| *__root.borrow_mut() = __v) };
             Ok(graph.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -536,7 +536,7 @@ fn getSetInitialGraph(mut inEnvOpt: Option<FCore::Graph>) -> Result<FCore::Graph
             let mut assocLst: Arc<metamodelica::List<(i32, FCore::Graph)>> = metamodelica::nil();
             let true = (intEq(Flags::getConfigEnum(Flags::GRAMMAR.clone())?, Flags::PARMODELICA.clone())) else { bail!("pattern mismatch") };
             assocLst = crate::Globals::builtinGraphIndex.with(|__root| __root.borrow().clone());
-            { let __v = cons((Flags::PARMODELICA.clone(), graph.clone()), assocLst.clone()); crate::Globals::builtinGraphIndex.with(|__root| *__root.borrow_mut() = __v) };
+            { let __v = metamodelica::cons((Flags::PARMODELICA.clone(), graph.clone()), assocLst.clone()); crate::Globals::builtinGraphIndex.with(|__root| *__root.borrow_mut() = __v) };
             Ok(graph.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -544,7 +544,7 @@ fn getSetInitialGraph(mut inEnvOpt: Option<FCore::Graph>) -> Result<FCore::Graph
             let mut assocLst: Arc<metamodelica::List<(i32, FCore::Graph)>> = metamodelica::nil();
             let true = (intEq(Flags::getConfigEnum(Flags::GRAMMAR.clone())?, Flags::MODELICA.clone()) || intEq(Flags::getConfigEnum(Flags::GRAMMAR.clone())?, Flags::OPTIMICA.clone())) else { bail!("pattern mismatch") };
             assocLst = crate::Globals::builtinGraphIndex.with(|__root| __root.borrow().clone());
-            { let __v = cons((Flags::MODELICA.clone(), graph.clone()), assocLst.clone()); crate::Globals::builtinGraphIndex.with(|__root| *__root.borrow_mut() = __v) };
+            { let __v = metamodelica::cons((Flags::MODELICA.clone(), graph.clone()), assocLst.clone()); crate::Globals::builtinGraphIndex.with(|__root| *__root.borrow_mut() = __v) };
             Ok(graph.clone())
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -596,7 +596,7 @@ pub fn initialGraphOptimica(mut graph: FCore::Graph, mut mkCompNode: Arc<dyn ::s
 }
 
 pub fn getElementWithPathCheckBuiltin(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inPath: Arc<Absyn::Path>) -> Result<Arc<SCode::Element>> {
-    let mut outElement: Arc<SCode::Element>;
+    let mut outElement: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     outElement = 'mc: {
         let __mc_input = inPath.clone();
         if let Ok(__v) = (|| -> Result<_> {

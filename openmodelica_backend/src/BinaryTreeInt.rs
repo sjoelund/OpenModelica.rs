@@ -461,7 +461,7 @@ fn bintreeToList2(mut inBinTree: Arc<BinTree>, mut inKeyLst: Arc<metamodelica::L
                     let mut vlst = (*vlst).clone();
                     (klst, vlst) = bintreeToListOpt(left.clone(), klst.clone(), vlst.clone())?;
                     (klst, vlst) = bintreeToListOpt(right.clone(), klst.clone(), vlst.clone())?;
-                    Ok((cons(key.clone(), klst.clone()), cons(value.clone(), vlst.clone())))
+                    Ok((metamodelica::cons(key.clone(), klst.clone()), metamodelica::cons(value.clone(), vlst.clone())))
                 }
                 _ => bail!("nomatch"),
             }}

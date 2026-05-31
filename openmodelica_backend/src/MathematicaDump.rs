@@ -1132,7 +1132,7 @@ fn printMmaParamStr(mut param: BackendDAE::Var) -> Result<ArcStr> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 BackendDAE::Var { values: val, bindExp: None, varKind: BackendDAE::VarKind::PARAM { .. }, varName: name, .. } => {
-                    let mut exp: Arc<DAE::Exp>;
+                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut expStr: ArcStr = arcstr::literal!("");
                     let mut paramStr: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = r#str.clone();

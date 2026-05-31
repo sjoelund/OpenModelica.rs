@@ -107,7 +107,7 @@ pub fn evaluate(mut flatModel: Arc<FlatModel::NFFlatModel>, mut context: i32) ->
         flatModel.algorithms = evaluateAlgorithms(flatModel.algorithms.clone()),
         flatModel.initialAlgorithms = evaluateAlgorithms(flatModel.initialAlgorithms.clone())
     );
-    execStat((literal!("NFEvalConstants.evaluate")).clone())?;
+    execStat(literal!("NFEvalConstants.evaluate"))?;
     Ok(flatModel)
 }
 
@@ -203,7 +203,7 @@ pub fn evaluateExpTraverser(mut exp: Arc<Expression::NFExpression>, mut info: So
     let mut var: Variability = Variability::CONSTANT;
     (outExp, outChanged) = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } => {
-            let (__pa2, __pa0, __pa1, __pa3) = ::match_deref::match_deref! { match &(Expression::mapFoldShallow(exp.clone(), Arc::new({ let __pe_b1 = info.clone(); move |__pe_a0, __pe_a2| evaluateExpTraverser(__pe_a0, __pe_b1.clone(), __pe_a2) }), false)?) {
+            let (__pa2, __pa0, __pa1, __pa3) = ::match_deref::match_deref! { match &(Expression::mapFoldShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = info.clone(); move |__pe_a0, __pe_a2| evaluateExpTraverser(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, bool) -> Result<(Arc<Expression::NFExpression>, bool)> + 'static>), false)?) {
                 (__pa2 @ Deref @ Expression::CREF { ty: __pa0, cref: __pa1 }, __pa3) => (__pa2.clone(), __pa0.clone(), __pa1.clone(), __pa3.clone()),
                 _ => bail!("pattern mismatch"),
             } };
@@ -214,7 +214,7 @@ pub fn evaluateExpTraverser(mut exp: Arc<Expression::NFExpression>, mut info: So
             var = ComponentRef::nodeVariability(cref.clone())?;
             if var.clone() <= Variability::STRUCTURAL_PARAMETER.clone() && !(Type::isExternalObject(ty.clone())) {
                 if var.clone() > Variability::CONSTANT.clone() {
-                    ErrorExt::setCheckpoint((literal!("NFEvalConstants.evaluateExpTraverser")).clone());
+                    ErrorExt::setCheckpoint(literal!("NFEvalConstants.evaluateExpTraverser"));
                     match '__try4: {
                         e = unwrap_break_err!(Ceval::evalCref(cref.clone(), outExp.clone(), Ceval::noTarget().clone(), false, true), '__try4);
                         e = unwrap_break_err!(Flatten::flattenExp(e.clone(), Arc::new(Flatten::Prefix::Prefix::PREFIX { root: Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), prefix: cref.clone() }), info.clone()), '__try4);
@@ -231,7 +231,7 @@ pub fn evaluateExpTraverser(mut exp: Arc<Expression::NFExpression>, mut info: So
                             bail!("try/else: outputs not set in else branch");
                         }
                     }
-                    ErrorExt::rollBack((literal!("NFEvalConstants.evaluateExpTraverser")).clone());
+                    ErrorExt::rollBack(literal!("NFEvalConstants.evaluateExpTraverser"));
                 } else {
                     outExp = Ceval::evalCref(cref.clone(), outExp.clone(), Ceval::EvalTarget::new(info.clone(), InstContext::NO_CONTEXT.clone(), None), false, true)?;
                     outExp = Flatten::flattenExp(outExp.clone(), Arc::new(Flatten::Prefix::Prefix::PREFIX { root: Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), prefix: cref.clone() }), info.clone())?;
@@ -255,7 +255,7 @@ pub fn evaluateExpTraverser(mut exp: Arc<Expression::NFExpression>, mut info: So
                     _ => bail!("pattern mismatch"),
                 } };
                 e = __pa0.clone();
-                (e, outChanged) = Expression::mapFoldShallow(e.clone(), Arc::new({ let __pe_b1 = info.clone(); move |__pe_a0, __pe_a2| evaluateExpTraverser(__pe_a0, __pe_b1.clone(), __pe_a2) }), false)?;
+                (e, outChanged) = Expression::mapFoldShallow(e.clone(), (std::sync::Arc::new({ let __pe_b1 = info.clone(); move |__pe_a0, __pe_a2| evaluateExpTraverser(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, bool) -> Result<(Arc<Expression::NFExpression>, bool)> + 'static>), false)?;
                 if outChanged.clone() {
                     assign_variant_field!(exp => Expression::NFExpression::SIZE; dimIndex = Some(e.clone()));
                 }
@@ -263,14 +263,14 @@ pub fn evaluateExpTraverser(mut exp: Arc<Expression::NFExpression>, mut info: So
             (exp.clone(), outChanged.clone())
         },
         Deref @ Expression::RANGE { .. } => {
-            (outExp, outChanged) = Expression::mapFoldShallow(exp.clone(), Arc::new({ let __pe_b1 = info.clone(); move |__pe_a0, __pe_a2| evaluateExpTraverser(__pe_a0, __pe_b1.clone(), __pe_a2) }), false)?;
+            (outExp, outChanged) = Expression::mapFoldShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = info.clone(); move |__pe_a0, __pe_a2| evaluateExpTraverser(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, bool) -> Result<(Arc<Expression::NFExpression>, bool)> + 'static>), false)?;
             if outChanged.clone() {
                 outExp = Expression::retype(outExp.clone())?;
             }
             (outExp.clone(), outChanged.clone())
         },
         _ => {
-            (outExp, outChanged) = Expression::mapFoldShallow(exp.clone(), Arc::new({ let __pe_b1 = info.clone(); move |__pe_a0, __pe_a2| evaluateExpTraverser(__pe_a0, __pe_b1.clone(), __pe_a2) }), false)?;
+            (outExp, outChanged) = Expression::mapFoldShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = info.clone(); move |__pe_a0, __pe_a2| evaluateExpTraverser(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, bool) -> Result<(Arc<Expression::NFExpression>, bool)> + 'static>), false)?;
             ty = Expression::typeOf(outExp.clone());
             ty2 = evaluateType(ty.clone(), info.clone())?;
             (if (referenceEq(&ty.clone(),&ty2.clone())) {outExp.clone()} else {Expression::setType(ty2.clone(), outExp.clone())?}, outChanged.clone())
@@ -372,14 +372,14 @@ pub fn evaluateEquation(mut eq: Arc<Equation::NFEquation>) -> Result<Arc<Equatio
             let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-            ty = Type::mapDims(var_field!((*eq).ty, Equation::NFEquation::EQUALITY).clone(), Arc::new({ let __pe_b1 = info.clone(); move |__pe_a0| evaluateDimension(__pe_a0, __pe_b1.clone()) }));
+            ty = Type::mapDims(var_field!((*eq).ty, Equation::NFEquation::EQUALITY).clone(), (std::sync::Arc::new({ let __pe_b1 = info.clone(); move |__pe_a0| evaluateDimension(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>));
             e1 = evaluateExp(var_field!((*eq).lhs, Equation::NFEquation::EQUALITY).clone(), info.clone())?;
             e2 = evaluateExp(var_field!((*eq).rhs, Equation::NFEquation::EQUALITY).clone(), info.clone())?;
             Arc::new(Equation::NFEquation::EQUALITY { lhs: e1.clone(), rhs: e2.clone(), ty: ty.clone(), scope: var_field!((*eq).scope, Equation::NFEquation::EQUALITY).clone(), source: var_field!((*eq).source, Equation::NFEquation::EQUALITY).clone(), scalarizeMode: var_field!((*eq).scalarizeMode, Equation::NFEquation::EQUALITY).clone() })
         },
         Deref @ Equation::FOR { .. } => {
             assign_variant_field!(eq => Equation::NFEquation::FOR;
-                range = Util::applyOption(var_field!((*eq).range, Equation::NFEquation::FOR).clone(), Arc::new({ let __pe_b1 = info.clone(); move |__pe_a0| evaluateExp(__pe_a0, __pe_b1.clone()) })),
+                range = Util::applyOption(var_field!((*eq).range, Equation::NFEquation::FOR).clone(), (std::sync::Arc::new({ let __pe_b1 = info.clone(); move |__pe_a0| evaluateExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
                 body = evaluateEquations(var_field!((*eq).body, Equation::NFEquation::FOR).clone())
             );
             eq.clone()
@@ -436,7 +436,7 @@ pub fn evaluateEquation(mut eq: Arc<Equation::NFEquation>) -> Result<Arc<Equatio
 }
 
 pub fn evaluateEqBranch(mut branch: Arc<Branch::Branch>, mut info: SourceInfo) -> Result<Arc<Branch::Branch>> {
-    let mut outBranch: Arc<Branch::Branch>;
+    let mut outBranch: Arc<Branch::Branch> = Arc::new(<Branch::Branch as ::std::default::Default>::default());
     outBranch = (::match_deref::match_deref! { match &(branch.clone()) {
         Deref @ Equation::Branch::BRANCH { body, condition, .. } => {
             let mut body = (*body).clone();
@@ -491,14 +491,14 @@ pub fn evaluateStatement(mut stmt: Arc<Statement::NFStatement>) -> Result<Arc<St
             let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-            ty = Type::mapDims(var_field!((*stmt).ty, Statement::NFStatement::ASSIGNMENT).clone(), Arc::new({ let __pe_b1 = info.clone(); move |__pe_a0| evaluateDimension(__pe_a0, __pe_b1.clone()) }));
+            ty = Type::mapDims(var_field!((*stmt).ty, Statement::NFStatement::ASSIGNMENT).clone(), (std::sync::Arc::new({ let __pe_b1 = info.clone(); move |__pe_a0| evaluateDimension(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>));
             e1 = evaluateExp(var_field!((*stmt).lhs, Statement::NFStatement::ASSIGNMENT).clone(), info.clone())?;
             e2 = evaluateExp(var_field!((*stmt).rhs, Statement::NFStatement::ASSIGNMENT).clone(), info.clone())?;
             Arc::new(Statement::NFStatement::ASSIGNMENT { lhs: e1.clone(), rhs: e2.clone(), ty: ty.clone(), source: var_field!((*stmt).source, Statement::NFStatement::ASSIGNMENT).clone() })
         },
         Deref @ Statement::FOR { .. } => {
             assign_variant_field!(stmt => Statement::NFStatement::FOR;
-                range = Util::applyOption(var_field!((*stmt).range, Statement::NFStatement::FOR).clone(), Arc::new({ let __pe_b1 = info.clone(); move |__pe_a0| evaluateExp(__pe_a0, __pe_b1.clone()) })),
+                range = Util::applyOption(var_field!((*stmt).range, Statement::NFStatement::FOR).clone(), (std::sync::Arc::new({ let __pe_b1 = info.clone(); move |__pe_a0| evaluateExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
                 body = evaluateStatements(var_field!((*stmt).body, Statement::NFStatement::FOR).clone())
             );
             stmt.clone()
@@ -562,7 +562,7 @@ pub fn evaluateStatement(mut stmt: Arc<Statement::NFStatement>) -> Result<Arc<St
 }
 
 pub fn evaluateStmtBranch(mut branch: (Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>), mut info: SourceInfo) -> Result<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>)> {
-    let mut outBranch: (Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>);
+    let mut outBranch: (Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<Statement::NFStatement>>>) = (Arc::new(Expression::END), metamodelica::nil());
     let mut cond: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut body: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
     (cond, body) = branch.clone();
@@ -578,7 +578,7 @@ pub fn evaluateFunction(mut func: Arc<Function::Function>) -> Result<Arc<Functio
     if !(Function::isEvaluated(func.clone())) {
         Function::markEvaluated(func.clone());
         is_con = Function::isDefaultRecordConstructor(func.clone());
-        func = Function::mapExp(func.clone(), Arc::new({ let __pe_b1 = func.node.clone(); let __pe_b2 = is_con.clone(); move |__pe_a0| evaluateFuncExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }), Arc::new({ let __pe_b1 = func.node.clone(); let __pe_b2 = true; move |__pe_a0| evaluateFuncExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }), true, true)?;
+        func = Function::mapExp(func.clone(), (std::sync::Arc::new({ let __pe_b1 = func.node.clone(); let __pe_b2 = is_con.clone(); move |__pe_a0| evaluateFuncExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), (std::sync::Arc::new({ let __pe_b1 = func.node.clone(); let __pe_b2 = true; move |__pe_a0| evaluateFuncExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), true, true)?;
         if is_con.clone() {
             Record::checkLocalFieldOrder(func.locals.clone(), func.node.clone(), InstNode::info(func.node.clone())?)?;
         }
@@ -603,11 +603,11 @@ pub fn evaluateFuncExpTraverser(mut exp: Arc<Expression::NFExpression>, mut fnNo
     let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut outChanged: bool = false;
     let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    (e, outChanged) = Expression::mapFoldShallow(exp.clone(), Arc::new({ let __pe_b1 = fnNode.clone(); let __pe_b2 = evaluateAll.clone(); move |__pe_a0, __pe_a3| evaluateFuncExpTraverser(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3) }), false)?;
+    (e, outChanged) = Expression::mapFoldShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = fnNode.clone(); let __pe_b2 = evaluateAll.clone(); move |__pe_a0, __pe_a3| evaluateFuncExpTraverser(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, bool) -> Result<(Arc<Expression::NFExpression>, bool)> + 'static>), false)?;
     outExp = (::match_deref::match_deref! { match &(e.clone()) {
         Deref @ Expression::CREF { .. } => {
             if evaluateAll.clone() || !(isLocalFunctionVariable(var_field!((*e).cref, Expression::NFExpression::CREF).clone(), fnNode.clone())?) {
-                ErrorExt::setCheckpoint((literal!("NFEvalConstants.evaluateFuncExpTraverser")).clone());
+                ErrorExt::setCheckpoint(literal!("NFEvalConstants.evaluateFuncExpTraverser"));
                 match '__try0: {
                     outExp = unwrap_break_err!(Ceval::evalCref(var_field!((*e).cref, Expression::NFExpression::CREF).clone(), e.clone(), Ceval::noTarget().clone(), false, true), '__try0);
                     Ok::<_, anyhow::Error>((outExp.clone(),))
@@ -619,7 +619,7 @@ pub fn evaluateFuncExpTraverser(mut exp: Arc<Expression::NFExpression>, mut fnNo
                         outExp = e.clone();
                     }
                 }
-                ErrorExt::rollBack((literal!("NFEvalConstants.evaluateFuncExpTraverser")).clone());
+                ErrorExt::rollBack(literal!("NFEvalConstants.evaluateFuncExpTraverser"));
                 outChanged = true;
             } else if outChanged.clone() {
                 outExp = Arc::new(Expression::NFExpression::CREF { ty: ComponentRef::getSubscriptedType(var_field!((*e).cref, Expression::NFExpression::CREF).clone(), false)?, cref: var_field!((*e).cref, Expression::NFExpression::CREF).clone() });
@@ -662,7 +662,7 @@ pub fn isLocalFunctionVariable(mut cref: Arc<ComponentRef::NFComponentRef>, mut 
 }
 
 pub fn evaluateRecordDeclaration(mut recordNode: Arc<InstNode::InstNode>) -> Result<()> {
-    ClassTree::applyComponents(Class::classTree(InstNode::getClass(recordNode.clone())?)?, Arc::new({ let __pe_b1 = recordNode.clone(); move |__pe_a0| evaluateRecordDeclarationField(__pe_a0, __pe_b1.clone()) }));
+    ClassTree::applyComponents(Class::classTree(InstNode::getClass(recordNode.clone())?)?, (std::sync::Arc::new({ let __pe_b1 = recordNode.clone(); move |__pe_a0| evaluateRecordDeclarationField(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<()> + 'static>));
     Ok(())
 }
 
@@ -673,12 +673,12 @@ pub fn evaluateRecordDeclarationField(mut fieldNode: Arc<InstNode::InstNode>, mu
     comp = InstNode::component(fieldNode.clone())?;
     binding = Component::getBinding(comp.clone());
     if Binding::isBound(binding.clone()) {
-        binding = Binding::mapExp(binding.clone(), Arc::new({ let __pe_b1 = fieldNode.clone(); let __pe_b2 = false; move |__pe_a0| evaluateFuncExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }))?;
+        binding = Binding::mapExp(binding.clone(), (std::sync::Arc::new({ let __pe_b1 = fieldNode.clone(); let __pe_b2 = false; move |__pe_a0| evaluateFuncExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
         comp = Component::setBinding(binding.clone(), comp.clone())?;
     }
     cls_inst = Component::classInstance(comp.clone());
     if !(InstNode::isEmpty(cls_inst.clone())) {
-        ClassTree::applyComponents(Class::classTree(InstNode::getClass(cls_inst.clone())?)?, Arc::new({ let __pe_b1 = recordNode.clone(); move |__pe_a0| evaluateRecordDeclarationField(__pe_a0, __pe_b1.clone()) }));
+        ClassTree::applyComponents(Class::classTree(InstNode::getClass(cls_inst.clone())?)?, (std::sync::Arc::new({ let __pe_b1 = recordNode.clone(); move |__pe_a0| evaluateRecordDeclarationField(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<()> + 'static>));
     }
     InstNode::updateComponent(comp.clone(), fieldNode.clone())?;
     Ok(())

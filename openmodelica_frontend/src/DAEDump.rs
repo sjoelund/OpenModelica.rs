@@ -2784,7 +2784,7 @@ fn buildGrList(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>) -> 
             let mut nodelist: Arc<metamodelica::List<Arc<Graphviz::Node>>> = metamodelica::nil();
             node = buildGrElement(el.clone())?;
             nodelist = buildGrList(rest.clone())?;
-            cons(node.clone(), nodelist.clone())
+            metamodelica::cons(node.clone(), nodelist.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2838,7 +2838,7 @@ pub fn buildGrStrlist<Type_a: Clone + 'static>(mut inTypeALst: Arc<metamodelica:
             count_1 = count.clone() - 1;
             (strlist, ignored) = buildGrStrlist(rest.clone(), printer.clone(), count_1.clone())?;
             r#str = (printer(var.clone())?).clone();
-            (cons((r#str.clone()).clone(), strlist.clone()), ignored.clone())
+            (metamodelica::cons((r#str.clone()).clone(), strlist.clone()), ignored.clone())
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2997,7 +2997,7 @@ fn unparseType(mut tp: Arc<DAE::Type>) -> Result<ArcStr> {
                 Deref @ DAE::Type::T_ARRAY { ty, .. } => {
                     let mut name: ArcStr = arcstr::literal!("");
                     let mut dim_str: ArcStr = arcstr::literal!("");
-                    let mut path: Arc<Absyn::Path>;
+                    let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
                     let __pa0 = ::match_deref::match_deref! { match &(Types::arrayElementType(ty.clone())) {
                         Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: __pa0 }, .. } => __pa0.clone(),
@@ -3566,7 +3566,7 @@ fn dumpEquationsStream(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element
             r#str = IOStream::append(r#str.clone(), (literal!(" then\n")).clone())?;
             r#str = dumpEquationsStream(xs1.clone(), r#str.clone())?;
             r#str = IOStream::append(r#str.clone(), (literal!(" else")).clone())?;
-            r#str = dumpEquationsStream(cons(el.clone(), xs.clone()), r#str.clone())?;
+            r#str = dumpEquationsStream(metamodelica::cons(el.clone(), xs.clone()), r#str.clone())?;
             r#str.clone()
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::WHEN_EQUATION { source: src, elsewhen_: None, equations: xs1, condition: e }, tail: xs }, r#str) => {
@@ -4321,7 +4321,7 @@ fn connectsStr(mut inLst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DA
                     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(c1.clone())?); __mm_s.push_str(&*literal!(",")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(c2.clone())?); ArcStr::from(__mm_s) }).clone();
                     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("connect(")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
                     slst = connectsStr(rest.clone())?;
-                    Ok(cons((r#str.clone()).clone(), slst.clone()))
+                    Ok(metamodelica::cons((r#str.clone()).clone(), slst.clone()))
                 }
                 _ => bail!("nomatch"),
             }}

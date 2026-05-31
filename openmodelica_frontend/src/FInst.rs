@@ -102,7 +102,7 @@ pub fn inst(mut inPath: Arc<Absyn::Path>, mut inProgram: Arc<metamodelica::List<
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut g: Graph;
+                    let mut g: Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut p: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
                     let mut lst: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
                     p = doSCodeDep(inProgram.clone(), inPath.clone())?;
@@ -155,7 +155,7 @@ pub fn instPath(mut inPath: Arc<Absyn::Path>, mut inProgram: Arc<metamodelica::L
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut g: Graph;
+                    let mut g: Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut p: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
                     let mut lst: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();
                     lst = metamodelica::nil();

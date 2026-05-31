@@ -138,8 +138,8 @@ pub fn elabMod(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc
         },
         (cache, env, ih, pre, Deref @ SCode::Mod::MOD { info, binding: Some(e), subModLst: subs, eachPrefix: each_, finalPrefix, .. }, r#impl, _) => {
             let mut subs_1: Arc<metamodelica::List<Arc<DAE::SubMod>>> = metamodelica::nil();
-            let mut e_1: Arc<DAE::Exp>;
-            let mut e_2: Arc<DAE::Exp>;
+            let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e_2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut prop: DAE::Properties;
             let mut e_val: Option<Arc<Values::Value>> = None;
             let mut cache = (*cache).clone();
@@ -204,7 +204,7 @@ pub fn isInvariantMod(mut r#mod: Arc<SCode::Mod>) -> Result<bool> {
 
 pub fn isInvariantDAEMod(mut r#mod: Arc<DAE::Mod>) -> Result<bool> {
     let mut b: bool = false;
-    let mut e: Arc<DAE::Exp>;
+    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut exp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut mods: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
     b = (::match_deref::match_deref! { match &(r#mod.clone()) {
@@ -278,7 +278,7 @@ fn checkIfSubmodsAreBasicTypeMods(mut inSubs: Arc<metamodelica::List<Arc<SCode::
 }
 
 fn elabModRedeclareElement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut finalPrefix: SCode::Final, mut inElt: Arc<SCode::Element>, mut r#impl: bool, mut inModScope: ModScope, mut info: SourceInfo) -> Result<(Arc<SCode::Element>, Arc<DAE::Mod>)> {
-    let mut outElement: Arc<SCode::Element>;
+    let mut outElement: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     let mut outMod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
     (outElement, outMod) = 'mc: {
         let __mc_input = inElt.clone();
@@ -349,13 +349,13 @@ fn elabModQualifyTypespec(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
     let mut outTp: Arc<Absyn::TypeSpec>;
     (outCache, outTp) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), tp.clone())) {
         (cache, env, _, _, Deref @ Absyn::TypeSpec::TPATH { path: p, arrayDim: None }) => {
-            let mut p1: Arc<Absyn::Path>;
+            let mut p1: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut cache = (*cache).clone();
             (cache, p1) = Inst::makeFullyQualified(cache.clone(), env.clone(), p.clone())?;
             (cache.clone(), Arc::new(Absyn::TypeSpec::TPATH { path: p1.clone(), arrayDim: None }))
         },
         (cache, env, ih, pre, Deref @ Absyn::TypeSpec::TPATH { path: p, arrayDim: Some(dims) }) => {
-            let mut p1: Arc<Absyn::Path>;
+            let mut p1: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut cref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
             let mut edims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
             let mut cache = (*cache).clone();
@@ -537,8 +537,8 @@ pub fn updateMod(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, pre, Deref @ DAE::Mod::MOD { info, binding: Some(DAE::EqMod::UNTYPED { exp: e }), subModLst: subs, eachPrefix: each_, finalPrefix: f }, r#impl) => {
                     let mut subs_1: Arc<metamodelica::List<Arc<DAE::SubMod>>> = metamodelica::nil();
-                    let mut e_1: Arc<DAE::Exp>;
-                    let mut e_2: Arc<DAE::Exp>;
+                    let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e_2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut prop: DAE::Properties;
                     let mut e_val: Option<Arc<Values::Value>> = None;
                     let mut cache = (*cache).clone();
@@ -692,7 +692,7 @@ fn elabSubmods2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Ar
             let mut accum_mods: Arc<metamodelica::List<Arc<DAE::SubMod>>> = metamodelica::nil();
             let mut cache = (*cache).clone();
             (cache, dmod) = elabSubmod(cache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), smod.clone(), inImpl.clone(), inInfo.clone())?;
-            (cache, accum_mods) = elabSubmods2(cache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), rest_smods.clone(), inImpl.clone(), inInfo.clone(), cons(dmod.clone(), inAccumMods.clone()))?;
+            (cache, accum_mods) = elabSubmods2(cache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), rest_smods.clone(), inImpl.clone(), inInfo.clone(), metamodelica::cons(dmod.clone(), inAccumMods.clone()))?;
             (cache.clone(), accum_mods.clone())
         },
         _ => {
@@ -715,7 +715,7 @@ fn compactSubMod(mut inSubMod: Arc<SCode::SubMod>, mut inModScope: ModScope, mut
     let mut outSubMods: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
     let mut submods: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
     let mut found: bool = false;
-    (submods, found) = List::findMap(inAccumMods.clone(), Arc::new({ let __pe_b1 = inSubMod.clone(); let __pe_b2 = inModScope.clone(); let __pe_b3 = inName.clone(); move |__pe_a0| compactSubMod2(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }))?;
+    (submods, found) = List::findMap(inAccumMods.clone(), (std::sync::Arc::new({ let __pe_b1 = inSubMod.clone(); let __pe_b2 = inModScope.clone(); let __pe_b3 = inName.clone(); move |__pe_a0| compactSubMod2(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<(Arc<SCode::SubMod>, bool)> + 'static>))?;
     outSubMods = List::consOnTrue(!(found.clone()), inSubMod.clone(), submods.clone());
     Ok(outSubMods)
 }
@@ -729,7 +729,7 @@ fn compactSubMod2(mut inExistingMod: Arc<SCode::SubMod>, mut inNewMod: Arc<SCode
         },
         (Deref @ SCode::SubMod { ident: name1, .. }, _) => {
             let mut submod: Arc<SCode::SubMod> = Arc::new(<SCode::SubMod as ::std::default::Default>::default());
-            submod = mergeSubModsInSameScope(inExistingMod.clone(), inNewMod.clone(), cons((name1.clone()).clone(), inName.clone()), inModScope.clone())?;
+            submod = mergeSubModsInSameScope(inExistingMod.clone(), inNewMod.clone(), metamodelica::cons((name1.clone()).clone(), inName.clone()), inModScope.clone())?;
             (submod.clone(), true)
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1040,7 +1040,7 @@ fn lookupComplexCompModification(mut inEqMod: Option<DAE::EqMod>, mut inName: Ar
     let mut names: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
     let mut name: ArcStr = arcstr::literal!("");
-    let mut e: Arc<DAE::Exp>;
+    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut ae: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut eq_mod: DAE::EqMod;
@@ -1301,7 +1301,7 @@ fn lookupIdxModification2(mut inSubMods: Arc<metamodelica::List<Arc<DAE::SubMod>
         r#mod = __pa1.clone();
         r#mod = lookupIdxModification3(r#mod.clone(), inIndex.clone())?;
         if !(isNoMod(r#mod.clone())) {
-            outSubMods = cons(Arc::new(DAE::SubMod { ident: (name.clone()).clone(), r#mod: r#mod.clone() }), outSubMods.clone());
+            outSubMods = metamodelica::cons(Arc::new(DAE::SubMod { ident: (name.clone()).clone(), r#mod: r#mod.clone() }), outSubMods.clone());
         }
     }
     outSubMods = outSubMods.clone().reverse();
@@ -1334,7 +1334,7 @@ fn lookupIdxModification3(mut inMod: Arc<DAE::Mod>, mut inIndex: Arc<DAE::Exp>) 
 
 fn indexEqmod(mut inBinding: Option<DAE::EqMod>, mut inIndices: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inInfo: SourceInfo) -> Result<Option<DAE::EqMod>> {
     let mut outBinding: Option<DAE::EqMod> = inBinding.clone();
-    let mut exp: Arc<DAE::Exp>;
+    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut oval: Option<Arc<Values::Value>> = None;
     let mut val: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -1561,7 +1561,7 @@ fn doMerge(mut inModOuter: Arc<DAE::Mod>, mut inModInner: Arc<DAE::Mod>, mut inC
                     }.is_err() {
                     }
                 }
-                vals = cons(v.clone(), vals.clone());
+                vals = metamodelica::cons(v.clone(), vals.clone());
             }
             assign_variant_field!(val => Values::Value::RECORD; orderd = vals.clone().reverse());
             let __owned_variant_modifierAsValue_0 = Some(val.clone());
@@ -1603,7 +1603,7 @@ fn doMerge(mut inModOuter: Arc<DAE::Mod>, mut inModInner: Arc<DAE::Mod>, mut inC
                     Ok::<(), anyhow::Error>(())
                 }.is_err() {
                 }
-                vals = cons(v.clone(), vals.clone());
+                vals = metamodelica::cons(v.clone(), vals.clone());
             }
             assign_variant_field!(val => Values::Value::RECORD; orderd = vals.clone().reverse());
             let __owned_variant_modifierAsValue_0 = Some(val.clone());
@@ -1665,7 +1665,7 @@ fn mergeSubs(mut inSubMods1: Arc<metamodelica::List<Arc<DAE::SubMod>>>, mut inSu
                 m1 = merge(m1.clone(), m2.clone(), (name.clone()).clone(), inCheckFinal.clone())?;
                 sm1 = Arc::new(DAE::SubMod { ident: (name.clone()).clone(), r#mod: m1.clone() });
             }
-            outSubMods = cons(sm1.clone(), outSubMods.clone());
+            outSubMods = metamodelica::cons(sm1.clone(), outSubMods.clone());
         }
         outSubMods = List::append_reverse(outSubMods.clone(), submods2.clone());
     }
@@ -2120,7 +2120,7 @@ pub fn printSubs1Str(mut inTypesSubModLst: Arc<metamodelica::List<Arc<DAE::SubMo
             let mut res: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             s1 = (printSubStr(x.clone())?).clone();
             res = printSubs1Str(xs.clone())?;
-            cons((s1.clone()).clone(), res.clone())
+            metamodelica::cons((s1.clone()).clone(), res.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2305,7 +2305,7 @@ fn getFullModsFromMod(mut inTopCref: Arc<DAE::ComponentRef>, mut inMod: Arc<DAE:
 
 fn getFullModFromModRedeclare(mut inTopCref: Arc<DAE::ComponentRef>, mut inRedeclare: Arc<DAE::Mod>) -> Result<FullMod> {
     let mut outFullMod: FullMod;
-    let mut el: Arc<SCode::Element>;
+    let mut el: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     let mut id: ArcStr = arcstr::literal!("");
     let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let __pa0 = ::match_deref::match_deref! { match &(inRedeclare.clone()) {
@@ -2334,7 +2334,7 @@ fn getFullModsFromSubMods(mut inTopCref: Arc<DAE::ComponentRef>, mut inSubMods: 
             cref = ComponentReference::joinCrefs(inTopCref.clone(), ComponentReferenceBasics::makeCrefIdent((id.clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil()))?;
             fullMods1 = getFullModsFromMod(cref.clone(), r#mod.clone())?;
             fullMods2 = getFullModsFromSubMods(inTopCref.clone(), rest.clone())?;
-            fullMods = listAppend(if (fullMods1.clone().is_empty()) {cons(FullMod::SUB_MOD { cref: cref.clone(), subMod: subMod.clone() }, fullMods1.clone())} else {fullMods1.clone()}, fullMods2.clone());
+            fullMods = listAppend(if (fullMods1.clone().is_empty()) {metamodelica::cons(FullMod::SUB_MOD { cref: cref.clone(), subMod: subMod.clone() }, fullMods1.clone())} else {fullMods1.clone()}, fullMods2.clone());
             fullMods.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -2556,7 +2556,7 @@ fn removeRedecl(mut isubs: Arc<metamodelica::List<Arc<DAE::SubMod>>>) -> Arc<met
         },
         Deref @ metamodelica::List::Cons { head: sm, tail: subs } => {
             osubs = removeRedecl(subs.clone());
-            cons(sm.clone(), osubs.clone())
+            metamodelica::cons(sm.clone(), osubs.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2731,7 +2731,7 @@ pub fn addEachToSubsIfNeeded(mut inSubMods: Arc<metamodelica::List<Arc<DAE::SubM
             let mut rest = (*rest).clone();
             m = addEachOneLevel(m.clone())?;
             rest = addEachToSubsIfNeeded(rest.clone(), inDimensions.clone())?;
-            cons(Arc::new(DAE::SubMod { ident: (id.clone()).clone(), r#mod: m.clone() }), rest.clone())
+            metamodelica::cons(Arc::new(DAE::SubMod { ident: (id.clone()).clone(), r#mod: m.clone() }), rest.clone())
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -2880,7 +2880,7 @@ fn stripSubModBindings(mut inSubMods: Arc<metamodelica::List<Arc<DAE::SubMod>>>)
         r#mod = __pa1.clone();
         r#mod = setEqMod(None, r#mod.clone());
         if !(isEmptyMod(r#mod.clone())) {
-            outSubMods = cons(Arc::new(DAE::SubMod { ident: (id.clone()).clone(), r#mod: r#mod.clone() }), outSubMods.clone());
+            outSubMods = metamodelica::cons(Arc::new(DAE::SubMod { ident: (id.clone()).clone(), r#mod: r#mod.clone() }), outSubMods.clone());
         }
     }
     outSubMods = outSubMods.clone().reverse();
@@ -2917,7 +2917,7 @@ fn filterRedeclaresSubMods(mut inSubMods: Arc<metamodelica::List<Arc<DAE::SubMod
         r#mod = __pa1.clone();
         r#mod = filterRedeclares(r#mod.clone())?;
         if isRedeclareMod(r#mod.clone()) {
-            outSubMods = cons(Arc::new(DAE::SubMod { ident: (id.clone()).clone(), r#mod: r#mod.clone() }), outSubMods.clone());
+            outSubMods = metamodelica::cons(Arc::new(DAE::SubMod { ident: (id.clone()).clone(), r#mod: r#mod.clone() }), outSubMods.clone());
         }
     }
     outSubMods = outSubMods.clone().reverse();

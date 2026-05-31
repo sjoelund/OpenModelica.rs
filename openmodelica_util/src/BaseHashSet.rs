@@ -98,8 +98,8 @@ pub fn bucketToValuesSize(mut szBucket: i32) -> i32 {
 
 pub fn emptyHashSetWork<Key: Clone + 'static>(mut szBucket: i32, mut fntpl: FuncsTuple<Key>) -> HashSet<Key> {
     let mut hashSet: HashSet<Key>;
-    let mut arr: metamodelica::Array<Arc<metamodelica::List<(Key, i32)>>>;
-    let mut emptyarr: metamodelica::Array<Option<Key>>;
+    let mut arr: metamodelica::Array<Arc<metamodelica::List<(Key, i32)>>> = Default::default();
+    let mut emptyarr: metamodelica::Array<Option<Key>> = Default::default();
     let mut szArr: i32 = 0;
     arr = arrayCreate(szBucket.clone(), metamodelica::nil());
     szArr = bucketToValuesSize(szBucket.clone());
@@ -124,7 +124,7 @@ pub fn add<Key: Clone + 'static>(mut entry: Key, mut hashSet: HashSet<Key>) -> R
                 newpos = valueArrayLength(varr.clone());
                 varr = valueArrayAdd(varr.clone(), key.clone())?;
                 indexes = hashvec.borrow()[(indx.clone() + 1-1) as usize].clone();
-                hashvec = {let _arr = hashvec.clone(); _arr.borrow_mut()[(indx.clone() + 1-1) as usize] = cons((key.clone(), newpos.clone()), indexes.clone()); _arr};
+                hashvec = {let _arr = hashvec.clone(); _arr.borrow_mut()[(indx.clone() + 1-1) as usize] = metamodelica::cons((key.clone(), newpos.clone()), indexes.clone()); _arr};
                 n = valueArrayLength(varr.clone());
             }
             (hashvec.clone(), varr.clone(), bsize.clone(), n.clone(), fntpl.clone())
@@ -154,14 +154,14 @@ pub fn addNoUpdCheck<Key: Clone + 'static>(mut entry: Key, mut hashSet: HashSet<
             let mut indx: i32 = 0;
             let mut newpos: i32 = 0;
             let mut n_1: i32 = 0;
-            let mut varr_1: (i32, i32, metamodelica::Array<Option<Key>>);
+            let mut varr_1: (i32, i32, metamodelica::Array<Option<Key>>) = (0, 0, Default::default());
             let mut indexes: Arc<metamodelica::List<(Key, i32)>> = metamodelica::nil();
-            let mut hashvec_1: metamodelica::Array<Arc<metamodelica::List<(Key, i32)>>>;
+            let mut hashvec_1: metamodelica::Array<Arc<metamodelica::List<(Key, i32)>>> = Default::default();
             indx = intMod(hashFunc(key.clone())?, bsize.clone());
             newpos = valueArrayLength(varr.clone());
             varr_1 = valueArrayAdd(varr.clone(), key.clone())?;
             indexes = hashvec.borrow()[(indx.clone() + 1-1) as usize].clone();
-            hashvec_1 = {let _arr = hashvec.clone(); _arr.borrow_mut()[(indx.clone() + 1-1) as usize] = cons((key.clone(), newpos.clone()), indexes.clone()); _arr};
+            hashvec_1 = {let _arr = hashvec.clone(); _arr.borrow_mut()[(indx.clone() + 1-1) as usize] = metamodelica::cons((key.clone(), newpos.clone()), indexes.clone()); _arr};
             n_1 = valueArrayLength(varr_1.clone());
             (hashvec_1.clone(), varr_1.clone(), bsize.clone(), n_1.clone(), fntpl.clone())
         },
@@ -176,14 +176,14 @@ pub fn addUnique<Key: Clone + 'static>(mut key: Key, mut hashSet: HashSet<Key>) 
             let mut indx: i32 = 0;
             let mut newpos: i32 = 0;
             let mut n_1: i32 = 0;
-            let mut varr_1: (i32, i32, metamodelica::Array<Option<Key>>);
+            let mut varr_1: (i32, i32, metamodelica::Array<Option<Key>>) = (0, 0, Default::default());
             let mut indexes: Arc<metamodelica::List<(Key, i32)>> = metamodelica::nil();
-            let mut hashvec_1: metamodelica::Array<Arc<metamodelica::List<(Key, i32)>>>;
+            let mut hashvec_1: metamodelica::Array<Arc<metamodelica::List<(Key, i32)>>> = Default::default();
             indx = intMod(hashFunc(key.clone())?, bsize.clone());
             newpos = valueArrayLength(varr.clone());
             varr_1 = valueArrayAdd(varr.clone(), key.clone())?;
             indexes = hashvec.borrow()[(indx.clone() + 1-1) as usize].clone();
-            hashvec_1 = {let _arr = hashvec.clone(); _arr.borrow_mut()[(indx.clone() + 1-1) as usize] = cons((key.clone(), newpos.clone()), indexes.clone()); _arr};
+            hashvec_1 = {let _arr = hashvec.clone(); _arr.borrow_mut()[(indx.clone() + 1-1) as usize] = metamodelica::cons((key.clone(), newpos.clone()), indexes.clone()); _arr};
             n_1 = valueArrayLength(varr_1.clone());
             (hashvec_1.clone(), varr_1.clone(), bsize.clone(), n_1.clone(), fntpl.clone())
         },
@@ -197,9 +197,9 @@ pub fn delete<Key: Clone + 'static>(mut key: Key, mut hashSet: HashSet<Key>) -> 
     let mut indx: i32 = 0;
     let mut n: i32 = 0;
     let mut bsize: i32 = 0;
-    let mut varr_1: (i32, i32, metamodelica::Array<Option<Key>>);
-    let mut varr: (i32, i32, metamodelica::Array<Option<Key>>);
-    let mut hashvec: metamodelica::Array<Arc<metamodelica::List<(Key, i32)>>>;
+    let mut varr_1: (i32, i32, metamodelica::Array<Option<Key>>) = (0, 0, Default::default());
+    let mut varr: (i32, i32, metamodelica::Array<Option<Key>>) = (0, 0, Default::default());
+    let mut hashvec: metamodelica::Array<Arc<metamodelica::List<(Key, i32)>>> = Default::default();
     let mut fntpl: FuncsTuple<Key>;
     (hashvec, varr, bsize, n, fntpl) = hashSet.clone();
     let __pa0 = ::match_deref::match_deref! { match &(get1(key.clone(), hashSet.clone())?) {
@@ -313,7 +313,7 @@ pub fn hashSetList<Key: Clone + 'static>(mut hashSet: HashSet<Key>) -> Result<Ar
 
 pub fn valueArrayList<Key: Clone + 'static>(mut inValueArray: ValueArray<Key>) -> Result<Arc<metamodelica::List<Key>>> {
     let mut outList: Arc<metamodelica::List<Key>> = metamodelica::nil();
-    let mut arr: metamodelica::Array<Option<Key>>;
+    let mut arr: metamodelica::Array<Option<Key>> = Default::default();
     let mut size: i32 = 0;
     let mut e: Key;
     (size, _, arr) = inValueArray.clone();
@@ -324,7 +324,7 @@ pub fn valueArrayList<Key: Clone + 'static>(mut inValueArray: ValueArray<Key>) -
                 _ => bail!("pattern mismatch"),
             } };
             e = __pa0.clone();
-            outList = cons(e.clone(), outList.clone());
+            outList = metamodelica::cons(e.clone(), outList.clone());
         }
     }
     outList = outList.clone().reverse();
@@ -333,7 +333,7 @@ pub fn valueArrayList<Key: Clone + 'static>(mut inValueArray: ValueArray<Key>) -
 
 pub fn currentSize<Key: Clone + 'static>(mut hashSet: HashSet<Key>) -> i32 {
     let mut sz: i32 = 0;
-    let mut va: ValueArray<Key>;
+    let mut va: ValueArray<Key> = (0, 0, Default::default());
     (_, va, _, _, _) = hashSet.clone();
     sz = valueArrayLength(va.clone());
     sz
@@ -346,12 +346,12 @@ pub fn valueArrayLength<Key: Clone + 'static>(mut valueArray: ValueArray<Key>) -
 }
 
 pub fn valueArrayAdd<Key: Clone + 'static>(mut valueArray: ValueArray<Key>, mut entry: Key) -> Result<ValueArray<Key>> {
-    let mut outValueArray: ValueArray<Key>;
+    let mut outValueArray: ValueArray<Key> = (0, 0, Default::default());
     let mut n: i32 = 0;
     let mut size: i32 = 0;
     let mut expandsize: i32 = 0;
     let mut expandsize_1: i32 = 0;
-    let mut arr: metamodelica::Array<Option<Key>>;
+    let mut arr: metamodelica::Array<Option<Key>> = Default::default();
     let mut rsize: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut rexpandsize: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     (n, size, arr) = valueArray.clone();
@@ -369,9 +369,9 @@ pub fn valueArrayAdd<Key: Clone + 'static>(mut valueArray: ValueArray<Key>, mut 
 }
 
 pub fn valueArraySetnth<Key: Clone + 'static>(mut valueArray: ValueArray<Key>, mut pos: i32, mut entry: Key) -> Result<ValueArray<Key>> {
-    let mut outValueArray: ValueArray<Key>;
-    let mut arr_1: metamodelica::Array<Option<Key>>;
-    let mut arr: metamodelica::Array<Option<Key>>;
+    let mut outValueArray: ValueArray<Key> = (0, 0, Default::default());
+    let mut arr_1: metamodelica::Array<Option<Key>> = Default::default();
+    let mut arr: metamodelica::Array<Option<Key>> = Default::default();
     let mut n: i32 = 0;
     let mut size: i32 = 0;
     (n, size, arr) = valueArray.clone();
@@ -382,9 +382,9 @@ pub fn valueArraySetnth<Key: Clone + 'static>(mut valueArray: ValueArray<Key>, m
 }
 
 pub fn valueArrayClearnth<Key: Clone + 'static>(mut valueArray: ValueArray<Key>, mut pos: i32) -> Result<ValueArray<Key>> {
-    let mut outValueArray: ValueArray<Key>;
-    let mut arr_1: metamodelica::Array<Option<Key>>;
-    let mut arr: metamodelica::Array<Option<Key>>;
+    let mut outValueArray: ValueArray<Key> = (0, 0, Default::default());
+    let mut arr_1: metamodelica::Array<Option<Key>> = Default::default();
+    let mut arr: metamodelica::Array<Option<Key>> = Default::default();
     let mut n: i32 = 0;
     let mut size: i32 = 0;
     (n, size, arr) = valueArray.clone();

@@ -210,7 +210,7 @@ pub fn tplMainTest(mut inFile: ArcStr) -> Result<()> {
                     let mut tequal: bool = false;
                     let mut tplPackage: TplAbsyn::TemplPackage = <TplAbsyn::TemplPackage as ::std::default::Default>::default();
                     let mut mmPckg: TplAbsyn::MMPackage = <TplAbsyn::MMPackage as ::std::default::Default>::default();
-                    let mut pid: Arc<TplAbsyn::PathIdent>;
+                    let mut pid: Arc<TplAbsyn::PathIdent> = Arc::new(<TplAbsyn::PathIdent as ::std::default::Default>::default());
                     let mut ts: Arc<TplAbsyn::TypeSignature> = Arc::new(TplAbsyn::TypeSignature::BOOLEAN_TYPE);
                     let mut astDefs: Arc<metamodelica::List<TplAbsyn::ASTDef>> = metamodelica::nil();
                     let mut expB: Arc<TplAbsyn::ExpressionBase> = Arc::new(TplAbsyn::ExpressionBase::ERROR_EXP);

@@ -352,10 +352,10 @@ pub mod ConstantsSetImpl {
     pub fn listKeys(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>) -> Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> {
         let mut lst: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::LEAF { .. } => cons(var_field!((*inTree).key, Tree::LEAF).clone(), lst.clone()),
+        Deref @ Tree::LEAF { .. } => metamodelica::cons(var_field!((*inTree).key, Tree::LEAF).clone(), lst.clone()),
         Deref @ Tree::NODE { .. } => {
             lst = listKeys(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
-            lst = cons(var_field!((*inTree).key, Tree::NODE).clone(), lst.clone());
+            lst = metamodelica::cons(var_field!((*inTree).key, Tree::NODE).clone(), lst.clone());
             lst = listKeys(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
@@ -368,10 +368,10 @@ pub mod ConstantsSetImpl {
     pub fn listKeysReverse(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>) -> Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> {
         let mut lst: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::LEAF { .. } => cons(var_field!((*inTree).key, Tree::LEAF).clone(), lst.clone()),
+        Deref @ Tree::LEAF { .. } => metamodelica::cons(var_field!((*inTree).key, Tree::LEAF).clone(), lst.clone()),
         Deref @ Tree::NODE { .. } => {
             lst = listKeysReverse(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
-            lst = cons(var_field!((*inTree).key, Tree::NODE).clone(), lst.clone());
+            lst = metamodelica::cons(var_field!((*inTree).key, Tree::NODE).clone(), lst.clone());
             lst = listKeysReverse(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
@@ -528,7 +528,7 @@ pub fn collectConstants(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Ar
         __acc
     });
     assign_field!(flatModel.variables = listAppend(vars.clone(), flatModel.variables.clone()));
-    execStat((literal!("NFPackage.collectConstants")).clone())?;
+    execStat(literal!("NFPackage.collectConstants"))?;
     Ok(flatModel)
 }
 
@@ -550,7 +550,7 @@ pub fn replaceConstants(mut flatModel: Arc<FlatModel::NFFlatModel>, mut function
         flatModel.initialAlgorithms = Algorithm::mapExpList(flatModel.initialAlgorithms.clone(), (std::sync::Arc::new(replaceExpConstants) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))
     );
     functions = Flatten::FunctionTreeImpl::map(functions.clone(), (std::sync::Arc::new(replaceFuncConstants) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Function::Function>) -> Result<Arc<Function::Function>> + 'static>));
-    execStat((literal!("NFPackage.replaceConstants")).clone())?;
+    execStat(literal!("NFPackage.replaceConstants"))?;
     Ok((flatModel, functions))
 }
 
@@ -633,7 +633,7 @@ pub fn getPackageConstantBinding2(mut fieldNode: Arc<InstNode::InstNode>, mut cr
 pub fn collectFuncConstants(mut name: Arc<Absyn::Path>, mut func: Arc<Function::Function>, mut constants: Constants) -> Result<Constants> {
     let mut constants: Constants = constants;
     let mut cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
-    let mut comps: metamodelica::Array<Arc<InstNode::InstNode>>;
+    let mut comps: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
     let mut sections: Arc<Sections::NFSections> = Arc::new(Sections::EMPTY);
     cls = InstNode::getClass(func.node.clone())?;
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
@@ -708,7 +708,7 @@ pub fn replaceExpConstants_traverser(mut exp: Arc<Expression::NFExpression>) -> 
 pub fn replaceFuncConstants(mut name: Arc<Absyn::Path>, mut func: Arc<Function::Function>) -> Result<Arc<Function::Function>> {
     let mut func: Arc<Function::Function> = func;
     let mut cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
-    let mut comps: metamodelica::Array<Arc<InstNode::InstNode>>;
+    let mut comps: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
     let mut sections: Arc<Sections::NFSections> = Arc::new(Sections::EMPTY);
     let mut comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);
     let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);

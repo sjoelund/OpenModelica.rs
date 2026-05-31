@@ -184,7 +184,7 @@ pub mod Association {
     }
 
     pub fn create(mut equations: Arc<EquationPointers::EquationPointers>, mut kind: Kind, mut info: Arc<ClockedInfo::ClockedInfo>, mut infer_del: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<Association>> {
-        let mut association: Arc<Association>;
+        let mut association: Arc<Association> = Arc::new(<Association as ::std::default::Default>::default());
         let mut clock_ptr: Pointer::Pointer<Option<(Arc<ComponentRef::NFComponentRef>, Arc<BClock::BClock>)>> = Pointer::create(None);
         let mut infer_ptr: Pointer::Pointer<Option<Arc<ComponentRef::NFComponentRef>>> = Pointer::create(None);
         let mut failed_set: Arc<UnorderedSet::UnorderedSet<(Arc<ComponentRef::NFComponentRef>, Arc<BClock::BClock>)>> = UnorderedSet::new((std::sync::Arc::new(hashClockTpl) as std::sync::Arc<dyn ::std::ops::Fn((Arc<ComponentRef::NFComponentRef>, Arc<BClock::BClock>)) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(isEqualClockTpl, (Arc<ComponentRef::NFComponentRef>, Arc<BClock::BClock>), (Arc<ComponentRef::NFComponentRef>, Arc<BClock::BClock>))) as std::sync::Arc<dyn ::std::ops::Fn((Arc<ComponentRef::NFComponentRef>, Arc<BClock::BClock>), (Arc<ComponentRef::NFComponentRef>, Arc<BClock::BClock>)) -> Result<bool> + 'static>), 13);
@@ -193,8 +193,8 @@ pub mod Association {
         let mut infer: Option<Arc<ComponentRef::NFComponentRef>> = None;
         let mut name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
         let mut base_name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-        let mut clock: Arc<BClock::BClock>;
-        BEquation::EquationPointers::mapExp(equations.clone(), Arc::new({ let __pe_b1 = info.clone(); let __pe_b2 = clock_ptr.clone(); let __pe_b3 = infer_ptr.clone(); let __pe_b4 = failed_set.clone(); let __pe_b5 = clock_deps.clone(); let __pe_b6 = infer_del.clone(); move |__pe_a0| expClocked(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone()) }), None, (std::sync::Arc::new(fnptr!(Expression::fakeMap, Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+        let mut clock: Arc<BClock::BClock> = Arc::new(<BClock::BClock as ::std::default::Default>::default());
+        BEquation::EquationPointers::mapExp(equations.clone(), (std::sync::Arc::new({ let __pe_b1 = info.clone(); let __pe_b2 = clock_ptr.clone(); let __pe_b3 = infer_ptr.clone(); let __pe_b4 = failed_set.clone(); let __pe_b5 = clock_deps.clone(); let __pe_b6 = infer_del.clone(); move |__pe_a0| expClocked(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), None, (std::sync::Arc::new(fnptr!(Expression::fakeMap, Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
         clock_tpl = Pointer::access(clock_ptr.clone());
         infer = Pointer::access(infer_ptr.clone());
         if isSome(clock_tpl.clone()) {
@@ -335,7 +335,7 @@ pub mod Association {
             exp.clone()
         },
         _ => {
-            Expression::mapShallow(exp.clone(), Arc::new({ let __pe_b1 = info.clone(); let __pe_b2 = clock_ptr.clone(); let __pe_b3 = infer_ptr.clone(); let __pe_b4 = failed_set.clone(); let __pe_b5 = clock_deps.clone(); let __pe_b6 = infer_del.clone(); move |__pe_a0| expClocked(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone()) }))?
+            Expression::mapShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = info.clone(); let __pe_b2 = clock_ptr.clone(); let __pe_b3 = infer_ptr.clone(); let __pe_b4 = failed_set.clone(); let __pe_b5 = clock_deps.clone(); let __pe_b6 = infer_del.clone(); move |__pe_a0| expClocked(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -343,7 +343,7 @@ pub mod Association {
     }
 
     fn removeInferredClock(mut name: Arc<ComponentRef::NFComponentRef>, mut new_name: Arc<ComponentRef::NFComponentRef>, mut info: Arc<ClockedInfo::ClockedInfo>, mut infer_del: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<()> {
-        let mut base: Arc<BClock::BClock>;
+        let mut base: Arc<BClock::BClock> = Arc::new(<BClock::BClock as ::std::default::Default>::default());
         let mut base_name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
         let mut sub_clock_names1: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
         let mut sub_clock_names2: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
@@ -505,7 +505,7 @@ pub mod Partition {
         let mut algebraic: bool = false;
         let mut continuous: bool = false;
         let mut kind: Kind = Kind::ODE;
-        let mut association: Arc<Association::Association>;
+        let mut association: Arc<Association::Association> = Arc::new(<Association::Association as ::std::default::Default>::default());
         (algebraic, continuous) = isAlgebraicContinuous(partition.clone());
         kind = (match (algebraic.clone(), continuous.clone()) {
         (true, true) => Kind::ALG.clone(),
@@ -558,7 +558,7 @@ pub mod Partition {
         let mut clock_idx: i32 = Pointer::access(index.clone());
         assign_field!(part.index = clock_idx.clone());
         if isClocked(part.clone()) {
-            assign_field!(part.equations = BEquation::EquationPointers::map(part.equations.clone(), Arc::new({ let __pe_b1 = EquationKind::CLOCKED.clone(); let __pe_b2 = Some(clock_idx.clone()); move |__pe_a0| Equation::setKind(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }))?);
+            assign_field!(part.equations = BEquation::EquationPointers::map(part.equations.clone(), (std::sync::Arc::new({ let __pe_b1 = EquationKind::CLOCKED.clone(); let __pe_b2 = Some(clock_idx.clone()); move |__pe_a0| BEquation::Equation::setKind(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>))?);
         }
         Pointer::update(index.clone(), clock_idx.clone() + 1);
         Ok(part)
@@ -612,7 +612,7 @@ pub mod Partition {
     }
 
     pub fn getClocks(mut part: Arc<Partition>) -> Result<(Arc<BClock::BClock>, Option<Arc<BClock::BClock>>, bool)> {
-        let mut clock: Arc<BClock::BClock>;
+        let mut clock: Arc<BClock::BClock> = Arc::new(<BClock::BClock as ::std::default::Default>::default());
         let mut baseClock: Option<Arc<BClock::BClock>> = None;
         let mut holdEvents: bool = false;
         (clock, baseClock, holdEvents) = (::match_deref::match_deref! { match &(part.association.clone()) {
@@ -691,7 +691,7 @@ pub mod Partition {
         pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>) -> Result<Arc<StrongComponent::NBStrongComponent>> + 'static>;
 
         let mut partition: Arc<Partition> = partition;
-        let mut comps: metamodelica::Array<Arc<StrongComponent::NBStrongComponent>>;
+        let mut comps: metamodelica::Array<Arc<StrongComponent::NBStrongComponent>> = Default::default();
         if isSome(partition.strongComponents.clone()) {
             let __pa0 = ::match_deref::match_deref! { match &(partition.strongComponents.clone()) {
                 Some(__pa0) => __pa0.clone(),
@@ -776,7 +776,7 @@ pub mod Partition {
 
     pub fn removeAlias(mut par: Arc<Partition>) -> Result<Arc<Partition>> {
         let mut par: Arc<Partition> = par;
-        let mut comps: metamodelica::Array<Arc<StrongComponent::NBStrongComponent>>;
+        let mut comps: metamodelica::Array<Arc<StrongComponent::NBStrongComponent>> = Default::default();
         if isSome(par.strongComponents.clone()) {
             comps = Util::getOption(par.strongComponents.clone())?;
             let __range0 = 1..=(comps.clone().borrow().len() as i32);

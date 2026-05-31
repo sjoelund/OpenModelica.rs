@@ -254,7 +254,7 @@ pub mod Branch {
     pub fn toString(mut branch: Arc<Branch>, mut indent: ArcStr) -> Result<ArcStr> {
         let mut r#str: ArcStr = arcstr::literal!("");
         let mut s: IOStream::IOStream = <IOStream::IOStream as ::std::default::Default>::default();
-        s = IOStream::create((literal!("NFEquation.Branch.toString")).clone(), openmodelica_util::IOStream::IOStreamType::LIST)?;
+        s = IOStream::create(literal!("NFEquation.Branch.toString"), openmodelica_util::IOStream::IOStreamType::LIST)?;
         s = toStream(branch.clone(), (literal!("")).clone(), false, (indent.clone()).clone(), s.clone())?;
         r#str = (IOStream::string(s.clone())?).clone();
         IOStream::delete(s.clone())?;
@@ -290,13 +290,13 @@ impl Ord for ScalarizeMode {
 }
 
 pub fn makeEquality(mut lhs: Arc<Expression::NFExpression>, mut rhs: Arc<Expression::NFExpression>, mut ty: Arc<Type::NFType>, mut src: Arc<DAE::ElementSource>, mut scope: Arc<InstNode::InstNode>, mut scalarizeMode: ScalarizeMode) -> Arc<NFEquation> {
-    let mut eq: Arc<NFEquation>;
+    let mut eq: Arc<NFEquation> = Arc::new(<NFEquation as ::std::default::Default>::default());
     eq = Arc::new(NFEquation::EQUALITY { lhs: lhs.clone(), rhs: rhs.clone(), ty: ty.clone(), scope: scope.clone(), source: src.clone(), scalarizeMode: scalarizeMode.clone() });
     eq
 }
 
 pub fn makeCrefEquality(mut lhsCref: Arc<ComponentRef::NFComponentRef>, mut rhsCref: Arc<ComponentRef::NFComponentRef>, mut scope: Arc<InstNode::InstNode>, mut src: Arc<DAE::ElementSource>) -> Result<Arc<NFEquation>> {
-    let mut eq: Arc<NFEquation>;
+    let mut eq: Arc<NFEquation> = Arc::new(<NFEquation as ::std::default::Default>::default());
     let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     e1 = Expression::fromCref(lhsCref.clone(), false)?;
@@ -306,13 +306,13 @@ pub fn makeCrefEquality(mut lhsCref: Arc<ComponentRef::NFComponentRef>, mut rhsC
 }
 
 pub fn makeBranch(mut condition: Arc<Expression::NFExpression>, mut body: Arc<metamodelica::List<Arc<NFEquation>>>, mut condVar: Variability) -> Arc<Branch::Branch> {
-    let mut branch: Arc<Branch::Branch>;
+    let mut branch: Arc<Branch::Branch> = Arc::new(<Branch::Branch as ::std::default::Default>::default());
     branch = Arc::new(Branch::Branch::BRANCH { condition: condition.clone(), conditionVar: condVar.clone(), body: body.clone() });
     branch
 }
 
 pub fn makeIf(mut branches: Arc<metamodelica::List<Arc<Branch::Branch>>>, mut scope: Arc<InstNode::InstNode>, mut src: Arc<DAE::ElementSource>) -> Arc<NFEquation> {
-    let mut eq: Arc<NFEquation>;
+    let mut eq: Arc<NFEquation> = Arc::new(<NFEquation as ::std::default::Default>::default());
     eq = Arc::new(NFEquation::IF { branches: branches.clone(), scope: scope.clone(), source: src.clone() });
     eq
 }
@@ -1109,7 +1109,7 @@ pub fn containsExpList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>, mut fu
 
 pub fn replaceIteratorList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>, mut iterator: Arc<InstNode::InstNode>, mut value: Arc<Expression::NFExpression>) -> Arc<metamodelica::List<Arc<NFEquation>>> {
     let mut eql: Arc<metamodelica::List<Arc<NFEquation>>> = eql;
-    eql = mapExpList(eql.clone(), Arc::new({ let __pe_b1 = iterator.clone(); let __pe_b2 = value.clone(); move |__pe_a0| Expression::replaceIterator(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }));
+    eql = mapExpList(eql.clone(), (std::sync::Arc::new({ let __pe_b1 = iterator.clone(); let __pe_b2 = value.clone(); move |__pe_a0| Expression::replaceIterator(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>));
     eql
 }
 
@@ -1216,7 +1216,7 @@ pub fn sizeOf(mut eq: Arc<NFEquation>) -> Result<i32> {
 pub fn toString(mut eq: Arc<NFEquation>, mut indent: ArcStr) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     let mut s: IOStream::IOStream = <IOStream::IOStream as ::std::default::Default>::default();
-    s = IOStream::create((literal!("NFEquation.toString")).clone(), openmodelica_util::IOStream::IOStreamType::LIST)?;
+    s = IOStream::create(literal!("NFEquation.toString"), openmodelica_util::IOStream::IOStreamType::LIST)?;
     s = toStream(eq.clone(), (indent.clone()).clone(), s.clone())?;
     r#str = (IOStream::string(s.clone())?).clone();
     IOStream::delete(s.clone())?;
@@ -1226,7 +1226,7 @@ pub fn toString(mut eq: Arc<NFEquation>, mut indent: ArcStr) -> Result<ArcStr> {
 pub fn toStringList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>, mut indent: ArcStr) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     let mut s: IOStream::IOStream = <IOStream::IOStream as ::std::default::Default>::default();
-    s = IOStream::create((literal!("NFEquation.toStringList")).clone(), openmodelica_util::IOStream::IOStreamType::LIST)?;
+    s = IOStream::create(literal!("NFEquation.toStringList"), openmodelica_util::IOStream::IOStreamType::LIST)?;
     s = toStreamList(eql.clone(), (indent.clone()).clone(), s.clone())?;
     r#str = (IOStream::string(s.clone())?).clone();
     IOStream::delete(s.clone())?;
@@ -1236,7 +1236,7 @@ pub fn toStringList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>, mut inden
 pub fn toStream(mut eq: Arc<NFEquation>, mut indent: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut branches: Arc<metamodelica::List<Arc<Branch::Branch>>> = metamodelica::nil();
-    let mut branch: Arc<Branch::Branch>;
+    let mut branch: Arc<Branch::Branch> = Arc::new(<Branch::Branch as ::std::default::Default>::default());
     s = IOStream::append(s.clone(), (indent.clone()).clone())?;
     s = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ EQUALITY { .. } => {
@@ -1353,7 +1353,7 @@ pub fn toStreamList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>, mut inden
 pub fn toFlatStream(mut eq: Arc<NFEquation>, mut format: BaseModelica::OutputFormat, mut indent: ArcStr, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
     let mut branches: Arc<metamodelica::List<Arc<Branch::Branch>>> = metamodelica::nil();
-    let mut branch: Arc<Branch::Branch>;
+    let mut branch: Arc<Branch::Branch> = Arc::new(<Branch::Branch as ::std::default::Default>::default());
     s = IOStream::append(s.clone(), (indent.clone()).clone())?;
     s = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ EQUALITY { .. } => {
@@ -1503,13 +1503,13 @@ pub fn splitRecordEquation(mut eq: Arc<NFEquation>, mut equations: Arc<metamodel
             for mut i in 1..=Type::recordFieldCount(Type::arrayElementType(var_field!((*eq).ty, NFEquation::EQUALITY).clone())) {
                 lhs = Expression::nthRecordElement(i.clone(), var_field!((*eq).lhs, NFEquation::EQUALITY).clone())?;
                 rhs = Expression::nthRecordElement(i.clone(), var_field!((*eq).rhs, NFEquation::EQUALITY).clone())?;
-                equations = cons(Arc::new(NFEquation::EQUALITY { lhs: lhs.clone(), rhs: rhs.clone(), ty: Expression::typeOf(lhs.clone()), scope: var_field!((*eq).scope, NFEquation::EQUALITY).clone(), source: var_field!((*eq).source, NFEquation::EQUALITY).clone(), scalarizeMode: var_field!((*eq).scalarizeMode, NFEquation::EQUALITY).clone() }), equations.clone());
+                equations = metamodelica::cons(Arc::new(NFEquation::EQUALITY { lhs: lhs.clone(), rhs: rhs.clone(), ty: Expression::typeOf(lhs.clone()), scope: var_field!((*eq).scope, NFEquation::EQUALITY).clone(), source: var_field!((*eq).source, NFEquation::EQUALITY).clone(), scalarizeMode: var_field!((*eq).scalarizeMode, NFEquation::EQUALITY).clone() }), equations.clone());
             }
             equations.clone()
         },
         Deref @ FOR { .. } => {
             assign_variant_field!(eq => NFEquation::FOR; body = splitRecordEquations(var_field!((*eq).body, NFEquation::FOR).clone())?);
-            cons(eq.clone(), equations.clone())
+            metamodelica::cons(eq.clone(), equations.clone())
         },
         Deref @ IF { .. } => {
             assign_variant_field!(eq => NFEquation::IF; branches = ({
@@ -1520,7 +1520,7 @@ pub fn splitRecordEquation(mut eq: Arc<NFEquation>, mut equations: Arc<metamodel
         }
         __acc.reverse()
     }));
-            cons(eq.clone(), equations.clone())
+            metamodelica::cons(eq.clone(), equations.clone())
         },
         Deref @ WHEN { .. } => {
             assign_variant_field!(eq => NFEquation::WHEN; branches = ({
@@ -1531,9 +1531,9 @@ pub fn splitRecordEquation(mut eq: Arc<NFEquation>, mut equations: Arc<metamodel
         }
         __acc.reverse()
     }));
-            cons(eq.clone(), equations.clone())
+            metamodelica::cons(eq.clone(), equations.clone())
         },
-        _ => cons(eq.clone(), equations.clone()),
+        _ => metamodelica::cons(eq.clone(), equations.clone()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(equations)

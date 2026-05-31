@@ -496,12 +496,12 @@ pub mod EntryTree {
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { key, .. } => {
             lst = listKeys(var_field!((*tree).right, Tree::NODE).clone(), lst.clone());
-            lst = cons(key.clone(), lst.clone());
+            lst = metamodelica::cons(key.clone(), lst.clone());
             lst = listKeys(var_field!((*tree).left, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
         Deref @ Tree::LEAF { key, .. } => {
-            cons(key.clone(), lst.clone())
+            metamodelica::cons(key.clone(), lst.clone())
         },
         _ => {
             lst.clone()
@@ -514,10 +514,10 @@ pub mod EntryTree {
     pub fn listKeysReverse(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>) -> Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> {
         let mut lst: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::LEAF { .. } => cons(var_field!((*inTree).key, Tree::LEAF).clone(), lst.clone()),
+        Deref @ Tree::LEAF { .. } => metamodelica::cons(var_field!((*inTree).key, Tree::LEAF).clone(), lst.clone()),
         Deref @ Tree::NODE { .. } => {
             lst = listKeysReverse(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
-            lst = cons(var_field!((*inTree).key, Tree::NODE).clone(), lst.clone());
+            lst = metamodelica::cons(var_field!((*inTree).key, Tree::NODE).clone(), lst.clone());
             lst = listKeysReverse(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
@@ -532,12 +532,12 @@ pub mod EntryTree {
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { value, .. } => {
             lst = listValues(var_field!((*tree).right, Tree::NODE).clone(), lst.clone());
-            lst = cons(value.clone(), lst.clone());
+            lst = metamodelica::cons(value.clone(), lst.clone());
             lst = listValues(var_field!((*tree).left, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
         Deref @ Tree::LEAF { value, .. } => {
-            cons(value.clone(), lst.clone())
+            metamodelica::cons(value.clone(), lst.clone())
         },
         _ => {
             lst.clone()
@@ -737,12 +737,12 @@ pub mod EntryTree {
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { value, key, .. } => {
             lst = toList(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
-            lst = cons((key.clone(), value.clone()), lst.clone());
+            lst = metamodelica::cons((key.clone(), value.clone()), lst.clone());
             lst = toList(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
         Deref @ Tree::LEAF { value, key } => {
-            cons((key.clone(), value.clone()), lst.clone())
+            metamodelica::cons((key.clone(), value.clone()), lst.clone())
         },
         _ => {
             lst.clone()
@@ -807,9 +807,9 @@ pub fn appendBreaksInNode(mut node: Arc<InstNode::InstNode>, mut tree: Arc<Tree>
                 let () = (::match_deref::match_deref! { match &(sm.clone()) {
         Deref @ SCode::SubMod { r#mod: break_mod @ Deref @ SCode::Mod::BREAK_CONNECT { .. }, .. } => {
             entry = Mutable::create(Entry { hasMatch: false, r#mod: break_mod.clone() });
-            newEntries = cons(entry.clone(), newEntries.clone());
-            tree = addUpdate(tree.clone(), var_field!((**break_mod).rhs, SCode::Mod::BREAK_CONNECT).clone(), Arc::new({ let __pe_b0 = var_field!((**break_mod).lhs, SCode::Mod::BREAK_CONNECT).clone(); let __pe_b1 = entry.clone(); move |__pe_a2| add_entry(__pe_b0.clone(), __pe_b1.clone(), __pe_a2) }))?;
-            tree = addUpdate(tree.clone(), var_field!((**break_mod).lhs, SCode::Mod::BREAK_CONNECT).clone(), Arc::new({ let __pe_b0 = var_field!((**break_mod).rhs, SCode::Mod::BREAK_CONNECT).clone(); let __pe_b1 = entry.clone(); move |__pe_a2| add_entry(__pe_b0.clone(), __pe_b1.clone(), __pe_a2) }))?;
+            newEntries = metamodelica::cons(entry.clone(), newEntries.clone());
+            tree = addUpdate(tree.clone(), var_field!((**break_mod).rhs, SCode::Mod::BREAK_CONNECT).clone(), (std::sync::Arc::new({ let __pe_b0 = var_field!((**break_mod).lhs, SCode::Mod::BREAK_CONNECT).clone(); let __pe_b1 = entry.clone(); move |__pe_a2| add_entry(__pe_b0.clone(), __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<EntryTree::Tree>>) -> Result<Arc<EntryTree::Tree>> + 'static>))?;
+            tree = addUpdate(tree.clone(), var_field!((**break_mod).lhs, SCode::Mod::BREAK_CONNECT).clone(), (std::sync::Arc::new({ let __pe_b0 = var_field!((**break_mod).rhs, SCode::Mod::BREAK_CONNECT).clone(); let __pe_b1 = entry.clone(); move |__pe_a2| add_entry(__pe_b0.clone(), __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<EntryTree::Tree>>) -> Result<Arc<EntryTree::Tree>> + 'static>))?;
             ()
         },
         _ => (),
@@ -1289,12 +1289,12 @@ pub fn listKeys(mut tree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<Absyn::
     lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { key, .. } => {
             lst = listKeys(var_field!((*tree).right, Tree::NODE).clone(), lst.clone());
-            lst = cons(key.clone(), lst.clone());
+            lst = metamodelica::cons(key.clone(), lst.clone());
             lst = listKeys(var_field!((*tree).left, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
         Deref @ Tree::LEAF { key, .. } => {
-            cons(key.clone(), lst.clone())
+            metamodelica::cons(key.clone(), lst.clone())
         },
         _ => {
             lst.clone()
@@ -1307,10 +1307,10 @@ pub fn listKeys(mut tree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<Absyn::
 pub fn listKeysReverse(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>>) -> Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> {
     let mut lst: Arc<metamodelica::List<Arc<Absyn::ComponentRef>>> = lst;
     lst = (::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::LEAF { .. } => cons(var_field!((*inTree).key, Tree::LEAF).clone(), lst.clone()),
+        Deref @ Tree::LEAF { .. } => metamodelica::cons(var_field!((*inTree).key, Tree::LEAF).clone(), lst.clone()),
         Deref @ Tree::NODE { .. } => {
             lst = listKeysReverse(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
-            lst = cons(var_field!((*inTree).key, Tree::NODE).clone(), lst.clone());
+            lst = metamodelica::cons(var_field!((*inTree).key, Tree::NODE).clone(), lst.clone());
             lst = listKeysReverse(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
@@ -1325,12 +1325,12 @@ pub fn listValues(mut tree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<Entry
     lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { value, .. } => {
             lst = listValues(var_field!((*tree).right, Tree::NODE).clone(), lst.clone());
-            lst = cons(value.clone(), lst.clone());
+            lst = metamodelica::cons(value.clone(), lst.clone());
             lst = listValues(var_field!((*tree).left, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
         Deref @ Tree::LEAF { value, .. } => {
-            cons(value.clone(), lst.clone())
+            metamodelica::cons(value.clone(), lst.clone())
         },
         _ => {
             lst.clone()
@@ -1530,12 +1530,12 @@ pub fn toList(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<(Arc<Absyn:
     lst = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { value, key, .. } => {
             lst = toList(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
-            lst = cons((key.clone(), value.clone()), lst.clone());
+            lst = metamodelica::cons((key.clone(), value.clone()), lst.clone());
             lst = toList(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
         Deref @ Tree::LEAF { value, key } => {
-            cons((key.clone(), value.clone()), lst.clone())
+            metamodelica::cons((key.clone(), value.clone()), lst.clone())
         },
         _ => {
             lst.clone()

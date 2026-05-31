@@ -114,7 +114,7 @@ fn dumpNode(mut inNode: Arc<Node>) -> Result<Ident> {
             let mut newattr: Attributes = metamodelica::nil();
             nm = (nodename((typ.clone()).clone())).clone();
             typlbl = (makeLabel(list![(typ.clone()).clone()])?).clone();
-            newattr = cons(Attribute { name: (literal!("label")).clone(), value: (typlbl.clone()).clone() }, attr.clone());
+            newattr = metamodelica::cons(Attribute { name: (literal!("label")).clone(), value: (typlbl.clone()).clone() }, attr.clone());
             out = (makeNode((nm.clone()).clone(), newattr.clone())?).clone();
             println!("{}", (out.clone()).clone());
             dumpChildren((nm.clone()).clone(), children.clone())?;
@@ -127,9 +127,9 @@ fn dumpNode(mut inNode: Arc<Node>) -> Result<Ident> {
             let mut newattr: Attributes = metamodelica::nil();
             let mut lbl_1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             nm = (nodename((typ.clone()).clone())).clone();
-            lbl_1 = cons((typ.clone()).clone(), lbl.clone());
+            lbl_1 = metamodelica::cons((typ.clone()).clone(), lbl.clone());
             lblstr = (makeLabel(lbl_1.clone())?).clone();
-            newattr = cons(Attribute { name: (literal!("label")).clone(), value: (lblstr.clone()).clone() }, attr.clone());
+            newattr = metamodelica::cons(Attribute { name: (literal!("label")).clone(), value: (lblstr.clone()).clone() }, attr.clone());
             out = (makeNode((nm.clone()).clone(), newattr.clone())?).clone();
             println!("{}", (out.clone()).clone());
             dumpChildren((nm.clone()).clone(), children.clone())?;

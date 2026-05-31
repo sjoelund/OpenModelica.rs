@@ -321,13 +321,6 @@ pub enum ClassPart {
         annotation_: Option<Arc<Annotation>>,
     },
 }
-impl Default for ClassPart {
-    fn default() -> Self {
-        Self::PUBLIC {
-            contents: Default::default(),
-        }
-    }
-}
 pub use self::ClassPart::{PUBLIC,PROTECTED,CONSTRAINTS,EQUATIONS,INITIALEQUATIONS,ALGORITHMS,INITIALALGORITHMS,EXTERNAL};
 
 /// An element item is either an element or an annotation
@@ -339,13 +332,6 @@ pub enum ElementItem {
     LEXER_COMMENT {
         comment: ArcStr,
     },
-}
-impl Default for ElementItem {
-    fn default() -> Self {
-        Self::ELEMENTITEM {
-            element: Default::default(),
-        }
-    }
 }
 pub use self::ElementItem::{ELEMENTITEM,LEXER_COMMENT};
 
@@ -378,15 +364,6 @@ pub enum Element {
         string: ArcStr,
         info: Info,
     },
-}
-impl Default for Element {
-    fn default() -> Self {
-        Self::DEFINEUNIT {
-            name: Default::default(),
-            args: Default::default(),
-            info: Default::default(),
-        }
-    }
 }
 pub use self::Element::{ELEMENT,DEFINEUNIT,TEXT};
 

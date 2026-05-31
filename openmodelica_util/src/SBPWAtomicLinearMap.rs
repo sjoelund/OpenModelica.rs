@@ -71,9 +71,9 @@ pub type PW_ATOMIC_LINEAR_MAP = SBPWAtomicLinearMap;
 pub fn new(mut dom: Arc<SBAtomicSet::SBAtomicSet>, mut lmap: Arc<SBLinearMap::SBLinearMap>) -> Arc<SBPWAtomicLinearMap> {
     let mut map: Arc<SBPWAtomicLinearMap> = Arc::new(<SBPWAtomicLinearMap as ::std::default::Default>::default());
     let mut compatible: bool = true;
-    let mut ints: metamodelica::Array<Arc<SBInterval::SBInterval>>;
-    let mut g: metamodelica::Array<metamodelica::Real>;
-    let mut o: metamodelica::Array<metamodelica::Real>;
+    let mut ints: metamodelica::Array<Arc<SBInterval::SBInterval>> = Default::default();
+    let mut g: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut o: metamodelica::Array<metamodelica::Real> = Default::default();
     let mut i: Arc<SBInterval::SBInterval> = Arc::new(<SBInterval::SBInterval as ::std::default::Default>::default());
     let mut gain: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut offset: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
@@ -148,10 +148,10 @@ pub fn image(mut map: Arc<SBPWAtomicLinearMap>, mut set: Arc<SBAtomicSet::SBAtom
     }
 
     let mut outSet: Arc<SBAtomicSet::SBAtomicSet> = Arc::new(<SBAtomicSet::SBAtomicSet as ::std::default::Default>::default());
-    let mut inters: metamodelica::Array<Arc<SBInterval::SBInterval>>;
-    let mut res: metamodelica::Array<Arc<SBInterval::SBInterval>>;
-    let mut gains: metamodelica::Array<metamodelica::Real>;
-    let mut offsets: metamodelica::Array<metamodelica::Real>;
+    let mut inters: metamodelica::Array<Arc<SBInterval::SBInterval>> = Default::default();
+    let mut res: metamodelica::Array<Arc<SBInterval::SBInterval>> = Default::default();
+    let mut gains: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut offsets: metamodelica::Array<metamodelica::Real> = Default::default();
     let mut set_int: Arc<SBAtomicSet::SBAtomicSet> = Arc::new(<SBAtomicSet::SBAtomicSet as ::std::default::Default>::default());
     let mut int: Arc<SBInterval::SBInterval> = Arc::new(<SBInterval::SBInterval as ::std::default::Default>::default());
     let mut gain: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
@@ -221,16 +221,16 @@ pub fn isEqual(mut map1: Arc<SBPWAtomicLinearMap>, mut map2: Arc<SBPWAtomicLinea
 pub fn toString(mut map: Arc<SBPWAtomicLinearMap>) -> ArcStr {
     let mut r#str: ArcStr = arcstr::literal!("");
     let mut strl: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut g: metamodelica::Array<metamodelica::Real>;
-    let mut o: metamodelica::Array<metamodelica::Real>;
-    let mut ints: metamodelica::Array<Arc<SBInterval::SBInterval>>;
+    let mut g: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut o: metamodelica::Array<metamodelica::Real> = Default::default();
+    let mut ints: metamodelica::Array<Arc<SBInterval::SBInterval>> = Default::default();
     g = SBLinearMap::gain(map.lmap.clone());
     o = SBLinearMap::offset(map.lmap.clone());
     ints = SBMultiInterval::intervals(SBAtomicSet::aset(map.dom.clone()));
     let __range0 = (1..=(ints.clone().borrow().len() as i32)).rev();
     for mut i in __range0 {
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*SBInterval::toString(ints.borrow()[(i.clone()-1) as usize].clone())); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", g.borrow()[(i.clone()-1) as usize].clone()))); __mm_s.push_str(&*literal!(" * x + ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", o.borrow()[(i.clone()-1) as usize].clone()))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
-        strl = cons((r#str.clone()).clone(), strl.clone());
+        strl = metamodelica::cons((r#str.clone()).clone(), strl.clone());
     }
     r#str = stringDelimitList(strl.clone(), (literal!("x")).clone());
     r#str

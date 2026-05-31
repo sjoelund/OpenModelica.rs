@@ -36,8 +36,8 @@ pub fn dumpElements(mut txt: Tpl::Text, mut a_elements: Arc<metamodelica::List<A
 
 pub fn dumpElements2(mut txt: Tpl::Text, mut a_elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut a_indent: bool, mut a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text;
-    let mut ret_2: metamodelica::Array<bool>;
-    let mut ret_1: metamodelica::Array<bool>;
+    let mut ret_2: metamodelica::Array<bool> = Default::default();
+    let mut ret_1: metamodelica::Array<bool> = Default::default();
     let mut ret_0: i32 = 0;
     ret_0 = (a_elements.clone().len() as i32);
     ret_1 = Util::makeStatefulBoolean(false);

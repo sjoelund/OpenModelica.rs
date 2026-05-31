@@ -95,6 +95,7 @@ use openmodelica_frontend::FInst;
 use openmodelica_frontend::Figaro;
 use openmodelica_frontend::InnerOuter;
 use openmodelica_frontend::Inst;
+use openmodelica_frontend::InteractiveTypes;
 use openmodelica_frontend::Lookup;
 use openmodelica_frontend::NFSCodeEnv;
 use openmodelica_frontend::NFSCodeFlatten;
@@ -206,7 +207,8 @@ pub fn defaultCflags() -> Arc<DAE::Exp> { __defaultCflags_TLS.with(|__t| __t.clo
 thread_local! { static __defaultSimflags_TLS: Arc<DAE::Exp> = Arc::new(DAE::Exp::SCONST { string: (literal!("")).clone() }); }
 pub fn defaultSimflags() -> Arc<DAE::Exp> { __defaultSimflags_TLS.with(|__t| __t.clone()) }
 
-pub static defaultSimulationOptions: std::sync::LazyLock</* ? */> = std::sync::LazyLock::new(|| { InteractiveTypes::SIMULATION_OPTIONS(defaultStartTime().clone(), defaultStopTime().clone(), defaultNumberOfIntervals().clone(), defaultStepSize().clone(), defaultTolerance().clone(), defaultMethod().clone(), defaultFileNamePrefix().clone(), defaultOptions().clone(), defaultOutputFormat().clone(), defaultVariableFilter().clone(), defaultCflags().clone(), defaultSimflags().clone()).unwrap() });
+thread_local! { static __defaultSimulationOptions_TLS: InteractiveTypes::SimulationOptions = InteractiveTypes::SimulationOptions { startTime: defaultStartTime().clone(), stopTime: defaultStopTime().clone(), numberOfIntervals: defaultNumberOfIntervals().clone(), stepSize: defaultStepSize().clone(), tolerance: defaultTolerance().clone(), method: defaultMethod().clone(), fileNamePrefix: defaultFileNamePrefix().clone(), options: defaultOptions().clone(), outputFormat: defaultOutputFormat().clone(), variableFilter: defaultVariableFilter().clone(), cflags: defaultCflags().clone(), simflags: defaultSimflags().clone() }; }
+pub fn defaultSimulationOptions() -> InteractiveTypes::SimulationOptions { __defaultSimulationOptions_TLS.with(|__t| __t.clone()) }
 
 pub static simulationOptionsNames: std::sync::LazyLock<Arc<metamodelica::List<ArcStr>>> = std::sync::LazyLock::new(|| { list![(literal!("startTime")).clone(), (literal!("stopTime")).clone(), (literal!("numberOfIntervals")).clone(), (literal!("tolerance")).clone(), (literal!("method")).clone(), (literal!("fileNamePrefix")).clone(), (literal!("options")).clone(), (literal!("outputFormat")).clone(), (literal!("variableFilter")).clone(), (literal!("cflags")).clone(), (literal!("simflags")).clone()] });
 
@@ -232,7 +234,7 @@ pub fn createSimulationResult(mut resultFile: ArcStr, mut options: ArcStr, mut m
     notest = !(Testsuite::isRunning()?);
     fields = if (notest.clone()) {List::map(resultValues.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)))} else {metamodelica::nil()};
     vals = if (notest.clone()) {List::map(resultValues.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)))} else {metamodelica::nil()};
-    res = Arc::new(Values::Value::RECORD { record_: Arc::new(Absyn::Path::IDENT { name: (literal!("SimulationResult")).clone() }), orderd: cons(Arc::new(Values::Value::STRING { string: (resultFile.clone()).clone() }), cons(Arc::new(Values::Value::STRING { string: (options.clone()).clone() }), cons(Arc::new(Values::Value::STRING { string: (message.clone()).clone() }), vals.clone()))), comp: cons((literal!("resultFile")).clone(), cons((literal!("simulationOptions")).clone(), cons((literal!("messages")).clone(), fields.clone()))), index: -1 });
+    res = Arc::new(Values::Value::RECORD { record_: Arc::new(Absyn::Path::IDENT { name: (literal!("SimulationResult")).clone() }), orderd: metamodelica::cons(Arc::new(Values::Value::STRING { string: (resultFile.clone()).clone() }), metamodelica::cons(Arc::new(Values::Value::STRING { string: (options.clone()).clone() }), metamodelica::cons(Arc::new(Values::Value::STRING { string: (message.clone()).clone() }), vals.clone()))), comp: metamodelica::cons((literal!("resultFile")).clone(), metamodelica::cons((literal!("simulationOptions")).clone(), metamodelica::cons((literal!("messages")).clone(), fields.clone()))), index: -1 });
     Ok(res)
 }
 
@@ -243,7 +245,7 @@ pub fn createSimulationResultFailure(mut message: ArcStr, mut options: ArcStr) -
 }
 
 fn buildCurrentSimulationResultExp() -> Result<Arc<DAE::Exp>> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     cref = ComponentReferenceBasics::makeCrefIdent((literal!("currentSimulationResult")).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil());
     outExp = Expression::makeCrefExp(cref.clone(), DAE::T_UNKNOWN_DEFAULT().clone())?;
@@ -272,8 +274,151 @@ fn cevalCurrentSimulationResultExp(mut inCache: FCore::Cache, mut env: FCore::Gr
     Ok((outCache, filename))
 }
 
+pub fn convertSimulationOptionsToSimCode(mut opts: InteractiveTypes::SimulationOptions) -> Result<SimCode::SimulationSettings> {
+    let mut settings: SimCode::SimulationSettings = <SimCode::SimulationSettings as ::std::default::Default>::default();
+    settings = (::match_deref::match_deref! { match &(opts.clone()) {
+        InteractiveTypes::SimulationOptions { startTime: Deref @ DAE::Exp::RCONST { real: startTime }, stopTime: Deref @ DAE::Exp::RCONST { real: stopTime }, numberOfIntervals: Deref @ DAE::Exp::ICONST { integer: nIntervals }, stepSize: Deref @ DAE::Exp::RCONST { real: stepSize }, tolerance: Deref @ DAE::Exp::RCONST { real: tolerance }, method: Deref @ DAE::Exp::SCONST { string: method }, fileNamePrefix: _, options: _, outputFormat: Deref @ DAE::Exp::SCONST { string: format }, variableFilter: Deref @ DAE::Exp::SCONST { string: varFilter }, cflags: Deref @ DAE::Exp::SCONST { string: cflags }, simflags: Deref @ DAE::Exp::SCONST { string: simflags } } => {
+            let mut options: ArcStr = arcstr::literal!("");
+            options = (literal!("")).clone();
+            SimCode::SimulationSettings { startTime: startTime.clone(), stopTime: stopTime.clone(), numberOfIntervals: nIntervals.clone(), stepSize: stepSize.clone(), tolerance: tolerance.clone(), method: (method.clone()).clone(), options: (options.clone()).clone(), outputFormat: (format.clone()).clone(), variableFilter: (varFilter.clone()).clone(), cflags: (cflags.clone()).clone(), simflags: (simflags.clone()).clone() }
+        },
+        _ => bail!("match: no arm matched"),
+    } });
+    Ok(settings)
+}
+
+pub fn buildSimulationOptions(mut startTime: Arc<DAE::Exp>, mut stopTime: Arc<DAE::Exp>, mut numberOfIntervals: Arc<DAE::Exp>, mut stepSize: Arc<DAE::Exp>, mut tolerance: Arc<DAE::Exp>, mut method: Arc<DAE::Exp>, mut fileNamePrefix: Arc<DAE::Exp>, mut options: Arc<DAE::Exp>, mut outputFormat: Arc<DAE::Exp>, mut variableFilter: Arc<DAE::Exp>, mut cflags: Arc<DAE::Exp>, mut simflags: Arc<DAE::Exp>) -> InteractiveTypes::SimulationOptions {
+    let mut outSimulationOptions: InteractiveTypes::SimulationOptions = <InteractiveTypes::SimulationOptions as ::std::default::Default>::default();
+    outSimulationOptions = InteractiveTypes::SimulationOptions { startTime: startTime.clone(), stopTime: stopTime.clone(), numberOfIntervals: numberOfIntervals.clone(), stepSize: stepSize.clone(), tolerance: tolerance.clone(), method: method.clone(), fileNamePrefix: fileNamePrefix.clone(), options: options.clone(), outputFormat: outputFormat.clone(), variableFilter: variableFilter.clone(), cflags: cflags.clone(), simflags: simflags.clone() };
+    outSimulationOptions
+}
+
+pub fn getSimulationOption(mut inSimOpt: InteractiveTypes::SimulationOptions, mut optionName: ArcStr) -> Result<Arc<DAE::Exp>> {
+    let mut outOptionValue: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    outOptionValue = (::match_deref::match_deref! { match &((inSimOpt.clone(), optionName.clone())) {
+        (InteractiveTypes::SimulationOptions { startTime: e, .. }, Deref @ "startTime") => {
+            e.clone()
+        },
+        (InteractiveTypes::SimulationOptions { stopTime: e, .. }, Deref @ "stopTime") => {
+            e.clone()
+        },
+        (InteractiveTypes::SimulationOptions { numberOfIntervals: e, .. }, Deref @ "numberOfIntervals") => {
+            e.clone()
+        },
+        (InteractiveTypes::SimulationOptions { stepSize: e, .. }, Deref @ "stepSize") => {
+            e.clone()
+        },
+        (InteractiveTypes::SimulationOptions { tolerance: e, .. }, Deref @ "tolerance") => {
+            e.clone()
+        },
+        (InteractiveTypes::SimulationOptions { method: e, .. }, Deref @ "method") => {
+            e.clone()
+        },
+        (InteractiveTypes::SimulationOptions { fileNamePrefix: e, .. }, Deref @ "fileNamePrefix") => {
+            e.clone()
+        },
+        (InteractiveTypes::SimulationOptions { options: e, .. }, Deref @ "options") => {
+            e.clone()
+        },
+        (InteractiveTypes::SimulationOptions { outputFormat: e, .. }, Deref @ "outputFormat") => {
+            e.clone()
+        },
+        (InteractiveTypes::SimulationOptions { variableFilter: e, .. }, Deref @ "variableFilter") => {
+            e.clone()
+        },
+        (InteractiveTypes::SimulationOptions { cflags: e, .. }, Deref @ "cflags") => {
+            e.clone()
+        },
+        (InteractiveTypes::SimulationOptions { simflags: e, .. }, Deref @ "simflags") => {
+            e.clone()
+        },
+        (_, name) => {
+            let mut msg: ArcStr = arcstr::literal!("");
+            msg = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Unknown simulation option: ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone();
+            Error::addCompilerWarning((msg.clone()).clone())?;
+            bail!("fail")
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    Ok(outOptionValue)
+}
+
+pub fn buildSimulationOptionsFromModelExperimentAnnotation(mut inModelPath: Arc<Absyn::Path>, mut inFileNamePrefix: ArcStr, mut defaultOption: Option<InteractiveTypes::SimulationOptions>) -> Result<InteractiveTypes::SimulationOptions> {
+    let mut outSimOpt: InteractiveTypes::SimulationOptions = <InteractiveTypes::SimulationOptions as ::std::default::Default>::default();
+    outSimOpt = 'mc: {
+        let __mc_input = defaultOption.clone();
+        if let Ok(__v) = (|| -> Result<_> {
+            let _ = __mc_input.clone() else { bail!("nomatch") };
+            let mut defaults: InteractiveTypes::SimulationOptions = <InteractiveTypes::SimulationOptions as ::std::default::Default>::default();
+            let mut simOpt: InteractiveTypes::SimulationOptions = <InteractiveTypes::SimulationOptions as ::std::default::Default>::default();
+            let mut experimentAnnotationStr: ArcStr = arcstr::literal!("");
+            let mut named: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
+            let mut experiment_ann: Option<Arc<Absyn::Modification>> = None;
+            loadProgram(inModelPath.clone())?;
+            defaults = Util::getOptionOrDefault(defaultOption.clone(), setFileNamePrefixInSimulationOptions(defaultSimulationOptions().clone(), (inFileNamePrefix.clone()).clone())?);
+            experiment_ann = InteractiveUtil::getInheritedAnnotation(inModelPath.clone(), (literal!("experiment")).clone(), SymbolTable::getAbsyn(), true)?;
+            experimentAnnotationStr = (Interactive::getExperimentAnnotationString(experiment_ann.clone())?).clone();
+            let false = (stringEq((experimentAnnotationStr.clone()).clone(), (literal!("{}")).clone())?) else { bail!("pattern mismatch") };
+            experimentAnnotationStr = (System::stringReplace((experimentAnnotationStr.clone()).clone(), (literal!("{")).clone(), (literal!("")).clone())?).clone();
+            experimentAnnotationStr = (System::stringReplace((experimentAnnotationStr.clone()).clone(), (literal!("}")).clone(), (literal!("")).clone())?).clone();
+            let __pa0 = ::match_deref::match_deref! { match &(Parser::parsestringexp(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("experiment(")); __mm_s.push_str(&*experimentAnnotationStr.clone()); __mm_s.push_str(&*literal!(");\n")); ArcStr::from(__mm_s) }).clone(), (literal!("<experiment>")).clone())?) {
+                GlobalScript::Statements { interactiveStmtLst: Deref @ metamodelica::List::Cons { head: GlobalScript::Statement::IEXP { exp: Deref @ Absyn::Exp::CALL { functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: _, argNames: __pa0 }, .. }, .. }, tail: Deref @ metamodelica::List::Nil }, semicolon: _ } => __pa0.clone(),
+                _ => bail!("pattern mismatch"),
+            } };
+            named = __pa0.clone();
+            simOpt = populateSimulationOptions(defaults.clone(), named.clone())?;
+            Ok(simOpt.clone())
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            let _ = __mc_input.clone() else { bail!("nomatch") };
+            let mut defaults: InteractiveTypes::SimulationOptions = <InteractiveTypes::SimulationOptions as ::std::default::Default>::default();
+            defaults = setFileNamePrefixInSimulationOptions(defaultSimulationOptions().clone(), (inFileNamePrefix.clone()).clone())?;
+            Ok(defaults.clone())
+        })() { break 'mc __v; }
+        bail!("matchcontinue: no arm matched")
+    };
+    Ok(outSimOpt)
+}
+
+fn setFileNamePrefixInSimulationOptions(mut inSimOpt: InteractiveTypes::SimulationOptions, mut inFileNamePrefix: ArcStr) -> Result<InteractiveTypes::SimulationOptions> {
+    let mut outSimOpt: InteractiveTypes::SimulationOptions = <InteractiveTypes::SimulationOptions as ::std::default::Default>::default();
+    let mut startTime: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut stopTime: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut numberOfIntervals: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut stepSize: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut tolerance: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut method: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut options: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outputFormat: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut variableFilter: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut cflags: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut simflags: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut UseOtimica: bool = false;
+    UseOtimica = Config::acceptOptimicaGrammar()? || Flags::getConfigBool(Flags::GENERATE_DYN_OPTIMIZATION_PROBLEM.clone())?;
+    let InteractiveTypes::SIMULATION_OPTIONS { startTime: __pa0, stopTime: __pa1, numberOfIntervals: __pa2, stepSize: __pa3, tolerance: __pa4, method: __pa5, fileNamePrefix: _, options: __pa6, outputFormat: __pa7, variableFilter: __pa8, cflags: __pa9, simflags: __pa10 } = (inSimOpt.clone()) else { bail!("pattern mismatch") };
+    startTime = __pa0.clone();
+    stopTime = __pa1.clone();
+    numberOfIntervals = __pa2.clone();
+    stepSize = __pa3.clone();
+    tolerance = __pa4.clone();
+    method = __pa5.clone();
+    options = __pa6.clone();
+    outputFormat = __pa7.clone();
+    variableFilter = __pa8.clone();
+    cflags = __pa9.clone();
+    simflags = __pa10.clone();
+    if UseOtimica.clone() {
+        method = Arc::new(DAE::Exp::SCONST { string: (literal!("optimization")).clone() });
+    } else if Flags::getConfigBool(Flags::DAE_MODE.clone())? {
+        method = Arc::new(DAE::Exp::SCONST { string: (literal!("ida")).clone() });
+    }
+    numberOfIntervals = if (UseOtimica.clone()) {Arc::new(DAE::Exp::ICONST { integer: 50 })} else {numberOfIntervals.clone()};
+    outSimOpt = InteractiveTypes::SimulationOptions { startTime: startTime.clone(), stopTime: stopTime.clone(), numberOfIntervals: numberOfIntervals.clone(), stepSize: stepSize.clone(), tolerance: tolerance.clone(), method: method.clone(), fileNamePrefix: Arc::new(DAE::Exp::SCONST { string: (inFileNamePrefix.clone()).clone() }), options: options.clone(), outputFormat: outputFormat.clone(), variableFilter: variableFilter.clone(), cflags: cflags.clone(), simflags: simflags.clone() };
+    Ok(outSimOpt)
+}
+
 fn getConst(mut inAbsynExp: Arc<Absyn::Exp>, mut inExpType: Arc<DAE::Type>) -> Result<Arc<DAE::Exp>> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     outExp = 'mc: {
         let __mc_input = (inAbsynExp.clone(), inExpType.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -348,6 +493,68 @@ fn getConst(mut inAbsynExp: Arc<Absyn::Exp>, mut inExpType: Arc<DAE::Type>) -> R
         bail!("matchcontinue: no arm matched")
     };
     Ok(outExp)
+}
+
+fn populateSimulationOptions(mut options: InteractiveTypes::SimulationOptions, mut args: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>) -> Result<InteractiveTypes::SimulationOptions> {
+    let mut options: InteractiveTypes::SimulationOptions = options;
+    let mut name: ArcStr = arcstr::literal!("");
+    let mut value: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
+    let mut interval: Option<Arc<DAE::Exp>> = None;
+    for mut arg in &*args.clone() {
+        let mut arg = arg.clone();
+        let (__pa0, __pa1) = ::match_deref::match_deref! { match &(arg.clone()) {
+            Deref @ Absyn::NamedArg { argValue: __pa0, argName: __pa1 } => (__pa0.clone(), __pa1.clone()),
+            _ => bail!("pattern mismatch"),
+        } };
+        value = __pa0.clone();
+        name = __pa1.clone();
+        let () = (::match_deref::match_deref! { match &(name.clone()) {
+        Deref @ "Tolerance" => {
+            options.tolerance = getConst(value.clone(), DAE::T_REAL_DEFAULT().clone())?;
+            ()
+        },
+        Deref @ "StartTime" => {
+            options.startTime = getConst(value.clone(), DAE::T_REAL_DEFAULT().clone())?;
+            ()
+        },
+        Deref @ "StopTime" => {
+            options.stopTime = getConst(value.clone(), DAE::T_REAL_DEFAULT().clone())?;
+            ()
+        },
+        Deref @ "NumberOfIntervals" => {
+            options.numberOfIntervals = getConst(value.clone(), DAE::T_INTEGER_DEFAULT().clone())?;
+            ()
+        },
+        Deref @ "Interval" => {
+            interval = Some(getConst(value.clone(), DAE::T_REAL_DEFAULT().clone())?);
+            ()
+        },
+        _ => {
+            if !(StringUtil::startsWith((name.clone()).clone(), (literal!("__")).clone())) {
+                Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Ignoring unknown experiment annotation option: ")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*Dump::printExpStr(value.clone())?); ArcStr::from(__mm_s) }).clone())?;
+            }
+            ()
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    }
+    if isSome(interval.clone()) {
+        options = setSimulationOptionsInterval(options.clone(), Expression::toReal(Util::getOption(interval.clone())?)?)?;
+    } else {
+        options.stepSize = Arc::new(DAE::Exp::RCONST { real: (Expression::toReal(options.stopTime.clone())? - Expression::toReal(options.startTime.clone())?) / metamodelica::OrderedFloat((500) as f64) });
+    }
+    Ok(options)
+}
+
+fn setSimulationOptionsInterval(mut options: InteractiveTypes::SimulationOptions, mut interval: metamodelica::Real) -> Result<InteractiveTypes::SimulationOptions> {
+    let mut options: InteractiveTypes::SimulationOptions = options;
+    let mut start_time: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+    let mut stop_time: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+    start_time = Expression::toReal(options.startTime.clone())?;
+    stop_time = Expression::toReal(options.stopTime.clone())?;
+    options.stepSize = Arc::new(DAE::Exp::RCONST { real: interval.clone() });
+    options.numberOfIntervals = Arc::new(DAE::Exp::ICONST { integer: (((stop_time.clone() - start_time.clone()) / interval.clone()).0 as i32) });
+    Ok(options)
 }
 
 fn simOptionsAsString(mut vals: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<ArcStr> {
@@ -475,7 +682,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
                     let mut strs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut blst: Arc<metamodelica::List<bool>> = metamodelica::nil();
-                    let mut forkedSymbolTable: Arc<SymbolTable::SymbolTable>;
+                    let mut forkedSymbolTable: Arc<SymbolTable::SymbolTable> = Arc::new(<SymbolTable::SymbolTable as ::std::default::Default>::default());
                     strs = List::map(vals.clone(), (std::sync::Arc::new(ValuesUtil::extractValueString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>));
                     forkedSymbolTable = SymbolTable::get();
                     blst = System::launchParallelTasks(i.clone(), List::map1(strs.clone(), std::sync::Arc::new(fnptr!(Util::makeTuple, _, _)), forkedSymbolTable.clone()), (std::sync::Arc::new(Interactive::evaluateFork) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, Arc<SymbolTable::SymbolTable>)) -> Result<bool> + 'static>))?;
@@ -718,7 +925,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                 (Deref @ "addTransition", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: classpath } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: str1 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: str2 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: str3 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: b }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: b1 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: b2 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: i }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_EXPRESSION { exp: aexp } }, tail: Deref @ metamodelica::List::Nil } } } } } } } } }) => {
                     let mut p: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
                     let mut bval: bool = false;
-                    (bval, p) = Interactive::addTransition(AbsynUtil::pathToCref(classpath.clone())?, (str1.clone()).clone(), (str2.clone()).clone(), (str3.clone()).clone(), b.clone(), b1.clone(), b2.clone(), i.clone(), cons(Arc::new(Absyn::NamedArg { argName: (literal!("annotate")).clone(), argValue: aexp.clone() }), metamodelica::nil()), SymbolTable::getAbsyn())?;
+                    (bval, p) = Interactive::addTransition(AbsynUtil::pathToCref(classpath.clone())?, (str1.clone()).clone(), (str2.clone()).clone(), (str3.clone()).clone(), b.clone(), b1.clone(), b2.clone(), i.clone(), metamodelica::cons(Arc::new(Absyn::NamedArg { argName: (literal!("annotate")).clone(), argValue: aexp.clone() }), metamodelica::nil()), SymbolTable::getAbsyn())?;
                     SymbolTable::setAbsyn(p.clone())?;
                     Ok(Arc::new(Values::Value::BOOL { boolean: bval.clone() }))
                 }
@@ -807,7 +1014,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     let mut p: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
                     let mut bval: bool = false;
                     (bval, p) = Interactive::deleteTransition(AbsynUtil::pathToCref(classpath.clone())?, (str1.clone()).clone(), (str2.clone()).clone(), (str3.clone()).clone(), b.clone(), b1.clone(), b2.clone(), i.clone(), SymbolTable::getAbsyn())?;
-                    (bval, p) = Interactive::addTransition(AbsynUtil::pathToCref(classpath.clone())?, (str1.clone()).clone(), (str2.clone()).clone(), (str4.clone()).clone(), b3.clone(), b4.clone(), b5.clone(), i1.clone(), cons(Arc::new(Absyn::NamedArg { argName: (literal!("annotate")).clone(), argValue: aexp.clone() }), metamodelica::nil()), p.clone())?;
+                    (bval, p) = Interactive::addTransition(AbsynUtil::pathToCref(classpath.clone())?, (str1.clone()).clone(), (str2.clone()).clone(), (str4.clone()).clone(), b3.clone(), b4.clone(), b5.clone(), i1.clone(), metamodelica::cons(Arc::new(Absyn::NamedArg { argName: (literal!("annotate")).clone(), argValue: aexp.clone() }), metamodelica::nil()), p.clone())?;
                     SymbolTable::setAbsyn(p.clone())?;
                     Ok(Arc::new(Values::Value::BOOL { boolean: bval.clone() }))
                 }
@@ -892,7 +1099,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                 (Deref @ "addInitialState", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: classpath } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: str1 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_EXPRESSION { exp: aexp } }, tail: Deref @ metamodelica::List::Nil } } }) => {
                     let mut p: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
                     let mut bval: bool = false;
-                    (bval, p) = addInitialState(classpath.clone(), (str1.clone()).clone(), cons(Arc::new(Absyn::NamedArg { argName: (literal!("annotate")).clone(), argValue: aexp.clone() }), metamodelica::nil()), SymbolTable::getAbsyn())?;
+                    (bval, p) = addInitialState(classpath.clone(), (str1.clone()).clone(), metamodelica::cons(Arc::new(Absyn::NamedArg { argName: (literal!("annotate")).clone(), argValue: aexp.clone() }), metamodelica::nil()), SymbolTable::getAbsyn())?;
                     SymbolTable::setAbsyn(p.clone())?;
                     Ok(Arc::new(Values::Value::BOOL { boolean: bval.clone() }))
                 }
@@ -973,7 +1180,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     let mut p: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
                     let mut bval: bool = false;
                     (bval, p) = deleteInitialState(classpath.clone(), (str1.clone()).clone(), SymbolTable::getAbsyn())?;
-                    (bval, p) = addInitialState(classpath.clone(), (str1.clone()).clone(), cons(Arc::new(Absyn::NamedArg { argName: (literal!("annotate")).clone(), argValue: aexp.clone() }), metamodelica::nil()), p.clone())?;
+                    (bval, p) = addInitialState(classpath.clone(), (str1.clone()).clone(), metamodelica::cons(Arc::new(Absyn::NamedArg { argName: (literal!("annotate")).clone(), argValue: aexp.clone() }), metamodelica::nil()), p.clone())?;
                     SymbolTable::setAbsyn(p.clone())?;
                     Ok(Arc::new(Values::Value::BOOL { boolean: bval.clone() }))
                 }
@@ -1242,12 +1449,12 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     let mut res: ArcStr = arcstr::literal!("");
                     let mut filenameprefix: ArcStr = arcstr::literal!("");
                     let mut description: ArcStr = arcstr::literal!("");
-                    let mut env: FCore::Graph;
+                    let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
                     let mut daelow: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
                     let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
                     let mut eqnarr: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
-                    let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>;
+                    let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
                     let mut jac: Option<Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>> = None;
                     let mut syst: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
                     let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
@@ -1285,7 +1492,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     let mut simSettings: SimCode::SimulationSettings = <SimCode::SimulationSettings as ::std::default::Default>::default();
                     let mut outCache: FCore::Cache = outCache.clone();
                     (outCache, simSettings) = calculateSimulationSettings(outCache.clone(), vals.clone())?;
-                    (b, outCache) = translateModel(outCache.clone(), inEnv.clone(), className.clone(), (filenameprefix.clone()).clone(), true, true, Some(simSettings.clone()))?;
+                    (b, outCache, _, _, _) = translateModel(outCache.clone(), inEnv.clone(), className.clone(), (filenameprefix.clone()).clone(), true, true, Some(simSettings.clone()))?;
                     Ok(Arc::new(Values::Value::BOOL { boolean: b.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -1892,7 +2099,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                             result_file = stringAppendList(List::consOnTrue(!(Testsuite::isRunning()?), (compileDir.clone()).clone(), list![(executable.clone()).clone(), (literal!("_res.")).clone(), (outputFormat_str.clone()).clone()]));
                             timeSimulation = System::realtimeTock(ClockIndexes::RT_CLOCK_SIMULATE_SIMULATION.clone())?;
                             timeTotal = System::realtimeTock(ClockIndexes::RT_CLOCK_SIMULATE_TOTAL.clone())?;
-                            simValue = createSimulationResult((result_file.clone()).clone(), (simOptionsAsString(vals.clone())?).clone(), (System::readFile((logFile.clone()).clone())?).clone(), cons((literal!("timeTotal"), Arc::new(Values::Value::REAL { real: timeTotal.clone() })), cons((literal!("timeSimulation"), Arc::new(Values::Value::REAL { real: timeSimulation.clone() })), resultValues.clone())))?;
+                            simValue = createSimulationResult((result_file.clone()).clone(), (simOptionsAsString(vals.clone())?).clone(), (System::readFile((logFile.clone()).clone())?).clone(), metamodelica::cons((literal!("timeTotal"), Arc::new(Values::Value::REAL { real: timeTotal.clone() })), metamodelica::cons((literal!("timeSimulation"), Arc::new(Values::Value::REAL { real: timeSimulation.clone() })), resultValues.clone())))?;
                             SymbolTable::addVar(Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (literal!("currentSimulationResult")).clone(), identType: DAE::T_STRING_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), Arc::new(Values::Value::STRING { string: (result_file.clone()).clone() }), FGraph::empty())?;
                         } else {
                             res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Succeeding building the linearized executable, but failed to run the linearize command: ")); __mm_s.push_str(&*sim_call.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*System::readFile((logFile.clone()).clone())?); ArcStr::from(__mm_s) }).clone();
@@ -1901,7 +2108,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     } else {
                         timeSimulation = metamodelica::OrderedFloat(0.0_f64);
                         timeTotal = System::realtimeTock(ClockIndexes::RT_CLOCK_SIMULATE_TOTAL.clone())?;
-                        simValue = createSimulationResult((literal!("")).clone(), (simOptionsAsString(vals.clone())?).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to run the linearize command: ")); __mm_s.push_str(&*AbsynUtil::pathString(className.clone(), (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }).clone(), cons((literal!("timeTotal"), Arc::new(Values::Value::REAL { real: timeTotal.clone() })), cons((literal!("timeSimulation"), Arc::new(Values::Value::REAL { real: timeSimulation.clone() })), resultValues.clone())))?;
+                        simValue = createSimulationResult((literal!("")).clone(), (simOptionsAsString(vals.clone())?).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to run the linearize command: ")); __mm_s.push_str(&*AbsynUtil::pathString(className.clone(), (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }).clone(), metamodelica::cons((literal!("timeTotal"), Arc::new(Values::Value::REAL { real: timeTotal.clone() })), metamodelica::cons((literal!("timeSimulation"), Arc::new(Values::Value::REAL { real: timeSimulation.clone() })), resultValues.clone())))?;
                     }
                     Ok(simValue.clone())
                 }
@@ -2497,7 +2704,7 @@ pub fn cevalInteractiveFunctions4(mut inCache: FCore::Cache, mut inEnv: FCore::G
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "addClassAnnotation", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: classpath } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_EXPRESSION { exp: aexp } }, tail: Deref @ metamodelica::List::Nil } }) => {
                     let mut p: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
-                    p = Interactive::addClassAnnotation(AbsynUtil::pathToCref(classpath.clone())?, cons(Arc::new(Absyn::NamedArg { argName: (literal!("annotate")).clone(), argValue: aexp.clone() }), metamodelica::nil()), SymbolTable::getAbsyn())?;
+                    p = Interactive::addClassAnnotation(AbsynUtil::pathToCref(classpath.clone())?, metamodelica::cons(Arc::new(Absyn::NamedArg { argName: (literal!("annotate")).clone(), argValue: aexp.clone() }), metamodelica::nil()), SymbolTable::getAbsyn())?;
                     SymbolTable::setAbsyn(p.clone())?;
                     Ok(Arc::new(Values::Value::BOOL { boolean: true }))
                 }
@@ -2537,7 +2744,7 @@ pub fn cevalInteractiveFunctions4(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     nargs = List::consOnTrue(!(stringEq((str1.clone()).clone(), (literal!("")).clone())?), Arc::new(Absyn::NamedArg { argName: (literal!("info")).clone(), argValue: Arc::new(Absyn::Exp::STRING { value: (System::escapedString((str1.clone()).clone(), false)).clone() }) }), metamodelica::nil());
                     nargs = List::consOnTrue(!(stringEq((str2.clone()).clone(), (literal!("")).clone())?), Arc::new(Absyn::NamedArg { argName: (literal!("revisions")).clone(), argValue: Arc::new(Absyn::Exp::STRING { value: (System::escapedString((str2.clone()).clone(), false)).clone() }) }), nargs.clone());
                     aexp = Arc::new(Absyn::Exp::CALL { function_: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("Documentation")).clone(), subscripts: metamodelica::nil() }), functionArgs: Arc::new(Absyn::FunctionArgs::FUNCTIONARGS { args: metamodelica::nil(), argNames: nargs.clone() }), typeVars: metamodelica::nil() });
-                    p = Interactive::addClassAnnotation(AbsynUtil::pathToCref(classpath.clone())?, cons(Arc::new(Absyn::NamedArg { argName: (literal!("annotate")).clone(), argValue: aexp.clone() }), metamodelica::nil()), p.clone())?;
+                    p = Interactive::addClassAnnotation(AbsynUtil::pathToCref(classpath.clone())?, metamodelica::cons(Arc::new(Absyn::NamedArg { argName: (literal!("annotate")).clone(), argValue: aexp.clone() }), metamodelica::nil()), p.clone())?;
                     SymbolTable::setAbsyn(p.clone())?;
                     Ok(Arc::new(Values::Value::BOOL { boolean: true }))
                 }
@@ -2868,11 +3075,11 @@ pub fn cevalInteractiveFunctions4(mut inCache: FCore::Cache, mut inEnv: FCore::G
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "getSimulationOptions", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: classpath } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: startTime }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: stopTime }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: tolerance }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: numberOfIntervals }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::REAL { real: interval }, tail: Deref @ metamodelica::List::Nil } } } } } }) => {
-                    let mut simOpt; // TODO: local with unresolved type
-                    let mut startTimeExp: Arc<DAE::Exp>;
-                    let mut stopTimeExp: Arc<DAE::Exp>;
-                    let mut toleranceExp: Arc<DAE::Exp>;
-                    let mut intervalExp: Arc<DAE::Exp>;
+                    let mut simOpt: InteractiveTypes::SimulationOptions = <InteractiveTypes::SimulationOptions as ::std::default::Default>::default();
+                    let mut startTimeExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut stopTimeExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut toleranceExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut intervalExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut cr: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
                     let mut startTime = (*startTime).clone();
                     let mut stopTime = (*stopTime).clone();
@@ -2881,7 +3088,7 @@ pub fn cevalInteractiveFunctions4(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     let mut interval = (*interval).clone();
                     cr = AbsynUtil::pathToCref(classpath.clone())?;
                     ErrorExt::setCheckpoint((literal!("getSimulationOptions")).clone());
-                    simOpt = InteractiveTypes::SIMULATION_OPTIONS(Arc::new(DAE::Exp::RCONST { real: startTime.clone() }), Arc::new(DAE::Exp::RCONST { real: stopTime.clone() }), Arc::new(DAE::Exp::ICONST { integer: numberOfIntervals.clone() }), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), Arc::new(DAE::Exp::RCONST { real: tolerance.clone() }), Arc::new(DAE::Exp::SCONST { string: (literal!("")).clone() }), Arc::new(DAE::Exp::SCONST { string: (literal!("")).clone() }), Arc::new(DAE::Exp::SCONST { string: (literal!("")).clone() }), Arc::new(DAE::Exp::SCONST { string: (literal!("")).clone() }), Arc::new(DAE::Exp::SCONST { string: (literal!("")).clone() }), Arc::new(DAE::Exp::SCONST { string: (literal!("")).clone() }), Arc::new(DAE::Exp::SCONST { string: (literal!("")).clone() }))?;
+                    simOpt = InteractiveTypes::SimulationOptions { startTime: Arc::new(DAE::Exp::RCONST { real: startTime.clone() }), stopTime: Arc::new(DAE::Exp::RCONST { real: stopTime.clone() }), numberOfIntervals: Arc::new(DAE::Exp::ICONST { integer: numberOfIntervals.clone() }), stepSize: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), tolerance: Arc::new(DAE::Exp::RCONST { real: tolerance.clone() }), method: Arc::new(DAE::Exp::SCONST { string: (literal!("")).clone() }), fileNamePrefix: Arc::new(DAE::Exp::SCONST { string: (literal!("")).clone() }), options: Arc::new(DAE::Exp::SCONST { string: (literal!("")).clone() }), outputFormat: Arc::new(DAE::Exp::SCONST { string: (literal!("")).clone() }), variableFilter: Arc::new(DAE::Exp::SCONST { string: (literal!("")).clone() }), cflags: Arc::new(DAE::Exp::SCONST { string: (literal!("")).clone() }), simflags: Arc::new(DAE::Exp::SCONST { string: (literal!("")).clone() }) };
                     ErrorExt::rollBack((literal!("getSimulationOptions")).clone());
                     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(StaticScript::getSimulationArguments(FCore::emptyCache(), FGraph::empty(), list![Arc::new(Absyn::Exp::CREF { componentRef: cr.clone() })], metamodelica::nil(), false, openmodelica_frontend_types::DAE::Prefix::NOPRE, (literal!("getSimulationOptions")).clone(), Absyn::dummyInfo.clone(), Some(simOpt.clone()))?) {
                         (_, Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Cons { head: __pa3, tail: _ } } } } }) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
@@ -3822,7 +4029,7 @@ pub fn cevalInteractiveFunctions4(mut inCache: FCore::Cache, mut inEnv: FCore::G
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "updateConnection", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path: classpath } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: str1 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: str2 }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_EXPRESSION { exp: aexp } }, tail: Deref @ metamodelica::List::Nil } } } }) => {
                     let mut p: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
-                    p = InteractiveUtil::updateConnectionAnnotation(AbsynUtil::pathToCref(classpath.clone())?, (str1.clone()).clone(), (str2.clone()).clone(), cons(Arc::new(Absyn::NamedArg { argName: (literal!("annotate")).clone(), argValue: aexp.clone() }), metamodelica::nil()), SymbolTable::getAbsyn())?;
+                    p = InteractiveUtil::updateConnectionAnnotation(AbsynUtil::pathToCref(classpath.clone())?, (str1.clone()).clone(), (str2.clone()).clone(), metamodelica::cons(Arc::new(Absyn::NamedArg { argName: (literal!("annotate")).clone(), argValue: aexp.clone() }), metamodelica::nil()), SymbolTable::getAbsyn())?;
                     SymbolTable::setAbsyn(p.clone())?;
                     Ok(Arc::new(Values::Value::BOOL { boolean: true }))
                 }
@@ -4494,7 +4701,7 @@ pub fn cevalInteractiveFunctions4(mut inCache: FCore::Cache, mut inEnv: FCore::G
                         } };
                         s1 = __pa0.clone();
                         s2 = __pa1.clone();
-                        relocatableFunctionsTuple = cons((s1.clone(), s2.clone()), relocatableFunctionsTuple.clone());
+                        relocatableFunctionsTuple = metamodelica::cons((s1.clone(), s2.clone()), relocatableFunctionsTuple.clone());
                     }
                     b = System::relocateFunctions((r#str.clone()).clone(), relocatableFunctionsTuple.clone());
                     Ok(Arc::new(Values::Value::BOOL { boolean: b.clone() }))
@@ -5425,6 +5632,42 @@ pub fn runFrontEndWorkNF(mut className: Arc<Absyn::Path>, mut relaxedFrontend: b
     Ok((flatModel, functions, flatString))
 }
 
+pub fn translateModel(mut cache: FCore::Cache, mut env: FCore::Graph, mut className: Arc<Absyn::Path>, mut fileNamePrefix: ArcStr, mut runBackend: bool, mut runSilent: bool, mut simSettingsOpt: Option<SimCode::SimulationSettings>) -> Result<(bool, FCore::Cache, Arc<metamodelica::List<ArcStr>>, ArcStr, Arc<metamodelica::List<(ArcStr, Arc<Values::Value>)>>)> {
+    let mut success: bool = false;
+    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
+    let mut outLibs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut outFileDir: ArcStr = arcstr::literal!("");
+    let mut resultValues: Arc<metamodelica::List<(ArcStr, Arc<Values::Value>)>> = metamodelica::nil();
+    let mut flags: Flags::Flag = Flags::Flag::NO_FLAGS;
+    let mut defaultSimOpt: InteractiveTypes::SimulationOptions = <InteractiveTypes::SimulationOptions as ::std::default::Default>::default();
+    let mut simSettings: Option<SimCode::SimulationSettings> = None;
+    if isSome(simSettingsOpt.clone()) {
+        simSettings = simSettingsOpt.clone();
+    } else {
+        defaultSimOpt = buildSimulationOptionsFromModelExperimentAnnotation(className.clone(), (fileNamePrefix.clone()).clone(), Some(defaultSimulationOptions().clone()))?;
+        simSettings = Some(convertSimulationOptionsToSimCode(defaultSimOpt.clone())?);
+    }
+    flags = loadCommandLineOptionsFromModel(className.clone())?;
+    match '__try0: {
+        (success, outCache, outLibs, outFileDir, resultValues) = unwrap_break_err!(SimCodeMain::translateModel(crate::SimCodeMain::TranslateModelKind::NORMAL, cache.clone(), env.clone(), className.clone(), (fileNamePrefix.clone()).clone(), runBackend.clone(), Flags::getConfigBool(Flags::DAE_MODE.clone())?, runSilent.clone(), simSettings.clone(), Arc::new(Absyn::FunctionArgs::FUNCTIONARGS { args: metamodelica::nil(), argNames: metamodelica::nil() })), '__try0);
+        FlagsUtil::saveFlags(flags.clone());
+        Ok::<_, anyhow::Error>((outCache.clone(), outFileDir.clone(), outLibs.clone(), resultValues.clone(), success.clone()))
+    } {
+        Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3, __try0_o4)) => {
+            outCache = __try0_o0;
+            outFileDir = __try0_o1;
+            outLibs = __try0_o2;
+            resultValues = __try0_o3;
+            success = __try0_o4;
+        }
+        Err(_) => {
+            FlagsUtil::saveFlags(flags.clone());
+            bail!("fail");
+        }
+    }
+    Ok((success, outCache, outLibs, outFileDir, resultValues))
+}
+
 fn getProcsStr(mut isMake: bool) -> Result<ArcStr> {
     let mut s: ArcStr = arcstr::literal!("");
     let mut n: i32 = 0;
@@ -5804,6 +6047,80 @@ fn translateModelFMU(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut cla
     Ok((success, cache, outValue))
 }
 
+fn callTranslateModelFMU(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut className: Arc<Absyn::Path>, mut FMUVersion: ArcStr, mut inFMUType: ArcStr, mut inFileNamePrefix: ArcStr, mut addDummy: bool, mut platforms: Arc<metamodelica::List<ArcStr>>, mut inSimSettings: Option<SimCode::SimulationSettings>) -> Result<(bool, FCore::Cache, Arc<Values::Value>)> {
+    let mut success: bool = false;
+    let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
+    let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
+    let mut filenameprefix: ArcStr = arcstr::literal!("");
+    let mut fmuTargetName: ArcStr = arcstr::literal!("");
+    let mut defaultSimOpt: InteractiveTypes::SimulationOptions = <InteractiveTypes::SimulationOptions as ::std::default::Default>::default();
+    let mut simSettings: SimCode::SimulationSettings = <SimCode::SimulationSettings as ::std::default::Default>::default();
+    let mut libs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut FMUType: ArcStr = inFMUType.clone();
+    cache = inCache.clone();
+    if !(FMI::checkFMIVersion((FMUVersion.clone()).clone())) {
+        success = false;
+        outValue = Arc::new(Values::Value::STRING { string: (literal!("")).clone() });
+        Error::addMessage(Error::UNKNOWN_FMU_VERSION.clone(), list![(FMUVersion.clone()).clone()])?;
+        return Ok((success.clone(), cache.clone(), outValue.clone()));
+    } else if !(FMI::checkFMIType((FMUType.clone()).clone())) {
+        success = false;
+        outValue = Arc::new(Values::Value::STRING { string: (literal!("")).clone() });
+        Error::addMessage(Error::UNKNOWN_FMU_TYPE.clone(), list![(FMUType.clone()).clone()])?;
+        return Ok((success.clone(), cache.clone(), outValue.clone()));
+    }
+    if !(FMI::canExportFMU((FMUVersion.clone()).clone(), (FMUType.clone()).clone())) {
+        success = false;
+        outValue = Arc::new(Values::Value::STRING { string: (literal!("")).clone() });
+        Error::addMessage(Error::FMU_EXPORT_NOT_SUPPORTED.clone(), list![(FMUType.clone()).clone(), (FMUVersion.clone()).clone()])?;
+        return Ok((success.clone(), cache.clone(), outValue.clone()));
+    }
+    if Config::simCodeTarget()? == literal!("Cpp") && FMI::isFMICSType((FMUType.clone()).clone()) {
+        Error::addMessage(Error::FMU_EXPORT_NOT_SUPPORTED_CPP.clone(), list![(FMUType.clone()).clone()])?;
+        FMUType = (literal!("me")).clone();
+    }
+    if Flags::getConfigBool(Flags::DAE_MODE.clone())? {
+        success = false;
+        outValue = Arc::new(Values::Value::STRING { string: (literal!("")).clone() });
+        Error::addMessage(Error::FMU_EXPORT_DAE_MODE_NOT_SUPPORTED.clone(), metamodelica::nil())?;
+        return Ok((success.clone(), cache.clone(), outValue.clone()));
+    }
+    filenameprefix = (Util::stringReplaceChar((if (inFileNamePrefix.clone() == literal!("<default>")) {AbsynUtil::pathLastIdent(className.clone())?} else {inFileNamePrefix.clone()}).clone(), (literal!(".")).clone(), (literal!("_")).clone())?).clone();
+    fmuTargetName = (if (FMUVersion.clone() == literal!("1.0")) {filenameprefix.clone()} else {if (inFileNamePrefix.clone() == literal!("<default>")) {AbsynUtil::pathLastIdent(className.clone())?} else {inFileNamePrefix.clone()}}).clone();
+    if isSome(inSimSettings.clone()) {
+        let __pa0 = ::match_deref::match_deref! { match &(inSimSettings.clone()) {
+            Some(__pa0) => __pa0.clone(),
+            _ => bail!("pattern mismatch"),
+        } };
+        simSettings = __pa0.clone();
+    } else {
+        defaultSimOpt = buildSimulationOptionsFromModelExperimentAnnotation(className.clone(), (filenameprefix.clone()).clone(), Some(defaultSimulationOptions().clone()))?;
+        simSettings = convertSimulationOptionsToSimCode(defaultSimOpt.clone())?;
+    }
+    FlagsUtil::setConfigBool(Flags::BUILDING_FMU.clone(), true)?;
+    FlagsUtil::setConfigString(Flags::FMI_VERSION.clone(), (FMUVersion.clone()).clone())?;
+    match '__try1: {
+        (success, cache, libs, _, _) = unwrap_break_err!(SimCodeMain::translateModel(SimCodeMain::TranslateModelKind::FMU { kind: (FMUType.clone()).clone(), targetName: (fmuTargetName.clone()).clone() }, cache.clone(), inEnv.clone(), className.clone(), (filenameprefix.clone()).clone(), true, false, true, Some(simSettings.clone()), Absyn::emptyFunctionArgs.clone()), '__try1);
+        outValue = Arc::new(Values::Value::STRING { string: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*if (!(unwrap_break_err!(Testsuite::isRunning(), '__try1))) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*System::pwd()); __mm_s.push_str(&*arcstr::literal!(Autoconf::pathDelimiter)); ArcStr::from(__mm_s) }} else {literal!("")}); __mm_s.push_str(&*fmuTargetName.clone()); __mm_s.push_str(&*literal!(".fmu")); ArcStr::from(__mm_s) }).clone() });
+        Ok::<_, anyhow::Error>((cache.clone(), libs.clone(), outValue.clone(), success.clone()))
+    } {
+        Ok((__try1_o0, __try1_o1, __try1_o2, __try1_o3)) => {
+            cache = __try1_o0;
+            libs = __try1_o1;
+            outValue = __try1_o2;
+            success = __try1_o3;
+        }
+        Err(_) => {
+            success = false;
+            outValue = Arc::new(Values::Value::STRING { string: (literal!("")).clone() });
+            bail!("try/else: outputs not set in else branch");
+        }
+    }
+    FlagsUtil::setConfigBool(Flags::BUILDING_FMU.clone(), false)?;
+    FlagsUtil::setConfigString(Flags::FMI_VERSION.clone(), (literal!("")).clone())?;
+    Ok((success, cache, outValue))
+}
+
 fn buildModelFMU(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut className: Arc<Absyn::Path>, mut FMUVersion: ArcStr, mut inFMUType: ArcStr, mut inFileNamePrefix: ArcStr, mut addDummy: bool, mut platforms: Arc<metamodelica::List<ArcStr>>, mut inSimSettings: Option<SimCode::SimulationSettings>) -> Result<(FCore::Cache, Arc<Values::Value>)> {
     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
@@ -5826,6 +6143,149 @@ fn buildModelFMU(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut classNa
                 FlagsUtil::saveFlags(flags.clone());
                 bail!("fail");
             }
+        }
+    }
+    Ok((cache, outValue))
+}
+
+fn callBuildModelFMU(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut className: Arc<Absyn::Path>, mut FMUVersion: ArcStr, mut inFMUType: ArcStr, mut inFileNamePrefix: ArcStr, mut addDummy: bool, mut platforms: Arc<metamodelica::List<ArcStr>>, mut inSimSettings: Option<SimCode::SimulationSettings>) -> Result<(FCore::Cache, Arc<Values::Value>)> {
+    let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
+    let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
+    let mut success: bool = false;
+    let mut filenameprefix: ArcStr = arcstr::literal!("");
+    let mut fmutmp: ArcStr = arcstr::literal!("");
+    let mut logfile: ArcStr = arcstr::literal!("");
+    let mut configureLogFile: ArcStr = arcstr::literal!("");
+    let mut dir: ArcStr = arcstr::literal!("");
+    let mut cmd: ArcStr = arcstr::literal!("");
+    let mut fmuTargetName: ArcStr = arcstr::literal!("");
+    let mut defaultSimOpt: InteractiveTypes::SimulationOptions = <InteractiveTypes::SimulationOptions as ::std::default::Default>::default();
+    let mut simSettings: SimCode::SimulationSettings = <SimCode::SimulationSettings as ::std::default::Default>::default();
+    let mut libs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
+    let mut isWindows: bool = false;
+    let mut needs3rdPartyLibs: bool = false;
+    let mut FMUType: ArcStr = inFMUType.clone();
+    cache = inCache.clone();
+    if !(FMI::checkFMIVersion((FMUVersion.clone()).clone())) {
+        outValue = Arc::new(Values::Value::STRING { string: (literal!("")).clone() });
+        Error::addMessage(Error::UNKNOWN_FMU_VERSION.clone(), list![(FMUVersion.clone()).clone()])?;
+        return Ok((cache.clone(), outValue.clone()));
+    } else if !(FMI::checkFMIType((FMUType.clone()).clone())) {
+        outValue = Arc::new(Values::Value::STRING { string: (literal!("")).clone() });
+        Error::addMessage(Error::UNKNOWN_FMU_TYPE.clone(), list![(FMUType.clone()).clone()])?;
+        return Ok((cache.clone(), outValue.clone()));
+    }
+    if !(FMI::canExportFMU((FMUVersion.clone()).clone(), (FMUType.clone()).clone())) {
+        outValue = Arc::new(Values::Value::STRING { string: (literal!("")).clone() });
+        Error::addMessage(Error::FMU_EXPORT_NOT_SUPPORTED.clone(), list![(FMUType.clone()).clone(), (FMUVersion.clone()).clone()])?;
+        return Ok((cache.clone(), outValue.clone()));
+    }
+    if Config::simCodeTarget()? == literal!("Cpp") && FMI::isFMICSType((FMUType.clone()).clone()) {
+        Error::addMessage(Error::FMU_EXPORT_NOT_SUPPORTED_CPP.clone(), list![(FMUType.clone()).clone()])?;
+        FMUType = (literal!("me")).clone();
+    }
+    if Flags::getConfigBool(Flags::DAE_MODE.clone())? {
+        outValue = Arc::new(Values::Value::STRING { string: (literal!("")).clone() });
+        Error::addMessage(Error::FMU_EXPORT_DAE_MODE_NOT_SUPPORTED.clone(), metamodelica::nil())?;
+        return Ok((cache.clone(), outValue.clone()));
+    }
+    filenameprefix = (Util::stringReplaceChar((if (inFileNamePrefix.clone() == literal!("<default>")) {AbsynUtil::pathLastIdent(className.clone())?} else {inFileNamePrefix.clone()}).clone(), (literal!(".")).clone(), (literal!("_")).clone())?).clone();
+    fmuTargetName = (if (FMUVersion.clone() == literal!("1.0")) {filenameprefix.clone()} else {if (inFileNamePrefix.clone() == literal!("<default>")) {AbsynUtil::pathLastIdent(className.clone())?} else {inFileNamePrefix.clone()}}).clone();
+    if isSome(inSimSettings.clone()) {
+        let __pa0 = ::match_deref::match_deref! { match &(inSimSettings.clone()) {
+            Some(__pa0) => __pa0.clone(),
+            _ => bail!("pattern mismatch"),
+        } };
+        simSettings = __pa0.clone();
+    } else {
+        defaultSimOpt = buildSimulationOptionsFromModelExperimentAnnotation(className.clone(), (filenameprefix.clone()).clone(), Some(defaultSimulationOptions().clone()))?;
+        simSettings = convertSimulationOptionsToSimCode(defaultSimOpt.clone())?;
+    }
+    FlagsUtil::setConfigBool(Flags::BUILDING_FMU.clone(), true)?;
+    FlagsUtil::setConfigString(Flags::FMI_VERSION.clone(), (FMUVersion.clone()).clone())?;
+    match '__try1: {
+        (success, cache, libs, _, _) = unwrap_break_err!(SimCodeMain::translateModel(SimCodeMain::TranslateModelKind::FMU { kind: (FMUType.clone()).clone(), targetName: (fmuTargetName.clone()).clone() }, cache.clone(), inEnv.clone(), className.clone(), (filenameprefix.clone()).clone(), true, false, true, Some(simSettings.clone()), Absyn::emptyFunctionArgs.clone()), '__try1);
+        let true = (success.clone()) else { break '__try1 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
+        outValue = Arc::new(Values::Value::STRING { string: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*if (!(unwrap_break_err!(Testsuite::isRunning(), '__try1))) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*System::pwd()); __mm_s.push_str(&*arcstr::literal!(Autoconf::pathDelimiter)); ArcStr::from(__mm_s) }} else {literal!("")}); __mm_s.push_str(&*fmuTargetName.clone()); __mm_s.push_str(&*literal!(".fmu")); ArcStr::from(__mm_s) }).clone() });
+        Ok::<_, anyhow::Error>((cache.clone(), libs.clone(), outValue.clone(), success.clone()))
+    } {
+        Ok((__try1_o0, __try1_o1, __try1_o2, __try1_o3)) => {
+            cache = __try1_o0;
+            libs = __try1_o1;
+            outValue = __try1_o2;
+            success = __try1_o3;
+        }
+        Err(_) => {
+            outValue = Arc::new(Values::Value::STRING { string: (literal!("")).clone() });
+            FlagsUtil::setConfigBool(Flags::BUILDING_FMU.clone(), false)?;
+            FlagsUtil::setConfigString(Flags::FMI_VERSION.clone(), (literal!("")).clone())?;
+            return Ok((cache.clone(), outValue.clone()));
+        }
+    }
+    FlagsUtil::setConfigBool(Flags::BUILDING_FMU.clone(), false)?;
+    FlagsUtil::setConfigString(Flags::FMI_VERSION.clone(), (literal!("")).clone())?;
+    System::realtimeTick(ClockIndexes::RT_CLOCK_BUILD_MODEL.clone())?;
+    isWindows = arcstr::literal!(Autoconf::os) == literal!("Windows_NT");
+    fmutmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*Util::hashFileNamePrefix((filenameprefix.clone()).clone())); __mm_s.push_str(&*literal!(".fmutmp")); ArcStr::from(__mm_s) }).clone();
+    logfile = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*filenameprefix.clone()); __mm_s.push_str(&*literal!(".log")); ArcStr::from(__mm_s) }).clone();
+    dir = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*fmutmp.clone()); __mm_s.push_str(&*literal!("/sources/")); ArcStr::from(__mm_s) }).clone();
+    if Config::simCodeTarget()? == literal!("Cpp") {
+        System::removeDirectory((literal!("binaries")).clone());
+        for mut platform in &*platforms.clone() {
+            let mut platform = platform.clone();
+            if platform.clone() == literal!("dynamic") || platform.clone() == literal!("static") {
+                CevalScript::compileModel(({ let mut __mm_s = String::new(); __mm_s.push_str(&*filenameprefix.clone()); __mm_s.push_str(&*literal!("_FMU")); ArcStr::from(__mm_s) }).clone(), libs.clone(), (literal!("")).clone(), metamodelica::nil())?;
+            } else {
+                CevalScript::compileModel(({ let mut __mm_s = String::new(); __mm_s.push_str(&*filenameprefix.clone()); __mm_s.push_str(&*literal!("_FMU")); ArcStr::from(__mm_s) }).clone(), libs.clone(), (literal!("")).clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("TARGET_TRIPLET=")); __mm_s.push_str(&*platform.clone()); ArcStr::from(__mm_s) }).clone()])?;
+            }
+            ExecStat::execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("buildModelFMU: Generate C++ for platform ")); __mm_s.push_str(&*platform.clone()); ArcStr::from(__mm_s) }).clone())?;
+        }
+        if 0 != System::systemCallRestrictedEnv(({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(Autoconf::make)); __mm_s.push_str(&*literal!(" -f ")); __mm_s.push_str(&*filenameprefix.clone()); __mm_s.push_str(&*literal!("_FMU.makefile clean")); ArcStr::from(__mm_s) }).clone(), (logfile.clone()).clone())? {
+        }
+        return Ok((cache.clone(), outValue.clone()));
+    }
+    if !(Config::simCodeTarget()? == literal!("omsic")) {
+        CevalScript::compileModel(({ let mut __mm_s = String::new(); __mm_s.push_str(&*filenameprefix.clone()); __mm_s.push_str(&*literal!("_FMU")); ArcStr::from(__mm_s) }).clone(), libs.clone(), (literal!("")).clone(), metamodelica::nil())?;
+        ExecStat::execStat((literal!("buildModelFMU: Generate the FMI files")).clone())?;
+    } else {
+        fmutmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*fmutmp.clone()); __mm_s.push_str(&*arcstr::literal!(Autoconf::pathDelimiter)); ArcStr::from(__mm_s) }).clone();
+        CevalScript::compileModel(({ let mut __mm_s = String::new(); __mm_s.push_str(&*filenameprefix.clone()); __mm_s.push_str(&*literal!("_FMU")); ArcStr::from(__mm_s) }).clone(), libs.clone(), (fmutmp.clone()).clone(), metamodelica::nil())?;
+        return Ok((cache.clone(), outValue.clone()));
+    }
+    needs3rdPartyLibs = SimCodeUtil::cvodeFmiFlagIsSet(SimCodeUtil::createFMISimulationFlags(false)?)?;
+    if !(Flags::getConfigBool(Flags::FMU_CMAKE_BUILD.clone())?) {
+        Error::addCompilerNotification(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("The Makefile build for FMUs is deprecated and will be removed in a future version of OpenModelica.")); __mm_s.push_str(&*literal!(" Use \"--")); __mm_s.push_str(&*Flags::getConfigName(Flags::FMU_CMAKE_BUILD.clone())?); __mm_s.push_str(&*literal!("=true\".")); ArcStr::from(__mm_s) }).clone())?;
+    }
+    for mut platform in &*platforms.clone() {
+        let mut platform = platform.clone();
+        configureLogFile = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*System::realpath((fmutmp.clone()).clone())?); __mm_s.push_str(&*literal!("/resources/")); __mm_s.push_str(&*System::stringReplace(((Util::stringSplitAtChar((platform.clone()).clone(), (literal!(" ")).clone())?).get(1)?).clone(), (literal!("/")).clone(), (literal!("-")).clone())?); __mm_s.push_str(&*literal!(".log")); ArcStr::from(__mm_s) }).clone();
+        if Flags::getConfigBool(Flags::FMU_CMAKE_BUILD.clone())? {
+            configureFMU_cmake((platform.clone()).clone(), (fmutmp.clone()).clone(), (filenameprefix.clone()).clone(), (configureLogFile.clone()).clone(), libs.clone(), isWindows.clone())?;
+        } else {
+            configureFMU((platform.clone()).clone(), (fmutmp.clone()).clone(), (configureLogFile.clone()).clone(), isWindows.clone(), needs3rdPartyLibs.clone())?;
+        }
+        if Flags::getConfigEnum(Flags::FMI_FILTER.clone())? == Flags::FMI_BLACKBOX.clone() || Flags::getConfigEnum(Flags::FMI_FILTER.clone())? == Flags::FMI_PROTECTED.clone() {
+            System::removeFile((configureLogFile.clone()).clone());
+        }
+        ExecStat::execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("buildModelFMU: Generate platform ")); __mm_s.push_str(&*platform.clone()); ArcStr::from(__mm_s) }).clone())?;
+    }
+    if !(Flags::getConfigBool(Flags::FMI_SOURCES.clone())?) || Flags::getConfigEnum(Flags::FMI_FILTER.clone())? == Flags::FMI_BLACKBOX.clone() {
+        if !(System::removeDirectory(({ let mut __mm_s = String::new(); __mm_s.push_str(&*fmutmp.clone()); __mm_s.push_str(&*literal!("/sources/")); ArcStr::from(__mm_s) }).clone())) {
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to remove directory: ")); __mm_s.push_str(&*fmutmp.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+        }
+    }
+    cmd = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("rm -f \"")); __mm_s.push_str(&*fmuTargetName.clone()); __mm_s.push_str(&*literal!(".fmu\" && cd \"")); __mm_s.push_str(&*fmutmp.clone()); __mm_s.push_str(&*literal!("\" && zip -r \"../")); __mm_s.push_str(&*fmuTargetName.clone()); __mm_s.push_str(&*literal!(".fmu\" *")); ArcStr::from(__mm_s) }).clone();
+    if 0 != System::systemCall((cmd.clone()).clone(), (logfile.clone()).clone()) {
+        Error::addMessage(Error::SIMULATOR_BUILD_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*cmd.clone()); __mm_s.push_str(&*literal!("\n\n")); __mm_s.push_str(&*System::readFile((logfile.clone()).clone())?); ArcStr::from(__mm_s) }).clone()])?;
+        ExecStat::execStat((literal!("buildModelFMU failed")).clone())?;
+    }
+    if !(System::regularFileExists(({ let mut __mm_s = String::new(); __mm_s.push_str(&*fmuTargetName.clone()); __mm_s.push_str(&*literal!(".fmu")); ArcStr::from(__mm_s) }).clone())) {
+        Error::addMessage(Error::SIMULATOR_BUILD_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Build commands returned success, but ")); __mm_s.push_str(&*fmuTargetName.clone()); __mm_s.push_str(&*literal!(".fmu does not exist")); ArcStr::from(__mm_s) }).clone()])?;
+        bail!("fail");
+    }
+    if !(Flags::isSet(Flags::GEN_DEBUG_SYMBOLS.clone())?) {
+        if !(System::removeDirectory((fmutmp.clone()).clone())) {
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to remove directory: ")); __mm_s.push_str(&*fmutmp.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
         }
     }
     Ok((cache, outValue))
@@ -6024,7 +6484,7 @@ fn getListNthShowError(mut inValues: Arc<metamodelica::List<Arc<Values::Value>>>
 fn moveClass(mut inClassName: Arc<Absyn::Path>, mut inOffset: i32, mut inProgram: Absyn::Program) -> (Absyn::Program, bool) {
     let mut outProgram: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
     let mut outSuccess: bool = false;
-    let mut parent_cls: Arc<Absyn::Path>;
+    let mut parent_cls: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut cls_name: ArcStr = arcstr::literal!("");
     if inOffset.clone() == 0 {
         outProgram = inProgram.clone();
@@ -6041,7 +6501,7 @@ fn moveClass(mut inClassName: Arc<Absyn::Path>, mut inOffset: i32, mut inProgram
             } };
             parent_cls = __pa1.clone();
             cls_name = __pa2.clone();
-            outProgram = unwrap_break_err!(Interactive::transformPathedClassInProgram(parent_cls.clone(), inProgram.clone(), Arc::new({ let __pe_b0 = (cls_name.clone()).clone(); let __pe_b1 = inOffset.clone(); move |__pe_a2| moveClassInClass(__pe_b0.clone(), __pe_b1.clone(), __pe_a2) })), '__try0);
+            outProgram = unwrap_break_err!(Interactive::transformPathedClassInProgram(parent_cls.clone(), inProgram.clone(), (std::sync::Arc::new({ let __pe_b0 = (cls_name.clone()).clone(); let __pe_b1 = inOffset.clone(); move |__pe_a2| moveClassInClass(__pe_b0.clone(), __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Class>) -> Result<Arc<Absyn::Class>> + 'static>)), '__try0);
         }
         outSuccess = true;
         Ok::<_, anyhow::Error>((outProgram.clone(), outSuccess.clone()))
@@ -6061,7 +6521,7 @@ fn moveClass(mut inClassName: Arc<Absyn::Path>, mut inOffset: i32, mut inProgram
 fn moveClassToTop(mut inClassName: Arc<Absyn::Path>, mut inProgram: Absyn::Program) -> (Absyn::Program, bool) {
     let mut outProgram: Absyn::Program = inProgram.clone();
     let mut outSuccess: bool = false;
-    let mut parent_cls: Arc<Absyn::Path>;
+    let mut parent_cls: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut cls_name: ArcStr = arcstr::literal!("");
     match '__try0: {
         if AbsynUtil::pathIsIdent(inClassName.clone()) {
@@ -6075,7 +6535,7 @@ fn moveClassToTop(mut inClassName: Arc<Absyn::Path>, mut inProgram: Absyn::Progr
             } };
             classes = __pa0.clone();
             cls = __pa1.clone();
-            outProgram.classes = cons(cls.clone(), classes.clone());
+            outProgram.classes = metamodelica::cons(cls.clone(), classes.clone());
             outProgram.clone()
         },
     });
@@ -6086,7 +6546,7 @@ fn moveClassToTop(mut inClassName: Arc<Absyn::Path>, mut inProgram: Absyn::Progr
             } };
             parent_cls = __pa1.clone();
             cls_name = __pa2.clone();
-            outProgram = unwrap_break_err!(Interactive::transformPathedClassInProgram(parent_cls.clone(), inProgram.clone(), Arc::new({ let __pe_b0 = (cls_name.clone()).clone(); move |__pe_a1| moveClassToTopInClass(__pe_b0.clone(), __pe_a1) })), '__try0);
+            outProgram = unwrap_break_err!(Interactive::transformPathedClassInProgram(parent_cls.clone(), inProgram.clone(), (std::sync::Arc::new({ let __pe_b0 = (cls_name.clone()).clone(); move |__pe_a1| moveClassToTopInClass(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Class>) -> Result<Arc<Absyn::Class>> + 'static>)), '__try0);
         }
         outSuccess = true;
         Ok::<_, anyhow::Error>((outSuccess.clone(),))
@@ -6104,7 +6564,7 @@ fn moveClassToTop(mut inClassName: Arc<Absyn::Path>, mut inProgram: Absyn::Progr
 fn moveClassToBottom(mut inClassName: Arc<Absyn::Path>, mut inProgram: Absyn::Program) -> (Absyn::Program, bool) {
     let mut outProgram: Absyn::Program = inProgram.clone();
     let mut outSuccess: bool = false;
-    let mut parent_cls: Arc<Absyn::Path>;
+    let mut parent_cls: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut cls_name: ArcStr = arcstr::literal!("");
     match '__try0: {
         if AbsynUtil::pathIsIdent(inClassName.clone()) {
@@ -6129,7 +6589,7 @@ fn moveClassToBottom(mut inClassName: Arc<Absyn::Path>, mut inProgram: Absyn::Pr
             } };
             parent_cls = __pa1.clone();
             cls_name = __pa2.clone();
-            outProgram = unwrap_break_err!(Interactive::transformPathedClassInProgram(parent_cls.clone(), inProgram.clone(), Arc::new({ let __pe_b0 = (cls_name.clone()).clone(); move |__pe_a1| moveClassToBottomInClass(__pe_b0.clone(), __pe_a1) })), '__try0);
+            outProgram = unwrap_break_err!(Interactive::transformPathedClassInProgram(parent_cls.clone(), inProgram.clone(), (std::sync::Arc::new({ let __pe_b0 = (cls_name.clone()).clone(); move |__pe_a1| moveClassToBottomInClass(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Class>) -> Result<Arc<Absyn::Class>> + 'static>)), '__try0);
         }
         outSuccess = true;
         Ok::<_, anyhow::Error>((outSuccess.clone(),))
@@ -6173,29 +6633,29 @@ fn moveClassInClassList(mut inName: ArcStr, mut inOffset: i32, mut inClasses: Ar
         if name.clone() == inName.clone() {
             break;
         } else {
-            acc = cons(cls.clone(), acc.clone());
+            acc = metamodelica::cons(cls.clone(), acc.clone());
         }
     }
     if inOffset.clone() > 0 {
         offset = std::cmp::min(inOffset.clone(), (rest.clone().len() as i32));
         for mut i in 1..=offset.clone() {
-            acc = cons(listHead(rest.clone())?, acc.clone());
+            acc = metamodelica::cons(listHead(rest.clone())?, acc.clone());
             rest = listRest(rest.clone())?;
         }
     } else {
         offset = std::cmp::max(inOffset.clone(), -((acc.clone().len() as i32)));
         for mut i in offset.clone()..=-1 {
-            rest = cons(listHead(acc.clone())?, rest.clone());
+            rest = metamodelica::cons(listHead(acc.clone())?, rest.clone());
             acc = listRest(acc.clone())?;
         }
     }
-    outClasses = List::append_reverse(acc.clone(), cons(cls.clone(), rest.clone()));
+    outClasses = List::append_reverse(acc.clone(), metamodelica::cons(cls.clone(), rest.clone()));
     Ok(outClasses)
 }
 
 fn moveClassInClass(mut inName: ArcStr, mut inOffset: i32, mut inClass: Arc<Absyn::Class>) -> Result<Arc<Absyn::Class>> {
     let mut outClass: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-    let mut body: Arc<Absyn::ClassDef>;
+    let mut body: Arc<Absyn::ClassDef> = Arc::new(<Absyn::ClassDef as ::std::default::Default>::default());
     let __pa0 = ::match_deref::match_deref! { match &(inClass.clone()) {
         Deref @ Absyn::Class { body: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -6237,7 +6697,7 @@ fn moveClassInClassParts(mut inName: ArcStr, mut inOffset: i32, mut inClassParts
         if isSome(cls.clone()) {
             break;
         } else {
-            acc = cons(part.clone(), acc.clone());
+            acc = metamodelica::cons(part.clone(), acc.clone());
         }
     }
     is_empty = AbsynUtil::isEmptyClassPart(part.clone());
@@ -6247,7 +6707,7 @@ fn moveClassInClassParts(mut inName: ArcStr, mut inOffset: i32, mut inClassParts
     } else {
         parts = moveClassInClassParts2(Util::getOption(cls.clone())?, offset.clone(), is_public.clone(), parts.clone())?;
         if !(is_empty.clone()) {
-            parts = cons(part.clone(), parts.clone());
+            parts = metamodelica::cons(part.clone(), parts.clone());
         }
     }
     if offset.clone() > 0 {
@@ -6273,9 +6733,9 @@ fn mergeClassPartWithList(mut inClassPart: Arc<Absyn::ClassPart>, mut inClassPar
     let mut part: Arc<Absyn::ClassPart>;
     let mut rest: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
     outClassParts = (::match_deref::match_deref! { match &((inClassPart.clone(), inClassParts.clone())) {
-        (Deref @ Absyn::ClassPart::PUBLIC { .. }, Deref @ metamodelica::List::Cons { head: part @ Deref @ Absyn::ClassPart::PUBLIC { .. }, tail: rest }) => cons(Arc::new(Absyn::ClassPart::PUBLIC { contents: listAppend(var_field!((**part).contents, Absyn::ClassPart::PUBLIC).clone(), var_field!((*inClassPart).contents, Absyn::ClassPart::PUBLIC).clone()) }), rest.clone()),
-        (Deref @ Absyn::ClassPart::PROTECTED { .. }, Deref @ metamodelica::List::Cons { head: part @ Deref @ Absyn::ClassPart::PROTECTED { .. }, tail: rest }) => cons(Arc::new(Absyn::ClassPart::PROTECTED { contents: listAppend(var_field!((**part).contents, Absyn::ClassPart::PROTECTED).clone(), var_field!((*inClassPart).contents, Absyn::ClassPart::PROTECTED).clone()) }), rest.clone()),
-        _ => cons(inClassPart.clone(), inClassParts.clone()),
+        (Deref @ Absyn::ClassPart::PUBLIC { .. }, Deref @ metamodelica::List::Cons { head: part @ Deref @ Absyn::ClassPart::PUBLIC { .. }, tail: rest }) => metamodelica::cons(Arc::new(Absyn::ClassPart::PUBLIC { contents: listAppend(var_field!((**part).contents, Absyn::ClassPart::PUBLIC).clone(), var_field!((*inClassPart).contents, Absyn::ClassPart::PUBLIC).clone()) }), rest.clone()),
+        (Deref @ Absyn::ClassPart::PROTECTED { .. }, Deref @ metamodelica::List::Cons { head: part @ Deref @ Absyn::ClassPart::PROTECTED { .. }, tail: rest }) => metamodelica::cons(Arc::new(Absyn::ClassPart::PROTECTED { contents: listAppend(var_field!((**part).contents, Absyn::ClassPart::PROTECTED).clone(), var_field!((*inClassPart).contents, Absyn::ClassPart::PROTECTED).clone()) }), rest.clone()),
+        _ => metamodelica::cons(inClassPart.clone(), inClassParts.clone()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     outClassParts
@@ -6320,12 +6780,12 @@ fn moveClassInClassParts2(mut inClass: Arc<Absyn::ElementItem>, mut inOffset: i3
 fn moveClassInClassParts3(mut inClass: Arc<Absyn::ElementItem>, mut inPositiveOffset: bool, mut inIsPublic: bool, mut inClassPart: Arc<Absyn::ClassPart>, mut inClassParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::ClassPart>>>> {
     let mut outClassParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
     outClassParts = (::match_deref::match_deref! { match &((inPositiveOffset.clone(), inIsPublic.clone(), inClassPart.clone())) {
-        (true, true, Deref @ Absyn::ClassPart::PUBLIC { .. }) => cons(Arc::new(Absyn::ClassPart::PUBLIC { contents: cons(inClass.clone(), var_field!((*inClassPart).contents, Absyn::ClassPart::PUBLIC).clone()) }), inClassParts.clone()),
-        (true, false, Deref @ Absyn::ClassPart::PROTECTED { .. }) => cons(Arc::new(Absyn::ClassPart::PROTECTED { contents: cons(inClass.clone(), var_field!((*inClassPart).contents, Absyn::ClassPart::PROTECTED).clone()) }), inClassParts.clone()),
-        (false, true, Deref @ Absyn::ClassPart::PUBLIC { .. }) => cons(Arc::new(Absyn::ClassPart::PUBLIC { contents: listAppend(var_field!((*inClassPart).contents, Absyn::ClassPart::PUBLIC).clone(), list![inClass.clone()]) }), inClassParts.clone()),
-        (false, false, Deref @ Absyn::ClassPart::PROTECTED { .. }) => cons(Arc::new(Absyn::ClassPart::PROTECTED { contents: listAppend(var_field!((*inClassPart).contents, Absyn::ClassPart::PROTECTED).clone(), list![inClass.clone()]) }), inClassParts.clone()),
-        (_, true, _) => cons(Arc::new(Absyn::ClassPart::PUBLIC { contents: list![inClass.clone()] }), cons(inClassPart.clone(), inClassParts.clone())),
-        (_, false, _) => cons(Arc::new(Absyn::ClassPart::PROTECTED { contents: list![inClass.clone()] }), cons(inClassPart.clone(), inClassParts.clone())),
+        (true, true, Deref @ Absyn::ClassPart::PUBLIC { .. }) => metamodelica::cons(Arc::new(Absyn::ClassPart::PUBLIC { contents: metamodelica::cons(inClass.clone(), var_field!((*inClassPart).contents, Absyn::ClassPart::PUBLIC).clone()) }), inClassParts.clone()),
+        (true, false, Deref @ Absyn::ClassPart::PROTECTED { .. }) => metamodelica::cons(Arc::new(Absyn::ClassPart::PROTECTED { contents: metamodelica::cons(inClass.clone(), var_field!((*inClassPart).contents, Absyn::ClassPart::PROTECTED).clone()) }), inClassParts.clone()),
+        (false, true, Deref @ Absyn::ClassPart::PUBLIC { .. }) => metamodelica::cons(Arc::new(Absyn::ClassPart::PUBLIC { contents: listAppend(var_field!((*inClassPart).contents, Absyn::ClassPart::PUBLIC).clone(), list![inClass.clone()]) }), inClassParts.clone()),
+        (false, false, Deref @ Absyn::ClassPart::PROTECTED { .. }) => metamodelica::cons(Arc::new(Absyn::ClassPart::PROTECTED { contents: listAppend(var_field!((*inClassPart).contents, Absyn::ClassPart::PROTECTED).clone(), list![inClass.clone()]) }), inClassParts.clone()),
+        (_, true, _) => metamodelica::cons(Arc::new(Absyn::ClassPart::PUBLIC { contents: list![inClass.clone()] }), metamodelica::cons(inClassPart.clone(), inClassParts.clone())),
+        (_, false, _) => metamodelica::cons(Arc::new(Absyn::ClassPart::PROTECTED { contents: list![inClass.clone()] }), metamodelica::cons(inClassPart.clone(), inClassParts.clone())),
         _ => bail!("match: no arm matched"),
     } });
     Ok(outClassParts)
@@ -6372,7 +6832,7 @@ fn moveClassInClassPart2(mut inName: ArcStr, mut inOffset: i32, mut inElements: 
             outClass = Some(e.clone());
             break;
         } else {
-            acc = cons(e.clone(), acc.clone());
+            acc = metamodelica::cons(e.clone(), acc.clone());
         }
     }
     if isNone(outClass.clone()) {
@@ -6382,7 +6842,7 @@ fn moveClassInClassPart2(mut inName: ArcStr, mut inOffset: i32, mut inElements: 
     }
     (acc, elements, outRemainingOffset, _) = moveClassInSplitClassPart(inOffset.clone(), acc.clone(), elements.clone())?;
     if outRemainingOffset.clone() == 0 {
-        elements = cons(e.clone(), elements.clone());
+        elements = metamodelica::cons(e.clone(), elements.clone());
     }
     outElements = List::append_reverse(acc.clone(), elements.clone());
     Ok((outElements, outClass, outRemainingOffset))
@@ -6417,14 +6877,14 @@ fn moveClassInClassPart3(mut inClass: Arc<Absyn::ElementItem>, mut inOffset: i32
     (elems_before, elems_after, outRemainingOffset, reached_end) = moveClassInSplitClassPart(inOffset.clone(), elems_before.clone().reverse(), elems_after.clone())?;
     if outRemainingOffset.clone() == 0 {
         if same_part_type.clone() {
-            elems = List::append_reverse(elems_before.clone(), cons(inClass.clone(), elems_after.clone()));
+            elems = List::append_reverse(elems_before.clone(), metamodelica::cons(inClass.clone(), elems_after.clone()));
             outClassParts = list![makeClassPart(elems.clone(), inIsPublic.clone())];
             outMoved = true;
         } else if !(reached_end.clone()) {
             outClassParts = if (elems_before.clone().is_empty()) {metamodelica::nil()} else {list![makeClassPart(elems_before.clone().reverse(), !(inIsPublic.clone()))]};
-            outClassParts = cons(makeClassPart(list![inClass.clone()], inIsPublic.clone()), outClassParts.clone());
+            outClassParts = metamodelica::cons(makeClassPart(list![inClass.clone()], inIsPublic.clone()), outClassParts.clone());
             if !(elems_after.clone().is_empty()) {
-                outClassParts = cons(makeClassPart(elems_after.clone(), !(inIsPublic.clone())), outClassParts.clone());
+                outClassParts = metamodelica::cons(makeClassPart(elems_after.clone(), !(inIsPublic.clone())), outClassParts.clone());
             }
             outMoved = true;
         } else {
@@ -6453,7 +6913,7 @@ fn moveClassInSplitClassPart(mut inOffset: i32, mut inElementsBefore: Arc<metamo
                 } };
                 e = __pa0.clone();
                 outElementsAfter = __pa1.clone();
-                outElementsBefore = cons(e.clone(), outElementsBefore.clone());
+                outElementsBefore = metamodelica::cons(e.clone(), outElementsBefore.clone());
                 if AbsynUtil::isElementItemClass(e.clone()) {
                     outRemainingOffset = outRemainingOffset.clone() - 1;
                 }
@@ -6471,7 +6931,7 @@ fn moveClassInSplitClassPart(mut inOffset: i32, mut inElementsBefore: Arc<metamo
                 } };
                 e = __pa2.clone();
                 outElementsBefore = __pa3.clone();
-                outElementsAfter = cons(e.clone(), outElementsAfter.clone());
+                outElementsAfter = metamodelica::cons(e.clone(), outElementsAfter.clone());
                 if AbsynUtil::isElementItemClass(e.clone()) {
                     outRemainingOffset = outRemainingOffset.clone() + 1;
                 }
@@ -6505,7 +6965,7 @@ fn deleteClassInClassPart(mut inName: ArcStr, mut inClassPart: Arc<Absyn::ClassP
 
 fn moveClassToTopInClass(mut inName: ArcStr, mut inClass: Arc<Absyn::Class>) -> Result<Arc<Absyn::Class>> {
     let mut outClass: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-    let mut body: Arc<Absyn::ClassDef>;
+    let mut body: Arc<Absyn::ClassDef> = Arc::new(<Absyn::ClassDef as ::std::default::Default>::default());
     let __pa0 = ::match_deref::match_deref! { match &(inClass.clone()) {
         Deref @ Absyn::Class { body: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -6544,12 +7004,12 @@ fn moveClassToTopInClassParts(mut inName: ArcStr, mut inClassParts: Arc<metamode
         (part, ocls) = deleteClassInClassPart((inName.clone()).clone(), part.clone())?;
         if isSome(ocls.clone()) {
             if !(AbsynUtil::isEmptyClassPart(part.clone())) || acc.clone().is_empty() || rest.clone().is_empty() {
-                rest = cons(part.clone(), rest.clone());
+                rest = metamodelica::cons(part.clone(), rest.clone());
             }
             outClassParts = List::append_reverse(acc.clone(), rest.clone());
             break;
         } else {
-            acc = cons(part.clone(), acc.clone());
+            acc = metamodelica::cons(part.clone(), acc.clone());
         }
     }
     let __pa2 = ::match_deref::match_deref! { match &(ocls.clone()) {
@@ -6565,15 +7025,15 @@ fn moveClassToTopInClassParts(mut inName: ArcStr, mut inClassParts: Arc<metamode
     rest = __pa4.clone();
     outClassParts = (::match_deref::match_deref! { match &((first.clone(), part.clone())) {
         (Deref @ Absyn::ClassPart::PUBLIC { .. }, Deref @ Absyn::ClassPart::PUBLIC { .. }) => {
-            assign_variant_field!(first => Absyn::ClassPart::PUBLIC; contents = cons(cls.clone(), var_field!((*first).contents, Absyn::ClassPart::PUBLIC).clone()));
-            cons(first.clone(), rest.clone())
+            assign_variant_field!(first => Absyn::ClassPart::PUBLIC; contents = metamodelica::cons(cls.clone(), var_field!((*first).contents, Absyn::ClassPart::PUBLIC).clone()));
+            metamodelica::cons(first.clone(), rest.clone())
         },
         (Deref @ Absyn::ClassPart::PROTECTED { .. }, Deref @ Absyn::ClassPart::PROTECTED { .. }) => {
-            assign_variant_field!(first => Absyn::ClassPart::PROTECTED; contents = cons(cls.clone(), var_field!((*first).contents, Absyn::ClassPart::PROTECTED).clone()));
-            cons(first.clone(), rest.clone())
+            assign_variant_field!(first => Absyn::ClassPart::PROTECTED; contents = metamodelica::cons(cls.clone(), var_field!((*first).contents, Absyn::ClassPart::PROTECTED).clone()));
+            metamodelica::cons(first.clone(), rest.clone())
         },
-        (_, Deref @ Absyn::ClassPart::PUBLIC { .. }) => cons(Arc::new(Absyn::ClassPart::PUBLIC { contents: list![cls.clone()] }), cons(first.clone(), rest.clone())),
-        (_, Deref @ Absyn::ClassPart::PROTECTED { .. }) => cons(Arc::new(Absyn::ClassPart::PROTECTED { contents: list![cls.clone()] }), cons(first.clone(), rest.clone())),
+        (_, Deref @ Absyn::ClassPart::PUBLIC { .. }) => metamodelica::cons(Arc::new(Absyn::ClassPart::PUBLIC { contents: list![cls.clone()] }), metamodelica::cons(first.clone(), rest.clone())),
+        (_, Deref @ Absyn::ClassPart::PROTECTED { .. }) => metamodelica::cons(Arc::new(Absyn::ClassPart::PROTECTED { contents: list![cls.clone()] }), metamodelica::cons(first.clone(), rest.clone())),
         _ => bail!("match: no arm matched"),
     } });
     Ok(outClassParts)
@@ -6581,7 +7041,7 @@ fn moveClassToTopInClassParts(mut inName: ArcStr, mut inClassParts: Arc<metamode
 
 fn moveClassToBottomInClass(mut inName: ArcStr, mut inClass: Arc<Absyn::Class>) -> Result<Arc<Absyn::Class>> {
     let mut outClass: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-    let mut body: Arc<Absyn::ClassDef>;
+    let mut body: Arc<Absyn::ClassDef> = Arc::new(<Absyn::ClassDef as ::std::default::Default>::default());
     let __pa0 = ::match_deref::match_deref! { match &(inClass.clone()) {
         Deref @ Absyn::Class { body: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -6621,7 +7081,7 @@ fn moveClassToBottomInClassParts(mut inName: ArcStr, mut inClassParts: Arc<metam
         if isSome(ocls.clone()) {
             break;
         } else {
-            acc = cons(part.clone(), acc.clone());
+            acc = metamodelica::cons(part.clone(), acc.clone());
         }
     }
     let __pa2 = ::match_deref::match_deref! { match &(ocls.clone()) {
@@ -6630,7 +7090,7 @@ fn moveClassToBottomInClassParts(mut inName: ArcStr, mut inClassParts: Arc<metam
     } };
     cls = __pa2.clone();
     if !(AbsynUtil::isEmptyClassPart(part.clone())) || rest.clone().is_empty() {
-        rest = cons(part.clone(), rest.clone());
+        rest = metamodelica::cons(part.clone(), rest.clone());
     }
     let (__pa3, __pa4) = ::match_deref::match_deref! { match &(rest.clone().reverse()) {
         Deref @ metamodelica::List::Cons { head: __pa3, tail: __pa4 } => (__pa3.clone(), __pa4.clone()),
@@ -6641,14 +7101,14 @@ fn moveClassToBottomInClassParts(mut inName: ArcStr, mut inClassParts: Arc<metam
     rest = (::match_deref::match_deref! { match &((last.clone(), part.clone())) {
         (Deref @ Absyn::ClassPart::PUBLIC { .. }, Deref @ Absyn::ClassPart::PUBLIC { .. }) => {
             assign_variant_field!(last => Absyn::ClassPart::PUBLIC; contents = listAppend(var_field!((*last).contents, Absyn::ClassPart::PUBLIC).clone(), list![cls.clone()]));
-            cons(last.clone(), rest.clone())
+            metamodelica::cons(last.clone(), rest.clone())
         },
         (Deref @ Absyn::ClassPart::PROTECTED { .. }, Deref @ Absyn::ClassPart::PROTECTED { .. }) => {
             assign_variant_field!(last => Absyn::ClassPart::PROTECTED; contents = listAppend(var_field!((*last).contents, Absyn::ClassPart::PROTECTED).clone(), list![cls.clone()]));
-            cons(last.clone(), rest.clone())
+            metamodelica::cons(last.clone(), rest.clone())
         },
-        (_, Deref @ Absyn::ClassPart::PUBLIC { .. }) => cons(Arc::new(Absyn::ClassPart::PUBLIC { contents: list![cls.clone()] }), cons(last.clone(), rest.clone())),
-        (_, Deref @ Absyn::ClassPart::PROTECTED { .. }) => cons(Arc::new(Absyn::ClassPart::PROTECTED { contents: list![cls.clone()] }), cons(last.clone(), rest.clone())),
+        (_, Deref @ Absyn::ClassPart::PUBLIC { .. }) => metamodelica::cons(Arc::new(Absyn::ClassPart::PUBLIC { contents: list![cls.clone()] }), metamodelica::cons(last.clone(), rest.clone())),
+        (_, Deref @ Absyn::ClassPart::PROTECTED { .. }) => metamodelica::cons(Arc::new(Absyn::ClassPart::PROTECTED { contents: list![cls.clone()] }), metamodelica::cons(last.clone(), rest.clone())),
         _ => bail!("match: no arm matched"),
     } });
     outClassParts = List::append_reverse(acc.clone(), rest.clone().reverse());
@@ -6687,8 +7147,8 @@ fn moveSourceInfo(mut inInfo: SourceInfo, mut dstPath: ArcStr) -> Result<SourceI
     let mut outInfo: SourceInfo = inInfo.clone();
     let () = (match outInfo.clone() {
         SourceInfo { .. } => {
-            outInfo.fileName = dstPath.clone();
-            outInfo.isReadOnly = false;
+            todo!("unhandled field-assign shape: outInfo.fileName");
+            todo!("unhandled field-assign shape: outInfo.isReadOnly");
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -7045,7 +7505,7 @@ fn moveEquationItemInfo(mut inEquation: Arc<Absyn::EquationItem>, mut dstPath: A
 }
 
 fn moveAlgorithmItemInfo(mut inAlgorithm: Arc<Absyn::AlgorithmItem>, mut dstPath: ArcStr) -> Result<Arc<Absyn::AlgorithmItem>> {
-    let mut outAlgorithm: Arc<Absyn::AlgorithmItem>;
+    let mut outAlgorithm: Arc<Absyn::AlgorithmItem> = Arc::new(<Absyn::AlgorithmItem as ::std::default::Default>::default());
     outAlgorithm = (::match_deref::match_deref! { match &(inAlgorithm.clone()) {
         Deref @ Absyn::AlgorithmItem::ALGORITHMITEM { algorithm_: alg, comment: cmt, info } => {
             let mut cmt = (*cmt).clone();
@@ -7160,7 +7620,7 @@ fn buildModel(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inValues: 
                     let mut method_str: ArcStr = arcstr::literal!("");
                     let mut filenameprefix: ArcStr = arcstr::literal!("");
                     let mut simflags: ArcStr = arcstr::literal!("");
-                    let mut classname: Arc<Absyn::Path>;
+                    let mut classname: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut timeCompile: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
                     let mut simSettings: SimCode::SimulationSettings = <SimCode::SimulationSettings as ::std::default::Default>::default();
                     let mut values: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
@@ -7233,7 +7693,7 @@ fn buildModel(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inValues: 
                     if Flags::isSet(Flags::DYN_LOAD.clone())? {
                         Debug::trace((literal!("buildModel: Compiling done.\n")).clone())?;
                     }
-                    resultValues = cons((literal!("timeCompile"), Arc::new(Values::Value::REAL { real: timeCompile.clone() })), resultValues.clone());
+                    resultValues = metamodelica::cons((literal!("timeCompile"), Arc::new(Values::Value::REAL { real: timeCompile.clone() })), resultValues.clone());
                     Ok((cache.clone(), compileDir.clone(), filenameprefix.clone(), method_str.clone(), outputFormat_str.clone(), init_filename.clone(), simflags.clone(), resultValues.clone(), values.clone(), libsAndLibDirs.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -7293,13 +7753,13 @@ fn createSimulationResultFromcallModelExecutable(mut buildSuccess: bool, mut cal
         if let Ok(__v) = (|| -> Result<_> {
             let (false, _) = __mc_input.clone() else { bail!("nomatch") };
             let mut simValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-            simValue = createSimulationResult((result_file.clone()).clone(), (simOptionsAsString(inVals.clone())?).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to build model: ")); __mm_s.push_str(&*AbsynUtil::pathString(className.clone(), (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }).clone(), cons((literal!("timeTotal"), Arc::new(Values::Value::REAL { real: timeTotal.clone() })), cons((literal!("timeSimulation"), Arc::new(Values::Value::REAL { real: timeSimulation.clone() })), resultValues.clone())))?;
+            simValue = createSimulationResult((result_file.clone()).clone(), (simOptionsAsString(inVals.clone())?).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to build model: ")); __mm_s.push_str(&*AbsynUtil::pathString(className.clone(), (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }).clone(), metamodelica::cons((literal!("timeTotal"), Arc::new(Values::Value::REAL { real: timeTotal.clone() })), metamodelica::cons((literal!("timeSimulation"), Arc::new(Values::Value::REAL { real: timeSimulation.clone() })), resultValues.clone())))?;
             Ok((inCache.clone(), simValue.clone()))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (_, 0) = __mc_input.clone() else { bail!("nomatch") };
             let mut simValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-            simValue = createSimulationResult((result_file.clone()).clone(), (simOptionsAsString(inVals.clone())?).clone(), (System::readFile((logFile.clone()).clone())?).clone(), cons((literal!("timeTotal"), Arc::new(Values::Value::REAL { real: timeTotal.clone() })), cons((literal!("timeSimulation"), Arc::new(Values::Value::REAL { real: timeSimulation.clone() })), resultValues.clone())))?;
+            simValue = createSimulationResult((result_file.clone()).clone(), (simOptionsAsString(inVals.clone())?).clone(), (System::readFile((logFile.clone()).clone())?).clone(), metamodelica::cons((literal!("timeTotal"), Arc::new(Values::Value::REAL { real: timeTotal.clone() })), metamodelica::cons((literal!("timeSimulation"), Arc::new(Values::Value::REAL { real: timeSimulation.clone() })), resultValues.clone())))?;
             SymbolTable::addVar(Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (literal!("currentSimulationResult")).clone(), identType: DAE::T_STRING_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), Arc::new(Values::Value::STRING { string: (result_file.clone()).clone() }), FGraph::empty())?;
             Ok((inCache.clone(), simValue.clone()))
         })() { break 'mc __v; }
@@ -7311,7 +7771,7 @@ fn createSimulationResultFromcallModelExecutable(mut buildSuccess: bool, mut cal
             res = (if (System::regularFileExists((logFile.clone()).clone())) {System::readFile((logFile.clone()).clone())?} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*logFile.clone()); __mm_s.push_str(&*literal!(" does not exist")); ArcStr::from(__mm_s) }}).clone();
             r#str = (AbsynUtil::pathString(className.clone(), (literal!(".")).clone(), true, false)?).clone();
             res = stringAppendList(list![(literal!("Simulation execution failed for model: ")).clone(), (r#str.clone()).clone(), (literal!("\n")).clone(), (res.clone()).clone()]);
-            simValue = createSimulationResult((literal!("")).clone(), (simOptionsAsString(inVals.clone())?).clone(), (res.clone()).clone(), cons((literal!("timeTotal"), Arc::new(Values::Value::REAL { real: timeTotal.clone() })), cons((literal!("timeSimulation"), Arc::new(Values::Value::REAL { real: timeSimulation.clone() })), resultValues.clone())))?;
+            simValue = createSimulationResult((literal!("")).clone(), (simOptionsAsString(inVals.clone())?).clone(), (res.clone()).clone(), metamodelica::cons((literal!("timeTotal"), Arc::new(Values::Value::REAL { real: timeTotal.clone() })), metamodelica::cons((literal!("timeSimulation"), Arc::new(Values::Value::REAL { real: timeSimulation.clone() })), resultValues.clone())))?;
             Ok((inCache.clone(), simValue.clone()))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -7664,10 +8124,10 @@ fn getClassnamesInClassList(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::
 }
 
 fn joinPaths(mut child: ArcStr, mut parent: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
-    let mut outPath: Arc<Absyn::Path>;
+    let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     outPath = (::match_deref::match_deref! { match &((child.clone(), parent.clone())) {
         (c, r) => {
-            let mut res: Arc<Absyn::Path>;
+            let mut res: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             res = AbsynUtil::joinPaths(r.clone(), Arc::new(Absyn::Path::IDENT { name: (c.clone()).clone() }))?;
             res.clone()
         },
@@ -7690,7 +8150,7 @@ fn getAllClassPathsRecursive(mut inPath: Arc<Absyn::Path>, mut inCheckProtected:
             strlst = getClassnamesInClassList(inPath.clone(), p.clone(), cdef.clone(), b.clone())?;
             result_path_lst = List::map1(strlst.clone(), (std::sync::Arc::new(joinPaths) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> + 'static>), inPath.clone());
             result = List::flatten(List::map2(result_path_lst.clone(), (std::sync::Arc::new(getAllClassPathsRecursive) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, bool, Absyn::Program) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> + 'static>), b.clone(), p.clone()));
-            Ok(cons(inPath.clone(), result.clone()))
+            Ok(metamodelica::cons(inPath.clone(), result.clone()))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
@@ -7763,7 +8223,7 @@ pub fn checkAll(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut allClass
     let mut failed: i32 = failed;
     let mut p: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
     let mut rest: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
-    let mut className: Arc<Absyn::Path>;
+    let mut className: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut r#str: ArcStr = arcstr::literal!("");
     let mut s: ArcStr = arcstr::literal!("");
     let mut smsg: ArcStr = arcstr::literal!("");
@@ -7882,7 +8342,7 @@ fn getAlgorithmsInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc
                 Deref @ metamodelica::List::Cons { head: cp @ Deref @ Absyn::ClassPart::ALGORITHMS { .. }, tail: xs } => {
                     let mut algsList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
                     algsList = getAlgorithmsInClassParts(xs.clone())?;
-                    Ok(cons(cp.clone(), algsList.clone()))
+                    Ok(metamodelica::cons(cp.clone(), algsList.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -7963,7 +8423,7 @@ fn getInitialAlgorithmsInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::L
                 Deref @ metamodelica::List::Cons { head: cp @ Deref @ Absyn::ClassPart::INITIALALGORITHMS { .. }, tail: xs } => {
                     let mut algsList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
                     algsList = getInitialAlgorithmsInClassParts(xs.clone())?;
-                    Ok(cons(cp.clone(), algsList.clone()))
+                    Ok(metamodelica::cons(cp.clone(), algsList.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -8367,7 +8827,7 @@ fn getEquationsInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<
                 Deref @ metamodelica::List::Cons { head: cp @ Deref @ Absyn::ClassPart::EQUATIONS { .. }, tail: xs } => {
                     let mut eqsList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
                     eqsList = getEquationsInClassParts(xs.clone())?;
-                    Ok(cons(cp.clone(), eqsList.clone()))
+                    Ok(metamodelica::cons(cp.clone(), eqsList.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -8448,7 +8908,7 @@ fn getInitialEquationsInClassParts(mut inAbsynClassPartLst: Arc<metamodelica::Li
                 Deref @ metamodelica::List::Cons { head: cp @ Deref @ Absyn::ClassPart::INITIALEQUATIONS { .. }, tail: xs } => {
                     let mut eqsList: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
                     eqsList = getInitialEquationsInClassParts(xs.clone())?;
-                    Ok(cons(cp.clone(), eqsList.clone()))
+                    Ok(metamodelica::cons(cp.clone(), eqsList.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -8935,7 +9395,7 @@ fn unparseGroupImport(mut inAbsynGroupImportLst: Arc<metamodelica::List<Absyn::G
                 Deref @ metamodelica::List::Cons { head: Absyn::GroupImport::GROUP_IMPORT_NAME { name: r#str }, tail: rest } => {
                     let mut lst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     lst = unparseGroupImport(rest.clone())?;
-                    Ok(cons((r#str.clone()).clone(), lst.clone()))
+                    Ok(metamodelica::cons((r#str.clone()).clone(), lst.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -9041,7 +9501,7 @@ fn searchClassNames(mut inVals: Arc<metamodelica::List<Arc<Values::Value>>>, mut
                     position = System::stringFind((System::tolower((r#str.clone()).clone())).clone(), (System::tolower((str1.clone()).clone())).clone())?;
                     let true = (position.clone() > -1) else { bail!("pattern mismatch") };
                     valsList = searchClassNames(xs.clone(), (str1.clone()).clone(), true, p.clone())?;
-                    Ok(cons(val.clone(), valsList.clone()))
+                    Ok(metamodelica::cons(val.clone(), valsList.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -9056,7 +9516,7 @@ fn searchClassNames(mut inVals: Arc<metamodelica::List<Arc<Values::Value>>>, mut
                     position = System::stringFind((System::tolower((r#str.clone()).clone())).clone(), (System::tolower((str1.clone()).clone())).clone())?;
                     let true = (position.clone() > -1) else { bail!("pattern mismatch") };
                     valsList = searchClassNames(xs.clone(), (str1.clone()).clone(), b.clone(), p.clone())?;
-                    Ok(cons(val.clone(), valsList.clone()))
+                    Ok(metamodelica::cons(val.clone(), valsList.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -9242,12 +9702,12 @@ fn getClassInformation(mut path: Arc<Absyn::Path>, mut p: Absyn::Program) -> Res
     let mut isDocClass: bool = false;
     let mut isState: bool = false;
     let mut restr: Absyn::Restriction = Absyn::Restriction::R_BLOCK;
-    let mut cdef: Arc<Absyn::ClassDef>;
+    let mut cdef: Arc<Absyn::ClassDef> = Arc::new(<Absyn::ClassDef as ::std::default::Default>::default());
     let mut sl: i32 = 0;
     let mut sc: i32 = 0;
     let mut el: i32 = 0;
     let mut ec: i32 = 0;
-    let mut classPath: Arc<Absyn::Path>;
+    let mut classPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7, __pa8, __pa9, __pa10, __pa11) = ::match_deref::match_deref! { match &(ProgramUtil::getPathedClassInProgram(path.clone(), p.clone(), false, false)?) {
         Deref @ Absyn::Class { name: __pa0, partialPrefix: __pa1, finalPrefix: __pa2, encapsulatedPrefix: __pa3, restriction: __pa4, body: __pa5, commentsBeforeClass: _, commentsBeforeEnd: _, commentsAfterEnd: _, info: SourceInfo { fileName: __pa6, isReadOnly: __pa7, lineNumberStart: __pa8, columnNumberStart: __pa9, lineNumberEnd: __pa10, columnNumberEnd: __pa11, lastModification: _ } } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone(), __pa10.clone(), __pa11.clone()),
         _ => bail!("pattern mismatch"),
@@ -9389,8 +9849,8 @@ fn getAnnotationInEquationElArgs(mut inElArgLst: Arc<metamodelica::List<Arc<Absy
                 Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { modification: Some(Deref @ Absyn::Modification { elementArgLst: r#mod, eqMod: _ }), path: Deref @ Absyn::Path::IDENT { name: annName }, .. }, tail: rest } => {
                     let mut fargs: Arc<Absyn::FunctionArgs>;
                     let mut p_1: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-                    let mut env: FCore::Graph;
-                    let mut newexp: Arc<DAE::Exp>;
+                    let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+                    let mut newexp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut gexpstr: ArcStr = arcstr::literal!("");
                     let mut res: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
@@ -9405,7 +9865,7 @@ fn getAnnotationInEquationElArgs(mut inElArgLst: Arc<metamodelica::List<Arc<Absy
                     Print::clearErrorBuf();
                     gexpstr = (ExpressionBasics::printExpStr(newexp.clone())?).clone();
                     res = getAnnotationInEquationElArgs(rest.clone())?;
-                    Ok(cons((gexpstr.clone()).clone(), res.clone()))
+                    Ok(metamodelica::cons((gexpstr.clone()).clone(), res.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -9417,7 +9877,7 @@ fn getAnnotationInEquationElArgs(mut inElArgLst: Arc<metamodelica::List<Arc<Absy
                     let mut res: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     gexpstr_1 = stringAppendList(list![(annName.clone()).clone(), (literal!("(error)")).clone()]);
                     res = getAnnotationInEquationElArgs(rest.clone())?;
-                    Ok(cons((gexpstr_1.clone()).clone(), res.clone()))
+                    Ok(metamodelica::cons((gexpstr_1.clone()).clone(), res.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -9665,7 +10125,7 @@ fn addInitialState(mut inPath: Arc<Absyn::Path>, mut state: ArcStr, mut inAbsynN
 fn addInitialStateWithAnnotation(mut inPath: Arc<Absyn::Path>, mut state: ArcStr, mut inAnnotation: Arc<Absyn::Annotation>, mut inProgram: Absyn::Program) -> (bool, Absyn::Program) {
     let mut b: bool = false;
     let mut outProgram: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
-    let mut package_: Arc<Absyn::Path>;
+    let mut package_: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut cdef: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
     let mut newcdef: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
     let mut cmt: Option<Arc<Absyn::Comment>> = None;
@@ -9705,7 +10165,7 @@ fn deleteInitialState(mut inPath: Arc<Absyn::Path>, mut state: ArcStr, mut inPro
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (modelpath, state_, p @ Absyn::Program { .. }) => {
-                    let mut modelwithin: Arc<Absyn::Path>;
+                    let mut modelwithin: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut cdef: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
                     let mut newcdef: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
                     let mut newp: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
@@ -9795,7 +10255,7 @@ fn getComponentInfo(mut comp: Arc<Absyn::Element>, mut inEnv: Interactive::Graph
     let mut vs: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
     vs = (::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ Absyn::Element::ELEMENT { specification: spec @ Deref @ Absyn::ElementSpec::COMPONENTS { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: p, arrayDim: _ }, attributes: attr, .. }, .. } => {
-            let mut p_1: Arc<Absyn::Path>;
+            let mut p_1: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut typename: ArcStr = arcstr::literal!("");
             let mut inout_str: ArcStr = arcstr::literal!("");
             let mut variability_str: ArcStr = arcstr::literal!("");
@@ -9849,7 +10309,7 @@ fn getComponentInfo(mut comp: Arc<Absyn::Element>, mut inEnv: Interactive::Graph
         }
         __acc.reverse()
     }), dims1.clone());
-                vs = cons(makeGetComponentsRecord((typename.clone()).clone(), (name.clone()).clone(), (comment.clone()).clone(), isProtected.clone(), var_field!((*comp).finalPrefix, Absyn::Element::ELEMENT).clone(), attr.flowPrefix.clone(), attr.streamPrefix.clone(), r_1.clone(), (variability_str.clone()).clone(), (inout_str.clone()).clone(), (dir_str.clone()).clone(), dims.clone())?, vs.clone());
+                vs = metamodelica::cons(makeGetComponentsRecord((typename.clone()).clone(), (name.clone()).clone(), (comment.clone()).clone(), isProtected.clone(), var_field!((*comp).finalPrefix, Absyn::Element::ELEMENT).clone(), attr.flowPrefix.clone(), attr.streamPrefix.clone(), r_1.clone(), (variability_str.clone()).clone(), (inout_str.clone()).clone(), (dir_str.clone()).clone(), dims.clone())?, vs.clone());
             }
             vs.clone()
         },
@@ -10203,8 +10663,8 @@ fn convertPackageToLibrary(mut clsPath: Arc<Absyn::Path>, mut libPath: Arc<Absyn
     let mut lib_cls: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
     let mut wi: Absyn::Within = Absyn::Within::TOP;
     let mut uses_version: Option<ArcStr> = None;
-    let mut lib_version: SemanticVersion::Version;
-    let mut lib_version_used: SemanticVersion::Version;
+    let mut lib_version: SemanticVersion::Version = <SemanticVersion::Version as ::std::default::Default>::default();
+    let mut lib_version_used: SemanticVersion::Version = <SemanticVersion::Version as ::std::default::Default>::default();
     let mut conversions: Arc<metamodelica::List<(ArcStr, Option<ArcStr>, Option<ArcStr>)>> = metamodelica::nil();
     let mut scripts: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut lib_name: ArcStr = arcstr::literal!("");
@@ -10270,7 +10730,7 @@ fn findConversionPaths(mut conversions: Arc<metamodelica::List<(ArcStr, Option<A
     }
     for mut c in &*conversions.clone() {
         let mut c = c.clone();
-        paths = cons(findConversionPath(c.clone(), libVersion.clone(), libVersionUsed.clone(), conversions.clone(), depth.clone())?, paths.clone());
+        paths = metamodelica::cons(findConversionPath(c.clone(), libVersion.clone(), libVersionUsed.clone(), conversions.clone(), depth.clone())?, paths.clone());
     }
     for mut p in &*paths.clone() {
         let mut p = p.clone();
@@ -10288,8 +10748,8 @@ fn findConversionPath(mut conversion: (ArcStr, Option<ArcStr>, Option<ArcStr>), 
     let mut from: ArcStr = arcstr::literal!("");
     let mut to: Option<ArcStr> = None;
     let mut script: Option<ArcStr> = None;
-    let mut from_version: SemanticVersion::Version;
-    let mut to_version: SemanticVersion::Version;
+    let mut from_version: SemanticVersion::Version = <SemanticVersion::Version as ::std::default::Default>::default();
+    let mut to_version: SemanticVersion::Version = <SemanticVersion::Version as ::std::default::Default>::default();
     (from, to, script) = conversion.clone();
     if isNone(script.clone()) {
         return Ok(scripts.clone());
@@ -10302,7 +10762,7 @@ fn findConversionPath(mut conversion: (ArcStr, Option<ArcStr>, Option<ArcStr>), 
                 scripts = findConversionPaths(conversions.clone(), libVersion.clone(), to_version.clone(), depth.clone() + 1)?;
             }
         }
-        scripts = cons((Util::getOption(script.clone())?).clone(), scripts.clone());
+        scripts = metamodelica::cons((Util::getOption(script.clone())?).clone(), scripts.clone());
     }
     Ok(scripts)
 }

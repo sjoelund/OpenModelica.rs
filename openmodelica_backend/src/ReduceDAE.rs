@@ -295,7 +295,7 @@ fn meanValueReplacements2(mut inVarRepl: BackendVarTransform::VariableReplacemen
 fn addLabelToEquations(mut inEquationLst1: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut inVarLst: SimCodeVar::SimVars, mut inIndex: (i32, i32), mut reduceList: Arc<metamodelica::List<i32>>, mut inVarRepl: BackendVarTransform::VariableReplacements) -> Result<(Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, SimCodeVar::SimVars, (i32, i32), Arc<metamodelica::List<ArcStr>>)> {
     let mut outEquationLst: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
     let mut outVarLst: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-    let mut outIndex: (i32, i32);
+    let mut outIndex: (i32, i32) = (0, 0);
     let mut outStringList: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     (outEquationLst, outVarLst, outIndex, outStringList) = 'mc: {
         let __mc_input = (inEquationLst1.clone(), inVarLst.clone(), inIndex.clone());
@@ -310,15 +310,15 @@ fn addLabelToEquations(mut inEquationLst1: Arc<metamodelica::List<Arc<SimCode::S
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ SimCode::SimEqSystem::SES_RESIDUAL { index: i, res_index: res_i, exp: e, source, eqAttr }, tail: es }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut es_1: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars_2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels3: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace((literal!("---Replace residuals\n")).clone())?;
                     }
@@ -326,7 +326,7 @@ fn addLabelToEquations(mut inEquationLst1: Arc<metamodelica::List<Arc<SimCode::S
                     (e2, _) = ExpressionSimplify::simplify(e2.clone())?;
                     (es_1, vars_2, idx3, labels2) = addLabelToEquations(es.clone(), vars_1.clone(), idx2.clone(), reduceList.clone(), inVarRepl.clone())?;
                     labels3 = listAppend(labels.clone(), labels2.clone());
-                    Ok((cons(Arc::new(SimCode::SimEqSystem::SES_RESIDUAL { index: i.clone(), res_index: res_i.clone(), exp: e2.clone(), source: source.clone(), eqAttr: eqAttr.clone() }), es_1.clone()), vars_2.clone(), idx3.clone(), labels3.clone()))
+                    Ok((metamodelica::cons(Arc::new(SimCode::SimEqSystem::SES_RESIDUAL { index: i.clone(), res_index: res_i.clone(), exp: e2.clone(), source: source.clone(), eqAttr: eqAttr.clone() }), es_1.clone()), vars_2.clone(), idx3.clone(), labels3.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -334,15 +334,15 @@ fn addLabelToEquations(mut inEquationLst1: Arc<metamodelica::List<Arc<SimCode::S
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN { index: i, cref: cr, exp: e, source, eqAttr }, tail: es }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut es_1: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars_2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels3: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace((literal!("---Replace simple assignments\n")).clone())?;
                     }
@@ -350,7 +350,7 @@ fn addLabelToEquations(mut inEquationLst1: Arc<metamodelica::List<Arc<SimCode::S
                     (e2, _) = ExpressionSimplify::simplify(e2.clone())?;
                     (es_1, vars_2, idx3, labels2) = addLabelToEquations(es.clone(), vars_1.clone(), idx2.clone(), reduceList.clone(), inVarRepl.clone())?;
                     labels3 = listAppend(labels.clone(), labels2.clone());
-                    Ok((cons(Arc::new(SimCode::SimEqSystem::SES_SIMPLE_ASSIGN { index: i.clone(), cref: cr.clone(), exp: e2.clone(), source: source.clone(), eqAttr: eqAttr.clone() }), es_1.clone()), vars_2.clone(), idx3.clone(), labels3.clone()))
+                    Ok((metamodelica::cons(Arc::new(SimCode::SimEqSystem::SES_SIMPLE_ASSIGN { index: i.clone(), cref: cr.clone(), exp: e2.clone(), source: source.clone(), eqAttr: eqAttr.clone() }), es_1.clone()), vars_2.clone(), idx3.clone(), labels3.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -364,8 +364,8 @@ fn addLabelToEquations(mut inEquationLst1: Arc<metamodelica::List<Arc<SimCode::S
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels3: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
                     let mut statements2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace((literal!("---Replace algorithms\n")).clone())?;
@@ -373,7 +373,7 @@ fn addLabelToEquations(mut inEquationLst1: Arc<metamodelica::List<Arc<SimCode::S
                     (statements2, vars_1, idx2, labels) = addLabelToAlgorithms(statements.clone(), vars.clone(), idx.clone(), reduceList.clone(), inVarRepl.clone())?;
                     (es_1, vars_2, idx3, labels2) = addLabelToEquations(es.clone(), vars_1.clone(), idx2.clone(), reduceList.clone(), inVarRepl.clone())?;
                     labels3 = listAppend(labels.clone(), labels2.clone());
-                    Ok((cons(Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: i.clone(), statements: statements2.clone(), eqAttr: eqAttr.clone() }), es_1.clone()), vars_2.clone(), idx3.clone(), labels3.clone()))
+                    Ok((metamodelica::cons(Arc::new(SimCode::SimEqSystem::SES_ALGORITHM { index: i.clone(), statements: statements2.clone(), eqAttr: eqAttr.clone() }), es_1.clone()), vars_2.clone(), idx3.clone(), labels3.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -387,8 +387,8 @@ fn addLabelToEquations(mut inEquationLst1: Arc<metamodelica::List<Arc<SimCode::S
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels3: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
                     let mut A2: Arc<metamodelica::List<(i32, i32, Arc<SimCode::SimEqSystem>)>> = metamodelica::nil();
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace((literal!("---Replace linear equation systems\n")).clone())?;
@@ -396,7 +396,7 @@ fn addLabelToEquations(mut inEquationLst1: Arc<metamodelica::List<Arc<SimCode::S
                     (A2, vars_1, idx2, labels) = addLabelToLinearEquationSystems(A.clone(), vars.clone(), idx.clone(), reduceList.clone(), inVarRepl.clone())?;
                     (es_1, vars_2, idx3, labels2) = addLabelToEquations(es.clone(), vars_1.clone(), idx2.clone(), reduceList.clone(), inVarRepl.clone())?;
                     labels3 = listAppend(labels.clone(), labels2.clone());
-                    Ok((cons(Arc::new(SimCode::SimEqSystem::SES_LINEAR { lSystem: Arc::new(SimCode::LinearSystem { index: i.clone(), partOfMixed: partOfLinear.clone(), tornSystem: tornSystem.clone(), vars: varsLin.clone(), beqs: b.clone(), simJac: A2.clone(), residual: residual.clone(), jacobianMatrix: jacobianMatrix.clone(), sources: sourcelist.clone(), indexLinearSystem: idxLS.clone(), nUnknowns: nUnknownsLS.clone(), partOfJac: partOfJac.clone() }), alternativeTearing: None, eqAttr: eqAttr.clone() }), es_1.clone()), vars_2.clone(), idx3.clone(), labels3.clone()))
+                    Ok((metamodelica::cons(Arc::new(SimCode::SimEqSystem::SES_LINEAR { lSystem: Arc::new(SimCode::LinearSystem { index: i.clone(), partOfMixed: partOfLinear.clone(), tornSystem: tornSystem.clone(), vars: varsLin.clone(), beqs: b.clone(), simJac: A2.clone(), residual: residual.clone(), jacobianMatrix: jacobianMatrix.clone(), sources: sourcelist.clone(), indexLinearSystem: idxLS.clone(), nUnknowns: nUnknownsLS.clone(), partOfJac: partOfJac.clone() }), alternativeTearing: None, eqAttr: eqAttr.clone() }), es_1.clone()), vars_2.clone(), idx3.clone(), labels3.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -411,15 +411,15 @@ fn addLabelToEquations(mut inEquationLst1: Arc<metamodelica::List<Arc<SimCode::S
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels3: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace((literal!("---Replace non-linear equation systems\n")).clone())?;
                     }
                     (nl_1, vars_1, idx2, labels) = addLabelToEquations(nl.clone(), vars.clone(), idx.clone(), reduceList.clone(), inVarRepl.clone())?;
                     (es_1, vars_2, idx3, labels2) = addLabelToEquations(es.clone(), vars_1.clone(), idx2.clone(), reduceList.clone(), inVarRepl.clone())?;
                     labels3 = listAppend(labels.clone(), labels2.clone());
-                    Ok((cons(Arc::new(SimCode::SimEqSystem::SES_NONLINEAR { nlSystem: Arc::new(SimCode::NonlinearSystem { clockIndex: clockIndex.clone(), tornSystem: false, mixedSystem: false, homotopySupport: false, jacobianMatrix: jacobianMatrix.clone(), nUnknowns: nUnknownsNLS.clone(), indexNonLinearSystem: idxNLS.clone(), crefs: crefs.clone(), eqs: nl_1.clone(), index: i.clone() }), alternativeTearing: None, eqAttr: eqAttr.clone() }), es_1.clone()), vars_2.clone(), idx3.clone(), labels3.clone()))
+                    Ok((metamodelica::cons(Arc::new(SimCode::SimEqSystem::SES_NONLINEAR { nlSystem: Arc::new(SimCode::NonlinearSystem { clockIndex: clockIndex.clone(), tornSystem: false, mixedSystem: false, homotopySupport: false, jacobianMatrix: jacobianMatrix.clone(), nUnknowns: nUnknownsNLS.clone(), indexNonLinearSystem: idxNLS.clone(), crefs: crefs.clone(), eqs: nl_1.clone(), index: i.clone() }), alternativeTearing: None, eqAttr: eqAttr.clone() }), es_1.clone()), vars_2.clone(), idx3.clone(), labels3.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -428,14 +428,14 @@ fn addLabelToEquations(mut inEquationLst1: Arc<metamodelica::List<Arc<SimCode::S
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: Deref @ SimCode::SimEqSystem::SES_MIXED { index: i, cont, discVars, discEqs: disc, indexMixedSystem: indexSys, eqAttr }, tail: es }, vars, idx) => {
                     let mut es_1: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
-                    let mut cont_1: Arc<SimCode::SimEqSystem>;
+                    let mut cont_1: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars_2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels3: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace((literal!("---Replace mixed equation systems\n")).clone())?;
                     }
@@ -449,7 +449,7 @@ fn addLabelToEquations(mut inEquationLst1: Arc<metamodelica::List<Arc<SimCode::S
                     labels = __pa3.clone();
                     (es_1, vars_2, idx3, labels2) = addLabelToEquations(es.clone(), vars_1.clone(), idx2.clone(), reduceList.clone(), inVarRepl.clone())?;
                     labels3 = listAppend(labels.clone(), labels2.clone());
-                    Ok((cons(Arc::new(SimCode::SimEqSystem::SES_MIXED { index: i.clone(), cont: cont_1.clone(), discVars: discVars.clone(), discEqs: disc.clone(), indexMixedSystem: indexSys.clone(), eqAttr: eqAttr.clone() }), es_1.clone()), vars_2.clone(), idx3.clone(), labels3.clone()))
+                    Ok((metamodelica::cons(Arc::new(SimCode::SimEqSystem::SES_MIXED { index: i.clone(), cont: cont_1.clone(), discVars: discVars.clone(), discEqs: disc.clone(), indexMixedSystem: indexSys.clone(), eqAttr: eqAttr.clone() }), es_1.clone()), vars_2.clone(), idx3.clone(), labels3.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -460,12 +460,12 @@ fn addLabelToEquations(mut inEquationLst1: Arc<metamodelica::List<Arc<SimCode::S
                     let mut es_1: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut idx2: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace((literal!("---Replace when equations without else statement\n")).clone())?;
                     }
                     (es_1, vars_1, idx2, labels) = addLabelToEquations(es.clone(), vars.clone(), idx.clone(), reduceList.clone(), inVarRepl.clone())?;
-                    Ok((cons(Arc::new(SimCode::SimEqSystem::SES_WHEN { index: i.clone(), conditions: conditions.clone(), initialCall: initialCall.clone(), whenStmtLst: whenStmtLst.clone(), elseWhen: None, source: source.clone(), eqAttr: eqAttr.clone() }), es_1.clone()), vars_1.clone(), idx2.clone(), labels.clone()))
+                    Ok((metamodelica::cons(Arc::new(SimCode::SimEqSystem::SES_WHEN { index: i.clone(), conditions: conditions.clone(), initialCall: initialCall.clone(), whenStmtLst: whenStmtLst.clone(), elseWhen: None, source: source.clone(), eqAttr: eqAttr.clone() }), es_1.clone()), vars_1.clone(), idx2.clone(), labels.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -479,8 +479,8 @@ fn addLabelToEquations(mut inEquationLst1: Arc<metamodelica::List<Arc<SimCode::S
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels3: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
                     let mut elsePart = (*elsePart).clone();
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace((literal!("---Replace when equations with else statement\n")).clone())?;
@@ -495,7 +495,7 @@ fn addLabelToEquations(mut inEquationLst1: Arc<metamodelica::List<Arc<SimCode::S
                     labels = __pa3.clone();
                     (es_1, vars_2, idx3, labels2) = addLabelToEquations(es.clone(), vars_1.clone(), idx2.clone(), reduceList.clone(), inVarRepl.clone())?;
                     labels3 = listAppend(labels.clone(), labels2.clone());
-                    Ok((cons(Arc::new(SimCode::SimEqSystem::SES_WHEN { index: i.clone(), conditions: conditions.clone(), initialCall: initialCall.clone(), whenStmtLst: whenStmtLst.clone(), elseWhen: Some(elsePart.clone()), source: source.clone(), eqAttr: eqAttr.clone() }), es_1.clone()), vars_2.clone(), idx3.clone(), labels3.clone()))
+                    Ok((metamodelica::cons(Arc::new(SimCode::SimEqSystem::SES_WHEN { index: i.clone(), conditions: conditions.clone(), initialCall: initialCall.clone(), whenStmtLst: whenStmtLst.clone(), elseWhen: Some(elsePart.clone()), source: source.clone(), eqAttr: eqAttr.clone() }), es_1.clone()), vars_2.clone(), idx3.clone(), labels3.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -506,12 +506,12 @@ fn addLabelToEquations(mut inEquationLst1: Arc<metamodelica::List<Arc<SimCode::S
                     let mut es_1: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut idx2: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace((literal!("---Replace unknown equations\n")).clone())?;
                     }
                     (es_1, vars_1, idx2, labels) = addLabelToEquations(es.clone(), vars.clone(), idx.clone(), reduceList.clone(), inVarRepl.clone())?;
-                    Ok((cons(eq.clone(), es_1.clone()), vars_1.clone(), idx2.clone(), labels.clone()))
+                    Ok((metamodelica::cons(eq.clone(), es_1.clone()), vars_1.clone(), idx2.clone(), labels.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -524,7 +524,7 @@ fn addLabelToEquations(mut inEquationLst1: Arc<metamodelica::List<Arc<SimCode::S
 fn addLabelToAlgorithms(mut inStatements: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut inVarLst: SimCodeVar::SimVars, mut inIndex: (i32, i32), mut reduceList: Arc<metamodelica::List<i32>>, mut inVarRepl: BackendVarTransform::VariableReplacements) -> Result<(Arc<metamodelica::List<Arc<DAE::Statement>>>, SimCodeVar::SimVars, (i32, i32), Arc<metamodelica::List<ArcStr>>)> {
     let mut outStatements: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
     let mut outVarLst: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-    let mut outIndex: (i32, i32);
+    let mut outIndex: (i32, i32) = (0, 0);
     let mut outStringList: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     (outStatements, outVarLst, outIndex, outStringList) = 'mc: {
         let __mc_input = (inStatements.clone(), inVarLst.clone(), inIndex.clone());
@@ -544,20 +544,20 @@ fn addLabelToAlgorithms(mut inStatements: Arc<metamodelica::List<Arc<DAE::Statem
                 (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_ASSIGN { type_: ty, exp1: e1, exp: e, source }, tail: rest }, vars, idx) => {
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars_2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
                     let mut rest2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels3: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace((literal!("---Replace assignment algorithm\n")).clone())?;
                     }
                     (e2, vars_1, idx2, labels) = addLabelToExp(e.clone(), vars.clone(), idx.clone(), true, reduceList.clone(), inVarRepl.clone())?;
                     (rest2, vars_2, idx3, labels2) = addLabelToAlgorithms(rest.clone(), vars_1.clone(), idx2.clone(), reduceList.clone(), inVarRepl.clone())?;
                     labels3 = listAppend(labels.clone(), labels2.clone());
-                    Ok((cons(Arc::new(DAE::Statement::STMT_ASSIGN { type_: ty.clone(), exp1: e1.clone(), exp: e2.clone(), source: source.clone() }), rest2.clone()), vars_2.clone(), idx3.clone(), labels3.clone()))
+                    Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_ASSIGN { type_: ty.clone(), exp1: e1.clone(), exp: e2.clone(), source: source.clone() }), rest2.clone()), vars_2.clone(), idx3.clone(), labels3.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -567,8 +567,8 @@ fn addLabelToAlgorithms(mut inStatements: Arc<metamodelica::List<Arc<DAE::Statem
                 (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_IF { exp: e, statementLst: stmtLst, else_, source }, tail: rest }, vars, idx) => {
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars_2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
                     let mut rest2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let mut stmtLst2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -580,7 +580,7 @@ fn addLabelToAlgorithms(mut inStatements: Arc<metamodelica::List<Arc<DAE::Statem
                     (stmtLst2, vars_1, idx2, labels) = addLabelToAlgorithms(stmtLst.clone(), vars.clone(), idx.clone(), reduceList.clone(), inVarRepl.clone())?;
                     (rest2, vars_2, idx3, labels2) = addLabelToAlgorithms(rest.clone(), vars_1.clone(), idx2.clone(), reduceList.clone(), inVarRepl.clone())?;
                     labels3 = listAppend(labels.clone(), labels2.clone());
-                    Ok((cons(Arc::new(DAE::Statement::STMT_IF { exp: e.clone(), statementLst: stmtLst2.clone(), else_: else_.clone(), source: source.clone() }), rest2.clone()), vars_2.clone(), idx3.clone(), labels3.clone()))
+                    Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_IF { exp: e.clone(), statementLst: stmtLst2.clone(), else_: else_.clone(), source: source.clone() }), rest2.clone()), vars_2.clone(), idx3.clone(), labels3.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -590,8 +590,8 @@ fn addLabelToAlgorithms(mut inStatements: Arc<metamodelica::List<Arc<DAE::Statem
                 (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_FOR { type_: ty, iterIsArray, iter, range: e, statementLst: stmtLst, source }, tail: rest }, vars, idx) => {
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars_2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
                     let mut rest2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let mut stmtLst2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -603,7 +603,7 @@ fn addLabelToAlgorithms(mut inStatements: Arc<metamodelica::List<Arc<DAE::Statem
                     (stmtLst2, vars_1, idx2, labels) = addLabelToAlgorithms(stmtLst.clone(), vars.clone(), idx.clone(), reduceList.clone(), inVarRepl.clone())?;
                     (rest2, vars_2, idx3, labels2) = addLabelToAlgorithms(rest.clone(), vars_1.clone(), idx2.clone(), reduceList.clone(), inVarRepl.clone())?;
                     labels3 = listAppend(labels.clone(), labels2.clone());
-                    Ok((cons(Arc::new(DAE::Statement::STMT_FOR { type_: ty.clone(), iterIsArray: iterIsArray.clone(), iter: (iter.clone()).clone(), range: e.clone(), statementLst: stmtLst2.clone(), source: source.clone() }), rest2.clone()), vars_2.clone(), idx3.clone(), labels3.clone()))
+                    Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_FOR { type_: ty.clone(), iterIsArray: iterIsArray.clone(), iter: (iter.clone()).clone(), range: e.clone(), statementLst: stmtLst2.clone(), source: source.clone() }), rest2.clone()), vars_2.clone(), idx3.clone(), labels3.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -613,8 +613,8 @@ fn addLabelToAlgorithms(mut inStatements: Arc<metamodelica::List<Arc<DAE::Statem
                 (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_WHILE { exp: e, statementLst: stmtLst, source }, tail: rest }, vars, idx) => {
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars_2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
                     let mut rest2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let mut stmtLst2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -626,7 +626,7 @@ fn addLabelToAlgorithms(mut inStatements: Arc<metamodelica::List<Arc<DAE::Statem
                     (stmtLst2, vars_1, idx2, labels) = addLabelToAlgorithms(stmtLst.clone(), vars.clone(), idx.clone(), reduceList.clone(), inVarRepl.clone())?;
                     (rest2, vars_2, idx3, labels2) = addLabelToAlgorithms(rest.clone(), vars_1.clone(), idx2.clone(), reduceList.clone(), inVarRepl.clone())?;
                     labels3 = listAppend(labels.clone(), labels2.clone());
-                    Ok((cons(Arc::new(DAE::Statement::STMT_WHILE { exp: e.clone(), statementLst: stmtLst2.clone(), source: source.clone() }), rest2.clone()), vars_2.clone(), idx3.clone(), labels3.clone()))
+                    Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_WHILE { exp: e.clone(), statementLst: stmtLst2.clone(), source: source.clone() }), rest2.clone()), vars_2.clone(), idx3.clone(), labels3.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -636,8 +636,8 @@ fn addLabelToAlgorithms(mut inStatements: Arc<metamodelica::List<Arc<DAE::Statem
                 (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Statement::STMT_WHEN { exp: e, conditions, initialCall, statementLst: stmtLst, elseWhen: None, source }, tail: rest }, vars, idx) => {
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars_2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
                     let mut rest2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let mut stmtLst2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -649,7 +649,7 @@ fn addLabelToAlgorithms(mut inStatements: Arc<metamodelica::List<Arc<DAE::Statem
                     (stmtLst2, vars_1, idx2, labels) = addLabelToAlgorithms(stmtLst.clone(), vars.clone(), idx.clone(), reduceList.clone(), inVarRepl.clone())?;
                     (rest2, vars_2, idx3, labels2) = addLabelToAlgorithms(rest.clone(), vars_1.clone(), idx2.clone(), reduceList.clone(), inVarRepl.clone())?;
                     labels3 = listAppend(labels.clone(), labels2.clone());
-                    Ok((cons(Arc::new(DAE::Statement::STMT_WHEN { exp: e.clone(), conditions: conditions.clone(), initialCall: initialCall.clone(), statementLst: stmtLst2.clone(), elseWhen: None, source: source.clone() }), rest2.clone()), vars_2.clone(), idx3.clone(), labels3.clone()))
+                    Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_WHEN { exp: e.clone(), conditions: conditions.clone(), initialCall: initialCall.clone(), statementLst: stmtLst2.clone(), elseWhen: None, source: source.clone() }), rest2.clone()), vars_2.clone(), idx3.clone(), labels3.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -660,9 +660,9 @@ fn addLabelToAlgorithms(mut inStatements: Arc<metamodelica::List<Arc<DAE::Statem
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars_2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars_3: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
-                    let mut idx4: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
+                    let mut idx4: (i32, i32) = (0, 0);
                     let mut rest2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let mut stmtLst2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -670,7 +670,7 @@ fn addLabelToAlgorithms(mut inStatements: Arc<metamodelica::List<Arc<DAE::Statem
                     let mut labels3: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels4: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels5: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut elseWhen2: Arc<DAE::Statement>;
+                    let mut elseWhen2: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace((literal!("---Replace when algorithm with else statement\n")).clone())?;
                     }
@@ -686,7 +686,7 @@ fn addLabelToAlgorithms(mut inStatements: Arc<metamodelica::List<Arc<DAE::Statem
                     (rest2, vars_3, idx4, labels3) = addLabelToAlgorithms(rest.clone(), vars_2.clone(), idx3.clone(), reduceList.clone(), inVarRepl.clone())?;
                     labels4 = listAppend(labels.clone(), labels2.clone());
                     labels5 = listAppend(labels4.clone(), labels3.clone());
-                    Ok((cons(Arc::new(DAE::Statement::STMT_WHEN { exp: e.clone(), conditions: conditions.clone(), initialCall: initialCall.clone(), statementLst: stmtLst2.clone(), elseWhen: Some(elseWhen2.clone()), source: source.clone() }), rest2.clone()), vars_3.clone(), idx4.clone(), labels5.clone()))
+                    Ok((metamodelica::cons(Arc::new(DAE::Statement::STMT_WHEN { exp: e.clone(), conditions: conditions.clone(), initialCall: initialCall.clone(), statementLst: stmtLst2.clone(), elseWhen: Some(elseWhen2.clone()), source: source.clone() }), rest2.clone()), vars_3.clone(), idx4.clone(), labels5.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -695,14 +695,14 @@ fn addLabelToAlgorithms(mut inStatements: Arc<metamodelica::List<Arc<DAE::Statem
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: stmt, tail: rest }, vars, idx) => {
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx2: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
                     let mut rest2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace((literal!("---Replace other algorithm\n")).clone())?;
                     }
                     (rest2, vars_1, idx2, labels) = addLabelToAlgorithms(rest.clone(), vars.clone(), idx.clone(), reduceList.clone(), inVarRepl.clone())?;
-                    Ok((cons(stmt.clone(), rest2.clone()), vars_1.clone(), idx2.clone(), labels.clone()))
+                    Ok((metamodelica::cons(stmt.clone(), rest2.clone()), vars_1.clone(), idx2.clone(), labels.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -755,7 +755,7 @@ end addLabelToElse;
 fn addLabelToLinearEquationSystems(mut inLinear: Arc<metamodelica::List<(i32, i32, Arc<SimCode::SimEqSystem>)>>, mut inVarLst: SimCodeVar::SimVars, mut inIndex: (i32, i32), mut reduceList: Arc<metamodelica::List<i32>>, mut inVarRepl: BackendVarTransform::VariableReplacements) -> Result<(Arc<metamodelica::List<(i32, i32, Arc<SimCode::SimEqSystem>)>>, SimCodeVar::SimVars, (i32, i32), Arc<metamodelica::List<ArcStr>>)> {
     let mut outLinear: Arc<metamodelica::List<(i32, i32, Arc<SimCode::SimEqSystem>)>> = metamodelica::nil();
     let mut outVarLst: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-    let mut outIndex: (i32, i32);
+    let mut outIndex: (i32, i32) = (0, 0);
     let mut outStringList: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     (outLinear, outVarLst, outIndex, outStringList) = (::match_deref::match_deref! { match &((inLinear.clone(), inVarLst.clone(), inIndex.clone())) {
         (Deref @ metamodelica::List::Nil, vars, idx) => {
@@ -764,9 +764,9 @@ fn addLabelToLinearEquationSystems(mut inLinear: Arc<metamodelica::List<(i32, i3
         (Deref @ metamodelica::List::Cons { head: (i, j, el), tail: rest }, vars, idx) => {
             let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
             let mut vars_2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-            let mut idx2: (i32, i32);
-            let mut idx3: (i32, i32);
-            let mut el2: Arc<SimCode::SimEqSystem>;
+            let mut idx2: (i32, i32) = (0, 0);
+            let mut idx3: (i32, i32) = (0, 0);
+            let mut el2: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
             let mut rest2: Arc<metamodelica::List<(i32, i32, Arc<SimCode::SimEqSystem>)>> = metamodelica::nil();
             let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -781,7 +781,7 @@ fn addLabelToLinearEquationSystems(mut inLinear: Arc<metamodelica::List<(i32, i3
             labels = __pa3.clone();
             (rest2, vars_2, idx3, labels2) = addLabelToLinearEquationSystems(rest.clone(), vars_1.clone(), idx2.clone(), reduceList.clone(), inVarRepl.clone())?;
             labels3 = listAppend(labels.clone(), labels2.clone());
-            (cons((i.clone(), j.clone(), el2.clone()), rest2.clone()), vars_2.clone(), idx3.clone(), labels3.clone())
+            (metamodelica::cons((i.clone(), j.clone(), el2.clone()), rest2.clone()), vars_2.clone(), idx3.clone(), labels3.clone())
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -789,17 +789,17 @@ fn addLabelToLinearEquationSystems(mut inLinear: Arc<metamodelica::List<(i32, i3
 }
 
 fn addLabelToExp(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar::SimVars, mut inIntdex: (i32, i32), mut add: bool, mut reduceList: Arc<metamodelica::List<i32>>, mut inVarRepl: BackendVarTransform::VariableReplacements) -> Result<(Arc<DAE::Exp>, SimCodeVar::SimVars, (i32, i32), Arc<metamodelica::List<ArcStr>>)> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outVarLst: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-    let mut outIntdex: (i32, i32);
+    let mut outIntdex: (i32, i32) = (0, 0);
     let mut outStringList: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     (outExp, outVarLst, outIntdex, outStringList) = 'mc: {
         let __mc_input = inVarRepl.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut e: Arc<DAE::Exp>;
+            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut vars: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-            let mut idx: (i32, i32);
+            let mut idx: (i32, i32) = (0, 0);
             let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             ::match_deref::match_deref! { match &(Flags::getConfigString(Flags::REDUCTION_METHOD.clone())?) {
                 Deref @ "deletion" => (),
@@ -810,9 +810,9 @@ fn addLabelToExp(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar::SimVars, m
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut e: Arc<DAE::Exp>;
+            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut vars: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-            let mut idx: (i32, i32);
+            let mut idx: (i32, i32) = (0, 0);
             let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             ::match_deref::match_deref! { match &(Flags::getConfigString(Flags::REDUCTION_METHOD.clone())?) {
                 Deref @ "substitution" => (),
@@ -823,9 +823,9 @@ fn addLabelToExp(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar::SimVars, m
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut e: Arc<DAE::Exp>;
+            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut vars: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-            let mut idx: (i32, i32);
+            let mut idx: (i32, i32) = (0, 0);
             let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             ::match_deref::match_deref! { match &(Flags::getConfigString(Flags::REDUCTION_METHOD.clone())?) {
                 Deref @ "linearization" => (),
@@ -840,24 +840,24 @@ fn addLabelToExp(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar::SimVars, m
 }
 
 fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar::SimVars, mut inIntdex: (i32, i32), mut add: bool, mut reduceList: Arc<metamodelica::List<i32>>) -> Result<(Arc<DAE::Exp>, SimCodeVar::SimVars, (i32, i32), Arc<metamodelica::List<ArcStr>>)> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outVarLst: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-    let mut outIntdex: (i32, i32);
+    let mut outIntdex: (i32, i32) = (0, 0);
     let mut outStringList: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     (outExp, outVarLst, outIntdex, outStringList) = 'mc: {
         let __mc_input = (inExp1.clone(), inVarLst.clone(), inIntdex.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::BINARY { exp2: e2, operator: op @ DAE::Operator::ADD { .. }, exp1: e1 }, vars, idx) => {
-                    let mut e1_1: Arc<DAE::Exp>;
-                    let mut e2_1: Arc<DAE::Exp>;
-                    let mut e3: Arc<DAE::Exp>;
+                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars_2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars_3: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
-                    let mut idx4: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
+                    let mut idx4: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels3: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -883,15 +883,15 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::BINARY { exp2: e2, operator: op @ DAE::Operator::SUB { .. }, exp1: e1 }, vars, idx) => {
-                    let mut e1_1: Arc<DAE::Exp>;
-                    let mut e2_1: Arc<DAE::Exp>;
-                    let mut e3: Arc<DAE::Exp>;
+                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars_2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars_3: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
-                    let mut idx4: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
+                    let mut idx4: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels3: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -917,15 +917,15 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::BINARY { exp2: e2, operator: op @ DAE::Operator::MUL { .. }, exp1: e1 }, vars, idx) => {
-                    let mut e1_1: Arc<DAE::Exp>;
-                    let mut e2_1: Arc<DAE::Exp>;
-                    let mut e3: Arc<DAE::Exp>;
+                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars_2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars_3: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
-                    let mut idx4: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
+                    let mut idx4: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels3: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -947,9 +947,9 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::BINARY { exp2: e2, operator: op @ DAE::Operator::DIV { .. }, exp1: e1 }, vars, idx) => {
-                    let mut e1_1: Arc<DAE::Exp>;
+                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx2: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Add label to div exp ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
@@ -963,15 +963,15 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::BINARY { exp2: e2, operator: op @ DAE::Operator::POW { .. }, exp1: e1 }, vars, idx) => {
-                    let mut e1_1: Arc<DAE::Exp>;
-                    let mut e2_1: Arc<DAE::Exp>;
-                    let mut e3: Arc<DAE::Exp>;
+                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars_2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars_3: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
-                    let mut idx4: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
+                    let mut idx4: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels3: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -997,9 +997,9 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::UNARY { exp: e1, operator: op }, vars, idx) => {
-                    let mut e1_1: Arc<DAE::Exp>;
+                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx2: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Add label to unary exp ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
@@ -1024,12 +1024,12 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::IFEXP { expElse: e3, expThen: e2, expCond: e1 }, vars, idx) => {
-                    let mut e2_1: Arc<DAE::Exp>;
-                    let mut e3_1: Arc<DAE::Exp>;
+                    let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars_2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels3: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -1047,9 +1047,9 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "pre" }, .. }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace((literal!("add no label to pre arguments\n")).clone())?;
@@ -1063,9 +1063,9 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "edge" }, .. }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace((literal!("add no label to edge arguments\n")).clone())?;
@@ -1079,9 +1079,9 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "change" }, .. }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace((literal!("add no label to change arguments\n")).clone())?;
@@ -1095,9 +1095,9 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "sample" }, .. }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace((literal!("add no label to sample arguments\n")).clone())?;
@@ -1111,9 +1111,9 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "noEvent" }, .. }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace((literal!("add no label for no event arguments\n")).clone())?;
@@ -1127,15 +1127,15 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { attr, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "max" } }, vars, idx) => {
-                    let mut e1_1: Arc<DAE::Exp>;
-                    let mut e2_1: Arc<DAE::Exp>;
-                    let mut e3: Arc<DAE::Exp>;
+                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars_2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars_3: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
-                    let mut idx4: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
+                    let mut idx4: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels3: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -1157,15 +1157,15 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { attr, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "min" } }, vars, idx) => {
-                    let mut e1_1: Arc<DAE::Exp>;
-                    let mut e2_1: Arc<DAE::Exp>;
-                    let mut e3: Arc<DAE::Exp>;
+                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars_2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars_3: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
-                    let mut idx4: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
+                    let mut idx4: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels3: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -1187,12 +1187,12 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { attr, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "abs" } }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
-                    let mut e3: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars_2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels3: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -1214,12 +1214,12 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { attr, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "sqrt" } }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
-                    let mut e3: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars_2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels3: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -1241,9 +1241,9 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { attr, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "sin" } }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx2: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Add label to sin exp ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
@@ -1257,12 +1257,12 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { attr, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "cos" } }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
-                    let mut e3: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars_2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels3: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -1280,9 +1280,9 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { attr, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "asin" } }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx2: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Add label to sin exp ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
@@ -1296,12 +1296,12 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { attr, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "acos" } }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
-                    let mut e3: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars_2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels3: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -1319,9 +1319,9 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { attr, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "tan" } }, vars, idx) => {
-                    let mut e1_1: Arc<DAE::Exp>;
+                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx2: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Add label to tan exp ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
@@ -1335,9 +1335,9 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { attr, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "atan" } }, vars, idx) => {
-                    let mut e1_1: Arc<DAE::Exp>;
+                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx2: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Add label to atan exp ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
@@ -1351,12 +1351,12 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { attr, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "exp" } }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
-                    let mut e3: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars_2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels3: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -1374,9 +1374,9 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { attr, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "div" } }, vars, idx) => {
-                    let mut e1_1: Arc<DAE::Exp>;
+                    let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx2: (i32, i32);
+                    let mut idx2: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Add label to div exp ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
@@ -1413,9 +1413,9 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::RCONST { real: _ }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Add label to real const variable ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
@@ -1441,9 +1441,9 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::ICONST { integer: _ }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Add label to integer const variable ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
@@ -1501,9 +1501,9 @@ fn addLabelToExpForDeletion(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CREF { componentRef: _, ty: _ }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Add label to variable ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
@@ -1564,16 +1564,16 @@ algorithm
 end addLabelToExpList;
 */
 fn addOneLabel(mut inExp1: Arc<DAE::Exp>, mut add: bool, mut inIndex: (i32, i32), mut inVarLst: SimCodeVar::SimVars, mut reduceList: Arc<metamodelica::List<i32>>) -> Result<(Arc<DAE::Exp>, SimCodeVar::SimVars, (i32, i32), Arc<metamodelica::List<ArcStr>>)> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outVarLst: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-    let mut outIndex: (i32, i32);
+    let mut outIndex: (i32, i32) = (0, 0);
     let mut outStringList: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     (outExp, outVarLst, outIndex, outStringList) = 'mc: {
         let __mc_input = (inExp1.clone(), add.clone(), inIndex.clone(), inVarLst.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e, true, (i, p), vars) => {
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut i_1: i32 = 0;
                     let true = (Flags::getConfigBool(Flags::REDUCE_TERMS.clone())?) else { bail!("pattern mismatch") };
                     let true = (List::contains(reduceList.clone(), i.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
@@ -1587,7 +1587,7 @@ fn addOneLabel(mut inExp1: Arc<DAE::Exp>, mut add: bool, mut inIndex: (i32, i32)
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e, true, (i, p), vars) => {
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut i_1: i32 = 0;
                     let true = (Flags::getConfigBool(Flags::REDUCE_TERMS.clone())?) else { bail!("pattern mismatch") };
                     e2 = Expression::expMul(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) }), e.clone())?;
@@ -1600,7 +1600,7 @@ fn addOneLabel(mut inExp1: Arc<DAE::Exp>, mut add: bool, mut inIndex: (i32, i32)
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e, true, (i, p), vars) => {
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut name: ArcStr = arcstr::literal!("");
                     let mut name1: ArcStr = arcstr::literal!("");
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
@@ -1630,18 +1630,18 @@ fn addOneLabel(mut inExp1: Arc<DAE::Exp>, mut add: bool, mut inIndex: (i32, i32)
 }
 
 fn addLabelToExpForLinearization(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar::SimVars, mut inIndex: (i32, i32), mut reduceList: Arc<metamodelica::List<i32>>, mut inVarRepl: BackendVarTransform::VariableReplacements) -> Result<(Arc<DAE::Exp>, SimCodeVar::SimVars, (i32, i32), Arc<metamodelica::List<ArcStr>>)> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outVarLst: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-    let mut outIndex: (i32, i32);
+    let mut outIndex: (i32, i32) = (0, 0);
     let mut outStringList: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     (outExp, outVarLst, outIndex, outStringList) = 'mc: {
         let __mc_input = (inExp1.clone(), inVarLst.clone(), inIndex.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::BINARY { exp2: e2, operator: DAE::Operator::POW { ty: tp }, exp1: e1 }, vars, idx) => {
-                    let mut e3: Arc<DAE::Exp>;
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let true = (Expression::expHasCrefs(e1.clone())?) else { bail!("pattern mismatch") };
                     let false = (Expression::expHasCrefs(e2.clone())?) else { bail!("pattern mismatch") };
@@ -1657,14 +1657,14 @@ fn addLabelToExpForLinearization(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCod
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::BINARY { exp2: e2, operator: DAE::Operator::POW { ty: tp }, exp1: e1 }, vars, idx) => {
-                    let mut e3: Arc<DAE::Exp>;
-                    let mut e4: Arc<DAE::Exp>;
-                    let mut e5: Arc<DAE::Exp>;
-                    let mut e6: Arc<DAE::Exp>;
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e5: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e6: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
-                    let mut idx2: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
+                    let mut idx2: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -1686,12 +1686,12 @@ fn addLabelToExpForLinearization(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCod
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::BINARY { exp2: e2, operator: op, exp1: e1 }, vars, idx) => {
-                    let mut e3: Arc<DAE::Exp>;
-                    let mut e4: Arc<DAE::Exp>;
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
-                    let mut idx2: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
+                    let mut idx2: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -1709,9 +1709,9 @@ fn addLabelToExpForLinearization(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCod
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::UNARY { exp: e1, operator: op }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                         Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Add label to unary exp ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
@@ -1725,12 +1725,12 @@ fn addLabelToExpForLinearization(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCod
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::IFEXP { expElse: e3, expThen: e2, expCond: e1 }, vars, idx) => {
-                    let mut e4: Arc<DAE::Exp>;
-                    let mut e5: Arc<DAE::Exp>;
+                    let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e5: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
-                    let mut idx2: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
+                    let mut idx2: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -1748,14 +1748,14 @@ fn addLabelToExpForLinearization(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCod
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { attr, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "sin" } }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
-                    let mut e3: Arc<DAE::Exp>;
-                    let mut e4: Arc<DAE::Exp>;
-                    let mut e5: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e5: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
-                    let mut idx2: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
+                    let mut idx2: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -1776,14 +1776,14 @@ fn addLabelToExpForLinearization(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCod
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { attr, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "cos" } }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
-                    let mut e3: Arc<DAE::Exp>;
-                    let mut e4: Arc<DAE::Exp>;
-                    let mut e5: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e5: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
-                    let mut idx2: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
+                    let mut idx2: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -1804,14 +1804,14 @@ fn addLabelToExpForLinearization(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCod
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { attr, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "tan" } }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
-                    let mut e3: Arc<DAE::Exp>;
-                    let mut e4: Arc<DAE::Exp>;
-                    let mut e5: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e5: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
-                    let mut idx2: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
+                    let mut idx2: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -1832,14 +1832,14 @@ fn addLabelToExpForLinearization(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCod
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { attr, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "asin" } }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
-                    let mut e3: Arc<DAE::Exp>;
-                    let mut e4: Arc<DAE::Exp>;
-                    let mut e5: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e5: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
-                    let mut idx2: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
+                    let mut idx2: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -1860,14 +1860,14 @@ fn addLabelToExpForLinearization(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCod
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { attr, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "acos" } }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
-                    let mut e3: Arc<DAE::Exp>;
-                    let mut e4: Arc<DAE::Exp>;
-                    let mut e5: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e5: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
-                    let mut idx2: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
+                    let mut idx2: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -1888,14 +1888,14 @@ fn addLabelToExpForLinearization(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCod
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { attr, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "atan" } }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
-                    let mut e3: Arc<DAE::Exp>;
-                    let mut e4: Arc<DAE::Exp>;
-                    let mut e5: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e5: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
-                    let mut idx2: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
+                    let mut idx2: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -1916,14 +1916,14 @@ fn addLabelToExpForLinearization(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCod
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { attr, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "exp" } }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
-                    let mut e3: Arc<DAE::Exp>;
-                    let mut e4: Arc<DAE::Exp>;
-                    let mut e5: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e5: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
-                    let mut idx2: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
+                    let mut idx2: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -1944,14 +1944,14 @@ fn addLabelToExpForLinearization(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCod
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { attr, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "log" } }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
-                    let mut e3: Arc<DAE::Exp>;
-                    let mut e4: Arc<DAE::Exp>;
-                    let mut e5: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e5: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
-                    let mut idx2: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
+                    let mut idx2: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -1972,14 +1972,14 @@ fn addLabelToExpForLinearization(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCod
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { attr, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "sqrt" } }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
-                    let mut e3: Arc<DAE::Exp>;
-                    let mut e4: Arc<DAE::Exp>;
-                    let mut e5: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e5: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
-                    let mut idx2: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
+                    let mut idx2: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -2011,18 +2011,18 @@ fn addLabelToExpForLinearization(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCod
 }
 
 fn addTwoLabels(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut label: bool, mut inVarLst: SimCodeVar::SimVars, mut inIndex: (i32, i32), mut reduceList: Arc<metamodelica::List<i32>>) -> Result<(Arc<DAE::Exp>, SimCodeVar::SimVars, (i32, i32), Arc<metamodelica::List<ArcStr>>)> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outVarLst: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-    let mut outIndex: (i32, i32);
+    let mut outIndex: (i32, i32) = (0, 0);
     let mut outStringList: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     (outExp, outVarLst, outIndex, outStringList) = 'mc: {
         let __mc_input = (inExp1.clone(), inExp2.clone(), label.clone(), inVarLst.clone(), inIndex.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e1, e2, true, vars, (i, p)) => {
-                    let mut e3: Arc<DAE::Exp>;
-                    let mut e4: Arc<DAE::Exp>;
-                    let mut e5: Arc<DAE::Exp>;
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e5: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut i_1: i32 = 0;
                     let true = (Flags::getConfigBool(Flags::REDUCE_TERMS.clone())?) else { bail!("pattern mismatch") };
                     let true = (List::contains(reduceList.clone(), i.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
@@ -2038,9 +2038,9 @@ fn addTwoLabels(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut label:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e1, e2, true, vars, (i, p)) => {
-                    let mut e3: Arc<DAE::Exp>;
-                    let mut e4: Arc<DAE::Exp>;
-                    let mut e5: Arc<DAE::Exp>;
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e5: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut i_1: i32 = 0;
                     let true = (Flags::getConfigBool(Flags::REDUCE_TERMS.clone())?) else { bail!("pattern mismatch") };
                     e3 = Expression::expMul(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) }), e1.clone())?;
@@ -2055,9 +2055,9 @@ fn addTwoLabels(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut label:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e1, e2, true, vars, (i, p)) => {
-                    let mut e3: Arc<DAE::Exp>;
-                    let mut e4: Arc<DAE::Exp>;
-                    let mut e5: Arc<DAE::Exp>;
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e5: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut i_1: i32 = 0;
                     let mut p_1: i32 = 0;
                     let mut vars_1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
@@ -2091,16 +2091,16 @@ fn addTwoLabels(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut label:
 }
 
 fn linearizeExp(mut inExp: Arc<DAE::Exp>, mut source: Arc<DAE::Exp>, mut inVarLst: SimCodeVar::SimVars, mut inVarRepl: BackendVarTransform::VariableReplacements) -> Result<Arc<DAE::Exp>> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     outExp = (::match_deref::match_deref! { match &((inExp.clone(), source.clone(), inVarRepl.clone())) {
         (e1, e2, repl) => {
-            let mut e: Arc<DAE::Exp>;
-            let mut e3: Arc<DAE::Exp>;
-            let mut e4: Arc<DAE::Exp>;
-            let mut e5: Arc<DAE::Exp>;
-            let mut e6: Arc<DAE::Exp>;
-            let mut tmpExp: Arc<DAE::Exp>;
-            let mut replExp: Arc<DAE::Exp>;
+            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e5: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e6: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut tmpExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut replExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut tmp: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             (replExp, _) = BackendVarTransform::replaceExp(e2.clone(), repl.clone(), None)?;
             (e, _) = Expression::replaceExp(e1.clone(), e2.clone(), replExp.clone())?;
@@ -2118,9 +2118,9 @@ fn linearizeExp(mut inExp: Arc<DAE::Exp>, mut source: Arc<DAE::Exp>, mut inVarLs
 }
 
 fn addLabelToExpForSubstitution(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCodeVar::SimVars, mut inIndex: (i32, i32), mut reduceList: Arc<metamodelica::List<i32>>, mut inVarRepl: BackendVarTransform::VariableReplacements) -> Result<(Arc<DAE::Exp>, SimCodeVar::SimVars, (i32, i32), Arc<metamodelica::List<ArcStr>>, bool)> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outVarLst: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-    let mut outIndex: (i32, i32);
+    let mut outIndex: (i32, i32) = (0, 0);
     let mut outStringList: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut substitute: bool = false;
     (outExp, outVarLst, outIndex, outStringList, substitute) = 'mc: {
@@ -2128,16 +2128,16 @@ fn addLabelToExpForSubstitution(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCode
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::BINARY { exp2: e2, operator: op, exp1: e1 }, vars, idx) => {
-                    let mut ex: Arc<DAE::Exp>;
-                    let mut e3: Arc<DAE::Exp>;
-                    let mut e4: Arc<DAE::Exp>;
-                    let mut e5: Arc<DAE::Exp>;
+                    let mut ex: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e5: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars3: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -2170,9 +2170,9 @@ fn addLabelToExpForSubstitution(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCode
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::UNARY { exp: e1, operator: op }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut subs: bool = false;
                     if Flags::isSet(Flags::REDUCE_DAE.clone())? {
@@ -2187,12 +2187,12 @@ fn addLabelToExpForSubstitution(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCode
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::IFEXP { expElse: e3, expThen: e2, expCond: e1 }, vars, idx) => {
-                    let mut e4: Arc<DAE::Exp>;
-                    let mut e5: Arc<DAE::Exp>;
+                    let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e5: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
-                    let mut idx2: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
+                    let mut idx2: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -2210,16 +2210,16 @@ fn addLabelToExpForSubstitution(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCode
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { attr, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "max" } }, vars, idx) => {
-                    let mut ex: Arc<DAE::Exp>;
-                    let mut e3: Arc<DAE::Exp>;
-                    let mut e4: Arc<DAE::Exp>;
-                    let mut e5: Arc<DAE::Exp>;
+                    let mut ex: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e5: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars3: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -2252,16 +2252,16 @@ fn addLabelToExpForSubstitution(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCode
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { attr, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "min" } }, vars, idx) => {
-                    let mut ex: Arc<DAE::Exp>;
-                    let mut e3: Arc<DAE::Exp>;
-                    let mut e4: Arc<DAE::Exp>;
-                    let mut e5: Arc<DAE::Exp>;
+                    let mut ex: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e5: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars3: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -2294,9 +2294,9 @@ fn addLabelToExpForSubstitution(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCode
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "abs" }, .. }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut subs: bool = false;
                     ::match_deref::match_deref! { match &(substituteExp(e.clone(), inVarRepl.clone())?) {
@@ -2315,9 +2315,9 @@ fn addLabelToExpForSubstitution(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCode
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "sqrt" }, .. }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut subs: bool = false;
                     ::match_deref::match_deref! { match &(substituteExp(e.clone(), inVarRepl.clone())?) {
@@ -2336,9 +2336,9 @@ fn addLabelToExpForSubstitution(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCode
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "sin" }, .. }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut subs: bool = false;
                     ::match_deref::match_deref! { match &(substituteExp(e.clone(), inVarRepl.clone())?) {
@@ -2357,9 +2357,9 @@ fn addLabelToExpForSubstitution(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCode
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "cos" }, .. }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut subs: bool = false;
                     ::match_deref::match_deref! { match &(substituteExp(e.clone(), inVarRepl.clone())?) {
@@ -2378,9 +2378,9 @@ fn addLabelToExpForSubstitution(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCode
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "tan" }, .. }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut subs: bool = false;
                     ::match_deref::match_deref! { match &(substituteExp(e.clone(), inVarRepl.clone())?) {
@@ -2399,9 +2399,9 @@ fn addLabelToExpForSubstitution(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCode
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "asin" }, .. }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut subs: bool = false;
                     ::match_deref::match_deref! { match &(substituteExp(e.clone(), inVarRepl.clone())?) {
@@ -2420,9 +2420,9 @@ fn addLabelToExpForSubstitution(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCode
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "acos" }, .. }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut subs: bool = false;
                     ::match_deref::match_deref! { match &(substituteExp(e.clone(), inVarRepl.clone())?) {
@@ -2441,9 +2441,9 @@ fn addLabelToExpForSubstitution(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCode
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "atan" }, .. }, vars, idx) => {
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut subs: bool = false;
                     ::match_deref::match_deref! { match &(substituteExp(e.clone(), inVarRepl.clone())?) {
@@ -2462,10 +2462,10 @@ fn addLabelToExpForSubstitution(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCode
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "exp" }, .. }, vars, idx) => {
-                    let mut ex: Arc<DAE::Exp>;
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut ex: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut subs: bool = false;
                     let __pa0 = ::match_deref::match_deref! { match &(substituteExp(e.clone(), inVarRepl.clone())?) {
@@ -2485,16 +2485,16 @@ fn addLabelToExpForSubstitution(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCode
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CALL { attr, expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "div" } }, vars, idx) => {
-                    let mut ex: Arc<DAE::Exp>;
-                    let mut e3: Arc<DAE::Exp>;
-                    let mut e4: Arc<DAE::Exp>;
-                    let mut e5: Arc<DAE::Exp>;
+                    let mut ex: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e5: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars2: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
                     let mut vars3: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
-                    let mut idx2: (i32, i32);
-                    let mut idx3: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
+                    let mut idx2: (i32, i32) = (0, 0);
+                    let mut idx3: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut labels2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -2527,10 +2527,10 @@ fn addLabelToExpForSubstitution(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCode
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CREF { componentRef: _, ty: Deref @ DAE::Type::T_INTEGER { varLst: _ } }, vars, idx) => {
-                    let mut e1: Arc<DAE::Exp>;
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let __pa0 = ::match_deref::match_deref! { match &(substituteExp(e.clone(), inVarRepl.clone())?) {
                         (__pa0, true) => __pa0.clone(),
@@ -2549,10 +2549,10 @@ fn addLabelToExpForSubstitution(mut inExp1: Arc<DAE::Exp>, mut inVarLst: SimCode
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (e @ Deref @ DAE::Exp::CREF { componentRef: _, ty: Deref @ DAE::Type::T_REAL { varLst: _ } }, vars, idx) => {
-                    let mut e1: Arc<DAE::Exp>;
-                    let mut e2: Arc<DAE::Exp>;
+                    let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vars1: SimCodeVar::SimVars = <SimCodeVar::SimVars as ::std::default::Default>::default();
-                    let mut idx1: (i32, i32);
+                    let mut idx1: (i32, i32) = (0, 0);
                     let mut labels: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let __pa0 = ::match_deref::match_deref! { match &(substituteExp(e.clone(), inVarRepl.clone())?) {
                         (__pa0, true) => __pa0.clone(),
@@ -2615,11 +2615,11 @@ algorithm
 end addLabelToExpListForSubstitution;
 */
 fn substituteExp(mut inExp: Arc<DAE::Exp>, mut inVarRepl: BackendVarTransform::VariableReplacements) -> Result<(Arc<DAE::Exp>, bool)> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut replPerformed: bool = false;
     (outExp, replPerformed) = (::match_deref::match_deref! { match &((inExp.clone(), inVarRepl.clone())) {
         (e, repl) => {
-            let mut e1: Arc<DAE::Exp>;
+            let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             (e1, replPerformed) = BackendVarTransform::replaceExp(e.clone(), repl.clone(), None)?;
             (e1.clone(), replPerformed.clone())
         },
@@ -2629,10 +2629,10 @@ fn substituteExp(mut inExp: Arc<DAE::Exp>, mut inVarRepl: BackendVarTransform::V
 }
 
 fn multiply(mut inExp: Arc<DAE::Exp>, mut inString: ArcStr) -> Result<Arc<DAE::Exp>> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     outExp = (::match_deref::match_deref! { match &((inExp.clone(), inString.clone())) {
         (e, name) => {
-            let mut e2: Arc<DAE::Exp>;
+            let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             e2 = Expression::expMul(Arc::new(DAE::Exp::CREF { componentRef: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name.clone()).clone(), identType: DAE::T_REAL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), ty: DAE::T_REAL_DEFAULT().clone() }), e.clone())?;
             if Flags::isSet(Flags::REDUCE_DAE.clone())? {
                 Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("generate label  ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e2.clone())?); __mm_s.push_str(&*literal!(" for term ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(e.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
@@ -2664,10 +2664,10 @@ fn createLabelVar(mut inVariables: SimCodeVar::SimVars, mut inInteger: i32, mut 
             name2 = (stringAppend((name.clone()).clone(), (literal!("_2")).clone())).clone();
             simVar_1 = SimCodeVar::SimVar { name: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name1.clone()).clone(), identType: DAE::T_REAL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), varKind: crate::BackendDAE::VarKind::PARAM, comment: (literal!("")).clone(), unit: (literal!("")).clone(), displayUnit: (literal!("")).clone(), index: p.clone(), minValue: None, maxValue: None, initialValue: Some(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) })), nominalValue: None, isFixed: true, type_: DAE::T_REAL_DEFAULT().clone(), isDiscrete: false, arrayCref: None, aliasvar: crate::SimCodeVar::AliasVariable::NOALIAS, source: DAE::emptyElementSource().clone(), causality: Some(crate::SimCodeVar::Causality::LOCAL), variable_index: None, fmi_index: None, numArrayElement: metamodelica::nil(), isValueChangeable: false, isProtected: false, hideResult: None, isEncrypted: false, inputIndex: None, initNonlinear: false, matrixName: None, variability: None, initial_: None, exportVar: None, relativeQuantity: false };
             param = param.clone().reverse();
-            param_1 = cons(simVar_1.clone(), param.clone());
+            param_1 = metamodelica::cons(simVar_1.clone(), param.clone());
             p = p.clone() + 1;
             simVar_2 = SimCodeVar::SimVar { name: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name2.clone()).clone(), identType: DAE::T_REAL_DEFAULT().clone(), subscriptLst: metamodelica::nil() }), varKind: crate::BackendDAE::VarKind::PARAM, comment: (literal!("")).clone(), unit: (literal!("")).clone(), displayUnit: (literal!("")).clone(), index: p.clone(), minValue: None, maxValue: None, initialValue: Some(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) })), nominalValue: None, isFixed: true, type_: DAE::T_REAL_DEFAULT().clone(), isDiscrete: false, arrayCref: None, aliasvar: crate::SimCodeVar::AliasVariable::NOALIAS, source: DAE::emptyElementSource().clone(), causality: Some(crate::SimCodeVar::Causality::LOCAL), variable_index: None, fmi_index: None, numArrayElement: metamodelica::nil(), isValueChangeable: false, isProtected: false, hideResult: None, isEncrypted: false, inputIndex: None, initNonlinear: false, matrixName: None, variability: None, initial_: None, exportVar: None, relativeQuantity: false };
-            param_2 = cons(simVar_2.clone(), param_1.clone());
+            param_2 = metamodelica::cons(simVar_2.clone(), param_1.clone());
             param_2 = param_2.clone().reverse();
             (SimCodeVar::SimVars { stateVars: states.clone(), derivativeVars: derVar.clone(), algVars: alg.clone(), discreteAlgVars: disAlg.clone(), intAlgVars: intAlg.clone(), boolAlgVars: boolAlg.clone(), inputVars: inVar.clone(), outputVars: outVar.clone(), aliasVars: algAlias.clone(), intAliasVars: intAlias.clone(), boolAliasVars: boolAlias.clone(), paramVars: param_2.clone(), intParamVars: intParam.clone(), boolParamVars: boolParam.clone(), stringAlgVars: stringAlg.clone(), stringParamVars: stringParam.clone(), stringAliasVars: stringAlias.clone(), extObjVars: extObjVar.clone(), constVars: r#const.clone(), intConstVars: intConst.clone(), boolConstVars: boolConst.clone(), stringConstVars: stringConst.clone(), jacobianVars: jacobianVar.clone(), seedVars: seedVar.clone(), realOptimizeConstraintsVars: realOptConst.clone(), realOptimizeFinalConstraintsVars: realOptFinalConst.clone(), sensitivityVars: sensVar.clone(), dataReconSetcVars: setcVar.clone(), dataReconinputVars: datareconinputvar.clone(), dataReconSetBVars: setBVar.clone() }, name.clone())
         },

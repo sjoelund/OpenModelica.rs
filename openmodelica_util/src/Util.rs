@@ -459,14 +459,14 @@ pub fn stringSplitAtChar(mut string: ArcStr, mut token: ArcStr) -> Result<Arc<me
     for mut c in &*stringListStringChar((string.clone()).clone()) {
         let mut c = c.clone();
         if stringCharInt((c.clone()).clone())? == ch.clone() {
-            strings = cons(stringAppendList(cur.clone().reverse()), strings.clone());
+            strings = metamodelica::cons(stringAppendList(cur.clone().reverse()), strings.clone());
             cur = metamodelica::nil();
         } else {
-            cur = cons((c.clone()).clone(), cur.clone());
+            cur = metamodelica::cons((c.clone()).clone(), cur.clone());
         }
     }
     if !(cur.clone().is_empty()) {
-        strings = cons(stringAppendList(cur.clone().reverse()), strings.clone());
+        strings = metamodelica::cons(stringAppendList(cur.clone().reverse()), strings.clone());
     }
     strings = strings.clone().reverse();
     Ok(strings)
@@ -1364,7 +1364,7 @@ pub fn applyTuple31<T1: Clone + 'static, T2: Clone + 'static, T3: Clone + 'stati
 
 pub fn referenceCompare<T1: Clone + 'static, T2: Clone + 'static>(mut ref1: T1, mut ref2: T2) -> i32 {
     let mut result: i32 = 0;
-    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("referenceCompareExt"), lang: Some("C"), output_: Some(CREF_IDENT { name: "result", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "ref1", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "ref2", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Include" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "\n  static inline int referenceCompareExt(void *ref1, void *ref2)\n  {\n    return (ref1 < ref2) ? -1 : (ref1 > ref2);\n  }\n" }, info: SourceInfo { fileName: "/home/martin/OpenModelica/OMCompiler/Compiler/Util/Util.mo", isReadOnly: false, lineNumberStart: 1650, columnNumberStart: 73, lineNumberEnd: 1655, columnNumberEnd: 1, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/home/martin/OpenModelica/OMCompiler/Compiler/Util/Util.mo", isReadOnly: false, lineNumberStart: 1650, columnNumberStart: 66, lineNumberEnd: 1655, columnNumberEnd: 1, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
+    todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("referenceCompareExt"), lang: Some("C"), output_: Some(CREF_IDENT { name: "result", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "ref1", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "ref2", subscripts: Nil } }, tail: Nil } }, annotation_: Some(Annotation { elementArgs: Cons { head: MODIFICATION { finalPrefix: false, eachPrefix: NON_EACH, path: IDENT { name: "Include" }, modification: Some(Modification { elementArgLst: Nil, eqMod: EQMOD { exp: STRING { value: "\n  static inline int referenceCompareExt(void *ref1, void *ref2)\n  {\n    return (ref1 < ref2) ? -1 : (ref1 > ref2);\n  }\n" }, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Util.mo", isReadOnly: false, lineNumberStart: 1650, columnNumberStart: 73, lineNumberEnd: 1655, columnNumberEnd: 1, lastModification: 0.0 } } }), comment: None, info: SourceInfo { fileName: "/projects/OpenModelica/OMCompiler/Compiler/Util/Util.mo", isReadOnly: false, lineNumberStart: 1650, columnNumberStart: 66, lineNumberEnd: 1655, columnNumberEnd: 1, lastModification: 0.0 } }, tail: Nil } }) }, annotation: None }
     result
 }
 

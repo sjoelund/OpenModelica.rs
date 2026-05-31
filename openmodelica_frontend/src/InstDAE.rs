@@ -136,7 +136,7 @@ fn showDAE(mut inCache: FCore::Cache, mut inParentEnv: FCore::Graph, mut inClass
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut r#str: ArcStr = arcstr::literal!("");
             let mut sstr: ArcStr = arcstr::literal!("");
-            let mut comp: Arc<DAE::Element>;
+            let mut comp: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
             let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
             let mut els: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
             els = DAEUtil::daeElements(inDAE.clone())?;
@@ -319,7 +319,7 @@ fn daeDeclare2(mut inComponentRef: Arc<DAE::ComponentRef>, mut inType: Arc<DAE::
             ::match_deref::match_deref! { match &__mc_input {
                 (vn, tty @ Deref @ DAE::Type::T_FUNCTION { .. }, ct, kind, dir, daePrl, prot, e, inst_dims, _, dae_var_attr, comment, _) => {
                     let mut finst_dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
-                    let mut path: Arc<Absyn::Path>;
+                    let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut tty = (*tty).clone();
                     finst_dims = List::flatten(inst_dims.clone());
                     path = ComponentReference::crefToPath(vn.clone())?;

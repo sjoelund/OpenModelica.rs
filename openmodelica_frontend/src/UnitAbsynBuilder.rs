@@ -99,8 +99,8 @@ fn retrieveUnitsFromEnv(mut p: Arc<Absyn::Path>, mut tpl: (FCore::Cache, FCore::
         let __mc_input = tpl.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut env: FCore::Graph;
-            let mut r: metamodelica::Array<FCore::Node>;
+            let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+            let mut r: metamodelica::Array<FCore::Node> = Default::default();
             let mut du: Arc<metamodelica::List<Arc<SCode::Element>>> = du.clone();
             (_, _, env) = Lookup::lookupClass(Util::tuple21(tpl.clone()), Util::tuple22(tpl.clone()), p.clone(), None)?;
             r = FGraph::lastScopeRef(env.clone())?;
@@ -206,7 +206,7 @@ pub fn registerUnits(mut prg: Absyn::Program) -> Result<()> {
 }
 
 fn registerUnitInClass(mut inTpl: (Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, i32)) -> Result<(Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, i32)> {
-    let mut outTpl: (Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, i32);
+    let mut outTpl: (Arc<Absyn::Class>, Option<Arc<Absyn::Path>>, i32) = (Arc::new(<Absyn::Class as ::std::default::Default>::default()), None, 0);
     outTpl = 'mc: {
         let __mc_input = inTpl.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -453,7 +453,7 @@ fn emptyInstStore2(mut wantInstStore: bool) -> UnitAbsyn::InstStore {
 
 pub fn emptyStore() -> UnitAbsyn::Store {
     let mut st: UnitAbsyn::Store = <UnitAbsyn::Store as ::std::default::Default>::default();
-    let mut vector: metamodelica::Array<Option<UnitAbsyn::Unit>>;
+    let mut vector: metamodelica::Array<Option<UnitAbsyn::Unit>> = Default::default();
     vector = arrayCreate(10, None);
     st = UnitAbsyn::Store { storeVector: vector.clone(), numElts: 0 };
     st
@@ -667,7 +667,7 @@ pub fn splitRationals(mut inRationals: Arc<metamodelica::List<MMath::Rational>>)
         },
         Deref @ metamodelica::List::Cons { head: MMath::Rational { nom: i1, denom: i2 }, tail: rationals } => {
             (nums, denoms) = splitRationals(rationals.clone())?;
-            (cons(i1.clone(), nums.clone()), cons(i2.clone(), denoms.clone()))
+            (metamodelica::cons(i1.clone(), nums.clone()), metamodelica::cons(i2.clone(), denoms.clone()))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -682,7 +682,7 @@ pub fn joinRationals(mut inums: Arc<metamodelica::List<i32>>, mut idenoms: Arc<m
         },
         (Deref @ metamodelica::List::Cons { head: i1, tail: nums }, Deref @ metamodelica::List::Cons { head: i2, tail: denoms }) => {
             rationals = joinRationals(nums.clone(), denoms.clone())?;
-            cons(MMath::Rational { nom: i1.clone(), denom: i2.clone() }, rationals.clone())
+            metamodelica::cons(MMath::Rational { nom: i1.clone(), denom: i2.clone() }, rationals.clone())
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -701,7 +701,7 @@ pub fn joinTypeParams(mut inums: Arc<metamodelica::List<i32>>, mut idenoms: Arc<
             typeParams = joinTypeParams(nums.clone(), denoms.clone(), tpstrs.clone(), funcInstIdOpt.clone())?;
             s = (Util::applyOptionOrDefault(funcInstIdOpt.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!("")).clone())).clone();
             tpParam = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tpParam.clone()); __mm_s.push_str(&*s.clone()); ArcStr::from(__mm_s) }).clone();
-            cons((MMath::Rational { nom: i1.clone(), denom: i2.clone() }, UnitAbsyn::TypeParameter { name: (tpParam.clone()).clone(), indx: 0 }), typeParams.clone())
+            metamodelica::cons((MMath::Rational { nom: i1.clone(), denom: i2.clone() }, UnitAbsyn::TypeParameter { name: (tpParam.clone()).clone(), indx: 0 }), typeParams.clone())
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -718,7 +718,7 @@ pub fn splitTypeParams(mut iTypeParams: Arc<metamodelica::List<(MMath::Rational,
         },
         Deref @ metamodelica::List::Cons { head: (MMath::Rational { nom: i1, denom: i2 }, UnitAbsyn::TypeParameter { name: tpParam, indx: _ }), tail: typeParams } => {
             (nums, denoms, tpstrs) = splitTypeParams(typeParams.clone())?;
-            (cons(i1.clone(), nums.clone()), cons(i2.clone(), denoms.clone()), cons((tpParam.clone()).clone(), tpstrs.clone()))
+            (metamodelica::cons(i1.clone(), nums.clone()), metamodelica::cons(i2.clone(), denoms.clone()), metamodelica::cons((tpParam.clone()).clone(), tpstrs.clone()))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -954,7 +954,7 @@ fn createTypeParameterLocations4(mut iparams: Arc<metamodelica::List<(MMath::Rat
                     cref_ = ComponentReferenceBasics::makeCrefIdent((name.clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil());
                     indx = BaseHashTable::get(cref_.clone(), ht.clone())?;
                     (params, ht, nextElt) = createTypeParameterLocations4(params.clone(), ht.clone(), nextElt.clone())?;
-                    Ok((cons((r.clone(), UnitAbsyn::TypeParameter { name: (name.clone()).clone(), indx: indx.clone() }), params.clone()), ht.clone(), nextElt.clone()))
+                    Ok((metamodelica::cons((r.clone(), UnitAbsyn::TypeParameter { name: (name.clone()).clone(), indx: indx.clone() }), params.clone()), ht.clone(), nextElt.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -969,7 +969,7 @@ fn createTypeParameterLocations4(mut iparams: Arc<metamodelica::List<(MMath::Rat
                     cref_ = ComponentReferenceBasics::makeCrefIdent((name.clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil());
                     ht = BaseHashTable::add((cref_.clone(), nextElt.clone()), ht.clone())?;
                     (params, ht, nextElt) = createTypeParameterLocations4(params.clone(), ht.clone(), nextElt.clone())?;
-                    Ok((cons((r.clone(), UnitAbsyn::TypeParameter { name: (name.clone()).clone(), indx: nextElt.clone() }), params.clone()), ht.clone(), nextElt.clone() + 1))
+                    Ok((metamodelica::cons((r.clone(), UnitAbsyn::TypeParameter { name: (name.clone()).clone(), indx: nextElt.clone() }), params.clone()), ht.clone(), nextElt.clone() + 1))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -981,7 +981,7 @@ fn createTypeParameterLocations4(mut iparams: Arc<metamodelica::List<(MMath::Rat
                     let mut ht = (*ht).clone();
                     let mut nextElt = (*nextElt).clone();
                     (params, ht, nextElt) = createTypeParameterLocations4(params.clone(), ht.clone(), nextElt.clone())?;
-                    Ok((cons(param.clone(), params.clone()), ht.clone(), nextElt.clone()))
+                    Ok((metamodelica::cons(param.clone(), params.clone()), ht.clone(), nextElt.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1034,7 +1034,7 @@ fn buildTerms(mut env: FCore::Graph, mut dae: DAE::DAElist, mut ht: (metamodelic
                     (ut2, terms2, store) = buildTermExp(env.clone(), e2.clone(), false, ht.clone(), store.clone())?;
                     (terms, store) = buildTerms(env.clone(), DAE::DAElist { elementLst: elts.clone() }, ht.clone(), store.clone())?;
                     terms = listAppend(terms1.clone(), listAppend(terms2.clone(), terms.clone()));
-                    Ok((cons(Arc::new(UnitAbsyn::UnitTerm::EQN { ut1: ut1.clone(), ut2: ut2.clone(), origExp: Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::SUB { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: e2.clone() }) }), terms.clone()), store.clone()))
+                    Ok((metamodelica::cons(Arc::new(UnitAbsyn::UnitTerm::EQN { ut1: ut1.clone(), ut2: ut2.clone(), origExp: Arc::new(DAE::Exp::BINARY { exp1: e1.clone(), operator: DAE::Operator::SUB { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: e2.clone() }) }), terms.clone()), store.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1042,8 +1042,8 @@ fn buildTerms(mut env: FCore::Graph, mut dae: DAE::DAElist, mut ht: (metamodelic
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::DAElist { elementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::EQUEQUATION { cr1, cr2, source: _ }, tail: elts } }, store) => {
-                    let mut crefExp1: Arc<DAE::Exp>;
-                    let mut crefExp2: Arc<DAE::Exp>;
+                    let mut crefExp1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut crefExp2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut ut1: Arc<UnitAbsyn::UnitTerm>;
                     let mut ut2: Arc<UnitAbsyn::UnitTerm>;
                     let mut terms1: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
@@ -1056,7 +1056,7 @@ fn buildTerms(mut env: FCore::Graph, mut dae: DAE::DAElist, mut ht: (metamodelic
                     (ut2, terms2, store) = buildTermExp(env.clone(), crefExp2.clone(), false, ht.clone(), store.clone())?;
                     (terms, store) = buildTerms(env.clone(), DAE::DAElist { elementLst: elts.clone() }, ht.clone(), store.clone())?;
                     terms = listAppend(terms1.clone(), listAppend(terms2.clone(), terms.clone()));
-                    Ok((cons(Arc::new(UnitAbsyn::UnitTerm::EQN { ut1: ut1.clone(), ut2: ut2.clone(), origExp: Arc::new(DAE::Exp::BINARY { exp1: crefExp1.clone(), operator: DAE::Operator::SUB { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: crefExp2.clone() }) }), terms.clone()), store.clone()))
+                    Ok((metamodelica::cons(Arc::new(UnitAbsyn::UnitTerm::EQN { ut1: ut1.clone(), ut2: ut2.clone(), origExp: Arc::new(DAE::Exp::BINARY { exp1: crefExp1.clone(), operator: DAE::Operator::SUB { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: crefExp2.clone() }) }), terms.clone()), store.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1064,7 +1064,7 @@ fn buildTerms(mut env: FCore::Graph, mut dae: DAE::DAElist, mut ht: (metamodelic
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::DAElist { elementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::VAR { binding: Some(e1), componentRef: cr1 @ Deref @ DAE::ComponentRef::CREF_IDENT { ident: _, identType: _, subscriptLst: _ }, .. }, tail: elts } }, store) => {
-                    let mut crefExp1: Arc<DAE::Exp>;
+                    let mut crefExp1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut ut1: Arc<UnitAbsyn::UnitTerm>;
                     let mut ut2: Arc<UnitAbsyn::UnitTerm>;
                     let mut terms1: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
@@ -1076,7 +1076,7 @@ fn buildTerms(mut env: FCore::Graph, mut dae: DAE::DAElist, mut ht: (metamodelic
                     (ut2, terms2, store) = buildTermExp(env.clone(), e1.clone(), false, ht.clone(), store.clone())?;
                     (terms, store) = buildTerms(env.clone(), DAE::DAElist { elementLst: elts.clone() }, ht.clone(), store.clone())?;
                     terms = listAppend(terms1.clone(), listAppend(terms2.clone(), terms.clone()));
-                    Ok((cons(Arc::new(UnitAbsyn::UnitTerm::EQN { ut1: ut1.clone(), ut2: ut2.clone(), origExp: Arc::new(DAE::Exp::BINARY { exp1: crefExp1.clone(), operator: DAE::Operator::SUB { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: e1.clone() }) }), terms.clone()), store.clone()))
+                    Ok((metamodelica::cons(Arc::new(UnitAbsyn::UnitTerm::EQN { ut1: ut1.clone(), ut2: ut2.clone(), origExp: Arc::new(DAE::Exp::BINARY { exp1: crefExp1.clone(), operator: DAE::Operator::SUB { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: e1.clone() }) }), terms.clone()), store.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1084,7 +1084,7 @@ fn buildTerms(mut env: FCore::Graph, mut dae: DAE::DAElist, mut ht: (metamodelic
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (DAE::DAElist { elementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::DEFINE { componentRef: cr1, exp: e1, source: _ }, tail: elts } }, store) => {
-                    let mut crefExp1: Arc<DAE::Exp>;
+                    let mut crefExp1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut ut1: Arc<UnitAbsyn::UnitTerm>;
                     let mut ut2: Arc<UnitAbsyn::UnitTerm>;
                     let mut terms1: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = metamodelica::nil();
@@ -1096,7 +1096,7 @@ fn buildTerms(mut env: FCore::Graph, mut dae: DAE::DAElist, mut ht: (metamodelic
                     (ut2, terms2, store) = buildTermExp(env.clone(), e1.clone(), false, ht.clone(), store.clone())?;
                     (terms, store) = buildTerms(env.clone(), DAE::DAElist { elementLst: elts.clone() }, ht.clone(), store.clone())?;
                     terms = listAppend(terms1.clone(), listAppend(terms2.clone(), terms.clone()));
-                    Ok((cons(Arc::new(UnitAbsyn::UnitTerm::EQN { ut1: ut1.clone(), ut2: ut2.clone(), origExp: Arc::new(DAE::Exp::BINARY { exp1: crefExp1.clone(), operator: DAE::Operator::SUB { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: e1.clone() }) }), terms.clone()), store.clone()))
+                    Ok((metamodelica::cons(Arc::new(UnitAbsyn::UnitTerm::EQN { ut1: ut1.clone(), ut2: ut2.clone(), origExp: Arc::new(DAE::Exp::BINARY { exp1: crefExp1.clone(), operator: DAE::Operator::SUB { ty: DAE::T_REAL_DEFAULT().clone() }, exp2: e1.clone() }) }), terms.clone()), store.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1385,8 +1385,8 @@ fn buildArrayElementTerms(mut iuts: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTe
     let mut ut2: Arc<UnitAbsyn::UnitTerm>;
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut rest_expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = iexpl.clone();
-    let mut e1: Arc<DAE::Exp>;
-    let mut e2: Arc<DAE::Exp>;
+    let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     while !(rest_ut.clone().is_empty()) {
         let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(rest_ut.clone()) {
             Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: __pa2 } } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
@@ -1403,7 +1403,7 @@ fn buildArrayElementTerms(mut iuts: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTe
         e2 = __pa5.clone();
         rest_expl = __pa6.clone();
         ty = Expression::r#typeof(e1.clone())?;
-        outUts = cons(Arc::new(UnitAbsyn::UnitTerm::EQN { ut1: ut1.clone(), ut2: ut2.clone(), origExp: Arc::new(DAE::Exp::ARRAY { ty: ty.clone(), scalar: true, array: list![e1.clone(), e2.clone()] }) }), outUts.clone());
+        outUts = metamodelica::cons(Arc::new(UnitAbsyn::UnitTerm::EQN { ut1: ut1.clone(), ut2: ut2.clone(), origExp: Arc::new(DAE::Exp::ARRAY { ty: ty.clone(), scalar: true, array: list![e1.clone(), e2.clone()] }) }), outUts.clone());
     }
     outUts = outUts.clone().reverse();
     Ok(outUts)
@@ -1543,7 +1543,7 @@ fn buildTermExpList(mut env: FCore::Graph, mut iexpl: Arc<metamodelica::List<Arc
                     (ut, eterms1, store) = buildTermExp(env.clone(), e.clone(), false, ht.clone(), store.clone())?;
                     (terms, eterms2, store) = buildTermExpList(env.clone(), expl.clone(), ht.clone(), store.clone())?;
                     extraTerms = listAppend(eterms1.clone(), eterms2.clone());
-                    Ok((cons(ut.clone(), terms.clone()), extraTerms.clone(), store.clone()))
+                    Ok((metamodelica::cons(ut.clone(), terms.clone()), extraTerms.clone(), store.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1609,7 +1609,7 @@ fn buildFuncTypeStores2(mut ifargs: Arc<metamodelica::List<Arc<DAE::FuncArg>>>, 
             unit = if (0 == stringCompare((unitStr.clone()).clone(), (literal!("")).clone())) {crate::UnitAbsyn::Unit::UNSPECIFIED} else {unit.clone()};
             (store, indx) = add(unit.clone(), store.clone())?;
             (store, indxs) = buildFuncTypeStores2(fargs.clone(), funcInstId.clone(), store.clone())?;
-            (store.clone(), cons(indx.clone(), indxs.clone()))
+            (store.clone(), metamodelica::cons(indx.clone(), indxs.clone()))
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1686,11 +1686,11 @@ fn buildFormal2ActualParamTerms(mut iformalParamIndxs: Arc<metamodelica::List<i3
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: loc1, tail: formalParamIndxs }, Deref @ metamodelica::List::Cons { head: ut, tail: actualParamIndxs }) => {
-                    let mut e: Arc<DAE::Exp>;
+                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut terms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>> = terms.clone();
                     terms = buildFormal2ActualParamTerms(formalParamIndxs.clone(), actualParamIndxs.clone())?;
                     e = origExpInTerm(ut.clone())?;
-                    Ok(cons(Arc::new(UnitAbsyn::UnitTerm::EQN { ut1: Arc::new(UnitAbsyn::UnitTerm::LOC { loc: loc1.clone(), origExp: e.clone() }), ut2: ut.clone(), origExp: e.clone() }), terms.clone()))
+                    Ok(metamodelica::cons(Arc::new(UnitAbsyn::UnitTerm::EQN { ut1: Arc::new(UnitAbsyn::UnitTerm::LOC { loc: loc1.clone(), origExp: e.clone() }), ut2: ut.clone(), origExp: e.clone() }), terms.clone()))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1710,7 +1710,7 @@ fn buildFormal2ActualParamTerms(mut iformalParamIndxs: Arc<metamodelica::List<i3
 }
 
 fn origExpInTerm(mut ut: Arc<UnitAbsyn::UnitTerm>) -> Result<Arc<DAE::Exp>> {
-    let mut origExp: Arc<DAE::Exp>;
+    let mut origExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     origExp = (::match_deref::match_deref! { match &(ut.clone()) {
         Deref @ UnitAbsyn::UnitTerm::ADD { ut1: _, ut2: _, origExp: e } => {
             e.clone()
@@ -2029,7 +2029,7 @@ fn getDerivedUnitsHelper(mut baseUnit: UnitAbsyn::Unit, mut baseUnitStr: ArcStr,
             unit = str2unit((unitStr.clone()).clone(), None)?;
             b = baseUnit.clone() == unit.clone();
             if b.clone() {
-                outUnits = cons((unitStr.clone()).clone(), outUnits.clone());
+                outUnits = metamodelica::cons((unitStr.clone()).clone(), outUnits.clone());
             }
         }
     }

@@ -155,7 +155,7 @@ fn daeModeDefault(mut partitions: Arc<metamodelica::List<Arc<Partition::Partitio
                 part.daeUnknowns = Some(part.unknowns.clone()),
                 part.unknowns = new_vars.clone()
             );
-            if (Partition::Partition::isEmpty(part.clone())) {new_partitions.clone()} else {cons(part.clone(), new_partitions.clone())}
+            if (Partition::Partition::isEmpty(part.clone())) {new_partitions.clone()} else {metamodelica::cons(part.clone(), new_partitions.clone())}
         },
         _ => {
             new_partitions.clone()

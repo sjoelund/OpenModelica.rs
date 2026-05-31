@@ -105,13 +105,13 @@ pub fn newEntry(mut lentry: Arc<NFLookupTree::Entry::Entry>) -> Arc<Entry> {
 
 pub fn idExistsInEntry(mut id: Arc<NFLookupTree::Entry::Entry>, mut entry: Arc<Entry>) -> bool {
     let mut exists: bool = false;
-    exists = NFLookupTree::Entry::isEqual(id.clone(), entry.entry.clone()) || List::any(entry.children.clone(), Arc::new({ let __pe_b0 = id.clone(); move |__pe_a1| Ok(idExistsInEntry(__pe_b0.clone(), __pe_a1)) }));
+    exists = NFLookupTree::Entry::isEqual(id.clone(), entry.entry.clone()) || List::any(entry.children.clone(), (std::sync::Arc::new({ let __pe_b0 = id.clone(); move |__pe_a1| Ok(idExistsInEntry(__pe_b0.clone(), __pe_a1)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Entry>) -> Result<bool> + 'static>));
     exists
 }
 
 pub fn getLookupEntries(mut entry: Arc<Entry>) -> Arc<metamodelica::List<Arc<NFLookupTree::Entry::Entry>>> {
     let mut entries: Arc<metamodelica::List<Arc<NFLookupTree::Entry::Entry>>> = metamodelica::nil();
-    entries = cons(entry.entry.clone(), ({
+    entries = metamodelica::cons(entry.entry.clone(), ({
         let mut __acc: Arc<metamodelica::List<Arc<NFLookupTree::Entry::Entry>>> = metamodelica::nil();
         for mut c in (entry.children.clone()).into_iter().cloned() {
             let __x = getLookupEntries(c.clone());
@@ -124,7 +124,7 @@ pub fn getLookupEntries(mut entry: Arc<Entry>) -> Arc<metamodelica::List<Arc<NFL
 
 pub fn entryToList(mut entry: Arc<Entry>) -> Arc<metamodelica::List<Arc<Entry>>> {
     let mut entries: Arc<metamodelica::List<Arc<Entry>>> = metamodelica::nil();
-    entries = cons(entry.clone(), ({
+    entries = metamodelica::cons(entry.clone(), ({
         let mut __acc: Arc<metamodelica::List<Arc<Entry>>> = metamodelica::nil();
         for mut c in (entry.children.clone()).into_iter().cloned() {
             let __x = entryToList(c.clone());
@@ -555,12 +555,12 @@ pub fn listKeys(mut tree: Arc<Tree>, mut lst: Arc<metamodelica::List<ArcStr>>) -
     lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { key, .. } => {
             lst = listKeys(var_field!((*tree).right, Tree::NODE).clone(), lst.clone());
-            lst = cons((key.clone()).clone(), lst.clone());
+            lst = metamodelica::cons((key.clone()).clone(), lst.clone());
             lst = listKeys(var_field!((*tree).left, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
         Deref @ Tree::LEAF { key, .. } => {
-            cons((key.clone()).clone(), lst.clone())
+            metamodelica::cons((key.clone()).clone(), lst.clone())
         },
         _ => {
             lst.clone()
@@ -573,10 +573,10 @@ pub fn listKeys(mut tree: Arc<Tree>, mut lst: Arc<metamodelica::List<ArcStr>>) -
 pub fn listKeysReverse(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<ArcStr>>) -> Arc<metamodelica::List<ArcStr>> {
     let mut lst: Arc<metamodelica::List<ArcStr>> = lst;
     lst = (::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::LEAF { .. } => cons((var_field!((*inTree).key, Tree::LEAF).clone()).clone(), lst.clone()),
+        Deref @ Tree::LEAF { .. } => metamodelica::cons((var_field!((*inTree).key, Tree::LEAF).clone()).clone(), lst.clone()),
         Deref @ Tree::NODE { .. } => {
             lst = listKeysReverse(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
-            lst = cons((var_field!((*inTree).key, Tree::NODE).clone()).clone(), lst.clone());
+            lst = metamodelica::cons((var_field!((*inTree).key, Tree::NODE).clone()).clone(), lst.clone());
             lst = listKeysReverse(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
@@ -591,12 +591,12 @@ pub fn listValues(mut tree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<Entry
     lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { value, .. } => {
             lst = listValues(var_field!((*tree).right, Tree::NODE).clone(), lst.clone());
-            lst = cons(value.clone(), lst.clone());
+            lst = metamodelica::cons(value.clone(), lst.clone());
             lst = listValues(var_field!((*tree).left, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
         Deref @ Tree::LEAF { value, .. } => {
-            cons(value.clone(), lst.clone())
+            metamodelica::cons(value.clone(), lst.clone())
         },
         _ => {
             lst.clone()
@@ -796,12 +796,12 @@ pub fn toList(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<(ArcStr, Ar
     lst = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { value, key, .. } => {
             lst = toList(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
-            lst = cons((key.clone(), value.clone()), lst.clone());
+            lst = metamodelica::cons((key.clone(), value.clone()), lst.clone());
             lst = toList(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
         Deref @ Tree::LEAF { value, key } => {
-            cons((key.clone(), value.clone()), lst.clone())
+            metamodelica::cons((key.clone(), value.clone()), lst.clone())
         },
         _ => {
             lst.clone()

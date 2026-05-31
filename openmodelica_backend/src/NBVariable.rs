@@ -184,7 +184,7 @@ pub fn fromCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut attr: Arc<Attri
     let mut variable: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
     let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut class_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut child_nodes: metamodelica::Array<Arc<InstNode::InstNode>>;
+    let mut child_nodes: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut vis: Prefixes::Visibility = Prefixes::Visibility::PUBLIC;
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
@@ -421,7 +421,7 @@ pub fn isContinuous(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mu
         Deref @ BackendExtension::VariableKind::ITERATOR => false,
         Deref @ BackendExtension::VariableKind::EXTOBJ { .. } => false,
         Deref @ BackendExtension::VariableKind::PARAMETER { .. } => init.clone() && Type::isContinuous(var.ty.clone())?,
-        Deref @ BackendExtension::VariableKind::RECORD { .. } => List::all(getRecordChildren(var_ptr.clone()), Arc::new({ let __pe_b1 = init.clone(); move |__pe_a0| isContinuous(__pe_a0, __pe_b1.clone()) })),
+        Deref @ BackendExtension::VariableKind::RECORD { .. } => List::all(getRecordChildren(var_ptr.clone()), (std::sync::Arc::new({ let __pe_b1 = init.clone(); move |__pe_a0| isContinuous(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>)),
         _ => true,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -706,7 +706,7 @@ pub fn hasPre(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool 
 pub fn isJacobianResultVar(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool = false;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
-    b = (match getVarPDer(var_ptr.clone()) {
+    b = (match (getVarPDer(var_ptr.clone())).0 {
         Some(mut der_var) => {
             isJacobianResultVarPDer(der_var.clone())
         },
@@ -1228,7 +1228,7 @@ pub fn addRecordChild(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, 
     var = (::match_deref::match_deref! { match &(var.clone()) {
         Deref @ Variable::VARIABLE { backendinfo: Deref @ BackendExtension::BackendInfo::BACKEND_INFO { varKind: varKind @ Deref @ BackendExtension::VariableKind::RECORD { .. }, .. }, .. } => {
             let mut varKind = (*varKind).clone();
-            assign_variant_field!(varKind => VariableKind::VariableKind::RECORD; children = cons(child.clone(), var_field!((*varKind).children, VariableKind::VariableKind::RECORD).clone()));
+            assign_variant_field!(varKind => VariableKind::VariableKind::RECORD; children = metamodelica::cons(child.clone(), var_field!((*varKind).children, VariableKind::VariableKind::RECORD).clone()));
             assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), varKind.clone()));
             var.clone()
         },
@@ -1347,7 +1347,7 @@ pub fn makePreVar(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<(Arc<Co
             pre = fromCref(pre_cref.clone(), Variable::attributes(Pointer::access(var_ptr.clone())), Binding::EMPTY_BINDING().clone())?;
             assign_field!(pre.backendinfo = BackendExtension::BackendInfo::setVarKind(pre.backendinfo.clone(), Arc::new(openmodelica_nf_frontend::NFBackendExtension::VariableKind::PREVIOUS)));
             (pre_ptr, pre_cref) = makeVarPtrCyclic(pre.clone(), pre_cref.clone())?;
-            connectPartners(var_ptr.clone(), pre_ptr.clone(), (std::sync::Arc::new(fnptr!(BackendInfo::setVarPre, Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>));
+            connectPartners(var_ptr.clone(), pre_ptr.clone(), (std::sync::Arc::new(fnptr!(BackendExtension::BackendInfo::setVarPre, Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>));
             ()
         },
         _ => {
@@ -1389,7 +1389,7 @@ pub fn makeSeedVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut name: ArcStr
     } });
                 assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), varKind.clone()));
                 (var_ptr, cref) = makeVarPtrCyclic(var.clone(), cref.clone())?;
-                connectPartners(old_var_ptr.clone(), var_ptr.clone(), (std::sync::Arc::new(fnptr!(BackendInfo::setVarSeed, Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>));
+                connectPartners(old_var_ptr.clone(), var_ptr.clone(), (std::sync::Arc::new(fnptr!(BackendExtension::BackendInfo::setVarSeed, Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>));
             }
             ()
         },
@@ -1432,7 +1432,7 @@ pub fn makePDerVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut name: ArcStr
     } });
                 assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), varKind.clone()));
                 (var_ptr, cref) = makeVarPtrCyclic(var.clone(), cref.clone())?;
-                connectPartners(res_ptr.clone(), var_ptr.clone(), (std::sync::Arc::new(fnptr!(BackendInfo::setVarPDer, Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>));
+                connectPartners(res_ptr.clone(), var_ptr.clone(), (std::sync::Arc::new(fnptr!(BackendExtension::BackendInfo::setVarPDer, Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>));
             }
             ()
         },
@@ -1485,7 +1485,7 @@ pub fn makeStartVar(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<(Arc<
             let mut old_var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
             let mut qual = (*qual).clone();
             old_var_ptr = getVarPointer(cref.clone(), metamodelica::sourceInfo!())?;
-            (start_cref, var_ptr) = (match getVarStart(old_var_ptr.clone()) {
+            (start_cref, var_ptr) = (match (getVarStart(old_var_ptr.clone())).0 {
         Some(mut var_ptr) => (getVarName(var_ptr.clone()), var_ptr.clone()),
         _ => {
             assign_variant_field!(qual => InstNode::InstNode::VAR_NODE; name = arcstr::literal!(START_STR));
@@ -1682,8 +1682,8 @@ pub fn hasEvaluableBinding(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariabl
         let mut new_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
         b = Expression::isLiteralXML(exp.clone());
         if !(b.clone()) {
-            (_, new_exp) = BEquation::Iterator::extract(exp.clone(), UnorderedSet::new((std::sync::Arc::new(fnptr!(hash, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(equalName, Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 13), UnorderedMap::new((std::sync::Arc::new(Dimension::hashList) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Dimension::NFDimension>>>) -> Result<i32> + 'static>), Arc::new({ let __pe_b2: Arc<dyn ::std::ops::Fn(_, _) -> Result<bool> + 'static> = (std::sync::Arc::new(Dimension::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>, Arc<Dimension::NFDimension>) -> Result<bool> + 'static>); move |__pe_a0, __pe_a1| Ok(List::isEqualOnTrue(__pe_a0, __pe_a1, __pe_b2.clone())) }), 1))?;
-            new_exp = SimplifyExp::simplifyDump(new_exp.clone(), true, (literal!("NBVariable.hasEvaluableBinding.isEvaluable")).clone(), (literal!("")).clone())?;
+            (_, new_exp) = BEquation::Iterator::extract(exp.clone(), UnorderedSet::new((std::sync::Arc::new(fnptr!(hash, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(equalName, Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 13), UnorderedMap::new((std::sync::Arc::new(Dimension::hashList) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Dimension::NFDimension>>>) -> Result<i32> + 'static>), (std::sync::Arc::new({ let __pe_b2: Arc<dyn ::std::ops::Fn(_, _) -> Result<bool> + 'static> = (std::sync::Arc::new(Dimension::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>, Arc<Dimension::NFDimension>) -> Result<bool> + 'static>); move |__pe_a0, __pe_a1| Ok(List::isEqualOnTrue(__pe_a0, __pe_a1, __pe_b2.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<bool> + 'static>), 1))?;
+            new_exp = SimplifyExp::simplifyDump(new_exp.clone(), true, literal!("NBVariable.hasEvaluableBinding.isEvaluable"), (literal!("")).clone())?;
             b = Expression::isLiteralXML(Ceval::tryEvalExp(new_exp.clone(), Ceval::noTarget().clone()));
         }
         Ok(b)
@@ -1855,7 +1855,7 @@ pub fn checkExpMap(mut exp: Arc<Expression::NFExpression>, mut func: Arc<dyn ::s
     }
 
     let mut b: bool = false;
-    (_, b) = Expression::mapFold(exp.clone(), Arc::new({ let __pe_b1 = func.clone(); let __pe_b2 = info.clone(); move |__pe_a0, __pe_a3| checkExpTraverse(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3) }), false)?;
+    (_, b) = Expression::mapFold(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = func.clone(); let __pe_b2 = info.clone(); move |__pe_a0, __pe_a3| checkExpTraverse(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, bool) -> Result<(Arc<Expression::NFExpression>, bool)> + 'static>), false)?;
     Ok(b)
 }
 
@@ -1899,7 +1899,7 @@ pub mod VariablePointers {
         let mut scal_start: i32 = 0;
         let mut index: ArcStr = arcstr::literal!("");
         let mut useMapping: bool = isSome(mapping_opt.clone());
-        let mut mapping: metamodelica::Array<(i32, i32)>;
+        let mut mapping: metamodelica::Array<(i32, i32)> = Default::default();
         if useMapping.clone() {
             length = 15;
             mapping = Util::getOption(mapping_opt.clone())?;
@@ -2038,13 +2038,13 @@ pub mod VariablePointers {
 
     pub fn addList(mut var_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut variables: Arc<VariablePointers>) -> Arc<VariablePointers> {
         let mut variables: Arc<VariablePointers> = variables;
-        variables = List::fold(var_lst.clone(), Arc::new(move |__pe_a0, __pe_a1| add(__pe_a0, __pe_a1)), variables.clone());
+        variables = List::fold(var_lst.clone(), (std::sync::Arc::new(move |__pe_a0, __pe_a1| add(__pe_a0, __pe_a1)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<VariablePointers>) -> Result<Arc<VariablePointers>> + 'static>), variables.clone());
         variables
     }
 
     pub fn removeList(mut var_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut variables: Arc<VariablePointers>) -> Result<Arc<VariablePointers>> {
         let mut variables: Arc<VariablePointers> = variables;
-        variables = List::fold(var_lst.clone(), Arc::new(move |__pe_a0, __pe_a1| remove(__pe_a0, __pe_a1)), variables.clone());
+        variables = List::fold(var_lst.clone(), (std::sync::Arc::new(move |__pe_a0, __pe_a1| remove(__pe_a0, __pe_a1)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<VariablePointers>) -> Result<Arc<VariablePointers>> + 'static>), variables.clone());
         variables = compress(variables.clone())?;
         Ok(variables)
     }
@@ -2147,7 +2147,7 @@ pub mod VariablePointers {
     pub fn getVarNames(mut variables: Arc<VariablePointers>) -> Result<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> {
         let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
         let mut acc: Pointer::Pointer<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> = Pointer::create(metamodelica::nil());
-        mapPtr(variables.clone(), Arc::new({ let __pe_b1 = acc.clone(); move |__pe_a0| Ok(getVarNameTraverse(__pe_a0, __pe_b1.clone())) }))?;
+        mapPtr(variables.clone(), (std::sync::Arc::new({ let __pe_b1 = acc.clone(); move |__pe_a0| Ok(getVarNameTraverse(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<()> + 'static>))?;
         names = Pointer::access(acc.clone()).reverse();
         Ok(names)
     }
@@ -2164,11 +2164,11 @@ pub mod VariablePointers {
                     if Type::isComplex(ComponentRef::nodeType(cr.clone())?) {
                         names = listAppend(ComponentRef::getRecordChildren(cr.clone())?, names.clone());
                     } else {
-                        names = cons(cr.clone(), names.clone());
+                        names = metamodelica::cons(cr.clone(), names.clone());
                     }
                 }
             } else {
-                names = cons(var.name.clone(), names.clone());
+                names = metamodelica::cons(var.name.clone(), names.clone());
             }
         }
         Ok(names)
@@ -2198,7 +2198,7 @@ pub mod VariablePointers {
         let mut vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
         for mut i in (1..=ExpandableArray::getLastUsedIndex(variables.varArr.clone())).rev() {
             if ExpandableArray::occupied(i.clone(), variables.varArr.clone()) {
-                vars = cons(ExpandableArray::get(i.clone(), variables.varArr.clone())?, vars.clone());
+                vars = metamodelica::cons(ExpandableArray::get(i.clone(), variables.varArr.clone())?, vars.clone());
             }
         }
         variables = fromList(vars.clone(), false);
@@ -2212,7 +2212,7 @@ pub mod VariablePointers {
         let mut hash_lst_ptr: Pointer::Pointer<Arc<metamodelica::List<(i32, Pointer::Pointer<Arc<Variable::NFVariable>>)>>> = Pointer::create(metamodelica::nil());
         let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>;
         size = ExpandableArray::getNumberOfElements(variables.varArr.clone());
-        mapPtr(variables.clone(), Arc::new({ let __pe_b1 = ((metamodelica::OrderedFloat((size.clone()) as f64) * (metamodelica::OrderedFloat((size.clone()) as f64)).ln()).0 as i32); let __pe_b2 = hash_lst_ptr.clone(); move |__pe_a0| createSortHashTpl(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }))?;
+        mapPtr(variables.clone(), (std::sync::Arc::new({ let __pe_b1 = ((metamodelica::OrderedFloat((size.clone()) as f64) * (metamodelica::OrderedFloat((size.clone()) as f64)).ln()).0 as i32); let __pe_b2 = hash_lst_ptr.clone(); move |__pe_a0| createSortHashTpl(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<()> + 'static>))?;
         hash_lst = List::sort(Pointer::access(hash_lst_ptr.clone()), std::sync::Arc::new(fnptr!(BackendUtil::indexTplGt, _, _)))?;
         variables = empty(size.clone(), variables.scalarized.clone());
         for mut tpl in &*hash_lst.clone() {
@@ -2256,10 +2256,10 @@ pub mod VariablePointers {
                     element_vars = Scalarize::scalarizeComplexVariable(var.clone(), metamodelica::nil())?;
                     for mut elem_var in &*element_vars.clone().reverse() {
                         let mut elem_var = elem_var.clone();
-                        new_vars = cons(Pointer::create(elem_var.clone()), new_vars.clone());
+                        new_vars = metamodelica::cons(Pointer::create(elem_var.clone()), new_vars.clone());
                     }
                 } else {
-                    new_vars = cons(Pointer::create(var.clone()), new_vars.clone());
+                    new_vars = metamodelica::cons(Pointer::create(var.clone()), new_vars.clone());
                 }
             }
         }
@@ -2311,7 +2311,7 @@ pub mod VariablePointers {
         let mut hash: i32 = 0;
         var = Pointer::access(var_ptr.clone());
         hash = stringHashDjb2Mod((BackendExtension::BackendInfo::toString(var.backendinfo.clone())?).clone(), r#mod.clone());
-        Pointer::update(hash_lst_ptr.clone(), cons((hash.clone(), var_ptr.clone()), Pointer::access(hash_lst_ptr.clone())));
+        Pointer::update(hash_lst_ptr.clone(), metamodelica::cons((hash.clone(), var_ptr.clone()), Pointer::access(hash_lst_ptr.clone())));
         Ok(())
     }
 
@@ -2688,7 +2688,7 @@ pub mod VarData {
                 variables = VariablePointers::addList(var_lst.clone(), var_field!((*varData).variables, VarData::VAR_DATA_SIM).clone()),
                 records = VariablePointers::addList(var_lst.clone(), var_field!((*varData).records, VarData::VAR_DATA_SIM).clone()),
                 knowns = VariablePointers::addList(var_lst.clone(), var_field!((*varData).knowns, VarData::VAR_DATA_SIM).clone()),
-                records = VariablePointers::mapPtr(var_field!((*varData).records, VarData::VAR_DATA_SIM).clone(), Arc::new({ let __pe_b1 = var_field!((*varData).variables, VarData::VAR_DATA_SIM).clone(); move |__pe_a0| BackendDAE::lowerRecordChildren(__pe_a0, __pe_b1.clone()) }))?
+                records = VariablePointers::mapPtr(var_field!((*varData).records, VarData::VAR_DATA_SIM).clone(), (std::sync::Arc::new({ let __pe_b1 = var_field!((*varData).variables, VarData::VAR_DATA_SIM).clone(); move |__pe_a0| BackendDAE::lowerRecordChildren(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<()> + 'static>))?
             );
             varData.clone()
         },
@@ -2790,7 +2790,7 @@ pub mod VarData {
 //                      Protected utility functions
 // ==========================================================================
 fn getVarNameTraverse(mut var: Pointer::Pointer<Arc<Variable::NFVariable>>, mut acc: Pointer::Pointer<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>) -> () {
-    Pointer::update(acc.clone(), cons(getVarName(var.clone()), Pointer::access(acc.clone())));
+    Pointer::update(acc.clone(), metamodelica::cons(getVarName(var.clone()), Pointer::access(acc.clone())));
     ()
 }
 

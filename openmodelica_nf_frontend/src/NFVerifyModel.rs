@@ -92,7 +92,7 @@ pub fn verify(mut flatModel: Arc<FlatModel::NFFlatModel>, mut isPartial: bool) -
     if !(isPartial.clone()) {
         checkDiscreteReal(flatModel.clone())?;
     }
-    execStat((literal!("NFVerifyModel.verify")).clone())?;
+    execStat(literal!("NFVerifyModel.verify"))?;
     Ok(())
 }
 
@@ -125,7 +125,7 @@ fn verifyEquation(mut eq: Arc<Equation::NFEquation>, mut isPartial: bool) -> Res
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Equation::applyExpShallow(eq.clone(), Arc::new({ let __pe_b1 = isPartial.clone(); let __pe_b2 = Equation::info(eq.clone()); move |__pe_a0| checkSubscriptBounds(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }))?;
+    Equation::applyExpShallow(eq.clone(), (std::sync::Arc::new({ let __pe_b1 = isPartial.clone(); let __pe_b2 = Equation::info(eq.clone()); move |__pe_a0| checkSubscriptBounds(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>))?;
     Ok(())
 }
 
@@ -176,7 +176,7 @@ fn whenEquationBranchCrefs(mut eql: Arc<metamodelica::List<Arc<Equation::NFEquat
 fn whenEquationEqualityCrefs(mut lhsExp: Arc<Expression::NFExpression>, mut crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> {
     let mut crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = crefs;
     crefs = (::match_deref::match_deref! { match &(lhsExp.clone()) {
-        Deref @ Expression::CREF { .. } => cons(var_field!((*lhsExp).cref, Expression::NFExpression::CREF).clone(), crefs.clone()),
+        Deref @ Expression::CREF { .. } => metamodelica::cons(var_field!((*lhsExp).cref, Expression::NFExpression::CREF).clone(), crefs.clone()),
         Deref @ Expression::TUPLE { .. } => List::fold(var_field!((*lhsExp).elements, Expression::NFExpression::TUPLE).clone(), (std::sync::Arc::new(whenEquationEqualityCrefs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> + 'static>), crefs.clone()),
         _ => bail!("match: no arm matched"),
     } });
@@ -225,7 +225,7 @@ fn checkCrefSetEquality(mut crefs1: Arc<metamodelica::List<Arc<ComponentRef::NFC
 fn expandCrefSet(mut crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> {
     let mut outCrefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut expl: metamodelica::Array<Arc<Expression::NFExpression>>;
+    let mut expl: metamodelica::Array<Arc<Expression::NFExpression>> = Default::default();
     for mut cref in &*crefs.clone() {
         let mut cref = cref.clone();
         exp = Expression::fromCref(cref.clone(), false)?;
@@ -241,7 +241,7 @@ fn expandCrefSet(mut crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponent
         __acc.reverse()
     }), outCrefs.clone());
         } else {
-            outCrefs = cons(cref.clone(), outCrefs.clone());
+            outCrefs = metamodelica::cons(cref.clone(), outCrefs.clone());
         }
     }
     outCrefs = List::sort(outCrefs.clone(), (std::sync::Arc::new(fnptr!(ComponentRef::isGreater, Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
@@ -250,17 +250,17 @@ fn expandCrefSet(mut crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponent
 }
 
 fn verifyAlgorithm(mut alg: Arc<Algorithm::NFAlgorithm>, mut isPartial: bool) -> () {
-    Algorithm::apply(alg.clone(), Arc::new({ let __pe_b1 = isPartial.clone(); move |__pe_a0| verifyStatement(__pe_a0, __pe_b1.clone()) }));
+    Algorithm::apply(alg.clone(), (std::sync::Arc::new({ let __pe_b1 = isPartial.clone(); move |__pe_a0| verifyStatement(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>) -> Result<()> + 'static>));
     ()
 }
 
 fn verifyStatement(mut stmt: Arc<Statement::NFStatement>, mut isPartial: bool) -> Result<()> {
-    Statement::applyExp(stmt.clone(), Arc::new({ let __pe_b1 = isPartial.clone(); let __pe_b2 = Statement::info(stmt.clone()); move |__pe_a0| checkSubscriptBounds(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }))?;
+    Statement::applyExp(stmt.clone(), (std::sync::Arc::new({ let __pe_b1 = isPartial.clone(); let __pe_b2 = Statement::info(stmt.clone()); move |__pe_a0| checkSubscriptBounds(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>))?;
     Ok(())
 }
 
 fn checkSubscriptBounds(mut exp: Arc<Expression::NFExpression>, mut isPartial: bool, mut info: SourceInfo) -> Result<()> {
-    Expression::apply(exp.clone(), Arc::new({ let __pe_b1 = isPartial.clone(); let __pe_b2 = info.clone(); move |__pe_a0| checkSubscriptBounds_traverser(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }))?;
+    Expression::apply(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = isPartial.clone(); let __pe_b2 = info.clone(); move |__pe_a0| checkSubscriptBounds_traverser(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>))?;
     Ok(())
 }
 
@@ -332,7 +332,7 @@ fn checkDiscreteReal(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<()> {
     for mut variable in &*flatModel.variables.clone() {
         let mut variable = variable.clone();
         if Variable::variability(variable.clone()) == Variability::DISCRETE.clone() && Type::isReal(Type::arrayElementType(variable.ty.clone())) && !(UnorderedSet::contains(variable.name.clone(), discrete_reals.clone())?) {
-            illegal_discrete_vars = cons(variable.clone(), illegal_discrete_vars.clone());
+            illegal_discrete_vars = metamodelica::cons(variable.clone(), illegal_discrete_vars.clone());
         }
     }
     if !(illegal_discrete_vars.clone().is_empty()) {

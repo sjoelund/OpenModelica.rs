@@ -81,7 +81,7 @@ pub fn split(mut conn: Arc<NFConnection>) -> Result<Arc<metamodelica::List<Arc<N
         cr = __pa0.clone();
         crs = __pa1.clone();
         if !(Connector::isDeleted(cl.clone()) || Connector::isDeleted(cr.clone())) {
-            conns = cons(Arc::new(NFConnection { lhs: cl.clone(), rhs: cr.clone() }), conns.clone());
+            conns = metamodelica::cons(Arc::new(NFConnection { lhs: cl.clone(), rhs: cr.clone() }), conns.clone());
         }
     }
     conns = metamodelica::Dangerous::listReverseInPlace(conns.clone());
@@ -108,7 +108,7 @@ pub fn scalarize(mut conn: Arc<NFConnection>) -> Result<Arc<metamodelica::List<A
         } };
         cr = __pa0.clone();
         crs = __pa1.clone();
-        conns = cons(Arc::new(NFConnection { lhs: cl.clone(), rhs: cr.clone() }), conns.clone());
+        conns = metamodelica::cons(Arc::new(NFConnection { lhs: cl.clone(), rhs: cr.clone() }), conns.clone());
     }
     conns = metamodelica::Dangerous::listReverseInPlace(conns.clone());
     Ok(conns)
@@ -134,7 +134,7 @@ pub fn scalarizePrefix(mut conn: Arc<NFConnection>) -> Result<Arc<metamodelica::
         } };
         cr = __pa0.clone();
         crs = __pa1.clone();
-        conns = cons(Arc::new(NFConnection { lhs: cl.clone(), rhs: cr.clone() }), conns.clone());
+        conns = metamodelica::cons(Arc::new(NFConnection { lhs: cl.clone(), rhs: cr.clone() }), conns.clone());
     }
     conns = metamodelica::Dangerous::listReverseInPlace(conns.clone());
     Ok(conns)

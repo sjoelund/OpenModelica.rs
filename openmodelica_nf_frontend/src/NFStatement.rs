@@ -170,13 +170,13 @@ pub fn isDiscrete(mut stmt: Arc<NFStatement>) -> bool {
 
 pub fn filterDiscrete(mut stmts: Arc<metamodelica::List<Arc<NFStatement>>>, mut out_stmts: Arc<metamodelica::List<Arc<NFStatement>>>) -> Arc<metamodelica::List<Arc<NFStatement>>> {
     let mut out_stmts: Arc<metamodelica::List<Arc<NFStatement>>> = out_stmts;
-    let mut stmt: Arc<NFStatement>;
+    let mut stmt: Arc<NFStatement> = Arc::new(<NFStatement as ::std::default::Default>::default());
     let mut rest: Arc<metamodelica::List<Arc<NFStatement>>> = metamodelica::nil();
     out_stmts = (::match_deref::match_deref! { match &(stmts.clone()) {
         Deref @ metamodelica::List::Cons { head: stmt @ Deref @ FOR { .. }, tail: rest } => {
             let mut stmt = (*stmt).clone();
             assign_variant_field!(stmt => NFStatement::FOR; body = filterDiscrete(var_field!((*stmt).body, NFStatement::FOR).clone(), metamodelica::nil()));
-            out_stmts = if ((var_field!((*stmt).body, NFStatement::FOR).clone().len() as i32) == 0) {out_stmts.clone()} else {cons(stmt.clone(), out_stmts.clone())};
+            out_stmts = if ((var_field!((*stmt).body, NFStatement::FOR).clone().len() as i32) == 0) {out_stmts.clone()} else {metamodelica::cons(stmt.clone(), out_stmts.clone())};
             filterDiscrete(rest.clone(), out_stmts.clone())
         },
         Deref @ metamodelica::List::Cons { head: stmt @ Deref @ IF { .. }, tail: rest } => {
@@ -189,10 +189,10 @@ pub fn filterDiscrete(mut stmts: Arc<metamodelica::List<Arc<NFStatement>>>, mut 
         }
         __acc.reverse()
     }));
-            filterDiscrete(rest.clone(), cons(stmt.clone(), out_stmts.clone()))
+            filterDiscrete(rest.clone(), metamodelica::cons(stmt.clone(), out_stmts.clone()))
         },
         Deref @ metamodelica::List::Cons { head: stmt, tail: rest } if (isDiscrete(stmt.clone())) => filterDiscrete(rest.clone(), out_stmts.clone()),
-        Deref @ metamodelica::List::Cons { head: stmt, tail: rest } => filterDiscrete(rest.clone(), cons(stmt.clone(), out_stmts.clone())),
+        Deref @ metamodelica::List::Cons { head: stmt, tail: rest } => filterDiscrete(rest.clone(), metamodelica::cons(stmt.clone(), out_stmts.clone())),
         _ => out_stmts.clone().reverse(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -239,7 +239,7 @@ pub fn isEqual(mut stmt1: Arc<NFStatement>, mut stmt2: Arc<NFStatement>) -> Resu
 }
 
 pub fn makeAssignment(mut lhs: Arc<Expression::NFExpression>, mut rhs: Arc<Expression::NFExpression>, mut ty: Arc<Type::NFType>, mut src: Arc<DAE::ElementSource>) -> Arc<NFStatement> {
-    let mut stmt: Arc<NFStatement>;
+    let mut stmt: Arc<NFStatement> = Arc::new(<NFStatement as ::std::default::Default>::default());
     stmt = Arc::new(NFStatement::ASSIGNMENT { lhs: lhs.clone(), rhs: rhs.clone(), ty: ty.clone(), source: src.clone() });
     stmt
 }
@@ -275,7 +275,7 @@ pub fn isReturn(mut stmt: Arc<NFStatement>) -> bool {
 }
 
 pub fn makeIf(mut branches: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<NFStatement>>>)>>, mut src: Arc<DAE::ElementSource>) -> Arc<NFStatement> {
-    let mut stmt: Arc<NFStatement>;
+    let mut stmt: Arc<NFStatement> = Arc::new(<NFStatement as ::std::default::Default>::default());
     stmt = Arc::new(NFStatement::IF { branches: branches.clone(), source: src.clone() });
     stmt
 }
@@ -898,14 +898,14 @@ pub fn containsList(mut eql: Arc<metamodelica::List<Arc<NFStatement>>>, mut func
 
 pub fn replaceIteratorList(mut stmtl: Arc<metamodelica::List<Arc<NFStatement>>>, mut iterator: Arc<InstNode::InstNode>, mut value: Arc<Expression::NFExpression>) -> Arc<metamodelica::List<Arc<NFStatement>>> {
     let mut stmtl: Arc<metamodelica::List<Arc<NFStatement>>> = stmtl;
-    stmtl = mapExpList(stmtl.clone(), Arc::new({ let __pe_b1 = iterator.clone(); let __pe_b2 = value.clone(); move |__pe_a0| Expression::replaceIterator(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }));
+    stmtl = mapExpList(stmtl.clone(), (std::sync::Arc::new({ let __pe_b1 = iterator.clone(); let __pe_b2 = value.clone(); move |__pe_a0| Expression::replaceIterator(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>));
     stmtl
 }
 
 pub fn toString(mut stmt: Arc<NFStatement>, mut indent: ArcStr) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     let mut s: IOStream::IOStream = <IOStream::IOStream as ::std::default::Default>::default();
-    s = IOStream::create((literal!("NFStatement.toString")).clone(), openmodelica_util::IOStream::IOStreamType::LIST)?;
+    s = IOStream::create(literal!("NFStatement.toString"), openmodelica_util::IOStream::IOStreamType::LIST)?;
     s = toStream(stmt.clone(), (indent.clone()).clone(), s.clone())?;
     r#str = (IOStream::string(s.clone())?).clone();
     IOStream::delete(s.clone())?;
@@ -915,7 +915,7 @@ pub fn toString(mut stmt: Arc<NFStatement>, mut indent: ArcStr) -> Result<ArcStr
 pub fn toStringList(mut stmtl: Arc<metamodelica::List<Arc<NFStatement>>>, mut indent: ArcStr) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     let mut s: IOStream::IOStream = <IOStream::IOStream as ::std::default::Default>::default();
-    s = IOStream::create((literal!("NFStatement.toStringList")).clone(), openmodelica_util::IOStream::IOStreamType::LIST)?;
+    s = IOStream::create(literal!("NFStatement.toStringList"), openmodelica_util::IOStream::IOStreamType::LIST)?;
     s = toStreamList(stmtl.clone(), (indent.clone()).clone(), s.clone())?;
     r#str = (IOStream::string(s.clone())?).clone();
     IOStream::delete(s.clone())?;

@@ -194,8 +194,8 @@ pub fn collectRecordParams(mut recNode: Arc<InstNode::InstNode>) -> Result<(Arc<
     let mut locals: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
     let mut allParams: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
     let mut comp: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut comps: metamodelica::Array<Arc<InstNode::InstNode>>;
-    let mut pcomps: metamodelica::Array<Mutable::Mutable<Arc<InstNode::InstNode>>>;
+    let mut comps: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
+    let mut pcomps: metamodelica::Array<Mutable::Mutable<Arc<InstNode::InstNode>>> = Default::default();
     let mut tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
     tree = Class::classTree(InstNode::getClass(recNode.clone())?)?;
     let () = (::match_deref::match_deref! { match &(tree.clone()) {
@@ -204,7 +204,7 @@ pub fn collectRecordParams(mut recNode: Arc<InstNode::InstNode>) -> Result<(Arc<
             for mut i in __range0 {
                 comp = comps.borrow()[(i.clone()-1) as usize].clone();
                 (inputs, locals) = collectRecordParam(comp.clone(), inputs.clone(), locals.clone())?;
-                allParams = cons(comp.clone(), allParams.clone());
+                allParams = metamodelica::cons(comp.clone(), allParams.clone());
             }
             ()
         },
@@ -213,7 +213,7 @@ pub fn collectRecordParams(mut recNode: Arc<InstNode::InstNode>) -> Result<(Arc<
             for mut i in __range0 {
                 comp = Mutable::access(pcomps.borrow()[(i.clone()-1) as usize].clone());
                 (inputs, locals) = collectRecordParam(comp.clone(), inputs.clone(), locals.clone())?;
-                allParams = cons(comp.clone(), allParams.clone());
+                allParams = metamodelica::cons(comp.clone(), allParams.clone());
             }
             ()
         },
@@ -232,17 +232,17 @@ pub fn collectRecordParam(mut component: Arc<InstNode::InstNode>, mut inputs: Ar
     let mut comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);
     let mut comp_node: Arc<InstNode::InstNode> = InstNode::resolveInner(component.clone());
     if InstNode::isProtected(comp_node.clone()) {
-        locals = cons(comp_node.clone(), locals.clone());
+        locals = metamodelica::cons(comp_node.clone(), locals.clone());
         return Ok((inputs.clone(), locals.clone()));
     }
     comp = InstNode::component(comp_node.clone())?;
     if Component::isFinal(comp.clone())? {
         setFieldDirection(comp_node.clone(), Direction::NONE.clone())?;
-        locals = cons(comp_node.clone(), locals.clone());
+        locals = metamodelica::cons(comp_node.clone(), locals.clone());
     } else {
         setFieldDirection(comp_node.clone(), Direction::INPUT.clone())?;
         InstNode::componentApply(comp_node.clone(), (std::sync::Arc::new(fnptr!(Component::setVariability, Variability, Arc<Component::NFComponent>)) as std::sync::Arc<dyn ::std::ops::Fn(Variability, Arc<Component::NFComponent>) -> Result<Arc<Component::NFComponent>> + 'static>), Variability::CONTINUOUS.clone())?;
-        inputs = cons(comp_node.clone(), inputs.clone());
+        inputs = metamodelica::cons(comp_node.clone(), inputs.clone());
     }
     Ok((inputs, locals))
 }
@@ -253,7 +253,7 @@ pub fn setFieldDirection(mut field: Arc<InstNode::InstNode>, mut direction: Dire
 }
 
 pub fn collectRecordFields(mut recNode: Arc<InstNode::InstNode>) -> Result<(metamodelica::Array<Arc<Field::Field>>, Arc<UnorderedMap::UnorderedMap<ArcStr, i32>>)> {
-    let mut fields: metamodelica::Array<Arc<Field::Field>>;
+    let mut fields: metamodelica::Array<Arc<Field::Field>> = Default::default();
     let mut indexMap: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>> = <Arc<UnorderedMap::UnorderedMap<ArcStr, i32>> as ::std::default::Default>::default();
     let mut field_lst: Arc<metamodelica::List<Arc<Field::Field>>> = metamodelica::nil();
     let mut tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
@@ -270,13 +270,13 @@ pub fn collectRecordField(mut component: Arc<InstNode::InstNode>, mut fields: Ar
     let mut comp_node: Arc<InstNode::InstNode> = InstNode::resolveInner(component.clone());
     let mut comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);
     if InstNode::isProtected(comp_node.clone()) {
-        fields = cons(Arc::new(Field::Field::LOCAL { name: (InstNode::name(comp_node.clone())?).clone() }), fields.clone());
+        fields = metamodelica::cons(Arc::new(Field::Field::LOCAL { name: (InstNode::name(comp_node.clone())?).clone() }), fields.clone());
     } else {
         comp = InstNode::component(comp_node.clone())?;
         if Component::isFinal(comp.clone())? {
-            fields = cons(Arc::new(Field::Field::LOCAL { name: (InstNode::name(comp_node.clone())?).clone() }), fields.clone());
+            fields = metamodelica::cons(Arc::new(Field::Field::LOCAL { name: (InstNode::name(comp_node.clone())?).clone() }), fields.clone());
         } else if !(Component::isOutput(comp.clone())) {
-            fields = cons(Arc::new(Field::Field::INPUT { name: (InstNode::name(comp_node.clone())?).clone() }), fields.clone());
+            fields = metamodelica::cons(Arc::new(Field::Field::INPUT { name: (InstNode::name(comp_node.clone())?).clone() }), fields.clone());
         }
     }
     Ok(fields)
@@ -288,7 +288,7 @@ pub fn fieldsToDAE(mut fields: Arc<metamodelica::List<Arc<Field::Field>>>) -> Ar
         let mut field = field.clone();
         let () = (::match_deref::match_deref! { match &(field.clone()) {
         Deref @ Field::INPUT { .. } => {
-            fieldNames = cons((var_field!((*field).name, Field::Field::INPUT).clone()).clone(), fieldNames.clone());
+            fieldNames = metamodelica::cons((var_field!((*field).name, Field::Field::INPUT).clone()).clone(), fieldNames.clone());
             ()
         },
         _ => (),

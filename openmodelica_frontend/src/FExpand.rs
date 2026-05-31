@@ -88,12 +88,12 @@ pub type Import = Absyn::Import;
 pub type Msg = Option<SourceInfo>;
 
 pub fn path(mut inGraph: Graph, mut inPath: Arc<Absyn::Path>) -> Result<(Graph, Ref)> {
-    let mut outGraph: Graph;
-    let mut outRef: Ref;
+    let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
+    let mut outRef: Ref = Default::default();
     (outGraph, outRef) = (match inGraph.clone() {
         mut g => {
-            let mut r: Ref;
-            let mut t: Ref;
+            let mut r: Ref = Default::default();
+            let mut t: Ref = Default::default();
             t = FGraph::top(g.clone())?;
             r = t.clone();
             (g.clone(), r.clone())
@@ -103,7 +103,7 @@ pub fn path(mut inGraph: Graph, mut inPath: Arc<Absyn::Path>) -> Result<(Graph, 
 }
 
 pub fn all(mut inGraph: Graph) -> Result<Graph> {
-    let mut outGraph: Graph;
+    let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
     outGraph = (match inGraph.clone() {
         mut g => {
             let mut lst: Arc<metamodelica::List<metamodelica::Real>> = metamodelica::nil();

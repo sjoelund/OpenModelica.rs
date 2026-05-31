@@ -93,7 +93,7 @@ impl Default for NSimPartition {
 }
 pub use self::NSimPartition::{BASE_PARTITION,SUB_PARTITION};
 pub fn createSubPartition(mut subClock: Arc<BClock::BClock>, mut equations: Arc<metamodelica::List<Arc<Block::Block>>>, mut variables: Arc<metamodelica::List<Arc<SimVar::SimVar>>>, mut holdEvents: bool) -> Arc<NSimPartition> {
-    let mut part: Arc<NSimPartition>;
+    let mut part: Arc<NSimPartition> = Arc::new(<NSimPartition as ::std::default::Default>::default());
     part = Arc::new(NSimPartition::SUB_PARTITION { variables: ({
         let mut __acc: Arc<metamodelica::List<(Arc<SimVar::SimVar>, bool)>> = metamodelica::nil();
         for mut v in (variables.clone()).into_iter().cloned() {
@@ -109,14 +109,14 @@ pub fn createBasePartitions(mut clock_collector: Arc<UnorderedMap::UnorderedMap<
     let mut baseParts: Arc<metamodelica::List<Arc<NSimPartition>>> = metamodelica::nil();
     let mut eventClocks: Arc<metamodelica::List<Arc<Block::Block>>> = metamodelica::nil();
     let mut simCodeIndices: SimCodeIndices = simCodeIndices;
-    let mut baseClock: Arc<BClock::BClock>;
+    let mut baseClock: Arc<BClock::BClock> = Arc::new(<BClock::BClock as ::std::default::Default>::default());
     let mut subClocks: Arc<metamodelica::List<Arc<NSimPartition>>> = metamodelica::nil();
     let mut clock_idx: i32 = 1;
     for mut tpl in &*UnorderedMap::toList(clock_collector.clone()) {
         let mut tpl = tpl.clone();
         (baseClock, subClocks) = tpl.clone();
         if !(BClock::isInferredClock(baseClock.clone())) {
-            baseParts = cons(Arc::new(NSimPartition::BASE_PARTITION { baseClock: baseClock.clone(), subPartitions: subClocks.clone() }), baseParts.clone());
+            baseParts = metamodelica::cons(Arc::new(NSimPartition::BASE_PARTITION { baseClock: baseClock.clone(), subPartitions: subClocks.clone() }), baseParts.clone());
         }
     }
     for mut base in &*baseParts.clone() {
@@ -125,15 +125,15 @@ pub fn createBasePartitions(mut clock_collector: Arc<UnorderedMap::UnorderedMap<
         Deref @ BASE_PARTITION { baseClock: Deref @ BClock::BASE_CLOCK { clock: Deref @ ClockKind::EVENT_CLOCK { condition: Deref @ Expression::CREF { cref: cond, .. }, .. } }, .. } => {
             let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
             let mut fire: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut stmt: Arc<WhenStatement::WhenStatement>;
+            let mut stmt: Arc<WhenStatement::WhenStatement> = Arc::new(<WhenStatement::WhenStatement as ::std::default::Default>::default());
             let mut attr: Arc<EquationAttributes::EquationAttributes> = Arc::new(<EquationAttributes::EquationAttributes as ::std::default::Default>::default());
-            let mut blck: Arc<Block::Block>;
+            let mut blck: Arc<Block::Block> = Arc::new(<Block::Block as ::std::default::Default>::default());
             source = DAE::emptyElementSource().clone();
             fire = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(BuiltinFuncs::CLOCK_FIRE().clone(), list![Arc::new(Expression::NFExpression::INTEGER { value: clock_idx.clone() })], Prefixes::Variability::CONSTANT.clone(), Prefixes::Purity::PURE.clone(), BuiltinFuncs::CLOCK_FIRE().returnType.clone()) });
             stmt = Arc::new(WhenStatement::WhenStatement::NORETCALL { exp: fire.clone(), source: source.clone() });
             attr = NBEquation::default(EquationKind::EMPTY.clone(), false, None, None);
             blck = Arc::new(Block::Block::WHEN { index: simCodeIndices.equationIndex.clone(), initialCall: false, conditions: list![cond.clone()], when_stmts: list![stmt.clone()], else_when: None, source: source.clone(), attr: attr.clone() });
-            eventClocks = cons(blck.clone(), eventClocks.clone());
+            eventClocks = metamodelica::cons(blck.clone(), eventClocks.clone());
             simCodeIndices.equationIndex = simCodeIndices.equationIndex.clone() + 1;
             ()
         },
@@ -148,7 +148,7 @@ pub fn createBasePartitions(mut clock_collector: Arc<UnorderedMap::UnorderedMap<
 }
 
 pub fn getClock(mut part: Arc<NSimPartition>) -> Result<Arc<BClock::BClock>> {
-    let mut clock: Arc<BClock::BClock>;
+    let mut clock: Arc<BClock::BClock> = Arc::new(<BClock::BClock as ::std::default::Default>::default());
     clock = (::match_deref::match_deref! { match &(part.clone()) {
         Deref @ BASE_PARTITION { .. } => var_field!((*part).baseClock, NSimPartition::BASE_PARTITION).clone(),
         Deref @ SUB_PARTITION { .. } => var_field!((*part).subClock, NSimPartition::SUB_PARTITION).clone(),
@@ -175,8 +175,8 @@ pub fn listToString(mut parts: Arc<metamodelica::List<Arc<NSimPartition>>>, mut 
 pub fn toString(mut part: Arc<NSimPartition>, mut r#str: ArcStr) -> Result<ArcStr> {
     let mut r#str: ArcStr = r#str;
     r#str = ((::match_deref::match_deref! { match &(part.clone()) {
-        Deref @ BASE_PARTITION { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[BASE] Partition ")); __mm_s.push_str(&*BClock::toString(var_field!((*part).baseClock, NSimPartition::BASE_PARTITION).clone())?); __mm_s.push_str(&*List::toString(var_field!((*part).subPartitions, NSimPartition::BASE_PARTITION).clone(), Arc::new({ let __pe_b1 = (r#str.clone()).clone(); move |__pe_a0| toString(__pe_a0, __pe_b1.clone()) }), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), (literal!("\n")).clone(), true, 0)?); ArcStr::from(__mm_s) },
-        Deref @ SUB_PARTITION { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("[SUB-] Partition ")); __mm_s.push_str(&*BClock::toString(var_field!((*part).subClock, NSimPartition::SUB_PARTITION).clone())?); __mm_s.push_str(&*List::toString(var_field!((*part).equations, NSimPartition::SUB_PARTITION).clone(), Arc::new({ let __pe_b1 = (r#str.clone()).clone(); move |__pe_a0| Block::toString(__pe_a0, __pe_b1.clone()) }), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), (literal!("")).clone(), true, 0)?); ArcStr::from(__mm_s) },
+        Deref @ BASE_PARTITION { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[BASE] Partition ")); __mm_s.push_str(&*BClock::toString(var_field!((*part).baseClock, NSimPartition::BASE_PARTITION).clone())?); __mm_s.push_str(&*List::toString(var_field!((*part).subPartitions, NSimPartition::BASE_PARTITION).clone(), (std::sync::Arc::new({ let __pe_b1 = (r#str.clone()).clone(); move |__pe_a0| toString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NSimPartition>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), (literal!("\n")).clone(), true, 0)?); ArcStr::from(__mm_s) },
+        Deref @ SUB_PARTITION { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("[SUB-] Partition ")); __mm_s.push_str(&*BClock::toString(var_field!((*part).subClock, NSimPartition::SUB_PARTITION).clone())?); __mm_s.push_str(&*List::toString(var_field!((*part).equations, NSimPartition::SUB_PARTITION).clone(), (std::sync::Arc::new({ let __pe_b1 = (r#str.clone()).clone(); move |__pe_a0| Block::toString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Block::Block>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), (literal!("")).clone(), true, 0)?); ArcStr::from(__mm_s) },
         _ => literal!("[ERR-]"),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();

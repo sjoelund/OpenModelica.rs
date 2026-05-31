@@ -100,8 +100,8 @@ fn instBinding(mut inMod: Arc<DAE::Mod>, mut inVarLst: Arc<metamodelica::List<Ar
             ::match_deref::match_deref! { match &__mc_input {
                 (r#mod, _, expected_type, Deref @ metamodelica::List::Nil, bind_name) => {
                     let mut mod2: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut e: Arc<DAE::Exp>;
-                    let mut e_1: Arc<DAE::Exp>;
+                    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut ty2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut optVal: Option<Arc<Values::Value>> = None;
                     mod2 = Mod::lookupCompModification(r#mod.clone(), (bind_name.clone()).clone())?;
@@ -180,8 +180,8 @@ fn instBinding2(mut inMod: Arc<DAE::Mod>, mut inType: Arc<DAE::Type>, mut inInte
     outExpExpOption = (::match_deref::match_deref! { match &((inMod.clone(), inType.clone(), inIntegerLst.clone(), inString.clone())) {
         (r#mod, etype, Deref @ metamodelica::List::Cons { head: index, tail: Deref @ metamodelica::List::Nil }, _) => {
             let mut mod2: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-            let mut e: Arc<DAE::Exp>;
-            let mut e_1: Arc<DAE::Exp>;
+            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+            let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut ty2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let mut optVal: Option<Arc<Values::Value>> = None;
             mod2 = Mod::lookupIdxModification(r#mod.clone(), Arc::new(DAE::Exp::ICONST { integer: index.clone() }))?;
@@ -446,10 +446,10 @@ fn instDistributionBinding(mut inMod: Arc<DAE::Mod>, mut varLst: Arc<metamodelic
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (r#mod, index_list, bind_name) => {
-                    let mut name: Arc<DAE::Exp>;
-                    let mut params: Arc<DAE::Exp>;
-                    let mut paramNames: Arc<DAE::Exp>;
-                    let mut path: Arc<Absyn::Path>;
+                    let mut name: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut params: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut paramNames: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(instBinding(r#mod.clone(), varLst.clone(), distributionType().clone(), index_list.clone(), (bind_name.clone()).clone(), useConstValue.clone())?) {
                         Some(Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Nil } } }, path: __pa3, .. }) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
                         _ => bail!("pattern mismatch"),
@@ -467,10 +467,10 @@ fn instDistributionBinding(mut inMod: Arc<DAE::Mod>, mut varLst: Arc<metamodelic
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (r#mod, index_list, bind_name) => {
-                    let mut name: Arc<DAE::Exp>;
-                    let mut params: Arc<DAE::Exp>;
-                    let mut paramNames: Arc<DAE::Exp>;
-                    let mut path: Arc<Absyn::Path>;
+                    let mut name: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut params: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut paramNames: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(instBinding(r#mod.clone(), varLst.clone(), distributionType().clone(), index_list.clone(), (bind_name.clone()).clone(), useConstValue.clone())?) {
                         Some(Deref @ DAE::Exp::RECORD { exps: Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Nil } } }, path: __pa3, .. }) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
                         _ => bail!("pattern mismatch"),
@@ -488,9 +488,9 @@ fn instDistributionBinding(mut inMod: Arc<DAE::Mod>, mut varLst: Arc<metamodelic
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (r#mod, index_list, bind_name) => {
-                    let mut name: Arc<DAE::Exp>;
-                    let mut params: Arc<DAE::Exp>;
-                    let mut paramNames: Arc<DAE::Exp>;
+                    let mut name: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut params: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut paramNames: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut paramDim: i32 = 0;
                     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -573,9 +573,9 @@ pub fn instModEquation(mut inComponentRef: Arc<DAE::ComponentRef>, mut inType: A
                 (_, Deref @ DAE::Mod::MOD { info, binding: Some(DAE::EqMod::TYPED { modifierAsExp: e, modifierAsValue: _, properties: prop2, modifierAsAbsynExp: aexp2, .. }), .. }) => {
                     let mut t: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-                    let mut lhs: Arc<DAE::Exp>;
+                    let mut lhs: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut aexp1: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-                    let mut scode: Arc<SCode::Equation>;
+                    let mut scode: Arc<SCode::Equation> = Arc::new(<SCode::Equation as ::std::default::Default>::default());
                     let mut acr: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
                     let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
                     t = Types::simplifyType(inType.clone())?;
@@ -644,7 +644,7 @@ pub fn makeBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAtt
                 (cache, _, Deref @ DAE::Mod::NOMOD { .. }, _) => {
                     let mut binding: Arc<DAE::Binding> = Arc::new(DAE::Binding::UNBOUND);
                     let mut complex_vars: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-                    let mut tpath: Arc<Absyn::Path>;
+                    let mut tpath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(Types::arrayElementType(inType.clone())) {
                         Deref @ DAE::Type::T_COMPLEX { varLst: __pa0, complexClassType: ClassInf::State::RECORD { path: __pa1 }, .. } => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
@@ -695,7 +695,7 @@ pub fn makeBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAtt
                 (cache, _, Deref @ DAE::Mod::MOD { subModLst: sub_mods @ Deref @ metamodelica::List::Cons { head: _, tail: _ }, .. }, _) => {
                     let mut binding: Arc<DAE::Binding> = Arc::new(DAE::Binding::UNBOUND);
                     let mut complex_vars: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-                    let mut tpath: Arc<Absyn::Path>;
+                    let mut tpath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(Types::arrayElementType(inType.clone())) {
                         Deref @ DAE::Type::T_COMPLEX { varLst: __pa0, complexClassType: ClassInf::State::RECORD { path: __pa1 }, .. } => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
@@ -720,8 +720,8 @@ pub fn makeBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAtt
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, _, Deref @ DAE::Mod::MOD { binding: Some(DAE::EqMod::TYPED { modifierAsExp: e, modifierAsValue: Some(v), properties: prop, modifierAsAbsynExp: _, .. }), .. }, e_tp) => {
                     let mut tp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut e_1: Arc<DAE::Exp>;
-                    let mut e_val_exp: Arc<DAE::Exp>;
+                    let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut e_val_exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut e_val: Option<Arc<Values::Value>> = None;
                     let mut c: DAE::Const = DAE::Const::C_CONST;
                     let mut v = (*v).clone();
@@ -744,7 +744,7 @@ pub fn makeBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAtt
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, _, Deref @ DAE::Mod::MOD { binding: Some(DAE::EqMod::TYPED { modifierAsExp: e, modifierAsValue: e_val, properties: prop, modifierAsAbsynExp: _, .. }), .. }, e_tp) => {
                     let mut tp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut e_1: Arc<DAE::Exp>;
+                    let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut c: DAE::Const = DAE::Const::C_CONST;
                     c = Types::propAllConst(prop.clone())?;
                     tp = Types::getPropType(prop.clone())?;
@@ -810,7 +810,7 @@ pub fn makeRecordBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
     let mut ety: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut binding: Arc<DAE::Binding> = Arc::new(DAE::Binding::UNBOUND);
     let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
-    let mut exp: Arc<DAE::Exp>;
+    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut val: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
     dims = TypesDump::getDimensions(inRecordType.clone());
     match '__try0: {
@@ -842,9 +842,9 @@ pub fn makeRecordBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
                 exp = Arc::new(DAE::Exp::EMPTY { scope: (scope.clone()).clone(), name: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name.clone()).clone(), identType: ety.clone(), subscriptLst: metamodelica::nil() }), ty: ety.clone(), tyStr: (ty_str.clone()).clone() });
                 val = Arc::new(Values::Value::EMPTY { scope: (scope.clone()).clone(), name: (name.clone()).clone(), ty: unwrap_break_err!(Types::typeToValue(ty.clone()), '__try0), tyStr: (ty_str.clone()).clone() });
             }
-            accum_exps = cons(exp.clone(), accum_exps.clone());
-            accum_vals = cons(val.clone(), accum_vals.clone());
-            accum_names = cons((name.clone()).clone(), accum_names.clone());
+            accum_exps = metamodelica::cons(exp.clone(), accum_exps.clone());
+            accum_vals = metamodelica::cons(val.clone(), accum_vals.clone());
+            accum_names = metamodelica::cons((name.clone()).clone(), accum_names.clone());
         }
         ety = unwrap_break_err!(Types::simplifyType(Types::arrayElementType(inRecordType.clone())), '__try0);
         exp = Arc::new(DAE::Exp::CALL { path: inRecordName.clone(), expLst: accum_exps.clone().reverse(), attr: Arc::new(DAE::CallAttributes { ty: ety.clone(), tuple_: false, builtin: false, isImpure: false, isFunctionPointerCall: false, inlineType: openmodelica_frontend_types::DAE::InlineType::NORM_INLINE, tailCall: openmodelica_frontend_types::DAE::TailCall::NO_TAIL }) });
@@ -870,7 +870,7 @@ pub fn makeRecordBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
 }
 
 fn makeRecordBinding3(mut inSubMod: Option<Arc<DAE::SubMod>>, mut inType: Arc<DAE::Type>, mut inInfo: SourceInfo) -> Result<(Arc<DAE::Exp>, Arc<Values::Value>)> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
     (outExp, outValue) = 'mc: {
         let __mc_input = inSubMod.clone();
@@ -928,8 +928,8 @@ fn makeRecordBinding3(mut inSubMod: Option<Arc<DAE::SubMod>>, mut inType: Arc<DA
 pub fn makeVariableBinding(mut inType: Arc<DAE::Type>, mut inMod: Arc<DAE::Mod>, mut inConst: DAE::Const, mut inPrefix: DAE::Prefix, mut inName: ArcStr) -> Result<Option<Arc<DAE::Exp>>> {
     let mut outBinding: Option<Arc<DAE::Exp>> = None;
     let mut oeq_mod: Option<DAE::EqMod> = Mod::modEquation(inMod.clone())?;
-    let mut e: Arc<DAE::Exp>;
-    let mut e2: Arc<DAE::Exp>;
+    let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut p: DAE::Properties;
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     let mut c: DAE::Const = DAE::Const::C_CONST;

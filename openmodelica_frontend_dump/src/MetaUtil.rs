@@ -61,7 +61,7 @@ pub fn createMetaClassesInProgram(mut inProgram: Absyn::Program) -> Result<Absyn
             for mut c in &*outProgram.classes.clone() {
                 let mut c = c.clone();
                 (c, meta_classes) = createMetaClasses(c.clone())?;
-                classes = cons(c.clone(), listAppend(meta_classes.clone(), classes.clone()));
+                classes = metamodelica::cons(c.clone(), listAppend(meta_classes.clone(), classes.clone()));
             }
             outProgram.classes = Dangerous::listReverseInPlace(classes.clone());
             ()
@@ -74,7 +74,7 @@ pub fn createMetaClassesInProgram(mut inProgram: Absyn::Program) -> Result<Absyn
 fn createMetaClasses(mut inClass: Arc<Absyn::Class>) -> Result<(Arc<Absyn::Class>, Arc<metamodelica::List<Arc<Absyn::Class>>>)> {
     let mut outClass: Arc<Absyn::Class> = inClass.clone();
     let mut outMetaClasses: Arc<metamodelica::List<Arc<Absyn::Class>>> = metamodelica::nil();
-    let mut body: Arc<Absyn::ClassDef>;
+    let mut body: Arc<Absyn::ClassDef> = Arc::new(<Absyn::ClassDef as ::std::default::Default>::default());
     let mut parts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
     let () = (::match_deref::match_deref! { match &(outClass.clone()) {
         Deref @ Absyn::Class { body: body @ Deref @ Absyn::ClassDef::PARTS { classParts: parts, .. }, restriction: Absyn::Restriction::R_UNIONTYPE { .. }, .. } => {
@@ -166,7 +166,7 @@ fn createMetaClassesFromElementItems(mut inElementItems: Arc<metamodelica::List<
         _ => e.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        outElementItems = cons(e.clone(), outElementItems.clone());
+        outElementItems = metamodelica::cons(e.clone(), outElementItems.clone());
     }
     Ok(outElementItems)
 }
@@ -250,7 +250,7 @@ fn fixElementItems(mut inElementItems: Arc<metamodelica::List<Arc<Absyn::Element
         for mut e in (inElementItems.clone()).into_iter().cloned() {
             let __x = (::match_deref::match_deref! { match &(e.clone()) {
         Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: c @ Deref @ Absyn::Class { restriction: Absyn::Restriction::R_RECORD { .. }, .. }, .. }, .. } } => {
-            let mut body: Arc<Absyn::ClassDef>;
+            let mut body: Arc<Absyn::ClassDef> = Arc::new(<Absyn::ClassDef as ::std::default::Default>::default());
             let mut c = (*c).clone();
             body = c.body.clone();
             let () = (::match_deref::match_deref! { match &(body.clone()) {
@@ -263,7 +263,7 @@ fn fixElementItems(mut inElementItems: Arc<metamodelica::List<Arc<Absyn::Element
     } });
             r = Absyn::Restriction::R_METARECORD { name: Arc::new(Absyn::Path::IDENT { name: (inName.clone()).clone() }), index: index.clone(), singleton: singleton.clone(), moved: true, typeVars: typeVars.clone() };
             assign_field!(c.restriction = r.clone());
-            outMetaClasses = cons(c.clone(), outMetaClasses.clone());
+            outMetaClasses = metamodelica::cons(c.clone(), outMetaClasses.clone());
             r = Absyn::Restriction::R_METARECORD { name: Arc::new(Absyn::Path::IDENT { name: (inName.clone()).clone() }), index: index.clone(), singleton: singleton.clone(), moved: false, typeVars: typeVars.clone() };
             assign_field!(c.restriction = r.clone());
             index = index.clone() + 1;

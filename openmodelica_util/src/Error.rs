@@ -1308,9 +1308,9 @@ pub fn updateCurrentComponent(mut component: ArcStr, mut info: SourceInfo, mut f
     pub type prefixToStr = std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>;
 
     let mut tpl: Option<(metamodelica::Array<ArcStr>, metamodelica::Array<SourceInfo>, metamodelica::Array<Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>>)> = None;
-    let mut astr: metamodelica::Array<ArcStr>;
-    let mut ainfo: metamodelica::Array<SourceInfo>;
-    let mut afunc: metamodelica::Array<Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>>;
+    let mut astr: metamodelica::Array<ArcStr> = Default::default();
+    let mut ainfo: metamodelica::Array<SourceInfo> = Default::default();
+    let mut afunc: metamodelica::Array<Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>> = Default::default();
     tpl = crate::Globals::currentInstVar.with(|__root| __root.borrow().clone());
     let () = (match tpl.clone() {
         None => {
@@ -1338,9 +1338,9 @@ pub fn getCurrentComponent() -> Result<(ArcStr, i32, i32, i32, i32, bool, ArcStr
     let mut read_only: bool = false;
     let mut filename: ArcStr = literal!("");
     let mut tpl: Option<(metamodelica::Array<ArcStr>, metamodelica::Array<SourceInfo>, metamodelica::Array<Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>>)> = None;
-    let mut astr: metamodelica::Array<ArcStr>;
-    let mut ainfo: metamodelica::Array<SourceInfo>;
-    let mut afunc: metamodelica::Array<Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>>;
+    let mut astr: metamodelica::Array<ArcStr> = Default::default();
+    let mut ainfo: metamodelica::Array<SourceInfo> = Default::default();
+    let mut afunc: metamodelica::Array<Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>> = Default::default();
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     let mut func: Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>;
     tpl = crate::Globals::currentInstVar.with(|__root| __root.borrow().clone());
@@ -1377,7 +1377,7 @@ pub fn addMessage(mut inErrorMsg: ErrorTypes::Message, mut inMessageTokens: Arc<
     let mut eline: i32 = 0;
     let mut ecol: i32 = 0;
     let mut isReadOnly: bool = false;
-    let mut msg: Gettext::TranslatableContent;
+    let mut msg: Gettext::TranslatableContent = <Gettext::TranslatableContent as ::std::default::Default>::default();
     if !(Flags::getConfigBool(Flags::DEMO_MODE.clone())?) {
         (r#str, sline, scol, eline, ecol, isReadOnly, file) = getCurrentComponent()?;
         let ErrorTypes::MESSAGE { id: __pa0, ty: __pa1, severity: __pa2, message: __pa3 } = (inErrorMsg.clone()) else { bail!("pattern mismatch") };

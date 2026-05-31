@@ -243,25 +243,25 @@ pub mod ConnectorType {
         let mut r#str: ArcStr = arcstr::literal!("");
         let mut strl: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         if intBitAnd(cty.clone(), POTENTIAL.clone()) > 0 {
-            strl = cons((literal!("potential")).clone(), strl.clone());
+            strl = metamodelica::cons((literal!("potential")).clone(), strl.clone());
         }
         if intBitAnd(cty.clone(), FLOW.clone()) > 0 {
-            strl = cons((literal!("flow")).clone(), strl.clone());
+            strl = metamodelica::cons((literal!("flow")).clone(), strl.clone());
         }
         if intBitAnd(cty.clone(), STREAM.clone()) > 0 {
-            strl = cons((literal!("stream")).clone(), strl.clone());
+            strl = metamodelica::cons((literal!("stream")).clone(), strl.clone());
         }
         if intBitAnd(cty.clone(), POTENTIALLY_PRESENT.clone()) > 0 {
-            strl = cons((literal!("potentially present")).clone(), strl.clone());
+            strl = metamodelica::cons((literal!("potentially present")).clone(), strl.clone());
         }
         if intBitAnd(cty.clone(), VIRTUAL.clone()) > 0 {
-            strl = cons((literal!("virtual")).clone(), strl.clone());
+            strl = metamodelica::cons((literal!("virtual")).clone(), strl.clone());
         }
         if intBitAnd(cty.clone(), CONNECTOR.clone()) > 0 {
-            strl = cons((literal!("connector")).clone(), strl.clone());
+            strl = metamodelica::cons((literal!("connector")).clone(), strl.clone());
         }
         if intBitAnd(cty.clone(), EXPANDABLE.clone()) > 0 {
-            strl = cons((literal!("expandable")).clone(), strl.clone());
+            strl = metamodelica::cons((literal!("expandable")).clone(), strl.clone());
         }
         r#str = stringDelimitList(strl.clone(), (literal!(" ")).clone());
         r#str

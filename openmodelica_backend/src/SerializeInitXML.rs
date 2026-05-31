@@ -340,7 +340,7 @@ fn scalarVariableAttribute(mut file: File::File, mut simVar: SimVar, mut classTy
 }
 
 fn scalarVariableType(mut file: File::File, mut v: SimVar) -> Result<()> {
-    let mut path: Arc<Absyn::Path>;
+    let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let () = (::match_deref::match_deref! { match &(Types::arrayElementType(v.type_.clone())) {
         Deref @ Type::T_INTEGER { .. } => {
             File::write(file.clone(), (literal!("<Integer")).clone());

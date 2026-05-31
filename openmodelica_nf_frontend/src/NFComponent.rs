@@ -141,7 +141,7 @@ pub fn newIterator(mut iterType: Arc<Type::NFType>, mut info: SourceInfo) -> Arc
 }
 
 pub fn definition(mut component: Arc<NFComponent>) -> Result<Arc<Element>> {
-    let mut definition: Arc<Element>;
+    let mut definition: Arc<Element> = Arc::new(<Element as ::std::default::Default>::default());
     let __pa0 = ::match_deref::match_deref! { match &(component.clone()) {
         Deref @ COMPONENT_DEF { definition: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),

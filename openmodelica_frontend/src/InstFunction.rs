@@ -87,7 +87,7 @@ pub type InstDims = Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimen
 
 pub fn instantiateExternalObject(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut els: Arc<metamodelica::List<Arc<SCode::Element>>>, mut inMod: Arc<DAE::Mod>, mut r#impl: bool, mut comment: Arc<SCode::Comment>, mut info: SourceInfo) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::DAElist, ClassInf::State)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph;
+    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
     let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
     let mut ciState: ClassInf::State;
@@ -96,12 +96,12 @@ pub fn instantiateExternalObject(mut inCache: FCore::Cache, mut inEnv: FCore::Gr
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, false) => {
-                    let mut destr: Arc<SCode::Element>;
-                    let mut constr: Arc<SCode::Element>;
+                    let mut destr: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
+                    let mut constr: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
                     let mut className: Ident = arcstr::literal!("");
-                    let mut classNameFQ: Arc<Absyn::Path>;
+                    let mut classNameFQ: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut functp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut r: metamodelica::Array<FCore::Node>;
+                    let mut r: metamodelica::Array<FCore::Node> = Default::default();
                     let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
                     let mut cache = (*cache).clone();
                     let mut env = (*env).clone();
@@ -133,7 +133,7 @@ pub fn instantiateExternalObject(mut inCache: FCore::Cache, mut inEnv: FCore::Gr
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, _, ih, true) => {
-                    let mut classNameFQ: Arc<Absyn::Path>;
+                    let mut classNameFQ: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let __pa0 = ::match_deref::match_deref! { match &(FGraph::getScopePath(inEnv.clone())?) {
                         Some(__pa0) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -218,7 +218,7 @@ fn instantiateExternalObjectConstructor(mut inCache: FCore::Cache, mut env: FCor
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, ih) => {
-                    let mut env1: FCore::Graph;
+                    let mut env1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
@@ -246,15 +246,15 @@ fn instantiateExternalObjectConstructor(mut inCache: FCore::Cache, mut env: FCor
 
 pub fn implicitFunctionInstantiation(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inMod: Arc<DAE::Mod>, mut inPrefix: DAE::Prefix, mut inClass: Arc<SCode::Element>, mut inInstDims: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimension>>>>>) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph;
+    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
     (outCache, outEnv, outIH) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inIH.clone(), inMod.clone(), inPrefix.clone(), inClass.clone(), inInstDims.clone())) {
         (cache, env, ih, r#mod, pre, c @ Deref @ SCode::Element::CLASS { partialPrefix: pPrefix, restriction: SCode::Restriction::R_RECORD { isOperator: _ }, name: n, .. }, inst_dims) => {
             let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut cenv: FCore::Graph;
-            let mut fpath: Arc<Absyn::Path>;
+            let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+            let mut fpath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
-            let mut fun: DAE::Function;
+            let mut fun: DAE::Function = <DAE::Function as ::std::default::Default>::default();
             let mut cache = (*cache).clone();
             let mut env = (*env).clone();
             let mut ih = (*ih).clone();
@@ -300,7 +300,7 @@ pub fn implicitFunctionInstantiation(mut inCache: FCore::Cache, mut inEnv: FCore
 
 fn implicitFunctionInstantiation2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inMod: Arc<DAE::Mod>, mut inPrefix: DAE::Prefix, mut inClass: Arc<SCode::Element>, mut inInstDims: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimension>>>>>, mut instFunctionTypeOnly: bool) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, Arc<metamodelica::List<DAE::Function>>)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph;
+    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
     let mut funcs: Arc<metamodelica::List<DAE::Function>> = metamodelica::nil();
     (outCache, outEnv, outIH, funcs) = 'mc: {
@@ -310,10 +310,10 @@ fn implicitFunctionInstantiation2(mut inCache: FCore::Cache, mut inEnv: FCore::G
                 (cache, env, ih, r#mod, pre, Deref @ SCode::Element::CLASS { info, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: funcRest }, name: n, partialPrefix, prefixes: Deref @ SCode::Prefixes { visibility, .. }, classDef: cd, .. }, inst_dims) => {
                     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut env_1: FCore::Graph;
-                    let mut cenv: FCore::Graph;
-                    let mut fpath: Arc<Absyn::Path>;
-                    let mut c: Arc<SCode::Element>;
+                    let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+                    let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+                    let mut fpath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+                    let mut c: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
                     let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
                     let mut daeElts: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
                     let mut derFuncs: Arc<metamodelica::List<DAE::FunctionDefinition>> = metamodelica::nil();
@@ -354,7 +354,7 @@ fn implicitFunctionInstantiation2(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     if false && Config::acceptMetaModelicaGrammar()? && !(instFunctionTypeOnly.clone()) {
                         InstUtil::checkFunctionInputUsed(daeElts.clone(), None, (AbsynUtil::pathString(fpath.clone(), (literal!(".")).clone(), true, false)?).clone())?;
                     }
-                    Ok((cache.clone(), env_1.clone(), ih.clone(), list![DAE::Function::FUNCTION { path: fpath.clone(), functions: cons(DAE::FunctionDefinition::FUNCTION_DEF { body: ({
+                    Ok((cache.clone(), env_1.clone(), ih.clone(), list![DAE::Function::FUNCTION { path: fpath.clone(), functions: metamodelica::cons(DAE::FunctionDefinition::FUNCTION_DEF { body: ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
         for mut e in (daeElts.clone()).into_iter().cloned() {
             if !(!(DAEUtil::isComment(e.clone()))) { continue; }
@@ -372,10 +372,10 @@ fn implicitFunctionInstantiation2(mut inCache: FCore::Cache, mut inEnv: FCore::G
                 (cache, env, ih, r#mod, pre, c @ Deref @ SCode::Element::CLASS { encapsulatedPrefix, info, classDef: cd @ parts @ Deref @ SCode::ClassDef::PARTS { externalDecl: Some(scExtdecl), .. }, restriction: restr @ SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { purity } }, name: n, prefixes: Deref @ SCode::Prefixes { visibility, .. }, partialPrefix, .. }, inst_dims) => {
                     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut env_1: FCore::Graph;
-                    let mut tempenv: FCore::Graph;
-                    let mut cenv: FCore::Graph;
-                    let mut fpath: Arc<Absyn::Path>;
+                    let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+                    let mut tempenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+                    let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+                    let mut fpath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut vis: SCode::Visibility = SCode::Visibility::PROTECTED;
                     let mut extdecl: DAE::ExternalDecl = <DAE::ExternalDecl as ::std::default::Default>::default();
                     let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
@@ -410,7 +410,7 @@ fn implicitFunctionInstantiation2(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     source = ElementSource::createElementSource(info.clone(), FGraph::getScopePath(env.clone())?, pre.clone(), (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?;
                     partialPrefixBool = SCodeUtil::partialBool(partialPrefix.clone())?;
                     InstUtil::checkExternalFunction(daeElts.clone(), extdecl.clone(), (AbsynUtil::pathString(fpath.clone(), (literal!(".")).clone(), true, false)?).clone())?;
-                    Ok((cache.clone(), env_1.clone(), ih.clone(), list![DAE::Function::FUNCTION { path: fpath.clone(), functions: cons(DAE::FunctionDefinition::FUNCTION_EXT { body: daeElts.clone(), externalDecl: extdecl.clone() }, derFuncs.clone()), type_: ty1.clone(), visibility: visibility.clone(), partialPrefix: partialPrefixBool.clone(), isImpure: isImpure.clone(), inlineType: openmodelica_frontend_types::DAE::InlineType::NO_INLINE, unusedInputs: metamodelica::nil(), source: source.clone(), comment: Some(cmt.clone()) }]))
+                    Ok((cache.clone(), env_1.clone(), ih.clone(), list![DAE::Function::FUNCTION { path: fpath.clone(), functions: metamodelica::cons(DAE::FunctionDefinition::FUNCTION_EXT { body: daeElts.clone(), externalDecl: extdecl.clone() }, derFuncs.clone()), type_: ty1.clone(), visibility: visibility.clone(), partialPrefix: partialPrefixBool.clone(), isImpure: isImpure.clone(), inlineType: openmodelica_frontend_types::DAE::InlineType::NO_INLINE, unusedInputs: metamodelica::nil(), source: source.clone(), comment: Some(cmt.clone()) }]))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -418,7 +418,7 @@ fn implicitFunctionInstantiation2(mut inCache: FCore::Cache, mut inEnv: FCore::G
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, _, pre, Deref @ SCode::Element::CLASS { cmt, classDef: Deref @ SCode::ClassDef::OVERLOAD { pathLst: funcnames }, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_NORMAL_FUNCTION { purity } }, prefixes: Deref @ SCode::Prefixes { visibility, .. }, name: n, .. }, _) => {
-                    let mut fpath: Arc<Absyn::Path>;
+                    let mut fpath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut resfns: Arc<metamodelica::List<DAE::Function>> = metamodelica::nil();
                     let mut isImpure: bool = false;
                     let mut cache = (*cache).clone();
@@ -427,7 +427,7 @@ fn implicitFunctionInstantiation2(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     (cache, env, ih, resfns) = instOverloadedFunctions(cache.clone(), env.clone(), ih.clone(), pre.clone(), funcnames.clone(), var_field!((*inClass).info, SCode::Element::CLASS).clone())?;
                     (cache, fpath) = Inst::makeFullyQualifiedIdent(cache.clone(), env.clone(), (n.clone()).clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }))?;
                     isImpure = AbsynUtil::isImpure(purity.clone(), false);
-                    resfns = cons(DAE::Function::FUNCTION { path: fpath.clone(), functions: list![DAE::FunctionDefinition::FUNCTION_DEF { body: metamodelica::nil() }], type_: DAE::T_UNKNOWN_DEFAULT().clone(), visibility: visibility.clone(), partialPrefix: true, isImpure: isImpure.clone(), inlineType: openmodelica_frontend_types::DAE::InlineType::NO_INLINE, unusedInputs: metamodelica::nil(), source: DAE::emptyElementSource().clone(), comment: Some(cmt.clone()) }, resfns.clone());
+                    resfns = metamodelica::cons(DAE::Function::FUNCTION { path: fpath.clone(), functions: list![DAE::FunctionDefinition::FUNCTION_DEF { body: metamodelica::nil() }], type_: DAE::T_UNKNOWN_DEFAULT().clone(), visibility: visibility.clone(), partialPrefix: true, isImpure: isImpure.clone(), inlineType: openmodelica_frontend_types::DAE::InlineType::NO_INLINE, unusedInputs: metamodelica::nil(), source: DAE::emptyElementSource().clone(), comment: Some(cmt.clone()) }, resfns.clone());
                     Ok((cache.clone(), env.clone(), ih.clone(), resfns.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -471,8 +471,8 @@ fn instantiateDerivativeFuncs2(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, Deref @ metamodelica::List::Cons { head: p, tail: paths }) => {
                     let mut funcs: Arc<metamodelica::List<DAE::Function>> = metamodelica::nil();
-                    let mut cenv: FCore::Graph;
-                    let mut cdef: Arc<SCode::Element>;
+                    let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+                    let mut cdef: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     let mut p = (*p).clone();
@@ -506,7 +506,7 @@ fn instantiateDerivativeFuncs2(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut p: Arc<Absyn::Path>;
+                    let mut p: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut fun: ArcStr = arcstr::literal!("");
                     let mut scope: ArcStr = arcstr::literal!("");
                     let __pa0 = ::match_deref::match_deref! { match &(inPaths.clone()) {
@@ -529,14 +529,14 @@ fn instantiateDerivativeFuncs2(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
 
 pub fn implicitFunctionTypeInstantiation(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inClass: Arc<SCode::Element>) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph;
+    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
     (outCache, outEnv, outIH) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), inClass.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { .. }, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { purity: _ } }, .. }) => {
-                    let mut env_1: FCore::Graph;
+                    let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut funs: Arc<metamodelica::List<DAE::Function>> = metamodelica::nil();
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
@@ -550,8 +550,8 @@ pub fn implicitFunctionTypeInstantiation(mut inCache: FCore::Cache, mut inEnv: F
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, Deref @ SCode::Element::CLASS { info, cmt, classDef: Deref @ SCode::ClassDef::PARTS { externalDecl: extDecl, elementLst: elts, .. }, restriction: r, partialPrefix: p, encapsulatedPrefix: e, prefixes, name: id }) => {
-                    let mut stripped_class: Arc<SCode::Element>;
-                    let mut env_1: FCore::Graph;
+                    let mut stripped_class: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
+                    let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     let mut elts = (*elts).clone();
@@ -566,11 +566,11 @@ pub fn implicitFunctionTypeInstantiation(mut inCache: FCore::Cache, mut inEnv: F
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, Deref @ SCode::Element::CLASS { info, classDef: Deref @ SCode::ClassDef::DERIVED { modifications: mod1, typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: cn, .. }, .. }, name: id, .. }) => {
-                    let mut env_1: FCore::Graph;
-                    let mut fpath: Arc<Absyn::Path>;
+                    let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+                    let mut fpath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut mod2: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut cenv: FCore::Graph;
-                    let mut c: Arc<SCode::Element>;
+                    let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+                    let mut c: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
                     let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut cache = (*cache).clone();
@@ -622,7 +622,7 @@ pub fn implicitFunctionTypeInstantiation(mut inCache: FCore::Cache, mut inEnv: F
 
 fn instOverloadedFunctions(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut pre: DAE::Prefix, mut inAbsynPathLst: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut inInfo: SourceInfo) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, Arc<metamodelica::List<DAE::Function>>)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outEnv: FCore::Graph;
+    let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
     let mut outFns: Arc<metamodelica::List<DAE::Function>> = metamodelica::nil();
     (outCache, outEnv, outIH, outFns) = 'mc: {
@@ -638,8 +638,8 @@ fn instOverloadedFunctions(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, Deref @ metamodelica::List::Cons { head: r#fn, tail: fns }) => {
-                    let mut cenv: FCore::Graph;
-                    let mut c: Arc<SCode::Element>;
+                    let mut cenv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+                    let mut c: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
                     let mut resfns1: Arc<metamodelica::List<DAE::Function>> = metamodelica::nil();
                     let mut resfns2: Arc<metamodelica::List<DAE::Function>> = metamodelica::nil();
                     let mut rest: SCode::Restriction = SCode::Restriction::R_BLOCK;
@@ -742,23 +742,23 @@ fn instExtMakeDefaultExternalCall(mut elements: Arc<metamodelica::List<Arc<DAE::
 
 fn addExtVarToCall(mut cr: Arc<DAE::ComponentRef>, mut dir: Absyn::Direction, mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut fargs: Arc<metamodelica::List<DAE::ExtArg>>) -> Result<Arc<metamodelica::List<DAE::ExtArg>>> {
     let mut fargs: Arc<metamodelica::List<DAE::ExtArg>> = fargs;
-    fargs = cons(DAE::ExtArg::EXTARG { componentRef: cr.clone(), direction: dir.clone(), type_: ComponentReference::crefTypeFull(cr.clone())? }, fargs.clone());
+    fargs = metamodelica::cons(DAE::ExtArg::EXTARG { componentRef: cr.clone(), direction: dir.clone(), type_: ComponentReference::crefTypeFull(cr.clone())? }, fargs.clone());
     for mut dim in 1..=(dims.clone().len() as i32) {
-        fargs = cons(DAE::ExtArg::EXTARGSIZE { componentRef: cr.clone(), type_: ComponentReference::crefTypeFull(cr.clone())?, exp: Arc::new(DAE::Exp::ICONST { integer: dim.clone() }) }, fargs.clone());
+        fargs = metamodelica::cons(DAE::ExtArg::EXTARGSIZE { componentRef: cr.clone(), type_: ComponentReference::crefTypeFull(cr.clone())?, exp: Arc::new(DAE::Exp::ICONST { integer: dim.clone() }) }, fargs.clone());
     }
     Ok(fargs)
 }
 
 pub fn getRecordConstructorFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPath: Arc<Absyn::Path>) -> Result<(FCore::Cache, DAE::Function)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outFunc: DAE::Function;
+    let mut outFunc: DAE::Function = <DAE::Function as ::std::default::Default>::default();
     (outCache, outFunc) = 'mc: {
         let __mc_input = inPath.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut path: Arc<Absyn::Path>;
-                    let mut func: DAE::Function;
+                    let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+                    let mut func: DAE::Function = <DAE::Function as ::std::default::Default>::default();
                     path = AbsynUtil::makeFullyQualified(inPath.clone());
                     func = FCore::getCachedInstFunc(inCache.clone(), path.clone())?;
                     Ok((inCache.clone(), func.clone()))
@@ -769,10 +769,10 @@ pub fn getRecordConstructorFunction(mut inCache: FCore::Cache, mut inEnv: FCore:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut path: Arc<Absyn::Path>;
-                    let mut recordCl: Arc<SCode::Element>;
-                    let mut recordEnv: FCore::Graph;
-                    let mut func: DAE::Function;
+                    let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+                    let mut recordCl: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
+                    let mut recordEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+                    let mut func: DAE::Function = <DAE::Function as ::std::default::Default>::default();
                     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
                     let mut recType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut fixedTy: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -859,7 +859,7 @@ pub fn addRecordConstructorFunction(mut inCache: FCore::Cache, mut inEnv: FCore:
                     let mut locals: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
                     let mut fixedTy: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut funcTy: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut func: DAE::Function;
+                    let mut func: DAE::Function = <DAE::Function as ::std::default::Default>::default();
                     let mut fargs: Arc<metamodelica::List<Arc<DAE::FuncArg>>> = metamodelica::nil();
                     let mut cache = (*cache).clone();
                     let mut path = (*path).clone();
@@ -919,7 +919,7 @@ fn checkExtObjOutput(mut inType: Arc<DAE::Type>, mut info: SourceInfo) -> Result
 
 fn checkExtObjOutputWork(mut ty: Arc<DAE::Type>, mut inTpl: (Arc<Absyn::Path>, SourceInfo, bool)) -> Result<(Arc<DAE::Type>, (Arc<Absyn::Path>, SourceInfo, bool))> {
     let mut oty: Arc<DAE::Type> = ty.clone();
-    let mut outTpl: (Arc<Absyn::Path>, SourceInfo, bool);
+    let mut outTpl: (Arc<Absyn::Path>, SourceInfo, bool) = (Arc::new(<Absyn::Path as ::std::default::Default>::default()), <SourceInfo as ::std::default::Default>::default(), false);
     outTpl = (::match_deref::match_deref! { match &((ty.clone(), inTpl.clone())) {
         (Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::EXTERNAL_OBJ { path: path1 }, .. }, (path2, info, true)) => {
             let mut str1: ArcStr = arcstr::literal!("");

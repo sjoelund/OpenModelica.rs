@@ -362,7 +362,7 @@ pub mod RefTree {
             Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() })
         },
         Deref @ Tree::NODE { key, .. } => {
-            let mut value: Value;
+            let mut value: Value = Default::default();
             let mut key_comp: i32 = 0;
             key_comp = keyCompare((inKey.clone()).clone(), (key.clone()).clone());
             if key_comp.clone() == -1 {
@@ -378,7 +378,7 @@ pub mod RefTree {
             if (key_comp.clone() == 0) {tree.clone()} else {balance(tree.clone())?}
         },
         Deref @ Tree::LEAF { .. } => {
-            let mut value: Value;
+            let mut value: Value = Default::default();
             let mut key_comp: i32 = 0;
             let mut outTree: Arc<Tree> = Arc::new(Tree::EMPTY);
             key_comp = keyCompare((inKey.clone()).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone());
@@ -403,7 +403,7 @@ pub mod RefTree {
     pub use addConflictFail as addConflictDefault;
 
     pub fn addConflictFail(mut newValue: Value, mut oldValue: Value, mut key: Key) -> Result<Value> {
-        let mut value: Value;
+        let mut value: Value = Default::default();
         bail!("fail");
         Ok(value)
     }
@@ -421,7 +421,7 @@ pub mod RefTree {
     pub fn addList(mut tree: Arc<Tree>, mut inValues: Arc<metamodelica::List<(ArcStr, metamodelica::Array<Node>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(metamodelica::Array<Node>, metamodelica::Array<Node>, ArcStr) -> Result<metamodelica::Array<Node>> + 'static>) -> Result<Arc<Tree>> {
         let mut tree: Arc<Tree> = tree;
         let mut key: Key = arcstr::literal!("");
-        let mut value: Value;
+        let mut value: Value = Default::default();
         for mut t in &*inValues.clone() {
             let mut t = t.clone();
             (key, value) = t.clone();
@@ -603,7 +603,7 @@ pub mod RefTree {
     pub fn fromList(mut inValues: Arc<metamodelica::List<(ArcStr, metamodelica::Array<Node>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(metamodelica::Array<Node>, metamodelica::Array<Node>, ArcStr) -> Result<metamodelica::Array<Node>> + 'static>) -> Result<Arc<Tree>> {
         let mut tree: Arc<Tree> = Arc::new(crate::FCore::RefTree::Tree::EMPTY);
         let mut key: Key = arcstr::literal!("");
-        let mut value: Value;
+        let mut value: Value = Default::default();
         for mut t in &*inValues.clone() {
             let mut t = t.clone();
             (key, value) = t.clone();
@@ -613,7 +613,7 @@ pub mod RefTree {
     }
 
     pub fn get(mut tree: Arc<Tree>, mut key: Key) -> Result<Value> {
-        let mut value: Value;
+        let mut value: Value = Default::default();
         let mut k: Key = arcstr::literal!("");
         k = ((::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => var_field!((*tree).key, Tree::NODE).clone(),
@@ -726,12 +726,12 @@ pub mod RefTree {
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { key, .. } => {
             lst = listKeys(var_field!((*tree).right, Tree::NODE).clone(), lst.clone());
-            lst = cons((key.clone()).clone(), lst.clone());
+            lst = metamodelica::cons((key.clone()).clone(), lst.clone());
             lst = listKeys(var_field!((*tree).left, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
         Deref @ Tree::LEAF { key, .. } => {
-            cons((key.clone()).clone(), lst.clone())
+            metamodelica::cons((key.clone()).clone(), lst.clone())
         },
         _ => {
             lst.clone()
@@ -744,10 +744,10 @@ pub mod RefTree {
     pub fn listKeysReverse(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<ArcStr>>) -> Arc<metamodelica::List<ArcStr>> {
         let mut lst: Arc<metamodelica::List<ArcStr>> = lst;
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
-        Deref @ Tree::LEAF { .. } => cons((var_field!((*inTree).key, Tree::LEAF).clone()).clone(), lst.clone()),
+        Deref @ Tree::LEAF { .. } => metamodelica::cons((var_field!((*inTree).key, Tree::LEAF).clone()).clone(), lst.clone()),
         Deref @ Tree::NODE { .. } => {
             lst = listKeysReverse(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
-            lst = cons((var_field!((*inTree).key, Tree::NODE).clone()).clone(), lst.clone());
+            lst = metamodelica::cons((var_field!((*inTree).key, Tree::NODE).clone()).clone(), lst.clone());
             lst = listKeysReverse(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
@@ -762,12 +762,12 @@ pub mod RefTree {
         lst = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { value, .. } => {
             lst = listValues(var_field!((*tree).right, Tree::NODE).clone(), lst.clone());
-            lst = cons(value.clone(), lst.clone());
+            lst = metamodelica::cons(value.clone(), lst.clone());
             lst = listValues(var_field!((*tree).left, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
         Deref @ Tree::LEAF { value, .. } => {
-            cons(value.clone(), lst.clone())
+            metamodelica::cons(value.clone(), lst.clone())
         },
         _ => {
             lst.clone()
@@ -783,7 +783,7 @@ pub mod RefTree {
         let mut outTree: Arc<Tree> = inTree.clone();
         outTree = (::match_deref::match_deref! { match &(outTree.clone()) {
         Deref @ Tree::NODE { value, key, .. } => {
-            let mut new_value: Value;
+            let mut new_value: Value = Default::default();
             let mut new_left: Arc<Tree> = Arc::new(Tree::EMPTY);
             let mut new_right: Arc<Tree> = Arc::new(Tree::EMPTY);
             new_left = map(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone());
@@ -795,7 +795,7 @@ pub mod RefTree {
             outTree.clone()
         },
         Deref @ Tree::LEAF { value, key } => {
-            let mut new_value: Value;
+            let mut new_value: Value = Default::default();
             new_value = inFunc((key.clone()).clone(), value.clone()).unwrap();
             if !(referenceEq(&value.clone(),&new_value.clone())) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
@@ -817,7 +817,7 @@ pub mod RefTree {
         let mut outResult: FT = inStartValue.clone();
         outTree = (::match_deref::match_deref! { match &(outTree.clone()) {
         Deref @ Tree::NODE { value, key, .. } => {
-            let mut new_value: Value;
+            let mut new_value: Value = Default::default();
             let mut new_left: Arc<Tree> = Arc::new(Tree::EMPTY);
             let mut new_right: Arc<Tree> = Arc::new(Tree::EMPTY);
             (new_left, outResult) = mapFold(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone());
@@ -829,7 +829,7 @@ pub mod RefTree {
             outTree.clone()
         },
         Deref @ Tree::LEAF { value, key } => {
-            let mut new_value: Value;
+            let mut new_value: Value = Default::default();
             (new_value, outResult) = inFunc((key.clone()).clone(), value.clone(), outResult.clone()).unwrap();
             if !(referenceEq(&value.clone(),&new_value.clone())) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
@@ -967,12 +967,12 @@ pub mod RefTree {
         lst = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { value, key, .. } => {
             lst = toList(var_field!((*inTree).right, Tree::NODE).clone(), lst.clone());
-            lst = cons((key.clone(), value.clone()), lst.clone());
+            lst = metamodelica::cons((key.clone(), value.clone()), lst.clone());
             lst = toList(var_field!((*inTree).left, Tree::NODE).clone(), lst.clone());
             lst.clone()
         },
         Deref @ Tree::LEAF { value, key } => {
-            cons((key.clone(), value.clone()), lst.clone())
+            metamodelica::cons((key.clone(), value.clone()), lst.clone())
         },
         _ => {
             lst.clone()
@@ -1264,7 +1264,7 @@ pub fn next(mut inext: Next) -> Next {
 pub fn emptyCache() -> Cache {
     let mut cache: Cache = Cache::NO_CACHE;
     let mut instFuncs: Mutable::Mutable<Arc<AvlTreePathFunction::Tree>>;
-    let mut ht: StructuralParameters;
+    let mut ht: StructuralParameters = (Arc::new(AvlSetCR::Tree::EMPTY), metamodelica::nil());
     instFuncs = Mutable::create(Arc::new(openmodelica_frontend_dump::AvlTreePathFunction::Tree::EMPTY));
     ht = (Arc::new(crate::AvlSetCR::Tree::EMPTY), metamodelica::nil());
     cache = Cache::CACHE { initialGraph: None, functions: instFuncs.clone(), evaluatedParams: ht.clone(), modelName: Arc::new(Absyn::Path::IDENT { name: (literal!("##UNDEFINED##")).clone() }) };
@@ -1281,10 +1281,10 @@ pub fn addEvaluatedCref(mut cache: Cache, mut var: SCode::Variability, mut cr: A
     let mut ocache: Cache = Cache::NO_CACHE;
     ocache = (::match_deref::match_deref! { match &((cache.clone(), var.clone())) {
         (Cache::CACHE { initialGraph, functions, evaluatedParams: (ht, Deref @ metamodelica::List::Cons { head: crs, tail: st }), modelName: p }, SCode::Variability::PARAM { .. }) => {
-            Cache::CACHE { initialGraph: initialGraph.clone(), functions: functions.clone(), evaluatedParams: (ht.clone(), cons(cons(cr.clone(), crs.clone()), st.clone())), modelName: p.clone() }
+            Cache::CACHE { initialGraph: initialGraph.clone(), functions: functions.clone(), evaluatedParams: (ht.clone(), metamodelica::cons(metamodelica::cons(cr.clone(), crs.clone()), st.clone())), modelName: p.clone() }
         },
         (Cache::CACHE { initialGraph, functions, evaluatedParams: (ht, Deref @ metamodelica::List::Nil), modelName: p }, SCode::Variability::PARAM { .. }) => {
-            Cache::CACHE { initialGraph: initialGraph.clone(), functions: functions.clone(), evaluatedParams: (ht.clone(), cons(list![cr.clone()], metamodelica::nil())), modelName: p.clone() }
+            Cache::CACHE { initialGraph: initialGraph.clone(), functions: functions.clone(), evaluatedParams: (ht.clone(), metamodelica::cons(list![cr.clone()], metamodelica::nil())), modelName: p.clone() }
         },
         _ => {
             cache.clone()
@@ -1343,7 +1343,7 @@ pub fn isImplicitScope(mut inName: Name) -> Result<bool> {
 }
 
 pub fn getCachedInstFunc(mut inCache: Cache, mut path: Arc<Absyn::Path>) -> Result<DAE::Function> {
-    let mut func: DAE::Function;
+    let mut func: DAE::Function = <DAE::Function as ::std::default::Default>::default();
     func = (match inCache.clone() {
         Cache::CACHE { functions: mut ef, .. } => {
             let __pa0 = ::match_deref::match_deref! { match &(AvlTreePathFunction::get(Mutable::access(ef.clone()), path.clone())?) {
@@ -1475,7 +1475,7 @@ pub fn isDeletedComp(mut status: Status) -> bool {
 }
 
 pub fn getCachedInitialGraph(mut cache: Cache) -> Result<Graph> {
-    let mut g: Graph;
+    let mut g: Graph = <Graph as ::std::default::Default>::default();
     g = (match cache.clone() {
         Cache::CACHE { initialGraph: Some(mut g), .. } => g.clone(),
         _ => bail!("match: no arm matched"),
@@ -1505,7 +1505,7 @@ pub fn getRecordConstructorName(mut inName: Name) -> Result<Name> {
 }
 
 pub fn getRecordConstructorPath(mut inPath: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
-    let mut outPath: Arc<Absyn::Path>;
+    let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut lastId: Name = arcstr::literal!("");
     if Config::acceptMetaModelicaGrammar()? {
         outPath = inPath.clone();

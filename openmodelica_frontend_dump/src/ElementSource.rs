@@ -82,7 +82,7 @@ pub fn addCommentToSource(mut source: Arc<DAE::ElementSource>, mut commentIn: Op
     let mut source: Arc<DAE::ElementSource> = source;
     source = (::match_deref::match_deref! { match &((source.clone(), commentIn.clone())) {
         (Deref @ DAE::ElementSource { info: _, partOfLst: _, instance: _, connectEquationOptLst: _, typeLst: _, operations: _, comment: _ }, Some(comment)) => {
-            assign_field!(source.comment = cons(comment.clone(), source.comment.clone()));
+            assign_field!(source.comment = metamodelica::cons(comment.clone(), source.comment.clone()));
             source.clone()
         },
         _ => {
@@ -95,7 +95,7 @@ pub fn addCommentToSource(mut source: Arc<DAE::ElementSource>, mut commentIn: Op
 
 pub fn createElementSource(mut fileInfo: SourceInfo, mut partOf: Option<Arc<Absyn::Path>>, mut prefix: DAE::Prefix, mut connectEquation: (Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>)) -> Result<Arc<DAE::ElementSource>> {
     let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
-    let mut path: Arc<Absyn::Path>;
+    let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     source = Arc::new(DAE::ElementSource { info: fileInfo.clone(), partOfLst: (::match_deref::match_deref! { match &(partOf.clone()) {
         None => metamodelica::nil(),
         Some(path) => list![Absyn::Within::WITHIN { path: path.clone() }],
@@ -120,7 +120,7 @@ pub fn addAdditionalComment(mut source: Arc<DAE::ElementSource>, mut message: Ar
             let mut comment = (*comment).clone();
             c = Arc::new(SCode::Comment { annotation_: None, comment: Some((message.clone()).clone()) });
             b = listMember(c.clone(), comment.clone());
-            comment = if (b.clone()) {comment.clone()} else {cons(c.clone(), comment.clone())};
+            comment = if (b.clone()) {comment.clone()} else {metamodelica::cons(c.clone(), comment.clone())};
             Arc::new(DAE::ElementSource { info: info.clone(), partOfLst: partOfLst.clone(), instance: instanceOpt.clone(), connectEquationOptLst: connectEquationOptLst.clone(), typeLst: typeLst.clone(), operations: operations.clone(), comment: comment.clone() })
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -132,7 +132,7 @@ pub fn addAnnotation(mut source: Arc<DAE::ElementSource>, mut comment: Arc<SCode
     let mut outSource: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
     outSource = (::match_deref::match_deref! { match &((source.clone(), comment.clone())) {
         (Deref @ DAE::ElementSource { info, partOfLst, instance: instanceOpt, connectEquationOptLst, typeLst, operations, comment: commentLst }, Deref @ SCode::Comment { annotation_: Some(_), .. }) => {
-            Arc::new(DAE::ElementSource { info: info.clone(), partOfLst: partOfLst.clone(), instance: instanceOpt.clone(), connectEquationOptLst: connectEquationOptLst.clone(), typeLst: typeLst.clone(), operations: operations.clone(), comment: cons(comment.clone(), commentLst.clone()) })
+            Arc::new(DAE::ElementSource { info: info.clone(), partOfLst: partOfLst.clone(), instance: instanceOpt.clone(), connectEquationOptLst: connectEquationOptLst.clone(), typeLst: typeLst.clone(), operations: operations.clone(), comment: metamodelica::cons(comment.clone(), commentLst.clone()) })
         },
         _ => {
             source.clone()
@@ -172,10 +172,10 @@ pub fn addSymbolicTransformation(mut source: Arc<DAE::ElementSource>, mut op: Ar
         (Deref @ DAE::ElementSource { info, partOfLst, instance: instanceOpt, connectEquationOptLst, typeLst, operations: Deref @ metamodelica::List::Cons { head: Deref @ DAE::SymbolicOperation::SUBSTITUTION { substitutions: es1 @ Deref @ metamodelica::List::Cons { head: h1, tail: _ }, source: t1 }, tail: operations }, comment }, Deref @ DAE::SymbolicOperation::SUBSTITUTION { substitutions: es2, source: t2 }) if (ExpressionBasics::expEqual(t2.clone(), h1.clone())?) => {
             let mut es: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             es = listAppend(es2.clone(), es1.clone());
-            Arc::new(DAE::ElementSource { info: info.clone(), partOfLst: partOfLst.clone(), instance: instanceOpt.clone(), connectEquationOptLst: connectEquationOptLst.clone(), typeLst: typeLst.clone(), operations: cons(Arc::new(DAE::SymbolicOperation::SUBSTITUTION { substitutions: es.clone(), source: t1.clone() }), operations.clone()), comment: comment.clone() })
+            Arc::new(DAE::ElementSource { info: info.clone(), partOfLst: partOfLst.clone(), instance: instanceOpt.clone(), connectEquationOptLst: connectEquationOptLst.clone(), typeLst: typeLst.clone(), operations: metamodelica::cons(Arc::new(DAE::SymbolicOperation::SUBSTITUTION { substitutions: es.clone(), source: t1.clone() }), operations.clone()), comment: comment.clone() })
         },
         (Deref @ DAE::ElementSource { info, partOfLst, instance: instanceOpt, connectEquationOptLst, typeLst, operations, comment }, _) => {
-            Arc::new(DAE::ElementSource { info: info.clone(), partOfLst: partOfLst.clone(), instance: instanceOpt.clone(), connectEquationOptLst: connectEquationOptLst.clone(), typeLst: typeLst.clone(), operations: cons(op.clone(), operations.clone()), comment: comment.clone() })
+            Arc::new(DAE::ElementSource { info: info.clone(), partOfLst: partOfLst.clone(), instance: instanceOpt.clone(), connectEquationOptLst: connectEquationOptLst.clone(), typeLst: typeLst.clone(), operations: metamodelica::cons(op.clone(), operations.clone()), comment: comment.clone() })
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -201,7 +201,7 @@ pub fn addSymbolicTransformationDeriveLst(mut source: Arc<DAE::ElementSource>, m
             source.clone()
         },
         (Deref @ metamodelica::List::Cons { head: exp1, tail: rexplst1 }, Deref @ metamodelica::List::Cons { head: exp2, tail: rexplst2 }) => {
-            let mut op: Arc<DAE::SymbolicOperation>;
+            let mut op: Arc<DAE::SymbolicOperation> = Arc::new(<DAE::SymbolicOperation as ::std::default::Default>::default());
             op = Arc::new(DAE::SymbolicOperation::OP_DIFFERENTIATE { cr: DAE::crefTime().clone(), before: exp1.clone(), after: exp2.clone() });
             source = addSymbolicTransformation(source.clone(), op.clone())?;
             addSymbolicTransformationDeriveLst(source.clone(), rexplst1.clone(), rexplst2.clone())?
@@ -218,7 +218,7 @@ pub fn addSymbolicTransformationFlattenedEqs(mut source: Arc<DAE::ElementSource>
     }
     source = (::match_deref::match_deref! { match &(source.clone()) {
         Deref @ DAE::ElementSource { info, partOfLst, instance: instanceOpt, connectEquationOptLst, typeLst, operations: Deref @ metamodelica::List::Cons { head: Deref @ DAE::SymbolicOperation::FLATTEN { scode, dae: None }, tail: operations }, comment } => {
-            Arc::new(DAE::ElementSource { info: info.clone(), partOfLst: partOfLst.clone(), instance: instanceOpt.clone(), connectEquationOptLst: connectEquationOptLst.clone(), typeLst: typeLst.clone(), operations: cons(Arc::new(DAE::SymbolicOperation::FLATTEN { scode: scode.clone(), dae: Some(elt.clone()) }), operations.clone()), comment: comment.clone() })
+            Arc::new(DAE::ElementSource { info: info.clone(), partOfLst: partOfLst.clone(), instance: instanceOpt.clone(), connectEquationOptLst: connectEquationOptLst.clone(), typeLst: typeLst.clone(), operations: metamodelica::cons(Arc::new(DAE::SymbolicOperation::FLATTEN { scode: scode.clone(), dae: Some(elt.clone()) }), operations.clone()), comment: comment.clone() })
         },
         Deref @ DAE::ElementSource { info, .. } => {
             Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Tried to add the flattened elements to the list of operations, but did not find the SCode equation")).clone()], info.clone())?;
@@ -291,9 +291,9 @@ pub fn addSymbolicTransformationSimplify(mut add: bool, mut source: Arc<DAE::Ele
 
 pub fn addSymbolicTransformationSolve(mut add: bool, mut source: Arc<DAE::ElementSource>, mut cr: Arc<DAE::ComponentRef>, mut exp1: Arc<DAE::Exp>, mut exp2: Arc<DAE::Exp>, mut exp: Arc<DAE::Exp>, mut asserts: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Arc<DAE::ElementSource>> {
     let mut source: Arc<DAE::ElementSource> = source;
-    let mut op: Arc<DAE::SymbolicOperation>;
-    let mut op1: Arc<DAE::SymbolicOperation>;
-    let mut op2: Arc<DAE::SymbolicOperation>;
+    let mut op: Arc<DAE::SymbolicOperation> = Arc::new(<DAE::SymbolicOperation as ::std::default::Default>::default());
+    let mut op1: Arc<DAE::SymbolicOperation> = Arc::new(<DAE::SymbolicOperation as ::std::default::Default>::default());
+    let mut op2: Arc<DAE::SymbolicOperation> = Arc::new(<DAE::SymbolicOperation as ::std::default::Default>::default());
     if !(add.clone() && Flags::isSet(Flags::INFO_XML_OPERATIONS.clone())?) {
         return Ok(source.clone());
     }
@@ -312,7 +312,7 @@ pub fn addSymbolicTransformationSolve(mut add: bool, mut source: Arc<DAE::Elemen
 }
 
 pub fn getAssertCond(mut stmt: Arc<DAE::Statement>) -> Result<Arc<DAE::Exp>> {
-    let mut cond: Arc<DAE::Exp>;
+    let mut cond: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let __pa0 = ::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ DAE::Statement::STMT_ASSERT { cond: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -425,7 +425,7 @@ pub fn addElementSourcePartOf(mut source: Arc<DAE::ElementSource>, mut withinPat
     if !(Flags::isSet(Flags::INFO_XML_OPERATIONS.clone())? || Flags::isSet(Flags::VISUAL_XML.clone())?) {
         return Ok(source.clone());
     }
-    assign_field!(source.partOfLst = cons(withinPath.clone(), source.partOfLst.clone()));
+    assign_field!(source.partOfLst = metamodelica::cons(withinPath.clone(), source.partOfLst.clone()));
     Ok(source)
 }
 
@@ -456,7 +456,7 @@ pub fn addElementSourceConnect(mut inSource: Arc<DAE::ElementSource>, mut connec
     let mut outSource: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
     outSource = (::match_deref::match_deref! { match &(inSource.clone()) {
         Deref @ DAE::ElementSource { info, partOfLst, instance: instanceOpt, connectEquationOptLst, typeLst, operations, comment } => {
-            Arc::new(DAE::ElementSource { info: info.clone(), partOfLst: partOfLst.clone(), instance: instanceOpt.clone(), connectEquationOptLst: cons(connectEquationOpt.clone(), connectEquationOptLst.clone()), typeLst: typeLst.clone(), operations: operations.clone(), comment: comment.clone() })
+            Arc::new(DAE::ElementSource { info: info.clone(), partOfLst: partOfLst.clone(), instance: instanceOpt.clone(), connectEquationOptLst: metamodelica::cons(connectEquationOpt.clone(), connectEquationOptLst.clone()), typeLst: typeLst.clone(), operations: operations.clone(), comment: comment.clone() })
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -470,7 +470,7 @@ pub fn addElementSourceType(mut source: Arc<DAE::ElementSource>, mut classPath: 
     }
     source = (::match_deref::match_deref! { match &(source.clone()) {
         Deref @ DAE::ElementSource { info, partOfLst, instance: instanceOpt, connectEquationOptLst, typeLst, operations, comment } => {
-            Arc::new(DAE::ElementSource { info: info.clone(), partOfLst: partOfLst.clone(), instance: instanceOpt.clone(), connectEquationOptLst: connectEquationOptLst.clone(), typeLst: cons(classPath.clone(), typeLst.clone()), operations: operations.clone(), comment: comment.clone() })
+            Arc::new(DAE::ElementSource { info: info.clone(), partOfLst: partOfLst.clone(), instance: instanceOpt.clone(), connectEquationOptLst: connectEquationOptLst.clone(), typeLst: metamodelica::cons(classPath.clone(), typeLst.clone()), operations: operations.clone(), comment: comment.clone() })
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

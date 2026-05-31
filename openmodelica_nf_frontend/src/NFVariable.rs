@@ -126,7 +126,7 @@ pub fn fromCref(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<NFVar
     let mut cmt: Arc<SCode::Comment> = Arc::new(<SCode::Comment as ::std::default::Default>::default());
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     let mut binfo: Arc<BackendInfo::BackendInfo> = NFBackendExtension::DUMMY_BACKEND_INFO().clone();
-    let mut child_nodes: metamodelica::Array<Arc<InstNode::InstNode>>;
+    let mut child_nodes: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
     let mut children: Arc<metamodelica::List<Arc<NFVariable>>> = metamodelica::nil();
     node = ComponentRef::node(cref.clone())?;
     comp = InstNode::component(node.clone())?;
@@ -234,13 +234,13 @@ pub fn expand(mut var: Arc<NFVariable>, mut backend: bool) -> Result<Arc<metamod
                 exp = __pa0.clone();
                 expl = __pa1.clone();
                 assign_field!(v.binding = Binding::makeFlat(exp.clone(), bind_var.clone(), bind_src.clone(), Binding::NO_CONFIDENCE.clone()));
-                vars = cons(v.clone(), vars.clone());
+                vars = metamodelica::cons(v.clone(), vars.clone());
             }
         } else {
             for mut cr in &*crefs.clone() {
                 let mut cr = cr.clone();
                 assign_field!(v.name = cr.clone());
-                vars = cons(v.clone(), vars.clone());
+                vars = metamodelica::cons(v.clone(), vars.clone());
             }
         }
         vars = metamodelica::Dangerous::listReverseInPlace(vars.clone());
@@ -257,7 +257,7 @@ pub fn expandChildren(mut var: Arc<NFVariable>, mut arrayDims: Arc<metamodelica:
         assign_field!(var.ty = Type::liftArrayLeftList(var.ty.clone(), arrayDims.clone()));
     }
     newArrayDims = Type::arrayDims(var.ty.clone());
-    children = cons(var.clone(), List::flatten(({
+    children = metamodelica::cons(var.clone(), List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<NFVariable>>>>> = metamodelica::nil();
         for mut v in (var.children.clone()).into_iter().cloned() {
             let __x = expandChildren(v.clone(), newArrayDims.clone(), addDimensions.clone());
@@ -553,8 +553,8 @@ pub fn mapExp(mut var: Arc<NFVariable>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<Exp
         __acc.reverse()
     }),
         var.backendinfo = BackendInfo::map(var.backendinfo.clone(), r#fn.clone()),
-        var.ty = Type::applyToDims(var.ty.clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = r#fn.clone(); move |__pe_a0| Dimension::mapExp(__pe_a0, __pe_b1.clone()) }))?,
-        var.name = ComponentRef::mapTypes(var.name.clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static> = Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = r#fn.clone(); move |__pe_a0| Dimension::mapExp(__pe_a0, __pe_b1.clone()) }); move |__pe_a0| Type::applyToDims(__pe_a0, __pe_b1.clone()) }))
+        var.ty = Type::applyToDims(var.ty.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = r#fn.clone(); move |__pe_a0| Dimension::mapExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>))?,
+        var.name = ComponentRef::mapTypes(var.name.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static> = (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = r#fn.clone(); move |__pe_a0| Dimension::mapExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>); move |__pe_a0| Type::applyToDims(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<Arc<Type::NFType>> + 'static>))
     );
     Ok(var)
 }
@@ -586,7 +586,7 @@ pub fn mapExpShallow(mut var: Arc<NFVariable>, mut r#fn: Arc<dyn ::std::ops::Fn(
 pub fn toString(mut var: Arc<NFVariable>, mut indent: ArcStr, mut printBindingType: bool) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     let mut s: IOStream::IOStream = <IOStream::IOStream as ::std::default::Default>::default();
-    s = IOStream::create((literal!("NFVariable.toString")).clone(), openmodelica_util::IOStream::IOStreamType::LIST)?;
+    s = IOStream::create(literal!("NFVariable.toString"), openmodelica_util::IOStream::IOStreamType::LIST)?;
     s = toStream(var.clone(), (indent.clone()).clone(), printBindingType.clone(), s.clone())?;
     r#str = (IOStream::string(s.clone())?).clone();
     IOStream::delete(s.clone())?;
@@ -681,7 +681,7 @@ pub fn toFlatStreamModifier(mut children: Arc<metamodelica::List<Arc<NFVariable>
     let mut src: Binding::Source = Binding::Source::BINDING;
     for mut child in &*children.clone() {
         let mut child = child.clone();
-        ss = IOStream::create((literal!("NFVariable.toFlatStreamModifier")).clone(), openmodelica_util::IOStream::IOStreamType::LIST)?;
+        ss = IOStream::create(literal!("NFVariable.toFlatStreamModifier"), openmodelica_util::IOStream::IOStreamType::LIST)?;
         if !(child.typeAttributes.clone().is_empty()) {
             ss = Component::typeAttrsToFlatStream(child.typeAttributes.clone(), child.ty.clone(), format.clone(), ss.clone())?;
         } else if !(child.children.clone().is_empty()) {
@@ -715,7 +715,7 @@ pub fn moveBinding(mut var: Arc<NFVariable>, mut equations: Arc<metamodelica::Li
     let mut var: Arc<NFVariable> = var;
     let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = equations;
     if variability(var.clone()) >= Variability::DISCRETE.clone() && Binding::isBound(var.binding.clone()) {
-        equations = cons(Equation::makeEquality(Expression::fromCref(var.name.clone(), false)?, Binding::getExp(var.binding.clone())?, var.ty.clone(), ElementSource::createElementSource(var.info.clone(), None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?, Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), Equation::ScalarizeMode::NO_PREFERENCE.clone()), equations.clone());
+        equations = metamodelica::cons(Equation::makeEquality(Expression::fromCref(var.name.clone(), false)?, Binding::getExp(var.binding.clone())?, var.ty.clone(), ElementSource::createElementSource(var.info.clone(), None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?, Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), Equation::ScalarizeMode::NO_PREFERENCE.clone()), equations.clone());
         assign_field!(var.binding = Binding::EMPTY_BINDING().clone());
     }
     Ok((var, equations))

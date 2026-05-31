@@ -83,7 +83,7 @@ pub fn simplify(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<FlatMo
         flatModel.algorithms = simplifyAlgorithms(flatModel.algorithms.clone())?,
         flatModel.initialAlgorithms = simplifyAlgorithms(flatModel.initialAlgorithms.clone())?
     );
-    execStat((literal!("NFSimplifyModel.simplify")).clone())?;
+    execStat(literal!("NFSimplifyModel.simplify"))?;
     Ok(flatModel)
 }
 
@@ -174,14 +174,14 @@ pub fn simplifyEquation(mut eq: Arc<Equation::NFEquation>, mut equations: Arc<me
         Deref @ Equation::FOR { range: Some(_), .. } => {
             let mut body: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
             body = simplifyEquations(var_field!((*eq).body, Equation::NFEquation::FOR).clone())?;
-            if !(Equation::containsExpList(body.clone(), Arc::new({ let __pe_b1 = var_field!((*eq).iterator, Equation::NFEquation::FOR).clone(); move |__pe_a0| Expression::containsIterator(__pe_a0, __pe_b1.clone()) }))?) {
+            if !(Equation::containsExpList(body.clone(), (std::sync::Arc::new({ let __pe_b1 = var_field!((*eq).iterator, Equation::NFEquation::FOR).clone(); move |__pe_a0| Expression::containsIterator(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>))?) {
                 equations = List::append_reverse(body.clone(), equations.clone());
             } else {
                 assign_variant_field!(eq => Equation::NFEquation::FOR;
-                    range = Util::applyOption(var_field!((*eq).range, Equation::NFEquation::FOR).clone(), Arc::new({ let __pe_b1 = false; move |__pe_a0| SimplifyExp::simplify(__pe_a0, __pe_b1.clone()) })),
+                    range = Util::applyOption(var_field!((*eq).range, Equation::NFEquation::FOR).clone(), (std::sync::Arc::new({ let __pe_b1 = false; move |__pe_a0| SimplifyExp::simplify(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
                     body = body.clone()
                 );
-                equations = cons(eq.clone(), equations.clone());
+                equations = metamodelica::cons(eq.clone(), equations.clone());
             }
             equations.clone()
         },
@@ -206,27 +206,27 @@ pub fn simplifyEquation(mut eq: Arc<Equation::NFEquation>, mut equations: Arc<me
         }
         __acc.reverse()
     }));
-            cons(eq.clone(), equations.clone())
+            metamodelica::cons(eq.clone(), equations.clone())
         },
         Deref @ Equation::ASSERT { .. } => {
             assign_variant_field!(eq => Equation::NFEquation::ASSERT; condition = SimplifyExp::simplify(var_field!((*eq).condition, Equation::NFEquation::ASSERT).clone(), false)?);
-            if (Expression::isTrue(var_field!((*eq).condition, Equation::NFEquation::ASSERT).clone())) {equations.clone()} else {cons(eq.clone(), equations.clone())}
+            if (Expression::isTrue(var_field!((*eq).condition, Equation::NFEquation::ASSERT).clone())) {equations.clone()} else {metamodelica::cons(eq.clone(), equations.clone())}
         },
         Deref @ Equation::REINIT { .. } => {
             assign_variant_field!(eq => Equation::NFEquation::REINIT; reinitExp = SimplifyExp::simplify(var_field!((*eq).reinitExp, Equation::NFEquation::REINIT).clone(), false)?);
-            cons(eq.clone(), equations.clone())
+            metamodelica::cons(eq.clone(), equations.clone())
         },
         Deref @ Equation::NORETCALL { .. } => {
             let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             e = SimplifyExp::simplify(var_field!((*eq).exp, Equation::NFEquation::NORETCALL).clone(), false)?;
             if Expression::isCall(e.clone()) {
                 assign_variant_field!(eq => Equation::NFEquation::NORETCALL; exp = removeEmptyFunctionArguments(e.clone(), false)?);
-                equations = cons(eq.clone(), equations.clone());
+                equations = metamodelica::cons(eq.clone(), equations.clone());
             }
             equations.clone()
         },
         _ => {
-            cons(eq.clone(), equations.clone())
+            metamodelica::cons(eq.clone(), equations.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -260,8 +260,8 @@ pub fn simplifyEqualityEquation(mut eq: Arc<Equation::NFEquation>, mut equations
     rhs = SimplifyExp::simplify(rhs.clone(), false)?;
     rhs = removeEmptyFunctionArguments(rhs.clone(), false)?;
     equations = (::match_deref::match_deref! { match &((lhs.clone(), rhs.clone())) {
-        (Deref @ Expression::TUPLE { .. }, Deref @ Expression::TUPLE { .. }) => simplifyTupleElement(var_field!((*lhs).elements, Expression::NFExpression::TUPLE).clone(), var_field!((*rhs).elements, Expression::NFExpression::TUPLE).clone(), ty.clone(), src.clone(), Arc::new({ let __pe_b4 = scope.clone(); let __pe_b5 = scalarize_mode.clone(); move |__pe_a0, __pe_a1, __pe_a2, __pe_a3| Ok(Equation::makeEquality(__pe_a0, __pe_a1, __pe_a2, __pe_a3, __pe_b4.clone(), __pe_b5.clone())) }), equations.clone())?,
-        _ => cons(Arc::new(Equation::NFEquation::EQUALITY { lhs: lhs.clone(), rhs: rhs.clone(), ty: ty.clone(), scope: scope.clone(), source: src.clone(), scalarizeMode: scalarize_mode.clone() }), equations.clone()),
+        (Deref @ Expression::TUPLE { .. }, Deref @ Expression::TUPLE { .. }) => simplifyTupleElement(var_field!((*lhs).elements, Expression::NFExpression::TUPLE).clone(), var_field!((*rhs).elements, Expression::NFExpression::TUPLE).clone(), ty.clone(), src.clone(), (std::sync::Arc::new({ let __pe_b4 = scope.clone(); let __pe_b5 = scalarize_mode.clone(); move |__pe_a0, __pe_a1, __pe_a2, __pe_a3| Ok(Equation::makeEquality(__pe_a0, __pe_a1, __pe_a2, __pe_a3, __pe_b4.clone(), __pe_b5.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>, Arc<Type::NFType>, Arc<DAE::ElementSource>) -> Result<Arc<Equation::NFEquation>> + 'static>), equations.clone())?,
+        _ => metamodelica::cons(Arc::new(Equation::NFEquation::EQUALITY { lhs: lhs.clone(), rhs: rhs.clone(), ty: ty.clone(), scope: scope.clone(), source: src.clone(), scalarizeMode: scalarize_mode.clone() }), equations.clone()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(equations)
@@ -273,7 +273,7 @@ pub fn simplifyAlgorithms(mut algs: Arc<metamodelica::List<Arc<Algorithm::NFAlgo
         let mut alg = alg.clone();
         alg = simplifyAlgorithm(alg.clone())?;
         if !(alg.statements.clone().is_empty()) {
-            outAlgs = cons(alg.clone(), outAlgs.clone());
+            outAlgs = metamodelica::cons(alg.clone(), outAlgs.clone());
         }
     }
     outAlgs = metamodelica::Dangerous::listReverseInPlace(outAlgs.clone());
@@ -313,7 +313,7 @@ pub fn simplifyStatement(mut stmt: Arc<Statement::NFStatement>, mut statements: 
                     range = Some(SimplifyExp::simplify(e.clone(), false)?),
                     body = simplifyStatements(var_field!((*stmt).body, Statement::NFStatement::FOR).clone())?
                 );
-                statements = cons(stmt.clone(), statements.clone());
+                statements = metamodelica::cons(stmt.clone(), statements.clone());
             }
             statements.clone()
         },
@@ -322,7 +322,7 @@ pub fn simplifyStatement(mut stmt: Arc<Statement::NFStatement>, mut statements: 
         },
         Deref @ Statement::WHEN { .. } => {
             assign_variant_field!(stmt => Statement::NFStatement::WHEN; branches = simplifyWhenBranches(var_field!((*stmt).branches, Statement::NFStatement::WHEN).clone())?);
-            if (var_field!((*stmt).branches, Statement::NFStatement::WHEN).clone().is_empty()) {statements.clone()} else {cons(stmt.clone(), statements.clone())}
+            if (var_field!((*stmt).branches, Statement::NFStatement::WHEN).clone().is_empty()) {statements.clone()} else {metamodelica::cons(stmt.clone(), statements.clone())}
         },
         Deref @ Statement::ASSERT { .. } => {
             assign_variant_field!(stmt => Statement::NFStatement::ASSERT;
@@ -330,30 +330,30 @@ pub fn simplifyStatement(mut stmt: Arc<Statement::NFStatement>, mut statements: 
                 message = SimplifyExp::simplify(var_field!((*stmt).message, Statement::NFStatement::ASSERT).clone(), false)?,
                 level = SimplifyExp::simplify(var_field!((*stmt).level, Statement::NFStatement::ASSERT).clone(), false)?
             );
-            cons(stmt.clone(), statements.clone())
+            metamodelica::cons(stmt.clone(), statements.clone())
         },
         Deref @ Statement::TERMINATE { .. } => {
             assign_variant_field!(stmt => Statement::NFStatement::TERMINATE; message = SimplifyExp::simplify(var_field!((*stmt).message, Statement::NFStatement::TERMINATE).clone(), false)?);
-            cons(stmt.clone(), statements.clone())
+            metamodelica::cons(stmt.clone(), statements.clone())
         },
         Deref @ Statement::WHILE { .. } => {
             assign_variant_field!(stmt => Statement::NFStatement::WHILE;
                 condition = SimplifyExp::simplify(var_field!((*stmt).condition, Statement::NFStatement::WHILE).clone(), false)?,
                 body = simplifyStatements(var_field!((*stmt).body, Statement::NFStatement::WHILE).clone())?
             );
-            cons(stmt.clone(), statements.clone())
+            metamodelica::cons(stmt.clone(), statements.clone())
         },
         Deref @ Statement::NORETCALL { .. } => {
             let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             e = SimplifyExp::simplify(var_field!((*stmt).exp, Statement::NFStatement::NORETCALL).clone(), false)?;
             if Expression::isCall(e.clone()) {
                 assign_variant_field!(stmt => Statement::NFStatement::NORETCALL; exp = removeEmptyFunctionArguments(e.clone(), false)?);
-                statements = cons(stmt.clone(), statements.clone());
+                statements = metamodelica::cons(stmt.clone(), statements.clone());
             }
             statements.clone()
         },
         _ => {
-            cons(stmt.clone(), statements.clone())
+            metamodelica::cons(stmt.clone(), statements.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -368,7 +368,7 @@ pub fn simplifyWhenBranches(mut branches: Arc<metamodelica::List<(Arc<Expression
             let mut body = (*body).clone();
             condition = SimplifyExp::simplify(condition.clone(), false)?;
             body = simplifyStatements(body.clone())?;
-            if (Expression::isBoolean(condition.clone())) {simplifyWhenBranches(tail.clone())?} else {cons((condition.clone(), body.clone()), simplifyWhenBranches(tail.clone())?)}
+            if (Expression::isBoolean(condition.clone())) {simplifyWhenBranches(tail.clone())?} else {metamodelica::cons((condition.clone(), body.clone()), simplifyWhenBranches(tail.clone())?)}
         },
         _ => {
             branches.clone()
@@ -402,7 +402,7 @@ pub fn simplifyAssignment(mut stmt: Arc<Statement::NFStatement>, mut statements:
     rhs = removeEmptyFunctionArguments(rhs.clone(), false)?;
     statements = (::match_deref::match_deref! { match &((lhs.clone(), rhs.clone())) {
         (Deref @ Expression::TUPLE { .. }, Deref @ Expression::TUPLE { .. }) => simplifyTupleElement(var_field!((*lhs).elements, Expression::NFExpression::TUPLE).clone(), var_field!((*rhs).elements, Expression::NFExpression::TUPLE).clone(), ty.clone(), src.clone(), (std::sync::Arc::new(fnptr!(Statement::makeAssignment, Arc<Expression::NFExpression>, Arc<Expression::NFExpression>, Arc<Type::NFType>, Arc<DAE::ElementSource>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>, Arc<Type::NFType>, Arc<DAE::ElementSource>) -> Result<Arc<Statement::NFStatement>> + 'static>), statements.clone())?,
-        _ => cons(Arc::new(Statement::NFStatement::ASSIGNMENT { lhs: lhs.clone(), rhs: rhs.clone(), ty: ty.clone(), source: src.clone() }), statements.clone()),
+        _ => metamodelica::cons(Arc::new(Statement::NFStatement::ASSIGNMENT { lhs: lhs.clone(), rhs: rhs.clone(), ty: ty.clone(), source: src.clone() }), statements.clone()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(statements)
@@ -436,7 +436,7 @@ pub fn simplifyTupleElement<ElementT: Clone + 'static>(mut lhsTuple: Arc<metamod
         ety = __pa3.clone();
         rest_ty = __pa4.clone();
         if !(Expression::isWildCref(lhs.clone())) {
-            statements = cons(makeFn(lhs.clone(), rhs.clone(), ety.clone(), src.clone())?, statements.clone());
+            statements = metamodelica::cons(makeFn(lhs.clone(), rhs.clone(), ety.clone(), src.clone())?, statements.clone());
         }
     }
     Ok(statements)
@@ -479,7 +479,7 @@ pub fn removeEmptyFunctionArguments(mut exp: Arc<Expression::NFExpression>, mut 
     } });
     }
     is_arg = isArg.clone() || Expression::isCall(exp.clone());
-    outExp = Expression::mapShallow(exp.clone(), Arc::new({ let __pe_b1 = is_arg.clone(); move |__pe_a0| removeEmptyFunctionArguments(__pe_a0, __pe_b1.clone()) }))?;
+    outExp = Expression::mapShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = is_arg.clone(); move |__pe_a0| removeEmptyFunctionArguments(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     Ok(outExp)
 }
 
@@ -503,13 +503,13 @@ pub fn simplifyIfEqBranches(mut branches: Arc<metamodelica::List<Arc<Equation::B
                     }
                     return Ok(elements.clone());
                 } else {
-                    accum = cons(Equation::makeBranch(cond.clone(), simplifyEquations(body.clone())?, Variability::CONTINUOUS.clone()), accum.clone());
+                    accum = metamodelica::cons(Equation::makeBranch(cond.clone(), simplifyEquations(body.clone())?, Variability::CONTINUOUS.clone()), accum.clone());
                     accum = List::trim(accum.clone(), (std::sync::Arc::new(Equation::Branch::isEmpty) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Branch::Branch>) -> Result<bool> + 'static>))?;
-                    elements = cons(Equation::makeIf(metamodelica::Dangerous::listReverseInPlace(accum.clone()), scope.clone(), src.clone()), elements.clone());
+                    elements = metamodelica::cons(Equation::makeIf(metamodelica::Dangerous::listReverseInPlace(accum.clone()), scope.clone(), src.clone()), elements.clone());
                     return Ok(elements.clone());
                 }
             } else if !(Expression::isFalse(cond.clone())) {
-                accum = cons(Equation::makeBranch(cond.clone(), simplifyEquations(body.clone())?, Variability::CONTINUOUS.clone()), accum.clone());
+                accum = metamodelica::cons(Equation::makeBranch(cond.clone(), simplifyEquations(body.clone())?, Variability::CONTINUOUS.clone()), accum.clone());
             }
             accum.clone()
         },
@@ -523,13 +523,13 @@ pub fn simplifyIfEqBranches(mut branches: Arc<metamodelica::List<Arc<Equation::B
             }
             accum.clone()
         },
-        _ => cons(branch.clone(), accum.clone()),
+        _ => metamodelica::cons(branch.clone(), accum.clone()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
     accum = List::trim(accum.clone(), (std::sync::Arc::new(Equation::Branch::isEmpty) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Branch::Branch>) -> Result<bool> + 'static>))?;
     if !(accum.clone().is_empty()) {
-        elements = cons(Equation::makeIf(metamodelica::Dangerous::listReverseInPlace(accum.clone()), scope.clone(), src.clone()), elements.clone());
+        elements = metamodelica::cons(Equation::makeIf(metamodelica::Dangerous::listReverseInPlace(accum.clone()), scope.clone(), src.clone()), elements.clone());
     }
     Ok(elements)
 }
@@ -552,15 +552,15 @@ pub fn simplifyIfStmtBranches<ElemT: Clone + 'static>(mut branches: Arc<metamode
                 elements = listAppend(simplifyFunc(body.clone())?.reverse(), elements.clone());
                 return Ok(elements.clone());
             } else {
-                accum = cons((cond.clone(), simplifyFunc(body.clone())?), accum.clone());
+                accum = metamodelica::cons((cond.clone(), simplifyFunc(body.clone())?), accum.clone());
                 break;
             }
         } else if !(Expression::isFalse(cond.clone())) {
-            accum = cons((cond.clone(), simplifyFunc(body.clone())?), accum.clone());
+            accum = metamodelica::cons((cond.clone(), simplifyFunc(body.clone())?), accum.clone());
         }
     }
     if !(accum.clone().is_empty()) {
-        elements = cons(makeFunc(metamodelica::Dangerous::listReverseInPlace(accum.clone()), src.clone())?, elements.clone());
+        elements = metamodelica::cons(makeFunc(metamodelica::Dangerous::listReverseInPlace(accum.clone()), src.clone())?, elements.clone());
     }
     Ok(elements)
 }
@@ -571,7 +571,7 @@ pub fn simplifyFunction(mut func: Arc<Function::Function>) -> Result<()> {
     let mut sections: Arc<Sections::NFSections> = Arc::new(Sections::EMPTY);
     if !(Function::isSimplified(func.clone())) {
         Function::markSimplified(func.clone());
-        Function::mapExp(func.clone(), Arc::new({ let __pe_b1 = false; move |__pe_a0| SimplifyExp::simplify(__pe_a0, __pe_b1.clone()) }), Arc::new({ let __pe_b1 = false; move |__pe_a0| SimplifyExp::simplify(__pe_a0, __pe_b1.clone()) }), true, false)?;
+        Function::mapExp(func.clone(), (std::sync::Arc::new({ let __pe_b1 = false; move |__pe_a0| SimplifyExp::simplify(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), (std::sync::Arc::new({ let __pe_b1 = false; move |__pe_a0| SimplifyExp::simplify(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), true, false)?;
         cls = InstNode::getClass(func.node.clone())?;
         let () = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ Class::INSTANCED_CLASS { sections, .. } => {

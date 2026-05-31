@@ -345,7 +345,7 @@ fn checkConditionalBinaryOperator(mut exp1: Arc<Expression::NFExpression>, mut t
         (_, Deref @ Type::CONDITIONAL_ARRAY { .. }) => (type1.clone(), type1.clone(), var_field!((*type2).trueType, Type::NFType::CONDITIONAL_ARRAY).clone(), var_field!((*type2).falseType, Type::NFType::CONDITIONAL_ARRAY).clone(), var_field!((*type2).matchedBranch, Type::NFType::CONDITIONAL_ARRAY).clone()),
         _ => bail!("match: no arm matched"),
     } });
-    ErrorExt::setCheckpoint((literal!("NFTypeCheck.checkConditionalBinaryOperator")).clone());
+    ErrorExt::setCheckpoint(literal!("NFTypeCheck.checkConditionalBinaryOperator"));
     match '__try0: {
         (e1, ty1) = unwrap_break_err!(checkBinaryOperation(exp1.clone(), tty1.clone(), var1.clone(), op.clone(), exp2.clone(), tty2.clone(), var2.clone(), context.clone(), info.clone(), retype.clone()), '__try0);
         valid1 = true;
@@ -370,7 +370,7 @@ fn checkConditionalBinaryOperator(mut exp1: Arc<Expression::NFExpression>, mut t
             valid2 = false;
         }
     }
-    ErrorExt::rollBack((literal!("NFTypeCheck.checkConditionalBinaryOperator")).clone());
+    ErrorExt::rollBack(literal!("NFTypeCheck.checkConditionalBinaryOperator"));
     if valid1.clone() && valid2.clone() {
         outType = Arc::new(Type::NFType::CONDITIONAL_ARRAY { trueType: ty1.clone(), falseType: ty2.clone(), matchedBranch: branch.clone() });
         outExp = e1.clone();
@@ -414,7 +414,7 @@ fn checkOverloadedBinaryArrayAddSub2(mut exp1: Arc<Expression::NFExpression>, mu
             let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            let mut arr: metamodelica::Array<Arc<Expression::NFExpression>>;
+            let mut arr: metamodelica::Array<Arc<Expression::NFExpression>> = Default::default();
             if arr1.clone().borrow().is_empty() {
                 ty1 = Type::arrayElementType(type1.clone());
                 ty2 = Type::arrayElementType(type2.clone());
@@ -502,7 +502,7 @@ fn checkOverloadedBinaryScalarArray2(mut exp1: Arc<Expression::NFExpression>, mu
     let mut outExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut outType: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut arr: metamodelica::Array<Arc<Expression::NFExpression>>;
+    let mut arr: metamodelica::Array<Arc<Expression::NFExpression>> = Default::default();
     let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     (outExp, outType) = (::match_deref::match_deref! { match &(exp2.clone()) {
         Deref @ Expression::ARRAY { .. } if (var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone().borrow().is_empty()) => {
@@ -552,7 +552,7 @@ fn checkOverloadedBinaryArrayScalar2(mut exp1: Arc<Expression::NFExpression>, mu
     let mut outType: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut arr: metamodelica::Array<Arc<Expression::NFExpression>>;
+    let mut arr: metamodelica::Array<Arc<Expression::NFExpression>> = Default::default();
     (outExp, outType) = (::match_deref::match_deref! { match &(exp1.clone()) {
         Deref @ Expression::ARRAY { .. } if (var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone().borrow().is_empty()) => {
             match '__try0: {
@@ -626,8 +626,8 @@ fn checkOverloadedBinaryArrayEW2(mut exp1: Arc<Expression::NFExpression>, mut ty
     let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut expl1: metamodelica::Array<Arc<Expression::NFExpression>>;
-    let mut expl2: metamodelica::Array<Arc<Expression::NFExpression>>;
+    let mut expl1: metamodelica::Array<Arc<Expression::NFExpression>> = Default::default();
+    let mut expl2: metamodelica::Array<Arc<Expression::NFExpression>> = Default::default();
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut ty1: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut ty2: Arc<Type::NFType> = Arc::new(Type::ANY);
@@ -659,7 +659,7 @@ fn checkOverloadedBinaryArrayEW2(mut exp1: Arc<Expression::NFExpression>, mut ty
                 e1 = expl1.clone().borrow()[(i.clone()-1) as usize].clone();
                 e2 = expl2.clone().borrow()[(i.clone()-1) as usize].clone();
                 (e1, ty) = checkOverloadedBinaryArrayEW2(e1.clone(), ty1.clone(), var1.clone(), op.clone(), e2.clone(), ty2.clone(), var2.clone(), candidates.clone(), context.clone(), info.clone())?;
-                expl = cons(e1.clone(), expl.clone());
+                expl = metamodelica::cons(e1.clone(), expl.clone());
             }
         } else if is_array1.clone() {
             ty1 = Type::unliftArray(type1.clone())?;
@@ -667,7 +667,7 @@ fn checkOverloadedBinaryArrayEW2(mut exp1: Arc<Expression::NFExpression>, mut ty
             let __range2 = expl1.clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut e in __range2 {
                 (e, ty) = checkOverloadedBinaryArrayEW2(e.clone(), ty1.clone(), var1.clone(), op.clone(), exp2.clone(), type2.clone(), var2.clone(), candidates.clone(), context.clone(), info.clone())?;
-                expl = cons(e.clone(), expl.clone());
+                expl = metamodelica::cons(e.clone(), expl.clone());
             }
         } else if is_array2.clone() {
             ty2 = Type::unliftArray(type2.clone())?;
@@ -675,7 +675,7 @@ fn checkOverloadedBinaryArrayEW2(mut exp1: Arc<Expression::NFExpression>, mut ty
             let __range3 = expl2.clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut e in __range3 {
                 (e, ty) = checkOverloadedBinaryArrayEW2(exp1.clone(), type1.clone(), var1.clone(), op.clone(), e.clone(), ty2.clone(), var2.clone(), candidates.clone(), context.clone(), info.clone())?;
-                expl = cons(e.clone(), expl.clone());
+                expl = metamodelica::cons(e.clone(), expl.clone());
             }
         }
         outType = Type::setArrayElementType(type1.clone(), ty.clone());
@@ -766,7 +766,7 @@ fn implicitConstructAndMatch2(mut exp1: Arc<Expression::NFExpression>, mut type1
         (e2, ty, var, _) = Call::typeCall(e2.clone(), 0, paramInfo1.clone(), false)?;
         (_, _, mk) = matchTypes(paramType2.clone(), ty.clone(), e2.clone(), DEFAULT_OPTIONS.clone())?;
         if mk.clone() == MatchKind::EXACT.clone() {
-            matchedFns = cons((r#fn.clone(), if (reverseArgs.clone()) {list![e2.clone(), e1.clone()]} else {list![e1.clone(), e2.clone()]}, var.clone()), matchedFns.clone());
+            matchedFns = metamodelica::cons((r#fn.clone(), if (reverseArgs.clone()) {list![e2.clone(), e1.clone()]} else {list![e1.clone(), e2.clone()]}, var.clone()), matchedFns.clone());
             matched = true;
         } else {
             matched = false;
@@ -1383,13 +1383,13 @@ pub fn matchComplexTypes(mut actualType: Arc<Type::NFType>, mut expectedType: Ar
     let mut ctree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
     let mut anode: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut enode: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-    let mut comps1: metamodelica::Array<Arc<InstNode::InstNode>>;
-    let mut comps2: metamodelica::Array<Arc<InstNode::InstNode>>;
+    let mut comps1: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
+    let mut comps2: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut cty1: Arc<ComplexType::NFComplexType> = Arc::new(ComplexType::CLASS);
     let mut cty2: Arc<ComplexType::NFComplexType> = Arc::new(ComplexType::CLASS);
     let mut matched_elements: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut elem_arr: metamodelica::Array<Arc<Expression::NFExpression>>;
+    let mut elem_arr: metamodelica::Array<Arc<Expression::NFExpression>> = Default::default();
     let mut opt: MatchOptions = options.clone();
     let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
     let __pa0 = ::match_deref::match_deref! { match &(actualType.clone()) {
@@ -1500,7 +1500,7 @@ pub fn matchComplexComponents(mut actualComponents: metamodelica::Array<Arc<Inst
         acomp = InstNode::component(anode.clone())?;
         e = expressions.borrow()[(idx.clone()-1) as usize].clone();
         (e, _, mk) = matchTypes(Component::getType(acomp.clone())?, Component::getType(ecomp.clone())?, e.clone(), options.clone())?;
-        matchedExpressions = cons(e.clone(), matchedExpressions.clone());
+        matchedExpressions = metamodelica::cons(e.clone(), matchedExpressions.clone());
         if mk.clone() == MatchKind::CAST.clone() {
             matchKind = mk.clone();
         } else if !(isValidPlugCompatibleMatch(mk.clone())) {
@@ -1532,14 +1532,14 @@ pub fn typeCastRecord(mut expressions: Arc<metamodelica::List<Arc<Expression::NF
         for mut d in &*dims.clone().reverse() {
             let mut d = d.clone();
             if Dimension::isUnknown(d.clone()) {
-                ranges = cons(Arc::new(Expression::NFExpression::RANGE { ty: Arc::new(crate::NFType::INTEGER), start: Arc::new(Expression::NFExpression::INTEGER { value: 1 }), step: None, stop: Arc::new(Expression::NFExpression::SIZE { exp: expression.clone(), dimIndex: Some(Arc::new(Expression::NFExpression::INTEGER { value: i.clone() })) }) }), ranges.clone());
+                ranges = metamodelica::cons(Arc::new(Expression::NFExpression::RANGE { ty: Arc::new(crate::NFType::INTEGER), start: Arc::new(Expression::NFExpression::INTEGER { value: 1 }), step: None, stop: Arc::new(Expression::NFExpression::SIZE { exp: expression.clone(), dimIndex: Some(Arc::new(Expression::NFExpression::INTEGER { value: i.clone() })) }) }), ranges.clone());
             } else {
-                ranges = cons(Dimension::toRange(d.clone())?, ranges.clone());
+                ranges = metamodelica::cons(Dimension::toRange(d.clone())?, ranges.clone());
             }
             iter = InstNode::newUniqueIterator(InstNode::info(node.clone())?, Arc::new(crate::NFType::INTEGER));
-            iters = cons(iter.clone(), iters.clone());
+            iters = metamodelica::cons(iter.clone(), iters.clone());
             sub = Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::CREF { ty: Arc::new(crate::NFType::INTEGER), cref: ComponentRef::makeIterator(iter.clone(), Arc::new(crate::NFType::INTEGER)) }) });
-            subs = cons(sub.clone(), subs.clone());
+            subs = metamodelica::cons(sub.clone(), subs.clone());
             i = i.clone() + 1;
         }
         expression = Arc::new(Expression::NFExpression::RECORD { path: InstNode::scopePath(node.clone(), InstNode::ScopeType::RELATIVE.clone(), false)?, ty: expectedType.clone(), elements: ({
@@ -1789,7 +1789,7 @@ pub fn matchArrayDims(mut dims1: Arc<metamodelica::List<Arc<Dimension::NFDimensi
             matchKind = MatchKind::NOT_COMPATIBLE.clone();
             break;
         }
-        cdims = cons(dim1.clone(), cdims.clone());
+        cdims = metamodelica::cons(dim1.clone(), cdims.clone());
     }
     ty = Arc::new(Type::NFType::ARRAY { elementType: ty.clone(), dimensions: metamodelica::Dangerous::listReverseInPlace(cdims.clone()) });
     Ok((ty, matchKind))
@@ -2378,11 +2378,11 @@ pub fn elaborateBindingType(mut bindingExp: Arc<Expression::NFExpression>, mut c
                 dims = (::match_deref::match_deref! { match &(s.clone()) {
         Deref @ Subscript::SPLIT_INDEX { .. } => {
             if isParent(var_field!((*s).node, Subscript::NFSubscript::SPLIT_INDEX).clone(), component.clone()) {
-                dims = cons(Type::nthDimension(InstNode::getType(var_field!((*s).node, Subscript::NFSubscript::SPLIT_INDEX).clone())?, var_field!((*s).dimIndex, Subscript::NFSubscript::SPLIT_INDEX).clone())?, dims.clone());
+                dims = metamodelica::cons(Type::nthDimension(InstNode::getType(var_field!((*s).node, Subscript::NFSubscript::SPLIT_INDEX).clone())?, var_field!((*s).dimIndex, Subscript::NFSubscript::SPLIT_INDEX).clone())?, dims.clone());
             }
             dims.clone()
         },
-        _ => cons(Arc::new(crate::NFDimension::UNKNOWN), dims.clone()),
+        _ => metamodelica::cons(Arc::new(crate::NFDimension::UNKNOWN), dims.clone()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             }
@@ -2398,7 +2398,7 @@ pub fn elaborateBindingType(mut bindingExp: Arc<Expression::NFExpression>, mut c
                 dims = (::match_deref::match_deref! { match &(s.clone()) {
         Deref @ Subscript::SPLIT_INDEX { .. } => {
             if isParent(var_field!((*s).node, Subscript::NFSubscript::SPLIT_INDEX).clone(), component.clone()) {
-                dims = cons(Type::nthDimension(InstNode::getType(var_field!((*s).node, Subscript::NFSubscript::SPLIT_INDEX).clone())?, var_field!((*s).dimIndex, Subscript::NFSubscript::SPLIT_INDEX).clone())?, dims.clone());
+                dims = metamodelica::cons(Type::nthDimension(InstNode::getType(var_field!((*s).node, Subscript::NFSubscript::SPLIT_INDEX).clone())?, var_field!((*s).dimIndex, Subscript::NFSubscript::SPLIT_INDEX).clone())?, dims.clone());
             }
             dims.clone()
         },

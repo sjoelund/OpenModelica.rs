@@ -143,10 +143,10 @@ pub fn introduceSlicedStateAlias(mut varData: Arc<VarData::VarData>, mut eqData:
         (::match_deref::match_deref! { match &((eqData.clone(), varData.clone())) {
         (Deref @ BEquation::EqData::EQ_DATA_SIM { .. }, Deref @ BVariable::VarData::VAR_DATA_SIM { .. }) => {
             let mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
-            BEquation::EquationPointers::map(var_field!((*eqData).simulation, EqData::EqData::EQ_DATA_SIM).clone(), Arc::new({ let __pe_b1 = map.clone(); move |__pe_a0| collectSlicedStatesAliasEquation(__pe_a0, __pe_b1.clone()) }))?;
+            BEquation::EquationPointers::map(var_field!((*eqData).simulation, EqData::EqData::EQ_DATA_SIM).clone(), (std::sync::Arc::new({ let __pe_b1 = map.clone(); move |__pe_a0| collectSlicedStatesAliasEquation(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>))?;
             set = getSlicedStatesSet(map.clone())?;
             if !(UnorderedSet::isEmpty(set.clone())) {
-                assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM; simulation = BEquation::EquationPointers::map(var_field!((*eqData).simulation, EqData::EqData::EQ_DATA_SIM).clone(), Arc::new({ let __pe_b1 = set.clone(); let __pe_b2 = aux_map.clone(); let __pe_b3 = aux_index.clone(); move |__pe_a0| introduceSlicedStateAliasEquation(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }))?);
+                assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM; simulation = BEquation::EquationPointers::map(var_field!((*eqData).simulation, EqData::EqData::EQ_DATA_SIM).clone(), (std::sync::Arc::new({ let __pe_b1 = set.clone(); let __pe_b2 = aux_map.clone(); let __pe_b3 = aux_index.clone(); move |__pe_a0| introduceSlicedStateAliasEquation(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>))?);
                 (_, new_vars_cont, _, new_vars_recd, _, new_eqns_cont, _) = resolveAux(aux_map.clone(), var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(), false, metamodelica::nil(), new_vars_cont.clone(), metamodelica::nil(), new_vars_recd.clone(), metamodelica::nil(), new_eqns_cont.clone(), metamodelica::nil())?;
             }
             ()
@@ -318,15 +318,15 @@ fn functionAliasDefault(mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqDa
     let () = (::match_deref::match_deref! { match &((eqData.clone(), varData.clone())) {
         (Deref @ BEquation::EqData::EQ_DATA_SIM { .. }, Deref @ BVariable::VarData::VAR_DATA_SIM { .. }) => {
             assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM;
-                simulation = BEquation::EquationPointers::map(var_field!((*eqData).simulation, EqData::EqData::EQ_DATA_SIM).clone(), Arc::new({ let __pe_b1 = map.clone(); let __pe_b2 = variables.clone(); let __pe_b3 = set.clone(); let __pe_b4 = aux_index.clone(); let __pe_b5 = var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(); let __pe_b6 = false; move |__pe_a0| introduceFunctionAliasEquation(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone()) }))?,
-                removed = BEquation::EquationPointers::map(var_field!((*eqData).removed, EqData::EqData::EQ_DATA_SIM).clone(), Arc::new({ let __pe_b1 = map.clone(); let __pe_b2 = variables.clone(); let __pe_b3 = set.clone(); let __pe_b4 = aux_index.clone(); let __pe_b5 = var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(); let __pe_b6 = false; move |__pe_a0| introduceFunctionAliasEquation(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone()) }))?
+                simulation = BEquation::EquationPointers::map(var_field!((*eqData).simulation, EqData::EqData::EQ_DATA_SIM).clone(), (std::sync::Arc::new({ let __pe_b1 = map.clone(); let __pe_b2 = variables.clone(); let __pe_b3 = set.clone(); let __pe_b4 = aux_index.clone(); let __pe_b5 = var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(); let __pe_b6 = false; move |__pe_a0| introduceFunctionAliasEquation(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>))?,
+                removed = BEquation::EquationPointers::map(var_field!((*eqData).removed, EqData::EqData::EQ_DATA_SIM).clone(), (std::sync::Arc::new({ let __pe_b1 = map.clone(); let __pe_b2 = variables.clone(); let __pe_b3 = set.clone(); let __pe_b4 = aux_index.clone(); let __pe_b5 = var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(); let __pe_b6 = false; move |__pe_a0| introduceFunctionAliasEquation(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>))?
             );
             (new_vars_disc, new_vars_cont, new_vars_init, new_vars_recd, new_eqns_disc, new_eqns_cont, new_eqns_init) = resolveAux(map.clone(), var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(), false, new_vars_disc.clone(), new_vars_cont.clone(), new_vars_init.clone(), new_vars_recd.clone(), new_eqns_disc.clone(), new_eqns_cont.clone(), new_eqns_init.clone())?;
             if Flags::isSet(Flags::DUMP_CSE.clone())? {
                 debug_lst_sim = UnorderedMap::toList(map.clone());
             }
-            assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM; initials = BEquation::EquationPointers::map(var_field!((*eqData).initials, EqData::EqData::EQ_DATA_SIM).clone(), Arc::new({ let __pe_b1 = map.clone(); let __pe_b2 = variables.clone(); let __pe_b3 = set.clone(); let __pe_b4 = aux_index.clone(); let __pe_b5 = var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(); let __pe_b6 = true; move |__pe_a0| introduceFunctionAliasEquation(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone()) }))?);
-            assign_variant_field!(varData => VarData::VarData::VAR_DATA_SIM; parameters = BVariable::VariablePointers::mapPtr(var_field!((*varData).parameters, VarData::VarData::VAR_DATA_SIM).clone(), Arc::new({ let __pe_b1 = Arc::new({ let __pe_b1 = map.clone(); let __pe_b2 = aux_index.clone(); let __pe_b3 = Arc::new(crate::NBEquation::Iterator::EMPTY); let __pe_b4 = true; move |__pe_a0| introduceFunctionAlias(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }); let __pe_b2 = (std::sync::Arc::new(fnptr!(Expression::fakeMap, Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| BVariable::mapExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }))?);
+            assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM; initials = BEquation::EquationPointers::map(var_field!((*eqData).initials, EqData::EqData::EQ_DATA_SIM).clone(), (std::sync::Arc::new({ let __pe_b1 = map.clone(); let __pe_b2 = variables.clone(); let __pe_b3 = set.clone(); let __pe_b4 = aux_index.clone(); let __pe_b5 = var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(); let __pe_b6 = true; move |__pe_a0| introduceFunctionAliasEquation(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>))?);
+            assign_variant_field!(varData => VarData::VarData::VAR_DATA_SIM; parameters = BVariable::VariablePointers::mapPtr(var_field!((*varData).parameters, VarData::VarData::VAR_DATA_SIM).clone(), (std::sync::Arc::new({ let __pe_b1 = (std::sync::Arc::new({ let __pe_b1 = map.clone(); let __pe_b2 = aux_index.clone(); let __pe_b3 = Arc::new(crate::NBEquation::Iterator::EMPTY); let __pe_b4 = true; move |__pe_a0| introduceFunctionAlias(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); let __pe_b2 = (std::sync::Arc::new(fnptr!(Expression::fakeMap, Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| BVariable::mapExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<()> + 'static>))?);
             (new_vars_disc, new_vars_cont, new_vars_init, new_vars_recd, new_eqns_disc, new_eqns_cont, new_eqns_init) = resolveAux(map.clone(), var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(), true, new_vars_disc.clone(), new_vars_cont.clone(), new_vars_init.clone(), new_vars_recd.clone(), new_eqns_disc.clone(), new_eqns_cont.clone(), new_eqns_init.clone())?;
             (new_eqns_clck, new_eqns_infr, new_vars_clck, new_vars_infr, clock_map, infer_map) = addClockedAlias(var_field!((*eqData).simulation, EqData::EqData::EQ_DATA_SIM).clone(), var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone())?;
             ()
@@ -358,8 +358,8 @@ fn functionAliasDefault(mut varData: Arc<VarData::VarData>, mut eqData: Arc<EqDa
         debug_lst_ini = UnorderedMap::toList(map.clone());
         println!("{}", (aliasListToString(debug_lst_sim.clone(), (std::sync::Arc::new(Call_Id::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Call_Id::Call_Id>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(fnptr!(Call_Aux::toString, Arc<Call_Aux::Call_Aux>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Call_Aux::Call_Aux>) -> Result<ArcStr> + 'static>), (literal!("Simulation Function")).clone())?).clone());
         println!("{}", (aliasListToString(debug_lst_ini.clone(), (std::sync::Arc::new(Call_Id::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Call_Id::Call_Id>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(fnptr!(Call_Aux::toString, Arc<Call_Aux::Call_Aux>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Call_Aux::Call_Aux>) -> Result<ArcStr> + 'static>), (literal!("Initial Function")).clone())?).clone());
-        println!("{}", (aliasListToString(UnorderedMap::toList(clock_map.clone()), (std::sync::Arc::new(BClock::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("Clocked Function")).clone())?).clone());
-        println!("{}", (aliasListToString(UnorderedMap::toList(infer_map.clone()), (std::sync::Arc::new(BClock::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("Inferred Clocked Function")).clone())?).clone());
+        println!("{}", (aliasListToString(UnorderedMap::toList(clock_map.clone()), (std::sync::Arc::new(Partitioning::BClock::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("Clocked Function")).clone())?).clone());
+        println!("{}", (aliasListToString(UnorderedMap::toList(infer_map.clone()), (std::sync::Arc::new(Partitioning::BClock::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("Inferred Clocked Function")).clone())?).clone());
     }
     Ok((varData, eqData))
 }
@@ -392,7 +392,7 @@ fn aliasListToString<T1: Clone + 'static, T2: Clone + 'static>(mut aux_lst: Arc<
         }
         __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction"))?
     }) + 3;
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*List::toString(str_lst.clone(), Arc::new({ let __pe_b1 = max_length.clone(); move |__pe_a0| Ok(functionAliasTplString(__pe_a0, __pe_b1.clone())) }), (literal!("")).clone(), (literal!("  ")).clone(), (literal!("\n  ")).clone(), (literal!("\n\n")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*List::toString(str_lst.clone(), (std::sync::Arc::new({ let __pe_b1 = max_length.clone(); move |__pe_a0| Ok(functionAliasTplString(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, ArcStr)) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("  ")).clone(), (literal!("\n  ")).clone(), (literal!("\n\n")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone();
     }
     Ok(r#str)
 }
@@ -422,11 +422,11 @@ fn resolveAux(mut map: Arc<UnorderedMap::UnorderedMap<Arc<Call_Id::Call_Id>, Arc
             }
             new_eqn = BEquation::Equation::makeAssignment(aux.replacer.clone(), id.call.clone(), eq_index.clone(), (literal!("AUX")).clone(), id.iter.clone(), BEquation::default(aux.kind.clone(), init.clone(), None, None))?;
             if init.clone() {
-                new_eqns_init = cons(new_eqn.clone(), new_eqns_init.clone());
+                new_eqns_init = metamodelica::cons(new_eqn.clone(), new_eqns_init.clone());
             } else if disc.clone() {
-                new_eqns_disc = cons(new_eqn.clone(), new_eqns_disc.clone());
+                new_eqns_disc = metamodelica::cons(new_eqn.clone(), new_eqns_disc.clone());
             } else {
-                new_eqns_cont = cons(new_eqn.clone(), new_eqns_cont.clone());
+                new_eqns_cont = metamodelica::cons(new_eqn.clone(), new_eqns_cont.clone());
             }
             assign_field!(aux.parsed = true);
             UnorderedMap::add(id.clone(), aux.clone(), map.clone())?;
@@ -473,9 +473,9 @@ fn introduceFunctionAliasEquation(mut eqn: Arc<Equation::Equation>, mut map: Arc
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     if depth.clone() == Depth::FULL.clone() {
-        eqn = BEquation::Equation::map(eqn.clone(), Arc::new({ let __pe_b1 = map.clone(); let __pe_b2 = aux_index.clone(); let __pe_b3 = iter.clone(); let __pe_b4 = init.clone(); move |__pe_a0| introduceFunctionAlias(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }), None, (std::sync::Arc::new(fnptr!(Expression::fakeMap, Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+        eqn = BEquation::Equation::map(eqn.clone(), (std::sync::Arc::new({ let __pe_b1 = map.clone(); let __pe_b2 = aux_index.clone(); let __pe_b3 = iter.clone(); let __pe_b4 = init.clone(); move |__pe_a0| introduceFunctionAlias(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), None, (std::sync::Arc::new(fnptr!(Expression::fakeMap, Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     } else if depth.clone() == Depth::CONDITION.clone() {
-        eqn = BEquation::Equation::mapCondition(eqn.clone(), Arc::new({ let __pe_b1 = map.clone(); let __pe_b2 = aux_index.clone(); let __pe_b3 = iter.clone(); let __pe_b4 = init.clone(); move |__pe_a0| introduceFunctionAlias(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }), None, (std::sync::Arc::new(fnptr!(Expression::fakeMap, Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>));
+        eqn = BEquation::Equation::mapCondition(eqn.clone(), (std::sync::Arc::new({ let __pe_b1 = map.clone(); let __pe_b2 = aux_index.clone(); let __pe_b3 = iter.clone(); let __pe_b4 = init.clone(); move |__pe_a0| introduceFunctionAlias(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), None, (std::sync::Arc::new(fnptr!(Expression::fakeMap, Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>));
     }
     Ok(eqn)
 }
@@ -488,7 +488,7 @@ fn introduceFunctionAlias(mut exp: Arc<Expression::NFExpression>, mut map: Arc<U
         _ => iter.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    exp = Expression::mapShallow(exp.clone(), Arc::new({ let __pe_b1 = map.clone(); let __pe_b2 = aux_index.clone(); let __pe_b3 = deep_iter.clone(); let __pe_b4 = init.clone(); move |__pe_a0| introduceFunctionAlias(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }))?;
+    exp = Expression::mapShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = map.clone(); let __pe_b2 = aux_index.clone(); let __pe_b3 = deep_iter.clone(); let __pe_b4 = init.clone(); move |__pe_a0| introduceFunctionAlias(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CALL { .. } if (checkCallReplacement(var_field!((*exp).call, Expression::NFExpression::CALL).clone())?) => {
             introduceAlias(exp.clone(), map.clone(), aux_index.clone(), (arcstr::literal!(BVariable::FUNCTION_STR)).clone(), iter.clone(), init.clone())?
@@ -499,7 +499,7 @@ fn introduceFunctionAlias(mut exp: Arc<Expression::NFExpression>, mut map: Arc<U
             assign_variant_field!(call => Call::NFCall::TYPED_CALL; arguments = ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
         for mut arg in (var_field!((*call).arguments, Call::NFCall::TYPED_CALL).clone()).into_iter().cloned() {
-            let __x = Expression::map(arg.clone(), Arc::new({ let __pe_b1 = map.clone(); let __pe_b2 = aux_index.clone(); let __pe_b3 = iter.clone(); let __pe_b4 = init.clone(); move |__pe_a0| introduceArrayConstructorAlias(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }))?;
+            let __x = Expression::map(arg.clone(), (std::sync::Arc::new({ let __pe_b1 = map.clone(); let __pe_b2 = aux_index.clone(); let __pe_b3 = iter.clone(); let __pe_b4 = init.clone(); move |__pe_a0| introduceArrayConstructorAlias(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -605,7 +605,7 @@ fn introduceAlias(mut exp: Arc<Expression::NFExpression>, mut map: Arc<Unordered
             let mut call = (*call).clone();
             let () = (::match_deref::match_deref! { match &((Call::functionName(call.clone())?, var_field!((*call).arguments, Call::NFCall::TYPED_CALL).clone())) {
         (Deref @ Absyn::Path::IDENT { name: Deref @ "cat" }, _) => {
-            assign_variant_field!(call => Call::NFCall::TYPED_CALL; arguments = cons(listHead(var_field!((*call).arguments, Call::NFCall::TYPED_CALL).clone())?, ({
+            assign_variant_field!(call => Call::NFCall::TYPED_CALL; arguments = metamodelica::cons(listHead(var_field!((*call).arguments, Call::NFCall::TYPED_CALL).clone())?, ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
         for mut arg in (listRest(var_field!((*call).arguments, Call::NFCall::TYPED_CALL).clone())?).into_iter().cloned() {
             let __x = if (Expression::isLiteral(arg.clone()) || Expression::isCref(arg.clone())) {arg.clone()} else {introduceAlias(arg.clone(), map.clone(), aux_index.clone(), (aux_name.clone()).clone(), iter.clone(), init.clone())?};
@@ -691,7 +691,7 @@ fn forceReplacement(mut r#fn: Arc<Function::Function>) -> Result<bool> {
 
 fn replaceException(mut r#fn: Arc<Function::Function>) -> Result<bool> {
     let mut b: bool = false;
-    let mut path: Arc<Absyn::Path>;
+    let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     if Function::isDefaultRecordConstructor(r#fn.clone()) || Function::isNonDefaultRecordConstructor(r#fn.clone()) || Function::isImpure(r#fn.clone()) || r#fn.outputs.clone().is_empty() {
         b = true;
         return Ok(b.clone());
@@ -742,7 +742,7 @@ fn filterFrames(mut exp: Arc<Expression::NFExpression>, mut names: Arc<metamodel
     let mut n: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
     let mut r: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut m: Arc<metamodelica::List<Option<Arc<Iterator::Iterator>>>> = metamodelica::nil();
-    Expression::map(exp.clone(), Arc::new({ let __pe_b1 = frame_map.clone(); let __pe_b2 = new_map.clone(); move |__pe_a0| collectFrames(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }))?;
+    Expression::map(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = frame_map.clone(); let __pe_b2 = new_map.clone(); move |__pe_a0| collectFrames(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     n = UnorderedMap::keyList(new_map.clone());
     r = UnorderedMap::valueList(new_map.clone());
     m = List::fill(None, (n.clone().len() as i32));
@@ -758,7 +758,7 @@ fn addAuxVar(mut new_var: Pointer::Pointer<Arc<Variable::NFVariable>>, mut disc:
     let mut new_vars_recd: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = new_vars_recd;
     let mut children: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
     if BVariable::isRecord(new_var.clone()) {
-        new_vars_recd = cons(new_var.clone(), new_vars_recd.clone());
+        new_vars_recd = metamodelica::cons(new_var.clone(), new_vars_recd.clone());
         let __pa0 = ::match_deref::match_deref! { match &(Variable::expandChildren(Pointer::access(new_var.clone()), metamodelica::nil(), false)) {
             Deref @ metamodelica::List::Cons { head: _, tail: __pa0 } => __pa0.clone(),
             _ => bail!("pattern mismatch"),
@@ -769,12 +769,12 @@ fn addAuxVar(mut new_var: Pointer::Pointer<Arc<Variable::NFVariable>>, mut disc:
             (disc, new_vars_disc, new_vars_cont, new_vars_init, new_vars_recd) = addAuxVar((BVariable::makeVarPtrCyclic(child.clone(), child.name.clone())?).0, disc.clone(), new_vars_disc.clone(), new_vars_cont.clone(), new_vars_init.clone(), new_vars_recd.clone(), init.clone())?;
         }
     } else if init.clone() {
-        new_vars_init = cons(BVariable::setFixed(new_var.clone(), false, false)?, new_vars_init.clone());
+        new_vars_init = metamodelica::cons(BVariable::setFixed(new_var.clone(), false, false)?, new_vars_init.clone());
     } else if BVariable::isContinuous(new_var.clone(), false)? {
         disc = false;
-        new_vars_cont = cons(new_var.clone(), new_vars_cont.clone());
+        new_vars_cont = metamodelica::cons(new_var.clone(), new_vars_cont.clone());
     } else {
-        new_vars_disc = cons(new_var.clone(), new_vars_disc.clone());
+        new_vars_disc = metamodelica::cons(new_var.clone(), new_vars_disc.clone());
     }
     Ok((disc, new_vars_disc, new_vars_cont, new_vars_init, new_vars_recd))
 }
@@ -784,25 +784,25 @@ fn addClockedAlias(mut equations: Arc<EquationPointers::EquationPointers>, mut e
     let mut infer_eqns: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
     let mut clock_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
     let mut infer_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-    let mut clck_coll: Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<ComponentRef::NFComponentRef>>> = UnorderedMap::new((std::sync::Arc::new(fnptr!(BClock::hash, Arc<BClock::BClock>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>) -> Result<i32> + 'static>), (std::sync::Arc::new(BClock::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>, Arc<BClock::BClock>) -> Result<bool> + 'static>), 1);
-    let mut infr_coll: Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<ComponentRef::NFComponentRef>>> = UnorderedMap::new((std::sync::Arc::new(fnptr!(BClock::hash, Arc<BClock::BClock>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>) -> Result<i32> + 'static>), (std::sync::Arc::new(BClock::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>, Arc<BClock::BClock>) -> Result<bool> + 'static>), 1);
+    let mut clck_coll: Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<ComponentRef::NFComponentRef>>> = UnorderedMap::new((std::sync::Arc::new(fnptr!(Partitioning::BClock::hash, Arc<BClock::BClock>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>) -> Result<i32> + 'static>), (std::sync::Arc::new(Partitioning::BClock::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>, Arc<BClock::BClock>) -> Result<bool> + 'static>), 1);
+    let mut infr_coll: Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<ComponentRef::NFComponentRef>>> = UnorderedMap::new((std::sync::Arc::new(fnptr!(Partitioning::BClock::hash, Arc<BClock::BClock>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>) -> Result<i32> + 'static>), (std::sync::Arc::new(Partitioning::BClock::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>, Arc<BClock::BClock>) -> Result<bool> + 'static>), 1);
     let mut new_clocks: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> = Pointer::create(metamodelica::nil());
     let mut new_infers: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> = Pointer::create(metamodelica::nil());
     let mut idx: Pointer::Pointer<i32> = Pointer::create(0);
-    let mut clock: Arc<BClock::BClock>;
+    let mut clock: Arc<BClock::BClock> = Arc::new(<BClock::BClock as ::std::default::Default>::default());
     let mut clock_name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    BEquation::EquationPointers::map(equations.clone(), Arc::new({ let __pe_b1 = clck_coll.clone(); let __pe_b2 = infr_coll.clone(); let __pe_b3 = new_clocks.clone(); let __pe_b4 = new_infers.clone(); let __pe_b5 = idx.clone(); move |__pe_a0| Partitioning::extractClocksEqn(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone()) }))?;
+    BEquation::EquationPointers::map(equations.clone(), (std::sync::Arc::new({ let __pe_b1 = clck_coll.clone(); let __pe_b2 = infr_coll.clone(); let __pe_b3 = new_clocks.clone(); let __pe_b4 = new_infers.clone(); let __pe_b5 = idx.clone(); move |__pe_a0| Partitioning::extractClocksEqn(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>))?;
     clock_vars = Pointer::access(new_clocks.clone());
     for mut tpl in &*UnorderedMap::toList(clck_coll.clone()) {
         let mut tpl = tpl.clone();
         (clock, clock_name) = tpl.clone();
-        clock_eqns = cons(BEquation::Equation::makeAssignment(Expression::fromCref(clock_name.clone(), false)?, Partitioning::BClock::toExp(clock.clone())?, eqn_idx.clone(), (literal!("AUX")).clone(), Arc::new(crate::NBEquation::Iterator::EMPTY), BEquation::default(EquationKind::CLOCKED.clone(), false, None, None))?, clock_eqns.clone());
+        clock_eqns = metamodelica::cons(BEquation::Equation::makeAssignment(Expression::fromCref(clock_name.clone(), false)?, Partitioning::BClock::toExp(clock.clone())?, eqn_idx.clone(), (literal!("AUX")).clone(), Arc::new(crate::NBEquation::Iterator::EMPTY), BEquation::default(EquationKind::CLOCKED.clone(), false, None, None))?, clock_eqns.clone());
     }
     infer_vars = Pointer::access(new_infers.clone());
     for mut tpl in &*UnorderedMap::toList(infr_coll.clone()) {
         let mut tpl = tpl.clone();
         (clock, clock_name) = tpl.clone();
-        infer_eqns = cons(BEquation::Equation::makeAssignment(Expression::fromCref(clock_name.clone(), false)?, Partitioning::BClock::toExp(clock.clone())?, eqn_idx.clone(), (literal!("AUX")).clone(), Arc::new(crate::NBEquation::Iterator::EMPTY), BEquation::default(EquationKind::CLOCKED.clone(), false, None, None))?, infer_eqns.clone());
+        infer_eqns = metamodelica::cons(BEquation::Equation::makeAssignment(Expression::fromCref(clock_name.clone(), false)?, Partitioning::BClock::toExp(clock.clone())?, eqn_idx.clone(), (literal!("AUX")).clone(), Arc::new(crate::NBEquation::Iterator::EMPTY), BEquation::default(EquationKind::CLOCKED.clone(), false, None, None))?, infer_eqns.clone());
     }
     Ok((clock_eqns, infer_eqns, clock_vars, infer_vars, clck_coll, infr_coll))
 }
@@ -813,7 +813,7 @@ pub type Indices = Arc<UnorderedSet::UnorderedSet<i32>>;
 fn collectSlicedStatesAliasEquation(mut eqn: Arc<Equation::Equation>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<i32>>>>) -> Result<Arc<Equation::Equation>> {
     let mut eqn: Arc<Equation::Equation> = eqn;
     let mut iter: Arc<Iterator::Iterator> = BEquation::Equation::getForIterator(eqn.clone());
-    BEquation::Equation::map(eqn.clone(), Arc::new({ let __pe_b1 = iter.clone(); let __pe_b2 = map.clone(); move |__pe_a0| collectSlicedStatesAlias(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }), None, (std::sync::Arc::new(fnptr!(Expression::fakeMap, Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+    BEquation::Equation::map(eqn.clone(), (std::sync::Arc::new({ let __pe_b1 = iter.clone(); let __pe_b2 = map.clone(); move |__pe_a0| collectSlicedStatesAlias(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), None, (std::sync::Arc::new(fnptr!(Expression::fakeMap, Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     Ok(eqn)
 }
 
@@ -832,7 +832,7 @@ fn collectSlicedStatesAlias(mut exp: Arc<Expression::NFExpression>, mut iter: Ar
             let mut maps: Arc<metamodelica::List<Option<Arc<Iterator::Iterator>>>> = metamodelica::nil();
             iter_size = BEquation::Iterator::size(iter.clone(), true);
             call_crefs = UnorderedSet::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
-            Slice::filterExp(arg.clone(), Arc::new({ let __pe_b2 = false; move |__pe_a0, __pe_a1| Slice::getContinuous(__pe_a0, __pe_a1, __pe_b2.clone()) }), call_crefs.clone())?;
+            Slice::filterExp(arg.clone(), (std::sync::Arc::new({ let __pe_b2 = false; move |__pe_a0, __pe_a1| Slice::getContinuous(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<ComponentRef::NFComponentRef>> + 'static>), call_crefs.clone())?;
             for mut cref in &*UnorderedSet::toList(call_crefs.clone()) {
                 let mut cref = cref.clone();
                 cref_size = Type::sizeOf(ComponentRef::getSubscriptedType(cref.clone(), false)?, true)?;
@@ -851,15 +851,15 @@ fn collectSlicedStatesAlias(mut exp: Arc<Expression::NFExpression>, mut iter: Ar
             exp.clone()
         },
         Deref @ Expression::CALL { call: Deref @ Call::TYPED_ARRAY_CONSTRUCTOR { .. } } => {
-            Expression::mapShallow(exp.clone(), Arc::new({ let __pe_b1 = BEquation::Iterator::expand(iter.clone(), var_field!((*exp).call, Expression::NFExpression::CALL).clone())?; let __pe_b2 = map.clone(); move |__pe_a0| collectSlicedStatesAlias(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }))?;
+            Expression::mapShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = BEquation::Iterator::expand(iter.clone(), var_field!((*exp).call, Expression::NFExpression::CALL).clone())?; let __pe_b2 = map.clone(); move |__pe_a0| collectSlicedStatesAlias(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             exp.clone()
         },
         Deref @ Expression::CALL { call: Deref @ Call::TYPED_REDUCTION { .. } } => {
-            Expression::mapShallow(exp.clone(), Arc::new({ let __pe_b1 = BEquation::Iterator::expand(iter.clone(), var_field!((*exp).call, Expression::NFExpression::CALL).clone())?; let __pe_b2 = map.clone(); move |__pe_a0| collectSlicedStatesAlias(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }))?;
+            Expression::mapShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = BEquation::Iterator::expand(iter.clone(), var_field!((*exp).call, Expression::NFExpression::CALL).clone())?; let __pe_b2 = map.clone(); move |__pe_a0| collectSlicedStatesAlias(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             exp.clone()
         },
         _ => {
-            Expression::mapShallow(exp.clone(), Arc::new({ let __pe_b1 = iter.clone(); let __pe_b2 = map.clone(); move |__pe_a0| collectSlicedStatesAlias(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }))?;
+            Expression::mapShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = iter.clone(); let __pe_b2 = map.clone(); move |__pe_a0| collectSlicedStatesAlias(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             exp.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -884,7 +884,7 @@ fn getSlicedStatesSet(mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::
 fn introduceSlicedStateAliasEquation(mut eqn: Arc<Equation::Equation>, mut set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<Call_Id::Call_Id>, Arc<Call_Aux::Call_Aux>>>, mut aux_index: Pointer::Pointer<i32>) -> Result<Arc<Equation::Equation>> {
     let mut eqn: Arc<Equation::Equation> = eqn;
     let mut iter: Arc<Iterator::Iterator> = BEquation::Equation::getForIterator(eqn.clone());
-    eqn = BEquation::Equation::map(eqn.clone(), Arc::new({ let __pe_b1 = set.clone(); let __pe_b2 = map.clone(); let __pe_b3 = iter.clone(); let __pe_b4 = aux_index.clone(); move |__pe_a0| introduceSlicedStateAliasExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }), None, (std::sync::Arc::new(fnptr!(Expression::fakeMap, Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+    eqn = BEquation::Equation::map(eqn.clone(), (std::sync::Arc::new({ let __pe_b1 = set.clone(); let __pe_b2 = map.clone(); let __pe_b3 = iter.clone(); let __pe_b4 = aux_index.clone(); move |__pe_a0| introduceSlicedStateAliasExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), None, (std::sync::Arc::new(fnptr!(Expression::fakeMap, Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     Ok(eqn)
 }
 
@@ -893,23 +893,23 @@ fn introduceSlicedStateAliasExp(mut exp: Arc<Expression::NFExpression>, mut set:
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { arguments: Deref @ metamodelica::List::Cons { head: arg, tail: Deref @ metamodelica::List::Nil }, r#fn: Deref @ Function::FUNCTION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, .. } } => {
             let mut call = (*call).clone();
-            assign_variant_field!(call => Call::NFCall::TYPED_CALL; arguments = list![Expression::map(arg.clone(), Arc::new({ let __pe_b1 = set.clone(); let __pe_b2 = map.clone(); let __pe_b3 = aux_index.clone(); let __pe_b4 = iter.clone(); let __pe_b5 = false; move |__pe_a0| introduceAliasCrefConditional(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone()) }))?]);
+            assign_variant_field!(call => Call::NFCall::TYPED_CALL; arguments = list![Expression::map(arg.clone(), (std::sync::Arc::new({ let __pe_b1 = set.clone(); let __pe_b2 = map.clone(); let __pe_b3 = aux_index.clone(); let __pe_b4 = iter.clone(); let __pe_b5 = false; move |__pe_a0| introduceAliasCrefConditional(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?]);
             assign_variant_field!(exp => Expression::NFExpression::CALL; call = call.clone());
             exp.clone()
         },
         Deref @ Expression::CALL { call: Deref @ Call::TYPED_ARRAY_CONSTRUCTOR { .. } } => {
             let mut new_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            new_exp = Expression::mapShallow(exp.clone(), Arc::new({ let __pe_b1 = set.clone(); let __pe_b2 = map.clone(); let __pe_b3 = BEquation::Iterator::expand(iter.clone(), var_field!((*exp).call, Expression::NFExpression::CALL).clone())?; let __pe_b4 = aux_index.clone(); move |__pe_a0| introduceSlicedStateAliasExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }))?;
+            new_exp = Expression::mapShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = set.clone(); let __pe_b2 = map.clone(); let __pe_b3 = BEquation::Iterator::expand(iter.clone(), var_field!((*exp).call, Expression::NFExpression::CALL).clone())?; let __pe_b4 = aux_index.clone(); move |__pe_a0| introduceSlicedStateAliasExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             new_exp.clone()
         },
         Deref @ Expression::CALL { call: Deref @ Call::TYPED_REDUCTION { .. } } => {
             let mut new_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            new_exp = Expression::mapShallow(exp.clone(), Arc::new({ let __pe_b1 = set.clone(); let __pe_b2 = map.clone(); let __pe_b3 = BEquation::Iterator::expand(iter.clone(), var_field!((*exp).call, Expression::NFExpression::CALL).clone())?; let __pe_b4 = aux_index.clone(); move |__pe_a0| introduceSlicedStateAliasExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }))?;
+            new_exp = Expression::mapShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = set.clone(); let __pe_b2 = map.clone(); let __pe_b3 = BEquation::Iterator::expand(iter.clone(), var_field!((*exp).call, Expression::NFExpression::CALL).clone())?; let __pe_b4 = aux_index.clone(); move |__pe_a0| introduceSlicedStateAliasExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             new_exp.clone()
         },
         _ => {
             let mut new_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            new_exp = Expression::mapShallow(exp.clone(), Arc::new({ let __pe_b1 = set.clone(); let __pe_b2 = map.clone(); let __pe_b3 = iter.clone(); let __pe_b4 = aux_index.clone(); move |__pe_a0| introduceSlicedStateAliasExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }))?;
+            new_exp = Expression::mapShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = set.clone(); let __pe_b2 = map.clone(); let __pe_b3 = iter.clone(); let __pe_b4 = aux_index.clone(); move |__pe_a0| introduceSlicedStateAliasExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             new_exp.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

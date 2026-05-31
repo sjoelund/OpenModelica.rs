@@ -158,7 +158,7 @@ pub fn applyModule(mut partitions: Arc<metamodelica::List<Arc<Partition::Partiti
     for mut partition in &*partitions.clone() {
         let mut partition = partition.clone();
         (new_partition, varData, eqData) = func(partition.clone(), varData.clone(), eqData.clone(), funcMap.clone())?;
-        new_partitions = if (BPartition::Partition::isEmpty(new_partition.clone())) {new_partitions.clone()} else {cons(new_partition.clone(), new_partitions.clone())};
+        new_partitions = if (BPartition::Partition::isEmpty(new_partition.clone())) {new_partitions.clone()} else {metamodelica::cons(new_partition.clone(), new_partitions.clone())};
     }
     new_partitions = new_partitions.clone().reverse();
     if !(BPartition::kindIsInitial(kind.clone())) {
@@ -210,8 +210,8 @@ pub fn checkSystemVariabilities(mut partition: Arc<Partition::Partition>) -> Res
 pub fn simple(mut vars: Arc<VariablePointers::VariablePointers>, mut eqns: Arc<EquationPointers::EquationPointers>, mut kind: BPartition::Kind, mut st: Adjacency::MatrixStrictness, mut iter: Arc<Iterator::Iterator>) -> Result<(Arc<Matching::NBMatching>, Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>>)> {
     let mut matching: Arc<Matching::NBMatching> = Arc::new(<Matching::NBMatching as ::std::default::Default>::default());
     let mut comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>> = metamodelica::nil();
-    let mut full: Arc<Adjacency::Matrix::Matrix>;
-    let mut adj: Arc<Adjacency::Matrix::Matrix>;
+    let mut full: Arc<Adjacency::Matrix::Matrix> = Arc::new(<Adjacency::Matrix::Matrix as ::std::default::Default>::default());
+    let mut adj: Arc<Adjacency::Matrix::Matrix> = Arc::new(<Adjacency::Matrix::Matrix as ::std::default::Default>::default());
     full = Adjacency::Matrix::createFull(vars.clone(), eqns.clone(), kind.clone())?;
     adj = Adjacency::Matrix::fullToFinal(full.clone(), vars.map.clone(), eqns.map.clone(), eqns.clone(), st.clone(), iter.clone());
     matching = Matching::regular(Matching::EMPTY_MATCHING().clone(), adj.clone(), false, false, true)?;
@@ -245,9 +245,9 @@ fn causalizePseudoArray(mut partition: Arc<Partition::Partition>, mut varData: A
     let mut kind: BPartition::Kind = BPartition::Partition::getKind(partition.clone());
     let mut variables: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
     let mut equations: Arc<EquationPointers::EquationPointers> = Arc::new(<EquationPointers::EquationPointers as ::std::default::Default>::default());
-    let mut full: Arc<Adjacency::Matrix::Matrix>;
-    let mut adj_matching: Arc<Adjacency::Matrix::Matrix>;
-    let mut adj_sorting: Arc<Adjacency::Matrix::Matrix>;
+    let mut full: Arc<Adjacency::Matrix::Matrix> = Arc::new(<Adjacency::Matrix::Matrix as ::std::default::Default>::default());
+    let mut adj_matching: Arc<Adjacency::Matrix::Matrix> = Arc::new(<Adjacency::Matrix::Matrix as ::std::default::Default>::default());
+    let mut adj_sorting: Arc<Adjacency::Matrix::Matrix> = Arc::new(<Adjacency::Matrix::Matrix as ::std::default::Default>::default());
     let mut matching: Arc<Matching::NBMatching> = Arc::new(<Matching::NBMatching as ::std::default::Default>::default());
     let mut comps: Arc<metamodelica::List<Arc<StrongComponent::NBStrongComponent>>> = metamodelica::nil();
     (variables, equations, full, matching, comps) = (match kind.clone() {
@@ -265,7 +265,7 @@ fn causalizePseudoArray(mut partition: Arc<Partition::Partition>, mut varData: A
                 partition.equations = BEquation::EquationPointers::compress(partition.equations.clone())?
             );
             (fixable, unfixable) = List::splitOnTrue(BVariable::VariablePointers::toList(partition.unknowns.clone())?, (std::sync::Arc::new(fnptr!(BVariable::isFixable, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>));
-            (initials, simulation) = List::splitOnTrue(BEquation::EquationPointers::toList(partition.equations.clone())?, (std::sync::Arc::new(fnptr!(Equation::isInitial, Pointer::Pointer<Arc<Equation::Equation>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>));
+            (initials, simulation) = List::splitOnTrue(BEquation::EquationPointers::toList(partition.equations.clone())?, (std::sync::Arc::new(fnptr!(BEquation::Equation::isInitial, Pointer::Pointer<Arc<Equation::Equation>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>));
             full = Adjacency::Matrix::createFull(partition.unknowns.clone(), partition.equations.clone(), kind.clone())?;
             vn = UnorderedMap::subMap(partition.unknowns.map.clone(), ({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();

@@ -63,7 +63,7 @@ use openmodelica_util::Error;
 pub fn instConstructor(mut path: Arc<Absyn::Path>, mut recordNode: Arc<InstNode::InstNode>, mut context: i32, mut info: SourceInfo) -> Result<Arc<InstNode::InstNode>> {
     let mut recordNode: Arc<InstNode::InstNode> = recordNode;
     let mut ctor_ref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut ctor_path: Arc<Absyn::Path>;
+    let mut ctor_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut ctor_overloaded: bool = false;
     let mut ctor_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     match '__try0: {
@@ -94,7 +94,7 @@ pub fn instConstructor(mut path: Arc<Absyn::Path>, mut recordNode: Arc<InstNode:
 pub fn instOperatorFunctions(mut node: Arc<InstNode::InstNode>, mut context: i32, mut info: SourceInfo) -> Result<Arc<InstNode::InstNode>> {
     let mut node: Arc<InstNode::InstNode> = node;
     let mut tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
-    let mut mclss: metamodelica::Array<Arc<InstNode::InstNode>>;
+    let mut mclss: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
     let mut allfuncs: Arc<metamodelica::List<Arc<Function::Function>>> = metamodelica::nil();
     let mut funcs: Arc<metamodelica::List<Arc<Function::Function>>> = metamodelica::nil();
     checkOperatorRestrictions(node.clone())?;
@@ -177,7 +177,7 @@ pub fn patchOperatorRecordConstructorBinding(mut r#fn: Arc<Function::Function>) 
     if !(Binding::isBound(output_binding.clone())) {
         return Ok(r#fn.clone());
     }
-    output_binding = Binding::mapExp(output_binding.clone(), Arc::new({ let __pe_b1 = r#fn.clone(); move |__pe_a0| Ok(patchOperatorRecordConstructorBinding_traverser(__pe_a0, __pe_b1.clone())) }))?;
+    output_binding = Binding::mapExp(output_binding.clone(), (std::sync::Arc::new({ let __pe_b1 = r#fn.clone(); move |__pe_a0| Ok(patchOperatorRecordConstructorBinding_traverser(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     output_comp = Component::setBinding(output_binding.clone(), output_comp.clone())?;
     output_node = InstNode::updateComponent(output_comp.clone(), output_node.clone())?;
     Ok(r#fn)

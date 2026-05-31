@@ -79,7 +79,7 @@ pub use self::NFExpressionIterator::{ARRAY_ITERATOR,SCALAR_ITERATOR,EACH_ITERATO
 pub fn toString(mut iter: Arc<NFExpressionIterator>) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((::match_deref::match_deref! { match &(iter.clone()) {
-        Deref @ ARRAY_ITERATOR { .. } => List::toString(var_field!((*iter).arrays, NFExpressionIterator::ARRAY_ITERATOR).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(_) -> Result<ArcStr> + 'static> = (std::sync::Arc::new(Expression::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<ArcStr> + 'static>); let __pe_b2 = (literal!("")).clone(); let __pe_b3 = (literal!("{")).clone(); let __pe_b4 = (literal!(", ")).clone(); let __pe_b5 = (literal!("}")).clone(); let __pe_b6 = false; let __pe_b7 = 0; move |__pe_a0| Array::toString(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone(), __pe_b7.clone()) }), (literal!("[ARRY] array iterator:\n")).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), true, 0)?,
+        Deref @ ARRAY_ITERATOR { .. } => List::toString(var_field!((*iter).arrays, NFExpressionIterator::ARRAY_ITERATOR).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(_) -> Result<ArcStr> + 'static> = (std::sync::Arc::new(Expression::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<ArcStr> + 'static>); let __pe_b2 = (literal!("")).clone(); let __pe_b3 = (literal!("{")).clone(); let __pe_b4 = (literal!(", ")).clone(); let __pe_b5 = (literal!("}")).clone(); let __pe_b6 = false; let __pe_b7 = 0; move |__pe_a0| Array::toString(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone(), __pe_b7.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<ArcStr> + 'static>), (literal!("[ARRY] array iterator:\n")).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), true, 0)?,
         Deref @ REPEAT_ITERATOR { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[REAP] repeat iterator:\n")); __mm_s.push_str(&*List::toString(var_field!((*iter).all, NFExpressionIterator::REPEAT_ITERATOR).clone(), (std::sync::Arc::new(Expression::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); ArcStr::from(__mm_s) },
         Deref @ SCALAR_ITERATOR { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[SCAL] scalar iterator: ")); __mm_s.push_str(&*Expression::toString(var_field!((*iter).exp, NFExpressionIterator::SCALAR_ITERATOR).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) },
         Deref @ EACH_ITERATOR { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[EACH] each iterator: ")); __mm_s.push_str(&*Expression::toString(var_field!((*iter).exp, NFExpressionIterator::EACH_ITERATOR).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) },
@@ -234,7 +234,7 @@ pub fn toList(mut iterator: Arc<NFExpressionIterator>) -> Result<Arc<metamodelic
     iter = iterator.clone();
     while hasNext(iter.clone())? {
         (iter, exp) = next(iter.clone())?;
-        expl = cons(exp.clone(), expl.clone());
+        expl = metamodelica::cons(exp.clone(), expl.clone());
     }
     expl = expl.clone().reverse();
     Ok(expl)
@@ -285,7 +285,7 @@ fn flattenArray(mut exp: Arc<Expression::NFExpression>, mut arrays: Arc<metamode
 fn flattenArray_impl(mut exp: Arc<Expression::NFExpression>, mut arrays: Arc<metamodelica::List<metamodelica::Array<Arc<Expression::NFExpression>>>>) -> Result<Arc<metamodelica::List<metamodelica::Array<Arc<Expression::NFExpression>>>>> {
     let mut arrays: Arc<metamodelica::List<metamodelica::Array<Arc<Expression::NFExpression>>>> = arrays;
     if Expression::isVector(exp.clone()) {
-        arrays = cons(Expression::arrayElements(exp.clone())?, arrays.clone());
+        arrays = metamodelica::cons(Expression::arrayElements(exp.clone())?, arrays.clone());
     } else {
         let __range0 = Expression::arrayElements(exp.clone())?.borrow().iter().cloned().collect::<Vec<_>>();
         for mut e in __range0 {

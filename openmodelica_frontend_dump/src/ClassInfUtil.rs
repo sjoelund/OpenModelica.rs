@@ -229,7 +229,7 @@ pub fn printState(mut inState: ClassInf::State) -> Result<()> {
 }
 
 pub fn getStateName(mut inState: ClassInf::State) -> Arc<Absyn::Path> {
-    let mut outPath: Arc<Absyn::Path>;
+    let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     outPath = (match inState.clone() {
         ClassInf::State::UNKNOWN { path: ref p } => {
             p.clone()

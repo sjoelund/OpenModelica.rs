@@ -241,7 +241,7 @@ pub fn filterOnDirection(mut inputs: Arc<metamodelica::List<Arc<Absyn::ElementIt
         let mut i = i.clone();
         directionEQ = AbsynUtil::directionEqual(direction.clone(), AbsynUtil::getDirection(i.clone())) || AbsynUtil::directionEqual(ioDirection.clone(), AbsynUtil::getDirection(i.clone()));
         if directionEQ.clone() {
-            outputs = cons(i.clone(), outputs.clone());
+            outputs = metamodelica::cons(i.clone(), outputs.clone());
         }
     }
     outputs

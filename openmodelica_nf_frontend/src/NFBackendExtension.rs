@@ -542,7 +542,7 @@ pub mod VariableAttributes {
         Deref @ VAR_ATTR_CLOCK { .. } => literal!(""),
         Deref @ VAR_ATTR_STRING { .. } => attributesToString(list![(literal!("fixed"), var_field!((*attr).fixed, VariableAttributes::VAR_ATTR_STRING).clone()), (literal!("start"), var_field!((*attr).start, VariableAttributes::VAR_ATTR_STRING).clone())], None, None)?,
         Deref @ VAR_ATTR_ENUMERATION { .. } => attributesToString(list![(literal!("fixed"), var_field!((*attr).fixed, VariableAttributes::VAR_ATTR_ENUMERATION).clone()), (literal!("start"), var_field!((*attr).start, VariableAttributes::VAR_ATTR_ENUMERATION).clone()), (literal!("min"), var_field!((*attr).min, VariableAttributes::VAR_ATTR_ENUMERATION).clone()), (literal!("max"), var_field!((*attr).max, VariableAttributes::VAR_ATTR_ENUMERATION).clone())], None, None)?,
-        Deref @ VAR_ATTR_RECORD { .. } => List::toString(UnorderedMap::toList(var_field!((*attr).indexMap, VariableAttributes::VAR_ATTR_RECORD).clone()), Arc::new({ let __pe_b1 = var_field!((*attr).childrenAttr, VariableAttributes::VAR_ATTR_RECORD).clone(); move |__pe_a0| recordString(__pe_a0, __pe_b1.clone()) }), (literal!("")).clone(), (literal!("")).clone(), (literal!(", ")).clone(), (literal!("")).clone(), true, 0)?,
+        Deref @ VAR_ATTR_RECORD { .. } => List::toString(UnorderedMap::toList(var_field!((*attr).indexMap, VariableAttributes::VAR_ATTR_RECORD).clone()), (std::sync::Arc::new({ let __pe_b1 = var_field!((*attr).childrenAttr, VariableAttributes::VAR_ATTR_RECORD).clone(); move |__pe_a0| recordString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, i32)) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("")).clone(), (literal!(", ")).clone(), (literal!("")).clone(), true, 0)?,
         _ => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.toString")); __mm_s.push_str(&*literal!(" failed. Attribute string could not be created.")); ArcStr::from(__mm_s) },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -560,7 +560,7 @@ pub mod VariableAttributes {
     }
 
     pub fn create(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Binding::NFBinding>)>>, mut ty: Arc<Type::NFType>, mut compAttrs: Arc<Attributes::NFAttributes>, mut children: Arc<metamodelica::List<Arc<Variable::NFVariable>>>, mut comment: Arc<SCode::Comment>) -> Result<Arc<VariableAttributes>> {
-        let mut attributes: Arc<VariableAttributes>;
+        let mut attributes: Arc<VariableAttributes> = Arc::new(<VariableAttributes as ::std::default::Default>::default());
         let mut is_final: bool = false;
         let mut complexTy: Arc<ComplexType::NFComplexType> = Arc::new(ComplexType::CLASS);
         is_final = compAttrs.isFinal.clone() || compAttrs.variability.clone() == Variability::STRUCTURAL_PARAMETER.clone();
@@ -585,60 +585,60 @@ pub mod VariableAttributes {
         attributes = (::match_deref::match_deref! { match &(attributes.clone()) {
         Deref @ VAR_ATTR_REAL { .. } => {
             assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_REAL;
-                quantity = Util::applyOption(var_field!((*attributes).quantity, VariableAttributes::VAR_ATTR_REAL).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                unit = Util::applyOption(var_field!((*attributes).unit, VariableAttributes::VAR_ATTR_REAL).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                displayUnit = Util::applyOption(var_field!((*attributes).displayUnit, VariableAttributes::VAR_ATTR_REAL).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                min = Util::applyOption(var_field!((*attributes).min, VariableAttributes::VAR_ATTR_REAL).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                max = Util::applyOption(var_field!((*attributes).max, VariableAttributes::VAR_ATTR_REAL).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                start = Util::applyOption(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_REAL).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                fixed = Util::applyOption(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_REAL).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                nominal = Util::applyOption(var_field!((*attributes).nominal, VariableAttributes::VAR_ATTR_REAL).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                binding = Util::applyOption(var_field!((*attributes).binding, VariableAttributes::VAR_ATTR_REAL).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                startOrigin = Util::applyOption(var_field!((*attributes).startOrigin, VariableAttributes::VAR_ATTR_REAL).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }))
+                quantity = Util::applyOption(var_field!((*attributes).quantity, VariableAttributes::VAR_ATTR_REAL).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                unit = Util::applyOption(var_field!((*attributes).unit, VariableAttributes::VAR_ATTR_REAL).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                displayUnit = Util::applyOption(var_field!((*attributes).displayUnit, VariableAttributes::VAR_ATTR_REAL).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                min = Util::applyOption(var_field!((*attributes).min, VariableAttributes::VAR_ATTR_REAL).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                max = Util::applyOption(var_field!((*attributes).max, VariableAttributes::VAR_ATTR_REAL).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                start = Util::applyOption(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_REAL).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                fixed = Util::applyOption(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_REAL).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                nominal = Util::applyOption(var_field!((*attributes).nominal, VariableAttributes::VAR_ATTR_REAL).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                binding = Util::applyOption(var_field!((*attributes).binding, VariableAttributes::VAR_ATTR_REAL).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                startOrigin = Util::applyOption(var_field!((*attributes).startOrigin, VariableAttributes::VAR_ATTR_REAL).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))
             );
             attributes.clone()
         },
         Deref @ VAR_ATTR_INT { .. } => {
             assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_INT;
-                quantity = Util::applyOption(var_field!((*attributes).quantity, VariableAttributes::VAR_ATTR_INT).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                min = Util::applyOption(var_field!((*attributes).min, VariableAttributes::VAR_ATTR_INT).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                max = Util::applyOption(var_field!((*attributes).max, VariableAttributes::VAR_ATTR_INT).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                start = Util::applyOption(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_INT).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                fixed = Util::applyOption(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_INT).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                binding = Util::applyOption(var_field!((*attributes).binding, VariableAttributes::VAR_ATTR_INT).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                startOrigin = Util::applyOption(var_field!((*attributes).startOrigin, VariableAttributes::VAR_ATTR_INT).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }))
+                quantity = Util::applyOption(var_field!((*attributes).quantity, VariableAttributes::VAR_ATTR_INT).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                min = Util::applyOption(var_field!((*attributes).min, VariableAttributes::VAR_ATTR_INT).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                max = Util::applyOption(var_field!((*attributes).max, VariableAttributes::VAR_ATTR_INT).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                start = Util::applyOption(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_INT).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                fixed = Util::applyOption(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_INT).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                binding = Util::applyOption(var_field!((*attributes).binding, VariableAttributes::VAR_ATTR_INT).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                startOrigin = Util::applyOption(var_field!((*attributes).startOrigin, VariableAttributes::VAR_ATTR_INT).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))
             );
             attributes.clone()
         },
         Deref @ VAR_ATTR_BOOL { .. } => {
             assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_BOOL;
-                quantity = Util::applyOption(var_field!((*attributes).quantity, VariableAttributes::VAR_ATTR_BOOL).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                start = Util::applyOption(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_BOOL).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                fixed = Util::applyOption(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_BOOL).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                binding = Util::applyOption(var_field!((*attributes).binding, VariableAttributes::VAR_ATTR_BOOL).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                startOrigin = Util::applyOption(var_field!((*attributes).startOrigin, VariableAttributes::VAR_ATTR_BOOL).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }))
+                quantity = Util::applyOption(var_field!((*attributes).quantity, VariableAttributes::VAR_ATTR_BOOL).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                start = Util::applyOption(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_BOOL).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                fixed = Util::applyOption(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_BOOL).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                binding = Util::applyOption(var_field!((*attributes).binding, VariableAttributes::VAR_ATTR_BOOL).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                startOrigin = Util::applyOption(var_field!((*attributes).startOrigin, VariableAttributes::VAR_ATTR_BOOL).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))
             );
             attributes.clone()
         },
         Deref @ VAR_ATTR_STRING { .. } => {
             assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_STRING;
-                quantity = Util::applyOption(var_field!((*attributes).quantity, VariableAttributes::VAR_ATTR_STRING).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                start = Util::applyOption(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_STRING).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                fixed = Util::applyOption(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_STRING).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                binding = Util::applyOption(var_field!((*attributes).binding, VariableAttributes::VAR_ATTR_STRING).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                startOrigin = Util::applyOption(var_field!((*attributes).startOrigin, VariableAttributes::VAR_ATTR_STRING).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }))
+                quantity = Util::applyOption(var_field!((*attributes).quantity, VariableAttributes::VAR_ATTR_STRING).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                start = Util::applyOption(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_STRING).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                fixed = Util::applyOption(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_STRING).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                binding = Util::applyOption(var_field!((*attributes).binding, VariableAttributes::VAR_ATTR_STRING).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                startOrigin = Util::applyOption(var_field!((*attributes).startOrigin, VariableAttributes::VAR_ATTR_STRING).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))
             );
             attributes.clone()
         },
         Deref @ VAR_ATTR_ENUMERATION { .. } => {
             assign_variant_field!(attributes => VariableAttributes::VAR_ATTR_ENUMERATION;
-                quantity = Util::applyOption(var_field!((*attributes).quantity, VariableAttributes::VAR_ATTR_ENUMERATION).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                min = Util::applyOption(var_field!((*attributes).min, VariableAttributes::VAR_ATTR_ENUMERATION).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                max = Util::applyOption(var_field!((*attributes).max, VariableAttributes::VAR_ATTR_ENUMERATION).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                start = Util::applyOption(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_ENUMERATION).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                fixed = Util::applyOption(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_ENUMERATION).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                binding = Util::applyOption(var_field!((*attributes).binding, VariableAttributes::VAR_ATTR_ENUMERATION).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) })),
-                startOrigin = Util::applyOption(var_field!((*attributes).startOrigin, VariableAttributes::VAR_ATTR_ENUMERATION).clone(), Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }))
+                quantity = Util::applyOption(var_field!((*attributes).quantity, VariableAttributes::VAR_ATTR_ENUMERATION).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                min = Util::applyOption(var_field!((*attributes).min, VariableAttributes::VAR_ATTR_ENUMERATION).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                max = Util::applyOption(var_field!((*attributes).max, VariableAttributes::VAR_ATTR_ENUMERATION).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                start = Util::applyOption(var_field!((*attributes).start, VariableAttributes::VAR_ATTR_ENUMERATION).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                fixed = Util::applyOption(var_field!((*attributes).fixed, VariableAttributes::VAR_ATTR_ENUMERATION).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                binding = Util::applyOption(var_field!((*attributes).binding, VariableAttributes::VAR_ATTR_ENUMERATION).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+                startOrigin = Util::applyOption(var_field!((*attributes).startOrigin, VariableAttributes::VAR_ATTR_ENUMERATION).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = func.clone(); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))
             );
             attributes.clone()
         },
@@ -683,7 +683,7 @@ pub mod VariableAttributes {
                 let mut stop = stop.clone();
                 iter_name = InstNode::newUniqueIterator(Absyn::dummyInfo.clone(), Arc::new(crate::NFType::INTEGER));
                 iter_range = Arc::new(Expression::NFExpression::RANGE { ty: Arc::new(crate::NFType::INTEGER), start: start.clone(), step: step.clone(), stop: Arc::new(Expression::NFExpression::INTEGER { value: stop.clone() }) });
-                iterators = cons((iter_name.clone(), iter_range.clone()), iterators.clone());
+                iterators = metamodelica::cons((iter_name.clone(), iter_range.clone()), iterators.clone());
             }
             binding = Arc::new(Expression::NFExpression::CALL { call: Arc::new(Call::NFCall::TYPED_ARRAY_CONSTRUCTOR { ty: ty.clone(), var: Expression::variability(binding.clone())?, purity: NFPrefixes::Purity::PURE.clone(), exp: binding.clone(), iters: iterators.clone().reverse() }) });
         }
@@ -902,7 +902,7 @@ pub mod VariableAttributes {
             (nominal_loc, nominal) = ExpressionIterator::nextOpt(nominal_loc.clone())?;
             (binding_loc, binding) = ExpressionIterator::nextOpt(binding_loc.clone())?;
             (startOrigin_loc, startOrigin) = ExpressionIterator::nextOpt(startOrigin_loc.clone())?;
-            scalar_attributes = cons(Arc::new(VariableAttributes::VAR_ATTR_REAL { quantity: quantity.clone(), unit: unit.clone(), displayUnit: displayUnit.clone(), min: min.clone(), max: max.clone(), start: start.clone(), fixed: fixed.clone(), nominal: nominal.clone(), stateSelect: stateSelect.clone(), tearingSelect: tearingSelect.clone(), uncertainty: uncertainty.clone(), distribution: distribution.clone(), binding: binding.clone(), isProtected: isProtected.clone(), finalPrefix: finalPrefix.clone(), startOrigin: startOrigin.clone() }), scalar_attributes.clone());
+            scalar_attributes = metamodelica::cons(Arc::new(VariableAttributes::VAR_ATTR_REAL { quantity: quantity.clone(), unit: unit.clone(), displayUnit: displayUnit.clone(), min: min.clone(), max: max.clone(), start: start.clone(), fixed: fixed.clone(), nominal: nominal.clone(), stateSelect: stateSelect.clone(), tearingSelect: tearingSelect.clone(), uncertainty: uncertainty.clone(), distribution: distribution.clone(), binding: binding.clone(), isProtected: isProtected.clone(), finalPrefix: finalPrefix.clone(), startOrigin: startOrigin.clone() }), scalar_attributes.clone());
         }
         scalar_attributes = scalar_attributes.clone().reverse();
         Ok(scalar_attributes)
@@ -932,7 +932,7 @@ pub mod VariableAttributes {
             (fixed_loc, fixed) = ExpressionIterator::nextOpt(fixed_loc.clone())?;
             (binding_loc, binding) = ExpressionIterator::nextOpt(binding_loc.clone())?;
             (startOrigin_loc, startOrigin) = ExpressionIterator::nextOpt(startOrigin_loc.clone())?;
-            scalar_attributes = cons(Arc::new(VariableAttributes::VAR_ATTR_INT { quantity: quantity.clone(), min: min.clone(), max: max.clone(), start: start.clone(), fixed: fixed.clone(), uncertainty: uncertainty.clone(), distribution: distribution.clone(), binding: binding.clone(), isProtected: isProtected.clone(), finalPrefix: finalPrefix.clone(), startOrigin: startOrigin.clone() }), scalar_attributes.clone());
+            scalar_attributes = metamodelica::cons(Arc::new(VariableAttributes::VAR_ATTR_INT { quantity: quantity.clone(), min: min.clone(), max: max.clone(), start: start.clone(), fixed: fixed.clone(), uncertainty: uncertainty.clone(), distribution: distribution.clone(), binding: binding.clone(), isProtected: isProtected.clone(), finalPrefix: finalPrefix.clone(), startOrigin: startOrigin.clone() }), scalar_attributes.clone());
         }
         scalar_attributes = scalar_attributes.clone().reverse();
         Ok(scalar_attributes)
@@ -956,7 +956,7 @@ pub mod VariableAttributes {
             (fixed_loc, fixed) = ExpressionIterator::nextOpt(fixed_loc.clone())?;
             (binding_loc, binding) = ExpressionIterator::nextOpt(binding_loc.clone())?;
             (startOrigin_loc, startOrigin) = ExpressionIterator::nextOpt(startOrigin_loc.clone())?;
-            scalar_attributes = cons(Arc::new(VariableAttributes::VAR_ATTR_BOOL { quantity: quantity.clone(), start: start.clone(), fixed: fixed.clone(), binding: binding.clone(), isProtected: isProtected.clone(), finalPrefix: finalPrefix.clone(), startOrigin: startOrigin.clone() }), scalar_attributes.clone());
+            scalar_attributes = metamodelica::cons(Arc::new(VariableAttributes::VAR_ATTR_BOOL { quantity: quantity.clone(), start: start.clone(), fixed: fixed.clone(), binding: binding.clone(), isProtected: isProtected.clone(), finalPrefix: finalPrefix.clone(), startOrigin: startOrigin.clone() }), scalar_attributes.clone());
         }
         scalar_attributes = scalar_attributes.clone().reverse();
         Ok(scalar_attributes)
@@ -985,7 +985,7 @@ pub mod VariableAttributes {
             (fixed_loc, fixed) = ExpressionIterator::nextOpt(fixed_loc.clone())?;
             (binding_loc, binding) = ExpressionIterator::nextOpt(binding_loc.clone())?;
             (startOrigin_loc, startOrigin) = ExpressionIterator::nextOpt(startOrigin_loc.clone())?;
-            scalar_attributes = cons(Arc::new(VariableAttributes::VAR_ATTR_STRING { quantity: quantity.clone(), start: start.clone(), fixed: fixed.clone(), binding: binding.clone(), isProtected: isProtected.clone(), finalPrefix: finalPrefix.clone(), startOrigin: startOrigin.clone() }), scalar_attributes.clone());
+            scalar_attributes = metamodelica::cons(Arc::new(VariableAttributes::VAR_ATTR_STRING { quantity: quantity.clone(), start: start.clone(), fixed: fixed.clone(), binding: binding.clone(), isProtected: isProtected.clone(), finalPrefix: finalPrefix.clone(), startOrigin: startOrigin.clone() }), scalar_attributes.clone());
         }
         scalar_attributes = scalar_attributes.clone().reverse();
         Ok(scalar_attributes)
@@ -1015,7 +1015,7 @@ pub mod VariableAttributes {
             (fixed_loc, fixed) = ExpressionIterator::nextOpt(fixed_loc.clone())?;
             (binding_loc, binding) = ExpressionIterator::nextOpt(binding_loc.clone())?;
             (startOrigin_loc, startOrigin) = ExpressionIterator::nextOpt(startOrigin_loc.clone())?;
-            scalar_attributes = cons(Arc::new(VariableAttributes::VAR_ATTR_ENUMERATION { quantity: quantity.clone(), min: min.clone(), max: max.clone(), start: start.clone(), fixed: fixed.clone(), binding: binding.clone(), isProtected: isProtected.clone(), finalPrefix: finalPrefix.clone(), startOrigin: startOrigin.clone() }), scalar_attributes.clone());
+            scalar_attributes = metamodelica::cons(Arc::new(VariableAttributes::VAR_ATTR_ENUMERATION { quantity: quantity.clone(), min: min.clone(), max: max.clone(), start: start.clone(), fixed: fixed.clone(), binding: binding.clone(), isProtected: isProtected.clone(), finalPrefix: finalPrefix.clone(), startOrigin: startOrigin.clone() }), scalar_attributes.clone());
         }
         scalar_attributes = scalar_attributes.clone().reverse();
         Ok(scalar_attributes)
@@ -1096,7 +1096,7 @@ pub mod VariableAttributes {
                 _ => bail!("pattern mismatch"),
             } };
             attr = __pa0.clone();
-            buffer = cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*Expression::toString(attr.clone())?); ArcStr::from(__mm_s) }).clone(), buffer.clone());
+            buffer = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*Expression::toString(attr.clone())?); ArcStr::from(__mm_s) }).clone(), buffer.clone());
         }
         Ok(buffer)
     }
@@ -1134,7 +1134,7 @@ pub mod VariableAttributes {
                 _ => bail!("pattern mismatch"),
             } };
             stateSelect = __pa0.clone();
-            buffer = cons((stateSelectString(stateSelect.clone())?).clone(), buffer.clone());
+            buffer = metamodelica::cons((stateSelectString(stateSelect.clone())?).clone(), buffer.clone());
         }
         Ok(buffer)
     }
@@ -1148,13 +1148,13 @@ pub mod VariableAttributes {
                 _ => bail!("pattern mismatch"),
             } };
             tearingSelect = __pa0.clone();
-            buffer = cons((tearingSelectString(tearingSelect.clone())?).clone(), buffer.clone());
+            buffer = metamodelica::cons((tearingSelectString(tearingSelect.clone())?).clone(), buffer.clone());
         }
         Ok(buffer)
     }
 
     fn createReal(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Binding::NFBinding>)>>, mut isFinal: bool, mut comment: Arc<SCode::Comment>) -> Result<Arc<VariableAttributes>> {
-        let mut attributes: Arc<VariableAttributes>;
+        let mut attributes: Arc<VariableAttributes> = Arc::new(<VariableAttributes as ::std::default::Default>::default());
         let mut name: ArcStr = arcstr::literal!("");
         let mut b: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
         let mut quantity: Option<Arc<Expression::NFExpression>> = None;
@@ -1221,7 +1221,7 @@ pub mod VariableAttributes {
     }
 
     fn createInt(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Binding::NFBinding>)>>, mut isFinal: bool) -> Result<Arc<VariableAttributes>> {
-        let mut attributes: Arc<VariableAttributes>;
+        let mut attributes: Arc<VariableAttributes> = Arc::new(<VariableAttributes as ::std::default::Default>::default());
         let mut name: ArcStr = arcstr::literal!("");
         let mut b: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
         let mut quantity: Option<Arc<Expression::NFExpression>> = None;
@@ -1269,7 +1269,7 @@ pub mod VariableAttributes {
     }
 
     fn createBool(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Binding::NFBinding>)>>, mut isFinal: bool) -> Result<Arc<VariableAttributes>> {
-        let mut attributes: Arc<VariableAttributes>;
+        let mut attributes: Arc<VariableAttributes> = Arc::new(<VariableAttributes as ::std::default::Default>::default());
         let mut name: ArcStr = arcstr::literal!("");
         let mut b: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
         let mut quantity: Option<Arc<Expression::NFExpression>> = None;
@@ -1307,7 +1307,7 @@ pub mod VariableAttributes {
     }
 
     fn createString(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Binding::NFBinding>)>>, mut isFinal: bool) -> Result<Arc<VariableAttributes>> {
-        let mut attributes: Arc<VariableAttributes>;
+        let mut attributes: Arc<VariableAttributes> = Arc::new(<VariableAttributes as ::std::default::Default>::default());
         let mut name: ArcStr = arcstr::literal!("");
         let mut b: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
         let mut quantity: Option<Arc<Expression::NFExpression>> = None;
@@ -1345,7 +1345,7 @@ pub mod VariableAttributes {
     }
 
     fn createEnum(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Binding::NFBinding>)>>, mut isFinal: bool) -> Result<Arc<VariableAttributes>> {
-        let mut attributes: Arc<VariableAttributes>;
+        let mut attributes: Arc<VariableAttributes> = Arc::new(<VariableAttributes as ::std::default::Default>::default());
         let mut name: ArcStr = arcstr::literal!("");
         let mut b: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
         let mut quantity: Option<Arc<Expression::NFExpression>> = None;
@@ -1398,7 +1398,7 @@ pub mod VariableAttributes {
     }
 
     fn createRecord(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Binding::NFBinding>)>>, mut indexMap: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>>, mut children: Arc<metamodelica::List<Arc<Variable::NFVariable>>>, mut isFinal: bool) -> Result<Arc<VariableAttributes>> {
-        let mut attributes: Arc<VariableAttributes>;
+        let mut attributes: Arc<VariableAttributes> = Arc::new(<VariableAttributes as ::std::default::Default>::default());
         let mut childrenAttr: metamodelica::Array<Arc<VariableAttributes>> = arrayCreate((children.clone().len() as i32), EMPTY_VAR_ATTR_REAL().clone());
         let mut index: i32 = 0;
         for mut var in &*children.clone() {
@@ -1452,7 +1452,7 @@ pub mod VariableAttributes {
             } };
             arg = __pa0.clone();
             rest = __pa1.clone();
-            if !(rest.clone().is_empty() || List::all(rest.clone(), Arc::new({ let __pe_b1 = arg.clone(); move |__pe_a0| Expression::isEqual(__pe_a0, __pe_b1.clone()) }))) {
+            if !(rest.clone().is_empty() || List::all(rest.clone(), (std::sync::Arc::new({ let __pe_b1 = arg.clone(); move |__pe_a0| Expression::isEqual(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>))) {
                 Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFBackendExtension.VariableAttributes.getStateSelectName")); __mm_s.push_str(&*literal!(" cannot handle array StateSelect with different values yet:")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
                 bail!("fail");
             }

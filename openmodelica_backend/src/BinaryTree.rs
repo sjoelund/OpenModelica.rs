@@ -484,7 +484,7 @@ fn bintreeToList2(mut inBinTree: Arc<BinTree>, mut inKeyLst: Arc<metamodelica::L
                 Deref @ BinTree { rightSubTree: right, leftSubTree: left, value: Some(TreeValue { value, key, .. }) } => {
                     let mut klst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
                     let mut vlst: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    (klst, vlst) = bintreeToListOpt(left.clone(), cons(key.clone(), inKeyLst.clone()), cons(value.clone(), inValueLst.clone()))?;
+                    (klst, vlst) = bintreeToListOpt(left.clone(), metamodelica::cons(key.clone(), inKeyLst.clone()), metamodelica::cons(value.clone(), inValueLst.clone()))?;
                     (klst, vlst) = bintreeToListOpt(right.clone(), klst.clone(), vlst.clone())?;
                     Ok((klst.clone(), vlst.clone()))
                 }

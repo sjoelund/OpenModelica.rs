@@ -313,7 +313,7 @@ pub fn obfuscateClassDef(mut cdef: Arc<SCode::ClassDef>, mut env: Env) -> Result
         }
         __acc.reverse()
     }),
-                externalDecl = Util::applyOption(var_field!((*cdef).externalDecl, SCode::ClassDef::PARTS).clone(), Arc::new({ let __pe_b1 = env.clone(); move |__pe_a0| obfuscateExternalDecl(__pe_a0, __pe_b1.clone()) }))
+                externalDecl = Util::applyOption(var_field!((*cdef).externalDecl, SCode::ClassDef::PARTS).clone(), (std::sync::Arc::new({ let __pe_b1 = env.clone(); move |__pe_a0| obfuscateExternalDecl(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::ExternalDecl>) -> Result<Arc<SCode::ExternalDecl>> + 'static>))
             );
             ()
         },
@@ -532,7 +532,7 @@ pub fn obfuscateIdentifier(mut id: ArcStr, mut env: Env, mut etype: ElementType)
     } else {
         foundType = ElementType::OTHER.clone();
     }
-    outId = (UnorderedMap::addUpdate((id.clone()).clone(), Arc::new({ let __pe_b1 = UnorderedMap::size(mapping.clone()); move |__pe_a0| makeId(__pe_a0, __pe_b1.clone()) }), mapping.clone())?).clone();
+    outId = (UnorderedMap::addUpdate((id.clone()).clone(), (std::sync::Arc::new({ let __pe_b1 = UnorderedMap::size(mapping.clone()); move |__pe_a0| makeId(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Option<ArcStr>) -> Result<ArcStr> + 'static>), mapping.clone())?).clone();
     Ok((outId, foundType))
 }
 
@@ -578,7 +578,7 @@ pub fn obfuscateComment(mut comment: Arc<SCode::Comment>, mut env: Env) -> Arc<S
 
 pub fn obfuscateAnnotationOpt(mut ann: Option<Arc<SCode::Annotation>>, mut env: Env) -> Option<Arc<SCode::Annotation>> {
     let mut ann: Option<Arc<SCode::Annotation>> = ann;
-    ann = Util::applyOption(ann.clone(), Arc::new({ let __pe_b1 = env.clone(); move |__pe_a0| obfuscateAnnotation(__pe_a0, __pe_b1.clone()) }));
+    ann = Util::applyOption(ann.clone(), (std::sync::Arc::new({ let __pe_b1 = env.clone(); move |__pe_a0| obfuscateAnnotation(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Annotation>) -> Result<Arc<SCode::Annotation>> + 'static>));
     ann
 }
 
@@ -659,7 +659,7 @@ pub fn obfuscateAnnotationSubMod(mut r#mod: Arc<SCode::SubMod>, mut env: Env, mu
 
 pub fn obfuscateExpOpt(mut exp: Option<Arc<Absyn::Exp>>, mut env: Env) -> Option<Arc<Absyn::Exp>> {
     let mut exp: Option<Arc<Absyn::Exp>> = exp;
-    exp = Util::applyOption(exp.clone(), Arc::new({ let __pe_b1 = env.clone(); move |__pe_a0| obfuscateExp(__pe_a0, __pe_b1.clone()) }));
+    exp = Util::applyOption(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = env.clone(); move |__pe_a0| obfuscateExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<Arc<Absyn::Exp>> + 'static>));
     exp
 }
 
@@ -807,7 +807,7 @@ pub fn obfuscateForIterator(mut iterator: Arc<Absyn::ForIterator>, mut env: Env)
 
 pub fn obfuscateArrayDimsOpt(mut dims: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>, mut env: Env) -> Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>> {
     let mut dims: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>> = dims;
-    dims = Util::applyOption(dims.clone(), Arc::new({ let __pe_b1 = env.clone(); move |__pe_a0| obfuscateArrayDims(__pe_a0, __pe_b1.clone()) }));
+    dims = Util::applyOption(dims.clone(), (std::sync::Arc::new({ let __pe_b1 = env.clone(); move |__pe_a0| obfuscateArrayDims(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::Subscript>>>> + 'static>));
     dims
 }
 
@@ -824,7 +824,7 @@ pub fn obfuscateExternalDecl(mut extDecl: Arc<SCode::ExternalDecl>, mut env: Env
         }
         __acc.reverse()
     }),
-        extDecl.output_ = Util::applyOption(extDecl.output_.clone(), Arc::new({ let __pe_b1 = env.clone(); let __pe_b2 = ElementType::OTHER.clone(); let __pe_b3 = true; move |__pe_a0| obfuscateCref(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) })),
+        extDecl.output_ = Util::applyOption(extDecl.output_.clone(), (std::sync::Arc::new({ let __pe_b1 = env.clone(); let __pe_b2 = ElementType::OTHER.clone(); let __pe_b3 = true; move |__pe_a0| obfuscateCref(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>) -> Result<Arc<Absyn::ComponentRef>> + 'static>)),
         extDecl.annotation_ = obfuscateAnnotationOpt(extDecl.annotation_.clone(), env.clone())
     );
     Ok(extDecl)

@@ -281,7 +281,7 @@ pub fn toString(mut res: Arc<NFRestriction>) -> ArcStr {
 }
 
 pub fn assertNoEquations(mut equations: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut initialEquations: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut res: Arc<NFRestriction>, mut onlyDeprecated: bool) -> Result<()> {
-    let mut eq: Arc<SCode::Equation>;
+    let mut eq: Arc<SCode::Equation> = Arc::new(<SCode::Equation as ::std::default::Default>::default());
     if equations.clone().is_empty() && initialEquations.clone().is_empty() {
         return Ok(());
     }

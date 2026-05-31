@@ -186,7 +186,7 @@ pub fn stateMachineToDataFlow(mut cache: FCore::Cache, mut env: FCore::Graph, mu
 }
 
 fn traversingSubsActiveState(mut inExp: Arc<DAE::Exp>, mut inHitCount: i32) -> Result<(Arc<DAE::Exp>, i32)> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outHitCount: i32 = 0;
     (outExp, outHitCount) = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "activeState" }, .. } => {
@@ -212,8 +212,8 @@ fn flatSmToDataFlow(mut inFlatSm: Arc<DAE::Element>, mut inEnclosingStateCrefOpt
     let mut eqnLst: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     let mut otherLst4: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     let mut smCompsLst2: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-    let mut initialStateOp: Arc<DAE::Element>;
-    let mut initialStateComp: Arc<DAE::Element>;
+    let mut initialStateOp: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut initialStateComp: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
     let mut crefInitialState: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut flatSmSemanticsBasics: FlatSmSemantics = <FlatSmSemantics as ::std::default::Default>::default();
     let mut flatSmSemanticsWithPropagation: FlatSmSemantics = <FlatSmSemantics as ::std::default::Default>::default();
@@ -250,7 +250,7 @@ fn flatSmToDataFlow(mut inFlatSm: Arc<DAE::Element>, mut inEnclosingStateCrefOpt
     } };
     initialStateComp = __pa7.clone();
     smCompsLst2 = __pa8.clone();
-    flatSmSemanticsBasics = basicFlatSmSemantics((ident.clone()).clone(), cons(initialStateComp.clone(), smCompsLst2.clone()), transitionLst.clone())?;
+    flatSmSemanticsBasics = basicFlatSmSemantics((ident.clone()).clone(), metamodelica::cons(initialStateComp.clone(), smCompsLst2.clone()), transitionLst.clone())?;
     flatSmSemanticsWithPropagation = addPropagationEquations(flatSmSemanticsBasics.clone(), inEnclosingStateCrefOption.clone(), inEnclosingFlatSmSemanticsOption.clone())?;
     flatSmSemantics = elabXInStateOps(flatSmSemanticsWithPropagation.clone(), inEnclosingStateCrefOption.clone())?;
     if Flags::getConfigBool(Flags::CT_STATE_MACHINES.clone())? {
@@ -268,7 +268,7 @@ fn flatSmToDataFlow(mut inFlatSm: Arc<DAE::Element>, mut inEnclosingStateCrefOpt
 }
 
 fn elabXInStateOps_CT(mut inSmComp: Arc<DAE::Element>) -> Result<Arc<DAE::Element>> {
-    let mut outSmComp: Arc<DAE::Element>;
+    let mut outSmComp: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
     let mut nOfHits: i32 = 0;
     let mut componentRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut dAElist1: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
@@ -292,8 +292,8 @@ fn elabXInStateOps_CT(mut inSmComp: Arc<DAE::Element>) -> Result<Arc<DAE::Elemen
 }
 
 fn traversingSubsTicksInState(mut inExp: Arc<DAE::Exp>, mut inCref_HitCount: (Arc<DAE::ComponentRef>, i32)) -> Result<(Arc<DAE::Exp>, (Arc<DAE::ComponentRef>, i32))> {
-    let mut outExp: Arc<DAE::Exp>;
-    let mut outCref_HitCount: (Arc<DAE::ComponentRef>, i32);
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outCref_HitCount: (Arc<DAE::ComponentRef>, i32) = (Arc::new(DAE::ComponentRef::WILD), 0);
     let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut hitCount: i32 = 0;
     (cref, hitCount) = inCref_HitCount.clone();
@@ -315,18 +315,18 @@ fn elabXInStateOps(mut inFlatSmSemantics: FlatSmSemantics, mut inEnclosingStateC
     let mut outFlatSmSemantics: FlatSmSemantics = <FlatSmSemantics as ::std::default::Default>::default();
     let mut i: i32 = 0;
     let mut found: bool = false;
-    let mut c2: Arc<DAE::Exp>;
-    let mut c3: Arc<DAE::Exp>;
-    let mut c4: Arc<DAE::Exp>;
-    let mut substTickExp: Arc<DAE::Exp>;
-    let mut substTimeExp: Arc<DAE::Exp>;
+    let mut c2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut c3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut c4: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut substTickExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut substTimeExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut stateRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut t2: Transition = <Transition as ::std::default::Default>::default();
     let mut tElab: Arc<metamodelica::List<Transition>> = metamodelica::nil();
     let mut cElab: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut smeqsElab: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     let mut ident: ArcStr = arcstr::literal!("");
-    let mut smComps: metamodelica::Array<Arc<DAE::Element>>;
+    let mut smComps: metamodelica::Array<Arc<DAE::Element>> = Default::default();
     let mut t: Arc<metamodelica::List<Transition>> = metamodelica::nil();
     let mut c: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut smvars: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
@@ -337,7 +337,7 @@ fn elabXInStateOps(mut inFlatSmSemantics: FlatSmSemantics, mut inEnclosingStateC
     let mut enclosingStateOption: Option<Arc<DAE::ComponentRef>> = None;
     let mut from: i32 = 0;
     let mut to: i32 = 0;
-    let mut condition: Arc<DAE::Exp>;
+    let mut condition: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut immediate: bool = false;
     let mut reset: bool = false;
     let mut synchronize: bool = false;
@@ -391,24 +391,24 @@ fn elabXInStateOps(mut inFlatSmSemantics: FlatSmSemantics, mut inEnclosingStateC
         }
         smeqsElab = if (found.clone()) {List::map5(smeqs.clone(), (std::sync::Arc::new(smeqsSubsXInState) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, Arc<DAE::Element>, i32, i32, Arc<DAE::Exp>, ArcStr) -> Result<Arc<DAE::Element>> + 'static>), smComps.clone().borrow()[(1-1) as usize].clone(), i.clone(), (t.clone().len() as i32), substTimeExp.clone(), (literal!("timeInState")).clone())} else {smeqs.clone()};
         smeqs = smeqsElab.clone();
-        tElab = cons(Transition { from: from.clone(), to: to.clone(), condition: c4.clone(), immediate: immediate.clone(), reset: reset.clone(), synchronize: synchronize.clone(), priority: priority.clone() }, tElab.clone());
-        cElab = cons(c4.clone(), cElab.clone());
+        tElab = metamodelica::cons(Transition { from: from.clone(), to: to.clone(), condition: c4.clone(), immediate: immediate.clone(), reset: reset.clone(), synchronize: synchronize.clone(), priority: priority.clone() }, tElab.clone());
+        cElab = metamodelica::cons(c4.clone(), cElab.clone());
     }
     outFlatSmSemantics = FlatSmSemantics { ident: (ident.clone()).clone(), smComps: smComps.clone(), t: tElab.clone().reverse(), c: cElab.clone().reverse(), vars: smvars.clone(), knowns: smknowns.clone(), eqs: smeqsElab.clone(), pvars: pvars.clone(), peqs: peqs.clone(), enclosingState: enclosingStateOption.clone() };
     Ok(outFlatSmSemantics)
 }
 
 fn smeqsSubsXInState(mut inSmeqs: Arc<DAE::Element>, mut initialStateComp: Arc<DAE::Element>, mut i: i32, mut nTransitions: i32, mut substExp: Arc<DAE::Exp>, mut xInState: ArcStr) -> Result<Arc<DAE::Element>> {
-    let mut outSmeqs: Arc<DAE::Element>;
+    let mut outSmeqs: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
     let mut preRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut lhsRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut crefInitialState: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut tArrayBool: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut elemSource: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
-    let mut lhsExp: Arc<DAE::Exp>;
-    let mut rhsExp: Arc<DAE::Exp>;
-    let mut rhsExp2: Arc<DAE::Exp>;
+    let mut lhsExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut rhsExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut rhsExp2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let __pa0 = ::match_deref::match_deref! { match &(initialStateComp.clone()) {
         Deref @ DAE::Element::SM_COMP { componentRef: __pa0, .. } => __pa0.clone(),
@@ -441,9 +441,9 @@ fn smeqsSubsXInState(mut inSmeqs: Arc<DAE::Element>, mut initialStateComp: Arc<D
 }
 
 fn traversingSubsXInState(mut inExp: Arc<DAE::Exp>, mut inXSubstHit: (ArcStr, Arc<DAE::Exp>, bool)) -> (Arc<DAE::Exp>, bool, (ArcStr, Arc<DAE::Exp>, bool)) {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cont: bool = true;
-    let mut outXSubstHit: (ArcStr, Arc<DAE::Exp>, bool);
+    let mut outXSubstHit: (ArcStr, Arc<DAE::Exp>, bool) = (arcstr::literal!(""), Arc::new(<DAE::Exp as ::std::default::Default>::default()), false);
     (outExp, outXSubstHit) = (::match_deref::match_deref! { match &((inExp.clone(), inXSubstHit.clone())) {
         (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name }, .. }, (xInState, subsExp, _)) if (name.clone() == xInState.clone()) => {
             (subsExp.clone(), (xInState.clone(), subsExp.clone(), true))
@@ -482,8 +482,8 @@ fn smCompToDataFlow(mut inSMComp: Arc<DAE::Element>, mut inEnclosingFlatSmSemant
     componentRef = __pa1.clone();
     (varLst1, otherLst1) = List::extractOnTrue(dAElist.clone(), (std::sync::Arc::new(fnptr!(isVar, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<bool> + 'static>));
     (equationLst1, otherLst2) = List::extractOnTrue(otherLst1.clone(), (std::sync::Arc::new(fnptr!(isEquationOrWhenEquation, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<bool> + 'static>));
-    assignedVarLst = List::filterOnTrue(varLst1.clone(), Arc::new({ let __pe_b0 = equationLst1.clone(); let __pe_b1: Arc<dyn ::std::ops::Fn(_, _) -> Result<bool> + 'static> = (std::sync::Arc::new(isVarAtLHS) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, Arc<DAE::Element>) -> Result<bool> + 'static>); move |__pe_a2| Ok(List::exist1(__pe_b0.clone(), __pe_b1.clone(), __pe_a2)) }));
-    stateVarLst = List::filterOnTrue(varLst1.clone(), Arc::new({ let __pe_b0 = equationLst1.clone(); let __pe_b1: Arc<dyn ::std::ops::Fn(_, _) -> Result<bool> + 'static> = (std::sync::Arc::new(isPreviousAppliedToVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, Arc<DAE::Element>) -> Result<bool> + 'static>); move |__pe_a2| Ok(List::exist1(__pe_b0.clone(), __pe_b1.clone(), __pe_a2)) }));
+    assignedVarLst = List::filterOnTrue(varLst1.clone(), (std::sync::Arc::new({ let __pe_b0 = equationLst1.clone(); let __pe_b1: Arc<dyn ::std::ops::Fn(_, _) -> Result<bool> + 'static> = (std::sync::Arc::new(isVarAtLHS) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, Arc<DAE::Element>) -> Result<bool> + 'static>); move |__pe_a2| Ok(List::exist1(__pe_b0.clone(), __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<bool> + 'static>));
+    stateVarLst = List::filterOnTrue(varLst1.clone(), (std::sync::Arc::new({ let __pe_b0 = equationLst1.clone(); let __pe_b1: Arc<dyn ::std::ops::Fn(_, _) -> Result<bool> + 'static> = (std::sync::Arc::new(isPreviousAppliedToVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, Arc<DAE::Element>) -> Result<bool> + 'static>); move |__pe_a2| Ok(List::exist1(__pe_b0.clone(), __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<bool> + 'static>));
     stateVarCrefs = List::map(stateVarLst.clone(), (std::sync::Arc::new(DAEUtil::varCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<DAE::ComponentRef>> + 'static>));
     startValuesOpt = List::map(stateVarLst.clone(), (std::sync::Arc::new(getStartAttrOption) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Option<Arc<DAE::Exp>>> + 'static>));
     varCrefStartVal = List::zip(stateVarCrefs.clone(), startValuesOpt.clone());
@@ -497,17 +497,17 @@ fn smCompToDataFlow(mut inSMComp: Arc<DAE::Element>, mut inEnclosingFlatSmSemant
 }
 
 fn addStateActivationAndReset(mut inEqn: Arc<DAE::Element>, mut inEnclosingSMComp: Arc<DAE::Element>, mut inEnclosingFlatSmSemantics: FlatSmSemantics, mut crToExpOpt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Option<Arc<DAE::Exp>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Option<Arc<DAE::Exp>>) -> Result<ArcStr> + 'static>)), mut accEqnsVars: (Arc<metamodelica::List<Arc<DAE::Element>>>, Arc<metamodelica::List<Arc<DAE::Element>>>)) -> Result<(Arc<metamodelica::List<Arc<DAE::Element>>>, Arc<metamodelica::List<Arc<DAE::Element>>>)> {
-    let mut outEqnsVars: (Arc<metamodelica::List<Arc<DAE::Element>>>, Arc<metamodelica::List<Arc<DAE::Element>>>);
+    let mut outEqnsVars: (Arc<metamodelica::List<Arc<DAE::Element>>>, Arc<metamodelica::List<Arc<DAE::Element>>>) = (metamodelica::nil(), metamodelica::nil());
     let mut equations1: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     let mut vars1: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-    let mut condition: Arc<DAE::Exp>;
+    let mut condition: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut equations: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
     outEqnsVars = (::match_deref::match_deref! { match &(inEqn.clone()) {
         Deref @ DAE::Element::EQUATION { .. } => addStateActivationAndReset1(inEqn.clone(), inEnclosingSMComp.clone(), inEnclosingFlatSmSemantics.clone(), crToExpOpt.clone(), accEqnsVars.clone())?,
         Deref @ DAE::Element::WHEN_EQUATION { condition, equations, elsewhen_: None, source } => {
             (equations1, vars1) = List::fold3(equations.clone(), (std::sync::Arc::new(addStateActivationAndReset) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, Arc<DAE::Element>, FlatSmSemantics, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Option<Arc<DAE::Exp>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Option<Arc<DAE::Exp>>) -> Result<ArcStr> + 'static>)), (Arc<metamodelica::List<Arc<DAE::Element>>>, Arc<metamodelica::List<Arc<DAE::Element>>>)) -> Result<(Arc<metamodelica::List<Arc<DAE::Element>>>, Arc<metamodelica::List<Arc<DAE::Element>>>)> + 'static>), inEnclosingSMComp.clone(), inEnclosingFlatSmSemantics.clone(), crToExpOpt.clone(), (metamodelica::nil(), metamodelica::nil()));
-            (cons(Arc::new(DAE::Element::WHEN_EQUATION { condition: condition.clone(), equations: equations1.clone(), elsewhen_: None, source: source.clone() }), Util::tuple21(accEqnsVars.clone())), listAppend(vars1.clone(), Util::tuple22(accEqnsVars.clone())))
+            (metamodelica::cons(Arc::new(DAE::Element::WHEN_EQUATION { condition: condition.clone(), equations: equations1.clone(), elsewhen_: None, source: source.clone() }), Util::tuple21(accEqnsVars.clone())), listAppend(vars1.clone(), Util::tuple22(accEqnsVars.clone())))
         },
         Deref @ DAE::Element::WHEN_EQUATION { elsewhen_: Some(_), .. } => {
             Error::addCompilerError((literal!("Encountered elsewhen part in a when clause of a clocked state machine.\n")).clone())?;
@@ -523,24 +523,24 @@ fn addStateActivationAndReset(mut inEqn: Arc<DAE::Element>, mut inEnclosingSMCom
 }
 
 fn addStateActivationAndReset1(mut inEqn: Arc<DAE::Element>, mut inEnclosingSMComp: Arc<DAE::Element>, mut inEnclosingFlatSmSemantics: FlatSmSemantics, mut crToExpOpt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Option<Arc<DAE::Exp>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Option<Arc<DAE::Exp>>) -> Result<ArcStr> + 'static>)), mut accEqnsVars: (Arc<metamodelica::List<Arc<DAE::Element>>>, Arc<metamodelica::List<Arc<DAE::Element>>>)) -> Result<(Arc<metamodelica::List<Arc<DAE::Element>>>, Arc<metamodelica::List<Arc<DAE::Element>>>)> {
-    let mut outEqnsVars: (Arc<metamodelica::List<Arc<DAE::Element>>>, Arc<metamodelica::List<Arc<DAE::Element>>>);
+    let mut outEqnsVars: (Arc<metamodelica::List<Arc<DAE::Element>>>, Arc<metamodelica::List<Arc<DAE::Element>>>) = (metamodelica::nil(), metamodelica::nil());
     let mut stateVarCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     let mut crefLHS: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut enclosingStateRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut cref2: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut found: bool = false;
     let mut tyLHS: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    let mut eqn: Arc<DAE::Element>;
-    let mut eqn1: Arc<DAE::Element>;
-    let mut eqn2: Arc<DAE::Element>;
-    let mut var2: Arc<DAE::Element>;
-    let mut varDecl: Arc<DAE::Element>;
+    let mut eqn: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut eqn1: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut eqn2: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut var2: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut varDecl: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
     let mut attr: Arc<DAE::CallAttributes> = Arc::new(<DAE::CallAttributes as ::std::default::Default>::default());
     let mut dAElist: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     let mut isOuterVar: bool = false;
-    let mut exp: Arc<DAE::Exp>;
-    let mut scalar: Arc<DAE::Exp>;
-    let mut scalarNew: Arc<DAE::Exp>;
+    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut scalar: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut scalarNew: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(inEqn.clone()) {
         Deref @ DAE::Element::EQUATION { exp: __pa0, scalar: __pa1, source: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
@@ -567,13 +567,13 @@ fn addStateActivationAndReset1(mut inEqn: Arc<DAE::Element>, mut inEnclosingSMCo
         scalarNew = __pa8.clone();
         found = __pa9.clone();
         eqn = Arc::new(DAE::Element::EQUATION { exp: exp.clone(), scalar: scalarNew.clone(), source: source.clone() });
-        if List::any(stateVarCrefs.clone(), Arc::new({ let __pe_b0 = crefLHS.clone(); move |__pe_a1| ComponentReferenceBasics::crefEqual(__pe_b0.clone(), __pe_a1) })) {
+        if List::any(stateVarCrefs.clone(), (std::sync::Arc::new({ let __pe_b0 = crefLHS.clone(); move |__pe_a1| ComponentReferenceBasics::crefEqual(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<bool> + 'static>)) {
             eqn1 = unwrap_break_err!(wrapInStateActivationConditional(eqn.clone(), enclosingStateRef.clone(), true), '__try5);
             var2 = createVarWithDefaults(ComponentReference::appendStringLastIdent((literal!("_previous")).clone(), crefLHS.clone())?, openmodelica_frontend_types::DAE::VarKind::DISCRETE, tyLHS.clone(), metamodelica::nil());
             eqn2 = unwrap_break_err!(createResetEquation(crefLHS.clone(), tyLHS.clone(), enclosingStateRef.clone(), inEnclosingFlatSmSemantics.clone(), crToExpOpt.clone()), '__try5);
-            outEqnsVars = (cons(eqn1.clone(), cons(eqn2.clone(), Util::tuple21(accEqnsVars.clone()))), cons(var2.clone(), Util::tuple22(accEqnsVars.clone())));
+            outEqnsVars = (metamodelica::cons(eqn1.clone(), metamodelica::cons(eqn2.clone(), Util::tuple21(accEqnsVars.clone()))), metamodelica::cons(var2.clone(), Util::tuple22(accEqnsVars.clone())));
         } else {
-            outEqnsVars = (cons(unwrap_break_err!(wrapInStateActivationConditional(eqn.clone(), enclosingStateRef.clone(), false), '__try5), Util::tuple21(accEqnsVars.clone())), Util::tuple22(accEqnsVars.clone()));
+            outEqnsVars = (metamodelica::cons(unwrap_break_err!(wrapInStateActivationConditional(eqn.clone(), enclosingStateRef.clone(), false), '__try5), Util::tuple21(accEqnsVars.clone())), Util::tuple22(accEqnsVars.clone()));
         }
         Ok::<_, anyhow::Error>((crefLHS.clone(), outEqnsVars.clone(), tyLHS.clone()))
     } {
@@ -603,11 +603,11 @@ fn addStateActivationAndReset1(mut inEqn: Arc<DAE::Element>, mut inEnclosingSMCo
                         cref2 = unwrap_break_err!(ComponentReference::appendStringLastIdent((literal!("_der$")).clone(), crefLHS.clone()), '__try10);
                         var2 = createVarWithDefaults(cref2.clone(), openmodelica_frontend_types::DAE::VarKind::VARIABLE, tyLHS.clone(), metamodelica::nil());
                         eqn1 = Arc::new(DAE::Element::EQUATION { exp: Arc::new(DAE::Exp::CREF { componentRef: cref2.clone(), ty: tyLHS.clone() }), scalar: scalar.clone(), source: source.clone() });
-                        outEqnsVars = (cons(eqn1.clone(), Util::tuple21(accEqnsVars.clone())), cons(var2.clone(), Util::tuple22(accEqnsVars.clone())));
+                        outEqnsVars = (metamodelica::cons(eqn1.clone(), Util::tuple21(accEqnsVars.clone())), metamodelica::cons(var2.clone(), Util::tuple22(accEqnsVars.clone())));
                     } else {
                         eqn1 = unwrap_break_err!(wrapInStateActivationConditionalCT(inEqn.clone(), enclosingStateRef.clone()), '__try10);
                         eqn2 = unwrap_break_err!(createResetEquationCT(crefLHS.clone(), tyLHS.clone(), enclosingStateRef.clone(), inEnclosingFlatSmSemantics.clone(), crToExpOpt.clone()), '__try10);
-                        outEqnsVars = (cons(eqn1.clone(), cons(eqn2.clone(), Util::tuple21(accEqnsVars.clone()))), Util::tuple22(accEqnsVars.clone()));
+                        outEqnsVars = (metamodelica::cons(eqn1.clone(), metamodelica::cons(eqn2.clone(), Util::tuple21(accEqnsVars.clone()))), Util::tuple22(accEqnsVars.clone()));
                     }
                 } else {
                     break '__try10 Err::<_, _>(anyhow::anyhow!("fail"));
@@ -642,7 +642,7 @@ fn isVarAtLHS(mut eqn: Arc<DAE::Element>, mut var: Arc<DAE::Element>) -> Result<
     let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut crefLHS: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut tyLHS: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    let mut exp: Arc<DAE::Exp>;
+    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut equations: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     let mut elsewhen_: Option<Arc<DAE::Element>> = None;
     res = (::match_deref::match_deref! { match &(eqn.clone()) {
@@ -684,7 +684,7 @@ fn isVarAtLHS(mut eqn: Arc<DAE::Element>, mut var: Arc<DAE::Element>) -> Result<
 fn isPreviousAppliedToVar(mut eqn: Arc<DAE::Element>, mut var: Arc<DAE::Element>) -> Result<bool> {
     let mut found: bool = false;
     let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut scalar: Arc<DAE::Exp>;
+    let mut scalar: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut equations: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     let mut elsewhen_: Option<Arc<DAE::Element>> = None;
     found = (::match_deref::match_deref! { match &(eqn.clone()) {
@@ -709,9 +709,9 @@ fn isPreviousAppliedToVar(mut eqn: Arc<DAE::Element>, mut var: Arc<DAE::Element>
 }
 
 fn traversingFindPreviousCref(mut inExp: Arc<DAE::Exp>, mut inCrefHit: (Arc<DAE::ComponentRef>, bool)) -> Result<(Arc<DAE::Exp>, bool, (Arc<DAE::ComponentRef>, bool))> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cont: bool = true;
-    let mut outCrefHit: (Arc<DAE::ComponentRef>, bool);
+    let mut outCrefHit: (Arc<DAE::ComponentRef>, bool) = (Arc::new(DAE::ComponentRef::WILD), false);
     (outExp, outCrefHit) = (::match_deref::match_deref! { match &((inExp.clone(), inCrefHit.clone())) {
         (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "previous" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, ty: _ }, tail: Deref @ metamodelica::List::Nil }, attr: _ }, (cref, _)) if (ComponentReferenceBasics::crefEqual(cr.clone(), cref.clone())?) => {
             (inExp.clone(), (cref.clone(), true))
@@ -725,20 +725,20 @@ fn traversingFindPreviousCref(mut inExp: Arc<DAE::Exp>, mut inCrefHit: (Arc<DAE:
 }
 
 fn createResetEquationCT(mut inLHSCref: Arc<DAE::ComponentRef>, mut inLHSty: Arc<DAE::Type>, mut inStateCref: Arc<DAE::ComponentRef>, mut inEnclosingFlatSmSemantics: FlatSmSemantics, mut crToExpOpt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Option<Arc<DAE::Exp>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Option<Arc<DAE::Exp>>) -> Result<ArcStr> + 'static>))) -> Result<Arc<DAE::Element>> {
-    let mut outEqn: Arc<DAE::Element>;
-    let mut activeExp: Arc<DAE::Exp>;
-    let mut activeResetExp: Arc<DAE::Exp>;
-    let mut activeResetStatesExp: Arc<DAE::Exp>;
-    let mut orExp: Arc<DAE::Exp>;
-    let mut andExp: Arc<DAE::Exp>;
-    let mut startValueExp: Arc<DAE::Exp>;
-    let mut reinitElem: Arc<DAE::Element>;
+    let mut outEqn: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut activeExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut activeResetExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut activeResetStatesExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut orExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut andExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut startValueExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut reinitElem: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
     let mut startValueOpt: Option<Arc<DAE::Exp>> = None;
     let mut initStateRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut preRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut i: i32 = 0;
     let mut nStates: i32 = 0;
-    let mut enclosingFlatSMComps: metamodelica::Array<Arc<DAE::Element>>;
+    let mut enclosingFlatSMComps: metamodelica::Array<Arc<DAE::Element>> = Default::default();
     let mut tArrayBool: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let FlatSmSemantics { smComps: __pa0, .. } = (inEnclosingFlatSmSemantics.clone()) else { bail!("pattern mismatch") };
     enclosingFlatSMComps = __pa0.clone();
@@ -808,22 +808,22 @@ fn isCrefInVar(mut inElement: Arc<DAE::Element>, mut inCref: Arc<DAE::ComponentR
 }
 
 fn createResetEquation(mut inLHSCref: Arc<DAE::ComponentRef>, mut inLHSty: Arc<DAE::Type>, mut inStateCref: Arc<DAE::ComponentRef>, mut inEnclosingFlatSmSemantics: FlatSmSemantics, mut crToExpOpt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Option<Arc<DAE::Exp>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Option<Arc<DAE::Exp>>) -> Result<ArcStr> + 'static>))) -> Result<Arc<DAE::Element>> {
-    let mut outEqn: Arc<DAE::Element>;
-    let mut activeExp: Arc<DAE::Exp>;
-    let mut lhsExp: Arc<DAE::Exp>;
-    let mut activeResetExp: Arc<DAE::Exp>;
-    let mut activeResetStatesExp: Arc<DAE::Exp>;
-    let mut orExp: Arc<DAE::Exp>;
-    let mut andExp: Arc<DAE::Exp>;
-    let mut previousExp: Arc<DAE::Exp>;
-    let mut startValueExp: Arc<DAE::Exp>;
-    let mut ifExp: Arc<DAE::Exp>;
+    let mut outEqn: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut activeExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut lhsExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut activeResetExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut activeResetStatesExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut orExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut andExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut previousExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut startValueExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut ifExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut startValueOpt: Option<Arc<DAE::Exp>> = None;
     let mut initStateRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut preRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut i: i32 = 0;
     let mut nStates: i32 = 0;
-    let mut enclosingFlatSMComps: metamodelica::Array<Arc<DAE::Element>>;
+    let mut enclosingFlatSMComps: metamodelica::Array<Arc<DAE::Element>> = Default::default();
     let mut tArrayBool: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut callAttributes: Arc<DAE::CallAttributes> = Arc::new(<DAE::CallAttributes as ::std::default::Default>::default());
     let FlatSmSemantics { smComps: __pa0, .. } = (inEnclosingFlatSmSemantics.clone()) else { bail!("pattern mismatch") };
@@ -883,12 +883,12 @@ fn createResetEquation(mut inLHSCref: Arc<DAE::ComponentRef>, mut inLHSty: Arc<D
 }
 
 fn wrapInStateActivationConditional(mut inEqn: Arc<DAE::Element>, mut inStateCref: Arc<DAE::ComponentRef>, mut isResetEquation: bool) -> Result<Arc<DAE::Element>> {
-    let mut outEqn: Arc<DAE::Element>;
-    let mut exp: Arc<DAE::Exp>;
-    let mut scalar: Arc<DAE::Exp>;
-    let mut scalar1: Arc<DAE::Exp>;
-    let mut activeRef: Arc<DAE::Exp>;
-    let mut expElse: Arc<DAE::Exp>;
+    let mut outEqn: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut scalar: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut scalar1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut activeRef: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut expElse: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut callAttributes: Arc<DAE::CallAttributes> = Arc::new(<DAE::CallAttributes as ::std::default::Default>::default());
     let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
@@ -931,12 +931,12 @@ fn wrapInStateActivationConditional(mut inEqn: Arc<DAE::Element>, mut inStateCre
 }
 
 fn wrapInStateActivationConditionalCT(mut inEqn: Arc<DAE::Element>, mut inStateCref: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Element>> {
-    let mut outEqn: Arc<DAE::Element>;
-    let mut exp: Arc<DAE::Exp>;
-    let mut scalar: Arc<DAE::Exp>;
-    let mut scalar1: Arc<DAE::Exp>;
-    let mut activeRef: Arc<DAE::Exp>;
-    let mut expElse: Arc<DAE::Exp>;
+    let mut outEqn: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut scalar: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut scalar1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut activeRef: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut expElse: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut callAttributes: Arc<DAE::CallAttributes> = Arc::new(<DAE::CallAttributes as ::std::default::Default>::default());
     let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
@@ -975,9 +975,9 @@ fn wrapInStateActivationConditionalCT(mut inEqn: Arc<DAE::Element>, mut inStateC
 }
 
 fn traversingSubsPreviousCref(mut inExp: Arc<DAE::Exp>, mut inCrefHit: (Arc<DAE::ComponentRef>, bool)) -> Result<(Arc<DAE::Exp>, bool, (Arc<DAE::ComponentRef>, bool))> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cont: bool = true;
-    let mut outCrefHit: (Arc<DAE::ComponentRef>, bool);
+    let mut outCrefHit: (Arc<DAE::ComponentRef>, bool) = (Arc::new(DAE::ComponentRef::WILD), false);
     (outExp, outCrefHit) = (::match_deref::match_deref! { match &((inExp.clone(), inCrefHit.clone())) {
         (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "previous" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, ty }, tail: Deref @ metamodelica::List::Nil }, attr: _ }, (cref, _)) if (ComponentReferenceBasics::crefEqual(cr.clone(), cref.clone())?) => {
             let mut substituteRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -994,11 +994,11 @@ fn traversingSubsPreviousCref(mut inExp: Arc<DAE::Exp>, mut inCrefHit: (Arc<DAE:
 }
 
 fn traversingSubsPreviousCrefs(mut inExp: Arc<DAE::Exp>, mut inCrefsHit: (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, bool)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, bool))> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cont: bool = true;
-    let mut outCrefsHit: (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, bool);
+    let mut outCrefsHit: (Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, bool) = (metamodelica::nil(), false);
     (outExp, outCrefsHit) = (::match_deref::match_deref! { match &((inExp.clone(), inCrefsHit.clone())) {
-        (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "previous" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, ty }, tail: Deref @ metamodelica::List::Nil }, attr: _ }, (crefs, _)) if (List::any(crefs.clone(), Arc::new({ let __pe_b0 = cr.clone(); move |__pe_a1| ComponentReferenceBasics::crefEqual(__pe_b0.clone(), __pe_a1) }))) => {
+        (Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "previous" }, expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, ty }, tail: Deref @ metamodelica::List::Nil }, attr: _ }, (crefs, _)) if (List::any(crefs.clone(), (std::sync::Arc::new({ let __pe_b0 = cr.clone(); move |__pe_a1| ComponentReferenceBasics::crefEqual(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))) => {
             let mut substituteRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             substituteRef = ComponentReference::appendStringLastIdent((literal!("_previous")).clone(), cr.clone())?;
             (Arc::new(DAE::Exp::CREF { componentRef: substituteRef.clone(), ty: ty.clone() }), (crefs.clone(), true))
@@ -1013,7 +1013,7 @@ fn traversingSubsPreviousCrefs(mut inExp: Arc<DAE::Exp>, mut inCrefsHit: (Arc<me
 
 fn getStartAttrOption(mut inElt: Arc<DAE::Element>) -> Result<Option<Arc<DAE::Exp>>> {
     let mut outExpOpt: Option<Arc<DAE::Exp>> = None;
-    let mut start: Arc<DAE::Exp>;
+    let mut start: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut varAttrOpt: Option<Arc<DAE::VariableAttributes>> = None;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inElt.clone()) {
@@ -1040,22 +1040,22 @@ fn addPropagationEquations(mut inFlatSmSemantics: FlatSmSemantics, mut inEnclosi
     let mut activeRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut stateRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut activePlotIndicatorRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut initVar: Arc<DAE::Element>;
-    let mut activePlotIndicatorVar: Arc<DAE::Element>;
-    let mut ticksInStateVar: Arc<DAE::Element>;
-    let mut timeEnteredStateVar: Arc<DAE::Element>;
-    let mut timeInStateVar: Arc<DAE::Element>;
-    let mut activePlotIndicatorEqn: Arc<DAE::Element>;
-    let mut ticksInStateEqn: Arc<DAE::Element>;
-    let mut timeEnteredStateEqn: Arc<DAE::Element>;
-    let mut timeInStateEqn: Arc<DAE::Element>;
-    let mut rhs: Arc<DAE::Exp>;
-    let mut andExp: Arc<DAE::Exp>;
-    let mut eqExp: Arc<DAE::Exp>;
+    let mut initVar: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut activePlotIndicatorVar: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut ticksInStateVar: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut timeEnteredStateVar: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut timeInStateVar: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut activePlotIndicatorEqn: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut ticksInStateEqn: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut timeEnteredStateEqn: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut timeInStateEqn: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut rhs: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut andExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut eqExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut tArrayBool: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut tArrayInteger: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut ident: ArcStr = arcstr::literal!("");
-    let mut smComps: metamodelica::Array<Arc<DAE::Element>>;
+    let mut smComps: metamodelica::Array<Arc<DAE::Element>> = Default::default();
     let mut t: Arc<metamodelica::List<Transition>> = metamodelica::nil();
     let mut c: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut smvars: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
@@ -1069,7 +1069,7 @@ fn addPropagationEquations(mut inFlatSmSemantics: FlatSmSemantics, mut inEnclosi
     let mut enclosingActiveResetRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut enclosingActiveStateRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut enclosingFlatSMSemantics: FlatSmSemantics = <FlatSmSemantics as ::std::default::Default>::default();
-    let mut enclosingFlatSMComps: metamodelica::Array<Arc<DAE::Element>>;
+    let mut enclosingFlatSMComps: metamodelica::Array<Arc<DAE::Element>> = Default::default();
     let mut enclosingFlatSMInitStateRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut posOfEnclosingSMComp: i32 = 0;
     let mut nStates: i32 = 0;
@@ -1093,11 +1093,11 @@ fn addPropagationEquations(mut inFlatSmSemantics: FlatSmSemantics, mut inEnclosi
         initRef = qCref((literal!("init")).clone(), DAE::T_BOOL_DEFAULT().clone(), metamodelica::nil(), preRef.clone())?;
         initVar = createVarWithDefaults(initRef.clone(), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_BOOL_DEFAULT().clone(), metamodelica::nil());
         initVar = setVarFixedStartValue(initVar.clone(), Arc::new(DAE::Exp::BCONST { bool: true }))?;
-        pvars = cons(initVar.clone(), pvars.clone());
-        peqs = cons(Arc::new(DAE::Element::EQUATION { exp: Arc::new(DAE::Exp::CREF { componentRef: initRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() }), scalar: Arc::new(DAE::Exp::BCONST { bool: false }), source: DAE::emptyElementSource().clone() }), peqs.clone());
+        pvars = metamodelica::cons(initVar.clone(), pvars.clone());
+        peqs = metamodelica::cons(Arc::new(DAE::Element::EQUATION { exp: Arc::new(DAE::Exp::CREF { componentRef: initRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() }), scalar: Arc::new(DAE::Exp::BCONST { bool: false }), source: DAE::emptyElementSource().clone() }), peqs.clone());
         rhs = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("previous")).clone() }), expLst: list![Arc::new(DAE::Exp::CREF { componentRef: initRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() })], attr: DAE::callAttrBuiltinImpureBool().clone() });
-        peqs = cons(Arc::new(DAE::Element::EQUATION { exp: Arc::new(DAE::Exp::CREF { componentRef: resetRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() }), scalar: rhs.clone(), source: DAE::emptyElementSource().clone() }), peqs.clone());
-        peqs = cons(Arc::new(DAE::Element::EQUATION { exp: Arc::new(DAE::Exp::CREF { componentRef: activeRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() }), scalar: Arc::new(DAE::Exp::BCONST { bool: true }), source: DAE::emptyElementSource().clone() }), peqs.clone());
+        peqs = metamodelica::cons(Arc::new(DAE::Element::EQUATION { exp: Arc::new(DAE::Exp::CREF { componentRef: resetRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() }), scalar: rhs.clone(), source: DAE::emptyElementSource().clone() }), peqs.clone());
+        peqs = metamodelica::cons(Arc::new(DAE::Element::EQUATION { exp: Arc::new(DAE::Exp::CREF { componentRef: activeRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() }), scalar: Arc::new(DAE::Exp::BCONST { bool: true }), source: DAE::emptyElementSource().clone() }), peqs.clone());
     } else {
         enclosingStateCref = Util::getOption(inEnclosingStateCrefOption.clone())?;
         enclosingFlatSMSemantics = Util::getOption(inEnclosingFlatSmSemanticsOption.clone())?;
@@ -1119,9 +1119,9 @@ fn addPropagationEquations(mut inFlatSmSemantics: FlatSmSemantics, mut inEnclosi
         eqExp = Arc::new(DAE::Exp::RELATION { exp1: Arc::new(DAE::Exp::CREF { componentRef: enclosingActiveStateRef.clone(), ty: DAE::T_INTEGER_DEFAULT().clone() }), operator: DAE::Operator::EQUAL { ty: DAE::T_INTEGER_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::ICONST { integer: posOfEnclosingSMComp.clone() }), index: -1, optionExpisASUB: None });
         andExp = Arc::new(DAE::Exp::LBINARY { exp1: Arc::new(DAE::Exp::CREF { componentRef: enclosingActiveResetRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() }), operator: DAE::Operator::AND { ty: DAE::T_BOOL_DEFAULT().clone() }, exp2: eqExp.clone() });
         rhs = Arc::new(DAE::Exp::LBINARY { exp1: Arc::new(DAE::Exp::CREF { componentRef: enclosingActiveResetStateRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() }), operator: DAE::Operator::OR { ty: DAE::T_BOOL_DEFAULT().clone() }, exp2: andExp.clone() });
-        peqs = cons(Arc::new(DAE::Element::EQUATION { exp: Arc::new(DAE::Exp::CREF { componentRef: resetRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() }), scalar: rhs.clone(), source: DAE::emptyElementSource().clone() }), peqs.clone());
+        peqs = metamodelica::cons(Arc::new(DAE::Element::EQUATION { exp: Arc::new(DAE::Exp::CREF { componentRef: resetRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() }), scalar: rhs.clone(), source: DAE::emptyElementSource().clone() }), peqs.clone());
         rhs = Arc::new(DAE::Exp::RELATION { exp1: Arc::new(DAE::Exp::CREF { componentRef: enclosingActiveStateRef.clone(), ty: DAE::T_INTEGER_DEFAULT().clone() }), operator: DAE::Operator::EQUAL { ty: DAE::T_INTEGER_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::ICONST { integer: posOfEnclosingSMComp.clone() }), index: -1, optionExpisASUB: None });
-        peqs = cons(Arc::new(DAE::Element::EQUATION { exp: Arc::new(DAE::Exp::CREF { componentRef: activeRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() }), scalar: rhs.clone(), source: DAE::emptyElementSource().clone() }), peqs.clone());
+        peqs = metamodelica::cons(Arc::new(DAE::Element::EQUATION { exp: Arc::new(DAE::Exp::CREF { componentRef: activeRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() }), scalar: rhs.clone(), source: DAE::emptyElementSource().clone() }), peqs.clone());
     }
     let __range10 = 1..=(smComps.clone().borrow().len() as i32);
     for mut i in __range10 {
@@ -1131,38 +1131,38 @@ fn addPropagationEquations(mut inFlatSmSemantics: FlatSmSemantics, mut inEnclosi
         } };
         stateRef = __pa11.clone();
         (activePlotIndicatorVar, activePlotIndicatorEqn) = createActiveIndicator(stateRef.clone(), preRef.clone(), i.clone())?;
-        pvars = cons(activePlotIndicatorVar.clone(), pvars.clone());
-        peqs = cons(activePlotIndicatorEqn.clone(), peqs.clone());
+        pvars = metamodelica::cons(activePlotIndicatorVar.clone(), pvars.clone());
+        peqs = metamodelica::cons(activePlotIndicatorEqn.clone(), peqs.clone());
         let __pa12 = ::match_deref::match_deref! { match &(activePlotIndicatorVar.clone()) {
             Deref @ DAE::Element::VAR { componentRef: __pa12, .. } => __pa12.clone(),
             _ => bail!("pattern mismatch"),
         } };
         activePlotIndicatorRef = __pa12.clone();
         (ticksInStateVar, ticksInStateEqn) = createTicksInStateIndicator(stateRef.clone(), activePlotIndicatorRef.clone())?;
-        pvars = cons(ticksInStateVar.clone(), pvars.clone());
-        peqs = cons(ticksInStateEqn.clone(), peqs.clone());
+        pvars = metamodelica::cons(ticksInStateVar.clone(), pvars.clone());
+        peqs = metamodelica::cons(ticksInStateEqn.clone(), peqs.clone());
         (timeEnteredStateVar, timeEnteredStateEqn) = createTimeEnteredStateIndicator(stateRef.clone(), activePlotIndicatorRef.clone())?;
         (timeInStateVar, timeInStateEqn) = createTimeInStateIndicator(stateRef.clone(), activePlotIndicatorRef.clone(), timeEnteredStateVar.clone())?;
-        pvars = cons(timeEnteredStateVar.clone(), cons(timeInStateVar.clone(), pvars.clone()));
-        peqs = cons(timeEnteredStateEqn.clone(), cons(timeInStateEqn.clone(), peqs.clone()));
+        pvars = metamodelica::cons(timeEnteredStateVar.clone(), metamodelica::cons(timeInStateVar.clone(), pvars.clone()));
+        peqs = metamodelica::cons(timeEnteredStateEqn.clone(), metamodelica::cons(timeInStateEqn.clone(), peqs.clone()));
     }
     outFlatSmSemantics = FlatSmSemantics { ident: (ident.clone()).clone(), smComps: smComps.clone(), t: t.clone(), c: c.clone(), vars: smvars.clone(), knowns: smknowns.clone(), eqs: smeqs.clone(), pvars: pvars.clone(), peqs: peqs.clone(), enclosingState: inEnclosingStateCrefOption.clone() };
     Ok(outFlatSmSemantics)
 }
 
 fn createTimeInStateIndicator(mut stateRef: Arc<DAE::ComponentRef>, mut stateActiveRef: Arc<DAE::ComponentRef>, mut timeEnteredStateVar: Arc<DAE::Element>) -> Result<(Arc<DAE::Element>, Arc<DAE::Element>)> {
-    let mut timeInStateVar: Arc<DAE::Element>;
-    let mut timeInStateEqn: Arc<DAE::Element>;
+    let mut timeInStateVar: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut timeInStateEqn: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
     let mut timeInStateRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut timeEnteredStateRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    let mut timeInStateExp: Arc<DAE::Exp>;
-    let mut timeEnteredStateExp: Arc<DAE::Exp>;
-    let mut stateActiveExp: Arc<DAE::Exp>;
-    let mut expCond: Arc<DAE::Exp>;
-    let mut expSampleTime: Arc<DAE::Exp>;
-    let mut expThen: Arc<DAE::Exp>;
-    let mut expElse: Arc<DAE::Exp>;
+    let mut timeInStateExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut timeEnteredStateExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut stateActiveExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut expCond: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut expSampleTime: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut expThen: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut expElse: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     timeInStateRef = qCref((literal!("$timeInState")).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil(), stateRef.clone())?;
     timeInStateVar = createVarWithDefaults(timeInStateRef.clone(), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_REAL_DEFAULT().clone(), metamodelica::nil());
     timeInStateVar = setVarFixedStartValue(timeInStateVar.clone(), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((0) as f64) }))?;
@@ -1184,14 +1184,14 @@ fn createTimeInStateIndicator(mut stateRef: Arc<DAE::ComponentRef>, mut stateAct
 }
 
 fn createTimeEnteredStateIndicator(mut stateRef: Arc<DAE::ComponentRef>, mut stateActiveRef: Arc<DAE::ComponentRef>) -> Result<(Arc<DAE::Element>, Arc<DAE::Element>)> {
-    let mut timeEnteredStateVar: Arc<DAE::Element>;
-    let mut timeEnteredStateEqn: Arc<DAE::Element>;
+    let mut timeEnteredStateVar: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut timeEnteredStateEqn: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
     let mut timeEnteredStateRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut timeEnteredStateExp: Arc<DAE::Exp>;
-    let mut stateActiveExp: Arc<DAE::Exp>;
-    let mut expCond: Arc<DAE::Exp>;
-    let mut expThen: Arc<DAE::Exp>;
-    let mut expElse: Arc<DAE::Exp>;
+    let mut timeEnteredStateExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut stateActiveExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut expCond: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut expThen: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut expElse: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     timeEnteredStateRef = qCref((literal!("$timeEnteredState")).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil(), stateRef.clone())?;
     timeEnteredStateVar = createVarWithDefaults(timeEnteredStateRef.clone(), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_REAL_DEFAULT().clone(), metamodelica::nil());
     timeEnteredStateVar = setVarFixedStartValue(timeEnteredStateVar.clone(), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((0) as f64) }))?;
@@ -1205,13 +1205,13 @@ fn createTimeEnteredStateIndicator(mut stateRef: Arc<DAE::ComponentRef>, mut sta
 }
 
 fn createTicksInStateIndicator(mut stateRef: Arc<DAE::ComponentRef>, mut stateActiveRef: Arc<DAE::ComponentRef>) -> Result<(Arc<DAE::Element>, Arc<DAE::Element>)> {
-    let mut ticksInStateVar: Arc<DAE::Element>;
-    let mut ticksInStateEqn: Arc<DAE::Element>;
+    let mut ticksInStateVar: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut ticksInStateEqn: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
     let mut ticksInStateRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut ticksInStateExp: Arc<DAE::Exp>;
-    let mut expCond: Arc<DAE::Exp>;
-    let mut expThen: Arc<DAE::Exp>;
-    let mut expElse: Arc<DAE::Exp>;
+    let mut ticksInStateExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut expCond: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut expThen: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut expElse: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     ticksInStateRef = qCref((literal!("$ticksInState")).clone(), DAE::T_INTEGER_DEFAULT().clone(), metamodelica::nil(), stateRef.clone())?;
     ticksInStateVar = createVarWithDefaults(ticksInStateRef.clone(), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_INTEGER_DEFAULT().clone(), metamodelica::nil());
     ticksInStateVar = setVarFixedStartValue(ticksInStateVar.clone(), Arc::new(DAE::Exp::ICONST { integer: 0 }))?;
@@ -1224,13 +1224,13 @@ fn createTicksInStateIndicator(mut stateRef: Arc<DAE::ComponentRef>, mut stateAc
 }
 
 fn createActiveIndicator(mut stateRef: Arc<DAE::ComponentRef>, mut preRef: Arc<DAE::ComponentRef>, mut i: i32) -> Result<(Arc<DAE::Element>, Arc<DAE::Element>)> {
-    let mut activePlotIndicatorVar: Arc<DAE::Element>;
-    let mut eqn: Arc<DAE::Element>;
+    let mut activePlotIndicatorVar: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut eqn: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
     let mut activeRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut activePlotIndicatorRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut activeStateRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut andExp: Arc<DAE::Exp>;
-    let mut eqExp: Arc<DAE::Exp>;
+    let mut andExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut eqExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     activePlotIndicatorRef = qCref((literal!("active")).clone(), DAE::T_BOOL_DEFAULT().clone(), metamodelica::nil(), stateRef.clone())?;
     activePlotIndicatorVar = createVarWithStartValue(activePlotIndicatorRef.clone(), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_BOOL_DEFAULT().clone(), Arc::new(DAE::Exp::BCONST { bool: false }), metamodelica::nil())?;
     activeRef = qCref((literal!("active")).clone(), DAE::T_BOOL_DEFAULT().clone(), metamodelica::nil(), preRef.clone())?;
@@ -1242,7 +1242,7 @@ fn createActiveIndicator(mut stateRef: Arc<DAE::ComponentRef>, mut preRef: Arc<D
 }
 
 fn setVarFixedStartValue(mut inVar: Arc<DAE::Element>, mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Element>> {
-    let mut outVar: Arc<DAE::Element>;
+    let mut outVar: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
     let mut vao: Option<Arc<DAE::VariableAttributes>> = None;
     let __pa0 = ::match_deref::match_deref! { match &(inVar.clone()) {
         Deref @ DAE::Element::VAR { variableAttributesOption: __pa0, .. } => __pa0.clone(),
@@ -1259,8 +1259,8 @@ fn basicFlatSmSemantics(mut ident: ArcStr, mut q: Arc<metamodelica::List<Arc<DAE
     let mut flatSmSemantics: FlatSmSemantics = <FlatSmSemantics as ::std::default::Default>::default();
     let mut crefInitialState: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut preRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut defaultIntVar: Arc<DAE::Element>;
-    let mut defaultBoolVar: Arc<DAE::Element>;
+    let mut defaultIntVar: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut defaultBoolVar: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
     let mut vars: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     let mut knowns: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     let mut i: i32 = 0;
@@ -1276,43 +1276,43 @@ fn basicFlatSmSemantics(mut ident: ArcStr, mut q: Arc<metamodelica::List<Arc<DAE
     let mut nextStateRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut nextResetRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut stateMachineInFinalStateRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut nStatesVar: Arc<DAE::Element>;
-    let mut activeVar: Arc<DAE::Element>;
-    let mut resetVar: Arc<DAE::Element>;
-    let mut selectedStateVar: Arc<DAE::Element>;
-    let mut selectedResetVar: Arc<DAE::Element>;
-    let mut firedVar: Arc<DAE::Element>;
-    let mut activeStateVar: Arc<DAE::Element>;
-    let mut activeResetVar: Arc<DAE::Element>;
-    let mut nextStateVar: Arc<DAE::Element>;
-    let mut nextResetVar: Arc<DAE::Element>;
-    let mut stateMachineInFinalStateVar: Arc<DAE::Element>;
+    let mut nStatesVar: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut activeVar: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut resetVar: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut selectedStateVar: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut selectedResetVar: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut firedVar: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut activeStateVar: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut activeResetVar: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut nextStateVar: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut nextResetVar: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut stateMachineInFinalStateVar: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
     let mut nStates: i32 = 0;
     let mut nStatesDims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
     let mut nStatesArrayBool: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    let mut activeResetStatesRefs: metamodelica::Array<Arc<DAE::ComponentRef>>;
-    let mut nextResetStatesRefs: metamodelica::Array<Arc<DAE::ComponentRef>>;
-    let mut finalStatesRefs: metamodelica::Array<Arc<DAE::ComponentRef>>;
-    let mut activeResetStatesVars: metamodelica::Array<Arc<DAE::Element>>;
-    let mut nextResetStatesVars: metamodelica::Array<Arc<DAE::Element>>;
-    let mut finalStatesVars: metamodelica::Array<Arc<DAE::Element>>;
+    let mut activeResetStatesRefs: metamodelica::Array<Arc<DAE::ComponentRef>> = Default::default();
+    let mut nextResetStatesRefs: metamodelica::Array<Arc<DAE::ComponentRef>> = Default::default();
+    let mut finalStatesRefs: metamodelica::Array<Arc<DAE::ComponentRef>> = Default::default();
+    let mut activeResetStatesVars: metamodelica::Array<Arc<DAE::Element>> = Default::default();
+    let mut nextResetStatesVars: metamodelica::Array<Arc<DAE::Element>> = Default::default();
+    let mut finalStatesVars: metamodelica::Array<Arc<DAE::Element>> = Default::default();
     let mut t: Arc<metamodelica::List<Transition>> = metamodelica::nil();
     let mut nTransitions: i32 = 0;
     let mut tDims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
     let mut tArrayInteger: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut tArrayBool: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    let mut tFromRefs: metamodelica::Array<Arc<DAE::ComponentRef>>;
-    let mut tToRefs: metamodelica::Array<Arc<DAE::ComponentRef>>;
-    let mut tImmediateRefs: metamodelica::Array<Arc<DAE::ComponentRef>>;
-    let mut tResetRefs: metamodelica::Array<Arc<DAE::ComponentRef>>;
-    let mut tSynchronizeRefs: metamodelica::Array<Arc<DAE::ComponentRef>>;
-    let mut tPriorityRefs: metamodelica::Array<Arc<DAE::ComponentRef>>;
-    let mut tFromVars: metamodelica::Array<Arc<DAE::Element>>;
-    let mut tToVars: metamodelica::Array<Arc<DAE::Element>>;
-    let mut tImmediateVars: metamodelica::Array<Arc<DAE::Element>>;
-    let mut tResetVars: metamodelica::Array<Arc<DAE::Element>>;
-    let mut tSynchronizeVars: metamodelica::Array<Arc<DAE::Element>>;
-    let mut tPriorityVars: metamodelica::Array<Arc<DAE::Element>>;
+    let mut tFromRefs: metamodelica::Array<Arc<DAE::ComponentRef>> = Default::default();
+    let mut tToRefs: metamodelica::Array<Arc<DAE::ComponentRef>> = Default::default();
+    let mut tImmediateRefs: metamodelica::Array<Arc<DAE::ComponentRef>> = Default::default();
+    let mut tResetRefs: metamodelica::Array<Arc<DAE::ComponentRef>> = Default::default();
+    let mut tSynchronizeRefs: metamodelica::Array<Arc<DAE::ComponentRef>> = Default::default();
+    let mut tPriorityRefs: metamodelica::Array<Arc<DAE::ComponentRef>> = Default::default();
+    let mut tFromVars: metamodelica::Array<Arc<DAE::Element>> = Default::default();
+    let mut tToVars: metamodelica::Array<Arc<DAE::Element>> = Default::default();
+    let mut tImmediateVars: metamodelica::Array<Arc<DAE::Element>> = Default::default();
+    let mut tResetVars: metamodelica::Array<Arc<DAE::Element>> = Default::default();
+    let mut tSynchronizeVars: metamodelica::Array<Arc<DAE::Element>> = Default::default();
+    let mut tPriorityVars: metamodelica::Array<Arc<DAE::Element>> = Default::default();
     let mut from: i32 = 0;
     let mut to: i32 = 0;
     let mut immediate: bool = false;
@@ -1320,26 +1320,26 @@ fn basicFlatSmSemantics(mut ident: ArcStr, mut q: Arc<metamodelica::List<Arc<DAE
     let mut synchronize: bool = false;
     let mut priority: i32 = 0;
     let mut cExps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-    let mut cRefs: metamodelica::Array<Arc<DAE::ComponentRef>>;
-    let mut cImmediateRefs: metamodelica::Array<Arc<DAE::ComponentRef>>;
-    let mut cVars: metamodelica::Array<Arc<DAE::Element>>;
-    let mut cImmediateVars: metamodelica::Array<Arc<DAE::Element>>;
+    let mut cRefs: metamodelica::Array<Arc<DAE::ComponentRef>> = Default::default();
+    let mut cImmediateRefs: metamodelica::Array<Arc<DAE::ComponentRef>> = Default::default();
+    let mut cVars: metamodelica::Array<Arc<DAE::Element>> = Default::default();
+    let mut cImmediateVars: metamodelica::Array<Arc<DAE::Element>> = Default::default();
     let mut eqs: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-    let mut selectedStateEqn: Arc<DAE::Element>;
-    let mut selectedResetEqn: Arc<DAE::Element>;
-    let mut firedEqn: Arc<DAE::Element>;
-    let mut activeStateEqn: Arc<DAE::Element>;
-    let mut activeResetEqn: Arc<DAE::Element>;
-    let mut nextStateEqn: Arc<DAE::Element>;
-    let mut nextResetEqn: Arc<DAE::Element>;
-    let mut exp: Arc<DAE::Exp>;
-    let mut rhs: Arc<DAE::Exp>;
-    let mut expCond: Arc<DAE::Exp>;
-    let mut expThen: Arc<DAE::Exp>;
-    let mut expElse: Arc<DAE::Exp>;
-    let mut exp1: Arc<DAE::Exp>;
-    let mut exp2: Arc<DAE::Exp>;
-    let mut expIf: Arc<DAE::Exp>;
+    let mut selectedStateEqn: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut selectedResetEqn: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut firedEqn: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut activeStateEqn: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut activeResetEqn: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut nextStateEqn: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut nextResetEqn: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut rhs: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut expCond: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut expThen: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut expElse: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut exp1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut exp2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut expIf: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut expLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut bindExp: Option<Arc<DAE::Exp>> = None;
     let __pa0 = ::match_deref::match_deref! { match &(listHead(q.clone())?) {
@@ -1357,7 +1357,7 @@ fn basicFlatSmSemantics(mut ident: ArcStr, mut q: Arc<metamodelica::List<Arc<DAE
     nStatesRef = qCref((literal!("nState")).clone(), DAE::T_INTEGER_DEFAULT().clone(), metamodelica::nil(), preRef.clone())?;
     nStatesVar = createVarWithDefaults(nStatesRef.clone(), openmodelica_frontend_types::DAE::VarKind::PARAM, DAE::T_INTEGER_DEFAULT().clone(), metamodelica::nil());
     nStatesVar = DAEUtil::setElementVarBinding(nStatesVar.clone(), Some(Arc::new(DAE::Exp::ICONST { integer: nStates.clone() })));
-    knowns = cons(nStatesVar.clone(), knowns.clone());
+    knowns = metamodelica::cons(nStatesVar.clone(), knowns.clone());
     nTransitions = (t.clone().len() as i32);
     tDims = list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: nTransitions.clone() })];
     tArrayInteger = Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_INTEGER_DEFAULT().clone(), dims: tDims.clone() });
@@ -1388,27 +1388,27 @@ fn basicFlatSmSemantics(mut ident: ArcStr, mut q: Arc<metamodelica::List<Arc<DAE
         tFromRefs = {let _arr = tFromRefs.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = qCref((literal!("tFrom")).clone(), tArrayInteger.clone(), list![Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: i.clone() }) })], preRef.clone())?; _arr};
         tFromVars = {let _arr = tFromVars.clone(); let _val = createVarWithDefaults(tFromRefs.clone().borrow()[(i.clone()-1) as usize].clone(), openmodelica_frontend_types::DAE::VarKind::PARAM, DAE::T_INTEGER_DEFAULT().clone(), tDims.clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
         tFromVars = {let _arr = tFromVars.clone(); let _val = DAEUtil::setElementVarBinding(tFromVars.clone().borrow()[(i.clone()-1) as usize].clone(), Some(Arc::new(DAE::Exp::ICONST { integer: from.clone() }))); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
-        knowns = cons(tFromVars.clone().borrow()[(i.clone()-1) as usize].clone(), knowns.clone());
+        knowns = metamodelica::cons(tFromVars.clone().borrow()[(i.clone()-1) as usize].clone(), knowns.clone());
         tToRefs = {let _arr = tToRefs.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = qCref((literal!("tTo")).clone(), tArrayInteger.clone(), list![Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: i.clone() }) })], preRef.clone())?; _arr};
         tToVars = {let _arr = tToVars.clone(); let _val = createVarWithDefaults(tToRefs.clone().borrow()[(i.clone()-1) as usize].clone(), openmodelica_frontend_types::DAE::VarKind::PARAM, DAE::T_INTEGER_DEFAULT().clone(), tDims.clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
         tToVars = {let _arr = tToVars.clone(); let _val = DAEUtil::setElementVarBinding(tToVars.clone().borrow()[(i.clone()-1) as usize].clone(), Some(Arc::new(DAE::Exp::ICONST { integer: to.clone() }))); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
-        knowns = cons(tToVars.clone().borrow()[(i.clone()-1) as usize].clone(), knowns.clone());
+        knowns = metamodelica::cons(tToVars.clone().borrow()[(i.clone()-1) as usize].clone(), knowns.clone());
         tImmediateRefs = {let _arr = tImmediateRefs.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = qCref((literal!("tImmediate")).clone(), tArrayBool.clone(), list![Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: i.clone() }) })], preRef.clone())?; _arr};
         tImmediateVars = {let _arr = tImmediateVars.clone(); let _val = createVarWithDefaults(tImmediateRefs.clone().borrow()[(i.clone()-1) as usize].clone(), openmodelica_frontend_types::DAE::VarKind::PARAM, DAE::T_BOOL_DEFAULT().clone(), tDims.clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
         tImmediateVars = {let _arr = tImmediateVars.clone(); let _val = DAEUtil::setElementVarBinding(tImmediateVars.clone().borrow()[(i.clone()-1) as usize].clone(), Some(Arc::new(DAE::Exp::BCONST { bool: immediate.clone() }))); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
-        knowns = cons(tImmediateVars.clone().borrow()[(i.clone()-1) as usize].clone(), knowns.clone());
+        knowns = metamodelica::cons(tImmediateVars.clone().borrow()[(i.clone()-1) as usize].clone(), knowns.clone());
         tResetRefs = {let _arr = tResetRefs.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = qCref((literal!("tReset")).clone(), tArrayBool.clone(), list![Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: i.clone() }) })], preRef.clone())?; _arr};
         tResetVars = {let _arr = tResetVars.clone(); let _val = createVarWithDefaults(tResetRefs.clone().borrow()[(i.clone()-1) as usize].clone(), openmodelica_frontend_types::DAE::VarKind::PARAM, DAE::T_BOOL_DEFAULT().clone(), tDims.clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
         tResetVars = {let _arr = tResetVars.clone(); let _val = DAEUtil::setElementVarBinding(tResetVars.clone().borrow()[(i.clone()-1) as usize].clone(), Some(Arc::new(DAE::Exp::BCONST { bool: reset.clone() }))); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
-        knowns = cons(tResetVars.clone().borrow()[(i.clone()-1) as usize].clone(), knowns.clone());
+        knowns = metamodelica::cons(tResetVars.clone().borrow()[(i.clone()-1) as usize].clone(), knowns.clone());
         tSynchronizeRefs = {let _arr = tSynchronizeRefs.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = qCref((literal!("tSynchronize")).clone(), tArrayBool.clone(), list![Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: i.clone() }) })], preRef.clone())?; _arr};
         tSynchronizeVars = {let _arr = tSynchronizeVars.clone(); let _val = createVarWithDefaults(tSynchronizeRefs.clone().borrow()[(i.clone()-1) as usize].clone(), openmodelica_frontend_types::DAE::VarKind::PARAM, DAE::T_BOOL_DEFAULT().clone(), tDims.clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
         tSynchronizeVars = {let _arr = tSynchronizeVars.clone(); let _val = DAEUtil::setElementVarBinding(tSynchronizeVars.clone().borrow()[(i.clone()-1) as usize].clone(), Some(Arc::new(DAE::Exp::BCONST { bool: synchronize.clone() }))); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
-        knowns = cons(tSynchronizeVars.clone().borrow()[(i.clone()-1) as usize].clone(), knowns.clone());
+        knowns = metamodelica::cons(tSynchronizeVars.clone().borrow()[(i.clone()-1) as usize].clone(), knowns.clone());
         tPriorityRefs = {let _arr = tPriorityRefs.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = qCref((literal!("tPriority")).clone(), tArrayInteger.clone(), list![Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: i.clone() }) })], preRef.clone())?; _arr};
         tPriorityVars = {let _arr = tPriorityVars.clone(); let _val = createVarWithDefaults(tPriorityRefs.clone().borrow()[(i.clone()-1) as usize].clone(), openmodelica_frontend_types::DAE::VarKind::PARAM, DAE::T_INTEGER_DEFAULT().clone(), tDims.clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
         tPriorityVars = {let _arr = tPriorityVars.clone(); let _val = DAEUtil::setElementVarBinding(tPriorityVars.clone().borrow()[(i.clone()-1) as usize].clone(), Some(Arc::new(DAE::Exp::ICONST { integer: priority.clone() }))); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
-        knowns = cons(tPriorityVars.clone().borrow()[(i.clone()-1) as usize].clone(), knowns.clone());
+        knowns = metamodelica::cons(tPriorityVars.clone().borrow()[(i.clone()-1) as usize].clone(), knowns.clone());
     }
     cRefs = arrayCreate(nTransitions.clone(), ComponentReference::makeDummyCref());
     cImmediateRefs = arrayCreate(nTransitions.clone(), ComponentReference::makeDummyCref());
@@ -1422,36 +1422,36 @@ fn basicFlatSmSemantics(mut ident: ArcStr, mut q: Arc<metamodelica::List<Arc<DAE
         cImmediateRefs = {let _arr = cImmediateRefs.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = qCref((literal!("cImmediate")).clone(), tArrayBool.clone(), list![Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: i.clone() }) })], preRef.clone())?; _arr};
         cVars = {let _arr = cVars.clone(); let _val = createVarWithDefaults(cRefs.clone().borrow()[(i.clone()-1) as usize].clone(), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_BOOL_DEFAULT().clone(), tDims.clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
         cImmediateVars = {let _arr = cImmediateVars.clone(); let _val = createVarWithStartValue(cImmediateRefs.clone().borrow()[(i.clone()-1) as usize].clone(), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_BOOL_DEFAULT().clone(), Arc::new(DAE::Exp::BCONST { bool: false }), tDims.clone())?; _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
-        vars = cons(cVars.clone().borrow()[(i.clone()-1) as usize].clone(), vars.clone());
-        vars = cons(cImmediateVars.clone().borrow()[(i.clone()-1) as usize].clone(), vars.clone());
+        vars = metamodelica::cons(cVars.clone().borrow()[(i.clone()-1) as usize].clone(), vars.clone());
+        vars = metamodelica::cons(cImmediateVars.clone().borrow()[(i.clone()-1) as usize].clone(), vars.clone());
     }
     activeRef = qCref((literal!("active")).clone(), DAE::T_BOOL_DEFAULT().clone(), metamodelica::nil(), preRef.clone())?;
     activeVar = createVarWithDefaults(activeRef.clone(), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_BOOL_DEFAULT().clone(), metamodelica::nil());
-    vars = cons(activeVar.clone(), vars.clone());
+    vars = metamodelica::cons(activeVar.clone(), vars.clone());
     resetRef = qCref((literal!("reset")).clone(), DAE::T_BOOL_DEFAULT().clone(), metamodelica::nil(), preRef.clone())?;
     resetVar = createVarWithDefaults(resetRef.clone(), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_BOOL_DEFAULT().clone(), metamodelica::nil());
-    vars = cons(resetVar.clone(), vars.clone());
+    vars = metamodelica::cons(resetVar.clone(), vars.clone());
     selectedStateRef = qCref((literal!("selectedState")).clone(), DAE::T_INTEGER_DEFAULT().clone(), metamodelica::nil(), preRef.clone())?;
     selectedStateVar = createVarWithDefaults(selectedStateRef.clone(), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_INTEGER_DEFAULT().clone(), metamodelica::nil());
-    vars = cons(selectedStateVar.clone(), vars.clone());
+    vars = metamodelica::cons(selectedStateVar.clone(), vars.clone());
     selectedResetRef = qCref((literal!("selectedReset")).clone(), DAE::T_BOOL_DEFAULT().clone(), metamodelica::nil(), preRef.clone())?;
     selectedResetVar = createVarWithDefaults(selectedResetRef.clone(), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_BOOL_DEFAULT().clone(), metamodelica::nil());
-    vars = cons(selectedResetVar.clone(), vars.clone());
+    vars = metamodelica::cons(selectedResetVar.clone(), vars.clone());
     firedRef = qCref((literal!("fired")).clone(), DAE::T_INTEGER_DEFAULT().clone(), metamodelica::nil(), preRef.clone())?;
     firedVar = createVarWithDefaults(firedRef.clone(), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_INTEGER_DEFAULT().clone(), metamodelica::nil());
-    vars = cons(firedVar.clone(), vars.clone());
+    vars = metamodelica::cons(firedVar.clone(), vars.clone());
     activeStateRef = qCref((literal!("activeState")).clone(), DAE::T_INTEGER_DEFAULT().clone(), metamodelica::nil(), preRef.clone())?;
     activeStateVar = createVarWithDefaults(activeStateRef.clone(), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_INTEGER_DEFAULT().clone(), metamodelica::nil());
-    vars = cons(activeStateVar.clone(), vars.clone());
+    vars = metamodelica::cons(activeStateVar.clone(), vars.clone());
     activeResetRef = qCref((literal!("activeReset")).clone(), DAE::T_BOOL_DEFAULT().clone(), metamodelica::nil(), preRef.clone())?;
     activeResetVar = createVarWithDefaults(activeResetRef.clone(), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_BOOL_DEFAULT().clone(), metamodelica::nil());
-    vars = cons(activeResetVar.clone(), vars.clone());
+    vars = metamodelica::cons(activeResetVar.clone(), vars.clone());
     nextStateRef = qCref((literal!("nextState")).clone(), DAE::T_INTEGER_DEFAULT().clone(), metamodelica::nil(), preRef.clone())?;
     nextStateVar = createVarWithStartValue(nextStateRef.clone(), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_INTEGER_DEFAULT().clone(), Arc::new(DAE::Exp::ICONST { integer: 0 }), metamodelica::nil())?;
-    vars = cons(nextStateVar.clone(), vars.clone());
+    vars = metamodelica::cons(nextStateVar.clone(), vars.clone());
     nextResetRef = qCref((literal!("nextReset")).clone(), DAE::T_BOOL_DEFAULT().clone(), metamodelica::nil(), preRef.clone())?;
     nextResetVar = createVarWithStartValue(nextResetRef.clone(), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_BOOL_DEFAULT().clone(), Arc::new(DAE::Exp::BCONST { bool: false }), metamodelica::nil())?;
-    vars = cons(nextResetVar.clone(), vars.clone());
+    vars = metamodelica::cons(nextResetVar.clone(), vars.clone());
     nStatesDims = list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: nStates.clone() })];
     nStatesArrayBool = Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_BOOL_DEFAULT().clone(), dims: nStatesDims.clone() });
     activeResetStatesRefs = arrayCreate(nStates.clone(), ComponentReference::makeDummyCref());
@@ -1459,40 +1459,40 @@ fn basicFlatSmSemantics(mut ident: ArcStr, mut q: Arc<metamodelica::List<Arc<DAE
     for mut i in 1..=nStates.clone() {
         activeResetStatesRefs = {let _arr = activeResetStatesRefs.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = qCref((literal!("activeResetStates")).clone(), nStatesArrayBool.clone(), list![Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: i.clone() }) })], preRef.clone())?; _arr};
         activeResetStatesVars = {let _arr = activeResetStatesVars.clone(); let _val = createVarWithDefaults(activeResetStatesRefs.clone().borrow()[(i.clone()-1) as usize].clone(), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_BOOL_DEFAULT().clone(), nStatesDims.clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
-        vars = cons(activeResetStatesVars.clone().borrow()[(i.clone()-1) as usize].clone(), vars.clone());
+        vars = metamodelica::cons(activeResetStatesVars.clone().borrow()[(i.clone()-1) as usize].clone(), vars.clone());
     }
     nextResetStatesRefs = arrayCreate(nStates.clone(), ComponentReference::makeDummyCref());
     nextResetStatesVars = arrayCreate(nStates.clone(), defaultBoolVar.clone());
     for mut i in 1..=nStates.clone() {
         nextResetStatesRefs = {let _arr = nextResetStatesRefs.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = qCref((literal!("nextResetStates")).clone(), nStatesArrayBool.clone(), list![Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: i.clone() }) })], preRef.clone())?; _arr};
         nextResetStatesVars = {let _arr = nextResetStatesVars.clone(); let _val = createVarWithStartValue(nextResetStatesRefs.clone().borrow()[(i.clone()-1) as usize].clone(), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_BOOL_DEFAULT().clone(), Arc::new(DAE::Exp::BCONST { bool: false }), nStatesDims.clone())?; _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
-        vars = cons(nextResetStatesVars.clone().borrow()[(i.clone()-1) as usize].clone(), vars.clone());
+        vars = metamodelica::cons(nextResetStatesVars.clone().borrow()[(i.clone()-1) as usize].clone(), vars.clone());
     }
     finalStatesRefs = arrayCreate(nStates.clone(), ComponentReference::makeDummyCref());
     finalStatesVars = arrayCreate(nStates.clone(), defaultBoolVar.clone());
     for mut i in 1..=nStates.clone() {
         finalStatesRefs = {let _arr = finalStatesRefs.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = qCref((literal!("finalStates")).clone(), nStatesArrayBool.clone(), list![Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: i.clone() }) })], preRef.clone())?; _arr};
         finalStatesVars = {let _arr = finalStatesVars.clone(); let _val = createVarWithDefaults(finalStatesRefs.clone().borrow()[(i.clone()-1) as usize].clone(), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_BOOL_DEFAULT().clone(), nStatesDims.clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
-        vars = cons(finalStatesVars.clone().borrow()[(i.clone()-1) as usize].clone(), vars.clone());
+        vars = metamodelica::cons(finalStatesVars.clone().borrow()[(i.clone()-1) as usize].clone(), vars.clone());
     }
     stateMachineInFinalStateRef = qCref((literal!("stateMachineInFinalState")).clone(), DAE::T_BOOL_DEFAULT().clone(), metamodelica::nil(), preRef.clone())?;
     stateMachineInFinalStateVar = createVarWithDefaults(stateMachineInFinalStateRef.clone(), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_BOOL_DEFAULT().clone(), metamodelica::nil());
-    vars = cons(stateMachineInFinalStateVar.clone(), vars.clone());
+    vars = metamodelica::cons(stateMachineInFinalStateVar.clone(), vars.clone());
     eqs = metamodelica::nil();
     i = 0;
     for mut cExp in &*cExps.clone() {
         let mut cExp = cExp.clone();
         i = i.clone() + 1;
         exp = Arc::new(DAE::Exp::CREF { componentRef: cImmediateRefs.clone().borrow()[(i.clone()-1) as usize].clone(), ty: DAE::T_BOOL_DEFAULT().clone() });
-        eqs = cons(Arc::new(DAE::Element::EQUATION { exp: exp.clone(), scalar: cExp.clone(), source: DAE::emptyElementSource().clone() }), eqs.clone());
+        eqs = metamodelica::cons(Arc::new(DAE::Element::EQUATION { exp: exp.clone(), scalar: cExp.clone(), source: DAE::emptyElementSource().clone() }), eqs.clone());
         exp1 = Arc::new(DAE::Exp::CREF { componentRef: cRefs.clone().borrow()[(i.clone()-1) as usize].clone(), ty: DAE::T_BOOL_DEFAULT().clone() });
         let __pa7 = ::match_deref::match_deref! { match &(tImmediateVars.clone().borrow()[(i.clone()-1) as usize].clone()) {
             Deref @ DAE::Element::VAR { binding: __pa7, .. } => __pa7.clone(),
             _ => bail!("pattern mismatch"),
         } };
         bindExp = __pa7.clone();
-        rhs = if (Util::applyOptionOrDefault(bindExp.clone(), Arc::new({ let __pe_b0 = Arc::new(DAE::Exp::BCONST { bool: true }); move |__pe_a1| ExpressionBasics::expEqual(__pe_b0.clone(), __pe_a1) }), false)) {exp.clone()} else {Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("previous")).clone() }), expLst: list![exp.clone()], attr: DAE::callAttrBuiltinImpureBool().clone() })};
-        eqs = cons(Arc::new(DAE::Element::EQUATION { exp: exp1.clone(), scalar: rhs.clone(), source: DAE::emptyElementSource().clone() }), eqs.clone());
+        rhs = if (Util::applyOptionOrDefault(bindExp.clone(), (std::sync::Arc::new({ let __pe_b0 = Arc::new(DAE::Exp::BCONST { bool: true }); move |__pe_a1| ExpressionBasics::expEqual(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>), false)) {exp.clone()} else {Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("previous")).clone() }), expLst: list![exp.clone()], attr: DAE::callAttrBuiltinImpureBool().clone() })};
+        eqs = metamodelica::cons(Arc::new(DAE::Element::EQUATION { exp: exp1.clone(), scalar: rhs.clone(), source: DAE::emptyElementSource().clone() }), eqs.clone());
     }
     exp = Arc::new(DAE::Exp::CREF { componentRef: selectedStateRef.clone(), ty: DAE::T_INTEGER_DEFAULT().clone() });
     expCond = Arc::new(DAE::Exp::CREF { componentRef: resetRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() });
@@ -1500,14 +1500,14 @@ fn basicFlatSmSemantics(mut ident: ArcStr, mut q: Arc<metamodelica::List<Arc<DAE
     expElse = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("previous")).clone() }), expLst: list![Arc::new(DAE::Exp::CREF { componentRef: nextStateRef.clone(), ty: DAE::T_INTEGER_DEFAULT().clone() })], attr: DAE::callAttrBuiltinImpureInteger().clone() });
     rhs = Arc::new(DAE::Exp::IFEXP { expCond: expCond.clone(), expThen: expThen.clone(), expElse: expElse.clone() });
     selectedStateEqn = Arc::new(DAE::Element::EQUATION { exp: exp.clone(), scalar: rhs.clone(), source: DAE::emptyElementSource().clone() });
-    eqs = cons(selectedStateEqn.clone(), eqs.clone());
+    eqs = metamodelica::cons(selectedStateEqn.clone(), eqs.clone());
     exp = Arc::new(DAE::Exp::CREF { componentRef: selectedResetRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() });
     expCond = Arc::new(DAE::Exp::CREF { componentRef: resetRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() });
     expThen = Arc::new(DAE::Exp::BCONST { bool: true });
     expElse = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("previous")).clone() }), expLst: list![Arc::new(DAE::Exp::CREF { componentRef: nextResetRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() })], attr: DAE::callAttrBuiltinImpureBool().clone() });
     rhs = Arc::new(DAE::Exp::IFEXP { expCond: expCond.clone(), expThen: expThen.clone(), expElse: expElse.clone() });
     selectedResetEqn = Arc::new(DAE::Element::EQUATION { exp: exp.clone(), scalar: rhs.clone(), source: DAE::emptyElementSource().clone() });
-    eqs = cons(selectedResetEqn.clone(), eqs.clone());
+    eqs = metamodelica::cons(selectedResetEqn.clone(), eqs.clone());
     exp = Arc::new(DAE::Exp::CREF { componentRef: firedRef.clone(), ty: DAE::T_INTEGER_DEFAULT().clone() });
     expLst = metamodelica::nil();
     for mut i in 1..=nTransitions.clone() {
@@ -1515,11 +1515,11 @@ fn basicFlatSmSemantics(mut ident: ArcStr, mut q: Arc<metamodelica::List<Arc<DAE
         expThen = Arc::new(DAE::Exp::CREF { componentRef: cRefs.clone().borrow()[(i.clone()-1) as usize].clone(), ty: DAE::T_BOOL_DEFAULT().clone() });
         expElse = Arc::new(DAE::Exp::BCONST { bool: false });
         expIf = Arc::new(DAE::Exp::IFEXP { expCond: expCond.clone(), expThen: expThen.clone(), expElse: expElse.clone() });
-        expLst = cons(Arc::new(DAE::Exp::IFEXP { expCond: expIf.clone(), expThen: Arc::new(DAE::Exp::ICONST { integer: i.clone() }), expElse: Arc::new(DAE::Exp::ICONST { integer: 0 }) }), expLst.clone());
+        expLst = metamodelica::cons(Arc::new(DAE::Exp::IFEXP { expCond: expIf.clone(), expThen: Arc::new(DAE::Exp::ICONST { integer: i.clone() }), expElse: Arc::new(DAE::Exp::ICONST { integer: 0 }) }), expLst.clone());
     }
     rhs = if ((expLst.clone().len() as i32) > 1) {Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("max")).clone() }), expLst: list![Expression::makeScalarArray(expLst.clone(), DAE::T_INTEGER_DEFAULT().clone())], attr: DAE::callAttrBuiltinInteger().clone() })} else {listHead(expLst.clone())?};
     firedEqn = Arc::new(DAE::Element::EQUATION { exp: exp.clone(), scalar: rhs.clone(), source: DAE::emptyElementSource().clone() });
-    eqs = cons(firedEqn.clone(), eqs.clone());
+    eqs = metamodelica::cons(firedEqn.clone(), eqs.clone());
     exp = Arc::new(DAE::Exp::CREF { componentRef: activeStateRef.clone(), ty: DAE::T_INTEGER_DEFAULT().clone() });
     expCond = Arc::new(DAE::Exp::CREF { componentRef: resetRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() });
     expThen = Arc::new(DAE::Exp::ICONST { integer: 1 });
@@ -1528,7 +1528,7 @@ fn basicFlatSmSemantics(mut ident: ArcStr, mut q: Arc<metamodelica::List<Arc<DAE
     expElse = Arc::new(DAE::Exp::IFEXP { expCond: exp1.clone(), expThen: exp2.clone(), expElse: Arc::new(DAE::Exp::CREF { componentRef: selectedStateRef.clone(), ty: DAE::T_INTEGER_DEFAULT().clone() }) });
     rhs = Arc::new(DAE::Exp::IFEXP { expCond: expCond.clone(), expThen: expThen.clone(), expElse: expElse.clone() });
     activeStateEqn = Arc::new(DAE::Element::EQUATION { exp: exp.clone(), scalar: rhs.clone(), source: DAE::emptyElementSource().clone() });
-    eqs = cons(activeStateEqn.clone(), eqs.clone());
+    eqs = metamodelica::cons(activeStateEqn.clone(), eqs.clone());
     exp = Arc::new(DAE::Exp::CREF { componentRef: activeResetRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() });
     expCond = Arc::new(DAE::Exp::CREF { componentRef: resetRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() });
     expThen = Arc::new(DAE::Exp::BCONST { bool: true });
@@ -1537,28 +1537,28 @@ fn basicFlatSmSemantics(mut ident: ArcStr, mut q: Arc<metamodelica::List<Arc<DAE
     expElse = Arc::new(DAE::Exp::IFEXP { expCond: exp1.clone(), expThen: exp2.clone(), expElse: Arc::new(DAE::Exp::CREF { componentRef: selectedResetRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() }) });
     rhs = Arc::new(DAE::Exp::IFEXP { expCond: expCond.clone(), expThen: expThen.clone(), expElse: expElse.clone() });
     activeResetEqn = Arc::new(DAE::Element::EQUATION { exp: exp.clone(), scalar: rhs.clone(), source: DAE::emptyElementSource().clone() });
-    eqs = cons(activeResetEqn.clone(), eqs.clone());
+    eqs = metamodelica::cons(activeResetEqn.clone(), eqs.clone());
     exp = Arc::new(DAE::Exp::CREF { componentRef: nextStateRef.clone(), ty: DAE::T_INTEGER_DEFAULT().clone() });
     expCond = Arc::new(DAE::Exp::CREF { componentRef: activeRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() });
     expThen = Arc::new(DAE::Exp::CREF { componentRef: activeStateRef.clone(), ty: DAE::T_INTEGER_DEFAULT().clone() });
     expElse = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("previous")).clone() }), expLst: list![Arc::new(DAE::Exp::CREF { componentRef: nextStateRef.clone(), ty: DAE::T_INTEGER_DEFAULT().clone() })], attr: DAE::callAttrBuiltinImpureInteger().clone() });
     rhs = Arc::new(DAE::Exp::IFEXP { expCond: expCond.clone(), expThen: expThen.clone(), expElse: expElse.clone() });
     nextStateEqn = Arc::new(DAE::Element::EQUATION { exp: exp.clone(), scalar: rhs.clone(), source: DAE::emptyElementSource().clone() });
-    eqs = cons(nextStateEqn.clone(), eqs.clone());
+    eqs = metamodelica::cons(nextStateEqn.clone(), eqs.clone());
     exp = Arc::new(DAE::Exp::CREF { componentRef: nextResetRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() });
     expCond = Arc::new(DAE::Exp::CREF { componentRef: activeRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() });
     expThen = Arc::new(DAE::Exp::BCONST { bool: false });
     expElse = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("previous")).clone() }), expLst: list![Arc::new(DAE::Exp::CREF { componentRef: nextResetRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() })], attr: DAE::callAttrBuiltinImpureBool().clone() });
     rhs = Arc::new(DAE::Exp::IFEXP { expCond: expCond.clone(), expThen: expThen.clone(), expElse: expElse.clone() });
     nextResetEqn = Arc::new(DAE::Element::EQUATION { exp: exp.clone(), scalar: rhs.clone(), source: DAE::emptyElementSource().clone() });
-    eqs = cons(nextResetEqn.clone(), eqs.clone());
+    eqs = metamodelica::cons(nextResetEqn.clone(), eqs.clone());
     for mut i in 1..=nStates.clone() {
         exp = Arc::new(DAE::Exp::CREF { componentRef: activeResetStatesRefs.clone().borrow()[(i.clone()-1) as usize].clone(), ty: DAE::T_BOOL_DEFAULT().clone() });
         expCond = Arc::new(DAE::Exp::CREF { componentRef: resetRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() });
         expThen = Arc::new(DAE::Exp::BCONST { bool: true });
         expElse = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("previous")).clone() }), expLst: list![Arc::new(DAE::Exp::CREF { componentRef: nextResetStatesRefs.clone().borrow()[(i.clone()-1) as usize].clone(), ty: DAE::T_BOOL_DEFAULT().clone() })], attr: DAE::callAttrBuiltinImpureBool().clone() });
         rhs = Arc::new(DAE::Exp::IFEXP { expCond: expCond.clone(), expThen: expThen.clone(), expElse: expElse.clone() });
-        eqs = cons(Arc::new(DAE::Element::EQUATION { exp: exp.clone(), scalar: rhs.clone(), source: DAE::emptyElementSource().clone() }), eqs.clone());
+        eqs = metamodelica::cons(Arc::new(DAE::Element::EQUATION { exp: exp.clone(), scalar: rhs.clone(), source: DAE::emptyElementSource().clone() }), eqs.clone());
     }
     for mut i in 1..=nStates.clone() {
         exp = Arc::new(DAE::Exp::CREF { componentRef: nextResetStatesRefs.clone().borrow()[(i.clone()-1) as usize].clone(), ty: DAE::T_BOOL_DEFAULT().clone() });
@@ -1567,22 +1567,22 @@ fn basicFlatSmSemantics(mut ident: ArcStr, mut q: Arc<metamodelica::List<Arc<DAE
         expThen = Arc::new(DAE::Exp::IFEXP { expCond: exp1.clone(), expThen: Arc::new(DAE::Exp::BCONST { bool: false }), expElse: Arc::new(DAE::Exp::CREF { componentRef: activeResetStatesRefs.clone().borrow()[(i.clone()-1) as usize].clone(), ty: DAE::T_BOOL_DEFAULT().clone() }) });
         expElse = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("previous")).clone() }), expLst: list![Arc::new(DAE::Exp::CREF { componentRef: nextResetStatesRefs.clone().borrow()[(i.clone()-1) as usize].clone(), ty: DAE::T_BOOL_DEFAULT().clone() })], attr: DAE::callAttrBuiltinImpureBool().clone() });
         rhs = Arc::new(DAE::Exp::IFEXP { expCond: expCond.clone(), expThen: expThen.clone(), expElse: expElse.clone() });
-        eqs = cons(Arc::new(DAE::Element::EQUATION { exp: exp.clone(), scalar: rhs.clone(), source: DAE::emptyElementSource().clone() }), eqs.clone());
+        eqs = metamodelica::cons(Arc::new(DAE::Element::EQUATION { exp: exp.clone(), scalar: rhs.clone(), source: DAE::emptyElementSource().clone() }), eqs.clone());
     }
     for mut i in 1..=nStates.clone() {
         exp = Arc::new(DAE::Exp::CREF { componentRef: finalStatesRefs.clone().borrow()[(i.clone()-1) as usize].clone(), ty: DAE::T_BOOL_DEFAULT().clone() });
         expLst = metamodelica::nil();
         for mut j in 1..=nTransitions.clone() {
             expCond = Arc::new(DAE::Exp::RELATION { exp1: Arc::new(DAE::Exp::CREF { componentRef: tFromRefs.clone().borrow()[(j.clone()-1) as usize].clone(), ty: DAE::T_INTEGER_DEFAULT().clone() }), operator: DAE::Operator::EQUAL { ty: DAE::T_INTEGER_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::ICONST { integer: i.clone() }), index: -1, optionExpisASUB: None });
-            expLst = cons(Arc::new(DAE::Exp::IFEXP { expCond: expCond.clone(), expThen: Arc::new(DAE::Exp::ICONST { integer: 1 }), expElse: Arc::new(DAE::Exp::ICONST { integer: 0 }) }), expLst.clone());
+            expLst = metamodelica::cons(Arc::new(DAE::Exp::IFEXP { expCond: expCond.clone(), expThen: Arc::new(DAE::Exp::ICONST { integer: 1 }), expElse: Arc::new(DAE::Exp::ICONST { integer: 0 }) }), expLst.clone());
         }
         exp1 = if ((expLst.clone().len() as i32) > 1) {Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("max")).clone() }), expLst: list![Expression::makeScalarArray(expLst.clone(), DAE::T_INTEGER_DEFAULT().clone())], attr: DAE::callAttrBuiltinInteger().clone() })} else {listHead(expLst.clone())?};
         rhs = Arc::new(DAE::Exp::RELATION { exp1: exp1.clone(), operator: DAE::Operator::EQUAL { ty: DAE::T_INTEGER_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::ICONST { integer: 0 }), index: -1, optionExpisASUB: None });
-        eqs = cons(Arc::new(DAE::Element::EQUATION { exp: exp.clone(), scalar: rhs.clone(), source: DAE::emptyElementSource().clone() }), eqs.clone());
+        eqs = metamodelica::cons(Arc::new(DAE::Element::EQUATION { exp: exp.clone(), scalar: rhs.clone(), source: DAE::emptyElementSource().clone() }), eqs.clone());
     }
     exp = Arc::new(DAE::Exp::CREF { componentRef: stateMachineInFinalStateRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() });
     rhs = Arc::new(DAE::Exp::CREF { componentRef: qCref((literal!("finalStates")).clone(), nStatesArrayBool.clone(), list![Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::CREF { componentRef: activeStateRef.clone(), ty: DAE::T_INTEGER_DEFAULT().clone() }) })], preRef.clone())?, ty: DAE::T_BOOL_DEFAULT().clone() });
-    eqs = cons(Arc::new(DAE::Element::EQUATION { exp: exp.clone(), scalar: rhs.clone(), source: DAE::emptyElementSource().clone() }), eqs.clone());
+    eqs = metamodelica::cons(Arc::new(DAE::Element::EQUATION { exp: exp.clone(), scalar: rhs.clone(), source: DAE::emptyElementSource().clone() }), eqs.clone());
     flatSmSemantics = FlatSmSemantics { ident: (ident.clone()).clone(), smComps: metamodelica::arrayFromVec(q.clone().into_iter().cloned().collect()), t: t.clone(), c: cExps.clone(), vars: vars.clone(), knowns: knowns.clone(), eqs: eqs.clone(), pvars: metamodelica::nil(), peqs: metamodelica::nil(), enclosingState: None };
     Ok(flatSmSemantics)
 }
@@ -1594,14 +1594,14 @@ fn qCref(mut ident: ArcStr, mut identType: Arc<DAE::Type>, mut subscriptLst: Arc
 }
 
 fn createVarWithDefaults(mut componentRef: Arc<DAE::ComponentRef>, mut kind: DAE::VarKind, mut ty: Arc<DAE::Type>, mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> Arc<DAE::Element> {
-    let mut var: Arc<DAE::Element>;
+    let mut var: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
     var = Arc::new(DAE::Element::VAR { componentRef: componentRef.clone(), kind: kind.clone(), direction: openmodelica_frontend_types::DAE::VarDirection::BIDIR, parallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, protection: openmodelica_frontend_types::DAE::VarVisibility::PUBLIC, ty: ty.clone(), binding: None, dims: dims.clone(), connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), source: DAE::emptyElementSource().clone(), variableAttributesOption: None, comment: None, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, encrypted: false });
     var
 }
 
 fn createVarWithStartValue(mut componentRef: Arc<DAE::ComponentRef>, mut kind: DAE::VarKind, mut ty: Arc<DAE::Type>, mut startExp: Arc<DAE::Exp>, mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> Result<Arc<DAE::Element>> {
-    let mut outVar: Arc<DAE::Element>;
-    let mut var: Arc<DAE::Element>;
+    let mut outVar: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut var: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
     var = Arc::new(DAE::Element::VAR { componentRef: componentRef.clone(), kind: kind.clone(), direction: openmodelica_frontend_types::DAE::VarDirection::BIDIR, parallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, protection: openmodelica_frontend_types::DAE::VarVisibility::PUBLIC, ty: ty.clone(), binding: None, dims: dims.clone(), connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), source: DAE::emptyElementSource().clone(), variableAttributesOption: None, comment: None, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, encrypted: false });
     outVar = setVarFixedStartValue(var.clone(), startExp.clone())?;
     Ok(outVar)
@@ -1618,7 +1618,7 @@ fn createTandC(mut inSMComps: Arc<metamodelica::List<Arc<DAE::Element>>>, mut in
 }
 
 fn extractCondtionFromTransition(mut trans: Transition) -> Result<Arc<DAE::Exp>> {
-    let mut condition: Arc<DAE::Exp>;
+    let mut condition: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let Transition { condition: __pa0, .. } = (trans.clone()) else { bail!("pattern mismatch") };
     condition = __pa0.clone();
     Ok(condition)
@@ -1642,7 +1642,7 @@ fn createTransition(mut transitionElem: Arc<DAE::Element>, mut states: Arc<metam
     let mut crefTo: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut from: i32 = 0;
     let mut to: i32 = 0;
-    let mut condition: Arc<DAE::Exp>;
+    let mut condition: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut immediate: bool = true;
     let mut reset: bool = true;
     let mut synchronize: bool = false;
@@ -1767,7 +1767,7 @@ pub fn dumpTransitionStr(mut transition: Transition) -> Result<ArcStr> {
     let mut transitionStr: ArcStr = arcstr::literal!("");
     let mut from: i32 = 0;
     let mut to: i32 = 0;
-    let mut condition: Arc<DAE::Exp>;
+    let mut condition: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut immediate: bool = false;
     let mut reset: bool = false;
     let mut synchronize: bool = false;
@@ -1788,10 +1788,10 @@ fn wrapHack(mut cache: FCore::Cache, mut inElementLst: Arc<metamodelica::List<Ar
     let mut outElementLst: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     let mut eqnLst: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     let mut otherLst: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-    let mut whenEq: Arc<DAE::Element>;
-    let mut cond1: Arc<DAE::Exp>;
-    let mut cond2: Arc<DAE::Exp>;
-    let mut condition: Arc<DAE::Exp>;
+    let mut whenEq: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
+    let mut cond1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut cond2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut condition: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut condLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut tArrayBool: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     cond1 = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("initial")).clone() }), expLst: metamodelica::nil(), attr: DAE::callAttrBuiltinImpureBool().clone() });
@@ -1800,7 +1800,7 @@ fn wrapHack(mut cache: FCore::Cache, mut inElementLst: Arc<metamodelica::List<Ar
     if Flags::getConfigBool(Flags::CT_STATE_MACHINES.clone())? {
         condLst = List::filterMap1(inElementLst.clone(), (std::sync::Arc::new(extractSmOfExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, ArcStr) -> Result<Arc<DAE::Exp>> + 'static>), (literal!("cImmediate")).clone());
         (eqnLst, otherLst) = List::extractOnTrue(inElementLst.clone(), (std::sync::Arc::new(isPreOrPreviousEquation) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<bool> + 'static>));
-        condition = Arc::new(DAE::Exp::ARRAY { ty: tArrayBool.clone(), scalar: true, array: cons(cond1.clone(), condLst.clone()) });
+        condition = Arc::new(DAE::Exp::ARRAY { ty: tArrayBool.clone(), scalar: true, array: metamodelica::cons(cond1.clone(), condLst.clone()) });
     } else {
         (eqnLst, otherLst) = List::extractOnTrue(inElementLst.clone(), (std::sync::Arc::new(fnptr!(isEquation, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<bool> + 'static>));
         condition = Arc::new(DAE::Exp::ARRAY { ty: tArrayBool.clone(), scalar: true, array: list![cond1.clone(), cond2.clone()] });
@@ -1811,7 +1811,7 @@ fn wrapHack(mut cache: FCore::Cache, mut inElementLst: Arc<metamodelica::List<Ar
 }
 
 fn extractSmOfExps(mut inElem: Arc<DAE::Element>, mut inLastIdent: ArcStr) -> Result<Arc<DAE::Exp>> {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     outExp = (::match_deref::match_deref! { match &(inElem.clone()) {
         Deref @ DAE::Element::EQUATION { exp, .. } => {
             let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -1834,7 +1834,7 @@ fn extractSmOfExps(mut inElem: Arc<DAE::Element>, mut inLastIdent: ArcStr) -> Re
 }
 
 fn traversingSubsPreForPrevious(mut inExp: Arc<DAE::Exp>, mut inHitCount: i32) -> (Arc<DAE::Exp>, i32) {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outHitCount: i32 = 0;
     (outExp, outHitCount) = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "previous" }, expLst, attr } => {
@@ -1849,7 +1849,7 @@ fn traversingSubsPreForPrevious(mut inExp: Arc<DAE::Exp>, mut inHitCount: i32) -
 }
 
 fn traversingSubsXForSampleX(mut inExp: Arc<DAE::Exp>, mut inHitCount: i32) -> (Arc<DAE::Exp>, i32) {
-    let mut outExp: Arc<DAE::Exp>;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outHitCount: i32 = 0;
     (outExp, outHitCount) = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::CALL { path: Deref @ Absyn::Path::IDENT { name: Deref @ "sample" }, expLst: Deref @ metamodelica::List::Cons { head: expX, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CLKCONST { clk: Deref @ DAE::ClockKind::INFERRED_CLOCK { .. } }, tail: Deref @ metamodelica::List::Nil } }, attr: _ } => {

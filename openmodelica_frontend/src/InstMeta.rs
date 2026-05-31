@@ -59,10 +59,10 @@ pub fn fixUniontype(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inSt
     let mut outType: Option<Arc<DAE::Type>> = None;
     outType = (::match_deref::match_deref! { match &((inState.clone(), inClassDef.clone())) {
         (ClassInf::State::META_UNIONTYPE { typeVars, .. }, Deref @ SCode::ClassDef::PARTS { .. }) => {
-            let mut p: Arc<Absyn::Path>;
-            let mut p2: Arc<Absyn::Path>;
-            let mut utPathOfRestriction: Arc<Absyn::Path>;
-            let mut utPath: Arc<Absyn::Path>;
+            let mut p: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+            let mut p2: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+            let mut utPathOfRestriction: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+            let mut utPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut isSingleton: bool = false;
             let mut singletonType: Arc<DAE::EvaluateSingletonType> = Arc::new(DAE::EvaluateSingletonType::NOT_SINGLETON);
             let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
@@ -94,7 +94,7 @@ pub fn fixUniontype(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inSt
             isSingleton = (paths.clone().len() as i32) == 1;
             if isSingleton.clone() {
                 p2 = (paths.clone()).get(1)?;
-                singletonType = Arc::new(DAE::EvaluateSingletonType::EVAL_SINGLETON_TYPE_FUNCTION { fun: Arc::new({ let __pe_b0 = arrayCreate(1, (cache.clone(), inEnv.clone(), p2.clone(), None)); move || fixUniontype2(__pe_b0.clone()) }) });
+                singletonType = Arc::new(DAE::EvaluateSingletonType::EVAL_SINGLETON_TYPE_FUNCTION { fun: (std::sync::Arc::new({ let __pe_b0 = arrayCreate(1, (cache.clone(), inEnv.clone(), p2.clone(), None)); move || fixUniontype2(__pe_b0.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn() -> Result<Arc<DAE::Type>> + 'static>) });
             } else {
                 singletonType = Arc::new(openmodelica_frontend_types::DAE::EvaluateSingletonType::NOT_SINGLETON);
             }
@@ -119,8 +119,8 @@ pub fn fixUniontype(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inSt
 fn fixUniontype2(mut arr: metamodelica::Array<(FCore::Cache, FCore::Graph, Arc<Absyn::Path>, Option<Arc<DAE::Type>>)>) -> Result<Arc<DAE::Type>> {
     let mut singletonType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut env: FCore::Graph;
-    let mut p: Arc<Absyn::Path>;
+    let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
+    let mut p: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut ot: Option<Arc<DAE::Type>> = None;
     (cache, env, p, ot) = arr.clone().borrow()[(1-1) as usize].clone();
     if isNone(ot.clone()) {

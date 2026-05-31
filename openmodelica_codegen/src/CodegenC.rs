@@ -9244,7 +9244,7 @@ fn lm_377(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<DAE::
             let mut l_step: Tpl::Text;
             let mut l_stop: Tpl::Text;
             let mut l_start: Tpl::Text;
-            let mut ret_1: Arc<DAE::Exp>;
+            let mut ret_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut l_iter: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_innerEqns = (*a_innerEqns).clone();
@@ -9314,7 +9314,7 @@ fn lm_379(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<DAE::
             (txt.clone(), a_innerEqns.clone(), a_varDecls.clone(), a_preExp.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: (i_cref, Deref @ DAE::Exp::RANGE { start: i_range_start, .. }), tail: rest }, a_innerEqns, a_varDecls, a_preExp) => {
-            let mut ret_1: Arc<DAE::Exp>;
+            let mut ret_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut l_start: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_innerEqns = (*a_innerEqns).clone();
@@ -9440,7 +9440,7 @@ fn lm_384(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<DAE::
             let mut l_step: Tpl::Text;
             let mut l_stop: Tpl::Text;
             let mut l_start: Tpl::Text;
-            let mut ret_1: Arc<DAE::Exp>;
+            let mut ret_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut l_iter: Tpl::Text;
             let mut txt = (*txt).clone();
             let mut a_innerEqns = (*a_innerEqns).clone();
@@ -14003,7 +14003,7 @@ fn fun_538(mut in_txt: Tpl::Text, mut in_mArg: Arc<SimCode::SimEqSystem>, mut in
             txt.clone()
         },
         (txt, _, a_modelNamePrefixStr, a_idx, a_derivativEquations) => {
-            let mut ret_1: Arc<SimCode::SimEqSystem>;
+            let mut ret_1: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
             let mut l_ix: Tpl::Text;
             let mut txt = (*txt).clone();
             ret_1 = HpcOmTaskGraph::getSimCodeEqByIndex(a_derivativEquations.clone(), a_idx.clone())?;
@@ -14026,7 +14026,7 @@ fn fun_539(mut in_txt: Tpl::Text, mut in_mArg: Arc<SimCode::SimEqSystem>, mut in
             txt.clone()
         },
         (txt, _, a_modelNamePrefixStr, a_idx, a_derivativEquations) => {
-            let mut ret_1: Arc<SimCode::SimEqSystem>;
+            let mut ret_1: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
             let mut l_ix: Tpl::Text;
             let mut txt = (*txt).clone();
             ret_1 = HpcOmTaskGraph::getSimCodeEqByIndex(a_derivativEquations.clone(), a_idx.clone())?;
@@ -14046,14 +14046,14 @@ fn fun_540(mut in_txt: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mu
     let mut out_txt: Tpl::Text;
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_context.clone(), in_a_idx.clone(), in_a_derivativEquations.clone(), in_a_modelNamePrefixStr.clone())) {
         (txt, SimCodeFunction::Context::SIMULATION_CONTEXT { genDiscrete: true }, a_idx, a_derivativEquations, a_modelNamePrefixStr) => {
-            let mut ret_0: Arc<SimCode::SimEqSystem>;
+            let mut ret_0: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
             let mut txt = (*txt).clone();
             ret_0 = HpcOmTaskGraph::getSimCodeEqByIndex(a_derivativEquations.clone(), a_idx.clone())?;
             txt = fun_538(txt.clone(), ret_0.clone(), (a_modelNamePrefixStr.clone()).clone(), a_idx.clone(), a_derivativEquations.clone())?;
             txt.clone()
         },
         (txt, _, a_idx, a_derivativEquations, a_modelNamePrefixStr) => {
-            let mut ret_1: Arc<SimCode::SimEqSystem>;
+            let mut ret_1: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
             let mut txt = (*txt).clone();
             ret_1 = HpcOmTaskGraph::getSimCodeEqByIndex(a_derivativEquations.clone(), a_idx.clone())?;
             txt = fun_539(txt.clone(), ret_1.clone(), (a_modelNamePrefixStr.clone()).clone(), a_idx.clone(), a_derivativEquations.clone())?;
@@ -19798,7 +19798,7 @@ pub fn equationForLoop(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSys
             let mut l_iterVar: Tpl::Text;
             let mut l_stop: Tpl::Text;
             let mut l_start: Tpl::Text;
-            let mut ret_3: Arc<DAE::Exp>;
+            let mut ret_3: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut l_crefPart: Tpl::Text;
             let mut l_expPart: Tpl::Text;
             let mut l_preExp: Tpl::Text;

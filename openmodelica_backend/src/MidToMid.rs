@@ -99,7 +99,7 @@ pub fn longJmpGoto(mut oldFunction: MidCode::Function) -> Result<MidCode::Functi
         oldBlock = lookupId(oldBody.clone(), node.clone())?;
         newBlock = oldBlock.clone();
         if isPushJmp(oldBlock.terminator.clone()) {
-            jumps = cons(listHead(getSuccessors(oldBlock.clone())?)?, jumps.clone());
+            jumps = metamodelica::cons(listHead(getSuccessors(oldBlock.clone())?)?, jumps.clone());
         } else if isLongJmp(oldBlock.terminator.clone()) && !(jumps.clone().is_empty()) {
             let __pa3 = ::match_deref::match_deref! { match &(jumps.clone()) {
                 Deref @ metamodelica::List::Cons { head: __pa3, tail: _ } => __pa3.clone(),
@@ -114,7 +114,7 @@ pub fn longJmpGoto(mut oldFunction: MidCode::Function) -> Result<MidCode::Functi
             } };
             jumps = __pa4.clone();
         }
-        newBody = cons(newBlock.clone(), newBody.clone());
+        newBody = metamodelica::cons(newBlock.clone(), newBody.clone());
         nodes_tmp = List::setDifference(getSuccessors(oldBlock.clone())?, checkedNodes.clone())?;
         checkedNodes = listAppend(nodes_tmp.clone(), checkedNodes.clone());
         tasks_tmp = ({

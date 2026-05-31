@@ -158,7 +158,7 @@ fn addHeading(mut stage: i32, mut text: ArcStr, mut inDoc: Document) -> Result<D
 
 fn addHeadingTag(mut stage: i32, mut text: ArcStr, mut inTags: Arc<metamodelica::List<Arc<Tag>>>) -> Arc<metamodelica::List<Arc<Tag>>> {
     let mut outTags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
-    outTags = cons(Arc::new(Tag::HEADING { stage: stage.clone(), text: (text.clone()).clone() }), inTags.clone());
+    outTags = metamodelica::cons(Arc::new(Tag::HEADING { stage: stage.clone(), text: (text.clone()).clone() }), inTags.clone());
     outTags
 }
 
@@ -170,13 +170,13 @@ fn addHyperLink(mut href: ArcStr, mut title: ArcStr, mut text: ArcStr, mut inDoc
 
 fn addHyperLinkTag(mut href: ArcStr, mut title: ArcStr, mut text: ArcStr, mut inTags: Arc<metamodelica::List<Arc<Tag>>>) -> Arc<metamodelica::List<Arc<Tag>>> {
     let mut outTags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
-    outTags = cons(Arc::new(Tag::HYPERLINK { href: (href.clone()).clone(), title: (title.clone()).clone(), text: (text.clone()).clone() }), inTags.clone());
+    outTags = metamodelica::cons(Arc::new(Tag::HYPERLINK { href: (href.clone()).clone(), title: (title.clone()).clone(), text: (text.clone()).clone() }), inTags.clone());
     outTags
 }
 
 fn addAnkerTag(mut name: ArcStr, mut inTags: Arc<metamodelica::List<Arc<Tag>>>) -> Arc<metamodelica::List<Arc<Tag>>> {
     let mut outTags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
-    outTags = cons(Arc::new(Tag::ANKER { name: (name.clone()).clone() }), inTags.clone());
+    outTags = metamodelica::cons(Arc::new(Tag::ANKER { name: (name.clone()).clone() }), inTags.clone());
     outTags
 }
 
@@ -188,7 +188,7 @@ fn addLine(mut text: ArcStr, mut inDoc: Document) -> Result<Document> {
 
 fn addLineTag(mut text: ArcStr, mut inTags: Arc<metamodelica::List<Arc<Tag>>>) -> Arc<metamodelica::List<Arc<Tag>>> {
     let mut outTags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
-    outTags = cons(Arc::new(Tag::LINE { text: (text.clone()).clone() }), inTags.clone());
+    outTags = metamodelica::cons(Arc::new(Tag::LINE { text: (text.clone()).clone() }), inTags.clone());
     outTags
 }
 
@@ -204,7 +204,7 @@ fn addDivisionTag(mut id: ArcStr, mut style: Arc<metamodelica::List<Style>>, mut
     let mut outTags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
     let mut t: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
     t = tags.clone().reverse();
-    outTags = cons(Arc::new(Tag::DIVISION { id: (id.clone()).clone(), style: style.clone(), tags: t.clone() }), inTags.clone());
+    outTags = metamodelica::cons(Arc::new(Tag::DIVISION { id: (id.clone()).clone(), style: style.clone(), tags: t.clone() }), inTags.clone());
     outTags
 }
 
@@ -250,7 +250,7 @@ fn addHeadTag(mut tag: Arc<Tag>, mut inDoc: Document) -> Result<Document> {
     body = __pa0.clone();
     head = __pa1.clone();
     docType = __pa2.clone();
-    outDoc = Document { docType: (docType.clone()).clone(), head: cons(tag.clone(), head.clone()), body: body.clone() };
+    outDoc = Document { docType: (docType.clone()).clone(), head: metamodelica::cons(tag.clone(), head.clone()), body: body.clone() };
     Ok(outDoc)
 }
 
@@ -263,7 +263,7 @@ fn addBodyTag(mut tag: Arc<Tag>, mut inDoc: Document) -> Result<Document> {
     body = __pa0.clone();
     head = __pa1.clone();
     docType = __pa2.clone();
-    outDoc = Document { docType: (docType.clone()).clone(), head: head.clone(), body: cons(tag.clone(), body.clone()) };
+    outDoc = Document { docType: (docType.clone()).clone(), head: head.clone(), body: metamodelica::cons(tag.clone(), body.clone()) };
     Ok(outDoc)
 }
 
@@ -350,7 +350,7 @@ pub fn dumpDAE(mut inDAE: Arc<BackendDAE::BackendDAE>, mut inHeader: ArcStr, mut
 }
 
 fn dumpEqSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inPrefixIdstr: ArcStr, mut inTpl: (Document, i32)) -> Result<(Document, i32)> {
-    let mut outTpl: (Document, i32);
+    let mut outTpl: (Document, i32) = (<Document as ::std::default::Default>::default(), 0);
     let mut vars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
     let mut i: i32 = 0;
     let mut varlen_str: ArcStr = arcstr::literal!("");
@@ -401,7 +401,7 @@ fn printVarList(mut vars: Arc<metamodelica::List<BackendDAE::Var>>, mut prefixId
 }
 
 fn dumpVar(mut inVar: BackendDAE::Var, mut prefixId: ArcStr, mut inTpl: (Arc<metamodelica::List<Arc<Tag>>>, i32)) -> Result<(Arc<metamodelica::List<Arc<Tag>>>, i32)> {
-    let mut oTpl: (Arc<metamodelica::List<Arc<Tag>>>, i32);
+    let mut oTpl: (Arc<metamodelica::List<Arc<Tag>>>, i32) = (metamodelica::nil(), 0);
     let mut tags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
     let mut i: i32 = 0;
     let mut ln: ArcStr = arcstr::literal!("");
@@ -426,7 +426,7 @@ fn dumpEqns(mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut pr
 }
 
 fn dumpEqn(mut inEquation: Arc<BackendDAE::Equation>, mut prefixId: ArcStr, mut inTpl: (Arc<metamodelica::List<Arc<Tag>>>, i32)) -> Result<(Arc<metamodelica::List<Arc<Tag>>>, i32)> {
-    let mut oTpl: (Arc<metamodelica::List<Arc<Tag>>>, i32);
+    let mut oTpl: (Arc<metamodelica::List<Arc<Tag>>>, i32) = (metamodelica::nil(), 0);
     let mut tags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
     let mut i: i32 = 0;
     let mut ln: ArcStr = arcstr::literal!("");
@@ -483,7 +483,7 @@ fn dumpMatching2(mut v: metamodelica::Array<i32>, mut i: i32, mut len: i32, mut 
         eqn = v.borrow()[(i.clone()-1) as usize].clone();
         s2 = (intString(eqn.clone())).clone();
         s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Variable <a href=\"#")); __mm_s.push_str(&*prefixId.clone()); __mm_s.push_str(&*literal!("varanker")); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*literal!("\" onclick=\"return show('")); __mm_s.push_str(&*prefixId.clone()); __mm_s.push_str(&*literal!("variables');\">")); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*literal!("</a> is solved in equation  <a href=\"#")); __mm_s.push_str(&*prefixId.clone()); __mm_s.push_str(&*literal!("eqanker")); __mm_s.push_str(&*s2.clone()); __mm_s.push_str(&*literal!("\" onclick=\"return show('")); __mm_s.push_str(&*prefixId.clone()); __mm_s.push_str(&*literal!("equations');\">")); __mm_s.push_str(&*s2.clone()); __mm_s.push_str(&*literal!("</a>")); ArcStr::from(__mm_s) }).clone();
-        outTags = dumpMatching2(v.clone(), i.clone() + 1, len.clone(), (prefixId.clone()).clone(), cons(Arc::new(Tag::LINE { text: (s.clone()).clone() }), inTags.clone()));
+        outTags = dumpMatching2(v.clone(), i.clone() + 1, len.clone(), (prefixId.clone()).clone(), metamodelica::cons(Arc::new(Tag::LINE { text: (s.clone()).clone() }), inTags.clone()));
         Ok::<_, anyhow::Error>((outTags.clone(),))
     } {
         Ok((__try0_o0,)) => {
@@ -510,36 +510,36 @@ pub fn dumpMatrixHTML(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, 
     let mut rowLabelScripts: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut colLabelScripts: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut doc: Document = <Document as ::std::default::Default>::default();
-    let mut canvas: Arc<Tag>;
+    let mut canvas: Arc<Tag> = Arc::new(<Tag as ::std::default::Default>::default());
     matrixMargin = 100;
     blockSize = 20;
     scripts = metamodelica::nil();
     rowLabelScripts = metamodelica::nil();
     colLabelScripts = metamodelica::nil();
-    scripts = cons((literal!("var ctx = document.querySelector('canvas').getContext('2d');\n")).clone(), scripts.clone());
-    scripts = cons((literal!("ctx.fillStyle = '#001D4B';\n")).clone(), scripts.clone());
-    scripts = cons((literal!("ctx.font=\"18px Arial\";\n\n")).clone(), scripts.clone());
-    scripts = cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("var blockSize = ")); __mm_s.push_str(&*intString(blockSize.clone())); __mm_s.push_str(&*literal!(";\n")); ArcStr::from(__mm_s) }).clone(), scripts.clone());
-    scripts = cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("var matrixMargin = ")); __mm_s.push_str(&*intString(matrixMargin.clone())); __mm_s.push_str(&*literal!(";\n\n")); ArcStr::from(__mm_s) }).clone(), scripts.clone());
-    scripts = cons((literal!("\nfunction drawRectangle(px, py, blockSize, margin, ctx) {\n   ctx.fillRect(((py-1)*blockSize) + matrixMargin,((px-1)*blockSize) + matrixMargin, blockSize, blockSize);\n   return ctx;\n     }\n\nfunction rowName(name, rowIdx, blockSize, margin, ctx) {\n   ctx.strokeText(name, 0, 18+margin+(rowIdx-1)*blockSize, margin);\n   return ctx;\n     }\n\nfunction colName(name, colIdx, blockSize, margin, ctx) {\n   ctx.strokeText(name, 0, 18+margin+(colIdx-1)*blockSize, margin);\n   return ctx;\n     }\n\nfunction makeLines(blockSize, margin,  n,  ctx) {\n     for (var x = 0; x < n+1; ++x) {\n     ctx.beginPath();\n     ctx.moveTo( x*blockSize + margin, margin);\n     ctx.lineTo( x*blockSize + margin, margin + (n)*blockSize);\n     ctx.stroke();\n     }\n\n\n    for (var x = 0; x < n+1; ++x) {\n     ctx.beginPath();\n     ctx.moveTo(margin, x*blockSize + margin);\n     ctx.lineTo(margin + (n)*blockSize, x*blockSize + margin);\n     ctx.stroke();\n    }\n\n  return ctx;\n  }\n  ")).clone(), scripts.clone());
+    scripts = metamodelica::cons((literal!("var ctx = document.querySelector('canvas').getContext('2d');\n")).clone(), scripts.clone());
+    scripts = metamodelica::cons((literal!("ctx.fillStyle = '#001D4B';\n")).clone(), scripts.clone());
+    scripts = metamodelica::cons((literal!("ctx.font=\"18px Arial\";\n\n")).clone(), scripts.clone());
+    scripts = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("var blockSize = ")); __mm_s.push_str(&*intString(blockSize.clone())); __mm_s.push_str(&*literal!(";\n")); ArcStr::from(__mm_s) }).clone(), scripts.clone());
+    scripts = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("var matrixMargin = ")); __mm_s.push_str(&*intString(matrixMargin.clone())); __mm_s.push_str(&*literal!(";\n\n")); ArcStr::from(__mm_s) }).clone(), scripts.clone());
+    scripts = metamodelica::cons((literal!("\nfunction drawRectangle(px, py, blockSize, margin, ctx) {\n   ctx.fillRect(((py-1)*blockSize) + matrixMargin,((px-1)*blockSize) + matrixMargin, blockSize, blockSize);\n   return ctx;\n     }\n\nfunction rowName(name, rowIdx, blockSize, margin, ctx) {\n   ctx.strokeText(name, 0, 18+margin+(rowIdx-1)*blockSize, margin);\n   return ctx;\n     }\n\nfunction colName(name, colIdx, blockSize, margin, ctx) {\n   ctx.strokeText(name, 0, 18+margin+(colIdx-1)*blockSize, margin);\n   return ctx;\n     }\n\nfunction makeLines(blockSize, margin,  n,  ctx) {\n     for (var x = 0; x < n+1; ++x) {\n     ctx.beginPath();\n     ctx.moveTo( x*blockSize + margin, margin);\n     ctx.lineTo( x*blockSize + margin, margin + (n)*blockSize);\n     ctx.stroke();\n     }\n\n\n    for (var x = 0; x < n+1; ++x) {\n     ctx.beginPath();\n     ctx.moveTo(margin, x*blockSize + margin);\n     ctx.lineTo(margin + (n)*blockSize, x*blockSize + margin);\n     ctx.stroke();\n    }\n\n  return ctx;\n  }\n  ")).clone(), scripts.clone());
     size = (m.clone().borrow().len() as i32);
     for mut rowIdx in 1..=size.clone() {
         row = m.clone().borrow()[(rowIdx.clone()-1) as usize].clone();
         rowLabelDraw = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ctx = rowName(\"eq_")); __mm_s.push_str(&*(rowNames.clone()).get(rowIdx.clone())?); __mm_s.push_str(&*literal!("\", ")); __mm_s.push_str(&*intString(rowIdx.clone())); __mm_s.push_str(&*literal!(", blockSize, matrixMargin, ctx);\n")); ArcStr::from(__mm_s) }).clone();
-        rowLabelScripts = cons((rowLabelDraw.clone()).clone(), rowLabelScripts.clone());
+        rowLabelScripts = metamodelica::cons((rowLabelDraw.clone()).clone(), rowLabelScripts.clone());
         colLabelDraw = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ctx = colName(\"var_")); __mm_s.push_str(&*(columNames.clone()).get(rowIdx.clone())?); __mm_s.push_str(&*literal!("\", ")); __mm_s.push_str(&*intString(rowIdx.clone())); __mm_s.push_str(&*literal!(", blockSize, matrixMargin, ctx);\n")); ArcStr::from(__mm_s) }).clone();
-        colLabelScripts = cons((colLabelDraw.clone()).clone(), colLabelScripts.clone());
+        colLabelScripts = metamodelica::cons((colLabelDraw.clone()).clone(), colLabelScripts.clone());
         for mut colIdx in &*row.clone() {
             let mut colIdx = colIdx.clone();
             if colIdx.clone() > 0 {
                 blockDraw = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ctx = drawRectangle(")); __mm_s.push_str(&*intString(rowIdx.clone())); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*intString(colIdx.clone())); __mm_s.push_str(&*literal!(",blockSize, matrixMargin,  ctx);\n")); ArcStr::from(__mm_s) }).clone();
-                scripts = cons((blockDraw.clone()).clone(), scripts.clone());
+                scripts = metamodelica::cons((blockDraw.clone()).clone(), scripts.clone());
             }
         }
     }
     scripts = listAppend(rowLabelScripts.clone(), scripts.clone());
-    scripts = cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n  ctx.textAlign = 'right';\n\n  ctx = makeLines(blockSize, matrixMargin, ")); __mm_s.push_str(&*intString(size.clone())); __mm_s.push_str(&*literal!(", ctx);\n")); ArcStr::from(__mm_s) }).clone(), scripts.clone());
-    scripts = cons((literal!("ctx.rotate(-Math.PI / 2);\n")).clone(), scripts.clone());
+    scripts = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n  ctx.textAlign = 'right';\n\n  ctx = makeLines(blockSize, matrixMargin, ")); __mm_s.push_str(&*intString(size.clone())); __mm_s.push_str(&*literal!(", ctx);\n")); ArcStr::from(__mm_s) }).clone(), scripts.clone());
+    scripts = metamodelica::cons((literal!("ctx.rotate(-Math.PI / 2);\n")).clone(), scripts.clone());
     scripts = listAppend(colLabelScripts.clone(), scripts.clone());
     doc = emptyDocumentWithToggleFunktion()?;
     canvas = Arc::new(Tag::CANVAS { attr: list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("width = \"")); __mm_s.push_str(&*intString(size.clone() * blockSize.clone() + matrixMargin.clone())); __mm_s.push_str(&*literal!("\"")); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" height = \"")); __mm_s.push_str(&*intString(size.clone() * blockSize.clone() + matrixMargin.clone())); __mm_s.push_str(&*literal!("\"")); ArcStr::from(__mm_s) }).clone()] });
