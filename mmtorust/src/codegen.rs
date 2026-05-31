@@ -11116,6 +11116,62 @@ fn canonicalize_call_funcs<'a>(
     }
 }
 
+/// Append trailing component-reference segments (a field-access chain like
+/// `.returnType`) onto an expression that has been spliced in for a formal
+/// parameter. The IR has no first-class field-access-on-expression node, so a
+/// `Var` base simply absorbs the segments into its own path. For an `If`/`Match`
+/// the access is distributed into every branch/case result — `(if c {A} else
+/// {B}).f` ≡ `if c {A.f} else {B.f}` — which is sound (only one branch runs) and
+/// keeps the access expressible through the `Var` path inside each branch. The
+/// resulting expression's static type is `ty` (the type of the whole access).
+/// Returns `None` when the base is some other shape (e.g. a bare `Call` result)
+/// that cannot absorb a field access in the current IR; the caller then emits
+/// the residual formal reference literally so the gap is visible at compile time.
+fn append_access_segments(base: &TypedExp, tail_segs: &[CrefSegment], ty: &Ty) -> Option<TypedExp> {
+    match base {
+        TypedExp::Var { name, segments, .. } => {
+            let mut joined = segments.clone();
+            joined.extend(tail_segs.iter().cloned());
+            Some(TypedExp::Var { name: name.clone(), segments: joined, ty: ty.clone() })
+        }
+        TypedExp::If { cond, then_, elseif, else_, .. } => {
+            let then_ = append_access_segments(then_, tail_segs, ty)?;
+            let mut new_elseif = Vec::with_capacity(elseif.len());
+            for (c, e) in elseif {
+                new_elseif.push((c.clone(), append_access_segments(e, tail_segs, ty)?));
+            }
+            let else_ = append_access_segments(else_, tail_segs, ty)?;
+            Some(TypedExp::If {
+                cond: cond.clone(),
+                then_: Box::new(then_),
+                elseif: new_elseif,
+                else_: Box::new(else_),
+                ty: ty.clone(),
+            })
+        }
+        TypedExp::Match { kind, input, cases, as_binding, .. } => {
+            let mut new_cases = Vec::with_capacity(cases.len());
+            for c in cases {
+                new_cases.push(typedexp::TypedCase {
+                    pattern: c.pattern.clone(),
+                    guard: c.guard.clone(),
+                    locals: c.locals.clone(),
+                    stmts: c.stmts.clone(),
+                    result: append_access_segments(&c.result, tail_segs, ty)?,
+                });
+            }
+            Some(TypedExp::Match {
+                kind: *kind,
+                input: input.clone(),
+                cases: new_cases,
+                ty: ty.clone(),
+                as_binding: as_binding.clone(),
+            })
+        }
+        _ => None,
+    }
+}
+
 /// Substitute references to formal parameter names in `exp` using concrete
 /// argument expressions already chosen for earlier slots.
 fn substitute_formal_refs(exp: &TypedExp, bindings: &HashMap<String, TypedExp>) -> TypedExp {
@@ -11177,10 +11233,13 @@ fn substitute_formal_refs(exp: &TypedExp, bindings: &HashMap<String, TypedExp>) 
                 if tail_segs.is_empty() {
                     return repl.clone();
                 }
-                if let TypedExp::Var { name: bname, segments: bsegments, ty: _bty } = repl {
-                    let mut joined: Vec<CrefSegment> = bsegments.clone();
-                    joined.append(&mut tail_segs);
-                    return TypedExp::Var { name: bname.clone(), segments: joined, ty: ty.clone() };
+                // Splice the trailing field-access segments onto the spliced-in
+                // actual. A `Var` actual absorbs them directly; an `If`/`Match`
+                // distributes them into its branches (see
+                // [`append_access_segments`]). Other shapes can't yet carry a
+                // field access, so fall through to literal emission.
+                if let Some(spliced) = append_access_segments(repl, &tail_segs, ty) {
+                    return spliced;
                 }
             }
             TypedExp::Var { name: name.clone(), segments: new_segments, ty: ty.clone() }
