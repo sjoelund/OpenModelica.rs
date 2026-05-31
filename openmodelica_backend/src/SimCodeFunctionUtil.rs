@@ -2107,7 +2107,16 @@ fn lookForExtFunctionLibrary(mut names: Arc<metamodelica::List<ArcStr>>, mut dir
                         } else {
                             Error::addSourceMessage(Error::COMPILER_NOTIFICATION.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Succeeded with compilation and installation of the library using:\ncommand: ")); __mm_s.push_str(&*cmd.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*contents.clone()); ArcStr::from(__mm_s) }).clone()], info.clone())?;
                             didFind = true;
-                            /* todo stmt: multi-iterator-for */
+                            for mut d in &*dirs2.clone() {
+                                let mut d = d.clone();
+                                for mut n in &*names.clone() {
+                                    let mut n = n.clone();
+                                    if !(System::regularFileExists(({ let mut __mm_s = String::new(); __mm_s.push_str(&*d.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*n.clone()); ArcStr::from(__mm_s) }).clone())) {
+                                        Error::addSourceMessage(Error::EXT_LIBRARY_NOT_FOUND_DESPITE_COMPILATION_SUCCESS.clone(), list![(n.clone()).clone(), (cmd.clone()).clone(), (System::pwd()).clone()], info.clone())?;
+                                        didFind = false;
+                                    }
+                                }
+                            }
                             if didFind.clone() {
                                 found = (listHead(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
