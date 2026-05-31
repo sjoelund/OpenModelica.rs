@@ -7813,6 +7813,40 @@ fn emit_parteval<'a>(
 /// value; we look that up via `resolve_call_formals` and synthesize a `fold`. If
 /// the lookup fails we emit a `todo!(...)` so the missing default is visible at
 /// compile time of the generated code.
+/// Collapse any `RustStruct(qname)` that actually names a *record of a
+/// multi-record uniontype* into `UnionTypeVariant(parent, variant)`, recursing
+/// through composite types. `lookup_ty_in_hierarchy` returns the per-variant
+/// `RustStruct` for such a record, but in Rust a variant is a value path
+/// (`Equation::WHEN_EQUATION`), never a type — only the parent enum is. So an
+/// *inferred* type that has no source annotation to override it (notably a
+/// list-comprehension accumulator's element type, derived from a constructor
+/// expression) must render as the enum, not the variant. `UnionTypeVariant`'s
+/// `fmt_ty` arm already collapses to the (Arc-wrapped) parent, so converting
+/// here fixes the rendering without disturbing the constructor expression's own
+/// value type (whose `RustStruct` identity downstream pattern/field code relies
+/// on).
+fn collapse_variant_structs(ty: &Ty, top_level: &BTreeMap<String, NameNode>) -> Ty {
+    match ty {
+        Ty::RustStruct(qname) => {
+            if let Some((parent, variant)) = qname.rsplit_once('.')
+                && let Some(pnode) = lookup_node(parent, top_level)
+                && matches!(pnode.ty, Ty::RustEnum(_))
+            {
+                Ty::UnionTypeVariant(parent.to_owned(), variant.to_owned())
+            } else {
+                ty.clone()
+            }
+        }
+        Ty::Option(i) => Ty::Option(Box::new(collapse_variant_structs(i, top_level))),
+        Ty::List(i) => Ty::List(Box::new(collapse_variant_structs(i, top_level))),
+        Ty::Array(i) => Ty::Array(Box::new(collapse_variant_structs(i, top_level))),
+        Ty::Range(i) => Ty::Range(Box::new(collapse_variant_structs(i, top_level))),
+        Ty::Tuple(ts) => Ty::Tuple(ts.iter().map(|t| collapse_variant_structs(t, top_level)).collect()),
+        Ty::Generic(n, args) => Ty::Generic(n.clone(), args.iter().map(|t| collapse_variant_structs(t, top_level)).collect()),
+        other => other.clone(),
+    }
+}
+
 fn emit_reduction<'a>(
     func: &str,
     body: &TypedExp,
@@ -7826,6 +7860,12 @@ fn emit_reduction<'a>(
     if iterators.is_empty() {
         return format!("todo!(\"empty-iterator reduction {func}\")");
     }
+    // The accumulator's element type is inferred from the body expression and
+    // has no source annotation; if the body constructs a uniontype variant the
+    // inferred element type is a `RustStruct(variant)`, which is not a valid
+    // type name. Collapse such variants to their parent enum before rendering.
+    let collapsed_ty = collapse_variant_structs(ty, top_level);
+    let ty = &collapsed_ty;
 
     // We lower reductions to a block expression containing one or more `for`
     // loops driving an accumulator. This is more efficient than an iterator
@@ -18850,13 +18890,15 @@ fn fmt_ty(ty: &Ty, ctx: &mut GenCtx) -> String {
             // element-type inference, `__acc` declarations, etc. see it); the
             // parent enum is what unifies with sibling variants of the same
             // uniontype.
-            let union_short = ctx.shorten(union_qname);
+            // Render exactly as the parent enum would in type position: this
+            // applies the `Mod::Enum` path doubling and `Arc<..>` recursive
+            // wrapping that the `RustEnum` arm performs. A bare `shorten` is not
+            // enough — for a uniontype declared inside a same-named module
+            // (`Equation` in `mod Equation`) it yields the module path
+            // `Equation`, not the enum `Equation::Equation` (E0573,
+            // "found module Equation").
             ctx.uniontype_imports.insert(union_qname.to_owned());
-            if ctx.recursive_types.contains(union_qname.as_str()) {
-                format!("Arc<{union_short}>")
-            } else {
-                union_short
-            }
+            fmt_ty(&Ty::RustEnum(union_qname.clone()), ctx)
         }
         Ty::Option(inner) => format!("Option<{}>", fmt_ty(inner, ctx)),
         Ty::List(inner) => format!("Arc<metamodelica::List<{}>>", fmt_ty(inner, ctx)),
