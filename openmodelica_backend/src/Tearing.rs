@@ -644,7 +644,7 @@ fn getDependenciesOfVars(mut iComps: Arc<metamodelica::List<Arc<metamodelica::Li
             let mut vars: Arc<metamodelica::List<i32>> = metamodelica::nil();
             vars = List::map1r(comp.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), ass2.clone());
             tvars = tVarsofEqns(comp.clone(), m.clone(), ass1.clone(), mT.clone(), visited.clone(), iMark.clone())?;
-            List::fold1r(vars.clone(), (std::sync::Arc::new(arrayUpdate) as std::sync::Arc<dyn ::std::ops::Fn(_, i32, _) -> Result<_> + 'static>), tvars.clone(), mT.clone());
+            List::fold1r(vars.clone(), Arc::new(arrayUpdate.clone()), tvars.clone(), mT.clone());
             getDependenciesOfVars(comps.clone(), ass1.clone(), ass2.clone(), m.clone(), mT.clone(), visited.clone(), iMark.clone() + 1)?
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -3844,7 +3844,7 @@ fn getUnassigned(mut ass: metamodelica::Array<i32>) -> Arc<metamodelica::List<i3
     let mut unassigned: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let __range0 = 1..=(ass.clone().borrow().len() as i32);
     for mut i in __range0 {
-        if Dangerous::arrayGet(ass.clone(), i.clone()).unwrap() < 0 {
+        if metamodelica::Dangerous::arrayGetNoBoundsChecking(ass.clone(), i.clone()) < 0 {
             unassigned = metamodelica::cons(i.clone(), unassigned.clone());
         }
     }

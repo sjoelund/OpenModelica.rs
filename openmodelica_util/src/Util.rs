@@ -297,7 +297,7 @@ pub fn stringContainsChar(mut r#str: ArcStr, mut char: ArcStr) -> Result<bool> {
     let mut ch: i32 = 0;
     ch = stringCharInt((char.clone()).clone())?;
     for mut i in 1..=((r#str.clone()).clone().len() as i32) {
-        if metamodelica::Dangerous::stringGet((r#str.clone()).clone(), i.clone())? == ch.clone() {
+        if metamodelica::Dangerous::stringGetNoBoundsChecking((r#str.clone()).clone(), i.clone())? == ch.clone() {
             res = true;
             return Ok(res.clone());
         }

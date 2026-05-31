@@ -1731,7 +1731,7 @@ pub fn transposeSparsePattern(mut inSparsePattern: Arc<metamodelica::List<Arc<me
         for mut oneElem in &*oneList.clone() {
             let mut oneElem = oneElem.clone();
             tmplist = outSparsePattern.clone().borrow()[(oneElem.clone()-1) as usize].clone();
-            metamodelica::Dangerous::arrayUpdate(outSparsePattern.clone(), oneElem.clone(), metamodelica::cons(value.clone(), tmplist.clone()))?;
+            metamodelica::Dangerous::arrayUpdateNoBoundsChecking(outSparsePattern.clone(), oneElem.clone(), metamodelica::cons(value.clone(), tmplist.clone()));
         }
         value = value.clone() + 1;
     }
@@ -1754,7 +1754,7 @@ pub fn transposeSparsePatternTuple(mut inSparsePattern: Arc<metamodelica::List<(
             (_, tmplist) = tmpTuple.clone();
             tmplist = metamodelica::cons(value.clone(), tmplist.clone());
             tmpTuple = (oneElem.clone(), tmplist.clone());
-            metamodelica::Dangerous::arrayUpdate(outSparsePattern.clone(), oneElem.clone() + 1, tmpTuple.clone())?;
+            metamodelica::Dangerous::arrayUpdateNoBoundsChecking(outSparsePattern.clone(), oneElem.clone() + 1, tmpTuple.clone());
         }
     }
     for mut i in 1..=(inSparsePattern.clone().len() as i32) {
@@ -1762,7 +1762,7 @@ pub fn transposeSparsePatternTuple(mut inSparsePattern: Arc<metamodelica::List<(
         (value, tmplist) = tmpTuple.clone();
         tmplist = List::heapSortIntList(tmplist.clone());
         tmpTuple = (value.clone(), tmplist.clone());
-        metamodelica::Dangerous::arrayUpdate(outSparsePattern.clone(), i.clone(), tmpTuple.clone())?;
+        metamodelica::Dangerous::arrayUpdateNoBoundsChecking(outSparsePattern.clone(), i.clone(), tmpTuple.clone());
     }
     Ok(outSparsePattern)
 }

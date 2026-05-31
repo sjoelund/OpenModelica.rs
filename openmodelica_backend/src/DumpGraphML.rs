@@ -531,7 +531,7 @@ fn addCompsGraph(mut iComps: Arc<metamodelica::List<Arc<BackendDAE::StrongCompon
             let mut varlst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
             let mut graphInfo = (*graphInfo).clone();
             (_, vlst) = BackendDAETransform::getEquationAndSolvedVarIndxes(comp.clone())?;
-            varcomp1 = List::fold1r(vlst.clone(), (std::sync::Arc::new(arrayUpdate) as std::sync::Arc<dyn ::std::ops::Fn(_, i32, _) -> Result<_> + 'static>), iN.clone(), varcomp.clone());
+            varcomp1 = List::fold1r(vlst.clone(), Arc::new(arrayUpdate.clone()), iN.clone(), varcomp.clone());
             varlst = List::map1r(vlst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), vars.clone());
             text = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(iN.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*stringDelimitList(List::mapMap(varlst.clone(), (std::sync::Arc::new(BackendVariable::varCref) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<Arc<DAE::ComponentRef>> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)), (literal!("\n")).clone())); ArcStr::from(__mm_s) }).clone();
             label = GraphML::NodeLabel::NODELABEL_INTERNAL { text: (text.clone()).clone(), backgroundColor: None, fontStyle: openmodelica_susan::GraphML::FontStyle::FONTPLAIN };
@@ -557,7 +557,7 @@ fn addCompsEdgesGraph(mut iComps: Arc<metamodelica::List<Arc<BackendDAE::StrongC
             let mut n: i32 = 0;
             let mut graph: GraphML::GraphInfo;
             (elst, vlst) = BackendDAETransform::getEquationAndSolvedVarIndxes(comp.clone())?;
-            List::fold1r(vlst.clone(), (std::sync::Arc::new(arrayUpdate) as std::sync::Arc<dyn ::std::ops::Fn(_, i32, _) -> Result<_> + 'static>), mark.clone(), markarray.clone());
+            List::fold1r(vlst.clone(), Arc::new(arrayUpdate.clone()), mark.clone(), markarray.clone());
             vlst = getUsedVarsComp(elst.clone(), m.clone(), markarray.clone(), mark.clone());
             (n, graph) = addCompEdgesGraph(vlst.clone(), varcomp.clone(), markarray.clone(), mark.clone() + 1, iN.clone(), id.clone(), iGraph.clone())?;
             addCompsEdgesGraph(rest.clone(), m.clone(), varcomp.clone(), iN.clone() + 1, n.clone(), markarray.clone(), mark.clone() + 2, graph.clone())?
@@ -574,7 +574,7 @@ fn getUsedVarsComp(mut iEqns: Arc<metamodelica::List<i32>>, mut m: metamodelica:
         let mut eq = eq.clone();
         vlst = List::select1(m.borrow()[(eq.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
         vlst = List::select1r(vlst.clone(), (std::sync::Arc::new(fnptr!(isUnMarked, (metamodelica::Array<i32>, i32), i32)) as std::sync::Arc<dyn ::std::ops::Fn((metamodelica::Array<i32>, i32), i32) -> Result<bool> + 'static>), (markarray.clone(), mark.clone()));
-        List::fold1r(vlst.clone(), (std::sync::Arc::new(arrayUpdate) as std::sync::Arc<dyn ::std::ops::Fn(_, i32, _) -> Result<_> + 'static>), mark.clone(), markarray.clone());
+        List::fold1r(vlst.clone(), Arc::new(arrayUpdate.clone()), mark.clone(), markarray.clone());
         oVars = listAppend(vlst.clone(), oVars.clone());
     }
     oVars

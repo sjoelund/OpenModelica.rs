@@ -168,7 +168,7 @@ pub fn remove<T: Clone + 'static>(mut key: T, mut set: Arc<UnorderedSet<T>>) -> 
     (bucket, okey) = List::deleteMemberOnTrue(key.clone(), bucket.clone(), eqfn.clone())?;
     removed = isSome(okey.clone());
     if removed.clone() {
-        {let _arr = buckets.clone(); _arr.borrow_mut()[(hash.clone() + 1-1) as usize] = bucket.clone(); _arr};
+        metamodelica::Dangerous::arrayUpdateNoBoundsChecking(buckets.clone(), hash.clone() + 1, bucket.clone());
         Mutable::update(set.size.clone(), Mutable::access(set.size.clone()) - 1);
     }
     Ok(removed)

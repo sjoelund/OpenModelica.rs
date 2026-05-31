@@ -431,8 +431,8 @@ fn checkOverloadedBinaryArrayAddSub2(mut exp1: Arc<Expression::NFExpression>, mu
                 arr = metamodelica::arrayCreateDefault((arr1.clone().borrow().len() as i32));
                 let __range1 = 1..=(arr1.clone().borrow().len() as i32);
                 for mut i in __range1 {
-                    e1 = arr1.clone().borrow()[(i.clone()-1) as usize].clone();
-                    e2 = arr2.clone().borrow()[(i.clone()-1) as usize].clone();
+                    e1 = metamodelica::Dangerous::arrayGetNoBoundsChecking(arr1.clone(), i.clone());
+                    e2 = metamodelica::Dangerous::arrayGetNoBoundsChecking(arr2.clone(), i.clone());
                     (e, ty) = checkOverloadedBinaryArrayAddSub2(e1.clone(), ty1.clone(), var1.clone(), op.clone(), e2.clone(), ty2.clone(), var2.clone(), candidates.clone(), context.clone(), info.clone())?;
                     unsafe { metamodelica::Dangerous::arrayInitSlot(arr.clone(), i.clone(), e.clone()) };
                 }
@@ -528,7 +528,7 @@ fn checkOverloadedBinaryScalarArray2(mut exp1: Arc<Expression::NFExpression>, mu
             arr = metamodelica::arrayCreate((var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone().borrow().len() as i32), exp2.clone());
             let __range0 = 1..=(arr.clone().borrow().len() as i32);
             for mut i in __range0 {
-                e2 = var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone().borrow()[(i.clone()-1) as usize].clone();
+                e2 = metamodelica::Dangerous::arrayGetNoBoundsChecking(var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone(), i.clone());
                 unsafe { metamodelica::Dangerous::arrayInitSlot(arr.clone(), i.clone(), (checkOverloadedBinaryScalarArray2(exp1.clone(), type1.clone(), var1.clone(), op.clone(), e2.clone(), ty.clone(), var2.clone(), candidates.clone(), context.clone(), info.clone())?).0) };
             }
             outType = Type::setArrayElementType(var_field!((*exp2).ty, Expression::NFExpression::ARRAY).clone(), Expression::typeOf(arr.borrow()[(1-1) as usize].clone()));
@@ -577,7 +577,7 @@ fn checkOverloadedBinaryArrayScalar2(mut exp1: Arc<Expression::NFExpression>, mu
             arr = metamodelica::arrayCreate((var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone().borrow().len() as i32), exp1.clone());
             let __range0 = 1..=(arr.clone().borrow().len() as i32);
             for mut i in __range0 {
-                e1 = var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone().borrow()[(i.clone()-1) as usize].clone();
+                e1 = metamodelica::Dangerous::arrayGetNoBoundsChecking(var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone(), i.clone());
                 unsafe { metamodelica::Dangerous::arrayInitSlot(arr.clone(), i.clone(), (checkOverloadedBinaryArrayScalar2(e1.clone(), ty.clone(), var1.clone(), op.clone(), exp2.clone(), type2.clone(), var2.clone(), candidates.clone(), context.clone(), info.clone())?).0) };
             }
             outType = Type::setArrayElementType(var_field!((*exp1).ty, Expression::NFExpression::ARRAY).clone(), Expression::typeOf(arr.borrow()[(1-1) as usize].clone()));
@@ -656,8 +656,8 @@ fn checkOverloadedBinaryArrayEW2(mut exp1: Arc<Expression::NFExpression>, mut ty
             }
             let __range1 = 1..=(expl1.clone().borrow().len() as i32);
             for mut i in __range1 {
-                e1 = expl1.clone().borrow()[(i.clone()-1) as usize].clone();
-                e2 = expl2.clone().borrow()[(i.clone()-1) as usize].clone();
+                e1 = metamodelica::Dangerous::arrayGetNoBoundsChecking(expl1.clone(), i.clone());
+                e2 = metamodelica::Dangerous::arrayGetNoBoundsChecking(expl2.clone(), i.clone());
                 (e1, ty) = checkOverloadedBinaryArrayEW2(e1.clone(), ty1.clone(), var1.clone(), op.clone(), e2.clone(), ty2.clone(), var2.clone(), candidates.clone(), context.clone(), info.clone())?;
                 expl = metamodelica::cons(e1.clone(), expl.clone());
             }

@@ -129,7 +129,7 @@ pub fn fromExp(mut exp: Arc<Expression::NFExpression>, mut source: Arc<DAE::Elem
         Deref @ Expression::ARRAY { .. } => {
             let __range0 = (1..=(var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone().borrow().len() as i32)).rev();
             for mut i in __range0 {
-                conns = fromExp(var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone().borrow()[(i.clone()-1) as usize].clone(), source.clone(), conns.clone())?;
+                conns = fromExp(metamodelica::Dangerous::arrayGetNoBoundsChecking(var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone(), i.clone()), source.clone(), conns.clone())?;
             }
             conns.clone()
         },

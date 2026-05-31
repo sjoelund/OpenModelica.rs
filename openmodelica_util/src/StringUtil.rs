@@ -87,7 +87,7 @@ pub fn findChar(mut inString: ArcStr, mut inChar: i32, mut inStartPos: i32, mut 
     start_pos = std::cmp::max(inStartPos.clone(), 1);
     end_pos = if (inEndPos.clone() > 0) {std::cmp::min(inEndPos.clone(), len.clone())} else {len.clone()};
     for mut i in start_pos.clone()..=end_pos.clone() {
-        if stringGet((inString.clone()).clone(),i.clone()).unwrap() == inChar.clone() {
+        if metamodelica::Dangerous::stringGetNoBoundsChecking((inString.clone()).clone(), i.clone()).unwrap() == inChar.clone() {
             outIndex = i.clone();
             break;
         }
@@ -103,7 +103,7 @@ pub fn rfindChar(mut inString: ArcStr, mut inChar: i32, mut inStartPos: i32, mut
     start_pos = if (inStartPos.clone() > 0) {std::cmp::min(inStartPos.clone(), len.clone())} else {len.clone()};
     end_pos = std::cmp::max(inEndPos.clone(), 1);
     for mut i in (end_pos.clone()..=start_pos.clone()).rev() {
-        if stringGet((inString.clone()).clone(),i.clone()).unwrap() == inChar.clone() {
+        if metamodelica::Dangerous::stringGetNoBoundsChecking((inString.clone()).clone(), i.clone()).unwrap() == inChar.clone() {
             outIndex = i.clone();
             break;
         }
@@ -119,7 +119,7 @@ pub fn findCharNot(mut inString: ArcStr, mut inChar: i32, mut inStartPos: i32, m
     start_pos = std::cmp::max(inStartPos.clone(), 1);
     end_pos = if (inEndPos.clone() > 0) {std::cmp::min(inEndPos.clone(), len.clone())} else {len.clone()};
     for mut i in start_pos.clone()..=end_pos.clone() {
-        if stringGet((inString.clone()).clone(),i.clone()).unwrap() != inChar.clone() {
+        if metamodelica::Dangerous::stringGetNoBoundsChecking((inString.clone()).clone(), i.clone()).unwrap() != inChar.clone() {
             outIndex = i.clone();
             break;
         }
@@ -135,7 +135,7 @@ pub fn rfindCharNot(mut inString: ArcStr, mut inChar: i32, mut inStartPos: i32, 
     start_pos = if (inStartPos.clone() > 0) {std::cmp::min(inStartPos.clone(), len.clone())} else {len.clone()};
     end_pos = std::cmp::max(inEndPos.clone(), 1);
     for mut i in (end_pos.clone()..=start_pos.clone()).rev() {
-        if stringGet((inString.clone()).clone(),i.clone()).unwrap() != inChar.clone() {
+        if metamodelica::Dangerous::stringGetNoBoundsChecking((inString.clone()).clone(), i.clone()).unwrap() != inChar.clone() {
             outIndex = i.clone();
             break;
         }
@@ -170,7 +170,7 @@ pub fn wordWrap(mut inString: ArcStr, mut inWrapLength: i32, mut inDelimiter: Ar
     for mut line in &*lines.clone() {
         let mut line = line.clone();
         while end_pos.clone() < ((line.clone()).clone().len() as i32) {
-            next_char = stringGet((line.clone()).clone(),end_pos.clone() + 1)?;
+            next_char = metamodelica::Dangerous::stringGetNoBoundsChecking((line.clone()).clone(), end_pos.clone() + 1)?;
             if next_char.clone() != CHAR_SPACE.clone() && next_char.clone() != CHAR_DASH.clone() {
                 pos = rfindChar((line.clone()).clone(), CHAR_SPACE.clone(), end_pos.clone(), end_pos.clone() - gap_size.clone());
                 if pos.clone() != NO_POS.clone() {
@@ -179,7 +179,7 @@ pub fn wordWrap(mut inString: ArcStr, mut inWrapLength: i32, mut inDelimiter: Ar
                 } else {
                     pos = rfindChar((line.clone()).clone(), CHAR_DASH.clone(), end_pos.clone(), start_pos.clone() + gap_size.clone());
                     if pos.clone() > 1 {
-                        char = stringGet((line.clone()).clone(),pos.clone() - 1)?;
+                        char = metamodelica::Dangerous::stringGetNoBoundsChecking((line.clone()).clone(), pos.clone() - 1)?;
                         pos = if (isAlpha(char.clone()) && isAlpha(next_char.clone())) {pos.clone()} else {NO_POS.clone()};
                     }
                     if pos.clone() != NO_POS.clone() {
@@ -231,11 +231,11 @@ pub fn equalIgnoreSpace(mut s1: ArcStr, mut s2: ArcStr) -> Result<bool> {
     let mut j: i32 = 1;
     b = true;
     for mut i in 1..=((s1.clone()).clone().len() as i32) {
-        if metamodelica::Dangerous::stringGet((s1.clone()).clone(), i.clone())? != stringCharInt((literal!(" ")).clone())? {
+        if metamodelica::Dangerous::stringGetNoBoundsChecking((s1.clone()).clone(), i.clone())? != stringCharInt((literal!(" ")).clone())? {
             b = false;
             for mut j2 in j.clone()..=((s2.clone()).clone().len() as i32) {
-                if metamodelica::Dangerous::stringGet((s2.clone()).clone(), j2.clone())? != stringCharInt((literal!(" ")).clone())? {
-                    if metamodelica::Dangerous::stringGet((s2.clone()).clone(), j2.clone())? != metamodelica::Dangerous::stringGet((s1.clone()).clone(), i.clone())? {
+                if metamodelica::Dangerous::stringGetNoBoundsChecking((s2.clone()).clone(), j2.clone())? != stringCharInt((literal!(" ")).clone())? {
+                    if metamodelica::Dangerous::stringGetNoBoundsChecking((s2.clone()).clone(), j2.clone())? != metamodelica::Dangerous::stringGetNoBoundsChecking((s1.clone()).clone(), i.clone())? {
                         return Ok(b.clone());
                     }
                     j = j2.clone() + 1;
@@ -249,7 +249,7 @@ pub fn equalIgnoreSpace(mut s1: ArcStr, mut s2: ArcStr) -> Result<bool> {
         }
     }
     for mut j2 in j.clone()..=((s2.clone()).clone().len() as i32) {
-        if metamodelica::Dangerous::stringGet((s2.clone()).clone(), j2.clone())? != stringCharInt((literal!(" ")).clone())? {
+        if metamodelica::Dangerous::stringGetNoBoundsChecking((s2.clone()).clone(), j2.clone())? != stringCharInt((literal!(" ")).clone())? {
             b = false;
             return Ok(b.clone());
         }
@@ -294,7 +294,7 @@ pub fn endsWith(mut r#str: ArcStr, mut suffix: ArcStr) -> bool {
 
 pub fn endsWithNewline(mut r#str: ArcStr) -> bool {
     let mut b: bool = false;
-    b = CHAR_NEWLINE.clone() == metamodelica::Dangerous::stringGet((r#str.clone()).clone(), ((r#str.clone()).clone().len() as i32)).unwrap();
+    b = CHAR_NEWLINE.clone() == metamodelica::Dangerous::stringGetNoBoundsChecking((r#str.clone()).clone(), ((r#str.clone()).clone().len() as i32)).unwrap();
     b
 }
 

@@ -244,7 +244,7 @@ pub mod ConnectionSets {
         entries = UnorderedMap::toArray(sets.elements.clone());
         let __range1 = (1..=(entries.clone().borrow().len() as i32)).rev();
         for mut i in __range1 {
-            (e, idx) = entries.clone().borrow()[(i.clone()-1) as usize].clone();
+            (e, idx) = metamodelica::Dangerous::arrayGetNoBoundsChecking(entries.clone(), i.clone());
             set_idx = nodes.borrow()[(idx.clone()-1) as usize].clone();
             while set_idx.clone() > 0 {
                 set_idx = nodes.borrow()[(set_idx.clone()-1) as usize].clone();

@@ -176,7 +176,7 @@ pub fn complement(mut mi1: Arc<SBMultiInterval>, mut mi2: Arc<SBMultiInterval>) 
     diffs = metamodelica::arrayCreate(mi1_size.clone(), dummys.clone());
     for mut i in 1..=mi1_size.clone() {
         {
-            let __cell0 = SBInterval::complement(mi1.intervals.clone().borrow()[(i.clone()-1) as usize].clone(), tmp_mi.intervals.clone().borrow()[(i.clone()-1) as usize].clone())?;
+            let __cell0 = SBInterval::complement(metamodelica::Dangerous::arrayGetNoBoundsChecking(mi1.intervals.clone(), i.clone()), tmp_mi.intervals.clone().borrow()[(i.clone()-1) as usize].clone())?;
             unsafe { metamodelica::Dangerous::arrayInitSlot(diffs.clone().clone(), i.clone(), __cell0); }
         }
     }

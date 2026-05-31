@@ -2202,7 +2202,7 @@ fn shortenPaths(mut allPartitions: Arc<metamodelica::List<Arc<metamodelica::List
                 (_, m, mT) = unwrap_break_err!(BackendDAEUtil::getAdjacencyMatrix(eqSys.clone(), crate::BackendDAE::IndexType::SOLVABLE, None, isInitial.clone()), '__try0);
                 let __range1 = 1..=(mT.clone().borrow().len() as i32);
                 for mut idx in __range1 {
-                    adjEqs = unwrap_break_err!(metamodelica::Dangerous::arrayGet(mT.clone(), idx.clone()), '__try0);
+                    adjEqs = metamodelica::Dangerous::arrayGetNoBoundsChecking(mT.clone(), idx.clone());
                     if (adjEqs.clone().len() as i32) == 2 {
                         adjEqs = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();

@@ -1118,7 +1118,7 @@ pub fn transposeList<T: Clone + 'static>(mut inList: Arc<metamodelica::List<Arc<
     for mut i in (1..=r_len.clone()).rev() {
         new_row = metamodelica::nil();
         for mut j in (1..=c_len.clone()).rev() {
-            new_row = metamodelica::cons(arr.clone().borrow()[(j.clone()-1) as usize].clone().borrow()[(i.clone()-1) as usize].clone(), new_row.clone());
+            new_row = metamodelica::cons(metamodelica::Dangerous::arrayGetNoBoundsChecking(arr.clone().borrow()[(j.clone()-1) as usize].clone(), i.clone()), new_row.clone());
         }
         outList = metamodelica::cons(new_row.clone(), outList.clone());
     }

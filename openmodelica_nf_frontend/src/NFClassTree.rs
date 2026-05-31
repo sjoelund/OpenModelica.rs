@@ -708,7 +708,7 @@ pub mod ClassTree {
     pub fn flattenElements(mut elements: metamodelica::Array<Mutable::Mutable<Arc<InstNode::InstNode>>>, mut flatElements: metamodelica::Array<Arc<InstNode::InstNode>>) -> () {
         let __range0 = 1..=(elements.clone().borrow().len() as i32);
         for mut i in __range0 {
-            {let _arr = flatElements.clone(); let _val = Mutable::access(elements.clone().borrow()[(i.clone()-1) as usize].clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+            metamodelica::Dangerous::arrayUpdateNoBoundsChecking(flatElements.clone(), i.clone(), Mutable::access(metamodelica::Dangerous::arrayGetNoBoundsChecking(elements.clone(), i.clone())));
         }
         ()
     }
@@ -717,9 +717,9 @@ pub mod ClassTree {
         let mut offset: i32 = 0;
         let __range0 = 1..=(elements.clone().borrow().len() as i32);
         for mut i in __range0 {
-            offset = offsets.clone().borrow()[(i.clone()-1) as usize].clone();
+            offset = metamodelica::Dangerous::arrayGetNoBoundsChecking(offsets.clone(), i.clone());
             if offset.clone() >= 0 {
-                {let _arr = flatElements.clone(); let _val = Mutable::access(elements.clone().borrow()[(i.clone()-1) as usize].clone()); _arr.borrow_mut()[(i.clone() - offset.clone()-1) as usize] = _val; _arr};
+                metamodelica::Dangerous::arrayUpdateNoBoundsChecking(flatElements.clone(), i.clone() - offset.clone(), Mutable::access(metamodelica::Dangerous::arrayGetNoBoundsChecking(elements.clone(), i.clone())));
             }
         }
         ()
@@ -767,7 +767,7 @@ pub mod ClassTree {
     pub fn flattenLookupTree2(mut key: ArcStr, mut entry: Arc<LookupTree::Entry::Entry>, mut offsets: metamodelica::Array<i32>) -> Arc<LookupTree::Entry::Entry> {
         let mut outEntry: Arc<LookupTree::Entry::Entry> = Arc::new(<LookupTree::Entry::Entry as ::std::default::Default>::default());
         outEntry = (::match_deref::match_deref! { match &(entry.clone()) {
-        Deref @ LookupTree::Entry::COMPONENT { .. } => Arc::new(LookupTree::Entry::Entry::COMPONENT { index: var_field!((*entry).index, LookupTree::Entry::Entry::COMPONENT).clone() - offsets.clone().borrow()[(var_field!((*entry).index, LookupTree::Entry::Entry::COMPONENT).clone()-1) as usize].clone() }),
+        Deref @ LookupTree::Entry::COMPONENT { .. } => Arc::new(LookupTree::Entry::Entry::COMPONENT { index: var_field!((*entry).index, LookupTree::Entry::Entry::COMPONENT).clone() - metamodelica::Dangerous::arrayGetNoBoundsChecking(offsets.clone(), var_field!((*entry).index, LookupTree::Entry::Entry::COMPONENT).clone()) }),
         _ => entry.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -837,7 +837,7 @@ pub mod ClassTree {
         let mut clss: metamodelica::Array<Arc<InstNode::InstNode>> = getClasses(tree.clone()).unwrap();
         let __range0 = 1..=(clss.clone().borrow().len() as i32);
         for mut i in __range0 {
-            {let _arr = clss.clone(); let _val = func(clss.clone().borrow()[(i.clone()-1) as usize].clone()).unwrap(); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+            metamodelica::Dangerous::arrayUpdateNoBoundsChecking(clss.clone(), i.clone(), func(metamodelica::Dangerous::arrayGetNoBoundsChecking(clss.clone(), i.clone())).unwrap());
         }
         ()
     }
@@ -871,7 +871,7 @@ pub mod ClassTree {
         let mut exts: metamodelica::Array<Arc<InstNode::InstNode>> = getExtends(tree.clone());
         let __range0 = 1..=(exts.clone().borrow().len() as i32);
         for mut i in __range0 {
-            {let _arr = exts.clone(); let _val = func(exts.clone().borrow()[(i.clone()-1) as usize].clone()).unwrap(); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+            metamodelica::Dangerous::arrayUpdateNoBoundsChecking(exts.clone(), i.clone(), func(metamodelica::Dangerous::arrayGetNoBoundsChecking(exts.clone(), i.clone())).unwrap());
         }
         ()
     }
@@ -896,8 +896,8 @@ pub mod ClassTree {
         let mut ext: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
         let __range0 = 1..=(exts.clone().borrow().len() as i32);
         for mut i in __range0 {
-            (ext, arg) = func(exts.clone().borrow()[(i.clone()-1) as usize].clone(), arg.clone()).unwrap();
-            {let _arr = exts.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = ext.clone(); _arr};
+            (ext, arg) = func(metamodelica::Dangerous::arrayGetNoBoundsChecking(exts.clone(), i.clone()), arg.clone()).unwrap();
+            metamodelica::Dangerous::arrayUpdateNoBoundsChecking(exts.clone(), i.clone(), ext.clone());
         }
         arg
     }
@@ -909,7 +909,7 @@ pub mod ClassTree {
         Deref @ INSTANTIATED_TREE { .. } => {
             for mut i in &*var_field!((*tree).localComponents, ClassTree::INSTANTIATED_TREE).clone() {
                 let mut i = i.clone();
-                func(Mutable::access(var_field!((*tree).components, ClassTree::INSTANTIATED_TREE).clone().borrow()[(i.clone()-1) as usize].clone()))?;
+                func(Mutable::access(metamodelica::Dangerous::arrayGetNoBoundsChecking(var_field!((*tree).components, ClassTree::INSTANTIATED_TREE).clone(), i.clone())))?;
             }
             ()
         },

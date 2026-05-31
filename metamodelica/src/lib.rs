@@ -1746,7 +1746,12 @@ pub mod Dangerous {
         arrayFromVec(v)
     }
     /// Unsafe string get without bounds checking.
-    pub fn stringGetNoBoundsChecking(str: String, index: i32) -> Result<i32> {
+    ///
+    /// Mirrors `stringGet`'s `ArcStr` parameter (MetaModelica `String` values
+    /// are `ArcStr` in the translation); `ArcStr` derefs to `str` so
+    /// `as_bytes()` works directly. Returns `Result` for signature parity with
+    /// `stringGet`, though the unchecked read never returns `Err`.
+    pub fn stringGetNoBoundsChecking(str: ArcStr, index: i32) -> Result<i32> {
         let idx = (index - 1) as usize; // 1-based to 0-based
         // SAFETY: Caller must ensure index is in bounds.
         unsafe { Ok((*str.as_bytes().get_unchecked(idx)) as i32) }
@@ -2853,7 +2858,7 @@ mod tests {
 
         #[test]
         fn test_string_get_no_bounds_checking() {
-            let s = "hello".to_string();
+            let s = arcstr::literal!("hello");
             assert_eq!(stringGetNoBoundsChecking(s.clone(), 1).unwrap(), b'h' as i32);
             assert_eq!(stringGetNoBoundsChecking(s, 5).unwrap(), b'o' as i32);
         }

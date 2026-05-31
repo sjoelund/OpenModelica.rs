@@ -88,9 +88,9 @@ pub fn clear<T: Clone + 'static>(mut exarray: Arc<ExpandableArray<T>>) -> Arc<Ex
     Mutable::update(exarray.numberOfElements.clone(), 0);
     Mutable::update(exarray.lastUsedIndex.clone(), 0);
     for mut i in 1..=lastUsedIndex.clone() {
-        if isSome(Dangerous::arrayGet(data.clone(), i.clone()).unwrap()) {
+        if isSome(metamodelica::Dangerous::arrayGetNoBoundsChecking(data.clone(), i.clone())) {
             n = n.clone() - 1;
-            Dangerous::arrayUpdate(data.clone(), i.clone(), None).unwrap();
+            metamodelica::Dangerous::arrayUpdateNoBoundsChecking(data.clone(), i.clone(), None);
             if n.clone() == 0 {
                 return exarray.clone();
             }
@@ -115,7 +115,7 @@ pub fn occupied<T: Clone + 'static>(mut index: i32, mut exarray: Arc<ExpandableA
     let mut b: bool = false;
     let mut lastUsedIndex: i32 = Mutable::access(exarray.lastUsedIndex.clone());
     let mut data: metamodelica::Array<Option<T>> = Mutable::access(exarray.data.clone());
-    b = index.clone() >= 1 && index.clone() <= lastUsedIndex.clone() && isSome(Dangerous::arrayGet(data.clone(), index.clone()).unwrap());
+    b = index.clone() >= 1 && index.clone() <= lastUsedIndex.clone() && isSome(metamodelica::Dangerous::arrayGetNoBoundsChecking(data.clone(), index.clone()));
     b
 }
 
@@ -123,7 +123,7 @@ pub fn get<T: Clone + 'static>(mut index: i32, mut exarray: Arc<ExpandableArray<
     let mut value: T;
     let mut data: metamodelica::Array<Option<T>> = Mutable::access(exarray.data.clone());
     let true = (index.clone() >= 1 && index.clone() <= Mutable::access(exarray.lastUsedIndex.clone())) else { bail!("pattern mismatch") };
-    let __pa0 = ::match_deref::match_deref! { match &(Dangerous::arrayGet(data.clone(), index.clone())?) {
+    let __pa0 = ::match_deref::match_deref! { match &(metamodelica::Dangerous::arrayGetNoBoundsChecking(data.clone(), index.clone())) {
         Some(__pa0) => __pa0.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -149,7 +149,7 @@ pub fn set<T: Clone + 'static>(mut index: i32, mut value: T, mut exarray: Arc<Ex
     let mut lastUsedIndex: i32 = Mutable::access(exarray.lastUsedIndex.clone());
     let mut capacity: i32 = Mutable::access(exarray.capacity.clone());
     let mut data: metamodelica::Array<Option<T>> = Mutable::access(exarray.data.clone());
-    if index.clone() > 0 && (index.clone() > capacity.clone() || isNone(Dangerous::arrayGet(data.clone(), index.clone())?)) {
+    if index.clone() > 0 && (index.clone() > capacity.clone() || isNone(metamodelica::Dangerous::arrayGetNoBoundsChecking(data.clone(), index.clone()))) {
         if index.clone() > capacity.clone() {
             capacity = std::cmp::max(capacity.clone(), 1);
             while index.clone() > capacity.clone() {
@@ -183,12 +183,12 @@ pub fn delete<T: Clone + 'static>(mut index: i32, mut exarray: Arc<ExpandableArr
     let mut numberOfElements: i32 = Mutable::access(exarray.numberOfElements.clone());
     let mut lastUsedIndex: i32 = Mutable::access(exarray.lastUsedIndex.clone());
     let mut data: metamodelica::Array<Option<T>> = Mutable::access(exarray.data.clone());
-    if index.clone() >= 1 && index.clone() <= lastUsedIndex.clone() && isSome(Dangerous::arrayGet(data.clone(), index.clone())?) {
+    if index.clone() >= 1 && index.clone() <= lastUsedIndex.clone() && isSome(metamodelica::Dangerous::arrayGetNoBoundsChecking(data.clone(), index.clone())) {
         {let _arr = data.clone(); _arr.borrow_mut()[(index.clone()-1) as usize] = None; _arr};
         Mutable::update(exarray.numberOfElements.clone(), numberOfElements.clone() - 1);
         if index.clone() == lastUsedIndex.clone() {
             lastUsedIndex = lastUsedIndex.clone() - 1;
-            while lastUsedIndex.clone() > 0 && isNone(Dangerous::arrayGet(data.clone(), lastUsedIndex.clone())?) {
+            while lastUsedIndex.clone() > 0 && isNone(metamodelica::Dangerous::arrayGetNoBoundsChecking(data.clone(), lastUsedIndex.clone())) {
                 lastUsedIndex = lastUsedIndex.clone() - 1;
             }
             Mutable::update(exarray.lastUsedIndex.clone(), lastUsedIndex.clone());
@@ -203,7 +203,7 @@ pub fn update<T: Clone + 'static>(mut index: i32, mut value: T, mut exarray: Arc
     let mut exarray: Arc<ExpandableArray<T>> = exarray;
     let mut lastUsedIndex: i32 = Mutable::access(exarray.lastUsedIndex.clone());
     let mut data: metamodelica::Array<Option<T>> = Mutable::access(exarray.data.clone());
-    if index.clone() >= 1 && index.clone() <= lastUsedIndex.clone() && isSome(Dangerous::arrayGet(data.clone(), index.clone())?) {
+    if index.clone() >= 1 && index.clone() <= lastUsedIndex.clone() && isSome(metamodelica::Dangerous::arrayGetNoBoundsChecking(data.clone(), index.clone())) {
         {let _arr = data.clone(); _arr.borrow_mut()[(index.clone()-1) as usize] = Some(value.clone()); _arr};
     } else {
         bail!("fail");
@@ -242,11 +242,11 @@ pub fn compress<T: Clone + 'static>(mut exarray: Arc<ExpandableArray<T>>) -> Arc
     let mut i: i32 = 0;
     while lastUsedIndex.clone() > numberOfElements.clone() {
         i = i.clone() + 1;
-        if isNone(Dangerous::arrayGet(data.clone(), i.clone()).unwrap()) {
-            Dangerous::arrayUpdate(data.clone(), i.clone(), Dangerous::arrayGet(data.clone(), lastUsedIndex.clone()).unwrap()).unwrap();
-            Dangerous::arrayUpdate(data.clone(), lastUsedIndex.clone(), None).unwrap();
+        if isNone(metamodelica::Dangerous::arrayGetNoBoundsChecking(data.clone(), i.clone())) {
+            metamodelica::Dangerous::arrayUpdateNoBoundsChecking(data.clone(), i.clone(), metamodelica::Dangerous::arrayGetNoBoundsChecking(data.clone(), lastUsedIndex.clone()));
+            metamodelica::Dangerous::arrayUpdateNoBoundsChecking(data.clone(), lastUsedIndex.clone(), None);
             lastUsedIndex = lastUsedIndex.clone() - 1;
-            while isNone(Dangerous::arrayGet(data.clone(), lastUsedIndex.clone()).unwrap()) {
+            while isNone(metamodelica::Dangerous::arrayGetNoBoundsChecking(data.clone(), lastUsedIndex.clone())) {
                 lastUsedIndex = lastUsedIndex.clone() - 1;
             }
         }
@@ -262,9 +262,9 @@ pub fn shrink<T: Clone + 'static>(mut exarray: Arc<ExpandableArray<T>>) -> Arc<E
     let mut newData: metamodelica::Array<Option<T>> = Default::default();
     exarray = compress(exarray.clone());
     Mutable::update(exarray.capacity.clone(), numberOfElements.clone());
-    newData = metamodelica::arrayCreate(numberOfElements.clone(), Dangerous::arrayGet(data.clone(), 1).unwrap());
+    newData = metamodelica::arrayCreate(numberOfElements.clone(), metamodelica::Dangerous::arrayGetNoBoundsChecking(data.clone(), 1));
     for mut i in 1..=numberOfElements.clone() {
-        Dangerous::arrayUpdate(newData.clone(), i.clone(), Dangerous::arrayGet(data.clone(), i.clone()).unwrap()).unwrap();
+        unsafe { metamodelica::Dangerous::arrayInitSlot(newData.clone(), i.clone(), metamodelica::Dangerous::arrayGetNoBoundsChecking(data.clone(), i.clone())) };
     }
     Mutable::update(exarray.data.clone(), newData.clone());
     exarray
@@ -288,8 +288,8 @@ pub fn toString<T: Clone + 'static>(mut exarray: Arc<ExpandableArray<T>>, mut he
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("<empty>\n")); ArcStr::from(__mm_s) }).clone();
     } else {
         for mut i in 1..=capacity.clone() {
-            if isSome(Dangerous::arrayGet(data.clone(), i.clone())?) {
-                let __pa0 = ::match_deref::match_deref! { match &(Dangerous::arrayGet(data.clone(), i.clone())?) {
+            if isSome(metamodelica::Dangerous::arrayGetNoBoundsChecking(data.clone(), i.clone())) {
+                let __pa0 = ::match_deref::match_deref! { match &(metamodelica::Dangerous::arrayGetNoBoundsChecking(data.clone(), i.clone())) {
                     Some(__pa0) => __pa0.clone(),
                     _ => bail!("pattern mismatch"),
                 } };

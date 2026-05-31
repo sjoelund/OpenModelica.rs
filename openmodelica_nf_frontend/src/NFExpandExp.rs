@@ -150,12 +150,12 @@ pub fn expandArray(mut arr: metamodelica::Array<Arc<Expression::NFExpression>>) 
     outArray = metamodelica::arrayFromVec(arr.clone().borrow().clone());
     let __range0 = 1..=(outArray.clone().borrow().len() as i32);
     for mut i in __range0 {
-        (e, res) = expand(outArray.clone().borrow()[(i.clone()-1) as usize].clone(), false, false)?;
+        (e, res) = expand(metamodelica::Dangerous::arrayGetNoBoundsChecking(outArray.clone(), i.clone()), false, false)?;
         if !(res.clone()) {
             expanded = false;
             return Ok((outArray.clone(), expanded.clone()));
         }
-        {let _arr = outArray.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = e.clone(); _arr};
+        metamodelica::Dangerous::arrayUpdateNoBoundsChecking(outArray.clone(), i.clone(), e.clone());
     }
     Ok((outArray, expanded))
 }
@@ -878,7 +878,7 @@ pub fn makeBinaryMatrixProduct(mut exp1: Arc<Expression::NFExpression>, mut exp2
         len = (arr1.clone().borrow().len() as i32);
         arr = metamodelica::arrayCreate(len.clone(), exp1.clone());
         for mut i in 1..=len.clone() {
-            e = arr1.clone().borrow()[(i.clone()-1) as usize].clone();
+            e = metamodelica::Dangerous::arrayGetNoBoundsChecking(arr1.clone(), i.clone());
             unsafe { metamodelica::Dangerous::arrayInitSlot(arr.clone(), i.clone(), Expression::makeArray(row_ty.clone(), makeBinaryMatrixProduct2(e.clone(), arr2.clone()), false)) };
         }
         exp = Expression::makeArray(mat_ty.clone(), arr.clone(), false);

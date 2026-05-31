@@ -518,8 +518,8 @@ fn differentiateEqns(mut inEqnsTpl: Arc<metamodelica::List<(i32, Option<Arc<Back
         eqnslst = if (intGt(numEqs1.clone(), numEqs.clone())) {List::intRange2(numEqs.clone() + 1, numEqs1.clone())} else {metamodelica::nil()};
         assEqs = List::map1r(changedVars.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), inAss1.clone());
         assEqs = List::select1(assEqs.clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
-        outAss2 = List::fold1r(assEqs.clone(), (std::sync::Arc::new(arrayUpdate) as std::sync::Arc<dyn ::std::ops::Fn(_, i32, _) -> Result<_> + 'static>), -1, inAss2.clone());
-        outAss1 = List::fold1r(changedVars.clone(), (std::sync::Arc::new(arrayUpdate) as std::sync::Arc<dyn ::std::ops::Fn(_, i32, _) -> Result<_> + 'static>), -1, inAss1.clone());
+        outAss2 = List::fold1r(assEqs.clone(), Arc::new(arrayUpdate.clone()), -1, inAss2.clone());
+        outAss1 = List::fold1r(changedVars.clone(), Arc::new(arrayUpdate.clone()), -1, inAss1.clone());
         eqnslst1 = collectVarEqns(changedVars.clone(), mt.clone(), (mt.clone().borrow().len() as i32), (m.clone().borrow().len() as i32))?;
         assign_field!(
             syst.orderedVars = v1.clone(),
@@ -859,8 +859,8 @@ fn handleundifferntiableMSS(mut b: bool, mut statesWithUnusedDer: Arc<metamodeli
                     eqnslst1 = List::flatten(List::map1r(eqnslst.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), imapEqnIncRow.clone()));
                     ilst = List::map1r(eqnslst1.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), inAss2.clone());
                     ilst = List::select1(ilst.clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
-                    ass2 = List::fold1r(eqnslst1.clone(), (std::sync::Arc::new(arrayUpdate) as std::sync::Arc<dyn ::std::ops::Fn(_, i32, _) -> Result<_> + 'static>), -1, inAss2.clone());
-                    ass1 = List::fold1r(ilst.clone(), (std::sync::Arc::new(arrayUpdate) as std::sync::Arc<dyn ::std::ops::Fn(_, i32, _) -> Result<_> + 'static>), -1, inAss1.clone());
+                    ass2 = List::fold1r(eqnslst1.clone(), Arc::new(arrayUpdate.clone()), -1, inAss2.clone());
+                    ass1 = List::fold1r(ilst.clone(), Arc::new(arrayUpdate.clone()), -1, inAss1.clone());
                     if Flags::isSet(Flags::BLT_DUMP.clone())? {
                         println!("{}", (literal!("Replaced final Parameter in Eqns\n")).clone());
                         println!("{}", (literal!("Update Adjacency Matrix: ")).clone());
@@ -2271,10 +2271,10 @@ fn getAdjacencyMatrixLevelEquations(mut iEqns: Arc<metamodelica::List<Arc<Backen
             rowSize = sindex.clone() + size.clone();
             i1 = index.clone() + 1;
             rowindxs = List::intRange2(sindex.clone() + 1, rowSize.clone());
-            List::fold1r(rowindxs.clone(), (std::sync::Arc::new(arrayUpdate) as std::sync::Arc<dyn ::std::ops::Fn(_, i32, _) -> Result<_> + 'static>), i1.clone(), mapIncRowEqn.clone());
+            List::fold1r(rowindxs.clone(), Arc::new(arrayUpdate.clone()), i1.clone(), mapIncRowEqn.clone());
             {let _arr = mapEqnIncRow.clone(); _arr.borrow_mut()[(i1.clone()-1) as usize] = rowindxs.clone(); _arr};
             row = List::map1(row.clone(), (std::sync::Arc::new(fnptr!(replaceStateIndex, i32, metamodelica::Array<i32>)) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>) -> Result<i32> + 'static>), stateindexs.clone());
-            List::fold1r(rowindxs.clone(), (std::sync::Arc::new(arrayUpdate) as std::sync::Arc<dyn ::std::ops::Fn(_, i32, _) -> Result<_> + 'static>), row.clone(), m.clone());
+            List::fold1r(rowindxs.clone(), Arc::new(arrayUpdate.clone()), row.clone(), m.clone());
             (row, negrow) = List::split1OnTrue(row.clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0);
             List::fold1(row.clone(), (std::sync::Arc::new(Array::appendToElement) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<_> + 'static>), rowindxs.clone(), mT.clone());
             row = List::map(negrow.clone(), Arc::new(fnptr!(intAbs, i32)));
@@ -2493,7 +2493,7 @@ fn getSetSystem(mut iEqns: Arc<metamodelica::List<i32>>, mut inMapEqnIncRow: met
             eqn = BackendEquation::get(iEqnsArr.clone(), e1.clone());
             eqnarr = BackendEquation::delete(e1.clone(), iEqnsArr.clone())?;
             eqns = inMapEqnIncRow.borrow()[(e1.clone()-1) as usize].clone();
-            List::fold1r(eqns.clone(), (std::sync::Arc::new(arrayUpdate) as std::sync::Arc<dyn ::std::ops::Fn(_, i32, _) -> Result<_> + 'static>), false, flag.clone());
+            List::fold1r(eqns.clone(), Arc::new(arrayUpdate.clone()), false, flag.clone());
             vindx = List::map1r(eqns.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), vec1.clone());
             varlst = listAppend(List::map1r(vindx.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), iVars.clone()), iVarsLst.clone());
             ass = List::intRange2(n.clone() - (eqns.clone().len() as i32) + 1, n.clone());
@@ -2562,7 +2562,7 @@ fn getEqnsforDynamicStateSelection1(mut U: Arc<metamodelica::List<i32>>, mut m: 
             let mut e1: i32 = 0;
             e1 = mapIncRowEqn.borrow()[(e.clone()-1) as usize].clone();
             eqns = mapEqnIncRow.borrow()[(e1.clone()-1) as usize].clone();
-            List::fold1r(eqns.clone(), (std::sync::Arc::new(arrayUpdate) as std::sync::Arc<dyn ::std::ops::Fn(_, i32, _) -> Result<_> + 'static>), mark.clone(), colummarks.clone());
+            List::fold1r(eqns.clone(), Arc::new(arrayUpdate.clone()), mark.clone(), colummarks.clone());
             (set, _) = getEqnsforDynamicStateSelectionPhase(eqns.clone(), m.clone(), mT.clone(), mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubset.clone(), false)?;
             getEqnsforDynamicStateSelection1(rest.clone(), m.clone(), mT.clone(), mark.clone() + 1, colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), set.clone())?
         },
@@ -2620,10 +2620,10 @@ fn getEqnsforDynamicStateSelectionRows(mut rows: Arc<metamodelica::List<i32>>, m
             rc = ass2.borrow()[(r.clone()-1) as usize].clone();
             e = mapIncRowEqn.borrow()[(rc.clone()-1) as usize].clone();
             eqns = mapEqnIncRow.borrow()[(e.clone()-1) as usize].clone();
-            List::fold1r(eqns.clone(), (std::sync::Arc::new(arrayUpdate) as std::sync::Arc<dyn ::std::ops::Fn(_, i32, _) -> Result<_> + 'static>), if (iFound.clone()) {mark.clone()} else {-(mark.clone())}, colummarks.clone());
+            List::fold1r(eqns.clone(), Arc::new(arrayUpdate.clone()), if (iFound.clone()) {mark.clone()} else {-(mark.clone())}, colummarks.clone());
             (set, b) = getEqnsforDynamicStateSelectionPhase(eqns.clone(), m.clone(), mT.clone(), mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubset.clone(), false)?;
             eqns = if (b.clone() && !(iFound.clone())) {eqns.clone()} else {metamodelica::nil()};
-            List::fold1r(eqns.clone(), (std::sync::Arc::new(arrayUpdate) as std::sync::Arc<dyn ::std::ops::Fn(_, i32, _) -> Result<_> + 'static>), mark.clone(), colummarks.clone());
+            List::fold1r(eqns.clone(), Arc::new(arrayUpdate.clone()), mark.clone(), colummarks.clone());
             (set, b) = getEqnsforDynamicStateSelectionRows(rest.clone(), m.clone(), mT.clone(), mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), set.clone(), b.clone() || iFound.clone())?;
             (set.clone(), b.clone())
         },

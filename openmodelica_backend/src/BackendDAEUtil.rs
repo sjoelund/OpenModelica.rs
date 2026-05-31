@@ -1534,7 +1534,7 @@ fn markStateEquationsWork(mut inEqns: Arc<metamodelica::List<i32>>, mut m: metam
             for mut i in __range2 {
                 let mut i = i.clone();
                 if i.clone() > 0 && i.clone() <= len.clone() {
-                    j = Dangerous::arrayGet(ass1.clone(), i.clone())?;
+                    j = metamodelica::Dangerous::arrayGetNoBoundsChecking(ass1.clone(), i.clone());
                     positiveAndUnmarked = if (j.clone() > 0) {oMark.clone().borrow()[(j.clone()-1) as usize].clone() == 0} else {false};
                     if positiveAndUnmarked.clone() {
                         queue = metamodelica::cons(j.clone(), queue.clone());
@@ -4453,7 +4453,7 @@ fn updateAdjacencyMatrixScalar1(mut vars: BackendDAE::Variables, mut daeeqns: Ar
             (_, outvarsTree, invarsTree) = AvlSetInt::intersection(AvlSetInt::addList(Arc::new(crate::AvlSetInt::Tree::EMPTY), oldvars.clone())?, row.clone())?;
             outvars = AvlSetInt::listKeys(outvarsTree.clone(), metamodelica::nil());
             invars = AvlSetInt::listKeys(invarsTree.clone(), metamodelica::nil());
-            m_1 = List::fold1r(scalarindxs.clone(), (std::sync::Arc::new(arrayUpdate) as std::sync::Arc<dyn ::std::ops::Fn(_, i32, _) -> Result<_> + 'static>), AvlSetInt::listKeys(row.clone(), metamodelica::nil()), m.clone());
+            m_1 = List::fold1r(scalarindxs.clone(), Arc::new(arrayUpdate.clone()), AvlSetInt::listKeys(row.clone(), metamodelica::nil()), m.clone());
             mt_1 = List::fold1(scalarindxs.clone(), (std::sync::Arc::new(removeValuefromMatrix) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<metamodelica::List<i32>>, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> + 'static>), outvars.clone(), mt.clone());
             mt_2 = List::fold1(scalarindxs.clone(), (std::sync::Arc::new(addValuetoMatrix) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<metamodelica::List<i32>>, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> + 'static>), invars.clone(), mt_1.clone());
             (m_2, mt_3, mapEqnIncRow, mapIncRowEqn) = updateAdjacencyMatrixScalar1(vars.clone(), daeeqns.clone(), m_1.clone(), mt_2.clone(), eqns.clone(), iMapEqnIncRow.clone(), iMapIncRowEqn.clone(), inIndxType.clone(), functionTree.clone(), isInitial.clone())?;
@@ -4482,7 +4482,7 @@ fn updateAdjacencyMatrixScalar1(mut vars: BackendDAE::Variables, mut daeeqns: Ar
             (_, outvarsTree, invarsTree) = AvlSetInt::intersection(AvlSetInt::addList(Arc::new(crate::AvlSetInt::Tree::EMPTY), oldvars.clone())?, row.clone())?;
             outvars = AvlSetInt::listKeys(outvarsTree.clone(), metamodelica::nil());
             invars = AvlSetInt::listKeys(invarsTree.clone(), metamodelica::nil());
-            m_1 = List::fold1r(scalarindxs.clone(), (std::sync::Arc::new(arrayUpdate) as std::sync::Arc<dyn ::std::ops::Fn(_, i32, _) -> Result<_> + 'static>), AvlSetInt::listKeys(row.clone(), metamodelica::nil()), m.clone());
+            m_1 = List::fold1r(scalarindxs.clone(), Arc::new(arrayUpdate.clone()), AvlSetInt::listKeys(row.clone(), metamodelica::nil()), m.clone());
             mt_1 = List::fold1(scalarindxs.clone(), (std::sync::Arc::new(removeValuefromMatrix) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<metamodelica::List<i32>>, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> + 'static>), outvars.clone(), mt.clone());
             mt_2 = List::fold1(scalarindxs.clone(), (std::sync::Arc::new(addValuetoMatrix) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<metamodelica::List<i32>>, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> + 'static>), invars.clone(), mt_1.clone());
             (m_2, mt_3, mapEqnIncRow, mapIncRowEqn) = updateAdjacencyMatrixScalar1(vars.clone(), daeeqns.clone(), m_1.clone(), mt_2.clone(), eqns.clone(), iMapEqnIncRow.clone(), iMapIncRowEqn.clone(), inIndxType.clone(), functionTree.clone(), isInitial.clone())?;
@@ -4522,9 +4522,9 @@ fn updateAdjacencyMatrixScalar2(mut index: i32, mut n: i32, mut size: i32, mut v
                     new_size = size.clone() + rowsize.clone();
                     scalarindxs = List::intRange2(size.clone() + 1, new_size.clone());
                     mapEqnIncRow = {let _arr = iMapEqnIncRow.clone(); _arr.borrow_mut()[(abse.clone()-1) as usize] = scalarindxs.clone(); _arr};
-                    mapIncRowEqn = List::fold1r(scalarindxs.clone(), (std::sync::Arc::new(arrayUpdate) as std::sync::Arc<dyn ::std::ops::Fn(_, i32, _) -> Result<_> + 'static>), abse.clone(), iMapIncRowEqn.clone());
+                    mapIncRowEqn = List::fold1r(scalarindxs.clone(), Arc::new(arrayUpdate.clone()), abse.clone(), iMapIncRowEqn.clone());
                     row_lst = AvlSetInt::listKeys(row.clone(), metamodelica::nil());
-                    m1 = List::fold1r(scalarindxs.clone(), (std::sync::Arc::new(arrayUpdate) as std::sync::Arc<dyn ::std::ops::Fn(_, i32, _) -> Result<_> + 'static>), row_lst.clone(), m.clone());
+                    m1 = List::fold1r(scalarindxs.clone(), Arc::new(arrayUpdate.clone()), row_lst.clone(), m.clone());
                     mt1 = filladjacencyMatrixT(row_lst.clone(), scalarindxs.clone(), mt.clone())?;
                     (m1, mt1, mapEqnIncRow, mapIncRowEqn) = updateAdjacencyMatrixScalar2(index.clone() + 1, n.clone(), new_size.clone(), vars.clone(), daeeqns.clone(), m1.clone(), mt1.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inIndxType.clone(), functionTree.clone(), isInitial.clone())?;
                     Ok((m1.clone(), mt1.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone()))
@@ -4559,9 +4559,9 @@ fn updateAdjacencyMatrixScalar2(mut index: i32, mut n: i32, mut size: i32, mut v
                     new_size = size.clone() + rowsize.clone();
                     scalarindxs = List::intRange2(size.clone() + 1, new_size.clone());
                     mapEqnIncRow = {let _arr = iMapEqnIncRow.clone(); _arr.borrow_mut()[(abse.clone()-1) as usize] = scalarindxs.clone(); _arr};
-                    mapIncRowEqn = List::fold1r(scalarindxs.clone(), (std::sync::Arc::new(arrayUpdate) as std::sync::Arc<dyn ::std::ops::Fn(_, i32, _) -> Result<_> + 'static>), abse.clone(), iMapIncRowEqn.clone());
+                    mapIncRowEqn = List::fold1r(scalarindxs.clone(), Arc::new(arrayUpdate.clone()), abse.clone(), iMapIncRowEqn.clone());
                     row_lst = AvlSetInt::listKeys(row.clone(), metamodelica::nil());
-                    m1 = List::fold1r(scalarindxs.clone(), (std::sync::Arc::new(arrayUpdate) as std::sync::Arc<dyn ::std::ops::Fn(_, i32, _) -> Result<_> + 'static>), row_lst.clone(), m.clone());
+                    m1 = List::fold1r(scalarindxs.clone(), Arc::new(arrayUpdate.clone()), row_lst.clone(), m.clone());
                     mt1 = filladjacencyMatrixT(row_lst.clone(), scalarindxs.clone(), mt.clone())?;
                     (m1, mt1, mapEqnIncRow, mapIncRowEqn) = updateAdjacencyMatrixScalar2(index.clone() + 1, n.clone(), new_size.clone(), vars.clone(), daeeqns.clone(), m1.clone(), mt1.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inIndxType.clone(), functionTree.clone(), isInitial.clone())?;
                     Ok((m1.clone(), mt1.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone()))

@@ -139,7 +139,7 @@ pub fn varAssignmentNonScalar(mut ass1: metamodelica::Array<i32>, mut mapIncRowE
     outAcc = metamodelica::arrayCreate((ass1.clone().borrow().len() as i32), -1);
     let __range0 = 1..=(ass1.clone().borrow().len() as i32);
     for mut i in __range0 {
-        Dangerous::arrayUpdate(outAcc.clone(), i.clone(), if (Dangerous::arrayGet(ass1.clone(), i.clone()).unwrap() > 0) {mapIncRowEqn.borrow()[(Dangerous::arrayGet(ass1.clone(), i.clone()).unwrap()-1) as usize].clone()} else {-1}).unwrap();
+        unsafe { metamodelica::Dangerous::arrayInitSlot(outAcc.clone(), i.clone(), if (metamodelica::Dangerous::arrayGetNoBoundsChecking(ass1.clone(), i.clone()) > 0) {mapIncRowEqn.borrow()[(metamodelica::Dangerous::arrayGetNoBoundsChecking(ass1.clone(), i.clone())-1) as usize].clone()} else {-1}) };
     }
     outAcc
 }

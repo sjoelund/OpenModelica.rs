@@ -8552,6 +8552,15 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
             let arg2 = args.get(1).map(|a| emit_builtin_call_arg_raw(func, 1, a, is_const, ctx, top_level)).unwrap_or_default();
             Ok(ctx.q(&format!("stringGet({},{})", arg1, arg2)))
         },
+        // Real call into the runtime's unchecked variant (see the
+        // `arrayGetNoBoundsChecking` arm). `stringGetNoBoundsChecking` returns
+        // `Result<i32>` (it never actually errs, but is `Result`-typed), so it
+        // goes through `ctx.q` like `stringGet`.
+        "stringGetNoBoundsChecking" | "Dangerous.stringGetNoBoundsChecking" | "MetaModelica.Dangerous.stringGetNoBoundsChecking" => {
+            let arg1 = args.first().map(|a| emit_builtin_call_arg(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();
+            let arg2 = args.get(1).map(|a| emit_builtin_call_arg_raw(func, 1, a, is_const, ctx, top_level)).unwrap_or_default();
+            Ok(ctx.q(&format!("metamodelica::Dangerous::stringGetNoBoundsChecking({arg1}, {arg2})")))
+        },
         "realNeg" => {
             let arg1 = args.first().map(|a| emit_builtin_call_arg(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();
             Ok(format!("-({arg1})"))
@@ -8593,15 +8602,26 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
             let arg = args.first().map(|a| emit_builtin_call_arg(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();
             Ok(format!("println!(\"{{}}\", {arg})"))
         },
-        "arrayGet" | "arrayGetNoBoundsChecking" => {
+        "arrayGet" => {
             // `arr` is `metamodelica::Array<T>` = `Rc<RefCell<Vec<T>>>`.
             // `.borrow()` returns a `Ref<Vec<T>>` whose lifetime extends to the end
             // of the enclosing expression, so the inline index + clone is sound.
-            // NoBoundsChecking falls back to checked indexing here; lifting it to
-            // `get_unchecked` would require a longer-lived borrow scope. TODO if profiling demands it.
             let arg1 = args.first().map(|a| emit_builtin_call_arg(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();
             let arg2 = args.get(1).map(|a| emit_builtin_call_arg_raw(func, 1, a, is_const, ctx, top_level)).unwrap_or_default();
             Ok(format!("{}.borrow()[({}-1) as usize].clone()", arg1, arg2))
+        },
+        // The `*NoBoundsChecking` builtins are genuinely distinct functions
+        // (truly unchecked `get_unchecked` access), not aliases of the
+        // bounds-checked builtins — so we lower them to real calls into the
+        // runtime `metamodelica::Dangerous` module rather than the inline
+        // checked-indexing form. The fully-qualified path is emitted so the
+        // call resolves regardless of whether the source wrote the bare name
+        // (group import) or qualified it through `Dangerous.`/`MetaModelica.Dangerous.`.
+        "arrayGetNoBoundsChecking" | "Dangerous.arrayGetNoBoundsChecking" | "MetaModelica.Dangerous.arrayGetNoBoundsChecking" => {
+            let arg1 = args.first().map(|a| emit_builtin_call_arg(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();
+            let arg2 = args.get(1).map(|a| emit_builtin_call_arg_raw(func, 1, a, is_const, ctx, top_level)).unwrap_or_default();
+            // Infallible (`-> A`): no `ctx.q`.
+            Ok(format!("metamodelica::Dangerous::arrayGetNoBoundsChecking({arg1}, {arg2})"))
         },
         "valueEq" => {
             // `valueEq` is structural equality. When one operand is a literal
@@ -8811,11 +8831,10 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
             // arrayClearIndex is infallible: returns () directly
             Ok(format!("metamodelica::Dangerous::arrayClearIndex({arg1}, {arg2})"))
         },
-        "arrayUpdate"| "arrayUpdateNoBoundsChecking" => {
+        "arrayUpdate" => {
             // MM semantics: mutate in place, return the same array (aliases see the change).
             // We bind the array once so {arg1} (which may be a non-trivial expression) is
             // evaluated only once, mutate through `borrow_mut()`, then yield the same Rc.
-            // NoBoundsChecking uses checked indexing here; same TODO as arrayGet.
             //
             // If the target array was created by arrayCreateNoInit its slots hold
             // uninitialised bytes. A plain `slot = value` would first DROP the garbage
@@ -8851,6 +8870,33 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
                 } else {
                     Ok(format!("{{let _arr = {}; _arr.borrow_mut()[({}-1) as usize] = {}; _arr}}", arg1, arg2, arg3))
                 }
+            }
+        },
+        // Real call into the runtime's truly-unchecked variant (see the
+        // `arrayGetNoBoundsChecking` arm). The value arg gets the same
+        // element-type first-output coercion as `arrayUpdate`. The
+        // uninitialised-array case still routes through `arrayInitSlot`:
+        // `arrayUpdateNoBoundsChecking` writes with `get_unchecked_mut`, which
+        // *drops* the old slot value — for a slot created by `arrayCreateNoInit`
+        // (uninitialised bytes) that is undefined behaviour, so `ptr::write` via
+        // `arrayInitSlot` is required exactly as for the bounds-checked path.
+        "arrayUpdateNoBoundsChecking" | "Dangerous.arrayUpdateNoBoundsChecking" | "MetaModelica.Dangerous.arrayUpdateNoBoundsChecking" => {
+            let arr_is_uninit = matches!(
+                args.first(),
+                Some(TypedExp::Var { name, .. }) if ctx.uninit_arrays.contains(name.as_str())
+            );
+            let arg1 = args.first().map(|a| emit_builtin_call_arg(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();
+            let arg2 = args.get(1).map(|a| emit_builtin_call_arg_raw(func, 1, a, is_const, ctx, top_level)).unwrap_or_default();
+            let elem_formal: Option<Ty> = match args.first().map(|a| a.ty()) {
+                Some(Ty::Array(inner)) => Some(*inner),
+                _ => None,
+            };
+            let arg3 = args.get(2).map(|a| emit_call_arg_with_formal(a, elem_formal.as_ref(), is_const, ctx, top_level)).unwrap_or_default();
+            if arr_is_uninit {
+                Ok(format!("unsafe {{ metamodelica::Dangerous::arrayInitSlot({arg1}, {arg2}, {arg3}) }}"))
+            } else {
+                // Infallible (`-> Array<A>`): no `ctx.q`.
+                Ok(format!("metamodelica::Dangerous::arrayUpdateNoBoundsChecking({arg1}, {arg2}, {arg3})"))
             }
         },
         "arrayEmpty" => {

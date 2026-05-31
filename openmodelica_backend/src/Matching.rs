@@ -5604,7 +5604,7 @@ fn getEqnsforIndexReduction1(mut U: Arc<metamodelica::List<i32>>, mut m: metamod
             let mut e1: i32 = 0;
             e1 = mapIncRowEqn.borrow()[(e.clone()-1) as usize].clone();
             eqns = mapEqnIncRow.borrow()[(e1.clone()-1) as usize].clone();
-            List::fold1r(eqns.clone(), (std::sync::Arc::new(arrayUpdate) as std::sync::Arc<dyn ::std::ops::Fn(_, i32, _) -> Result<_> + 'static>), mark.clone(), colummarks.clone());
+            List::fold1r(eqns.clone(), Arc::new(arrayUpdate.clone()), mark.clone(), colummarks.clone());
             eqns = getEqnsforIndexReductionphase(eqns.clone(), m.clone(), mT.clone(), mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubsets.clone(), eqns.clone())?;
             Array::appendToElement(mark.clone(), eqns.clone(), inSubsets.clone())?;
             getEqnsforIndexReduction1(rest.clone(), m.clone(), mT.clone(), mark.clone() + 1, colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubsets.clone())?
@@ -5666,7 +5666,7 @@ fn getEqnsforIndexReductiontraverseRows(mut rows: Arc<metamodelica::List<i32>>, 
                 } else {
                     e = mapIncRowEqn.borrow()[(rc.clone()-1) as usize].clone();
                     eqns = mapEqnIncRow.borrow()[(e.clone()-1) as usize].clone();
-                    List::fold1r(eqns.clone(), (std::sync::Arc::new(arrayUpdate) as std::sync::Arc<dyn ::std::ops::Fn(_, i32, _) -> Result<_> + 'static>), mark.clone(), colummarks.clone());
+                    List::fold1r(eqns.clone(), Arc::new(arrayUpdate.clone()), mark.clone(), colummarks.clone());
                     nextqueue = listAppend(nextColums.clone(), eqns.clone());
                     queue = listAppend(inEqns.clone(), eqns.clone());
                 }
@@ -5686,7 +5686,7 @@ fn mergeSubsets(mut mark: i32, mut markColum: i32, mut inSubsets: metamodelica::
     eqns = inSubsets.borrow()[(markColum.clone()-1) as usize].clone();
     Array::appendToElement(mark.clone(), eqns.clone(), inSubsets.clone())?;
     {let _arr = inSubsets.clone(); _arr.borrow_mut()[(markColum.clone()-1) as usize] = metamodelica::nil(); _arr};
-    List::fold1r(eqns.clone(), (std::sync::Arc::new(arrayUpdate) as std::sync::Arc<dyn ::std::ops::Fn(_, i32, _) -> Result<_> + 'static>), mark.clone(), colummarks.clone());
+    List::fold1r(eqns.clone(), Arc::new(arrayUpdate.clone()), mark.clone(), colummarks.clone());
     Ok(())
 }
 
@@ -6067,12 +6067,12 @@ fn clearArrayWithKnownSetIndexes(mut arr: metamodelica::Array<bool>, mut arrIx: 
     if metamodelica::OrderedFloat((n.clone()) as f64) > metamodelica::OrderedFloat(0.3_f64) * metamodelica::OrderedFloat(((arr.clone().borrow().len() as i32)) as f64) {
         let __range0 = 1..=(arr.clone().borrow().len() as i32);
         for mut i in __range0 {
-            Dangerous::arrayUpdate(arr.clone(), i.clone(), false)?;
+            metamodelica::Dangerous::arrayUpdateNoBoundsChecking(arr.clone(), i.clone(), false);
         }
     } else {
         let true = (n.clone() <= (arrIx.clone().borrow().len() as i32)) else { bail!("pattern mismatch") };
         for mut i in 1..=n.clone() {
-            Dangerous::arrayUpdate(arr.clone(), Dangerous::arrayGet(arrIx.clone(), i.clone())?, false)?;
+            metamodelica::Dangerous::arrayUpdateNoBoundsChecking(arr.clone(), metamodelica::Dangerous::arrayGetNoBoundsChecking(arrIx.clone(), i.clone()), false);
         }
     }
     if debug.clone() {

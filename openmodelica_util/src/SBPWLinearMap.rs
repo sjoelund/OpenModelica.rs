@@ -219,10 +219,10 @@ pub fn compPW(mut map1: Arc<SBPWLinearMap>, mut map2: Arc<SBPWLinearMap>) -> Res
     reslm = Vector::new(0);
     let __range0 = 1..=(dom1.clone().borrow().len() as i32);
     for mut i in __range0 {
-        d1 = dom1.clone().borrow()[(i.clone()-1) as usize].clone();
+        d1 = metamodelica::Dangerous::arrayGetNoBoundsChecking(dom1.clone(), i.clone());
         let __range1 = 1..=(dom2.clone().borrow().len() as i32);
         for mut j in __range1 {
-            d2 = dom2.clone().borrow()[(j.clone()-1) as usize].clone();
+            d2 = metamodelica::Dangerous::arrayGetNoBoundsChecking(dom2.clone(), j.clone());
             aux_dom = image(map2.clone(), d2.clone())?;
             aux_dom = SBSet::intersection(aux_dom.clone(), d1.clone())?;
             aux_dom = preImage(map2.clone(), aux_dom.clone())?;

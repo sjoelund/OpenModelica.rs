@@ -431,14 +431,14 @@ pub fn keySet<K: Clone + 'static, V: Clone + 'static>(mut map: Arc<UnorderedMap<
     let mut buckets: metamodelica::Array<Arc<metamodelica::List<K>>> = Default::default();
     buckets = arrayCreate(bucket_count.clone(), metamodelica::nil());
     for mut h in 1..=bucket_count.clone() {
-        {let _arr = buckets.clone(); _arr.borrow_mut()[(h.clone()-1) as usize] = ({
+        metamodelica::Dangerous::arrayUpdateNoBoundsChecking(buckets.clone(), h.clone(), ({
         let mut __acc: Arc<metamodelica::List<_>> = metamodelica::nil();
         for mut i in (Vector::get(map.buckets.clone(), h.clone())?).into_iter().cloned() {
             let __x = Vector::getNoBounds(map.keys.clone(), i.clone());
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }); _arr};
+    }));
     }
     set = Arc::new(UnorderedSet::UnorderedSet { buckets: Mutable::create(buckets.clone()), size: Mutable::create(Vector::size(map.keys.clone())), hashFn: map.hashFn.clone(), eqFn: map.eqFn.clone() });
     Ok(set)

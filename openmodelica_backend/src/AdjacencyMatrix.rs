@@ -248,9 +248,9 @@ pub fn absAdjacencyMatrix(mut m: metamodelica::Array<Arc<metamodelica::List<i32>
     for mut v in __range0 {
         minn = List::fold(v.clone(), (std::sync::Arc::new(fnptr!(intMin, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), 0);
         if minn.clone() < 0 {
-            Dangerous::arrayUpdate(res.clone(), i.clone(), List::map(v.clone(), Arc::new(fnptr!(intAbs, i32)))).unwrap();
+            unsafe { metamodelica::Dangerous::arrayInitSlot(res.clone(), i.clone(), List::map(v.clone(), Arc::new(fnptr!(intAbs, i32)))) };
         } else {
-            Dangerous::arrayUpdate(res.clone(), i.clone(), v.clone()).unwrap();
+            unsafe { metamodelica::Dangerous::arrayInitSlot(res.clone(), i.clone(), v.clone()) };
         }
         i = i.clone() + 1;
     }

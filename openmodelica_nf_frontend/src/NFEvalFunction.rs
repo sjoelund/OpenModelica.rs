@@ -761,16 +761,16 @@ fn assignArrayElement(mut arrayExp: Arc<Expression::NFExpression>, mut subscript
             if rest_subs.clone().is_empty() {
                 let __range0 = 1..=(subs.clone().borrow().len() as i32);
                 for mut i in __range0 {
-                    sub = subs.clone().borrow()[(i.clone()-1) as usize].clone();
-                    val = vals.clone().borrow()[(i.clone()-1) as usize].clone();
+                    sub = metamodelica::Dangerous::arrayGetNoBoundsChecking(subs.clone(), i.clone());
+                    val = metamodelica::Dangerous::arrayGetNoBoundsChecking(vals.clone(), i.clone());
                     idx = Expression::toInteger(sub.clone())?;
                     {let _arr = var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone(); _arr.borrow_mut()[(idx.clone()-1) as usize] = val.clone(); _arr};
                 }
             } else {
                 let __range1 = 1..=(subs.clone().borrow().len() as i32);
                 for mut i in __range1 {
-                    sub = subs.clone().borrow()[(i.clone()-1) as usize].clone();
-                    val = vals.clone().borrow()[(i.clone()-1) as usize].clone();
+                    sub = metamodelica::Dangerous::arrayGetNoBoundsChecking(subs.clone(), i.clone());
+                    val = metamodelica::Dangerous::arrayGetNoBoundsChecking(vals.clone(), i.clone());
                     idx = Expression::toInteger(sub.clone())?;
                     {let _arr = var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone(); let _val = assignArrayElement(var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone().borrow()[(idx.clone()-1) as usize].clone(), rest_subs.clone(), val.clone())?; _arr.borrow_mut()[(idx.clone()-1) as usize] = _val; _arr};
                 }

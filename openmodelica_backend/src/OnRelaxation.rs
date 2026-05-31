@@ -2527,7 +2527,7 @@ fn getIndexesForEqnsAdvanced(mut orphans: Arc<metamodelica::List<i32>>, mut inde
                     {let _arr = ocolummarks.clone(); _arr.borrow_mut()[(eorphan.clone()-1) as usize] = -1; _arr};
                     vorphans = List::removeOnTrue(vorphan.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), vorphans.clone());
                     List::fold1(vorphans.clone(), (std::sync::Arc::new(markOrphans) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32, metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> + 'static>), -1, orowmarks.clone());
-                    List::fold1r(vorphans.clone(), (std::sync::Arc::new(arrayUpdate) as std::sync::Arc<dyn ::std::ops::Fn(_, i32, _) -> Result<_> + 'static>), metamodelica::nil(), mT.clone());
+                    List::fold1r(vorphans.clone(), Arc::new(arrayUpdate.clone()), metamodelica::nil(), mT.clone());
                     Ok(getIndexesForEqnsAdvanced(rest.clone(), index1.clone() + 1, m.clone(), mT.clone(), mark.clone() + 2, rowmarks.clone(), colummarks.clone(), orowmarks.clone(), ocolummarks.clone(), ass1.clone(), ass2.clone(), vec1.clone(), vec2.clone(), queuemark.clone(), vars.clone(), eqns.clone(), shared.clone(), size.clone())?)
                 }
                 _ => bail!("nomatch"),

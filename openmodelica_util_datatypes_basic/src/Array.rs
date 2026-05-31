@@ -51,7 +51,7 @@ pub fn mapNoCopy<T: Clone + 'static>(mut inArray: metamodelica::Array<T>, mut in
     let mut outArray: metamodelica::Array<T> = inArray.clone();
     let __range0 = 1..=(inArray.clone().borrow().len() as i32);
     for mut i in __range0 {
-        {let _arr = inArray.clone(); let _val = inFunc(inArray.clone().borrow()[(i.clone()-1) as usize].clone()).unwrap(); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+        metamodelica::Dangerous::arrayUpdateNoBoundsChecking(inArray.clone(), i.clone(), inFunc(metamodelica::Dangerous::arrayGetNoBoundsChecking(inArray.clone(), i.clone())).unwrap());
     }
     outArray
 }
@@ -64,8 +64,8 @@ pub fn mapNoCopy_1<T: Clone + 'static, ArgT: Clone + 'static>(mut inArray: metam
     let mut e: T;
     let __range0 = 1..=(inArray.clone().borrow().len() as i32);
     for mut i in __range0 {
-        (e, outArg) = inFunc((inArray.clone().borrow()[(i.clone()-1) as usize].clone(), outArg.clone())).unwrap();
-        {let _arr = inArray.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = e.clone(); _arr};
+        (e, outArg) = inFunc((metamodelica::Dangerous::arrayGetNoBoundsChecking(inArray.clone(), i.clone()), outArg.clone())).unwrap();
+        metamodelica::Dangerous::arrayUpdateNoBoundsChecking(inArray.clone(), i.clone(), e.clone());
     }
     (outArray, outArg)
 }
@@ -176,11 +176,11 @@ pub fn map<TI: Clone + 'static, TO: Clone + 'static>(mut inArray: metamodelica::
     if len.clone() == 0 {
         outArray = metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect());
     } else {
-        res = inFunc(inArray.clone().borrow()[(1-1) as usize].clone()).unwrap();
+        res = inFunc(metamodelica::Dangerous::arrayGetNoBoundsChecking(inArray.clone(), 1)).unwrap();
         outArray = metamodelica::arrayCreate(len.clone(), res.clone());
         unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), 1, res.clone()) };
         for mut i in 2..=len.clone() {
-            unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), i.clone(), inFunc(inArray.clone().borrow()[(i.clone()-1) as usize].clone()).unwrap()) };
+            unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), i.clone(), inFunc(metamodelica::Dangerous::arrayGetNoBoundsChecking(inArray.clone(), i.clone())).unwrap()) };
         }
     }
     outArray
@@ -195,11 +195,11 @@ pub fn map1<TI: Clone + 'static, ArgT: Clone + 'static, TO: Clone + 'static>(mut
     if len.clone() == 0 {
         outArray = metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect());
     } else {
-        res = inFunc(inArray.clone().borrow()[(1-1) as usize].clone(), inArg.clone())?;
+        res = inFunc(metamodelica::Dangerous::arrayGetNoBoundsChecking(inArray.clone(), 1), inArg.clone())?;
         outArray = metamodelica::arrayCreate(len.clone(), res.clone());
         unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), 1, res.clone()) };
         for mut i in 2..=len.clone() {
-            unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), i.clone(), inFunc(inArray.clone().borrow()[(i.clone()-1) as usize].clone(), inArg.clone())?) };
+            unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), i.clone(), inFunc(metamodelica::Dangerous::arrayGetNoBoundsChecking(inArray.clone(), i.clone()), inArg.clone())?) };
         }
     }
     Ok(outArray)
@@ -214,11 +214,11 @@ pub fn map1Ind<TI: Clone + 'static, ArgT: Clone + 'static, TO: Clone + 'static>(
     if len.clone() == 0 {
         outArray = metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect());
     } else {
-        res = inFunc(inArray.clone().borrow()[(1-1) as usize].clone(), 1, inArg.clone())?;
+        res = inFunc(metamodelica::Dangerous::arrayGetNoBoundsChecking(inArray.clone(), 1), 1, inArg.clone())?;
         outArray = metamodelica::arrayCreate(len.clone(), res.clone());
         unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), 1, res.clone()) };
         for mut i in 2..=len.clone() {
-            unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), i.clone(), inFunc(inArray.clone().borrow()[(i.clone()-1) as usize].clone(), i.clone(), inArg.clone())?) };
+            unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), i.clone(), inFunc(metamodelica::Dangerous::arrayGetNoBoundsChecking(inArray.clone(), i.clone()), i.clone(), inArg.clone())?) };
         }
     }
     Ok(outArray)
@@ -402,7 +402,7 @@ pub fn copy<T: Clone + 'static>(mut inArraySrc: metamodelica::Array<T>, mut inAr
     }
     let __range0 = 1..=(inArraySrc.clone().borrow().len() as i32);
     for mut i in __range0 {
-        {let _arr = outArray.clone(); let _val = inArraySrc.clone().borrow()[(i.clone()-1) as usize].clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+        metamodelica::Dangerous::arrayUpdateNoBoundsChecking(outArray.clone(), i.clone(), metamodelica::Dangerous::arrayGetNoBoundsChecking(inArraySrc.clone(), i.clone()));
     }
     Ok(outArray)
 }
@@ -413,7 +413,7 @@ pub fn copyN<T: Clone + 'static>(mut inArraySrc: metamodelica::Array<T>, mut inA
         bail!("fail");
     }
     for mut i in 1..=inN.clone() {
-        {let _arr = outArray.clone(); let _val = inArraySrc.clone().borrow()[(i.clone() + srcOffset.clone()-1) as usize].clone(); _arr.borrow_mut()[(i.clone() + dstOffset.clone()-1) as usize] = _val; _arr};
+        metamodelica::Dangerous::arrayUpdateNoBoundsChecking(outArray.clone(), i.clone() + dstOffset.clone(), metamodelica::Dangerous::arrayGetNoBoundsChecking(inArraySrc.clone(), i.clone() + srcOffset.clone()));
     }
     Ok(outArray)
 }
@@ -424,7 +424,7 @@ pub fn copyRange<T: Clone + 'static>(mut srcArray: metamodelica::Array<T>, mut d
         bail!("fail");
     }
     for mut i in srcFirst.clone()..=srcLast.clone() {
-        {let _arr = dstArray.clone(); let _val = srcArray.clone().borrow()[(i.clone()-1) as usize].clone(); _arr.borrow_mut()[(offset.clone() + i.clone()-1) as usize] = _val; _arr};
+        metamodelica::Dangerous::arrayUpdateNoBoundsChecking(dstArray.clone(), offset.clone() + i.clone(), metamodelica::Dangerous::arrayGetNoBoundsChecking(srcArray.clone(), i.clone()));
     }
     Ok(())
 }
@@ -481,8 +481,8 @@ pub fn getMemberOnTrue<VT: Clone + 'static, ET: Clone + 'static>(mut inValue: VT
     let mut outIndex: i32 = 0;
     let __range0 = 1..=(inArray.clone().borrow().len() as i32);
     for mut i in __range0 {
-        if inCompFunc(inValue.clone(), inArray.clone().borrow()[(i.clone()-1) as usize].clone())? {
-            outElement = inArray.clone().borrow()[(i.clone()-1) as usize].clone();
+        if inCompFunc(inValue.clone(), metamodelica::Dangerous::arrayGetNoBoundsChecking(inArray.clone(), i.clone()))? {
+            outElement = metamodelica::Dangerous::arrayGetNoBoundsChecking(inArray.clone(), i.clone());
             outIndex = i.clone();
             return Ok((outElement.clone(), outIndex.clone()));
         }
@@ -564,7 +564,7 @@ pub fn isEqualOnTrue<T1: Clone + 'static, T2: Clone + 'static>(mut arr1: metamod
     }
     let __range0 = 1..=(arr1.clone().borrow().len() as i32);
     for mut i in __range0 {
-        if !(pred(arr1.clone().borrow()[(i.clone()-1) as usize].clone(), arr2.clone().borrow()[(i.clone()-1) as usize].clone()).unwrap()) {
+        if !(pred(metamodelica::Dangerous::arrayGetNoBoundsChecking(arr1.clone(), i.clone()), metamodelica::Dangerous::arrayGetNoBoundsChecking(arr2.clone(), i.clone())).unwrap()) {
             equal = false;
             return equal.clone();
         }
@@ -581,7 +581,7 @@ pub fn allEqual<T: Clone + 'static>(mut arr: metamodelica::Array<T>, mut pred: A
     }
     let __range0 = 2..=(arr.clone().borrow().len() as i32);
     for mut i in __range0 {
-        if !(pred(arr.clone().borrow()[(1-1) as usize].clone(), arr.clone().borrow()[(i.clone()-1) as usize].clone()).unwrap()) {
+        if !(pred(metamodelica::Dangerous::arrayGetNoBoundsChecking(arr.clone(), 1), metamodelica::Dangerous::arrayGetNoBoundsChecking(arr.clone(), i.clone())).unwrap()) {
             equal = false;
             return equal.clone();
         }
@@ -600,8 +600,8 @@ pub fn isLess<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut arr2: me
     len1 = (arr1.clone().borrow().len() as i32);
     len2 = (arr2.clone().borrow().len() as i32);
     for mut i in 1..=std::cmp::min(len1.clone(), len2.clone()) {
-        e1 = arr1.clone().borrow()[(i.clone()-1) as usize].clone();
-        e2 = arr2.clone().borrow()[(i.clone()-1) as usize].clone();
+        e1 = metamodelica::Dangerous::arrayGetNoBoundsChecking(arr1.clone(), i.clone());
+        e2 = metamodelica::Dangerous::arrayGetNoBoundsChecking(arr2.clone(), i.clone());
         if lessFn(e1.clone(), e2.clone()).unwrap() {
             res = true;
             return res.clone();
@@ -637,10 +637,10 @@ pub fn remove<T: Clone + 'static>(mut arr: metamodelica::Array<T>, mut index: i3
     } else {
         outArr = metamodelica::arrayCreate(len.clone() - 1, arr.borrow()[(1-1) as usize].clone());
         for mut i in 1..=index.clone() - 1 {
-            unsafe { metamodelica::Dangerous::arrayInitSlot(outArr.clone(), i.clone(), arr.clone().borrow()[(i.clone()-1) as usize].clone()) };
+            unsafe { metamodelica::Dangerous::arrayInitSlot(outArr.clone(), i.clone(), metamodelica::Dangerous::arrayGetNoBoundsChecking(arr.clone(), i.clone())) };
         }
         for mut i in index.clone() + 1..=len.clone() {
-            unsafe { metamodelica::Dangerous::arrayInitSlot(outArr.clone(), i.clone() - 1, arr.clone().borrow()[(i.clone()-1) as usize].clone()) };
+            unsafe { metamodelica::Dangerous::arrayInitSlot(outArr.clone(), i.clone() - 1, metamodelica::Dangerous::arrayGetNoBoundsChecking(arr.clone(), i.clone())) };
         }
     }
     Ok(outArr)
@@ -684,7 +684,7 @@ pub fn minElement<T: Clone + 'static>(mut arr: metamodelica::Array<T>, mut lessF
     res = arr.borrow()[(1-1) as usize].clone();
     let __range0 = 2..=(arr.clone().borrow().len() as i32);
     for mut i in __range0 {
-        e = arr.clone().borrow()[(i.clone()-1) as usize].clone();
+        e = metamodelica::Dangerous::arrayGetNoBoundsChecking(arr.clone(), i.clone());
         if lessFn(e.clone(), res.clone()).unwrap() {
             res = e.clone();
         }
@@ -700,7 +700,7 @@ pub fn maxElement<T: Clone + 'static>(mut arr: metamodelica::Array<T>, mut lessF
     res = arr.borrow()[(1-1) as usize].clone();
     let __range0 = 2..=(arr.clone().borrow().len() as i32);
     for mut i in __range0 {
-        e = arr.clone().borrow()[(i.clone()-1) as usize].clone();
+        e = metamodelica::Dangerous::arrayGetNoBoundsChecking(arr.clone(), i.clone());
         if lessFn(res.clone(), e.clone()).unwrap() {
             res = e.clone();
         }
@@ -721,7 +721,7 @@ pub fn compare<T1: Clone + 'static, T2: Clone + 'static>(mut arr1: metamodelica:
         return res.clone();
     }
     for mut i in 1..=l1.clone() {
-        res = compFn(arr1.clone().borrow()[(i.clone()-1) as usize].clone(), arr2.clone().borrow()[(i.clone()-1) as usize].clone()).unwrap();
+        res = compFn(metamodelica::Dangerous::arrayGetNoBoundsChecking(arr1.clone(), i.clone()), metamodelica::Dangerous::arrayGetNoBoundsChecking(arr2.clone(), i.clone())).unwrap();
         if res.clone() != 0 {
             return res.clone();
         }
@@ -739,11 +739,11 @@ pub fn mapFold<TI: Clone + 'static, ArgT: Clone + 'static, TO: Clone + 'static>(
     if len.clone() == 0 {
         outArray = metamodelica::arrayFromVec(metamodelica::nil().into_iter().cloned().collect());
     } else {
-        (res, outArg) = func(arr.clone().borrow()[(1-1) as usize].clone(), outArg.clone()).unwrap();
+        (res, outArg) = func(metamodelica::Dangerous::arrayGetNoBoundsChecking(arr.clone(), 1), outArg.clone()).unwrap();
         outArray = metamodelica::arrayCreate(len.clone(), res.clone());
         unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), 1, res.clone()) };
         for mut i in 2..=len.clone() {
-            (res, outArg) = func(arr.clone().borrow()[(i.clone()-1) as usize].clone(), outArg.clone()).unwrap();
+            (res, outArg) = func(metamodelica::Dangerous::arrayGetNoBoundsChecking(arr.clone(), i.clone()), outArg.clone()).unwrap();
             unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), i.clone(), res.clone()) };
         }
     }
@@ -760,12 +760,12 @@ pub fn transpose<T: Clone + 'static>(mut arr: metamodelica::Array<metamodelica::
         outArray = arr.clone();
         return outArray.clone();
     }
-    row = arr.clone().borrow()[(1-1) as usize].clone();
+    row = metamodelica::Dangerous::arrayGetNoBoundsChecking(arr.clone(), 1);
     if row.clone().borrow().is_empty() {
         outArray = arr.clone();
         return outArray.clone();
     }
-    val = row.clone().borrow()[(1-1) as usize].clone();
+    val = metamodelica::Dangerous::arrayGetNoBoundsChecking(row.clone(), 1);
     c_len = (arr.clone().borrow().len() as i32);
     r_len = (row.clone().borrow().len() as i32);
     outArray = metamodelica::arrayCreate(r_len.clone(), row.clone());
@@ -774,8 +774,8 @@ pub fn transpose<T: Clone + 'static>(mut arr: metamodelica::Array<metamodelica::
     }
     for mut r in 1..=r_len.clone() {
         for mut c in 1..=c_len.clone() {
-            val = arr.clone().borrow()[(c.clone()-1) as usize].clone().borrow()[(r.clone()-1) as usize].clone();
-            {let _arr = outArray.clone().borrow()[(r.clone()-1) as usize].clone(); _arr.borrow_mut()[(c.clone()-1) as usize] = val.clone(); _arr};
+            val = metamodelica::Dangerous::arrayGetNoBoundsChecking(metamodelica::Dangerous::arrayGetNoBoundsChecking(arr.clone(), c.clone()), r.clone());
+            metamodelica::Dangerous::arrayUpdateNoBoundsChecking(metamodelica::Dangerous::arrayGetNoBoundsChecking(outArray.clone(), r.clone()), c.clone(), val.clone());
         }
     }
     outArray
@@ -797,11 +797,11 @@ pub fn threadMap<T1: Clone + 'static, T2: Clone + 'static, TO: Clone + 'static>(
     if len1.clone() != len2.clone() {
         bail!("fail");
     }
-    res = func(arr1.clone().borrow()[(1-1) as usize].clone(), arr2.clone().borrow()[(1-1) as usize].clone())?;
+    res = func(metamodelica::Dangerous::arrayGetNoBoundsChecking(arr1.clone(), 1), metamodelica::Dangerous::arrayGetNoBoundsChecking(arr2.clone(), 1))?;
     outArray = metamodelica::arrayCreate(len1.clone(), res.clone());
     unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), 1, res.clone()) };
     for mut i in 2..=len1.clone() {
-        unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), i.clone(), func(arr1.clone().borrow()[(i.clone()-1) as usize].clone(), arr2.clone().borrow()[(i.clone()-1) as usize].clone())?) };
+        unsafe { metamodelica::Dangerous::arrayInitSlot(outArray.clone(), i.clone(), func(metamodelica::Dangerous::arrayGetNoBoundsChecking(arr1.clone(), i.clone()), metamodelica::Dangerous::arrayGetNoBoundsChecking(arr2.clone(), i.clone()))?) };
     }
     Ok(outArray)
 }

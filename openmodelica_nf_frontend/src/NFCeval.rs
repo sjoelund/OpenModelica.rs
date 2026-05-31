@@ -1174,7 +1174,7 @@ pub fn evalBinaryScalarProduct(mut exp1: Arc<Expression::NFExpression>, mut exp2
             exp = Expression::makeZero(elem_ty.clone())?;
             let __range0 = 1..=(var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone().borrow().len() as i32);
             for mut i in __range0 {
-                exp = evalBinaryAdd(exp.clone(), evalBinaryMul(var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone().borrow()[(i.clone()-1) as usize].clone(), var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone().borrow()[(i.clone()-1) as usize].clone())?)?;
+                exp = evalBinaryAdd(exp.clone(), evalBinaryMul(metamodelica::Dangerous::arrayGetNoBoundsChecking(var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone(), i.clone()), metamodelica::Dangerous::arrayGetNoBoundsChecking(var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone(), i.clone()))?)?;
             }
             exp.clone()
         },
@@ -1210,7 +1210,7 @@ pub fn evalBinaryMatrixProduct(mut exp1: Arc<Expression::NFExpression>, mut exp2
                 arr = metamodelica::arrayCreate((arr1.clone().borrow().len() as i32), exp1.clone());
                 let __range0 = 1..=(arr1.clone().borrow().len() as i32);
                 for mut i in __range0 {
-                    unsafe { metamodelica::Dangerous::arrayInitSlot(arr.clone(), i.clone(), Expression::makeArray(row_ty.clone(), Array::map(arr2.clone(), (std::sync::Arc::new({ let __pe_b0 = arr1.clone().borrow()[(i.clone()-1) as usize].clone(); move |__pe_a1| evalBinaryScalarProduct(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)), true)) };
+                    unsafe { metamodelica::Dangerous::arrayInitSlot(arr.clone(), i.clone(), Expression::makeArray(row_ty.clone(), Array::map(arr2.clone(), (std::sync::Arc::new({ let __pe_b0 = metamodelica::Dangerous::arrayGetNoBoundsChecking(arr1.clone(), i.clone()); move |__pe_a1| evalBinaryScalarProduct(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)), true)) };
                 }
                 exp = Expression::makeArray(mat_ty.clone(), arr.clone(), true);
             }
@@ -2009,10 +2009,10 @@ pub fn evalBuiltinDiagonal(mut arg: Arc<Expression::NFExpression>) -> Result<Arc
             arr_rows = metamodelica::arrayCreate(n.clone(), zero.clone());
             for mut i in 1..=n.clone() {
                 arr_row = metamodelica::arrayFromVec(arr_zero.clone().borrow().clone());
-                exp = var_field!((*arg).elements, Expression::NFExpression::ARRAY).clone().borrow()[(i.clone()-1) as usize].clone();
+                exp = metamodelica::Dangerous::arrayGetNoBoundsChecking(var_field!((*arg).elements, Expression::NFExpression::ARRAY).clone(), i.clone());
                 e_lit = Expression::isLiteral(exp.clone());
                 arg_lit = arg_lit.clone() && e_lit.clone();
-                {let _arr = arr_row.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = exp.clone(); _arr};
+                metamodelica::Dangerous::arrayUpdateNoBoundsChecking(arr_row.clone(), i.clone(), exp.clone());
                 exp = Expression::makeArray(row_ty.clone(), arr_row.clone(), e_lit.clone());
                 unsafe { metamodelica::Dangerous::arrayInitSlot(arr_rows.clone(), i.clone(), exp.clone()) };
             }

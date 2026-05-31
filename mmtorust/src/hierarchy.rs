@@ -1987,9 +1987,9 @@ fn fmt_cref(cref: &Absyn::ComponentRef) -> String {
         Absyn::ComponentRef::ALLWILD => "__".to_owned(),
     };
     match raw.as_str() {
-        "MetaModelica.Dangerous.stringGetNoBoundsChecking" | "Dangerous.stringGetNoBoundsChecking" | ".MetaModelica.Dangerous.stringGetNoBoundsChecking" | "stringGetNoBoundsChecking" => "stringGet".to_owned(),
-        "MetaModelica.Dangerous.arrayGetNoBoundsChecking" | "Dangerous.arrayGetNoBoundsChecking" | ".MetaModelica.Dangerous.arrayGetNoBoundsChecking" | "arrayGetNoBoundsChecking" => "arrayGet".to_owned(),
-        "MetaModelica.Dangerous.arrayUpdateNoBoundsChecking" | "Dangerous.arrayUpdateNoBoundsChecking" | ".MetaModelica.Dangerous.arrayUpdateNoBoundsChecking" | "arrayUpdateNoBoundsChecking" => "arrayUpdate".to_owned(),
+        // The `*NoBoundsChecking` builtins are not normalised: they are distinct
+        // functions lowered as real `metamodelica::Dangerous::*` calls (see
+        // `typedexp::cref_to_dotted`).
         // Keep arrayCreateNoInit distinct from arrayCreate; codegen lowers it
         // to `metamodelica::Dangerous::arrayCreateNoInit(size)` (dropping the
         // dummy type-witness argument).

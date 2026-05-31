@@ -150,10 +150,10 @@ pub fn compose(mut map1: Arc<SBLinearMap>, mut map2: Arc<SBLinearMap>) -> Arc<SB
         gain = metamodelica::arrayCreate(len1.clone(), metamodelica::OrderedFloat(0.0_f64));
         offset = metamodelica::arrayCreate(len1.clone(), metamodelica::OrderedFloat(0.0_f64));
         for mut i in 1..=len1.clone() {
-            g1 = map1.gain.clone().borrow()[(i.clone()-1) as usize].clone();
-            g2 = map2.gain.clone().borrow()[(i.clone()-1) as usize].clone();
-            o1 = map1.offset.clone().borrow()[(i.clone()-1) as usize].clone();
-            o2 = map2.offset.clone().borrow()[(i.clone()-1) as usize].clone();
+            g1 = metamodelica::Dangerous::arrayGetNoBoundsChecking(map1.gain.clone(), i.clone());
+            g2 = metamodelica::Dangerous::arrayGetNoBoundsChecking(map2.gain.clone(), i.clone());
+            o1 = metamodelica::Dangerous::arrayGetNoBoundsChecking(map1.offset.clone(), i.clone());
+            o2 = metamodelica::Dangerous::arrayGetNoBoundsChecking(map2.offset.clone(), i.clone());
             unsafe { metamodelica::Dangerous::arrayInitSlot(gain.clone(), i.clone(), g1.clone() * g2.clone()) };
             unsafe { metamodelica::Dangerous::arrayInitSlot(offset.clone(), i.clone(), o2.clone() * g1.clone() + o1.clone()) };
         }
@@ -174,8 +174,8 @@ pub fn inverse(mut map: Arc<SBLinearMap>) -> Arc<SBLinearMap> {
     gain = metamodelica::arrayCreate(len.clone(), metamodelica::OrderedFloat(0.0_f64));
     offset = metamodelica::arrayCreate(len.clone(), metamodelica::OrderedFloat(0.0_f64));
     for mut i in 1..=len.clone() {
-        g = map.gain.clone().borrow()[(i.clone()-1) as usize].clone();
-        o = map.offset.clone().borrow()[(i.clone()-1) as usize].clone();
+        g = metamodelica::Dangerous::arrayGetNoBoundsChecking(map.gain.clone(), i.clone());
+        o = metamodelica::Dangerous::arrayGetNoBoundsChecking(map.offset.clone(), i.clone());
         if g.clone() != metamodelica::OrderedFloat((0) as f64) {
             unsafe { metamodelica::Dangerous::arrayInitSlot(gain.clone(), i.clone(), metamodelica::OrderedFloat(1.0_f64) / g.clone()) };
             unsafe { metamodelica::Dangerous::arrayInitSlot(offset.clone(), i.clone(), -(o.clone() / g.clone())) };
@@ -228,7 +228,7 @@ pub fn toString(mut map: Arc<SBLinearMap>) -> ArcStr {
     let mut strl: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let __range0 = (1..=(map.gain.clone().borrow().len() as i32)).rev();
     for mut i in __range0 {
-        strl = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", map.gain.clone().borrow()[(i.clone()-1) as usize].clone()))); __mm_s.push_str(&*literal!(" * x + ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", map.offset.clone().borrow()[(i.clone()-1) as usize].clone()))); ArcStr::from(__mm_s) }).clone(), strl.clone());
+        strl = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", metamodelica::Dangerous::arrayGetNoBoundsChecking(map.gain.clone(), i.clone())))); __mm_s.push_str(&*literal!(" * x + ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", metamodelica::Dangerous::arrayGetNoBoundsChecking(map.offset.clone(), i.clone())))); ArcStr::from(__mm_s) }).clone(), strl.clone());
     }
     r#str = stringDelimitList(strl.clone(), (literal!("\n")).clone());
     r#str

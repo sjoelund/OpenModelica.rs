@@ -461,7 +461,7 @@ pub fn minAdjCompMap(mut pw2: Arc<SBPWLinearMap::SBPWLinearMap>, mut pw1: Arc<SB
         reso = metamodelica::arrayCreate((gain.clone().borrow().len() as i32), metamodelica::OrderedFloat(0.0_f64));
         let __range0 = 1..=(gain.clone().borrow().len() as i32);
         for mut i in __range0 {
-            g = gain.clone().borrow()[(i.clone()-1) as usize].clone();
+            g = metamodelica::Dangerous::arrayGetNoBoundsChecking(gain.clone(), i.clone());
             if g.clone() == inf.clone() {
                 {
                     let __cell1 = metamodelica::OrderedFloat(0.0_f64);
@@ -496,7 +496,7 @@ pub fn minAdjCompMap(mut pw2: Arc<SBPWLinearMap::SBPWLinearMap>, mut pw1: Arc<SB
             ginv = SBLinearMap::gain(lm_inv.clone());
             let __range5 = 1..=(gain.clone().borrow().len() as i32);
             for mut i in __range5 {
-                g = gain.clone().borrow()[(i.clone()-1) as usize].clone();
+                g = metamodelica::Dangerous::arrayGetNoBoundsChecking(gain.clone(), i.clone());
                 if g.clone() == inf.clone() {
                     {
                         let __cell6 = metamodelica::OrderedFloat(0.0_f64);

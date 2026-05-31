@@ -89,9 +89,9 @@ pub fn new(mut dom: Arc<SBAtomicSet::SBAtomicSet>, mut lmap: Arc<SBLinearMap::SB
     o = SBLinearMap::offset(lmap.clone());
     let __range0 = 1..=(ints.clone().borrow().len() as i32);
     for mut j in __range0 {
-        i = ints.clone().borrow()[(j.clone()-1) as usize].clone();
-        gain = g.clone().borrow()[(j.clone()-1) as usize].clone();
-        offset = g.clone().borrow()[(j.clone()-1) as usize].clone();
+        i = metamodelica::Dangerous::arrayGetNoBoundsChecking(ints.clone(), j.clone());
+        gain = metamodelica::Dangerous::arrayGetNoBoundsChecking(g.clone(), j.clone());
+        offset = metamodelica::Dangerous::arrayGetNoBoundsChecking(g.clone(), j.clone());
         if gain.clone() < intReal(System::intMaxLit()) {
             lo = metamodelica::OrderedFloat((SBInterval::lowerBound(i.clone())) as f64) * gain.clone() + offset.clone();
             step = metamodelica::OrderedFloat((SBInterval::stepValue(i.clone())) as f64) * gain.clone();
@@ -177,7 +177,7 @@ pub fn image(mut map: Arc<SBPWAtomicLinearMap>, mut set: Arc<SBAtomicSet::SBAtom
     res = metamodelica::arrayCreate((inters.clone().borrow().len() as i32), inters.borrow()[(1-1) as usize].clone());
     let __range0 = 1..=(inters.clone().borrow().len() as i32);
     for mut i in __range0 {
-        int = inters.clone().borrow()[(i.clone()-1) as usize].clone();
+        int = metamodelica::Dangerous::arrayGetNoBoundsChecking(inters.clone(), i.clone());
         gain = gains.borrow()[(i.clone()-1) as usize].clone();
         offset = offsets.borrow()[(i.clone()-1) as usize].clone();
         tmp_lo = metamodelica::OrderedFloat((SBInterval::lowerBound(int.clone())) as f64) * gain.clone() + offset.clone();
