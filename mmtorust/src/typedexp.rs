@@ -1640,7 +1640,22 @@ pub fn infer_exp<'a>(
             let elseif: Vec<(TypedExp, TypedExp)> = (&**elseIfBranch).into_iter()
                 .map(|(c, b)| (infer_exp(c.as_ref(), env, top_level, pkg_prefix, type_vars), infer_exp(b.as_ref(), env, top_level, pkg_prefix, type_vars)))
                 .collect();
-            let ty = if then_.ty() != Ty::Unknown { then_.ty() } else { else_.ty() };
+            // Branch-type unification with MetaModelica's implicit first-output
+            // coercion: when one branch is a multi-output call (`Ty::Tuple`) and
+            // the other is a scalar (non-tuple) value, the tuple branch yields
+            // only its first output so both branches share the scalar type (e.g.
+            // `systs := if b then partitionIndependentBlocksSplitBlocks(..) else
+            // {syst}`, whose `then` returns a 3-tuple but `else` is a single
+            // list). Codegen applies the `.0` to the tuple branch; the
+            // expression's static type must then be the scalar branch's type so
+            // a single-variable assignment doesn't mis-expand its LHS into a
+            // tuple destructure (E0308). Otherwise keep the then-branch type
+            // (falling back to else when then is unknown).
+            let ty = match (then_.ty(), else_.ty()) {
+                (Ty::Tuple(_), other) if !matches!(other, Ty::Tuple(_) | Ty::Unknown) => other,
+                (other, Ty::Tuple(_)) if !matches!(other, Ty::Tuple(_) | Ty::Unknown) => other,
+                _ => if then_.ty() != Ty::Unknown { then_.ty() } else { else_.ty() },
+            };
             TypedExp::If { cond: Box::new(cond), then_: Box::new(then_), elseif, else_: Box::new(else_), ty }
         }
 
