@@ -1732,15 +1732,54 @@ pub fn infer_exp<'a>(
                         => ts[0].clone(),
                     _ => raw_body_ty,
                 };
-                let ty = match func.as_str() {
-                    "list" | "listReverse" => Ty::List(Box::new(body_ty.clone())),
-                    "listAppend" => body_ty.clone(),
-                    "sum" | "product" | "min" | "max" => body_ty.clone(),
-                    _ => match lookup_ty_in_hierarchy(&func, top_level) {
-                        Ty::Function { output, .. } => *output,
-                        _ => Ty::Unknown,
-                    },
+                // Per-level reduction result type. `list`/`listReverse` lift the
+                // collected type by one list level; the scalar folds and
+                // `listAppend` keep it; a user-defined reduction yields its
+                // function output type.
+                let reduction_result_ty = |func: &str, inner: &Ty| -> Ty {
+                    match func {
+                        "list" | "listReverse" => Ty::List(Box::new(inner.clone())),
+                        "listAppend" => inner.clone(),
+                        "sum" | "product" | "min" | "max" => inner.clone(),
+                        _ => match lookup_ty_in_hierarchy(func, top_level) {
+                            Ty::Function { output, .. } => *output,
+                            _ => Ty::Unknown,
+                        },
+                    }
                 };
+                // A multi-iterator COMBINE reduction desugars to NESTED
+                // single-iterator reductions. OMC's own frontend requires this
+                // rewrite (Static.elabCallReduction errors on multi-iterator
+                // COMBINE, advising e.g. `array(i+j for i, j) =>
+                // array(array(i+j for i) for j)`), and `Static.reductionType`
+                // lifts the result type one list level per iterator
+                // (`List.foldr(dims, Types.liftList, ty)`), so `list(e for a, b)`
+                // has type `list<list<...>>`. The compiled C confirms the LAST
+                // iterator's loop is OUTERMOST and one list level nests per
+                // iterator. Building the nesting here makes both the inferred
+                // type and the emitted accumulators correct, because every level
+                // is an ordinary single-iterator reduction the rest of the
+                // lowering already handles. (THREAD reductions zip their
+                // iterators into one loop and are left as a single node.)
+                if matches!(iter_kind, ReductionIterKind::Combine) && iters.len() > 1 {
+                    let mut acc_exp = body;
+                    let mut acc_ty = body_ty;
+                    // iters[0] becomes the innermost reduction, iters[last] the
+                    // outermost — matching the last-iterator-outermost nesting.
+                    for it in iters {
+                        let lvl_ty = reduction_result_ty(&func, &acc_ty);
+                        acc_exp = TypedExp::Reduction {
+                            func: func.clone(),
+                            body: Box::new(acc_exp),
+                            iterators: vec![it],
+                            iter_kind: ReductionIterKind::Combine,
+                            ty: lvl_ty.clone(),
+                        };
+                        acc_ty = lvl_ty;
+                    }
+                    return acc_exp;
+                }
+                let ty = reduction_result_ty(&func, &body_ty);
                 return TypedExp::Reduction {
                     func,
                     body: Box::new(body),
