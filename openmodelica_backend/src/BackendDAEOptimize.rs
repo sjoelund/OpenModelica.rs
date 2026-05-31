@@ -207,12 +207,12 @@ fn simplifyInStreamGetMinMaxAttributes(mut cr: Arc<DAE::ComponentRef>, mut inVar
     let mut outMin: Option<Arc<DAE::Exp>> = None;
     let mut outMax: Option<Arc<DAE::Exp>> = None;
     let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
-    for mut vars in &*inVars.clone() {
+    '__loop0: for mut vars in &*inVars.clone() {
         let mut vars = vars.clone();
-        if '__try0: {
-            (v, _) = unwrap_break_err!(BackendVariable::getVarSingle(cr.clone(), vars.clone()), '__try0);
+        if '__try1: {
+            (v, _) = unwrap_break_err!(BackendVariable::getVarSingle(cr.clone(), vars.clone()), '__try1);
             (outMin, outMax) = BackendVariable::getMinMaxAttribute(v.clone());
-            break;
+            break '__loop0;
             Ok::<(), anyhow::Error>(())
         }.is_err() {
         }
@@ -5059,60 +5059,60 @@ pub fn simplifyComplexFunction1(mut inDAE: Arc<BackendDAE::BackendDAE>, mut with
         n = ExpandableArray::getNumberOfElements(eqns.clone());
         update = false;
         indRemove = metamodelica::nil();
-        for mut i in 1..=n.clone() {
-            match '__try2: {
+        '__loop2: for mut i in 1..=n.clone() {
+            match '__try3: {
                 eqn = BackendEquation::get(eqns.clone(), i.clone());
                 Ok::<_, anyhow::Error>((eqn.clone(),))
             } {
-                Ok((__try2_o0,)) => {
-                    eqn = __try2_o0;
+                Ok((__try3_o0,)) => {
+                    eqn = __try3_o0;
                 }
                 Err(_) => {
-                    continue;
+                    continue '__loop2;
                 }
             }
             if BackendEquation::isComplexEquation(eqn.clone()) || BackendEquation::isArrayEquation(eqn.clone()) {
                 if BackendEquation::isComplexEquation(eqn.clone()) {
-                    let (__pa3, __pa4, __pa5, __pa6, __pa7) = ::match_deref::match_deref! { match &(eqn.clone()) {
-                        Deref @ BackendDAE::Equation::COMPLEX_EQUATION { source: __pa3, attr: __pa4, right: __pa5, left: __pa6, size: __pa7 } => (__pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone()),
+                    let (__pa4, __pa5, __pa6, __pa7, __pa8) = ::match_deref::match_deref! { match &(eqn.clone()) {
+                        Deref @ BackendDAE::Equation::COMPLEX_EQUATION { source: __pa4, attr: __pa5, right: __pa6, left: __pa7, size: __pa8 } => (__pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
-                    source = __pa3.clone();
-                    attr = __pa4.clone();
-                    right = __pa5.clone();
-                    left = __pa6.clone();
-                    size = __pa7.clone();
+                    source = __pa4.clone();
+                    attr = __pa5.clone();
+                    right = __pa6.clone();
+                    left = __pa7.clone();
+                    size = __pa8.clone();
                 } else {
-                    let (__pa8, __pa9, __pa10, __pa11) = ::match_deref::match_deref! { match &(eqn.clone()) {
-                        Deref @ BackendDAE::Equation::ARRAY_EQUATION { source: __pa8, attr: __pa9, right: __pa10, left: __pa11, .. } => (__pa8.clone(), __pa9.clone(), __pa10.clone(), __pa11.clone()),
+                    let (__pa9, __pa10, __pa11, __pa12) = ::match_deref::match_deref! { match &(eqn.clone()) {
+                        Deref @ BackendDAE::Equation::ARRAY_EQUATION { source: __pa9, attr: __pa10, right: __pa11, left: __pa12, .. } => (__pa9.clone(), __pa10.clone(), __pa11.clone(), __pa12.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
-                    source = __pa8.clone();
-                    attr = __pa9.clone();
-                    right = __pa10.clone();
-                    left = __pa11.clone();
+                    source = __pa9.clone();
+                    attr = __pa10.clone();
+                    right = __pa11.clone();
+                    left = __pa12.clone();
                 }
                 if Expression::isTuple(left.clone()) && Expression::isTuple(right.clone()) {
-                    let __pa12 = ::match_deref::match_deref! { match &(left.clone()) {
-                        Deref @ DAE::Exp::TUPLE { PR: __pa12 } => __pa12.clone(),
-                        _ => bail!("pattern mismatch"),
-                    } };
-                    left_lst = __pa12.clone();
-                    let __pa13 = ::match_deref::match_deref! { match &(right.clone()) {
+                    let __pa13 = ::match_deref::match_deref! { match &(left.clone()) {
                         Deref @ DAE::Exp::TUPLE { PR: __pa13 } => __pa13.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
-                    right_lst = __pa13.clone();
+                    left_lst = __pa13.clone();
+                    let __pa14 = ::match_deref::match_deref! { match &(right.clone()) {
+                        Deref @ DAE::Exp::TUPLE { PR: __pa14 } => __pa14.clone(),
+                        _ => bail!("pattern mismatch"),
+                    } };
+                    right_lst = __pa14.clone();
                     update = true;
                     indRemove = metamodelica::cons(i.clone(), indRemove.clone());
                     for mut e1 in &*left_lst.clone() {
                         let mut e1 = e1.clone();
-                        let (__pa14, __pa15) = ::match_deref::match_deref! { match &(right_lst.clone()) {
-                            Deref @ metamodelica::List::Cons { head: __pa14, tail: __pa15 } => (__pa14.clone(), __pa15.clone()),
+                        let (__pa15, __pa16) = ::match_deref::match_deref! { match &(right_lst.clone()) {
+                            Deref @ metamodelica::List::Cons { head: __pa15, tail: __pa16 } => (__pa15.clone(), __pa16.clone()),
                             _ => bail!("pattern mismatch"),
                         } };
-                        e2 = __pa14.clone();
-                        right_lst = __pa15.clone();
+                        e2 = __pa15.clone();
+                        right_lst = __pa16.clone();
                         if !(Expression::isWild(e1.clone())) {
                             if Expression::isScalar(e2.clone())? {
                                 eqn1 = BackendEquation::generateEquation(e1.clone(), e2.clone(), source.clone(), attr.clone())?;
@@ -5122,12 +5122,12 @@ pub fn simplifyComplexFunction1(mut inDAE: Arc<BackendDAE::BackendDAE>, mut with
                                 arrayLst = simplifyComplexFunction2(e2.clone());
                                 for mut e_asub in &*arrayLst.clone() {
                                     let mut e_asub = e_asub.clone();
-                                    let (__pa16, __pa17) = ::match_deref::match_deref! { match &(expLst.clone()) {
-                                        Deref @ metamodelica::List::Cons { head: __pa16, tail: __pa17 } => (__pa16.clone(), __pa17.clone()),
+                                    let (__pa17, __pa18) = ::match_deref::match_deref! { match &(expLst.clone()) {
+                                        Deref @ metamodelica::List::Cons { head: __pa17, tail: __pa18 } => (__pa17.clone(), __pa18.clone()),
                                         _ => bail!("pattern mismatch"),
                                     } };
-                                    e3 = __pa16.clone();
-                                    expLst = __pa17.clone();
+                                    e3 = __pa17.clone();
+                                    expLst = __pa18.clone();
                                     eqn1 = BackendEquation::generateEquation(e_asub.clone(), e3.clone(), source.clone(), attr.clone())?;
                                     eqns = BackendEquation::add(eqn1.clone(), eqns.clone())?;
                                 }
@@ -5135,74 +5135,74 @@ pub fn simplifyComplexFunction1(mut inDAE: Arc<BackendDAE::BackendDAE>, mut with
                         }
                     }
                 } else if Expression::isArray(left.clone()) && Expression::isArray(right.clone()) {
-                    match '__try18: {
-                        left_lst = unwrap_break_err!(Expression::getArrayOrRangeContents(left.clone()), '__try18);
-                        right_lst = unwrap_break_err!(Expression::getArrayOrRangeContents(right.clone()), '__try18);
+                    match '__try19: {
+                        left_lst = unwrap_break_err!(Expression::getArrayOrRangeContents(left.clone()), '__try19);
+                        right_lst = unwrap_break_err!(Expression::getArrayOrRangeContents(right.clone()), '__try19);
                         update = true;
                         indRemove = metamodelica::cons(i.clone(), indRemove.clone());
                         for mut e1 in &*left_lst.clone() {
                             let mut e1 = e1.clone();
-                            let (__pa19, __pa20) = ::match_deref::match_deref! { match &(right_lst.clone()) {
-                                Deref @ metamodelica::List::Cons { head: __pa19, tail: __pa20 } => (__pa19.clone(), __pa20.clone()),
-                                _ => break '__try18 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
+                            let (__pa20, __pa21) = ::match_deref::match_deref! { match &(right_lst.clone()) {
+                                Deref @ metamodelica::List::Cons { head: __pa20, tail: __pa21 } => (__pa20.clone(), __pa21.clone()),
+                                _ => break '__try19 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
                             } };
-                            e2 = __pa19.clone();
-                            right_lst = __pa20.clone();
+                            e2 = __pa20.clone();
+                            right_lst = __pa21.clone();
                             if !(Expression::isWild(e1.clone())) {
-                                if unwrap_break_err!(Expression::isScalar(e2.clone()), '__try18) {
-                                    eqn1 = unwrap_break_err!(BackendEquation::generateEquation(e1.clone(), e2.clone(), source.clone(), attr.clone()), '__try18);
-                                    eqns = unwrap_break_err!(BackendEquation::add(eqn1.clone(), eqns.clone()), '__try18);
+                                if unwrap_break_err!(Expression::isScalar(e2.clone()), '__try19) {
+                                    eqn1 = unwrap_break_err!(BackendEquation::generateEquation(e1.clone(), e2.clone(), source.clone(), attr.clone()), '__try19);
+                                    eqns = unwrap_break_err!(BackendEquation::add(eqn1.clone(), eqns.clone()), '__try19);
                                 } else {
                                     expLst = simplifyComplexFunction2(e1.clone());
                                     arrayLst = simplifyComplexFunction2(e2.clone());
                                     for mut e_asub in &*arrayLst.clone() {
                                         let mut e_asub = e_asub.clone();
-                                        let (__pa21, __pa22) = ::match_deref::match_deref! { match &(expLst.clone()) {
-                                            Deref @ metamodelica::List::Cons { head: __pa21, tail: __pa22 } => (__pa21.clone(), __pa22.clone()),
-                                            _ => break '__try18 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
+                                        let (__pa22, __pa23) = ::match_deref::match_deref! { match &(expLst.clone()) {
+                                            Deref @ metamodelica::List::Cons { head: __pa22, tail: __pa23 } => (__pa22.clone(), __pa23.clone()),
+                                            _ => break '__try19 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
                                         } };
-                                        e3 = __pa21.clone();
-                                        expLst = __pa22.clone();
-                                        eqn1 = unwrap_break_err!(BackendEquation::generateEquation(e_asub.clone(), e3.clone(), source.clone(), attr.clone()), '__try18);
-                                        eqns = unwrap_break_err!(BackendEquation::add(eqn1.clone(), eqns.clone()), '__try18);
+                                        e3 = __pa22.clone();
+                                        expLst = __pa23.clone();
+                                        eqn1 = unwrap_break_err!(BackendEquation::generateEquation(e_asub.clone(), e3.clone(), source.clone(), attr.clone()), '__try19);
+                                        eqns = unwrap_break_err!(BackendEquation::add(eqn1.clone(), eqns.clone()), '__try19);
                                     }
                                 }
                             }
                         }
                         Ok::<_, anyhow::Error>((indRemove.clone(), left_lst.clone(), right_lst.clone(), update.clone()))
                     } {
-                        Ok((__try18_o0, __try18_o1, __try18_o2, __try18_o3)) => {
-                            indRemove = __try18_o0;
-                            left_lst = __try18_o1;
-                            right_lst = __try18_o2;
-                            update = __try18_o3;
+                        Ok((__try19_o0, __try19_o1, __try19_o2, __try19_o3)) => {
+                            indRemove = __try19_o0;
+                            left_lst = __try19_o1;
+                            right_lst = __try19_o2;
+                            update = __try19_o3;
                         }
                         Err(_) => {
-                            continue;
+                            continue '__loop2;
                         }
                     }
                 } else if withTmpVars.clone() && Expression::isTuple(left.clone()) && Expression::isCall(right.clone()) {
-                    let __pa23 = ::match_deref::match_deref! { match &(left.clone()) {
-                        Deref @ DAE::Exp::TUPLE { PR: __pa23 } => __pa23.clone(),
+                    let __pa24 = ::match_deref::match_deref! { match &(left.clone()) {
+                        Deref @ DAE::Exp::TUPLE { PR: __pa24 } => __pa24.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
-                    left_lst = __pa23.clone();
-                    let (__pa24, __pa25, __pa26) = ::match_deref::match_deref! { match &(right.clone()) {
-                        Deref @ DAE::Exp::CALL { attr: __pa24, expLst: __pa25, path: __pa26 } => (__pa24.clone(), __pa25.clone(), __pa26.clone()),
+                    left_lst = __pa24.clone();
+                    let (__pa25, __pa26, __pa27) = ::match_deref::match_deref! { match &(right.clone()) {
+                        Deref @ DAE::Exp::CALL { attr: __pa25, expLst: __pa26, path: __pa27 } => (__pa25.clone(), __pa26.clone(), __pa27.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
-                    cattr = __pa24.clone();
-                    expLst = __pa25.clone();
-                    path = __pa26.clone();
+                    cattr = __pa25.clone();
+                    expLst = __pa26.clone();
+                    path = __pa27.clone();
                     expLst = metamodelica::nil();
                     for mut e1 in &*left_lst.clone() {
                         let mut e1 = e1.clone();
                         if Expression::isCref(e1.clone()) {
-                            let __pa27 = ::match_deref::match_deref! { match &(e1.clone()) {
-                                Deref @ DAE::Exp::CREF { componentRef: __pa27, .. } => __pa27.clone(),
+                            let __pa28 = ::match_deref::match_deref! { match &(e1.clone()) {
+                                Deref @ DAE::Exp::CREF { componentRef: __pa28, .. } => __pa28.clone(),
                                 _ => bail!("pattern mismatch"),
                             } };
-                            cr = __pa27.clone();
+                            cr = __pa28.clone();
                             if Expression::expHasCrefNoPreOrStart(right.clone(), cr.clone())? {
                                 update = true;
                                 cr = ComponentReferenceBasics::makeCrefIdent(({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmpVarPrefix.clone()); __mm_s.push_str(&*intString(idx.clone())); ArcStr::from(__mm_s) }).clone(), Expression::r#typeof(e1.clone())?, metamodelica::nil());
@@ -5228,12 +5228,12 @@ pub fn simplifyComplexFunction1(mut inDAE: Arc<BackendDAE::BackendDAE>, mut with
                             eqns = BackendEquation::add(eqn1.clone(), eqns.clone())?;
                         } else if Expression::isArray(e1.clone()) {
                             update = true;
-                            let (__pa28, __pa29) = ::match_deref::match_deref! { match &(e1.clone()) {
-                                Deref @ DAE::Exp::ARRAY { scalar: __pa28, array: __pa29, .. } => (__pa28.clone(), __pa29.clone()),
+                            let (__pa29, __pa30) = ::match_deref::match_deref! { match &(e1.clone()) {
+                                Deref @ DAE::Exp::ARRAY { scalar: __pa29, array: __pa30, .. } => (__pa29.clone(), __pa30.clone()),
                                 _ => bail!("pattern mismatch"),
                             } };
-                            sc = __pa28.clone();
-                            arrayLst = __pa29.clone();
+                            sc = __pa29.clone();
+                            arrayLst = __pa30.clone();
                             m = (arrayLst.clone().len() as i32);
                             cr = ComponentReferenceBasics::makeCrefIdent(({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmpVarPrefix.clone()); __mm_s.push_str(&*intString(idx.clone())); ArcStr::from(__mm_s) }).clone(), Expression::r#typeof(e1.clone())?, metamodelica::nil());
                             idx = idx.clone() + 1;
@@ -5252,12 +5252,12 @@ pub fn simplifyComplexFunction1(mut inDAE: Arc<BackendDAE::BackendDAE>, mut with
                             j = 1;
                             for mut e2 in &*arrayLst2.clone() {
                                 let mut e2 = e2.clone();
-                                let (__pa30, __pa31) = ::match_deref::match_deref! { match &(arrayLst.clone()) {
-                                    Deref @ metamodelica::List::Cons { head: __pa30, tail: __pa31 } => (__pa30.clone(), __pa31.clone()),
+                                let (__pa31, __pa32) = ::match_deref::match_deref! { match &(arrayLst.clone()) {
+                                    Deref @ metamodelica::List::Cons { head: __pa31, tail: __pa32 } => (__pa31.clone(), __pa32.clone()),
                                     _ => bail!("pattern mismatch"),
                                 } };
-                                e3 = __pa30.clone();
-                                arrayLst = __pa31.clone();
+                                e3 = __pa31.clone();
+                                arrayLst = __pa32.clone();
                                 eqn1 = Arc::new(BackendDAE::Equation::EQUATION { exp: e2.clone(), scalar: e3.clone(), source: DAE::emptyElementSource().clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_DYNAMIC.clone() });
                                 eqns = BackendEquation::add(eqn1.clone(), eqns.clone())?;
                                 cr = ComponentReferenceBasics::makeCrefIdent(({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmpVarPrefix.clone()); __mm_s.push_str(&*intString(idx.clone() - 1)); ArcStr::from(__mm_s) }).clone(), Expression::r#typeof(e1.clone())?, list![Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: j.clone() }) })]);

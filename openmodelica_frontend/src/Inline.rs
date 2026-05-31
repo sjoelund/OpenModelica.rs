@@ -2245,14 +2245,14 @@ fn getExpFromArgMap(mut inArgMap: Arc<metamodelica::List<(Arc<DAE::ComponentRef>
     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     subs = ComponentReferenceBasics::crefSubs(inComponentRef.clone())?;
     key = ComponentReference::crefStripSubs(inComponentRef.clone())?;
-    for mut arg in &*inArgMap.clone() {
+    '__loop0: for mut arg in &*inArgMap.clone() {
         let mut arg = arg.clone();
         (cref, exp) = arg.clone();
         if ComponentReferenceBasics::crefEqual(cref.clone(), key.clone())? {
-            if let Ok(__iflet0) = Expression::applyExpSubscripts(exp.clone(), subs.clone()) {
-                outExp = __iflet0;
+            if let Ok(__iflet1) = Expression::applyExpSubscripts(exp.clone(), subs.clone()) {
+                outExp = __iflet1;
             } else {
-                continue;
+                continue '__loop0;
             }
             return Ok(outExp.clone());
         }

@@ -428,6 +428,14 @@ struct GenCtx {
     /// Monotonic counter for synthesizing fresh names for real-literal
     /// pattern bindings (see `pat_extra_guards`).
     pat_lit_counter: u32,
+    /// Stack of enclosing loop labels (innermost last), one entry per active
+    /// `for`/`while` loop. `Some(label)` when the loop was emitted with an
+    /// explicit `'__loopN:` label because its body contains a `break`/`continue`
+    /// nested inside a `try` block (a labeled Rust block, which would otherwise
+    /// intercept an unlabeled `break`/`continue` — E0695); `None` otherwise.
+    /// A `break`/`continue` consults the innermost entry and uses the label
+    /// when present so it diverges to the loop rather than the labeled block.
+    loop_label_stack: Vec<Option<String>>,
 }
 
 /// Binding-shape classification for variables tracked in `GenCtx::variants`.
@@ -496,6 +504,7 @@ impl GenCtx {
             tail_lowering: None,
             pat_extra_guards: Vec::new(),
             pat_lit_counter: 0,
+            loop_label_stack: Vec::new(),
         }
     }
 
@@ -4084,6 +4093,100 @@ fn stmt_reads_name(stmt: &typedexp::TypedStmt, name: &str) -> bool {
         S::Failure { body } => stmts_read_name(body, name),
         S::Return | S::Break | S::Continue | S::Todo(_) => false,
     }
+}
+
+/// True if `stmts` contain a `break`/`continue` that targets the *enclosing*
+/// loop AND is lexically nested inside a `try`/`failure` block (tracked by
+/// `in_try`).
+///
+/// `try`/`failure` blocks lower to *labeled* Rust blocks (`'__tryN: { … }`); an
+/// unlabeled `break`/`continue` nested in one would diverge through that block
+/// rather than to the loop, which Rust rejects (E0695). A loop whose body
+/// satisfies this predicate (called with `in_try = false`) must therefore be
+/// emitted with an explicit label.
+///
+/// The walk descends through `if`/`try`/`failure` statements *and* into
+/// `match`/`matchcontinue` arm bodies (which lower to inline `match` arms, so a
+/// break inside an arm still targets the enclosing loop), but stops at nested
+/// `for`/`while` boundaries — a break there targets the nested loop, not ours
+/// (only their iterator/condition expressions are still in our scope).
+fn stmts_break_under_try(stmts: &[typedexp::TypedStmt], in_try: bool) -> bool {
+    use typedexp::TypedStmt as S;
+    stmts.iter().any(|s| match s {
+        S::Break | S::Continue => in_try,
+        S::Assign { rhs, .. } => exp_break_under_try(rhs, in_try),
+        S::NoRetCall { call } => exp_break_under_try(call, in_try),
+        S::If { cond, then_, elseif, else_ } => {
+            exp_break_under_try(cond, in_try)
+                || stmts_break_under_try(then_, in_try)
+                || elseif.iter().any(|(c, b)| exp_break_under_try(c, in_try) || stmts_break_under_try(b, in_try))
+                || stmts_break_under_try(else_, in_try)
+        }
+        S::Try { body, else_body } => {
+            stmts_break_under_try(body, true) || stmts_break_under_try(else_body, true)
+        }
+        S::Failure { body } => stmts_break_under_try(body, true),
+        // Nested loops own their break scope; only their range/condition
+        // expressions are still in the current loop's scope.
+        S::For { range, .. } => exp_break_under_try(range, in_try),
+        S::While { cond, .. } => exp_break_under_try(cond, in_try),
+        S::Return | S::Todo(_) => false,
+    })
+}
+
+/// Expression counterpart of [`stmts_break_under_try`]: descends into
+/// `match`/`matchcontinue` arm statements (the only place a `TypedStmt` — and
+/// hence a `break`/`continue` — can appear inside an expression). `in_try`
+/// carries the surrounding labeled-block context across the expression.
+fn exp_break_under_try(e: &TypedExp, in_try: bool) -> bool {
+    match e {
+        TypedExp::Match { input, cases, .. } => {
+            exp_break_under_try(input, in_try)
+                || cases.iter().any(|c| {
+                    c.guard.as_ref().is_some_and(|g| exp_break_under_try(g, in_try))
+                        || c.locals.iter().any(|(_, _, d, _)| d.as_ref().is_some_and(|d| exp_break_under_try(d, in_try)))
+                        || stmts_break_under_try(&c.stmts, in_try)
+                        || exp_break_under_try(&c.result, in_try)
+                })
+        }
+        TypedExp::Call { args, named_args, .. }
+        | TypedExp::Constructor { args, named_args, .. }
+        | TypedExp::PartEval { args, named_args, .. } => {
+            args.iter().any(|e| exp_break_under_try(e, in_try))
+                || named_args.iter().any(|(_, e)| exp_break_under_try(e, in_try))
+        }
+        TypedExp::BinOp { lhs, rhs, .. } => exp_break_under_try(lhs, in_try) || exp_break_under_try(rhs, in_try),
+        TypedExp::UnOp { operand, .. } => exp_break_under_try(operand, in_try),
+        TypedExp::If { cond, then_, elseif, else_, .. } => {
+            exp_break_under_try(cond, in_try)
+                || exp_break_under_try(then_, in_try)
+                || elseif.iter().any(|(c, e)| exp_break_under_try(c, in_try) || exp_break_under_try(e, in_try))
+                || exp_break_under_try(else_, in_try)
+        }
+        TypedExp::Cons { head, tail, .. } => exp_break_under_try(head, in_try) || exp_break_under_try(tail, in_try),
+        TypedExp::Tuple(es) => es.iter().any(|e| exp_break_under_try(e, in_try)),
+        TypedExp::Array { elems, .. } => elems.iter().any(|e| exp_break_under_try(e, in_try)),
+        TypedExp::Range { start, step, stop, .. } => {
+            exp_break_under_try(start, in_try)
+                || step.as_ref().is_some_and(|s| exp_break_under_try(s, in_try))
+                || exp_break_under_try(stop, in_try)
+        }
+        TypedExp::Reduction { body, iterators, .. } => {
+            exp_break_under_try(body, in_try)
+                || iterators.iter().any(|it| exp_break_under_try(&it.range, in_try)
+                    || it.guard.as_ref().is_some_and(|g| exp_break_under_try(g, in_try)))
+        }
+        TypedExp::Var { segments, .. } => {
+            segments.iter().any(|s| s.subscripts.iter().any(|e| exp_break_under_try(e, in_try)))
+        }
+        TypedExp::Lit(_) | TypedExp::Todo(_) => false,
+    }
+}
+
+/// True if a loop with body `stmts` must be emitted with an explicit label so
+/// its `break`/`continue` statements can name it (see [`stmts_break_under_try`]).
+fn loop_body_needs_label(stmts: &[typedexp::TypedStmt]) -> bool {
+    stmts_break_under_try(stmts, false)
 }
 
 fn pat_reads_name(_pat: &TypedPat, _name: &str) -> bool {
@@ -16084,6 +16187,16 @@ fn emit_stmt<'a>(
                 // `(a..=b).step_by(..)`), so feed it straight to `for ... in`.
                 t => format!("{r} /* Unknown type for iterator {:?} */", t),
             };
+            // Label the loop when its body contains a `break`/`continue` nested
+            // inside a `try`/`failure` block, which lowers to a labeled Rust
+            // block that would otherwise intercept the unlabeled control-flow
+            // (E0695). See `loop_body_needs_label`.
+            let loop_label = if loop_body_needs_label(body) {
+                let l = format!("'__loop{}", *fresh); *fresh += 1; Some(l)
+            } else {
+                None
+            };
+            let label_prefix = match &loop_label { Some(l) => format!("{l}: "), None => String::new() };
             // Rust extends temporaries in a `for` operand to the entire loop scope.
             // If the operand reads through a `RefCell` (`.borrow()`), that Ref stays
             // alive across every iteration — and any `borrow_mut()` on the same cell
@@ -16092,9 +16205,9 @@ fn emit_stmt<'a>(
             if r.contains(".borrow(") || r.contains(".borrow_mut(") {
                 let n = *fresh; *fresh += 1;
                 writeln!(out, "{indent}let __range{n} = {r};").unwrap();
-                writeln!(out, "{indent}for mut {} in __range{n} {{", escape_ident(var)).unwrap();
+                writeln!(out, "{indent}{label_prefix}for mut {} in __range{n} {{", escape_ident(var)).unwrap();
             } else {
-                writeln!(out, "{indent}for mut {} in {r} {{", escape_ident(var)).unwrap();
+                writeln!(out, "{indent}{label_prefix}for mut {} in {r} {{", escape_ident(var)).unwrap();
             }
             // Element type: peel List/Array.
             let elem_ty = match range.ty() { Ty::List(t) | Ty::Array(t) | Ty::Range(t) => *t, _ => Ty::Unknown };
@@ -16128,7 +16241,9 @@ fn emit_stmt<'a>(
             // seeds its shadow with `= x.clone()` rather than a bare
             // `let mut x: T;` that reads uninitialised memory (E0381).
             let iter_newly_init = ctx.fn_initialized_vars.insert(var.clone());
+            ctx.loop_label_stack.push(loop_label);
             emit_stmts(out, &format!("{indent}    "), body, fail_mode, ctx, &mut inner, top_level, fresh);
+            ctx.loop_label_stack.pop();
             if iter_newly_init { ctx.fn_initialized_vars.remove(var); }
             match saved_arg_ty {
                 Some(t) => { ctx.fn_env_vars.insert(var.clone(), t); }
@@ -16137,21 +16252,31 @@ fn emit_stmt<'a>(
             writeln!(out, "{indent}}}").unwrap();
         }
         S::While { cond, body } => {
+            // Label the loop when a `break`/`continue` is nested inside a
+            // `try`/`failure` labeled block in its body (see
+            // `loop_body_needs_label` and the `for` arm above for the E0695
+            // rationale).
+            let loop_label = if loop_body_needs_label(body) {
+                let l = format!("'__loop{}", *fresh); *fresh += 1; Some(l)
+            } else {
+                None
+            };
+            let label_prefix = match &loop_label { Some(l) => format!("{l}: "), None => String::new() };
             // `while true { ... }` doesn't get the `!` (never-falls-through)
             // typing that Rust's `loop { ... }` does, so any variable
             // assigned inside before a `break` stays "possibly uninitialized"
             // for code after the loop (E0381). Use `loop` when the condition
             // is literally `true` so post-loop reads typecheck.
             if matches!(cond, TypedExp::Lit(typedexp::Lit::Bool(true))) {
-                writeln!(out, "{indent}loop {{").unwrap();
-                emit_stmts(out, &format!("{indent}    "), body, fail_mode, ctx, env, top_level, fresh);
-                writeln!(out, "{indent}}}").unwrap();
+                writeln!(out, "{indent}{label_prefix}loop {{").unwrap();
             } else {
                 let c = emit_exp(cond, false, ctx, top_level);
-                writeln!(out, "{indent}while {c} {{").unwrap();
-                emit_stmts(out, &format!("{indent}    "), body, fail_mode, ctx, env, top_level, fresh);
-                writeln!(out, "{indent}}}").unwrap();
+                writeln!(out, "{indent}{label_prefix}while {c} {{").unwrap();
             }
+            ctx.loop_label_stack.push(loop_label);
+            emit_stmts(out, &format!("{indent}    "), body, fail_mode, ctx, env, top_level, fresh);
+            ctx.loop_label_stack.pop();
+            writeln!(out, "{indent}}}").unwrap();
         }
         S::Try { body, else_body } => {
             // ── Single-statement fast path ──────────────────────────────────
@@ -16375,8 +16500,14 @@ fn emit_stmt<'a>(
                 writeln!(out, "{indent}return {tail};").unwrap();
             }
         }
-        S::Break    => writeln!(out, "{indent}break;").unwrap(),
-        S::Continue => writeln!(out, "{indent}continue;").unwrap(),
+        S::Break    => match ctx.loop_label_stack.last() {
+            Some(Some(lbl)) => writeln!(out, "{indent}break {lbl};").unwrap(),
+            _ => writeln!(out, "{indent}break;").unwrap(),
+        },
+        S::Continue => match ctx.loop_label_stack.last() {
+            Some(Some(lbl)) => writeln!(out, "{indent}continue {lbl};").unwrap(),
+            _ => writeln!(out, "{indent}continue;").unwrap(),
+        },
         S::Todo(s)  => writeln!(out, "{indent}/* todo stmt: {} */", s.chars().take(60).collect::<String>()).unwrap(),
     }
 }

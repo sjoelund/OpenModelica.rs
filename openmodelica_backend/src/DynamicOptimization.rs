@@ -759,31 +759,31 @@ pub fn simplifyConstraints(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
             eqns = __pa5.clone();
             vars = __pa6.clone();
             b = false;
-            for mut comp in &*comps.clone() {
+            '__loop8: for mut comp in &*comps.clone() {
                 let mut comp = comp.clone();
                 if (::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ BackendDAE::StrongComponent::SINGLEEQUATION { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } }) {
-                    let (__pa8, __pa9) = ::match_deref::match_deref! { match &(comp.clone()) {
-                        Deref @ BackendDAE::StrongComponent::SINGLEEQUATION { var: __pa8, eqn: __pa9 } => (__pa8.clone(), __pa9.clone()),
+                    let (__pa9, __pa10) = ::match_deref::match_deref! { match &(comp.clone()) {
+                        Deref @ BackendDAE::StrongComponent::SINGLEEQUATION { var: __pa9, eqn: __pa10 } => (__pa9.clone(), __pa10.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
-                    vindx = __pa8.clone();
-                    eindex = __pa9.clone();
+                    vindx = __pa9.clone();
+                    eindex = __pa10.clone();
                     var_con = BackendVariable::getVarAt(vars.clone(), vindx.clone())?;
                     b3 = BackendVariable::isRealOptimizeConstraintsVars(var_con.clone());
                     if b3.clone() {
-                        if '__try10: {
-                            let (__pa13, __pa11, __pa12) = ::match_deref::match_deref! { match &(BackendEquation::get(eqns.clone(), eindex.clone())) {
-                                __pa13 @ Deref @ BackendDAE::Equation::EQUATION { scalar: __pa11, exp: __pa12, .. } => (__pa13.clone(), __pa11.clone(), __pa12.clone()),
-                                _ => break '__try10 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
+                        if '__try11: {
+                            let (__pa14, __pa12, __pa13) = ::match_deref::match_deref! { match &(BackendEquation::get(eqns.clone(), eindex.clone())) {
+                                __pa14 @ Deref @ BackendDAE::Equation::EQUATION { scalar: __pa12, exp: __pa13, .. } => (__pa14.clone(), __pa12.clone(), __pa13.clone()),
+                                _ => break '__try11 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
                             } };
-                            e2 = __pa11.clone();
-                            e1 = __pa12.clone();
-                            eqn_ = __pa13.clone();
-                            let true = (unwrap_break_err!(ExpressionBasics::expEqual(e1.clone(), BackendVariable::varExp(var_con.clone())?), '__try10)) else { break '__try10 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
+                            e2 = __pa12.clone();
+                            e1 = __pa13.clone();
+                            eqn_ = __pa14.clone();
+                            let true = (unwrap_break_err!(ExpressionBasics::expEqual(e1.clone(), BackendVariable::varExp(var_con.clone())?), '__try11)) else { break '__try11 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
                             Ok::<(), anyhow::Error>(())
                         }.is_err() {
                             b3 = false;
@@ -812,26 +812,26 @@ pub fn simplifyConstraints(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
         __acc.reverse()
     }));
                         if (var_lst_opt.clone().len() as i32) == 1 {
-                            let __pa14 = ::match_deref::match_deref! { match &(var_lst_opt.clone()) {
-                                Deref @ metamodelica::List::Cons { head: __pa14, tail: Deref @ metamodelica::List::Nil } => __pa14.clone(),
+                            let __pa15 = ::match_deref::match_deref! { match &(var_lst_opt.clone()) {
+                                Deref @ metamodelica::List::Cons { head: __pa15, tail: Deref @ metamodelica::List::Nil } => __pa15.clone(),
                                 _ => bail!("pattern mismatch"),
                             } };
-                            var_ = __pa14.clone();
-                            let BackendDAE::VAR { varName: __pa16, .. } = (var_.clone()) else { bail!("pattern mismatch") };
-                            cr = __pa16.clone();
+                            var_ = __pa15.clone();
+                            let BackendDAE::VAR { varName: __pa17, .. } = (var_.clone()) else { bail!("pattern mismatch") };
+                            cr = __pa17.clone();
                             e = Expression::crefExp(cr.clone())?;
                             tp = Expression::r#typeof(e.clone())?;
                             zero = Expression::makeConstZero(tp.clone());
-                            if '__try17: {
-                                der_e = unwrap_break_err!(Differentiate::differentiateExpSolve(e2.clone(), cr.clone(), Some(funcs.clone())), '__try17);
-                                (der_e, _) = unwrap_break_err!(ExpressionSimplify::simplify(der_e.clone()), '__try17);
+                            if '__try18: {
+                                der_e = unwrap_break_err!(Differentiate::differentiateExpSolve(e2.clone(), cr.clone(), Some(funcs.clone())), '__try18);
+                                (der_e, _) = unwrap_break_err!(ExpressionSimplify::simplify(der_e.clone()), '__try18);
                                 if Expression::isZero(e.clone()) {
-                                    continue;
+                                    continue '__loop8;
                                 }
-                                (z, _) = unwrap_break_err!(Expression::makeZeroExpression(Expression::arrayDimension(tp.clone())), '__try17);
-                                (c, _) = unwrap_break_err!(Expression::replaceExp(e2.clone(), e.clone(), z.clone()), '__try17);
-                                (c, _) = unwrap_break_err!(ExpressionSimplify::simplify(c.clone()), '__try17);
-                                var_lst = unwrap_break_err!(BackendEquation::expressionVars(der_e.clone(), globalKnownVars.clone()), '__try17);
+                                (z, _) = unwrap_break_err!(Expression::makeZeroExpression(Expression::arrayDimension(tp.clone())), '__try18);
+                                (c, _) = unwrap_break_err!(Expression::replaceExp(e2.clone(), e.clone(), z.clone()), '__try18);
+                                (c, _) = unwrap_break_err!(ExpressionSimplify::simplify(c.clone()), '__try18);
+                                var_lst = unwrap_break_err!(BackendEquation::expressionVars(der_e.clone(), globalKnownVars.clone()), '__try18);
                                 if b3.clone() {
                                     var_lst = ({
         let mut __acc: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
@@ -844,7 +844,7 @@ pub fn simplifyConstraints(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
     });
                                 }
                                 var_lst = listAppend(BackendEquation::expressionVars(der_e.clone(), vars.clone())?, var_lst.clone());
-                                var_lst1 = unwrap_break_err!(BackendEquation::expressionVars(c.clone(), globalKnownVars.clone()), '__try17);
+                                var_lst1 = unwrap_break_err!(BackendEquation::expressionVars(c.clone(), globalKnownVars.clone()), '__try18);
                                 if b3.clone() {
                                     var_lst1 = ({
         let mut __acc: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
@@ -858,51 +858,51 @@ pub fn simplifyConstraints(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
                                 }
                                 var_lst1 = listAppend(BackendEquation::expressionVars(c.clone(), vars.clone())?, var_lst1.clone());
                                 var_lst = listAppend(var_lst1.clone(), var_lst.clone());
-                                b4 = unwrap_break_err!(Expression::expHasCref(der_e.clone(), DAE::crefTime().clone()), '__try17) || unwrap_break_err!(Expression::expHasCref(c.clone(), DAE::crefTime().clone()), '__try17);
+                                b4 = unwrap_break_err!(Expression::expHasCref(der_e.clone(), DAE::crefTime().clone()), '__try18) || unwrap_break_err!(Expression::expHasCref(c.clone(), DAE::crefTime().clone()), '__try18);
                                 if var_lst.clone().is_empty() && !(b4.clone()) {
                                     (oMin_con, oMax_con) = BackendVariable::getMinMaxAttribute(var_con.clone());
                                     b1 = isSome(oMin_con.clone());
                                     b2 = isSome(oMax_con.clone());
                                     con2 = Expression::makeNoEvent(Arc::new(DAE::Exp::RELATION { exp1: der_e.clone(), operator: DAE::Operator::LESS { ty: tp.clone() }, exp2: zero.clone(), index: -1, optionExpisASUB: None }));
                                     if b1.clone() {
-                                        let __pa18 = ::match_deref::match_deref! { match &(oMin_con.clone()) {
-                                            Some(__pa18) => __pa18.clone(),
-                                            _ => break '__try17 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
+                                        let __pa19 = ::match_deref::match_deref! { match &(oMin_con.clone()) {
+                                            Some(__pa19) => __pa19.clone(),
+                                            _ => break '__try18 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
                                         } };
-                                        min_con = __pa18.clone();
-                                        min_con = unwrap_break_err!(Expression::makeDiv(Expression::expSub(min_con.clone(), c.clone())?, der_e.clone()), '__try17);
+                                        min_con = __pa19.clone();
+                                        min_con = unwrap_break_err!(Expression::makeDiv(Expression::expSub(min_con.clone(), c.clone())?, der_e.clone()), '__try18);
                                     } else {
                                         min_con = Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(-1e64_f64) });
                                     }
                                     if b2.clone() {
-                                        let __pa19 = ::match_deref::match_deref! { match &(oMax_con.clone()) {
-                                            Some(__pa19) => __pa19.clone(),
-                                            _ => break '__try17 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
+                                        let __pa20 = ::match_deref::match_deref! { match &(oMax_con.clone()) {
+                                            Some(__pa20) => __pa20.clone(),
+                                            _ => break '__try18 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
                                         } };
-                                        max_con = __pa19.clone();
-                                        max_con = unwrap_break_err!(Expression::makeDiv(Expression::expSub(max_con.clone(), c.clone())?, der_e.clone()), '__try17);
+                                        max_con = __pa20.clone();
+                                        max_con = unwrap_break_err!(Expression::makeDiv(Expression::expSub(max_con.clone(), c.clone())?, der_e.clone()), '__try18);
                                     } else {
                                         max_con = Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1e64_f64) });
                                     }
                                     oMin_con = Some(Arc::new(DAE::Exp::IFEXP { expCond: con2.clone(), expThen: max_con.clone(), expElse: min_con.clone() }));
                                     oMax_con = Some(Arc::new(DAE::Exp::IFEXP { expCond: con2.clone(), expThen: min_con.clone(), expElse: max_con.clone() }));
-                                    oMin_con = unwrap_break_err!(ExpressionSimplify::simplify1o(oMin_con.clone()), '__try17);
-                                    oMax_con = unwrap_break_err!(ExpressionSimplify::simplify1o(oMax_con.clone()), '__try17);
-                                    var_con = unwrap_break_err!(BackendVariable::setVarMinMax(var_con.clone(), oMin_con.clone(), oMax_con.clone()), '__try17);
-                                    var_ = unwrap_break_err!(BackendVariable::mergeMinMaxAttribute(var_con.clone(), var_.clone(), false), '__try17);
-                                    var_con = unwrap_break_err!(BackendVariable::setVarKind(var_con.clone(), crate::BackendDAE::VarKind::VARIABLE), '__try17);
-                                    vars = unwrap_break_err!(BackendVariable::setVarAt(vars.clone(), vindx.clone(), var_con.clone()), '__try17);
-                                    match '__try20: {
-                                        (_, vindx) = unwrap_break_err!(BackendVariable::getVarSingle(cr.clone(), vars.clone()), '__try20);
-                                        vars = unwrap_break_err!(BackendVariable::setVarAt(vars.clone(), vindx.clone(), var_.clone()), '__try20);
+                                    oMin_con = unwrap_break_err!(ExpressionSimplify::simplify1o(oMin_con.clone()), '__try18);
+                                    oMax_con = unwrap_break_err!(ExpressionSimplify::simplify1o(oMax_con.clone()), '__try18);
+                                    var_con = unwrap_break_err!(BackendVariable::setVarMinMax(var_con.clone(), oMin_con.clone(), oMax_con.clone()), '__try18);
+                                    var_ = unwrap_break_err!(BackendVariable::mergeMinMaxAttribute(var_con.clone(), var_.clone(), false), '__try18);
+                                    var_con = unwrap_break_err!(BackendVariable::setVarKind(var_con.clone(), crate::BackendDAE::VarKind::VARIABLE), '__try18);
+                                    vars = unwrap_break_err!(BackendVariable::setVarAt(vars.clone(), vindx.clone(), var_con.clone()), '__try18);
+                                    match '__try21: {
+                                        (_, vindx) = unwrap_break_err!(BackendVariable::getVarSingle(cr.clone(), vars.clone()), '__try21);
+                                        vars = unwrap_break_err!(BackendVariable::setVarAt(vars.clone(), vindx.clone(), var_.clone()), '__try21);
                                         Ok::<_, anyhow::Error>((vindx.clone(),))
                                     } {
-                                        Ok((__try20_o0,)) => {
-                                            vindx = __try20_o0;
+                                        Ok((__try21_o0,)) => {
+                                            vindx = __try21_o0;
                                         }
                                         Err(_) => {
-                                            (_, vindx) = unwrap_break_err!(BackendVariable::getVarSingle(cr.clone(), globalKnownVars.clone()), '__try17);
-                                            globalKnownVars = unwrap_break_err!(BackendVariable::setVarAt(globalKnownVars.clone(), vindx.clone(), var_.clone()), '__try17);
+                                            (_, vindx) = unwrap_break_err!(BackendVariable::getVarSingle(cr.clone(), globalKnownVars.clone()), '__try18);
+                                            globalKnownVars = unwrap_break_err!(BackendVariable::setVarAt(globalKnownVars.clone(), vindx.clone(), var_.clone()), '__try18);
                                         }
                                     }
                                     b = true;

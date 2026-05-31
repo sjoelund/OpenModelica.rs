@@ -211,7 +211,7 @@ pub fn detect(mut eqn: Arc<Equation::Equation>, mut cref_to_solve: Arc<Component
     });
                     subs = List::transposeList(subs.clone())?;
                     subs_to_solve = ComponentRef::subscriptsAllWithWholeFlat(cref_to_solve.clone());
-                    for mut dim in &*List::zip(subs.clone(), subs_to_solve.clone()) {
+                    '__loop0: for mut dim in &*List::zip(subs.clone(), subs_to_solve.clone()) {
                         let mut dim = dim.clone();
                         (local_subs, sub_to_solve) = dim.clone();
                         ite_occurences = UnorderedSet::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
@@ -256,7 +256,7 @@ pub fn detect(mut eqn: Arc<Equation::Equation>, mut cref_to_solve: Arc<Component
     });
                 }
                 if eval.clone() == EvalOrder::FAILED.clone() {
-                    break;
+                    break '__loop0;
                 }
                 Ok::<(), anyhow::Error>(())
             }.is_err() {
@@ -275,7 +275,7 @@ pub fn detect(mut eqn: Arc<Equation::Equation>, mut cref_to_solve: Arc<Component
                 let mut it = it.clone();
                 UnorderedMap::add(it.clone(), EvalOrder::FAILED.clone(), order.clone())?;
             }
-            break;
+            break '__loop0;
             ()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
