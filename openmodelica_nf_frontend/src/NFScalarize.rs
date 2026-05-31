@@ -280,7 +280,7 @@ pub fn scalarizeBackendVariable(mut var: Arc<Variable::NFVariable>, mut indices:
             binding = Binding::makeFlat(exp.clone(), bind_var.clone(), bind_src.clone(), confidence.clone());
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(backend_attributes.clone()) {
                 Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
-                _ => bail!("pattern mismatch"),
+                _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
             } };
             binfo = __pa0.clone();
             backend_attributes = __pa1.clone();
@@ -300,7 +300,7 @@ pub fn scalarizeBackendVariable(mut var: Arc<Variable::NFVariable>, mut indices:
         _ => {
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(backend_attributes.clone()) {
                 Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
-                _ => bail!("pattern mismatch"),
+                _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
             } };
             binfo = __pa0.clone();
             backend_attributes = __pa1.clone();

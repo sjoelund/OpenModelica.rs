@@ -4097,7 +4097,7 @@ pub fn getComponentModifierValues(mut inComponentRef1: Arc<Absyn::ComponentRef>,
                     compelts = List::map(comps.clone(), (std::sync::Arc::new(fnptr!(InteractiveUtil::getComponentitemsInElement, Arc<Absyn::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Element>) -> Result<Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>> + 'static>));
                     compelts_1 = List::flatten(compelts.clone());
                     let __pa1 = ::match_deref::match_deref! { match &(List::select1(compelts_1.clone(), (std::sync::Arc::new(InteractiveUtil::componentitemNamed) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentItem>, ArcStr) -> Result<bool> + 'static>), (name.clone()).clone())) {
-                        Deref @ metamodelica::List::Cons { head: Absyn::ComponentItem { component: Absyn::Component { modification: Some(Deref @ Absyn::Modification { elementArgLst: __pa1, .. }), .. }, .. }, tail: Deref @ metamodelica::List::Nil } => __pa1.clone(),
+                        Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ComponentItem { component: Absyn::Component { modification: Some(Deref @ Absyn::Modification { elementArgLst: __pa1, .. }), .. }, .. }, tail: Deref @ metamodelica::List::Nil } => __pa1.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
                     elementArgLst = __pa1.clone();
@@ -4161,7 +4161,7 @@ pub fn getComponentModifierNames(mut path: Arc<Absyn::Path>, mut inComponentName
             compelts = List::map(comps.clone(), (std::sync::Arc::new(fnptr!(InteractiveUtil::getComponentitemsInElement, Arc<Absyn::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Element>) -> Result<Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>> + 'static>));
             compelts_1 = List::flatten(compelts.clone());
             let __pa0 = ::match_deref::match_deref! { match &(List::select1(compelts_1.clone(), (std::sync::Arc::new(InteractiveUtil::componentitemNamed) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentItem>, ArcStr) -> Result<bool> + 'static>), (inComponentName.clone()).clone())) {
-                Deref @ metamodelica::List::Cons { head: Absyn::ComponentItem { component: Absyn::Component { name: _, arrayDim: _, modification: Some(Deref @ Absyn::Modification { elementArgLst: __pa0, eqMod: _ }) }, condition: _, comment: _ }, tail: Deref @ metamodelica::List::Nil } => __pa0.clone(),
+                Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ComponentItem { component: Absyn::Component { name: _, arrayDim: _, modification: Some(Deref @ Absyn::Modification { elementArgLst: __pa0, eqMod: _ }) }, condition: _, comment: _ }, tail: Deref @ metamodelica::List::Nil } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             r#mod = __pa0.clone();
@@ -7719,7 +7719,10 @@ pub fn getNamedAnnotation(mut classPath: Arc<Absyn::Path>, mut annotationPath: A
 pub fn getStringNamedAnnotation(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::Program, mut id: Arc<Absyn::Path>) -> ArcStr {
     let mut outString: ArcStr = arcstr::literal!("");
     match '__try0: {
-        let Absyn::STRING { value: __pa1 } = (unwrap_break_err!(ProgramUtil::getNamedAnnotationExp(inPath.clone(), inProgram.clone(), id.clone(), Some(Arc::new(Absyn::Exp::STRING { value: (literal!("")).clone() })), (std::sync::Arc::new(getAnnotationExp) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<Arc<Absyn::Exp>> + 'static>)), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
+        let __pa1 = ::match_deref::match_deref! { match &(unwrap_break_err!(ProgramUtil::getNamedAnnotationExp(inPath.clone(), inProgram.clone(), id.clone(), Some(Arc::new(Absyn::Exp::STRING { value: (literal!("")).clone() })), (std::sync::Arc::new(getAnnotationExp) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<Arc<Absyn::Exp>> + 'static>)), '__try0)) {
+            Absyn::Exp::STRING { value: __pa1 } => __pa1.clone(),
+            _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
+        } };
         outString = __pa1.clone();
         Ok::<_, anyhow::Error>((outString.clone(),))
     } {

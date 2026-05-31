@@ -3072,9 +3072,8 @@ fn lookupVar2(mut inBinTree: Arc<FCore::RefTree::Tree>, mut inIdent: ArcStr, mut
     n = FNode::fromRef(r.clone())?;
     if !(FNode::isComponent(n.clone())) && Flags::isSet(Flags::LOOKUP.clone())? {
         let false = (Config::acceptMetaModelicaGrammar()?) else { bail!("pattern mismatch") };
-        let FCore::N { data: FCore::CL { e: __t1, .. }, .. } = (n.clone()) else { bail!("pattern mismatch") };
-        let __pa0 = ::match_deref::match_deref! { match &(__t1.clone()) {
-            Deref @ SCode::Element::CLASS { name: __pa0, .. } => __pa0.clone(),
+        let __pa0 = ::match_deref::match_deref! { match &(n.clone()) {
+            FCore::Node { data: FCore::Data::CL { e: Deref @ SCode::Element::CLASS { name: __pa0, .. }, .. }, .. } => __pa0.clone(),
             _ => bail!("pattern mismatch"),
         } };
         name = __pa0.clone();

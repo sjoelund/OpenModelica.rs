@@ -571,9 +571,8 @@ fn determineDependencies(mut exarray: Arc<ExpandableArray::ExpandableArray<CSE_E
     let mut exarray: Arc<ExpandableArray::ExpandableArray<CSE_Equation>> = exarray;
     let mut callArguments: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     for mut i in 1..=ExpandableArray::getNumberOfElements(exarray.clone()) {
-        let CSE_Equation { call: __t1, .. } = (ExpandableArray::get(i.clone(), exarray.clone())?) else { bail!("pattern mismatch") };
-        let __pa0 = ::match_deref::match_deref! { match &(__t1.clone()) {
-            Deref @ DAE::Exp::CALL { expLst: __pa0, .. } => __pa0.clone(),
+        let __pa0 = ::match_deref::match_deref! { match &(ExpandableArray::get(i.clone(), exarray.clone())?) {
+            CSE_Equation { call: Deref @ DAE::Exp::CALL { expLst: __pa0, .. }, .. } => __pa0.clone(),
             _ => bail!("pattern mismatch"),
         } };
         callArguments = __pa0.clone();

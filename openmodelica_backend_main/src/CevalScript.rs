@@ -2332,7 +2332,10 @@ pub fn getPackageVersion(mut path: Arc<Absyn::Path>, mut p: Absyn::Program) -> R
     evalParamAnn = Config::getEvaluateParametersInAnnotations()?;
     Config::setEvaluateParametersInAnnotations(true)?;
     match '__try0: {
-        let Absyn::STRING { value: __pa1 } = (unwrap_break_err!(ProgramUtil::getNamedAnnotationExp(path.clone(), p.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("version")).clone() }), Some(Arc::new(Absyn::Exp::STRING { value: (literal!("")).clone() })), (std::sync::Arc::new(Interactive::getAnnotationExp) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<Arc<Absyn::Exp>> + 'static>)), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
+        let __pa1 = ::match_deref::match_deref! { match &(unwrap_break_err!(ProgramUtil::getNamedAnnotationExp(path.clone(), p.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("version")).clone() }), Some(Arc::new(Absyn::Exp::STRING { value: (literal!("")).clone() })), (std::sync::Arc::new(Interactive::getAnnotationExp) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<Arc<Absyn::Exp>> + 'static>)), '__try0)) {
+            Absyn::Exp::STRING { value: __pa1 } => __pa1.clone(),
+            _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
+        } };
         version = __pa1.clone();
         Ok::<_, anyhow::Error>((version.clone(),))
     } {

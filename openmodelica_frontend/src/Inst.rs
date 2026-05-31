@@ -4941,9 +4941,8 @@ pub fn getCachedInstance(mut cache: FCore::Cache, mut env: FCore::Graph, mut nam
     let mut res: SCode::Restriction = SCode::Restriction::R_BLOCK;
     let mut inputs: (Arc<DAE::Mod>, DAE::Prefix, DAE::Connect::Sets, ClassInf::State, Arc<SCode::Element>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Dimension>>>>>, bool, Option<Arc<DAE::ComponentRef>>, InstTypes::CallingScope);
     let true = (Flags::isSet(Flags::CACHE.clone())?) else { bail!("pattern mismatch") };
-    let FCore::CL { e: __t4, pre: __pa3, .. } = (FNode::refData(r#ref.clone())?) else { bail!("pattern mismatch") };
-    let (__pa2, __pa0, __pa1) = ::match_deref::match_deref! { match &(__t4.clone()) {
-        __pa2 @ Deref @ SCode::Element::CLASS { restriction: __pa0, encapsulatedPrefix: __pa1, .. } => (__pa2.clone(), __pa0.clone(), __pa1.clone()),
+    let (__pa2, __pa0, __pa1, __pa3) = ::match_deref::match_deref! { match &(FNode::refData(r#ref.clone())?) {
+        FCore::Data::CL { e: __pa2 @ Deref @ SCode::Element::CLASS { restriction: __pa0, encapsulatedPrefix: __pa1, .. }, pre: __pa3, .. } => (__pa2.clone(), __pa0.clone(), __pa1.clone(), __pa3.clone()),
         _ => bail!("pattern mismatch"),
     } };
     res = __pa0.clone();

@@ -2261,7 +2261,7 @@ fn instStatement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
             }
             let __pa0 = ::match_deref::match_deref! { match &(when_stmt_opt.clone()) {
                 Some(__pa0) => __pa0.clone(),
-                _ => bail!("pattern mismatch"),
+                _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
             } };
             when_stmt = __pa0.clone();
             list![when_stmt.clone()]
@@ -2330,7 +2330,7 @@ fn instStatement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
         Deref @ SCode::Statement::ALG_FAILURE { info, .. } => {
             let mut branch: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
             let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
-            let true = (unwrap_break_err!(Config::acceptMetaModelicaGrammar(), '__try0)) else { bail!("pattern mismatch") };
+            let true = (unwrap_break_err!(Config::acceptMetaModelicaGrammar(), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
             (outCache, branch) = unwrap_break_err!(instStatements(outCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), inState.clone(), var_field!((*inStatement).stmts, SCode::Statement::ALG_FAILURE).clone(), inSource.clone(), inInitial.clone(), inImpl.clone(), inUnrollLoops.clone()), '__try0);
             source = ElementSource::addElementSourceFileInfo(inSource.clone(), info.clone());
             list![Arc::new(DAE::Statement::STMT_FAILURE { body: branch.clone(), source: source.clone() })]
@@ -2341,7 +2341,7 @@ fn instStatement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
             let mut else_branch: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
             let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
             let mut cases: Arc<metamodelica::List<Arc<DAE::MatchCase>>> = metamodelica::nil();
-            let true = (unwrap_break_err!(Config::acceptMetaModelicaGrammar(), '__try0)) else { bail!("pattern mismatch") };
+            let true = (unwrap_break_err!(Config::acceptMetaModelicaGrammar(), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
             (outCache, if_branch) = unwrap_break_err!(instStatements(outCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), inState.clone(), var_field!((*inStatement).body, SCode::Statement::ALG_TRY).clone(), inSource.clone(), inInitial.clone(), inImpl.clone(), inUnrollLoops.clone()), '__try0);
             (outCache, else_branch) = unwrap_break_err!(instStatements(outCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), inState.clone(), var_field!((*inStatement).elseBody, SCode::Statement::ALG_TRY).clone(), inSource.clone(), inInitial.clone(), inImpl.clone(), inUnrollLoops.clone()), '__try0);
             source = ElementSource::addElementSourceFileInfo(inSource.clone(), info.clone());

@@ -781,14 +781,14 @@ pub fn getElementModifierValue(mut classRef: Arc<Absyn::ComponentRef>, mut varRe
                 let mut c = c.clone();
                 let (__pa0, __pa1) = ::match_deref::match_deref! { match &(c.clone()) {
                     Deref @ Absyn::ComponentItem { component: Absyn::Component { modification: __pa0, name: __pa1, .. }, .. } => (__pa0.clone(), __pa1.clone()),
-                    _ => bail!("pattern mismatch"),
+                    _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
                 } };
                 optMod = __pa0.clone();
                 name = __pa1.clone();
                 if stringEq((name.clone()).clone(), (elName.clone()).clone()) {
                     let __pa2 = ::match_deref::match_deref! { match &(Util::getOptionOrDefault(optMod.clone(), Arc::new(Absyn::Modification { elementArgLst: metamodelica::nil(), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) }))) {
                         Deref @ Absyn::Modification { elementArgLst: __pa2, .. } => __pa2.clone(),
-                        _ => bail!("pattern mismatch"),
+                        _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
                     } };
                     args = __pa2.clone();
                     found = true;
@@ -892,7 +892,7 @@ pub fn getElementModifierValues(mut inComponentRef1: Arc<Absyn::ComponentRef>, m
                     compelts = List::map(elems.clone(), (std::sync::Arc::new(fnptr!(getComponentitemsInElement, Arc<Absyn::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Element>) -> Result<Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>> + 'static>));
                     compelts_1 = List::flatten(compelts.clone());
                     let __pa1 = ::match_deref::match_deref! { match &(List::select1(compelts_1.clone(), (std::sync::Arc::new(componentitemNamed) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentItem>, ArcStr) -> Result<bool> + 'static>), (name.clone()).clone())) {
-                        Deref @ metamodelica::List::Cons { head: Absyn::ComponentItem { component: Absyn::Component { modification: Some(Deref @ Absyn::Modification { elementArgLst: __pa1, .. }), .. }, .. }, tail: Deref @ metamodelica::List::Nil } => __pa1.clone(),
+                        Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ComponentItem { component: Absyn::Component { modification: Some(Deref @ Absyn::Modification { elementArgLst: __pa1, .. }), .. }, .. }, tail: Deref @ metamodelica::List::Nil } => __pa1.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
                     elementArgLst = __pa1.clone();

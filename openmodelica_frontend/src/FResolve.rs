@@ -178,9 +178,8 @@ pub fn derived_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Grap
             let mut rr: Ref = Default::default();
             let mut p: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let true = (FNode::isRefDerived(r.clone())?) else { bail!("pattern mismatch") };
-            let FCore::CL { e: __t1, .. } = (FNode::refData(r.clone())?) else { bail!("pattern mismatch") };
-            let __pa0 = ::match_deref::match_deref! { match &(__t1.clone()) {
-                Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: __pa0, arrayDim: _ }, .. }, .. } => __pa0.clone(),
+            let __pa0 = ::match_deref::match_deref! { match &(FNode::refData(r.clone())?) {
+                FCore::Data::CL { e: Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: __pa0, arrayDim: _ }, .. }, .. }, .. } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             p = __pa0.clone();
@@ -192,14 +191,13 @@ pub fn derived_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Grap
             let (mut r, mut g) = __mc_input.clone() else { bail!("nomatch") };
             let mut p: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let true = (FNode::isRefDerived(r.clone())?) else { bail!("pattern mismatch") };
-            let FCore::CL { e: __t1, .. } = (FNode::refData(r.clone())?) else { bail!("pattern mismatch") };
-            let __pa0 = ::match_deref::match_deref! { match &(__t1.clone()) {
-                Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: __pa0, arrayDim: _ }, .. }, .. } => __pa0.clone(),
+            let __pa0 = ::match_deref::match_deref! { match &(FNode::refData(r.clone())?) {
+                FCore::Data::CL { e: Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: __pa0, arrayDim: _ }, .. }, .. }, .. } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             p = __pa0.clone();
-            if '__try3: {
-                unwrap_break_err!(FLookup::name(g.clone(), r.clone(), p.clone(), FLookup::ignoreNothing.clone(), FLookup::dummyLookupOption.clone()), '__try3);
+            if '__try2: {
+                unwrap_break_err!(FLookup::name(g.clone(), r.clone(), p.clone(), FLookup::ignoreNothing.clone(), FLookup::dummyLookupOption.clone()), '__try2);
                 Ok::<(), anyhow::Error>(())
             }.is_ok() { bail!("failure(): body succeeded") }
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FResolve.derived_one: baseclass: ")); __mm_s.push_str(&*AbsynUtil::pathString(p.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" not found in: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(r.clone())?)?); __mm_s.push_str(&*literal!("!\n")); ArcStr::from(__mm_s) }).clone());
@@ -362,9 +360,8 @@ pub fn clsext_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph
             let mut p: Ref = Default::default();
             let mut id: Name = arcstr::literal!("");
             let true = (FNode::isRefClassExtends(r.clone())?) else { bail!("pattern mismatch") };
-            let FCore::CL { e: __t1, .. } = (FNode::refData(r.clone())?) else { bail!("pattern mismatch") };
-            let __pa0 = ::match_deref::match_deref! { match &(__t1.clone()) {
-                Deref @ SCode::Element::CLASS { name: __pa0, .. } => __pa0.clone(),
+            let __pa0 = ::match_deref::match_deref! { match &(FNode::refData(r.clone())?) {
+                FCore::Data::CL { e: Deref @ SCode::Element::CLASS { name: __pa0, .. }, .. } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             id = __pa0.clone();
@@ -382,9 +379,8 @@ pub fn clsext_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph
             let mut p: Ref = Default::default();
             let mut id: Name = arcstr::literal!("");
             let true = (FNode::isRefClassExtends(r.clone())?) else { bail!("pattern mismatch") };
-            let FCore::CL { e: __t1, .. } = (FNode::refData(r.clone())?) else { bail!("pattern mismatch") };
-            let __pa0 = ::match_deref::match_deref! { match &(__t1.clone()) {
-                Deref @ SCode::Element::CLASS { name: __pa0, .. } => __pa0.clone(),
+            let __pa0 = ::match_deref::match_deref! { match &(FNode::refData(r.clone())?) {
+                FCore::Data::CL { e: Deref @ SCode::Element::CLASS { name: __pa0, .. }, .. } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
             id = __pa0.clone();

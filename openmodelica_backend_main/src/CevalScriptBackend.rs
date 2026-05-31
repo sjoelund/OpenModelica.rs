@@ -6538,7 +6538,7 @@ fn moveClassToTop(mut inClassName: Arc<Absyn::Path>, mut inProgram: Absyn::Progr
             let mut cls: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(unwrap_break_err!(List::deleteMemberOnTrue((AbsynUtil::pathFirstIdent(inClassName.clone()).unwrap()).clone(), outProgram.classes.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::isClassNamed, ArcStr, Arc<Absyn::Class>)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<Absyn::Class>) -> Result<bool> + 'static>)), '__try0)) {
                 (__pa0, Some(__pa1)) => (__pa0.clone(), __pa1.clone()),
-                _ => bail!("pattern mismatch"),
+                _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
             } };
             classes = __pa0.clone();
             cls = __pa1.clone();
@@ -6581,7 +6581,7 @@ fn moveClassToBottom(mut inClassName: Arc<Absyn::Path>, mut inProgram: Absyn::Pr
             let mut cls: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(unwrap_break_err!(List::deleteMemberOnTrue((AbsynUtil::pathFirstIdent(inClassName.clone()).unwrap()).clone(), outProgram.classes.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::isClassNamed, ArcStr, Arc<Absyn::Class>)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<Absyn::Class>) -> Result<bool> + 'static>)), '__try0)) {
                 (__pa0, Some(__pa1)) => (__pa0.clone(), __pa1.clone()),
-                _ => bail!("pattern mismatch"),
+                _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
             } };
             classes = __pa0.clone();
             cls = __pa1.clone();
@@ -10783,7 +10783,10 @@ pub fn loadCommandLineOptionsFromModel(mut className: Arc<Absyn::Path>) -> Resul
         return Ok(oldFlags.clone());
     }
     loadProgram(className.clone())?;
-    let Absyn::STRING { value: __pa0 } = (ProgramUtil::getNamedAnnotationExp(className.clone(), SymbolTable::getAbsyn(), Arc::new(Absyn::Path::IDENT { name: (literal!("__OpenModelica_commandLineOptions")).clone() }), Some(Arc::new(Absyn::Exp::STRING { value: (literal!("")).clone() })), (std::sync::Arc::new(Interactive::getAnnotationExp) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<Arc<Absyn::Exp>> + 'static>))?) else { bail!("pattern mismatch") };
+    let __pa0 = ::match_deref::match_deref! { match &(ProgramUtil::getNamedAnnotationExp(className.clone(), SymbolTable::getAbsyn(), Arc::new(Absyn::Path::IDENT { name: (literal!("__OpenModelica_commandLineOptions")).clone() }), Some(Arc::new(Absyn::Exp::STRING { value: (literal!("")).clone() })), (std::sync::Arc::new(Interactive::getAnnotationExp) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<Arc<Absyn::Exp>> + 'static>))?) {
+        Absyn::Exp::STRING { value: __pa0 } => __pa0.clone(),
+        _ => bail!("pattern mismatch"),
+    } };
     opts = __pa0.clone();
     if !(stringEmpty((opts.clone()).clone())) {
         oldFlags = FlagsUtil::backupFlags()?;

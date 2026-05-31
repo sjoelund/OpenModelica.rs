@@ -1172,9 +1172,8 @@ pub fn elabListExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
                     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut outCache: FCore::Cache = outCache.clone();
                     let mut outProperties: DAE::Properties;
-                    let DAE::PROP { type_: __t1, constFlag: __pa0 } = (inProp.clone()) else { bail!("pattern mismatch") };
-                    ::match_deref::match_deref! { match &(__t1.clone()) {
-                        Deref @ DAE::Type::T_METALIST { .. } => (),
+                    let __pa0 = ::match_deref::match_deref! { match &(inProp.clone()) {
+                        DAE::Properties::PROP { type_: Deref @ DAE::Type::T_METALIST { .. }, constFlag: __pa0 } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
                     c = __pa0.clone();

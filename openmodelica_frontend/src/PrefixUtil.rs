@@ -243,9 +243,8 @@ pub fn prefixFirstCref(mut inPrefix: DAE::Prefix) -> Result<Arc<DAE::ComponentRe
     let mut outCref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut name: ArcStr = arcstr::literal!("");
     let mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
-    let DAE::PREFIX { compPre: __t2, .. } = (inPrefix.clone()) else { bail!("pattern mismatch") };
-    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(__t2.clone()) {
-        Deref @ DAE::ComponentPrefix::PRE { subscripts: __pa0, prefix: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
+    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inPrefix.clone()) {
+        DAE::Prefix::PREFIX { compPre: Deref @ DAE::ComponentPrefix::PRE { subscripts: __pa0, prefix: __pa1, .. }, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
     subs = __pa0.clone();

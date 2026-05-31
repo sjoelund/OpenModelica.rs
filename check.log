@@ -17,6 +17,8 @@ warning: unreachable call
    = note: `#[warn(unreachable_code)]` (part of `#[warn(unused)]`) on by default
 
 warning: `openmodelica_frontend_dump` (lib) generated 2 warnings
+    Checking openmodelica_nf_frontend v0.1.0 (/projects/OpenModelica.rs/openmodelica_nf_frontend)
+    Checking openmodelica_frontend v0.1.0 (/projects/OpenModelica.rs/openmodelica_frontend)
 warning: unknown lint: `type_complexity`
   --> openmodelica_frontend/src/Globals.rs:10:50
    |
@@ -44,6 +46,7 @@ warning: unreachable call
    |         unreachable call
 
 warning: `openmodelica_frontend` (lib) generated 3 warnings
+    Checking openmodelica_program_util v0.1.0 (/projects/OpenModelica.rs/openmodelica_program_util)
     Checking openmodelica_backend v0.1.0 (/projects/OpenModelica.rs/openmodelica_backend)
 warning: unknown lint: `type_complexity`
   --> openmodelica_backend/src/Globals.rs:10:50
@@ -64,4 +67,139 @@ warning: unreachable call
    = note: `#[warn(unreachable_code)]` (part of `#[warn(unused)]`) on by default
 
 warning: `openmodelica_backend` (lib) generated 2 warnings
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2m 19s
+    Checking openmodelica_codegen v0.1.0 (/projects/OpenModelica.rs/openmodelica_codegen)
+    Checking openmodelica_backend_main v0.1.0 (/projects/OpenModelica.rs/openmodelica_backend_main)
+warning: unknown lint: `type_complexity`
+  --> openmodelica_backend_main/src/Globals.rs:10:50
+   |
+10 | #![allow(non_snake_case, non_upper_case_globals, type_complexity)]
+   |                                                  ^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unknown_lints)]` on by default
+
+error[E0308]: mismatched types
+    --> openmodelica_backend_main/src/CevalScript.rs:2336:13
+     |
+2335 | ...et __pa1 = ::match_deref::match_deref! { match &(unwrap_break_err!(ProgramUtil::getNamedAnn...ult<Arc<Absyn::Exp>> + 'static>)), '__try0)) {
+     |                                                   --------------------------------------------...-------------------------------------------- this expression has type `&std::sync::Arc<openmodelica_ast::Absyn::Exp>`
+2336 | ...   Absyn::Exp::STRING { value: __pa1 } => __pa1.clone(),
+     |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Arc<Exp>`, found `Exp`
+     |
+     = note: expected struct `std::sync::Arc<openmodelica_ast::Absyn::Exp>`
+                  found enum `openmodelica_ast::Absyn::Exp`
+help: consider dereferencing to access the inner value using the `Deref` trait
+     |
+2335 ~         let __pa1 = ::match_deref::match_deref! { match &*match $x {
+2336 +             Ok(v) => v,
+2337 +             Err(e) => {
+2338 +                 break $label Err(e);
+2339 +             }
+2340 ~         } {
+     |
+
+error[E0277]: cannot divide `OrderedFloat<f64>` by `i32`
+    --> openmodelica_backend_main/src/CevalScriptBackend.rs:3119:75
+     |
+3119 |                         interval = (stopTime.clone() - startTime.clone()) / std::cmp::max(numberOfIntervals.clone(), 1);
+     |                                                                           ^ no implementation for `OrderedFloat<f64> / i32`
+     |
+     = help: the trait `Div<i32>` is not implemented for `OrderedFloat<f64>`
+     = help: the following other types implement trait `Div<Rhs>`:
+               `&OrderedFloat<T>` implements `Div<&T>`
+               `&OrderedFloat<T>` implements `Div<OrderedFloat<T>>`
+               `&OrderedFloat<T>` implements `Div<T>`
+               `&OrderedFloat<T>` implements `Div`
+               `OrderedFloat<T>` implements `Div<&OrderedFloat<T>>`
+               `OrderedFloat<T>` implements `Div<&T>`
+               `OrderedFloat<T>` implements `Div<T>`
+               `OrderedFloat<T>` implements `Div`
+
+error[E0308]: mismatched types
+     --> openmodelica_backend_main/src/CevalScriptBackend.rs:10787:9
+      |
+10786 | ...et __pa0 = ::match_deref::match_deref! { match &(ProgramUtil::getNamedAnnotationExp(classNa...>) -> Result<Arc<Absyn::Exp>> + 'static>))?) {
+      |                                                   --------------------------------------------...-------------------------------------------- this expression has type `&std::sync::Arc<openmodelica_ast::Absyn::Exp>`
+10787 | ...   Absyn::Exp::STRING { value: __pa0 } => __pa0.clone(),
+      |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Arc<Exp>`, found `Exp`
+      |
+      = note: expected struct `std::sync::Arc<openmodelica_ast::Absyn::Exp>`
+                   found enum `openmodelica_ast::Absyn::Exp`
+help: consider dereferencing to access the inner value using the `Deref` trait
+      |
+10786 |     let __pa0 = ::match_deref::match_deref! { match &*(ProgramUtil::getNamedAnnotationExp(className.clone(), SymbolTable::getAbsyn(), Arc::new(Absyn::Path::IDENT { name: (literal!("__OpenModelica_commandLineOptions")).clone() }), Some(Arc::new(Absyn::Exp::STRING { value: (literal!("")).clone() })), (std::sync::Arc::new(Interactive::getAnnotationExp) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<Arc<Absyn::Exp>> + 'static>))?) {
+      |                                                      +
+
+error[E0308]: mismatched types
+    --> openmodelica_backend_main/src/Interactive.rs:7723:13
+     |
+7722 | ...et __pa1 = ::match_deref::match_deref! { match &(unwrap_break_err!(ProgramUtil::getNamedAnn...ult<Arc<Absyn::Exp>> + 'static>)), '__try0)) {
+     |                                                   --------------------------------------------...-------------------------------------------- this expression has type `&std::sync::Arc<openmodelica_ast::Absyn::Exp>`
+7723 | ...   Absyn::Exp::STRING { value: __pa1 } => __pa1.clone(),
+     |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Arc<Exp>`, found `Exp`
+     |
+     = note: expected struct `std::sync::Arc<openmodelica_ast::Absyn::Exp>`
+                  found enum `openmodelica_ast::Absyn::Exp`
+help: consider dereferencing to access the inner value using the `Deref` trait
+     |
+7722 ~         let __pa1 = ::match_deref::match_deref! { match &*match $x {
+7723 +             Ok(v) => v,
+7724 +             Err(e) => {
+7725 +                 break $label Err(e);
+7726 +             }
+7727 ~         } {
+     |
+
+error[E0308]: `?` operator has incompatible types
+    --> openmodelica_backend_main/src/Interactive.rs:9286:42
+     |
+9286 | ...ad(InteractiveUtil::getElementitemsAnnotationsElArgs(el.clone(), FGraph::emptyGraph().clone(), inClass.clone(), GraphicEnvCache::GRAPHIC_ENV_NO_CACHE { program: inFullProgram.clone(), modelPath: inModelPath.clone() }, false)?)?;
+     |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Arc<List<_>>`, found `(Arc<List<ArcStr>>, GraphicEnvCache)`
+     |
+     = note: `?` operator cannot convert from `(std::sync::Arc<metamodelica::List<ArcStr>>, Interactive::GraphicEnvCache)` to `std::sync::Arc<metamodelica::List<_>>`
+     = note: expected struct `std::sync::Arc<metamodelica::List<_>>`
+                 found tuple `(std::sync::Arc<metamodelica::List<ArcStr>>, Interactive::GraphicEnvCache)`
+
+error[E0308]: mismatched types
+   --> openmodelica_backend_main/src/SimCodeMain.rs:456:15
+    |
+452 |         let mut res: (bool, Arc<metamodelica::List<ArcStr>>) = (false, metamodelica::nil());
+    |                      --------------------------------------- expected due to this type
+...
+456 |         res = __pa1.clone();
+    |               ^^^^^^^^^^^^^ expected `(bool, Arc<List<ArcStr>>)`, found `&(bool, Arc<List<ArcStr>>)`
+    |
+    = note:  expected tuple `(_, std::sync::Arc<_>)`
+            found reference `&(_, std::sync::Arc<_>)`
+help: consider using clone here
+    |
+456 |         res = __pa1.clone().clone();
+    |                            ++++++++
+
+error[E0381]: used binding `e` is possibly-uninitialized
+    --> openmodelica_backend_main/src/CevalScriptBackend.rs:6852:39
+     |
+6828 |     let mut e: Arc<Absyn::ElementItem>;
+     |         ----- binding declared here but left uninitialized
+...
+6836 |         e = __pa0.clone();
+     |         - binding initialized here in some conditions
+...
+6852 |         elements = metamodelica::cons(e.clone(), elements.clone());
+     |                                       ^ `e` used here but it is possibly-uninitialized
+
+error[E0381]: used binding `eltold` is possibly-uninitialized
+    --> openmodelica_backend_main/src/Interactive.rs:5907:98
+     |
+5844 |             let mut eltold: Arc<Absyn::Element>;
+     |                 ---------- binding declared here but left uninitialized
+...
+5899 |                     eltold = elt.clone();
+     |                     ------ binding initialized here in some conditions
+...
+5907 |                     res = metamodelica::cons(Arc::new(Absyn::ElementItem::ELEMENTITEM { element: eltold.clone() }), res.clone());
+     |                                                                                                  ^^^^^^ `eltold` used here but it is possibly-uninitialized
+
+Some errors have detailed explanations: E0277, E0308, E0381.
+For more information about an error, try `rustc --explain E0277`.
+warning: `openmodelica_backend_main` (lib) generated 1 warning
+error: could not compile `openmodelica_backend_main` (lib) due to 8 previous errors; 1 warning emitted
