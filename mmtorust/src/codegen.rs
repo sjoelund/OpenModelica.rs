@@ -5685,6 +5685,58 @@ fn fn_ref_turbofish(
     Some(format!("::<{}>", args.join(", ")))
 }
 
+/// Compute an explicit turbofish for a *direct call* to a function generic in
+/// one or more `replaceable type T subtypeof Any` variables, when the call
+/// leaves some of those variables genuinely free.
+///
+/// A variable is *free* at a call when it is neither bound by unifying the
+/// actual arguments against the formals (`bound`, the call's typevar
+/// substitution) nor present in the function's output type (whence the
+/// surrounding context could pin it). The canonical case is
+/// `ExpressionDump.printExp2Str(e, "'", NONE(), NONE())`: its `Type_a` occurs
+/// only inside the `Option<tuple<…, Type_a>>` parameters, both fed `NONE()`,
+/// and the output is `String`. Rust cannot infer such a `Type_a` and its
+/// `T: Clone` bound is unsatisfiable (E0283). Default each free variable to the
+/// unit type `()` — the canonical monomorphization of an unconstrained `Any` —
+/// and leave bound/output-pinned ones as `_` for normal inference.
+///
+/// Returns `Some("::<…>")` only when at least one variable is free; otherwise
+/// `None` so the call is emitted without a turbofish, exactly as before.
+fn call_free_typevar_turbofish(
+    qname: &str,
+    bound: &HashMap<String, Ty>,
+    ctx: &GenCtx,
+    top_level: &BTreeMap<String, NameNode<'_>>,
+) -> Option<String> {
+    let tvs = ctx.fn_type_vars.get(qname)?;
+    if tvs.is_empty() {
+        return None;
+    }
+    let output = match crate::hierarchy::lookup_node_ty(qname, top_level)? {
+        Ty::Function { output, .. } => output,
+        _ => return None,
+    };
+    let mut output_tvs = Vec::new();
+    crate::hierarchy::collect_type_vars_in_ty(output, &mut output_tvs);
+    let mut any_free = false;
+    let args: Vec<String> = tvs
+        .iter()
+        .map(|tv| {
+            if bound.contains_key(tv) || output_tvs.iter().any(|o| o == tv) {
+                "_".to_owned()
+            } else {
+                any_free = true;
+                "()".to_owned()
+            }
+        })
+        .collect();
+    if any_free {
+        Some(format!("::<{}>", args.join(", ")))
+    } else {
+        None
+    }
+}
+
 /// Resolve a top-level dotted name from the current emission context AND return the
 /// fully-qualified path that succeeded. Mirrors `resolve_fully_qualified` but also
 /// hands back the resolved path so callers can use the *target's* package as the
@@ -6766,7 +6818,7 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
             // function; only `f(...)` itself (or its panic-on-fail equivalent)
             // is governed by the outer QMode.
             let outer_qmode = ctx.qmode.clone();
-            let parts: Vec<String> = ctx.with_qmode(QMode::Function, |ctx| -> Vec<String> {
+            let (parts, turbofish): (Vec<String>, Option<String>) = ctx.with_qmode(QMode::Function, |ctx| -> (Vec<String>, Option<String>) {
             let _ = &outer_qmode;
             if let Some(formals) = formals {
                 // Reorder positional + named arguments into formal-declaration
@@ -6910,7 +6962,7 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
                     (0..formals.len()).map(formal_at).collect();
                 let formal_at = |i: usize| -> Option<Ty> { arg_formals.get(i).cloned().flatten() };
 
-                if failed {
+                let parts = if failed {
                     // Last resort: emit positional args followed by `n=v`
                     // pairs. The `n=v` form is not valid Rust call syntax
                     // and will fail to compile — that's intentional: it
@@ -6932,7 +6984,13 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
                             emit_call_arg_with_formal(&s.unwrap(), formal_at(i).as_ref(), is_const, ctx, top_level)
                         })
                         .collect()
-                }
+                };
+                // Default any genuinely-free `subtypeof Any` type variable of the
+                // callee to `()` via a turbofish (see [`call_free_typevar_turbofish`]).
+                // `subst` already holds the variables the actuals pinned.
+                let turbofish = resolve_call_qname(func, ctx, top_level)
+                    .and_then(|qn| call_free_typevar_turbofish(&qn, &subst, ctx, top_level));
+                (parts, turbofish)
             } else {
                 // Callee whose signature didn't resolve (e.g. a function reached
                 // through a private module import that this crate doesn't see
@@ -6955,7 +7013,7 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
                     let v = wrap_part_eval(v, raw);
                     parts.push(format!("{n}={v}"));
                 }
-                parts
+                (parts, None)
             }
             });
 
@@ -6964,7 +7022,8 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
                 println!("{:?} is a constructor, but was not detected as such in typedexp.rs", exp);
                 is_ctor = false;
             }
-            let mut call = format!("{func_str}({})", parts.join(", "));
+            let tf = turbofish.as_deref().unwrap_or("");
+            let mut call = format!("{func_str}{tf}({})", parts.join(", "));
 
             // Decide whether to attach the `?`/q-wrapping. A call expression in
             // the generated Rust returns:

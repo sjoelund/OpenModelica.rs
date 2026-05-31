@@ -1021,7 +1021,7 @@ fn adjacencyRowMatrixExp(mut inTplExpExpBooleanLstLst: Arc<metamodelica::List<Ar
 
 fn printExpStr(mut e: Arc<DAE::Exp>) -> Result<ArcStr> {
     let mut s: ArcStr = arcstr::literal!("");
-    s = (ExpressionDump::printExp2Str(e.clone(), (literal!("'")).clone(), None, None)?).clone();
+    s = (ExpressionDump::printExp2Str::<()>(e.clone(), (literal!("'")).clone(), None, None)?).clone();
     Ok(s)
 }
 
