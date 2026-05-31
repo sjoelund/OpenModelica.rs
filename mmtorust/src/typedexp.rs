@@ -1010,7 +1010,16 @@ pub fn builtin_function_ty(name: &str) -> Option<Ty> {
 
 fn binop_ty(op: BinOpKind, lhs_ty: &Ty, rhs_ty: &Ty) -> Ty {
     match op {
-        BinOpKind::Add | BinOpKind::Sub | BinOpKind::Mul | BinOpKind::Div => {
+        // Division in MetaModelica/Modelica is *always* real division. The
+        // built-in operator table (OperatorOverloading.mo) gives `/` a single
+        // scalar overload `Real / Real -> Real`; Integer operands are coerced
+        // to Real. Integer (truncating) division is a separate builtin
+        // (`intDiv`/`div`), never the `/` operator. So a `Div` node is Real
+        // regardless of operand types — emitting it as `i32 / i32` would
+        // silently truncate. The matching codegen promotes both operands to
+        // f64 (see emit_exp's BinOpKind::Div arm).
+        BinOpKind::Div => Ty::F64,
+        BinOpKind::Add | BinOpKind::Sub | BinOpKind::Mul => {
             match (lhs_ty, rhs_ty) {
                 // String concatenation: in MetaModelica, `+` on String is the
                 // only overload that doesn't require both sides to be numeric,
@@ -1019,7 +1028,7 @@ fn binop_ty(op: BinOpKind, lhs_ty: &Ty, rhs_ty: &Ty) -> Ty {
                 // infer (Ty::Unknown) would propagate up the Add chain even
                 // when the other operand is a literal! string, and emit_exp
                 // would fall through to the numeric `+` codegen instead of
-                // the ArcStr concat path. Only valid for Add — Sub/Mul/Div on
+                // the ArcStr concat path. Only valid for Add — Sub/Mul on
                 // strings don't exist in MetaModelica.
                 _ if matches!(op, BinOpKind::Add) && (matches!(lhs_ty, Ty::Str) || matches!(rhs_ty, Ty::Str)) => Ty::Str,
                 (Ty::F64, _) | (_, Ty::F64) => Ty::F64,

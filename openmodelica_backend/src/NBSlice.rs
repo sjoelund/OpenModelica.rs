@@ -826,7 +826,7 @@ fn resolveEqualInertia(mut frame_inertia_lst: Arc<metamodelica::List<(i32, (meta
                 UnorderedMap::add(name2.clone(), linMap.clone(), replacements.clone())?;
                 status = FrameOrderingStatus::CHANGED.clone();
             } else {
-                m = ((metamodelica::OrderedFloat(((loc2.borrow()[(1-1) as usize].clone() - loc2.borrow()[(1 + inertia2.clone()-1) as usize].clone()) / (loc1.borrow()[(1-1) as usize].clone() - loc1.borrow()[(1 + inertia1.clone()-1) as usize].clone())) as f64)).0 as i32);
+                m = (((metamodelica::OrderedFloat((loc2.borrow()[(1-1) as usize].clone() - loc2.borrow()[(1 + inertia2.clone()-1) as usize].clone()) as f64)) / (metamodelica::OrderedFloat((loc1.borrow()[(1-1) as usize].clone() - loc1.borrow()[(1 + inertia1.clone()-1) as usize].clone()) as f64))).0 as i32);
                 b = loc2.borrow()[(1-1) as usize].clone() - m.clone() * loc1.borrow()[(1-1) as usize].clone();
                 let __range0 = 2..=(loc1.clone().borrow().len() as i32);
                 for mut i in __range0 {
@@ -1393,7 +1393,7 @@ fn resolveAllRegular(mut cref: Arc<ComponentRef::NFComponentRef>, mut original_c
     scal_size = (List::flatten(UnorderedMap::valueList(map3.clone())).len() as i32);
     if size.clone() == scal_size.clone() || UnorderedSet::contains(cref.clone(), rep.clone())? && intMod(size.clone(), scal_size.clone()) == 0 {
         shift = 0;
-        for mut i in 1..=size.clone() / scal_size.clone() {
+        for mut i in 1..=((metamodelica::OrderedFloat((size.clone()) as f64) / metamodelica::OrderedFloat((scal_size.clone()) as f64)).0 as i32) {
             for mut scal in &*scalarized.clone() {
                 let mut scal = scal.clone();
                 for mut scal_idx in &*UnorderedMap::getSafe(scal.clone(), map3.clone(), metamodelica::sourceInfo!())? {

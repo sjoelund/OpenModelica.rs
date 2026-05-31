@@ -6685,10 +6685,20 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
             if r_needs_first {
                 r = format!("({r}).0");
             }
-            if lhs.ty() == Ty::I32 && rhs.ty() == Ty::F64 {
+            // Division is always real division in MetaModelica (`/` has the
+            // single overload `Real / Real -> Real`; integer division is the
+            // `intDiv`/`div` builtin). So for `Div`, *both* operands must be
+            // Real even when they are both Integer — otherwise `i32 / i32`
+            // would truncate. For the other arithmetic ops we only widen the
+            // narrower side of a mixed Integer/Real pair. Each `if` keys on the
+            // operand it widens being Integer, so the `is_div` relaxation of the
+            // "other side is Real" requirement never double-wraps a side that
+            // the mixed-pair rule already widened.
+            let is_div = matches!(op, BinOpKind::Div);
+            if lhs.ty() == Ty::I32 && (rhs.ty() == Ty::F64 || is_div) {
                 l = format!("metamodelica::OrderedFloat(({l}) as f64)");
             }
-            if rhs.ty() == Ty::I32 && lhs.ty() == Ty::F64 {
+            if rhs.ty() == Ty::I32 && (lhs.ty() == Ty::F64 || is_div) {
                 r = format!("metamodelica::OrderedFloat(({r}) as f64)");
             }
             // Parenthesize operands when the inner operator binds more loosely
@@ -8661,11 +8671,13 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
             // Modelica `integer(Real)` truncates toward -inf. `metamodelica::Real`
             // wraps `f64`; reach the inner value via `.0`.
             //
-            // The argument is usually a `Real`, but it can already be an `Integer`
-            // — e.g. `integer((8/3)*count)` where `/` is integer division, so the
-            // whole product is an i32. An i32 has no `.0`/`.floor()` (E0610), so
-            // when the argument's static type is `Integer` the conversion is a
-            // no-op; emit it as-is (a redundant `as i32` cast on an i32).
+            // The argument is usually a `Real`, but it can already be an
+            // `Integer` — e.g. `integer(intVar)` or any expression whose static
+            // type is `Integer`. (Note `/` is *always* real division, so a
+            // quotient like `8/3` is a `Real`, not an `i32`.) An i32 has no
+            // `.0`/`.floor()` (E0610), so when the argument's static type is
+            // `Integer` the conversion is a no-op; emit it as-is (a redundant
+            // `as i32` cast on an i32).
             let arg_exp = args.first();
             let arg = arg_exp.map(|a| emit_builtin_call_arg(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();
             if matches!(arg_exp.map(|a| a.ty()), Some(Ty::I32)) {
@@ -11186,7 +11198,20 @@ fn substitute_formal_refs(exp: &TypedExp, bindings: &HashMap<String, TypedExp>) 
 /// Negative steps reverse the range: `(stop..=start).step_by(-n)`.
 fn emit_range<'a>(start: &TypedExp, step: Option<&TypedExp>, stop: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a BTreeMap<String, NameNode<'a>>) -> String {
     let s = emit_exp(start, is_const, ctx, top_level);
-    let e = emit_exp(stop, is_const, ctx, top_level);
+    let mut e = emit_exp(stop, is_const, ctx, top_level);
+
+    // A range iterates at its element type, which is the start operand's type
+    // (see the `Range` inference in typedexp.rs). Modelica's `/` is always real
+    // division, so a bound like `n/2` is a `Real` even when the iterator is an
+    // `Integer` — e.g. `for i in 1:(size/2)`. The OMC backend stores such a
+    // bound in a `modelica_integer`, truncating it toward zero; mirror that by
+    // truncating a Real stop bound to `i32` when the iterator is Integer.
+    // Without this the range would be `1..=OrderedFloat(..)`, a start/stop type
+    // mismatch (E0308). `OrderedFloat`'s inner f64 is reached via `.0`, and an
+    // `f64 as i32` cast truncates toward zero exactly like the C cast.
+    if matches!(start.ty(), Ty::I32) && matches!(stop.ty(), Ty::F64) {
+        e = format!("(({e}).0 as i32)");
+    }
 
     // Modelica allows `Boolean` ranges (`false:true`), but Rust's
     // `RangeInclusive<bool>` is not an iterator. Materialize the bool range as

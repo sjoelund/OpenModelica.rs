@@ -253,7 +253,7 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             File::write(file.clone(), (intString(i.clone())).clone());
             if i.clone() != 0 {
                 File::write(file.clone(), (literal!(",\"density\":")).clone());
-                File::writeReal(file.clone(), metamodelica::OrderedFloat((j.clone() / (i.clone() * i.clone())) as f64), (literal!("%.2f")).clone());
+                File::writeReal(file.clone(), metamodelica::OrderedFloat((j.clone()) as f64) / (metamodelica::OrderedFloat((i.clone() * i.clone()) as f64)), (literal!("%.2f")).clone());
             }
             File::write(file.clone(), (literal!(",\"A\":[")).clone());
             serializeList1(file.clone(), lSystem.simJac.clone(), withOperations.clone(), (std::sync::Arc::new(serializeLinearCell) as std::sync::Arc<dyn ::std::ops::Fn(File::File, (i32, i32, Arc<SimCode::SimEqSystem>), bool) -> Result<()> + 'static>));
@@ -341,7 +341,7 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             File::write(file.clone(), (intString(i.clone())).clone());
             if i.clone() != 0 {
                 File::write(file.clone(), (literal!(",\"density\":")).clone());
-                File::writeReal(file.clone(), metamodelica::OrderedFloat((j.clone() / (i.clone() * i.clone())) as f64), (literal!("%.2f")).clone());
+                File::writeReal(file.clone(), metamodelica::OrderedFloat((j.clone()) as f64) / (metamodelica::OrderedFloat((i.clone() * i.clone()) as f64)), (literal!("%.2f")).clone());
             }
             File::write(file.clone(), (literal!(",\"A\":[")).clone());
             serializeList1(file.clone(), lSystem.simJac.clone(), withOperations.clone(), (std::sync::Arc::new(serializeLinearCell) as std::sync::Arc<dyn ::std::ops::Fn(File::File, (i32, i32, Arc<SimCode::SimEqSystem>), bool) -> Result<()> + 'static>));
@@ -403,7 +403,7 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             File::write(file.clone(), (intString(i.clone())).clone());
             if i.clone() != 0 {
                 File::write(file.clone(), (literal!(",\"density\":")).clone());
-                File::writeReal(file.clone(), metamodelica::OrderedFloat((j.clone() / (i.clone() * i.clone())) as f64), (literal!("%.2f")).clone());
+                File::writeReal(file.clone(), metamodelica::OrderedFloat((j.clone()) as f64) / (metamodelica::OrderedFloat((i.clone() * i.clone()) as f64)), (literal!("%.2f")).clone());
             }
             File::write(file.clone(), (literal!(",\"A\":[")).clone());
             serializeList1(file.clone(), atL.simJac.clone(), withOperations.clone(), (std::sync::Arc::new(serializeLinearCell) as std::sync::Arc<dyn ::std::ops::Fn(File::File, (i32, i32, Arc<SimCode::SimEqSystem>), bool) -> Result<()> + 'static>));

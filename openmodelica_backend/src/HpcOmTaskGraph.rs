@@ -3653,7 +3653,7 @@ fn distributeToClusters1(mut tplIn: (Arc<metamodelica::List<i32>>, Arc<metamodel
                     let mut clusters = (*clusters).clone();
                     let mut clusterValues = (*clusterValues).clone();
                     let true = ((itemsIn.clone().len() as i32) > numClusters.clone()) else { bail!("pattern mismatch") };
-                    let true = ((itemsIn.clone().len() as i32) / 2 < numClusters.clone()) else { bail!("pattern mismatch") };
+                    let true = (metamodelica::OrderedFloat(((itemsIn.clone().len() as i32)) as f64) / metamodelica::OrderedFloat((2) as f64) < metamodelica::OrderedFloat((numClusters.clone()) as f64)) else { bail!("pattern mismatch") };
                     (lst1, _) = List::split(itemsIn.clone(), numClusters.clone())?;
                     diff = (itemsIn.clone().len() as i32) - numClusters.clone();
                     idcsLst1 = List::intRange2(numClusters.clone() - diff.clone() + 1, numClusters.clone());
@@ -3687,7 +3687,7 @@ fn distributeToClusters1(mut tplIn: (Arc<metamodelica::List<i32>>, Arc<metamodel
                     let mut clusters = (*clusters).clone();
                     let mut clusterValues = (*clusterValues).clone();
                     let true = ((itemsIn.clone().len() as i32) > numClusters.clone()) else { bail!("pattern mismatch") };
-                    let true = ((itemsIn.clone().len() as i32) / 2 >= numClusters.clone()) else { bail!("pattern mismatch") };
+                    let true = (metamodelica::OrderedFloat(((itemsIn.clone().len() as i32)) as f64) / metamodelica::OrderedFloat((2) as f64) >= metamodelica::OrderedFloat((numClusters.clone()) as f64)) else { bail!("pattern mismatch") };
                     numCl = nextGreaterPowerOf2(intReal((itemsIn.clone().len() as i32)))?;
                     (lst1, _) = List::split(itemsIn.clone(), intDiv(numCl.clone(), 2))?;
                     idcsLst2 = List::intRange2(intDiv(numCl.clone(), 2) + 1, (itemsIn.clone().len() as i32));

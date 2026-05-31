@@ -70,7 +70,7 @@ pub static RAT1: Rational = Rational { nom: 1, denom: 1 };
 
 pub fn isGreaterThan(mut r1: Rational, mut r2: Rational) -> bool {
     let mut b: bool = false;
-    b = realGt(metamodelica::OrderedFloat((r1.nom.clone() / r1.denom.clone()) as f64), metamodelica::OrderedFloat((r2.nom.clone() / r2.denom.clone()) as f64));
+    b = realGt(metamodelica::OrderedFloat((r1.nom.clone()) as f64) / metamodelica::OrderedFloat((r1.denom.clone()) as f64), metamodelica::OrderedFloat((r2.nom.clone()) as f64) / metamodelica::OrderedFloat((r2.denom.clone()) as f64));
     b
 }
 

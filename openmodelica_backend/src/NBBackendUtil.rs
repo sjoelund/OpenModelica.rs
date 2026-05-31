@@ -260,7 +260,7 @@ pub fn noNameHashExp(mut exp: Arc<Expression::NFExpression>, mut r#mod: i32) -> 
         (Operator::MathClassification::ADDITION, _) => hash1.clone() + hash2.clone(),
         (Operator::MathClassification::SUBTRACTION, _) => hash1.clone() - hash2.clone(),
         (Operator::MathClassification::MULTIPLICATION, _) => hash1.clone() * hash2.clone(),
-        (Operator::MathClassification::DIVISION, _) => ((metamodelica::OrderedFloat((hash1.clone() / hash2.clone()) as f64)).0 as i32),
+        (Operator::MathClassification::DIVISION, _) => ((metamodelica::OrderedFloat((hash1.clone()) as f64) / metamodelica::OrderedFloat((hash2.clone()) as f64)).0 as i32),
         (Operator::MathClassification::POWER, _) => (((metamodelica::OrderedFloat((hash1.clone()) as f64)).powf(metamodelica::OrderedFloat((hash2.clone()) as f64))).0 as i32),
         (Operator::MathClassification::LOGICAL, _) => -(hash1.clone() + hash2.clone()),
         (Operator::MathClassification::RELATION, _) => hash2.clone() - hash1.clone(),

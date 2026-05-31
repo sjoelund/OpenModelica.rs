@@ -1113,7 +1113,7 @@ pub fn getStructurallySingularSystemHandlerArg(mut inSystem: Arc<BackendDAE::EqS
     if Config::getIndexReductionMethod()? == literal!("uode") {
         so = crate::BackendDAE::StateOrder::NOSTATEORDER;
     } else {
-        count = ((8 / 3 * BackendVariable::getNumStateVarFromVariables(inSystem.orderedVars.clone())?) as i32);
+        count = ((metamodelica::OrderedFloat((8) as f64) / metamodelica::OrderedFloat((3) as f64) * metamodelica::OrderedFloat((BackendVariable::getNumStateVarFromVariables(inSystem.orderedVars.clone())?) as f64)).0.floor() as i32);
         if count.clone() == 0 {
             so = crate::BackendDAE::StateOrder::NOSTATEORDER;
         } else {

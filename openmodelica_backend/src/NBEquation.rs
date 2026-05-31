@@ -642,7 +642,7 @@ pub mod Iterator {
         let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
         (or_start, or_step, or_stop) = Expression::getIntegerRange(replacor_range.clone(), true)?;
         (ee_start, ee_step, ee_stop) = Expression::getIntegerRange(replacee_range.clone(), true)?;
-        if (or_stop.clone() - or_start.clone() + 1) / or_step.clone() == (ee_stop.clone() - ee_start.clone() + 1) / ee_step.clone() {
+        if (metamodelica::OrderedFloat((or_stop.clone() - or_start.clone() + 1) as f64)) / metamodelica::OrderedFloat((or_step.clone()) as f64) == (metamodelica::OrderedFloat((ee_stop.clone() - ee_start.clone() + 1) as f64)) / metamodelica::OrderedFloat((ee_step.clone()) as f64) {
             exp = Arc::new(Expression::NFExpression::MULTARY { operator: Operator::makeAdd(Arc::new(openmodelica_nf_frontend::NFType::REAL)), inv_arguments: metamodelica::nil(), arguments: list![Arc::new(Expression::NFExpression::REAL { value: intReal(ee_start.clone()) }), Arc::new(Expression::NFExpression::MULTARY { operator: Operator::makeMul(Arc::new(openmodelica_nf_frontend::NFType::REAL)), inv_arguments: metamodelica::nil(), arguments: list![Arc::new(Expression::NFExpression::REAL { value: intReal(ee_step.clone()) / intReal(or_step.clone()) }), Arc::new(Expression::NFExpression::MULTARY { operator: Operator::makeAdd(Arc::new(openmodelica_nf_frontend::NFType::REAL)), inv_arguments: list![Arc::new(Expression::NFExpression::REAL { value: intReal(or_start.clone()) })], arguments: list![Expression::fromCref(replacor_cref.clone(), false)?] })] })] });
             UnorderedMap::add(replacee_cref.clone(), exp.clone(), replacements.clone())?;
         } else {

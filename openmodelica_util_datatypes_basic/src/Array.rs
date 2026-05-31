@@ -499,7 +499,7 @@ pub fn reverse<T: Clone + 'static>(mut inArray: metamodelica::Array<T>) -> Resul
     let mut elem2: T;
     outArray = inArray.clone();
     size = (inArray.clone().borrow().len() as i32);
-    for mut i in 1..=size.clone() / 2 {
+    for mut i in 1..=((metamodelica::OrderedFloat((size.clone()) as f64) / metamodelica::OrderedFloat((2) as f64)).0 as i32) {
         elem1 = inArray.clone().borrow()[(i.clone()-1) as usize].clone();
         elem2 = inArray.clone().borrow()[(size.clone() - i.clone() + 1-1) as usize].clone();
         outArray = {let _arr = outArray.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = elem2.clone(); _arr};

@@ -860,7 +860,7 @@ pub mod InlineRating {
             __acc += __x;
         }
         __acc
-    }) / (ir.input_rating.clone().borrow().len() as i32)) as f64) + intReal(ir.constant_rating.clone());
+    })) as f64) / metamodelica::OrderedFloat(((ir.input_rating.clone().borrow().len() as i32)) as f64) + intReal(ir.constant_rating.clone());
         r
     }
 
