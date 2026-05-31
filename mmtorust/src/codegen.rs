@@ -8365,10 +8365,25 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
             // first output, not the whole tuple. Take `.0` when the argument is a
             // tuple-typed call/partial-application. A first-class `tuple<..>`
             // value (a Var/field) is wrapped whole, so it is left intact.
-            if let Some(a) = a
-                && matches!(a, TypedExp::Call { .. } | TypedExp::PartEval { .. })
-                && matches!(a.ty(), Ty::Tuple(_))
-            {
+            //
+            // Crucially, a call whose *single* output has a tuple-aliased type
+            // (e.g. `HashTableCrefSimVar.emptyHashTableSized` returns one
+            // `HashTableCrefSimVar`, itself `type … = tuple<…>`) is NOT a
+            // multi-output call — its result IS the tuple value and must be
+            // wrapped whole. Gate the `.0` on the callee genuinely having >1
+            // output; a PartEval always forwards a single value but lowers
+            // through a closure, so it keeps the prior (whole) treatment.
+            let take_first = match a {
+                Some(TypedExp::Call { func, .. }) if matches!(a.unwrap().ty(), Ty::Tuple(_)) => {
+                    resolve_call_qname(func, ctx, top_level)
+                        .map(|q| typedexp::function_has_multiple_outputs(&q, top_level, ""))
+                        // Unresolved callee: preserve the prior always-coerce
+                        // behaviour rather than silently wrapping a whole tuple.
+                        .unwrap_or(true)
+                }
+                _ => false,
+            };
+            if take_first {
                 arg = format!("({arg}).0");
             }
             Ok(format!("Some({arg})"))

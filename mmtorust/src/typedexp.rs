@@ -504,7 +504,7 @@ fn find_record_in_package_unions<'a>(
 ///
 /// Used by reduction inference to apply MetaModelica's implicit "first-output"
 /// coercion only to genuine multi-output calls.
-fn function_has_multiple_outputs<'a>(
+pub fn function_has_multiple_outputs<'a>(
     func: &str,
     top_level: &'a BTreeMap<String, NameNode<'a>>,
     pkg_prefix: &str,
