@@ -6581,6 +6581,18 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
                 // wrap with `Arc<dyn Fn(_, ..) -> Result<_>>` and let
                 // rustc infer each slot from the surrounding call. The
                 // arity comes from the resolved base.
+                // Function-alias-typed LOCAL BINDING (input/output/protected) —
+                // e.g. NBSlice's `toStringT_ func` where
+                // `partial function toStringT_ = toStringT`. Like the
+                // `Ty::Function` local-binding arm above, the runtime value is
+                // already an `Arc<dyn Fn>` (the alias lowers to
+                // `pub type … = Arc<dyn Fn …>`), so forward it with `.clone()`.
+                // Only the fn-*item* alias form (`function f = g;`, not in
+                // `fn_env_vars`) needs the `Arc::new(.. as Arc<dyn Fn>)` wrap
+                // below — wrapping a binding would nest `Arc<Arc<dyn Fn>>`.
+                Ty::FunctionAlias { .. }
+                    if ctx.fn_env_vars.contains_key(&name.split('.').next().unwrap_or(name).to_owned()) =>
+                    format!("{var_str}.clone()"),
                 Ty::FunctionAlias { base, .. } => {
                     // `resolve_call_qname` searches relative to the *call
                     // site's* function scope, but the alias's RHS name
@@ -9828,7 +9840,12 @@ fn arg_is_input_fn_param(arg: &TypedExp, ctx: &GenCtx) -> bool {
     // frequently `Ty::Unknown` for a bare local. A top-level fn-*item*
     // referenced by name is not in `fn_env_vars`, so it correctly falls
     // through to the fn-item wrapping path.
-    let is_fn = |t: &Ty| matches!(t, Ty::Function { .. });
+    // A partial-function *alias* parameter (`partial function F_ = F;`, e.g.
+    // NBSlice's `toStringT_`) carries `Ty::FunctionAlias`; its runtime value is
+    // still an `Arc<dyn Fn>` (the alias is `pub type F_ = Arc<dyn Fn …>`), so it
+    // is forwarded with `.clone()` just like a `Ty::Function` parameter — never
+    // re-wrapped in `Arc::new` (which would nest `Arc<Arc<dyn Fn>>`, E0277).
+    let is_fn = |t: &Ty| matches!(t, Ty::Function { .. } | Ty::FunctionAlias { .. });
     if let Some(env_ty) = ctx.fn_env_vars.get(base) {
         return is_fn(env_ty);
     }
