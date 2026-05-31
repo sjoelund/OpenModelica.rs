@@ -101,7 +101,7 @@ fn unexpandArrayVariables(mut varsIn: Arc<metamodelica::List<BackendDAE::Var>>, 
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: var, tail: rest } => {
                     let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-                    let mut scalars: Arc<metamodelica::List</* ? */>> = metamodelica::nil();
+                    let mut scalars: Arc<metamodelica::List<_>> = metamodelica::nil();
                     let mut var = (*var).clone();
                     let mut rest = (*rest).clone();
                     cref = BackendVariable::varCref(var.clone())?;

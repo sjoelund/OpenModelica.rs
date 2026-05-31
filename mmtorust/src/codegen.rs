@@ -5409,7 +5409,10 @@ fn emit_function<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::
         // `let mut x: /* ? */;` would fail to parse. Match-arm locals use the
         // same fallback (see "TODO: local with unresolved type" below).
         let is_unknown_ty = matches!(t, Ty::Unknown);
-        let ty_s = try_alias(n, None).unwrap_or_else(|| fmt_ty(t, ctx));
+        // A partially-unresolved container type renders its Unknown leaf as
+        // `/* ? */`, invalid in a `let` annotation (E0107 — `List<>` once the
+        // comment is stripped). Default such leaves to `_` for inference.
+        let ty_s = try_alias(n, None).unwrap_or_else(|| fmt_ty(t, ctx)).replace("/* ? */", "_");
         let modif_opt: Option<Arc<Absyn::Modification>> = modif.clone();
         // Carry along the inferred type of the initializer so we can detect a
         // multi-output call assigned into a single-valued local. MetaModelica
@@ -11711,7 +11714,14 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                         // in scope. Falls back to the resolved concrete type.
                         let ty_s = type_spec.as_ref()
                             .and_then(|ts| arm_alias_scope.and_then(|sc| field_type_alias_name(ts, sc)))
-                            .unwrap_or_else(|| fmt_ty(ty, ctx));
+                            .unwrap_or_else(|| fmt_ty(ty, ctx))
+                            // A partially-unresolved container type (e.g.
+                            // `list<X>` whose element type didn't resolve) renders
+                            // its Unknown leaf as `/* ? */`, which is invalid in a
+                            // `let` annotation (`List<>` after the comment is
+                            // stripped — E0107). Default such leaves to `_` so Rust
+                            // infers them from the later assignment.
+                            .replace("/* ? */", "_");
                         match default {
                             Some(d) => {
                                 let init = emit_exp(d, is_const, ctx, top_level);
@@ -12130,7 +12140,14 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                         }
                         let ty_s = type_spec.as_ref()
                             .and_then(|ts| arm_alias_scope.and_then(|sc| field_type_alias_name(ts, sc)))
-                            .unwrap_or_else(|| fmt_ty(ty, ctx));
+                            .unwrap_or_else(|| fmt_ty(ty, ctx))
+                            // A partially-unresolved container type (e.g.
+                            // `list<X>` whose element type didn't resolve) renders
+                            // its Unknown leaf as `/* ? */`, which is invalid in a
+                            // `let` annotation (`List<>` after the comment is
+                            // stripped — E0107). Default such leaves to `_` so Rust
+                            // infers them from the later assignment.
+                            .replace("/* ? */", "_");
                         match default {
                             Some(d) => {
                                 let init = emit_exp(d, is_const, ctx, top_level);
