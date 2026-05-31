@@ -3333,7 +3333,12 @@ fn emit_type_item(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::Cla
                     i += 1;
                     let doc = comment.as_ref().and_then(|c| c.comment.as_deref());
                     emit_doc_comment(out, &lit_indent, doc);
-                    writeln!(out, "{indent}    {} = {i},", escape_ident(literal)).unwrap();
+                    // Enum literals are always reached qualified (`Enum::Lit`),
+                    // so they never collide with the unqualified prelude — use
+                    // the segment escaper (no None/Some/Ok/Err rename) to keep
+                    // the definition matching every `Enum::Lit` reference, which
+                    // resolves through `escape_ident_segment` via its `::` path.
+                    writeln!(out, "{indent}    {} = {i},", escape_ident_segment(literal)).unwrap();
                 }
                 writeln!(out, "{indent}}}").unwrap();
                 writeln!(out, "{indent}impl PartialOrd for {ename} {{").unwrap();
@@ -3353,7 +3358,7 @@ fn emit_type_item(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::Cla
                 {
                     let Absyn::EnumLiteral { literal, .. } = &**first;
                     writeln!(out, "{indent}impl Default for {ename} {{").unwrap();
-                    writeln!(out, "{indent}    fn default() -> Self {{ Self::{} }}", escape_ident(literal)).unwrap();
+                    writeln!(out, "{indent}    fn default() -> Self {{ Self::{} }}", escape_ident_segment(literal)).unwrap();
                     writeln!(out, "{indent}}}").unwrap();
                 }
                 writeln!(out).unwrap();
@@ -13342,8 +13347,25 @@ fn emit_pat_with_implicit_bind_md<'a>(pat: &TypedPat, allow_implicit_bind: bool,
     // generic-returning call's result emits without `Deref @` and Rust
     // rejects the pattern with E0308.
     let pat_implies_arc_edge = matches!(pat, TypedPat::Cons { .. } | TypedPat::EmptyList);
+    // Extend the same pattern-shape fallback to a `Constructor` sub-pattern whose
+    // own type is an Arc-wrapped uniontype variant. This catches the case where
+    // the *scrutinee* type didn't infer (e.g. a `List.select1`/`List.flatten`
+    // chain whose generic return stays `Ty::Unknown`, so `Cons`'s `elem_ty`
+    // collapses to `Unknown`) yet the head element is still `Arc<T>` — e.g.
+    // `Cons { head: Absyn::ComponentItem { .. }, .. }` over a
+    // `List<Arc<ComponentItem>>`. Only fire when the scrutinee type is genuinely
+    // unknown so we never contradict a position whose type *did* resolve to a
+    // non-Arc value; recursive-uniontype values are uniformly `Arc`-wrapped
+    // (fields, list elements, Option contents), so the peel is always correct
+    // when the pattern's variant belongs to such a type.
+    let scrut_unknown = scrut_ty.map(|t| matches!(t, Ty::Unknown)).unwrap_or(true);
+    let pat_ty_implies_arc = match pat {
+        TypedPat::Constructor { ty, .. } => is_arc_wrapped(ty, ctx) || constructor_needs_arc(ty, ctx),
+        _ => false,
+    };
     let at_arc_edge = pat_implies_arc_edge
-        || scrut_ty.map(|t| ty_needs_arc_match_deref(t, ctx)).unwrap_or(false);
+        || scrut_ty.map(|t| ty_needs_arc_match_deref(t, ctx)).unwrap_or(false)
+        || (scrut_unknown && pat_ty_implies_arc);
     // `match_deref!` recognises the literal token `Deref` in pattern position
     // (it looks for an `i.ident == "Deref"` syn::PatIdent) and rewrites the
     // `Deref @ <subpat>` into an `if let <subpat> = ::core::ops::Deref::deref(binding)`
@@ -14415,7 +14437,18 @@ fn pat_requires_arc_deref(pat: &TypedPat, ctx: &GenCtx) -> bool {
         //     the inner List::Cons is on an `Arc<List<_>>` field even though
         //     the outer Constructor's own type is a plain struct.
         TypedPat::Constructor { fields, named_fields, ty, .. } => {
+            // `is_arc_wrapped` only recognises the bare recursive-uniontype
+            // *enum* qname (e.g. `Absyn.Exp`); a pattern's `ty` is typically the
+            // narrower *variant record* (`Absyn.Exp.STRING`), which lives behind
+            // the same `Arc<Enum>` but isn't itself in `recursive_types`.
+            // `constructor_needs_arc` resolves the variant→parent-enum link
+            // precisely (via `variant_record_qnames`/`rust_enum_qnames`), so a
+            // refutable `let Absyn::STRING { .. } = fn()? else { … }` against a
+            // scrutinee whose type didn't infer (`Ty::Unknown`) still routes
+            // through `match_deref!` with the required `Deref @` peel instead of
+            // a bare `let`-else that tries to match `Exp` against `Arc<Exp>`.
             is_arc_wrapped(ty, ctx)
+                || constructor_needs_arc(ty, ctx)
                 || fields.iter().any(|p| pat_requires_arc_deref(p, ctx))
                 || named_fields.iter().any(|(_, p)| pat_requires_arc_deref(p, ctx))
         }
@@ -14738,8 +14771,21 @@ fn emit_pat_assign<'a>(
                 };
                 let fail_owned;
                 let fail: &str = match &fail_mode {
-                    FailureMode::Function => "bail!(\"pattern mismatch\")",
-                    FailureMode::TryArm => match &ctx.qmode {
+                    // Both `Function` and `TryArm` defer to `ctx.qmode`: a
+                    // refutable destructuring is a `?`-like failure point, so it
+                    // must follow the same propagation as `unwrap_break_err!`
+                    // (which keys off `qmode`, see `GenCtx::qpropagate`). When the
+                    // enclosing lexical context is a `try … end try` block —
+                    // including a *nested match expression* inside it, whose arm
+                    // bodies inherit `qmode = TryBlock` but are emitted under
+                    // `FailureMode::Function` — failure must `break` to the try
+                    // label, not `bail!` out of the function (which need not even
+                    // be fallible; e.g. CevalScriptBackend.moveClassToTop returns
+                    // a plain `(Program, bool)` and catches the failure in `else`).
+                    // `qmode` is reset to `Function` at every closure/IIFE
+                    // boundary (see the matchcontinue-arm reset), so a labeled
+                    // break can never escape across a closure.
+                    FailureMode::Function | FailureMode::TryArm => match &ctx.qmode {
                         QMode::TryBlock(label) => {
                             fail_owned = format!("break {label} Err::<_, _>(anyhow::anyhow!(\"pattern mismatch\"))");
                             &fail_owned
@@ -14884,8 +14930,13 @@ fn emit_pat_assign<'a>(
                 // would skip the `else_body` recovery entirely.
                 let fail_owned;
                 let fail: &str = match fail_mode {
-                    FailureMode::Function => "bail!(\"pattern mismatch\")",
-                    FailureMode::TryArm => match &ctx.qmode {
+                    // See the companion `match_deref!`-path comment above: a
+                    // refutable destructuring follows `qmode`, so a failure
+                    // inside a `try` block (incl. a nested match expression that
+                    // inherits `qmode = TryBlock` under `FailureMode::Function`)
+                    // breaks to the try label rather than `bail!`-ing out of a
+                    // possibly-infallible function.
+                    FailureMode::Function | FailureMode::TryArm => match &ctx.qmode {
                         QMode::TryBlock(label) => {
                             fail_owned = format!("break {label} Err::<_, _>(anyhow::anyhow!(\"pattern mismatch\"))");
                             &fail_owned
@@ -19353,9 +19404,17 @@ fn field_type_alias_name(
     }
 }
 
-/// Prefix Rust keywords with `r#` so they are valid identifiers.
-/// `self`, `super`, `crate`, and `Self` cannot be raw identifiers and are left as-is.
-fn escape_ident(name: &str) -> String {
+/// Keyword/raw-identifier escaping for an identifier or qualified path. Prefixes
+/// Rust keywords with `r#`, normalises `MetaModelica::Dangerous` and quoted
+/// identifiers, and escapes every `::`-separated segment.
+///
+/// This does NOT apply the bare-value prelude rename (None/Some/Ok/Err) — that
+/// is layered on top by [`escape_ident`] for *unqualified* names only. A
+/// qualified `Enum::None` (or a hand-written variant like `File::Escape::None`)
+/// is reached through its enum path and can never collide with the unqualified
+/// prelude `Option::None`, so renaming the segment would only break the link to
+/// its definition. Enum-literal definitions therefore also use this function.
+fn escape_ident_segment(name: &str) -> String {
     // Path-style identifiers (e.g. `Expression::typeof`, `crate::Foo`) must
     // have *every* segment checked for keyword collisions, not just the whole
     // string. Without this, a path whose tail is a Rust reserved keyword
@@ -19365,12 +19424,12 @@ fn escape_ident(name: &str) -> String {
     if name.starts_with("MetaModelica::Dangerous") {
         let rewritten = name.replace("MetaModelica::Dangerous", "metamodelica::Dangerous");
         if rewritten.contains("::") {
-            return rewritten.split("::").map(escape_ident).collect::<Vec<_>>().join("::");
+            return rewritten.split("::").map(escape_ident_segment).collect::<Vec<_>>().join("::");
         }
         return rewritten;
     }
     if name.contains("::") {
-        return name.split("::").map(escape_ident).collect::<Vec<_>>().join("::");
+        return name.split("::").map(escape_ident_segment).collect::<Vec<_>>().join("::");
     }
     if let Some(start) = name.find('\'') {
         // Find the next quote relative to the first one.
@@ -19386,7 +19445,7 @@ fn escape_ident(name: &str) -> String {
             //  Use &name[end..] if you want to keep the second quote.)
 
             let new_name = format!("{}_{}{}", &name[..start], name[start+1..end].replace("'", "").replace(".","_").replace("::","_"), &name[end + 1..]);
-            return escape_ident(new_name.as_str());
+            return escape_ident_segment(new_name.as_str());
         };
     };
     if name.starts_with("MetaModelica::Dangerous") {
@@ -19407,6 +19466,37 @@ fn escape_ident(name: &str) -> String {
         "str" => format!("r#{name}"),
         _ => name.to_owned(),
     }
+}
+
+/// Escape an identifier for emission, additionally mangling a *bare,
+/// unqualified* name that collides with a Rust prelude **value** constructor
+/// the code generator emits for its own Option/Result lowering: `NONE()`/
+/// `SOME()` become bare `None`/`Some(..)` (see the `"NONE"`/`"SOME"` arms in the
+/// call emitter) and fallible functions wrap results in `Ok(..)`/`Err(..)`. A
+/// MetaModelica value identifier spelled exactly the same — e.g. Refactor.mo's
+/// `constant String None = "None";`, referenced bare — would otherwise *shadow*
+/// that prelude name and break every `None`/`Some`/`Ok`/`Err` the codegen relies
+/// on in the same module. These are not keywords, so the `r#` raw-identifier
+/// escape does not apply (`r#None` is rejected by rustc); mangle with a trailing
+/// underscore instead.
+///
+/// The rename is confined to **unqualified** names because that is the only form
+/// that can shadow the unqualified prelude. Qualified accesses (`Enum::None`,
+/// `Mod::Ok`) and enum-*literal* definitions go through [`escape_ident_segment`]
+/// untouched — they are always reached through their owning path and so never
+/// collide (e.g. the hand-written `File::Escape::None`). `escape_ident` is the
+/// single funnel for both a bare value's definition site (`emit_node`'s const
+/// path) and its bare references (`emit_var`'s bare-name path), so the mangle
+/// stays consistent; the codegen's own bare `None`/`Some(..)`/`Ok(..)`/`Err(..)`
+/// emissions are literal strings that never pass through here.
+fn escape_ident(name: &str) -> String {
+    if !name.contains("::") && !name.contains('\'') && !name.starts_with("MetaModelica") {
+        match name {
+            "None" | "Some" | "Ok" | "Err" => return format!("{name}_"),
+            _ => {}
+        }
+    }
+    escape_ident_segment(name)
 }
 
 fn path_to_dotted(path: &Absyn::Path) -> String {
