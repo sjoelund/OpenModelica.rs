@@ -9025,6 +9025,32 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
             // a format string, so deref into `&str` via `&*`.
             Ok(format!("assert!({cond}, \"{{}}\", &*{msg})"))
         },
+        // Modelica enumeration cardinality: `size(EnumType, dim)` evaluates to
+        // the number of enumeration literals (e.g. `arrayCreate(size(
+        // SimVarsIndex, 1), {})` in SimCodeUtil). This is the only sense in
+        // which `size`'s first argument is a *type* rather than a value — every
+        // other `size(...)` in the compiler is a call to a user-defined `size`
+        // function on a collection, so bail (fall through to the regular call
+        // path) unless the first argument resolves to an enumeration type.
+        "size" if args.len() == 2 => {
+            // The first argument names an enumeration *type* (its static type is
+            // `Ty::Enumeration`). Count the enumeration's literals, which the
+            // hierarchy records as `EnumLiteral` child nodes. (`type X =
+            // enumeration(..)` has restriction `R_TYPE`, not `R_ENUMERATION`, so
+            // we key off the resolved `Ty` and the presence of literal children
+            // rather than the restriction.)
+            if let Ty::Enumeration(q) = args[0].ty()
+                && let Some(node) = lookup_node(&q, top_level)
+            {
+                let count = node.children.values()
+                    .filter(|ch| matches!(ch.kind, NodeKind::EnumLiteral))
+                    .count();
+                if count > 0 {
+                    return Ok(format!("{count}i32"));
+                }
+            }
+            bail!("size: not an enumeration-cardinality call")
+        },
         _ => bail!("Not a builtin function")
     }
 }
