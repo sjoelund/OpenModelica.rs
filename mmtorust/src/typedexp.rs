@@ -3372,7 +3372,34 @@ fn infer_stmt<'a>(
                 let body = infer_stmts_list(forBody, &mut inner, top_level, pkg_prefix, type_vars);
                 TypedStmt::For { var: name.to_string(), range: range_e, body }
             } else {
-                TypedStmt::Todo("multi-iterator-for".to_owned())
+                // Multi-iterator for: nested loops with the FIRST iterator
+                // outermost (Modelica spec §11.2.2: `for i in A, j in B loop S`
+                // is equivalent to `for i in A loop for j in B loop S`). Each
+                // iterator's range is elaborated in the scope of the preceding
+                // iterators, so a later range may depend on an earlier one.
+                let mut inner = env.clone();
+                let mut specs: Vec<(String, TypedExp)> = Vec::new();
+                for it in &iters {
+                    let Absyn::ForIterator { name, range, .. } = &**it;
+                    let range_e = match range {
+                        Some(r) => infer_exp(r.as_ref(), &inner, top_level, pkg_prefix, type_vars),
+                        None => TypedExp::Todo("for-without-range".to_owned()),
+                    };
+                    let elem_ty = match range_e.ty() {
+                        Ty::List(t) | Ty::Array(t) | Ty::Range(t) => *t,
+                        _ => Ty::Unknown,
+                    };
+                    inner.insert(name.to_string(), elem_ty);
+                    specs.push((name.to_string(), range_e));
+                }
+                let body = infer_stmts_list(forBody, &mut inner, top_level, pkg_prefix, type_vars);
+                // Wrap from the innermost (last) iterator outward, so the first
+                // iterator ends up as the outermost loop.
+                let mut stmts = body;
+                for (var, range) in specs.into_iter().rev() {
+                    stmts = vec![TypedStmt::For { var, range, body: stmts }];
+                }
+                stmts.into_iter().next().expect("multi-iterator for has >1 iterator")
             }
         }
         Absyn::Algorithm::ALG_WHILE { boolExpr, whileBody } => {
