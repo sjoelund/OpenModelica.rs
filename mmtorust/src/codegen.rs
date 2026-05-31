@@ -425,6 +425,17 @@ struct GenCtx {
     /// next arm clears them — verifying that no such guards leak is
     /// outside the scope of this hook.
     pat_extra_guards: Vec<String>,
+    /// Active renames for match-arm pattern bindings, MetaModelica name → Rust
+    /// binding name. Consulted by [`emit_pat_with_implicit_bind_md`] when
+    /// emitting a `Var` binding. Used when a pattern binds a name that also
+    /// names a *function output* (or other enclosing-scope variable): in
+    /// MetaModelica a match-case pattern variable lives in the enclosing scope,
+    /// so binding an output in a pattern must flow the value back out to that
+    /// output. Rust patterns instead create an arm-local binding that shadows
+    /// the output and never escapes the match. The arm emitter renames the
+    /// binding to a fresh temp (registered here for the duration of pattern
+    /// emission only) and writes the output back at the arm-body start.
+    pat_bind_rename: HashMap<String, String>,
     /// Monotonic counter for synthesizing fresh names for real-literal
     /// pattern bindings (see `pat_extra_guards`).
     pat_lit_counter: u32,
@@ -503,6 +514,7 @@ impl GenCtx {
             in_tail_lowered_fn: false,
             tail_lowering: None,
             pat_extra_guards: Vec::new(),
+            pat_bind_rename: HashMap::new(),
             pat_lit_counter: 0,
             loop_label_stack: Vec::new(),
         }
@@ -11806,11 +11818,36 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
             // on the Absyn side; the two must agree).
             let exhaustive = cases_exhaustive(kind, cases, &input_ty, top_level);
             let arms: Vec<String> = cases.iter().map(|case| {
+                // Pattern bindings that name a *function output*. In
+                // MetaModelica a match-case pattern variable lives in the
+                // enclosing (function) scope, so binding an output in a pattern
+                // (e.g. `case STATE(derivative = SOME(derivative))` where
+                // `derivative` is the function output) must flow that value
+                // back out to the output. Rust patterns create an arm-local
+                // binding that shadows the output and never escapes, so we
+                // rename the Rust binding to a fresh temp and write the output
+                // back at the arm-body start. See [`pat_bind_rename`].
+                let escaping_outputs: Vec<String> = if ctx.fn_outputs.is_empty() {
+                    Vec::new()
+                } else {
+                    let binds: HashSet<String> = typedexp::pat_bindings(&case.pattern)
+                        .iter().map(|(n, _)| n.clone()).collect();
+                    ctx.fn_outputs.iter().filter(|o| binds.contains(*o)).cloned().collect()
+                };
+                // Prefix the *raw* name before escaping so a keyword output
+                // (`str` → `r#str`) doesn't yield the invalid token
+                // `__esc_r#str`; `__esc_<name>` is never itself a keyword.
+                let esc_rename: HashMap<String, String> = escaping_outputs.iter()
+                    .map(|o| (o.clone(), escape_ident(&format!("__esc_{o}"))))
+                    .collect();
                 // Real-literal patterns lower to a binding + guard. Clear the
                 // accumulator before emitting the pattern, drain after so
                 // they can be merged into the arm's guard below.
                 ctx.pat_extra_guards.clear();
+                // Install the output-binding renames for pattern emission only.
+                let saved_pat_bind_rename = std::mem::replace(&mut ctx.pat_bind_rename, esc_rename.clone());
                 let pat = emit_pat_with_implicit_bind_md(&case.pattern, /*allow_implicit_bind=*/true, /*mut_bindings=*/true, /*in_deref=*/false, /*implicit_ref=*/input_is_arc, /*in_match_deref=*/use_match_deref, Some(&input_ty), ctx, top_level);
+                ctx.pat_bind_rename = saved_pat_bind_rename;
                 let pat_extra_guards: Vec<String> = std::mem::take(&mut ctx.pat_extra_guards);
                 // Compute the variant narrowing established by this arm's pattern so
                 // that reads of `v.field` inside the guard and the case result use
@@ -11827,6 +11864,14 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                     }
                     for (k, s) in tmp_shapes {
                         ctx.variant_shapes.insert(k, s);
+                    }
+                    // An escaping output is written back as an *owned* value at
+                    // the arm-body start, so the result expression and body must
+                    // read it as the owned function output — not under the
+                    // by-reference shape `record_pattern_variants_with_shapes`
+                    // just recorded for the (renamed-away) pattern binding.
+                    for o in &escaping_outputs {
+                        ctx.variant_shapes.remove(o);
                     }
                     // `match e as v case Variant(..) => …`: the as-bound name
                     // also denotes the scrutinee, narrowed to this arm's
@@ -11941,7 +11986,7 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                 } else {
                     &case.stmts[..]
                 };
-                let arm_str = if stmts_for_arm.is_empty() && case.locals.is_empty() {
+                let arm_str = if stmts_for_arm.is_empty() && case.locals.is_empty() && escaping_outputs.is_empty() {
                     format!("        {pat}{guard} => {result}")
                 } else {
                     // Seed the arm's local env from the enclosing function scope:
@@ -11969,6 +12014,15 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                     record_pattern_variants(&case.pattern, input, &mut local_env, top_level);
                     let mut fresh_local: u32 = 0;
                     let mut body = String::new();
+                    // Write each pattern-bound function output back to the real
+                    // output from its renamed temp (see `escaping_outputs`). The
+                    // temp is by-reference under match_deref, so deref-then-clone
+                    // to obtain the owned value the output holds.
+                    for o in &escaping_outputs {
+                        let temp = &esc_rename[o];
+                        let rhs = if use_match_deref { format!("(*{temp}).clone()") } else { format!("{temp}.clone()") };
+                        body.push_str(&format!("            {} = {rhs};\n", escape_ident(o)));
+                    }
                     // Pattern bindings are declared by the match arm itself (as `mut`
                     // bindings). Don't shadow them with `let mut <name>;` declarations
                     // in the arm body — that would create a separate variable, so any
@@ -12105,6 +12159,12 @@ fn emit_match<'a>(kind: &MatchKind, input: &TypedExp, cases: &[TypedCase], as_bi
                         let mut assigned: HashSet<String> = HashSet::new();
                         stmts_assigned_var_names(&case.stmts, &mut assigned);
                         for n in &deref_names {
+                            // Escaping outputs were renamed away from `n` and are
+                            // already written back as owned values above; the
+                            // owned-rebind below would dangle on the absent binding.
+                            if escaping_outputs.contains(n) {
+                                continue;
+                            }
                             if assigned.contains(n) {
                                 let id = escape_ident(n);
                                 // Under match_deref the binding is by
@@ -13305,7 +13365,12 @@ fn emit_pat_with_implicit_bind_md<'a>(pat: &TypedPat, allow_implicit_bind: bool,
     let arc_prefix: &str = if in_match_deref && at_arc_edge { "Deref @ " } else { "" };
     match pat {
         TypedPat::Wildcard    => "_".to_owned(),
-        TypedPat::Var(name)   => bind_var(name),
+        TypedPat::Var(name)   => match ctx.pat_bind_rename.get(name) {
+            // An output bound here is renamed to a temp; the arm emitter writes
+            // the real output back from it (see `pat_bind_rename`).
+            Some(renamed) => bind_var(&renamed.clone()),
+            None => bind_var(name),
+        },
         TypedPat::EmptyList   => format!("{arc_prefix}metamodelica::List::Nil"),
         TypedPat::Some_(inner) => {
             // Propagate the Option's inner type into the sub-pattern so it can
@@ -13646,14 +13711,25 @@ fn emit_pat_with_implicit_bind_md<'a>(pat: &TypedPat, allow_implicit_bind: bool,
                             let inner_scrut = field_tys.get(i).map(|(_, t)| t);
                             let pstr = emit_pat_with_implicit_bind_md(p, allow_implicit_bind, mut_bindings, in_deref, implicit_ref, in_match_deref, inner_scrut, ctx, top_level);
                             if matches!(p, TypedPat::Var(v) if v == fname) {
+                                // A pattern-bound function output is renamed to a
+                                // temp (see `pat_bind_rename`); the field-init
+                                // shorthand `{ field }` is only valid when the
+                                // binding name matches the field name, so a rename
+                                // forces the explicit `field: <binding>` form.
+                                let renamed = ctx.pat_bind_rename.get(fname).cloned();
+                                let bind_e = escape_ident(renamed.as_deref().unwrap_or(fname));
+                                let fname_e = escape_ident(fname);
+                                let shorthand = renamed.is_none();
                                 if implicit_ref {
-                                    escape_ident(fname)
+                                    if shorthand { fname_e } else { format!("{fname_e}: {bind_e}") }
                                 } else if in_deref {
-                                    format!("{}: ref {}", escape_ident(fname), escape_ident(fname))
+                                    format!("{fname_e}: ref {bind_e}")
                                 } else if mut_bindings {
-                                    format!("{}: mut {}", escape_ident(fname), escape_ident(fname))
+                                    format!("{fname_e}: mut {bind_e}")
+                                } else if shorthand {
+                                    fname_e
                                 } else {
-                                    escape_ident(fname)
+                                    format!("{fname_e}: {bind_e}")
                                 }
                             } else {
                                 format!("{}: {pstr}", escape_ident(fname))
@@ -13686,14 +13762,22 @@ fn emit_pat_with_implicit_bind_md<'a>(pat: &TypedPat, allow_implicit_bind: bool,
                         let inner_scrut = field_tys.iter().find(|(n, _)| n == fname).map(|(_, t)| t);
                         let pstr = emit_pat_with_implicit_bind_md(p, allow_implicit_bind, mut_bindings, in_deref, implicit_ref, in_match_deref, inner_scrut, ctx, top_level);
                         if matches!(p, TypedPat::Var(v) if v == fname) {
+                            // See the positional branch: a renamed output binding
+                            // forces the explicit `field: <binding>` form.
+                            let renamed = ctx.pat_bind_rename.get(fname).cloned();
+                            let bind_e = escape_ident(renamed.as_deref().unwrap_or(fname));
+                            let fname_e = escape_ident(fname);
+                            let shorthand = renamed.is_none();
                             if implicit_ref {
-                                escape_ident(fname)
+                                if shorthand { fname_e } else { format!("{fname_e}: {bind_e}") }
                             } else if in_deref {
-                                format!("{}: ref {}", escape_ident(fname), escape_ident(fname))
+                                format!("{fname_e}: ref {bind_e}")
                             } else if mut_bindings {
-                                format!("{}: mut {}", escape_ident(fname), escape_ident(fname))
+                                format!("{fname_e}: mut {bind_e}")
+                            } else if shorthand {
+                                fname_e
                             } else {
-                                escape_ident(fname)
+                                format!("{fname_e}: {bind_e}")
                             }
                         } else {
                             format!("{}: {pstr}", escape_ident(fname))
@@ -13724,14 +13808,17 @@ fn emit_pat_with_implicit_bind_md<'a>(pat: &TypedPat, allow_implicit_bind: bool,
             // use sites to coerce `&T` back to owned `T` where needed.
             let pat_has_subbinding = pat_introduces_binding(pat);
             let force_ref = pat_has_subbinding && !implicit_ref;
+            // A pattern-bound function output is renamed to a temp and written
+            // back at the arm-body start (see `pat_bind_rename`).
+            let var_bind = ctx.pat_bind_rename.get(var).cloned().unwrap_or_else(|| var.clone());
             let outer = if implicit_ref {
-                escape_ident(var)
+                escape_ident(&var_bind)
             } else if in_deref || force_ref {
-                format!("ref {}", escape_ident(var))
+                format!("ref {}", escape_ident(&var_bind))
             } else if mut_bindings {
-                format!("mut {}", escape_ident(var))
+                format!("mut {}", escape_ident(&var_bind))
             } else {
-                escape_ident(var)
+                escape_ident(&var_bind)
             };
             // Propagate the scrutinee type into the inner sub-pattern.
             // `var @ inner` matches the same value against both sides, so the
