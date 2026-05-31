@@ -1521,7 +1521,7 @@ pub fn differentiateBuiltinCall(mut name: ArcStr, mut exp: Arc<Expression::NFExp
             if Expression::isZero(diffArg1.clone()) {
                 ret = Expression::makeZero(Type::arrayElementType(ty.clone()))?;
             } else {
-                ret1 = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(if (name.clone() == literal!("min")) {BuiltinFuncs::ARG_MIN_ARR_REAL().clone()} else {BuiltinFuncs::ARG_MAX_ARR_REAL().clone()}, list![arg1.clone()], Expression::variability(arg1.clone())?, Prefixes::Purity::PURE.clone(), r#fn.returnType.clone()) });
+                ret1 = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(if (name.clone() == literal!("min")) {BuiltinFuncs::ARG_MIN_ARR_REAL().clone()} else {BuiltinFuncs::ARG_MAX_ARR_REAL().clone()}, list![arg1.clone()], Expression::variability(arg1.clone())?, Prefixes::Purity::PURE.clone(), if (name.clone() == literal!("min")) {BuiltinFuncs::ARG_MIN_ARR_REAL().returnType.clone()} else {BuiltinFuncs::ARG_MAX_ARR_REAL().returnType.clone()}) });
                 ret = Expression::applySubscripts(list![Arc::new(Subscript::NFSubscript::INDEX { index: ret1.clone() })], diffArg1.clone(), true)?;
             }
             ret.clone()

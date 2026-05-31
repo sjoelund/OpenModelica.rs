@@ -1271,7 +1271,7 @@ fn lowerWhenEquation(mut frontend_eq: Arc<FEquation::NFEquation>, mut init: bool
             whenEqBody = __pa0.clone();
             bodies = BEquation::WhenEquationBody::split(whenEqBody.clone())?;
             ({
-        let mut __acc: Arc<metamodelica::List<Pointer::Pointer<BEquation::Equation::WHEN_EQUATION>>> = metamodelica::nil();
+        let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
         for mut b in (bodies.clone()).into_iter().cloned() {
             let __x = Pointer::create(Arc::new(Equation::Equation::WHEN_EQUATION { attr: BEquation::default(if (BEquation::WhenEquationBody::size(b.clone(), false) > 0) {EquationKind::DISCRETE.clone()} else {EquationKind::EMPTY.clone()}, init.clone(), None, None), source: var_field!((*frontend_eq).source, FEquation::NFEquation::WHEN).clone(), body: b.clone(), size: BEquation::WhenEquationBody::size(b.clone(), false) }));
             __acc = cons(__x, __acc);

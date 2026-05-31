@@ -117,7 +117,7 @@ pub fn toString<T: Clone + 'static>(mut slice: Arc<NBSlice<T>>, mut func: Arc<dy
 pub fn lstToString<T: Clone + 'static>(mut lst: Arc<metamodelica::List<Arc<NBSlice<T>>>>, mut func: toStringT<T>, mut maxLength: i32) -> ArcStr {
     pub use toStringT as toStringT_;
 
-    let mut r#str: ArcStr = List::toString(lst.clone(), (std::sync::Arc::new({ let __pe_b1 = (std::sync::Arc::new(func) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>); let __pe_b2 = maxLength.clone(); move |__pe_a0| toString(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("\t")).clone(), (literal!(";\n\t")).clone(), (literal!(";")).clone(), false, 0).unwrap();
+    let mut r#str: ArcStr = List::toString(lst.clone(), (std::sync::Arc::new({ let __pe_b1 = func.clone(); let __pe_b2 = maxLength.clone(); move |__pe_a0| toString(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("\t")).clone(), (literal!(";\n\t")).clone(), (literal!(";")).clone(), false, 0).unwrap();
     r#str
 }
 

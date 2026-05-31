@@ -1857,7 +1857,7 @@ pub fn partitionIndependentBlocksHelper(mut isyst: Arc<BackendDAE::EqSystem>, mu
                     rvars = arrayCreate((rmT.clone().borrow().len() as i32), false);
                     i = SynchronousFeatures::partitionIndependentBlocks0(m.clone(), mT.clone(), rm.clone(), rmT.clone(), eqPartMap.clone(), varPartMap.clone(), rixs.clone(), vars.clone(), rvars.clone())?;
                     b = i.clone() > 1;
-                    (systs, _, _) = if (b.clone()) {(SynchronousFeatures::partitionIndependentBlocksSplitBlocks(i.clone(), syst.clone(), eqPartMap.clone(), rixs.clone(), mT.clone(), rmT.clone(), throwNoError.clone(), funcs.clone(), isInitial.clone())?).0} else {list![syst.clone()]};
+                    systs = if (b.clone()) {(SynchronousFeatures::partitionIndependentBlocksSplitBlocks(i.clone(), syst.clone(), eqPartMap.clone(), rixs.clone(), mT.clone(), rmT.clone(), throwNoError.clone(), funcs.clone(), isInitial.clone())?).0} else {list![syst.clone()]};
                     GCExt::free(eqPartMap.clone());
                     GCExt::free(varPartMap.clone());
                     GCExt::free(rixs.clone());

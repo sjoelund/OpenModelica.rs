@@ -666,7 +666,7 @@ fn removeSlicedDerivateEqn(mut eqn: Arc<Equation::Equation>, mut iter: Arc<Itera
             let mut lhs = (*lhs).clone();
             assign_variant_field!(lhs => Expression::NFExpression::TUPLE; elements = ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-        for mut e in (var_field!((*lhs).elements, Expression::NFExpression::TUPLE).clone()).borrow().iter() {
+        for mut e in (var_field!((*lhs).elements, Expression::NFExpression::TUPLE).clone()).into_iter().cloned() {
             let __x = replaceTupleLiterals(e.clone(), iter.clone(), dummy_slice_set.clone(), aux_index.clone())?;
             __acc = cons(__x, __acc);
         }

@@ -80,6 +80,7 @@ use openmodelica_nf_frontend::NFFlatten as Flatten;
 use openmodelica_nf_frontend::NFFunction::Function;
 use openmodelica_nf_frontend::NFInstNode::InstNode;
 use openmodelica_nf_frontend::NFOperator as Operator;
+use openmodelica_nf_frontend::NFSimplifyExp;
 use openmodelica_nf_frontend::NFStatement as Statement;
 use openmodelica_nf_frontend::NFSubscript as Subscript;
 use openmodelica_nf_frontend::NFType as Type;
@@ -800,7 +801,7 @@ pub fn cleanupInitialCall(mut eq: Arc<Equation::Equation>, mut kind: BPartition:
     let mut simplify: Pointer::Pointer<bool> = Pointer::create(false);
     eq = BEquation::Equation::map(eq.clone(), (std::sync::Arc::new({ let __pe_b1 = kind.clone(); let __pe_b2 = simplify.clone(); move |__pe_a0| cleanupInitialCallExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     if Pointer::access(simplify.clone()) {
-        eq = BEquation::Equation::simplify(eq.clone(), (literal!("")).clone(), (literal!("")).clone(), Pointer::create(metamodelica::nil()), Pointer::create(metamodelica::nil()), (std::sync::Arc::new({ let __pe_b1 = true; let __pe_b2 = (literal!("")).clone(); let __pe_b3 = (literal!("")).clone(); move |__pe_a0| SimplifyExp::simplifyDump(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+        eq = BEquation::Equation::simplify(eq.clone(), (literal!("")).clone(), (literal!("")).clone(), Pointer::create(metamodelica::nil()), Pointer::create(metamodelica::nil()), (std::sync::Arc::new({ let __pe_b1 = true; let __pe_b2 = (literal!("")).clone(); let __pe_b3 = (literal!("")).clone(); move |__pe_a0| NFSimplifyExp::simplifyDump(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     }
     Ok(eq)
 }

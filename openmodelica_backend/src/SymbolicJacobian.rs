@@ -2630,7 +2630,7 @@ pub fn updateJacobianDependencies(mut jacobian: Arc<BackendDAE::Jacobian>) -> Re
             let mut dependencies: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
             let mut jac = (*jac).clone();
             let (__pa7, __pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6) = ::match_deref::match_deref! { match &(var_field!((*jac).jacobian, BackendDAE::Jacobian::GENERIC_JACOBIAN).clone()) {
-                Some(__pa7 @ (BackendDAE::BackendDAE { eqs: Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil }, shared: __pa1 }, __pa2, __pa3, __pa4, __pa5, __pa6)) => (__pa7.clone(), __pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone()),
+                Some(__pa7 @ (Deref @ BackendDAE::BackendDAE { eqs: Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil }, shared: __pa1 }, __pa2, __pa3, __pa4, __pa5, __pa6)) => (__pa7.clone(), __pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone()),
                 _ => bail!("pattern mismatch"),
             } };
             syst = __pa0.clone();
@@ -4466,8 +4466,9 @@ pub mod LinearJacobian {
         type evaluateFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<metamodelica::Real> + 'static>;
 
         fn intWrapperFunc(mut e: Arc<DAE::Exp>) -> Result<metamodelica::Real> {
-            let v = intReal(Expression::getEvaluatedConstInteger(e.clone())?);
-            Ok(())
+            let mut v: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
+            v = intReal(Expression::getEvaluatedConstInteger(e.clone())?);
+            Ok(v)
         }
 
         let mut linJac: Arc<LinearJacobian> = Arc::new(<LinearJacobian as ::std::default::Default>::default());

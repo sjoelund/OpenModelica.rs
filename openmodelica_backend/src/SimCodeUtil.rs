@@ -4001,7 +4001,7 @@ fn createAllEquationOMSI(mut constSysts: Arc<metamodelica::List<Arc<BackendDAE::
     let mut uniqueEqIndex: i32 = uniqueEqIndex;
     let mut components: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
     let mut newAllEquations: Arc<SimCode::OMSIFunction> = Arc::new(<SimCode::OMSIFunction as ::std::default::Default>::default());
-    assign_field!(omsiAllEquations.context = SimCodeFunction::Context::OMSI_CONTEXT { hashTable: Some((HashTableCrefSimVar::emptyHashTableSized(1013)).0) });
+    assign_field!(omsiAllEquations.context = SimCodeFunction::Context::OMSI_CONTEXT { hashTable: Some(HashTableCrefSimVar::emptyHashTableSized(1013)) });
     for mut constSyst in &*constSysts.clone() {
         let mut constSyst = constSyst.clone();
         match '__try0: {
@@ -8226,7 +8226,7 @@ fn createVars(mut inSimDAE: Arc<BackendDAE::BackendDAE>, mut inInitDAE: Arc<Back
     let mut systs2: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = metamodelica::nil();
     let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
     let mut hs: Mutable::Mutable<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr))>;
-    let mut simVars: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>> = arrayCreate(size(SimVarsIndex.clone(), 1), metamodelica::nil());
+    let mut simVars: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>> = arrayCreate(30i32, metamodelica::nil());
     let mut primeSize: i32 = 0;
     let mut iterationVarsLst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     let mut iterationVars: Option<Arc<UnorderedSet::UnorderedSet<Arc<DAE::ComponentRef>>>> = None;
