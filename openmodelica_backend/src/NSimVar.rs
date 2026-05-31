@@ -1317,7 +1317,7 @@ pub mod SimVars {
         if Flags::getConfigBool(Flags::SIM_CODE_SCALARIZE.clone())? {
             vars = ({
         let mut __acc: Arc<metamodelica::List<Arc<SimVar::SimVar>>> = metamodelica::nil();
-        for mut v in (BVariable::VariablePointers::scalarizeList(list![var.clone()])?).into_iter() {
+        for mut v in ((BVariable::VariablePointers::scalarizeList(list![var.clone()])?).0).into_iter().cloned() {
             let __x = UnorderedMap::getSafe(BVariable::getVarName(v.clone()), simcode_map.clone(), metamodelica::sourceInfo!())?;
             __acc = cons(__x, __acc);
         }

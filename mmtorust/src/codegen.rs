@@ -7835,7 +7835,17 @@ fn emit_reduction<'a>(
     // Build the for-loop opening for one iterator.
     fn open_for(it: &ReductionIter, is_const: bool, ctx: &mut GenCtx, top_level: &BTreeMap<String, NameNode>) -> String {
         let range_s = emit_exp(&it.range, is_const, ctx, top_level);
-        let iter_expr = match it.range.ty() {
+        // MetaModelica takes the first output of a multi-output call when it is
+        // used in single-value position — here, as a comprehension iterator's
+        // range (e.g. `for v in scalarizeList(vars)`, whose callee returns
+        // `(list, Boolean)`). Peel the tuple type to its first element and index
+        // `.0` so we iterate the primary output, not the whole (non-iterable)
+        // tuple.
+        let (range_s, range_ty) = match it.range.ty() {
+            Ty::Tuple(ts) if !ts.is_empty() => (format!("({range_s}).0"), ts[0].clone()),
+            t => (range_s, t),
+        };
+        let iter_expr = match range_ty {
             // Lists yield &T; clone so the loop body owns its element (matches
             // the rest of the generated code which clones liberally).
             Ty::List(_) => format!("({range_s}).into_iter().cloned()"),
@@ -8030,7 +8040,13 @@ fn emit_reduction<'a>(
     // resolve their types (e.g. for `var_field!` shape selection on Arc-wrapped
     // element types). Saved + restored so iterators don't leak.
     let saved_iter_tys: Vec<(String, Option<Ty>, bool)> = iterators.iter().map(|it| {
-        let elem_ty = match it.range.ty() {
+        // A multi-output call range iterates its first output (see `open_for`);
+        // peel the tuple to its first element before reading the element type.
+        let range_ty = match it.range.ty() {
+            Ty::Tuple(ts) if !ts.is_empty() => ts[0].clone(),
+            t => t,
+        };
+        let elem_ty = match range_ty {
             Ty::List(t) | Ty::Array(t) | Ty::Range(t) => *t,
             _ => Ty::Unknown,
         };
@@ -16175,12 +16191,23 @@ fn emit_stmt<'a>(
                 return;
             }
             let r = emit_exp(range, false, ctx, top_level);
+            // MetaModelica takes the *first* output of a multi-output function
+            // call when it appears in single-value position — here, as the
+            // iterable of a `for` loop (e.g. `for v in scalarizeList(vars)`,
+            // whose callee returns `(list, Boolean)`). The call's static type is
+            // a tuple; peel to its first element and index `.0` so we iterate
+            // the primary output rather than the whole tuple (which is not
+            // iterable — E0599/E0277).
+            let (r, range_ty) = match range.ty() {
+                Ty::Tuple(ts) if !ts.is_empty() => (format!("({r}).0"), ts[0].clone()),
+                t => (r, t),
+            };
             // List<T> behind `Arc` → iterate via `&*lst` (Deref<Target=List>).
             // Array<T> = `Rc<RefCell<Vec<T>>>` → iterate via `arr.borrow().iter()`
             //   then `.cloned()` so the loop variable owns its element instead of
             //   borrowing through the RefCell guard for the whole body (avoids
             //   holding a borrow across user code that may itself touch the array).
-            let r = match range.ty() {
+            let r = match &range_ty {
                 Ty::List(..) => format!("&*{r}"),
                 Ty::Array(..) => format!("{r}.borrow().iter().cloned().collect::<Vec<_>>()"),
                 Ty::Range(..) => r,
@@ -16210,7 +16237,7 @@ fn emit_stmt<'a>(
                 writeln!(out, "{indent}{label_prefix}for mut {} in {r} {{", escape_ident(var)).unwrap();
             }
             // Element type: peel List/Array.
-            let elem_ty = match range.ty() { Ty::List(t) | Ty::Array(t) | Ty::Range(t) => *t, _ => Ty::Unknown };
+            let elem_ty = match range_ty.clone() { Ty::List(t) | Ty::Array(t) | Ty::Range(t) => *t, _ => Ty::Unknown };
             // The `&*lst`/`arr.borrow().iter().cloned()` iterators above yield
             // `&T` for List and `T` for the cloned Array path; integer ranges
             // yield `T` directly. To present a uniform owned binding to the
@@ -16221,7 +16248,7 @@ fn emit_stmt<'a>(
             // increment; for primitives/ArcStr it is also cheap. For other
             // types, MetaModelica semantics already treat list elements as
             // independent copies.
-            if matches!(range.ty(), Ty::List(_)) {
+            if matches!(range_ty, Ty::List(_)) {
                 // `mut` because the loop body may rebind the variable
                 // (assign_variant_field! mutates through &mut on the binding,
                 // and MetaModelica's `for x in xs loop x := ... end for;`
