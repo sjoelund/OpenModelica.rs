@@ -2217,10 +2217,22 @@ fn isVisited(mut mark: i32, mut iS: SimpleContainer) -> Result<bool> {
 fn getVisited(mut iS: SimpleContainer) -> Result<i32> {
     let mut visited: i32 = 0;
     visited = (match iS.clone() {
-        SimpleContainer::ALIAS { visited: mut visited, .. } => visited.clone(),
-        SimpleContainer::PARAMETERALIAS { visited: mut visited, .. } => visited.clone(),
-        SimpleContainer::TIMEALIAS { visited: mut visited, .. } => visited.clone(),
-        SimpleContainer::TIMEINDEPENTVAR { visited: mut visited, .. } => visited.clone(),
+        SimpleContainer::ALIAS { visited: mut __esc_visited, .. } => {
+            visited = __esc_visited.clone();
+            visited.clone()
+        },
+        SimpleContainer::PARAMETERALIAS { visited: mut __esc_visited, .. } => {
+            visited = __esc_visited.clone();
+            visited.clone()
+        },
+        SimpleContainer::TIMEALIAS { visited: mut __esc_visited, .. } => {
+            visited = __esc_visited.clone();
+            visited.clone()
+        },
+        SimpleContainer::TIMEINDEPENTVAR { visited: mut __esc_visited, .. } => {
+            visited = __esc_visited.clone();
+            visited.clone()
+        },
     });
     Ok(visited)
 }
@@ -4237,13 +4249,15 @@ fn addUnreplaceableFromWhenEqn(mut inEq: Arc<BackendDAE::Equation>, mut inHs: (m
     let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
     let mut hs: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr));
     (eqn, hs) = (::match_deref::match_deref! { match &((inEq.clone(), inHs.clone())) {
-        (eqn @ Deref @ BackendDAE::Equation::WHEN_EQUATION { whenEquation: weqn, .. }, hs) => {
-            let mut hs = (*hs).clone();
+        (__esc_eqn @ Deref @ BackendDAE::Equation::WHEN_EQUATION { whenEquation: weqn, .. }, __esc_hs) => {
+            eqn = (*__esc_eqn).clone();
+            hs = (*__esc_hs).clone();
             hs = addUnreplaceableFromWhen(weqn.clone(), hs.clone())?;
             (eqn.clone(), hs.clone())
         },
-        (eqn @ Deref @ BackendDAE::Equation::ALGORITHM { alg: Deref @ DAE::Algorithm { statementLst: stmts }, .. }, hs) => {
-            let mut hs = (*hs).clone();
+        (__esc_eqn @ Deref @ BackendDAE::Equation::ALGORITHM { alg: Deref @ DAE::Algorithm { statementLst: stmts }, .. }, __esc_hs) => {
+            eqn = (*__esc_eqn).clone();
+            hs = (*__esc_hs).clone();
             hs = List::fold(stmts.clone(), (std::sync::Arc::new(addUnreplaceableFromWhenStmt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))> + 'static>), hs.clone());
             (eqn.clone(), hs.clone())
         },

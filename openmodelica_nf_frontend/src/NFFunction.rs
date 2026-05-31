@@ -1159,7 +1159,10 @@ pub mod Function {
     pub fn fillDefaultSlot(mut slot: Arc<Slot::Slot>, mut slots: metamodelica::Array<Arc<Slot::Slot>>, mut context: i32, mut info: SourceInfo) -> Result<Arc<TypedArg>> {
         let mut outArg: Arc<TypedArg> = Arc::new(<TypedArg as ::std::default::Default>::default());
         outArg = (::match_deref::match_deref! { match &(slot.clone()) {
-        Deref @ Slot::SLOT { arg: Some(outArg), .. } => outArg.clone(),
+        Deref @ Slot::SLOT { arg: Some(__esc_outArg), .. } => {
+            outArg = (*__esc_outArg).clone();
+            outArg.clone()
+        },
         Deref @ Slot::SLOT { default: Some(_), .. } => fillDefaultSlot2(slot.clone(), slots.clone(), context.clone(), info.clone())?,
         _ => {
             Error::addSourceMessage(Error::UNFILLED_SLOT.clone(), list![(Slot::name(slot.clone())).clone()], info.clone())?;
@@ -1965,7 +1968,10 @@ pub mod Function {
     pub fn hasUnboxArgs(mut r#fn: Arc<Function>) -> bool {
         let mut res: bool = false;
         res = (match r#fn.attributes.clone() {
-        DAE::FunctionAttributes { isBuiltin: DAE::FunctionBuiltin::FUNCTION_BUILTIN { unboxArgs: mut res, .. }, .. } => res.clone(),
+        DAE::FunctionAttributes { isBuiltin: DAE::FunctionBuiltin::FUNCTION_BUILTIN { unboxArgs: mut __esc_res, .. }, .. } => {
+            res = __esc_res.clone();
+            res.clone()
+        },
         _ => false,
     });
         res
@@ -2461,7 +2467,10 @@ pub mod Function {
     });
         returnType = (::match_deref::match_deref! { match &(ret_tyl.clone()) {
         Deref @ metamodelica::List::Nil => Arc::new(crate::NFType::NORETCALL),
-        Deref @ metamodelica::List::Cons { head: returnType, tail: Deref @ metamodelica::List::Nil } => returnType.clone(),
+        Deref @ metamodelica::List::Cons { head: __esc_returnType, tail: Deref @ metamodelica::List::Nil } => {
+            returnType = (*__esc_returnType).clone();
+            returnType.clone()
+        },
         _ => Arc::new(Type::NFType::TUPLE { types: ret_tyl.clone(), names: None }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

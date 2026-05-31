@@ -261,7 +261,10 @@ fn createEmptyAvlIfNone(mut t: Option<Arc<FCore::VAvlTree>>) -> AvlTree {
     let mut outT: AvlTree = Arc::new(<FCore::VAvlTree as ::std::default::Default>::default());
     outT = (::match_deref::match_deref! { match &(t.clone()) {
         None => Arc::new(FCore::VAvlTree { value: None, height: 0, left: None, right: None }),
-        Some(outT) => outT.clone(),
+        Some(__esc_outT) => {
+            outT = (*__esc_outT).clone();
+            outT.clone()
+        },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     outT
@@ -270,7 +273,10 @@ fn createEmptyAvlIfNone(mut t: Option<Arc<FCore::VAvlTree>>) -> AvlTree {
 fn nodeValue(mut bt: AvlTree) -> Result<AvlValue> {
     let mut v: AvlValue = <FCore::Visit as ::std::default::Default>::default();
     v = (::match_deref::match_deref! { match &(bt.clone()) {
-        Deref @ FCore::VAvlTree { value: Some(FCore::VAvlTreeValue { key: _, value: v }), .. } => v.clone(),
+        Deref @ FCore::VAvlTree { value: Some(FCore::VAvlTreeValue { key: _, value: __esc_v }), .. } => {
+            v = (*__esc_v).clone();
+            v.clone()
+        },
         _ => bail!("match: no arm matched"),
     } });
     Ok(v)
@@ -418,7 +424,10 @@ fn setLeft(mut node: AvlTree, mut left: Option<Arc<FCore::VAvlTree>>) -> Result<
 fn leftNode(mut node: AvlTree) -> Result<Option<Arc<FCore::VAvlTree>>> {
     let mut subNode: Option<Arc<FCore::VAvlTree>> = None;
     subNode = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ FCore::VAvlTree { left: subNode, .. } => subNode.clone(),
+        Deref @ FCore::VAvlTree { left: __esc_subNode, .. } => {
+            subNode = (*__esc_subNode).clone();
+            subNode.clone()
+        },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(subNode)
@@ -427,7 +436,10 @@ fn leftNode(mut node: AvlTree) -> Result<Option<Arc<FCore::VAvlTree>>> {
 fn rightNode(mut node: AvlTree) -> Result<Option<Arc<FCore::VAvlTree>>> {
     let mut subNode: Option<Arc<FCore::VAvlTree>> = None;
     subNode = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ FCore::VAvlTree { right: subNode, .. } => subNode.clone(),
+        Deref @ FCore::VAvlTree { right: __esc_subNode, .. } => {
+            subNode = (*__esc_subNode).clone();
+            subNode.clone()
+        },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(subNode)
@@ -478,7 +490,10 @@ fn rotateLeft(mut node: AvlTree) -> Result<AvlTree> {
 fn getOption<T: Clone + 'static>(mut opt: Option<T>) -> Result<T> {
     let mut val: T;
     val = (match opt.clone() {
-        Some(mut val) => val.clone(),
+        Some(mut __esc_val) => {
+            val = __esc_val.clone();
+            val.clone()
+        },
         _ => bail!("match: no arm matched"),
     });
     Ok(val)
@@ -598,7 +613,10 @@ fn getHeight(mut bt: Option<Arc<FCore::VAvlTree>>) -> Result<i32> {
     let mut height: i32 = 0;
     height = (::match_deref::match_deref! { match &(bt.clone()) {
         None => 0,
-        Some(Deref @ FCore::VAvlTree { height, .. }) => height.clone(),
+        Some(Deref @ FCore::VAvlTree { height: __esc_height, .. }) => {
+            height = (*__esc_height).clone();
+            height.clone()
+        },
         _ => bail!("match: no arm matched"),
     } });
     Ok(height)
@@ -703,7 +721,10 @@ pub fn getAvlTreeValues(mut tree: Arc<metamodelica::List<Option<Arc<FCore::VAvlT
 pub fn getAvlValue(mut inValue: AvlTreeValue) -> Result<AvlValue> {
     let mut res: AvlValue = <FCore::Visit as ::std::default::Default>::default();
     res = (match inValue.clone() {
-        FCore::VAvlTreeValue { value: mut res, .. } => res.clone(),
+        FCore::VAvlTreeValue { value: mut __esc_res, .. } => {
+            res = __esc_res.clone();
+            res.clone()
+        },
     });
     Ok(res)
 }

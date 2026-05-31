@@ -584,7 +584,10 @@ pub mod Partition {
     pub fn getJacobian(mut part: Arc<Partition>) -> Option<Arc<Jacobian::NBackendDAE>> {
         let mut jac: Option<Arc<Jacobian::NBackendDAE>> = None;
         jac = (::match_deref::match_deref! { match &(part.association.clone()) {
-        Deref @ Association::CONTINUOUS { jacobian: jac, .. } => jac.clone(),
+        Deref @ Association::CONTINUOUS { jacobian: __esc_jac, .. } => {
+            jac = (*__esc_jac).clone();
+            jac.clone()
+        },
         _ => None,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -594,7 +597,10 @@ pub mod Partition {
     pub fn getJacobianAdjoint(mut part: Arc<Partition>) -> Option<Arc<Jacobian::NBackendDAE>> {
         let mut jac: Option<Arc<Jacobian::NBackendDAE>> = None;
         jac = (::match_deref::match_deref! { match &(part.association.clone()) {
-        Deref @ Association::CONTINUOUS { jacobianAdjoint: jac, .. } => jac.clone(),
+        Deref @ Association::CONTINUOUS { jacobianAdjoint: __esc_jac, .. } => {
+            jac = (*__esc_jac).clone();
+            jac.clone()
+        },
         _ => None,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -604,7 +610,10 @@ pub mod Partition {
     pub fn getKind(mut part: Arc<Partition>) -> Kind {
         let mut kind: Kind = Kind::ODE;
         kind = (::match_deref::match_deref! { match &(part.association.clone()) {
-        Deref @ Association::CONTINUOUS { kind, .. } => kind.clone(),
+        Deref @ Association::CONTINUOUS { kind: __esc_kind, .. } => {
+            kind = (*__esc_kind).clone();
+            kind.clone()
+        },
         _ => Kind::CLK.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -616,7 +625,12 @@ pub mod Partition {
         let mut baseClock: Option<Arc<BClock::BClock>> = None;
         let mut holdEvents: bool = false;
         (clock, baseClock, holdEvents) = (::match_deref::match_deref! { match &(part.association.clone()) {
-        Deref @ Association::CLOCKED { holdEvents, baseClock, clock, .. } => (clock.clone(), baseClock.clone(), holdEvents.clone()),
+        Deref @ Association::CLOCKED { holdEvents: __esc_holdEvents, baseClock: __esc_baseClock, clock: __esc_clock, .. } => {
+            clock = (*__esc_clock).clone();
+            baseClock = (*__esc_baseClock).clone();
+            holdEvents = (*__esc_holdEvents).clone();
+            (clock.clone(), baseClock.clone(), holdEvents.clone())
+        },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBPartition.Partition.getClocks")); __mm_s.push_str(&*literal!(" failed. Cannot get clocks for continuous partition:\n")); __mm_s.push_str(&*toString(part.clone(), 0)?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
@@ -650,7 +664,10 @@ pub mod Partition {
     pub fn getClockDependencies(mut part: Arc<Partition>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<BClock::BClock>>>> {
         let mut clock_deps: Arc<UnorderedSet::UnorderedSet<Arc<BClock::BClock>>> = <Arc<UnorderedSet::UnorderedSet<Arc<BClock::BClock>>> as ::std::default::Default>::default();
         clock_deps = (::match_deref::match_deref! { match &(part.association.clone()) {
-        Deref @ Association::CLOCKED { clock_deps, .. } => clock_deps.clone(),
+        Deref @ Association::CLOCKED { clock_deps: __esc_clock_deps, .. } => {
+            clock_deps = (*__esc_clock_deps).clone();
+            clock_deps.clone()
+        },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBPartition.Partition.getClockDependencies")); __mm_s.push_str(&*literal!(" failed. Cannot get clock dependencies for continuous partition:\n")); __mm_s.push_str(&*toString(part.clone(), 0)?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")

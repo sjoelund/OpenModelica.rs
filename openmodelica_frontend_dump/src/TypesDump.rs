@@ -1248,7 +1248,10 @@ pub fn flattenArrayType(mut inType: Arc<DAE::Type>) -> (Arc<DAE::Type>, Arc<meta
 pub fn getVarName(mut v: Arc<DAE::Var>) -> Result<ArcStr> {
     let mut name: ArcStr = arcstr::literal!("");
     name = ((::match_deref::match_deref! { match &(v.clone()) {
-        Deref @ DAE::Var { name, .. } => name.clone(),
+        Deref @ DAE::Var { name: __esc_name, .. } => {
+            name = (*__esc_name).clone();
+            name.clone()
+        },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(name)

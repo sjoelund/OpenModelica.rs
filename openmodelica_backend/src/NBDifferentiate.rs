@@ -411,7 +411,10 @@ pub fn differentiateEquationPointer(mut eq_ptr: Pointer::Pointer<Arc<Equation::E
     eq = Pointer::access(eq_ptr.clone());
     old_diffArguments = Pointer::access(diffArguments_ptr.clone());
     derivative_ptr = (::match_deref::match_deref! { match &(Equation::getAttributes(eq.clone())) {
-        Deref @ EquationAttributes::EQUATION_ATTRIBUTES { derivative: Some(derivative_ptr), .. } if (old_diffArguments.diffType.clone() == DifferentiationType::TIME.clone()) => derivative_ptr.clone(),
+        Deref @ EquationAttributes::EQUATION_ATTRIBUTES { derivative: Some(__esc_derivative_ptr), .. } if (old_diffArguments.diffType.clone() == DifferentiationType::TIME.clone()) => {
+            derivative_ptr = (*__esc_derivative_ptr).clone();
+            derivative_ptr.clone()
+        },
         _ => {
             (diffedEq, new_diffArguments) = differentiateEquation(eq.clone(), old_diffArguments.clone(), (name.clone()).clone())?;
             derivative_ptr = Pointer::create(diffedEq.clone());
@@ -1827,7 +1830,8 @@ pub fn differentiateFunction(mut func: Arc<Function::Function>, mut interface_ma
     der_func = ({
         let mut diff_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>> = UnorderedMap::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
         (::match_deref::match_deref! { match &(func.clone()) {
-        der_func @ Deref @ NFFunction::Function::FUNCTION { node: node @ Deref @ InstNode::CLASS_NODE { cls, .. }, .. } => {
+        __esc_der_func @ Deref @ NFFunction::Function::FUNCTION { node: node @ Deref @ InstNode::CLASS_NODE { cls, .. }, .. } => {
+            der_func = (*__esc_der_func).clone();
             let mut new_cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
             let mut funcDiffArgs: Arc<DifferentiationArguments::DifferentiationArguments> = Arc::new(<DifferentiationArguments::DifferentiationArguments as ::std::default::Default>::default());
             let mut diffInfo: Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>> = <Arc<UnorderedSet::UnorderedSet<Arc<InstNode::InstNode>>> as ::std::default::Default>::default();
@@ -1841,7 +1845,6 @@ pub fn differentiateFunction(mut func: Arc<Function::Function>, mut interface_ma
             let mut outputs: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
             let mut local_outputs: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
             let mut slots: Arc<metamodelica::List<Arc<Slot::Slot>>> = metamodelica::nil();
-            let mut der_func = (*der_func).clone();
             let mut node = (*node).clone();
             new_cls = (::match_deref::match_deref! { match &(Pointer::access(cls.clone())) {
         new_cls @ Deref @ Class::INSTANCED_CLASS { .. } => {
@@ -1987,8 +1990,8 @@ pub fn differentiateFunctionInterfaceNode(mut node: Arc<InstNode::InstNode>, mut
     cref = ComponentRef::fromNode(node.clone(), InstNode::getType(node.clone())?, metamodelica::nil(), ComponentRef::Origin::CREF.clone());
     diff_cref = UnorderedMap::getSafe(cref.clone(), diff_map.clone(), metamodelica::sourceInfo!())?;
     diff_cref = (::match_deref::match_deref! { match &(diff_cref.clone()) {
-        Deref @ ComponentRef::CREF { node: d_node @ Deref @ InstNode::COMPONENT_NODE { .. }, .. } => {
-            let mut d_node = (*d_node).clone();
+        Deref @ ComponentRef::CREF { node: __esc_d_node @ Deref @ InstNode::COMPONENT_NODE { .. }, .. } => {
+            d_node = (*__esc_d_node).clone();
             comp = Pointer::access(var_field!((*d_node).component, InstNode::InstNode::COMPONENT_NODE).clone());
             comp = (::match_deref::match_deref! { match &(comp.clone()) {
         comp @ Deref @ Component::COMPONENT { .. } => {

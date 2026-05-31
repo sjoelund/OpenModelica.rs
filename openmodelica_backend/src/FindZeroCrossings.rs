@@ -1033,10 +1033,10 @@ fn collectZC(mut inExp: Arc<DAE::Exp>, mut inTpl: ZCArgType) -> Result<(Arc<DAE:
             }
             (inExp.clone(), true, inTpl.clone())
         },
-        (outExp @ Deref @ DAE::Exp::REDUCTION { .. }, ((zeroCrossings, relations, samples, numMathFunctions), tp1, _), _) => {
+        (__esc_outExp @ Deref @ DAE::Exp::REDUCTION { .. }, ((zeroCrossings, relations, samples, numMathFunctions), tp1, _), _) => {
+            outExp = (*__esc_outExp).clone();
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut iters: Option<Arc<metamodelica::List<BackendDAE::SimIterator>>> = None;
-            let mut outExp = (*outExp).clone();
             let mut zeroCrossings = (*zeroCrossings).clone();
             let mut relations = (*relations).clone();
             let mut samples = (*samples).clone();

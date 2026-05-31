@@ -835,7 +835,10 @@ pub fn constrainingClassPath(mut clsNode: Arc<InstNode::InstNode>) -> Result<Arc
     let mut cls_node: Arc<InstNode::InstNode> = lastBaseClass(clsNode.clone());
     let mut prefs: Arc<Prefixes::Prefixes> = getPrefixes(InstNode::getClass(cls_node.clone())?)?;
     path = (::match_deref::match_deref! { match &(prefs.clone()) {
-        Deref @ Prefixes::PREFIXES { replaceablePrefix: Deref @ SCode::Replaceable::REPLACEABLE { cc: Some(Deref @ SCode::ConstrainClass { constrainingClass: path, .. }) }, .. } => path.clone(),
+        Deref @ Prefixes::PREFIXES { replaceablePrefix: Deref @ SCode::Replaceable::REPLACEABLE { cc: Some(Deref @ SCode::ConstrainClass { constrainingClass: __esc_path, .. }) }, .. } => {
+            path = (*__esc_path).clone();
+            path.clone()
+        },
         _ => InstNode::enclosingScopePath(cls_node.clone(), false, false)?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

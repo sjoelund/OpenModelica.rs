@@ -9996,7 +9996,10 @@ fn getAliasVar1(mut inExp: Arc<DAE::Exp>, mut inVar: BackendDAE::Var) -> Result<
 fn unparseCommentOptionNoAnnotationNoQuote(mut absynComment: Option<Arc<SCode::Comment>>) -> ArcStr {
     let mut commentStr: ArcStr = arcstr::literal!("");
     commentStr = ((::match_deref::match_deref! { match &(absynComment.clone()) {
-        Some(Deref @ SCode::Comment { annotation_: _, comment: Some(commentStr) }) => commentStr.clone(),
+        Some(Deref @ SCode::Comment { annotation_: _, comment: Some(__esc_commentStr) }) => {
+            commentStr = (*__esc_commentStr).clone();
+            commentStr.clone()
+        },
         _ => literal!(""),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -10682,9 +10685,18 @@ fn getNominalValue(mut daelowVar: BackendDAE::Var) -> Result<Option<Arc<DAE::Exp
 pub fn functionInfo(mut r#fn: Arc<SimCodeFunction::Function::Function>) -> Result<SourceInfo> {
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     info = (::match_deref::match_deref! { match &(r#fn.clone()) {
-        Deref @ SimCodeFunction::Function::FUNCTION { info, .. } => info.clone(),
-        Deref @ SimCodeFunction::Function::EXTERNAL_FUNCTION { info, .. } => info.clone(),
-        Deref @ SimCodeFunction::Function::RECORD_CONSTRUCTOR { info, .. } => info.clone(),
+        Deref @ SimCodeFunction::Function::FUNCTION { info: __esc_info, .. } => {
+            info = (*__esc_info).clone();
+            info.clone()
+        },
+        Deref @ SimCodeFunction::Function::EXTERNAL_FUNCTION { info: __esc_info, .. } => {
+            info = (*__esc_info).clone();
+            info.clone()
+        },
+        Deref @ SimCodeFunction::Function::RECORD_CONSTRUCTOR { info: __esc_info, .. } => {
+            info = (*__esc_info).clone();
+            info.clone()
+        },
         _ => bail!("match: no arm matched"),
     } });
     Ok(info)
@@ -10693,11 +10705,26 @@ pub fn functionInfo(mut r#fn: Arc<SimCodeFunction::Function::Function>) -> Resul
 pub fn functionPath(mut r#fn: Arc<SimCodeFunction::Function::Function>) -> Result<Arc<Absyn::Path>> {
     let mut name: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     name = (::match_deref::match_deref! { match &(r#fn.clone()) {
-        Deref @ SimCodeFunction::Function::FUNCTION { name, .. } => name.clone(),
-        Deref @ SimCodeFunction::Function::PARALLEL_FUNCTION { name, .. } => name.clone(),
-        Deref @ SimCodeFunction::Function::KERNEL_FUNCTION { name, .. } => name.clone(),
-        Deref @ SimCodeFunction::Function::EXTERNAL_FUNCTION { name, .. } => name.clone(),
-        Deref @ SimCodeFunction::Function::RECORD_CONSTRUCTOR { name, .. } => name.clone(),
+        Deref @ SimCodeFunction::Function::FUNCTION { name: __esc_name, .. } => {
+            name = (*__esc_name).clone();
+            name.clone()
+        },
+        Deref @ SimCodeFunction::Function::PARALLEL_FUNCTION { name: __esc_name, .. } => {
+            name = (*__esc_name).clone();
+            name.clone()
+        },
+        Deref @ SimCodeFunction::Function::KERNEL_FUNCTION { name: __esc_name, .. } => {
+            name = (*__esc_name).clone();
+            name.clone()
+        },
+        Deref @ SimCodeFunction::Function::EXTERNAL_FUNCTION { name: __esc_name, .. } => {
+            name = (*__esc_name).clone();
+            name.clone()
+        },
+        Deref @ SimCodeFunction::Function::RECORD_CONSTRUCTOR { name: __esc_name, .. } => {
+            name = (*__esc_name).clone();
+            name.clone()
+        },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(name)
@@ -10706,17 +10733,50 @@ pub fn functionPath(mut r#fn: Arc<SimCodeFunction::Function::Function>) -> Resul
 pub fn eqInfo(mut eq: Arc<SimCode::SimEqSystem>) -> Result<SourceInfo> {
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     info = (::match_deref::match_deref! { match &(eq.clone()) {
-        Deref @ SimCode::SimEqSystem::SES_RESIDUAL { source: Deref @ DAE::ElementSource { info, .. }, .. } => info.clone(),
-        Deref @ SimCode::SimEqSystem::SES_FOR_RESIDUAL { source: Deref @ DAE::ElementSource { info, .. }, .. } => info.clone(),
-        Deref @ SimCode::SimEqSystem::SES_GENERIC_RESIDUAL { source: Deref @ DAE::ElementSource { info, .. }, .. } => info.clone(),
-        Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN { source: Deref @ DAE::ElementSource { info, .. }, .. } => info.clone(),
-        Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN_CONSTRAINTS { source: Deref @ DAE::ElementSource { info, .. }, .. } => info.clone(),
-        Deref @ SimCode::SimEqSystem::SES_ARRAY_CALL_ASSIGN { source: Deref @ DAE::ElementSource { info, .. }, .. } => info.clone(),
-        Deref @ SimCode::SimEqSystem::SES_RESIZABLE_ASSIGN { source: Deref @ DAE::ElementSource { info, .. }, .. } => info.clone(),
-        Deref @ SimCode::SimEqSystem::SES_GENERIC_ASSIGN { source: Deref @ DAE::ElementSource { info, .. }, .. } => info.clone(),
-        Deref @ SimCode::SimEqSystem::SES_ENTWINED_ASSIGN { source: Deref @ DAE::ElementSource { info, .. }, .. } => info.clone(),
-        Deref @ SimCode::SimEqSystem::SES_WHEN { source: Deref @ DAE::ElementSource { info, .. }, .. } => info.clone(),
-        Deref @ SimCode::SimEqSystem::SES_FOR_LOOP { source: Deref @ DAE::ElementSource { info, .. }, .. } => info.clone(),
+        Deref @ SimCode::SimEqSystem::SES_RESIDUAL { source: Deref @ DAE::ElementSource { info: __esc_info, .. }, .. } => {
+            info = (*__esc_info).clone();
+            info.clone()
+        },
+        Deref @ SimCode::SimEqSystem::SES_FOR_RESIDUAL { source: Deref @ DAE::ElementSource { info: __esc_info, .. }, .. } => {
+            info = (*__esc_info).clone();
+            info.clone()
+        },
+        Deref @ SimCode::SimEqSystem::SES_GENERIC_RESIDUAL { source: Deref @ DAE::ElementSource { info: __esc_info, .. }, .. } => {
+            info = (*__esc_info).clone();
+            info.clone()
+        },
+        Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN { source: Deref @ DAE::ElementSource { info: __esc_info, .. }, .. } => {
+            info = (*__esc_info).clone();
+            info.clone()
+        },
+        Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN_CONSTRAINTS { source: Deref @ DAE::ElementSource { info: __esc_info, .. }, .. } => {
+            info = (*__esc_info).clone();
+            info.clone()
+        },
+        Deref @ SimCode::SimEqSystem::SES_ARRAY_CALL_ASSIGN { source: Deref @ DAE::ElementSource { info: __esc_info, .. }, .. } => {
+            info = (*__esc_info).clone();
+            info.clone()
+        },
+        Deref @ SimCode::SimEqSystem::SES_RESIZABLE_ASSIGN { source: Deref @ DAE::ElementSource { info: __esc_info, .. }, .. } => {
+            info = (*__esc_info).clone();
+            info.clone()
+        },
+        Deref @ SimCode::SimEqSystem::SES_GENERIC_ASSIGN { source: Deref @ DAE::ElementSource { info: __esc_info, .. }, .. } => {
+            info = (*__esc_info).clone();
+            info.clone()
+        },
+        Deref @ SimCode::SimEqSystem::SES_ENTWINED_ASSIGN { source: Deref @ DAE::ElementSource { info: __esc_info, .. }, .. } => {
+            info = (*__esc_info).clone();
+            info.clone()
+        },
+        Deref @ SimCode::SimEqSystem::SES_WHEN { source: Deref @ DAE::ElementSource { info: __esc_info, .. }, .. } => {
+            info = (*__esc_info).clone();
+            info.clone()
+        },
+        Deref @ SimCode::SimEqSystem::SES_FOR_LOOP { source: Deref @ DAE::ElementSource { info: __esc_info, .. }, .. } => {
+            info = (*__esc_info).clone();
+            info.clone()
+        },
         _ => bail!("match: no arm matched"),
     } });
     Ok(info)
@@ -10725,24 +10785,78 @@ pub fn eqInfo(mut eq: Arc<SimCode::SimEqSystem>) -> Result<SourceInfo> {
 pub fn simEqSystemIndex(mut eq: Arc<SimCode::SimEqSystem>) -> Result<i32> {
     let mut index: i32 = 0;
     index = (::match_deref::match_deref! { match &(eq.clone()) {
-        Deref @ SimCode::SimEqSystem::SES_RESIDUAL { index, .. } => index.clone(),
-        Deref @ SimCode::SimEqSystem::SES_FOR_RESIDUAL { index, .. } => index.clone(),
-        Deref @ SimCode::SimEqSystem::SES_GENERIC_RESIDUAL { index, .. } => index.clone(),
-        Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN { index, .. } => index.clone(),
-        Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN_CONSTRAINTS { index, .. } => index.clone(),
-        Deref @ SimCode::SimEqSystem::SES_ARRAY_CALL_ASSIGN { index, .. } => index.clone(),
-        Deref @ SimCode::SimEqSystem::SES_RESIZABLE_ASSIGN { index, .. } => index.clone(),
-        Deref @ SimCode::SimEqSystem::SES_GENERIC_ASSIGN { index, .. } => index.clone(),
-        Deref @ SimCode::SimEqSystem::SES_ENTWINED_ASSIGN { index, .. } => index.clone(),
-        Deref @ SimCode::SimEqSystem::SES_IFEQUATION { index, .. } => index.clone(),
-        Deref @ SimCode::SimEqSystem::SES_ALGORITHM { index, .. } => index.clone(),
-        Deref @ SimCode::SimEqSystem::SES_INVERSE_ALGORITHM { index, .. } => index.clone(),
-        Deref @ SimCode::SimEqSystem::SES_LINEAR { lSystem: Deref @ SimCode::LinearSystem { index, .. }, .. } => index.clone(),
-        Deref @ SimCode::SimEqSystem::SES_NONLINEAR { nlSystem: Deref @ SimCode::NonlinearSystem { index, .. }, .. } => index.clone(),
-        Deref @ SimCode::SimEqSystem::SES_MIXED { index, .. } => index.clone(),
-        Deref @ SimCode::SimEqSystem::SES_WHEN { index, .. } => index.clone(),
-        Deref @ SimCode::SimEqSystem::SES_FOR_LOOP { index, .. } => index.clone(),
-        Deref @ SimCode::SimEqSystem::SES_ALIAS { index, .. } => index.clone(),
+        Deref @ SimCode::SimEqSystem::SES_RESIDUAL { index: __esc_index, .. } => {
+            index = (*__esc_index).clone();
+            index.clone()
+        },
+        Deref @ SimCode::SimEqSystem::SES_FOR_RESIDUAL { index: __esc_index, .. } => {
+            index = (*__esc_index).clone();
+            index.clone()
+        },
+        Deref @ SimCode::SimEqSystem::SES_GENERIC_RESIDUAL { index: __esc_index, .. } => {
+            index = (*__esc_index).clone();
+            index.clone()
+        },
+        Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN { index: __esc_index, .. } => {
+            index = (*__esc_index).clone();
+            index.clone()
+        },
+        Deref @ SimCode::SimEqSystem::SES_SIMPLE_ASSIGN_CONSTRAINTS { index: __esc_index, .. } => {
+            index = (*__esc_index).clone();
+            index.clone()
+        },
+        Deref @ SimCode::SimEqSystem::SES_ARRAY_CALL_ASSIGN { index: __esc_index, .. } => {
+            index = (*__esc_index).clone();
+            index.clone()
+        },
+        Deref @ SimCode::SimEqSystem::SES_RESIZABLE_ASSIGN { index: __esc_index, .. } => {
+            index = (*__esc_index).clone();
+            index.clone()
+        },
+        Deref @ SimCode::SimEqSystem::SES_GENERIC_ASSIGN { index: __esc_index, .. } => {
+            index = (*__esc_index).clone();
+            index.clone()
+        },
+        Deref @ SimCode::SimEqSystem::SES_ENTWINED_ASSIGN { index: __esc_index, .. } => {
+            index = (*__esc_index).clone();
+            index.clone()
+        },
+        Deref @ SimCode::SimEqSystem::SES_IFEQUATION { index: __esc_index, .. } => {
+            index = (*__esc_index).clone();
+            index.clone()
+        },
+        Deref @ SimCode::SimEqSystem::SES_ALGORITHM { index: __esc_index, .. } => {
+            index = (*__esc_index).clone();
+            index.clone()
+        },
+        Deref @ SimCode::SimEqSystem::SES_INVERSE_ALGORITHM { index: __esc_index, .. } => {
+            index = (*__esc_index).clone();
+            index.clone()
+        },
+        Deref @ SimCode::SimEqSystem::SES_LINEAR { lSystem: Deref @ SimCode::LinearSystem { index: __esc_index, .. }, .. } => {
+            index = (*__esc_index).clone();
+            index.clone()
+        },
+        Deref @ SimCode::SimEqSystem::SES_NONLINEAR { nlSystem: Deref @ SimCode::NonlinearSystem { index: __esc_index, .. }, .. } => {
+            index = (*__esc_index).clone();
+            index.clone()
+        },
+        Deref @ SimCode::SimEqSystem::SES_MIXED { index: __esc_index, .. } => {
+            index = (*__esc_index).clone();
+            index.clone()
+        },
+        Deref @ SimCode::SimEqSystem::SES_WHEN { index: __esc_index, .. } => {
+            index = (*__esc_index).clone();
+            index.clone()
+        },
+        Deref @ SimCode::SimEqSystem::SES_FOR_LOOP { index: __esc_index, .. } => {
+            index = (*__esc_index).clone();
+            index.clone()
+        },
+        Deref @ SimCode::SimEqSystem::SES_ALIAS { index: __esc_index, .. } => {
+            index = (*__esc_index).clone();
+            index.clone()
+        },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("SimCodeUtil.simEqSystemIndex failed")).clone()])?;
             bail!("fail")
@@ -15142,7 +15256,10 @@ pub fn getSimCode() -> Result<SimCode::SimCode> {
     let mut ocode: Option<SimCode::SimCode> = None;
     ocode = crate::Globals::optionSimCode.with(|__root| __root.borrow().clone());
     code = (match ocode.clone() {
-        Some(mut code) => code.clone(),
+        Some(mut __esc_code) => {
+            code = __esc_code.clone();
+            code.clone()
+        },
         _ => {
             Error::addInternalError((literal!("Tried to generate code that requires the SimCode structure, but this is not set (function context?)")).clone(), metamodelica::sourceInfo!())?;
             bail!("fail")

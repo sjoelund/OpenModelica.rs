@@ -4458,9 +4458,9 @@ fn expandDerOperatorWork(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<Ba
     let mut syst: Arc<BackendDAE::EqSystem> = syst;
     let mut shared: Arc<BackendDAE::Shared> = shared;
     (syst, shared) = (::match_deref::match_deref! { match &((syst.clone(), shared.clone())) {
-        (syst @ Deref @ BackendDAE::EqSystem { orderedEqs: eqns, orderedVars: vars, .. }, Deref @ BackendDAE::Shared { initialEqs: inieqns, .. }) => {
+        (__esc_syst @ Deref @ BackendDAE::EqSystem { orderedEqs: eqns, orderedVars: vars, .. }, Deref @ BackendDAE::Shared { initialEqs: inieqns, .. }) => {
+            syst = (*__esc_syst).clone();
             let mut shared_arr: Mutable::Mutable<Arc<BackendDAE::Shared>>;
-            let mut syst = (*syst).clone();
             let mut vars = (*vars).clone();
             shared_arr = Mutable::create(shared.clone());
             (_, vars) = BackendEquation::traverseEquationArray_WithUpdate(eqns.clone(), (std::sync::Arc::new({ let __pe_b2 = shared_arr.clone(); move |__pe_a0, __pe_a1| traverserexpandDerEquation(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, BackendDAE::Variables) -> Result<(Arc<BackendDAE::Equation>, BackendDAE::Variables)> + 'static>), vars.clone())?;

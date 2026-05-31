@@ -3290,7 +3290,8 @@ fn cevalListFirst(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExpE
 fn extractValueStringChar(mut val: Arc<Values::Value>) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((::match_deref::match_deref! { match &(val.clone()) {
-        Deref @ Values::Value::STRING { string: r#str } => {
+        Deref @ Values::Value::STRING { string: __esc_str } => {
+            r#str = (*__esc_str).clone();
             let 1 = (((r#str.clone()).clone().len() as i32)) else { bail!("pattern mismatch") };
             r#str.clone()
         },

@@ -588,7 +588,10 @@ fn getRecordDependencies(mut decl: SimCodeFunction::RecordDeclaration, mut allDe
 fn getVarType(mut var: Arc<SimCodeFunction::Variable::Variable>) -> Arc<DAE::Type> {
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     ty = (::match_deref::match_deref! { match &(var.clone()) {
-        Deref @ SimCodeFunction::Variable::VARIABLE { ty, .. } => ty.clone(),
+        Deref @ SimCodeFunction::Variable::VARIABLE { ty: __esc_ty, .. } => {
+            ty = (*__esc_ty).clone();
+            ty.clone()
+        },
         _ => DAE::T_ANYTYPE_DEFAULT().clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1935,8 +1938,14 @@ fn scodeParallelismToDAEParallelism(mut inParallelism: SCode::Parallelism) -> Re
 fn variableName(mut v: Arc<SimCodeFunction::Variable::Variable>) -> Result<ArcStr> {
     let mut s: ArcStr = arcstr::literal!("");
     s = ((::match_deref::match_deref! { match &(v.clone()) {
-        Deref @ SimCodeFunction::Variable::VARIABLE { name: Deref @ DAE::ComponentRef::CREF_IDENT { ident: s, .. }, .. } => s.clone(),
-        Deref @ SimCodeFunction::Variable::FUNCTION_PTR { name: s, .. } => s.clone(),
+        Deref @ SimCodeFunction::Variable::VARIABLE { name: Deref @ DAE::ComponentRef::CREF_IDENT { ident: __esc_s, .. }, .. } => {
+            s = (*__esc_s).clone();
+            s.clone()
+        },
+        Deref @ SimCodeFunction::Variable::FUNCTION_PTR { name: __esc_s, .. } => {
+            s = (*__esc_s).clone();
+            s.clone()
+        },
         _ => bail!("match: no arm matched"),
     } })).clone();
     Ok(s)
@@ -2413,9 +2422,9 @@ fn generateExtFunctionLibraryDirectoryPaths(mut program: Absyn::Program, mut pat
 fn generateExtFunctionLibraryDirectoryPaths2(mut add: bool, mut dir: ArcStr, mut isLinux: bool, mut inLibs: Arc<metamodelica::List<ArcStr>>) -> Arc<metamodelica::List<ArcStr>> {
     let mut libs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     libs = (::match_deref::match_deref! { match &((add.clone(), inLibs.clone())) {
-        (true, libs) => {
+        (true, __esc_libs) => {
+            libs = (*__esc_libs).clone();
             let mut b: bool = false;
-            let mut libs = (*libs).clone();
             b = System::directoryExists((dir.clone()).clone());
             libs = List::consOnTrue(b.clone(), (dir.clone()).clone(), libs.clone());
             libs.clone()
@@ -3078,7 +3087,8 @@ fn variableString(mut var: Arc<SimCodeFunction::Variable::Variable>) -> Result<A
         Deref @ SimCodeFunction::Variable::VARIABLE { ty, name, .. } => {
             { let mut __mm_s = String::new(); __mm_s.push_str(&*TypesDump::unparseType(ty.clone())?); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(name.clone())?); ArcStr::from(__mm_s) }
         },
-        Deref @ SimCodeFunction::Variable::FUNCTION_PTR { name: r#str, .. } => {
+        Deref @ SimCodeFunction::Variable::FUNCTION_PTR { name: __esc_str, .. } => {
+            r#str = (*__esc_str).clone();
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("modelica_fnptr ")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -3148,7 +3158,10 @@ pub fn codegenPeekTryThrowIndex() -> i32 {
     let mut lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
     lst = openmodelica_util::Globals::codegenTryThrowIndex.with(|__root| __root.borrow().clone());
     i = (::match_deref::match_deref! { match &(lst.clone()) {
-        Deref @ metamodelica::List::Cons { head: i, tail: _ } => i.clone(),
+        Deref @ metamodelica::List::Cons { head: __esc_i, tail: _ } => {
+            i = (*__esc_i).clone();
+            i.clone()
+        },
         _ => -1,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -3210,7 +3223,10 @@ pub fn generateSubPalceholders(mut cr: Arc<DAE::ComponentRef>) -> Result<ArcStr>
 pub fn getCurrentCrefPrefix(mut context: SimCodeFunction::Context) -> Result<ArcStr> {
     let mut cref_pref: ArcStr = arcstr::literal!("");
     cref_pref = ((match context.clone() {
-        SimCodeFunction::Context::FUNCTION_CONTEXT { cref_prefix: mut cref_pref, is_parallel: _ } => cref_pref.clone(),
+        SimCodeFunction::Context::FUNCTION_CONTEXT { cref_prefix: mut __esc_cref_pref, is_parallel: _ } => {
+            cref_pref = __esc_cref_pref.clone();
+            cref_pref.clone()
+        },
         _ => {
             Error::addInternalError((literal!("Tried to get cref prefix from a non FUNCTION_CONTEXT() context. cref_pref is only avaiable in FUNCTION_CONTEXT.")).clone(), metamodelica::sourceInfo!())?;
             bail!("fail")

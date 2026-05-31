@@ -608,7 +608,11 @@ pub mod SimCode {
         let mut directory: ArcStr = arcstr::literal!("");
         let mut libs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         (directory, libs) = (::match_deref::match_deref! { match &(simCode.clone()) {
-        Deref @ SimCode { makefileParams: SimCodeFunction::MakefileParams { libs, .. }, modelInfo: Deref @ ModelInfo::MODEL_INFO { directory, .. }, .. } => (directory.clone(), libs.clone()),
+        Deref @ SimCode { makefileParams: SimCodeFunction::MakefileParams { libs: __esc_libs, .. }, modelInfo: Deref @ ModelInfo::MODEL_INFO { directory: __esc_directory, .. }, .. } => {
+            directory = (*__esc_directory).clone();
+            libs = (*__esc_libs).clone();
+            (directory.clone(), libs.clone())
+        },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimCode.SimCode.getDirectoryAndLibs")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")

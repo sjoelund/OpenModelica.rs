@@ -2225,7 +2225,8 @@ fn functionReferenceType(mut ty1: Arc<DAE::Type>) -> Result<(Arc<DAE::Type>, DAE
     let mut ty2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut inlineType: DAE::InlineType = DAE::InlineType::AFTER_INDEX_RED_INLINE;
     (ty2, inlineType) = (::match_deref::match_deref! { match &(ty1.clone()) {
-        Deref @ DAE::Type::T_FUNCTION_REFERENCE_FUNC { functionType: Deref @ DAE::Type::T_FUNCTION { funcResultType: ty, functionAttributes: DAE::FunctionAttributes { inline: inlineType, .. }, .. }, .. } => {
+        Deref @ DAE::Type::T_FUNCTION_REFERENCE_FUNC { functionType: Deref @ DAE::Type::T_FUNCTION { funcResultType: ty, functionAttributes: DAE::FunctionAttributes { inline: __esc_inlineType, .. }, .. }, .. } => {
+            inlineType = (*__esc_inlineType).clone();
             (Types::simplifyType(ty.clone())?, inlineType.clone())
         },
         _ => {
@@ -2406,7 +2407,9 @@ fn getInlineHashTableVarTransform() -> Result<((metamodelica::Array<Arc<metamode
     let mut invRepl: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>), i32, (HashTable3::FuncHashCref, HashTable3::FuncCrefEqual, HashTable3::FuncCrefStr, HashTable3::FuncExpStr));
     opt = crate::Globals::inlineHashTable.with(|__root| __root.borrow().clone());
     (ht, repl) = (match opt.clone() {
-        Some((mut ht, ref repl @ VarTransform::VariableReplacements { hashTable: ref regRepl, invHashTable: ref invRepl })) => {
+        Some((mut __esc_ht, ref __esc_repl @ VarTransform::VariableReplacements { hashTable: ref regRepl, invHashTable: ref invRepl })) => {
+            ht = __esc_ht.clone();
+            repl = __esc_repl.clone();
             BaseHashTable::clearAssumeNoDelete(ht.clone())?;
             BaseHashTable::clearAssumeNoDelete(regRepl.clone())?;
             BaseHashTable::clearAssumeNoDelete(invRepl.clone())?;

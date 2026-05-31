@@ -961,22 +961,70 @@ pub fn getAllExpsStmts(mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>>) 
 pub fn getStatementSource(mut stmt: Arc<DAE::Statement>) -> Result<Arc<DAE::ElementSource>> {
     let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
     source = (::match_deref::match_deref! { match &(stmt.clone()) {
-        Deref @ DAE::Statement::STMT_ASSIGN { source, .. } => source.clone(),
-        Deref @ DAE::Statement::STMT_TUPLE_ASSIGN { source, .. } => source.clone(),
-        Deref @ DAE::Statement::STMT_ASSIGN_ARR { source, .. } => source.clone(),
-        Deref @ DAE::Statement::STMT_IF { source, .. } => source.clone(),
-        Deref @ DAE::Statement::STMT_FOR { source, .. } => source.clone(),
-        Deref @ DAE::Statement::STMT_PARFOR { source, .. } => source.clone(),
-        Deref @ DAE::Statement::STMT_WHILE { source, .. } => source.clone(),
-        Deref @ DAE::Statement::STMT_WHEN { source, .. } => source.clone(),
-        Deref @ DAE::Statement::STMT_ASSERT { source, .. } => source.clone(),
-        Deref @ DAE::Statement::STMT_TERMINATE { source, .. } => source.clone(),
-        Deref @ DAE::Statement::STMT_REINIT { source, .. } => source.clone(),
-        Deref @ DAE::Statement::STMT_NORETCALL { source, .. } => source.clone(),
-        Deref @ DAE::Statement::STMT_RETURN { source } => source.clone(),
-        Deref @ DAE::Statement::STMT_BREAK { source } => source.clone(),
-        Deref @ DAE::Statement::STMT_CONTINUE { source } => source.clone(),
-        Deref @ DAE::Statement::STMT_FAILURE { source, .. } => source.clone(),
+        Deref @ DAE::Statement::STMT_ASSIGN { source: __esc_source, .. } => {
+            source = (*__esc_source).clone();
+            source.clone()
+        },
+        Deref @ DAE::Statement::STMT_TUPLE_ASSIGN { source: __esc_source, .. } => {
+            source = (*__esc_source).clone();
+            source.clone()
+        },
+        Deref @ DAE::Statement::STMT_ASSIGN_ARR { source: __esc_source, .. } => {
+            source = (*__esc_source).clone();
+            source.clone()
+        },
+        Deref @ DAE::Statement::STMT_IF { source: __esc_source, .. } => {
+            source = (*__esc_source).clone();
+            source.clone()
+        },
+        Deref @ DAE::Statement::STMT_FOR { source: __esc_source, .. } => {
+            source = (*__esc_source).clone();
+            source.clone()
+        },
+        Deref @ DAE::Statement::STMT_PARFOR { source: __esc_source, .. } => {
+            source = (*__esc_source).clone();
+            source.clone()
+        },
+        Deref @ DAE::Statement::STMT_WHILE { source: __esc_source, .. } => {
+            source = (*__esc_source).clone();
+            source.clone()
+        },
+        Deref @ DAE::Statement::STMT_WHEN { source: __esc_source, .. } => {
+            source = (*__esc_source).clone();
+            source.clone()
+        },
+        Deref @ DAE::Statement::STMT_ASSERT { source: __esc_source, .. } => {
+            source = (*__esc_source).clone();
+            source.clone()
+        },
+        Deref @ DAE::Statement::STMT_TERMINATE { source: __esc_source, .. } => {
+            source = (*__esc_source).clone();
+            source.clone()
+        },
+        Deref @ DAE::Statement::STMT_REINIT { source: __esc_source, .. } => {
+            source = (*__esc_source).clone();
+            source.clone()
+        },
+        Deref @ DAE::Statement::STMT_NORETCALL { source: __esc_source, .. } => {
+            source = (*__esc_source).clone();
+            source.clone()
+        },
+        Deref @ DAE::Statement::STMT_RETURN { source: __esc_source } => {
+            source = (*__esc_source).clone();
+            source.clone()
+        },
+        Deref @ DAE::Statement::STMT_BREAK { source: __esc_source } => {
+            source = (*__esc_source).clone();
+            source.clone()
+        },
+        Deref @ DAE::Statement::STMT_CONTINUE { source: __esc_source } => {
+            source = (*__esc_source).clone();
+            source.clone()
+        },
+        Deref @ DAE::Statement::STMT_FAILURE { source: __esc_source, .. } => {
+            source = (*__esc_source).clone();
+            source.clone()
+        },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Algorithm.getStatementSource")).clone()])?;
             bail!("fail")

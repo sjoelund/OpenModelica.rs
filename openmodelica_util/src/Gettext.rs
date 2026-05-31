@@ -68,11 +68,15 @@ pub use self::TranslatableContent::{gettext,notrans};
 pub fn translateContent(mut msg: TranslatableContent) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((match msg.clone() {
-        TranslatableContent::gettext { msgid: mut r#str } => {
+        TranslatableContent::gettext { msgid: mut __esc_str } => {
+            r#str = __esc_str.clone();
             r#str = (System::gettext((r#str.clone()).clone())).clone();
             r#str.clone()
         },
-        TranslatableContent::notrans { r#str: mut r#str } => r#str.clone(),
+        TranslatableContent::notrans { r#str: mut __esc_str } => {
+            r#str = __esc_str.clone();
+            r#str.clone()
+        },
     })).clone();
     Ok(r#str)
 }

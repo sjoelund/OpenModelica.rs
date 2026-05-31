@@ -741,8 +741,14 @@ pub fn varHasUncertainValuePropagate(mut var: BackendDAE::Var) -> bool {
 pub fn varDistribution(mut var: BackendDAE::Var) -> Result<Arc<DAE::Distribution>> {
     let mut d: Arc<DAE::Distribution> = Arc::new(<DAE::Distribution as ::std::default::Default>::default());
     d = (::match_deref::match_deref! { match &(var.clone()) {
-        BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { distributionOption: Some(d), .. }), .. } => d.clone(),
-        BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_INT { distributionOption: Some(d), .. }), .. } => d.clone(),
+        BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { distributionOption: Some(__esc_d), .. }), .. } => {
+            d = (*__esc_d).clone();
+            d.clone()
+        },
+        BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_INT { distributionOption: Some(__esc_d), .. }), .. } => {
+            d = (*__esc_d).clone();
+            d.clone()
+        },
         _ => bail!("match: no arm matched"),
     } });
     Ok(d)
@@ -763,8 +769,14 @@ pub fn varTryGetDistribution(mut var: BackendDAE::Var) -> Option<Arc<DAE::Distri
 pub fn varUncertainty(mut var: BackendDAE::Var) -> Result<DAE::Uncertainty> {
     let mut u: DAE::Uncertainty = DAE::Uncertainty::GIVEN;
     u = (::match_deref::match_deref! { match &(var.clone()) {
-        BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { uncertainOption: Some(u), .. }), .. } => u.clone(),
-        BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_INT { uncertainOption: Some(u), .. }), .. } => u.clone(),
+        BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { uncertainOption: Some(__esc_u), .. }), .. } => {
+            u = (*__esc_u).clone();
+            u.clone()
+        },
+        BackendDAE::Var { values: Some(Deref @ DAE::VariableAttributes::VAR_ATTR_INT { uncertainOption: Some(__esc_u), .. }), .. } => {
+            u = (*__esc_u).clone();
+            u.clone()
+        },
         _ => bail!("match: no arm matched"),
     } });
     Ok(u)
@@ -1464,11 +1476,26 @@ pub fn isProtectedVar(mut v: BackendDAE::Var) -> bool {
 pub fn isProtected(mut v: BackendDAE::Var) -> bool {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(v.values.clone()) {
-        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { isProtected: Some(b), .. }) => b.clone(),
-        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_INT { isProtected: Some(b), .. }) => b.clone(),
-        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_BOOL { isProtected: Some(b), .. }) => b.clone(),
-        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_STRING { isProtected: Some(b), .. }) => b.clone(),
-        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_ENUMERATION { isProtected: Some(b), .. }) => b.clone(),
+        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { isProtected: Some(__esc_b), .. }) => {
+            b = (*__esc_b).clone();
+            b.clone()
+        },
+        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_INT { isProtected: Some(__esc_b), .. }) => {
+            b = (*__esc_b).clone();
+            b.clone()
+        },
+        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_BOOL { isProtected: Some(__esc_b), .. }) => {
+            b = (*__esc_b).clone();
+            b.clone()
+        },
+        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_STRING { isProtected: Some(__esc_b), .. }) => {
+            b = (*__esc_b).clone();
+            b.clone()
+        },
+        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_ENUMERATION { isProtected: Some(__esc_b), .. }) => {
+            b = (*__esc_b).clone();
+            b.clone()
+        },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

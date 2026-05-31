@@ -795,7 +795,10 @@ fn matchCompNames(mut names: Arc<metamodelica::List<ArcStr>>, mut comps: Arc<met
 fn packageOrderName(mut ord: PackageOrder) -> ArcStr {
     let mut name: ArcStr = arcstr::literal!("");
     name = ((match ord.clone() {
-        PackageOrder::CLASSLOAD { cl: mut name } => name.clone(),
+        PackageOrder::CLASSLOAD { cl: mut __esc_name } => {
+            name = __esc_name.clone();
+            name.clone()
+        },
         _ => literal!("#"),
     })).clone();
     name

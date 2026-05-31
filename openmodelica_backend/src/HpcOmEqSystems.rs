@@ -2234,7 +2234,10 @@ pub fn parallelizeTornSystems(mut graphIn: metamodelica::Array<Arc<metamodelica:
 fn getScheduledTaskCompIdx(mut taskIn: Arc<HpcOmSimCode::Task>) -> Result<i32> {
     let mut compIdx: i32 = 0;
     compIdx = (::match_deref::match_deref! { match &(taskIn.clone()) {
-        Deref @ HpcOmSimCode::Task::SCHEDULED_TASK { compIdx, .. } => compIdx.clone(),
+        Deref @ HpcOmSimCode::Task::SCHEDULED_TASK { compIdx: __esc_compIdx, .. } => {
+            compIdx = (*__esc_compIdx).clone();
+            compIdx.clone()
+        },
         _ => bail!("match: no arm matched"),
     } });
     Ok(compIdx)

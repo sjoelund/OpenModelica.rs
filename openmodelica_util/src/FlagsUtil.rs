@@ -1096,7 +1096,8 @@ fn getValidOptionsAndDescription2(mut validOptions: Flags::ValidOptions) -> Resu
     let mut validStrings: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut descriptions: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     (validStrings, descriptions) = (match validOptions.clone() {
-        Flags::ValidOptions::STRING_OPTION { options: ref validStrings } => {
+        Flags::ValidOptions::STRING_OPTION { options: ref __esc_validStrings } => {
+            validStrings = __esc_validStrings.clone();
             (validStrings.clone(), metamodelica::nil())
         },
         Flags::ValidOptions::STRING_DESC_OPTION { options: mut options } => {
@@ -1556,7 +1557,8 @@ pub fn configFlagName(mut inFlag: Flags::ConfigFlag) -> Result<ArcStr> {
 fn getValidStringOptions(mut inOptions: Flags::ValidOptions) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut validOptions: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     validOptions = (match inOptions.clone() {
-        Flags::ValidOptions::STRING_OPTION { options: ref validOptions } => {
+        Flags::ValidOptions::STRING_OPTION { options: ref __esc_validOptions } => {
+            validOptions = __esc_validOptions.clone();
             validOptions.clone()
         },
         Flags::ValidOptions::STRING_DESC_OPTION { options: mut options } => {

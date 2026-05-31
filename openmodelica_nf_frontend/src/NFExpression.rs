@@ -1723,7 +1723,10 @@ pub fn getInteger(mut exp: Arc<NFExpression>, mut resize: bool) -> Result<i32> {
         e = map(exp.clone(), (std::sync::Arc::new(replaceResizableParameterWithOriginal) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>))?;
     }
     i = (::match_deref::match_deref! { match &(SimplifyExp::simplify(e.clone(), false)?) {
-        Deref @ INTEGER { value: i } => i.clone(),
+        Deref @ INTEGER { value: __esc_i } => {
+            i = (*__esc_i).clone();
+            i.clone()
+        },
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpression.getInteger")); __mm_s.push_str(&*literal!(" cannot be parsed to an integer: ")); __mm_s.push_str(&*toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
             bail!("fail")
@@ -6530,7 +6533,10 @@ pub fn expandNonListedSplitIndices(mut exp: Arc<NFExpression>, mut indicesToKeep
 pub fn isSplitSubscriptedExp(mut exp: Arc<NFExpression>) -> bool {
     let mut split: bool = false;
     split = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ SUBSCRIPTED_EXP { split, .. } => split.clone(),
+        Deref @ SUBSCRIPTED_EXP { split: __esc_split, .. } => {
+            split = (*__esc_split).clone();
+            split.clone()
+        },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

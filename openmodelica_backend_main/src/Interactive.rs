@@ -839,7 +839,10 @@ fn extractAllComponentreplacements(mut p: Absyn::Program, mut classPath: Arc<Abs
 fn isClassReadOnly(mut cl: Arc<Absyn::Class>) -> Result<bool> {
     let mut readOnly: bool = false;
     readOnly = (::match_deref::match_deref! { match &(cl.clone()) {
-        Deref @ Absyn::Class { info: SourceInfo { isReadOnly: readOnly, .. }, .. } => readOnly.clone(),
+        Deref @ Absyn::Class { info: SourceInfo { isReadOnly: __esc_readOnly, .. }, .. } => {
+            readOnly = (*__esc_readOnly).clone();
+            readOnly.clone()
+        },
         _ => bail!("match: no arm matched"),
     } });
     Ok(readOnly)
@@ -2523,7 +2526,10 @@ fn extractAllComponentsVisitor(mut inTplAbsynClassAbsynPathOptionTplComponentsAb
 fn isReadOnly(mut file_info: SourceInfo) -> Result<bool> {
     let mut res: bool = false;
     res = (match file_info.clone() {
-        SourceInfo { isReadOnly: mut res, .. } => res.clone(),
+        SourceInfo { isReadOnly: mut __esc_res, .. } => {
+            res = __esc_res.clone();
+            res.clone()
+        },
         _ => bail!("match: no arm matched"),
     });
     Ok(res)
@@ -3724,16 +3730,16 @@ pub fn removeExtendsModifiers(mut inClassPath: Arc<Absyn::Path>, mut inBaseClass
 fn removeExtendsModifiersInClass(mut inClass: Arc<Absyn::Class>, mut inPath: Arc<Absyn::Path>, mut inEnv: GraphicEnvCache, mut keepRedeclares: bool) -> Result<Arc<Absyn::Class>> {
     let mut outClass: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
     outClass = (::match_deref::match_deref! { match &((inClass.clone(), inPath.clone(), inEnv.clone())) {
-        (outClass @ Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { comment: cmt, ann, classParts: parts, classAttrs, typeVars }, .. }, inherit_name, env) => {
+        (__esc_outClass @ Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { comment: cmt, ann, classParts: parts, classAttrs, typeVars }, .. }, inherit_name, env) => {
+            outClass = (*__esc_outClass).clone();
             let mut parts_1: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
-            let mut outClass = (*outClass).clone();
             parts_1 = removeExtendsModifiersInClassparts(parts.clone(), inherit_name.clone(), env.clone(), keepRedeclares.clone())?;
             assign_field!(outClass.body = Arc::new(Absyn::ClassDef::PARTS { typeVars: typeVars.clone(), classAttrs: classAttrs.clone(), classParts: parts_1.clone(), ann: ann.clone(), comment: cmt.clone() }));
             outClass.clone()
         },
-        (outClass @ Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::CLASS_EXTENDS { comment: cmt, ann, modifications: modif, parts, baseClassName: bcname }, .. }, inherit_name, env) => {
+        (__esc_outClass @ Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::CLASS_EXTENDS { comment: cmt, ann, modifications: modif, parts, baseClassName: bcname }, .. }, inherit_name, env) => {
+            outClass = (*__esc_outClass).clone();
             let mut parts_1: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
-            let mut outClass = (*outClass).clone();
             parts_1 = removeExtendsModifiersInClassparts(parts.clone(), inherit_name.clone(), env.clone(), keepRedeclares.clone())?;
             assign_field!(outClass.body = Arc::new(Absyn::ClassDef::CLASS_EXTENDS { baseClassName: (bcname.clone()).clone(), modifications: modif.clone(), comment: cmt.clone(), parts: parts_1.clone(), ann: ann.clone() }));
             outClass.clone()
@@ -5768,7 +5774,8 @@ fn deleteOrUpdateComponent(mut componentName: ArcStr, mut classPath: Arc<Absyn::
 fn deleteOrUpdateComponentFromClass(mut inString: ArcStr, mut inClass: Arc<Absyn::Class>, mut item: Option<(Arc<Absyn::Path>, Arc<Absyn::ComponentItem>)>) -> Result<Arc<Absyn::Class>> {
     let mut outClass: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
     outClass = (::match_deref::match_deref! { match &((inString.clone(), inClass.clone())) {
-        (name, outClass @ Deref @ Absyn::Class { info: _, body: Deref @ Absyn::ClassDef::PARTS { comment: cmt, ann, classParts: parts, classAttrs, typeVars }, .. }) => {
+        (name, __esc_outClass @ Deref @ Absyn::Class { info: _, body: Deref @ Absyn::ClassDef::PARTS { comment: cmt, ann, classParts: parts, classAttrs, typeVars }, .. }) => {
+            outClass = (*__esc_outClass).clone();
             let mut publst: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
             let mut publst2: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
             let mut protlst: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
@@ -5778,7 +5785,6 @@ fn deleteOrUpdateComponentFromClass(mut inString: ArcStr, mut inClass: Arc<Absyn
             let mut l1_1: i32 = 0;
             let mut parts2: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
             let mut success: bool = false;
-            let mut outClass = (*outClass).clone();
             publst = ProgramUtil::getPublicList(parts.clone());
             (publst2, success) = deleteOrUpdateComponentFromElementitems((name.clone()).clone(), publst.clone(), item.clone())?;
             l2 = (publst2.clone().len() as i32);
@@ -5794,7 +5800,8 @@ fn deleteOrUpdateComponentFromClass(mut inString: ArcStr, mut inClass: Arc<Absyn
             assign_field!(outClass.body = Arc::new(Absyn::ClassDef::PARTS { typeVars: typeVars.clone(), classAttrs: classAttrs.clone(), classParts: parts2.clone(), ann: ann.clone(), comment: cmt.clone() }));
             outClass.clone()
         },
-        (name, outClass @ Deref @ Absyn::Class { info: _, body: Deref @ Absyn::ClassDef::CLASS_EXTENDS { comment: cmt, ann, parts, modifications: r#mod, baseClassName: bcpath }, .. }) => {
+        (name, __esc_outClass @ Deref @ Absyn::Class { info: _, body: Deref @ Absyn::ClassDef::CLASS_EXTENDS { comment: cmt, ann, parts, modifications: r#mod, baseClassName: bcpath }, .. }) => {
+            outClass = (*__esc_outClass).clone();
             let mut publst: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
             let mut publst2: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
             let mut protlst: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
@@ -5804,7 +5811,6 @@ fn deleteOrUpdateComponentFromClass(mut inString: ArcStr, mut inClass: Arc<Absyn
             let mut l1_1: i32 = 0;
             let mut parts2: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
             let mut success: bool = false;
-            let mut outClass = (*outClass).clone();
             publst = ProgramUtil::getPublicList(parts.clone());
             (publst2, success) = deleteOrUpdateComponentFromElementitems((name.clone()).clone(), publst.clone(), item.clone())?;
             l2 = (publst2.clone().len() as i32);
@@ -7215,22 +7221,22 @@ pub fn deleteTransition(mut inComponentRef1: Arc<Absyn::ComponentRef>, mut from:
 fn deleteTransitionInClass(mut inClass: Arc<Absyn::Class>, mut from: ArcStr, mut to: ArcStr, mut condition: ArcStr, mut immediate: bool, mut reset: bool, mut synchronize: bool, mut priority: i32) -> Result<Arc<Absyn::Class>> {
     let mut outClass: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
     outClass = (::match_deref::match_deref! { match &((inClass.clone(), from.clone(), to.clone(), condition.clone(), immediate.clone(), reset.clone(), synchronize.clone(), priority.clone())) {
-        (outClass @ Deref @ Absyn::Class { info: _, body: Deref @ Absyn::ClassDef::PARTS { comment: cmt, ann, classParts: parts, classAttrs, typeVars }, .. }, from_, to_, condition_, immediate_, reset_, synchronize_, priority_) => {
+        (__esc_outClass @ Deref @ Absyn::Class { info: _, body: Deref @ Absyn::ClassDef::PARTS { comment: cmt, ann, classParts: parts, classAttrs, typeVars }, .. }, from_, to_, condition_, immediate_, reset_, synchronize_, priority_) => {
+            outClass = (*__esc_outClass).clone();
             let mut eqlst: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
             let mut eqlst_1: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
             let mut parts2: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
-            let mut outClass = (*outClass).clone();
             eqlst = InteractiveUtil::getEquationList(parts.clone())?;
             eqlst_1 = deleteTransitionInEqlist(eqlst.clone(), (from_.clone()).clone(), (to_.clone()).clone(), (condition_.clone()).clone(), immediate_.clone(), reset_.clone(), synchronize_.clone(), priority_.clone())?;
             parts2 = InteractiveUtil::replaceEquationList(parts.clone(), eqlst_1.clone())?;
             assign_field!(outClass.body = Arc::new(Absyn::ClassDef::PARTS { typeVars: typeVars.clone(), classAttrs: classAttrs.clone(), classParts: parts2.clone(), ann: ann.clone(), comment: cmt.clone() }));
             outClass.clone()
         },
-        (outClass @ Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::CLASS_EXTENDS { comment: cmt, ann, parts, modifications: modif, baseClassName: bcname }, .. }, from_, to_, condition_, immediate_, reset_, synchronize_, priority_) => {
+        (__esc_outClass @ Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::CLASS_EXTENDS { comment: cmt, ann, parts, modifications: modif, baseClassName: bcname }, .. }, from_, to_, condition_, immediate_, reset_, synchronize_, priority_) => {
+            outClass = (*__esc_outClass).clone();
             let mut eqlst: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
             let mut eqlst_1: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
             let mut parts2: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
-            let mut outClass = (*outClass).clone();
             eqlst = InteractiveUtil::getEquationList(parts.clone())?;
             eqlst_1 = deleteTransitionInEqlist(eqlst.clone(), (from_.clone()).clone(), (to_.clone()).clone(), (condition_.clone()).clone(), immediate_.clone(), reset_.clone(), synchronize_.clone(), priority_.clone())?;
             parts2 = InteractiveUtil::replaceEquationList(parts.clone(), eqlst_1.clone())?;
@@ -7924,7 +7930,11 @@ pub fn getConversionAnnotation(mut cls: Arc<Absyn::Class>) -> Result<(Arc<metamo
     let mut opt_conversion: Option<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> = None;
     opt_conversion = AbsynUtil::getNamedAnnotationInClass(cls.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("conversion")).clone() }), (std::sync::Arc::new(getConversionAnnotationString) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> + 'static>))?;
     (withoutConversion, withConversion) = (::match_deref::match_deref! { match &(opt_conversion.clone()) {
-        Some((withoutConversion, withConversion)) => (withoutConversion.clone(), withConversion.clone()),
+        Some((__esc_withoutConversion, __esc_withConversion)) => {
+            withoutConversion = (*__esc_withoutConversion).clone();
+            withConversion = (*__esc_withConversion).clone();
+            (withoutConversion.clone(), withConversion.clone())
+        },
         _ => (metamodelica::nil(), metamodelica::nil()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -9305,8 +9315,8 @@ fn getComponentInfoOld(mut inElement: Arc<Absyn::Element>, mut inEnv: GraphicEnv
     let mut comment: ArcStr = arcstr::literal!("");
     let mut comp: Arc<Absyn::ComponentItem> = Arc::new(<Absyn::ComponentItem as ::std::default::Default>::default());
     (componentName, typeName, comment) = (::match_deref::match_deref! { match &(inElement.clone()) {
-        Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::COMPONENTS { components: Deref @ metamodelica::List::Cons { head: comp, tail: _ }, typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: typeName, arrayDim: _ }, .. }, .. } => {
-            let mut typeName = (*typeName).clone();
+        Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::COMPONENTS { components: Deref @ metamodelica::List::Cons { head: comp, tail: _ }, typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: __esc_typeName, arrayDim: _ }, .. }, .. } => {
+            typeName = (*__esc_typeName).clone();
             componentName = (comp.component.name.clone()).clone();
             typeName = InteractiveUtil::qualifyPath(inEnv.clone(), typeName.clone(), false)?;
             comment = (InteractiveUtil::getComponentComment(comp.clone(), inElement.clone())).clone();
@@ -9521,22 +9531,22 @@ fn removeInnerDiffFiledClasses(mut inProgram: Absyn::Program) -> Result<Absyn::P
 fn removeInnerDiffFiledClass(mut inClass: Arc<Absyn::Class>) -> Result<Arc<Absyn::Class>> {
     let mut outClass: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
     outClass = (::match_deref::match_deref! { match &(inClass.clone()) {
-        outClass @ Deref @ Absyn::Class { info: SourceInfo { fileName: file, .. }, body: Deref @ Absyn::ClassDef::PARTS { comment: cmt, ann, classParts: parts, classAttrs, typeVars }, .. } => {
+        __esc_outClass @ Deref @ Absyn::Class { info: SourceInfo { fileName: file, .. }, body: Deref @ Absyn::ClassDef::PARTS { comment: cmt, ann, classParts: parts, classAttrs, typeVars }, .. } => {
+            outClass = (*__esc_outClass).clone();
             let mut publst: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
             let mut publst2: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
             let mut parts2: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
-            let mut outClass = (*outClass).clone();
             publst = ProgramUtil::getPublicList(parts.clone());
             publst2 = removeClassDiffFiledInElementitemlist(publst.clone(), (file.clone()).clone());
             parts2 = ProgramUtil::replacePublicList(parts.clone(), publst2.clone())?;
             assign_field!(outClass.body = Arc::new(Absyn::ClassDef::PARTS { typeVars: typeVars.clone(), classAttrs: classAttrs.clone(), classParts: parts2.clone(), ann: ann.clone(), comment: cmt.clone() }));
             outClass.clone()
         },
-        outClass @ Deref @ Absyn::Class { info: SourceInfo { fileName: file, .. }, body: Deref @ Absyn::ClassDef::CLASS_EXTENDS { comment: cmt, ann, parts, modifications, baseClassName }, .. } => {
+        __esc_outClass @ Deref @ Absyn::Class { info: SourceInfo { fileName: file, .. }, body: Deref @ Absyn::ClassDef::CLASS_EXTENDS { comment: cmt, ann, parts, modifications, baseClassName }, .. } => {
+            outClass = (*__esc_outClass).clone();
             let mut publst: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
             let mut publst2: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
             let mut parts2: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
-            let mut outClass = (*outClass).clone();
             publst = ProgramUtil::getPublicList(parts.clone());
             publst2 = removeClassDiffFiledInElementitemlist(publst.clone(), (file.clone()).clone());
             parts2 = ProgramUtil::replacePublicList(parts.clone(), publst2.clone())?;

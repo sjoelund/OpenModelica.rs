@@ -2672,7 +2672,10 @@ pub fn calcJacobianDependencies(mut jacobian: (Arc<BackendDAE::BackendDAE>, ArcS
 pub fn getJacobianDependencies(mut jacobian: Arc<BackendDAE::Jacobian>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
     let mut dependencies: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     dependencies = (::match_deref::match_deref! { match &(jacobian.clone()) {
-        Deref @ BackendDAE::Jacobian::GENERIC_JACOBIAN { jacobian: Some((_, _, _, _, _, dependencies)), .. } => dependencies.clone(),
+        Deref @ BackendDAE::Jacobian::GENERIC_JACOBIAN { jacobian: Some((_, _, _, _, _, __esc_dependencies)), .. } => {
+            dependencies = (*__esc_dependencies).clone();
+            dependencies.clone()
+        },
         Deref @ BackendDAE::Jacobian::GENERIC_JACOBIAN { jacobian: None, .. } => metamodelica::nil(),
         _ => {
             Error::addInternalError((literal!("function getJacobianDependencies failed")).clone(), metamodelica::sourceInfo!())?;
@@ -3972,13 +3975,13 @@ fn varsNotInRelations(mut exp: Arc<DAE::Exp>, mut tpl: (BackendDAE::Variables, b
             (_, tpl) = Expression::traverseExpTopDown(exp.clone(), (std::sync::Arc::new(BackendDAEUtil::getEqnsysRhsExp2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, bool)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, bool))> + 'static>), tpl.clone())?;
             (exp.clone(), false, tpl.clone())
         },
-        (Deref @ DAE::Exp::LUNARY { .. }, tpl) => {
-            let mut tpl = (*tpl).clone();
+        (Deref @ DAE::Exp::LUNARY { .. }, __esc_tpl) => {
+            tpl = (*__esc_tpl).clone();
             (_, tpl) = Expression::traverseExpTopDown(exp.clone(), (std::sync::Arc::new(BackendDAEUtil::getEqnsysRhsExp2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, bool)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, bool))> + 'static>), tpl.clone())?;
             (exp.clone(), false, tpl.clone())
         },
-        (Deref @ DAE::Exp::RELATION { .. }, tpl) => {
-            let mut tpl = (*tpl).clone();
+        (Deref @ DAE::Exp::RELATION { .. }, __esc_tpl) => {
+            tpl = (*__esc_tpl).clone();
             (_, tpl) = Expression::traverseExpTopDown(exp.clone(), (std::sync::Arc::new(BackendDAEUtil::getEqnsysRhsExp2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, bool)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, bool))> + 'static>), tpl.clone())?;
             (exp.clone(), false, tpl.clone())
         },

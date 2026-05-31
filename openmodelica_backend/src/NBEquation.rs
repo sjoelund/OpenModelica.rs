@@ -891,8 +891,14 @@ pub mod Iterator {
         let mut stop: i32 = 0;
         let mut within_range: bool = false;
         (thresh, start, step, stop) = (::match_deref::match_deref! { match &((rhs.clone(), range.clone())) {
-        (Deref @ Expression::INTEGER { value: thresh }, range @ Deref @ Expression::RANGE { stop: Deref @ Expression::INTEGER { value: stop }, step: Some(Deref @ Expression::INTEGER { value: step }), start: Deref @ Expression::INTEGER { value: start }, .. }) => (thresh.clone(), start.clone(), step.clone(), stop.clone()),
-        (Deref @ Expression::INTEGER { value: thresh }, range @ Deref @ Expression::RANGE { stop: Deref @ Expression::INTEGER { value: stop }, start: Deref @ Expression::INTEGER { value: start }, .. }) => (thresh.clone(), start.clone(), 1, stop.clone()),
+        (Deref @ Expression::INTEGER { value: thresh }, __esc_range @ Deref @ Expression::RANGE { stop: Deref @ Expression::INTEGER { value: stop }, step: Some(Deref @ Expression::INTEGER { value: step }), start: Deref @ Expression::INTEGER { value: start }, .. }) => {
+            range = (*__esc_range).clone();
+            (thresh.clone(), start.clone(), step.clone(), stop.clone())
+        },
+        (Deref @ Expression::INTEGER { value: thresh }, __esc_range @ Deref @ Expression::RANGE { stop: Deref @ Expression::INTEGER { value: stop }, start: Deref @ Expression::INTEGER { value: start }, .. }) => {
+            range = (*__esc_range).clone();
+            (thresh.clone(), start.clone(), 1, stop.clone())
+        },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Iterator.adaptRange")); __mm_s.push_str(&*literal!(" failed because range could not be evaluated: ")); __mm_s.push_str(&*Expression::toString(range.clone())?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")

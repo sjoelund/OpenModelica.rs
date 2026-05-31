@@ -1521,14 +1521,14 @@ fn addLocalCref(mut inExp: Arc<DAE::Exp>, mut inHt: (metamodelica::Array<Arc<met
 fn addLocalCrefHelper(mut cr: Arc<DAE::ComponentRef>, mut iht: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>))> {
     let mut ht: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (HashTableStringToPath::FuncHashCref, HashTableStringToPath::FuncCrefEqual, HashTableStringToPath::FuncCrefStr, HashTableStringToPath::FuncExpStr));
     ht = (::match_deref::match_deref! { match &((cr.clone(), iht.clone())) {
-        (Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: subs, ident: name, .. }, ht) => {
-            let mut ht = (*ht).clone();
+        (Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: subs, ident: name, .. }, __esc_ht) => {
+            ht = (*__esc_ht).clone();
             ht = addLocalCrefSubs(subs.clone(), ht.clone())?;
             ht = BaseHashTable::add((name.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() })), ht.clone())?;
             ht.clone()
         },
-        (Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: cr2, subscriptLst: subs, ident: name, .. }, ht) => {
-            let mut ht = (*ht).clone();
+        (Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: cr2, subscriptLst: subs, ident: name, .. }, __esc_ht) => {
+            ht = (*__esc_ht).clone();
             ht = addLocalCrefSubs(subs.clone(), ht.clone())?;
             ht = BaseHashTable::add((name.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() })), ht.clone())?;
             addLocalCrefHelper(cr2.clone(), ht.clone())?
@@ -2698,11 +2698,11 @@ pub fn traverseConstantPatternsHelper<T: Clone + 'static>(mut inExp: Arc<DAE::Ex
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outT: T = inT.clone();
     outExp = (::match_deref::match_deref! { match &(inExp.clone()) {
-        outExp @ Deref @ DAE::Exp::MATCHEXPRESSION { cases, .. } => {
+        __esc_outExp @ Deref @ DAE::Exp::MATCHEXPRESSION { cases, .. } => {
+            outExp = (*__esc_outExp).clone();
             let mut cases2: Arc<metamodelica::List<Arc<DAE::MatchCase>>> = metamodelica::nil();
             let mut case_: Arc<DAE::MatchCase> = Arc::new(<DAE::MatchCase as ::std::default::Default>::default());
             let mut patterns: Arc<metamodelica::List<Arc<DAE::Pattern>>> = metamodelica::nil();
-            let mut outExp = (*outExp).clone();
             cases2 = metamodelica::nil();
             for mut c in &*cases.clone() {
                 let mut c = c.clone();
@@ -2741,9 +2741,9 @@ pub fn traverseConstantPatternsHelper2<T: Clone + 'static>(mut inPattern: Arc<DA
     let mut outPattern: Arc<DAE::Pattern> = Arc::new(DAE::Pattern::PAT_WILD);
     let mut extra: T = inExtra.clone();
     outPattern = (::match_deref::match_deref! { match &(inPattern.clone()) {
-        outPattern @ Deref @ DAE::Pattern::PAT_CONSTANT { .. } => {
+        __esc_outPattern @ Deref @ DAE::Pattern::PAT_CONSTANT { .. } => {
+            outPattern = (*__esc_outPattern).clone();
             let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut outPattern = (*outPattern).clone();
             (exp, extra) = func(var_field!((*outPattern).exp, DAE::Pattern::PAT_CONSTANT).clone(), extra.clone()).unwrap();
             if !(referenceEq(&var_field!((*outPattern).exp, DAE::Pattern::PAT_CONSTANT).clone(),&exp.clone())) {
                 assign_variant_field!(outPattern => DAE::Pattern::PAT_CONSTANT; exp = exp.clone());
@@ -3348,7 +3348,10 @@ fn addEnvKnownAsBindings2(mut inPat: Arc<DAE::Pattern>, mut inEnv: FCore::Graph,
 fn findFirstNonAsPattern(mut inPattern: Arc<DAE::Pattern>) -> Arc<DAE::Pattern> {
     let mut outPattern: Arc<DAE::Pattern> = Arc::new(DAE::Pattern::PAT_WILD);
     outPattern = (::match_deref::match_deref! { match &(inPattern.clone()) {
-        Deref @ DAE::Pattern::PAT_AS { pat: outPattern, .. } => findFirstNonAsPattern(outPattern.clone()),
+        Deref @ DAE::Pattern::PAT_AS { pat: __esc_outPattern, .. } => {
+            outPattern = (*__esc_outPattern).clone();
+            findFirstNonAsPattern(outPattern.clone())
+        },
         _ => inPattern.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -3363,8 +3366,8 @@ fn getInputAsBinding(mut inExp: Arc<Absyn::Exp>) -> (Arc<Absyn::Exp>, Arc<metamo
         Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { name: id, subscripts: Deref @ metamodelica::List::Nil } } => {
             (inExp.clone(), metamodelica::nil(), list![(id.clone()).clone()])
         },
-        Deref @ Absyn::Exp::AS { id, exp } => {
-            let mut exp = (*exp).clone();
+        Deref @ Absyn::Exp::AS { id, exp: __esc_exp } => {
+            exp = (*__esc_exp).clone();
             (exp, aliases, aliasesAndCrefs) = getInputAsBinding(exp.clone());
             (exp.clone(), metamodelica::cons((id.clone()).clone(), aliases.clone()), metamodelica::cons((id.clone()).clone(), aliasesAndCrefs.clone()))
         },

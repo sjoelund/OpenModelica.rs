@@ -1300,8 +1300,14 @@ pub fn pathSetNthIdent(mut path: Arc<Absyn::Path>, mut ident: ArcStr, mut n: i32
 pub fn pathRest(mut inPath: Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> {
     let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     outPath = (::match_deref::match_deref! { match &(inPath.clone()) {
-        Deref @ Absyn::Path::QUALIFIED { path: outPath, .. } => outPath.clone(),
-        Deref @ Absyn::Path::FULLYQUALIFIED { path: outPath } => pathRest(outPath.clone())?,
+        Deref @ Absyn::Path::QUALIFIED { path: __esc_outPath, .. } => {
+            outPath = (*__esc_outPath).clone();
+            outPath.clone()
+        },
+        Deref @ Absyn::Path::FULLYQUALIFIED { path: __esc_outPath } => {
+            outPath = (*__esc_outPath).clone();
+            pathRest(outPath.clone())?
+        },
         _ => bail!("match: no arm matched"),
     } });
     Ok(outPath)
@@ -2260,7 +2266,10 @@ pub fn getString(mut exp: Arc<Absyn::Exp>) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Absyn::Exp::EXPRESSIONCOMMENT { .. } => getString(var_field!((*exp).exp, Absyn::Exp::EXPRESSIONCOMMENT).clone())?,
-        Deref @ Absyn::Exp::STRING { value: r#str } => r#str.clone(),
+        Deref @ Absyn::Exp::STRING { value: __esc_str } => {
+            r#str = (*__esc_str).clone();
+            r#str.clone()
+        },
         _ => bail!("match: no arm matched"),
     } })).clone();
     Ok(r#str)
@@ -4626,7 +4635,8 @@ pub fn isEmptyEqMod(mut eqMod: Arc<Absyn::EqMod>) -> bool {
 pub fn elementArgName(mut inArg: Arc<Absyn::ElementArg>) -> Result<Arc<Absyn::Path>> {
     let mut outName: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     outName = (::match_deref::match_deref! { match &(inArg.clone()) {
-        Deref @ Absyn::ElementArg::MODIFICATION { path: outName, .. } => {
+        Deref @ Absyn::ElementArg::MODIFICATION { path: __esc_outName, .. } => {
+            outName = (*__esc_outName).clone();
             outName.clone()
         },
         Deref @ Absyn::ElementArg::REDECLARATION { elementSpec: e, .. } => {
@@ -5050,7 +5060,10 @@ pub fn pathPartCount(mut path: Arc<Absyn::Path>, mut partsAccum: i32) -> Result<
 pub fn getAnnotationsFromConstraintClass(mut inCC: Option<Arc<Absyn::ConstrainClass>>) -> Arc<metamodelica::List<Arc<Absyn::ElementArg>>> {
     let mut elementArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
     elementArgs = (::match_deref::match_deref! { match &(inCC.clone()) {
-        Some(Deref @ Absyn::ConstrainClass { comment: Some(Deref @ Absyn::Comment { annotation_: Some(Deref @ Absyn::Annotation { elementArgs }), .. }), .. }) => elementArgs.clone(),
+        Some(Deref @ Absyn::ConstrainClass { comment: Some(Deref @ Absyn::Comment { annotation_: Some(Deref @ Absyn::Annotation { elementArgs: __esc_elementArgs }), .. }), .. }) => {
+            elementArgs = (*__esc_elementArgs).clone();
+            elementArgs.clone()
+        },
         _ => metamodelica::nil(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -5574,7 +5587,10 @@ pub fn getElementSpecificationFromElementItemOpt(mut inElementItem: Arc<Absyn::E
 pub fn getComponentItemsFromElement(mut element: Arc<Absyn::Element>) -> Arc<metamodelica::List<Arc<Absyn::ComponentItem>>> {
     let mut items: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>> = metamodelica::nil();
     items = (::match_deref::match_deref! { match &(element.clone()) {
-        Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::COMPONENTS { components: items, .. }, .. } => items.clone(),
+        Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::COMPONENTS { components: __esc_items, .. }, .. } => {
+            items = (*__esc_items).clone();
+            items.clone()
+        },
         _ => metamodelica::nil(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -5608,7 +5624,10 @@ pub fn getComponentItemsFromElementItem(mut inElementItem: Arc<Absyn::ElementIte
 pub fn getDirection(mut elementItem: Arc<Absyn::ElementItem>) -> Absyn::Direction {
     let mut oDirection: Absyn::Direction = Absyn::Direction::BIDIR;
     oDirection = (::match_deref::match_deref! { match &(elementItem.clone()) {
-        Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::COMPONENTS { attributes: Absyn::ElementAttributes { direction: oDirection, .. }, .. }, .. } } => oDirection.clone(),
+        Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::COMPONENTS { attributes: Absyn::ElementAttributes { direction: __esc_oDirection, .. }, .. }, .. } } => {
+            oDirection = (*__esc_oDirection).clone();
+            oDirection.clone()
+        },
         _ => openmodelica_ast::Absyn::Direction::BIDIR,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -6449,12 +6468,30 @@ pub fn elementItemClass(mut item: Arc<Absyn::ElementItem>) -> Result<Arc<Absyn::
 pub fn classDefStringComment(mut def: Arc<Absyn::ClassDef>) -> ArcStr {
     let mut comment: ArcStr = arcstr::literal!("");
     comment = ((::match_deref::match_deref! { match &(def.clone()) {
-        Deref @ Absyn::ClassDef::PARTS { comment: Some(comment), .. } => comment.clone(),
-        Deref @ Absyn::ClassDef::DERIVED { comment: Some(Deref @ Absyn::Comment { comment: Some(comment), .. }), .. } => comment.clone(),
-        Deref @ Absyn::ClassDef::ENUMERATION { comment: Some(Deref @ Absyn::Comment { comment: Some(comment), .. }), .. } => comment.clone(),
-        Deref @ Absyn::ClassDef::OVERLOAD { comment: Some(Deref @ Absyn::Comment { comment: Some(comment), .. }), .. } => comment.clone(),
-        Deref @ Absyn::ClassDef::CLASS_EXTENDS { comment: Some(comment), .. } => comment.clone(),
-        Deref @ Absyn::ClassDef::PDER { comment: Some(Deref @ Absyn::Comment { comment: Some(comment), .. }), .. } => comment.clone(),
+        Deref @ Absyn::ClassDef::PARTS { comment: Some(__esc_comment), .. } => {
+            comment = (*__esc_comment).clone();
+            comment.clone()
+        },
+        Deref @ Absyn::ClassDef::DERIVED { comment: Some(Deref @ Absyn::Comment { comment: Some(__esc_comment), .. }), .. } => {
+            comment = (*__esc_comment).clone();
+            comment.clone()
+        },
+        Deref @ Absyn::ClassDef::ENUMERATION { comment: Some(Deref @ Absyn::Comment { comment: Some(__esc_comment), .. }), .. } => {
+            comment = (*__esc_comment).clone();
+            comment.clone()
+        },
+        Deref @ Absyn::ClassDef::OVERLOAD { comment: Some(Deref @ Absyn::Comment { comment: Some(__esc_comment), .. }), .. } => {
+            comment = (*__esc_comment).clone();
+            comment.clone()
+        },
+        Deref @ Absyn::ClassDef::CLASS_EXTENDS { comment: Some(__esc_comment), .. } => {
+            comment = (*__esc_comment).clone();
+            comment.clone()
+        },
+        Deref @ Absyn::ClassDef::PDER { comment: Some(Deref @ Absyn::Comment { comment: Some(__esc_comment), .. }), .. } => {
+            comment = (*__esc_comment).clone();
+            comment.clone()
+        },
         _ => literal!(""),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();

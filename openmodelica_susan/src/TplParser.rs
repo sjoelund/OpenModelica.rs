@@ -5780,8 +5780,14 @@ pub fn lineIndent(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineIndent
     let mut outChars: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut outLineIndent: i32 = 0;
     (outChars, outLineIndent) = (::match_deref::match_deref! { match &(inChars.clone()) {
-        Deref @ metamodelica::List::Cons { head: Deref @ " ", tail: outChars } => lineIndent(outChars.clone(), inLineIndent.clone() + 1),
-        Deref @ metamodelica::List::Cons { head: Deref @ "\t", tail: outChars } => lineIndent(outChars.clone(), inLineIndent.clone() + TabSpaces.clone()),
+        Deref @ metamodelica::List::Cons { head: Deref @ " ", tail: __esc_outChars } => {
+            outChars = (*__esc_outChars).clone();
+            lineIndent(outChars.clone(), inLineIndent.clone() + 1)
+        },
+        Deref @ metamodelica::List::Cons { head: Deref @ "\t", tail: __esc_outChars } => {
+            outChars = (*__esc_outChars).clone();
+            lineIndent(outChars.clone(), inLineIndent.clone() + TabSpaces.clone())
+        },
         _ => (inChars.clone(), inLineIndent.clone()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -7766,9 +7772,10 @@ fn annotationFooter(mut inChars: Arc<metamodelica::List<ArcStr>>, mut inLineInfo
     let mut linfo: LineInfo = <LineInfo as ::std::default::Default>::default();
     let mut footer: ArcStr = arcstr::literal!("");
     (chars, linfo, footer) = (::match_deref::match_deref! { match &((inChars.clone(), inLineInfo.clone())) {
-        (Deref @ metamodelica::List::Cons { head: Deref @ "a", tail: Deref @ metamodelica::List::Cons { head: Deref @ "n", tail: Deref @ metamodelica::List::Cons { head: Deref @ "n", tail: Deref @ metamodelica::List::Cons { head: Deref @ "o", tail: Deref @ metamodelica::List::Cons { head: Deref @ "t", tail: Deref @ metamodelica::List::Cons { head: Deref @ "a", tail: Deref @ metamodelica::List::Cons { head: Deref @ "t", tail: Deref @ metamodelica::List::Cons { head: Deref @ "i", tail: Deref @ metamodelica::List::Cons { head: Deref @ "o", tail: Deref @ metamodelica::List::Cons { head: Deref @ "n", tail: chars } } } } } } } } } }, linfo) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ "a", tail: Deref @ metamodelica::List::Cons { head: Deref @ "n", tail: Deref @ metamodelica::List::Cons { head: Deref @ "n", tail: Deref @ metamodelica::List::Cons { head: Deref @ "o", tail: Deref @ metamodelica::List::Cons { head: Deref @ "t", tail: Deref @ metamodelica::List::Cons { head: Deref @ "a", tail: Deref @ metamodelica::List::Cons { head: Deref @ "t", tail: Deref @ metamodelica::List::Cons { head: Deref @ "i", tail: Deref @ metamodelica::List::Cons { head: Deref @ "o", tail: Deref @ metamodelica::List::Cons { head: Deref @ "n", tail: __esc_chars } } } } } } } } } }, __esc_linfo) => {
+            chars = (*__esc_chars).clone();
+            linfo = (*__esc_linfo).clone();
             let mut footerChars: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut chars = (*chars).clone();
             (footerChars, chars) = List::split(inChars.clone(), List::position((literal!(";")).clone(), inChars.clone())? + 1)?;
             footer = stringAppendList(footerChars.clone());
             (chars.clone(), linfo.clone(), footer.clone())

@@ -585,7 +585,10 @@ pub fn isResizable(mut cref: Arc<NFComponentRef>) -> Result<bool> {
         },
         Deref @ CREF { node: Deref @ InstNode::VAR_NODE { varPointer: v, .. }, .. } => {
             (::match_deref::match_deref! { match &(Pointer::access(v.clone())) {
-        Deref @ Variable::VARIABLE { backendinfo: Deref @ BackendInfo::BACKEND_INFO { annotations: Deref @ Annotations::ANNOTATIONS { resizable: b, .. }, .. }, .. } => b.clone(),
+        Deref @ Variable::VARIABLE { backendinfo: Deref @ BackendInfo::BACKEND_INFO { annotations: Deref @ Annotations::ANNOTATIONS { resizable: __esc_b, .. }, .. }, .. } => {
+            b = (*__esc_b).clone();
+            b.clone()
+        },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })

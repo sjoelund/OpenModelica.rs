@@ -571,7 +571,8 @@ pub fn popIter(mut txt: Text) -> Result<Text> {
 pub fn nextIter(mut txt: Text) -> Result<Text> {
     let mut txt: Text = txt;
     txt = (::match_deref::match_deref! { match &(txt.clone()) {
-        txt @ Text::MEM_TEXT { blocksStack: Deref @ metamodelica::List::Cons { head: (_, Deref @ BlockType::BT_ITER { options: Deref @ IterOptions { empty: None, .. }, .. }), tail: _ }, tokens: Deref @ metamodelica::List::Nil } => {
+        __esc_txt @ Text::MEM_TEXT { blocksStack: Deref @ metamodelica::List::Cons { head: (_, Deref @ BlockType::BT_ITER { options: Deref @ IterOptions { empty: None, .. }, .. }), tail: _ }, tokens: Deref @ metamodelica::List::Nil } => {
+            txt = (*__esc_txt).clone();
             txt.clone()
         },
         Text::MEM_TEXT { blocksStack: Deref @ metamodelica::List::Cons { head: (itertoks, bt @ Deref @ BlockType::BT_ITER { index0: i0, options: Deref @ IterOptions { empty: Some(emptok), .. } }), tail: blstack }, tokens: Deref @ metamodelica::List::Nil } => {
@@ -809,39 +810,47 @@ fn tokFile(mut file: File::File, mut inStringToken: Arc<StringToken>, mut nchars
     let mut isstart: bool = isstart;
     let mut aind: i32 = aind;
     (nchars, isstart, aind) = (::match_deref::match_deref! { match &((inStringToken.clone(), nchars.clone(), isstart.clone(), aind.clone())) {
-        (Deref @ StringToken::ST_NEW_LINE { .. }, _, _, aind) => {
+        (Deref @ StringToken::ST_NEW_LINE { .. }, _, _, __esc_aind) => {
+            aind = (*__esc_aind).clone();
             File::write(file.clone(), (literal!("\n")).clone());
             (aind.clone(), true, aind.clone())
         },
-        (Deref @ StringToken::ST_STRING { value: r#str }, nchars, true, aind) => {
+        (Deref @ StringToken::ST_STRING { value: r#str }, __esc_nchars, true, __esc_aind) => {
+            nchars = (*__esc_nchars).clone();
+            aind = (*__esc_aind).clone();
             File::writeSpace(file.clone(), nchars.clone());
             File::write(file.clone(), (r#str.clone()).clone());
             (nchars.clone() + ((r#str.clone()).clone().len() as i32), false, aind.clone())
         },
-        (Deref @ StringToken::ST_STRING { value: r#str }, nchars, false, aind) => {
+        (Deref @ StringToken::ST_STRING { value: r#str }, __esc_nchars, false, __esc_aind) => {
+            nchars = (*__esc_nchars).clone();
+            aind = (*__esc_aind).clone();
             File::write(file.clone(), (r#str.clone()).clone());
             (nchars.clone() + ((r#str.clone()).clone().len() as i32), false, aind.clone())
         },
-        (Deref @ StringToken::ST_LINE { line: r#str }, nchars, true, aind) => {
+        (Deref @ StringToken::ST_LINE { line: r#str }, __esc_nchars, true, __esc_aind) => {
+            nchars = (*__esc_nchars).clone();
+            aind = (*__esc_aind).clone();
             File::writeSpace(file.clone(), nchars.clone());
             File::write(file.clone(), (r#str.clone()).clone());
             (aind.clone(), true, aind.clone())
         },
-        (Deref @ StringToken::ST_LINE { line: r#str }, _, false, aind) => {
+        (Deref @ StringToken::ST_LINE { line: r#str }, _, false, __esc_aind) => {
+            aind = (*__esc_aind).clone();
             File::write(file.clone(), (r#str.clone()).clone());
             (aind.clone(), true, aind.clone())
         },
-        (Deref @ StringToken::ST_STRING_LIST { strList: strLst, .. }, nchars, isstart, aind) => {
-            let mut nchars = (*nchars).clone();
-            let mut isstart = (*isstart).clone();
-            let mut aind = (*aind).clone();
+        (Deref @ StringToken::ST_STRING_LIST { strList: strLst, .. }, __esc_nchars, __esc_isstart, __esc_aind) => {
+            nchars = (*__esc_nchars).clone();
+            isstart = (*__esc_isstart).clone();
+            aind = (*__esc_aind).clone();
             (nchars, isstart, aind) = stringListFile(file.clone(), strLst.clone(), nchars.clone(), isstart.clone(), aind.clone())?;
             (nchars.clone(), isstart.clone(), aind.clone())
         },
-        (Deref @ StringToken::ST_BLOCK { blockType: bt, tokens: toks }, nchars, isstart, aind) => {
-            let mut nchars = (*nchars).clone();
-            let mut isstart = (*isstart).clone();
-            let mut aind = (*aind).clone();
+        (Deref @ StringToken::ST_BLOCK { blockType: bt, tokens: toks }, __esc_nchars, __esc_isstart, __esc_aind) => {
+            nchars = (*__esc_nchars).clone();
+            isstart = (*__esc_isstart).clone();
+            aind = (*__esc_aind).clone();
             (nchars, isstart, aind) = blockFile(file.clone(), bt.clone(), toks.clone().reverse(), nchars.clone(), isstart.clone(), aind.clone())?;
             (nchars.clone(), isstart.clone(), aind.clone())
         },
@@ -909,20 +918,22 @@ fn stringListFile(mut file: File::File, mut inStringList: Arc<metamodelica::List
     let mut isstart: bool = isstart;
     let mut aind: i32 = aind;
     (nchars, isstart, aind) = (::match_deref::match_deref! { match &((inStringList.clone(), nchars.clone(), isstart.clone(), aind.clone())) {
-        (Deref @ metamodelica::List::Nil, _, isstart, aind) => {
+        (Deref @ metamodelica::List::Nil, _, __esc_isstart, __esc_aind) => {
+            isstart = (*__esc_isstart).clone();
+            aind = (*__esc_aind).clone();
             (aind.clone(), isstart.clone(), aind.clone())
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ "", tail: strLst }, nchars, isstart, aind) => {
-            let mut nchars = (*nchars).clone();
-            let mut isstart = (*isstart).clone();
-            let mut aind = (*aind).clone();
+        (Deref @ metamodelica::List::Cons { head: Deref @ "", tail: strLst }, __esc_nchars, __esc_isstart, __esc_aind) => {
+            nchars = (*__esc_nchars).clone();
+            isstart = (*__esc_isstart).clone();
+            aind = (*__esc_aind).clone();
             (nchars, isstart, aind) = stringListFile(file.clone(), strLst.clone(), nchars.clone(), isstart.clone(), aind.clone())?;
             (nchars.clone(), isstart.clone(), aind.clone())
         },
-        (Deref @ metamodelica::List::Cons { head: r#str, tail: strLst }, nchars, true, aind) => {
+        (Deref @ metamodelica::List::Cons { head: r#str, tail: strLst }, __esc_nchars, true, __esc_aind) => {
+            nchars = (*__esc_nchars).clone();
+            aind = (*__esc_aind).clone();
             let mut hasNL: bool = false;
-            let mut nchars = (*nchars).clone();
-            let mut aind = (*aind).clone();
             File::writeSpace(file.clone(), nchars.clone());
             File::write(file.clone(), (r#str.clone()).clone());
             hasNL = StringUtil::endsWithNewline((r#str.clone()).clone());
@@ -930,10 +941,10 @@ fn stringListFile(mut file: File::File, mut inStringList: Arc<metamodelica::List
             (nchars, isstart, aind) = stringListFile(file.clone(), strLst.clone(), nchars.clone(), hasNL.clone(), aind.clone())?;
             (nchars.clone(), isstart.clone(), aind.clone())
         },
-        (Deref @ metamodelica::List::Cons { head: r#str, tail: strLst }, nchars, false, aind) => {
+        (Deref @ metamodelica::List::Cons { head: r#str, tail: strLst }, __esc_nchars, false, __esc_aind) => {
+            nchars = (*__esc_nchars).clone();
+            aind = (*__esc_aind).clone();
             let mut hasNL: bool = false;
-            let mut nchars = (*nchars).clone();
-            let mut aind = (*aind).clone();
             File::write(file.clone(), (r#str.clone()).clone());
             hasNL = StringUtil::endsWithNewline((r#str.clone()).clone());
             nchars = if (hasNL.clone()) {aind.clone()} else {nchars.clone() + ((r#str.clone()).clone().len() as i32)};

@@ -2088,12 +2088,18 @@ fn checkReductionType1(mut inEnv: FCore::Graph, mut inPath: Arc<Absyn::Path>, mu
             Error::addSourceMessage(Error::LOOKUP_FUNCTION_ERROR.clone(), list![(str1.clone()).clone(), (str2.clone()).clone()], info.clone())?;
             bail!("fail")
         },
-        Deref @ metamodelica::List::Cons { head: Deref @ DAE::Type::T_FUNCTION { path, funcResultType: resType, funcArg: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { r#const: DAE::Const::C_VAR { .. }, ty: typeA, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { defaultBinding: Some(e), r#const: DAE::Const::C_VAR { .. }, ty: typeB, .. }, tail: Deref @ metamodelica::List::Nil } }, .. }, tail: Deref @ metamodelica::List::Nil } => {
+        Deref @ metamodelica::List::Cons { head: Deref @ DAE::Type::T_FUNCTION { path, funcResultType: __esc_resType, funcArg: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { r#const: DAE::Const::C_VAR { .. }, ty: __esc_typeA, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { defaultBinding: Some(e), r#const: DAE::Const::C_VAR { .. }, ty: __esc_typeB, .. }, tail: Deref @ metamodelica::List::Nil } }, .. }, tail: Deref @ metamodelica::List::Nil } => {
+            typeA = (*__esc_typeA).clone();
+            typeB = (*__esc_typeB).clone();
+            resType = (*__esc_resType).clone();
             let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
             v = Ceval::cevalSimple(e.clone())?;
             (typeA.clone(), typeB.clone(), resType.clone(), Some(v.clone()), path.clone())
         },
-        Deref @ metamodelica::List::Cons { head: Deref @ DAE::Type::T_FUNCTION { path, funcResultType: resType, funcArg: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { r#const: DAE::Const::C_VAR { .. }, ty: typeA, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { defaultBinding: None, r#const: DAE::Const::C_VAR { .. }, ty: typeB, .. }, tail: Deref @ metamodelica::List::Nil } }, .. }, tail: Deref @ metamodelica::List::Nil } => {
+        Deref @ metamodelica::List::Cons { head: Deref @ DAE::Type::T_FUNCTION { path, funcResultType: __esc_resType, funcArg: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { r#const: DAE::Const::C_VAR { .. }, ty: __esc_typeA, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { defaultBinding: None, r#const: DAE::Const::C_VAR { .. }, ty: __esc_typeB, .. }, tail: Deref @ metamodelica::List::Nil } }, .. }, tail: Deref @ metamodelica::List::Nil } => {
+            typeA = (*__esc_typeA).clone();
+            typeB = (*__esc_typeB).clone();
+            resType = (*__esc_resType).clone();
             (typeA.clone(), typeB.clone(), resType.clone(), None, path.clone())
         },
         _ => {

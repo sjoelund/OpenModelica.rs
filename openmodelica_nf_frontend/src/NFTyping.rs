@@ -442,7 +442,10 @@ pub fn typeComponent(mut component: Arc<InstNode::InstNode>, mut context: i32, m
         },
         Deref @ Component::COMPONENT { .. } => var_field!((*c).ty, Component::NFComponent::COMPONENT).clone(),
         Deref @ Component::ITERATOR { .. } => var_field!((*c).ty, Component::NFComponent::ITERATOR).clone(),
-        Deref @ Component::ENUM_LITERAL { literal: Deref @ Expression::ENUM_LITERAL { ty, .. }, .. } => ty.clone(),
+        Deref @ Component::ENUM_LITERAL { literal: Deref @ Expression::ENUM_LITERAL { ty: __esc_ty, .. }, .. } => {
+            ty = (*__esc_ty).clone();
+            ty.clone()
+        },
         Deref @ Component::INVALID_COMPONENT { .. } => Component::getType(c.clone())?,
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFTyping.typeComponent")); __mm_s.push_str(&*literal!(" got noninstantiated component ")); __mm_s.push_str(&*InstNode::name(component.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;

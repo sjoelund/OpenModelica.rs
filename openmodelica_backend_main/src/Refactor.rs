@@ -965,7 +965,11 @@ fn getCoordsFromCoordSysArgs(mut inAnns: Arc<metamodelica::List<Arc<Absyn::Eleme
     let mut x2: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut y2: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     (x1, y1, x2, y2) = (::match_deref::match_deref! { match &(inAnns.clone()) {
-        Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::MATRIX { matrix: Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: x1, tail: Deref @ metamodelica::List::Cons { head: y1, tail: Deref @ metamodelica::List::Nil } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: x2, tail: Deref @ metamodelica::List::Cons { head: y2, tail: Deref @ metamodelica::List::Nil } }, tail: Deref @ metamodelica::List::Nil } } }, .. }, .. }), path: Deref @ Absyn::Path::IDENT { name: Deref @ "extent" }, .. }, tail: _ } => {
+        Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::MATRIX { matrix: Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: __esc_x1, tail: Deref @ metamodelica::List::Cons { head: __esc_y1, tail: Deref @ metamodelica::List::Nil } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: __esc_x2, tail: Deref @ metamodelica::List::Cons { head: __esc_y2, tail: Deref @ metamodelica::List::Nil } }, tail: Deref @ metamodelica::List::Nil } } }, .. }, .. }), path: Deref @ Absyn::Path::IDENT { name: Deref @ "extent" }, .. }, tail: _ } => {
+            x1 = (*__esc_x1).clone();
+            y1 = (*__esc_y1).clone();
+            x2 = (*__esc_x2).clone();
+            y2 = (*__esc_y2).clone();
             (x1.clone(), y1.clone(), x2.clone(), y2.clone())
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
@@ -983,7 +987,11 @@ fn getExtentModification(mut elementArgLst: Arc<metamodelica::List<Arc<Absyn::El
     let mut x2: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut y2: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     (x1, y1, x2, y2) = (::match_deref::match_deref! { match &(elementArgLst.clone()) {
-        Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::ARRAY { arrayExp: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::ARRAY { arrayExp: Deref @ metamodelica::List::Cons { head: x1, tail: Deref @ metamodelica::List::Cons { head: y1, tail: Deref @ metamodelica::List::Nil } } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::ARRAY { arrayExp: Deref @ metamodelica::List::Cons { head: x2, tail: Deref @ metamodelica::List::Cons { head: y2, tail: Deref @ metamodelica::List::Nil } } }, tail: Deref @ metamodelica::List::Nil } } }, .. }, .. }), path: Deref @ Absyn::Path::IDENT { name: Deref @ "extent" }, .. }, tail: _ } => {
+        Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::ARRAY { arrayExp: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::ARRAY { arrayExp: Deref @ metamodelica::List::Cons { head: __esc_x1, tail: Deref @ metamodelica::List::Cons { head: __esc_y1, tail: Deref @ metamodelica::List::Nil } } }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::ARRAY { arrayExp: Deref @ metamodelica::List::Cons { head: __esc_x2, tail: Deref @ metamodelica::List::Cons { head: __esc_y2, tail: Deref @ metamodelica::List::Nil } } }, tail: Deref @ metamodelica::List::Nil } } }, .. }, .. }), path: Deref @ Absyn::Path::IDENT { name: Deref @ "extent" }, .. }, tail: _ } => {
+            x1 = (*__esc_x1).clone();
+            y1 = (*__esc_y1).clone();
+            x2 = (*__esc_x2).clone();
+            y2 = (*__esc_y2).clone();
             (x1.clone(), y1.clone(), x2.clone(), y2.clone())
         },
         Deref @ metamodelica::List::Cons { head: _, tail: rest } => {

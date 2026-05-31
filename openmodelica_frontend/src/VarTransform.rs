@@ -427,9 +427,9 @@ pub fn applyReplacementList(mut repl: VariableReplacements, mut increfs: Arc<met
         Deref @ metamodelica::List::Nil => {
             metamodelica::nil()
         },
-        Deref @ metamodelica::List::Cons { head: cr1, tail: ocrefs } => {
+        Deref @ metamodelica::List::Cons { head: cr1, tail: __esc_ocrefs } => {
+            ocrefs = (*__esc_ocrefs).clone();
             let mut cr1_1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-            let mut ocrefs = (*ocrefs).clone();
             let __pa0 = ::match_deref::match_deref! { match &(replaceExp(Expression::crefExp(cr1.clone())?, repl.clone(), None)?) {
                 (Deref @ DAE::Exp::CREF { componentRef: __pa0, ty: _ }, _) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
@@ -922,11 +922,12 @@ pub fn replacementTargets(mut repl: VariableReplacements) -> Result<Arc<metamode
 pub fn addReplacementLst(mut inRepl: VariableReplacements, mut crs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut dsts: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<VariableReplacements> {
     let mut repl: VariableReplacements = <VariableReplacements as ::std::default::Default>::default();
     repl = (::match_deref::match_deref! { match &((inRepl.clone(), crs.clone(), dsts.clone())) {
-        (repl, Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
+        (__esc_repl, Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
+            repl = (*__esc_repl).clone();
             repl.clone()
         },
-        (repl, Deref @ metamodelica::List::Cons { head: cr, tail: crrest }, Deref @ metamodelica::List::Cons { head: dst, tail: dstrest }) => {
-            let mut repl = (*repl).clone();
+        (__esc_repl, Deref @ metamodelica::List::Cons { head: cr, tail: crrest }, Deref @ metamodelica::List::Cons { head: dst, tail: dstrest }) => {
+            repl = (*__esc_repl).clone();
             repl = addReplacement(repl.clone(), cr.clone(), dst.clone())?;
             repl = addReplacementLst(repl.clone(), crrest.clone(), dstrest.clone())?;
             repl.clone()

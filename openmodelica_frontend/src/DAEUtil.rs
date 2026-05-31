@@ -240,7 +240,8 @@ pub fn dimExp(mut dim: Arc<DAE::Dimension>) -> Result<Arc<DAE::Exp>> {
         Deref @ DAE::Dimension::DIM_INTEGER { integer: iconst } => {
             Arc::new(DAE::Exp::ICONST { integer: iconst.clone() })
         },
-        Deref @ DAE::Dimension::DIM_EXP { exp } => {
+        Deref @ DAE::Dimension::DIM_EXP { exp: __esc_exp } => {
+            exp = (*__esc_exp).clone();
             exp.clone()
         },
         _ => {
@@ -341,7 +342,10 @@ pub fn addEquationBoundString(mut bindExp: Arc<DAE::Exp>, mut attr: Option<Arc<D
 pub fn getClassList(mut v: Arc<DAE::Element>) -> Arc<metamodelica::List<Arc<Absyn::Path>>> {
     let mut lst: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
     lst = (::match_deref::match_deref! { match &(v.clone()) {
-        Deref @ DAE::Element::VAR { source: Deref @ DAE::ElementSource { typeLst: lst, .. }, .. } => lst.clone(),
+        Deref @ DAE::Element::VAR { source: Deref @ DAE::ElementSource { typeLst: __esc_lst, .. }, .. } => {
+            lst = (*__esc_lst).clone();
+            lst.clone()
+        },
         _ => metamodelica::nil(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1230,12 +1234,30 @@ pub fn setProtectedAttr(mut attr: Option<Arc<DAE::VariableAttributes>>, mut isPr
 pub fn getProtectedAttr(mut attr: Option<Arc<DAE::VariableAttributes>>) -> bool {
     let mut isProtected: bool = false;
     isProtected = (::match_deref::match_deref! { match &(attr.clone()) {
-        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { isProtected: Some(isProtected), .. }) => isProtected.clone(),
-        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_INT { isProtected: Some(isProtected), .. }) => isProtected.clone(),
-        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_BOOL { isProtected: Some(isProtected), .. }) => isProtected.clone(),
-        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_STRING { isProtected: Some(isProtected), .. }) => isProtected.clone(),
-        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_ENUMERATION { isProtected: Some(isProtected), .. }) => isProtected.clone(),
-        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_CLOCK { isProtected: Some(isProtected), .. }) => isProtected.clone(),
+        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { isProtected: Some(__esc_isProtected), .. }) => {
+            isProtected = (*__esc_isProtected).clone();
+            isProtected.clone()
+        },
+        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_INT { isProtected: Some(__esc_isProtected), .. }) => {
+            isProtected = (*__esc_isProtected).clone();
+            isProtected.clone()
+        },
+        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_BOOL { isProtected: Some(__esc_isProtected), .. }) => {
+            isProtected = (*__esc_isProtected).clone();
+            isProtected.clone()
+        },
+        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_STRING { isProtected: Some(__esc_isProtected), .. }) => {
+            isProtected = (*__esc_isProtected).clone();
+            isProtected.clone()
+        },
+        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_ENUMERATION { isProtected: Some(__esc_isProtected), .. }) => {
+            isProtected = (*__esc_isProtected).clone();
+            isProtected.clone()
+        },
+        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_CLOCK { isProtected: Some(__esc_isProtected), .. }) => {
+            isProtected = (*__esc_isProtected).clone();
+            isProtected.clone()
+        },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1268,11 +1290,26 @@ pub fn setFixedAttr(mut attr: Option<Arc<DAE::VariableAttributes>>, mut fixed: O
 pub fn getFixedAttr(mut attr: Option<Arc<DAE::VariableAttributes>>) -> Option<Arc<DAE::Exp>> {
     let mut isFixed: Option<Arc<DAE::Exp>> = None;
     isFixed = (::match_deref::match_deref! { match &(attr.clone()) {
-        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { fixed: isFixed, .. }) => isFixed.clone(),
-        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_INT { fixed: isFixed, .. }) => isFixed.clone(),
-        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_BOOL { fixed: isFixed, .. }) => isFixed.clone(),
-        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_STRING { fixed: isFixed, .. }) => isFixed.clone(),
-        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_ENUMERATION { fixed: isFixed, .. }) => isFixed.clone(),
+        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_REAL { fixed: __esc_isFixed, .. }) => {
+            isFixed = (*__esc_isFixed).clone();
+            isFixed.clone()
+        },
+        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_INT { fixed: __esc_isFixed, .. }) => {
+            isFixed = (*__esc_isFixed).clone();
+            isFixed.clone()
+        },
+        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_BOOL { fixed: __esc_isFixed, .. }) => {
+            isFixed = (*__esc_isFixed).clone();
+            isFixed.clone()
+        },
+        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_STRING { fixed: __esc_isFixed, .. }) => {
+            isFixed = (*__esc_isFixed).clone();
+            isFixed.clone()
+        },
+        Some(Deref @ DAE::VariableAttributes::VAR_ATTR_ENUMERATION { fixed: __esc_isFixed, .. }) => {
+            isFixed = (*__esc_isFixed).clone();
+            isFixed.clone()
+        },
         _ => None,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2879,7 +2916,10 @@ pub fn getNamedFunctionFromList(mut ipath: Arc<Absyn::Path>, mut ifns: Arc<metam
 pub fn getFunctionVisibility(mut r#fn: DAE::Function) -> SCode::Visibility {
     let mut visibility: SCode::Visibility = SCode::Visibility::PROTECTED;
     visibility = (match r#fn.clone() {
-        DAE::Function::FUNCTION { visibility: mut visibility, .. } => visibility.clone(),
+        DAE::Function::FUNCTION { visibility: mut __esc_visibility, .. } => {
+            visibility = __esc_visibility.clone();
+            visibility.clone()
+        },
         _ => openmodelica_frontend_types::SCode::Visibility::PUBLIC,
     });
     visibility
@@ -2913,9 +2953,18 @@ pub fn getFunctionElements(mut r#fn: DAE::Function) -> Result<Arc<metamodelica::
 pub fn getFunctionType(mut r#fn: DAE::Function) -> Result<Arc<DAE::Type>> {
     let mut outType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     outType = (match r#fn.clone() {
-        DAE::Function::FUNCTION { type_: ref outType, .. } => outType.clone(),
-        DAE::Function::FUNCTION { type_: ref outType, .. } => outType.clone(),
-        DAE::Function::RECORD_CONSTRUCTOR { type_: ref outType, .. } => outType.clone(),
+        DAE::Function::FUNCTION { type_: ref __esc_outType, .. } => {
+            outType = __esc_outType.clone();
+            outType.clone()
+        },
+        DAE::Function::FUNCTION { type_: ref __esc_outType, .. } => {
+            outType = __esc_outType.clone();
+            outType.clone()
+        },
+        DAE::Function::RECORD_CONSTRUCTOR { type_: ref __esc_outType, .. } => {
+            outType = __esc_outType.clone();
+            outType.clone()
+        },
     });
     Ok(outType)
 }
@@ -2923,7 +2972,10 @@ pub fn getFunctionType(mut r#fn: DAE::Function) -> Result<Arc<DAE::Type>> {
 pub fn getFunctionImpureAttribute(mut r#fn: DAE::Function) -> Result<bool> {
     let mut outImpure: bool = false;
     outImpure = (match r#fn.clone() {
-        DAE::Function::FUNCTION { isImpure: mut outImpure, .. } => outImpure.clone(),
+        DAE::Function::FUNCTION { isImpure: mut __esc_outImpure, .. } => {
+            outImpure = __esc_outImpure.clone();
+            outImpure.clone()
+        },
         _ => bail!("match: no arm matched"),
     });
     Ok(outImpure)
@@ -2932,7 +2984,10 @@ pub fn getFunctionImpureAttribute(mut r#fn: DAE::Function) -> Result<bool> {
 pub fn getFunctionInlineType(mut r#fn: DAE::Function) -> Result<DAE::InlineType> {
     let mut outInlineType: DAE::InlineType = DAE::InlineType::AFTER_INDEX_RED_INLINE;
     outInlineType = (match r#fn.clone() {
-        DAE::Function::FUNCTION { inlineType: mut outInlineType, .. } => outInlineType.clone(),
+        DAE::Function::FUNCTION { inlineType: mut __esc_outInlineType, .. } => {
+            outInlineType = __esc_outInlineType.clone();
+            outInlineType.clone()
+        },
         _ => bail!("match: no arm matched"),
     });
     Ok(outInlineType)
@@ -3023,7 +3078,10 @@ pub fn getTupleSize(mut inExp: Arc<DAE::Exp>) -> i32 {
 pub fn getTupleExps(mut inExp: Arc<DAE::Exp>) -> Arc<metamodelica::List<Arc<DAE::Exp>>> {
     let mut exps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     exps = (::match_deref::match_deref! { match &(inExp.clone()) {
-        Deref @ DAE::Exp::TUPLE { PR: exps } => exps.clone(),
+        Deref @ DAE::Exp::TUPLE { PR: __esc_exps } => {
+            exps = (*__esc_exps).clone();
+            exps.clone()
+        },
         _ => list![inExp.clone()],
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -5363,8 +5421,14 @@ pub fn isExtFunction(mut elt: DAE::Function) -> bool {
 pub fn functionName(mut elt: DAE::Function) -> Result<Arc<Absyn::Path>> {
     let mut name: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     name = (match elt.clone() {
-        DAE::Function::FUNCTION { path: ref name, .. } => name.clone(),
-        DAE::Function::RECORD_CONSTRUCTOR { path: ref name, .. } => name.clone(),
+        DAE::Function::FUNCTION { path: ref __esc_name, .. } => {
+            name = __esc_name.clone();
+            name.clone()
+        },
+        DAE::Function::RECORD_CONSTRUCTOR { path: ref __esc_name, .. } => {
+            name = __esc_name.clone();
+            name.clone()
+        },
     });
     Ok(name)
 }
@@ -5395,7 +5459,10 @@ pub fn inlineTypeEqual(mut it1: DAE::InlineType, mut it2: DAE::InlineType) -> bo
 pub fn daeElements(mut dae: DAE::DAElist) -> Result<Arc<metamodelica::List<Arc<DAE::Element>>>> {
     let mut elts: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
     elts = (match dae.clone() {
-        DAE::DAElist { elementLst: ref elts } => elts.clone(),
+        DAE::DAElist { elementLst: ref __esc_elts } => {
+            elts = __esc_elts.clone();
+            elts.clone()
+        },
     });
     Ok(elts)
 }
@@ -6395,7 +6462,10 @@ fn collectAllExpandableCrefsInExp(mut exp: Arc<DAE::Exp>, mut acc: Arc<metamodel
 pub fn daeDescription(mut inDAE: DAE::DAElist) -> ArcStr {
     let mut comment: ArcStr = arcstr::literal!("");
     comment = ((::match_deref::match_deref! { match &(inDAE.clone()) {
-        DAE::DAElist { elementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::COMP { comment: Some(Deref @ SCode::Comment { comment: Some(comment), .. }), .. }, tail: _ } } => comment.clone(),
+        DAE::DAElist { elementLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::COMP { comment: Some(Deref @ SCode::Comment { comment: Some(__esc_comment), .. }), .. }, tail: _ } } => {
+            comment = (*__esc_comment).clone();
+            comment.clone()
+        },
         _ => literal!(""),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -6554,7 +6624,8 @@ pub fn getVarBinding(mut iels: Arc<metamodelica::List<Arc<DAE::Element>>>, mut i
     for mut i in &*iels.clone() {
         let mut i = i.clone();
         obnd = (::match_deref::match_deref! { match &(i.clone()) {
-        Deref @ DAE::Element::VAR { binding: obnd, componentRef: cr, .. } => {
+        Deref @ DAE::Element::VAR { binding: __esc_obnd, componentRef: cr, .. } => {
+            obnd = (*__esc_obnd).clone();
             if ComponentReferenceBasics::crefEqualNoStringCompare(icr.clone(), cr.clone())? {
                 return Ok(obnd.clone());
             }
@@ -6877,7 +6948,10 @@ pub fn getParameters(mut elts: Arc<metamodelica::List<Arc<DAE::Element>>>, mut a
 pub fn getInteger(mut exp: Arc<DAE::Exp>) -> Result<i32> {
     let mut i: i32 = 0;
     i = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ DAE::Exp::ICONST { integer: i } => i.clone(),
+        Deref @ DAE::Exp::ICONST { integer: __esc_i } => {
+            i = (*__esc_i).clone();
+            i.clone()
+        },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAEUtil.getInteger")); __mm_s.push_str(&*literal!(" failed because expression is not an ICONST: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(exp.clone())?); __mm_s.push_str(&*literal!(".\n")); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")

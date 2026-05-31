@@ -1038,11 +1038,12 @@ fn simplifyIfExp(mut origExp: Arc<DAE::Exp>, mut cond: Arc<DAE::Exp>, mut tb: Ar
         (Deref @ DAE::Exp::BCONST { bool: false }, _, _) => {
             fb.clone()
         },
-        (exp, Deref @ DAE::Exp::BCONST { bool: true }, Deref @ DAE::Exp::BCONST { bool: false }) => {
+        (__esc_exp, Deref @ DAE::Exp::BCONST { bool: true }, Deref @ DAE::Exp::BCONST { bool: false }) => {
+            exp = (*__esc_exp).clone();
             exp.clone()
         },
-        (exp, Deref @ DAE::Exp::BCONST { bool: false }, Deref @ DAE::Exp::BCONST { bool: true }) => {
-            let mut exp = (*exp).clone();
+        (__esc_exp, Deref @ DAE::Exp::BCONST { bool: false }, Deref @ DAE::Exp::BCONST { bool: true }) => {
+            exp = (*__esc_exp).clone();
             exp = Arc::new(DAE::Exp::LUNARY { operator: DAE::Operator::NOT { ty: DAE::T_BOOL_DEFAULT().clone() }, exp: exp.clone() });
             exp.clone()
         },
@@ -1136,8 +1137,14 @@ fn simplifyCons(mut inExp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
 fn simplifyUnbox(mut exp: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     outExp = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ DAE::Exp::UNBOX { exp: Deref @ DAE::Exp::BOX { exp: outExp }, .. } => outExp.clone(),
-        Deref @ DAE::Exp::BOX { exp: Deref @ DAE::Exp::UNBOX { exp: outExp, .. } } => outExp.clone(),
+        Deref @ DAE::Exp::UNBOX { exp: Deref @ DAE::Exp::BOX { exp: __esc_outExp }, .. } => {
+            outExp = (*__esc_outExp).clone();
+            outExp.clone()
+        },
+        Deref @ DAE::Exp::BOX { exp: Deref @ DAE::Exp::UNBOX { exp: __esc_outExp, .. } } => {
+            outExp = (*__esc_outExp).clone();
+            outExp.clone()
+        },
         _ => exp.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2060,9 +2067,16 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
 fn simplifyScalar(mut inExp: Arc<DAE::Exp>, mut tp: Arc<DAE::Type>) -> Result<Arc<DAE::Exp>> {
     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     exp = (::match_deref::match_deref! { match &(inExp.clone()) {
-        Deref @ DAE::Exp::ARRAY { array: Deref @ metamodelica::List::Cons { head: exp, tail: Deref @ metamodelica::List::Nil }, .. } => Expression::makePureBuiltinCall((literal!("scalar")).clone(), list![exp.clone()], tp.clone()),
-        Deref @ DAE::Exp::MATRIX { matrix: Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: exp, tail: Deref @ metamodelica::List::Nil }, tail: Deref @ metamodelica::List::Nil }, .. } => Expression::makePureBuiltinCall((literal!("scalar")).clone(), list![exp.clone()], tp.clone()),
-        Deref @ DAE::Exp::SIZE { sz: None, exp } => {
+        Deref @ DAE::Exp::ARRAY { array: Deref @ metamodelica::List::Cons { head: __esc_exp, tail: Deref @ metamodelica::List::Nil }, .. } => {
+            exp = (*__esc_exp).clone();
+            Expression::makePureBuiltinCall((literal!("scalar")).clone(), list![exp.clone()], tp.clone())
+        },
+        Deref @ DAE::Exp::MATRIX { matrix: Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: __esc_exp, tail: Deref @ metamodelica::List::Nil }, tail: Deref @ metamodelica::List::Nil }, .. } => {
+            exp = (*__esc_exp).clone();
+            Expression::makePureBuiltinCall((literal!("scalar")).clone(), list![exp.clone()], tp.clone())
+        },
+        Deref @ DAE::Exp::SIZE { sz: None, exp: __esc_exp } => {
+            exp = (*__esc_exp).clone();
             ::match_deref::match_deref! { match &(TypesDump::flattenArrayType(Expression::r#typeof(inExp.clone())?)) {
                 (_, Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }) => (),
                 _ => bail!("pattern mismatch"),
@@ -2242,7 +2256,8 @@ fn simplifyStringAppendList(mut iexpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, m
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil, _) => {
             Arc::new(DAE::Exp::SCONST { string: (literal!("")).clone() })
         },
-        (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Cons { head: exp, tail: Deref @ metamodelica::List::Nil }, _) => {
+        (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Cons { head: __esc_exp, tail: Deref @ metamodelica::List::Nil }, _) => {
+            exp = (*__esc_exp).clone();
             exp.clone()
         },
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Cons { head: exp1, tail: Deref @ metamodelica::List::Cons { head: exp2, tail: Deref @ metamodelica::List::Nil } }, _) => {
@@ -2259,7 +2274,8 @@ fn simplifyStringAppendList(mut iexpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, m
             s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*s2.clone()); __mm_s.push_str(&*s1.clone()); ArcStr::from(__mm_s) }).clone();
             simplifyStringAppendList(rest.clone(), metamodelica::cons(Arc::new(DAE::Exp::SCONST { string: (s.clone()).clone() }), acc.clone()), true)?
         },
-        (Deref @ metamodelica::List::Cons { head: exp, tail: rest }, acc, change) => {
+        (Deref @ metamodelica::List::Cons { head: __esc_exp, tail: rest }, acc, change) => {
+            exp = (*__esc_exp).clone();
             simplifyStringAppendList(rest.clone(), metamodelica::cons(exp.clone(), acc.clone()), change.clone())?
         },
         _ => bail!("match: no arm matched"),
@@ -6803,11 +6819,12 @@ fn simplifyReductionFoldPhase(mut path: Arc<Absyn::Path>, mut optFoldExp: Option
             arr_exp = Expression::makeScalarArray(inExps.clone(), ty.clone());
             (Expression::makePureBuiltinCall((literal!("max")).clone(), list![arr_exp.clone()], ty.clone()), true)
         },
-        (_, Some(_), Deref @ metamodelica::List::Cons { head: exp, tail: Deref @ metamodelica::List::Nil }, _) => {
+        (_, Some(_), Deref @ metamodelica::List::Cons { head: __esc_exp, tail: Deref @ metamodelica::List::Nil }, _) => {
+            exp = (*__esc_exp).clone();
             (exp.clone(), false)
         },
-        (_, Some(foldExp), Deref @ metamodelica::List::Cons { head: exp, tail: exps }, _) => {
-            let mut exp = (*exp).clone();
+        (_, Some(foldExp), Deref @ metamodelica::List::Cons { head: __esc_exp, tail: exps }, _) => {
+            exp = (*__esc_exp).clone();
             exp = simplifyReductionFoldPhase2(exps.clone(), foldExp.clone(), (foldName.clone()).clone(), (resultName.clone()).clone(), exp.clone())?;
             (exp.clone(), false)
         },
@@ -6829,8 +6846,8 @@ fn simplifyReductionFoldPhase2(mut inExps: Arc<metamodelica::List<Arc<DAE::Exp>>
         Deref @ metamodelica::List::Nil => {
             acc.clone()
         },
-        Deref @ metamodelica::List::Cons { head: exp, tail: exps } => {
-            let mut exp = (*exp).clone();
+        Deref @ metamodelica::List::Cons { head: __esc_exp, tail: exps } => {
+            exp = (*__esc_exp).clone();
             exp = replaceIteratorWithExp(exp.clone(), foldExp.clone(), (foldName.clone()).clone())?;
             exp = replaceIteratorWithExp(acc.clone(), exp.clone(), (resultName.clone()).clone())?;
             simplifyReductionFoldPhase2(exps.clone(), foldExp.clone(), (foldName.clone()).clone(), (resultName.clone()).clone(), exp.clone())?

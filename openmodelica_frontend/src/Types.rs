@@ -585,7 +585,10 @@ pub fn recordHasConstVar(mut ty: Arc<DAE::Type>) -> Result<bool> {
 pub fn getRecordPath(mut tp: Arc<DAE::Type>) -> Result<Arc<Absyn::Path>> {
     let mut p: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     p = (::match_deref::match_deref! { match &(tp.clone()) {
-        Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: p }, .. } => p.clone(),
+        Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: __esc_p }, .. } => {
+            p = (*__esc_p).clone();
+            p.clone()
+        },
         _ => bail!("match: no arm matched"),
     } });
     Ok(p)
@@ -608,7 +611,10 @@ pub fn isRecordWithOnlyReals(mut tp: Arc<DAE::Type>) -> bool {
 pub fn getVarType(mut v: Arc<DAE::Var>) -> Result<Arc<DAE::Type>> {
     let mut tp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     tp = (::match_deref::match_deref! { match &(v.clone()) {
-        Deref @ DAE::Var { ty: tp, .. } => tp.clone(),
+        Deref @ DAE::Var { ty: __esc_tp, .. } => {
+            tp = (*__esc_tp).clone();
+            tp.clone()
+        },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Types.getVarType failed")).clone()])?;
             bail!("fail")
@@ -2499,7 +2505,8 @@ pub fn unliftArrayOrList(mut inType: Arc<DAE::Type>) -> Result<(Arc<DAE::Type>, 
         Deref @ DAE::Type::T_METAARRAY { ty } => {
             (boxIfUnboxedType(ty.clone())?, Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN))
         },
-        Deref @ DAE::Type::T_ARRAY { ty, dims: Deref @ metamodelica::List::Cons { head: dim, tail: Deref @ metamodelica::List::Nil } } => {
+        Deref @ DAE::Type::T_ARRAY { ty, dims: Deref @ metamodelica::List::Cons { head: __esc_dim, tail: Deref @ metamodelica::List::Nil } } => {
+            dim = (*__esc_dim).clone();
             (ty.clone(), dim.clone())
         },
         Deref @ DAE::Type::T_SUBTYPE_BASIC { complexType: ty, .. } => {
@@ -7579,94 +7586,94 @@ pub fn traverseType<A: Clone + 'static>(mut ty: Arc<DAE::Type>, mut arg: A, mut 
         Deref @ DAE::Type::T_CODE { .. } => {
             (ty.clone(), a.clone())
         },
-        oty @ Deref @ DAE::Type::T_METABOXED { .. } => {
+        __esc_oty @ Deref @ DAE::Type::T_METABOXED { .. } => {
+            oty = (*__esc_oty).clone();
             let mut tyInner: Type = Arc::new(DAE::Type::T_NORETCALL);
-            let mut oty = (*oty).clone();
             (tyInner, a) = traverseType(var_field!((*oty).ty, DAE::Type::T_METABOXED).clone(), a.clone(), r#fn.clone())?;
             assign_variant_field!(oty => DAE::Type::T_METABOXED; ty = tyInner.clone());
             (oty.clone(), a.clone())
         },
-        oty @ Deref @ DAE::Type::T_ARRAY { .. } => {
+        __esc_oty @ Deref @ DAE::Type::T_ARRAY { .. } => {
+            oty = (*__esc_oty).clone();
             let mut tyInner: Type = Arc::new(DAE::Type::T_NORETCALL);
-            let mut oty = (*oty).clone();
             (tyInner, a) = traverseType(var_field!((*oty).ty, DAE::Type::T_ARRAY).clone(), a.clone(), r#fn.clone())?;
             assign_variant_field!(oty => DAE::Type::T_ARRAY; ty = tyInner.clone());
             (oty.clone(), a.clone())
         },
-        oty @ Deref @ DAE::Type::T_METATYPE { .. } => {
+        __esc_oty @ Deref @ DAE::Type::T_METATYPE { .. } => {
+            oty = (*__esc_oty).clone();
             let mut tyInner: Type = Arc::new(DAE::Type::T_NORETCALL);
-            let mut oty = (*oty).clone();
             (tyInner, a) = traverseType(var_field!((*oty).ty, DAE::Type::T_METATYPE).clone(), a.clone(), r#fn.clone())?;
             assign_variant_field!(oty => DAE::Type::T_METATYPE; ty = tyInner.clone());
             (oty.clone(), a.clone())
         },
-        oty @ Deref @ DAE::Type::T_METALIST { .. } => {
+        __esc_oty @ Deref @ DAE::Type::T_METALIST { .. } => {
+            oty = (*__esc_oty).clone();
             let mut tyInner: Type = Arc::new(DAE::Type::T_NORETCALL);
-            let mut oty = (*oty).clone();
             (tyInner, a) = traverseType(var_field!((*oty).ty, DAE::Type::T_METALIST).clone(), a.clone(), r#fn.clone())?;
             assign_variant_field!(oty => DAE::Type::T_METALIST; ty = tyInner.clone());
             (oty.clone(), a.clone())
         },
-        oty @ Deref @ DAE::Type::T_METAOPTION { .. } => {
+        __esc_oty @ Deref @ DAE::Type::T_METAOPTION { .. } => {
+            oty = (*__esc_oty).clone();
             let mut tyInner: Type = Arc::new(DAE::Type::T_NORETCALL);
-            let mut oty = (*oty).clone();
             (tyInner, a) = traverseType(var_field!((*oty).ty, DAE::Type::T_METAOPTION).clone(), a.clone(), r#fn.clone())?;
             assign_variant_field!(oty => DAE::Type::T_METAOPTION; ty = tyInner.clone());
             (oty.clone(), a.clone())
         },
-        oty @ Deref @ DAE::Type::T_METAARRAY { .. } => {
+        __esc_oty @ Deref @ DAE::Type::T_METAARRAY { .. } => {
+            oty = (*__esc_oty).clone();
             let mut tyInner: Type = Arc::new(DAE::Type::T_NORETCALL);
-            let mut oty = (*oty).clone();
             (tyInner, a) = traverseType(var_field!((*oty).ty, DAE::Type::T_METAARRAY).clone(), a.clone(), r#fn.clone())?;
             assign_variant_field!(oty => DAE::Type::T_METAARRAY; ty = tyInner.clone());
             (oty.clone(), a.clone())
         },
-        oty @ Deref @ DAE::Type::T_FUNCTION_REFERENCE_VAR { .. } => {
+        __esc_oty @ Deref @ DAE::Type::T_FUNCTION_REFERENCE_VAR { .. } => {
+            oty = (*__esc_oty).clone();
             let mut tyInner: Type = Arc::new(DAE::Type::T_NORETCALL);
-            let mut oty = (*oty).clone();
             (tyInner, a) = traverseType(var_field!((*oty).functionType, DAE::Type::T_FUNCTION_REFERENCE_VAR).clone(), a.clone(), r#fn.clone())?;
             assign_variant_field!(oty => DAE::Type::T_FUNCTION_REFERENCE_VAR; functionType = tyInner.clone());
             (oty.clone(), a.clone())
         },
-        oty @ Deref @ DAE::Type::T_FUNCTION_REFERENCE_FUNC { .. } => {
+        __esc_oty @ Deref @ DAE::Type::T_FUNCTION_REFERENCE_FUNC { .. } => {
+            oty = (*__esc_oty).clone();
             let mut tyInner: Type = Arc::new(DAE::Type::T_NORETCALL);
-            let mut oty = (*oty).clone();
             (tyInner, a) = traverseType(var_field!((*oty).functionType, DAE::Type::T_FUNCTION_REFERENCE_FUNC).clone(), a.clone(), r#fn.clone())?;
             assign_variant_field!(oty => DAE::Type::T_FUNCTION_REFERENCE_FUNC; functionType = tyInner.clone());
             (oty.clone(), a.clone())
         },
-        oty @ Deref @ DAE::Type::T_METATUPLE { .. } => {
+        __esc_oty @ Deref @ DAE::Type::T_METATUPLE { .. } => {
+            oty = (*__esc_oty).clone();
             let mut tys: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
-            let mut oty = (*oty).clone();
             (tys, a) = traverseTupleType(var_field!((*oty).types, DAE::Type::T_METATUPLE).clone(), a.clone(), r#fn.clone())?;
             assign_variant_field!(oty => DAE::Type::T_METATUPLE; types = tys.clone());
             (oty.clone(), a.clone())
         },
-        oty @ Deref @ DAE::Type::T_TUPLE { .. } => {
+        __esc_oty @ Deref @ DAE::Type::T_TUPLE { .. } => {
+            oty = (*__esc_oty).clone();
             let mut tys: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
-            let mut oty = (*oty).clone();
             (tys, a) = traverseTupleType(var_field!((*oty).types, DAE::Type::T_TUPLE).clone(), a.clone(), r#fn.clone())?;
             assign_variant_field!(oty => DAE::Type::T_TUPLE; types = tys.clone());
             (oty.clone(), a.clone())
         },
-        oty @ Deref @ DAE::Type::T_METARECORD { .. } => {
+        __esc_oty @ Deref @ DAE::Type::T_METARECORD { .. } => {
+            oty = (*__esc_oty).clone();
             let mut vars: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-            let mut oty = (*oty).clone();
             (vars, a) = traverseVarTypes(var_field!((*oty).fields, DAE::Type::T_METARECORD).clone(), a.clone(), r#fn.clone())?;
             assign_variant_field!(oty => DAE::Type::T_METARECORD; fields = vars.clone());
             (oty.clone(), a.clone())
         },
-        oty @ Deref @ DAE::Type::T_COMPLEX { .. } => {
+        __esc_oty @ Deref @ DAE::Type::T_COMPLEX { .. } => {
+            oty = (*__esc_oty).clone();
             let mut vars: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-            let mut oty = (*oty).clone();
             (vars, a) = traverseVarTypes(var_field!((*oty).varLst, DAE::Type::T_COMPLEX).clone(), a.clone(), r#fn.clone())?;
             assign_variant_field!(oty => DAE::Type::T_COMPLEX; varLst = vars.clone());
             (oty.clone(), a.clone())
         },
-        oty @ Deref @ DAE::Type::T_SUBTYPE_BASIC { .. } => {
+        __esc_oty @ Deref @ DAE::Type::T_SUBTYPE_BASIC { .. } => {
+            oty = (*__esc_oty).clone();
             let mut tyInner: Type = Arc::new(DAE::Type::T_NORETCALL);
             let mut vars: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-            let mut oty = (*oty).clone();
             (vars, a) = traverseVarTypes(var_field!((*oty).varLst, DAE::Type::T_SUBTYPE_BASIC).clone(), a.clone(), r#fn.clone())?;
             (tyInner, a) = traverseType(var_field!((*oty).complexType, DAE::Type::T_SUBTYPE_BASIC).clone(), a.clone(), r#fn.clone())?;
             assign_variant_field!(oty => DAE::Type::T_SUBTYPE_BASIC;
@@ -7675,10 +7682,10 @@ pub fn traverseType<A: Clone + 'static>(mut ty: Arc<DAE::Type>, mut arg: A, mut 
             );
             (oty.clone(), a.clone())
         },
-        oty @ Deref @ DAE::Type::T_FUNCTION { .. } => {
+        __esc_oty @ Deref @ DAE::Type::T_FUNCTION { .. } => {
+            oty = (*__esc_oty).clone();
             let mut tyInner: Type = Arc::new(DAE::Type::T_NORETCALL);
             let mut farg: Arc<metamodelica::List<Arc<DAE::FuncArg>>> = metamodelica::nil();
-            let mut oty = (*oty).clone();
             (farg, a) = traverseFuncArg(var_field!((*oty).funcArg, DAE::Type::T_FUNCTION).clone(), a.clone(), r#fn.clone())?;
             (tyInner, a) = traverseType(var_field!((*oty).funcResultType, DAE::Type::T_FUNCTION).clone(), a.clone(), r#fn.clone())?;
             assign_variant_field!(oty => DAE::Type::T_FUNCTION;
@@ -9255,14 +9262,16 @@ fn unboxedTypeTraverseHelper<T: Clone + 'static>(mut ty: Arc<DAE::Type>, mut dum
 pub fn getMetaRecordFields(mut ty: Arc<DAE::Type>) -> Result<Arc<metamodelica::List<Arc<DAE::Var>>>> {
     let mut fields: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
     fields = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ DAE::Type::T_METARECORD { fields, .. } => {
+        Deref @ DAE::Type::T_METARECORD { fields: __esc_fields, .. } => {
+            fields = (*__esc_fields).clone();
             fields.clone()
         },
         Deref @ DAE::Type::T_METAUNIONTYPE { knownSingleton: false, .. } => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Types.getMetaRecordFields")); __mm_s.push_str(&*literal!(" called on a non-singleton uniontype: ")); __mm_s.push_str(&*TypesDump::unparseType(ty.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
             bail!("fail")
         },
-        Deref @ DAE::Type::T_METAUNIONTYPE { singletonType: Deref @ DAE::EvaluateSingletonType::EVAL_SINGLETON_KNOWN_TYPE { ty: Deref @ DAE::Type::T_METARECORD { fields, .. } }, .. } => {
+        Deref @ DAE::Type::T_METAUNIONTYPE { singletonType: Deref @ DAE::EvaluateSingletonType::EVAL_SINGLETON_KNOWN_TYPE { ty: Deref @ DAE::Type::T_METARECORD { fields: __esc_fields, .. } }, .. } => {
+            fields = (*__esc_fields).clone();
             fields.clone()
         },
         Deref @ DAE::Type::T_METAUNIONTYPE { singletonType: Deref @ DAE::EvaluateSingletonType::EVAL_SINGLETON_TYPE_FUNCTION { fun }, .. } => {
@@ -9288,7 +9297,8 @@ pub fn getMetaRecordIfSingleton(mut ty: Arc<DAE::Type>) -> Arc<DAE::Type> {
         Deref @ DAE::Type::T_METAUNIONTYPE { knownSingleton: false, .. } => {
             ty.clone()
         },
-        Deref @ DAE::Type::T_METAUNIONTYPE { singletonType: Deref @ DAE::EvaluateSingletonType::EVAL_SINGLETON_KNOWN_TYPE { ty: oty }, .. } => {
+        Deref @ DAE::Type::T_METAUNIONTYPE { singletonType: Deref @ DAE::EvaluateSingletonType::EVAL_SINGLETON_KNOWN_TYPE { ty: __esc_oty }, .. } => {
+            oty = (*__esc_oty).clone();
             setTypeVariables(oty.clone(), var_field!((*ty).typeVars, DAE::Type::T_METAUNIONTYPE).clone())
         },
         Deref @ DAE::Type::T_METAUNIONTYPE { singletonType: Deref @ DAE::EvaluateSingletonType::EVAL_SINGLETON_TYPE_FUNCTION { fun }, .. } => {
@@ -9306,13 +9316,13 @@ pub fn getMetaRecordIfSingleton(mut ty: Arc<DAE::Type>) -> Arc<DAE::Type> {
 pub fn setTypeVariables(mut ty: Arc<DAE::Type>, mut typeVars: Arc<metamodelica::List<Arc<DAE::Type>>>) -> Arc<DAE::Type> {
     let mut oty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     oty = (::match_deref::match_deref! { match &(ty.clone()) {
-        oty @ Deref @ DAE::Type::T_METAUNIONTYPE { .. } => {
-            let mut oty = (*oty).clone();
+        __esc_oty @ Deref @ DAE::Type::T_METAUNIONTYPE { .. } => {
+            oty = (*__esc_oty).clone();
             assign_variant_field!(oty => DAE::Type::T_METAUNIONTYPE; typeVars = typeVars.clone());
             oty.clone()
         },
-        oty @ Deref @ DAE::Type::T_METARECORD { .. } => {
-            let mut oty = (*oty).clone();
+        __esc_oty @ Deref @ DAE::Type::T_METARECORD { .. } => {
+            oty = (*__esc_oty).clone();
             assign_variant_field!(oty => DAE::Type::T_METARECORD; typeVars = typeVars.clone());
             oty.clone()
         },

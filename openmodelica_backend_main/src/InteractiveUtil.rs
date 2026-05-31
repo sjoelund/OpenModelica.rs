@@ -1431,7 +1431,10 @@ pub fn createEnvironment(mut p: Absyn::Program, mut os: Option<Arc<metamodelica:
 pub fn getClassCommentInCommentOpt(mut inComment: Option<Arc<Absyn::Comment>>) -> ArcStr {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((::match_deref::match_deref! { match &(inComment.clone()) {
-        Some(Deref @ Absyn::Comment { comment: Some(outString), .. }) => outString.clone(),
+        Some(Deref @ Absyn::Comment { comment: Some(__esc_outString), .. }) => {
+            outString = (*__esc_outString).clone();
+            outString.clone()
+        },
         _ => literal!(""),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -2381,7 +2384,10 @@ pub fn attrDirectionStr(mut inElementAttributes: Absyn::ElementAttributes) -> Re
 pub fn getConstrainingClassComment(mut constrainingClass: Option<Arc<Absyn::ConstrainClass>>) -> ArcStr {
     let mut comment: ArcStr = arcstr::literal!("");
     comment = ((::match_deref::match_deref! { match &(constrainingClass.clone()) {
-        Some(Deref @ Absyn::ConstrainClass { comment: Some(Deref @ Absyn::Comment { comment: Some(comment), .. }), .. }) => comment.clone(),
+        Some(Deref @ Absyn::ConstrainClass { comment: Some(Deref @ Absyn::Comment { comment: Some(__esc_comment), .. }), .. }) => {
+            comment = (*__esc_comment).clone();
+            comment.clone()
+        },
         _ => literal!(""),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
@@ -2878,22 +2884,22 @@ pub fn updateConnectionAnnotation(mut inClass: Arc<Absyn::ComponentRef>, mut inF
 pub fn updateConnectionAnnotationInClass(mut inClass1: Arc<Absyn::Class>, mut inFrom: ArcStr, mut inTo: ArcStr, mut inAnnotation: Arc<Absyn::Annotation>) -> Result<Arc<Absyn::Class>> {
     let mut outClass: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
     outClass = (::match_deref::match_deref! { match &((inClass1.clone(), inFrom.clone(), inTo.clone(), inAnnotation.clone())) {
-        (outClass @ Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { comment: cmt, ann, classParts: parts, classAttrs, typeVars }, .. }, from, to, annotation_) => {
+        (__esc_outClass @ Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { comment: cmt, ann, classParts: parts, classAttrs, typeVars }, .. }, from, to, annotation_) => {
+            outClass = (*__esc_outClass).clone();
             let mut eqlst: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
             let mut eqlst_1: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
             let mut parts2: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
-            let mut outClass = (*outClass).clone();
             eqlst = getEquationList(parts.clone())?;
             eqlst_1 = updateConnectionAnnotationInEqList(eqlst.clone(), (from.clone()).clone(), (to.clone()).clone(), annotation_.clone())?;
             parts2 = replaceEquationList(parts.clone(), eqlst_1.clone())?;
             assign_field!(outClass.body = Arc::new(Absyn::ClassDef::PARTS { typeVars: typeVars.clone(), classAttrs: classAttrs.clone(), classParts: parts2.clone(), ann: ann.clone(), comment: cmt.clone() }));
             outClass.clone()
         },
-        (outClass @ Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::CLASS_EXTENDS { comment: cmt, ann, parts, modifications: modif, baseClassName: bcname }, .. }, from, to, annotation_) => {
+        (__esc_outClass @ Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::CLASS_EXTENDS { comment: cmt, ann, parts, modifications: modif, baseClassName: bcname }, .. }, from, to, annotation_) => {
+            outClass = (*__esc_outClass).clone();
             let mut eqlst: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
             let mut eqlst_1: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
             let mut parts2: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
-            let mut outClass = (*outClass).clone();
             eqlst = getEquationList(parts.clone())?;
             eqlst_1 = updateConnectionAnnotationInEqList(eqlst.clone(), (from.clone()).clone(), (to.clone()).clone(), annotation_.clone())?;
             parts2 = replaceEquationList(parts.clone(), eqlst_1.clone())?;
@@ -2991,22 +2997,22 @@ pub fn updateConnectionNames(mut inPath: Arc<Absyn::Path>, mut inFrom: ArcStr, m
 fn updateConnectionNamesInClass(mut inClass1: Arc<Absyn::Class>, mut inFrom: ArcStr, mut inTo: ArcStr, mut inFromNew: ArcStr, mut inToNew: ArcStr) -> Result<Arc<Absyn::Class>> {
     let mut outClass: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
     outClass = (::match_deref::match_deref! { match &((inClass1.clone(), inFrom.clone(), inTo.clone(), inFromNew.clone(), inToNew.clone())) {
-        (outClass @ Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { comment: cmt, ann, classParts: parts, classAttrs, typeVars }, .. }, from, to, fromNew, toNew) => {
+        (__esc_outClass @ Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { comment: cmt, ann, classParts: parts, classAttrs, typeVars }, .. }, from, to, fromNew, toNew) => {
+            outClass = (*__esc_outClass).clone();
             let mut eqlst: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
             let mut eqlst_1: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
             let mut parts2: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
-            let mut outClass = (*outClass).clone();
             eqlst = getEquationList(parts.clone())?;
             eqlst_1 = updateConnectionNamesInEqList(eqlst.clone(), (from.clone()).clone(), (to.clone()).clone(), (fromNew.clone()).clone(), (toNew.clone()).clone())?;
             parts2 = replaceEquationList(parts.clone(), eqlst_1.clone())?;
             assign_field!(outClass.body = Arc::new(Absyn::ClassDef::PARTS { typeVars: typeVars.clone(), classAttrs: classAttrs.clone(), classParts: parts2.clone(), ann: ann.clone(), comment: cmt.clone() }));
             outClass.clone()
         },
-        (outClass @ Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::CLASS_EXTENDS { comment: cmt, ann, parts, modifications: modif, baseClassName: bcname }, .. }, from, to, fromNew, toNew) => {
+        (__esc_outClass @ Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::CLASS_EXTENDS { comment: cmt, ann, parts, modifications: modif, baseClassName: bcname }, .. }, from, to, fromNew, toNew) => {
+            outClass = (*__esc_outClass).clone();
             let mut eqlst: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
             let mut eqlst_1: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
             let mut parts2: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
-            let mut outClass = (*outClass).clone();
             eqlst = getEquationList(parts.clone())?;
             eqlst_1 = updateConnectionNamesInEqList(eqlst.clone(), (from.clone()).clone(), (to.clone()).clone(), (fromNew.clone()).clone(), (toNew.clone()).clone())?;
             parts2 = replaceEquationList(parts.clone(), eqlst_1.clone())?;

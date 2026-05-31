@@ -3379,7 +3379,8 @@ fn solveEqn2(mut eqn: Arc<BackendDAE::Equation>, mut cr: Arc<DAE::ComponentRef>)
     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
     (exp, source) = (::match_deref::match_deref! { match &(eqn.clone()) {
-        Deref @ BackendDAE::Equation::EQUATION { source, scalar: e2, exp: e1, .. } => {
+        Deref @ BackendDAE::Equation::EQUATION { source: __esc_source, scalar: e2, exp: e1, .. } => {
+            source = (*__esc_source).clone();
             (exp, _) = ExpressionSolve::solve(e1.clone(), e2.clone(), Arc::new(DAE::Exp::CREF { componentRef: cr.clone(), ty: DAE::T_REAL_DEFAULT().clone() }), None)?;
             (exp.clone(), source.clone())
         },
@@ -3481,7 +3482,10 @@ fn replaceVars(mut invarLst: Arc<metamodelica::List<BackendDAE::Var>>, mut repl:
 pub fn varBindingOpt(mut v: BackendDAE::Var) -> Result<Option<Arc<DAE::Exp>>> {
     let mut exp: Option<Arc<DAE::Exp>> = None;
     exp = (match v.clone() {
-        BackendDAE::Var { bindExp: mut exp, .. } => exp.clone(),
+        BackendDAE::Var { bindExp: mut __esc_exp, .. } => {
+            exp = __esc_exp.clone();
+            exp.clone()
+        },
     });
     Ok(exp)
 }

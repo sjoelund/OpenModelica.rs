@@ -176,7 +176,10 @@ pub fn classInstance(mut component: Arc<NFComponent>) -> Arc<InstNode::InstNode>
     let mut classInst: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     classInst = (::match_deref::match_deref! { match &(component.clone()) {
         Deref @ COMPONENT { .. } => var_field!((*component).classInst, NFComponent::COMPONENT).clone(),
-        Deref @ ITERATOR { ty: Deref @ Type::COMPLEX { cls: classInst, .. }, .. } => classInst.clone(),
+        Deref @ ITERATOR { ty: Deref @ Type::COMPLEX { cls: __esc_classInst, .. }, .. } => {
+            classInst = (*__esc_classInst).clone();
+            classInst.clone()
+        },
         Deref @ ITERATOR { .. } => Arc::new(InstNode::InstNode::ITERATOR_NODE { exp: Arc::new(Expression::NFExpression::EMPTY { ty: var_field!((*component).ty, NFComponent::ITERATOR).clone() }) }),
         _ => Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -458,7 +461,10 @@ pub fn hasCondition(mut component: Arc<NFComponent>) -> bool {
 pub fn direction(mut component: Arc<NFComponent>) -> Prefixes::Direction {
     let mut direction: Prefixes::Direction = Prefixes::Direction::NONE;
     direction = (::match_deref::match_deref! { match &(component.clone()) {
-        Deref @ COMPONENT { attributes: Deref @ Attributes::ATTRIBUTES { direction, .. }, .. } => direction.clone(),
+        Deref @ COMPONENT { attributes: Deref @ Attributes::ATTRIBUTES { direction: __esc_direction, .. }, .. } => {
+            direction = (*__esc_direction).clone();
+            direction.clone()
+        },
         _ => Direction::NONE.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -494,7 +500,10 @@ pub fn isOutput(mut component: Arc<NFComponent>) -> bool {
 pub fn parallelism(mut component: Arc<NFComponent>) -> Prefixes::Parallelism {
     let mut parallelism: Prefixes::Parallelism = Prefixes::Parallelism::NON_PARALLEL;
     parallelism = (::match_deref::match_deref! { match &(component.clone()) {
-        Deref @ COMPONENT { attributes: Deref @ Attributes::ATTRIBUTES { parallelism, .. }, .. } => parallelism.clone(),
+        Deref @ COMPONENT { attributes: Deref @ Attributes::ATTRIBUTES { parallelism: __esc_parallelism, .. }, .. } => {
+            parallelism = (*__esc_parallelism).clone();
+            parallelism.clone()
+        },
         _ => Parallelism::NON_PARALLEL.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -504,7 +513,10 @@ pub fn parallelism(mut component: Arc<NFComponent>) -> Prefixes::Parallelism {
 pub fn variability(mut component: Arc<NFComponent>) -> Prefixes::Variability {
     let mut variability: Prefixes::Variability = Prefixes::Variability::CONSTANT;
     variability = (::match_deref::match_deref! { match &(component.clone()) {
-        Deref @ COMPONENT { attributes: Deref @ Attributes::ATTRIBUTES { variability, .. }, .. } => variability.clone(),
+        Deref @ COMPONENT { attributes: Deref @ Attributes::ATTRIBUTES { variability: __esc_variability, .. }, .. } => {
+            variability = (*__esc_variability).clone();
+            variability.clone()
+        },
         Deref @ ITERATOR { .. } => var_field!((*component).variability, NFComponent::ITERATOR).clone(),
         Deref @ ENUM_LITERAL { .. } => Variability::CONSTANT.clone(),
         Deref @ INVALID_COMPONENT { .. } => self::variability(var_field!((*component).component, NFComponent::INVALID_COMPONENT).clone()),
@@ -565,7 +577,10 @@ pub fn isFinal(mut component: Arc<NFComponent>) -> Result<bool> {
     let mut isFinal: bool = false;
     isFinal = (::match_deref::match_deref! { match &(component.clone()) {
         Deref @ COMPONENT_DEF { .. } => SCodeUtil::finalBool(SCodeUtil::prefixesFinal(SCodeUtil::elementPrefixes(var_field!((*component).definition, NFComponent::COMPONENT_DEF).clone())?)?)?,
-        Deref @ COMPONENT { attributes: Deref @ Attributes::ATTRIBUTES { isFinal, .. }, .. } => isFinal.clone(),
+        Deref @ COMPONENT { attributes: Deref @ Attributes::ATTRIBUTES { isFinal: __esc_isFinal, .. }, .. } => {
+            isFinal = (*__esc_isFinal).clone();
+            isFinal.clone()
+        },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -591,7 +606,10 @@ pub fn setFinal(mut component: Arc<NFComponent>, mut isFinal: bool) -> Arc<NFCom
 pub fn isResizable(mut component: Arc<NFComponent>) -> bool {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(component.clone()) {
-        Deref @ COMPONENT { attributes: Deref @ Attributes::ATTRIBUTES { isResizable: b, .. }, .. } => b.clone(),
+        Deref @ COMPONENT { attributes: Deref @ Attributes::ATTRIBUTES { isResizable: __esc_b, .. }, .. } => {
+            b = (*__esc_b).clone();
+            b.clone()
+        },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -601,7 +619,10 @@ pub fn isResizable(mut component: Arc<NFComponent>) -> bool {
 pub fn innerOuter(mut component: Arc<NFComponent>) -> Result<Prefixes::InnerOuter> {
     let mut io: Prefixes::InnerOuter = Prefixes::InnerOuter::NOT_INNER_OUTER;
     io = (::match_deref::match_deref! { match &(component.clone()) {
-        Deref @ COMPONENT { attributes: Deref @ Attributes::ATTRIBUTES { innerOuter: io, .. }, .. } => io.clone(),
+        Deref @ COMPONENT { attributes: Deref @ Attributes::ATTRIBUTES { innerOuter: __esc_io, .. }, .. } => {
+            io = (*__esc_io).clone();
+            io.clone()
+        },
         Deref @ COMPONENT_DEF { .. } => Prefixes::innerOuterFromSCode(SCodeUtil::prefixesInnerOuter(SCodeUtil::elementPrefixes(var_field!((*component).definition, NFComponent::COMPONENT_DEF).clone())?)?)?,
         _ => InnerOuter::NOT_INNER_OUTER.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -637,7 +658,10 @@ pub fn isOnlyOuter(mut component: Arc<NFComponent>) -> bool {
 pub fn connectorType(mut component: Arc<NFComponent>) -> i32 {
     let mut cty: i32 = 0;
     cty = (::match_deref::match_deref! { match &(component.clone()) {
-        Deref @ COMPONENT { attributes: Deref @ Attributes::ATTRIBUTES { connectorType: cty, .. }, .. } => cty.clone(),
+        Deref @ COMPONENT { attributes: Deref @ Attributes::ATTRIBUTES { connectorType: __esc_cty, .. }, .. } => {
+            cty = (*__esc_cty).clone();
+            cty.clone()
+        },
         _ => ConnectorType::NON_CONNECTOR.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

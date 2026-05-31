@@ -2004,9 +2004,18 @@ pub fn unboxIfBoxedVal(mut iv: Arc<Values::Value>) -> Arc<Values::Value> {
 pub fn arrayOrListVals(mut v: Arc<Values::Value>, mut boxIfUnboxed: bool) -> Result<Arc<metamodelica::List<Arc<Values::Value>>>> {
     let mut vals: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
     vals = (::match_deref::match_deref! { match &((v.clone(), boxIfUnboxed.clone())) {
-        (Deref @ Values::Value::ARRAY { valueLst: vals, .. }, _) => vals.clone(),
-        (Deref @ Values::Value::LIST { valueLst: vals }, true) => List::map(vals.clone(), (std::sync::Arc::new(fnptr!(boxIfUnboxedVal, Arc<Values::Value>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<Arc<Values::Value>> + 'static>)),
-        (Deref @ Values::Value::LIST { valueLst: vals }, _) => vals.clone(),
+        (Deref @ Values::Value::ARRAY { valueLst: __esc_vals, .. }, _) => {
+            vals = (*__esc_vals).clone();
+            vals.clone()
+        },
+        (Deref @ Values::Value::LIST { valueLst: __esc_vals }, true) => {
+            vals = (*__esc_vals).clone();
+            List::map(vals.clone(), (std::sync::Arc::new(fnptr!(boxIfUnboxedVal, Arc<Values::Value>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<Arc<Values::Value>> + 'static>))
+        },
+        (Deref @ Values::Value::LIST { valueLst: __esc_vals }, _) => {
+            vals = (*__esc_vals).clone();
+            vals.clone()
+        },
         _ => bail!("match: no arm matched"),
     } });
     Ok(vals)

@@ -887,7 +887,8 @@ pub mod Modifier {
         let mut elem: Arc<SCode::Element> = elem;
         let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
         r#mod = (::match_deref::match_deref! { match &(elem.clone()) {
-        Deref @ SCode::Element::CLASS { classDef: cdef @ Deref @ SCode::ClassDef::DERIVED { modifications: r#mod, .. }, .. } => {
+        Deref @ SCode::Element::CLASS { classDef: cdef @ Deref @ SCode::ClassDef::DERIVED { modifications: __esc_mod, .. }, .. } => {
+            r#mod = (*__esc_mod).clone();
             let mut cdef = (*cdef).clone();
             if !(SCodeUtil::isEmptyMod(r#mod.clone())) {
                 assign_variant_field!(cdef => SCode::ClassDef::DERIVED; modifications = Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD));
@@ -895,7 +896,8 @@ pub mod Modifier {
             }
             r#mod.clone()
         },
-        Deref @ SCode::Element::COMPONENT { modifications: r#mod, .. } => {
+        Deref @ SCode::Element::COMPONENT { modifications: __esc_mod, .. } => {
+            r#mod = (*__esc_mod).clone();
             if !(SCodeUtil::isEmptyMod(r#mod.clone())) {
                 assign_variant_field!(elem => SCode::Element::COMPONENT; modifications = Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD));
             }

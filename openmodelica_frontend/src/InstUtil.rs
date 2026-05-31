@@ -4399,13 +4399,16 @@ fn extractNameAndExp(mut m: Arc<DAE::SubMod>) -> (ArcStr, DAE::derivativeCond) {
     let mut inputVar: ArcStr = arcstr::literal!("");
     let mut cond: DAE::derivativeCond = DAE::derivativeCond::ZERO_DERIVATIVE;
     (inputVar, cond) = (::match_deref::match_deref! { match &(m.clone()) {
-        Deref @ DAE::SubMod { r#mod: Deref @ DAE::Mod::MOD { binding: Some(DAE::EqMod::TYPED { modifierAsExp: e, .. }), .. }, ident: inputVar } => {
+        Deref @ DAE::SubMod { r#mod: Deref @ DAE::Mod::MOD { binding: Some(DAE::EqMod::TYPED { modifierAsExp: e, .. }), .. }, ident: __esc_inputVar } => {
+            inputVar = (*__esc_inputVar).clone();
             (inputVar.clone(), DAE::derivativeCond::NO_DERIVATIVE { binding: e.clone() })
         },
-        Deref @ DAE::SubMod { r#mod: Deref @ DAE::Mod::MOD { binding: None, .. }, ident: inputVar } => {
+        Deref @ DAE::SubMod { r#mod: Deref @ DAE::Mod::MOD { binding: None, .. }, ident: __esc_inputVar } => {
+            inputVar = (*__esc_inputVar).clone();
             (inputVar.clone(), DAE::derivativeCond::NO_DERIVATIVE { binding: Arc::new(DAE::Exp::ICONST { integer: 1 }) })
         },
-        Deref @ DAE::SubMod { r#mod: Deref @ DAE::Mod::MOD { binding: None, .. }, ident: inputVar } => {
+        Deref @ DAE::SubMod { r#mod: Deref @ DAE::Mod::MOD { binding: None, .. }, ident: __esc_inputVar } => {
+            inputVar = (*__esc_inputVar).clone();
             (inputVar.clone(), openmodelica_frontend_types::DAE::derivativeCond::ZERO_DERIVATIVE)
         },
         _ => {
@@ -4460,7 +4463,8 @@ fn getDerivativeOrder(mut inSubs: Arc<metamodelica::List<Arc<SCode::SubMod>>>) -
         Deref @ metamodelica::List::Nil => {
             1
         },
-        Deref @ metamodelica::List::Cons { head: Deref @ SCode::SubMod { ident: Deref @ "order", r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::INTEGER { value: order }), .. } }, tail: _ } => {
+        Deref @ metamodelica::List::Cons { head: Deref @ SCode::SubMod { ident: Deref @ "order", r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::INTEGER { value: __esc_order }), .. } }, tail: _ } => {
+            order = (*__esc_order).clone();
             order.clone()
         },
         Deref @ metamodelica::List::Cons { head: _, tail: subs } => {
@@ -4474,8 +4478,8 @@ fn getDerivativeOrder(mut inSubs: Arc<metamodelica::List<Arc<SCode::SubMod>>>) -
 pub fn setFullyQualifiedTypename(mut inType: Arc<DAE::Type>, mut path: Arc<Absyn::Path>) -> Arc<DAE::Type> {
     let mut resType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     resType = (::match_deref::match_deref! { match &(inType.clone()) {
-        resType @ Deref @ DAE::Type::T_FUNCTION { .. } => {
-            let mut resType = (*resType).clone();
+        __esc_resType @ Deref @ DAE::Type::T_FUNCTION { .. } => {
+            resType = (*__esc_resType).clone();
             assign_variant_field!(resType => DAE::Type::T_FUNCTION; path = path.clone());
             resType.clone()
         },
@@ -6863,7 +6867,8 @@ pub fn extractComment(mut elts: Arc<metamodelica::List<Arc<DAE::Element>>>) -> R
     for mut elt in &*elts.clone() {
         let mut elt = elt.clone();
         let () = (::match_deref::match_deref! { match &(elt.clone()) {
-        Deref @ DAE::Element::COMMENT { cmt } => {
+        Deref @ DAE::Element::COMMENT { cmt: __esc_cmt } => {
+            cmt = (*__esc_cmt).clone();
             return Ok(cmt.clone());
             bail!("fail")
         },
@@ -7898,8 +7903,8 @@ fn findUnboundVariableUse(mut inExp: Arc<DAE::Exp>, mut inTpl: (Arc<metamodelica
 fn findUnboundVariableUseInCase(mut case_: Arc<DAE::MatchCase>, mut inUnbound: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut unbound: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     unbound = (::match_deref::match_deref! { match &((case_.clone(), inUnbound.clone())) {
-        (Deref @ DAE::MatchCase { resultInfo, info, result, body, patternGuard, patterns, .. }, unbound) => {
-            let mut unbound = (*unbound).clone();
+        (Deref @ DAE::MatchCase { resultInfo, info, result, body, patternGuard, patterns, .. }, __esc_unbound) => {
+            unbound = (*__esc_unbound).clone();
             (_, unbound) = Patternm::traversePatternList(patterns.clone(), (std::sync::Arc::new(fnptr!(patternFiltering, Arc<DAE::Pattern>, Arc<metamodelica::List<ArcStr>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>, Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<DAE::Pattern>, Arc<metamodelica::List<ArcStr>>)> + 'static>), unbound.clone())?;
             let (_, (__pa0, _)) = Expression::traverseExpTopDown(Arc::new(DAE::Exp::META_OPTION { exp: patternGuard.clone() }), (std::sync::Arc::new(findUnboundVariableUse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<ArcStr>>, SourceInfo)) -> Result<(Arc<DAE::Exp>, bool, (Arc<metamodelica::List<ArcStr>>, SourceInfo))> + 'static>), (unbound.clone(), info.clone()))?;
             unbound = __pa0.clone();

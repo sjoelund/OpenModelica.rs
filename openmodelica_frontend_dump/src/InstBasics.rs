@@ -126,7 +126,10 @@ pub fn commentGenerateEvents(mut cmt: Arc<SCode::Comment>) -> bool {
         for mut tp in &*inSubModList.clone() {
             let mut tp = tp.clone();
             stop = (::match_deref::match_deref! { match &(tp.clone()) {
-        Deref @ SCode::SubMod { ident: Deref @ "GenerateEvents", r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: res }), .. } } => false,
+        Deref @ SCode::SubMod { ident: Deref @ "GenerateEvents", r#mod: Deref @ SCode::Mod::MOD { binding: Some(Deref @ Absyn::Exp::BOOL { value: __esc_res }), .. } } => {
+            res = (*__esc_res).clone();
+            false
+        },
         _ => true,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

@@ -1677,7 +1677,10 @@ fn getVarArrIdx(mut cref: Arc<ComponentRef::NFComponentRef>, mut mapping: Arc<Ma
     let mut cref: Arc<ComponentRef::NFComponentRef> = cref;
     let mut var_arr_idx: i32 = 0;
     (var_arr_idx, cref) = (match UnorderedMap::get(cref.clone(), map.clone()) {
-        Some(mut var_arr_idx) => (var_arr_idx.clone(), cref.clone()),
+        Some(mut __esc_var_arr_idx) => {
+            var_arr_idx = __esc_var_arr_idx.clone();
+            (var_arr_idx.clone(), cref.clone())
+        },
         _ => {
             cref = ComponentRef::stripSubscriptsAll(cref.clone());
             (UnorderedMap::getSafe(cref.clone(), map.clone(), metamodelica::sourceInfo!())?, cref.clone())

@@ -678,7 +678,10 @@ fn getHeight<Key: Clone + 'static, Val: Clone + 'static>(mut bt: Arc<Node<Key, V
     let mut height: i32 = 0;
     height = (::match_deref::match_deref! { match &(bt.clone()) {
         Deref @ Node::NO_NODE { .. } => 0,
-        Deref @ Node::NODE { height, .. } => height.clone(),
+        Deref @ Node::NODE { height: __esc_height, .. } => {
+            height = (*__esc_height).clone();
+            height.clone()
+        },
         _ => bail!("match: no arm matched"),
     } });
     Ok(height)

@@ -1361,8 +1361,12 @@ pub fn setTearingSelectAttribute(mut optComment: Option<Arc<SCode::Comment>>) ->
 fn getTearingSelectName(mut exp: Arc<Absyn::Exp>, mut info: SourceInfo) -> Result<ArcStr> {
     let mut name: ArcStr = arcstr::literal!("");
     name = ((::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_QUAL { componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { subscripts: Deref @ metamodelica::List::Nil, name }, subscripts: Deref @ metamodelica::List::Nil, name: Deref @ "TearingSelect" } } => name.clone(),
-        Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { subscripts: Deref @ metamodelica::List::Nil, name } } => {
+        Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_QUAL { componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { subscripts: Deref @ metamodelica::List::Nil, name: __esc_name }, subscripts: Deref @ metamodelica::List::Nil, name: Deref @ "TearingSelect" } } => {
+            name = (*__esc_name).clone();
+            name.clone()
+        },
+        Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { subscripts: Deref @ metamodelica::List::Nil, name: __esc_name } } => {
+            name = (*__esc_name).clone();
             Error::addSourceMessage(Error::DEPRECATED_EXPRESSION.clone(), list![(name.clone()).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("TearingSelect.")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone()], info.clone())?;
             literal!("")
         },
@@ -1787,7 +1791,10 @@ pub fn splitoutEquationAndVars(mut inNeededBlocks: Arc<metamodelica::List<Arc<Ba
 pub fn getStrongComponents(mut syst: Arc<BackendDAE::EqSystem>) -> Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> {
     let mut outComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
     outComps = (::match_deref::match_deref! { match &(syst.clone()) {
-        Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::MATCHING { comps: outComps, .. }, .. } => outComps.clone(),
+        Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::MATCHING { comps: __esc_outComps, .. }, .. } => {
+            outComps = (*__esc_outComps).clone();
+            outComps.clone()
+        },
         _ => metamodelica::nil(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -6986,57 +6993,65 @@ fn getIfExpBranchVarOccurency(mut inExp: Arc<DAE::Exp>, mut inBt: Arc<BinaryTree
     let mut cont: bool = false;
     let mut bt: Arc<BinaryTree::BinTree> = Arc::new(<BinaryTree::BinTree as ::std::default::Default>::default());
     (outExp, cont, bt) = (::match_deref::match_deref! { match &((inExp.clone(), inBt.clone())) {
-        (e @ Deref @ DAE::Exp::IFEXP { expElse: e2, expThen: e1, .. }, bt) => {
+        (e @ Deref @ DAE::Exp::IFEXP { expElse: e2, expThen: e1, .. }, __esc_bt) => {
+            bt = (*__esc_bt).clone();
             let mut bt_then: Arc<BinaryTree::BinTree> = Arc::new(<BinaryTree::BinTree as ::std::default::Default>::default());
             let mut bt_else: Arc<BinaryTree::BinTree> = Arc::new(<BinaryTree::BinTree as ::std::default::Default>::default());
-            let mut bt = (*bt).clone();
             (_, bt_then) = Expression::traverseExpTopDown(e1.clone(), (std::sync::Arc::new(getIfExpBranchVarOccurency) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<BinaryTree::BinTree>) -> Result<(Arc<DAE::Exp>, bool, Arc<BinaryTree::BinTree>)> + 'static>), BinaryTree::emptyBinTree().clone())?;
             (_, bt_else) = Expression::traverseExpTopDown(e2.clone(), (std::sync::Arc::new(getIfExpBranchVarOccurency) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<BinaryTree::BinTree>) -> Result<(Arc<DAE::Exp>, bool, Arc<BinaryTree::BinTree>)> + 'static>), BinaryTree::emptyBinTree().clone())?;
             bt = BinaryTree::binTreeintersection(bt_then.clone(), bt_else.clone(), bt.clone())?;
             (e.clone(), false, bt.clone())
         },
-        (e @ Deref @ DAE::Exp::LUNARY { .. }, bt) => {
+        (e @ Deref @ DAE::Exp::LUNARY { .. }, __esc_bt) => {
+            bt = (*__esc_bt).clone();
             (e.clone(), false, bt.clone())
         },
-        (e @ Deref @ DAE::Exp::LBINARY { .. }, bt) => {
+        (e @ Deref @ DAE::Exp::LBINARY { .. }, __esc_bt) => {
+            bt = (*__esc_bt).clone();
             (e.clone(), false, bt.clone())
         },
-        (e @ Deref @ DAE::Exp::RELATION { .. }, bt) => {
+        (e @ Deref @ DAE::Exp::RELATION { .. }, __esc_bt) => {
+            bt = (*__esc_bt).clone();
             (e.clone(), false, bt.clone())
         },
-        (e @ Deref @ DAE::Exp::RANGE { .. }, bt) => {
+        (e @ Deref @ DAE::Exp::RANGE { .. }, __esc_bt) => {
+            bt = (*__esc_bt).clone();
             (e.clone(), false, bt.clone())
         },
-        (e @ Deref @ DAE::Exp::RANGE { .. }, bt) => {
+        (e @ Deref @ DAE::Exp::RANGE { .. }, __esc_bt) => {
+            bt = (*__esc_bt).clone();
             (e.clone(), false, bt.clone())
         },
-        (e @ Deref @ DAE::Exp::ASUB { exp: e1, .. }, bt) => {
-            let mut bt = (*bt).clone();
+        (e @ Deref @ DAE::Exp::ASUB { exp: e1, .. }, __esc_bt) => {
+            bt = (*__esc_bt).clone();
             (_, bt) = Expression::traverseExpTopDown(e1.clone(), (std::sync::Arc::new(getIfExpBranchVarOccurency) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<BinaryTree::BinTree>) -> Result<(Arc<DAE::Exp>, bool, Arc<BinaryTree::BinTree>)> + 'static>), bt.clone())?;
             (e.clone(), false, bt.clone())
         },
-        (e @ Deref @ DAE::Exp::CREF { componentRef: cr, .. }, bt) => {
-            let mut bt = (*bt).clone();
+        (e @ Deref @ DAE::Exp::CREF { componentRef: cr, .. }, __esc_bt) => {
+            bt = (*__esc_bt).clone();
             bt = BinaryTree::treeAdd(bt.clone(), cr.clone(), 0)?;
             (e.clone(), false, bt.clone())
         },
-        (e @ Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, bt) => {
-            let mut bt = (*bt).clone();
+        (e @ Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, __esc_bt) => {
+            bt = (*__esc_bt).clone();
             bt = BinaryTree::treeAdd(bt.clone(), cr.clone(), 0)?;
             (e.clone(), false, bt.clone())
         },
-        (e @ Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, bt) => {
-            let mut bt = (*bt).clone();
+        (e @ Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, __esc_bt) => {
+            bt = (*__esc_bt).clone();
             bt = BinaryTree::treeAdd(bt.clone(), cr.clone(), 0)?;
             (e.clone(), false, bt.clone())
         },
-        (e @ Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "pre" }, .. }, bt) => {
+        (e @ Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "pre" }, .. }, __esc_bt) => {
+            bt = (*__esc_bt).clone();
             (e.clone(), false, bt.clone())
         },
-        (e @ Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "previous" }, .. }, bt) => {
+        (e @ Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { .. }, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "previous" }, .. }, __esc_bt) => {
+            bt = (*__esc_bt).clone();
             (e.clone(), false, bt.clone())
         },
-        (e @ Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } } } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "delay" }, .. }, bt) => {
+        (e @ Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } } } }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "delay" }, .. }, __esc_bt) => {
+            bt = (*__esc_bt).clone();
             let mut b: bool = false;
             b = Flags::getConfigBool(Flags::DELAY_BREAK_LOOP.clone())? && ExpressionBasics::expEqual(e1.clone(), e2.clone())?;
             (e.clone(), !(b.clone()), bt.clone())
@@ -8301,7 +8316,8 @@ fn traverseBackendDAEAttrDistribution<Type_a: Clone + 'static>(mut distOpt: Opti
     let mut outDistOpt: Option<Arc<DAE::Distribution>> = None;
     let mut outExtraArg: Type_a;
     (outDistOpt, outExtraArg) = (::match_deref::match_deref! { match &((distOpt.clone(), extraArg.clone())) {
-        (None, outExtraArg) => {
+        (None, __esc_outExtraArg) => {
+            outExtraArg = (*__esc_outExtraArg).clone();
             (None, outExtraArg.clone())
         },
         (Some(Deref @ DAE::Distribution { name, params: arr, paramNames: sarr }), _) => {
@@ -9563,7 +9579,8 @@ fn collectAlgorithms(mut inEq: Arc<BackendDAE::Equation>, mut inAlgs: Arc<metamo
     let mut outEq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
     let mut algs: Arc<metamodelica::List<Arc<DAE::Algorithm>>> = metamodelica::nil();
     (outEq, algs) = (::match_deref::match_deref! { match &((inEq.clone(), inAlgs.clone())) {
-        (Deref @ BackendDAE::Equation::ALGORITHM { alg, .. }, algs) => {
+        (Deref @ BackendDAE::Equation::ALGORITHM { alg, .. }, __esc_algs) => {
+            algs = (*__esc_algs).clone();
             (inEq.clone(), metamodelica::cons(alg.clone(), algs.clone()))
         },
         _ => {

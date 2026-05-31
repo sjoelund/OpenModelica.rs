@@ -1606,7 +1606,10 @@ fn findWithin(mut tree: Arc<metamodelica::List<Arc<ParseTree>>>) -> Result<Arc<P
     let mut rest: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     let mut rest2: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     w = (::match_deref::match_deref! { match &(tree.clone()) {
-        Deref @ metamodelica::List::Cons { head: Deref @ ParseTree::NODE { nodes: Deref @ metamodelica::List::Cons { head: w @ Deref @ ParseTree::NODE { label: Deref @ ParseTree::LEAF { token: tok2 }, .. }, tail: rest }, label: Deref @ ParseTree::LEAF { token: tok } }, tail: rest2 } if (tokenContent(tok.clone())? == literal!("$program") && tokenContent(tok2.clone())? == literal!("$within")) => w.clone(),
+        Deref @ metamodelica::List::Cons { head: Deref @ ParseTree::NODE { nodes: Deref @ metamodelica::List::Cons { head: __esc_w @ Deref @ ParseTree::NODE { label: Deref @ ParseTree::LEAF { token: tok2 }, .. }, tail: rest }, label: Deref @ ParseTree::LEAF { token: tok } }, tail: rest2 } if (tokenContent(tok.clone())? == literal!("$program") && tokenContent(tok2.clone())? == literal!("$within")) => {
+            w = (*__esc_w).clone();
+            w.clone()
+        },
         _ => Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2966,11 +2969,17 @@ fn replaceFirstTokensInTreeWork(mut t: Arc<ParseTree>, mut inTokens: Arc<metamod
     let mut n: Arc<ParseTree> = Arc::new(ParseTree::EMPTY);
     let mut tok: Token = <Token as ::std::default::Default>::default();
     (tree, tokens) = (::match_deref::match_deref! { match &((tree.clone(), tokens.clone())) {
-        (tree, Deref @ metamodelica::List::Nil) => (tree.clone(), tokens.clone()),
+        (__esc_tree, Deref @ metamodelica::List::Nil) => {
+            tree = (*__esc_tree).clone();
+            (tree.clone(), tokens.clone())
+        },
         (Deref @ ParseTree::EMPTY { .. }, _) => (tree.clone(), tokens.clone()),
-        (Deref @ ParseTree::LEAF { .. }, Deref @ metamodelica::List::Cons { head: tok, tail: tokens }) => (Arc::new(ParseTree::LEAF { token: tok.clone() }), tokens.clone()),
-        (Deref @ ParseTree::NODE { .. }, tokens) => {
-            let mut tokens = (*tokens).clone();
+        (Deref @ ParseTree::LEAF { .. }, Deref @ metamodelica::List::Cons { head: tok, tail: __esc_tokens }) => {
+            tokens = (*__esc_tokens).clone();
+            (Arc::new(ParseTree::LEAF { token: tok.clone() }), tokens.clone())
+        },
+        (Deref @ ParseTree::NODE { .. }, __esc_tokens) => {
+            tokens = (*__esc_tokens).clone();
             work = var_field!((*tree).nodes, ParseTree::NODE).clone();
             acc = metamodelica::nil();
             while !(work.clone().is_empty()) {
@@ -3181,7 +3190,10 @@ fn makeNode(mut nodes: Arc<metamodelica::List<Arc<ParseTree>>>, mut label: Arc<P
         __acc.reverse()
     }), label.clone())) {
         (Deref @ metamodelica::List::Nil, Deref @ ParseTree::EMPTY { .. }) => Arc::new(crate::SimpleModelicaParser::ParseTree::EMPTY),
-        (Deref @ metamodelica::List::Cons { head: node, tail: Deref @ metamodelica::List::Nil }, Deref @ ParseTree::EMPTY { .. }) => node.clone(),
+        (Deref @ metamodelica::List::Cons { head: __esc_node, tail: Deref @ metamodelica::List::Nil }, Deref @ ParseTree::EMPTY { .. }) => {
+            node = (*__esc_node).clone();
+            node.clone()
+        },
         _ => Arc::new(ParseTree::NODE { label: label.clone(), nodes: nodes.clone() }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -3210,7 +3222,8 @@ fn firstToken(mut t: Arc<metamodelica::List<Arc<ParseTree>>>) -> Token {
         Deref @ metamodelica::List::Cons { head: Deref @ ParseTree::NODE { nodes, .. }, tail: _ } => {
             firstToken(nodes.clone())
         },
-        Deref @ metamodelica::List::Cons { head: Deref @ ParseTree::LEAF { token }, tail: _ } => {
+        Deref @ metamodelica::List::Cons { head: Deref @ ParseTree::LEAF { token: __esc_token }, tail: _ } => {
+            token = (*__esc_token).clone();
             token.clone()
         },
         _ => {
@@ -3625,7 +3638,10 @@ fn peek(mut inTokens: Arc<metamodelica::List<Token>>, mut inTree: Arc<metamodeli
     tree = inTree.clone();
     (tokens, tree) = eatWhitespace(tokens.clone(), tree.clone())?;
     id = (::match_deref::match_deref! { match &(tokens.clone()) {
-        Deref @ metamodelica::List::Cons { head: Token { id, .. }, tail: _ } => id.clone(),
+        Deref @ metamodelica::List::Cons { head: Token { id: __esc_id, .. }, tail: _ } => {
+            id = (*__esc_id).clone();
+            id.clone()
+        },
         _ => TokenId::_NO_TOKEN.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

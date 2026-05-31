@@ -622,7 +622,10 @@ pub fn getVarDer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> (O
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     partnerName = (literal!("derivative")).clone();
     partner = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
-        Deref @ BackendExtension::VariableKind::STATE { derivative: partner, .. } => partner.clone(),
+        Deref @ BackendExtension::VariableKind::STATE { derivative: __esc_partner, .. } => {
+            partner = (*__esc_partner).clone();
+            partner.clone()
+        },
         _ => None,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -905,7 +908,10 @@ pub fn getResizableValue(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>
     let mut val: i32 = 0;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     let _ = (::match_deref::match_deref! { match &(var.backendinfo.clone()) {
-        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { varKind: Deref @ BackendExtension::VariableKind::PARAMETER { resize_value: Some(val) }, .. } => val.clone(),
+        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { varKind: Deref @ BackendExtension::VariableKind::PARAMETER { resize_value: Some(__esc_val) }, .. } => {
+            val = (*__esc_val).clone();
+            val.clone()
+        },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBVariable.getResizableValue")); __mm_s.push_str(&*literal!(" failed because following variable is not a resizable parameter: ")); __mm_s.push_str(&*toString(var.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
@@ -1303,7 +1309,8 @@ pub fn makeDummyState(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>
     let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
     var = Pointer::access(varPointer.clone());
     assign_field!(var.backendinfo = (::match_deref::match_deref! { match &(BackendExtension::BackendInfo::getVarKind(var.backendinfo.clone())) {
-        Deref @ BackendExtension::VariableKind::STATE { derivative: Some(derivative), .. } => {
+        Deref @ BackendExtension::VariableKind::STATE { derivative: Some(__esc_derivative), .. } => {
+            derivative = (*__esc_derivative).clone();
             let mut der_var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
             der_var = Pointer::access(derivative.clone());
             assign_field!(
@@ -1313,7 +1320,8 @@ pub fn makeDummyState(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>
             Pointer::update(derivative.clone(), der_var.clone());
             BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), Arc::new(VariableKind::VariableKind::DUMMY_STATE { dummy_der: derivative.clone() }))
         },
-        Deref @ BackendExtension::VariableKind::DUMMY_STATE { dummy_der: derivative } => {
+        Deref @ BackendExtension::VariableKind::DUMMY_STATE { dummy_der: __esc_derivative } => {
+            derivative = (*__esc_derivative).clone();
             var.backendinfo.clone()
         },
         _ => {
@@ -1486,7 +1494,10 @@ pub fn makeStartVar(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<(Arc<
             let mut qual = (*qual).clone();
             old_var_ptr = getVarPointer(cref.clone(), metamodelica::sourceInfo!())?;
             (start_cref, var_ptr) = (match (getVarStart(old_var_ptr.clone())).0 {
-        Some(mut var_ptr) => (getVarName(var_ptr.clone()), var_ptr.clone()),
+        Some(mut __esc_var_ptr) => {
+            var_ptr = __esc_var_ptr.clone();
+            (getVarName(var_ptr.clone()), var_ptr.clone())
+        },
         _ => {
             assign_variant_field!(qual => InstNode::InstNode::VAR_NODE; name = arcstr::literal!(START_STR));
             start_cref = ComponentRef::append(ComponentRef::stripSubscriptsAll(cref.clone()), ComponentRef::fromNode(qual.clone(), ComponentRef::scalarType(cref.clone())?, metamodelica::nil(), ComponentRef::Origin::CREF.clone()))?;

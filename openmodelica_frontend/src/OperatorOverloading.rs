@@ -565,7 +565,8 @@ fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isS
     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut exps: Arc<metamodelica::List<(Arc<DAE::Exp>, Option<Arc<DAE::Type>>)>> = metamodelica::nil();
     (cache, exps) = (match (inCache.clone(), isScalar1.clone(), isVector1.clone(), isMatrix1.clone(), isScalar2.clone(), isVector2.clone(), isMatrix2.clone(), inOper.clone()) {
-        (mut cache, false, _, _, true, _, _, _) => {
+        (mut __esc_cache, false, _, _, true, _, _, _) => {
+            cache = __esc_cache.clone();
             let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut cr: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut newType1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -591,7 +592,8 @@ fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isS
             exp = Arc::new(DAE::Exp::REDUCTION { reductionInfo: Arc::new(DAE::ReductionInfo { path: Arc::new(Absyn::Path::IDENT { name: (literal!("array")).clone() }), iterType: openmodelica_ast::Absyn::ReductionIterType::COMBINE, exprType: resType.clone(), defaultValue: None, foldName: (foldName.clone()).clone(), resultName: (resultName.clone()).clone(), foldExp: None }), expr: exp.clone(), iterators: metamodelica::cons(Arc::new(DAE::ReductionIterator { id: (iterName.clone()).clone(), exp: inExp1.clone(), guardExp: None, ty: newType1.clone() }), metamodelica::nil()) });
             (cache.clone(), list![(exp.clone(), None)])
         },
-        (mut cache, true, _, _, false, _, _, _) => {
+        (mut __esc_cache, true, _, _, false, _, _, _) => {
+            cache = __esc_cache.clone();
             let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut cr: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut newType2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -623,7 +625,8 @@ fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isS
         (_, _, true, _, _, _, true, Absyn::Operator::MUL { .. }) => {
             bail!("fail")
         },
-        (mut cache, _, _, true, _, true, _, Absyn::Operator::MUL { .. }) => {
+        (mut __esc_cache, _, _, true, _, true, _, Absyn::Operator::MUL { .. }) => {
+            cache = __esc_cache.clone();
             let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut cr: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut cr1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -701,7 +704,8 @@ fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isS
             exp = Arc::new(DAE::Exp::REDUCTION { reductionInfo: Arc::new(DAE::ReductionInfo { path: Arc::new(Absyn::Path::IDENT { name: (literal!("array")).clone() }), iterType: openmodelica_ast::Absyn::ReductionIterType::COMBINE, exprType: resType.clone(), defaultValue: None, foldName: (foldName2.clone()).clone(), resultName: (resultName2.clone()).clone(), foldExp: None }), expr: exp.clone(), iterators: metamodelica::cons(iter1.clone(), metamodelica::nil()) });
             (cache.clone(), list![(exp.clone(), None)])
         },
-        (mut cache, _, _, true, _, _, true, Absyn::Operator::MUL { .. }) => {
+        (mut __esc_cache, _, _, true, _, _, true, Absyn::Operator::MUL { .. }) => {
+            cache = __esc_cache.clone();
             let mut mulExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut cr1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -800,7 +804,8 @@ fn binaryUserdefArray2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut isS
             exp = Arc::new(DAE::Exp::REDUCTION { reductionInfo: Arc::new(DAE::ReductionInfo { path: Arc::new(Absyn::Path::IDENT { name: (literal!("array")).clone() }), iterType: openmodelica_ast::Absyn::ReductionIterType::COMBINE, exprType: ty.clone(), defaultValue: None, foldName: (foldName1.clone()).clone(), resultName: (resultName1.clone()).clone(), foldExp: None }), expr: exp.clone(), iterators: metamodelica::cons(iter1.clone(), metamodelica::nil()) });
             (cache.clone(), list![(exp.clone(), None)])
         },
-        (mut cache, false, _, _, false, _, _, _) => {
+        (mut __esc_cache, false, _, _, false, _, _, _) => {
+            cache = __esc_cache.clone();
             let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut cr1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut cr2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -2771,16 +2776,18 @@ fn lookupOperatorBaseClass(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
     let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     (cache, path, env) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inClass.clone())) {
-        (cache, env, Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path, arrayDim: None }, .. }, .. }) => {
+        (__esc_cache, __esc_env, Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: __esc_path, arrayDim: None }, .. }, .. }) => {
+            cache = (*__esc_cache).clone();
+            path = (*__esc_path).clone();
+            env = (*__esc_env).clone();
             let mut cl: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-            let mut cache = (*cache).clone();
-            let mut env = (*env).clone();
-            let mut path = (*path).clone();
             (cache, cl, env) = Lookup::lookupClass(cache.clone(), env.clone(), path.clone(), None)?;
             (cache, path, env) = lookupOperatorBaseClass(cache.clone(), env.clone(), cl.clone())?;
             (cache.clone(), path.clone(), env.clone())
         },
-        (cache, env, Deref @ SCode::Element::CLASS { name, .. }) => {
+        (__esc_cache, __esc_env, Deref @ SCode::Element::CLASS { name, .. }) => {
+            cache = (*__esc_cache).clone();
+            env = (*__esc_env).clone();
             path = FGraph::joinScopePath(env.clone(), Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() }))?;
             (cache.clone(), path.clone(), env.clone())
         },

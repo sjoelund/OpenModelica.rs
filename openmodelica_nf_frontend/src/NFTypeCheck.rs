@@ -1333,8 +1333,8 @@ pub fn matchExpressions_cast(mut exp1: Arc<Expression::NFExpression>, mut type1:
             exp2 = Expression::typeCast(exp2.clone(), type1.clone())?;
             (type1.clone(), MatchKind::CAST.clone())
         },
-        (Deref @ Type::TUPLE { types: Deref @ metamodelica::List::Cons { head: compatibleType, tail: _ }, .. }, _) => {
-            let mut compatibleType = (*compatibleType).clone();
+        (Deref @ Type::TUPLE { types: Deref @ metamodelica::List::Cons { head: __esc_compatibleType, tail: _ }, .. }, _) => {
+            compatibleType = (*__esc_compatibleType).clone();
             exp1 = Expression::tupleElement(exp1.clone(), compatibleType.clone(), 1)?;
             (exp1, compatibleType, matchKind) = matchTypes(compatibleType.clone(), type2.clone(), exp1.clone(), options.clone())?;
             if isCompatibleMatch(matchKind.clone()) {

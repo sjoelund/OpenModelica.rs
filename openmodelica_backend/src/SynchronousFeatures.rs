@@ -884,7 +884,10 @@ fn setSubClockFactor(mut subClk: BackendDAE::SubClock, mut factor: MMath::Ration
 fn getSubClockFactor(mut subClk: BackendDAE::SubClock) -> MMath::Rational {
     let mut factor: MMath::Rational = <MMath::Rational as ::std::default::Default>::default();
     factor = (match subClk.clone() {
-        BackendDAE::SubClock::SUBCLOCK { factor: mut factor, shift: _, solver: _ } => factor.clone(),
+        BackendDAE::SubClock::SUBCLOCK { factor: mut __esc_factor, shift: _, solver: _ } => {
+            factor = __esc_factor.clone();
+            factor.clone()
+        },
         _ => MMath::RAT1.clone(),
     });
     factor
@@ -893,7 +896,10 @@ fn getSubClockFactor(mut subClk: BackendDAE::SubClock) -> MMath::Rational {
 fn getSubClockShift(mut subClk: BackendDAE::SubClock) -> MMath::Rational {
     let mut shift: MMath::Rational = <MMath::Rational as ::std::default::Default>::default();
     shift = (match subClk.clone() {
-        BackendDAE::SubClock::SUBCLOCK { factor: _, shift: mut shift, solver: _ } => shift.clone(),
+        BackendDAE::SubClock::SUBCLOCK { factor: _, shift: mut __esc_shift, solver: _ } => {
+            shift = __esc_shift.clone();
+            shift.clone()
+        },
         _ => MMath::RAT0.clone(),
     });
     shift
@@ -902,7 +908,10 @@ fn getSubClockShift(mut subClk: BackendDAE::SubClock) -> MMath::Rational {
 fn getSubClockSolverOpt(mut subClk: BackendDAE::SubClock) -> Option<ArcStr> {
     let mut solver: Option<ArcStr> = None;
     solver = (match subClk.clone() {
-        BackendDAE::SubClock::SUBCLOCK { factor: _, shift: _, solver: mut solver } => solver.clone(),
+        BackendDAE::SubClock::SUBCLOCK { factor: _, shift: _, solver: mut __esc_solver } => {
+            solver = __esc_solver.clone();
+            solver.clone()
+        },
         _ => None,
     });
     solver

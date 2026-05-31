@@ -422,7 +422,10 @@ pub fn find(mut index: i32, mut st: UnitAbsyn::Store) -> Result<UnitAbsyn::Unit>
 pub fn instGetStore(mut store: UnitAbsyn::InstStore) -> Result<UnitAbsyn::Store> {
     let mut st: UnitAbsyn::Store = <UnitAbsyn::Store as ::std::default::Default>::default();
     st = (match store.clone() {
-        UnitAbsyn::InstStore::INSTSTORE { store: mut st, ht: _, checkResult: _ } => st.clone(),
+        UnitAbsyn::InstStore::INSTSTORE { store: mut __esc_st, ht: _, checkResult: _ } => {
+            st = __esc_st.clone();
+            st.clone()
+        },
         UnitAbsyn::InstStore::NOSTORE { .. } => emptyStore(),
     });
     Ok(st)
@@ -835,7 +838,10 @@ pub fn instAddStore(mut istore: UnitAbsyn::InstStore, mut itp: Arc<DAE::Type>, m
 pub fn storeSize(mut store: UnitAbsyn::Store) -> Result<i32> {
     let mut size: i32 = 0;
     size = (match store.clone() {
-        UnitAbsyn::Store { storeVector: _, numElts: mut size } => size.clone(),
+        UnitAbsyn::Store { storeVector: _, numElts: mut __esc_size } => {
+            size = __esc_size.clone();
+            size.clone()
+        },
     });
     Ok(size)
 }
@@ -1628,7 +1634,8 @@ fn getUnitStr(mut itp: Arc<DAE::Type>) -> Result<ArcStr> {
                     for mut v in &*varLst.clone() {
                         let mut v = v.clone();
                         let () = (::match_deref::match_deref! { match &(v.clone()) {
-        Deref @ DAE::Var { binding: Deref @ DAE::Binding::EQBOUND { exp: Deref @ DAE::Exp::SCONST { string: r#str }, .. }, name: Deref @ "unit", .. } => {
+        Deref @ DAE::Var { binding: Deref @ DAE::Binding::EQBOUND { exp: Deref @ DAE::Exp::SCONST { string: __esc_str }, .. }, name: Deref @ "unit", .. } => {
+                    r#str = (*__esc_str).clone();
                     return Ok(r#str.clone());
                     ()
         },

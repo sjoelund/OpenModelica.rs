@@ -1477,7 +1477,10 @@ pub fn isDeletedComp(mut status: Status) -> bool {
 pub fn getCachedInitialGraph(mut cache: Cache) -> Result<Graph> {
     let mut g: Graph = <Graph as ::std::default::Default>::default();
     g = (match cache.clone() {
-        Cache::CACHE { initialGraph: Some(mut g), .. } => g.clone(),
+        Cache::CACHE { initialGraph: Some(mut __esc_g), .. } => {
+            g = __esc_g.clone();
+            g.clone()
+        },
         _ => bail!("match: no arm matched"),
     });
     Ok(g)

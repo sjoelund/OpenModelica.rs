@@ -2645,7 +2645,8 @@ fn getComponentsIncludingTime1(mut inExp: Arc<DAE::Exp>, mut inB: bool) -> Resul
     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut res: bool = false;
     (e, res) = (::match_deref::match_deref! { match &((inExp.clone(), inB.clone())) {
-        (e, false) => {
+        (__esc_e, false) => {
+            e = (*__esc_e).clone();
             res = Expression::traverseCrefsFromExp(e.clone(), (std::sync::Arc::new(fnptr!(getComponentsIncludingTime2, Arc<DAE::ComponentRef>, bool)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, bool) -> Result<bool> + 'static>), false)?;
             (e.clone(), res.clone())
         },

@@ -829,7 +829,10 @@ pub mod VariableAttributes {
     pub fn getStateSelect(mut attributes: Arc<VariableAttributes>) -> StateSelect {
         let mut stateSelect: StateSelect = StateSelect::NEVER;
         stateSelect = (::match_deref::match_deref! { match &(attributes.clone()) {
-        Deref @ VAR_ATTR_REAL { stateSelect: Some(stateSelect), .. } => stateSelect.clone(),
+        Deref @ VAR_ATTR_REAL { stateSelect: Some(__esc_stateSelect), .. } => {
+            stateSelect = (*__esc_stateSelect).clone();
+            stateSelect.clone()
+        },
         _ => StateSelect::DEFAULT.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -852,7 +855,10 @@ pub mod VariableAttributes {
     pub fn getTearingSelect(mut attributes: Arc<VariableAttributes>) -> TearingSelect {
         let mut tearingSelect: TearingSelect = TearingSelect::NEVER;
         tearingSelect = (::match_deref::match_deref! { match &(attributes.clone()) {
-        Deref @ VAR_ATTR_REAL { tearingSelect: Some(tearingSelect), .. } => tearingSelect.clone(),
+        Deref @ VAR_ATTR_REAL { tearingSelect: Some(__esc_tearingSelect), .. } => {
+            tearingSelect = (*__esc_tearingSelect).clone();
+            tearingSelect.clone()
+        },
         _ => TearingSelect::DEFAULT.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1530,8 +1536,12 @@ pub mod VariableAttributes {
     fn getTearingSelectName(mut exp: Arc<Absyn::Exp>, mut info: SourceInfo) -> Result<ArcStr> {
         let mut name: ArcStr = arcstr::literal!("");
         name = ((::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_QUAL { componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { subscripts: Deref @ metamodelica::List::Nil, name }, subscripts: Deref @ metamodelica::List::Nil, name: Deref @ "TearingSelect" } } => name.clone(),
-        Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { subscripts: Deref @ metamodelica::List::Nil, name } } => {
+        Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_QUAL { componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { subscripts: Deref @ metamodelica::List::Nil, name: __esc_name }, subscripts: Deref @ metamodelica::List::Nil, name: Deref @ "TearingSelect" } } => {
+            name = (*__esc_name).clone();
+            name.clone()
+        },
+        Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { subscripts: Deref @ metamodelica::List::Nil, name: __esc_name } } => {
+            name = (*__esc_name).clone();
             Error::addSourceMessage(Error::DEPRECATED_EXPRESSION.clone(), list![(name.clone()).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("TearingSelect.")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone()], info.clone())?;
             literal!("")
         },

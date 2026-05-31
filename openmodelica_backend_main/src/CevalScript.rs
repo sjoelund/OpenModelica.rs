@@ -2583,12 +2583,14 @@ fn generateFunctions(mut icache: FCore::Cache, mut ienv: FCore::Graph, mut p: Ab
     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     (cache, env) = (::match_deref::match_deref! { match &((icache.clone(), ienv.clone(), isp.clone())) {
-        (cache, env, Deref @ metamodelica::List::Nil) => {
+        (__esc_cache, __esc_env, Deref @ metamodelica::List::Nil) => {
+            cache = (*__esc_cache).clone();
+            env = (*__esc_env).clone();
             (cache.clone(), env.clone())
         },
-        (cache, env, Deref @ metamodelica::List::Cons { head: cl @ Deref @ SCode::Element::CLASS { info, restriction: restr, encapsulatedPrefix: SCode::Encapsulated::ENCAPSULATED { .. }, name, .. }, tail: sp }) => {
-            let mut cache = (*cache).clone();
-            let mut env = (*env).clone();
+        (__esc_cache, __esc_env, Deref @ metamodelica::List::Cons { head: cl @ Deref @ SCode::Element::CLASS { info, restriction: restr, encapsulatedPrefix: SCode::Encapsulated::ENCAPSULATED { .. }, name, .. }, tail: sp }) => {
+            cache = (*__esc_cache).clone();
+            env = (*__esc_env).clone();
             let () = (match restr.clone() {
         SCode::Restriction::R_PACKAGE { .. } => (),
         SCode::Restriction::R_UNIONTYPE { .. } => (),
@@ -2730,7 +2732,9 @@ fn getNonPartialElementsForInstantiatedClass(mut sp: Arc<metamodelica::List<Arc<
         ErrorExt::rollBack((literal!("getNonPartialElementsForInstantiatedClass")).clone());
     }
     elts = (::match_deref::match_deref! { match &(cl.clone()) {
-        Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { elementLst: elts, .. }, .. } => ({
+        Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { elementLst: __esc_elts, .. }, .. } => {
+            elts = (*__esc_elts).clone();
+            ({
         let mut __acc: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
         for mut e in (elts.clone()).into_iter().cloned() {
             if !(!(SCodeUtil::isPartial(e.clone())) && SCodeUtil::isClass(e.clone())) { continue; }
@@ -2738,7 +2742,8 @@ fn getNonPartialElementsForInstantiatedClass(mut sp: Arc<metamodelica::List<Arc<
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }),
+    })
+        },
         _ => metamodelica::nil(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

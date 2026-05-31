@@ -4399,7 +4399,8 @@ fn makeEnumLiteralIndices(mut enumTypeName: Arc<Absyn::Path>, mut enumLiterals: 
 fn getVectorizedCref(mut crefOrArray: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     let mut cref: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     cref = (::match_deref::match_deref! { match &(crefOrArray.clone()) {
-        cref @ Deref @ DAE::Exp::CREF { componentRef: _, ty: _ } => {
+        __esc_cref @ Deref @ DAE::Exp::CREF { componentRef: _, ty: _ } => {
+            cref = (*__esc_cref).clone();
             cref.clone()
         },
         Deref @ DAE::Exp::ARRAY { ty: _, scalar: _, array: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Exp::CREF { componentRef: cr, ty: t }, tail: _ } } => {
@@ -5011,16 +5012,20 @@ fn getIteratorType(mut ty: Arc<DAE::Type>, mut id: ArcStr, mut info: SourceInfo)
             Error::addSourceMessage(Error::ITERATOR_NON_ARRAY.clone(), list![(id.clone()).clone(), (r#str.clone()).clone()], info.clone())?;
             bail!("fail")
         },
-        Deref @ DAE::Type::T_ARRAY { ty: oty, .. } => {
+        Deref @ DAE::Type::T_ARRAY { ty: __esc_oty, .. } => {
+            oty = (*__esc_oty).clone();
             oty.clone()
         },
-        Deref @ DAE::Type::T_METALIST { ty: oty } => {
+        Deref @ DAE::Type::T_METALIST { ty: __esc_oty } => {
+            oty = (*__esc_oty).clone();
             Types::boxIfUnboxedType(oty.clone())?
         },
-        Deref @ DAE::Type::T_METAARRAY { ty: oty } => {
+        Deref @ DAE::Type::T_METAARRAY { ty: __esc_oty } => {
+            oty = (*__esc_oty).clone();
             Types::boxIfUnboxedType(oty.clone())?
         },
-        Deref @ DAE::Type::T_METATYPE { ty: oty } => {
+        Deref @ DAE::Type::T_METATYPE { ty: __esc_oty } => {
+            oty = (*__esc_oty).clone();
             getIteratorType(var_field!((*ty).ty, DAE::Type::T_METATYPE).clone(), (id.clone()).clone(), info.clone())?
         },
         _ => {

@@ -1239,8 +1239,14 @@ fn solvable(mut s: BackendDAE::Solvability) -> Result<bool> {
     b = (match s.clone() {
         BackendDAE::Solvability::SOLVABILITY_SOLVED { .. } => true,
         BackendDAE::Solvability::SOLVABILITY_CONSTONE { .. } => true,
-        BackendDAE::Solvability::SOLVABILITY_CONST { b: mut b } => b.clone(),
-        BackendDAE::Solvability::SOLVABILITY_PARAMETER { b: mut b } => b.clone() && !(stringEqual((Flags::getConfigString(Flags::TEARING_STRICTNESS.clone())?).clone(), (literal!("veryStrict")).clone())),
+        BackendDAE::Solvability::SOLVABILITY_CONST { b: mut __esc_b } => {
+            b = __esc_b.clone();
+            b.clone()
+        },
+        BackendDAE::Solvability::SOLVABILITY_PARAMETER { b: mut __esc_b } => {
+            b = __esc_b.clone();
+            b.clone() && !(stringEqual((Flags::getConfigString(Flags::TEARING_STRICTNESS.clone())?).clone(), (literal!("veryStrict")).clone()))
+        },
         BackendDAE::Solvability::SOLVABILITY_LINEAR { .. } => false,
         BackendDAE::Solvability::SOLVABILITY_NONLINEAR { .. } => false,
         BackendDAE::Solvability::SOLVABILITY_UNSOLVABLE { .. } => false,
@@ -1254,7 +1260,8 @@ fn isEntrySolved(mut entry: (i32, BackendDAE::Solvability, Arc<metamodelica::Lis
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(entry.clone()) {
         (_, BackendDAE::Solvability::SOLVABILITY_SOLVED { .. }, _) => true,
-        (_, BackendDAE::Solvability::SOLVABILITY_PARAMETER { b }, _) => {
+        (_, BackendDAE::Solvability::SOLVABILITY_PARAMETER { b: __esc_b }, _) => {
+            b = (*__esc_b).clone();
             Error::addInternalError((literal!("SOLVABILITY_PARAMETER is not handled yet. Requires revision.")).clone(), metamodelica::sourceInfo!())?;
             b.clone() && !(stringEqual((Flags::getConfigString(Flags::TEARING_STRICTNESS.clone())?).clone(), (literal!("veryStrict")).clone()))
         },

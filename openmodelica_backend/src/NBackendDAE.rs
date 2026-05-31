@@ -278,7 +278,10 @@ pub fn setVarData(mut bdae: Arc<NBackendDAE>, mut varData: Arc<VarData::VarData>
 pub fn getIsAdjoint(mut bdae: Arc<NBackendDAE>) -> Result<bool> {
     let mut isAdjoint: bool = false;
     isAdjoint = (::match_deref::match_deref! { match &(bdae.clone()) {
-        Deref @ JACOBIAN { isAdjoint, .. } => isAdjoint.clone(),
+        Deref @ JACOBIAN { isAdjoint: __esc_isAdjoint, .. } => {
+            isAdjoint = (*__esc_isAdjoint).clone();
+            isAdjoint.clone()
+        },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBackendDAE.getIsAdjoint")); __mm_s.push_str(&*literal!(" failed! Only the record type JACOBIAN() has a jacobian.")); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")

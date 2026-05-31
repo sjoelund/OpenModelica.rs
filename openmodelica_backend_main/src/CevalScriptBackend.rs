@@ -10198,22 +10198,22 @@ fn deleteInitialState(mut inPath: Arc<Absyn::Path>, mut state: ArcStr, mut inPro
 fn deleteInitialStateInClass(mut inClass: Arc<Absyn::Class>, mut state: ArcStr) -> Result<Arc<Absyn::Class>> {
     let mut outClass: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
     outClass = (::match_deref::match_deref! { match &(inClass.clone()) {
-        outClass @ Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { comment: cmt, ann, classParts: parts, classAttrs, typeVars }, .. } => {
+        __esc_outClass @ Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { comment: cmt, ann, classParts: parts, classAttrs, typeVars }, .. } => {
+            outClass = (*__esc_outClass).clone();
             let mut eqlst: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
             let mut eqlst_1: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
             let mut parts2: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
-            let mut outClass = (*outClass).clone();
             eqlst = InteractiveUtil::getEquationList(parts.clone())?;
             eqlst_1 = deleteInitialStateInEqlist(eqlst.clone(), (state.clone()).clone())?;
             parts2 = InteractiveUtil::replaceEquationList(parts.clone(), eqlst_1.clone())?;
             assign_field!(outClass.body = Arc::new(Absyn::ClassDef::PARTS { typeVars: typeVars.clone(), classAttrs: classAttrs.clone(), classParts: parts2.clone(), ann: ann.clone(), comment: cmt.clone() }));
             outClass.clone()
         },
-        outClass @ Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::CLASS_EXTENDS { comment: cmt, ann, parts, modifications: modif, baseClassName: bcname }, .. } => {
+        __esc_outClass @ Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::CLASS_EXTENDS { comment: cmt, ann, parts, modifications: modif, baseClassName: bcname }, .. } => {
+            outClass = (*__esc_outClass).clone();
             let mut eqlst: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
             let mut eqlst_1: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
             let mut parts2: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
-            let mut outClass = (*outClass).clone();
             eqlst = InteractiveUtil::getEquationList(parts.clone())?;
             eqlst_1 = deleteInitialStateInEqlist(eqlst.clone(), (state.clone()).clone())?;
             parts2 = InteractiveUtil::replaceEquationList(parts.clone(), eqlst_1.clone())?;

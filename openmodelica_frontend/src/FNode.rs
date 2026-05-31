@@ -248,7 +248,10 @@ pub fn target(mut inNode: Node) -> Result<Ref> {
 pub fn targetScope(mut inNode: Node) -> Result<Scope> {
     let mut outScope: Scope = metamodelica::nil();
     outScope = (match inNode.clone() {
-        FCore::Node { data: FCore::Data::REF { target: ref outScope }, .. } => outScope.clone(),
+        FCore::Node { data: FCore::Data::REF { target: ref __esc_outScope }, .. } => {
+            outScope = __esc_outScope.clone();
+            outScope.clone()
+        },
         _ => bail!("match: no arm matched"),
     });
     Ok(outScope)
@@ -450,7 +453,10 @@ pub fn refName(mut r: Ref) -> Result<ArcStr> {
 pub fn data(mut n: Node) -> Result<Data> {
     let mut d: Data = FCore::Data::TOP;
     d = (match n.clone() {
-        FCore::Node { data: mut d, .. } => d.clone(),
+        FCore::Node { data: mut __esc_d, .. } => {
+            d = __esc_d.clone();
+            d.clone()
+        },
     });
     Ok(d)
 }
@@ -1700,7 +1706,10 @@ pub fn refImport(mut inRef: Ref) -> Result<Ref> {
 pub fn importTable(mut inNode: Node) -> Result<ImportTable> {
     let mut it: ImportTable = <FCore::ImportTable as ::std::default::Default>::default();
     it = (match inNode.clone() {
-        FCore::Node { data: FCore::Data::IM { i: mut it }, .. } => it.clone(),
+        FCore::Node { data: FCore::Data::IM { i: mut __esc_it }, .. } => {
+            it = __esc_it.clone();
+            it.clone()
+        },
         _ => bail!("match: no arm matched"),
     });
     Ok(it)

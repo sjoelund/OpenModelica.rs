@@ -1297,7 +1297,10 @@ pub fn prefixClockKind(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
 pub fn getPrefixInfo(mut inPrefix: DAE::Prefix) -> SourceInfo {
     let mut outInfo: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     outInfo = (::match_deref::match_deref! { match &(inPrefix.clone()) {
-        DAE::Prefix::PREFIX { compPre: Deref @ DAE::ComponentPrefix::PRE { info: outInfo, .. }, .. } => outInfo.clone(),
+        DAE::Prefix::PREFIX { compPre: Deref @ DAE::ComponentPrefix::PRE { info: __esc_outInfo, .. }, .. } => {
+            outInfo = (*__esc_outInfo).clone();
+            outInfo.clone()
+        },
         _ => Absyn::dummyInfo.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

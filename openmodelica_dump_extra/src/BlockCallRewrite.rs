@@ -93,8 +93,8 @@ pub fn parseClasses(mut classes: Arc<metamodelica::List<Arc<Absyn::Class>>>, mut
 pub fn parseClass(mut in_class: Arc<Absyn::Class>, mut defs: Absyn::Program) -> Result<Arc<Absyn::Class>> {
     let mut out_class: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
     out_class = (::match_deref::match_deref! { match &(in_class.clone()) {
-        out_class @ Deref @ Absyn::Class { body, .. } => {
-            let mut out_class = (*out_class).clone();
+        __esc_out_class @ Deref @ Absyn::Class { body, .. } => {
+            out_class = (*__esc_out_class).clone();
             assign_field!(out_class.body = parseClassDef(body.clone(), defs.clone())?);
             out_class.clone()
         },

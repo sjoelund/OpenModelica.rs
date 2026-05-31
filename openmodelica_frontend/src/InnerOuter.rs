@@ -1147,7 +1147,10 @@ fn getInnersFromInstHierarchyHashTable(mut t: InstHierarchyHashTable) -> Result<
 fn getValue(mut tpl: (Arc<DAE::ComponentRef>, InstInner)) -> InstInner {
     let mut v: InstInner = <InstInner as ::std::default::Default>::default();
     v = (::match_deref::match_deref! { match &(tpl.clone()) {
-        (_, v) => v.clone(),
+        (_, __esc_v) => {
+            v = (*__esc_v).clone();
+            v.clone()
+        },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     v
@@ -1450,7 +1453,10 @@ fn valueArrayList2(mut inVarOptionArray1: metamodelica::Array<Option<(Arc<DAE::C
 fn valueArrayLength(mut valueArray: ValueArray) -> Result<i32> {
     let mut size: i32 = 0;
     size = (match valueArray.clone() {
-        ValueArray { numberOfElements: mut size, .. } => size.clone(),
+        ValueArray { numberOfElements: mut __esc_size, .. } => {
+            size = __esc_size.clone();
+            size.clone()
+        },
     });
     Ok(size)
 }

@@ -291,7 +291,10 @@ pub fn simplifyBuiltinCall(mut name: Arc<Absyn::Path>, mut args: Arc<metamodelic
             exp.clone()
         },
         Deref @ "pre" => (::match_deref::match_deref! { match &(args.clone()) {
-        Deref @ metamodelica::List::Cons { head: exp @ Deref @ Expression::BOOLEAN { .. }, tail: Deref @ metamodelica::List::Nil } => exp.clone(),
+        Deref @ metamodelica::List::Cons { head: __esc_exp @ Deref @ Expression::BOOLEAN { .. }, tail: Deref @ metamodelica::List::Nil } => {
+            exp = (*__esc_exp).clone();
+            exp.clone()
+        },
         _ => Arc::new(Expression::NFExpression::CALL { call: call.clone() }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } }),
@@ -1543,7 +1546,10 @@ fn cancelTermsInMultary(mut inArguments: Arc<metamodelica::List<Arc<Expression::
     fn inc(mut oldValue: Option<i32>, mut step: i32) -> i32 {
         let mut value: i32 = 0;
         value = (match oldValue.clone() {
-        Some(mut value) => value.clone() + step.clone(),
+        Some(mut __esc_value) => {
+            value = __esc_value.clone();
+            value.clone() + step.clone()
+        },
         _ => step.clone(),
     });
         value

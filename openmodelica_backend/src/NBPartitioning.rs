@@ -697,7 +697,10 @@ pub mod Cluster {
     pub fn addElement(mut cluster_opt: Option<Arc<Cluster>>, mut cref: Arc<ComponentRef::NFComponentRef>, mut ty: ClusterElementType) -> Result<Arc<Cluster>> {
         let mut cluster: Arc<Cluster> = Arc::new(<Cluster as ::std::default::Default>::default());
         cluster = (::match_deref::match_deref! { match &(cluster_opt.clone()) {
-        Some(cluster) => cluster.clone(),
+        Some(__esc_cluster) => {
+            cluster = (*__esc_cluster).clone();
+            cluster.clone()
+        },
         _ => Arc::new(Cluster { eqn_idnts: UnorderedSet::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13), variables: UnorderedSet::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13) }),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

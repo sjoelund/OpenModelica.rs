@@ -753,7 +753,10 @@ fn canonical(mut inPartition: CrefCrefTable, mut inRef: Arc<ComponentRef::NFComp
     let mut cref_opt: Option<Arc<ComponentRef::NFComponentRef>> = None;
     cref_opt = UnorderedMap::get(inRef.clone(), inPartition.clone());
     outCanonical = (::match_deref::match_deref! { match &(cref_opt.clone()) {
-        Some(outCanonical) => canonical(inPartition.clone(), outCanonical.clone()),
+        Some(__esc_outCanonical) => {
+            outCanonical = (*__esc_outCanonical).clone();
+            canonical(inPartition.clone(), outCanonical.clone())
+        },
         _ => inRef.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1140,7 +1143,10 @@ fn addConnectionRooted(mut cref1: Arc<ComponentRef::NFComponentRef>, mut cref2: 
     pub fn updateRooted(mut roots: Option<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>, mut newRoot: Arc<ComponentRef::NFComponentRef>) -> DefiniteRoots {
         let mut outRoots: DefiniteRoots = metamodelica::nil();
         outRoots = (::match_deref::match_deref! { match &(roots.clone()) {
-        Some(outRoots) => metamodelica::cons(newRoot.clone(), outRoots.clone()),
+        Some(__esc_outRoots) => {
+            outRoots = (*__esc_outRoots).clone();
+            metamodelica::cons(newRoot.clone(), outRoots.clone())
+        },
         _ => list![newRoot.clone()],
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

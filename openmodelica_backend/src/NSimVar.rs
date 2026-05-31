@@ -359,7 +359,8 @@ pub mod SimVar {
         let mut isDiscrete: bool = false;
         let mut isProtected: bool = false;
         let () = (::match_deref::match_deref! { match &(backendInfo.clone()) {
-        Deref @ BackendInfo::BACKEND_INFO { attributes: varAttr @ Deref @ VariableAttributes::VAR_ATTR_REAL { .. }, varKind, .. } => {
+        Deref @ BackendInfo::BACKEND_INFO { attributes: varAttr @ Deref @ VariableAttributes::VAR_ATTR_REAL { .. }, varKind: __esc_varKind, .. } => {
+            varKind = (*__esc_varKind).clone();
             unit = (Util::applyOptionOrDefault(var_field!((**varAttr).unit, VariableAttributes::VariableAttributes::VAR_ATTR_REAL).clone(), (std::sync::Arc::new(fnptr!(Expression::stringValue, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<ArcStr> + 'static>), (literal!("")).clone())).clone();
             displayUnit = (Util::applyOptionOrDefault(var_field!((**varAttr).displayUnit, VariableAttributes::VariableAttributes::VAR_ATTR_REAL).clone(), (std::sync::Arc::new(fnptr!(Expression::stringValue, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<ArcStr> + 'static>), (literal!("")).clone())).clone();
             min = var_field!((**varAttr).min, VariableAttributes::VariableAttributes::VAR_ATTR_REAL).clone();
@@ -380,7 +381,8 @@ pub mod SimVar {
             isProtected = Util::getOptionOrDefault(var_field!((**varAttr).isProtected, VariableAttributes::VariableAttributes::VAR_ATTR_REAL).clone(), false);
             ()
         },
-        Deref @ BackendInfo::BACKEND_INFO { attributes: varAttr @ Deref @ VariableAttributes::VAR_ATTR_INT { .. }, varKind, .. } => {
+        Deref @ BackendInfo::BACKEND_INFO { attributes: varAttr @ Deref @ VariableAttributes::VAR_ATTR_INT { .. }, varKind: __esc_varKind, .. } => {
+            varKind = (*__esc_varKind).clone();
             min = var_field!((**varAttr).min, VariableAttributes::VariableAttributes::VAR_ATTR_INT).clone();
             max = var_field!((**varAttr).max, VariableAttributes::VariableAttributes::VAR_ATTR_INT).clone();
             start = var_field!((**varAttr).start, VariableAttributes::VariableAttributes::VAR_ATTR_INT).clone();
@@ -389,26 +391,30 @@ pub mod SimVar {
             isProtected = Util::getOptionOrDefault(var_field!((**varAttr).isProtected, VariableAttributes::VariableAttributes::VAR_ATTR_INT).clone(), false);
             ()
         },
-        Deref @ BackendInfo::BACKEND_INFO { attributes: varAttr @ Deref @ VariableAttributes::VAR_ATTR_BOOL { .. }, varKind, .. } => {
+        Deref @ BackendInfo::BACKEND_INFO { attributes: varAttr @ Deref @ VariableAttributes::VAR_ATTR_BOOL { .. }, varKind: __esc_varKind, .. } => {
+            varKind = (*__esc_varKind).clone();
             start = var_field!((**varAttr).start, VariableAttributes::VariableAttributes::VAR_ATTR_BOOL).clone();
             isFixed = Util::applyOptionOrDefault(var_field!((**varAttr).fixed, VariableAttributes::VariableAttributes::VAR_ATTR_BOOL).clone(), (std::sync::Arc::new(fnptr!(Expression::booleanValue, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>), false);
             isDiscrete = true;
             isProtected = Util::getOptionOrDefault(var_field!((**varAttr).isProtected, VariableAttributes::VariableAttributes::VAR_ATTR_BOOL).clone(), false);
             ()
         },
-        Deref @ BackendInfo::BACKEND_INFO { attributes: varAttr @ Deref @ VariableAttributes::VAR_ATTR_CLOCK { .. }, varKind, .. } => {
+        Deref @ BackendInfo::BACKEND_INFO { attributes: varAttr @ Deref @ VariableAttributes::VAR_ATTR_CLOCK { .. }, varKind: __esc_varKind, .. } => {
+            varKind = (*__esc_varKind).clone();
             isDiscrete = true;
             isProtected = Util::getOptionOrDefault(var_field!((**varAttr).isProtected, VariableAttributes::VariableAttributes::VAR_ATTR_CLOCK).clone(), false);
             ()
         },
-        Deref @ BackendInfo::BACKEND_INFO { attributes: varAttr @ Deref @ VariableAttributes::VAR_ATTR_STRING { .. }, varKind, .. } => {
+        Deref @ BackendInfo::BACKEND_INFO { attributes: varAttr @ Deref @ VariableAttributes::VAR_ATTR_STRING { .. }, varKind: __esc_varKind, .. } => {
+            varKind = (*__esc_varKind).clone();
             start = var_field!((**varAttr).start, VariableAttributes::VariableAttributes::VAR_ATTR_STRING).clone();
             isFixed = Util::applyOptionOrDefault(var_field!((**varAttr).fixed, VariableAttributes::VariableAttributes::VAR_ATTR_STRING).clone(), (std::sync::Arc::new(fnptr!(Expression::booleanValue, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>), false);
             isDiscrete = true;
             isProtected = Util::getOptionOrDefault(var_field!((**varAttr).isProtected, VariableAttributes::VariableAttributes::VAR_ATTR_STRING).clone(), false);
             ()
         },
-        Deref @ BackendInfo::BACKEND_INFO { attributes: varAttr @ Deref @ VariableAttributes::VAR_ATTR_ENUMERATION { .. }, varKind, .. } => {
+        Deref @ BackendInfo::BACKEND_INFO { attributes: varAttr @ Deref @ VariableAttributes::VAR_ATTR_ENUMERATION { .. }, varKind: __esc_varKind, .. } => {
+            varKind = (*__esc_varKind).clone();
             min = var_field!((**varAttr).min, VariableAttributes::VariableAttributes::VAR_ATTR_ENUMERATION).clone();
             max = var_field!((**varAttr).max, VariableAttributes::VariableAttributes::VAR_ATTR_ENUMERATION).clone();
             start = var_field!((**varAttr).start, VariableAttributes::VariableAttributes::VAR_ATTR_ENUMERATION).clone();
@@ -429,7 +435,10 @@ pub mod SimVar {
     fn parseComment(mut absynComment: Arc<SCode::Comment>) -> ArcStr {
         let mut commentStr: ArcStr = arcstr::literal!("");
         commentStr = ((::match_deref::match_deref! { match &(absynComment.clone()) {
-        Deref @ SCode::Comment { comment: Some(commentStr), .. } => commentStr.clone(),
+        Deref @ SCode::Comment { comment: Some(__esc_commentStr), .. } => {
+            commentStr = (*__esc_commentStr).clone();
+            commentStr.clone()
+        },
         _ => literal!(""),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();

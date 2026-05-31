@@ -78,7 +78,10 @@ pub fn addConnector(mut conn: Arc<Connector::NFConnector>, mut table: Table) -> 
     fn update(mut count: Option<i32>) -> i32 {
         let mut outCount: i32 = 0;
         outCount = (match count.clone() {
-        Some(mut outCount) => outCount.clone() + 1,
+        Some(mut __esc_outCount) => {
+            outCount = __esc_outCount.clone();
+            outCount.clone() + 1
+        },
         _ => 1,
     });
         outCount

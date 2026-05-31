@@ -997,7 +997,10 @@ fn stateAddBailOnFalse(mut var: MidCode::Var, mut labelBail: i32, mut state: Sta
 fn unpackCrefFromExp(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::ComponentRef>> {
     let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     cref = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ DAE::Exp::CREF { componentRef: cref, .. } => cref.clone(),
+        Deref @ DAE::Exp::CREF { componentRef: __esc_cref, .. } => {
+            cref = (*__esc_cref).clone();
+            cref.clone()
+        },
         _ => bail!("match: no arm matched"),
     } });
     Ok(cref)

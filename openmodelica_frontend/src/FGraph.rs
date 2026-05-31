@@ -127,7 +127,10 @@ pub fn extra(mut inGraph: Graph) -> Result<Extra> {
 pub fn currentScope(mut inGraph: Graph) -> Result<Scope> {
     let mut outScope: Scope = metamodelica::nil();
     outScope = (match inGraph.clone() {
-        FCore::Graph::G { scope: ref outScope, .. } => outScope.clone(),
+        FCore::Graph::G { scope: ref __esc_outScope, .. } => {
+            outScope = __esc_outScope.clone();
+            outScope.clone()
+        },
         FCore::Graph::EG { name: _ } => metamodelica::nil(),
     });
     Ok(outScope)

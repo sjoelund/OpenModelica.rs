@@ -302,7 +302,10 @@ pub fn analyseArrayConnector(mut conn: Arc<Connector::NFConnector>, mut connectC
     fn update(mut count: Option<i32>) -> i32 {
         let mut outCount: i32 = 0;
         outCount = (match count.clone() {
-        Some(mut outCount) => if (outCount.clone() >= 0) {outCount.clone() + 1} else {-1},
+        Some(mut __esc_outCount) => {
+            outCount = __esc_outCount.clone();
+            if (outCount.clone() >= 0) {outCount.clone() + 1} else {-1}
+        },
         _ => 1,
     });
         outCount

@@ -403,8 +403,14 @@ fn preFromArgs(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>,
     let mut state_var: Pointer::Pointer<Arc<Variable::NFVariable>>;
     let mut negated: bool = false;
     (state_var, old_exp, negated) = (::match_deref::match_deref! { match &(args.clone()) {
-        Deref @ metamodelica::List::Cons { head: old_exp @ Deref @ Expression::CREF { cref: state_cref, .. }, tail: Deref @ metamodelica::List::Nil } => (BVariable::getVarPointer(state_cref.clone(), metamodelica::sourceInfo!())?, old_exp.clone(), false),
-        Deref @ metamodelica::List::Cons { head: old_exp @ Deref @ Expression::LUNARY { exp: Deref @ Expression::CREF { cref: state_cref, .. }, .. }, tail: Deref @ metamodelica::List::Nil } => (BVariable::getVarPointer(state_cref.clone(), metamodelica::sourceInfo!())?, old_exp.clone(), true),
+        Deref @ metamodelica::List::Cons { head: __esc_old_exp @ Deref @ Expression::CREF { cref: state_cref, .. }, tail: Deref @ metamodelica::List::Nil } => {
+            old_exp = (*__esc_old_exp).clone();
+            (BVariable::getVarPointer(state_cref.clone(), metamodelica::sourceInfo!())?, old_exp.clone(), false)
+        },
+        Deref @ metamodelica::List::Cons { head: __esc_old_exp @ Deref @ Expression::LUNARY { exp: Deref @ Expression::CREF { cref: state_cref, .. }, .. }, tail: Deref @ metamodelica::List::Nil } => {
+            old_exp = (*__esc_old_exp).clone();
+            (BVariable::getVarPointer(state_cref.clone(), metamodelica::sourceInfo!())?, old_exp.clone(), true)
+        },
         _ => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBDetectStates.preFromArgs")); __mm_s.push_str(&*literal!(" failed because of unexpected expression ")); __mm_s.push_str(&*context.clone()); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*List::toString(args.clone(), (std::sync::Arc::new(Expression::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("")).clone(), (literal!(", ")).clone(), (literal!("")).clone(), true, 0)?); __mm_s.push_str(&*literal!(").")); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")

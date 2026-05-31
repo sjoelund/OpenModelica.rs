@@ -186,8 +186,8 @@ pub fn generateVerificationScenarios(mut package_path: Path, mut in_env: Absyn::
 pub fn updatePackage(mut in_class: Arc<Absyn::Class>, mut ag_elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>) -> Result<Arc<Absyn::Class>> {
     let mut out_class: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
     out_class = (::match_deref::match_deref! { match &(in_class.clone()) {
-        out_class @ Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { typeVars, classAttrs, classParts: _, ann, comment }, .. } => {
-            let mut out_class = (*out_class).clone();
+        __esc_out_class @ Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { typeVars, classAttrs, classParts: _, ann, comment }, .. } => {
+            out_class = (*__esc_out_class).clone();
             assign_field!(out_class.body = Arc::new(Absyn::ClassDef::PARTS { typeVars: typeVars.clone(), classAttrs: classAttrs.clone(), classParts: list![Arc::new(Absyn::ClassPart::PUBLIC { contents: ag_elems.clone() })], ann: ann.clone(), comment: comment.clone() }));
             out_class.clone()
         },

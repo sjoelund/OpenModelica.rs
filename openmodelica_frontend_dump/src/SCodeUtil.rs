@@ -363,8 +363,14 @@ pub fn setElementName(mut e: Arc<SCode::Element>, mut name: ArcStr) -> Arc<SCode
 pub fn elementName(mut e: Arc<SCode::Element>) -> Result<ArcStr> {
     let mut s: ArcStr = arcstr::literal!("");
     s = ((::match_deref::match_deref! { match &(e.clone()) {
-        Deref @ SCode::Element::COMPONENT { name: s, .. } => s.clone(),
-        Deref @ SCode::Element::CLASS { name: s, .. } => s.clone(),
+        Deref @ SCode::Element::COMPONENT { name: __esc_s, .. } => {
+            s = (*__esc_s).clone();
+            s.clone()
+        },
+        Deref @ SCode::Element::CLASS { name: __esc_s, .. } => {
+            s = (*__esc_s).clone();
+            s.clone()
+        },
         _ => bail!("match: no arm matched"),
     } })).clone();
     Ok(s)
@@ -374,8 +380,16 @@ pub fn elementNameInfo(mut element: Arc<SCode::Element>) -> Result<(ArcStr, Sour
     let mut name: ArcStr = arcstr::literal!("");
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     (name, info) = (::match_deref::match_deref! { match &(element.clone()) {
-        Deref @ SCode::Element::COMPONENT { info, name, .. } => (name.clone(), info.clone()),
-        Deref @ SCode::Element::CLASS { info, name, .. } => (name.clone(), info.clone()),
+        Deref @ SCode::Element::COMPONENT { info: __esc_info, name: __esc_name, .. } => {
+            name = (*__esc_name).clone();
+            info = (*__esc_info).clone();
+            (name.clone(), info.clone())
+        },
+        Deref @ SCode::Element::CLASS { info: __esc_info, name: __esc_name, .. } => {
+            name = (*__esc_name).clone();
+            info = (*__esc_info).clone();
+            (name.clone(), info.clone())
+        },
         _ => bail!("match: no arm matched"),
     } });
     Ok((name, info))
@@ -437,7 +451,10 @@ pub fn elementNameEqual(mut inElement1: Arc<SCode::Element>, mut inElement2: Arc
 pub fn enumName(mut e: Arc<SCode::Enum>) -> Result<ArcStr> {
     let mut s: ArcStr = arcstr::literal!("");
     s = ((::match_deref::match_deref! { match &(e.clone()) {
-        Deref @ SCode::Enum { literal: s, .. } => s.clone(),
+        Deref @ SCode::Enum { literal: __esc_s, .. } => {
+            s = (*__esc_s).clone();
+            s.clone()
+        },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
     Ok(s)
@@ -1359,8 +1376,14 @@ pub fn getClassComponents(mut cl: Arc<SCode::Element>) -> Result<(Arc<metamodeli
 pub fn getClassElements(mut cl: Arc<SCode::Element>) -> Arc<metamodelica::List<Arc<SCode::Element>>> {
     let mut elts: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     elts = (::match_deref::match_deref! { match &(cl.clone()) {
-        Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { elementLst: elts, .. }, .. } => elts.clone(),
-        Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::CLASS_EXTENDS { composition: Deref @ SCode::ClassDef::PARTS { elementLst: elts, .. }, .. }, .. } => elts.clone(),
+        Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { elementLst: __esc_elts, .. }, .. } => {
+            elts = (*__esc_elts).clone();
+            elts.clone()
+        },
+        Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::CLASS_EXTENDS { composition: Deref @ SCode::ClassDef::PARTS { elementLst: __esc_elts, .. }, .. }, .. } => {
+            elts = (*__esc_elts).clone();
+            elts.clone()
+        },
         _ => metamodelica::nil(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2237,19 +2260,24 @@ pub static knownExternalCFunctions: std::sync::LazyLock<Arc<metamodelica::List<A
 pub fn isBuiltinFunction(mut cl: Arc<SCode::Element>, mut inVars: Arc<metamodelica::List<ArcStr>>, mut outVars: Arc<metamodelica::List<ArcStr>>) -> Result<ArcStr> {
     let mut name: ArcStr = arcstr::literal!("");
     name = ((::match_deref::match_deref! { match &((cl.clone(), outVars.clone())) {
-        (Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { externalDecl: Some(Deref @ SCode::ExternalDecl { lang: Some(Deref @ "builtin"), funcName: None, .. }), .. }, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { .. } }, name, .. }, _) => {
+        (Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { externalDecl: Some(Deref @ SCode::ExternalDecl { lang: Some(Deref @ "builtin"), funcName: None, .. }), .. }, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { .. } }, name: __esc_name, .. }, _) => {
+            name = (*__esc_name).clone();
             name.clone()
         },
-        (Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { externalDecl: Some(Deref @ SCode::ExternalDecl { lang: Some(Deref @ "builtin"), funcName: Some(name), .. }), .. }, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { .. } }, .. }, _) => {
+        (Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { externalDecl: Some(Deref @ SCode::ExternalDecl { lang: Some(Deref @ "builtin"), funcName: Some(__esc_name), .. }), .. }, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { .. } }, .. }, _) => {
+            name = (*__esc_name).clone();
             name.clone()
         },
-        (Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { externalDecl: Some(Deref @ SCode::ExternalDecl { lang: Some(Deref @ "builtin"), funcName: None, .. }), .. }, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_PARALLEL_FUNCTION { .. } }, name, .. }, _) => {
+        (Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { externalDecl: Some(Deref @ SCode::ExternalDecl { lang: Some(Deref @ "builtin"), funcName: None, .. }), .. }, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_PARALLEL_FUNCTION { .. } }, name: __esc_name, .. }, _) => {
+            name = (*__esc_name).clone();
             name.clone()
         },
-        (Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { externalDecl: Some(Deref @ SCode::ExternalDecl { lang: Some(Deref @ "builtin"), funcName: Some(name), .. }), .. }, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_PARALLEL_FUNCTION { .. } }, .. }, _) => {
+        (Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { externalDecl: Some(Deref @ SCode::ExternalDecl { lang: Some(Deref @ "builtin"), funcName: Some(__esc_name), .. }), .. }, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_PARALLEL_FUNCTION { .. } }, .. }, _) => {
+            name = (*__esc_name).clone();
             name.clone()
         },
-        (Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { externalDecl: Some(Deref @ SCode::ExternalDecl { args, output_: Some(Deref @ Absyn::ComponentRef::CREF_IDENT { name: outVar2, subscripts: Deref @ metamodelica::List::Nil }), lang: Some(Deref @ "C"), funcName: Some(name), .. }), .. }, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { .. } }, .. }, Deref @ metamodelica::List::Cons { head: outVar1, tail: Deref @ metamodelica::List::Nil }) => {
+        (Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { externalDecl: Some(Deref @ SCode::ExternalDecl { args, output_: Some(Deref @ Absyn::ComponentRef::CREF_IDENT { name: outVar2, subscripts: Deref @ metamodelica::List::Nil }), lang: Some(Deref @ "C"), funcName: Some(__esc_name), .. }), .. }, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { .. } }, .. }, Deref @ metamodelica::List::Cons { head: outVar1, tail: Deref @ metamodelica::List::Nil }) => {
+            name = (*__esc_name).clone();
             let mut argsStr: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let true = (listMember((name.clone()).clone(), knownExternalCFunctions.clone())) else { bail!("pattern mismatch") };
             let true = (outVar2.clone() == outVar1.clone()) else { bail!("pattern mismatch") };
@@ -2257,7 +2285,8 @@ pub fn isBuiltinFunction(mut cl: Arc<SCode::Element>, mut inVars: Arc<metamodeli
             let true = (argsStr.clone() == inVars.clone()) else { bail!("pattern mismatch") };
             name.clone()
         },
-        (Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { externalDecl: Some(Deref @ SCode::ExternalDecl { lang: Some(Deref @ "C"), funcName: None, .. }), .. }, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { .. } }, name, .. }, _) => {
+        (Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { externalDecl: Some(Deref @ SCode::ExternalDecl { lang: Some(Deref @ "C"), funcName: None, .. }), .. }, restriction: SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { .. } }, name: __esc_name, .. }, _) => {
+            name = (*__esc_name).clone();
             let true = (listMember((name.clone()).clone(), knownExternalCFunctions.clone())) else { bail!("pattern mismatch") };
             name.clone()
         },
@@ -2999,7 +3028,10 @@ pub fn commentAnnotation(mut cmt: Arc<SCode::Comment>) -> Option<Arc<SCode::Anno
 pub fn optCommentAnnotation(mut cmt: Option<Arc<SCode::Comment>>) -> Option<Arc<SCode::Annotation>> {
     let mut ann: Option<Arc<SCode::Annotation>> = None;
     ann = (::match_deref::match_deref! { match &(cmt.clone()) {
-        Some(Deref @ SCode::Comment { annotation_: ann, .. }) => ann.clone(),
+        Some(Deref @ SCode::Comment { annotation_: __esc_ann, .. }) => {
+            ann = (*__esc_ann).clone();
+            ann.clone()
+        },
         _ => None,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -3327,10 +3359,12 @@ pub fn getElementWithPath(mut inProgram: Arc<metamodelica::List<Arc<SCode::Eleme
 pub fn getElementName(mut e: Arc<SCode::Element>) -> Result<ArcStr> {
     let mut s: ArcStr = arcstr::literal!("");
     s = ((::match_deref::match_deref! { match &(e.clone()) {
-        Deref @ SCode::Element::COMPONENT { name: s, .. } => {
+        Deref @ SCode::Element::COMPONENT { name: __esc_s, .. } => {
+            s = (*__esc_s).clone();
             s.clone()
         },
-        Deref @ SCode::Element::CLASS { name: s, .. } => {
+        Deref @ SCode::Element::CLASS { name: __esc_s, .. } => {
+            s = (*__esc_s).clone();
             s.clone()
         },
         Deref @ SCode::Element::EXTENDS { baseClassPath: p, .. } => {
@@ -3472,7 +3506,10 @@ pub fn setClassPrefixes(mut prefixes: Arc<SCode::Prefixes>, mut cl: Arc<SCode::E
 pub fn getClassDef(mut inClass: Arc<SCode::Element>) -> Result<Arc<SCode::ClassDef>> {
     let mut outCdef: Arc<SCode::ClassDef>;
     outCdef = (::match_deref::match_deref! { match &(inClass.clone()) {
-        Deref @ SCode::Element::CLASS { classDef: outCdef, .. } => outCdef.clone(),
+        Deref @ SCode::Element::CLASS { classDef: __esc_outCdef, .. } => {
+            outCdef = (*__esc_outCdef).clone();
+            outCdef.clone()
+        },
         _ => bail!("match: no arm matched"),
     } });
     Ok(outCdef)
@@ -3789,8 +3826,14 @@ pub fn isRestrictionImpure(mut inRestr: SCode::Restriction, mut hasZeroOutputPre
 pub fn getFunctionRestrictionPurity(mut restr: SCode::FunctionRestriction) -> Absyn::FunctionPurity {
     let mut purity: Absyn::FunctionPurity = Absyn::FunctionPurity::IMPURE;
     purity = (match restr.clone() {
-        SCode::FunctionRestriction::FR_NORMAL_FUNCTION { purity: mut purity } => purity.clone(),
-        SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { purity: mut purity } => purity.clone(),
+        SCode::FunctionRestriction::FR_NORMAL_FUNCTION { purity: mut __esc_purity } => {
+            purity = __esc_purity.clone();
+            purity.clone()
+        },
+        SCode::FunctionRestriction::FR_EXTERNAL_FUNCTION { purity: mut __esc_purity } => {
+            purity = __esc_purity.clone();
+            purity.clone()
+        },
         _ => openmodelica_ast::Absyn::FunctionPurity::NO_PURITY,
     });
     purity
@@ -4366,7 +4409,8 @@ fn hasExternalObjectConstructor(mut inEls: Arc<metamodelica::List<Arc<SCode::Ele
 pub fn getExternalObjectDestructor(mut inEls: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<SCode::Element>> {
     let mut cl: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     cl = (::match_deref::match_deref! { match &(inEls.clone()) {
-        Deref @ metamodelica::List::Cons { head: cl @ Deref @ SCode::Element::CLASS { name: Deref @ "destructor", .. }, tail: _ } => {
+        Deref @ metamodelica::List::Cons { head: __esc_cl @ Deref @ SCode::Element::CLASS { name: Deref @ "destructor", .. }, tail: _ } => {
+            cl = (*__esc_cl).clone();
             cl.clone()
         },
         Deref @ metamodelica::List::Cons { head: _, tail: els } => {
@@ -4380,7 +4424,8 @@ pub fn getExternalObjectDestructor(mut inEls: Arc<metamodelica::List<Arc<SCode::
 pub fn getExternalObjectConstructor(mut inEls: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<SCode::Element>> {
     let mut cl: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     cl = (::match_deref::match_deref! { match &(inEls.clone()) {
-        Deref @ metamodelica::List::Cons { head: cl @ Deref @ SCode::Element::CLASS { name: Deref @ "constructor", .. }, tail: _ } => {
+        Deref @ metamodelica::List::Cons { head: __esc_cl @ Deref @ SCode::Element::CLASS { name: Deref @ "constructor", .. }, tail: _ } => {
+            cl = (*__esc_cl).clone();
             cl.clone()
         },
         Deref @ metamodelica::List::Cons { head: _, tail: els } => {
@@ -4459,10 +4504,22 @@ pub fn isEmptyMod(mut r#mod: Arc<SCode::Mod>) -> bool {
 pub fn getConstrainingMod(mut element: Arc<SCode::Element>) -> Arc<SCode::Mod> {
     let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
     r#mod = (::match_deref::match_deref! { match &(element.clone()) {
-        Deref @ SCode::Element::CLASS { prefixes: Deref @ SCode::Prefixes { replaceablePrefix: Deref @ SCode::Replaceable::REPLACEABLE { cc: Some(Deref @ SCode::ConstrainClass { modifier: r#mod, .. }) }, .. }, .. } => r#mod.clone(),
-        Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::DERIVED { modifications: r#mod, .. }, .. } => r#mod.clone(),
-        Deref @ SCode::Element::COMPONENT { prefixes: Deref @ SCode::Prefixes { replaceablePrefix: Deref @ SCode::Replaceable::REPLACEABLE { cc: Some(Deref @ SCode::ConstrainClass { modifier: r#mod, .. }) }, .. }, .. } => r#mod.clone(),
-        Deref @ SCode::Element::COMPONENT { modifications: r#mod, .. } => r#mod.clone(),
+        Deref @ SCode::Element::CLASS { prefixes: Deref @ SCode::Prefixes { replaceablePrefix: Deref @ SCode::Replaceable::REPLACEABLE { cc: Some(Deref @ SCode::ConstrainClass { modifier: __esc_mod, .. }) }, .. }, .. } => {
+            r#mod = (*__esc_mod).clone();
+            r#mod.clone()
+        },
+        Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::DERIVED { modifications: __esc_mod, .. }, .. } => {
+            r#mod = (*__esc_mod).clone();
+            r#mod.clone()
+        },
+        Deref @ SCode::Element::COMPONENT { prefixes: Deref @ SCode::Prefixes { replaceablePrefix: Deref @ SCode::Replaceable::REPLACEABLE { cc: Some(Deref @ SCode::ConstrainClass { modifier: __esc_mod, .. }) }, .. }, .. } => {
+            r#mod = (*__esc_mod).clone();
+            r#mod.clone()
+        },
+        Deref @ SCode::Element::COMPONENT { modifications: __esc_mod, .. } => {
+            r#mod = (*__esc_mod).clone();
+            r#mod.clone()
+        },
         _ => Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

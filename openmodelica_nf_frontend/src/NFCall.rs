@@ -627,7 +627,10 @@ pub fn isReduction(mut call: Arc<NFCall>) -> Result<bool> {
 pub fn inlineType(mut call: Arc<NFCall>) -> DAE::InlineType {
     let mut inlineTy: DAE::InlineType = DAE::InlineType::AFTER_INDEX_RED_INLINE;
     inlineTy = (::match_deref::match_deref! { match &(call.clone()) {
-        Deref @ TYPED_CALL { attributes: Deref @ NFCallAttributes::CALL_ATTR { inlineType: inlineTy, .. }, .. } => inlineTy.clone(),
+        Deref @ TYPED_CALL { attributes: Deref @ NFCallAttributes::CALL_ATTR { inlineType: __esc_inlineTy, .. }, .. } => {
+            inlineTy = (*__esc_inlineTy).clone();
+            inlineTy.clone()
+        },
         _ => openmodelica_frontend_types::DAE::InlineType::NO_INLINE,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
