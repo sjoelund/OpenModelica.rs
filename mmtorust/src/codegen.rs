@@ -8660,8 +8660,19 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
         "integer" => {
             // Modelica `integer(Real)` truncates toward -inf. `metamodelica::Real`
             // wraps `f64`; reach the inner value via `.0`.
-            let arg = args.first().map(|a| emit_builtin_call_arg(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();
-            Ok(format!("(({arg}).0.floor() as i32)"))
+            //
+            // The argument is usually a `Real`, but it can already be an `Integer`
+            // — e.g. `integer((8/3)*count)` where `/` is integer division, so the
+            // whole product is an i32. An i32 has no `.0`/`.floor()` (E0610), so
+            // when the argument's static type is `Integer` the conversion is a
+            // no-op; emit it as-is (a redundant `as i32` cast on an i32).
+            let arg_exp = args.first();
+            let arg = arg_exp.map(|a| emit_builtin_call_arg(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();
+            if matches!(arg_exp.map(|a| a.ty()), Some(Ty::I32)) {
+                Ok(format!("(({arg}) as i32)"))
+            } else {
+                Ok(format!("(({arg}).0.floor() as i32)"))
+            }
         },
         "sign" if args.len() == 1 => {
             // Modelica `sign(v)` is `input Real v; output Integer` — the single
