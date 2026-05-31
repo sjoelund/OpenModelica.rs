@@ -4733,6 +4733,26 @@ fn emit_function<'a>(out: &mut String, name: &str, node: &NameNode<'_>, c: &MM::
                 lookup_node(&format!("{target}.{rest}"), top_level)
             })
             .or_else(|| {
+                // A nested (function-local) function may `extends` a *sibling*
+                // declared in the same enclosing function body — e.g.
+                // `function intWrapperFunc extends evaluateFunc;` where the
+                // sibling `partial function evaluateFunc` supplies its output.
+                // Such siblings live in the enclosing function's NameNode
+                // children, not at package scope, so none of the package-scope
+                // lookups above can find them. At this point in `emit_function`
+                // `ctx.current_fn_qname` still names the *enclosing* function
+                // (it is replaced with this function's own qname further down),
+                // so resolve the base among its children. Without this the
+                // inherited output component is never merged and the body
+                // returns `Ok(())` instead of its output.
+                if ctx.current_fn_qname.is_empty() {
+                    return None;
+                }
+                let enclosing = lookup_node(&ctx.current_fn_qname, top_level)?;
+                let last = dotted.rsplit('.').next().unwrap_or(&dotted);
+                enclosing.children.get(last)
+            })
+            .or_else(|| {
                 let last = dotted.rsplit('.').next().unwrap_or(&dotted);
                 lookup_node(last, top_level)
             });
