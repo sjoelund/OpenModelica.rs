@@ -83,6 +83,7 @@ pub struct OutputFormat {
     pub scalarizeMode: ScalarizeMode,
     pub recordMode: RecordMode,
     pub moveBindings: bool,
+    pub showConfidence: bool,
 }
 
 impl Default for OutputFormat {
@@ -91,6 +92,7 @@ impl Default for OutputFormat {
             scalarizeMode: Default::default(),
             recordMode: Default::default(),
             moveBindings: Default::default(),
+            showConfidence: Default::default(),
         }
     }
 }
@@ -98,7 +100,7 @@ impl Default for OutputFormat {
 pub type OUTPUT_FORMAT = OutputFormat;
 
 
-pub static defaultFormat: std::sync::LazyLock<OutputFormat> = std::sync::LazyLock::new(|| { OutputFormat { scalarizeMode: ScalarizeMode::PARTIALLY_SCALARIZED.clone(), recordMode: RecordMode::WITH_RECORDS.clone(), moveBindings: false } });
+pub static defaultFormat: std::sync::LazyLock<OutputFormat> = std::sync::LazyLock::new(|| { OutputFormat { scalarizeMode: ScalarizeMode::PARTIALLY_SCALARIZED.clone(), recordMode: RecordMode::WITH_RECORDS.clone(), moveBindings: false, showConfidence: false } });
 
 pub fn formatFromFlags() -> Result<OutputFormat> {
     let mut format: OutputFormat = defaultFormat.clone();
@@ -129,6 +131,10 @@ pub fn formatFromFlags() -> Result<OutputFormat> {
         },
         Deref @ "withoutRecords" => {
             format.recordMode = RecordMode::WITHOUT_RECORDS.clone();
+            ()
+        },
+        Deref @ "showConfidence" => {
+            format.showConfidence = true;
             ()
         },
         _ => (),

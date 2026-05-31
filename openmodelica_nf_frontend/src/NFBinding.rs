@@ -494,8 +494,6 @@ pub fn toString(mut binding: Arc<NFBinding>, mut prefix: ArcStr) -> Result<ArcSt
     Ok(string)
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn toFlatString(mut binding: Arc<NFBinding>, mut format: BaseModelica::OutputFormat, mut prefix: ArcStr) -> Result<ArcStr> {
     let mut string: ArcStr = arcstr::literal!("");
     string = ((::match_deref::match_deref! { match &(binding.clone()) {
@@ -509,6 +507,9 @@ pub fn toFlatString(mut binding: Arc<NFBinding>, mut format: BaseModelica::Outpu
         _ => literal!(""),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
+    if format.showConfidence.clone() {
+        string = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*string.clone()); __mm_s.push_str(&*literal!(" /* confidence = ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", actualConfidence(binding.clone())?))); __mm_s.push_str(&*literal!("*/")); ArcStr::from(__mm_s) }).clone();
+    }
     Ok(string)
 }
 

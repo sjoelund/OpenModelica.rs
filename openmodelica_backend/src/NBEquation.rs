@@ -2500,6 +2500,7 @@ pub mod Equation {
             ty.clone()
         },
         Deref @ WHEN_EQUATION { .. } => WhenEquationBody::getType(var_field!((*eq).body, Equation::WHEN_EQUATION).clone())?,
+        Deref @ IF_EQUATION { .. } => IfEquationBody::getType(var_field!((*eq).body, Equation::IF_EQUATION).clone())?,
         _ => Arc::new(openmodelica_nf_frontend::NFType::REAL),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -3605,6 +3606,21 @@ pub mod IfEquationBody {
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         b
+    }
+
+    pub fn getType(mut body: Arc<IfEquationBody>) -> Result<Arc<Type::NFType>> {
+        let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
+        let mut body_types: Arc<metamodelica::List<Arc<Type::NFType>>> = metamodelica::nil();
+        body_types = ({
+        let mut __acc: Arc<metamodelica::List<Arc<Type::NFType>>> = metamodelica::nil();
+        for mut b in (body.then_eqns.clone()).into_iter().cloned() {
+            let __x = Equation::getType(Pointer::access(b.clone()), false)?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    });
+        ty = if ((body_types.clone().len() as i32) == 1) {listHead(body_types.clone())?} else {Arc::new(Type::NFType::TUPLE { types: body_types.clone(), names: None })};
+        Ok(ty)
     }
 
     fn sortForSplit(mut body: Arc<IfEquationBody>) -> Result<Arc<IfEquationBody>> {

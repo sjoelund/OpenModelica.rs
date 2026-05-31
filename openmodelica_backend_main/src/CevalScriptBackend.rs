@@ -1217,6 +1217,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     let mut r#str: ArcStr = arcstr::literal!("");
                     let mut bom: ArcStr = arcstr::literal!("");
                     let mut sanityCheckFailed: bool = false;
+                    let mut lineEndingIsCRLF: bool = false;
                     let mut tokens1: Arc<metamodelica::List<Token>> = metamodelica::nil();
                     let mut tokens2: Arc<metamodelica::List<Token>> = metamodelica::nil();
                     let mut errorTokens: Arc<metamodelica::List<Token>> = metamodelica::nil();
@@ -1227,6 +1228,9 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     let mut s2 = (*s2).clone();
                     ExecStat::execStatReset()?;
                     (s1, bom) = StringUtil::stripBOM((s1.clone()).clone())?;
+                    lineEndingIsCRLF = s1.clone() != System::stringReplace((s1.clone()).clone(), (literal!("\r\n")).clone(), (literal!("\n")).clone())?;
+                    s1 = (System::stringReplace((s1.clone()).clone(), (literal!("\r\n")).clone(), (literal!("\n")).clone())?).clone();
+                    s1 = (System::stringReplace((s1.clone()).clone(), (literal!("\r")).clone(), (literal!("\n")).clone())?).clone();
                     (tokens1, errorTokens) = scanString((s1.clone()).clone(), (literal!("<StringSource>")).clone())?;
                     reportErrors(errorTokens.clone())?;
                     if false && s1.clone() != stringAppendList(({
@@ -1259,6 +1263,8 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                         bail!("fail");
                     }
                     (s2, bom) = StringUtil::stripBOM((s2.clone()).clone())?;
+                    s2 = (System::stringReplace((s2.clone()).clone(), (literal!("\r\n")).clone(), (literal!("\n")).clone())?).clone();
+                    s2 = (System::stringReplace((s2.clone()).clone(), (literal!("\r")).clone(), (literal!("\n")).clone())?).clone();
                     (tokens2, errorTokens) = scanString((s2.clone()).clone(), (literal!("<StringSource>")).clone())?;
                     reportErrors(errorTokens.clone())?;
                     ExecStat::execStat((literal!("diffModelicaFileListings scan string 2")).clone())?;
@@ -1340,6 +1346,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     }}).clone();
+                    r#str = (if (lineEndingIsCRLF.clone()) {System::stringReplace((r#str.clone()).clone(), (literal!("\n")).clone(), (literal!("\r\n")).clone())?} else {r#str.clone()}).clone();
                     Ok(Arc::new(Values::Value::STRING { string: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*bom.clone()); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -3686,9 +3693,9 @@ pub fn cevalInteractiveFunctions4(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     filename = (if (System::regularFileExists((str1.clone()).clone())) {str1.clone()} else {filename.clone()}).clone();
                     b = System::plotCallBackDefined();
                     if boolOr(forceOMPlot.clone(), boolNot(b.clone())) {
-                        r#str = stringDelimitList(vars_1.clone(), (literal!("\" \"")).clone());
+                        r#str = stringDelimitList(vars_1.clone(), (literal!("' '")).clone());
                         str2 = stringAppendList(list![(omhome.clone()).clone(), (pd.clone()).clone(), (literal!("bin")).clone(), (pd.clone()).clone(), (literal!("OMPlot")).clone(), (s1.clone()).clone()]);
-                        str3 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("--filename=\"")); __mm_s.push_str(&*filename.clone()); __mm_s.push_str(&*literal!("\" --title=\"")); __mm_s.push_str(&*title.clone()); __mm_s.push_str(&*literal!("\" --grid=")); __mm_s.push_str(&*gridStr.clone()); __mm_s.push_str(&*literal!(" --plot --logx=")); __mm_s.push_str(&*boolString(logX.clone())); __mm_s.push_str(&*literal!(" --logy=")); __mm_s.push_str(&*boolString(logY.clone())); __mm_s.push_str(&*literal!(" --yaxis=\"")); __mm_s.push_str(&*yAxis.clone()); __mm_s.push_str(&*literal!("\" --xlabel=\"")); __mm_s.push_str(&*xLabel.clone()); __mm_s.push_str(&*literal!("\" --ylabel=\"")); __mm_s.push_str(&*yLabel.clone()); __mm_s.push_str(&*literal!("\" --ylabel-right=\"")); __mm_s.push_str(&*yLabelRight.clone()); __mm_s.push_str(&*literal!("\" --xrange=")); __mm_s.push_str(&*realString(x1.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*realString(x2.clone())); __mm_s.push_str(&*literal!(" --yrange=")); __mm_s.push_str(&*realString(y1.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*realString(y2.clone())); __mm_s.push_str(&*literal!(" --yrange-right=")); __mm_s.push_str(&*realString(y1R.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*realString(y2R.clone())); __mm_s.push_str(&*literal!(" --new-window=")); __mm_s.push_str(&*boolString(externalWindow.clone())); __mm_s.push_str(&*literal!(" --curve-width=")); __mm_s.push_str(&*realString(curveWidth.clone())); __mm_s.push_str(&*literal!(" --curve-style=")); __mm_s.push_str(&*intString(curveStyle.clone())); __mm_s.push_str(&*literal!(" --legend-position=\"")); __mm_s.push_str(&*legendPosition.clone()); __mm_s.push_str(&*literal!("\" --footer=\"")); __mm_s.push_str(&*footer.clone()); __mm_s.push_str(&*literal!("\" --auto-scale=")); __mm_s.push_str(&*boolString(autoScale.clone())); __mm_s.push_str(&*literal!(" \"")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\"")); ArcStr::from(__mm_s) }).clone();
+                        str3 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("--filename=\"")); __mm_s.push_str(&*filename.clone()); __mm_s.push_str(&*literal!("\" --title=\"")); __mm_s.push_str(&*title.clone()); __mm_s.push_str(&*literal!("\" --grid=")); __mm_s.push_str(&*gridStr.clone()); __mm_s.push_str(&*literal!(" --plot --logx=")); __mm_s.push_str(&*boolString(logX.clone())); __mm_s.push_str(&*literal!(" --logy=")); __mm_s.push_str(&*boolString(logY.clone())); __mm_s.push_str(&*literal!(" --yaxis=\"")); __mm_s.push_str(&*yAxis.clone()); __mm_s.push_str(&*literal!("\" --xlabel=\"")); __mm_s.push_str(&*xLabel.clone()); __mm_s.push_str(&*literal!("\" --ylabel=\"")); __mm_s.push_str(&*yLabel.clone()); __mm_s.push_str(&*literal!("\" --ylabel-right=\"")); __mm_s.push_str(&*yLabelRight.clone()); __mm_s.push_str(&*literal!("\" --xrange=")); __mm_s.push_str(&*realString(x1.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*realString(x2.clone())); __mm_s.push_str(&*literal!(" --yrange=")); __mm_s.push_str(&*realString(y1.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*realString(y2.clone())); __mm_s.push_str(&*literal!(" --yrange-right=")); __mm_s.push_str(&*realString(y1R.clone())); __mm_s.push_str(&*literal!(":")); __mm_s.push_str(&*realString(y2R.clone())); __mm_s.push_str(&*literal!(" --new-window=")); __mm_s.push_str(&*boolString(externalWindow.clone())); __mm_s.push_str(&*literal!(" --curve-width=")); __mm_s.push_str(&*realString(curveWidth.clone())); __mm_s.push_str(&*literal!(" --curve-style=")); __mm_s.push_str(&*intString(curveStyle.clone())); __mm_s.push_str(&*literal!(" --legend-position=\"")); __mm_s.push_str(&*legendPosition.clone()); __mm_s.push_str(&*literal!("\" --footer=\"")); __mm_s.push_str(&*footer.clone()); __mm_s.push_str(&*literal!("\" --auto-scale=")); __mm_s.push_str(&*boolString(autoScale.clone())); __mm_s.push_str(&*literal!(" '")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("'")); ArcStr::from(__mm_s) }).clone();
                         call = stringAppendList(list![(literal!("\"")).clone(), (str2.clone()).clone(), (literal!("\"")).clone(), (literal!(" ")).clone(), (str3.clone()).clone()]);
                         let 0 = (System::spawnCall((str2.clone()).clone(), (call.clone()).clone())) else { bail!("pattern mismatch") };
                     } else if b.clone() {

@@ -1546,18 +1546,9 @@ pub fn makeEventVar(mut name: ArcStr, mut uniqueIndex: i32, mut var_ty: Arc<Type
     let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut var_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
-    let mut iter_crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
     let mut iter_subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    (iter_crefs, _, _) = BEquation::Iterator::getFrames(iterator.clone())?;
-    iter_subs = ({
-        let mut __acc: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
-        for mut iter in (iter_crefs.clone()).into_iter().cloned() {
-            let __x = Subscript::fromTypedExp(Expression::fromCref(iter.clone(), false)?);
-            __acc = cons(__x, __acc);
-        }
-        __acc.reverse()
-    });
+    iter_subs = BEquation::Iterator::normalizedSubscripts(iterator.clone(), UnorderedMap::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1))?;
     if iter_subs.clone().is_empty() {
         ty = var_ty.clone();
     } else {

@@ -629,7 +629,7 @@ fn fun_77(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_stateVars: Arc<meta
         (txt, _, a_stateVars, a_simCode, a_exportVar, a_simVar) => {
             let mut ret_0: bool = false;
             let mut txt = (*txt).clone();
-            ret_0 = Util::isSome(a_exportVar.clone());
+            ret_0 = isSome(a_exportVar.clone());
             txt = fun_76(txt.clone(), ret_0.clone(), a_stateVars.clone(), a_simCode.clone(), a_simVar.clone())?;
             txt.clone()
         },

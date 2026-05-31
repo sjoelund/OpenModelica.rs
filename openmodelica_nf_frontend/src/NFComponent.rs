@@ -810,6 +810,11 @@ pub fn typeAttrsToFlatStream(mut typeAttrs: Arc<metamodelica::List<(ArcStr, Arc<
         s = IOStream::append(s.clone(), (name.clone()).clone())?;
         s = IOStream::append(s.clone(), (literal!(" = ")).clone())?;
         s = IOStream::append(s.clone(), (Expression::toFlatString(bind_exp.clone(), format.clone())?).clone())?;
+        if format.showConfidence.clone() {
+            s = IOStream::append(s.clone(), (literal!(" /* confidence = ")).clone())?;
+            s = IOStream::append(s.clone(), ArcStr::from(::std::format!("{}", Binding::actualConfidence(binding.clone())?)))?;
+            s = IOStream::append(s.clone(), (literal!("*/")).clone())?;
+        }
         ty_attrs = listRest(ty_attrs.clone())?;
         if ty_attrs.clone().is_empty() {
             break;
