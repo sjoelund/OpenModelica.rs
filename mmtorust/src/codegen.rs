@@ -6385,7 +6385,17 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
                 // same trait-object shape, matching the parameter-side
                 // `Arc<dyn Fn>` used by [`fmt_param_ty`] and the
                 // partial-function alias declarations.
-                Ty::Function { inputs, output, .. } if infallible_ref => {
+                // A local function-typed binding (callback parameter / protected
+                // local holding an `Arc<dyn Fn>`) must be forwarded as
+                // `name.clone()` by the `fn_env_vars` arm below — never wrapped
+                // as a concrete fn-item. Exclude it here even when its name
+                // collides with an infallible user function (e.g. a local
+                // `filter` shadowing a `filter` function): the fn-item wrapping
+                // would emit `fnptr!(filter::<()>, …)`, applying a turbofish to a
+                // local variable (E0109).
+                Ty::Function { inputs, output, .. }
+                    if infallible_ref
+                        && !ctx.fn_env_vars.contains_key(name.split('.').next().unwrap_or(name)) => {
                     // The closure synthesized by `fnptr!` annotates each
                     // parameter with its declared type. Concrete types are
                     // emitted as-is; type variables from the function's own
@@ -9650,32 +9660,28 @@ fn emit_cloned_call_arg<'a>(arg: &TypedExp, is_const: bool, ctx: &mut GenCtx, to
 fn arg_is_input_fn_param(arg: &TypedExp, ctx: &GenCtx) -> bool {
     let TypedExp::Var { name, segments, ty, .. } = arg else { return false };
     if segments.len() > 1 { return false; }
-    // Whether the binding's Rust value is already shaped as `Arc<dyn Fn>` (as
-    // opposed to a bare `fn(...)` pointer). [`fmt_param_ty`] emits `Arc<dyn Fn>`
-    // for `Ty::Function { name: None, .. }` and for named partial-function
-    // aliases declared *inside* another function (tracked in
-    // `nested_partial_aliases`); top-level named aliases stay as `fn(...)`
-    // pointers and DO need an outer `Arc::new(...)` when fed into an anonymous
-    // `Arc<dyn Fn>` slot.
-    let stored_as_arc_dyn = |ty: &Ty| -> bool {
-        match ty {
-            Ty::Function { name: None, .. } => true,
-            Ty::Function { name: Some(qn), .. } => ctx.nested_partial_aliases.contains(qn),
-            _ => false,
-        }
-    };
-    if !stored_as_arc_dyn(ty) { return false; }
     let base = name.split('.').next().unwrap_or(name);
-    // Input parameters AND function-typed local variables (outputs/protected /
-    // pattern bindings) are declared with the same shape `fmt_param_ty` chose
-    // for the formal — already `Arc<dyn Fn + 'static>`. Forward with
-    // `.clone()`; wrapping in `Arc::new(...)` would produce
-    // `Arc<Arc<dyn Fn>>` and fail typeck (E0277).
-    if ctx.fn_input_names.contains(base) { return true; }
-    match ctx.fn_env_vars.get(base) {
-        Some(env_ty) => stored_as_arc_dyn(env_ty),
-        None => false,
+    // A local binding (input parameter, output, protected, or pattern binding)
+    // whose type is a function type holds an `Arc<dyn Fn(...)>` runtime value:
+    // every function-typed parameter/local lowers to `Arc<dyn Fn>` —
+    // anonymous callbacks (`Ty::Function { name: None }`) and partial-function
+    // aliases alike. [`fmt_param_ty`] renders *any* `Ty::Function` as
+    // `Arc<dyn Fn>`, and a partial-function alias is itself a
+    // `pub type … = Arc<dyn Fn …>` (so a local `let mut f: SomeAlias;` is an
+    // `Arc<dyn Fn>` too). Such a binding must be forwarded with `.clone()`;
+    // re-wrapping it as a fn-item (`fnptr!`/`Arc::new`) would nest
+    // `Arc<Arc<dyn Fn>>` or Ok-wrap an already-fallible callback (E0271).
+    //
+    // Consult the declared shape in `fn_env_vars` (which holds every local
+    // binding) rather than the reference's own inferred `ty`, which is
+    // frequently `Ty::Unknown` for a bare local. A top-level fn-*item*
+    // referenced by name is not in `fn_env_vars`, so it correctly falls
+    // through to the fn-item wrapping path.
+    let is_fn = |t: &Ty| matches!(t, Ty::Function { .. });
+    if let Some(env_ty) = ctx.fn_env_vars.get(base) {
+        return is_fn(env_ty);
     }
+    ctx.fn_input_names.contains(base) && is_fn(ty)
 }
 
 /// MetaModelica implicitly extracts the first element of a tuple-returning call
