@@ -11124,6 +11124,26 @@ fn canonicalize_call_funcs<'a>(
                 sig_ty,
             }
         }
+        // A partial application used as a default value — e.g.
+        // `simplifyExp = function SimplifyExp.simplifyDump(includeScope = true,
+        // …)` on `NBEquation.Equation.simplify`, where `SimplifyExp` is an
+        // import alias local to the callee's module. Canonicalize its `func`
+        // exactly like a `Call`, so when the default is inlined at a call site
+        // in another module the alias is resolved to the real path
+        // (`NFSimplifyExp.simplifyDump`) rather than emitted verbatim (E0433).
+        E::PartEval { func, args, named_args, sig_ty, ty } => {
+            let canonical = match typedexp::resolve_call_node(&func, top_level, module_prefix) {
+                Some((q, _)) => q,
+                None => func,
+            };
+            E::PartEval {
+                func: canonical,
+                args: args.into_iter().map(recur).collect(),
+                named_args: named_args.into_iter().map(|(n, a)| (n, recur(a))).collect(),
+                sig_ty,
+                ty,
+            }
+        }
         E::Constructor { name, args, named_args, ty, field_names } => E::Constructor {
             name,
             args: args.into_iter().map(recur).collect(),
