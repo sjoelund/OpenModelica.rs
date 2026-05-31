@@ -30,7 +30,7 @@ pub fn disable() {}
 
 pub fn enable() {}
 
-pub fn expandHeap(sz: f64) -> bool {
+pub fn expandHeap(sz: metamodelica::Real) -> bool {
     true
 }
 
@@ -96,4 +96,4 @@ pub fn setForceUnmapOnGcollect(forceUnmap: bool) {}
 
 pub fn setFreeSpaceDivisor(divisor: i32) {}
 
-pub fn setMaxHeapSize(sz: f64) {}
+pub fn setMaxHeapSize(sz: metamodelica::Real) {}
