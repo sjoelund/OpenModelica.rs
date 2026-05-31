@@ -147,13 +147,18 @@ thread_local! {
 
     /// Index 20 — Stack-overflow sentinel.
     ///
-    /// Set to `None` before code that may overflow; set to `Some(())` as a
-    /// marker when overflow is detected and caught.
-    /// Source: `BackendDAECreate.mo`, `Util.mo`, `DAEMode.mo`.
+    /// Set to `None` before code that may overflow; set to `Some(1)` as a
+    /// marker when stack-overflow handling has been armed for the current
+    /// evaluation (see `CevalScript.cevalCallFunctionEvaluateOrGenerate`,
+    /// which does `setGlobalRoot(Global.stackoverFlowIndex, SOME(1))` and tests
+    /// it with `isNone(getGlobalRoot(...))`).
+    /// Source: `CevalScript.mo` (`SOME(1)` store), plus `NONE()` clears in
+    /// `BackendDAECreate.mo`, `Util.mo`, `DAEMode.mo`, `SimCodeMain.mo`.
     ///
-    /// TODO: Confirm the stored value is indeed `Option<()>` and not a richer
-    /// type by inspecting the `getGlobalRoot` call sites.
-    pub static stackoverFlowIndex: RefCell<Option<()>> =
+    /// The stored value is `Option<Integer>` (`SOME(1)`), not `Option<()>`:
+    /// the marker carries an Integer payload even though current call sites
+    /// only test it via `isNone`.
+    pub static stackoverFlowIndex: RefCell<Option<i32>> =
         const { RefCell::new(None) };
 
     /// Index 21 — GC profiling statistics.
