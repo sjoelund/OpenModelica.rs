@@ -935,6 +935,27 @@ pub fn builtin_function_ty(name: &str) -> Option<Ty> {
         // rather than a `todo!()`. Formal names mirror MetaModelicaBuiltin.mo.
         "arrayGet" =>
             Some(f(vec![inp("arr", Ty::Array(Box::new(tv("A")))), inp("index", Ty::I32)], tv("A"), vec!["A".to_owned()])),
+        // `arrayUpdate(array<A>, Integer, A) -> array<A>`: mutate in place and
+        // return the (same) array. The value formal `A` is what lets the call
+        // site apply MetaModelica's implicit first-output coercion when a
+        // tuple-returning call is passed as the value (e.g.
+        // `arrayUpdate(a, i, rewriteIndex(..))` where `rewriteIndex` returns
+        // `(list, Integer)` — only the first output is stored).
+        "arrayUpdate" =>
+            Some(f(vec![inp("arr", Ty::Array(Box::new(tv("A")))), inp("index", Ty::I32), inp("value", tv("A"))], Ty::Array(Box::new(tv("A"))), vec!["A".to_owned()])),
+        // The bounds-checked `arrayGet`/`arrayUpdate` builtins are commonly
+        // written qualified through the `MetaModelica.Dangerous` import (that
+        // package only declares the `*NoBoundsChecking` variants; the runtime
+        // re-exports the plain builtins into `Dangerous` via `pub use super::*`).
+        // `cref_to_dotted` deliberately leaves the qualified spelling intact
+        // (so the call lowers to the real `Dangerous::arrayUpdate(..)` rather
+        // than being renamed), which means the bare-name signatures above don't
+        // match. Register the qualified spellings here too so the call site
+        // still resolves formals and applies the value-arg first-output coercion.
+        "Dangerous.arrayGet" | "MetaModelica.Dangerous.arrayGet" =>
+            Some(f(vec![inp("arr", Ty::Array(Box::new(tv("A")))), inp("index", Ty::I32)], tv("A"), vec!["A".to_owned()])),
+        "Dangerous.arrayUpdate" | "MetaModelica.Dangerous.arrayUpdate" =>
+            Some(f(vec![inp("arr", Ty::Array(Box::new(tv("A")))), inp("index", Ty::I32), inp("value", tv("A"))], Ty::Array(Box::new(tv("A"))), vec!["A".to_owned()])),
 
         // Length-style: container -> Integer
         "listLength" =>
@@ -1094,13 +1115,17 @@ fn call_ty(func: &str, args: &[TypedExp], top_level: &BTreeMap<String, NameNode<
         "listRest" | "listTail" | "listReverse" | "listAppend" | "listReverseInPlace" | "listAppendDestroy" => {
             args.first().map(|a| a.ty()).unwrap_or(Ty::Unknown)
         }
-        "arrayGet" => {
+        // `arrayGet` yields the array's element type. The `Dangerous.`-qualified
+        // spellings denote the same builtin (see `builtin_function_ty`); type
+        // them identically so a result flowing into e.g. a `for` loop's iterable
+        // infers the element type rather than `Unknown`.
+        "arrayGet" | "Dangerous.arrayGet" | "MetaModelica.Dangerous.arrayGet" => {
             match args.first().map(|a| a.ty()) {
                 Some(Ty::Array(inner)) => *inner,
                 _ => Ty::Unknown,
             }
         }
-        "arrayUpdate" | "arrayCopy" => {
+        "arrayUpdate" | "arrayCopy" | "Dangerous.arrayUpdate" | "MetaModelica.Dangerous.arrayUpdate" => {
             args.first().map(|a| a.ty()).unwrap_or(Ty::Unknown)
         }
         "arrayCreate" => {

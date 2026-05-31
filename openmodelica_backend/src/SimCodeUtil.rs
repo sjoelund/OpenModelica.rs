@@ -9533,7 +9533,8 @@ fn sortSimvars(mut simvars: metamodelica::Array<Arc<metamodelica::List<SimCodeVa
         let mut i = match __ord0 { 1 => SimVarsIndex::state, 2 => SimVarsIndex::derivative, 3 => SimVarsIndex::alg, 4 => SimVarsIndex::discreteAlg, 5 => SimVarsIndex::realOptimizeConstraints, 6 => SimVarsIndex::realOptimizeFinalConstraints, 7 => SimVarsIndex::param, 8 => SimVarsIndex::alias, 9 => SimVarsIndex::intAlg, 10 => SimVarsIndex::intParam, 11 => SimVarsIndex::intAlias, 12 => SimVarsIndex::boolAlg, 13 => SimVarsIndex::boolParam, 14 => SimVarsIndex::boolAlias, 15 => SimVarsIndex::stringAlg, 16 => SimVarsIndex::stringParam, 17 => SimVarsIndex::stringAlias, 18 => SimVarsIndex::extObj, 19 => SimVarsIndex::inputs, 20 => SimVarsIndex::outputs, 21 => SimVarsIndex::r#const, 22 => SimVarsIndex::intConst, 23 => SimVarsIndex::boolConst, 24 => SimVarsIndex::stringConst, 25 => SimVarsIndex::sensitivity, 26 => SimVarsIndex::setcvars, 27 => SimVarsIndex::datareconinputvars, 28 => SimVarsIndex::setBVars, 29 => SimVarsIndex::jacobian, 30 => SimVarsIndex::seed, _ => unreachable!("enum ordinal out of range") };
         Dangerous::arrayUpdate(simvars.clone(), ((i.clone()) as i32 /* Integer(...) with unknown arg type */), List::sort(Dangerous::arrayGet(simvars.clone(), ((i.clone()) as i32 /* Integer(...) with unknown arg type */))?, (std::sync::Arc::new(simVarCompareByCrefSubsAtEndlLexical) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, SimCodeVar::SimVar) -> Result<bool> + 'static>))?)?;
     }
-    for mut v in Dangerous::arrayGet(simvars.clone(), ((SimVarsIndex::inputs.clone()) as i32))? /* Unknown type for iterator Unknown */ {
+    for mut v in &*Dangerous::arrayGet(simvars.clone(), ((SimVarsIndex::inputs.clone()) as i32))? {
+        let mut v = v.clone();
         i = (match v.clone() {
         SimCodeVar::SimVar { inputIndex: Some(mut arr), .. } => {
             {let _arr = arr.clone(); _arr.borrow_mut()[(1-1) as usize] = i.clone(); _arr};
@@ -9649,15 +9650,15 @@ fn fixIndex(mut simVars: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::
         let mut i = match __ord0 { 1 => SimVarsIndex::state, 2 => SimVarsIndex::derivative, 3 => SimVarsIndex::alg, 4 => SimVarsIndex::discreteAlg, 5 => SimVarsIndex::realOptimizeConstraints, 6 => SimVarsIndex::realOptimizeFinalConstraints, 7 => SimVarsIndex::param, 8 => SimVarsIndex::alias, 9 => SimVarsIndex::intAlg, 10 => SimVarsIndex::intParam, 11 => SimVarsIndex::intAlias, 12 => SimVarsIndex::boolAlg, 13 => SimVarsIndex::boolParam, 14 => SimVarsIndex::boolAlias, 15 => SimVarsIndex::stringAlg, 16 => SimVarsIndex::stringParam, 17 => SimVarsIndex::stringAlias, 18 => SimVarsIndex::extObj, 19 => SimVarsIndex::inputs, 20 => SimVarsIndex::outputs, 21 => SimVarsIndex::r#const, 22 => SimVarsIndex::intConst, 23 => SimVarsIndex::boolConst, 24 => SimVarsIndex::stringConst, 25 => SimVarsIndex::sensitivity, 26 => SimVarsIndex::setcvars, 27 => SimVarsIndex::datareconinputvars, 28 => SimVarsIndex::setBVars, 29 => SimVarsIndex::jacobian, 30 => SimVarsIndex::seed, _ => unreachable!("enum ordinal out of range") };
         lst = Dangerous::arrayGet(simVars.clone(), ((i.clone()) as i32))?;
         if !(isCpp.clone()) {
-            Dangerous::arrayUpdate(simVars.clone(), ((i.clone()) as i32), rewriteIndex(lst.clone(), ix.clone()))?;
+            Dangerous::arrayUpdate(simVars.clone(), ((i.clone()) as i32), (rewriteIndex(lst.clone(), ix.clone())).0)?;
             ix = ix.clone() + (lst.clone().len() as i32);
         } else {
-            Dangerous::arrayUpdate(simVars.clone(), ((i.clone()) as i32), rewriteIndexColumnMajor(lst.clone(), 0)?)?;
+            Dangerous::arrayUpdate(simVars.clone(), ((i.clone()) as i32), (rewriteIndexColumnMajor(lst.clone(), 0)?).0)?;
         }
     }
     for __ord1 in (((SimVarsIndex::param.clone()) as i32))..=(((SimVarsIndex::stringConst.clone()) as i32)) {
         let mut i = match __ord1 { 1 => SimVarsIndex::state, 2 => SimVarsIndex::derivative, 3 => SimVarsIndex::alg, 4 => SimVarsIndex::discreteAlg, 5 => SimVarsIndex::realOptimizeConstraints, 6 => SimVarsIndex::realOptimizeFinalConstraints, 7 => SimVarsIndex::param, 8 => SimVarsIndex::alias, 9 => SimVarsIndex::intAlg, 10 => SimVarsIndex::intParam, 11 => SimVarsIndex::intAlias, 12 => SimVarsIndex::boolAlg, 13 => SimVarsIndex::boolParam, 14 => SimVarsIndex::boolAlias, 15 => SimVarsIndex::stringAlg, 16 => SimVarsIndex::stringParam, 17 => SimVarsIndex::stringAlias, 18 => SimVarsIndex::extObj, 19 => SimVarsIndex::inputs, 20 => SimVarsIndex::outputs, 21 => SimVarsIndex::r#const, 22 => SimVarsIndex::intConst, 23 => SimVarsIndex::boolConst, 24 => SimVarsIndex::stringConst, 25 => SimVarsIndex::sensitivity, 26 => SimVarsIndex::setcvars, 27 => SimVarsIndex::datareconinputvars, 28 => SimVarsIndex::setBVars, 29 => SimVarsIndex::jacobian, 30 => SimVarsIndex::seed, _ => unreachable!("enum ordinal out of range") };
-        Dangerous::arrayUpdate(simVars.clone(), ((i.clone()) as i32), rewriteIndex(Dangerous::arrayGet(simVars.clone(), ((i.clone()) as i32))?, 0))?;
+        Dangerous::arrayUpdate(simVars.clone(), ((i.clone()) as i32), (rewriteIndex(Dangerous::arrayGet(simVars.clone(), ((i.clone()) as i32))?, 0)).0)?;
     }
     Ok(())
 }
