@@ -347,7 +347,7 @@ pub mod BClock {
         Ok((subClock, baseClock))
     }
 
-    fn updateSubClock(mut dest: Arc<BClock>, mut src: Arc<BClock>) -> Result<Arc<BClock>> {
+    pub fn updateSubClock(mut dest: Arc<BClock>, mut src: Arc<BClock>) -> Result<Arc<BClock>> {
         let mut dest: Arc<BClock> = dest;
         dest = (::match_deref::match_deref! { match &((dest.clone(), src.clone())) {
         (Deref @ SUB_CLOCK { .. }, Deref @ SUB_CLOCK { .. }) => {

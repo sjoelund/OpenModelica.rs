@@ -722,7 +722,7 @@ fn checkLinearity(mut full: Arc<Adjacency::Matrix::Matrix>, mut v: Arc<Unordered
     linear = (::match_deref::match_deref! { match &(full.clone()) {
         Deref @ Adjacency::Matrix::FULL { .. } => UnorderedMap::all(e.clone(), (std::sync::Arc::new({ let __pe_b1 = var_field!((*full).occurrences, Adjacency::Matrix::Matrix::FULL).clone(); let __pe_b2 = var_field!((*full).solvabilities, Adjacency::Matrix::Matrix::FULL).clone(); let __pe_b3 = v.clone(); move |__pe_a0| Ok(eqnIsLinear(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>)),
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBTearing.checkLinearity")); __mm_s.push_str(&*literal!(" expected type full, got type ")); __mm_s.push_str(&*Adjacency::Matrix::strictnessString(Adjacency::Matrix::getStrictness(full.clone())?)?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBTearing.checkLinearity")); __mm_s.push_str(&*literal!(" expected type full, got type ")); __mm_s.push_str(&*Adjacency::strictnessString(Adjacency::Matrix::getStrictness(full.clone())?)); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
