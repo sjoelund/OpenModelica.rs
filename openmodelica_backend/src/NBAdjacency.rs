@@ -1065,7 +1065,7 @@ pub mod Matrix {
                 name = BEquation::Equation::getEqnName(eqn_ptr.clone())?;
                 index_new = UnorderedMap::getSafe(name.clone(), eqns.map.clone(), metamodelica::sourceInfo!())?;
                 index_old = UnorderedMap::getSafe(name.clone(), old_map.clone(), metamodelica::sourceInfo!())?;
-                (old_start, old_size) = var_field!((*adj).mapping, Matrix::FINAL).eqn_AtS[(index_old.clone()-1) as usize].clone();
+                (old_start, old_size) = var_field!((*adj).mapping, Matrix::FINAL).eqn_AtS.borrow()[(index_old.clone()-1) as usize].clone();
                 (new_start, new_size) = mapping.eqn_AtS.borrow()[(index_new.clone()-1) as usize].clone();
                 if old_size.clone() == new_size.clone() {
                     for mut i in 0..=old_size.clone() - 1 {

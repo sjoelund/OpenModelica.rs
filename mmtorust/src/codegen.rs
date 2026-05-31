@@ -9128,26 +9128,39 @@ fn emit_var<'a>(
                 VarShape::RefArc => format!("(**{base}).{field_id}"),
             };
             res = format!("var_field!({macro_call}, {variant_path})");
+            // Look up the extracted field's declared type on the variant record.
+            // Needed both to insert `.borrow()` when it is an `Array<T>` field
+            // being subscripted here, AND to advance `cur_ty` so the `field_iter`
+            // loop below can resolve *further* field accesses (e.g. the Array
+            // field reached as `adj.mapping.eqn_AtS` — without advancing `cur_ty`
+            // the `eqn_AtS` lookup sees the enum type, misses the `.borrow()`,
+            // and `[i]` hits an `Rc<RefCell<Vec<_>>>` directly: E0608).
+            let variant_qname = format!("{enum_qname}.{variant_name}");
+            let field_ty = record_field_tys(&variant_qname, top_level)
+                .unwrap_or_default()
+                .into_iter()
+                .find(|(n, _)| n == &first.name)
+                .map(|(_, t)| t)
+                .unwrap_or(Ty::Unknown);
             if !first.subscripts.is_empty() {
-                // Look up the field's declared type on the variant. If it's
-                // Array<T> (= Rc<RefCell<Vec<T>>>), insert `.borrow()` before
+                // Array<T> (= Rc<RefCell<Vec<T>>>) needs `.borrow()` before
                 // indexing — matching the package-path and inherited-field
                 // branches below. Without this, `[i]` is applied directly to
                 // an `&Rc<RefCell<Vec<T>>>` reference, which doesn't impl
                 // `Index` (E0608).
-                let variant_qname = format!("{enum_qname}.{variant_name}");
-                let field_ty = record_field_tys(&variant_qname, top_level)
-                    .unwrap_or_default()
-                    .into_iter()
-                    .find(|(n, _)| n == &first.name)
-                    .map(|(_, t)| t)
-                    .unwrap_or(Ty::Unknown);
                 if matches!(field_ty, Ty::Array(_)) {
                     res = format!("{res}.borrow()");
                 }
                 for sub in &first.subscripts {
                     res = format!("{}[({}-1) as usize]", res, emit_exp(sub, false, ctx, top_level));
                 }
+            }
+            cur_ty = field_ty;
+            for _ in &first.subscripts {
+                cur_ty = match cur_ty {
+                    Ty::Array(inner) | Ty::List(inner) => *inner,
+                    other => other,
+                };
             }
         }
     }
