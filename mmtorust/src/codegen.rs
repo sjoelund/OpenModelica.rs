@@ -9164,9 +9164,16 @@ fn global_root_var_path(grc: &GlobalRootConst, ctx: &GenCtx) -> String {
         // (see FrontEnd/BackendInterface.mo and its `__OpenModelica_Interface`).
         "backendInterface" => Some("openmodelica_frontend_dump"),
         // openmodelica_backend — types from SymbolTable, SimCode, etc.
-        "symbolTable" | "rewriteRulesIndex" | "optionSimCode" | "interactiveCache" => {
+        "symbolTable" | "rewriteRulesIndex" | "optionSimCode" => {
             Some("openmodelica_backend")
         }
+        // openmodelica_backend_main — the interactive cache holds a tuple
+        // whose third element is `Interactive.GraphicEnvCache`, a uniontype
+        // defined in Script/Interactive.mo (→ openmodelica_backend_main). The
+        // root cannot be declared in openmodelica_backend (which does not, and
+        // must not, depend on backend_main); its only accessor is also in
+        // backend_main, so place the thread_local there.
+        "interactiveCache" => Some("openmodelica_backend_main"),
         _ => None,
     };
     let pkg_top = grc.pkg.split('.').next().unwrap_or(&grc.pkg);

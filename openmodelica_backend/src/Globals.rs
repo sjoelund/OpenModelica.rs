@@ -39,12 +39,8 @@ thread_local! {
 
     // Index 26 — interactiveCache
     //
-    // Cache of interactive lookup results:
-    //   list of (program, path, environment).
-    // Set to Some(list) when cache is populated; None otherwise.
-    pub static interactiveCache: RefCell<Option<Arc<metamodelica::List<(
-        openmodelica_frontend::Absyn::Program,
-        Arc<openmodelica_frontend::Absyn::Path>,
-        crate::Interactive::GraphicEnvCache,
-    )>>>> = const { RefCell::new(None) };
+    // Declared in `openmodelica_backend_main/src/Globals.rs`: its value type
+    // includes `Interactive.GraphicEnvCache`, defined in backend_main, which
+    // this crate does not depend on. See `global_root_var_path`'s crate
+    // override for `interactiveCache`.
 }

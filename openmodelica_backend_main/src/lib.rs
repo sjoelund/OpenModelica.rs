@@ -11,3 +11,4 @@ pub mod OpenModelicaScriptingAPI;
 pub mod Refactor;
 pub mod SimCodeMain;
 pub mod StaticScript;
+pub mod Globals;

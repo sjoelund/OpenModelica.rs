@@ -2991,7 +2991,7 @@ pub fn getClassEnv(mut p: Absyn::Program, mut p_class: Arc<Absyn::Path>) -> Resu
         env_2 = GraphicEnvCache::GRAPHIC_ENV_FULL_CACHE { program: p.clone(), modelPath: p_class.clone(), cache: FCore::emptyCache(), env: FGraph::empty() };
         return Ok(env_2.clone());
     }
-    ocache = openmodelica_backend::Globals::interactiveCache.with(|__root| __root.borrow().clone());
+    ocache = crate::Globals::interactiveCache.with(|__root| __root.borrow().clone());
     if isSome(ocache.clone()) {
         let __pa0 = ::match_deref::match_deref! { match &(ocache.clone()) {
             Some(__pa0) => __pa0.clone(),
@@ -3018,21 +3018,21 @@ pub fn getClassEnv(mut p: Absyn::Program, mut p_class: Arc<Absyn::Path>) -> Resu
             } };
             cache = __pa1.clone();
             (cache, _) = List::deleteMemberOnTrue(p_class.clone(), cache.clone(), (std::sync::Arc::new(fnptr!(matchPath, Arc<Absyn::Path>, (Absyn::Program, Arc<Absyn::Path>, GraphicEnvCache))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, (Absyn::Program, Arc<Absyn::Path>, GraphicEnvCache)) -> Result<bool> + 'static>))?;
-            { let __v = Some(cache.clone()); openmodelica_backend::Globals::interactiveCache.with(|__root| *__root.borrow_mut() = __v) };
+            { let __v = Some(cache.clone()); crate::Globals::interactiveCache.with(|__root| *__root.borrow_mut() = __v) };
         }
     }
     (fcache, env) = getClassEnv_dispatch(p.clone(), p_class.clone())?;
     env_2 = GraphicEnvCache::GRAPHIC_ENV_FULL_CACHE { program: p.clone(), modelPath: p_class.clone(), cache: fcache.clone(), env: env.clone() };
-    ocache = openmodelica_backend::Globals::interactiveCache.with(|__root| __root.borrow().clone());
+    ocache = crate::Globals::interactiveCache.with(|__root| __root.borrow().clone());
     if isSome(ocache.clone()) {
         let __pa2 = ::match_deref::match_deref! { match &(ocache.clone()) {
             Some(__pa2) => __pa2.clone(),
             _ => bail!("pattern mismatch"),
         } };
         cache = __pa2.clone();
-        { let __v = Some(metamodelica::cons((p.clone(), p_class.clone(), env_2.clone()), cache.clone())); openmodelica_backend::Globals::interactiveCache.with(|__root| *__root.borrow_mut() = __v) };
+        { let __v = Some(metamodelica::cons((p.clone(), p_class.clone(), env_2.clone()), cache.clone())); crate::Globals::interactiveCache.with(|__root| *__root.borrow_mut() = __v) };
     } else {
-        { let __v = Some(metamodelica::cons((p.clone(), p_class.clone(), env_2.clone()), metamodelica::nil())); openmodelica_backend::Globals::interactiveCache.with(|__root| *__root.borrow_mut() = __v) };
+        { let __v = Some(metamodelica::cons((p.clone(), p_class.clone(), env_2.clone()), metamodelica::nil())); crate::Globals::interactiveCache.with(|__root| *__root.borrow_mut() = __v) };
     }
     Ok(env_2)
 }
