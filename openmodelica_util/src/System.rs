@@ -1256,17 +1256,29 @@ pub fn numProcessors() -> i32 {
     std::thread::available_parallelism().map(|n| n.get() as i32).unwrap_or(1)
 }
 
-pub fn launchParallelTasks<AnyInput: Clone + Send + 'static, AnyOutput: Clone + Send + 'static>(
+pub fn launchParallelTasks<AnyInput: Clone + 'static, AnyOutput: Clone + 'static>(
     _numThreads: i32,
-    _inData: Arc<List<AnyInput>>,
-    _func: Arc<dyn Fn(AnyInput) -> Result<AnyOutput> + 'static>,
+    inData: Arc<List<AnyInput>>,
+    func: Arc<dyn Fn(AnyInput) -> Result<AnyOutput> + 'static>,
 ) -> Result<Arc<List<AnyOutput>>> {
-    // The C version spawns `numThreads` worker pthreads, each pulling
-    // tasks off a shared queue. The Rust port needs `Send + Sync` on the
-    // closure type, which conflicts with the current `Arc<dyn Fn>` slot.
-    // Defer until we either widen the callback bound at all call sites or
-    // route through rayon.
-    todo!("System.launchParallelTasks: parallel task scheduler not yet ported")
+    // The C runtime (System_omc.c) spawns `numThreads` worker pthreads pulling
+    // tasks off a shared queue, but collects the results back in INPUT ORDER
+    // (`commands[i] = fn(task[i])`) and itself falls back to a plain serial map
+    // (`System_launchParallelTasksSerial`) whenever `numThreads == 1` or there
+    // is a single task. Parallelism is therefore a throughput optimisation, not
+    // a semantic requirement.
+    //
+    // We run the serial map unconditionally: the MetaModelica payloads carried
+    // here (e.g. a `SymbolTable` with `Rc<RefCell<…>>` fields and `Arc<dyn Fn>`
+    // callbacks) are deliberately NOT `Send`, so spawning OS threads is not
+    // possible without a representational change. The `Send` bounds the C-port
+    // stub previously carried were premature and only blocked call sites; drop
+    // them. A failing task aborts the whole run, mirroring the C version's
+    // `MMC_THROW` on a worker failure (here: the first `Err` short-circuits the
+    // `collect`).
+    let results: Result<Vec<AnyOutput>> =
+        (&*inData).into_iter().map(|x| func(x.clone())).collect();
+    Ok(Arc::new(results?.into_iter().collect::<List<AnyOutput>>()))
 }
 
 pub fn exit(status: i32) -> Result<()> {
