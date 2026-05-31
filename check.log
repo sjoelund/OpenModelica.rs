@@ -1,6 +1,3 @@
-    Checking openmodelica_util v0.1.0 (/projects/OpenModelica.rs/openmodelica_util)
-    Checking openmodelica_susan v0.1.0 (/projects/OpenModelica.rs/openmodelica_susan)
-    Checking openmodelica_frontend_dump v0.1.0 (/projects/OpenModelica.rs/openmodelica_frontend_dump)
 warning: unknown lint: `type_complexity`
   --> openmodelica_frontend_dump/src/Globals.rs:10:50
    |
@@ -20,12 +17,6 @@ warning: unreachable call
    = note: `#[warn(unreachable_code)]` (part of `#[warn(unused)]`) on by default
 
 warning: `openmodelica_frontend_dump` (lib) generated 2 warnings
-    Checking openmodelica_frontend_inst v0.1.0 (/projects/OpenModelica.rs/openmodelica_frontend_inst)
-    Checking openmodelica_nf_frontend v0.1.0 (/projects/OpenModelica.rs/openmodelica_nf_frontend)
-    Checking openmodelica_ast_collections v0.1.0 (/projects/OpenModelica.rs/openmodelica_ast_collections)
-    Checking openmodelica_script_util v0.1.0 (/projects/OpenModelica.rs/openmodelica_script_util)
-    Checking openmodelica_dump_extra v0.1.0 (/projects/OpenModelica.rs/openmodelica_dump_extra)
-    Checking openmodelica_frontend v0.1.0 (/projects/OpenModelica.rs/openmodelica_frontend)
 warning: unknown lint: `type_complexity`
   --> openmodelica_frontend/src/Globals.rs:10:50
    |
@@ -53,7 +44,6 @@ warning: unreachable call
    |         unreachable call
 
 warning: `openmodelica_frontend` (lib) generated 3 warnings
-    Checking openmodelica_program_util v0.1.0 (/projects/OpenModelica.rs/openmodelica_program_util)
     Checking openmodelica_backend v0.1.0 (/projects/OpenModelica.rs/openmodelica_backend)
 warning: unknown lint: `type_complexity`
   --> openmodelica_backend/src/Globals.rs:10:50
@@ -62,15 +52,6 @@ warning: unknown lint: `type_complexity`
    |                                                  ^^^^^^^^^^^^^^^
    |
    = note: `#[warn(unknown_lints)]` on by default
-
-error[E0308]: mismatched types
-    --> openmodelica_backend/src/SimCodeFunctionUtil.rs:2117:9
-     |
-2117 |         __acc.reverse()
-     |         ^^^^^^^^^^^^^^^ expected `Arc<List<Arc<List<_>>>>`, found `Arc<List<ArcStr>>`
-     |
-     = note: expected struct `std::sync::Arc<metamodelica::List<std::sync::Arc<metamodelica::List<_>>>>`
-                found struct `std::sync::Arc<metamodelica::List<arcstr::ArcStr>>`
 
 warning: unreachable call
   --> openmodelica_backend/src/Globals.rs:23:9
@@ -82,6 +63,5 @@ warning: unreachable call
    |
    = note: `#[warn(unreachable_code)]` (part of `#[warn(unused)]`) on by default
 
-For more information about this error, try `rustc --explain E0308`.
 warning: `openmodelica_backend` (lib) generated 2 warnings
-error: could not compile `openmodelica_backend` (lib) due to 1 previous error; 2 warnings emitted
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3m 47s

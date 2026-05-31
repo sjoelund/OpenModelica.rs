@@ -2057,11 +2057,16 @@ fn lookForExtFunctionLibrary(mut names: Arc<metamodelica::List<ArcStr>>, mut dir
     dirs2 = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*Settings::getInstallationDirectoryPath()?); __mm_s.push_str(&*literal!("/lib/")); __mm_s.push_str(&*arcstr::literal!(Autoconf::triple)); __mm_s.push_str(&*literal!("/omc")); ArcStr::from(__mm_s) }).clone(), metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("/usr/lib/")); __mm_s.push_str(&*arcstr::literal!(Autoconf::triple)); ArcStr::from(__mm_s) }).clone(), metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("/lib/")); __mm_s.push_str(&*arcstr::literal!(Autoconf::triple)); ArcStr::from(__mm_s) }).clone(), metamodelica::cons((literal!("/usr/lib/")).clone(), metamodelica::cons((literal!("/lib/")).clone(), dirs.clone())))));
     if !(({
         let mut __acc: Option<bool> = None;
+        for mut n in (names.clone()).into_iter().cloned() {
+            let __x = ({
+        let mut __acc: Option<bool> = None;
         for mut d in (dirs2.clone()).into_iter().cloned() {
-            for mut n in (names.clone()).into_iter().cloned() {
-                let __x = System::regularFileExists(({ let mut __mm_s = String::new(); __mm_s.push_str(&*d.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*n.clone()); ArcStr::from(__mm_s) }).clone());
-                __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
-            }
+            let __x = System::regularFileExists(({ let mut __mm_s = String::new(); __mm_s.push_str(&*d.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*n.clone()); ArcStr::from(__mm_s) }).clone());
+            __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
+        }
+        __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction"))?
+    });
+            __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
         }
         __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction"))?
     })) {
@@ -2104,24 +2109,29 @@ fn lookForExtFunctionLibrary(mut names: Arc<metamodelica::List<ArcStr>>, mut dir
                             didFind = true;
                             /* todo stmt: multi-iterator-for */
                             if didFind.clone() {
-                                found = listHead(({
-        let mut __acc: Arc<metamodelica::List<_>> = metamodelica::nil();
+                                found = (listHead(({
+        let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut x in (List::flatten(({
+        let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
+        for mut n in (names.clone()).into_iter().cloned() {
+            let __x = ({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut d in (dirs2.clone()).into_iter().cloned() {
-            for mut n in (names.clone()).into_iter().cloned() {
-                let __x = { let mut __mm_s = String::new(); __mm_s.push_str(&*d.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*n.clone()); ArcStr::from(__mm_s) };
-                __acc = cons(__x, __acc);
-            }
+            let __x = { let mut __mm_s = String::new(); __mm_s.push_str(&*d.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*n.clone()); ArcStr::from(__mm_s) };
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    });
+            __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }))).into_iter().cloned() {
-            if !(System::regularFileExists(x.clone())) { continue; }
+            if !(System::regularFileExists((x.clone()).clone())) { continue; }
             let __x = x.clone();
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))?;
+    }))?).clone();
                                 Error::addSourceMessage(Error::COMPILER_NOTIFICATION.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Compiled ")); __mm_s.push_str(&*found.clone()); __mm_s.push_str(&*literal!(" by running build project ")); __mm_s.push_str(&*resourcesStr.clone()); __mm_s.push_str(&*literal!("/BuildProjects/")); __mm_s.push_str(&*dir.clone()); ArcStr::from(__mm_s) }).clone()], info.clone())?;
                             }
                         }
@@ -2144,22 +2154,32 @@ fn lookForExtFunctionLibrary(mut names: Arc<metamodelica::List<ArcStr>>, mut dir
     });
         if !(({
         let mut __acc: Option<bool> = None;
+        for mut n in (names.clone()).into_iter().cloned() {
+            let __x = ({
+        let mut __acc: Option<bool> = None;
         for mut d in (dirs2.clone()).into_iter().cloned() {
-            for mut n in (names.clone()).into_iter().cloned() {
-                let __x = System::regularFileExists(({ let mut __mm_s = String::new(); __mm_s.push_str(&*d.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*n.clone()); ArcStr::from(__mm_s) }).clone());
-                __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
-            }
+            let __x = System::regularFileExists(({ let mut __mm_s = String::new(); __mm_s.push_str(&*d.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*n.clone()); ArcStr::from(__mm_s) }).clone());
+            __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
+        }
+        __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction"))?
+    });
+            __acc = Some(match __acc { None => __x, Some(__cur) => if __x > __cur { __x } else { __cur } });
         }
         __acc.ok_or_else(|| anyhow::anyhow!("empty max reduction"))?
     })) {
             if !(Testsuite::isRunning()?) {
                 Error::addSourceMessage(Error::EXT_LIBRARY_NOT_FOUND.clone(), list![(name.clone()).clone(), (({
         let mut __acc = String::new();
+        for mut n in (names.clone()).into_iter().cloned() {
+            let __x = ({
+        let mut __acc = String::new();
         for mut d in (dirs2.clone()).into_iter().cloned() {
-            for mut n in (names.clone()).into_iter().cloned() {
-                let __x = { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n  ")); __mm_s.push_str(&*d.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*n.clone()); ArcStr::from(__mm_s) };
-                __acc.push_str(&__x);
-            }
+            let __x = { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n  ")); __mm_s.push_str(&*d.clone()); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*n.clone()); ArcStr::from(__mm_s) };
+            __acc.push_str(&__x);
+        }
+        ArcStr::from(__acc)
+    });
+            __acc.push_str(&__x);
         }
         ArcStr::from(__acc)
     })).clone()], info.clone())?;
