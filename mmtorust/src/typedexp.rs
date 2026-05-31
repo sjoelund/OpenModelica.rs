@@ -2415,6 +2415,22 @@ fn infer_case<'a>(
                 }
             }
             for (n, t, _, _) in &locals {
+                // A case-local declaration and a pattern binding can name the
+                // same variable — e.g. `local Expression lhs;` together with
+                // `case RECORD_EQUATION(lhs = lhs as Expression.TUPLE())`. The
+                // pattern narrowed `lhs` to `UnionTypeVariant(NFExpression,
+                // TUPLE)` in `inner_env`; the local declares only the bare enum
+                // `Expression`. The narrowing is strictly more precise for the
+                // arm body (it picks the correct variant's field types for
+                // fields whose type differs per variant), so don't clobber it
+                // with the less-specific declared type when they share the
+                // parent enum.
+                if let (Some(Ty::UnionTypeVariant(parent, _)), Ty::RustEnum(decl)) =
+                    (inner_env.get(n), t)
+                    && parent == decl
+                {
+                    continue;
+                }
                 inner_env.insert(n.clone(), t.clone());
             }
             let guard = patternGuard.as_ref().map(|g| infer_exp(g, &inner_env, top_level, pkg_prefix, type_vars));
@@ -3116,7 +3132,18 @@ fn collect_bindings_typed_tl<'a>(
             }
         }
         TypedPat::As { var, pat } => {
-            out.push((var.clone(), scrut.clone()));
+            // When the inner pattern fixes a specific variant (`x @ CTOR(..)`),
+            // narrow `x`'s type to that variant. Variants of one uniontype may
+            // share a field *name* with *different* types (e.g.
+            // `NFExpression.ARRAY.elements` is `array<..>` but
+            // `TUPLE.elements`/`RECORD.elements` are `list<..>`); without the
+            // narrowing, `x` stays typed as the bare enum and field-access
+            // resolution falls back to the first matching variant's type,
+            // mis-inferring `x.elements` and e.g. iterating it as an Array
+            // (`.borrow().iter()`) when it is a List (E0599).
+            let var_ty = narrow_scrutinee_for_pat(pat, scrut, top_level)
+                .unwrap_or_else(|| scrut.clone());
+            out.push((var.clone(), var_ty));
             collect_bindings_typed_tl(pat, scrut, top_level, out);
         }
         _ => {}
