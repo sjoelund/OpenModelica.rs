@@ -300,7 +300,7 @@ fn isFlatModelicaFile(mut filename: ArcStr) -> Result<()> {
         _ => bail!("pattern mismatch"),
     } };
     last = __pa0.clone();
-    let true = (stringEq((last.clone()).clone(), (literal!("mof")).clone())?) else { bail!("pattern mismatch") };
+    let true = (stringEq((last.clone()).clone(), (literal!("mof")).clone())) else { bail!("pattern mismatch") };
     Ok(())
 }
 
@@ -314,7 +314,7 @@ fn isModelicaScriptFile(mut filename: ArcStr) -> Result<()> {
         _ => bail!("pattern mismatch"),
     } };
     last = __pa0.clone();
-    let true = (stringEq((last.clone()).clone(), (literal!("mos")).clone())?) else { bail!("pattern mismatch") };
+    let true = (stringEq((last.clone()).clone(), (literal!("mos")).clone())) else { bail!("pattern mismatch") };
     Ok(())
 }
 
@@ -327,7 +327,7 @@ fn isCodegenTemplateFile(mut filename: ArcStr) -> Result<()> {
         _ => bail!("pattern mismatch"),
     } };
     last = __pa0.clone();
-    let true = (stringEq((last.clone()).clone(), (literal!("tpl")).clone())?) else { bail!("pattern mismatch") };
+    let true = (stringEq((last.clone()).clone(), (literal!("tpl")).clone())) else { bail!("pattern mismatch") };
     Ok(())
 }
 
@@ -617,7 +617,7 @@ pub fn setWindowsPaths(mut inOMHome: ArcStr) -> Result<()> {
             let mut hasLibBinDir: bool = false;
             System::setEnv((literal!("OPENMODELICAHOME")).clone(), (omHome.clone()).clone(), true);
             omdevPath = (Util::makeValueOrDefault((std::sync::Arc::new(System::readEnv) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>), (literal!("OMDEV")).clone(), (literal!("")).clone())).clone();
-            if stringEq((omdevPath.clone()).clone(), (literal!("")).clone())? {
+            if stringEq((omdevPath.clone()).clone(), (literal!("")).clone()) {
                 omdevPath = (omHome.clone()).clone();
             }
             msysPath = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*omdevPath.clone()); __mm_s.push_str(&*literal!("\\tools\\msys")); ArcStr::from(__mm_s) }).clone();

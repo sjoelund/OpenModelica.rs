@@ -8226,7 +8226,7 @@ fn createVars(mut inSimDAE: Arc<BackendDAE::BackendDAE>, mut inInitDAE: Arc<Back
     let mut systs2: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = metamodelica::nil();
     let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
     let mut hs: Mutable::Mutable<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<Arc<DAE::ComponentRef>>>), i32, i32, (HashSet::FuncHashCref, HashSet::FuncCrefEqual, HashSet::FuncCrefStr))>;
-    let mut simVars: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>> = arrayCreate(size::<()>(SimVarsIndex.clone(), 1), metamodelica::nil());
+    let mut simVars: metamodelica::Array<Arc<metamodelica::List<SimCodeVar::SimVar>>> = arrayCreate(size(SimVarsIndex.clone(), 1), metamodelica::nil());
     let mut primeSize: i32 = 0;
     let mut iterationVarsLst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     let mut iterationVars: Option<Arc<UnorderedSet::UnorderedSet<Arc<DAE::ComponentRef>>>> = None;

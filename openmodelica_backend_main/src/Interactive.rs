@@ -801,7 +801,7 @@ pub fn getTypeOfVariable(mut inIdent: ArcStr, mut inVariableLst: Arc<metamodelic
         let InteractiveTypes::IVAR { type_: __pa0, varIdent: __pa1, .. } = (var.clone()) else { bail!("pattern mismatch") };
         tp = __pa0.clone();
         id = __pa1.clone();
-        if stringEq((inIdent.clone()).clone(), (id.clone()).clone())? {
+        if stringEq((inIdent.clone()).clone(), (id.clone()).clone()) {
             outType = tp.clone();
             return Ok(outType.clone());
         }
@@ -1198,7 +1198,7 @@ fn renameComponentInComponentitems(mut inAbsynComponentItemLst1: Arc<metamodelic
                     let mut comp_1: Arc<Absyn::ComponentItem> = Arc::new(<Absyn::ComponentItem as ::std::default::Default>::default());
                     old_comp_path = AbsynUtil::crefToPath(old_comp.clone())?;
                     old_comp_string = (AbsynUtil::pathString(old_comp_path.clone(), (literal!(".")).clone(), true, false)?).clone();
-                    let true = (stringEq((name.clone()).clone(), (old_comp_string.clone()).clone())?) else { bail!("pattern mismatch") };
+                    let true = (stringEq((name.clone()).clone(), (old_comp_string.clone()).clone())) else { bail!("pattern mismatch") };
                     new_comp_path = AbsynUtil::crefToPath(new_comp.clone())?;
                     new_comp_string = (AbsynUtil::pathString(new_comp_path.clone(), (literal!(".")).clone(), true, false)?).clone();
                     res_1 = renameComponentInComponentitems(res.clone(), old_comp.clone(), new_comp.clone())?;
@@ -2123,7 +2123,7 @@ fn replaceStartInComponentRef2(mut inComponentRef1: Arc<Absyn::ComponentRef>, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ComponentRef::CREF_IDENT { name: id, .. }, Deref @ Absyn::ComponentRef::CREF_IDENT { name: id2, .. }, res @ Deref @ Absyn::ComponentRef::CREF_IDENT { .. }) => {
-                    let true = (stringEq((id.clone()).clone(), (id2.clone()).clone())?) else { bail!("pattern mismatch") };
+                    let true = (stringEq((id.clone()).clone(), (id2.clone()).clone())) else { bail!("pattern mismatch") };
                     Ok(res.clone())
                 }
                 _ => bail!("nomatch"),
@@ -2132,7 +2132,7 @@ fn replaceStartInComponentRef2(mut inComponentRef1: Arc<Absyn::ComponentRef>, mu
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ComponentRef::CREF_QUAL { componentRef: cr1, subscripts: a, name: id }, Deref @ Absyn::ComponentRef::CREF_IDENT { name: id2, .. }, Deref @ Absyn::ComponentRef::CREF_IDENT { name: id3, .. }) => {
-                    let true = (stringEq((id.clone()).clone(), (id2.clone()).clone())?) else { bail!("pattern mismatch") };
+                    let true = (stringEq((id.clone()).clone(), (id2.clone()).clone())) else { bail!("pattern mismatch") };
                     Ok(Arc::new(Absyn::ComponentRef::CREF_QUAL { name: (id3.clone()).clone(), subscripts: a.clone(), componentRef: cr1.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -2142,7 +2142,7 @@ fn replaceStartInComponentRef2(mut inComponentRef1: Arc<Absyn::ComponentRef>, mu
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ComponentRef::CREF_QUAL { componentRef: cr1, subscripts: a, name: id }, Deref @ Absyn::ComponentRef::CREF_QUAL { componentRef: cr2, name: id2, .. }, Deref @ Absyn::ComponentRef::CREF_QUAL { componentRef: cr3, name: id3, .. }) => {
                     let mut cr: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
-                    let true = (stringEq((id.clone()).clone(), (id2.clone()).clone())?) else { bail!("pattern mismatch") };
+                    let true = (stringEq((id.clone()).clone(), (id2.clone()).clone())) else { bail!("pattern mismatch") };
                     cr = replaceStartInComponentRef2(cr1.clone(), cr2.clone(), cr3.clone())?;
                     Ok(Arc::new(Absyn::ComponentRef::CREF_QUAL { name: (id3.clone()).clone(), subscripts: a.clone(), componentRef: cr.clone() }))
                 }
@@ -3942,7 +3942,7 @@ pub fn isModifierfinal(mut inAbsynElementArgLst: Arc<metamodelica::List<Arc<Absy
         (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { modification: Some(_), path: p1, finalPrefix: f, .. }, tail: _ }, p2) if (AbsynUtil::pathEqual(p1.clone(), p2.clone())) => {
             f.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { modification: Some(Deref @ Absyn::Modification { elementArgLst: args, .. }), path: Deref @ Absyn::Path::IDENT { name: name1 }, .. }, tail: _ }, Deref @ Absyn::Path::QUALIFIED { path: p2, name: name2 }) if (stringEq((name1.clone()).clone(), (name2.clone()).clone())?) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { modification: Some(Deref @ Absyn::Modification { elementArgLst: args, .. }), path: Deref @ Absyn::Path::IDENT { name: name1 }, .. }, tail: _ }, Deref @ Absyn::Path::QUALIFIED { path: p2, name: name2 }) if (stringEq((name1.clone()).clone(), (name2.clone()).clone())) => {
             let mut f: bool = false;
             f = isModifierfinal(args.clone(), p2.clone())?;
             f.clone()
@@ -4123,7 +4123,7 @@ fn getModificationValues(mut inAbsynElementArgLst: Arc<metamodelica::List<Arc<Ab
         (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { modification: Some(r#mod), path: p1, .. }, tail: _ }, p2) if (AbsynUtil::pathEqual(p1.clone(), p2.clone())) => {
             r#mod.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { modification: Some(Deref @ Absyn::Modification { elementArgLst: args, .. }), path: Deref @ Absyn::Path::IDENT { name: name1 }, .. }, tail: _ }, Deref @ Absyn::Path::QUALIFIED { path: p2, name: name2 }) if (stringEq((name1.clone()).clone(), (name2.clone()).clone())?) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { modification: Some(Deref @ Absyn::Modification { elementArgLst: args, .. }), path: Deref @ Absyn::Path::IDENT { name: name1 }, .. }, tail: _ }, Deref @ Absyn::Path::QUALIFIED { path: p2, name: name2 }) if (stringEq((name1.clone()).clone(), (name2.clone()).clone())) => {
             let mut res: Arc<Absyn::Modification> = Arc::new(<Absyn::Modification as ::std::default::Default>::default());
             res = getModificationValues(args.clone(), p2.clone())?;
             res.clone()
@@ -5438,7 +5438,7 @@ fn getCompitemNamed(mut inComponentRef: Arc<Absyn::ComponentRef>, mut inAbsynCom
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::ComponentRef::CREF_IDENT { name: id1, .. }, Deref @ metamodelica::List::Cons { head: x @ Deref @ Absyn::ComponentItem { component: Absyn::Component { name: id2, .. }, .. }, tail: _ }) => {
-                    let true = (stringEq((id1.clone()).clone(), (id2.clone()).clone())?) else { bail!("pattern mismatch") };
+                    let true = (stringEq((id1.clone()).clone(), (id2.clone()).clone())) else { bail!("pattern mismatch") };
                     Ok(x.clone())
                 }
                 _ => bail!("nomatch"),
@@ -5584,7 +5584,7 @@ fn getVariableValue(mut inIdent: ArcStr, mut inVariableLst: Arc<metamodelica::Li
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (id1, Deref @ metamodelica::List::Cons { head: InteractiveTypes::Variable { value: v, varIdent: id2, .. }, tail: _ }) => {
-                    let true = (stringEq((id1.clone()).clone(), (id2.clone()).clone())?) else { bail!("pattern mismatch") };
+                    let true = (stringEq((id1.clone()).clone(), (id2.clone()).clone())) else { bail!("pattern mismatch") };
                     Ok(v.clone())
                 }
                 _ => bail!("nomatch"),
@@ -5594,7 +5594,7 @@ fn getVariableValue(mut inIdent: ArcStr, mut inVariableLst: Arc<metamodelica::Li
             ::match_deref::match_deref! { match &__mc_input {
                 (id1, Deref @ metamodelica::List::Cons { head: InteractiveTypes::Variable { varIdent: id2, .. }, tail: rest }) => {
                     let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-                    let false = (stringEq((id1.clone()).clone(), (id2.clone()).clone())?) else { bail!("pattern mismatch") };
+                    let false = (stringEq((id1.clone()).clone(), (id2.clone()).clone())) else { bail!("pattern mismatch") };
                     v = getVariableValue((id1.clone()).clone(), rest.clone())?;
                     Ok(v.clone())
                 }
@@ -5616,7 +5616,7 @@ fn getVariableValueLst(mut ids: Arc<metamodelica::List<ArcStr>>, mut vars: Arc<m
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: id1, tail: _ }, Deref @ metamodelica::List::Cons { head: InteractiveTypes::Variable { varIdent: id2, .. }, tail: rest }) => {
                     let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-                    let false = (stringEq((id1.clone()).clone(), (id2.clone()).clone())?) else { bail!("pattern mismatch") };
+                    let false = (stringEq((id1.clone()).clone(), (id2.clone()).clone())) else { bail!("pattern mismatch") };
                     v = getVariableValueLst(ids.clone(), rest.clone())?;
                     Ok(v.clone())
                 }
@@ -5628,7 +5628,7 @@ fn getVariableValueLst(mut ids: Arc<metamodelica::List<ArcStr>>, mut vars: Arc<m
                 (Deref @ metamodelica::List::Cons { head: id1, tail: Deref @ metamodelica::List::Cons { head: id2, tail: srest } }, Deref @ metamodelica::List::Cons { head: InteractiveTypes::Variable { value: Deref @ Values::Value::RECORD { comp, orderd: vals, .. }, varIdent: id3, .. }, tail: _ }) => {
                     let mut ix: i32 = 0;
                     let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-                    let true = (stringEq((id1.clone()).clone(), (id3.clone()).clone())?) else { bail!("pattern mismatch") };
+                    let true = (stringEq((id1.clone()).clone(), (id3.clone()).clone())) else { bail!("pattern mismatch") };
                     ix = List::position1OnTrue(comp.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), (id2.clone()).clone());
                     v = (vals.clone()).get(ix.clone())?;
                     v = getVariableValueLst(metamodelica::cons((id2.clone()).clone(), srest.clone()), list![InteractiveTypes::Variable { varIdent: (id2.clone()).clone(), value: v.clone(), type_: DAE::T_UNKNOWN_DEFAULT().clone() }])?;
@@ -5640,7 +5640,7 @@ fn getVariableValueLst(mut ids: Arc<metamodelica::List<ArcStr>>, mut vars: Arc<m
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: id1, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: InteractiveTypes::Variable { value: v, varIdent: id2, .. }, tail: _ }) => {
-                    let true = (stringEq((id1.clone()).clone(), (id2.clone()).clone())?) else { bail!("pattern mismatch") };
+                    let true = (stringEq((id1.clone()).clone(), (id2.clone()).clone())) else { bail!("pattern mismatch") };
                     Ok(v.clone())
                 }
                 _ => bail!("nomatch"),
@@ -5847,7 +5847,7 @@ fn deleteOrUpdateComponentFromElementitems(mut inString: ArcStr, mut inAbsynElem
         let mut __acc: Option<bool> = None;
         for mut c in (comps.clone()).into_iter().cloned() {
             let __x = (::match_deref::match_deref! { match &(c.clone()) {
-        Deref @ Absyn::ComponentItem { component: Absyn::Component { name: name2, .. }, .. } if (stringEq((name.clone()).clone(), (name2.clone()).clone())?) => true,
+        Deref @ Absyn::ComponentItem { component: Absyn::Component { name: name2, .. }, .. } if (stringEq((name.clone()).clone(), (name2.clone()).clone())) => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -5862,7 +5862,7 @@ fn deleteOrUpdateComponentFromElementitems(mut inString: ArcStr, mut inAbsynElem
         let mut __acc: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>> = metamodelica::nil();
         for mut c in (comps.clone()).into_iter().cloned() {
             let __x = (::match_deref::match_deref! { match &(c.clone()) {
-        Deref @ Absyn::ComponentItem { component: Absyn::Component { name: name2, .. }, .. } if (stringEq((name.clone()).clone(), (name2.clone()).clone())?) => compitem.clone(),
+        Deref @ Absyn::ComponentItem { component: Absyn::Component { name: name2, .. }, .. } if (stringEq((name.clone()).clone(), (name2.clone()).clone())) => compitem.clone(),
         _ => c.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -5878,7 +5878,7 @@ fn deleteOrUpdateComponentFromElementitems(mut inString: ArcStr, mut inAbsynElem
         let mut __acc: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>> = metamodelica::nil();
         for mut c in (comps.clone()).into_iter().cloned() {
             if !((::match_deref::match_deref! { match &(c.clone()) {
-        Deref @ Absyn::ComponentItem { component: Absyn::Component { name: name2, .. }, .. } => !(stringEq((name.clone()).clone(), (name2.clone()).clone())?),
+        Deref @ Absyn::ComponentItem { component: Absyn::Component { name: name2, .. }, .. } => !(stringEq((name.clone()).clone(), (name2.clone()).clone())),
         _ => true,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })) { continue; }
@@ -5913,7 +5913,7 @@ fn deleteOrUpdateComponentFromElementitems(mut inString: ArcStr, mut inAbsynElem
         let mut __acc: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>> = metamodelica::nil();
         for mut c in (comps.clone()).into_iter().cloned() {
             if !((::match_deref::match_deref! { match &(c.clone()) {
-        Deref @ Absyn::ComponentItem { component: Absyn::Component { name: name2, .. }, .. } => !(stringEq((name.clone()).clone(), (name2.clone()).clone())?),
+        Deref @ Absyn::ComponentItem { component: Absyn::Component { name: name2, .. }, .. } => !(stringEq((name.clone()).clone(), (name2.clone()).clone())),
         _ => true,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })) { continue; }
@@ -7317,7 +7317,7 @@ fn namedArgValueAsString(mut inAbsynNamedArgLst: Arc<metamodelica::List<Arc<Absy
         Deref @ metamodelica::List::Nil => {
             (inDefaultValue.clone(), true)
         },
-        Deref @ metamodelica::List::Cons { head: namedArg @ Deref @ Absyn::NamedArg { argName: namedArgName, .. }, tail: _ } if (stringEq((namedArgName.clone()).clone(), (inNamedArg.clone()).clone())?) => {
+        Deref @ metamodelica::List::Cons { head: namedArg @ Deref @ Absyn::NamedArg { argName: namedArgName, .. }, tail: _ } if (stringEq((namedArgName.clone()).clone(), (inNamedArg.clone()).clone())) => {
             (Dump::printNamedArgValueStr(namedArg.clone())?, false)
         },
         Deref @ metamodelica::List::Cons { head: _, tail: al } => {
@@ -7335,7 +7335,7 @@ fn compareTransitionFuncArgs(mut args: Arc<metamodelica::List<ArcStr>>, mut from
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: from1, tail: Deref @ metamodelica::List::Cons { head: to1, tail: Deref @ metamodelica::List::Cons { head: condition1, tail: Deref @ metamodelica::List::Nil } } }, from2, to2, condition2, _, _, _, _) => {
-                    if !((stringEq((from1.clone()).clone(), (from2.clone()).clone())? && stringEq((to1.clone()).clone(), (to2.clone()).clone())? && stringEq((condition1.clone()).clone(), (condition2.clone()).clone())?)) { bail!("guard") }
+                    if !((stringEq((from1.clone()).clone(), (from2.clone()).clone()) && stringEq((to1.clone()).clone(), (to2.clone()).clone()) && stringEq((condition1.clone()).clone(), (condition2.clone()).clone()))) { bail!("guard") }
                     Ok(true)
                 }
                 _ => bail!("nomatch"),
@@ -7344,7 +7344,7 @@ fn compareTransitionFuncArgs(mut args: Arc<metamodelica::List<ArcStr>>, mut from
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: from1, tail: Deref @ metamodelica::List::Cons { head: to1, tail: Deref @ metamodelica::List::Cons { head: condition1, tail: Deref @ metamodelica::List::Cons { head: immediate1, tail: Deref @ metamodelica::List::Nil } } } }, from2, to2, condition2, immediate2, _, _, _) => {
-                    if !((stringEq((from1.clone()).clone(), (from2.clone()).clone())? && stringEq((to1.clone()).clone(), (to2.clone()).clone())? && stringEq((condition1.clone()).clone(), (condition2.clone()).clone())? && stringEq((immediate1.clone()).clone(), (boolString(immediate2.clone())).clone())?)) { bail!("guard") }
+                    if !((stringEq((from1.clone()).clone(), (from2.clone()).clone()) && stringEq((to1.clone()).clone(), (to2.clone()).clone()) && stringEq((condition1.clone()).clone(), (condition2.clone()).clone()) && stringEq((immediate1.clone()).clone(), (boolString(immediate2.clone())).clone()))) { bail!("guard") }
                     Ok(true)
                 }
                 _ => bail!("nomatch"),
@@ -7353,7 +7353,7 @@ fn compareTransitionFuncArgs(mut args: Arc<metamodelica::List<ArcStr>>, mut from
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: from1, tail: Deref @ metamodelica::List::Cons { head: to1, tail: Deref @ metamodelica::List::Cons { head: condition1, tail: Deref @ metamodelica::List::Cons { head: immediate1, tail: Deref @ metamodelica::List::Cons { head: reset1, tail: Deref @ metamodelica::List::Nil } } } } }, from2, to2, condition2, immediate2, reset2, _, _) => {
-                    if !((stringEq((from1.clone()).clone(), (from2.clone()).clone())? && stringEq((to1.clone()).clone(), (to2.clone()).clone())? && stringEq((condition1.clone()).clone(), (condition2.clone()).clone())? && stringEq((immediate1.clone()).clone(), (boolString(immediate2.clone())).clone())? && stringEq((reset1.clone()).clone(), (boolString(reset2.clone())).clone())?)) { bail!("guard") }
+                    if !((stringEq((from1.clone()).clone(), (from2.clone()).clone()) && stringEq((to1.clone()).clone(), (to2.clone()).clone()) && stringEq((condition1.clone()).clone(), (condition2.clone()).clone()) && stringEq((immediate1.clone()).clone(), (boolString(immediate2.clone())).clone()) && stringEq((reset1.clone()).clone(), (boolString(reset2.clone())).clone()))) { bail!("guard") }
                     Ok(true)
                 }
                 _ => bail!("nomatch"),
@@ -7362,7 +7362,7 @@ fn compareTransitionFuncArgs(mut args: Arc<metamodelica::List<ArcStr>>, mut from
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: from1, tail: Deref @ metamodelica::List::Cons { head: to1, tail: Deref @ metamodelica::List::Cons { head: condition1, tail: Deref @ metamodelica::List::Cons { head: immediate1, tail: Deref @ metamodelica::List::Cons { head: reset1, tail: Deref @ metamodelica::List::Cons { head: synchronize1, tail: Deref @ metamodelica::List::Nil } } } } } }, from2, to2, condition2, immediate2, reset2, synchronize2, _) => {
-                    if !((stringEq((from1.clone()).clone(), (from2.clone()).clone())? && stringEq((to1.clone()).clone(), (to2.clone()).clone())? && stringEq((condition1.clone()).clone(), (condition2.clone()).clone())? && stringEq((immediate1.clone()).clone(), (boolString(immediate2.clone())).clone())? && stringEq((reset1.clone()).clone(), (boolString(reset2.clone())).clone())? && stringEq((synchronize1.clone()).clone(), (boolString(synchronize2.clone())).clone())?)) { bail!("guard") }
+                    if !((stringEq((from1.clone()).clone(), (from2.clone()).clone()) && stringEq((to1.clone()).clone(), (to2.clone()).clone()) && stringEq((condition1.clone()).clone(), (condition2.clone()).clone()) && stringEq((immediate1.clone()).clone(), (boolString(immediate2.clone())).clone()) && stringEq((reset1.clone()).clone(), (boolString(reset2.clone())).clone()) && stringEq((synchronize1.clone()).clone(), (boolString(synchronize2.clone())).clone()))) { bail!("guard") }
                     Ok(true)
                 }
                 _ => bail!("nomatch"),
@@ -7371,7 +7371,7 @@ fn compareTransitionFuncArgs(mut args: Arc<metamodelica::List<ArcStr>>, mut from
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: from1, tail: Deref @ metamodelica::List::Cons { head: to1, tail: Deref @ metamodelica::List::Cons { head: condition1, tail: Deref @ metamodelica::List::Cons { head: immediate1, tail: Deref @ metamodelica::List::Cons { head: reset1, tail: Deref @ metamodelica::List::Cons { head: synchronize1, tail: Deref @ metamodelica::List::Cons { head: priority1, tail: Deref @ metamodelica::List::Nil } } } } } } }, from2, to2, condition2, immediate2, reset2, synchronize2, priority2) => {
-                    if !((stringEq((from1.clone()).clone(), (from2.clone()).clone())? && stringEq((to1.clone()).clone(), (to2.clone()).clone())? && stringEq((condition1.clone()).clone(), (condition2.clone()).clone())? && stringEq((immediate1.clone()).clone(), (boolString(immediate2.clone())).clone())? && stringEq((reset1.clone()).clone(), (boolString(reset2.clone())).clone())? && stringEq((synchronize1.clone()).clone(), (boolString(synchronize2.clone())).clone())? && stringEq((priority1.clone()).clone(), (intString(priority2.clone())).clone())?)) { bail!("guard") }
+                    if !((stringEq((from1.clone()).clone(), (from2.clone()).clone()) && stringEq((to1.clone()).clone(), (to2.clone()).clone()) && stringEq((condition1.clone()).clone(), (condition2.clone()).clone()) && stringEq((immediate1.clone()).clone(), (boolString(immediate2.clone())).clone()) && stringEq((reset1.clone()).clone(), (boolString(reset2.clone())).clone()) && stringEq((synchronize1.clone()).clone(), (boolString(synchronize2.clone())).clone()) && stringEq((priority1.clone()).clone(), (intString(priority2.clone())).clone()))) { bail!("guard") }
                     Ok(true)
                 }
                 _ => bail!("nomatch"),
@@ -8541,7 +8541,7 @@ pub fn getDocumentationClassAnnotation(mut className: Arc<Absyn::Path>, mut p: A
         _ => {
             let mut docStr: ArcStr = arcstr::literal!("");
             docStr = (ProgramUtil::getNamedAnnotationExp(className.clone(), p.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("DocumentationClass")).clone() }), Some((literal!("false")).clone()), (std::sync::Arc::new(getDocumentationClassAnnotationModStr) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<ArcStr> + 'static>))?).clone();
-            stringEq((docStr.clone()).clone(), (literal!("true")).clone())?
+            stringEq((docStr.clone()).clone(), (literal!("true")).clone())
         },
     });
     Ok(isDocClass)
@@ -9555,7 +9555,7 @@ fn classIsInFile(mut inFilename: ArcStr, mut inElement: Arc<Absyn::ElementItem>)
     let mut outInFile: bool = false;
     outInFile = (::match_deref::match_deref! { match &(inElement.clone()) {
         Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { info: SourceInfo { fileName: filename, .. }, .. }, .. }, .. } } => {
-            stringEq((inFilename.clone()).clone(), (filename.clone()).clone())?
+            stringEq((inFilename.clone()).clone(), (filename.clone()).clone())
         },
         _ => {
             true
@@ -9588,7 +9588,7 @@ fn getSurroundingPackage(mut classpath: Arc<Absyn::Path>, mut inProgram: Absyn::
             ppath = AbsynUtil::stripLast(classpath.clone())?;
             pdef = ProgramUtil::getPathedClassInProgram(ppath.clone(), p.clone(), false, false)?;
             filename2 = (AbsynUtil::classFilename(pdef.clone())?).clone();
-            let true = (stringEq((filename1.clone()).clone(), (filename2.clone()).clone())?) else { bail!("pattern mismatch") };
+            let true = (stringEq((filename1.clone()).clone(), (filename2.clone()).clone())) else { bail!("pattern mismatch") };
             res = getSurroundingPackage(ppath.clone(), p.clone())?;
             Ok(res.clone())
         })() { break 'mc __v; }

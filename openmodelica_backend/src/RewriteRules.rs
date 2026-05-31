@@ -414,7 +414,7 @@ pub fn matchesFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inUnifyWith: Arc<Absyn::E
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::Exp::AS { id: id1a, exp: e1a }, Deref @ Absyn::Exp::AS { id: id1b, exp: e1b }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
-                    let true = (stringEq((id1a.clone()).clone(), (id1b.clone()).clone())?) else { bail!("pattern mismatch") };
+                    let true = (stringEq((id1a.clone()).clone(), (id1b.clone()).clone())) else { bail!("pattern mismatch") };
                     outBinds = matchesFrontEnd(e1a.clone(), e1b.clone(), inAcc.clone())?;
                     Ok(outBinds.clone())
                 }
@@ -538,7 +538,7 @@ pub fn matchesNargsFrontEnd(mut inNargs1: Arc<metamodelica::List<Arc<Absyn::Name
             inAcc.clone()
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::NamedArg { argName: n1a, argValue: e1a }, tail: nargs1a }, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::NamedArg { argName: n1b, argValue: e1b }, tail: nargs1b }) => {
-            let true = (stringEq((n1a.clone()).clone(), (n1b.clone()).clone())?) else { bail!("pattern mismatch") };
+            let true = (stringEq((n1a.clone()).clone(), (n1b.clone()).clone())) else { bail!("pattern mismatch") };
             outBinds = matchesFrontEnd(e1a.clone(), e1b.clone(), inAcc.clone())?;
             outBinds = matchesNargsFrontEnd(nargs1a.clone(), nargs1b.clone(), outBinds.clone())?;
             outBinds.clone()

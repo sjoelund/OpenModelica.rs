@@ -10075,13 +10075,15 @@ fn resolve_call_qname_fn<'a>(
         let candidate = format!("{module}.{func}");
         if is_fn(&candidate) { return Some(candidate); }
     }
+    // Only member imports (`local == func`) satisfy a bare reference; a
+    // qualified/named *module* import never brings its members into scope
+    // unqualified. See the matching loop in `resolve_call_qname` for the full
+    // rationale (synthesising `{dotted}.{func}` would resolve e.g. bare
+    // `stringEq` to `Parser.stringEq`).
     for (dotted, local) in &ctx.named {
-        if local == func {
-            if is_fn(dotted) { return Some(dotted.clone()); }
-            continue;
+        if local == func && is_fn(dotted) {
+            return Some(dotted.clone());
         }
-        let candidate = format!("{dotted}.{func}");
-        if is_fn(&candidate) { return Some(candidate); }
     }
     if is_fn(func) { Some(func.to_owned()) } else { None }
 }
@@ -10550,17 +10552,25 @@ fn resolve_call_qname<'a>(
         }
     }
 
-    // Named import aliases can also denote modules.
+    // Resolve a bare name through a `named` entry only when that entry is a
+    // *member* import. `ctx.named` mixes two import shapes:
+    //   * module imports — `import Parser;` (QUAL) / `import L = Pkg;` (NAMED) —
+    //     keyed by the *module* path with `local` the module's local name. In
+    //     MetaModelica these bring only the module name into scope; their
+    //     members must be written qualified (`Parser.foo`).
+    //   * member imports — `import Pkg.{f};` (GROUP) / a const `import Pkg.c;` —
+    //     keyed by the *member's* full path with `local` the unqualified name.
+    //     These genuinely bring the member into scope unqualified.
+    // Only the second kind may satisfy a bare reference, and it does so through
+    // the `local == func` match (returning the member's full path). We must NOT
+    // synthesise `{dotted}.{func}`: that would let a bare name resolve to an
+    // arbitrary member of any qualified-imported *module* (e.g. bare `stringEq`
+    // → `Parser.stringEq`), which is not in scope unqualified and would mark an
+    // infallible builtin call as fallible (spurious `?`/`.unwrap()`). Genuine
+    // unqualified module imports are already handled by `unqual_modules` above.
     for (dotted, local) in &ctx.named {
-        if local == func {
-            if exists(dotted) {
-                return Some(dotted.clone());
-            }
-            continue;
-        }
-        let candidate = format!("{dotted}.{func}");
-        if exists(&candidate) {
-            return Some(candidate);
+        if local == func && exists(dotted) {
+            return Some(dotted.clone());
         }
     }
 

@@ -772,7 +772,7 @@ pub fn getElementModifierValue(mut classRef: Arc<Absyn::ComponentRef>, mut varRe
         for mut e in &*elems.clone() {
             let mut e = e.clone();
             args = (::match_deref::match_deref! { match &(e.clone()) {
-        Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::DERIVED { arguments: args, .. }, name, .. }, .. }, .. } if (unwrap_break_err!(stringEq((name.clone()).clone(), (elName.clone()).clone()), '__try0)) => {
+        Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::DERIVED { arguments: args, .. }, name, .. }, .. }, .. } if (stringEq((name.clone()).clone(), (elName.clone()).clone())) => {
             found = true;
             args.clone()
         },
@@ -785,7 +785,7 @@ pub fn getElementModifierValue(mut classRef: Arc<Absyn::ComponentRef>, mut varRe
                 } };
                 optMod = __pa0.clone();
                 name = __pa1.clone();
-                if unwrap_break_err!(stringEq((name.clone()).clone(), (elName.clone()).clone()), '__try0) {
+                if stringEq((name.clone()).clone(), (elName.clone()).clone()) {
                     let __pa2 = ::match_deref::match_deref! { match &(Util::getOptionOrDefault(optMod.clone(), Arc::new(Absyn::Modification { elementArgLst: metamodelica::nil(), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) }))) {
                         Deref @ Absyn::Modification { elementArgLst: __pa2, .. } => __pa2.clone(),
                         _ => bail!("pattern mismatch"),
@@ -935,7 +935,7 @@ fn getModificationValues(mut inAbsynElementArgLst: Arc<metamodelica::List<Arc<Ab
         (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { modification: Some(r#mod), path: p1, .. }, tail: _ }, p2) if (AbsynUtil::pathEqual(p1.clone(), p2.clone())) => {
             r#mod.clone()
         },
-        (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { modification: Some(Deref @ Absyn::Modification { elementArgLst: args, .. }), path: Deref @ Absyn::Path::IDENT { name: name1 }, .. }, tail: _ }, Deref @ Absyn::Path::QUALIFIED { path: p2, name: name2 }) if (stringEq((name1.clone()).clone(), (name2.clone()).clone())?) => {
+        (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { modification: Some(Deref @ Absyn::Modification { elementArgLst: args, .. }), path: Deref @ Absyn::Path::IDENT { name: name1 }, .. }, tail: _ }, Deref @ Absyn::Path::QUALIFIED { path: p2, name: name2 }) if (stringEq((name1.clone()).clone(), (name2.clone()).clone())) => {
             let mut res: Arc<Absyn::Modification> = Arc::new(<Absyn::Modification as ::std::default::Default>::default());
             res = getModificationValues(args.clone(), p2.clone())?;
             res.clone()
@@ -974,7 +974,7 @@ pub fn getElementModifierNames(mut path: Arc<Absyn::Path>, mut inElementName: Ar
             for mut e in &*elems.clone() {
                 let mut e = e.clone();
                 r#mod = (::match_deref::match_deref! { match &(e.clone()) {
-        Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::DERIVED { arguments: args, .. }, name, .. }, .. }, .. } if (stringEq((name.clone()).clone(), (inElementName.clone()).clone())?) => {
+        Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::DERIVED { arguments: args, .. }, name, .. }, .. }, .. } if (stringEq((name.clone()).clone(), (inElementName.clone()).clone())) => {
             found = true;
             args.clone()
         },
@@ -987,7 +987,7 @@ pub fn getElementModifierNames(mut path: Arc<Absyn::Path>, mut inElementName: Ar
                 } };
                 optMod = __pa0.clone();
                 name = __pa1.clone();
-                if stringEq((name.clone()).clone(), (inElementName.clone()).clone())? {
+                if stringEq((name.clone()).clone(), (inElementName.clone()).clone()) {
                     let __pa2 = ::match_deref::match_deref! { match &(Util::getOptionOrDefault(optMod.clone(), Arc::new(Absyn::Modification { elementArgLst: metamodelica::nil(), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) }))) {
                         Deref @ Absyn::Modification { elementArgLst: __pa2, .. } => __pa2.clone(),
                         _ => bail!("pattern mismatch"),
@@ -1353,7 +1353,7 @@ pub fn getVariableBindingInComponentitem(mut inComponentItem: Arc<Absyn::Compone
 pub fn componentitemNamed(mut inComponentItem: Arc<Absyn::ComponentItem>, mut inIdent: ArcStr) -> Result<bool> {
     let mut outBoolean: bool = false;
     outBoolean = (::match_deref::match_deref! { match &((inComponentItem.clone(), inIdent.clone())) {
-        (Deref @ Absyn::ComponentItem { component: Absyn::Component { name: id1, .. }, .. }, id2) if (stringEq((id1.clone()).clone(), (id2.clone()).clone())?) => {
+        (Deref @ Absyn::ComponentItem { component: Absyn::Component { name: id1, .. }, .. }, id2) if (stringEq((id1.clone()).clone(), (id2.clone()).clone())) => {
             true
         },
         _ => {

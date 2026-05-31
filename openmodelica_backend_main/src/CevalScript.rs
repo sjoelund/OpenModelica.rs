@@ -140,7 +140,7 @@ pub fn ceval(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<
                     let mut vallst: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
                     let mut newval: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
                     let mut cache = (*cache).clone();
-                    let false = (stringEq((literal!("Connection.isRoot")).clone(), (AbsynUtil::pathString(funcpath.clone(), (literal!(".")).clone(), true, false)?).clone())?) else { bail!("pattern mismatch") };
+                    let false = (stringEq((literal!("Connection.isRoot")).clone(), (AbsynUtil::pathString(funcpath.clone(), (literal!(".")).clone(), true, false)?).clone())) else { bail!("pattern mismatch") };
                     (cache, vallst) = Ceval::cevalList(cache.clone(), env.clone(), expl.clone(), r#impl.clone(), msg.clone(), numIter.clone())?;
                     (cache, newval) = cevalCallFunction(cache.clone(), env.clone(), e.clone(), vallst.clone(), r#impl.clone(), msg.clone(), numIter.clone() + 1)?;
                     Ok((cache.clone(), newval.clone()))
@@ -235,7 +235,7 @@ pub fn compileModel(mut fileprefix: ArcStr, mut libs: Arc<metamodelica::List<Arc
     let mut libs_str: ArcStr = arcstr::literal!("");
     let mut s_call: ArcStr = arcstr::literal!("");
     let mut winCompileMode: ArcStr = arcstr::literal!("");
-    let mut workDir: ArcStr = if (stringEq((workingDir.clone()).clone(), (literal!("")).clone())?) {literal!("")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*workingDir.clone()); __mm_s.push_str(&*pd.clone()); ArcStr::from(__mm_s) }};
+    let mut workDir: ArcStr = if (stringEq((workingDir.clone()).clone(), (literal!("")).clone())) {literal!("")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*workingDir.clone()); __mm_s.push_str(&*pd.clone()); ArcStr::from(__mm_s) }};
     let mut linkType: ArcStr = literal!("dynamic");
     let mut fileDLL: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*workDir.clone()); __mm_s.push_str(&*fileprefix.clone()); __mm_s.push_str(&*arcstr::literal!(Autoconf::dllExt)); ArcStr::from(__mm_s) };
     let mut fileEXE: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*workDir.clone()); __mm_s.push_str(&*fileprefix.clone()); __mm_s.push_str(&*arcstr::literal!(Autoconf::exeExt)); ArcStr::from(__mm_s) };
@@ -376,7 +376,7 @@ fn checkDuplicateTopLevelClasses(mut program: Absyn::Program) -> Result<bool> {
         let mut cl = cl.clone();
         let () = (::match_deref::match_deref! { match &(cl.clone()) {
         Deref @ Absyn::Class { info: SourceInfo { .. }, .. } => {
-            skip = stringEq(cl.info.fileName.clone(), (literal!("<interactive>")).clone())? || stringEq((System::basename(cl.info.fileName.clone())).clone(), (literal!("ModelicaBuiltin.mo")).clone())? || stringEq((System::basename(cl.info.fileName.clone())).clone(), (literal!("MetaModelicaBuiltin.mo")).clone())?;
+            skip = stringEq(cl.info.fileName.clone(), (literal!("<interactive>")).clone()) || stringEq((System::basename(cl.info.fileName.clone())).clone(), (literal!("ModelicaBuiltin.mo")).clone()) || stringEq((System::basename(cl.info.fileName.clone())).clone(), (literal!("MetaModelicaBuiltin.mo")).clone());
             if !(skip.clone()) {
                 optClassInfo = UnorderedMap::get((cl.name.clone()).clone(), classInfoMap.clone());
                 if isSome(optClassInfo.clone()) {
@@ -1793,7 +1793,7 @@ pub fn cevalInteractiveFunctions2(mut cache: FCore::Cache, mut env: FCore::Graph
                     pathstr = (Settings::getModelicaPath(Testsuite::isRunning()?)?).clone();
                     strs = List::map(cvars.clone(), (std::sync::Arc::new(ValuesUtil::extractValueString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>));
                     oldLanguageStd = Config::getLanguageStandard()?;
-                    b1 = !(stringEq((r#str.clone()).clone(), (literal!("")).clone())?);
+                    b1 = !(stringEq((r#str.clone()).clone(), (literal!("")).clone()));
                     if b1.clone() {
                         Config::setLanguageStandard(Config::versionStringToStd((r#str.clone()).clone()))?;
                     }
@@ -3038,7 +3038,7 @@ fn checkLibraryUsage(mut inLibrary: ArcStr, mut inExp: Arc<Absyn::Exp>) -> Resul
     let mut isUsed: bool = false;
     isUsed = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ Absyn::Exp::STRING { value: s } => {
-            stringEq((s.clone()).clone(), (inLibrary.clone()).clone())?
+            stringEq((s.clone()).clone(), (inLibrary.clone()).clone())
         },
         Deref @ Absyn::Exp::ARRAY { arrayExp: exps } => {
             List::isMemberOnTrue((inLibrary.clone()).clone(), exps.clone(), (std::sync::Arc::new(checkLibraryUsage) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<Absyn::Exp>) -> Result<bool> + 'static>))
