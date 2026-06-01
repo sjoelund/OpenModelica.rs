@@ -212,6 +212,7 @@ fn interface_to_crate(interface: &str) -> Option<String> {
         "script_util" => Some("openmodelica_script_util".to_owned()),
         "program_util" => Some("openmodelica_program_util".to_owned()),
         "codegen" => Some("openmodelica_codegen".to_owned()),
+        "codegen_cpp" => Some("openmodelica_codegen_cpp".to_owned()),
         "backend_main" => Some("openmodelica_backend_main".to_owned()),
         _ => None,
     }

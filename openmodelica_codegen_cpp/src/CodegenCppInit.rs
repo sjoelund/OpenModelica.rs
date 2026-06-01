@@ -10,8 +10,6 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::CodegenCppCommon;
-use crate::CodegenFMU2;
-use crate::CodegenFMUCommon;
 use openmodelica_ast::Absyn;
 use openmodelica_backend::BackendDAE;
 use openmodelica_backend::CodegenUtil;
@@ -19,6 +17,8 @@ use openmodelica_backend::SimCode;
 use openmodelica_backend::SimCodeFunction;
 use openmodelica_backend::SimCodeUtil;
 use openmodelica_backend::SimCodeVar;
+use openmodelica_codegen::CodegenFMU2;
+use openmodelica_codegen::CodegenFMUCommon;
 use openmodelica_frontend::Expression;
 use openmodelica_frontend::HashTableCrIListArray;
 use openmodelica_frontend::Types;

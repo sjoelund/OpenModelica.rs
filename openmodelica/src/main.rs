@@ -4,5 +4,7 @@ use arcstr::ArcStr;
 use std::sync::Arc;
 
 fn main() -> () {
-    Main::main(Arc::new(args().map(|e| ArcStr::from(e)).collect())).unwrap()
+    if let Err(e) = Main::main(Arc::new(args().map(|e| ArcStr::from(e)).collect())) {
+        println!("{:?}", e);
+    }
 }
