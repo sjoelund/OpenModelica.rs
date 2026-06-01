@@ -56,7 +56,15 @@ pub fn initialize() -> () {
     crate::Globals::packageIndexCacheIndex.with(|__root| *__root.borrow_mut() = None);
     crate::Globals::profilerTime1Index.with(|__root| *__root.borrow_mut() = metamodelica::OrderedFloat(0.0_f64));
     crate::Globals::profilerTime2Index.with(|__root| *__root.borrow_mut() = metamodelica::OrderedFloat(0.0_f64));
-    crate::Globals::flagsIndex.with(|__root| *__root.borrow_mut() = crate::Flags::Flag::NO_FLAGS);
+    // NOTE: flagsIndex must NOT be reset here. MetaModelica's `Global.initialize`
+    // (Global.mo) does not touch flagsIndex at all — in MM the root starts unset
+    // and `Flags.getFlags` (`getGlobalRoot`) *throws* until `FlagsUtil.loadFlags`
+    // lazily creates the defaults. The Rust port instead seeds the slot eagerly
+    // with valid `FLAGS(..)` (see `Globals::flagsIndex`) so `getFlags` is
+    // infallible. Resetting it to `NO_FLAGS` here would break that contract:
+    // `getFlags` would then return `NO_FLAGS` *without failing*, so
+    // `loadFlags`'s `try … else (re)initialize` never re-creates the defaults,
+    // and every `getConfigValue` afterwards fails its `FLAGS(..)` pattern match.
     crate::Globals::gcProfilingIndex.with(|__root| *__root.borrow_mut() = openmodelica_util_datatypes_basic::GCExt::getProfStats());
     // ── Cross-crate roots — reset by the owning crate, not here ───────────
     // openmodelica_frontend::Globals::{rewriteRulesIndex, inlineHashTable,

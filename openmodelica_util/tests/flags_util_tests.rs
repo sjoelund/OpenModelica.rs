@@ -16,7 +16,7 @@
 
 use metamodelica::nil;
 use arcstr::literal;
-use openmodelica_util::{Flags, FlagsUtil};
+use openmodelica_util::{Flags, FlagsUtil, Global};
 
 /// `loadFlags(true)` on a fresh (never-initialised) flags root must create the
 /// flags structure and return a `FLAGS(..)` value, not the `NO_FLAGS` sentinel.
@@ -57,4 +57,27 @@ fn new_passes_through_non_flag_args() {
         .expect("FlagsUtil::new should not fail");
     let out: Vec<_> = (&*out).into_iter().cloned().collect();
     assert_eq!(out, vec![literal!("model.mo")]);
+}
+
+/// Regression test for the real `Main.init` boot sequence: `Global.initialize()`
+/// runs *before* `FlagsUtil.new`. `Global.initialize` (Global.mo) deliberately
+/// does NOT touch the flags root — but the hand-written Rust port once reset it
+/// to `NO_FLAGS`, which undid the eager seed in `Globals::flagsIndex`. Because
+/// the Rust `getFlags` is infallible (it returns the slot value rather than
+/// throwing on an unset root the way MetaModelica's `getGlobalRoot` does),
+/// `loadFlags`'s `try … else (re)initialize` never re-created the defaults, and
+/// the next `getConfigValue` pattern-mismatched on `NO_FLAGS`.
+///
+/// This reproduces `omc --help` crashing in `evaluateConfigFlag →
+/// getConfigString → getConfigValue`. The earlier tests miss it because they
+/// never call `Global::initialize()`, so the slot keeps its seeded `FLAGS(..)`.
+#[test]
+fn config_value_usable_after_global_initialize_then_new() {
+    Global::initialize();
+    FlagsUtil::new(nil()).expect("FlagsUtil::new should not fail after Global::initialize");
+    // Reading any config flag exercises `getConfigValue`'s `FLAGS(..)` pattern,
+    // which is what crashed when the flags were left as `NO_FLAGS`.
+    let mode = Flags::getConfigString(Flags::INTERACTIVE.clone())
+        .expect("getConfigString must not fail after initialize + new");
+    assert_eq!(mode, literal!("none"), "INTERACTIVE defaults to \"none\"");
 }
