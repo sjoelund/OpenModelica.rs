@@ -210,10 +210,10 @@ pub fn elabCallInteractive(mut cache: FCore::Cache, mut env: FCore::Graph, mut r
             e = __try0_o1;
             prop = __try0_o2;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             ErrorExt::rollBack((literal!("elabCall_InteractiveFunction1")).clone());
             ErrorExt::pushMessages(handles.clone());
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     ErrorExt::freeMessages(handles.clone());

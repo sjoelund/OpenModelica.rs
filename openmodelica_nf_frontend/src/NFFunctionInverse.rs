@@ -185,9 +185,9 @@ fn instInverseSubMod(mut submod: Arc<SCode::SubMod>, mut fnNode: Arc<InstNode::I
                 Ok((__try0_o0,)) => {
                     param = __try0_o0;
                 }
-                Err(_) => {
+                Err(__try0_err) => {
                     Error::addSourceMessage(Error::INVALID_FUNCTION_ANNOTATION_INPUT.clone(), list![(name.clone()).clone(), (AbsynUtil::pathString(Function::name(r#fn.clone()), (literal!(".")).clone(), true, false)?).clone()], info.clone())?;
-                    bail!("fail");
+                    return Err(__try0_err);
                 }
             }
             call_exp = Inst::instExp(call_aexp.clone(), fnNode.clone(), NFInstContext::RELAXED.clone(), info.clone())?;

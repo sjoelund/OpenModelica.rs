@@ -89,9 +89,9 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NB
             bdae = __try0_o0;
             func = __try0_o1;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBDAEMode.main")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
-            bail!("try/else: outputs not set in else branch");
+            return Err(__try0_err);
         }
     }
     Ok(bdae)

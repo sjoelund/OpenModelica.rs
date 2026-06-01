@@ -16224,6 +16224,38 @@ fn is_fail_call(exp: &TypedExp) -> bool {
     matches!(exp, TypedExp::Call { func, .. } if func == "fail" || is_known_always_failing_fn(func))
 }
 
+/// True iff `exp` is a call to the MetaModelica `fail()` builtin — the
+/// zero-argument failure primitive — as opposed to a user function that
+/// merely always fails. Only the plain builtin lowers to a content-free
+/// `bail!("fail")`; user "always failing" helpers
+/// ([`is_known_always_failing_fn`]) already propagate a meaningful `Error`
+/// of their own, which we must not clobber.
+fn is_plain_fail_call(exp: &TypedExp) -> bool {
+    matches!(exp, TypedExp::Call { func, args, .. } if func == "fail" && args.is_empty())
+}
+
+/// True iff emitting `stmts` as a `try`/`else` *else* branch ends by
+/// re-raising: the final statement is an explicit `fail()`, or a tail `if`
+/// (with an `else`) every branch of which recursively ends in a re-raise.
+///
+/// Such a tail can propagate the captured body error (`e?`) instead of a
+/// fresh `bail!("fail")`, preserving the original failure for debugging — the
+/// common MetaModelica idiom `try … else <cleanup>; fail(); end try`. See
+/// [`emit_else_body`].
+fn else_tail_reraises(stmts: &[typedexp::TypedStmt]) -> bool {
+    use typedexp::TypedStmt as S;
+    let Some(last) = stmts.last() else { return false };
+    match last {
+        S::NoRetCall { call } => is_plain_fail_call(call),
+        S::If { then_, elseif, else_, .. } =>
+            !else_.is_empty()
+                && else_tail_reraises(then_)
+                && elseif.iter().all(|(_, b)| else_tail_reraises(b))
+                && else_tail_reraises(else_),
+        _ => false,
+    }
+}
+
 /// Fully-qualified MetaModelica functions whose body always ends in `fail()`
 /// (or equivalent). The Rust port lowers their bodies to `… ; bail!(...)`,
 /// but their signature is still `-> Result<()>`, so `?` at a call site is
@@ -16389,6 +16421,72 @@ fn try_emit_enum_for<'a>(
     }
     writeln!(out, "{indent}}}").unwrap();
     true
+}
+
+/// Emit a `try`/`else` *else* branch, propagating the captured body error
+/// when the branch ends by re-raising.
+///
+/// When `reraise` is `Some(err)`, a tail `fail()` — or every branch of a tail
+/// `if` (see [`else_tail_reraises`]) — is lowered to `return Err(err)` rather
+/// than to a fresh `bail!("fail")`, so the original error that caused the
+/// `try` body to fail is propagated for debugging instead of being replaced by
+/// a content-free failure. `err` is the name the `Err(err)` arm pattern bound
+/// the captured `anyhow::Error` to. Callers only pass `Some` when the
+/// enclosing function is fallible (so the `return` type-checks) and
+/// `else_tail_reraises(stmts)` held.
+///
+/// The re-raise diverges (`return`), exactly like the `bail!("fail")` it
+/// replaces — this matters: a `match`-form `try` with yielded outputs only
+/// assigns those outputs on the `Ok` arm, so the `Err` arm *must* diverge or
+/// the post-`try` reads of those outputs are flagged possibly-uninitialised
+/// (E0381). A bare `err?` would not diverge (its `Ok` path falls through).
+///
+/// Only the *tail* re-raise is rewritten: non-tail `fail()`s, and `fail()`s
+/// inside nested `try`/loops/match arms, retain their existing lowering. This
+/// keeps `err` from being moved more than once or across a loop back-edge,
+/// which the borrow checker would otherwise reject.
+fn emit_else_body<'a>(
+    out: &mut String,
+    indent: &str,
+    stmts: &[typedexp::TypedStmt],
+    reraise: Option<&str>,
+    fail_mode: FailureMode,
+    ctx: &mut GenCtx,
+    env: &mut LocalEnv,
+    top_level: &'a BTreeMap<String, NameNode<'a>>,
+    fresh: &mut u32,
+) {
+    use typedexp::TypedStmt as S;
+    let Some(err) = reraise else {
+        emit_stmts(out, indent, stmts, fail_mode, ctx, env, top_level, fresh);
+        return;
+    };
+    let Some((last, prefix)) = stmts.split_last() else { return };
+    emit_stmts(out, indent, prefix, fail_mode.clone(), ctx, env, top_level, fresh);
+    match last {
+        S::NoRetCall { call } if is_plain_fail_call(call) => {
+            writeln!(out, "{indent}return Err({err});").unwrap();
+        }
+        S::If { cond, then_, elseif, else_ }
+            if !else_.is_empty()
+                && else_tail_reraises(then_)
+                && elseif.iter().all(|(_, b)| else_tail_reraises(b))
+                && else_tail_reraises(else_) =>
+        {
+            let c = emit_exp(cond, false, ctx, top_level);
+            writeln!(out, "{indent}if {c} {{").unwrap();
+            emit_else_body(out, &format!("{indent}    "), then_, Some(err), fail_mode.clone(), ctx, env, top_level, fresh);
+            for (ec, eb) in elseif {
+                let cs = emit_exp(ec, false, ctx, top_level);
+                writeln!(out, "{indent}}} else if {cs} {{").unwrap();
+                emit_else_body(out, &format!("{indent}    "), eb, Some(err), fail_mode.clone(), ctx, env, top_level, fresh);
+            }
+            writeln!(out, "{indent}}} else {{").unwrap();
+            emit_else_body(out, &format!("{indent}    "), else_, Some(err), fail_mode, ctx, env, top_level, fresh);
+            writeln!(out, "{indent}}}").unwrap();
+        }
+        other => emit_stmt(out, indent, other, fail_mode, ctx, env, top_level, fresh),
+    }
 }
 
 fn emit_stmt<'a>(
@@ -16946,7 +17044,27 @@ fn emit_stmt<'a>(
                 }
             };
 
-            if yield_vars.is_empty() {
+            // The captured body error can be propagated when the enclosing
+            // function is fallible AND the else branch ends by re-raising —
+            // either an explicit tail `fail()` (`else_tail_reraises`) or a
+            // fall-through that leaves outputs unset (`else_needs_fail`, a
+            // match failure). In both cases we bind the error in the `Err`
+            // arm (to `err_name`, a label-derived name that cannot collide
+            // with a user variable — a plain `e` clashed with locals named
+            // `e` in the source) and lower the re-raise to
+            // `return Err(err_name)` so the original failure surfaces for
+            // debugging instead of a content-free `bail!("fail")`. The two
+            // triggers are mutually exclusive: a tail `fail()` makes the else
+            // branch diverge, so `else_needs_fail` (which requires
+            // fall-through) cannot also hold.
+            let tail_reraises = ctx.current_fn_fallible && else_tail_reraises(else_body);
+            let needs_fail_reraise = ctx.current_fn_fallible && else_needs_fail;
+            let bind_err = tail_reraises || needs_fail_reraise;
+            let err_name = format!("__try{label_n}_err");
+            let err_pat = if bind_err { format!("Err({err_name})") } else { "Err(_)".to_owned() };
+            let reraise_arg = if tail_reraises { Some(err_name.as_str()) } else { None };
+
+            if yield_vars.is_empty() && !bind_err {
                 writeln!(out, "{indent}if {label}: {{", ).unwrap();
                 let mut benv = env.clone();
                 ctx.with_qmode(QMode::TryBlock(label.clone()), |ctx| {
@@ -16957,12 +17075,31 @@ fn emit_stmt<'a>(
                 let mut eenv = env.clone();
                 emit_stmts(out, &format!("{indent}    "), else_body, fail_mode, ctx, &mut eenv, top_level, fresh);
                 if else_needs_fail {
-                    if ctx.current_fn_fallible {
-                        writeln!(out, "{indent}    bail!(\"try/else: outputs not set in else branch\");").unwrap();
-                    } else {
-                        writeln!(out, "{indent}    panic!(\"try/else: outputs not set in else branch\");").unwrap();
-                    }
+                    // Unreachable when fallible (that path takes the `bind_err`
+                    // branch below); only the non-fallible `panic!` survives.
+                    writeln!(out, "{indent}    panic!(\"try/else: outputs not set in else branch\");").unwrap();
                 }
+                writeln!(out, "{indent}}}").unwrap();
+            } else if yield_vars.is_empty() {
+                // Empty yield set but the else branch re-raises: lower to a
+                // `match` (rather than `if … .is_err()`) so the body error can
+                // be bound and propagated.
+                writeln!(out, "{indent}match {label}: {{").unwrap();
+                let mut benv = env.clone();
+                ctx.with_qmode(QMode::TryBlock(label.clone()), |ctx| {
+                    emit_stmts(out, &format!("{indent}    "), body, FailureMode::TryArm, ctx, &mut benv, top_level, fresh);
+                });
+                writeln!(out, "{indent}    Ok::<(), anyhow::Error>(())").unwrap();
+                writeln!(out, "{indent}}} {{").unwrap();
+                writeln!(out, "{indent}    Ok(()) => {{}}").unwrap();
+                writeln!(out, "{indent}    {err_pat} => {{").unwrap();
+                let mut eenv = env.clone();
+                emit_else_body(out, &format!("{indent}        "), else_body, reraise_arg, fail_mode, ctx, &mut eenv, top_level, fresh);
+                if else_needs_fail {
+                    // needs_fail_reraise ⇒ fallible, so `err_name` is in scope.
+                    writeln!(out, "{indent}        return Err({err_name});").unwrap();
+                }
+                writeln!(out, "{indent}    }}").unwrap();
                 writeln!(out, "{indent}}}").unwrap();
             } else {
                 let escaped_vars: Vec<String> = yield_vars.iter().map(|n| escape_ident(n)).collect();
@@ -16999,12 +17136,13 @@ fn emit_stmt<'a>(
                     writeln!(out, "{indent}        {v} = {t};").unwrap();
                 }
                 writeln!(out, "{indent}    }}").unwrap();
-                writeln!(out, "{indent}    Err(_) => {{").unwrap();
+                writeln!(out, "{indent}    {err_pat} => {{").unwrap();
                 let mut eenv = env.clone();
-                emit_stmts(out, &format!("{indent}        "), else_body, fail_mode, ctx, &mut eenv, top_level, fresh);
+                emit_else_body(out, &format!("{indent}        "), else_body, reraise_arg, fail_mode, ctx, &mut eenv, top_level, fresh);
                 if else_needs_fail {
                     if ctx.current_fn_fallible {
-                        writeln!(out, "{indent}        bail!(\"try/else: outputs not set in else branch\");").unwrap();
+                        // needs_fail_reraise ⇒ bind_err, so `err_name` is in scope.
+                        writeln!(out, "{indent}        return Err({err_name});").unwrap();
                     } else {
                         writeln!(out, "{indent}        panic!(\"try/else: outputs not set in else branch\");").unwrap();
                     }

@@ -2697,9 +2697,9 @@ fn getTaskSimVarMapping(mut iSccEqMapping: metamodelica::Array<Arc<metamodelica:
             tmpNotSolvedVars = __try0_o5;
             tmpSolvedVars = __try0_o6;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("HpcOmMemory.getTaskSimVarMapping")); __mm_s.push_str(&*literal!(" failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((oSolvedVars, oNotSolvedVars))

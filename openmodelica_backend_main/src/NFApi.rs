@@ -141,10 +141,10 @@ pub fn evaluateAnnotation(mut absynProgram: Absyn::Program, mut classPath: Arc<P
         Ok((__try0_o0,)) => {
             outString = __try0_o0;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             FlagsUtil::set(Flags::SCODE_INST.clone(), b.clone())?;
             FlagsUtil::set(Flags::NF_SCALARIZE.clone(), s.clone())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(outString)
@@ -337,10 +337,10 @@ pub fn evaluateAnnotations(mut absynProgram: Absyn::Program, mut classPath: Arc<
         Ok((__try0_o0,)) => {
             outStringLst = __try0_o0;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             FlagsUtil::set(Flags::SCODE_INST.clone(), b.clone())?;
             FlagsUtil::set(Flags::NF_SCALARIZE.clone(), s.clone())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(outStringLst)
@@ -827,9 +827,9 @@ pub fn getModelInstance(mut classPath: Arc<Path>, mut contextPath: Arc<Path>, mu
             res = __try0_o6;
             top = __try0_o7;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Inst::clearCaches()?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(res)
@@ -859,9 +859,9 @@ pub fn getModelInstanceAnnotation(mut classPath: Arc<Path>, mut filter: Arc<meta
             res = __try0_o3;
             top = __try0_o4;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Inst::clearCaches()?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(res)
@@ -2177,8 +2177,8 @@ pub fn dumpJSONSCodeClassDef(mut classDef: Arc<SCode::ClassDef>, mut scope: Arc<
                         derivedNode = __try0_o0;
                         json = __try0_o1;
                     }
-                    Err(_) => {
-                        bail!("try/else: outputs not set in else branch");
+                    Err(__try0_err) => {
+                        return Err(__try0_err);
                     }
                 }
             } else {

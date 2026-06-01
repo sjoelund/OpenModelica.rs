@@ -343,9 +343,9 @@ pub fn lookupRootClass(mut path: Arc<Path>, mut topScope: Arc<InstNode::InstNode
                     cty = __try1_o1;
                     last = __try1_o2;
                 }
-                Err(_) => {
+                Err(__try1_err) => {
                     ErrorExt::delCheckpoint(literal!("NFInst.lookupRootClass"));
-                    bail!("fail");
+                    return Err(__try1_err);
                 }
             }
         }

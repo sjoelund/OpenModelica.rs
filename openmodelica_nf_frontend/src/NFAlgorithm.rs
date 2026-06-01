@@ -216,9 +216,9 @@ pub fn getInputsOutputs(mut statements: Arc<metamodelica::List<Arc<Statement::NF
             inputs_lst = __try0_o0;
             outputs_lst = __try0_o1;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFAlgorithm.getInputsOutputs")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
-            bail!("try/else: outputs not set in else branch");
+            return Err(__try0_err);
         }
     }
     Ok((inputs_lst, outputs_lst))

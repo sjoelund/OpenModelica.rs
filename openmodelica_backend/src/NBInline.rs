@@ -210,12 +210,12 @@ pub fn inlineArrayConstructorSingle(mut eqn: Arc<Equation::Equation>, mut iter: 
             changed = __try0_o0;
             eqn = __try0_o1;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             changed = false;
             if Flags::isSet(Flags::FAILTRACE.clone())? {
                 Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to inline following equation:\n")); __mm_s.push_str(&*BEquation::Equation::toString(eqn.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone())?;
             }
-            bail!("try/else: outputs not set in else branch");
+            return Err(__try0_err);
         }
     }
     Ok((eqn, changed))
@@ -368,11 +368,11 @@ pub fn inlineRecordTupleArrayEquation(mut eqn: Arc<Equation::Equation>, mut iter
         Ok((__try0_o0,)) => {
             eqn = __try0_o0;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             if Flags::isSet(Flags::FAILTRACE.clone())? {
                 Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Failed to inline following equation:\n")); __mm_s.push_str(&*BEquation::Equation::toString(eqn.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone())?;
             }
-            bail!("try/else: outputs not set in else branch");
+            return Err(__try0_err);
         }
     }
     Ok(eqn)

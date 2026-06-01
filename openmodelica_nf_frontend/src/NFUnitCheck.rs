@@ -134,9 +134,9 @@ pub fn checkUnits(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<Flat
             htS2U = __try0_o4;
             htU2S = __try0_o5;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFUnitCheck.checkUnits")); __mm_s.push_str(&*literal!(": unit check module failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
-            bail!("try/else: outputs not set in else branch");
+            return Err(__try0_err);
         }
     }
     execStat(literal!("NFUnitCheck.checkUnits"))?;

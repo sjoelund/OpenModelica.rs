@@ -514,9 +514,9 @@ fn instVar_dispatch(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH
             source = __try0_o12;
             type_mods = __try0_o13;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::clearCurrentComponent()?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((outCache, outEnv, outIH, outStore, outDae, outSets, outType, outGraph))

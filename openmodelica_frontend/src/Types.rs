@@ -6145,9 +6145,9 @@ pub fn matchType(mut inExp: Arc<DAE::Exp>, mut inActualType: Arc<DAE::Type>, mut
                 outExp = __try0_o0;
                 outType = __try0_o1;
             }
-            Err(_) => {
+            Err(__try0_err) => {
                 printFailure(Flags::TYPES.clone(), (literal!("matchType")).clone(), inExp.clone(), inActualType.clone(), inExpectedType.clone())?;
-                bail!("fail");
+                return Err(__try0_err);
             }
         }
     }

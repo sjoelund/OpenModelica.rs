@@ -135,9 +135,9 @@ pub fn tearingSystem(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<Backe
             outDAE = __try0_o1;
             strongComponentIndex = __try0_o2;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Tearing.tearingSystem")); __mm_s.push_str(&*literal!(" failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(outDAE)
@@ -1535,9 +1535,9 @@ fn minimalTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backend
             var_lst = __try0_o18;
             vars = __try0_o19;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addInternalError((literal!("function minimalTearing failed")).clone(), metamodelica::sourceInfo!())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(ocomp)
@@ -1547,7 +1547,7 @@ fn matchDiscreteVars(mut inDiscreteVars: Arc<metamodelica::List<i32>>, mut adjEn
     let mut nE: metamodelica::Array<i32> = nE;
     let mut nV: metamodelica::Array<i32> = nV;
     let mut eqMarker: metamodelica::Array<bool> = Default::default();
-    if '__try0: {
+    match '__try0: {
         for mut varIdx in &*inDiscreteVars.clone() {
             let mut varIdx = varIdx.clone();
             eqMarker = metamodelica::arrayFromVec(eqArray.clone().borrow().clone());
@@ -1557,9 +1557,12 @@ fn matchDiscreteVars(mut inDiscreteVars: Arc<metamodelica::List<i32>>, mut adjEn
             nV = __pa3.clone();
         }
         Ok::<(), anyhow::Error>(())
-    }.is_err() {
-        Error::addInternalError((literal!("function matchDiscreteVars failed")).clone(), metamodelica::sourceInfo!())?;
-        bail!("fail");
+    } {
+        Ok(()) => {}
+        Err(__try0_err) => {
+            Error::addInternalError((literal!("function matchDiscreteVars failed")).clone(), metamodelica::sourceInfo!())?;
+            return Err(__try0_err);
+        }
     }
     Ok((nE, nV))
 }
@@ -1570,7 +1573,7 @@ fn pathFound(mut varIdx: i32, mut adjEnhT: metamodelica::Array<Arc<metamodelica:
     let mut nV: metamodelica::Array<i32> = nV;
     let mut success: bool = false;
     let mut eqIdx: i32 = 0;
-    if '__try0: {
+    match '__try0: {
         let __range1 = &*adjEnhT.borrow()[(varIdx.clone()-1) as usize].clone();
         for mut entry in __range1 {
             let mut entry = entry.clone();
@@ -1616,9 +1619,12 @@ fn pathFound(mut varIdx: i32, mut adjEnhT: metamodelica::Array<Arc<metamodelica:
             }
         }
         Ok::<(), anyhow::Error>(())
-    }.is_err() {
-        Error::addInternalError((literal!("function pathFound failed")).clone(), metamodelica::sourceInfo!())?;
-        bail!("fail");
+    } {
+        Ok(()) => {}
+        Err(__try0_err) => {
+            Error::addInternalError((literal!("function pathFound failed")).clone(), metamodelica::sourceInfo!())?;
+            return Err(__try0_err);
+        }
     }
     Ok((eqMarker, nE, nV, success))
 }
@@ -1628,7 +1634,7 @@ fn getTearingSetfromAssign(mut inDiscreteVars: Arc<metamodelica::List<i32>>, mut
     let mut equationArray: metamodelica::Array<bool> = equationArray;
     let mut innerEquations: Arc<metamodelica::List<BackendDAE::InnerEquation>> = metamodelica::nil();
     let mut eqIdx: i32 = 0;
-    if '__try0: {
+    match '__try0: {
         for mut varIdx in &*inDiscreteVars.clone() {
             let mut varIdx = varIdx.clone();
             {let _arr = varArray.clone(); _arr.borrow_mut()[(varIdx.clone()-1) as usize] = false; _arr};
@@ -1637,9 +1643,12 @@ fn getTearingSetfromAssign(mut inDiscreteVars: Arc<metamodelica::List<i32>>, mut
             innerEquations = metamodelica::cons(BackendDAE::InnerEquation::INNEREQUATION { eqn: eqIdx.clone(), vars: list![varIdx.clone()] }, innerEquations.clone());
         }
         Ok::<(), anyhow::Error>(())
-    }.is_err() {
-        Error::addInternalError((literal!("function getTearingSetfromAssign failed")).clone(), metamodelica::sourceInfo!())?;
-        bail!("fail");
+    } {
+        Ok(()) => {}
+        Err(__try0_err) => {
+            Error::addInternalError((literal!("function getTearingSetfromAssign failed")).clone(), metamodelica::sourceInfo!())?;
+            return Err(__try0_err);
+        }
     }
     Ok((varArray, equationArray, innerEquations))
 }
@@ -2246,10 +2255,10 @@ fn selectTearingVar(mut me: metamodelica::Array<Arc<metamodelica::List<(i32, Bac
             OutTVar = __try0_o0;
             potentials = __try0_o1;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             println!("{}", (literal!("\nThe selection of a new tearing variable failed.\n")).clone());
             Error::addCompilerWarning((literal!("Function Tearing.selectTearingVar failed at least once. Use -d=tearingdump or -d=tearingdumpV for more information.")).clone())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     if listMember(OutTVar.clone(), tSel_avoid.clone()) {
@@ -3783,9 +3792,9 @@ fn recursiveTearingMain(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<(Arc<B
             Ok((__try24_o0,)) => {
                 outDAE = __try24_o0;
             }
-            Err(_) => {
+            Err(__try24_err) => {
                 update = false;
-                bail!("try/else: outputs not set in else branch");
+                return Err(__try24_err);
             }
         }
     } else {
@@ -4228,9 +4237,9 @@ fn userDefinedTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Bac
         Ok((__try2_o0,)) => {
             userResiduals_exp = __try2_o0;
         }
-        Err(_) => {
+        Err(__try2_err) => {
             Error::addMessage(Error::USER_DEFINED_TEARING_ERROR.clone(), list![(literal!("Index out of bounds.")).clone()])?;
-            bail!("fail");
+            return Err(__try2_err);
         }
     }
     if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {

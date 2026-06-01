@@ -1175,9 +1175,9 @@ pub mod ClassTree {
                 entry = __try0_o0;
                 node = __try0_o1;
             }
-            Err(_) => {
+            Err(__try0_err) => {
                 Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClassTree.ClassTree.getRedeclaredNode")); __mm_s.push_str(&*literal!(" failed on ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
-                bail!("try/else: outputs not set in else branch");
+                return Err(__try0_err);
             }
         }
         Ok(node)

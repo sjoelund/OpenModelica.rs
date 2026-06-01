@@ -681,10 +681,10 @@ fn handleOverconstrainedConnections_dispatch(mut graph: NFOCConnectionGraph, mut
             rooted = __try0_o3;
             roots = __try0_o4;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             let true = (Flags::isSet(Flags::CGRAPH.clone())?) else { bail!("pattern mismatch") };
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- NFOCConnectionGraph.handleOverconstrainedConnections failed for model: ")); __mm_s.push_str(&*FlatModel::fullName(flatModel.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((flatModel, connected, broken))

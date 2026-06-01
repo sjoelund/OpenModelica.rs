@@ -429,6 +429,9 @@ pub mod SimCode {
             let mut jacF: Arc<SimJacobian::SimJacobian> = Arc::new(<SimJacobian::SimJacobian as ::std::default::Default>::default());
             let mut jacH: Arc<SimJacobian::SimJacobian> = Arc::new(<SimJacobian::SimJacobian as ::std::default::Default>::default());
             let mut jacAdjoint: Arc<SimJacobian::SimJacobian> = Arc::new(<SimJacobian::SimJacobian as ::std::default::Default>::default());
+            let mut jacLfg: Arc<SimJacobian::SimJacobian> = Arc::new(<SimJacobian::SimJacobian as ::std::default::Default>::default());
+            let mut jacMrf: Arc<SimJacobian::SimJacobian> = Arc::new(<SimJacobian::SimJacobian as ::std::default::Default>::default());
+            let mut jacR0: Arc<SimJacobian::SimJacobian> = Arc::new(<SimJacobian::SimJacobian as ::std::default::Default>::default());
             let mut inlineEquations: Arc<metamodelica::List<Arc<SimStrongComponent::Block::Block>>> = metamodelica::nil();
             let mut collect_literals: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>;
             simCodeIndices = EMPTY_SIM_CODE_INDICES();
@@ -503,14 +506,15 @@ pub mod SimCode {
             (jacD, simCodeIndices) = SimJacobian::empty((literal!("D")).clone(), simCodeIndices.clone())?;
             (jacF, simCodeIndices) = SimJacobian::empty((literal!("F")).clone(), simCodeIndices.clone())?;
             (jacH, simCodeIndices) = SimJacobian::empty((literal!("H")).clone(), simCodeIndices.clone())?;
-            jacobians = metamodelica::cons(jacAdjoint.clone(), metamodelica::cons(jacH.clone(), metamodelica::cons(jacF.clone(), metamodelica::cons(jacD.clone(), metamodelica::cons(jacC.clone(), metamodelica::cons(jacB.clone(), metamodelica::cons(jacA.clone(), jacobians.clone()))))))).reverse();
+            (jacLfg, jacMrf, jacR0, simCodeIndices) = SimJacobian::createOptimizationJacobian(listAppend(var_field!((*bdae).ode, BackendDAE::NBackendDAE::MAIN).clone(), var_field!((*bdae).ode_event, BackendDAE::NBackendDAE::MAIN).clone()), simCodeIndices.clone(), simcode_map.clone())?;
+            jacobians = metamodelica::cons(jacR0.clone(), metamodelica::cons(jacMrf.clone(), metamodelica::cons(jacLfg.clone(), metamodelica::cons(jacAdjoint.clone(), metamodelica::cons(jacH.clone(), metamodelica::cons(jacF.clone(), metamodelica::cons(jacD.clone(), metamodelica::cons(jacC.clone(), metamodelica::cons(jacB.clone(), metamodelica::cons(jacA.clone(), jacobians.clone())))))))))).reverse();
             for mut jac in &*jacobians.clone() {
                 let mut jac = jac.clone();
                 if isSome(jac.jac_map.clone()) {
                     vars = SimVars::addSeedAndJacobianVars(vars.clone(), UnorderedMap::toList(Util::getOption(jac.jac_map.clone())?));
                 }
             }
-            jac_blocks = SimJacobian::getJacobiansBlocks(list![jacA.clone(), jacB.clone(), jacC.clone(), jacD.clone(), jacF.clone(), jacH.clone(), jacAdjoint.clone()])?;
+            jac_blocks = SimJacobian::getJacobiansBlocks(list![jacA.clone(), jacB.clone(), jacC.clone(), jacD.clone(), jacF.clone(), jacH.clone(), jacAdjoint.clone(), jacLfg.clone(), jacMrf.clone(), jacR0.clone()])?;
             (jac_blocks, simCodeIndices) = SimStrongComponent::Block::fixIndices(jac_blocks.clone(), metamodelica::nil(), simCodeIndices.clone())?;
             generic_loop_calls = ({
         let mut __acc: Arc<metamodelica::List<Arc<SimGenericCall::NSimGenericCall>>> = metamodelica::nil();

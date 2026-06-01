@@ -292,9 +292,9 @@ pub fn getWhenEquationExpr(mut inWhenEquation: Arc<BackendDAE::WhenEquation>) ->
             outComponentRef = __try0_o0;
             outExp = __try0_o1;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addInternalError((literal!("BackendEquation.getWhenEquationExpr failed\n")).clone(), metamodelica::sourceInfo!())?;
-            bail!("try/else: outputs not set in else branch");
+            return Err(__try0_err);
         }
     }
     Ok((outComponentRef, outExp))
@@ -1073,17 +1073,16 @@ fn traverseExpsOfWhenOps_WithStop<T: Clone + 'static>(mut inWhenOps: Arc<metamod
     pub type FuncExpType<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, bool, T)> + 'static>;
 
     let mut outCont: bool = false;
-    let mut outTypeA: T;
-    (outCont, outTypeA) = ({
-        let mut extArg: T = inTypeA.clone();
+    let mut extArg: T = inTypeA.clone();
+    (outCont, extArg) = ({
         let mut b: bool = false;
         (::match_deref::match_deref! { match &(inWhenOps.clone()) {
         Deref @ metamodelica::List::Nil => {
-            (inCont.clone(), inTypeA.clone())
+            (inCont.clone(), extArg.clone())
         },
         Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::ASSIGN { right: e2, left: e1, .. }, tail: rest } => {
             if inCont.clone() {
-                (_, b, extArg) = inFunc(e1.clone(), inTypeA.clone())?;
+                (_, b, extArg) = inFunc(e1.clone(), extArg.clone())?;
             }
             if b.clone() {
                 (_, b, extArg) = inFunc(e2.clone(), extArg.clone())?;
@@ -1097,7 +1096,7 @@ fn traverseExpsOfWhenOps_WithStop<T: Clone + 'static>(mut inWhenOps: Arc<metamod
             tp = Expression::r#typeof(e2.clone())?;
             e1 = Expression::makeCrefExp(cr.clone(), tp.clone())?;
             if inCont.clone() {
-                (_, b, extArg) = inFunc(e1.clone(), inTypeA.clone())?;
+                (_, b, extArg) = inFunc(e1.clone(), extArg.clone())?;
             }
             if b.clone() {
                 (_, b, extArg) = inFunc(e2.clone(), extArg.clone())?;
@@ -1107,7 +1106,7 @@ fn traverseExpsOfWhenOps_WithStop<T: Clone + 'static>(mut inWhenOps: Arc<metamod
         },
         Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::ASSERT { message: e2, condition: e1, .. }, tail: rest } => {
             if inCont.clone() {
-                (_, b, extArg) = inFunc(e1.clone(), inTypeA.clone())?;
+                (_, b, extArg) = inFunc(e1.clone(), extArg.clone())?;
             }
             if b.clone() {
                 (_, b, extArg) = inFunc(e2.clone(), extArg.clone())?;
@@ -1117,14 +1116,14 @@ fn traverseExpsOfWhenOps_WithStop<T: Clone + 'static>(mut inWhenOps: Arc<metamod
         },
         Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::TERMINATE { message: e1, .. }, tail: rest } => {
             if inCont.clone() {
-                (_, b, extArg) = inFunc(e1.clone(), inTypeA.clone())?;
+                (_, b, extArg) = inFunc(e1.clone(), extArg.clone())?;
             }
             (b, extArg) = traverseExpsOfWhenOps_WithStop(rest.clone(), inFunc.clone(), extArg.clone(), b.clone())?;
             (b.clone(), extArg.clone())
         },
         Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::NORETCALL { exp: e1, .. }, tail: rest } => {
             if inCont.clone() {
-                (_, b, extArg) = inFunc(e1.clone(), inTypeA.clone())?;
+                (_, b, extArg) = inFunc(e1.clone(), extArg.clone())?;
             }
             (b, extArg) = traverseExpsOfWhenOps_WithStop(rest.clone(), inFunc.clone(), extArg.clone(), b.clone())?;
             (b.clone(), extArg.clone())
@@ -1132,7 +1131,7 @@ fn traverseExpsOfWhenOps_WithStop<T: Clone + 'static>(mut inWhenOps: Arc<metamod
         _ => bail!("match: no arm matched"),
     } })
     });
-    Ok((outCont, outTypeA))
+    Ok((outCont, extArg))
 }
 
 fn traverseExpsOfExpList<T: Clone + 'static>(mut inExpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut rel: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, T)> + 'static>, mut inExtArg: T) -> (Arc<metamodelica::List<Arc<DAE::Exp>>>, T) {

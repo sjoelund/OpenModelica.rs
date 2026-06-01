@@ -357,13 +357,16 @@ fn findOptimalResizableValues(mut eqn: Arc<Equation::Equation>, mut parameters: 
                 (lhs_dim, rhs_dim) = tpl.clone();
                 if Dimension::isResizable(lhs_dim.clone()) || Dimension::isResizable(rhs_dim.clone()) {
                     r#const = Arc::new(Expression::NFExpression::MULTARY { arguments: list![Dimension::sizeExp(lhs_dim.clone())?], inv_arguments: list![Dimension::sizeExp(rhs_dim.clone())?], operator: Operator::makeAdd(Arc::new(openmodelica_nf_frontend::NFType::INTEGER)) });
-                    if '__try0: {
+                    match '__try0: {
                         unwrap_break_err!(addConstraint(r#const.clone(), None, c2pe.clone(), (std::sync::Arc::new(fnptr!(Expression::isZero, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>), (literal!("array dimension")).clone(), (literal!("=")).clone()), '__try0);
                         unwrap_break_err!(Expression::map(r#const.clone(), (std::sync::Arc::new({ let __pe_b1 = parameters.clone(); move |__pe_a0| collectResizables(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)), '__try0);
                         Ok::<(), anyhow::Error>(())
-                    }.is_err() {
-                        Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBResizable.findOptimalResizableValues")); __mm_s.push_str(&*literal!(" failed.\nViolation of implicit constraint `")); __mm_s.push_str(&*Dimension::toString(lhs_dim.clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*Dimension::toString(rhs_dim.clone())?); __mm_s.push_str(&*literal!("` for LHS and RHS type dimensions in equation:\n")); __mm_s.push_str(&*Equation::toString(eqn.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
-                        bail!("fail");
+                    } {
+                        Ok(()) => {}
+                        Err(__try0_err) => {
+                            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBResizable.findOptimalResizableValues")); __mm_s.push_str(&*literal!(" failed.\nViolation of implicit constraint `")); __mm_s.push_str(&*Dimension::toString(lhs_dim.clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*Dimension::toString(rhs_dim.clone())?); __mm_s.push_str(&*literal!("` for LHS and RHS type dimensions in equation:\n")); __mm_s.push_str(&*Equation::toString(eqn.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
+                            return Err(__try0_err);
+                        }
                     }
                 }
             }
@@ -639,20 +642,26 @@ fn addVariableConstraint(mut cref: Arc<ComponentRef::NFComponentRef>, mut eqn: A
         (dim, sub) = tpl.clone();
         sub_exp = Subscript::toExp(sub.clone())?;
         r#const = Arc::new(Expression::NFExpression::MULTARY { arguments: list![sub_exp.clone()], inv_arguments: list![Dimension::sizeExp(dim.clone())?], operator: op.clone() });
-        if '__try0: {
+        match '__try0: {
             unwrap_break_err!(addConstraint(r#const.clone(), replacements.clone(), c2pi.clone(), (std::sync::Arc::new(fnptr!(Expression::isNonPositive, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentRef::toString(cref.clone())?); __mm_s.push_str(&*literal!(" (variable)")); ArcStr::from(__mm_s) }).clone(), (literal!(">=")).clone()), '__try0);
             Ok::<(), anyhow::Error>(())
-        }.is_err() {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBResizable.addVariableConstraint")); __mm_s.push_str(&*literal!(" failed.\nViolation of implicit constraint `")); __mm_s.push_str(&*Dimension::toString(dim.clone())?); __mm_s.push_str(&*literal!(" >= ")); __mm_s.push_str(&*Subscript::toString(sub.clone())?); __mm_s.push_str(&*literal!("` for component reference `")); __mm_s.push_str(&*ComponentRef::toString(cref.clone())?); __mm_s.push_str(&*literal!("` of variable `")); __mm_s.push_str(&*Variable::toString(Pointer::access(BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!())?), (literal!("")).clone(), false)?); __mm_s.push_str(&*literal!("`\nin equation:\n")); __mm_s.push_str(&*Equation::toString(eqn.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
-            bail!("fail");
+        } {
+            Ok(()) => {}
+            Err(__try0_err) => {
+                Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBResizable.addVariableConstraint")); __mm_s.push_str(&*literal!(" failed.\nViolation of implicit constraint `")); __mm_s.push_str(&*Dimension::toString(dim.clone())?); __mm_s.push_str(&*literal!(" >= ")); __mm_s.push_str(&*Subscript::toString(sub.clone())?); __mm_s.push_str(&*literal!("` for component reference `")); __mm_s.push_str(&*ComponentRef::toString(cref.clone())?); __mm_s.push_str(&*literal!("` of variable `")); __mm_s.push_str(&*Variable::toString(Pointer::access(BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!())?), (literal!("")).clone(), false)?); __mm_s.push_str(&*literal!("`\nin equation:\n")); __mm_s.push_str(&*Equation::toString(eqn.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
+                return Err(__try0_err);
+            }
         }
         r#const = Arc::new(Expression::NFExpression::MULTARY { arguments: list![Arc::new(Expression::NFExpression::INTEGER { value: 1 })], inv_arguments: list![Dimension::sizeExp(dim.clone())?], operator: op.clone() });
-        if '__try1: {
+        match '__try1: {
             unwrap_break_err!(addConstraint(r#const.clone(), replacements.clone(), c2pi.clone(), (std::sync::Arc::new(fnptr!(Expression::isNonPositive, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentRef::toString(cref.clone())?); __mm_s.push_str(&*literal!(" (variable)")); ArcStr::from(__mm_s) }).clone(), (literal!(">=")).clone()), '__try1);
             Ok::<(), anyhow::Error>(())
-        }.is_err() {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBResizable.addVariableConstraint")); __mm_s.push_str(&*literal!(" failed.\nViolation of implicit constraint `")); __mm_s.push_str(&*Dimension::toString(dim.clone())?); __mm_s.push_str(&*literal!(" >= 1")); __mm_s.push_str(&*literal!("` for component reference `")); __mm_s.push_str(&*ComponentRef::toString(cref.clone())?); __mm_s.push_str(&*literal!("` of variable `")); __mm_s.push_str(&*Variable::toString(Pointer::access(BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!())?), (literal!("")).clone(), false)?); __mm_s.push_str(&*literal!("`\nin equation:\n")); __mm_s.push_str(&*Equation::toString(eqn.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
-            bail!("fail");
+        } {
+            Ok(()) => {}
+            Err(__try1_err) => {
+                Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBResizable.addVariableConstraint")); __mm_s.push_str(&*literal!(" failed.\nViolation of implicit constraint `")); __mm_s.push_str(&*Dimension::toString(dim.clone())?); __mm_s.push_str(&*literal!(" >= 1")); __mm_s.push_str(&*literal!("` for component reference `")); __mm_s.push_str(&*ComponentRef::toString(cref.clone())?); __mm_s.push_str(&*literal!("` of variable `")); __mm_s.push_str(&*Variable::toString(Pointer::access(BVariable::getVarPointer(cref.clone(), metamodelica::sourceInfo!())?), (literal!("")).clone(), false)?); __mm_s.push_str(&*literal!("`\nin equation:\n")); __mm_s.push_str(&*Equation::toString(eqn.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
+                return Err(__try1_err);
+            }
         }
     }
     Ok(c2pi)

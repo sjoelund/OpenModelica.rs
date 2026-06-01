@@ -246,8 +246,8 @@ pub fn maxCardinality(mut sets: Arc<Vector::Vector<Arc<SBSet>>>) -> Result<(Arc<
             index = __try0_o0;
             maxSet = __try0_o1;
         }
-        Err(_) => {
-            bail!("fail");
+        Err(__try0_err) => {
+            return Err(__try0_err);
         }
     }
     Ok((maxSet, index))

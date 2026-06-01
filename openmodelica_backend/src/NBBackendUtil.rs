@@ -363,17 +363,17 @@ pub fn isOnlyTimeDependentFold(mut exp: Arc<Expression::NFExpression>, mut b: bo
     b
 }
 
-pub fn isContinuous(mut exp: Arc<Expression::NFExpression>, mut init: bool) -> Result<bool> {
+pub fn isContinuous(mut exp: Arc<Expression::NFExpression>, mut staticAsContinuous: bool) -> Result<bool> {
     let mut b: bool = false;
-    b = Expression::fold(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = init.clone(); move |__pe_a0, __pe_a2| Ok(isContinuousFold(__pe_a0, __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, bool) -> Result<bool> + 'static>), true)?;
+    b = Expression::fold(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = staticAsContinuous.clone(); move |__pe_a0, __pe_a2| Ok(isContinuousFold(__pe_a0, __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, bool) -> Result<bool> + 'static>), true)?;
     Ok(b)
 }
 
-pub fn isContinuousFold(mut exp: Arc<Expression::NFExpression>, mut init: bool, mut b: bool) -> bool {
+pub fn isContinuousFold(mut exp: Arc<Expression::NFExpression>, mut staticAsContinuous: bool, mut b: bool) -> bool {
     let mut b: bool = b;
     if b.clone() {
         b = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CREF { .. } => BVariable::checkCref(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), (std::sync::Arc::new({ let __pe_b1 = init.clone(); move |__pe_a0| BVariable::isContinuous(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!()),
+        Deref @ Expression::CREF { .. } => BVariable::checkCref(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), (std::sync::Arc::new({ let __pe_b1 = staticAsContinuous.clone(); move |__pe_a0| BVariable::isContinuous(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!()),
         _ => true,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

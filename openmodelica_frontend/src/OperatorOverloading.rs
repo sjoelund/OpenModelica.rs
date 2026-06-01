@@ -1154,10 +1154,10 @@ fn operatorsBinary(mut inOperator: Absyn::Operator, mut t1: Arc<DAE::Type>, mut 
         Ok((__try0_o0,)) => {
             ops = __try0_o0;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
             Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("OperatorOverloading.operatorsBinary failed, op: ")); __mm_s.push_str(&*Dump::opSymbol(op.clone())?); ArcStr::from(__mm_s) }).clone())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((ops, t1, e1, t2, e2, oty1, oe1, oty2, oe2))

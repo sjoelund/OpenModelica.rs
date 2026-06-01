@@ -1077,9 +1077,9 @@ fn setTrieGet(mut cref: Arc<DAE::ComponentRef>, mut trie: Arc<SetTrieNode>, mut 
             Ok((__try2_o0,)) => {
                 leaf = __try2_o0;
             }
-            Err(_) => {
+            Err(__try2_err) => {
                 let true = (matchPrefix.clone() && !(setTrieIsNode(leaf.clone()))) else { bail!("pattern mismatch") };
-                bail!("try/else: outputs not set in else branch");
+                return Err(__try2_err);
             }
         }
     }
@@ -1916,10 +1916,10 @@ fn evaluateInStream(mut streamCref: Arc<DAE::ComponentRef>, mut sets: Sets, mut 
             exp = __try0_o1;
             sl = __try0_o2;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
             Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- ConnectUtil.evaluateInStream failed for ")); __mm_s.push_str(&*ComponentReference::crefStr(streamCref.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
-            bail!("try/else: outputs not set in else branch");
+            return Err(__try0_err);
         }
     }
     Ok(exp)

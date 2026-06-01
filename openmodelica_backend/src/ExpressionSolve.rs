@@ -178,9 +178,9 @@ fn solveSimpleEquation(mut eqn: Arc<BackendDAE::Equation>, mut var: BackendDAE::
             solved = __try5_o2;
             source = __try5_o3;
         }
-        Err(_) => {
+        Err(__try5_err) => {
             solved = false;
-            bail!("try/else: outputs not set in else branch");
+            return Err(__try5_err);
         }
     }
     Ok((eqn, solved))

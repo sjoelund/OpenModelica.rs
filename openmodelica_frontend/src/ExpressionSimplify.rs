@@ -3711,11 +3711,11 @@ fn simplifyAdd(mut inExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<A
             coeffs = __try0_o0;
             outExpLst = __try0_o1;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             if Flags::isSet(Flags::FAILTRACE.clone())? {
                 Debug::trace((literal!("- ExpressionSimplify.simplifyAdd failed\n")).clone())?;
             }
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(outExpLst)

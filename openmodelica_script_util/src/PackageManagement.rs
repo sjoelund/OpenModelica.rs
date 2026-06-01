@@ -1697,9 +1697,9 @@ pub fn getPackageIndex(mut printError: bool) -> Result<Arc<JSON::JSON>> {
         Ok((__try1_o0,)) => {
             obj = __try1_o0;
         }
-        Err(_) => {
+        Err(__try1_err) => {
             Error::addSourceMessage(Error::ERROR_PKG_INDEX_NOT_PARSED.clone(), list![(packageIndex.clone()).clone()], makeSourceInfo((getIndexPath()?).clone()))?;
-            bail!("try/else: outputs not set in else branch");
+            return Err(__try1_err);
         }
     }
     Ok(obj)

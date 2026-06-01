@@ -371,10 +371,10 @@ fn evaluateSelectedParameters0(mut i: i32, mut globalKnownVars: BackendDAE::Vari
             replEvaluate = __try0_o4;
             v = __try0_o5;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             v = BackendVariable::getVarAt(globalKnownVars.clone(), i.clone())?;
             (globalKnownVars, repl, replEvaluate, cache) = evaluateSelectedParameter(v.clone(), i.clone(), globalKnownVars.clone(), inIEqns.clone(), repl.clone(), replEvaluate.clone(), cache.clone(), graph.clone())?;
-            bail!("try/else: outputs not set in else branch");
+            return Err(__try0_err);
         }
     }
     Ok((globalKnownVars, cache, repl, replEvaluate, mark))

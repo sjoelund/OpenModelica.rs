@@ -191,9 +191,9 @@ fn analyseStrongComponentScalar(mut inComp: Arc<metamodelica::List<i32>>, mut sy
             vars = __try0_o5;
             vlst = __try0_o6;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addInternalError((literal!("function analyseStrongComponentScalar failed")).clone(), metamodelica::sourceInfo!())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((outComp, omark))

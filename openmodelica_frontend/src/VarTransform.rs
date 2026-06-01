@@ -1274,8 +1274,8 @@ fn replaceExpCref(mut inExp: Arc<DAE::Exp>, mut inVarReplacements: VariableRepla
                     outExp = __try0_o0;
                     replacementPerformed = __try0_o1;
                 }
-                Err(_) => {
-                    bail!("try/else: outputs not set in else branch");
+                Err(__try0_err) => {
+                    return Err(__try0_err);
                 }
             }
             ()

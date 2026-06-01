@@ -276,9 +276,9 @@ pub mod BClock {
                 clock = __try0_o1;
                 clock_var = __try0_o2;
             }
-            Err(_) => {
+            Err(__try0_err) => {
                 Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBPartitioning.BClock.create")); __mm_s.push_str(&*literal!(" failed for ")); __mm_s.push_str(&*ComponentRef::toString(clock_name.clone())?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone()])?;
-                bail!("fail");
+                return Err(__try0_err);
             }
         }
         Ok(())

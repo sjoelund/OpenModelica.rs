@@ -100,10 +100,10 @@ fn serializeParModWork(mut code: SimCode::SimCode, mut withOperations: bool) -> 
             success = __try0_o2;
             vars = __try0_o3;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addInternalError((literal!("SerializeTaskSystemInfo.serializeParModWork failed")).clone(), metamodelica::sourceInfo!())?;
             success = false;
-            bail!("try/else: outputs not set in else branch");
+            return Err(__try0_err);
         }
     }
     Ok((success, fileName))

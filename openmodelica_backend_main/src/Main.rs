@@ -699,7 +699,7 @@ pub fn main(mut args: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
             args_1 = __try0_o0;
             seconds = __try0_o1;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             ErrorExt::clearMessages();
             if '__try1: {
                 unwrap_break_err!(FlagsUtil::new(args.clone()), '__try1);
@@ -707,7 +707,7 @@ pub fn main(mut args: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
             }.is_ok() { bail!("failure(): body succeeded") }
             println!("{}", (ErrorExt::printMessagesStr(false)).clone());
             println!("{}", (literal!("\n")).clone());
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     if Flags::isSet(Flags::GC_PROF.clone())? {
@@ -731,7 +731,7 @@ fn main2(mut args: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
     if arcstr::literal!(Autoconf::os) == literal!("Windows_NT") {
         setWindowsPaths((Settings::getInstallationDirectoryPath()?).clone())?;
     }
-    if '__try0: {
+    match '__try0: {
         unwrap_break_err!(Settings::getInstallationDirectoryPath(), '__try0);
         unwrap_break_err!(readSettings(args.clone()), '__try0);
         if interactiveMode.clone() == literal!("tcp") {
@@ -744,34 +744,37 @@ fn main2(mut args: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
             unwrap_break_err!(translateFile(args.clone()), '__try0);
         }
         Ok::<(), anyhow::Error>(())
-    }.is_err() {
-        if args.clone().is_empty() && Config::classToInstantiate()? == literal!("") {
-            if !(Config::helpRequest()?) {
-                println!("{}", (FlagsUtil::printUsage()?).clone());
+    } {
+        Ok(()) => {}
+        Err(__try0_err) => {
+            if args.clone().is_empty() && Config::classToInstantiate()? == literal!("") {
+                if !(Config::helpRequest()?) {
+                    println!("{}", (FlagsUtil::printUsage()?).clone());
+                    System::fflush();
+                }
+                return Ok(());
+            }
+            if '__try1: {
+                unwrap_break_err!(Settings::getInstallationDirectoryPath(), '__try1);
+                println!("{}", (literal!("# Error encountered! Exiting...\n")).clone());
+                System::fflush();
+                println!("{}", (literal!("# Please check the error message and the flags.\n")).clone());
+                System::fflush();
+                unwrap_break_err!(Print::printBuf((literal!("\n\n----\n\nError buffer:\n\n")).clone()), '__try1);
+                System::fflush();
+                println!("{}", (unwrap_break_err!(Print::getErrorString(), '__try1)).clone());
+                System::fflush();
+                println!("{}", (ErrorExt::printMessagesStr(false)).clone());
+                System::fflush();
+                println!("{}", (literal!("\n")).clone());
+                System::fflush();
+                Ok::<(), anyhow::Error>(())
+            }.is_err() {
+                println!("{}", (literal!("Error: Failed to retrieve the installation directory path!\n")).clone());
                 System::fflush();
             }
-            return Ok(());
+            return Err(__try0_err);
         }
-        if '__try1: {
-            unwrap_break_err!(Settings::getInstallationDirectoryPath(), '__try1);
-            println!("{}", (literal!("# Error encountered! Exiting...\n")).clone());
-            System::fflush();
-            println!("{}", (literal!("# Please check the error message and the flags.\n")).clone());
-            System::fflush();
-            unwrap_break_err!(Print::printBuf((literal!("\n\n----\n\nError buffer:\n\n")).clone()), '__try1);
-            System::fflush();
-            println!("{}", (unwrap_break_err!(Print::getErrorString(), '__try1)).clone());
-            System::fflush();
-            println!("{}", (ErrorExt::printMessagesStr(false)).clone());
-            System::fflush();
-            println!("{}", (literal!("\n")).clone());
-            System::fflush();
-            Ok::<(), anyhow::Error>(())
-        }.is_err() {
-            println!("{}", (literal!("Error: Failed to retrieve the installation directory path!\n")).clone());
-            System::fflush();
-        }
-        bail!("fail");
     }
     Ok(())
 }

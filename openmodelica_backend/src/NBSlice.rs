@@ -1369,9 +1369,9 @@ fn resolveDependency(mut original_cref: Arc<ComponentRef::NFComponentRef>, mut e
             skip_lst = __try0_o2;
             start = __try0_o3;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBSlice.resolveDependency")); __mm_s.push_str(&*literal!(" failed for: ")); __mm_s.push_str(&*ComponentRef::toString(original_cref.clone())?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone()])?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(())
@@ -1539,15 +1539,18 @@ fn resolveEquationDimensions(mut lst: Arc<metamodelica::List<(Arc<Dimension::NFD
 }
 
 fn addMatrixEntry(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut modes: Arc<UnorderedMap::UnorderedMap<(i32, i32), Arc<Mode::Mode>>>, mut eqn_idx: i32, mut var_idx: i32, mut mode: Arc<Mode::Mode>) -> Result<()> {
-    if '__try0: {
+    match '__try0: {
         if var_idx.clone() > 0 {
             {let _arr = m.clone(); let _val = metamodelica::cons(var_idx.clone(), m.borrow()[(eqn_idx.clone()-1) as usize].clone()); _arr.borrow_mut()[(eqn_idx.clone()-1) as usize] = _val; _arr};
             unwrap_break_err!(UnorderedMap::addUpdate((eqn_idx.clone(), var_idx.clone()), (std::sync::Arc::new({ let __pe_b1 = mode.clone(); move |__pe_a0| Ok(Mode::mergeCreate(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Mode::Mode>>) -> Result<Arc<Mode::Mode>> + 'static>), modes.clone()), '__try0);
         }
         Ok::<(), anyhow::Error>(())
-    }.is_err() {
-        Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBSlice.addMatrixEntry")); __mm_s.push_str(&*literal!(" failed because index ")); __mm_s.push_str(&*intString(eqn_idx.clone())); __mm_s.push_str(&*literal!(" could not be added. Matrix size: ")); __mm_s.push_str(&*intString((m.clone().borrow().len() as i32))); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone()])?;
-        bail!("fail");
+    } {
+        Ok(()) => {}
+        Err(__try0_err) => {
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBSlice.addMatrixEntry")); __mm_s.push_str(&*literal!(" failed because index ")); __mm_s.push_str(&*intString(eqn_idx.clone())); __mm_s.push_str(&*literal!(" could not be added. Matrix size: ")); __mm_s.push_str(&*intString((m.clone().borrow().len() as i32))); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone()])?;
+            return Err(__try0_err);
+        }
     }
     Ok(())
 }

@@ -95,9 +95,9 @@ pub fn parseTreeStr(mut trees: Arc<metamodelica::List<Arc<ParseTree>>>) -> Resul
         Ok((__try0_o0,)) => {
             r#str = __try0_o0;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Print::restoreBuf(i.clone())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(r#str)
@@ -137,9 +137,9 @@ pub fn parseTreeNodeStr(mut tree: Arc<ParseTree>) -> Result<ArcStr> {
         Ok((__try0_o0,)) => {
             r#str = __try0_o0;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Print::restoreBuf(i.clone())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(r#str)
@@ -1663,8 +1663,8 @@ fn moveComments(mut t1: Arc<metamodelica::List<Arc<ParseTree>>>, mut t2: Arc<met
                 tempTree = __try0_o6;
                 tok = __try0_o7;
             }
-            Err(_) => {
-                bail!("try/else: outputs not set in else branch");
+            Err(__try0_err) => {
+                return Err(__try0_err);
             }
         }
     }

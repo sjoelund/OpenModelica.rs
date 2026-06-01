@@ -2646,9 +2646,9 @@ pub fn unrollForStatement(mut stmt: Arc<Statement::NFStatement>, mut statements:
                     range = __try0_o0;
                     range_iter = __try0_o1;
                 }
-                Err(_) => {
+                Err(__try0_err) => {
                     Error::addSourceMessage(Error::UNROLL_FAILURE.clone(), list![(Statement::toString(stmt.clone(), (literal!("")).clone())?).clone()], info.clone())?;
-                    bail!("fail");
+                    return Err(__try0_err);
                 }
             }
             has_for = Statement::containsList(var_field!((*stmt).body, Statement::NFStatement::FOR).clone(), (std::sync::Arc::new(fnptr!(Statement::isFor, Arc<Statement::NFStatement>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>) -> Result<bool> + 'static>));

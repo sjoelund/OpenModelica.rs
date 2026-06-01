@@ -623,13 +623,13 @@ fn addStateActivationAndReset1(mut inEqn: Arc<DAE::Element>, mut inEnclosingSMCo
                     tyLHS = __try10_o5;
                     varDecl = __try10_o6;
                 }
-                Err(_) => {
+                Err(__try10_err) => {
                     if Flags::getConfigBool(Flags::CT_STATE_MACHINES.clone())? {
                         Error::addCompilerError((literal!("Currently, only equations in state machines with a LHS component reference, e.g., x=.., or its derivative, e.g., der(x)=.., are supported")).clone())?;
                     } else {
                         Error::addCompilerError((literal!("Currently, only equations in state machines with a LHS component reference, e.g., x=.., are supported")).clone())?;
                     }
-                    bail!("fail");
+                    return Err(__try10_err);
                 }
             }
         }
@@ -913,9 +913,9 @@ fn wrapInStateActivationConditional(mut inEqn: Arc<DAE::Element>, mut inStateCre
             cref = __try3_o0;
             ty = __try3_o1;
         }
-        Err(_) => {
+        Err(__try3_err) => {
             Error::addCompilerError((literal!("The LHS of equations in state machines needs to be a component reference")).clone())?;
-            bail!("fail");
+            return Err(__try3_err);
         }
     }
     activeRef = Arc::new(DAE::Exp::CREF { componentRef: qCref((literal!("active")).clone(), DAE::T_BOOL_DEFAULT().clone(), metamodelica::nil(), inStateCref.clone())?, ty: DAE::T_BOOL_DEFAULT().clone() });
@@ -961,9 +961,9 @@ fn wrapInStateActivationConditionalCT(mut inEqn: Arc<DAE::Element>, mut inStateC
             cref = __try3_o0;
             ty = __try3_o1;
         }
-        Err(_) => {
+        Err(__try3_err) => {
             Error::addCompilerError((literal!("The LHS of equations in state machines needs to be a component reference, e.g., x = .., or its derivative, e.g., der(x) = ..")).clone())?;
-            bail!("fail");
+            return Err(__try3_err);
         }
     }
     activeRef = Arc::new(DAE::Exp::CREF { componentRef: qCref((literal!("active")).clone(), DAE::T_BOOL_DEFAULT().clone(), metamodelica::nil(), inStateCref.clone())?, ty: DAE::T_BOOL_DEFAULT().clone() });

@@ -408,10 +408,10 @@ fn fixAliasVarsCausal2(mut inVar: BackendDAE::Var, mut inDAE: Arc<BackendDAE::Ba
             shared = __try0_o5;
             var = __try0_o6;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             BackendDump::dumpVarList(list![inVar.clone()], (literal!("fixAliasVarsCausal2 failed for ...")).clone())?;
             Error::addCompilerError((literal!("fixAliasVarsCausal2 failed")).clone())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(outDAE)
@@ -463,10 +463,10 @@ fn fixKnownVarsCausal2(mut inVar: BackendDAE::Var, mut inDAE: Arc<BackendDAE::Ba
             rightCrefs = __try0_o3;
             var = __try0_o4;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             BackendDump::dumpVarList(list![inVar.clone()], (literal!("fixKnownVarsCausal2 failed for ...")).clone())?;
             Error::addCompilerError((literal!("fixKnownVarsCausal2 failed")).clone())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(outDAE)
@@ -5146,7 +5146,7 @@ fn addRestCrefs(mut tplCrEqLst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, 
     let mut HTCrToExp: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>>), i32, (HashTableCrToExp::FuncHashCref, HashTableCrToExp::FuncCrefEqual, HashTableCrToExp::FuncCrefStr, HashTableCrToExp::FuncExpStr)) = inHTCrToExp.clone();
     let mut cr1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut cr_eq_lst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<BackendDAE::Equation>)>> = metamodelica::nil();
-    if '__try0: {
+    match '__try0: {
         for mut tpl in &*tplCrEqLst.clone() {
             let mut tpl = tpl.clone();
             (cr1, cr_eq_lst) = tpl.clone();
@@ -5155,9 +5155,12 @@ fn addRestCrefs(mut tplCrEqLst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, 
             }
         }
         Ok::<(), anyhow::Error>(())
-    }.is_err() {
-        println!("{}", (literal!("\n++++++++++ Error in RemoveSimpleEquations.addRestCrefs ++++++++++\n")).clone());
-        bail!("fail");
+    } {
+        Ok(()) => {}
+        Err(__try0_err) => {
+            println!("{}", (literal!("\n++++++++++ Error in RemoveSimpleEquations.addRestCrefs ++++++++++\n")).clone());
+            return Err(__try0_err);
+        }
     }
     Ok(HTCrToExp)
 }

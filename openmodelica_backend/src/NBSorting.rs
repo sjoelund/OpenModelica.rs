@@ -324,7 +324,7 @@ pub fn tarjan(mut adj: Arc<Adjacency::Matrix::Matrix>, mut matching: Arc<Matchin
         Ok((__try0_o0,)) => {
             comps = __try0_o0;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             mapping_opt = Adjacency::Matrix::getMappingOpt(adj.clone());
             (eqn_AtS, var_AtS) = (::match_deref::match_deref! { match &(mapping_opt.clone()) {
         Some(mapping) => {
@@ -336,7 +336,7 @@ pub fn tarjan(mut adj: Arc<Adjacency::Matrix::Matrix>, mut matching: Arc<Matchin
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBSorting.tarjan")); __mm_s.push_str(&*literal!(" failed to sort system:\n")); __mm_s.push_str(&*BVariable::VariablePointers::toString(vars.clone(), (literal!("System")).clone(), var_AtS.clone(), true)?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*BEquation::EquationPointers::toString(eqns.clone(), (literal!("System")).clone(), eqn_AtS.clone(), true, None)?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*Matching::toString(matching.clone(), (literal!("")).clone())); ArcStr::from(__mm_s) }).clone()])?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(comps)

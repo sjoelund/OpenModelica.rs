@@ -187,9 +187,9 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NB
             eq_filter_opt = __try0_o2;
             modules = __try0_o3;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBInitialization.main")); __mm_s.push_str(&*literal!(" failed to apply modules!")); ArcStr::from(__mm_s) }).clone()])?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(bdae)

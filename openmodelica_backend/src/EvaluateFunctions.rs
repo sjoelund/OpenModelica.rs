@@ -225,9 +225,9 @@ fn getCallSignatureForCall(mut callExpIn: Arc<DAE::Exp>) -> Result<CallSignature
             signatureOut = __try0_o2;
             vari = __try0_o3;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("evalFunc.getCallSignatureForCall failed for :\n")); __mm_s.push_str(&*ExpressionBasics::printExpStr(callExpIn.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(signatureOut)

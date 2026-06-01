@@ -488,7 +488,7 @@ fn loadModel1(mut modelToLoad: (Arc<Absyn::Path>, ArcStr, Arc<metamodelica::List
             pnew = __try1_o0;
             program = __try1_o1;
         }
-        Err(_) => {
+        Err(__try1_err) => {
             pathStr = (AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone();
             versions = stringDelimitList(versionsLst.clone(), (literal!(",")).clone());
             msgTokens = list![(pathStr.clone()).clone(), (versions.clone()).clone(), (thisModelicaPath.clone()).clone()];
@@ -498,7 +498,7 @@ fn loadModel1(mut modelToLoad: (Arc<Absyn::Path>, ArcStr, Arc<metamodelica::List
             } else {
                 Error::addMessage(Error::NOTIFY_LOAD_MODEL_FAILED.clone(), msgTokens.clone())?;
             }
-            bail!("try/else: outputs not set in else branch");
+            return Err(__try1_err);
         }
     }
     Ok((program, success))

@@ -605,7 +605,7 @@ fn guru(mut comp: Arc<StrongComponent::NBStrongComponent>, mut full: Arc<Adjacen
     let mut success: bool = false;
     let mut var_assigned: bool = false;
     let mut stripped: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let init: bool = Partition::kindIsInitial(kind.clone());
+    let staticAsContinuous: bool = Partition::kindIsInitial(kind.clone());
     comp = (::match_deref::match_deref! { match &((comp.clone(), full.clone())) {
         (Deref @ StrongComponent::ALGEBRAIC_LOOP { strict, .. }, Deref @ Adjacency::Matrix::FULL { .. }) => {
             let mut strict = (*strict).clone();
@@ -618,7 +618,7 @@ fn guru(mut comp: Arc<StrongComponent::NBStrongComponent>, mut full: Arc<Adjacen
                 failed_vars = ({
         let mut __acc: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>> = metamodelica::nil();
         for mut var in (guru_vars.clone()).into_iter().cloned() {
-            if !(Slice::check(var.clone(), (std::sync::Arc::new({ let __pe_b1 = init.clone(); move |__pe_a0| BVariable::isDiscontinuous(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>))) { continue; }
+            if !(Slice::check(var.clone(), (std::sync::Arc::new({ let __pe_b1 = staticAsContinuous.clone(); move |__pe_a0| BVariable::isDiscontinuous(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>))) { continue; }
             let __x = var.clone();
             __acc = cons(__x, __acc);
         }
@@ -691,7 +691,7 @@ fn guru(mut comp: Arc<StrongComponent::NBStrongComponent>, mut full: Arc<Adjacen
                         bail!("fail");
                     }
                 }
-                assign_variant_field!(comp => StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP; mixed = List::any(inner_vars.clone(), (std::sync::Arc::new({ let __pe_b1 = (std::sync::Arc::new({ let __pe_b1 = init.clone(); move |__pe_a0| BVariable::isDiscontinuous(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>); move |__pe_a0| Ok(Slice::check(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>)));
+                assign_variant_field!(comp => StrongComponent::NBStrongComponent::ALGEBRAIC_LOOP; mixed = List::any(inner_vars.clone(), (std::sync::Arc::new({ let __pe_b1 = (std::sync::Arc::new({ let __pe_b1 = staticAsContinuous.clone(); move |__pe_a0| BVariable::isDiscontinuous(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>); move |__pe_a0| Ok(Slice::check(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>)));
                 assign_field!(
                     strict.innerEquations = metamodelica::arrayFromVec(inner_comps.clone().reverse().into_iter().cloned().collect()),
                     strict.residual_eqns = listAppend(UnorderedMap::valueList(unsolved_equations.clone()), residuals.clone()),
@@ -730,7 +730,7 @@ fn checkLinearity(mut full: Arc<Adjacency::Matrix::Matrix>, mut v: Arc<Unordered
     Ok(linear)
 }
 
-fn filterDiscreteVariables(mut vars_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut init: bool) -> Result<(Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>)> {
+fn filterDiscreteVariables(mut vars_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut staticAsContinuous: bool) -> Result<(Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>)> {
     fn addDiscreteRecord(mut var: Pointer::Pointer<Arc<Variable::NFVariable>>, mut discrete_records: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<()> {
         let () = (match BVariable::getParent(var.clone()) {
         Some(mut parent) => {
@@ -762,7 +762,7 @@ fn filterDiscreteVariables(mut vars_lst: Arc<metamodelica::List<Pointer::Pointer
     let mut disc_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
     let mut discrete_records: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
     let mut rec_disc_vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-    (cont_vars, disc_vars) = List::splitOnTrue(vars_lst.clone(), (std::sync::Arc::new({ let __pe_b1 = init.clone(); move |__pe_a0| BVariable::isContinuous(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>));
+    (cont_vars, disc_vars) = List::splitOnTrue(vars_lst.clone(), (std::sync::Arc::new({ let __pe_b1 = staticAsContinuous.clone(); move |__pe_a0| BVariable::isContinuous(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>));
     for mut var in &*disc_vars.clone() {
         let mut var = var.clone();
         addDiscreteRecord(var.clone(), discrete_records.clone())?;

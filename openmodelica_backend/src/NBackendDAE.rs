@@ -791,7 +791,7 @@ fn lowerVariable(mut var: Arc<Variable::NFVariable>) -> Result<Pointer::Pointer<
             var.backendinfo = (::match_deref::match_deref! { match &(var.backendinfo.clone()) {
         Deref @ BackendInfo::BACKEND_INFO { varKind: Deref @ VariableKind::FRONTEND_DUMMY, .. } => {
             (varKind, attributes) = unwrap_break_err!(lowerVariableKind(var.clone(), attributes.clone(), var.ty.clone()), '__try0);
-            Arc::new(BackendInfo::BackendInfo { varKind: varKind.clone(), attributes: attributes.clone(), annotations: annotations.clone(), var_pre: None, var_seed: None, var_pder: None, var_start: None, parent: None })
+            Arc::new(BackendInfo::BackendInfo { varKind: varKind.clone(), attributes: attributes.clone(), annotations: annotations.clone(), var_pre: None, var_seed: None, var_pder_res: None, var_pder_tmp: None, var_start: None, parent: None })
         },
         _ => BackendInfo::setAttributes(var.backendinfo.clone(), attributes.clone(), annotations.clone()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -807,9 +807,9 @@ fn lowerVariable(mut var: Arc<Variable::NFVariable>) -> Result<Pointer::Pointer<
             var = __try0_o2;
             var_ptr = __try0_o3;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBackendDAE.lowerVariable")); __mm_s.push_str(&*literal!(" failed for ")); __mm_s.push_str(&*Variable::toString(var.clone(), (literal!("")).clone(), false)?); ArcStr::from(__mm_s) }).clone()])?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(var_ptr)
@@ -1557,7 +1557,7 @@ fn lowerDimension(mut dim: Arc<Dimension::NFDimension>, mut variables: Arc<Varia
 
 fn collectIterators(mut exp: Arc<Expression::NFExpression>, mut variables: Arc<VariablePointers::VariablePointers>, mut set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
-    if '__try0: {
+    match '__try0: {
         let () = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } if (!(BVariable::VariablePointers::containsCref(ComponentRef::stripSubscriptsAll(var_field!((*exp).cref, Expression::NFExpression::CREF).clone()), variables.clone()) || ComponentRef::isNameNode(var_field!((*exp).cref, Expression::NFExpression::CREF).clone()) || ComponentRef::isWild(var_field!((*exp).cref, Expression::NFExpression::CREF).clone()))) => {
             unwrap_break_err!(UnorderedSet::add(lowerIterator(var_field!((*exp).cref, Expression::NFExpression::CREF).clone()), set.clone()), '__try0);
@@ -1583,9 +1583,12 @@ fn collectIterators(mut exp: Arc<Expression::NFExpression>, mut variables: Arc<V
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok::<(), anyhow::Error>(())
-    }.is_err() {
-        Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBackendDAE.collectIterators")); __mm_s.push_str(&*literal!(" failed for ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone()])?;
-        bail!("fail");
+    } {
+        Ok(()) => {}
+        Err(__try0_err) => {
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBackendDAE.collectIterators")); __mm_s.push_str(&*literal!(" failed for ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone()])?;
+            return Err(__try0_err);
+        }
     }
     Ok(exp)
 }

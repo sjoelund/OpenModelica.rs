@@ -227,8 +227,8 @@ pub fn evaluateExpTraverser(mut exp: Arc<Expression::NFExpression>, mut info: So
                             outChanged = __try4_o1;
                             outExp = __try4_o2;
                         }
-                        Err(_) => {
-                            bail!("try/else: outputs not set in else branch");
+                        Err(__try4_err) => {
+                            return Err(__try4_err);
                         }
                     }
                     ErrorExt::rollBack(literal!("NFEvalConstants.evaluateExpTraverser"));

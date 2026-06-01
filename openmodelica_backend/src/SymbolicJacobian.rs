@@ -1484,9 +1484,9 @@ pub fn createColoring(mut sparseArray: metamodelica::Array<Arc<metamodelica::Lis
             sparseGraph = __try0_o6;
             sparseGraphT = __try0_o7;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addInternalError((literal!("function createColoring failed")).clone(), metamodelica::sourceInfo!())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(coloredArray)
@@ -1769,15 +1769,18 @@ pub fn transposeSparsePatternTuple(mut inSparsePattern: Arc<metamodelica::List<(
 
 fn mapIndexColors(mut inColors: metamodelica::Array<i32>, mut inMaxIndex: i32, mut inArray: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<()> {
     let mut index: i32 = 0;
-    if '__try0: {
+    match '__try0: {
         for mut i in 1..=inMaxIndex.clone() {
             index = inColors.clone().borrow()[(i.clone()-1) as usize].clone();
             {let _arr = inArray.clone(); let _val = metamodelica::cons(i.clone(), inArray.clone().borrow()[(index.clone()-1) as usize].clone()); _arr.borrow_mut()[(index.clone()-1) as usize] = _val; _arr};
         }
         Ok::<(), anyhow::Error>(())
-    }.is_err() {
-        Error::addInternalError((literal!("function mapIndexColors failed")).clone(), metamodelica::sourceInfo!())?;
-        bail!("fail");
+    } {
+        Ok(()) => {}
+        Err(__try0_err) => {
+            Error::addInternalError((literal!("function mapIndexColors failed")).clone(), metamodelica::sourceInfo!())?;
+            return Err(__try0_err);
+        }
     }
     Ok(())
 }
@@ -2247,8 +2250,8 @@ fn generateGenericJacobian(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut in
             outFunctionTree = __try0_o1;
             outJacobian = __try0_o2;
         }
-        Err(_) => {
-            bail!("fail");
+        Err(__try0_err) => {
+            return Err(__try0_err);
         }
     }
     Ok((outJacobian, outFunctionTree, outSparsePattern, outSparseColoring, nonlinearPattern))
@@ -2589,9 +2592,9 @@ fn deriveAll(mut inEquations: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>
             allVars = __try0_o0;
             outDerivedEquations = __try0_o1;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("SymbolicJacobian.deriveAll failed")).clone()])?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((outDerivedEquations, outFunctions))
@@ -2807,8 +2810,8 @@ pub fn prepareTornStrongComponentData(mut inVars: BackendDAE::Variables, mut inE
             reqns = __try0_o11;
             resVarsLst = __try0_o12;
         }
-        Err(_) => {
-            bail!("fail");
+        Err(__try0_err) => {
+            return Err(__try0_err);
         }
     }
     Ok((outDiffVars, outResidualVars, outOtherVars, outResidualEqns, outOtherEqns))
@@ -2891,8 +2894,8 @@ fn calculateTearingSetJacobian(mut inVars: BackendDAE::Variables, mut inEqns: Ar
             resEqns = __try0_o7;
             resVars = __try0_o8;
         }
-        Err(_) => {
-            bail!("fail");
+        Err(__try0_err) => {
+            return Err(__try0_err);
         }
     }
     Ok((outJacobian, outShared))
@@ -3717,7 +3720,7 @@ fn calculateJacobianRow2(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variabl
     let mut dcr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut vindx: i32 = 0;
     let mut r#str: ArcStr = arcstr::literal!("");
-    if '__try0: {
+    match '__try0: {
         for mut vindx in &*inIntegerLst.clone() {
             let mut vindx = vindx.clone();
             v = unwrap_break_err!(BackendVariable::getVarAt(vars.clone(), vindx.clone()), '__try0);
@@ -3734,12 +3737,15 @@ fn calculateJacobianRow2(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variabl
             }
         }
         Ok::<(), anyhow::Error>(())
-    }.is_err() {
-        if Flags::isSet(Flags::FAILTRACE.clone())? {
-            r#str = (ExpressionBasics::printExpStr(inExp.clone())?).clone();
-            Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- BackendDAE.calculateJacobianRow2 failed on ")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone())?;
+    } {
+        Ok(()) => {}
+        Err(__try0_err) => {
+            if Flags::isSet(Flags::FAILTRACE.clone())? {
+                r#str = (ExpressionBasics::printExpStr(inExp.clone())?).clone();
+                Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- BackendDAE.calculateJacobianRow2 failed on ")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone())?;
+            }
+            return Err(__try0_err);
         }
-        bail!("fail");
     }
     Ok((outLst, oShared))
 }
@@ -4191,8 +4197,8 @@ fn checkForNonLinearStrongComponents_work(mut syst: Arc<BackendDAE::EqSystem>, m
         Ok((__try0_o0,)) => {
             comps = __try0_o0;
         }
-        Err(_) => {
-            bail!("fail");
+        Err(__try0_err) => {
+            return Err(__try0_err);
         }
     }
     Ok((syst, shared))

@@ -318,10 +318,10 @@ pub fn elabExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Ar
             outExp = __try0_o2;
             outProperties = __try0_o3;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             let true = (num_errmsgs.clone() == Error::getNumErrorMessages()) else { bail!("pattern mismatch") };
             Error::addSourceMessage(Error::GENERIC_ELAB_EXPRESSION.clone(), list![(Dump::printExpStr(e.clone())?).clone()], inInfo.clone())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((outCache, outExp, outProperties))
@@ -995,12 +995,12 @@ fn elabExp_Cons(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: A
             ty1 = __try10_o6;
             ty2 = __try10_o7;
         }
-        Err(_) => {
+        Err(__try10_err) => {
             exp_str = (Dump::printExpStr(inExp.clone())?).clone();
             ty1_str = (TypesDump::unparseType(Types::getPropType(prop1.clone())?)?).clone();
             ty2_str = (TypesDump::unparseType(ty2.clone())?).clone();
             Error::addSourceMessage(Error::META_CONS_TYPE_MATCH.clone(), list![(exp_str.clone()).clone(), (ty1_str.clone()).clone(), (ty2_str.clone()).clone()], inInfo.clone())?;
-            bail!("fail");
+            return Err(__try10_err);
         }
     }
     Ok((outCache, outExp, outProperties))
@@ -1511,14 +1511,14 @@ fn elabCallReduction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inR
             res_ty = __try0_o18;
             v = __try0_o19;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             if (inIterators.clone().len() as i32) > 1 {
                 Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Reductions using multiple iterators is not yet implemented. Try rewriting the expression using nested reductions (e.g. array(i+j for i, j) => array(array(i+j for i) for j).")).clone()], inInfo.clone())?;
             } else {
                 let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
                 Debug::traceln((literal!("Static.elabCallReduction - failed!")).clone())?;
             }
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((outCache, outExp, outProperties))
@@ -3166,10 +3166,10 @@ fn elabMatrixComma(mut inExpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inPro
             sty = __try0_o9;
             ty = __try0_o10;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
             Debug::traceln((literal!("- Static.elabMatrixComma failed")).clone())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((outExp, outProperties, outDim1, outDim2))
@@ -3200,10 +3200,10 @@ fn elabMatrixCatTwoExp(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
             expl = __try0_o0;
             outExp = __try0_o1;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
             Debug::traceln((literal!("- Static.elabMatrixCatTwoExp failed")).clone())?;
-            bail!("try/else: outputs not set in else branch");
+            return Err(__try0_err);
         }
     }
     Ok(outExp)
@@ -3353,10 +3353,10 @@ fn promoteExp(mut inExp: Arc<DAE::Exp>, mut inProperties: DAE::Properties, mut i
             outProperties = __try0_o2;
             ty = __try0_o3;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
             Debug::traceln((literal!("- Static.promoteExp failed")).clone())?;
-            bail!("try/else: outputs not set in else branch");
+            return Err(__try0_err);
         }
     }
     Ok((outExp, outProperties))
@@ -5984,13 +5984,13 @@ fn elabBuiltinIdentity(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
                 outCache = __try2_o2;
                 sz = __try2_o3;
             }
-            Err(_) => {
+            Err(__try2_err) => {
                 if check_model.clone() {
                     dim_size = Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN);
                 } else {
                     bail!("fail");
                 }
-                bail!("try/else: outputs not set in else branch");
+                return Err(__try2_err);
             }
         }
     } else {
@@ -6754,19 +6754,22 @@ fn elabCall(mut cache: FCore::Cache, mut env: FCore::Graph, mut r#fn: Arc<Absyn:
     let mut prestr: ArcStr = arcstr::literal!("");
     let mut argstrs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     if hasBuiltInHandler(r#fn.clone())? {
-        if '__try0: {
+        match '__try0: {
             (cache, e, prop) = unwrap_break_err!(elabCallBuiltin(cache.clone(), env.clone(), r#fn.clone(), args.clone(), nargs.clone(), r#impl.clone(), pre.clone(), info.clone()), '__try0);
             return Ok((cache.clone(), e.clone(), prop.clone()));
             Ok::<(), anyhow::Error>(())
-        }.is_err() {
-            let true = (numErrorMessages.clone() == Error::getNumErrorMessages()) else { bail!("pattern mismatch") };
-            name = (Dump::printComponentRefStr(r#fn.clone())?).clone();
-            s1 = stringDelimitList(List::map(args.clone(), (std::sync::Arc::new(Dump::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<ArcStr> + 'static>)), (literal!(", ")).clone());
-            s2 = stringDelimitList(List::map(nargs.clone(), (std::sync::Arc::new(Dump::printNamedArgStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::NamedArg>) -> Result<ArcStr> + 'static>)), (literal!(", ")).clone());
-            s = (if (s2.clone() == literal!("")) {s1.clone()} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*s2.clone()); ArcStr::from(__mm_s) }}).clone();
-            s = stringAppendList(list![(name.clone()).clone(), (literal!("(")).clone(), (s.clone()).clone(), (literal!(").\n")).clone()]);
-            Error::addSourceMessage(Error::WRONG_TYPE_OR_NO_OF_ARGS.clone(), list![(s.clone()).clone(), (PrefixUtil::printPrefixStr3(pre.clone())?).clone()], info.clone())?;
-            bail!("fail");
+        } {
+            Ok(()) => {}
+            Err(__try0_err) => {
+                let true = (numErrorMessages.clone() == Error::getNumErrorMessages()) else { bail!("pattern mismatch") };
+                name = (Dump::printComponentRefStr(r#fn.clone())?).clone();
+                s1 = stringDelimitList(List::map(args.clone(), (std::sync::Arc::new(Dump::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<ArcStr> + 'static>)), (literal!(", ")).clone());
+                s2 = stringDelimitList(List::map(nargs.clone(), (std::sync::Arc::new(Dump::printNamedArgStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::NamedArg>) -> Result<ArcStr> + 'static>)), (literal!(", ")).clone());
+                s = (if (s2.clone() == literal!("")) {s1.clone()} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*s2.clone()); ArcStr::from(__mm_s) }}).clone();
+                s = stringAppendList(list![(name.clone()).clone(), (literal!("(")).clone(), (s.clone()).clone(), (literal!(").\n")).clone()]);
+                Error::addSourceMessage(Error::WRONG_TYPE_OR_NO_OF_ARGS.clone(), list![(s.clone()).clone(), (PrefixUtil::printPrefixStr3(pre.clone())?).clone()], info.clone())?;
+                return Err(__try0_err);
+            }
         }
     }
     handles = metamodelica::nil();
@@ -8741,8 +8744,8 @@ fn elabTypes(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: 
                 slots = __try6_o10;
                 success = __try6_o11;
             }
-            Err(_) => {
-                bail!("try/else: outputs not set in else branch");
+            Err(__try6_err) => {
+                return Err(__try6_err);
             }
         }
     }

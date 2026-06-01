@@ -1791,7 +1791,7 @@ pub mod Matrix {
         let mut names: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
         let mut ranges: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
         let mut maps: Arc<metamodelica::List<Option<Arc<Iterator::Iterator>>>> = metamodelica::nil();
-        if '__try0: {
+        match '__try0: {
             if BEquation::Equation::isAlgorithm(eqn_ptr.clone()) || BEquation::Equation::isIfEquation(eqn_ptr.clone()) {
                 (eqn_scal_idx, eqn_size) = mapping.eqn_AtS.borrow()[(eqn_arr_idx.clone()-1) as usize].clone();
                 row = unwrap_break_err!(Slice::upgradeRowFull(dependencies.clone(), map.clone(), mapping.clone()), '__try0);
@@ -1806,9 +1806,12 @@ pub mod Matrix {
                 unwrap_break_err!(Slice::upgradeRow(BEquation::Equation::getEqnName(eqn_ptr.clone())?, eqn_arr_idx.clone(), iter.clone(), ty.clone(), dependencies.clone(), dep.clone(), rep.clone(), map.clone(), fullmap.clone(), m.clone(), mapping.clone(), modes.clone()), '__try0);
             }
             Ok::<(), anyhow::Error>(())
-        }.is_err() {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBAdjacency.Matrix.upgradeRow")); __mm_s.push_str(&*literal!(" failed for:\n")); __mm_s.push_str(&*BEquation::Equation::pointerToString(eqn_ptr.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
-            bail!("fail");
+        } {
+            Ok(()) => {}
+            Err(__try0_err) => {
+                Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBAdjacency.Matrix.upgradeRow")); __mm_s.push_str(&*literal!(" failed for:\n")); __mm_s.push_str(&*BEquation::Equation::pointerToString(eqn_ptr.clone(), (literal!("")).clone())?); ArcStr::from(__mm_s) }).clone()])?;
+                return Err(__try0_err);
+            }
         }
         Ok(())
     }

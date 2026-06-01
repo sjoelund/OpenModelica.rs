@@ -1214,14 +1214,14 @@ pub fn lookupConnectorVar(mut env: FCore::Graph, mut cr: Arc<DAE::ComponentRef>,
                         status = __try4_o2;
                         ty = __try4_o3;
                     }
-                    Err(_) => {
+                    Err(__try4_err) => {
                         if Types::isExpandableConnector(ty.clone()) {
                             attr = parent_attr.clone();
                             isExpandable = true;
                         } else {
                             bail!("fail");
                         }
-                        bail!("try/else: outputs not set in else branch");
+                        return Err(__try4_err);
                     }
                 }
                 attr = DAEUtil::setAttrVariability(attr.clone(), SCodeUtil::variabilityOr(DAEUtil::getAttrVariability(attr.clone()), DAEUtil::getAttrVariability(parent_attr.clone())));

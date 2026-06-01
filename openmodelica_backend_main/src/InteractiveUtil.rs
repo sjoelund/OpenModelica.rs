@@ -459,8 +459,8 @@ fn setSubmodifierInElement(mut element: Arc<Absyn::Element>, mut found: bool, mu
                 found = __try0_o0;
                 outContinue = __try0_o1;
             }
-            Err(_) => {
-                bail!("try/else: outputs not set in else branch");
+            Err(__try0_err) => {
+                return Err(__try0_err);
             }
         }
     }
@@ -1418,9 +1418,9 @@ pub fn createEnvironment(mut p: Absyn::Program, mut os: Option<Arc<metamodelica:
             Ok((__try6_o0,)) => {
                 env2 = __try6_o0;
             }
-            Err(_) => {
+            Err(__try6_err) => {
                 FlagsUtil::setConfigBool(Flags::PERMISSIVE.clone(), permissive.clone())?;
-                bail!("fail");
+                return Err(__try6_err);
             }
         }
         genv = Interactive::GraphicEnvCache::GRAPHIC_ENV_FULL_CACHE { program: SymbolTable::getAbsyn(), modelPath: modelPath.clone(), cache: cache.clone(), env: env2.clone() };
@@ -1828,9 +1828,9 @@ fn buildEnvForGraphicProgramFull(mut inProgram: Absyn::Program, mut inModelPath:
             outCache = __try0_o0;
             outEnv = __try0_o1;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             failed = true;
-            bail!("try/else: outputs not set in else branch");
+            return Err(__try0_err);
         }
     }
     Config::setEvaluateParametersInAnnotations(eval_param.clone())?;

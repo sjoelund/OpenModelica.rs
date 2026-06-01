@@ -1534,9 +1534,9 @@ fn getConstantValue(mut exp: Arc<Expression::NFExpression>) -> Result<metamodeli
         Ok((__try0_o0,)) => {
             value = __try0_o0;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSimplifyExp.getConstantValue")); __mm_s.push_str(&*literal!(" expression is not known to be a constant number: ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
-            bail!("try/else: outputs not set in else branch");
+            return Err(__try0_err);
         }
     }
     Ok(value)

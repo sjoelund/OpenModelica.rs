@@ -1291,10 +1291,10 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                             Ok((__try0_o0,)) => {
                                         s4 = __try0_o0;
                             }
-                            Err(_) => {
+                            Err(__try0_err) => {
                                         System::writeFile((literal!("SanityCheckFail.mo")).clone(), (s5.clone()).clone())?;
                                         Error::addInternalError((literal!("Failed to parse merged string (see generated file SanityCheckFail.mo)\n")).clone(), metamodelica::sourceInfo!())?;
-                                        bail!("fail");
+                                        return Err(__try0_err);
                             }
                         }
                         if !(diffSanityCheckEqual((s3.clone()).clone(), (s4.clone()).clone())?) {
@@ -5475,8 +5475,8 @@ pub fn runFrontEnd(mut cache: FCore::Cache, mut env: FCore::Graph, mut className
             flatString = __try0_o4;
             odae = __try0_o5;
         }
-        Err(_) => {
-            bail!("try/else: outputs not set in else branch");
+        Err(__try0_err) => {
+            return Err(__try0_err);
         }
     }
     FlagsUtil::setConfigBool(Flags::BUILDING_MODEL.clone(), false)?;
@@ -5507,13 +5507,13 @@ fn loadProgram(mut className: Arc<Absyn::Path>) -> Result<bool> {
         Ok((__try0_o0,)) => {
             success = __try0_o0;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             (p, b) = CevalScript::loadModel(list![(Arc::new(Absyn::Path::IDENT { name: (lib_name.clone()).clone() }), literal!("the given model name to instantiate"), list![(literal!("default")).clone()], false)], (Settings::getModelicaPath(Testsuite::isRunning()?)?).clone(), p.clone(), true, true, true, false, false, (literal!("")).clone())?;
             Error::assertionOrAddSourceMessage(!(b.clone()), Error::NOTIFY_IMPLICIT_LOAD.clone(), list![(lib_name.clone()).clone(), (literal!("default")).clone()], Absyn::dummyInfo.clone())?;
             System::loadModelCallBack((lib_name.clone()).clone());
             SymbolTable::setAbsyn(p.clone())?;
             SymbolTable::clearSCode();
-            bail!("try/else: outputs not set in else branch");
+            return Err(__try0_err);
         }
     }
     Ok(success)
@@ -5626,10 +5626,10 @@ pub fn runFrontEndWorkNF(mut className: Arc<Absyn::Path>, mut relaxedFrontend: b
             flatString = __try0_o1;
             functions = __try0_o2;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             inst_failed = true;
             NFInst::clearCaches()?;
-            bail!("try/else: outputs not set in else branch");
+            return Err(__try0_err);
         }
     }
     FlagsUtil::set(Flags::NF_API.clone(), nf_api.clone())?;
@@ -5667,9 +5667,9 @@ pub fn translateModel(mut cache: FCore::Cache, mut env: FCore::Graph, mut classN
             resultValues = __try0_o3;
             success = __try0_o4;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             FlagsUtil::saveFlags(flags.clone());
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((success, outCache, outLibs, outFileDir, resultValues))
@@ -6045,9 +6045,9 @@ fn translateModelFMU(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut cla
                 outValue = __try0_o1;
                 success = __try0_o2;
             }
-            Err(_) => {
+            Err(__try0_err) => {
                 FlagsUtil::saveFlags(flags.clone());
-                bail!("fail");
+                return Err(__try0_err);
             }
         }
     }
@@ -6117,10 +6117,10 @@ fn callTranslateModelFMU(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
             outValue = __try1_o2;
             success = __try1_o3;
         }
-        Err(_) => {
+        Err(__try1_err) => {
             success = false;
             outValue = Arc::new(Values::Value::STRING { string: (literal!("")).clone() });
-            bail!("try/else: outputs not set in else branch");
+            return Err(__try1_err);
         }
     }
     FlagsUtil::setConfigBool(Flags::BUILDING_FMU.clone(), false)?;
@@ -6146,9 +6146,9 @@ fn buildModelFMU(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut classNa
                 cache = __try0_o0;
                 outValue = __try0_o1;
             }
-            Err(_) => {
+            Err(__try0_err) => {
                 FlagsUtil::saveFlags(flags.clone());
-                bail!("fail");
+                return Err(__try0_err);
             }
         }
     }
@@ -7822,9 +7822,9 @@ pub fn checkModel(mut cache: FCore::Cache, mut env: FCore::Graph, mut className:
                     simpleEqnSize = __try0_o4;
                     varSize = __try0_o5;
                 }
-                Err(_) => {
+                Err(__try0_err) => {
                     FlagsUtil::saveFlags(flags.clone());
-                    bail!("fail");
+                    return Err(__try0_err);
                 }
             }
             classNameStr = (AbsynUtil::pathString(className.clone(), (literal!(".")).clone(), true, false)?).clone();
@@ -10589,9 +10589,9 @@ fn instantiateModel(mut cache: FCore::Cache, mut env: FCore::Graph, mut path: Ar
                     odae = __try0_o1;
                     r#str = __try0_o2;
                 }
-                Err(_) => {
+                Err(__try0_err) => {
                     FlagsUtil::saveFlags(flags.clone());
-                    bail!("fail");
+                    return Err(__try0_err);
                 }
             }
             Ok(r#str.clone())

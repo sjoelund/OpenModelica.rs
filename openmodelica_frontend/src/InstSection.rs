@@ -150,7 +150,7 @@ fn instEquationCommon(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
             outState = __try0_o6;
             state = __try0_o7;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             if '__try1: {
                 if '__try2: {
                     unwrap_break_err!(ClassInfUtil::trans(inState.clone(), openmodelica_frontend_types::ClassInf::Event::FOUND_EQUATION), '__try2);
@@ -165,7 +165,7 @@ fn instEquationCommon(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
                     Error::addSourceMessage(Error::EQUATION_GENERIC_FAILURE.clone(), list![(s.clone()).clone()], SCodeUtil::getEquationInfo(inEquation.clone())?)?;
                 }
             }
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((outCache, outEnv, outIH, outDae, outSets, outState, outGraph))
@@ -1174,10 +1174,10 @@ fn unroll(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<meta
             outDae = __try0_o0;
             values = __try0_o1;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
             Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- InstSection.unroll failed: ")); __mm_s.push_str(&*ValuesDump::valString(inValue.clone())?); ArcStr::from(__mm_s) }).clone())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((outCache, outDae, outSets, outGraph))
@@ -2791,9 +2791,9 @@ fn checkWhenCondition(mut exp: Arc<DAE::Exp>, mut ty: Arc<DAE::Type>, mut aexp: 
             exp = __try0_o0;
             tyEl = __try0_o1;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addSourceMessage(Error::IF_CONDITION_TYPE_ERROR.clone(), list![(Dump::printExpStr(aexp.clone())?).clone(), (TypesDump::unparseType(ty.clone())?).clone()], info.clone())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     if Config::languageStandardAtLeast(Config::LanguageStandard::_3_2.clone())? {

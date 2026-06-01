@@ -1649,9 +1649,9 @@ fn lookupVarNoErrorMessage(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
             id = __try0_o0;
             outEnv = __try0_o1;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             ErrorExt::rollBack((literal!("InstExtends.lookupVarNoErrorMessage")).clone());
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((outEnv, id))

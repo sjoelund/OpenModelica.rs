@@ -158,9 +158,9 @@ pub fn evaluateNormal(mut r#fn: Arc<Function::Function>, mut args: Arc<metamodel
             fn_body = __try0_o2;
             result = __try0_o3;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Pointer::update(call_counter.clone(), call_count.clone() - 1);
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     if Flags::isSet(Flags::EVAL_FUNC_DUMP.clone())? {
@@ -1108,9 +1108,9 @@ fn callExternalFunction(mut extName: ArcStr, mut r#fn: Arc<Function::Function>, 
             ret_ty = __try0_o3;
             specs = __try0_o4;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             freeLibraryFunction(fn_handle.clone(), debug.clone())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     if output_vals.clone().is_empty() {
@@ -1238,8 +1238,8 @@ fn loadLibraryFunction(mut libName: ArcStr, mut fnName: ArcStr, mut extAnnotatio
                 found = __try1_o1;
                 lib_handle = __try1_o2;
             }
-            Err(_) => {
-                bail!("try/else: outputs not set in else branch");
+            Err(__try1_err) => {
+                return Err(__try1_err);
             }
         }
         if found.clone() {

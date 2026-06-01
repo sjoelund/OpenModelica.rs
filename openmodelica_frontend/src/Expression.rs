@@ -989,10 +989,10 @@ pub fn applyExpSubscripts(mut exp: Arc<DAE::Exp>, mut inSubs: Arc<metamodelica::
         Ok((__try0_o0,)) => {
             exp = __try0_o0;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Expression.applyExpSubscripts failed applying subs: [")); __mm_s.push_str(&*ExpressionDump::printSubscriptLstStr(inSubs.clone())); __mm_s.push_str(&*literal!("] on expression:")); __mm_s.push_str(&*printExpStr(exp.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(r#str.clone()).clone()])?;
-            bail!("try/else: outputs not set in else branch");
+            return Err(__try0_err);
         }
     }
     Ok(exp)

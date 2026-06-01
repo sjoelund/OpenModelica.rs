@@ -853,9 +853,9 @@ pub mod Iterator {
                             range = __try0_o0;
                             status = __try0_o1;
                         }
-                        Err(_) => {
+                        Err(__try0_err) => {
                             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.Iterator.simplifyRangeCondition")); __mm_s.push_str(&*literal!(" failed to combine iterator: ")); __mm_s.push_str(&*toString(iter.clone())?); __mm_s.push_str(&*literal!(" with condition ")); __mm_s.push_str(&*Expression::toString(condition.clone())?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone()])?;
-                            bail!("fail");
+                            return Err(__try0_err);
                         }
                     }
                     UnorderedMap::add(cref.clone(), range.clone(), iter_map.clone())?;
@@ -4494,9 +4494,9 @@ pub mod EquationAttributes {
             Ok((__try0_o0,)) => {
                 residualVar = __try0_o0;
             }
-            Err(_) => {
+            Err(__try0_err) => {
                 Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.EquationAttributes.getResidualVar")); __mm_s.push_str(&*literal!(" failed because of missing residualVar!")); ArcStr::from(__mm_s) }).clone()])?;
-                bail!("try/else: outputs not set in else branch");
+                return Err(__try0_err);
             }
         }
         Ok(residualVar)

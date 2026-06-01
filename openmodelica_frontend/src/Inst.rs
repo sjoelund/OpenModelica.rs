@@ -812,10 +812,10 @@ pub fn instClassIn2(mut cache: FCore::Cache, mut env: FCore::Graph, mut ih: Arc<
             ty = __try13_o12;
             vars = __try13_o13;
         }
-        Err(_) => {
+        Err(__try13_err) => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
             Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- Inst.instClassIn2 failed on class: ")); __mm_s.push_str(&*SCodeUtil::elementName(cls.clone())?); __mm_s.push_str(&*literal!(" in environment: ")); __mm_s.push_str(&*FGraph::printGraphPathStr(env.clone())?); ArcStr::from(__mm_s) }).clone())?;
-            bail!("fail");
+            return Err(__try13_err);
         }
     }
     Ok((cache, env, ih, store, state, graph, sets, dae, vars, ty, optDerAttr, equalityConstraint))
@@ -845,9 +845,9 @@ fn markDerivedRecordOutsideBindings(mut inType: Arc<DAE::Type>, mut inClass: Arc
         Ok((__try0_o0,)) => {
             submods = __try0_o0;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Unexpected Mod structure in collectAndFixDerivedComplexOutsideBindings.")).clone()])?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     outType = (::match_deref::match_deref! { match &(inType.clone()) {
@@ -1504,10 +1504,10 @@ pub fn partialInstClassIn(mut cache: FCore::Cache, mut env: FCore::Graph, mut ih
             state = __try9_o6;
             vars = __try9_o7;
         }
-        Err(_) => {
+        Err(__try9_err) => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
             Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- Inst.partialInstClassIn failed on class: ")); __mm_s.push_str(&*SCodeUtil::elementName(cls.clone())?); __mm_s.push_str(&*literal!(" in environment: ")); __mm_s.push_str(&*FGraph::printGraphPathStr(env.clone())?); ArcStr::from(__mm_s) }).clone())?;
-            bail!("fail");
+            return Err(__try9_err);
         }
     }
     Ok((cache, env, ih, state, vars))
@@ -3937,9 +3937,9 @@ fn updateComponentInEnv2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
             outIH = __try0_o2;
             outUpdatedComps = __try0_o3;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             ErrorExt::rollBack((literal!("Inst.updateComponentInEnv2")).clone());
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((outCache, outEnv, outIH, outUpdatedComps))

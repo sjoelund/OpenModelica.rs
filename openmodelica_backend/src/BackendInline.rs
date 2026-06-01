@@ -124,11 +124,11 @@ fn inlineCalls(mut inITLst: Arc<metamodelica::List<DAE::InlineType>>, mut inBack
             shared = __try0_o2;
             tpl = __try0_o3;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             if Flags::isSet(Flags::FAILTRACE.clone())? {
                 Debug::traceln((literal!("BackendInline.inlineCalls failed")).clone())?;
             }
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(outBackendDAE)
@@ -641,11 +641,11 @@ fn inlineCallsBDAE(mut inITLst: Arc<metamodelica::List<DAE::InlineType>>, mut in
             shared = __try0_o2;
             tpl = __try0_o3;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             if Flags::isSet(Flags::FAILTRACE.clone())? {
                 Debug::traceln((literal!("BackendInline.inlineCallsBDAE failed")).clone())?;
             }
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     outBackendDAE = BackendDAEOptimize::simplifyComplexFunction1(outBackendDAE.clone(), false)?;

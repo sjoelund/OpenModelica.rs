@@ -1346,11 +1346,11 @@ fn typeviewDefsFromInterfaceFile(mut interfaceName: Arc<TplAbsyn::PathIdent>, mu
             linfo = __try0_o4;
             newAstDefs = __try0_o5;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             if Flags::isSet(Flags::FAILTRACE.clone())? {
                 Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Parse error - TplParser.typeviewDefsFromInterfaceFile ")); __mm_s.push_str(&*file.clone()); __mm_s.push_str(&*literal!(" failed.\n")); ArcStr::from(__mm_s) }).clone())?;
             }
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((astDefs, linfo, errOpt, cachedDefs))
@@ -1405,11 +1405,11 @@ fn typeviewDefsFromTemplateFile(mut packageName: Arc<TplAbsyn::PathIdent>, mut i
             templateDefs = __try0_o7;
             tplPackage = __try0_o8;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             if Flags::isSet(Flags::FAILTRACE.clone())? {
                 Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Parse error - TplParser.typeviewDefsFromInterfaceFile ")); __mm_s.push_str(&*file.clone()); __mm_s.push_str(&*literal!(" failed.\n")); ArcStr::from(__mm_s) }).clone())?;
             }
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((astDefs, linfo, errOpt, cachedDefs))

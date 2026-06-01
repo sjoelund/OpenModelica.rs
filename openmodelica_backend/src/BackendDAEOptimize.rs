@@ -1608,9 +1608,9 @@ pub fn copyRecordConstructorAndExternalObjConstructorDestructor(mut inAllFunctio
                 Ok((__try0_o0,)) => {
                     var_list = __try0_o0;
                 }
-                Err(_) => {
+                Err(__try0_err) => {
                     Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendDAEOptimize.copyRecordConstructorAndExternalObjConstructorDestructor")); __mm_s.push_str(&*literal!(" got unxpected record constructor structure for  ")); __mm_s.push_str(&*AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }).clone()], metamodelica::sourceInfo!())?;
-                    bail!("fail");
+                    return Err(__try0_err);
                 }
             }
             for mut var in &*var_list.clone() {
@@ -4331,8 +4331,8 @@ pub fn removeLocalKnownVars2(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Ar
                     rhs = __try3_o6;
                     shared = __try3_o7;
                 }
-                Err(_) => {
-                    bail!("try/else: outputs not set in else branch");
+                Err(__try3_err) => {
+                    return Err(__try3_err);
                 }
             }
         }

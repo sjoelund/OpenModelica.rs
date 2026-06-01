@@ -607,6 +607,45 @@ pub mod Partition {
         jac
     }
 
+    pub fn getJacobianLfg(mut part: Arc<Partition>) -> Option<Arc<Jacobian::NBackendDAE>> {
+        let mut jac: Option<Arc<Jacobian::NBackendDAE>> = None;
+        jac = (::match_deref::match_deref! { match &(part.association.clone()) {
+        Deref @ Association::CONTINUOUS { LFG_jacobian: __esc_jac, .. } => {
+            jac = (*__esc_jac).clone();
+            jac.clone()
+        },
+        _ => None,
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+        jac
+    }
+
+    pub fn getJacobianMrf(mut part: Arc<Partition>) -> Option<Arc<Jacobian::NBackendDAE>> {
+        let mut jac: Option<Arc<Jacobian::NBackendDAE>> = None;
+        jac = (::match_deref::match_deref! { match &(part.association.clone()) {
+        Deref @ Association::CONTINUOUS { MRF_jacobian: __esc_jac, .. } => {
+            jac = (*__esc_jac).clone();
+            jac.clone()
+        },
+        _ => None,
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+        jac
+    }
+
+    pub fn getJacobianR0(mut part: Arc<Partition>) -> Option<Arc<Jacobian::NBackendDAE>> {
+        let mut jac: Option<Arc<Jacobian::NBackendDAE>> = None;
+        jac = (::match_deref::match_deref! { match &(part.association.clone()) {
+        Deref @ Association::CONTINUOUS { R0_jacobian: __esc_jac, .. } => {
+            jac = (*__esc_jac).clone();
+            jac.clone()
+        },
+        _ => None,
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+        jac
+    }
+
     pub fn getKind(mut part: Arc<Partition>) -> Kind {
         let mut kind: Kind = Kind::ODE;
         kind = (::match_deref::match_deref! { match &(part.association.clone()) {

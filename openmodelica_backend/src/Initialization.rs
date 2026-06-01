@@ -231,9 +231,9 @@ pub fn solveInitialSystem(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<(Arc
             useHomotopy = __try0_o21;
             vars = __try0_o22;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addCompilerError((literal!("No system for the symbolic initialization was generated")).clone())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((outInitDAE, outInitDAE_lambda0, outRemovedInitialEquations, outGlobalKnownVars, outSimDAE))
@@ -1057,9 +1057,9 @@ fn preBalanceInitialSystem2(mut n: i32, mut mt: metamodelica::Array<Arc<metamode
         Ok((__try0_o0,)) => {
             row = __try0_o0;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Initialization.preBalanceInitialSystem2")); __mm_s.push_str(&*literal!(" failed")); __mm_s.push_str(&*err_str.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((outVars, outEqs, outB, outDumpVars))
@@ -1711,9 +1711,9 @@ fn compsMarker(mut inUnassignedEqn: i32, mut inVecVarToEq: metamodelica::Array<i
             outMarkedEqns = __try0_o1;
             varList = __try0_o2;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addCompilerNotification((literal!("It was not possible to check the given initialization system for consistency symbolically, because the relevant equations are part of an algebraic loop. This is not supported yet.")).clone())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(outMarkedEqns)

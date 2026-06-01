@@ -431,9 +431,9 @@ fn instEnumerationBinding(mut inMod: Arc<DAE::Mod>, mut varLst: Arc<metamodelica
         Ok((__try0_o0,)) => {
             outBinding = __try0_o0;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addMessage(Error::TYPE_ERROR.clone(), list![(inName.clone()).clone(), (literal!("enumeration type")).clone()])?;
-            bail!("try/else: outputs not set in else branch");
+            return Err(__try0_err);
         }
     }
     Ok(outBinding)
@@ -859,11 +859,11 @@ pub fn makeRecordBinding(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
             outBinding = __try0_o2;
             val = __try0_o3;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             if Flags::isSet(Flags::FAILTRACE.clone())? {
                 Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- Inst.makeRecordBinding2 failed for ")); __mm_s.push_str(&*AbsynUtil::pathString(inRecordName.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
             }
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(outBinding)

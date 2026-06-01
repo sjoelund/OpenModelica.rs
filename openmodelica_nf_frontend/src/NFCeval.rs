@@ -412,12 +412,12 @@ pub fn evalComponentBinding(mut node: Arc<InstNode::InstNode>, mut cref: Arc<Com
                 Ok((__try0_o0,)) => {
                     exp = __try0_o0;
                 }
-                Err(_) => {
+                Err(__try0_err) => {
                     Mutable::update(var_field!((*binding).evalState, Binding::NFBinding::TYPED_BINDING).clone(), Binding::EvalState::NOT_EVALUATED.clone());
                     errors = ErrorExt::popCheckPoint(literal!("NFCeval.evalComponentBinding"));
                     Error::addSourceMessage(Error::ERROR_FROM_HERE.clone(), metamodelica::nil(), var_field!((*binding).info, Binding::NFBinding::TYPED_BINDING).clone())?;
                     ErrorExt::pushMessages(errors.clone());
-                    bail!("fail");
+                    return Err(__try0_err);
                 }
             }
             assign_variant_field!(binding => Binding::NFBinding::TYPED_BINDING; bindingExp = exp.clone());
@@ -2095,9 +2095,9 @@ pub fn evalBuiltinFill(mut args: Arc<metamodelica::List<Arc<Expression::NFExpres
             fill_exp = __try0_o1;
             result = __try0_o2;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             printWrongArgsError(literal!("NFCeval.evalBuiltinFill"), args.clone(), metamodelica::sourceInfo!())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(result)
@@ -3080,9 +3080,9 @@ fn evalRecordElement(mut exp: Arc<Expression::NFExpression>, mut target: Arc<Eva
         Ok((__try2_o0,)) => {
             result = __try2_o0;
         }
-        Err(_) => {
+        Err(__try2_err) => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCeval.evalRecordElement")); __mm_s.push_str(&*literal!(" could not evaluate ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
-            bail!("try/else: outputs not set in else branch");
+            return Err(__try2_err);
         }
     }
     Ok(result)

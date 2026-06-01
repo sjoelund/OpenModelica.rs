@@ -164,11 +164,11 @@ pub fn differentiateExpTime(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDA
             outExp = __try0_o4;
             outShared = __try0_o5;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             if Flags::isSet(Flags::FAILTRACE.clone())? {
                 Error::addSourceMessage(Error::NON_EXISTING_DERIVATIVE.clone(), list![(ExpressionBasics::printExpStr(inExp.clone())?).clone(), (literal!("time")).clone()], metamodelica::sourceInfo!())?;
             }
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((outExp, outShared))
@@ -208,11 +208,11 @@ pub fn differentiateExpSolve(mut inExp: Arc<DAE::Exp>, mut inCref: Arc<DAE::Comp
             fun = __try0_o1;
             outExp = __try0_o2;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             if Flags::isSet(Flags::FAILTRACE.clone())? {
                 Error::addSourceMessage(Error::NON_EXISTING_DERIVATIVE.clone(), list![(ExpressionBasics::printExpStr(inExp.clone())?).clone(), (ComponentReference::crefStr(inCref.clone())?).clone()], metamodelica::sourceInfo!())?;
             }
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(outExp)
@@ -244,11 +244,11 @@ pub fn differentiateExpCrefFullJacobian(mut inExp: Arc<DAE::Exp>, mut inCref: Ar
             outExp = __try0_o4;
             outShared = __try0_o5;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             if Flags::isSet(Flags::FAILTRACE.clone())? {
                 Error::addSourceMessage(Error::NON_EXISTING_DERIVATIVE.clone(), list![(ExpressionBasics::printExpStr(inExp.clone())?).clone(), (ComponentReference::crefStr(inCref.clone())?).clone()], metamodelica::sourceInfo!())?;
             }
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((outExp, outShared))
@@ -3525,10 +3525,10 @@ fn lowerVarsElementVars(mut inElementLstVars: Arc<metamodelica::List<Arc<DAE::El
             vars = __try0_o4;
             varsLst = __try0_o5;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
             Debug::traceln((literal!("- Differentiate.lowerVarsElementVars failed.")).clone())?;
-            bail!("try/else: outputs not set in else branch");
+            return Err(__try0_err);
         }
     }
     Ok((varsLst, eqnsLst, reqnsLst))
@@ -3548,9 +3548,9 @@ fn addElementVars2Dep(mut inElementLstVars: Arc<metamodelica::List<Arc<DAE::Elem
             outEqnsLst = __try0_o1;
             varsLst = __try0_o2;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Differentiate.addElementVars2Dep failed")).clone()])?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((outDiffData, outEqnsLst))

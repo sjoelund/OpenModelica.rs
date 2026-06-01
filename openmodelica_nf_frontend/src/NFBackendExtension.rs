@@ -89,8 +89,10 @@ pub mod BackendInfo {
         pub var_pre: Option<Pointer::Pointer<Arc<Variable::NFVariable>>>,
         /// Pointer (var -> seed) or (seed -> var) if existent.
         pub var_seed: Option<Pointer::Pointer<Arc<Variable::NFVariable>>>,
-        /// Pointer (var -> pder) or (pder -> var) if existent.
-        pub var_pder: Option<Pointer::Pointer<Arc<Variable::NFVariable>>>,
+        /// Pointer (var -> pder, result var in Jacobian) or (pder -> var) if existent.
+        pub var_pder_res: Option<Pointer::Pointer<Arc<Variable::NFVariable>>>,
+        /// Pointer (var -> pder, tmp var in Jacobian) or (pder -> var) if existent.
+        pub var_pder_tmp: Option<Pointer::Pointer<Arc<Variable::NFVariable>>>,
         /// Pointer (var -> start) or (start -> var) if existent.
         pub var_start: Option<Pointer::Pointer<Arc<Variable::NFVariable>>>,
         /// record parent if it is part of a record.
@@ -105,7 +107,8 @@ pub mod BackendInfo {
                 annotations: Default::default(),
                 var_pre: Default::default(),
                 var_seed: Default::default(),
-                var_pder: Default::default(),
+                var_pder_res: Default::default(),
+                var_pder_tmp: Default::default(),
                 var_start: Default::default(),
                 parent: Default::default(),
             }
@@ -166,9 +169,13 @@ pub mod BackendInfo {
         binfo
     }
 
-    pub fn setVarPDer(mut binfo: Arc<BackendInfo>, mut var_ptr: Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Arc<BackendInfo> {
+    pub fn setVarPDer(mut binfo: Arc<BackendInfo>, mut var_ptr: Option<Pointer::Pointer<Arc<Variable::NFVariable>>>, mut isTmp: bool) -> Arc<BackendInfo> {
         let mut binfo: Arc<BackendInfo> = binfo;
-        assign_field!(binfo.var_pder = var_ptr.clone());
+        if isTmp.clone() {
+            assign_field!(binfo.var_pder_tmp = var_ptr.clone());
+        } else {
+            assign_field!(binfo.var_pder_res = var_ptr.clone());
+        }
         binfo
     }
 
@@ -216,7 +223,7 @@ pub mod BackendInfo {
             ({
         let mut __acc: Arc<metamodelica::List<Arc<BackendInfo>>> = metamodelica::nil();
         for mut attr in (scalar_attributes.clone()).into_iter().cloned() {
-            let __x = Arc::new(BackendInfo { varKind: binfo.varKind.clone(), attributes: attr.clone(), annotations: binfo.annotations.clone(), var_pre: binfo.var_pre.clone(), var_seed: binfo.var_seed.clone(), var_pder: binfo.var_pder.clone(), var_start: binfo.var_start.clone(), parent: binfo.parent.clone() });
+            let __x = Arc::new(BackendInfo { varKind: binfo.varKind.clone(), attributes: attr.clone(), annotations: binfo.annotations.clone(), var_pre: binfo.var_pre.clone(), var_seed: binfo.var_seed.clone(), var_pder_res: binfo.var_pder_res.clone(), var_pder_tmp: binfo.var_pder_tmp.clone(), var_start: binfo.var_start.clone(), parent: binfo.parent.clone() });
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -229,7 +236,7 @@ pub mod BackendInfo {
 
 }
 
-thread_local! { static __DUMMY_BACKEND_INFO_TLS: Arc<BackendInfo::BackendInfo> = Arc::new(BackendInfo::BackendInfo { varKind: Arc::new(crate::NFBackendExtension::VariableKind::FRONTEND_DUMMY), attributes: EMPTY_VAR_ATTR_REAL().clone(), annotations: EMPTY_ANNOTATIONS.clone(), var_pre: None, var_seed: None, var_pder: None, var_start: None, parent: None }); }
+thread_local! { static __DUMMY_BACKEND_INFO_TLS: Arc<BackendInfo::BackendInfo> = Arc::new(BackendInfo::BackendInfo { varKind: Arc::new(crate::NFBackendExtension::VariableKind::FRONTEND_DUMMY), attributes: EMPTY_VAR_ATTR_REAL().clone(), annotations: EMPTY_ANNOTATIONS.clone(), var_pre: None, var_seed: None, var_pder_res: None, var_pder_tmp: None, var_start: None, parent: None }); }
 pub fn DUMMY_BACKEND_INFO() -> Arc<BackendInfo::BackendInfo> { __DUMMY_BACKEND_INFO_TLS.with(|__t| __t.clone()) }
 
 pub mod VariableKind {

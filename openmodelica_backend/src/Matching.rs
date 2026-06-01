@@ -6072,7 +6072,7 @@ fn clearArrayWithKnownSetIndexes(mut arr: metamodelica::Array<bool>, mut arrIx: 
     } else {
         let true = (n.clone() <= (arrIx.clone().borrow().len() as i32)) else { bail!("pattern mismatch") };
         for mut i in 1..=n.clone() {
-            metamodelica::Dangerous::arrayUpdateNoBoundsChecking(arr.clone(), metamodelica::Dangerous::arrayGetNoBoundsChecking(arrIx.clone(), i.clone()), false);
+            {let _arr = arr.clone(); _arr.borrow_mut()[(metamodelica::Dangerous::arrayGetNoBoundsChecking(arrIx.clone(), i.clone())-1) as usize] = false; _arr};
         }
     }
     if debug.clone() {

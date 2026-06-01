@@ -102,7 +102,7 @@ pub fn DUMMY_VARIABLE() -> Arc<Variable::NFVariable> { __DUMMY_VARIABLE_TLS.with
 thread_local! { static __SUBST_VARIABLE_TLS: Arc<Variable::NFVariable> = Arc::new(Variable::NFVariable { name: NFBuiltin::SUBST_CREF().clone(), ty: Arc::new(openmodelica_nf_frontend::NFType::ANY), binding: Binding::EMPTY_BINDING().clone(), visibility: Prefixes::Visibility::PUBLIC.clone(), attributes: Attributes::DEFAULT_ATTR().clone(), typeAttributes: metamodelica::nil(), children: metamodelica::nil(), comment: SCode::noComment.clone(), info: SCodeUtil::dummyInfo.clone(), backendinfo: BackendExtension::DUMMY_BACKEND_INFO().clone() }); }
 pub fn SUBST_VARIABLE() -> Arc<Variable::NFVariable> { __SUBST_VARIABLE_TLS.with(|__t| __t.clone()) }
 
-thread_local! { static __TIME_VARIABLE_TLS: Arc<Variable::NFVariable> = Arc::new(Variable::NFVariable { name: NFBuiltin::TIME_CREF().clone(), ty: Arc::new(openmodelica_nf_frontend::NFType::REAL), binding: Binding::EMPTY_BINDING().clone(), visibility: Prefixes::Visibility::PUBLIC.clone(), attributes: Attributes::DEFAULT_ATTR().clone(), typeAttributes: metamodelica::nil(), children: metamodelica::nil(), comment: SCode::noComment.clone(), info: SCodeUtil::dummyInfo.clone(), backendinfo: Arc::new(BackendInfo::BackendInfo { varKind: Arc::new(openmodelica_nf_frontend::NFBackendExtension::VariableKind::TIME), attributes: BackendExtension::EMPTY_VAR_ATTR_REAL().clone(), annotations: BackendExtension::EMPTY_ANNOTATIONS.clone(), var_pre: None, var_seed: None, var_pder: None, var_start: None, parent: None }) }); }
+thread_local! { static __TIME_VARIABLE_TLS: Arc<Variable::NFVariable> = Arc::new(Variable::NFVariable { name: NFBuiltin::TIME_CREF().clone(), ty: Arc::new(openmodelica_nf_frontend::NFType::REAL), binding: Binding::EMPTY_BINDING().clone(), visibility: Prefixes::Visibility::PUBLIC.clone(), attributes: Attributes::DEFAULT_ATTR().clone(), typeAttributes: metamodelica::nil(), children: metamodelica::nil(), comment: SCode::noComment.clone(), info: SCodeUtil::dummyInfo.clone(), backendinfo: Arc::new(BackendInfo::BackendInfo { varKind: Arc::new(openmodelica_nf_frontend::NFBackendExtension::VariableKind::TIME), attributes: BackendExtension::EMPTY_VAR_ATTR_REAL().clone(), annotations: BackendExtension::EMPTY_ANNOTATIONS.clone(), var_pre: None, var_seed: None, var_pder_res: None, var_pder_tmp: None, var_start: None, parent: None }) }); }
 pub fn TIME_VARIABLE() -> Arc<Variable::NFVariable> { __TIME_VARIABLE_TLS.with(|__t| __t.clone()) }
 
 pub const DERIVATIVE_STR: &'static str = "$DER";
@@ -410,7 +410,7 @@ pub fn isTime(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool 
     b
 }
 
-pub fn isContinuous(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut init: bool) -> Result<bool> {
+pub fn isContinuous(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut staticAsContinuous: bool) -> Result<bool> {
     let mut b: bool = false;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
@@ -420,30 +420,30 @@ pub fn isContinuous(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mu
         Deref @ BackendExtension::VariableKind::CONSTANT => false,
         Deref @ BackendExtension::VariableKind::ITERATOR => false,
         Deref @ BackendExtension::VariableKind::EXTOBJ { .. } => false,
-        Deref @ BackendExtension::VariableKind::PARAMETER { .. } => init.clone() && Type::isContinuous(var.ty.clone())?,
-        Deref @ BackendExtension::VariableKind::RECORD { .. } => List::all(getRecordChildren(var_ptr.clone()), (std::sync::Arc::new({ let __pe_b1 = init.clone(); move |__pe_a0| isContinuous(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>)),
+        Deref @ BackendExtension::VariableKind::PARAMETER { .. } => staticAsContinuous.clone() && Type::isContinuous(var.ty.clone())?,
+        Deref @ BackendExtension::VariableKind::RECORD { .. } => List::all(getRecordChildren(var_ptr.clone()), (std::sync::Arc::new({ let __pe_b1 = staticAsContinuous.clone(); move |__pe_a0| isContinuous(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>)),
         _ => true,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(b)
 }
 
-pub fn isDiscontinuous(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut init: bool) -> Result<bool> {
+pub fn isDiscontinuous(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut staticAsContinuous: bool) -> Result<bool> {
     let mut b: bool = false;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
-    b = !(isContinuous(var_ptr.clone(), init.clone())?);
+    b = !(isContinuous(var_ptr.clone(), staticAsContinuous.clone())?);
     Ok(b)
 }
 
-pub fn isContinuousRecordAware(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut init: bool) -> Result<bool> {
+pub fn isContinuousRecordAware(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut staticAsContinuous: bool) -> Result<bool> {
     let mut b: bool = false;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (match getParent(var_ptr.clone()) {
         Some(mut parent) => {
-            isContinuousRecordAware(parent.clone(), init.clone())?
+            isContinuousRecordAware(parent.clone(), staticAsContinuous.clone())?
         },
         _ => {
-            isContinuous(var_ptr.clone(), init.clone())?
+            isContinuous(var_ptr.clone(), staticAsContinuous.clone())?
         },
     });
     Ok(b)
@@ -607,12 +607,17 @@ pub fn getVarSeed(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> (
     (partner, partnerName)
 }
 
-pub fn getVarPDer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> (Option<Pointer::Pointer<Arc<Variable::NFVariable>>>, ArcStr) {
+pub fn getVarPDer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut isTmp: bool) -> (Option<Pointer::Pointer<Arc<Variable::NFVariable>>>, ArcStr) {
     let mut partner: Option<Pointer::Pointer<Arc<Variable::NFVariable>>> = None;
     let mut partnerName: ArcStr = arcstr::literal!("");
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
-    partnerName = (literal!("partial derivative")).clone();
-    partner = var.backendinfo.var_pder.clone();
+    if isTmp.clone() {
+        partnerName = (literal!("partial derivative (temp)")).clone();
+        partner = var.backendinfo.var_pder_tmp.clone();
+    } else {
+        partnerName = (literal!("partial derivative (result)")).clone();
+        partner = var.backendinfo.var_pder_res.clone();
+    }
     (partner, partnerName)
 }
 
@@ -709,12 +714,16 @@ pub fn hasPre(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool 
 pub fn isJacobianResultVar(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool = false;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
-    b = (match (getVarPDer(var_ptr.clone())).0 {
+    b = (match (getVarPDer(var_ptr.clone(), false)).0 {
         Some(mut der_var) => {
             isJacobianResultVarPDer(der_var.clone())
         },
         _ => {
-            false
+            let mut der_var: Pointer::Pointer<Arc<Variable::NFVariable>>;
+            (match (getVarPDer(var_ptr.clone(), true)).0 {
+        Some(mut der_var) => isJacobianResultVarPDer(der_var.clone()),
+        _ => false,
+    })
         },
     });
     b
@@ -801,6 +810,13 @@ pub fn isOptimizable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -
     b
 }
 
+pub fn isStateOrOptimizable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+    let mut b: bool = false;
+    let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
+    b = isState(var_ptr.clone()) || isOptimizable(var_ptr.clone());
+    b
+}
+
 pub fn isInitialTime(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool = false;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
@@ -825,24 +841,48 @@ pub fn isFinalTime(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> 
     b
 }
 
-pub fn isLagrangeOrPathConstraint(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub fn isLagrange(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool = false;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     let mut optExp: OptimizerExpression = OptimizerExpression::MAYER;
     b = (::match_deref::match_deref! { match &(var.backendinfo.clone()) {
-        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizerExpression: Some(optExp), .. }, .. } => optExp.clone() == OptimizerExpression::LAGRANGE.clone() || optExp.clone() == OptimizerExpression::PATH_CONSTRAINT.clone(),
+        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizerExpression: Some(optExp), .. }, .. } => optExp.clone() == OptimizerExpression::LAGRANGE.clone(),
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     b
 }
 
-pub fn isMayerOrFinalConstraint(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub fn isMayer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool = false;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     let mut optExp: OptimizerExpression = OptimizerExpression::MAYER;
     b = (::match_deref::match_deref! { match &(var.backendinfo.clone()) {
-        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizerExpression: Some(optExp), .. }, .. } => optExp.clone() == OptimizerExpression::MAYER.clone() || optExp.clone() == OptimizerExpression::FINAL_CONSTRAINT.clone(),
+        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizerExpression: Some(optExp), .. }, .. } => optExp.clone() == OptimizerExpression::MAYER.clone(),
+        _ => false,
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    b
+}
+
+pub fn isPathConstraint(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+    let mut b: bool = false;
+    let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
+    let mut optExp: OptimizerExpression = OptimizerExpression::MAYER;
+    b = (::match_deref::match_deref! { match &(var.backendinfo.clone()) {
+        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizerExpression: Some(optExp), .. }, .. } => optExp.clone() == OptimizerExpression::PATH_CONSTRAINT.clone(),
+        _ => false,
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    b
+}
+
+pub fn isFinalConstraint(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+    let mut b: bool = false;
+    let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
+    let mut optExp: OptimizerExpression = OptimizerExpression::MAYER;
+    b = (::match_deref::match_deref! { match &(var.backendinfo.clone()) {
+        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizerExpression: Some(optExp), .. }, .. } => optExp.clone() == OptimizerExpression::FINAL_CONSTRAINT.clone(),
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -861,10 +901,52 @@ pub fn isInitialConstraint(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariabl
     b
 }
 
-pub fn isStateOrOptimizable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub fn isLfgFunction(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
     let mut b: bool = false;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
-    b = isState(var_ptr.clone()) || isOptimizable(var_ptr.clone());
+    let mut optExp: OptimizerExpression = OptimizerExpression::MAYER;
+    if isStateDerivative(var_ptr.clone()) {
+        b = true;
+        return b.clone();
+    }
+    b = (::match_deref::match_deref! { match &(var.backendinfo.clone()) {
+        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizerExpression: Some(optExp), .. }, .. } => optExp.clone() == OptimizerExpression::LAGRANGE.clone() || optExp.clone() == OptimizerExpression::PATH_CONSTRAINT.clone(),
+        _ => false,
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    b
+}
+
+pub fn isMrfFunction(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+    let mut b: bool = false;
+    let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
+    let mut optExp: OptimizerExpression = OptimizerExpression::MAYER;
+    b = (::match_deref::match_deref! { match &(var.backendinfo.clone()) {
+        Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { optimizerExpression: Some(optExp), .. }, .. } => optExp.clone() == OptimizerExpression::MAYER.clone() || optExp.clone() == OptimizerExpression::FINAL_CONSTRAINT.clone(),
+        _ => false,
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    b
+}
+
+pub fn isLfgVariable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+    let mut b: bool = false;
+    let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
+    b = !(isFinalTime(var_ptr.clone()) || isInitialTime(var_ptr.clone()));
+    b
+}
+
+pub fn isMrfVariable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+    let mut b: bool = false;
+    let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
+    b = !(isInitialTime(var_ptr.clone()));
+    b
+}
+
+pub fn isR0Variable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+    let mut b: bool = false;
+    let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
+    b = !(isFinalTime(var_ptr.clone()));
     b
 }
 
@@ -1421,7 +1503,7 @@ pub fn makePDerVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut name: ArcStr
             let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
             let mut qual = (*qual).clone();
             res_ptr = getVarPointer(cref.clone(), metamodelica::sourceInfo!())?;
-            (ovar, _) = getVarPDer(res_ptr.clone());
+            (ovar, _) = getVarPDer(res_ptr.clone(), isTmp.clone());
             if isSome(ovar.clone()) {
                 var_ptr = Util::getOption(ovar.clone())?;
                 cref = getVarName(var_ptr.clone());
@@ -1440,7 +1522,7 @@ pub fn makePDerVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut name: ArcStr
     } });
                 assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), varKind.clone()));
                 (var_ptr, cref) = makeVarPtrCyclic(var.clone(), cref.clone())?;
-                connectPartners(res_ptr.clone(), var_ptr.clone(), (std::sync::Arc::new(fnptr!(BackendExtension::BackendInfo::setVarPDer, Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>));
+                connectPartners(res_ptr.clone(), var_ptr.clone(), (std::sync::Arc::new({ let __pe_b2 = isTmp.clone(); move |__pe_a0, __pe_a1| Ok(BackendExtension::BackendInfo::setVarPDer(__pe_a0, __pe_a1, __pe_b2.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>));
             }
             ()
         },

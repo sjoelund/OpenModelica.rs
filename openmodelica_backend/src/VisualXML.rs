@@ -264,9 +264,9 @@ fn getConstCrefBinding(mut cr: Arc<DAE::ComponentRef>, mut vars: BackendDAE::Var
             eOut = __try0_o1;
             var = __try0_o2;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("VisualXMl.getConstCrefBinding failed for ")); __mm_s.push_str(&*ComponentReference::crefStr(cr.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
-            bail!("try/else: outputs not set in else branch");
+            return Err(__try0_err);
         }
     }
     Ok(eOut)
@@ -378,9 +378,9 @@ fn fillVisualizationObjects(mut visVar: (Arc<DAE::ComponentRef>, ArcStr), mut al
             visOut = __try0_o2;
             vis_name = __try0_o3;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             println!("{}", (literal!("fillVisualizationObjects failed! - not yet supported type")).clone());
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((visOut, allVarsOut, programOut))

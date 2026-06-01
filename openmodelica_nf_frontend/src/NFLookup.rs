@@ -680,7 +680,7 @@ pub fn lookupSimpleCref(mut name: ArcStr, mut subs: Arc<metamodelica::List<Arc<A
             node = __try0_o2;
             state = __try0_o3;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             if InstContext::inAnnotation(context.clone()) {
                 if '__try1: {
                     (node, foundScope) = unwrap_break_err!(lookupLocalSimpleCref((name.clone()).clone(), InstNode::annotationScope(foundScope.clone())?), '__try1);
@@ -717,7 +717,7 @@ pub fn lookupSimpleCref(mut name: ArcStr, mut subs: Arc<metamodelica::List<Arc<A
                 }
             }
             Error::addMessage(Error::RECURSION_DEPTH_REACHED.clone(), list![ArcStr::from(::std::format!("{}", Global::recursionDepthLimit.clone())), (InstNode::scopeName(foundScope.clone())).clone()])?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((node, cref, foundScope, inEnclosingScope, state))

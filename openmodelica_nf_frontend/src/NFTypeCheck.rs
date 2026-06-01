@@ -262,7 +262,7 @@ pub fn matchOverloadedBinaryOperator(mut exp1: Arc<Expression::NFExpression>, mu
                 outExp = __try0_o0;
                 outType = __try0_o1;
             }
-            Err(_) => {
+            Err(__try0_err) => {
                 ErrorExt::rollBack((literal!("NFTypeCheck:implicitConstruction")).clone());
                 if Type::isArray(type1.clone()) || Type::isArray(type2.clone()) {
                     (outExp, outType) = (match op.op.clone() {
@@ -278,7 +278,7 @@ pub fn matchOverloadedBinaryOperator(mut exp1: Arc<Expression::NFExpression>, mu
                 } else {
                     printUnresolvableTypeError(Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: op.clone(), exp2: exp2.clone() }), list![type1.clone(), type2.clone()], info.clone(), showErrors.clone())?;
                 }
-                bail!("try/else: outputs not set in else branch");
+                return Err(__try0_err);
             }
         }
     } else if (exactMatches.clone().len() as i32) == 1 {
@@ -515,9 +515,9 @@ fn checkOverloadedBinaryScalarArray2(mut exp1: Arc<Expression::NFExpression>, mu
                     outType = __try0_o0;
                     ty = __try0_o1;
                 }
-                Err(_) => {
+                Err(__try0_err) => {
                     printUnresolvableTypeError(Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: op.clone(), exp2: exp2.clone() }), list![type1.clone(), var_field!((*exp2).ty, Expression::NFExpression::ARRAY).clone()], info.clone(), true)?;
-                    bail!("try/else: outputs not set in else branch");
+                    return Err(__try0_err);
                 }
             }
             outType = Type::setArrayElementType(var_field!((*exp2).ty, Expression::NFExpression::ARRAY).clone(), outType.clone());
@@ -564,9 +564,9 @@ fn checkOverloadedBinaryArrayScalar2(mut exp1: Arc<Expression::NFExpression>, mu
                     outType = __try0_o0;
                     ty = __try0_o1;
                 }
-                Err(_) => {
+                Err(__try0_err) => {
                     printUnresolvableTypeError(Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: op.clone(), exp2: exp2.clone() }), list![type1.clone(), var_field!((*exp1).ty, Expression::NFExpression::ARRAY).clone()], info.clone(), true)?;
-                    bail!("try/else: outputs not set in else branch");
+                    return Err(__try0_err);
                 }
             }
             outType = Type::setArrayElementType(var_field!((*exp1).ty, Expression::NFExpression::ARRAY).clone(), outType.clone());

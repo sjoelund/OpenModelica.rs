@@ -2556,9 +2556,9 @@ pub fn adjacencyMatrix(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inIndexTyp
             outAdjacencyMatrixT = __try0_o2;
             vars = __try0_o3;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("BackendDAEUtil.adjacencyMatrix failed.")).clone()])?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((outAdjacencyMatrix, outAdjacencyMatrixT))
@@ -2585,9 +2585,9 @@ pub fn adjacencyMatrixMasked(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inIn
             outAdjacencyMatrixT = __try0_o2;
             vars = __try0_o3;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("BackendDAEUtil.adjacencyMatrix failed.")).clone()])?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((outAdjacencyMatrix, outAdjacencyMatrixT))
@@ -2619,9 +2619,9 @@ pub fn adjacencyMatrixScalar(mut syst: Arc<BackendDAE::EqSystem>, mut inIndexTyp
             outMapIncRowEqn = __try0_o4;
             vars = __try0_o5;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("BackendDAEUtil.adjacencyMatrixScalar failed.")).clone()])?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((outAdjacencyMatrix, outAdjacencyMatrixT, outMapEqnIncRow, outMapIncRowEqn))
@@ -7981,10 +7981,10 @@ pub fn traverseBackendDAEExpsNoCopyWithUpdate<A: Clone + 'static>(mut inBackendD
             shared = __try0_o1;
             systs = __try0_o2;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             (_, _, name) = System::dladdr(func.clone());
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("traverseBackendDAEExpsNoCopyWithUpdate failed for ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(outTypeA)
@@ -8349,7 +8349,7 @@ pub fn traverseBackendDAEExpsEqns<T: Clone + 'static>(mut equationArray: Arc<Exp
     let mut name: ArcStr = arcstr::literal!("");
     let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
     let mut eqn_new: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
-    if '__try0: {
+    match '__try0: {
         for mut i in 1..=ExpandableArray::getLastUsedIndex(equationArray.clone()) {
             if ExpandableArray::occupied(i.clone(), equationArray.clone()) {
                 eqn = unwrap_break_err!(ExpandableArray::get(i.clone(), equationArray.clone()), '__try0);
@@ -8360,12 +8360,15 @@ pub fn traverseBackendDAEExpsEqns<T: Clone + 'static>(mut equationArray: Arc<Exp
             }
         }
         Ok::<(), anyhow::Error>(())
-    }.is_err() {
-        if Flags::isSet(Flags::FAILTRACE.clone())? {
-            (_, _, name) = System::dladdr(func.clone());
-            Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- BackendDAE.traverseBackendDAEExpsEqns failed for ")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
+    } {
+        Ok(()) => {}
+        Err(__try0_err) => {
+            if Flags::isSet(Flags::FAILTRACE.clone())? {
+                (_, _, name) = System::dladdr(func.clone());
+                Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- BackendDAE.traverseBackendDAEExpsEqns failed for ")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
+            }
+            return Err(__try0_err);
         }
-        bail!("fail");
     }
     Ok(extraArg)
 }
@@ -8377,7 +8380,7 @@ pub fn traverseBackendDAEExpsEqnsWithStop<T: Clone + 'static>(mut equationArray:
     let mut name: ArcStr = arcstr::literal!("");
     let mut e: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
     let mut continue_: bool = false;
-    if '__try0: {
+    match '__try0: {
         for mut i in 1..=ExpandableArray::getLastUsedIndex(equationArray.clone()) {
             if ExpandableArray::occupied(i.clone(), equationArray.clone()) {
                 e = unwrap_break_err!(ExpandableArray::get(i.clone(), equationArray.clone()), '__try0);
@@ -8388,12 +8391,15 @@ pub fn traverseBackendDAEExpsEqnsWithStop<T: Clone + 'static>(mut equationArray:
             }
         }
         Ok::<(), anyhow::Error>(())
-    }.is_err() {
-        if Flags::isSet(Flags::FAILTRACE.clone())? {
-            (_, _, name) = System::dladdr(func.clone());
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendDAEUtil.traverseBackendDAEExpsEqnsWithStop failed for ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+    } {
+        Ok(()) => {}
+        Err(__try0_err) => {
+            if Flags::isSet(Flags::FAILTRACE.clone())? {
+                (_, _, name) = System::dladdr(func.clone());
+                Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendDAEUtil.traverseBackendDAEExpsEqnsWithStop failed for ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            }
+            return Err(__try0_err);
         }
-        bail!("fail");
     }
     Ok(extraArg)
 }
@@ -8611,10 +8617,10 @@ pub fn preOptimizeDAE(mut inDAE: Arc<BackendDAE::BackendDAE>, mut inPreOptModule
                 shared = __try0_o1;
                 systs = __try0_o2;
             }
-            Err(_) => {
+            Err(__try0_err) => {
                 execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("preOpt ")); __mm_s.push_str(&*moduleStr.clone()); __mm_s.push_str(&*literal!(" <failed>")); ArcStr::from(__mm_s) }).clone())?;
                 Error::addCompilerError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("pre-optimization module ")); __mm_s.push_str(&*moduleStr.clone()); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone())?;
-                bail!("fail");
+                return Err(__try0_err);
             }
         }
     }
@@ -8792,9 +8798,9 @@ fn sortEqnsDAEWork(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Ba
             outSystem = __try0_o3;
             syst = __try0_o4;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addInternalError((literal!("Transformation module sort components failed")).clone(), metamodelica::sourceInfo!())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(outSystem)
@@ -8851,10 +8857,10 @@ pub fn postOptimizeDAE(mut inDAE: Arc<BackendDAE::BackendDAE>, mut inPostOptModu
                 shared = __try0_o1;
                 systs = __try0_o2;
             }
-            Err(_) => {
+            Err(__try0_err) => {
                 execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("<failed> postOpt ")); __mm_s.push_str(&*moduleStr.clone()); ArcStr::from(__mm_s) }).clone())?;
                 Error::addCompilerError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("post-optimization module ")); __mm_s.push_str(&*moduleStr.clone()); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone())?;
-                bail!("fail");
+                return Err(__try0_err);
             }
         }
     }
@@ -10290,10 +10296,10 @@ pub fn traverseEqSystemStrongComponents<Type_a: Clone + 'static>(mut syst: Arc<B
             eqnArr = __try0_o1;
             varArr = __try0_o2;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             (_, _, name) = System::dladdr(func.clone());
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackendDAEUtil.traverseEqSystemStrongComponents failed ")); __mm_s.push_str(&*literal!("with function:\n")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(outTypeA)

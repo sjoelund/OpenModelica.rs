@@ -303,9 +303,9 @@ pub mod SimVar {
                 index = __try0_o0;
                 var = __try0_o1;
             }
-            Err(_) => {
+            Err(__try0_err) => {
                 Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimVar.SimVar.getIndex")); __mm_s.push_str(&*literal!(" failed to get index for cref: ")); __mm_s.push_str(&*ComponentRef::toString(cref.clone())?); ArcStr::from(__mm_s) }).clone()])?;
-                bail!("fail");
+                return Err(__try0_err);
             }
         }
         Ok(index)

@@ -681,8 +681,8 @@ fn getDiscAndContEqns(mut inAllVars: Arc<metamodelica::List<BackendDAE::Var>>, m
             syst = __try0_o7;
             varsIndex = __try0_o8;
         }
-        Err(_) => {
-            bail!("fail");
+        Err(__try0_err) => {
+            return Err(__try0_err);
         }
     }
     Ok((discEqns, contEqns))

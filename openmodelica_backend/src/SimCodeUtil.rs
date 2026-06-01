@@ -812,9 +812,9 @@ pub fn createSimCode(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inInitDA
             varToIndexMapping = __try0_o67;
             zeroCrossings = __try0_o68;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addInternalError((literal!("function createSimCode failed [Transformation from optimised DAE to simulation code structure failed]")).clone(), metamodelica::sourceInfo!())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((simCode, outMapping))
@@ -851,9 +851,9 @@ pub fn createFunctions(mut inProgram: Absyn::Program, mut functionTree: Arc<AvlT
             outLiterals = __try0_o7;
             outRecordDecls = __try0_o8;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addInternalError((literal!("Creation of Modelica functions failed.")).clone(), metamodelica::sourceInfo!())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((outLibs, outLibPaths, outIncludes, outIncludeDirs, outRecordDecls, outFunctions, outLiterals))
@@ -1536,9 +1536,9 @@ fn createEquationsForSystems(mut inSysts: Arc<metamodelica::List<Arc<BackendDAE:
             otempvars = __try0_o11;
             ouniqueEqIndex = __try0_o12;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SimCodeUtil.createEquationsForSystems")); __mm_s.push_str(&*literal!(" failed")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((ouniqueEqIndex, oodeEquations, oalgebraicEquations, olocalKnownVars, oallEquations, oequationsForZeroCrossings, otempvars, oeqSccMapping, oeqBackendSimCodeMapping, obackendMapping, oSccOffset))
@@ -3009,7 +3009,7 @@ pub fn createNonlinearResidualEquations(mut eqs: Arc<metamodelica::List<Arc<Back
     let mut tempvars: Arc<metamodelica::List<SimCodeVar::SimVar>> = tempvars;
     let mut eq_idx: i32 = 0;
     let mut res_idx: i32 = 0;
-    if '__try0: {
+    match '__try0: {
         for mut eq in &*eqs.clone().reverse() {
             let mut eq = eq.clone();
             (eq_idx, res_idx) = idx_tpl.clone();
@@ -3104,9 +3104,12 @@ pub fn createNonlinearResidualEquations(mut eqs: Arc<metamodelica::List<Arc<Back
     } });
         }
         Ok::<(), anyhow::Error>(())
-    }.is_err() {
-        Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("function createNonlinearResidualEquations failed")).clone()])?;
-        bail!("fail");
+    } {
+        Ok(()) => {}
+        Err(__try0_err) => {
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("function createNonlinearResidualEquations failed")).clone()])?;
+            return Err(__try0_err);
+        }
     }
     Ok((eqSystems, idx_tpl, tempvars))
 }
@@ -4015,9 +4018,9 @@ fn createAllEquationOMSI(mut constSysts: Arc<metamodelica::List<Arc<BackendDAE::
             Ok((__try0_o0,)) => {
                 components = __try0_o0;
             }
-            Err(_) => {
+            Err(__try0_err) => {
                 Error::addInternalError((literal!("The matching information is missing in function createAllEquationOMSI!")).clone(), metamodelica::sourceInfo!())?;
-                bail!("fail");
+                return Err(__try0_err);
             }
         }
         (newAllEquations, uniqueEqIndex) = generateEquationsForComponents(components.clone(), constSyst.clone(), shared.clone(), uniqueEqIndex.clone())?;
@@ -4264,9 +4267,9 @@ fn generateSingleEquation(mut eqn: Arc<BackendDAE::Equation>, mut var: BackendDA
                     tmpSimEqLst = __try0_o10;
                     uniqueEqIndex = __try0_o11;
                 }
-                Err(_) => {
+                Err(__try0_err) => {
                     Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- ")); __mm_s.push_str(&*BackendDump::equationString(eqn.clone())?); __mm_s.push_str(&*literal!(" could not resolved for ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cr.clone())?); __mm_s.push_str(&*literal!(" in SimCodeUtil.generateSingleEquation")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
-                    bail!("fail");
+                    return Err(__try0_err);
                 }
             }
             ()
@@ -5119,7 +5122,7 @@ fn createJacSimVarsColumn(mut inVars: Arc<metamodelica::List<BackendDAE::Var>>, 
                     simVar = __try0_o4;
                     v1 = __try0_o5;
                 }
-                Err(_) => {
+                Err(__try0_err) => {
                     currVar = (match varkind.clone() {
         BackendDAE::VarKind::STATE { .. } => ComponentReference::crefPrefixDer(currVar.clone()),
         _ => currVar.clone(),
@@ -5132,7 +5135,7 @@ fn createJacSimVarsColumn(mut inVars: Arc<metamodelica::List<BackendDAE::Var>>, 
                     simVar.matrixName = Some((inMatrixName.clone()).clone());
                     tmpIndex = inTmpIndex.clone() + 1;
                     tmpVars = metamodelica::cons(simVar.clone(), tmpVars.clone());
-                    bail!("try/else: outputs not set in else branch");
+                    return Err(__try0_err);
                 }
             }
             createJacSimVarsColumn(restVar.clone(), inCref.clone(), inAllVars.clone(), resIndex.clone(), tmpIndex.clone(), (inMatrixName.clone()).clone(), tmpVars.clone(), resVars.clone())?
@@ -7670,9 +7673,9 @@ pub fn createModelInfo(mut class_: Arc<Absyn::Path>, mut program: Absyn::Program
             vars = __try0_o30;
             version = __try0_o31;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addInternalError((literal!("createModelInfo failed")).clone(), metamodelica::sourceInfo!())?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(modelInfo)
@@ -9851,9 +9854,9 @@ pub fn createCrefToSimVarHT(mut modelInfo: SimCode::ModelInfo) -> Result<(metamo
             varInfo = __try0_o3;
             vars = __try0_o4;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addInternalError((literal!("function createCrefToSimVarHT failed")).clone(), metamodelica::sourceInfo!())?;
-            bail!("try/else: outputs not set in else branch");
+            return Err(__try0_err);
         }
     }
     Ok(outHT)
@@ -10868,7 +10871,7 @@ pub fn simEqSystemIndex(mut eq: Arc<SimCode::SimEqSystem>) -> Result<i32> {
 
 fn adjustStatesForInlineSolver(mut inStates: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Arc<metamodelica::List<SimCodeVar::SimVar>>> {
     let mut outStates: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
-    if '__try0: {
+    match '__try0: {
         for mut var in &*inStates.clone() {
             let mut var = var.clone();
             var.name = unwrap_break_err!(ComponentReference::appendStringLastIdent((literal!("$Old")).clone(), var.name.clone()), '__try0);
@@ -10876,9 +10879,12 @@ fn adjustStatesForInlineSolver(mut inStates: Arc<metamodelica::List<SimCodeVar::
             outStates = metamodelica::cons(var.clone(), outStates.clone());
         }
         Ok::<(), anyhow::Error>(())
-    }.is_err() {
-        Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("SimCodeUtil.adjustStatesForInlineSolver failed")).clone()])?;
-        bail!("fail");
+    } {
+        Ok(()) => {}
+        Err(__try0_err) => {
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("SimCodeUtil.adjustStatesForInlineSolver failed")).clone()])?;
+            return Err(__try0_err);
+        }
     }
     Ok(outStates)
 }
@@ -14298,9 +14304,9 @@ pub fn createFMIModelStructure(mut inSymjacs: Arc<metamodelica::List<(Option<(Ar
                     outputs = __try28_o6;
                     varsA = __try28_o7;
                 }
-                Err(_) => {
+                Err(__try28_err) => {
                     Error::addInternalError((literal!("SimCodeUtil.createFMIModelStructure failed")).clone(), metamodelica::sourceInfo!())?;
-                    bail!("fail");
+                    return Err(__try28_err);
                 }
             }
         }

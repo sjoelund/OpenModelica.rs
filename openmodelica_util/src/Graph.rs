@@ -860,16 +860,19 @@ pub fn partialDistance2colorInt(mut inGraphT: Arc<metamodelica::List<(i32, Arc<m
 
 fn addForbiddenColorsInt(mut inNode: i32, mut nodes: Arc<metamodelica::List<i32>>, mut inColored: metamodelica::Array<i32>, mut forbiddenColor: metamodelica::Array<i32>, mut inGraph: metamodelica::Array<(i32, Arc<metamodelica::List<i32>>)>) -> Result<()> {
     let mut indexes: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    if '__try0: {
+    match '__try0: {
         for mut node in &*nodes.clone() {
             let mut node = node.clone();
             (_, indexes) = inGraph.clone().borrow()[(node.clone()-1) as usize].clone();
             unwrap_break_err!(updateForbiddenColorArrayInt(indexes.clone(), inColored.clone(), forbiddenColor.clone(), inNode.clone()), '__try0);
         }
         Ok::<(), anyhow::Error>(())
-    }.is_err() {
-        Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Graph.addForbiddenColorsInt failed.")).clone()], metamodelica::sourceInfo!())?;
-        bail!("fail");
+    } {
+        Ok(()) => {}
+        Err(__try0_err) => {
+            Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Graph.addForbiddenColorsInt failed.")).clone()], metamodelica::sourceInfo!())?;
+            return Err(__try0_err);
+        }
     }
     Ok(())
 }

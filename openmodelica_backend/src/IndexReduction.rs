@@ -149,13 +149,13 @@ pub fn pantelidesIndexReduction(mut inEqns: Arc<metamodelica::List<Arc<metamodel
             unassignedEqns = __try0_o11;
             unassignedStates = __try0_o12;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             ErrorExt::delCheckpoint((literal!("Pantelides")).clone());
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("- IndexReduction.pantelidesIndexReduction failed!")).clone()])?;
             if Flags::isSet(Flags::OPT_DAE_DUMP.clone())? {
                 println!("{}", (literal!("Index reduction done.\n")).clone());
             }
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((changedEqns, continueEqn, osyst, oshared, oass1, oass2, outArg))
@@ -1247,9 +1247,9 @@ fn dynamicStateSelectionWork(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShar
                 osyst = __try0_o7;
                 vars = __try0_o8;
             }
-            Err(_) => {
+            Err(__try0_err) => {
                 Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("- IndexReduction.dynamicStateSelectionWork failed!")).clone()])?;
-                bail!("fail");
+                return Err(__try0_err);
             }
         }
     }
@@ -2453,9 +2453,9 @@ fn processComps4New(mut iSets: Arc<metamodelica::List<Arc<metamodelica::List<i32
         Ok((__try0_o0,)) => {
             outDummyStates = __try0_o0;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("- IndexReduction.processComps4New failed!")).clone()])?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok((outDummyVars, outDummyStates, oStateSets))

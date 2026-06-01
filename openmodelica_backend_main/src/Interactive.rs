@@ -817,9 +817,9 @@ fn extractAllComponentreplacements(mut p: Absyn::Program, mut classPath: Arc<Abs
             comp_repsrules = __try0_o1;
             comps = __try0_o2;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             ErrorExt::delCheckpoint((literal!("Interactive.extractAllComponentreplacements")).clone());
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(comp_reps)
@@ -6364,11 +6364,11 @@ pub fn getInheritedClasses(mut inPath: Arc<Absyn::Path>) -> Result<Arc<metamodel
         Ok((__try0_o0,)) => {
             outPaths = __try0_o0;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             if !(Flags::isSet(Flags::NF_API_NOISE.clone())?) {
                 ErrorExt::rollBack((literal!("getInheritedClasses")).clone());
             }
-            bail!("try/else: outputs not set in else branch");
+            return Err(__try0_err);
         }
     }
     Ok(outPaths)

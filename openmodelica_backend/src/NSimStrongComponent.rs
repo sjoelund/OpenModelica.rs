@@ -1003,19 +1003,31 @@ pub mod Block {
         let mut simCodeIndices: SimCodeIndices = simCodeIndices;
         for mut blck_lst in &*blcks.clone() {
             let mut blck_lst = blck_lst.clone();
-            for mut blck in &*blck_lst.clone() {
-                let mut blck = blck.clone();
-                (linearLoops, nonlinearLoops) = (::match_deref::match_deref! { match &(blck.clone()) {
+            (linearLoops, nonlinearLoops, jacobians, simCodeIndices) = collectAlgebraicLoopsSingle(blck_lst.clone(), linearLoops.clone(), nonlinearLoops.clone(), jacobians.clone(), simCodeIndices.clone(), simcode_map.clone())?;
+        }
+        Ok((linearLoops, nonlinearLoops, jacobians, simCodeIndices))
+    }
+
+    pub fn collectAlgebraicLoopsSingle(mut blck_lst: Arc<metamodelica::List<Arc<Block>>>, mut linearLoops: Arc<metamodelica::List<Arc<Block>>>, mut nonlinearLoops: Arc<metamodelica::List<Arc<Block>>>, mut jacobians: Arc<metamodelica::List<Arc<SimJacobian::SimJacobian>>>, mut simCodeIndices: SimCodeIndices, mut simcode_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<SimVar::SimVar>>>) -> Result<(Arc<metamodelica::List<Arc<Block>>>, Arc<metamodelica::List<Arc<Block>>>, Arc<metamodelica::List<Arc<SimJacobian::SimJacobian>>>, SimCodeIndices)> {
+        let mut linearLoops: Arc<metamodelica::List<Arc<Block>>> = linearLoops;
+        let mut nonlinearLoops: Arc<metamodelica::List<Arc<Block>>> = nonlinearLoops;
+        let mut jacobians: Arc<metamodelica::List<Arc<SimJacobian::SimJacobian>>> = jacobians;
+        let mut simCodeIndices: SimCodeIndices = simCodeIndices;
+        for mut blck in &*blck_lst.clone() {
+            let mut blck = blck.clone();
+            (linearLoops, nonlinearLoops) = (::match_deref::match_deref! { match &(blck.clone()) {
         Deref @ LINEAR { .. } => {
             (metamodelica::cons(blck.clone(), linearLoops.clone()), nonlinearLoops.clone())
         },
         Deref @ NONLINEAR { .. } => {
-            let mut jacobian: Option<Arc<SimJacobian::SimJacobian>> = None;
-            jacobian = NonlinearSystem::getJacobian(var_field!((*blck).system, Block::NONLINEAR).clone());
-            if isSome(jacobian.clone()) {
-                jacobians = metamodelica::cons(Util::getOption(jacobian.clone())?, jacobians.clone());
+            let mut opt_jacobian: Option<Arc<SimJacobian::SimJacobian>> = None;
+            let mut jacobian: Arc<SimJacobian::SimJacobian> = Arc::new(<SimJacobian::SimJacobian as ::std::default::Default>::default());
+            opt_jacobian = NonlinearSystem::getJacobian(var_field!((*blck).system, Block::NONLINEAR).clone());
+            if isSome(opt_jacobian.clone()) {
+                jacobian = Util::getOption(opt_jacobian.clone())?;
+                jacobians = metamodelica::cons(jacobian.clone(), jacobians.clone());
             }
-            assign_variant_field!(blck => Block::NONLINEAR; system = NonlinearSystem::setJacobian(var_field!((*blck).system, Block::NONLINEAR).clone(), jacobian.clone()));
+            assign_variant_field!(blck => Block::NONLINEAR; system = NonlinearSystem::setJacobian(var_field!((*blck).system, Block::NONLINEAR).clone(), opt_jacobian.clone()));
             (linearLoops.clone(), metamodelica::cons(blck.clone(), nonlinearLoops.clone()))
         },
         _ => {
@@ -1023,7 +1035,6 @@ pub mod Block {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-            }
         }
         Ok((linearLoops, nonlinearLoops, jacobians, simCodeIndices))
     }

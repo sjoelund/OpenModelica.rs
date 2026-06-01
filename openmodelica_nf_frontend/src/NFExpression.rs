@@ -1527,9 +1527,9 @@ pub fn integerValue(mut exp: Arc<NFExpression>) -> Result<i32> {
         Ok((__try0_o0,)) => {
             value = __try0_o0;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpression.integerValue")); __mm_s.push_str(&*literal!(" failed because expression is not an integer:\n")); __mm_s.push_str(&*toString(exp.clone())?); ArcStr::from(__mm_s) }).clone()])?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(value)
@@ -1698,9 +1698,9 @@ pub fn getIntegerRange(mut range: Arc<NFExpression>, mut resize: bool) -> Result
                     step = __try0_o1;
                     stop = __try0_o2;
                 }
-                Err(_) => {
+                Err(__try0_err) => {
                     Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpression.getIntegerRange")); __mm_s.push_str(&*literal!(" range could not be parsed to integer values: ")); __mm_s.push_str(&*toString(range.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
-                    bail!("fail");
+                    return Err(__try0_err);
                 }
             }
             (start.clone(), step.clone(), stop.clone())
@@ -5420,9 +5420,9 @@ pub fn makeOperatorRecordZero(mut recordNode: Arc<InstNode::InstNode>) -> Result
             op_node = __try0_o1;
             zeroExp = __try0_o2;
         }
-        Err(_) => {
+        Err(__try0_err) => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpression.makeOperatorRecordZero")); __mm_s.push_str(&*literal!(" failed for: ")); __mm_s.push_str(&*InstNode::toString(recordNode.clone())?); ArcStr::from(__mm_s) }).clone()])?;
-            bail!("fail");
+            return Err(__try0_err);
         }
     }
     Ok(zeroExp)
