@@ -503,7 +503,7 @@ fn frontEndFront(mut absynProgram: Absyn::Program, mut classPath: Arc<Path>) -> 
     let mut name: ArcStr = arcstr::literal!("");
     let mut inst_cls: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut cache: Arc<metamodelica::List<((Absyn::Program, Arc<Path>), (Arc<metamodelica::List<Arc<SCode::Element>>>, ArcStr, Arc<InstNode::InstNode>))>> = metamodelica::nil();
-    cache = openmodelica_frontend::Globals::instNFInstCacheIndex.with(|__root| __root.borrow().clone());
+    cache = crate::Globals::instNFInstCacheIndex.with(|__root| __root.borrow().clone());
     if !(cache.clone().is_empty()) {
         for mut i in &*cache.clone() {
             let mut i = i.clone();
@@ -513,12 +513,12 @@ fn frontEndFront(mut absynProgram: Absyn::Program, mut classPath: Arc<Path>) -> 
                     return Ok((program.clone(), name.clone(), inst_cls.clone()));
                 }
                 cache = metamodelica::nil();
-                { let __v = cache.clone(); openmodelica_frontend::Globals::instNFInstCacheIndex.with(|__root| *__root.borrow_mut() = __v) };
+                { let __v = cache.clone(); crate::Globals::instNFInstCacheIndex.with(|__root| *__root.borrow_mut() = __v) };
                 break;
             } else {
                 if AbsynUtil::pathEqual(classPath.clone(), Util::tuple22(Util::tuple21(i.clone()))) {
                     cache = metamodelica::nil();
-                    { let __v = cache.clone(); openmodelica_frontend::Globals::instNFInstCacheIndex.with(|__root| *__root.borrow_mut() = __v) };
+                    { let __v = cache.clone(); crate::Globals::instNFInstCacheIndex.with(|__root| *__root.borrow_mut() = __v) };
                     break;
                 }
             }
@@ -529,7 +529,7 @@ fn frontEndFront(mut absynProgram: Absyn::Program, mut classPath: Arc<Path>) -> 
         cache = List::firstN(cache.clone(), 10)?;
     }
     cache = metamodelica::cons(((absynProgram.clone(), classPath.clone()), (program.clone(), name.clone(), inst_cls.clone())), cache.clone());
-    { let __v = cache.clone(); openmodelica_frontend::Globals::instNFInstCacheIndex.with(|__root| *__root.borrow_mut() = __v) };
+    { let __v = cache.clone(); crate::Globals::instNFInstCacheIndex.with(|__root| *__root.borrow_mut() = __v) };
     Ok((program, name, inst_cls))
 }
 
@@ -541,7 +541,7 @@ fn mkTop(mut absynProgram: Absyn::Program, mut name: ArcStr) -> Result<(Arc<meta
     let mut placementProgram: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
     let mut cache: Arc<metamodelica::List<(Absyn::Program, (Arc<metamodelica::List<Arc<SCode::Element>>>, Arc<InstNode::InstNode>))>> = metamodelica::nil();
     let mut update: bool = true;
-    cache = openmodelica_frontend::Globals::instNFNodeCacheIndex.with(|__root| __root.borrow().clone());
+    cache = crate::Globals::instNFNodeCacheIndex.with(|__root| __root.borrow().clone());
     if !(cache.clone().is_empty()) {
         if referenceEq(&absynProgram.clone(),&Util::tuple21(listHead(cache.clone())?)) {
             (program, top) = Util::tuple22(listHead(cache.clone())?);
@@ -550,7 +550,7 @@ fn mkTop(mut absynProgram: Absyn::Program, mut name: ArcStr) -> Result<(Arc<meta
         } else {
             update = true;
             cache = metamodelica::nil();
-            { let __v = cache.clone(); openmodelica_frontend::Globals::instNFNodeCacheIndex.with(|__root| *__root.borrow_mut() = __v) };
+            { let __v = cache.clone(); crate::Globals::instNFNodeCacheIndex.with(|__root| *__root.borrow_mut() = __v) };
         }
     }
     if update.clone() {
@@ -565,7 +565,7 @@ fn mkTop(mut absynProgram: Absyn::Program, mut name: ArcStr) -> Result<(Arc<meta
             execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFApi.mkTop(")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
         }
         cache = list![(absynProgram.clone(), (program.clone(), top.clone()))];
-        { let __v = cache.clone(); openmodelica_frontend::Globals::instNFNodeCacheIndex.with(|__root| *__root.borrow_mut() = __v) };
+        { let __v = cache.clone(); crate::Globals::instNFNodeCacheIndex.with(|__root| *__root.borrow_mut() = __v) };
     }
     Ok((program, top))
 }
@@ -621,7 +621,7 @@ fn frontEndLookup(mut absynProgram: Absyn::Program, mut classPath: Arc<Path>) ->
     let mut name: ArcStr = arcstr::literal!("");
     let mut expanded_cls: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut cache: Arc<metamodelica::List<((Absyn::Program, Arc<Path>), (Arc<metamodelica::List<Arc<SCode::Element>>>, ArcStr, Arc<InstNode::InstNode>))>> = metamodelica::nil();
-    cache = openmodelica_frontend::Globals::instNFLookupCacheIndex.with(|__root| __root.borrow().clone());
+    cache = crate::Globals::instNFLookupCacheIndex.with(|__root| __root.borrow().clone());
     if !(cache.clone().is_empty()) {
         for mut i in &*cache.clone() {
             let mut i = i.clone();
@@ -631,12 +631,12 @@ fn frontEndLookup(mut absynProgram: Absyn::Program, mut classPath: Arc<Path>) ->
                     return Ok((program.clone(), name.clone(), expanded_cls.clone()));
                 }
                 cache = metamodelica::nil();
-                { let __v = cache.clone(); openmodelica_frontend::Globals::instNFLookupCacheIndex.with(|__root| *__root.borrow_mut() = __v) };
+                { let __v = cache.clone(); crate::Globals::instNFLookupCacheIndex.with(|__root| *__root.borrow_mut() = __v) };
                 break;
             } else {
                 if AbsynUtil::pathEqual(classPath.clone(), Util::tuple22(Util::tuple21(i.clone()))) {
                     cache = metamodelica::nil();
-                    { let __v = cache.clone(); openmodelica_frontend::Globals::instNFLookupCacheIndex.with(|__root| *__root.borrow_mut() = __v) };
+                    { let __v = cache.clone(); crate::Globals::instNFLookupCacheIndex.with(|__root| *__root.borrow_mut() = __v) };
                     break;
                 }
             }
@@ -647,7 +647,7 @@ fn frontEndLookup(mut absynProgram: Absyn::Program, mut classPath: Arc<Path>) ->
         cache = List::firstN(cache.clone(), 10)?;
     }
     cache = metamodelica::cons(((absynProgram.clone(), classPath.clone()), (program.clone(), name.clone(), expanded_cls.clone())), cache.clone());
-    { let __v = cache.clone(); openmodelica_frontend::Globals::instNFLookupCacheIndex.with(|__root| *__root.borrow_mut() = __v) };
+    { let __v = cache.clone(); crate::Globals::instNFLookupCacheIndex.with(|__root| *__root.borrow_mut() = __v) };
     Ok((program, name, expanded_cls))
 }
 
