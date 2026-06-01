@@ -3293,6 +3293,65 @@ pub enum TypedStmt {
     Todo(String),
 }
 
+/// True iff `comment` carries the boolean annotation `name=true`.
+///
+/// Mirrors `SCodeUtil.commentHasBooleanNamedAnnotation`: an Absyn annotation is
+/// a list of `MODIFICATION` element-args; we look for one whose path is the
+/// bare identifier `name` bound to the literal `true` (`name = true`).
+pub(crate) fn comment_has_boolean_named_annotation(
+    comment: &Option<Arc<Absyn::Comment>>,
+    name: &str,
+) -> bool {
+    let Some(comment) = comment else { return false };
+    let Some(annotation) = &comment.annotation_ else { return false };
+    (&*annotation.elementArgs).into_iter().any(|arg| {
+        let Absyn::ElementArg::MODIFICATION { path, modification, .. } = arg.as_ref() else {
+            return false;
+        };
+        if !matches!(path.as_ref(), Absyn::Path::IDENT { name: n } if n == name) {
+            return false;
+        }
+        let Some(modification) = modification else { return false };
+        matches!(
+            modification.eqMod.as_ref(),
+            Absyn::EqMod::EQMOD { exp, .. }
+                if matches!(exp.as_ref(), Absyn::Exp::BOOL { value: true })
+        )
+    })
+}
+
+/// Lower one algorithm item, appending the resulting statement(s) to `out`.
+///
+/// Almost every item lowers to a single statement. The exception is a
+/// `try`/`else` block annotated with `__OpenModelica_stackOverflowCheckpoint=true`:
+/// that annotation requests a stack-overflow recovery handler (the `else`
+/// branch) which we deliberately do not model. We splice the `try` body
+/// straight into the enclosing statement list — in the *same* scope, with no
+/// `else` handler — so the code behaves exactly as if the body had been written
+/// without any `try` wrapper. A nested annotated try (none exist today, but the
+/// recursion costs nothing) is inlined the same way.
+fn infer_stmt_into<'a>(
+    out: &mut Vec<TypedStmt>,
+    item: &Absyn::AlgorithmItem,
+    env: &mut HashMap<String, Ty>,
+    top_level: &'a BTreeMap<String, NameNode<'a>>,
+    pkg_prefix: &str,
+    type_vars: &[String],
+) {
+    if let Absyn::AlgorithmItem::ALGORITHMITEM { algorithm_, comment, .. } = item
+        && let Absyn::Algorithm::ALG_TRY { body, .. } = algorithm_.as_ref()
+        && comment_has_boolean_named_annotation(comment, "__OpenModelica_stackOverflowCheckpoint")
+    {
+        for it in (&**body).into_iter() {
+            infer_stmt_into(out, &**it, env, top_level, pkg_prefix, type_vars);
+        }
+        return;
+    }
+    if let Some(s) = infer_stmt(item, env, top_level, pkg_prefix, type_vars) {
+        out.push(s);
+    }
+}
+
 /// Infer a list of algorithm items into typed statements, threading the env so that
 /// each pattern-assign extends bindings visible to subsequent stmts.
 pub fn infer_stmts<'a>(
@@ -3304,9 +3363,7 @@ pub fn infer_stmts<'a>(
 ) -> Vec<TypedStmt> {
     let mut out = Vec::new();
     for it in items {
-        if let Some(s) = infer_stmt(&**it, env, top_level, pkg_prefix, type_vars) {
-            out.push(s);
-        }
+        infer_stmt_into(&mut out, &**it, env, top_level, pkg_prefix, type_vars);
     }
     out
 }
@@ -3476,9 +3533,7 @@ fn infer_stmts_list<'a>(
 ) -> Vec<TypedStmt> {
     let mut out = Vec::new();
     for it in (&**items).into_iter() {
-        if let Some(s) = infer_stmt(&**it, env, top_level, pkg_prefix, type_vars) {
-            out.push(s);
-        }
+        infer_stmt_into(&mut out, &**it, env, top_level, pkg_prefix, type_vars);
     }
     out
 }
