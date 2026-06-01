@@ -1077,10 +1077,110 @@ pub fn reopenStandardStream(_stream: i32, _filename: ArcStr) -> bool {
     todo!("System.reopenStandardStream: freopen(stdin/stdout/stderr) not yet ported")
 }
 
-pub fn iconv(_string: ArcStr, _from: ArcStr, _to: ArcStr) -> ArcStr {
-    // GNU iconv wrapper. We're all-UTF-8 in the Rust port, so a real
-    // implementation only matters when callers ask for legacy charsets.
-    todo!("System.iconv: charset conversion not yet ported")
+pub fn iconv(string: ArcStr, from: ArcStr, to: ArcStr) -> ArcStr {
+    // Port of `SystemImpl__iconv` (systemimpl.c): reinterpret the bytes of
+    // `string` as being encoded in `from` and convert them to `to`.
+    //
+    // In the C runtime MetaModelica strings are raw byte arrays, so iconv can
+    // both consume and produce arbitrary (non-UTF-8) byte sequences. In this
+    // port strings are `ArcStr`, i.e. always valid UTF-8, which has two
+    // consequences:
+    //   * the input bytes we hand to the decoder are exactly this string's
+    //     UTF-8 bytes, and
+    //   * the only `to` whose output is representable as an `ArcStr` is one
+    //     whose byte stream is itself valid UTF-8 (UTF-8 proper, or an
+    //     ASCII-only result of some other charset).
+    // This matches real usage: the only non-trivial caller is
+    // `loadString`/`loadFile`, which always converts *to* "UTF-8".
+    //
+    // On any failure the C function returns "" after emitting a scripting
+    // error via `c_add_message`; we mirror both behaviours.
+    use encoding_rs::{Encoding, UTF_8};
+
+    // WHATWG label lookup. Case-insensitive and alias-aware ("utf8",
+    // "iso-8859-1", "latin1", …), mirroring iconv_open's tolerant name
+    // matching. An unknown charset is the iconv_open == (iconv_t)-1 case.
+    let Some(from_enc) = Encoding::for_label(from.as_bytes()) else {
+        return iconv_failed(&string, &from, &to, "unknown source character set");
+    };
+    let Some(to_enc) = Encoding::for_label(to.as_bytes()) else {
+        return iconv_failed(&string, &from, &to, "unknown target character set");
+    };
+
+    // UTF-8 → UTF-8: the C code validates the input and returns it unchanged.
+    // An `ArcStr` is already valid UTF-8, so this is unconditionally a no-op.
+    if from_enc == UTF_8 && to_enc == UTF_8 {
+        return string;
+    }
+
+    // Decode the input bytes from `from` into Unicode. `iconv` without
+    // `//IGNORE` fails on malformed input; `decode_without_bom_handling`
+    // reports that via `had_errors` (and, like iconv, performs no BOM sniffing
+    // that would override the requested `from`).
+    let (decoded, had_errors) = from_enc.decode_without_bom_handling(string.as_bytes());
+    if had_errors {
+        return iconv_failed(&string, &from, &to, "invalid input sequence");
+    }
+
+    if to_enc == UTF_8 {
+        return ArcStr::from(decoded.as_ref());
+    }
+
+    // Encode Unicode into the target charset. Unmappable characters make iconv
+    // fail rather than substitute; `encode` flags them via `had_unmappable`.
+    let (encoded, _enc, had_unmappable) = to_enc.encode(&decoded);
+    if had_unmappable {
+        return iconv_failed(&string, &from, &to, "character not representable in target set");
+    }
+    // The target bytes must be valid UTF-8 to live in an `ArcStr`. Most
+    // non-UTF-8 charsets emit high bytes for non-ASCII input, so such a result
+    // is not representable in this all-UTF-8 port. C would hand back those raw
+    // bytes in a byte-array `modelica_string`; we cannot, so we fail rather
+    // than corrupt the string.
+    match std::str::from_utf8(&encoded) {
+        Ok(s) => ArcStr::from(s),
+        Err(_) => iconv_failed(&string, &from, &to, "result is not representable as UTF-8"),
+    }
+}
+
+/// Emit the scripting diagnostic for a failed `iconv` conversion and return the
+/// empty string, exactly as `SystemImpl__iconv` does on every failure path.
+///
+/// The shape mirrors the C message `iconv("%s",from="%s",to="%s") failed: %s`;
+/// the first token is the input rendered through `iconv_ascii_fallback` (a
+/// best-effort ASCII view, like C's `SystemImpl__iconv__ascii`) so the user
+/// gets a hint of the offending content without us echoing raw bytes.
+fn iconv_failed(string: &str, from: &str, to: &str, reason: &str) -> ArcStr {
+    let msg = crate::ErrorTypes::Message {
+        id: -1,
+        ty: crate::ErrorTypes::MessageType::SCRIPTING,
+        severity: crate::ErrorTypes::Severity::ERROR,
+        message: crate::Gettext::TranslatableContent::gettext {
+            msgid: literal!("iconv(\"%s\",from=\"%s\",to=\"%s\") failed: %s"),
+        },
+    };
+    let tokens = metamodelica::list![
+        iconv_ascii_fallback(string),
+        ArcStr::from(from),
+        ArcStr::from(to),
+        ArcStr::from(reason),
+    ];
+    // `addMessage` only returns `Err` if the error machinery itself fails;
+    // there is nothing useful to do with that here (and `iconv` is infallible),
+    // so it is dropped — the C runtime likewise cannot surface such a failure.
+    let _ = crate::Error::addMessage(msg, tokens);
+    literal!("")
+}
+
+/// Port of `SystemImpl__iconv__ascii`: every byte with the high bit set becomes
+/// `'?'`, the rest pass through. Used only to render a readable hint of the
+/// failing input in the diagnostic above.
+fn iconv_ascii_fallback(string: &str) -> ArcStr {
+    let mut out = String::with_capacity(string.len());
+    for &b in string.as_bytes() {
+        out.push(if b & 0x80 != 0 { '?' } else { b as char });
+    }
+    ArcStr::from(out)
 }
 
 pub fn snprintff(format: ArcStr, maxlen: i32, val: metamodelica::Real) -> Result<ArcStr> {
@@ -1471,4 +1571,48 @@ pub fn waitForInput() {
     let mut buf = [0u8; 1];
     use std::io::Read as _;
     let _ = std::io::stdin().read(&mut buf);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn iconv_utf8_to_utf8_is_identity() {
+        // Valid UTF-8 in, UTF-8 out: returned unchanged (case-insensitive labels).
+        let s = ArcStr::from("héllo αβγ");
+        assert_eq!(iconv(s.clone(), literal!("UTF-8"), literal!("UTF-8")), s);
+        assert_eq!(iconv(s.clone(), literal!("utf8"), literal!("UTF-8")), s);
+    }
+
+    #[test]
+    fn iconv_latin1_to_utf8() {
+        // The UTF-8 byte sequence C3 A9 ("é") reinterpreted as ISO-8859-1 is the
+        // two characters 'Ã' (C3) and '©' (A9), which become this UTF-8 string.
+        let input = ArcStr::from("é"); // bytes: 0xC3 0xA9
+        let out = iconv(input, literal!("ISO-8859-1"), literal!("UTF-8"));
+        assert_eq!(out.as_str(), "Ã©");
+    }
+
+    #[test]
+    fn iconv_unknown_charset_returns_empty() {
+        let out = iconv(ArcStr::from("abc"), literal!("NO-SUCH-CHARSET"), literal!("UTF-8"));
+        assert_eq!(out.as_str(), "");
+    }
+
+    #[test]
+    fn iconv_ascii_roundtrips_through_legacy_target() {
+        // Pure-ASCII content survives a non-UTF-8 target because the encoded
+        // bytes stay valid UTF-8.
+        let out = iconv(ArcStr::from("plain ascii"), literal!("UTF-8"), literal!("ISO-8859-1"));
+        assert_eq!(out.as_str(), "plain ascii");
+    }
+
+    #[test]
+    fn iconv_nonrepresentable_target_returns_empty() {
+        // Encoding non-ASCII to a non-UTF-8 charset yields high bytes that are
+        // not valid UTF-8, so the all-UTF-8 port cannot represent the result.
+        let out = iconv(ArcStr::from("é"), literal!("UTF-8"), literal!("ISO-8859-1"));
+        assert_eq!(out.as_str(), "");
+    }
 }
