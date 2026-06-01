@@ -132,10 +132,21 @@ thread_local! {
 
     /// Index 17 — Compiler flags.
     ///
-    /// Initialised by `FlagsUtil.loadFlags`; read by `Flags.getFlags`.
-    /// Defaults to `Flag::NO_FLAGS` before initialisation.
-    pub static flagsIndex: RefCell<crate::Flags::Flag> =
-        const { RefCell::new(crate::Flags::Flag::NO_FLAGS) };
+    /// Read by `Flags.getFlags`; written by `FlagsUtil.saveFlags`.
+    ///
+    /// In MetaModelica this root starts unset, so `Flags.getFlags`
+    /// (`getGlobalRoot`) *throws* until `FlagsUtil.loadFlags` lazily creates and
+    /// stores the defaults on first use. MetaModelica has no way to initialise a
+    /// global root statically; the Rust port does, so we seed the slot eagerly
+    /// with the same defaults `loadFlags` would build (`createDebugFlags` /
+    /// `createConfigFlags`). `getFlags` then always returns a valid `FLAGS(..)`
+    /// and stays infallible — the lazy-init dance is unnecessary here.
+    pub static flagsIndex: RefCell<crate::Flags::Flag> = RefCell::new(
+        crate::Flags::Flag::FLAGS {
+            debugFlags: crate::FlagsUtil::createDebugFlags(),
+            configFlags: crate::FlagsUtil::createConfigFlags(),
+        }
+    );
 
     // Index 18 — builtinGraphIndex
     // Declared in openmodelica_frontend::Globals.
