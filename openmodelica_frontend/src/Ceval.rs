@@ -172,7 +172,7 @@ fn cevalWork2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ DAE::Exp::CODE { code: Deref @ Absyn::CodeNode::C_ELEMENT { element: elt }, .. }, r#impl, msg) => {
-                    let mut elt_1: Arc<Absyn::Element>;
+                    let mut elt_1: Arc<Absyn::Element> = Arc::new(<Absyn::Element as ::std::default::Default>::default());
                     let mut cache = (*cache).clone();
                     (cache, elt_1) = cevalAstElt(cache.clone(), env.clone(), elt.clone(), r#impl.clone(), msg.clone())?;
                     Ok((cache.clone(), Arc::new(Values::Value::CODE { A: Arc::new(Absyn::CodeNode::C_ELEMENT { element: elt_1.clone() }) })))
@@ -1483,7 +1483,7 @@ pub fn cevalIfConstant(mut cache: FCore::Cache, mut inEnv: FCore::Graph, mut exp
 
 fn cevalWholedimRetCall(mut inExp: Arc<DAE::Exp>, mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inInfo: SourceInfo, mut numIter: i32) -> Result<(Arc<DAE::Exp>, DAE::Properties)> {
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProp: DAE::Properties;
+    let mut outProp: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outExp, outProp) = (::match_deref::match_deref! { match &(inExp.clone()) {
         e @ Deref @ DAE::Exp::CALL { attr: attr @ Deref @ DAE::CallAttributes { ty: Deref @ DAE::Type::T_ARRAY { dims, .. }, .. }, expLst: el, path: p } => {
             let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
@@ -3369,7 +3369,7 @@ fn catDimension2(mut inValuesValueLstLst: Arc<metamodelica::List<Arc<metamodelic
                     let mut first_lst_2: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Values::Value>>>>> = metamodelica::nil();
                     l_lst = listHead(lst.clone())?;
                     let 1 = ((l_lst.clone().len() as i32)) else { bail!("pattern mismatch") };
-                    first_lst = List::map(lst.clone(), Arc::new(listHead.clone()));
+                    first_lst = List::map(lst.clone(), (std::sync::Arc::new(listHead) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>));
                     first_lst_1 = catDimension(first_lst.clone(), dim.clone())?;
                     first_lst_2 = List::map(first_lst_1.clone(), std::sync::Arc::new(fnptr!(List::create, _)));
                     Ok(first_lst_2.clone())
@@ -3385,8 +3385,8 @@ fn catDimension2(mut inValuesValueLstLst: Arc<metamodelica::List<Arc<metamodelic
                     let mut rest: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Values::Value>>>>> = metamodelica::nil();
                     let mut rest_1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Values::Value>>>>> = metamodelica::nil();
                     let mut res: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Values::Value>>>>> = metamodelica::nil();
-                    first_lst = List::map(lst.clone(), Arc::new(listHead.clone()));
-                    rest = List::map(lst.clone(), Arc::new(listRest.clone()));
+                    first_lst = List::map(lst.clone(), (std::sync::Arc::new(listHead) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>));
+                    rest = List::map(lst.clone(), (std::sync::Arc::new(listRest) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>));
                     first_lst_1 = catDimension(first_lst.clone(), dim.clone())?;
                     rest_1 = catDimension2(rest.clone(), dim.clone())?;
                     res = List::threadMap(rest_1.clone(), first_lst_1.clone(), std::sync::Arc::new(fnptr!(List::consr, _, _)));
@@ -5990,7 +5990,7 @@ fn cevalAstExpListList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
 
 pub fn cevalAstElt(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inElement: Arc<Absyn::Element>, mut inBoolean: bool, mut inMsg: Absyn::Msg) -> Result<(FCore::Cache, Arc<Absyn::Element>)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outElement: Arc<Absyn::Element>;
+    let mut outElement: Arc<Absyn::Element> = Arc::new(<Absyn::Element as ::std::default::Default>::default());
     (outCache, outElement) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inElement.clone(), inBoolean.clone(), inMsg.clone())) {
         (cache, env, Deref @ Absyn::Element::ELEMENT { constrainClass: c, info: info @ SourceInfo { .. }, specification: Deref @ Absyn::ElementSpec::COMPONENTS { components: citems, typeSpec: tp, attributes: attr }, innerOuter: io, redeclareKeywords: r, finalPrefix: f }, r#impl, msg) => {
             let mut citems_1: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>> = metamodelica::nil();

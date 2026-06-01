@@ -55,6 +55,9 @@ pub enum UnitCheckResult {
         u2: SpecUnit,
     },
 }
+impl Default for UnitCheckResult {
+    fn default() -> Self { Self::CONSISTENT }
+}
 pub use self::UnitCheckResult::{CONSISTENT,INCONSISTENT};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -177,6 +180,14 @@ pub enum UnitTerm {
         /// for proper error reporting
         origExp: Arc<DAE::Exp>,
     },
+}
+impl Default for UnitTerm {
+    fn default() -> Self {
+        Self::LOC {
+            loc: Default::default(),
+            origExp: Default::default(),
+        }
+    }
 }
 pub use self::UnitTerm::{ADD,SUB,MUL,DIV,EQN,LOC,POW};
 

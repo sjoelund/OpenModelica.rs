@@ -113,6 +113,9 @@ pub mod TypingError {
             upperBound: i32,
         },
     }
+    impl Default for TypingError {
+        fn default() -> Self { Self::NO_ERROR }
+    }
     pub use self::TypingError::{NO_ERROR,OUT_OF_BOUNDS};
     pub fn isError(mut error: Arc<TypingError>) -> bool {
         let mut isError: bool = false;

@@ -2747,14 +2747,14 @@ pub fn dumpConnectorType(mut inConnectorType: Arc<DAE::ConnectorType>) -> ArcStr
 }
 
 pub fn dumpGraphviz(mut dae: DAE::DAElist) -> Result<()> {
-    let mut r: Arc<Graphviz::Node>;
+    let mut r: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
     r = buildGraphviz(dae.clone())?;
     Graphviz::dump(r.clone())?;
     Ok(())
 }
 
 fn buildGraphviz(mut inDAElist: DAE::DAElist) -> Result<Arc<Graphviz::Node>> {
-    let mut outNode: Arc<Graphviz::Node>;
+    let mut outNode: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
     outNode = (match inDAElist.clone() {
         DAE::DAElist { elementLst: ref els } => {
             let mut vars: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
@@ -2780,7 +2780,7 @@ fn buildGrList(mut inElementLst: Arc<metamodelica::List<Arc<DAE::Element>>>) -> 
             metamodelica::nil()
         },
         Deref @ metamodelica::List::Cons { head: el, tail: rest } => {
-            let mut node: Arc<Graphviz::Node>;
+            let mut node: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
             let mut nodelist: Arc<metamodelica::List<Arc<Graphviz::Node>>> = metamodelica::nil();
             node = buildGrElement(el.clone())?;
             nodelist = buildGrList(rest.clone())?;
@@ -2901,7 +2901,7 @@ fn printExpStrSpecial(mut inExp: Arc<DAE::Exp>) -> Result<ArcStr> {
 }
 
 fn buildGrElement(mut inElement: Arc<DAE::Element>) -> Result<Arc<Graphviz::Node>> {
-    let mut outNode: Arc<Graphviz::Node>;
+    let mut outNode: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
     outNode = (::match_deref::match_deref! { match &(inElement.clone()) {
         Deref @ DAE::Element::VAR { binding: None, kind: vk, componentRef: cr, .. } => {
             let mut crstr: ArcStr = arcstr::literal!("");

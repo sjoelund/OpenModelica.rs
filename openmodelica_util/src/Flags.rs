@@ -159,6 +159,9 @@ pub enum Flag {
     },
     NO_FLAGS,
 }
+impl Default for Flag {
+    fn default() -> Self { Self::NO_FLAGS }
+}
 pub use self::Flag::{FLAGS,NO_FLAGS};
 
 /// Specifies valid options for a flag.

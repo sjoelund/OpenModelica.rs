@@ -188,7 +188,7 @@ pub fn inlineStartAttribute(mut inVariableAttributesOption: Option<Arc<DAE::Vari
 pub fn inlineCallsInFunctions(mut inElementList: Arc<metamodelica::List<DAE::Function>>, mut inFunctions: Functiontuple) -> Result<Arc<metamodelica::List<DAE::Function>>> {
     let mut outElementList: Arc<metamodelica::List<DAE::Function>> = metamodelica::nil();
     let mut body: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-    let mut fn_def: DAE::FunctionDefinition;
+    let mut fn_def: DAE::FunctionDefinition = <DAE::FunctionDefinition as ::std::default::Default>::default();
     let mut fn_defs: Arc<metamodelica::List<DAE::FunctionDefinition>> = metamodelica::nil();
     outElementList = ({
         let mut __acc: Arc<metamodelica::List<DAE::Function>> = metamodelica::nil();
@@ -2303,7 +2303,7 @@ pub fn printInlineTypeStr(mut it: DAE::InlineType) -> Result<ArcStr> {
 }
 
 pub fn simplifyAndInlineEquationExp(mut inExp: Arc<DAE::EquationExp>, mut fns: Functiontuple, mut inSource: Arc<DAE::ElementSource>) -> Result<(Arc<DAE::EquationExp>, Arc<DAE::ElementSource>)> {
-    let mut exp: Arc<DAE::EquationExp>;
+    let mut exp: Arc<DAE::EquationExp> = Arc::new(<DAE::EquationExp as ::std::default::Default>::default());
     let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
     (exp, source) = ExpressionSimplify::simplifyAddSymbolicOperation(inExp.clone(), inSource.clone())?;
     (exp, source) = inlineEquationExp(exp.clone(), (std::sync::Arc::new({ let __pe_b2 = fns.clone(); move |__pe_a0, __pe_a1| inlineCall(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Statement>>>)> + 'static>), source.clone())?;
@@ -2311,7 +2311,7 @@ pub fn simplifyAndInlineEquationExp(mut inExp: Arc<DAE::EquationExp>, mut fns: F
 }
 
 pub fn simplifyAndForceInlineEquationExp(mut inExp: Arc<DAE::EquationExp>, mut fns: Functiontuple, mut inSource: Arc<DAE::ElementSource>) -> Result<(Arc<DAE::EquationExp>, Arc<DAE::ElementSource>)> {
-    let mut exp: Arc<DAE::EquationExp>;
+    let mut exp: Arc<DAE::EquationExp> = Arc::new(<DAE::EquationExp as ::std::default::Default>::default());
     let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
     (exp, source) = ExpressionSimplify::simplifyAddSymbolicOperation(inExp.clone(), inSource.clone())?;
     (exp, source) = inlineEquationExp(exp.clone(), (std::sync::Arc::new({ let __pe_b2 = fns.clone(); let __pe_b3 = Arc::new(openmodelica_ast_collections::AvlSetPath::Tree::EMPTY); move |__pe_a0, __pe_a1| forceInlineCall(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Statement>>>)> + 'static>), source.clone())?;
@@ -2323,13 +2323,13 @@ pub fn inlineEquationExp(mut inExp: Arc<DAE::EquationExp>, mut r#fn: Arc<dyn ::s
 
     pub type Functiontuple = (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>);
 
-    let mut outExp: Arc<DAE::EquationExp>;
+    let mut outExp: Arc<DAE::EquationExp> = Arc::new(<DAE::EquationExp as ::std::default::Default>::default());
     let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
     (outExp, source) = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::EquationExp::PARTIAL_EQUATION { exp: e } => {
             let mut changed: bool = false;
             let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut eq2: Arc<DAE::EquationExp>;
+            let mut eq2: Arc<DAE::EquationExp> = Arc::new(<DAE::EquationExp as ::std::default::Default>::default());
             (e_1, _) = Expression::traverseExpBottomUp(e.clone(), r#fn.clone(), metamodelica::nil())?;
             changed = !(referenceEq(&e.clone(),&e_1.clone()));
             eq2 = Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e_1.clone() });
@@ -2340,7 +2340,7 @@ pub fn inlineEquationExp(mut inExp: Arc<DAE::EquationExp>, mut r#fn: Arc<dyn ::s
         Deref @ DAE::EquationExp::RESIDUAL_EXP { exp: e } => {
             let mut changed: bool = false;
             let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut eq2: Arc<DAE::EquationExp>;
+            let mut eq2: Arc<DAE::EquationExp> = Arc::new(<DAE::EquationExp as ::std::default::Default>::default());
             (e_1, _) = Expression::traverseExpBottomUp(e.clone(), r#fn.clone(), metamodelica::nil())?;
             changed = !(referenceEq(&e.clone(),&e_1.clone()));
             eq2 = Arc::new(DAE::EquationExp::RESIDUAL_EXP { exp: e_1.clone() });
@@ -2352,7 +2352,7 @@ pub fn inlineEquationExp(mut inExp: Arc<DAE::EquationExp>, mut r#fn: Arc<dyn ::s
             let mut changed: bool = false;
             let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut eq2: Arc<DAE::EquationExp>;
+            let mut eq2: Arc<DAE::EquationExp> = Arc::new(<DAE::EquationExp as ::std::default::Default>::default());
             (e1_1, _) = Expression::traverseExpBottomUp(e1.clone(), r#fn.clone(), metamodelica::nil())?;
             (e2_1, _) = Expression::traverseExpBottomUp(e2.clone(), r#fn.clone(), metamodelica::nil())?;
             changed = !(referenceEq(&e1.clone(),&e1_1.clone()) && referenceEq(&e2.clone(),&e2_1.clone()));

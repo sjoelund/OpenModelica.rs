@@ -1018,7 +1018,7 @@ fn solveUniqueFindInstructions(mut exp: Arc<Expression::NFExpression>, mut cref:
     let mut status: Status = Status::EXPLICIT.clone();
     let mut substExp: Arc<Expression::NFExpression> = BVariable::toExpression(Pointer::create(BVariable::SUBST_VARIABLE().clone()));
     let mut ty: Arc<Type::NFType> = ComponentRef::getSubscriptedType(cref.clone(), true)?;
-    let mut call: Arc<Call::NFCall>;
+    let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     if crefFound.clone() {
         if Expression::containsCref(exp.clone(), cref.clone())? {
             status = Status::IMPLICIT.clone();
@@ -1290,7 +1290,7 @@ fn solveUniqueFindInstructionsCallOneArg(mut ty: Arc<Type::NFType>, mut substExp
     let mut status: Status = Status::UNPROCESSED;
     let mut crefFoundInRecursion: bool = false;
     let mut argExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut call: Arc<Call::NFCall>;
+    let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut name: ArcStr = arcstr::literal!("");
     let () = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { .. } } if (List::hasOneElement(Call::arguments(var_field!((*exp).call, Expression::NFExpression::CALL).clone())?)) => {
@@ -1347,7 +1347,7 @@ fn solveUniqueFindInstructionsCallTwoArgs(mut ty: Arc<Type::NFType>, mut substEx
     let mut crefFoundInRecursion: bool = false;
     let mut argExp1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut argExp2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut call: Arc<Call::NFCall>;
+    let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut name: ArcStr = arcstr::literal!("");
     let () = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { .. } } if ((Call::arguments(var_field!((*exp).call, Expression::NFExpression::CALL).clone())?.len() as i32) == 2) => {

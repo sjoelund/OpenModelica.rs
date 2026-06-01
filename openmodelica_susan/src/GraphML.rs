@@ -125,6 +125,18 @@ pub enum GraphInfo {
         graphEdgeKey: ArcStr,
     },
 }
+impl Default for GraphInfo {
+    fn default() -> Self {
+        Self::GRAPHINFOARR {
+            graphs: Default::default(),
+            nodes: Default::default(),
+            edges: Default::default(),
+            attributes: Default::default(),
+            graphNodeKey: Default::default(),
+            graphEdgeKey: Default::default(),
+        }
+    }
+}
 pub use self::GraphInfo::{GRAPHINFO,GRAPHINFOARR};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -166,6 +178,16 @@ pub enum Node {
         isFolded: bool,
         header: ArcStr,
     },
+}
+impl Default for Node {
+    fn default() -> Self {
+        Self::GROUPNODE {
+            id: Default::default(),
+            internalGraphIdx: Default::default(),
+            isFolded: Default::default(),
+            header: Default::default(),
+        }
+    }
 }
 pub use self::Node::{NODE,GROUPNODE};
 
@@ -241,6 +263,15 @@ pub enum NodeLabel {
         position: ArcStr,
     },
 }
+impl Default for NodeLabel {
+    fn default() -> Self {
+        Self::NODELABEL_INTERNAL {
+            text: Default::default(),
+            backgroundColor: Default::default(),
+            fontStyle: Default::default(),
+        }
+    }
+}
 pub use self::NodeLabel::{NODELABEL_INTERNAL,NODELABEL_CORNER};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -270,6 +301,9 @@ pub enum FontStyle {
     FONTITALIC,
     FONTBOLDITALIC,
 }
+impl Default for FontStyle {
+    fn default() -> Self { Self::FONTPLAIN }
+}
 pub use self::FontStyle::{FONTPLAIN,FONTBOLD,FONTITALIC,FONTBOLDITALIC};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -284,6 +318,9 @@ pub enum ShapeType {
     DIAMOND,
     TRAPEZOID,
     TRAPEZOID2,
+}
+impl Default for ShapeType {
+    fn default() -> Self { Self::RECTANGLE }
 }
 pub use self::ShapeType::{RECTANGLE,ROUNDRECTANGLE,ELLIPSE,PARALLELOGRAM,HEXAGON,TRIANGLE,OCTAGON,DIAMOND,TRAPEZOID,TRAPEZOID2};
 
@@ -336,13 +373,13 @@ pub use self::AttributeTarget::{TARGET_NODE,TARGET_EDGE,TARGET_GRAPH};
 // Logic
 // -------------------------
 pub fn createGraphInfo() -> GraphInfo {
-    let mut oGraphInfo: GraphInfo;
+    let mut oGraphInfo: GraphInfo = <GraphInfo as ::std::default::Default>::default();
     oGraphInfo = GraphInfo::GRAPHINFO { graphs: metamodelica::nil(), graphCount: 0, nodes: metamodelica::nil(), nodeCount: 0, edges: metamodelica::nil(), edgeCount: 0, attributes: metamodelica::nil(), graphNodeKey: (literal!("gi1")).clone(), graphEdgeKey: (literal!("gi2")).clone() };
     oGraphInfo
 }
 
 pub fn addGraph(mut id: ArcStr, mut directed: bool, mut iGraphInfo: GraphInfo) -> Result<(GraphInfo, (Graph, i32))> {
-    let mut oGraphInfo: GraphInfo;
+    let mut oGraphInfo: GraphInfo = <GraphInfo as ::std::default::Default>::default();
     let mut oGraph: (Graph, i32) = (<Graph as ::std::default::Default>::default(), 0);
     let mut tmpGraph: Graph = <Graph as ::std::default::Default>::default();
     let mut graphs: Arc<metamodelica::List<Graph>> = metamodelica::nil();
@@ -373,9 +410,9 @@ pub fn addGraph(mut id: ArcStr, mut directed: bool, mut iGraphInfo: GraphInfo) -
 }
 
 pub fn addNode(mut id: ArcStr, mut backgroundColor: ArcStr, mut borderWidth: metamodelica::Real, mut nodeLabels: Arc<metamodelica::List<NodeLabel>>, mut shapeType: ShapeType, mut optDesc: Option<ArcStr>, mut attValues: Arc<metamodelica::List<(i32, ArcStr)>>, mut iGraphIdx: i32, mut iGraphInfo: GraphInfo) -> Result<(GraphInfo, (Node, i32))> {
-    let mut oGraphInfo: GraphInfo;
-    let mut oNode: (Node, i32);
-    let mut tmpNode: Node;
+    let mut oGraphInfo: GraphInfo = <GraphInfo as ::std::default::Default>::default();
+    let mut oNode: (Node, i32) = (<Node as ::std::default::Default>::default(), 0);
+    let mut tmpNode: Node = <Node as ::std::default::Default>::default();
     let mut graphs: Arc<metamodelica::List<Graph>> = metamodelica::nil();
     let mut graphCount: i32 = 0;
     let mut nodes: Arc<metamodelica::List<Node>> = metamodelica::nil();
@@ -418,11 +455,11 @@ pub fn addNode(mut id: ArcStr, mut backgroundColor: ArcStr, mut borderWidth: met
 }
 
 pub fn addGroupNode(mut id: ArcStr, mut iGraphIdx: i32, mut isFolded: bool, mut iHeader: ArcStr, mut iGraphInfo: GraphInfo) -> Result<(GraphInfo, (Node, i32), (Graph, i32))> {
-    let mut oGraphInfo: GraphInfo;
-    let mut oNode: (Node, i32);
+    let mut oGraphInfo: GraphInfo = <GraphInfo as ::std::default::Default>::default();
+    let mut oNode: (Node, i32) = (<Node as ::std::default::Default>::default(), 0);
     let mut oGraph: (Graph, i32) = (<Graph as ::std::default::Default>::default(), 0);
-    let mut tmpGraphInfo: GraphInfo;
-    let mut tmpNode: Node;
+    let mut tmpGraphInfo: GraphInfo = <GraphInfo as ::std::default::Default>::default();
+    let mut tmpNode: Node = <Node as ::std::default::Default>::default();
     let mut graphs: Arc<metamodelica::List<Graph>> = metamodelica::nil();
     let mut graphCount: i32 = 0;
     let mut nodes: Arc<metamodelica::List<Node>> = metamodelica::nil();
@@ -482,7 +519,7 @@ pub fn addGroupNode(mut id: ArcStr, mut iGraphIdx: i32, mut isFolded: bool, mut 
 }
 
 pub fn addEdge(mut id: ArcStr, mut target: ArcStr, mut source: ArcStr, mut color: ArcStr, mut lineType: LineType, mut lineWidth: metamodelica::Real, mut smooth: bool, mut labels: Arc<metamodelica::List<EdgeLabel>>, mut arrows: (ArrowType, ArrowType), mut attValues: Arc<metamodelica::List<(i32, ArcStr)>>, mut iGraphInfo: GraphInfo) -> Result<(GraphInfo, (Edge, i32))> {
-    let mut oGraphInfo: GraphInfo;
+    let mut oGraphInfo: GraphInfo = <GraphInfo as ::std::default::Default>::default();
     let mut oEdge: (Edge, i32) = (<Edge as ::std::default::Default>::default(), 0);
     let mut tmpEdge: Edge = <Edge as ::std::default::Default>::default();
     let mut graphs: Arc<metamodelica::List<Graph>> = metamodelica::nil();
@@ -513,7 +550,7 @@ pub fn addEdge(mut id: ArcStr, mut target: ArcStr, mut source: ArcStr, mut color
 }
 
 pub fn addAttribute(mut defaultValue: ArcStr, mut name: ArcStr, mut attType: AttributeType, mut attTarget: AttributeTarget, mut iGraphInfo: GraphInfo) -> Result<(GraphInfo, (Attribute, i32))> {
-    let mut oGraphInfo: GraphInfo;
+    let mut oGraphInfo: GraphInfo = <GraphInfo as ::std::default::Default>::default();
     let mut oAttribute: (Attribute, i32) = (<Attribute as ::std::default::Default>::default(), 0);
     let mut tmpAttribute: Attribute = <Attribute as ::std::default::Default>::default();
     let mut attIdx: i32 = 0;
@@ -545,7 +582,7 @@ pub fn addAttribute(mut defaultValue: ArcStr, mut name: ArcStr, mut attType: Att
 }
 
 pub fn addGraphAttributeValue(mut iValue: (i32, ArcStr), mut iGraphIdx: i32, mut iGraphInfo: GraphInfo) -> Result<GraphInfo> {
-    let mut oGraphInfo: GraphInfo;
+    let mut oGraphInfo: GraphInfo = <GraphInfo as ::std::default::Default>::default();
     let mut graphs: Arc<metamodelica::List<Graph>> = metamodelica::nil();
     let mut graphCount: i32 = 0;
     let mut nodes: Arc<metamodelica::List<Node>> = metamodelica::nil();
@@ -688,14 +725,14 @@ fn compareAttributeTarget0(mut iTarget: AttributeTarget) -> Result<i32> {
 // Dump
 // -------------------------
 pub fn dumpGraph(mut iGraphInfo: GraphInfo, mut iFileName: ArcStr) -> Result<()> {
-    let mut iGraphInfoArr: GraphInfo;
+    let mut iGraphInfoArr: GraphInfo = <GraphInfo as ::std::default::Default>::default();
     iGraphInfoArr = convertToGraphInfoArr(iGraphInfo.clone())?;
     Tpl::tplNoret2((std::sync::Arc::new(GraphMLDumpTpl::dumpGraphInfo) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, GraphInfo, ArcStr) -> Result<Tpl::Text> + 'static>), iGraphInfoArr.clone(), (iFileName.clone()).clone())?;
     Ok(())
 }
 
 fn convertToGraphInfoArr(mut iGraphInfo: GraphInfo) -> Result<GraphInfo> {
-    let mut oGraphInfo: GraphInfo;
+    let mut oGraphInfo: GraphInfo = <GraphInfo as ::std::default::Default>::default();
     let mut graphs: Arc<metamodelica::List<Graph>> = metamodelica::nil();
     let mut graphsArr: metamodelica::Array<Graph> = Default::default();
     let mut graphCount: i32 = 0;

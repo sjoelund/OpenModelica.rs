@@ -80,6 +80,9 @@ pub enum VarKind {
     /// constant
     CONST,
 }
+impl Default for VarKind {
+    fn default() -> Self { Self::VARIABLE }
+}
 pub use self::VarKind::{VARIABLE,DISCRETE,PARAM,CONST};
 
 /// The type of a connector element.
@@ -131,6 +134,9 @@ pub enum VarVisibility {
     PUBLIC,
     /// protected variables
     PROTECTED,
+}
+impl Default for VarVisibility {
+    fn default() -> Self { Self::PUBLIC }
 }
 pub use self::VarVisibility::{PUBLIC,PROTECTED};
 
@@ -280,6 +286,13 @@ pub enum EquationExp {
         lhs: Arc<Exp>,
         rhs: Arc<Exp>,
     },
+}
+impl Default for EquationExp {
+    fn default() -> Self {
+        Self::PARTIAL_EQUATION {
+            exp: Default::default(),
+        }
+    }
 }
 pub use self::EquationExp::{PARTIAL_EQUATION,RESIDUAL_EXP,EQUALITY_EXPS};
 
@@ -674,6 +687,13 @@ pub enum FunctionDefinition {
         derivedVars: Arc<metamodelica::List<ArcStr>>,
     },
 }
+impl Default for FunctionDefinition {
+    fn default() -> Self {
+        Self::FUNCTION_DEF {
+            body: Default::default(),
+        }
+    }
+}
 pub use self::FunctionDefinition::{FUNCTION_DEF,FUNCTION_EXT,FUNCTION_DER_MAPPER,FUNCTION_INVERSE,FUNCTION_PARTIAL_DERIVATIVE};
 
 /// Different conditions on derivatives
@@ -683,6 +703,9 @@ pub enum derivativeCond {
     NO_DERIVATIVE {
         binding: Arc<Exp>,
     },
+}
+impl Default for derivativeCond {
+    fn default() -> Self { Self::ZERO_DERIVATIVE }
 }
 pub use self::derivativeCond::{ZERO_DERIVATIVE,NO_DERIVATIVE};
 
@@ -811,6 +834,9 @@ pub enum StateSelect {
     PREFER,
     ALWAYS,
 }
+impl Default for StateSelect {
+    fn default() -> Self { Self::NEVER }
+}
 pub use self::StateSelect::{NEVER,AVOID,DEFAULT,PREFER,ALWAYS};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -819,6 +845,9 @@ pub enum Uncertainty {
     SOUGHT,
     REFINE,
     PROPAGATE,
+}
+impl Default for Uncertainty {
+    fn default() -> Self { Self::GIVEN }
 }
 pub use self::Uncertainty::{GIVEN,SOUGHT,REFINE,PROPAGATE};
 
@@ -1128,6 +1157,9 @@ pub enum Else {
     ELSE {
         statementLst: Arc<metamodelica::List<Arc<Statement>>>,
     },
+}
+impl Default for Else {
+    fn default() -> Self { Self::NOELSE }
 }
 pub use self::Else::{NOELSE,ELSEIF,ELSE};
 
@@ -1766,6 +1798,13 @@ pub enum TupleConst {
         tupleConstLst: Arc<metamodelica::List<Arc<TupleConst>>>,
     },
 }
+impl Default for TupleConst {
+    fn default() -> Self {
+        Self::SINGLE_CONST {
+            r#const: Default::default(),
+        }
+    }
+}
 pub use self::TupleConst::{SINGLE_CONST,TUPLE_CONST};
 
 /// P.R 1.1 for multiple return arguments from functions,
@@ -1790,6 +1829,14 @@ pub enum Properties {
         ///                  tuple themselfs.
         tupleConst: Arc<TupleConst>,
     },
+}
+impl Default for Properties {
+    fn default() -> Self {
+        Self::PROP {
+            type_: Default::default(),
+            constFlag: Default::default(),
+        }
+    }
 }
 pub use self::Properties::{PROP,PROP_TUPLE};
 
@@ -1819,6 +1866,13 @@ pub enum EqMod {
     UNTYPED {
         exp: Arc<Absyn::Exp>,
     },
+}
+impl Default for EqMod {
+    fn default() -> Self {
+        Self::UNTYPED {
+            exp: Default::default(),
+        }
+    }
 }
 pub use self::EqMod::{TYPED,UNTYPED};
 
@@ -2321,6 +2375,9 @@ pub enum MatchType {
         switch: Option<(i32, Arc<Type>, i32)>,
     },
 }
+impl Default for MatchType {
+    fn default() -> Self { Self::MATCHCONTINUE }
+}
 pub use self::MatchType::{MATCHCONTINUE,TRY_STACKOVERFLOW,MATCH};
 
 /// Patterns deconstruct expressions
@@ -2511,6 +2568,13 @@ pub enum Operator {
         fqName: Arc<Absyn::Path>,
     },
 }
+impl Default for Operator {
+    fn default() -> Self {
+        Self::ADD {
+            ty: Default::default(),
+        }
+    }
+}
 pub use self::Operator::{ADD,SUB,MUL,DIV,POW,UMINUS,UMINUS_ARR,ADD_ARR,SUB_ARR,MUL_ARR,DIV_ARR,MUL_ARRAY_SCALAR,ADD_ARRAY_SCALAR,SUB_SCALAR_ARRAY,MUL_SCALAR_PRODUCT,MUL_MATRIX_PRODUCT,DIV_ARRAY_SCALAR,DIV_SCALAR_ARRAY,POW_ARRAY_SCALAR,POW_SCALAR_ARRAY,POW_ARR,POW_ARR2,AND,OR,NOT,LESS,LESSEQ,GREATER,GREATEREQ,EQUAL,NEQUAL,USERDEFINED};
 
 /// - Component references
@@ -2573,6 +2637,9 @@ pub enum Subscript {
         exp: Arc<Exp>,
     },
 }
+impl Default for Subscript {
+    fn default() -> Self { Self::WHOLEDIM }
+}
 pub use self::Subscript::{WHOLEDIM,SLICE,INDEX,WHOLE_NONEXP};
 
 /* -- End Expression.mo -- */
@@ -2583,6 +2650,9 @@ pub enum Expand {
     EXPAND,
     /// not expand crefs
     NOT_EXPAND,
+}
+impl Default for Expand {
+    fn default() -> Self { Self::EXPAND }
 }
 pub use self::Expand::{EXPAND,NOT_EXPAND};
 
@@ -2825,6 +2895,13 @@ pub mod Connect {
         SET_POINTER {
             index: i32,
         },
+    }
+    impl Default for Set {
+        fn default() -> Self {
+            Self::SET_POINTER {
+                index: Default::default(),
+            }
+        }
     }
     pub use self::Set::{SET,SET_POINTER};
 

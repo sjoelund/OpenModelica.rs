@@ -28,56 +28,56 @@ use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
 pub fn translateModel(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_FMUVersion: ArcStr, mut in_a_FMUType: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_FMUVersion.clone(), in_a_FMUType.clone()) {
         (mut txt, ref i_simCode @ SimCode::SimCode { varToArrayIndexMapping: ref i_varToArrayIndexMapping, allEquations: ref i_allEquations, fileNamePrefix: ref i_fileNamePrefix, hpcomData: HpcOmSimCode::HpcOmData { schedules: ref i_hpcomData_schedules, hpcOmMemory: ref i_hpcomData_hpcOmMemory }, makefileParams: SimCodeFunction::MakefileParams { ccompiler: _, .. }, modelInfo: ref i_modelInfo @ SimCode::ModelInfo { name: ref i_modelInfo_name, .. }, .. }, mut a_FMUVersion, mut a_FMUType) => {
-            let mut txt_46: Tpl::Text;
-            let mut txt_45: Tpl::Text;
-            let mut txt_44: Tpl::Text;
+            let mut txt_46: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_45: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_44: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_43: bool = false;
-            let mut txt_42: Tpl::Text;
-            let mut txt_41: Tpl::Text;
-            let mut txt_40: Tpl::Text;
-            let mut txt_39: Tpl::Text;
-            let mut txt_38: Tpl::Text;
-            let mut txt_37: Tpl::Text;
-            let mut txt_36: Tpl::Text;
-            let mut txt_35: Tpl::Text;
-            let mut txt_34: Tpl::Text;
-            let mut txt_33: Tpl::Text;
-            let mut txt_32: Tpl::Text;
-            let mut txt_31: Tpl::Text;
-            let mut txt_30: Tpl::Text;
-            let mut txt_29: Tpl::Text;
-            let mut txt_28: Tpl::Text;
-            let mut txt_27: Tpl::Text;
-            let mut txt_26: Tpl::Text;
-            let mut txt_25: Tpl::Text;
-            let mut txt_24: Tpl::Text;
-            let mut txt_23: Tpl::Text;
-            let mut txt_22: Tpl::Text;
-            let mut txt_21: Tpl::Text;
-            let mut txt_20: Tpl::Text;
-            let mut txt_19: Tpl::Text;
-            let mut txt_18: Tpl::Text;
-            let mut txt_17: Tpl::Text;
-            let mut txt_16: Tpl::Text;
-            let mut l_cpp: Tpl::Text;
-            let mut txt_14: Tpl::Text;
-            let mut l_numPreVars: Tpl::Text;
-            let mut l_numStringVars: Tpl::Text;
-            let mut l_numBoolVars: Tpl::Text;
-            let mut l_numIntVars: Tpl::Text;
-            let mut l_numRealVars: Tpl::Text;
-            let mut l_className: Tpl::Text;
-            let mut l_complexStartExpressions: Tpl::Text;
-            let mut l_extraFuncsDecl: Tpl::Text;
-            let mut l_extraFuncs: Tpl::Text;
-            let mut l_stateDerVectorName: Tpl::Text;
+            let mut txt_42: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_41: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_40: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_39: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_38: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_37: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_36: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_35: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_34: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_33: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_32: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_31: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_30: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_29: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_28: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_27: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_26: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_25: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_24: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_23: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_22: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_21: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_20: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_19: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_18: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_17: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_16: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_cpp: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_14: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_numPreVars: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_numStringVars: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_numBoolVars: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_numIntVars: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_numRealVars: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_className: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_complexStartExpressions: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_stateDerVectorName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_3: ArcStr = arcstr::literal!("");
-            let mut l_target: Tpl::Text;
+            let mut l_target: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_1: ArcStr = arcstr::literal!("");
-            let mut l_guid: Tpl::Text;
+            let mut l_guid: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             ret_1 = (System::getUUIDStr()).clone();
             l_guid = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_1.clone()).clone())?;
             ret_3 = (Config::simulationCodeTarget()?).clone();
@@ -164,7 +164,7 @@ pub fn translateModel(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode,
 }
 
 fn fun_54(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -178,19 +178,19 @@ fn fun_54(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 pub fn fmuMakefile(mut txt: Tpl::Text, mut a_target: ArcStr, mut a_simCode: SimCode::SimCode, mut a_extraFuncs: Tpl::Text, mut a_extraFuncsDecl: Tpl::Text, mut a_extraFuncsNamespace: Tpl::Text, mut a_FMUVersion: ArcStr) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_8: bool = false;
     let mut ret_7: bool = false;
     let mut ret_6: bool = false;
-    let mut l_additionalLinkerFlags__MSVC: Tpl::Text;
-    let mut l_additionalLinkerFlags__GCC: Tpl::Text;
-    let mut l_additionalCFlags__MSVC: Tpl::Text;
-    let mut l_additionalCFlags__GCC: Tpl::Text;
+    let mut l_additionalLinkerFlags__MSVC: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_additionalLinkerFlags__GCC: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_additionalCFlags__MSVC: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_additionalCFlags__GCC: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_1: ArcStr = arcstr::literal!("");
-    let mut l_type: Tpl::Text;
+    let mut l_type: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     ret_1 = (Flags::getConfigString(Flags::HPCOM_CODE.clone())?).clone();
     l_type = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_1.clone()).clone())?;
     l_additionalCFlags__GCC = Tpl::emptyTxt.clone();

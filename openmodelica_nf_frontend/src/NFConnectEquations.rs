@@ -626,7 +626,7 @@ fn isStreamCall(mut exp: Arc<Expression::NFExpression>) -> Result<bool> {
 
 fn evaluateOperatorReductionExp(mut exp: Arc<Expression::NFExpression>, mut sets: ConnectionSets::Sets, mut setsArray: metamodelica::Array<Arc<metamodelica::List<Arc<Connector::NFConnector>>>>, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>, mut ctable: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>>) -> Result<Arc<Expression::NFExpression>> {
     let mut evalExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut call: Arc<Call::NFCall>;
+    let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut arg: Arc<Expression::NFExpression> = Arc::new(Expression::END);

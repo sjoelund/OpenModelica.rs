@@ -1166,7 +1166,7 @@ pub fn printRowStr(mut es_1: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut stringD
 }
 
 pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> {
-    let mut outNode: Arc<Graphviz::Node>;
+    let mut outNode: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
     outNode = 'mc: {
         let __mc_input = inExp.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -1224,8 +1224,8 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::BINARY { exp2: e2, operator: op, exp1: e1 } => {
                     let mut sym: ArcStr = arcstr::literal!("");
-                    let mut lt: Arc<Graphviz::Node>;
-                    let mut rt: Arc<Graphviz::Node>;
+                    let mut lt: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
+                    let mut rt: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     sym = (binopSymbol(op.clone())?).clone();
                     lt = dumpExpGraphviz(e1.clone())?;
                     rt = dumpExpGraphviz(e2.clone())?;
@@ -1238,7 +1238,7 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::UNARY { exp: e, operator: op } => {
                     let mut sym: ArcStr = arcstr::literal!("");
-                    let mut ct: Arc<Graphviz::Node>;
+                    let mut ct: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     sym = (unaryopSymbol(op.clone())?).clone();
                     ct = dumpExpGraphviz(e.clone())?;
                     Ok(Arc::new(Graphviz::Node::LNODE { type_: (literal!("UNARY")).clone(), labelLst: list![(sym.clone()).clone()], attributes: metamodelica::nil(), children: list![ct.clone()] }))
@@ -1250,8 +1250,8 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::LBINARY { exp2: e2, operator: op, exp1: e1 } => {
                     let mut sym: ArcStr = arcstr::literal!("");
-                    let mut lt: Arc<Graphviz::Node>;
-                    let mut rt: Arc<Graphviz::Node>;
+                    let mut lt: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
+                    let mut rt: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     sym = (lbinopSymbol(op.clone())?).clone();
                     lt = dumpExpGraphviz(e1.clone())?;
                     rt = dumpExpGraphviz(e2.clone())?;
@@ -1264,7 +1264,7 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::LUNARY { exp: e, operator: op } => {
                     let mut sym: ArcStr = arcstr::literal!("");
-                    let mut ct: Arc<Graphviz::Node>;
+                    let mut ct: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     sym = (lunaryopSymbol(op.clone())?).clone();
                     ct = dumpExpGraphviz(e.clone())?;
                     Ok(Arc::new(Graphviz::Node::LNODE { type_: (literal!("LUNARY")).clone(), labelLst: list![(sym.clone()).clone()], attributes: metamodelica::nil(), children: list![ct.clone()] }))
@@ -1276,8 +1276,8 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::RELATION { exp2: e2, operator: op, exp1: e1, .. } => {
                     let mut sym: ArcStr = arcstr::literal!("");
-                    let mut lt: Arc<Graphviz::Node>;
-                    let mut rt: Arc<Graphviz::Node>;
+                    let mut lt: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
+                    let mut rt: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     sym = (relopSymbol(op.clone())?).clone();
                     lt = dumpExpGraphviz(e1.clone())?;
                     rt = dumpExpGraphviz(e2.clone())?;
@@ -1289,9 +1289,9 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::IFEXP { expElse: f, expThen: t, expCond: cond } => {
-                    let mut ct: Arc<Graphviz::Node>;
-                    let mut tt: Arc<Graphviz::Node>;
-                    let mut ft: Arc<Graphviz::Node>;
+                    let mut ct: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
+                    let mut tt: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
+                    let mut ft: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     ct = dumpExpGraphviz(cond.clone())?;
                     tt = dumpExpGraphviz(t.clone())?;
                     ft = dumpExpGraphviz(f.clone())?;
@@ -1356,9 +1356,9 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::RANGE { stop, step: None, start, .. } => {
-                    let mut t1: Arc<Graphviz::Node>;
-                    let mut t2: Arc<Graphviz::Node>;
-                    let mut t3: Arc<Graphviz::Node>;
+                    let mut t1: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
+                    let mut t2: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
+                    let mut t3: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     t1 = dumpExpGraphviz(start.clone())?;
                     t2 = Arc::new(Graphviz::Node::NODE { type_: (literal!(":")).clone(), attributes: metamodelica::nil(), children: metamodelica::nil() });
                     t3 = dumpExpGraphviz(stop.clone())?;
@@ -1370,9 +1370,9 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::RANGE { stop, step: Some(step), start, .. } => {
-                    let mut t1: Arc<Graphviz::Node>;
-                    let mut t2: Arc<Graphviz::Node>;
-                    let mut t3: Arc<Graphviz::Node>;
+                    let mut t1: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
+                    let mut t2: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
+                    let mut t3: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     t1 = dumpExpGraphviz(start.clone())?;
                     t2 = dumpExpGraphviz(step.clone())?;
                     t3 = dumpExpGraphviz(stop.clone())?;
@@ -1385,7 +1385,7 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::CAST { exp: e, ty } => {
                     let mut tystr: ArcStr = arcstr::literal!("");
-                    let mut ct: Arc<Graphviz::Node>;
+                    let mut ct: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     tystr = (TypesDump::unparseType(ty.clone())?).clone();
                     ct = dumpExpGraphviz(e.clone())?;
                     Ok(Arc::new(Graphviz::Node::LNODE { type_: (literal!("CAST")).clone(), labelLst: list![(tystr.clone()).clone()], attributes: metamodelica::nil(), children: list![ct.clone()] }))
@@ -1398,7 +1398,7 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
                 Deref @ DAE::Exp::ASUB { sub: Deref @ metamodelica::List::Cons { head: Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: i } }, tail: Deref @ metamodelica::List::Nil }, exp: e } => {
                     let mut s: ArcStr = arcstr::literal!("");
                     let mut istr: ArcStr = arcstr::literal!("");
-                    let mut ct: Arc<Graphviz::Node>;
+                    let mut ct: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     ct = dumpExpGraphviz(e.clone())?;
                     istr = (intString(i.clone())).clone();
                     s = stringAppendList(list![(literal!("[")).clone(), (istr.clone()).clone(), (literal!("]")).clone()]);
@@ -1410,8 +1410,8 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::SIZE { sz: Some(dim), exp: cr } => {
-                    let mut crt: Arc<Graphviz::Node>;
-                    let mut dimt: Arc<Graphviz::Node>;
+                    let mut crt: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
+                    let mut dimt: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     crt = dumpExpGraphviz(cr.clone())?;
                     dimt = dumpExpGraphviz(dim.clone())?;
                     Ok(Arc::new(Graphviz::Node::NODE { type_: (literal!("SIZE")).clone(), attributes: metamodelica::nil(), children: list![crt.clone(), dimt.clone()] }))
@@ -1422,7 +1422,7 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::SIZE { sz: None, exp: cr } => {
-                    let mut crt: Arc<Graphviz::Node>;
+                    let mut crt: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     crt = dumpExpGraphviz(cr.clone())?;
                     Ok(Arc::new(Graphviz::Node::NODE { type_: (literal!("SIZE")).clone(), attributes: metamodelica::nil(), children: list![crt.clone()] }))
                 }
@@ -1433,8 +1433,8 @@ pub fn dumpExpGraphviz(mut inExp: Arc<DAE::Exp>) -> Result<Arc<Graphviz::Node>> 
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Exp::REDUCTION { iterators: Deref @ metamodelica::List::Cons { head: Deref @ DAE::ReductionIterator { exp: iterexp, .. }, tail: Deref @ metamodelica::List::Nil }, expr: exp, reductionInfo: Deref @ DAE::ReductionInfo { path: fcn, .. } } => {
                     let mut fs: ArcStr = arcstr::literal!("");
-                    let mut expt: Arc<Graphviz::Node>;
-                    let mut itert: Arc<Graphviz::Node>;
+                    let mut expt: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
+                    let mut itert: Arc<Graphviz::Node> = Arc::new(<Graphviz::Node as ::std::default::Default>::default());
                     fs = (AbsynUtil::pathString(fcn.clone(), (literal!(".")).clone(), true, false)?).clone();
                     expt = dumpExpGraphviz(exp.clone())?;
                     itert = dumpExpGraphviz(iterexp.clone())?;

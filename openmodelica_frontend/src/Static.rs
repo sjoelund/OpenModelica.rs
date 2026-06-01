@@ -141,7 +141,7 @@ pub fn elabExpList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
     let mut outExpl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut outProperties: Arc<metamodelica::List<DAE::Properties>> = metamodelica::nil();
     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut prop: DAE::Properties;
+    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut last_ty: Arc<DAE::Type> = inLastType.clone();
     let mut cr: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
     let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
@@ -252,10 +252,10 @@ pub fn elabExpListList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
 fn elabExpOptAndMatchType(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Option<Arc<Absyn::Exp>>, mut inDefaultType: Arc<DAE::Type>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Option<Arc<DAE::Exp>>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Option<Arc<DAE::Exp>> = None;
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut exp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut dexp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut prop: DAE::Properties;
+    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     outProperties = DAE::Properties::PROP { type_: inDefaultType.clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_CONST };
     if isSome(inExp.clone()) {
         let __pa0 = ::match_deref::match_deref! { match &(inExp.clone()) {
@@ -275,7 +275,7 @@ fn elabExpOptAndMatchType(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
 pub fn elabExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut e: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut num_errmsgs: i32 = 0;
     let mut elabfunc: PartialElabExpFunc;
@@ -332,7 +332,7 @@ pub type PartialElabExpFunc = std::sync::Arc<dyn ::std::ops::Fn(FCore::Cache, FC
 fn elabExp_BuiltinType(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outExp, outProperties) = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ Absyn::Exp::INTEGER { .. } => (Arc::new(DAE::Exp::ICONST { integer: var_field!((*inExp).value, Absyn::Exp::INTEGER).clone() }), DAE::Properties::PROP { type_: DAE::T_INTEGER_DEFAULT().clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_CONST }),
         Deref @ Absyn::Exp::REAL { .. } => (Arc::new(DAE::Exp::RCONST { real: stringReal((var_field!((*inExp).value, Absyn::Exp::REAL).clone()).clone())? }), DAE::Properties::PROP { type_: DAE::T_REAL_DEFAULT().clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_CONST }),
@@ -346,7 +346,7 @@ fn elabExp_BuiltinType(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
 fn elabExp_Cref(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut cr: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut c: DAE::Const = DAE::Const::C_CONST;
@@ -374,12 +374,12 @@ fn elabExp_Cref(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: A
 fn elabExp_Binary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut e1: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut e2: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut op: Absyn::Operator = Absyn::Operator::ADD;
-    let mut prop1: DAE::Properties;
-    let mut prop2: DAE::Properties;
+    let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+    let mut prop2: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut exp1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut exp2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let () = (::match_deref::match_deref! { match &(inExp.clone()) {
@@ -397,7 +397,7 @@ fn elabExp_Binary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp:
 fn elabExp_Unary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut e: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut op: Absyn::Operator = Absyn::Operator::ADD;
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -426,7 +426,7 @@ fn elabExp_Unary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: 
 fn elabExp_LUnary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut e: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut op: Absyn::Operator = Absyn::Operator::ADD;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inExp.clone()) {
@@ -443,16 +443,16 @@ fn elabExp_LUnary(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp:
 fn elabExp_If(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut cond_e: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut true_e: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut false_e: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut cond_exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut true_exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut false_exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut cond_prop: DAE::Properties;
-    let mut true_prop: DAE::Properties;
-    let mut false_prop: DAE::Properties;
+    let mut cond_prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+    let mut true_prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+    let mut false_prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut b: bool = false;
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(AbsynUtil::canonIfExp(inExp.clone())?) {
@@ -468,12 +468,12 @@ fn elabExp_If(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc
         if let Ok(__v) = (|| -> Result<_> {
             let () = __mc_input.clone() else { bail!("nomatch") };
             let mut false_exp: Arc<DAE::Exp> = false_exp.clone();
-            let mut false_prop: DAE::Properties;
+            let mut false_prop: DAE::Properties = false_prop.clone();
             let mut outCache: FCore::Cache = outCache.clone();
             let mut outExp: Arc<DAE::Exp> = outExp.clone();
-            let mut outProperties: DAE::Properties;
+            let mut outProperties: DAE::Properties = outProperties.clone();
             let mut true_exp: Arc<DAE::Exp> = true_exp.clone();
-            let mut true_prop: DAE::Properties;
+            let mut true_prop: DAE::Properties = true_prop.clone();
             ErrorExt::setCheckpoint((literal!("Static.elabExp:IFEXP")).clone());
             (outCache, true_exp, true_prop) = elabExpInExpression(cache.clone(), inEnv.clone(), true_e.clone(), inImplicit.clone(), inDoVect.clone(), inPrefix.clone(), inInfo.clone())?;
             (outCache, false_exp, false_prop) = elabExpInExpression(outCache.clone(), inEnv.clone(), false_e.clone(), inImplicit.clone(), inDoVect.clone(), inPrefix.clone(), inInfo.clone())?;
@@ -486,7 +486,7 @@ fn elabExp_If(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc
             let mut b: bool = b.clone();
             let mut outCache: FCore::Cache = outCache.clone();
             let mut outExp: Arc<DAE::Exp> = outExp.clone();
-            let mut outProperties: DAE::Properties;
+            let mut outProperties: DAE::Properties = outProperties.clone();
             ErrorExt::setCheckpoint((literal!("Static.elabExp:IFEXP:HACK")).clone());
             let true = (Types::isParameterOrConstant(Types::propAllConst(cond_prop.clone())?)) else { bail!("pattern mismatch") };
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(Ceval::ceval(cache.clone(), inEnv.clone(), cond_exp.clone(), inImplicit.clone(), Absyn::Msg::MSG { info: inInfo.clone() }, 0)?) {
@@ -514,9 +514,9 @@ fn elabExp_If(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc
 fn elabExp_Call(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut func_name: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
-    let mut args: Arc<Absyn::FunctionArgs>;
+    let mut args: Arc<Absyn::FunctionArgs> = Arc::new(<Absyn::FunctionArgs as ::std::default::Default>::default());
     let mut type_vars: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ Absyn::Exp::CALL { typeVars: __pa0, functionArgs: __pa1, function_: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
@@ -543,7 +543,7 @@ fn elabExp_Call(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: A
 fn elabExp_Dot(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outExp, outProperties) = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ Absyn::Exp::DOT { .. } => {
             let mut s: ArcStr = arcstr::literal!("");
@@ -586,7 +586,7 @@ fn elabExp_Dot(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Ar
 fn elabExp_Comment(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut exp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let __pa0 = ::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ Absyn::Exp::EXPRESSIONCOMMENT { exp: __pa0, .. } => __pa0.clone(),
@@ -600,7 +600,7 @@ fn elabExp_Comment(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
 fn elabExp_PartEvalFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut cref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
     let mut pos_args: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
     let mut named_args: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
@@ -650,7 +650,7 @@ fn elabExp_PartEvalFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
 fn elabExp_Tuple(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = elabExp_Tuple_LHS_RHS(inCache.clone(), inEnv.clone(), inExp.clone(), inImplicit.clone(), inDoVect.clone(), inPrefix.clone(), inInfo.clone(), false)?;
     Ok((outCache, outExp, outProperties))
 }
@@ -658,7 +658,7 @@ fn elabExp_Tuple(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: 
 fn elabExp_Tuple_LHS_RHS(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo, mut isLhs: bool) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut el: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
     let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut props: Arc<metamodelica::List<DAE::Properties>> = metamodelica::nil();
@@ -682,7 +682,7 @@ fn elabExp_Tuple_LHS_RHS(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
 pub fn elabExpLHS(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ Absyn::Exp::TUPLE { .. } => {
             (outCache, outExp, outProperties) = elabExp_Tuple_LHS_RHS(inCache.clone(), inEnv.clone(), inExp.clone(), inImplicit.clone(), inDoVect.clone(), inPrefix.clone(), inInfo.clone(), true)?;
@@ -700,7 +700,7 @@ pub fn elabExpLHS(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp:
 fn elabExp_Range(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut start: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut step: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut stop: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
@@ -777,7 +777,7 @@ fn elabExp_Range(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: 
 fn elabExp_Array(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut es: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
     let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut props: Arc<metamodelica::List<DAE::Properties>> = metamodelica::nil();
@@ -829,7 +829,7 @@ fn elabExp_Array(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: 
                     if !((Config::acceptMetaModelicaGrammar()?)) { bail!("guard") }
                     let mut outCache: FCore::Cache = outCache.clone();
                     let mut outExp: Arc<DAE::Exp> = outExp.clone();
-                    let mut outProperties: DAE::Properties;
+                    let mut outProperties: DAE::Properties = outProperties.clone();
                     (outCache, outExp, outProperties) = elabExpInExpression(inCache.clone(), inEnv.clone(), Arc::new(Absyn::Exp::LIST { exps: es.clone() }), inImplicit.clone(), inDoVect.clone(), inPrefix.clone(), inInfo.clone())?;
                     Ok((outExp.clone(), outProperties.clone()))
                 }
@@ -844,7 +844,7 @@ fn elabExp_Array(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: 
 fn elabExp_Matrix(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut ess: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::Exp>>>>> = metamodelica::nil();
     let mut dess: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>> = metamodelica::nil();
     let mut props: Arc<metamodelica::List<Arc<metamodelica::List<DAE::Properties>>>> = metamodelica::nil();
@@ -901,7 +901,7 @@ fn elabExp_Matrix(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp:
 
 fn elabExp_Matrix_realCast(mut inExp: Arc<DAE::Exp>, mut inProperties: DAE::Properties) -> Result<(Arc<DAE::Exp>, DAE::Properties)> {
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     ty = Types::getPropType(inProperties.clone())?;
     if Types::isInteger(ty.clone()) {
@@ -919,10 +919,10 @@ fn elabExp_Matrix_realCast(mut inExp: Arc<DAE::Exp>, mut inProperties: DAE::Prop
 fn elabExp_Code(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut ty2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    let mut cn: Arc<Absyn::CodeNode>;
+    let mut cn: Arc<Absyn::CodeNode> = Arc::new(<Absyn::CodeNode as ::std::default::Default>::default());
     let __pa0 = ::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ Absyn::Exp::CODE { code: __pa0 } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -938,12 +938,12 @@ fn elabExp_Code(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: A
 fn elabExp_Cons(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut e1: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut e2: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut exp1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut exp2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut prop1: DAE::Properties;
+    let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut ty2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -1009,7 +1009,7 @@ fn elabExp_Cons(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: A
 fn elabExp_List(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut es: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
     let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut props: Arc<metamodelica::List<DAE::Properties>> = metamodelica::nil();
@@ -1048,7 +1048,7 @@ fn elabExp_List(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: A
 pub fn elabExpInExpression(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut performVectorization: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = elabExp(inCache.clone(), inEnv.clone(), inExp.clone(), inImplicit.clone(), performVectorization.clone(), inPrefix.clone(), info.clone())?;
     (outExp, outProperties) = elabExpInExpression2(outExp.clone(), outProperties.clone());
     Ok((outCache, outExp, outProperties))
@@ -1056,7 +1056,7 @@ pub fn elabExpInExpression(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
 
 fn elabExpInExpression2(mut inExp: Arc<DAE::Exp>, mut inProperties: DAE::Properties) -> (Arc<DAE::Exp>, DAE::Properties) {
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outExp, outProperties) = (::match_deref::match_deref! { match &(inProperties.clone()) {
         DAE::Properties::PROP_TUPLE { tupleConst: Deref @ DAE::TupleConst::TUPLE_CONST { tupleConstLst: Deref @ metamodelica::List::Cons { head: Deref @ DAE::TupleConst::SINGLE_CONST { r#const: c }, tail: _ } }, type_: Deref @ DAE::Type::T_TUPLE { types: Deref @ metamodelica::List::Cons { head: ty, tail: _ }, .. } } => {
             (Arc::new(DAE::Exp::TSUB { exp: inExp.clone(), ix: 1, ty: ty.clone() }), DAE::Properties::PROP { type_: ty.clone(), constFlag: c.clone() })
@@ -1106,7 +1106,7 @@ pub fn elabExpCrefNoEvalList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph,
     let mut outAttributes: Arc<metamodelica::List<Arc<DAE::Attributes>>> = metamodelica::nil();
     let mut num_err: i32 = Error::getNumErrorMessages();
     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut prop: DAE::Properties;
+    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut props: Arc<metamodelica::List<DAE::Properties>> = metamodelica::nil();
     let mut attr: Arc<DAE::Attributes> = Arc::new(<DAE::Attributes as ::std::default::Default>::default());
     let mut cr: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
@@ -1151,7 +1151,7 @@ pub fn elabExpCrefNoEvalList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph,
 pub fn elabListExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExpList: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inProp: DAE::Properties, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = 'mc: {
         let __mc_input = inExpList.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -1171,7 +1171,7 @@ pub fn elabListExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp
                     let mut c: DAE::Const = DAE::Const::C_CONST;
                     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut outCache: FCore::Cache = outCache.clone();
-                    let mut outProperties: DAE::Properties;
+                    let mut outProperties: DAE::Properties = outProperties.clone();
                     let __pa0 = ::match_deref::match_deref! { match &(inProp.clone()) {
                         DAE::Properties::PROP { type_: Deref @ DAE::Type::T_METALIST { .. }, constFlag: __pa0 } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -1444,7 +1444,7 @@ fn matrixConstrMaxDim(mut inTypes: Arc<metamodelica::List<Arc<DAE::Type>>>) -> R
 fn elabCallReduction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inReductionFn: Arc<Absyn::ComponentRef>, mut inReductionExp: Arc<Absyn::Exp>, mut inIterType: Absyn::ReductionIterType, mut inIterators: Arc<metamodelica::List<Arc<Absyn::ForIterator>>>, mut inImplicit: bool, mut inDoVect: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     let mut fold_env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     let mut reduction_iters: Arc<metamodelica::List<Arc<DAE::ReductionIterator>>> = metamodelica::nil();
@@ -1757,7 +1757,7 @@ fn getIteratorIndexedCrefs(mut inCref: Arc<Absyn::ComponentRef>, mut inIterator:
 
 fn deduceReductionIterationRange2(mut inDimension: Arc<DAE::Dimension>, mut inCref: Arc<DAE::ComponentRef>, mut inType: Arc<DAE::Type>, mut inIndex: i32) -> Result<(Arc<DAE::Exp>, DAE::Properties)> {
     let mut outRange: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut range_ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut range_const: DAE::Const = DAE::Const::C_CONST;
     let mut enum_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
@@ -2197,7 +2197,7 @@ fn elabCodeType(mut inCode: Arc<Absyn::CodeNode>) -> Result<Arc<DAE::Type>> {
 pub fn elabGraphicsExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inBoolean: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inExp.clone(), inBoolean.clone(), inPrefix.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -2240,7 +2240,7 @@ pub fn elabGraphicsExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ Absyn::Exp::CREF { componentRef: cr }, r#impl, pre) => {
                     let mut dexp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut cache = (*cache).clone();
                     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(elabCref(cache.clone(), env.clone(), cr.clone(), r#impl.clone(), true, pre.clone(), info.clone())?) {
                         (__pa0, Some((__pa1, __pa2, _))) => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
@@ -2260,9 +2260,9 @@ pub fn elabGraphicsExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
                     let mut dexp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
-                    let mut prop1: DAE::Properties;
-                    let mut prop2: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut prop2: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut cache = (*cache).clone();
                     (cache, e1_1, prop1) = elabGraphicsExp(cache.clone(), env.clone(), e1.clone(), r#impl.clone(), pre.clone(), info.clone())?;
                     (cache, e2_1, prop2) = elabGraphicsExp(cache.clone(), env.clone(), e2.clone(), r#impl.clone(), pre.clone(), info.clone())?;
@@ -2276,7 +2276,7 @@ pub fn elabGraphicsExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, e @ Deref @ Absyn::Exp::UNARY { op: Absyn::Operator::UPLUS { .. }, .. }, r#impl, pre) => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut t: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut c: DAE::Const = DAE::Const::C_CONST;
                     let mut cache = (*cache).clone();
@@ -2300,8 +2300,8 @@ pub fn elabGraphicsExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
                 (cache, env, exp @ Deref @ Absyn::Exp::UNARY { exp: e, op }, r#impl, pre) => {
                     let mut dexp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
-                    let mut prop1: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut cache = (*cache).clone();
                     (cache, e_1, prop1) = elabGraphicsExp(cache.clone(), env.clone(), e.clone(), r#impl.clone(), pre.clone(), info.clone())?;
                     (cache, dexp, prop) = OperatorOverloading::unary(cache.clone(), env.clone(), op.clone(), prop1.clone(), e_1.clone(), exp.clone(), e.clone(), r#impl.clone(), pre.clone(), info.clone())?;
@@ -2316,9 +2316,9 @@ pub fn elabGraphicsExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
                     let mut dexp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
-                    let mut prop1: DAE::Properties;
-                    let mut prop2: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut prop2: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut cache = (*cache).clone();
                     (cache, e1_1, prop1) = elabGraphicsExp(cache.clone(), env.clone(), e1.clone(), r#impl.clone(), pre.clone(), info.clone())?;
                     (cache, e2_1, prop2) = elabGraphicsExp(cache.clone(), env.clone(), e2.clone(), r#impl.clone(), pre.clone(), info.clone())?;
@@ -2333,8 +2333,8 @@ pub fn elabGraphicsExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
                 (cache, env, exp @ Deref @ Absyn::Exp::LUNARY { exp: e, op }, r#impl, pre) => {
                     let mut dexp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
-                    let mut prop1: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut cache = (*cache).clone();
                     (cache, e_1, prop1) = elabGraphicsExp(cache.clone(), env.clone(), e.clone(), r#impl.clone(), pre.clone(), info.clone())?;
                     (cache, dexp, prop) = OperatorOverloading::unary(cache.clone(), env.clone(), op.clone(), prop1.clone(), e_1.clone(), exp.clone(), e.clone(), r#impl.clone(), pre.clone(), info.clone())?;
@@ -2349,9 +2349,9 @@ pub fn elabGraphicsExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
                     let mut dexp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
-                    let mut prop1: DAE::Properties;
-                    let mut prop2: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut prop2: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut cache = (*cache).clone();
                     (cache, e1_1, prop1) = elabGraphicsExp(cache.clone(), env.clone(), e1.clone(), r#impl.clone(), pre.clone(), info.clone())?;
                     (cache, e2_1, prop2) = elabGraphicsExp(cache.clone(), env.clone(), e2.clone(), r#impl.clone(), pre.clone(), info.clone())?;
@@ -2368,10 +2368,10 @@ pub fn elabGraphicsExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
                     let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut e3_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
-                    let mut prop1: DAE::Properties;
-                    let mut prop2: DAE::Properties;
-                    let mut prop3: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut prop2: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut prop3: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut e1: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
                     let mut e2: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
                     let mut e3: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
@@ -2396,7 +2396,7 @@ pub fn elabGraphicsExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ Absyn::Exp::CALL { functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { argNames: nargs, args }, function_: r#fn, .. }, _, pre) => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut cache = (*cache).clone();
                     (cache, e_1, prop) = elabCall(cache.clone(), env.clone(), r#fn.clone(), args.clone(), nargs.clone(), var_field!((*inExp).typeVars, Absyn::Exp::CALL).clone(), true, pre.clone(), info.clone())?;
                     Ok((cache.clone(), e_1.clone(), prop.clone()))
@@ -2820,7 +2820,7 @@ fn elabTuple(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExpl: Arc
     let mut outExpl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut outProperties: Arc<metamodelica::List<DAE::Properties>> = metamodelica::nil();
     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut prop: DAE::Properties;
+    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     if if (!(isLhs.clone())) {!(Config::acceptMetaModelicaGrammar()?)} else {false} {
         Error::addSourceMessage(Error::RHS_TUPLE_EXPRESSION.clone(), list![(Dump::printExpStr(Arc::new(Absyn::Exp::TUPLE { expressions: inExpl.clone() }))?).clone()], inInfo.clone())?;
         bail!("fail");
@@ -2889,7 +2889,7 @@ fn stripExtraArgsFromType2(mut inSlots: Arc<metamodelica::List<Slot>>, mut inTyp
 
 fn elabArray(mut inExpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inProps: Arc<metamodelica::List<DAE::Properties>>, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(Arc<metamodelica::List<Arc<DAE::Exp>>>, DAE::Properties)> {
     let mut outExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut types: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut c: DAE::Const = openmodelica_frontend_types::DAE::Const::C_CONST;
@@ -3047,7 +3047,7 @@ fn elabArray2(mut inExpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inTypes: A
 fn elabGraphicsArray(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExpl: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inImplicit: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<metamodelica::List<Arc<DAE::Exp>>>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExpl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut c: DAE::Const = openmodelica_frontend_types::DAE::Const::C_CONST;
     let mut c2: DAE::Const = DAE::Const::C_CONST;
     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -3076,13 +3076,13 @@ fn elabGraphicsArray(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inE
 
 fn elabMatrixComma(mut inExpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inProps: Arc<metamodelica::List<DAE::Properties>>, mut inHaveReal: bool, mut inDims: i32, mut inInfo: SourceInfo) -> Result<(Arc<DAE::Exp>, DAE::Properties, Arc<DAE::Dimension>, Arc<DAE::Dimension>)> {
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut outDim1: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
     let mut outDim2: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut rest_expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut accum_expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-    let mut prop: DAE::Properties;
+    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut rest_props: Arc<metamodelica::List<DAE::Properties>> = metamodelica::nil();
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut sty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -3336,7 +3336,7 @@ fn elabMatrixCatOne2(mut inArray1: Arc<DAE::Exp>, mut inArray2: Arc<DAE::Exp>) -
 
 fn promoteExp(mut inExp: Arc<DAE::Exp>, mut inProperties: DAE::Properties, mut inDims: i32) -> Result<(Arc<DAE::Exp>, DAE::Properties)> {
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut c: DAE::Const = DAE::Const::C_CONST;
     match '__try0: {
@@ -3365,7 +3365,7 @@ fn promoteExp(mut inExp: Arc<DAE::Exp>, mut inProperties: DAE::Properties, mut i
 fn elabMatrixSemi(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inMatrix: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>>, mut inProperties: Arc<metamodelica::List<Arc<metamodelica::List<DAE::Properties>>>>, mut inImpl: bool, mut inHaveReal: bool, mut inDims: i32, mut inDoVectorization: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties, Arc<DAE::Dimension>, Arc<DAE::Dimension>)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut outDim1: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
     let mut outDim2: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
     let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -3373,7 +3373,7 @@ fn elabMatrixSemi(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inMatr
     let mut props: Arc<metamodelica::List<DAE::Properties>> = metamodelica::nil();
     let mut rest_props: Arc<metamodelica::List<Arc<metamodelica::List<DAE::Properties>>>> = metamodelica::nil();
     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut prop: DAE::Properties;
+    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut dim1: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
     let mut dim2: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
     let mut dim1_str: ArcStr = arcstr::literal!("");
@@ -3441,7 +3441,7 @@ fn verifyBuiltInHandlerType(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
 
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut e: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let __pa0 = ::match_deref::match_deref! { match &(inExpl.clone()) {
@@ -3466,7 +3466,7 @@ fn verifyBuiltInHandlerType(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
 fn elabBuiltinCardinality(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplicit: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut e: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     checkBuiltinCallArgs(inPosArgs.clone(), inNamedArgs.clone(), 1, (literal!("cardinality")).clone(), inInfo.clone())?;
@@ -3487,7 +3487,7 @@ fn elabBuiltinCardinality(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
 fn elabBuiltinSmooth(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplicit: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut msg_str: ArcStr = arcstr::literal!("");
     let mut p: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut expr: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
@@ -3568,13 +3568,13 @@ fn printBuiltinFnArgError(mut inFnName: ArcStr, mut inMsg: ArcStr, mut inPosArgs
 fn elabBuiltinSize(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAbsynExpLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArg: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inBoolean: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inAbsynExpLst.clone(), inBoolean.clone(), inPrefix.clone())) {
         (cache, env, Deref @ metamodelica::List::Cons { head: arraycr, tail: Deref @ metamodelica::List::Cons { head: dim, tail: Deref @ metamodelica::List::Nil } }, r#impl, pre) => {
             let mut dimp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut arraycrefe: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut prop: DAE::Properties;
+            let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
             let mut ety: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
             let mut dims1: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
@@ -3598,7 +3598,7 @@ fn elabBuiltinSize(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAbs
             let mut arraycrefe: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut arrtp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut prop: DAE::Properties;
+            let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
             let mut ety: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
             let mut cache = (*cache).clone();
@@ -3621,7 +3621,7 @@ fn elabBuiltinSize(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAbs
 
 fn elabBuiltinSizeNoIndex(mut inArrayExp: Arc<DAE::Exp>, mut inArrayExpType: Arc<DAE::Type>, mut inDimensions: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut inArrayType: Arc<DAE::Type>, mut inInfo: SourceInfo) -> Result<(Arc<DAE::Exp>, DAE::Properties)> {
     let mut outSizeExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outSizeExp, outProperties) = 'mc: {
         let __mc_input = inDimensions.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -3644,7 +3644,7 @@ fn elabBuiltinSizeNoIndex(mut inArrayExp: Arc<DAE::Exp>, mut inArrayExpType: Arc
                     let mut dim_expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut dim_int: i32 = 0;
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     dim_expl = List::map(inDimensions.clone(), (std::sync::Arc::new(Expression::dimensionSizeExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>) -> Result<Arc<DAE::Exp>> + 'static>));
                     dim_int = (dim_expl.clone().len() as i32);
@@ -3660,7 +3660,7 @@ fn elabBuiltinSizeNoIndex(mut inArrayExp: Arc<DAE::Exp>, mut inArrayExpType: Arc
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: _ } => {
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut b: bool = false;
                     let mut cnst: DAE::Const = DAE::Const::C_CONST;
                     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -3707,7 +3707,7 @@ fn elabBuiltinSizeIndex(mut inArrayExp: Arc<DAE::Exp>, mut inArrayProp: DAE::Pro
                     let mut dim_count: i32 = 0;
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut dim: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     dim_int = Expression::expInt(inIndexExp.clone())?;
                     dim_count = (inDimensions.clone().len() as i32);
                     let true = (dim_int.clone() > 0 && dim_int.clone() <= dim_count.clone()) else { bail!("pattern mismatch") };
@@ -3744,7 +3744,7 @@ fn elabBuiltinSizeIndex(mut inArrayExp: Arc<DAE::Exp>, mut inArrayProp: DAE::Pro
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut cnst: DAE::Const = DAE::Const::C_CONST;
                     exp = Arc::new(DAE::Exp::SIZE { exp: inArrayExp.clone(), sz: Some(inIndexExp.clone()) });
                     cnst = openmodelica_frontend_types::DAE::Const::C_PARAM;
@@ -3763,7 +3763,7 @@ fn elabBuiltinSizeIndex(mut inArrayExp: Arc<DAE::Exp>, mut inArrayProp: DAE::Pro
 fn elabBuiltinNDims(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAbsynExpLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArg: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inBoolean: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inAbsynExpLst.clone(), inBoolean.clone(), inPrefix.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -3806,7 +3806,7 @@ fn elabBuiltinNDims(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAb
 fn elabBuiltinFill(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAbsynExpLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArg: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inBoolean: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inAbsynExpLst.clone(), inBoolean.clone(), inPrefix.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -3814,7 +3814,7 @@ fn elabBuiltinFill(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAbs
                 (cache, env, Deref @ metamodelica::List::Cons { head: s, tail: dims }, r#impl, pre) => {
                     let mut s_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut dims_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut dimprops: Arc<metamodelica::List<DAE::Properties>> = metamodelica::nil();
                     let mut sty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -3843,7 +3843,7 @@ fn elabBuiltinFill(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAbs
                 (cache, env, Deref @ metamodelica::List::Cons { head: s, tail: dims }, r#impl, pre) => {
                     let mut s_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut dims_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut dimprops: Arc<metamodelica::List<DAE::Properties>> = metamodelica::nil();
                     let mut sty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -3869,7 +3869,7 @@ fn elabBuiltinFill(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAbs
                 (cache, env, Deref @ metamodelica::List::Cons { head: s, tail: dims }, r#impl, pre) => {
                     let mut s_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut dims_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut sty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut c1: DAE::Const = DAE::Const::C_CONST;
@@ -3935,7 +3935,7 @@ fn elabBuiltinFill(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAbs
 pub fn elabBuiltinFill2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<DAE::Exp>, mut inType: Arc<DAE::Type>, mut inValuesValueLst: Arc<metamodelica::List<Arc<Values::Value>>>, mut constVar: DAE::Const, mut inPrefix: DAE::Prefix, mut inDims: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inExp.clone(), inType.clone(), inValuesValueLst.clone(), constVar.clone(), inPrefix.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -4016,7 +4016,7 @@ pub fn elabBuiltinFill2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
 fn elabBuiltinSymmetric(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAbsynExpLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArg: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inBoolean: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inAbsynExpLst.clone(), inBoolean.clone(), inPrefix.clone())) {
         (cache, env, Deref @ metamodelica::List::Cons { head: matexp, tail: Deref @ metamodelica::List::Nil }, r#impl, pre) => {
             let mut tp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -4024,7 +4024,7 @@ fn elabBuiltinSymmetric(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
             let mut d2: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
             let mut eltp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let mut newtp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut prop: DAE::Properties;
+            let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
             let mut c: DAE::Const = DAE::Const::C_CONST;
             let mut exp_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -4053,7 +4053,7 @@ fn elabBuiltinSymmetric(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
 fn elabBuiltinClassDirectory(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAbsynExpLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArg: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inBoolean: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = (match info.clone() {
         SourceInfo { fileName: mut fileName, .. } => {
             let mut r#str: ArcStr = arcstr::literal!("");
@@ -4069,7 +4069,7 @@ fn elabBuiltinClassDirectory(mut inCache: FCore::Cache, mut inEnv: FCore::Graph,
 fn elabBuiltinSourceInfo(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAbsynExpLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArg: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inBoolean: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     ::match_deref::match_deref! { match &(inAbsynExpLst.clone()) {
         Deref @ metamodelica::List::Nil => (),
         _ => bail!("pattern mismatch"),
@@ -4089,9 +4089,9 @@ fn elabBuiltinSourceInfo(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
 fn elabBuiltinSome(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplicit: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut arg: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut prop: DAE::Properties;
+    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut c: DAE::Const = DAE::Const::C_CONST;
     if (inPosArgs.clone().len() as i32) != 1 || !(inNamedArgs.clone().is_empty()) {
@@ -4111,7 +4111,7 @@ fn elabBuiltinSome(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPos
 fn elabBuiltinNone(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplicit: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     if !(inPosArgs.clone().is_empty()) || !(inNamedArgs.clone().is_empty()) {
         Error::addSourceMessageAndFail(Error::WRONG_TYPE_OR_NO_OF_ARGS.clone(), list![(literal!("NONE")).clone(), (literal!("")).clone()], inInfo.clone())?;
         unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
@@ -4125,7 +4125,7 @@ fn elabBuiltinNone(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPos
 fn elabBuiltinHomotopy(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplicit: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut replaceWith: ArcStr = arcstr::literal!("");
     let mut e: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut e1: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
@@ -4173,7 +4173,7 @@ fn getHomotopyArguments(mut args: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut 
 fn elabBuiltinDynamicSelect(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplicit: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut msg_str: ArcStr = arcstr::literal!("");
     let mut astatic: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut adynamic: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
@@ -4216,7 +4216,7 @@ fn elabBuiltinDynamicSelect(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
 fn elabBuiltinTranspose(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArg: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImpl: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut aexp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -4254,7 +4254,7 @@ fn elabBuiltinTranspose(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
 fn elabBuiltinSum(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAbsynExpLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArg: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inBoolean: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inAbsynExpLst.clone(), inBoolean.clone(), inPrefix.clone())) {
         (cache, env, Deref @ metamodelica::List::Cons { head: arrexp, tail: Deref @ metamodelica::List::Nil }, r#impl, pre) => {
             let mut exp_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -4293,7 +4293,7 @@ fn elabBuiltinSum(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAbsy
 fn elabBuiltinProduct(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAbsynExpLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArg: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inBoolean: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inAbsynExpLst.clone(), inBoolean.clone(), inPrefix.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -4411,7 +4411,7 @@ fn elabBuiltinProduct2(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
 fn elabBuiltinPre(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplicit: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut ty2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -4504,7 +4504,7 @@ fn elabBuiltinPre2(mut inExp: Arc<DAE::Exp>, mut inType: Arc<DAE::Type>) -> Resu
 fn elabBuiltinInStream(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImpl: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut e: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -4525,7 +4525,7 @@ fn elabBuiltinInStream(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
 fn elabBuiltinActualStream(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImpl: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut e: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -4641,7 +4641,7 @@ fn elabBuiltinPreMatrix(mut inExp: Arc<DAE::Exp>, mut inType: Arc<DAE::Type>) ->
 fn elabBuiltinArray(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplicit: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut props: Arc<metamodelica::List<DAE::Properties>> = metamodelica::nil();
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -4665,9 +4665,9 @@ fn elabBuiltinArray(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPo
 
 fn elabBuiltinArray2(mut inExpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inProperties: Arc<metamodelica::List<DAE::Properties>>, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(Arc<metamodelica::List<Arc<DAE::Exp>>>, DAE::Properties)> {
     let mut outExpl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut pre_str: ArcStr = arcstr::literal!("");
-    let mut prop: DAE::Properties;
+    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     if !(sameDimensions(inProperties.clone())?) {
         pre_str = (PrefixUtil::printPrefixStr3(inPrefix.clone())?).clone();
         Error::addSourceMessageAndFail(Error::DIFFERENT_DIM_SIZE_IN_ARGUMENTS.clone(), list![(literal!("array")).clone(), (pre_str.clone()).clone()], inInfo.clone())?;
@@ -4681,7 +4681,7 @@ fn elabBuiltinArray2(mut inExpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inP
 fn elabBuiltinArray3(mut inExpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inPropertiesLst: Arc<metamodelica::List<DAE::Properties>>, mut inProperties: DAE::Properties) -> Result<(Arc<metamodelica::List<Arc<DAE::Exp>>>, DAE::Properties)> {
     let mut outExpl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut outProperties: DAE::Properties = listHead(inPropertiesLst.clone())?;
-    let mut prop: DAE::Properties;
+    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut rest_props: Arc<metamodelica::List<DAE::Properties>> = inPropertiesLst.clone();
     for mut e in &*inExpl.clone() {
         let mut e = e.clone();
@@ -4701,7 +4701,7 @@ fn elabBuiltinArray3(mut inExpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inP
 fn elabBuiltinZeros(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplicit: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = elabBuiltinFill(inCache.clone(), inEnv.clone(), metamodelica::cons(Arc::new(Absyn::Exp::INTEGER { value: 0 }), inPosArgs.clone()), metamodelica::nil(), inImplicit.clone(), inPrefix.clone(), inInfo.clone())?;
     Ok((outCache, outExp, outProperties))
 }
@@ -4783,7 +4783,7 @@ fn sameDimensions3(mut inDims: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> 
 fn elabBuiltinOnes(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArg: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplicit: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = elabBuiltinFill(inCache.clone(), inEnv.clone(), metamodelica::cons(Arc::new(Absyn::Exp::INTEGER { value: 1 }), inPosArgs.clone()), metamodelica::nil(), inImplicit.clone(), inPrefix.clone(), inInfo.clone())?;
     Ok((outCache, outExp, outProperties))
 }
@@ -4791,7 +4791,7 @@ fn elabBuiltinOnes(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPos
 fn elabBuiltinMax(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inFnArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArg: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImpl: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = elabBuiltinMinMaxCommon(inCache.clone(), inEnv.clone(), (literal!("max")).clone(), inFnArgs.clone(), inImpl.clone(), inPrefix.clone(), info.clone())?;
     Ok((outCache, outExp, outProperties))
 }
@@ -4799,7 +4799,7 @@ fn elabBuiltinMax(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inFnAr
 fn elabBuiltinMin(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inFnArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArg: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImpl: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = elabBuiltinMinMaxCommon(inCache.clone(), inEnv.clone(), (literal!("min")).clone(), inFnArgs.clone(), inImpl.clone(), inPrefix.clone(), info.clone())?;
     Ok((outCache, outExp, outProperties))
 }
@@ -4807,7 +4807,7 @@ fn elabBuiltinMin(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inFnAr
 fn elabBuiltinMinMaxCommon(mut cache: FCore::Cache, mut env: FCore::Graph, mut inFnName: ArcStr, mut inFnArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut r#impl: bool, mut prefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut cache: FCore::Cache = cache;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outExp, outProperties) = (::match_deref::match_deref! { match &(inFnArgs.clone()) {
         Deref @ metamodelica::List::Cons { head: arrexp, tail: Deref @ metamodelica::List::Nil } => {
             let mut arrexp_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -4880,7 +4880,7 @@ fn elabBuiltinMinMaxCommon(mut cache: FCore::Cache, mut env: FCore::Graph, mut i
 fn elabBuiltinClock(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut args: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut nargs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inBoolean: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = ({
         let mut prop: DAE::Properties = DAE::Properties::PROP { type_: DAE::T_CLOCK_DEFAULT().clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_VAR };
         'mc: {
@@ -4901,7 +4901,7 @@ fn elabBuiltinClock(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut args
                     let mut call: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut intervalCounter: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut prop1: DAE::Properties;
+                    let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut cache = (*cache).clone();
                     (cache, intervalCounter, prop1) = elabExpInExpression(cache.clone(), env.clone(), aintervalCounter.clone(), r#impl.clone(), true, pre.clone(), info.clone())?;
                     ty1 = Types::arrayElementType(Types::getPropType(prop1.clone())?);
@@ -4920,8 +4920,8 @@ fn elabBuiltinClock(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut args
                     let mut resolution: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut ty2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut prop1: DAE::Properties;
-                    let mut prop2: DAE::Properties;
+                    let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut prop2: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut val: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
                     let mut cache = (*cache).clone();
                     (cache, intervalCounter, prop1) = elabExpInExpression(cache.clone(), env.clone(), aintervalCounter.clone(), r#impl.clone(), true, pre.clone(), info.clone())?;
@@ -4945,7 +4945,7 @@ fn elabBuiltinClock(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut args
                     let mut call: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut interval: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut prop1: DAE::Properties;
+                    let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut cache = (*cache).clone();
                     (cache, interval, prop1) = elabExpInExpression(cache.clone(), env.clone(), ainterval.clone(), r#impl.clone(), true, pre.clone(), info.clone())?;
                     ty1 = Types::arrayElementType(Types::getPropType(prop1.clone())?);
@@ -4962,7 +4962,7 @@ fn elabBuiltinClock(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut args
                     let mut call: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut condition: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut prop1: DAE::Properties;
+                    let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut cache = (*cache).clone();
                     (cache, condition, prop1) = elabExpInExpression(cache.clone(), env.clone(), acondition.clone(), r#impl.clone(), true, pre.clone(), info.clone())?;
                     ty1 = Types::arrayElementType(Types::getPropType(prop1.clone())?);
@@ -4981,8 +4981,8 @@ fn elabBuiltinClock(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut args
                     let mut startInterval: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut ty2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut prop1: DAE::Properties;
-                    let mut prop2: DAE::Properties;
+                    let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut prop2: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut cache = (*cache).clone();
                     (cache, condition, prop1) = elabExpInExpression(cache.clone(), env.clone(), acondition.clone(), r#impl.clone(), true, pre.clone(), info.clone())?;
                     (cache, startInterval, prop2) = elabExpInExpression(cache.clone(), env.clone(), astartInterval.clone(), r#impl.clone(), true, pre.clone(), info.clone())?;
@@ -5004,8 +5004,8 @@ fn elabBuiltinClock(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut args
                     let mut solverMethod: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut ty2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut prop1: DAE::Properties;
-                    let mut prop2: DAE::Properties;
+                    let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut prop2: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut val: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
                     let mut cache = (*cache).clone();
                     (cache, c, prop1) = elabExpInExpression(cache.clone(), env.clone(), ac.clone(), r#impl.clone(), true, pre.clone(), info.clone())?;
@@ -5030,8 +5030,8 @@ fn elabBuiltinClock(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut args
                     let mut solverMethod: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut ty2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut prop1: DAE::Properties;
-                    let mut prop2: DAE::Properties;
+                    let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut prop2: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut val: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
                     let mut cache = (*cache).clone();
                     (cache, c, prop1) = elabExpInExpression(cache.clone(), env.clone(), ac.clone(), r#impl.clone(), true, pre.clone(), info.clone())?;
@@ -5057,14 +5057,14 @@ fn elabBuiltinClock(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut args
 fn elabBuiltinHold(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut args: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut nargs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inBoolean: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), args.clone(), nargs.clone(), inBoolean.clone(), inPrefix.clone())) {
         (cache, env, Deref @ metamodelica::List::Cons { head: au, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Nil, r#impl, pre) => {
             let mut call: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut prop1: DAE::Properties;
-            let mut prop: DAE::Properties;
+            let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+            let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
             let mut cache = (*cache).clone();
             (cache, _, prop1) = elabExpInExpression(cache.clone(), env.clone(), au.clone(), r#impl.clone(), true, pre.clone(), info.clone())?;
             ty1 = Types::arrayElementType(Types::getPropType(prop1.clone())?);
@@ -5086,7 +5086,7 @@ fn elabBuiltinHold(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut args:
 fn elabBuiltinSample(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut args: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut nargs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inBoolean: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), args.clone(), nargs.clone(), inBoolean.clone(), inPrefix.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -5098,9 +5098,9 @@ fn elabBuiltinSample(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut arg
                     let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut ty2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut prop1: DAE::Properties;
-                    let mut prop2: DAE::Properties;
-                    let mut prop: DAE::Properties;
+                    let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut prop2: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut cache = (*cache).clone();
                     (cache, start, prop1) = elabExpInExpression(cache.clone(), env.clone(), astart.clone(), r#impl.clone(), true, pre.clone(), info.clone())?;
                     (cache, interval, prop2) = elabExpInExpression(cache.clone(), env.clone(), ainterval.clone(), r#impl.clone(), true, pre.clone(), info.clone())?;
@@ -5129,9 +5129,9 @@ fn elabBuiltinSample(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut arg
                     let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut ty2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut prop1: DAE::Properties;
-                    let mut prop2: DAE::Properties;
-                    let mut prop: DAE::Properties;
+                    let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut prop2: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut variability: DAE::Const = DAE::Const::C_CONST;
                     let mut cache = (*cache).clone();
                     (cache, _, prop1) = elabExpInExpression(cache.clone(), env.clone(), au.clone(), r#impl.clone(), true, pre.clone(), info.clone())?;
@@ -5159,8 +5159,8 @@ fn elabBuiltinSample(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut arg
                     let mut call: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut prop1: DAE::Properties;
-                    let mut prop: DAE::Properties;
+                    let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut variability: DAE::Const = DAE::Const::C_CONST;
                     let mut cache = (*cache).clone();
                     (cache, _, prop1) = elabExpInExpression(cache.clone(), env.clone(), au.clone(), r#impl.clone(), true, pre.clone(), info.clone())?;
@@ -5187,16 +5187,16 @@ fn elabBuiltinSample(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut arg
 fn elabBuiltinShiftSample(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut args: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut nargs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inBoolean: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), args.clone(), nargs.clone(), inBoolean.clone(), inPrefix.clone())) {
         (cache, env, Deref @ metamodelica::List::Cons { head: au, tail: Deref @ metamodelica::List::Cons { head: ashiftCounter, tail: Deref @ metamodelica::List::Nil } }, Deref @ metamodelica::List::Nil, r#impl, pre) => {
             let mut call: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut shiftCounter: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut prop1: DAE::Properties;
-            let mut prop2: DAE::Properties;
-            let mut prop: DAE::Properties;
+            let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+            let mut prop2: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+            let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
             let mut aresolution: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
             let mut val: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
             let mut cache = (*cache).clone();
@@ -5225,10 +5225,10 @@ fn elabBuiltinShiftSample(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
             let mut resolution: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut prop1: DAE::Properties;
-            let mut prop2: DAE::Properties;
-            let mut prop3: DAE::Properties;
-            let mut prop: DAE::Properties;
+            let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+            let mut prop2: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+            let mut prop3: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+            let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
             let mut val: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
             let mut rval: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
             let mut cache = (*cache).clone();
@@ -5264,16 +5264,16 @@ fn elabBuiltinShiftSample(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
 fn elabBuiltinBackSample(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut args: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut nargs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inBoolean: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), args.clone(), nargs.clone(), inBoolean.clone(), inPrefix.clone())) {
         (cache, env, Deref @ metamodelica::List::Cons { head: au, tail: Deref @ metamodelica::List::Cons { head: abackCounter, tail: Deref @ metamodelica::List::Nil } }, Deref @ metamodelica::List::Nil, r#impl, pre) => {
             let mut call: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut backCounter: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut prop1: DAE::Properties;
-            let mut prop2: DAE::Properties;
-            let mut prop: DAE::Properties;
+            let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+            let mut prop2: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+            let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
             let mut aresolution: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
             let mut val: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
             let mut cache = (*cache).clone();
@@ -5302,10 +5302,10 @@ fn elabBuiltinBackSample(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
             let mut resolution: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut prop1: DAE::Properties;
-            let mut prop2: DAE::Properties;
-            let mut prop3: DAE::Properties;
-            let mut prop: DAE::Properties;
+            let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+            let mut prop2: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+            let mut prop3: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+            let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
             let mut val: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
             let mut rval: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
             let mut cache = (*cache).clone();
@@ -5341,14 +5341,14 @@ fn elabBuiltinBackSample(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
 fn elabBuiltinNoClock(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut args: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut nargs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inBoolean: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), args.clone(), nargs.clone(), inBoolean.clone(), inPrefix.clone())) {
         (cache, env, Deref @ metamodelica::List::Cons { head: au, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Nil, r#impl, pre) => {
             let mut call: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut prop1: DAE::Properties;
-            let mut prop: DAE::Properties;
+            let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+            let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
             let mut cache = (*cache).clone();
             (cache, _, prop1) = elabExpInExpression(cache.clone(), env.clone(), au.clone(), r#impl.clone(), true, pre.clone(), info.clone())?;
             ty1 = Types::arrayElementType(Types::getPropType(prop1.clone())?);
@@ -5370,12 +5370,12 @@ fn elabBuiltinNoClock(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut ar
 fn elabBuiltinFirstTick(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut args: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut nargs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inBoolean: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), args.clone(), nargs.clone(), inBoolean.clone(), inPrefix.clone())) {
         (cache, env, Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil, r#impl, pre) => {
             let mut call: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut prop: DAE::Properties;
+            let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
             let mut cache = (*cache).clone();
             ty = Arc::new(DAE::Type::T_FUNCTION { funcArg: metamodelica::nil(), funcResultType: DAE::T_BOOL_DEFAULT().clone(), functionAttributes: DAE::FUNCTION_ATTRIBUTES_BUILTIN_IMPURE.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("firstTick")).clone() }) });
             let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(elabCallArgs3(cache.clone(), env.clone(), list![ty.clone()], Arc::new(Absyn::Path::IDENT { name: (literal!("firstTick")).clone() }), args.clone(), nargs.clone(), metamodelica::nil(), r#impl.clone(), pre.clone(), info.clone())?) {
@@ -5391,8 +5391,8 @@ fn elabBuiltinFirstTick(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
             let mut call: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut prop1: DAE::Properties;
-            let mut prop: DAE::Properties;
+            let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+            let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
             let mut cache = (*cache).clone();
             (cache, _, prop1) = elabExpInExpression(cache.clone(), env.clone(), au.clone(), r#impl.clone(), true, pre.clone(), info.clone())?;
             ty1 = Types::arrayElementType(Types::getPropType(prop1.clone())?);
@@ -5414,12 +5414,12 @@ fn elabBuiltinFirstTick(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
 fn elabBuiltinInterval(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut args: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut nargs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inBoolean: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), args.clone(), nargs.clone(), inBoolean.clone(), inPrefix.clone())) {
         (cache, env, Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil, r#impl, pre) => {
             let mut call: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut prop: DAE::Properties;
+            let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
             let mut cache = (*cache).clone();
             ty = Arc::new(DAE::Type::T_FUNCTION { funcArg: metamodelica::nil(), funcResultType: DAE::T_REAL_DEFAULT().clone(), functionAttributes: DAE::FUNCTION_ATTRIBUTES_BUILTIN_IMPURE.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("interval")).clone() }) });
             let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(elabCallArgs3(cache.clone(), env.clone(), list![ty.clone()], Arc::new(Absyn::Path::IDENT { name: (literal!("interval")).clone() }), args.clone(), nargs.clone(), metamodelica::nil(), r#impl.clone(), pre.clone(), info.clone())?) {
@@ -5435,8 +5435,8 @@ fn elabBuiltinInterval(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut a
             let mut call: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut prop1: DAE::Properties;
-            let mut prop: DAE::Properties;
+            let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+            let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
             let mut cache = (*cache).clone();
             (cache, _, prop1) = elabExpInExpression(cache.clone(), env.clone(), au.clone(), r#impl.clone(), true, pre.clone(), info.clone())?;
             ty1 = Types::arrayElementType(Types::getPropType(prop1.clone())?);
@@ -5471,14 +5471,14 @@ fn isBlockTypeWorkaround(mut ity: Arc<DAE::Type>) -> bool {
 fn elabBuiltinTransition(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut args: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut nargs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inBoolean: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = (match (inCache.clone(), inEnv.clone(), inBoolean.clone(), inPrefix.clone()) {
         (mut cache, mut env, mut r#impl, mut pre) => {
             let mut call: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let mut ty2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut prop: DAE::Properties;
+            let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
             let mut n: i32 = 0;
             let mut strMsg0: ArcStr = arcstr::literal!("");
             let mut strPre: ArcStr = arcstr::literal!("");
@@ -5510,7 +5510,7 @@ fn elabBuiltinTransition(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
 fn elabBuiltinTransition2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut args: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut nargs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inBoolean: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo, mut argName: ArcStr, mut n: i32, mut strMsg0: ArcStr, mut strPre: ArcStr) -> Result<Arc<DAE::Type>> {
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut arg1: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-    let mut prop1: DAE::Properties;
+    let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut nPos: i32 = 0;
     let mut s1: ArcStr = arcstr::literal!("");
     let mut s2: ArcStr = arcstr::literal!("");
@@ -5583,14 +5583,14 @@ fn elabBuiltinTransition5(mut argName: ArcStr, mut getAsNamedArg: bool, mut args
 fn elabBuiltinInitialState(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut args: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut nargs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inBoolean: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), args.clone(), nargs.clone(), inBoolean.clone(), inPrefix.clone())) {
         (cache, env, Deref @ metamodelica::List::Cons { head: astate, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Nil, r#impl, pre) => {
             let mut call: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut prop1: DAE::Properties;
-            let mut prop: DAE::Properties;
+            let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+            let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
             let mut strMsg: ArcStr = arcstr::literal!("");
             let mut strPre: ArcStr = arcstr::literal!("");
             let mut cache = (*cache).clone();
@@ -5617,14 +5617,14 @@ fn elabBuiltinInitialState(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
 fn elabBuiltinActiveState(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut args: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut nargs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inBoolean: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), args.clone(), nargs.clone(), inBoolean.clone(), inPrefix.clone())) {
         (cache, env, Deref @ metamodelica::List::Cons { head: astate, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Nil, r#impl, pre) => {
             let mut call: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut prop1: DAE::Properties;
-            let mut prop: DAE::Properties;
+            let mut prop1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+            let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
             let mut strMsg: ArcStr = arcstr::literal!("");
             let mut strPre: ArcStr = arcstr::literal!("");
             let mut cache = (*cache).clone();
@@ -5651,12 +5651,12 @@ fn elabBuiltinActiveState(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
 fn elabBuiltinTicksInState(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut args: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut nargs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inBoolean: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), args.clone(), nargs.clone(), inBoolean.clone(), inPrefix.clone())) {
         (cache, env, Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil, r#impl, pre) => {
             let mut call: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut prop: DAE::Properties;
+            let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
             let mut cache = (*cache).clone();
             ty = Arc::new(DAE::Type::T_FUNCTION { funcArg: metamodelica::nil(), funcResultType: DAE::T_INTEGER_DEFAULT().clone(), functionAttributes: DAE::FUNCTION_ATTRIBUTES_BUILTIN_IMPURE.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("ticksInState")).clone() }) });
             let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(elabCallArgs3(cache.clone(), env.clone(), list![ty.clone()], Arc::new(Absyn::Path::IDENT { name: (literal!("ticksInState")).clone() }), args.clone(), nargs.clone(), metamodelica::nil(), r#impl.clone(), pre.clone(), info.clone())?) {
@@ -5676,12 +5676,12 @@ fn elabBuiltinTicksInState(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
 fn elabBuiltinTimeInState(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut args: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut nargs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inBoolean: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), args.clone(), nargs.clone(), inBoolean.clone(), inPrefix.clone())) {
         (cache, env, Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil, r#impl, pre) => {
             let mut call: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut prop: DAE::Properties;
+            let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
             let mut cache = (*cache).clone();
             ty = Arc::new(DAE::Type::T_FUNCTION { funcArg: metamodelica::nil(), funcResultType: DAE::T_REAL_DEFAULT().clone(), functionAttributes: DAE::FUNCTION_ATTRIBUTES_BUILTIN_IMPURE.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("timeInState")).clone() }) });
             let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(elabCallArgs3(cache.clone(), env.clone(), list![ty.clone()], Arc::new(Absyn::Path::IDENT { name: (literal!("timeInState")).clone() }), args.clone(), nargs.clone(), metamodelica::nil(), r#impl.clone(), pre.clone(), info.clone())?) {
@@ -5701,7 +5701,7 @@ fn elabBuiltinTimeInState(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
 fn elabBuiltinBoolean(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplicit: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = verifyBuiltInHandlerType(inCache.clone(), inEnv.clone(), inPosArgs.clone(), inImplicit.clone(), (std::sync::Arc::new(Types::isIntegerOrRealOrBooleanOrSubTypeOfEither) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<bool> + 'static>), (literal!("boolean")).clone(), inPrefix.clone(), inInfo.clone())?;
     Ok((outCache, outExp, outProperties))
 }
@@ -5709,7 +5709,7 @@ fn elabBuiltinBoolean(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
 fn elabBuiltinIntegerEnum(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArg: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplicit: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = verifyBuiltInHandlerType(inCache.clone(), inEnv.clone(), inPosArgs.clone(), inImplicit.clone(), (std::sync::Arc::new(fnptr!(Types::isEnumeration, Arc<DAE::Type>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<bool> + 'static>), (literal!("Integer")).clone(), inPrefix.clone(), inInfo.clone())?;
     Ok((outCache, outExp, outProperties))
 }
@@ -5717,7 +5717,7 @@ fn elabBuiltinIntegerEnum(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
 fn elabBuiltinNoevent(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplicit: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut e: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     checkBuiltinCallArgs(inPosArgs.clone(), inNamedArgs.clone(), 1, (literal!("noEvent")).clone(), inInfo.clone())?;
     e = listHead(inPosArgs.clone())?;
@@ -5729,7 +5729,7 @@ fn elabBuiltinNoevent(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
 fn elabBuiltinEdge(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplicit: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut c: DAE::Const = DAE::Const::C_CONST;
     let mut msg: ArcStr = arcstr::literal!("");
@@ -5754,7 +5754,7 @@ fn elabBuiltinEdge(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPos
 fn elabBuiltinDer(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplicit: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut c: DAE::Const = DAE::Const::C_CONST;
     let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
@@ -5792,7 +5792,7 @@ fn elabBuiltinDer(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosA
 fn elabBuiltinChange(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplicit: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut e: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut pre_str: ArcStr = arcstr::literal!("");
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -5846,9 +5846,9 @@ fn elabBuiltinChange(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inP
 fn elabBuiltinCat(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplicit: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut dim_exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut dim_props: DAE::Properties;
+    let mut dim_props: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut dim_ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut result_ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -5944,7 +5944,7 @@ fn elabBuiltinCat(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosA
 fn elabBuiltinIdentity(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplicit: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut exp_ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut c: DAE::Const = DAE::Const::C_CONST;
@@ -6022,7 +6022,7 @@ fn zeroSizeOverconstrainedOperator(mut inExp: Arc<DAE::Exp>, mut inFExp: Arc<DAE
 fn elabBuiltinIsRoot(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplicit: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     checkBuiltinCallArgs(inPosArgs.clone(), inNamedArgs.clone(), 1, (literal!("Connections.isRoot")).clone(), inInfo.clone())?;
     (outCache, exp, _) = elabExpInExpression(inCache.clone(), inEnv.clone(), listHead(inPosArgs.clone())?, false, false, inPrefix.clone(), inInfo.clone())?;
@@ -6035,7 +6035,7 @@ fn elabBuiltinIsRoot(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inP
 fn elabBuiltinRooted(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplicit: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     checkBuiltinCallArgs(inPosArgs.clone(), inNamedArgs.clone(), 1, (literal!("rooted")).clone(), inInfo.clone())?;
     (outCache, exp, _) = elabExpInExpression(inCache.clone(), inEnv.clone(), listHead(inPosArgs.clone())?, false, false, inPrefix.clone(), inInfo.clone())?;
@@ -6048,7 +6048,7 @@ fn elabBuiltinRooted(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inP
 fn elabBuiltinUniqueRootIndices(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAbsynExpLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArg: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inBoolean: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inAbsynExpLst.clone(), inNamedArg.clone(), inPrefix.clone())) {
         (cache, env, Deref @ metamodelica::List::Cons { head: aexp1, tail: Deref @ metamodelica::List::Cons { head: aexp2, tail: Deref @ metamodelica::List::Nil } }, Deref @ metamodelica::List::Nil, pre) => {
             let mut exp1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -6121,7 +6121,7 @@ fn elabBuiltinUniqueRootIndices(mut inCache: FCore::Cache, mut inEnv: FCore::Gra
 fn elabBuiltinScalar(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplicit: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut scalar_ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut c: DAE::Const = DAE::Const::C_CONST;
@@ -6165,7 +6165,7 @@ pub fn STRING_ARG_SIGNIFICANT_DIGITS() -> Slot { __STRING_ARG_SIGNIFICANT_DIGITS
 fn elabBuiltinString(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplicit: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut e: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -6245,7 +6245,7 @@ fn elabBuiltinString(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inP
 fn elabBuiltinGetInstanceName(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplicit: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut r#str: ArcStr = arcstr::literal!("");
     let mut name: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     let mut envName: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
@@ -6266,7 +6266,7 @@ fn elabBuiltinGetInstanceName(mut inCache: FCore::Cache, mut inEnv: FCore::Graph
 fn elabBuiltinIsPresent(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplicit: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut r#str: ArcStr = arcstr::literal!("");
     let mut direction: Absyn::Direction = Absyn::Direction::BIDIR;
     let mut exp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
@@ -6304,7 +6304,7 @@ fn elabBuiltinIsPresent(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
 fn elabBuiltinVector(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplicit: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut e: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut arr_ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -6412,7 +6412,7 @@ fn flattenArray(mut arr: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Arc<metamode
 pub fn elabBuiltinMatrix(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImpl: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     checkBuiltinCallArgs(inPosArgs.clone(), inNamedArgs.clone(), 1, (literal!("matrix")).clone(), inInfo.clone())?;
     (outCache, outExp, outProperties) = elabExpInExpression(inCache.clone(), inEnv.clone(), listHead(inPosArgs.clone())?, inImpl.clone(), true, inPrefix.clone(), inInfo.clone())?;
@@ -6423,17 +6423,17 @@ pub fn elabBuiltinMatrix(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
 
 fn elabBuiltinMatrix2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inArg: Arc<DAE::Exp>, mut inProperties: DAE::Properties, mut inType: Arc<DAE::Type>, mut inInfo: SourceInfo) -> Result<(Arc<DAE::Exp>, DAE::Properties)> {
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outExp, outProperties) = (::match_deref::match_deref! { match &(inArg.clone()) {
         _ if (Types::isSimpleType(inType.clone())) => {
             let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut props: DAE::Properties;
+            let mut props: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
             (exp, props) = promoteExp(inArg.clone(), inProperties.clone(), 2)?;
             (exp.clone(), props.clone())
         },
         _ if (Types::numberOfDimensions(inType.clone())? == 1) => {
             let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut props: DAE::Properties;
+            let mut props: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
             (exp, props) = promoteExp(inArg.clone(), inProperties.clone(), 2)?;
             (exp.clone(), props.clone())
         },
@@ -6442,7 +6442,7 @@ fn elabBuiltinMatrix2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
         },
         Deref @ DAE::Exp::ARRAY { array: expl, scalar, ty: Deref @ DAE::Type::T_ARRAY { ty: ety, dims: Deref @ metamodelica::List::Cons { head: dim1, tail: Deref @ metamodelica::List::Cons { head: dim2, tail: _ } } } } => {
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-            let mut props: DAE::Properties;
+            let mut props: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
             let mut expl = (*expl).clone();
             expl = List::map1(expl.clone(), (std::sync::Arc::new(elabBuiltinMatrix3) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, SourceInfo) -> Result<Arc<DAE::Exp>> + 'static>), inInfo.clone());
             ty = Types::arrayElementType(inType.clone());
@@ -6713,7 +6713,7 @@ fn elabCallBuiltin(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inFnN
 
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = (::match_deref::match_deref! { match &(inFnName.clone()) {
         Deref @ Absyn::ComponentRef::CREF_IDENT { subscripts: Deref @ metamodelica::List::Nil, .. } => {
             let mut handler: Arc<dyn ::std::ops::Fn(FCore::Cache, FCore::Graph, Arc<metamodelica::List<Arc<Absyn::Exp>>>, Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, bool, DAE::Prefix, SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> + 'static>;
@@ -6741,7 +6741,7 @@ fn elabCallBuiltin(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inFnN
 fn elabCall(mut cache: FCore::Cache, mut env: FCore::Graph, mut r#fn: Arc<Absyn::ComponentRef>, mut args: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut nargs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut typeVars: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut r#impl: bool, mut pre: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut cache: FCore::Cache = cache;
     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut prop: DAE::Properties;
+    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut numErrorMessages: i32 = Error::getNumErrorMessages();
     let mut handles: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut name: ArcStr = arcstr::literal!("");
@@ -7064,7 +7064,7 @@ fn createDummyFarg(mut name: ArcStr) -> Arc<DAE::FuncArg> {
 pub fn elabCallArgs(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPath: Arc<Absyn::Path>, mut inAbsynExpLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inAbsynNamedArgLst: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut typeVars: Arc<metamodelica::List<Arc<Absyn::Path>>>, mut inBoolean: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(elabCallArgs2(inCache.clone(), inEnv.clone(), inPath.clone(), inAbsynExpLst.clone(), inAbsynNamedArgLst.clone(), typeVars.clone(), inBoolean.clone(), Mutable::create(false), inPrefix.clone(), info.clone(), Error::getNumErrorMessages())?) {
         (__pa0, Some((__pa1, __pa2))) => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
@@ -7078,7 +7078,7 @@ pub fn elabCallArgs(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPa
 
 fn elabCallArgsEvaluateArrayLength(mut inCache: FCore::Cache, mut env: FCore::Graph, mut inProperties: DAE::Properties, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> (FCore::Cache, DAE::Properties) {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     match '__try0: {
         let true = (unwrap_break_err!(FGraph::checkScopeType(list![FGraph::lastScopeRef(env.clone()).unwrap()], Some(crate::FCore::ScopeType::CLASS_SCOPE)), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
@@ -7265,9 +7265,9 @@ fn elabCallArgs2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPath:
                     let mut constlist: Arc<metamodelica::List<DAE::Const>> = metamodelica::nil();
                     let mut constInputArgs: Arc<metamodelica::List<DAE::Const>> = metamodelica::nil();
                     let mut r#const: DAE::Const = DAE::Const::C_CONST;
-                    let mut tyconst: Arc<DAE::TupleConst>;
-                    let mut prop: DAE::Properties;
-                    let mut prop_1: DAE::Properties;
+                    let mut tyconst: Arc<DAE::TupleConst> = Arc::new(<DAE::TupleConst as ::std::default::Default>::default());
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut prop_1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut vect_dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
                     let mut call_exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -7464,7 +7464,7 @@ fn elabCallArgs2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPath:
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, r#fn, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { componentRef: Deref @ Absyn::ComponentRef::CREF_IDENT { name, subscripts: _ } }, tail: Deref @ metamodelica::List::Nil }, _, r#impl, pre) => {
                     if !((Config::acceptOptimicaGrammar()?)) { bail!("guard") }
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut daeexp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut tp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut cref: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
@@ -7562,10 +7562,10 @@ pub fn elabCallArgs3(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut typ
     let mut isImpure: bool = false;
     let mut inlineType: DAE::InlineType = DAE::InlineType::AFTER_INDEX_RED_INLINE;
     let mut fn_1: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    let mut prop: DAE::Properties;
-    let mut prop_1: DAE::Properties;
+    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+    let mut prop_1: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut tp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    let mut tyconst: Arc<DAE::TupleConst>;
+    let mut tyconst: Arc<DAE::TupleConst> = Arc::new(<DAE::TupleConst as ::std::default::Default>::default());
     let mut vect_dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
     let mut slots: Arc<metamodelica::List<Slot>> = metamodelica::nil();
     let mut slots2: Arc<metamodelica::List<Slot>> = metamodelica::nil();
@@ -7867,8 +7867,8 @@ fn elabCallArgsMetarecord(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
                     let mut slots: Arc<metamodelica::List<Slot>> = metamodelica::nil();
                     let mut const_lst: Arc<metamodelica::List<DAE::Const>> = metamodelica::nil();
                     let mut r#const: DAE::Const = DAE::Const::C_CONST;
-                    let mut ty_const: Arc<DAE::TupleConst>;
-                    let mut prop: DAE::Properties;
+                    let mut ty_const: Arc<DAE::TupleConst> = Arc::new(<DAE::TupleConst as ::std::default::Default>::default());
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut args: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut bindings: Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<Arc<DAE::Type>>>)>> = metamodelica::nil();
                     let mut outCache: FCore::Cache = outCache.clone();
@@ -7929,7 +7929,7 @@ fn elabCallArgsMetarecord(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
                     let mut r#str: ArcStr = arcstr::literal!("");
                     let mut fn_str: ArcStr = arcstr::literal!("");
                     let mut tys: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut outCache: FCore::Cache = outCache.clone();
                     (outCache, _, prop) = elabExpInExpression(inCache.clone(), inEnv.clone(), Arc::new(Absyn::Exp::TUPLE { expressions: inPosArgs.clone() }), false, false, inPrefix.clone(), inInfo.clone())?;
                     tys = ({
@@ -8349,7 +8349,7 @@ pub const vectorizeArg: &'static str = "$vectorizeArg";
 
 fn vectorizeCall(mut inExp: Arc<DAE::Exp>, mut inDims: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mut inSlots: Arc<metamodelica::List<Slot>>, mut inProperties: DAE::Properties, mut info: SourceInfo) -> Result<(Arc<DAE::Exp>, DAE::Properties)> {
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outExp, outProperties) = 'mc: {
         let __mc_input = (inExp.clone(), inDims.clone(), inProperties.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -9310,7 +9310,7 @@ fn sameArraydimLst(mut inDims1: Arc<metamodelica::List<Arc<DAE::Dimension>>>, mu
 }
 
 fn getProperties(mut inType: Arc<DAE::Type>, mut inTupleConst: Arc<DAE::TupleConst>) -> Result<DAE::Properties> {
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     outProperties = (::match_deref::match_deref! { match &((inType.clone(), inTupleConst.clone())) {
         (tt @ Deref @ DAE::Type::T_TUPLE { .. }, r#const) => {
             DAE::Properties::PROP_TUPLE { type_: tt.clone(), tupleConst: r#const.clone() }
@@ -9342,7 +9342,7 @@ fn getProperties(mut inType: Arc<DAE::Type>, mut inTupleConst: Arc<DAE::TupleCon
 }
 
 fn elabConsts(mut inType: Arc<DAE::Type>, mut inConst: DAE::Const) -> Result<Arc<DAE::TupleConst>> {
-    let mut outTupleConst: Arc<DAE::TupleConst>;
+    let mut outTupleConst: Arc<DAE::TupleConst> = Arc::new(<DAE::TupleConst as ::std::default::Default>::default());
     outTupleConst = (::match_deref::match_deref! { match &((inType.clone(), inConst.clone())) {
         (Deref @ DAE::Type::T_TUPLE { types: tys, .. }, c) => {
             let mut consts: Arc<metamodelica::List<Arc<DAE::TupleConst>>> = metamodelica::nil();
@@ -9373,7 +9373,7 @@ fn checkConsts(mut inTypes: Arc<metamodelica::List<Arc<DAE::Type>>>, mut inConst
 }
 
 fn checkConst(mut inType: Arc<DAE::Type>, mut c: DAE::Const) -> Result<Arc<DAE::TupleConst>> {
-    let mut outTupleConst: Arc<DAE::TupleConst>;
+    let mut outTupleConst: Arc<DAE::TupleConst> = Arc::new(<DAE::TupleConst as ::std::default::Default>::default());
     outTupleConst = (::match_deref::match_deref! { match &(inType.clone()) {
         Deref @ DAE::Type::T_TUPLE { .. } => {
             Error::addInternalError((literal!("No support for tuples built by tuples")).clone(), metamodelica::sourceInfo!())?;
@@ -9390,7 +9390,7 @@ fn splitProps(mut inProperties: Arc<metamodelica::List<DAE::Properties>>) -> Res
     let mut outConsts: Arc<metamodelica::List<Arc<DAE::TupleConst>>> = metamodelica::nil();
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut c: DAE::Const = DAE::Const::C_CONST;
-    let mut tc: Arc<DAE::TupleConst>;
+    let mut tc: Arc<DAE::TupleConst> = Arc::new(<DAE::TupleConst as ::std::default::Default>::default());
     for mut prop in &*inProperties.clone().reverse() {
         let mut prop = prop.clone();
         tc = (match prop.clone() {
@@ -9757,7 +9757,7 @@ fn elabPositionalInputArg(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
                     let mut e_2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut t: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut c1: DAE::Const = DAE::Const::C_CONST;
-                    let mut props: DAE::Properties;
+                    let mut props: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut cache = (*cache).clone();
                     let mut vt = (*vt).clone();
                     let mut polymorphicBindings = (*polymorphicBindings).clone();
@@ -9781,7 +9781,7 @@ fn elabPositionalInputArg(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
                     let mut t: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut c1: DAE::Const = DAE::Const::C_CONST;
                     let mut ds: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
-                    let mut props: DAE::Properties;
+                    let mut props: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut cache = (*cache).clone();
                     let mut vt = (*vt).clone();
                     let mut polymorphicBindings = (*polymorphicBindings).clone();
@@ -9803,7 +9803,7 @@ fn elabPositionalInputArg(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut t: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut c1: DAE::Const = DAE::Const::C_CONST;
-                    let mut props: DAE::Properties;
+                    let mut props: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut cache = (*cache).clone();
                     (cache, e_1, props) = elabExpInExpression(cache.clone(), env.clone(), e.clone(), r#impl.clone(), true, pre.clone(), info.clone())?;
                     t = Types::getPropType(props.clone())?;
@@ -9818,7 +9818,7 @@ fn elabPositionalInputArg(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, e, Deref @ DAE::FuncArg { ty: vt, name: id, .. }, _, true, true, _, pre) => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut s3: ArcStr = arcstr::literal!("");
@@ -10000,7 +10000,7 @@ fn elabNamedInputArg(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inN
                 (cache, env, Deref @ Absyn::NamedArg { argValue: e, argName: id }, farg, _, true, true, _, pre) => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut vt: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
                     let mut s3: ArcStr = arcstr::literal!("");
@@ -10144,7 +10144,7 @@ pub fn elabCref(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inCompon
 pub fn elabCrefNoEval(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponentRef: Arc<Absyn::ComponentRef>, mut inImplicit: bool, mut performVectorization: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties, Arc<DAE::Attributes>)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut outAttributes: Arc<DAE::Attributes> = Arc::new(<DAE::Attributes as ::std::default::Default>::default());
     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(elabCref1(inCache.clone(), inEnv.clone(), inComponentRef.clone(), inImplicit.clone(), performVectorization.clone(), inPrefix.clone(), false, info.clone())?) {
         (__pa0, Some((__pa1, __pa2, __pa3))) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
@@ -11979,7 +11979,7 @@ fn elabSubscript(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inSubsc
                     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut r#const: DAE::Const = DAE::Const::C_CONST;
                     let mut sub_2: Arc<DAE::Subscript> = Arc::new(DAE::Subscript::WHOLEDIM);
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut cache = (*cache).clone();
                     let (__pa0, __pa1, __pa3, __pa2) = ::match_deref::match_deref! { match &(elabExpInExpression(cache.clone(), env.clone(), sub.clone(), r#impl.clone(), true, pre.clone(), info.clone())?) {
                         (__pa0, __pa1, __pa3 @ DAE::Properties::PROP { constFlag: __pa2, .. }) => (__pa0.clone(), __pa1.clone(), __pa3.clone(), __pa2.clone()),
@@ -12170,7 +12170,7 @@ fn subscriptType(mut inType: Arc<DAE::Type>, mut inExpSubscriptLst: Arc<metamode
 fn makeIfExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inCondition: Arc<DAE::Exp>, mut inCondProp: DAE::Properties, mut inTrueBranch: Arc<DAE::Exp>, mut inTrueProp: DAE::Properties, mut inFalseBranch: Arc<DAE::Exp>, mut inFalseProp: DAE::Properties, mut inImplicit: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = inCache.clone();
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut ty_match: bool = false;
     let mut cond: bool = false;
     let mut cond_ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -12487,7 +12487,7 @@ pub fn elabCodeExp_dispatch(mut exp: Arc<Absyn::Exp>, mut cache: FCore::Cache, m
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Exp::CREF { componentRef: cr } => {
                     let mut dexp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut ct2: DAE::CodeType = DAE::CodeType::C_EXPRESSION;
                     let mut id: ArcStr = arcstr::literal!("");
                     ErrorExt::setCheckpoint((literal!("elabCodeExp_dispatch1")).clone());
@@ -12534,7 +12534,7 @@ pub fn elabCodeExp_dispatch(mut exp: Arc<Absyn::Exp>, mut cache: FCore::Cache, m
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut dexp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut ct2: DAE::CodeType = DAE::CodeType::C_EXPRESSION;
                     let false = (AbsynUtil::isCref(exp.clone())) else { bail!("pattern mismatch") };
                     ErrorExt::setCheckpoint((literal!("elabCodeExp_dispatch")).clone());
@@ -12668,7 +12668,7 @@ fn elabArrayDim(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inCref: 
                     let mut dim: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
                     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
                     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     (cache, e, prop) = elabExpInExpression(inCache.clone(), inEnv.clone(), sub.clone(), inImpl.clone(), inDoVect.clone(), inPrefix.clone(), inInfo.clone())?;
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(elabArrayDim2(cache.clone(), inEnv.clone(), inCref.clone(), e.clone(), prop.clone(), inImpl.clone(), inDoVect.clone(), inPrefix.clone(), inInfo.clone())?) {
                         (__pa0, Some(__pa1)) => (__pa0.clone(), __pa1.clone()),
@@ -12901,7 +12901,7 @@ fn replaceEndTraverser(mut inExp: Arc<Absyn::Exp>, mut inTuple: (Arc<Absyn::Comp
 
 fn fixTupleMetaModelica(mut exps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut types: Arc<metamodelica::List<Arc<DAE::Type>>>, mut consts: Arc<metamodelica::List<Arc<DAE::TupleConst>>>) -> Result<(Arc<DAE::Exp>, DAE::Properties)> {
     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut prop: DAE::Properties;
+    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut c: DAE::Const = DAE::Const::C_CONST;
     let mut tys2: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
     let mut exps2: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();

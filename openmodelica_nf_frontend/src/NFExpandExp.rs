@@ -1121,7 +1121,7 @@ pub fn expandGeneric2(mut subs: Arc<metamodelica::List<Arc<metamodelica::List<Ar
 
 pub fn expandCallArgs(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
-    let mut call: Arc<Call::NFCall>;
+    let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let () = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { .. } } => {
             let mut call = (*call).clone();

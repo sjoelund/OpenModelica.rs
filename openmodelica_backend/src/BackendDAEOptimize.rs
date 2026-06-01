@@ -1995,7 +1995,7 @@ pub fn countOperationstraverseComps(mut inComps: Arc<metamodelica::List<Arc<Back
                     let mut numLog: i32 = 0;
                     let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
                     let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
-                    let mut compInfo: Arc<BackendDAE::CompInfo>;
+                    let mut compInfo: Arc<BackendDAE::CompInfo> = Arc::new(<BackendDAE::CompInfo as ::std::default::Default>::default());
                     eqns = BackendEquation::getEqnsFromEqSystem(isyst.clone());
                     eqn = BackendEquation::get(eqns.clone(), eqIdx.clone());
                     let (_, (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7)) = BackendEquation::traverseExpsOfEquation(eqn.clone(), (std::sync::Arc::new({ let __pe_b1 = ishared.clone(); move |__pe_a0, __pe_a2| countOperationsExp(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32)) -> Result<(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32))> + 'static>), (0, 0, 0, 0, 0, 0, 0, 0))?;
@@ -2028,7 +2028,7 @@ pub fn countOperationstraverseComps(mut inComps: Arc<metamodelica::List<Arc<Back
                     let mut numFuncs: i32 = 0;
                     let mut numLog: i32 = 0;
                     let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
-                    let mut compInfo: Arc<BackendDAE::CompInfo>;
+                    let mut compInfo: Arc<BackendDAE::CompInfo> = Arc::new(<BackendDAE::CompInfo as ::std::default::Default>::default());
                     eqn = BackendEquation::get(BackendEquation::getEqnsFromEqSystem(isyst.clone()), eqIdx.clone());
                     let (_, (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7)) = BackendEquation::traverseExpsOfEquation(eqn.clone(), (std::sync::Arc::new({ let __pe_b1 = ishared.clone(); move |__pe_a0, __pe_a2| countOperationsExp(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32)) -> Result<(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32))> + 'static>), (0, 0, 0, 0, 0, 0, 0, 0))?;
                     numAdd = __pa0.clone();
@@ -2053,8 +2053,8 @@ pub fn countOperationstraverseComps(mut inComps: Arc<metamodelica::List<Arc<Back
                 (Deref @ metamodelica::List::Cons { head: comp @ Deref @ BackendDAE::StrongComponent::EQUATIONSYSTEM { jacType: BackendDAE::JacobianType::JAC_LINEAR { .. }, jac, eqns: eqs, .. }, tail: rest }, _) => {
                     let mut size: i32 = 0;
                     let mut density: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-                    let mut compInfo: Arc<BackendDAE::CompInfo>;
-                    let mut allOps: Arc<BackendDAE::CompInfo>;
+                    let mut compInfo: Arc<BackendDAE::CompInfo> = Arc::new(<BackendDAE::CompInfo as ::std::default::Default>::default());
+                    let mut allOps: Arc<BackendDAE::CompInfo> = Arc::new(<BackendDAE::CompInfo as ::std::default::Default>::default());
                     BackendDAETransform::getEquationAndSolvedVar(comp.clone(), BackendEquation::getEqnsFromEqSystem(isyst.clone()), BackendVariable::daeVars(isyst.clone()))?;
                     size = (eqs.clone().len() as i32);
                     density = realDiv(intReal(getNumJacEntries(jac.clone())), intReal(size.clone() * size.clone()));
@@ -2080,8 +2080,8 @@ pub fn countOperationstraverseComps(mut inComps: Arc<metamodelica::List<Arc<Back
                     let mut size: i32 = 0;
                     let mut jacEntries: i32 = 0;
                     let mut density: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-                    let mut compInfo: Arc<BackendDAE::CompInfo>;
-                    let mut allOps: Arc<BackendDAE::CompInfo>;
+                    let mut compInfo: Arc<BackendDAE::CompInfo> = Arc::new(<BackendDAE::CompInfo as ::std::default::Default>::default());
+                    let mut allOps: Arc<BackendDAE::CompInfo> = Arc::new(<BackendDAE::CompInfo as ::std::default::Default>::default());
                     let mut eqnlst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
                     (eqnlst, _, _) = BackendDAETransform::getEquationAndSolvedVar(comp.clone(), BackendEquation::getEqnsFromEqSystem(isyst.clone()), BackendVariable::daeVars(isyst.clone()))?;
                     size = (eqnlst.clone().len() as i32);
@@ -2110,7 +2110,7 @@ pub fn countOperationstraverseComps(mut inComps: Arc<metamodelica::List<Arc<Back
                     let mut numFuncs: i32 = 0;
                     let mut numLog: i32 = 0;
                     let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
-                    let mut compInfo: Arc<BackendDAE::CompInfo>;
+                    let mut compInfo: Arc<BackendDAE::CompInfo> = Arc::new(<BackendDAE::CompInfo as ::std::default::Default>::default());
                     eqn = BackendEquation::get(BackendEquation::getEqnsFromEqSystem(isyst.clone()), eqIdx.clone());
                     let (_, (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7)) = BackendEquation::traverseExpsOfEquation(eqn.clone(), (std::sync::Arc::new({ let __pe_b1 = ishared.clone(); move |__pe_a0, __pe_a2| countOperationsExp(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32)) -> Result<(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32))> + 'static>), (0, 0, 0, 0, 0, 0, 0, 0))?;
                     numAdd = __pa0.clone();
@@ -2139,7 +2139,7 @@ pub fn countOperationstraverseComps(mut inComps: Arc<metamodelica::List<Arc<Back
                     let mut numFuncs: i32 = 0;
                     let mut numLog: i32 = 0;
                     let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
-                    let mut compInfo: Arc<BackendDAE::CompInfo>;
+                    let mut compInfo: Arc<BackendDAE::CompInfo> = Arc::new(<BackendDAE::CompInfo as ::std::default::Default>::default());
                     eqn = BackendEquation::get(BackendEquation::getEqnsFromEqSystem(isyst.clone()), eqIdx.clone());
                     let (_, (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7)) = BackendEquation::traverseExpsOfEquation(eqn.clone(), (std::sync::Arc::new({ let __pe_b1 = ishared.clone(); move |__pe_a0, __pe_a2| countOperationsExp(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32)) -> Result<(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32))> + 'static>), (0, 0, 0, 0, 0, 0, 0, 0))?;
                     numAdd = __pa0.clone();
@@ -2168,7 +2168,7 @@ pub fn countOperationstraverseComps(mut inComps: Arc<metamodelica::List<Arc<Back
                     let mut numFuncs: i32 = 0;
                     let mut numLog: i32 = 0;
                     let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
-                    let mut compInfo: Arc<BackendDAE::CompInfo>;
+                    let mut compInfo: Arc<BackendDAE::CompInfo> = Arc::new(<BackendDAE::CompInfo as ::std::default::Default>::default());
                     eqn = BackendEquation::get(BackendEquation::getEqnsFromEqSystem(isyst.clone()), eqIdx.clone());
                     let (_, (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7)) = BackendEquation::traverseExpsOfEquation(eqn.clone(), (std::sync::Arc::new({ let __pe_b1 = ishared.clone(); move |__pe_a0, __pe_a2| countOperationsExp(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32)) -> Result<(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32))> + 'static>), (0, 0, 0, 0, 0, 0, 0, 0))?;
                     numAdd = __pa0.clone();
@@ -2197,7 +2197,7 @@ pub fn countOperationstraverseComps(mut inComps: Arc<metamodelica::List<Arc<Back
                     let mut numFuncs: i32 = 0;
                     let mut numLog: i32 = 0;
                     let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
-                    let mut compInfo: Arc<BackendDAE::CompInfo>;
+                    let mut compInfo: Arc<BackendDAE::CompInfo> = Arc::new(<BackendDAE::CompInfo as ::std::default::Default>::default());
                     eqn = BackendEquation::get(BackendEquation::getEqnsFromEqSystem(isyst.clone()), eqIdx.clone());
                     let (_, (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7)) = BackendEquation::traverseExpsOfEquation(eqn.clone(), (std::sync::Arc::new({ let __pe_b1 = ishared.clone(); move |__pe_a0, __pe_a2| countOperationsExp(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32)) -> Result<(Arc<DAE::Exp>, (i32, i32, i32, i32, i32, i32, i32, i32))> + 'static>), (0, 0, 0, 0, 0, 0, 0, 0))?;
                     numAdd = __pa0.clone();
@@ -2226,12 +2226,12 @@ pub fn countOperationstraverseComps(mut inComps: Arc<metamodelica::List<Arc<Back
                     let mut numFuncs: i32 = 0;
                     let mut numLog: i32 = 0;
                     let mut otherEqs: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    let mut comp: Arc<BackendDAE::StrongComponent>;
+                    let mut comp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
                     let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
                     let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
-                    let mut compInfo: Arc<BackendDAE::CompInfo>;
-                    let mut torn: Arc<BackendDAE::CompInfo>;
-                    let mut other: Arc<BackendDAE::CompInfo>;
+                    let mut compInfo: Arc<BackendDAE::CompInfo> = Arc::new(<BackendDAE::CompInfo as ::std::default::Default>::default());
+                    let mut torn: Arc<BackendDAE::CompInfo> = Arc::new(<BackendDAE::CompInfo as ::std::default::Default>::default());
+                    let mut other: Arc<BackendDAE::CompInfo> = Arc::new(<BackendDAE::CompInfo as ::std::default::Default>::default());
                     let mut eqnlst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
                     let mut varlst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
                     let mut explst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -2286,11 +2286,11 @@ pub fn countOperationstraverseComps(mut inComps: Arc<metamodelica::List<Arc<Back
                     let mut numFuncs: i32 = 0;
                     let mut numLog: i32 = 0;
                     let mut otherEqs: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    let mut comp: Arc<BackendDAE::StrongComponent>;
+                    let mut comp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
                     let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
-                    let mut compInfo: Arc<BackendDAE::CompInfo>;
-                    let mut torn: Arc<BackendDAE::CompInfo>;
-                    let mut other: Arc<BackendDAE::CompInfo>;
+                    let mut compInfo: Arc<BackendDAE::CompInfo> = Arc::new(<BackendDAE::CompInfo as ::std::default::Default>::default());
+                    let mut torn: Arc<BackendDAE::CompInfo> = Arc::new(<BackendDAE::CompInfo as ::std::default::Default>::default());
+                    let mut other: Arc<BackendDAE::CompInfo> = Arc::new(<BackendDAE::CompInfo as ::std::default::Default>::default());
                     let mut eqnlst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
                     let mut explst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     comp = listHead(inComps.clone())?;
@@ -2368,7 +2368,7 @@ fn getNumJacEntries(mut inJac: Arc<BackendDAE::Jacobian>) -> i32 {
 }
 
 fn countOperationsJac(mut inJac: Arc<BackendDAE::Jacobian>, mut shared: Arc<BackendDAE::Shared>, mut compInfoIn: Arc<BackendDAE::CompInfo>) -> Result<Arc<BackendDAE::CompInfo>> {
-    let mut compInfoOut: Arc<BackendDAE::CompInfo>;
+    let mut compInfoOut: Arc<BackendDAE::CompInfo> = Arc::new(<BackendDAE::CompInfo as ::std::default::Default>::default());
     compInfoOut = (::match_deref::match_deref! { match &((inJac.clone(), compInfoIn.clone())) {
         (Deref @ BackendDAE::Jacobian::FULL_JACOBIAN { jacobian: None }, _) => {
             compInfoIn.clone()
@@ -3356,9 +3356,9 @@ fn makeResidualIfExpLst(mut inExp1: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut 
             let mut tbsFirst: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             let mut rest_res: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             let mut ifexp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            tbsRest = List::map(tbs.clone(), Arc::new(listRest.clone()));
+            tbsRest = List::map(tbs.clone(), (std::sync::Arc::new(listRest) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>));
             rest_res = makeResidualIfExpLst(conds.clone(), tbsRest.clone(), fbs.clone())?;
-            tbsFirst = List::map(tbs.clone(), Arc::new(listHead.clone()));
+            tbsFirst = List::map(tbs.clone(), (std::sync::Arc::new(listHead) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>));
             ifexp = Expression::makeNestedIf(conds.clone(), tbsFirst.clone(), fb.clone())?;
             metamodelica::cons(ifexp.clone(), rest_res.clone())
         },
@@ -3491,9 +3491,9 @@ fn makeEquationsFromResiduals(mut inExp1: Arc<metamodelica::List<Arc<DAE::Exp>>>
             let mut zeroExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut size: i32 = 0;
             size = Expression::sizeOf(Expression::r#typeof(fb.clone())?)?;
-            tbsRest = List::map(inExpLst2.clone(), Arc::new(listRest.clone()));
+            tbsRest = List::map(inExpLst2.clone(), (std::sync::Arc::new(listRest) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>));
             rest_res = makeEquationsFromResiduals(inExp1.clone(), tbsRest.clone(), fbs.clone(), inSource.clone(), inEqAttr.clone())?;
-            tbsFirst = List::map(inExpLst2.clone(), Arc::new(listHead.clone()));
+            tbsFirst = List::map(inExpLst2.clone(), (std::sync::Arc::new(listHead) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>));
             ifexp = Expression::makeNestedIf(inExp1.clone(), tbsFirst.clone(), fb.clone())?;
             if size.clone() == 1 {
                 eq = Arc::new(BackendDAE::Equation::EQUATION { exp: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), scalar: ifexp.clone(), source: inSource.clone(), attr: inEqAttr.clone() });
@@ -5720,7 +5720,7 @@ fn simplifyLoopsUpdateComps(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::
     let mut a2: i32 = 0;
     let mut shift: i32 = 0;
     let mut o: i32 = 0;
-    let mut comp: Arc<BackendDAE::StrongComponent>;
+    let mut comp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
     let mut ass1: Arc<metamodelica::List<i32>> = inAss1.clone();
     let mut ass2: Arc<metamodelica::List<i32>> = inAss2.clone();
     let mut compOrders: Arc<metamodelica::List<i32>> = inCompOrders.clone();
@@ -5910,7 +5910,7 @@ pub fn simplifyLoopExp(mut inIndx: i32, mut inVars: BackendDAE::Variables, mut i
     let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut update: bool = false;
-    let mut op: DAE::Operator;
+    let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
     let mut para: bool = false;
     (loopTerms, noLoopTerms) = simplifyLoops_SplitTerms(var_lst.clone(), outExp.clone())?;
     (noLoopTerm, _) = ExpressionSimplify::simplify1(Expression::makeSum1(noLoopTerms.clone(), false)?)?;
@@ -6608,7 +6608,7 @@ pub fn evaluateOutputsOnly(mut daeIn: Arc<BackendDAE::BackendDAE>) -> Result<Arc
     let mut comps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
     let mut compsNew: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
     let mut addComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
-    let mut comp: Arc<BackendDAE::StrongComponent>;
+    let mut comp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
     let mut syst: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
     let mut systs: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = metamodelica::nil();
     let mut systsNew: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>> = metamodelica::nil();
@@ -6916,7 +6916,7 @@ fn traverseStrongComponentsForHomotopyLoop(mut comps: Arc<metamodelica::List<Arc
     let mut preHomotopyComponents: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
     let mut homotopyComponents: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
     let mut postHomotopyComponents: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
-    let mut homotopyComponent: Arc<BackendDAE::StrongComponent>;
+    let mut homotopyComponent: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
     let mut lambda: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
     let mut lambdaIdx: i32 = 0;
     nComps = (comps.clone().len() as i32);
@@ -7084,7 +7084,7 @@ fn getHomotopyComponents(mut componentIndexes: Arc<metamodelica::List<i32>>, mut
 }
 
 fn createOneHomotopyComponent(mut homotopyComponents: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut inSystem: Arc<BackendDAE::EqSystem>, mut lambdaIdx: i32) -> Result<Arc<BackendDAE::StrongComponent>> {
-    let mut outHomotopyComponent: Arc<BackendDAE::StrongComponent>;
+    let mut outHomotopyComponent: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
     let mut newInnerEquations: Arc<metamodelica::List<BackendDAE::InnerEquation>> = metamodelica::nil();
     let mut newResEquations: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut newIterationVars: Arc<metamodelica::List<i32>> = metamodelica::nil();

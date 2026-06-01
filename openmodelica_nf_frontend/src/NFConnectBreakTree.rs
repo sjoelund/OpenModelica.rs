@@ -119,6 +119,9 @@ pub mod EntryTree {
         },
         EMPTY,
     }
+    impl Default for Tree {
+        fn default() -> Self { Self::EMPTY }
+    }
     pub use self::Tree::{NODE,LEAF,EMPTY};
 
     pub type Value = Mutable::Mutable<Entry>;
@@ -911,6 +914,9 @@ pub enum Tree {
         value: Value,
     },
     EMPTY,
+}
+impl Default for Tree {
+    fn default() -> Self { Self::EMPTY }
 }
 pub use self::Tree::{NODE,LEAF,EMPTY};
 

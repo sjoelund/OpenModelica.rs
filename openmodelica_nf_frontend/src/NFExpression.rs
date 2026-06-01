@@ -843,7 +843,7 @@ pub fn compare(mut exp1: Arc<NFExpression>, mut exp2: Arc<NFExpression>) -> Resu
             if (comp.clone() == 0) {List::compare(var_field!((*exp1).elements, NFExpression::RECORD).clone(), expl.clone(), (std::sync::Arc::new(compare) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>, Arc<NFExpression>) -> Result<i32> + 'static>))?} else {comp.clone()}
         },
         Deref @ CALL { .. } => {
-            let mut c: Arc<Call::NFCall>;
+            let mut c: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
             let __pa0 = ::match_deref::match_deref! { match &(exp2.clone()) {
                 Deref @ CALL { call: __pa0 } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
@@ -2046,7 +2046,7 @@ pub fn applyIndexSubscriptRange2(mut startExp: Arc<NFExpression>, mut stepExp: O
 
 pub fn applySubscriptCall(mut subscript: Arc<Subscript::NFSubscript>, mut exp: Arc<NFExpression>, mut restSubscripts: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>, mut applyToScope: bool) -> Result<Arc<NFExpression>> {
     let mut outExp: Arc<NFExpression> = Arc::new(NFExpression::END);
-    let mut call: Arc<Call::NFCall>;
+    let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let __pa0 = ::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ CALL { call: __pa0 } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -2919,7 +2919,7 @@ pub fn toDAE(mut exp: Arc<NFExpression>, mut allowEmpty: bool) -> Result<Arc<DAE
             toDAE(SimplifyExp::splitMultary(exp.clone())?, false)?
         },
         Deref @ BINARY { .. } => {
-            let mut daeOp: DAE::Operator;
+            let mut daeOp: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
             let mut swap: bool = false;
             let mut negate: bool = false;
             let mut dae1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
@@ -4352,7 +4352,7 @@ pub fn mapFold<ArgT: Clone + 'static>(mut exp: Arc<NFExpression>, mut func: Arc<
             Arc::new(NFExpression::RECORD { path: var_field!((*exp).path, NFExpression::RECORD).clone(), ty: var_field!((*exp).ty, NFExpression::RECORD).clone(), elements: expl.clone() })
         },
         Deref @ CALL { .. } => {
-            let mut call: Arc<Call::NFCall>;
+            let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
             (call, arg) = Call::mapFoldExp(var_field!((*exp).call, NFExpression::CALL).clone(), func.clone(), arg.clone())?;
             if (referenceEq(&var_field!((*exp).call, NFExpression::CALL).clone(),&call.clone())) {exp.clone()} else {Arc::new(NFExpression::CALL { call: call.clone() })}
         },
@@ -4550,7 +4550,7 @@ pub fn mapFoldShallow<ArgT: Clone + 'static>(mut exp: Arc<NFExpression>, mut fun
             Arc::new(NFExpression::RECORD { path: var_field!((*exp).path, NFExpression::RECORD).clone(), ty: var_field!((*exp).ty, NFExpression::RECORD).clone(), elements: expl.clone() })
         },
         Deref @ CALL { .. } => {
-            let mut call: Arc<Call::NFCall>;
+            let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
             (call, arg) = Call::mapFoldExpShallow(var_field!((*exp).call, NFExpression::CALL).clone(), func.clone(), arg.clone())?;
             if (referenceEq(&var_field!((*exp).call, NFExpression::CALL).clone(),&call.clone())) {exp.clone()} else {Arc::new(NFExpression::CALL { call: call.clone() })}
         },
@@ -5735,7 +5735,7 @@ pub fn hasArrayCall(mut exp: Arc<NFExpression>) -> Result<bool> {
 
 pub fn hasArrayCall2(mut exp: Arc<NFExpression>) -> bool {
     let mut hasArrayCall: bool = false;
-    let mut call: Arc<Call::NFCall>;
+    let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     hasArrayCall = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ CALL { call } => {

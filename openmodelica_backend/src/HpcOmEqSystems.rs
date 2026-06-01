@@ -193,7 +193,7 @@ fn reduceLinearTornSystem1(mut compIdx: i32, mut compsIn: Arc<metamodelica::List
                     let mut innerEquations: Arc<metamodelica::List<BackendDAE::InnerEquation>> = metamodelica::nil();
                     let mut matchingNew: Arc<BackendDAE::Matching> = Arc::new(BackendDAE::Matching::NO_MATCHING);
                     let mut matchingOther: Arc<BackendDAE::Matching> = Arc::new(BackendDAE::Matching::NO_MATCHING);
-                    let mut comp: Arc<BackendDAE::StrongComponent>;
+                    let mut comp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
                     let mut compsNew: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
                     let mut compsTmp: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
                     let mut otherComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
@@ -266,7 +266,7 @@ fn reduceLinearTornSystem1(mut compIdx: i32, mut compsIn: Arc<metamodelica::List
                     let mut eqIdcs: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut varIdcs: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut hpcSyst: EqSys = <EqSys as ::std::default::Default>::default();
-                    let mut comp: Arc<BackendDAE::StrongComponent>;
+                    let mut comp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
                     let mut compsNew: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
                     let mut compsTmp: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
                     let mut otherComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
@@ -395,7 +395,7 @@ fn matchComponent(mut eqLstIn: Arc<metamodelica::List<Arc<BackendDAE::Equation>>
 }
 
 fn replaceIndecesInComp(mut comp: Arc<BackendDAE::StrongComponent>, mut eqMap: metamodelica::Array<i32>, mut varMap: metamodelica::Array<i32>) -> Result<Arc<BackendDAE::StrongComponent>> {
-    let mut compOut: Arc<BackendDAE::StrongComponent>;
+    let mut compOut: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
     compOut = (::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ BackendDAE::StrongComponent::SINGLEEQUATION { var, eqn } => {
             let mut var = (*var).clone();
@@ -671,7 +671,7 @@ fn buildEqSystemComponent(mut eqIdcsIn: Arc<metamodelica::List<i32>>, mut varIdc
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: eqIdx, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: varIdx, tail: Deref @ metamodelica::List::Nil }) => {
-                    let mut comp: Arc<BackendDAE::StrongComponent>;
+                    let mut comp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
                     let true = (intEq((eqIdcsIn.clone().len() as i32), 1)) else { bail!("pattern mismatch") };
                     comp = Arc::new(BackendDAE::StrongComponent::SINGLEEQUATION { eqn: eqIdx.clone(), var: varIdx.clone() });
                     Ok((list![comp.clone()], resEqsIn.clone(), tVarsIn.clone(), metamodelica::nil(), metamodelica::nil()))
@@ -698,7 +698,7 @@ fn buildEqSystemComponent(mut eqIdcsIn: Arc<metamodelica::List<i32>>, mut varIdc
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut jac: Option<Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>> = None;
-                    let mut comp: Arc<BackendDAE::StrongComponent>;
+                    let mut comp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
                     let mut jacValues: Arc<metamodelica::List<Arc<metamodelica::List<BackendDAE::Var>>>> = metamodelica::nil();
                     let mut mixedSystem: bool = false;
                     let __pa0 = ::match_deref::match_deref! { match &(Arc::new(jacValuesIn.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>())) {
@@ -811,7 +811,7 @@ fn getOtherComps1(mut innerEquation: BackendDAE::InnerEquation, mut tplIn: (meta
                     let mut eqIdx: i32 = 0;
                     let mut varIdx: i32 = 0;
                     let mut varIdcs: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    let mut comp: Arc<BackendDAE::StrongComponent>;
+                    let mut comp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
                     let mut compsTmp: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
                     let mut ass1 = (*ass1).clone();
                     let mut ass2 = (*ass2).clone();
@@ -852,13 +852,13 @@ fn replaceAtPositionFromList<ElementType: Clone + 'static>(mut n: i32, mut repla
 }
 
 fn updateIndicesInComp(mut compIn: Arc<BackendDAE::StrongComponent>, mut varOffset: i32, mut eqOffset: i32) -> Result<Arc<BackendDAE::StrongComponent>> {
-    let mut compOut: Arc<BackendDAE::StrongComponent>;
+    let mut compOut: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
     compOut = 'mc: {
         let __mc_input = compIn.clone();
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ BackendDAE::StrongComponent::SINGLEEQUATION { var: varIdx, eqn: eqIdx } => {
-                    let mut compTmp: Arc<BackendDAE::StrongComponent>;
+                    let mut compTmp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
                     let mut varIdx = (*varIdx).clone();
                     let mut eqIdx = (*eqIdx).clone();
                     varIdx = varIdx.clone() + varOffset.clone();

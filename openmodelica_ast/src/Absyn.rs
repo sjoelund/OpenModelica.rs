@@ -259,6 +259,14 @@ pub enum TypeSpec {
         arrayDim: Option<Arc<metamodelica::List<Arc<Subscript>>>>,
     },
 }
+impl Default for TypeSpec {
+    fn default() -> Self {
+        Self::TPATH {
+            path: Default::default(),
+            arrayDim: Default::default(),
+        }
+    }
+}
 pub use self::TypeSpec::{TPATH,TCOMPLEX};
 
 /// The definition of an enumeration is either a list of literals
@@ -321,6 +329,13 @@ pub enum ClassPart {
         annotation_: Option<Arc<Annotation>>,
     },
 }
+impl Default for ClassPart {
+    fn default() -> Self {
+        Self::PUBLIC {
+            contents: Default::default(),
+        }
+    }
+}
 pub use self::ClassPart::{PUBLIC,PROTECTED,CONSTRAINTS,EQUATIONS,INITIALEQUATIONS,ALGORITHMS,INITIALALGORITHMS,EXTERNAL};
 
 /// An element item is either an element or an annotation
@@ -332,6 +347,13 @@ pub enum ElementItem {
     LEXER_COMMENT {
         comment: ArcStr,
     },
+}
+impl Default for ElementItem {
+    fn default() -> Self {
+        Self::ELEMENTITEM {
+            element: Default::default(),
+        }
+    }
 }
 pub use self::ElementItem::{ELEMENTITEM,LEXER_COMMENT};
 
@@ -364,6 +386,15 @@ pub enum Element {
         string: ArcStr,
         info: Info,
     },
+}
+impl Default for Element {
+    fn default() -> Self {
+        Self::DEFINEUNIT {
+            name: Default::default(),
+            args: Default::default(),
+            info: Default::default(),
+        }
+    }
 }
 pub use self::Element::{ELEMENT,DEFINEUNIT,TEXT};
 
@@ -498,6 +529,13 @@ pub enum GroupImport {
         name: ArcStr,
     },
 }
+impl Default for GroupImport {
+    fn default() -> Self {
+        Self::GROUP_IMPORT_NAME {
+            name: Default::default(),
+        }
+    }
+}
 pub use self::GroupImport::{GROUP_IMPORT_NAME,GROUP_IMPORT_RENAME};
 
 /// A componentItem can have a condition that must be fulfilled if
@@ -568,6 +606,13 @@ pub enum EquationItem {
     EQUATIONITEMCOMMENT {
         comment: ArcStr,
     },
+}
+impl Default for EquationItem {
+    fn default() -> Self {
+        Self::EQUATIONITEMCOMMENT {
+            comment: Default::default(),
+        }
+    }
 }
 pub use self::EquationItem::{EQUATIONITEM,EQUATIONITEMCOMMENT};
 
@@ -653,6 +698,13 @@ pub enum Equation {
         equ: Arc<EquationItem>,
     },
 }
+impl Default for Equation {
+    fn default() -> Self {
+        Self::EQ_FAILURE {
+            equ: Default::default(),
+        }
+    }
+}
 pub use self::Equation::{EQ_IF,EQ_EQUALS,EQ_PDE,EQ_CONNECT,EQ_FOR,EQ_WHEN_E,EQ_NORETCALL,EQ_FAILURE};
 
 /// The Algorithm type describes one algorithm statement in an
@@ -717,6 +769,9 @@ pub enum Algorithm {
         elseBody: Arc<metamodelica::List<Arc<AlgorithmItem>>>,
     },
     ALG_CONTINUE,
+}
+impl Default for Algorithm {
+    fn default() -> Self { Self::ALG_RETURN }
 }
 pub use self::Algorithm::{ALG_ASSIGN,ALG_IF,ALG_FOR,ALG_PARFOR,ALG_WHILE,ALG_WHEN_A,ALG_NORETCALL,ALG_RETURN,ALG_BREAK,ALG_FAILURE,ALG_TRY,ALG_CONTINUE};
 
@@ -813,6 +868,9 @@ pub enum RedeclareKeywords {
     REPLACEABLE,
     REDECLARE_REPLACEABLE,
 }
+impl Default for RedeclareKeywords {
+    fn default() -> Self { Self::REDECLARE }
+}
 pub use self::RedeclareKeywords::{REDECLARE,REPLACEABLE,REDECLARE_REPLACEABLE};
 
 /// The each keyword can be present in both MODIFICATION\'s and REDECLARATION\'s.
@@ -821,6 +879,9 @@ pub use self::RedeclareKeywords::{REDECLARE,REPLACEABLE,REDECLARE_REPLACEABLE};
 pub enum Each {
     EACH,
     NON_EACH,
+}
+impl Default for Each {
+    fn default() -> Self { Self::EACH }
 }
 pub use self::Each::{EACH,NON_EACH};
 
@@ -1121,12 +1182,27 @@ pub enum Case {
         info: Info,
     },
 }
+impl Default for Case {
+    fn default() -> Self {
+        Self::ELSE {
+            localDecls: Default::default(),
+            classPart: Default::default(),
+            result: Default::default(),
+            resultInfo: Default::default(),
+            comment: Default::default(),
+            info: Default::default(),
+        }
+    }
+}
 pub use self::Case::{CASE,ELSE};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum MatchType {
     MATCH,
     MATCHCONTINUE,
+}
+impl Default for MatchType {
+    fn default() -> Self { Self::MATCH }
 }
 pub use self::MatchType::{MATCH,MATCHCONTINUE};
 
@@ -1163,6 +1239,13 @@ pub enum CodeNode {
         modification: Arc<Modification>,
     },
 }
+impl Default for CodeNode {
+    fn default() -> Self {
+        Self::C_TYPENAME {
+            path: Default::default(),
+        }
+    }
+}
 pub use self::CodeNode::{C_TYPENAME,C_VARIABLENAME,C_CONSTRAINTSECTION,C_EQUATIONSECTION,C_ALGORITHMSECTION,C_ELEMENT,C_EXPRESSION,C_MODIFICATION};
 
 /// The FunctionArgs uniontype consists of a list of positional arguments
@@ -1181,6 +1264,14 @@ pub enum FunctionArgs {
         iterType: ReductionIterType,
         iterators: ForIterators,
     },
+}
+impl Default for FunctionArgs {
+    fn default() -> Self {
+        Self::FUNCTIONARGS {
+            args: Default::default(),
+            argNames: Default::default(),
+        }
+    }
 }
 pub use self::FunctionArgs::{FUNCTIONARGS,FOR_ITER_FARG};
 
@@ -1266,6 +1357,9 @@ pub enum Operator {
     EQUAL,
     /// relational not equal
     NEQUAL,
+}
+impl Default for Operator {
+    fn default() -> Self { Self::ADD }
 }
 pub use self::Operator::{ADD,SUB,MUL,DIV,POW,UPLUS,UMINUS,ADD_EW,SUB_EW,MUL_EW,DIV_EW,POW_EW,UPLUS_EW,UMINUS_EW,AND,OR,NOT,LESS,LESSEQ,GREATER,GREATEREQ,EQUAL,NEQUAL};
 
@@ -1414,6 +1508,9 @@ pub enum FunctionPurity {
     IMPURE,
     NO_PURITY,
 }
+impl Default for FunctionPurity {
+    fn default() -> Self { Self::PURE }
+}
 pub use self::FunctionPurity::{PURE,IMPURE,NO_PURITY};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -1524,6 +1621,9 @@ pub enum Msg {
     },
     /// Do not give error message
     NO_MSG,
+}
+impl Default for Msg {
+    fn default() -> Self { Self::NO_MSG }
 }
 pub use self::Msg::{MSG,NO_MSG};
 

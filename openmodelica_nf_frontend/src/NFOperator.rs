@@ -377,7 +377,7 @@ pub fn toAbsyn(mut op: Arc<NFOperator>) -> Result<Absyn::Operator> {
 }
 
 pub fn toDAE(mut op: Arc<NFOperator>) -> Result<(DAE::Operator, bool, bool)> {
-    let mut daeOp: DAE::Operator;
+    let mut daeOp: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
     let mut swapArguments: bool = false;
     let mut negate: bool = false;
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);

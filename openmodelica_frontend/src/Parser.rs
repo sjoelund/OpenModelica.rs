@@ -119,7 +119,7 @@ pub fn stringMod(mut r#str: ArcStr, mut filename: ArcStr) -> Result<Arc<Absyn::E
 }
 
 pub fn stringEq(mut r#str: ArcStr, mut filename: ArcStr) -> Result<Arc<Absyn::EquationItem>> {
-    let mut eq: Arc<Absyn::EquationItem>;
+    let mut eq: Arc<Absyn::EquationItem> = Arc::new(<Absyn::EquationItem as ::std::default::Default>::default());
     eq = ParserExt::stringEq((r#str.clone()).clone(), (filename.clone()).clone(), Config::acceptedGrammar()?, Flags::getConfigEnum(Flags::LANGUAGE_STANDARD.clone())?, Testsuite::isRunning()?);
     Ok(eq)
 }

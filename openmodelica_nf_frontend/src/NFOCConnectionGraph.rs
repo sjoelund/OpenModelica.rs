@@ -498,7 +498,7 @@ fn addBreakableBranches(mut connections: Arc<metamodelica::List<Arc<Connection::
 fn addRootsAndBranches(mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>, mut printTrace: bool, mut graph: NFOCConnectionGraph) -> Result<(Arc<metamodelica::List<Arc<Equation::NFEquation>>>, NFOCConnectionGraph)> {
     let mut outEquations: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
     let mut graph: NFOCConnectionGraph = graph;
-    let mut call: Arc<Call::NFCall>;
+    let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut arg1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut arg2: Arc<Expression::NFExpression> = Arc::new(Expression::END);

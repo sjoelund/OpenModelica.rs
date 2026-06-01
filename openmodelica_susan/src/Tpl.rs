@@ -75,6 +75,14 @@ pub enum Text {
         blocksStack: Mutable::Mutable<Arc<metamodelica::List<BlockTypeFileText>>>,
     },
 }
+impl Default for Text {
+    fn default() -> Self {
+        Self::MEM_TEXT {
+            tokens: Default::default(),
+            blocksStack: Default::default(),
+        }
+    }
+}
 pub use self::Text::{MEM_TEXT,FILE_TEXT};
 
 pub static emptyTxt: std::sync::LazyLock<Text> = std::sync::LazyLock::new(|| { Text::MEM_TEXT { tokens: metamodelica::nil(), blocksStack: metamodelica::nil() } });
@@ -144,6 +152,9 @@ pub enum BlockType {
         index0: Mutable::Mutable<i32>,
     },
 }
+impl Default for BlockType {
+    fn default() -> Self { Self::BT_TEXT }
+}
 pub use self::BlockType::{BT_TEXT,BT_INDENT,BT_ABS_INDENT,BT_REL_INDENT,BT_ANCHOR,BT_ITER};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -165,7 +176,7 @@ pub type ITER_OPTIONS = IterOptions;
 
 //by default, we will parse new lines in every non-token string
 pub fn writeStr(mut inText: Text, mut inStr: ArcStr) -> Result<Text> {
-    let mut outText: Text;
+    let mut outText: Text = <Text as ::std::default::Default>::default();
     outText = (::match_deref::match_deref! { match &((inText.clone(), inStr.clone())) {
         (txt, Deref @ "") => {
             txt.clone()
@@ -186,7 +197,7 @@ pub fn writeStr(mut inText: Text, mut inStr: ArcStr) -> Result<Text> {
 }
 
 pub fn writeTok(mut inText: Text, mut inToken: Arc<StringToken>) -> Result<Text> {
-    let mut outText: Text;
+    let mut outText: Text = <Text as ::std::default::Default>::default();
     outText = (::match_deref::match_deref! { match &((inText.clone(), inToken.clone())) {
         (txt, Deref @ StringToken::ST_BLOCK { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
@@ -207,7 +218,7 @@ pub fn writeTok(mut inText: Text, mut inToken: Arc<StringToken>) -> Result<Text>
 }
 
 pub fn writeText(mut inText: Text, mut inTextToWrite: Text) -> Result<Text> {
-    let mut outText: Text;
+    let mut outText: Text = <Text as ::std::default::Default>::default();
     outText = (::match_deref::match_deref! { match &((inText.clone(), inTextToWrite.clone())) {
         (txt, Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
@@ -235,7 +246,7 @@ pub fn writeText(mut inText: Text, mut inTextToWrite: Text) -> Result<Text> {
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn writeChars(mut inText: Text, mut inChars: Arc<metamodelica::List<ArcStr>>) -> Result<Text> {
-    let mut outText: Text;
+    let mut outText: Text = <Text as ::std::default::Default>::default();
     outText = (::match_deref::match_deref! { match &((inText.clone(), inChars.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -270,7 +281,7 @@ fn writeChars(mut inText: Text, mut inChars: Arc<metamodelica::List<ArcStr>>) ->
 }
 
 fn writeLineOrStr(mut inText: Text, mut inStr: ArcStr, mut inIsLine: bool) -> Result<Text> {
-    let mut outText: Text;
+    let mut outText: Text = <Text as ::std::default::Default>::default();
     outText = (::match_deref::match_deref! { match &((inText.clone(), inStr.clone(), inIsLine.clone())) {
         (txt, Deref @ "", _) => {
             txt.clone()
@@ -317,7 +328,7 @@ fn takeLineOrString(mut inChars: Arc<metamodelica::List<ArcStr>>) -> (Arc<metamo
 }
 
 pub fn softNewLine(mut inText: Text) -> Result<Text> {
-    let mut outText: Text;
+    let mut outText: Text = <Text as ::std::default::Default>::default();
     outText = (::match_deref::match_deref! { match &(inText.clone()) {
         txt @ Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. } => {
             txt.clone()
@@ -388,7 +399,7 @@ fn isAtStartOfLineTok(mut inTok: Arc<StringToken>) -> bool {
 }
 
 pub fn newLine(mut inText: Text) -> Result<Text> {
-    let mut outText: Text;
+    let mut outText: Text = <Text as ::std::default::Default>::default();
     outText = (match inText.clone() {
         Text::MEM_TEXT { blocksStack: ref blstack, tokens: ref toks } => {
             Text::MEM_TEXT { tokens: metamodelica::cons(Arc::new(crate::Tpl::StringToken::ST_NEW_LINE), toks.clone()), blocksStack: blstack.clone() }
@@ -593,7 +604,7 @@ pub fn nextIter(mut txt: Text) -> Result<Text> {
             let mut tell: Mutable::Mutable<i32>;
             let mut tellpos: i32 = 0;
             let mut curIndex: i32 = 0;
-            let mut txt2: Text;
+            let mut txt2: Text = <Text as ::std::default::Default>::default();
             let mut haveToken: bool = false;
             let mut septok: Mutable::Mutable<Option<Arc<StringToken>>>;
             let () = (::match_deref::match_deref! { match &((Mutable::access(var_field!(txt.blocksStack, Text::FILE_TEXT).clone())).get(1)?) {
@@ -1448,7 +1459,7 @@ fn tryWrapFile(mut file: File::File, mut inWrapWidth: i32, mut inWrapSeparator: 
 }
 
 pub fn strTokText(mut inStringToken: Arc<StringToken>) -> Text {
-    let mut outText: Text;
+    let mut outText: Text = <Text as ::std::default::Default>::default();
     outText = Text::MEM_TEXT { tokens: list![inStringToken.clone()], blocksStack: metamodelica::nil() };
     outText
 }
@@ -1473,7 +1484,7 @@ pub fn textStrTok(mut inText: Text) -> Result<Arc<StringToken>> {
 }
 
 pub fn stringText(mut inString: ArcStr) -> Text {
-    let mut outText: Text;
+    let mut outText: Text = <Text as ::std::default::Default>::default();
     outText = Text::MEM_TEXT { tokens: list![Arc::new(StringToken::ST_STRING { value: (inString.clone()).clone() })], blocksStack: metamodelica::nil() };
     outText
 }
@@ -1556,7 +1567,7 @@ pub fn tplString<ArgType1: Clone + 'static>(mut inFun: Arc<dyn ::std::ops::Fn(Te
     pub type Tpl_Fun<ArgType1: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Text, ArgType1) -> Result<Text> + 'static>;
 
     let mut outString: ArcStr = arcstr::literal!("");
-    let mut txt: Text;
+    let mut txt: Text = <Text as ::std::default::Default>::default();
     let mut nErr: i32 = 0;
     nErr = Error::getNumErrorMessages();
     txt = tplCallWithFailError(inFun.clone(), inArg.clone(), emptyTxt.clone())?;
@@ -1569,7 +1580,7 @@ pub fn tplString2<ArgType1: Clone + 'static, ArgType2: Clone + 'static>(mut inFu
     pub type Tpl_Fun<ArgType1: Clone + 'static, ArgType2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2) -> Result<Text> + 'static>;
 
     let mut outString: ArcStr = arcstr::literal!("");
-    let mut txt: Text;
+    let mut txt: Text = <Text as ::std::default::Default>::default();
     let mut nErr: i32 = 0;
     nErr = Error::getNumErrorMessages();
     txt = tplCallWithFailError2(inFun.clone(), inArgA.clone(), inArgB.clone(), emptyTxt.clone())?;
@@ -1582,7 +1593,7 @@ pub fn tplString3<ArgType1: Clone + 'static, ArgType2: Clone + 'static, ArgType3
     pub type Tpl_Fun<ArgType1: Clone + 'static, ArgType2: Clone + 'static, ArgType3: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2, ArgType3) -> Result<Text> + 'static>;
 
     let mut outString: ArcStr = arcstr::literal!("");
-    let mut txt: Text;
+    let mut txt: Text = <Text as ::std::default::Default>::default();
     let mut nErr: i32 = 0;
     nErr = Error::getNumErrorMessages();
     txt = tplCallWithFailError3(inFun.clone(), inArgA.clone(), inArgB.clone(), inArgC.clone(), emptyTxt.clone())?;
@@ -1594,7 +1605,7 @@ pub fn tplString3<ArgType1: Clone + 'static, ArgType2: Clone + 'static, ArgType3
 pub fn tplPrint<ArgType1: Clone + 'static>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1) -> Result<Text> + 'static>, mut inArg: ArgType1) -> Result<()> {
     pub type Tpl_Fun<ArgType1: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Text, ArgType1) -> Result<Text> + 'static>;
 
-    let mut txt: Text;
+    let mut txt: Text = <Text as ::std::default::Default>::default();
     let mut nErr: i32 = 0;
     nErr = Error::getNumErrorMessages();
     txt = tplCallWithFailError(inFun.clone(), inArg.clone(), emptyTxt.clone())?;
@@ -1606,7 +1617,7 @@ pub fn tplPrint<ArgType1: Clone + 'static>(mut inFun: Arc<dyn ::std::ops::Fn(Tex
 pub fn tplPrint2<ArgType1: Clone + 'static, ArgType2: Clone + 'static>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2) -> Result<Text> + 'static>, mut inArgA: ArgType1, mut inArgB: ArgType2) -> Result<()> {
     pub type Tpl_Fun<ArgType1: Clone + 'static, ArgType2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2) -> Result<Text> + 'static>;
 
-    let mut txt: Text;
+    let mut txt: Text = <Text as ::std::default::Default>::default();
     let mut nErr: i32 = 0;
     nErr = Error::getNumErrorMessages();
     txt = tplCallWithFailError2(inFun.clone(), inArgA.clone(), inArgB.clone(), emptyTxt.clone())?;
@@ -1618,7 +1629,7 @@ pub fn tplPrint2<ArgType1: Clone + 'static, ArgType2: Clone + 'static>(mut inFun
 pub fn tplPrint3<ArgType1: Clone + 'static, ArgType2: Clone + 'static, ArgType3: Clone + 'static>(mut inFun: Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2, ArgType3) -> Result<Text> + 'static>, mut inArgA: ArgType1, mut inArgB: ArgType2, mut inArgC: ArgType3) -> Result<()> {
     pub type Tpl_Fun<ArgType1: Clone + 'static, ArgType2: Clone + 'static, ArgType3: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Text, ArgType1, ArgType2, ArgType3) -> Result<Text> + 'static>;
 
-    let mut txt: Text;
+    let mut txt: Text = <Text as ::std::default::Default>::default();
     let mut nErr: i32 = 0;
     nErr = Error::getNumErrorMessages();
     txt = tplCallWithFailError3(inFun.clone(), inArgA.clone(), inArgB.clone(), inArgC.clone(), emptyTxt.clone())?;

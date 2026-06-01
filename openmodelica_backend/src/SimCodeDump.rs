@@ -22,7 +22,7 @@ use openmodelica_util::Util;
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_47(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -30,7 +30,7 @@ fn lm_47(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar:
         (txt, Deref @ metamodelica::List::Cons { head: SimCodeVar::SimVar { name: i_v_name, .. }, tail: rest }) => {
             let mut x_index0: i32 = 0;
             let mut ret_1: ArcStr = arcstr::literal!("");
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             x_index0 = Tpl::getIteri_i0(txt.clone())?;
             txt = Tpl::writeStr(txt.clone(), (intString(x_index0.clone())).clone())?;
@@ -53,8 +53,8 @@ fn lm_47(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar:
 }
 
 pub fn dumpVarsShort(mut txt: Tpl::Text, mut a_vars: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
-    let mut l_varsString: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_varsString: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     l_varsString = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
     l_varsString = lm_47(l_varsString.clone(), a_vars.clone())?;
     l_varsString = Tpl::popIter(l_varsString.clone())?;
@@ -65,11 +65,11 @@ pub fn dumpVarsShort(mut txt: Tpl::Text, mut a_vars: Arc<metamodelica::List<SimC
 }
 
 pub fn dumpAlias(mut in_txt: Tpl::Text, mut in_a_alias: SimCodeVar::AliasVariable) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_alias.clone()) {
         (mut txt, SimCodeVar::AliasVariable::ALIAS { varName: ref i_varName }) => {
             let mut ret_1: ArcStr = arcstr::literal!("");
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<alias>")).clone() }))?;
             txt_0 = CodegenUtil::crefStrNoUnderscore(Tpl::emptyTxt.clone(), i_varName.clone())?;
             ret_1 = (Util::escapeModelicaStringToXmlString((Tpl::textString(txt_0.clone())?).clone())?).clone();
@@ -79,7 +79,7 @@ pub fn dumpAlias(mut in_txt: Tpl::Text, mut in_a_alias: SimCodeVar::AliasVariabl
         },
         (mut txt, SimCodeVar::AliasVariable::NEGATEDALIAS { varName: ref i_varName }) => {
             let mut ret_3: ArcStr = arcstr::literal!("");
-            let mut txt_2: Tpl::Text;
+            let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<alias negated=\"true\">")).clone() }))?;
             txt_2 = CodegenUtil::crefStrNoUnderscore(Tpl::emptyTxt.clone(), i_varName.clone())?;
@@ -97,9 +97,9 @@ pub fn dumpAlias(mut in_txt: Tpl::Text, mut in_a_alias: SimCodeVar::AliasVariabl
 }
 
 pub fn printExpStrEscaped(mut txt: Tpl::Text, mut a_exp: Arc<DAE::Exp>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_1: ArcStr = arcstr::literal!("");
-    let mut txt_0: Tpl::Text;
+    let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     txt_0 = ExpressionDumpTpl::dumpExp(Tpl::emptyTxt.clone(), a_exp.clone(), (literal!("\"")).clone())?;
     ret_1 = (Util::escapeModelicaStringToXmlString((Tpl::textString(txt_0.clone())?).clone())?).clone();
     out_txt = Tpl::writeStr(txt.clone(), (ret_1.clone()).clone())?;

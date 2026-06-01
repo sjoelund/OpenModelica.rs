@@ -1499,7 +1499,7 @@ fn convertClassDef(mut cdef: Arc<Absyn::ClassDef>, mut rules: Arc<ConversionRule
         Deref @ Absyn::ClassDef::DERIVED { .. } => {
             let mut local_rules: RuleTable = <Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<metamodelica::List<ConversionRule>>>> as ::std::default::Default>::default();
             let mut mod_rules: Arc<metamodelica::List<ConversionRule>> = metamodelica::nil();
-            let mut ty: Arc<Absyn::TypeSpec>;
+            let mut ty: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
             (ty, local_rules, mod_rules) = convertTypeSpec(var_field!((*cdef).typeSpec, Absyn::ClassDef::DERIVED).clone(), rules.clone(), env.clone(), info.clone())?;
             assign_variant_field!(cdef => Absyn::ClassDef::DERIVED;
                 typeSpec = ty.clone(),
@@ -2003,7 +2003,7 @@ fn convertElementSpec(mut spec: Arc<Absyn::ElementSpec>, mut rules: Arc<Conversi
         Deref @ Absyn::ElementSpec::COMPONENTS { .. } => {
             let mut local_rules: RuleTable = <Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<metamodelica::List<ConversionRule>>>> as ::std::default::Default>::default();
             let mut mod_rules: Arc<metamodelica::List<ConversionRule>> = metamodelica::nil();
-            let mut ty: Arc<Absyn::TypeSpec>;
+            let mut ty: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
             (ty, local_rules, mod_rules) = convertTypeSpec(var_field!((*spec).typeSpec, Absyn::ElementSpec::COMPONENTS).clone(), rules.clone(), env.clone(), info.clone())?;
             assign_variant_field!(spec => Absyn::ElementSpec::COMPONENTS;
                 typeSpec = ty.clone(),

@@ -75,6 +75,13 @@ pub enum PackageOrder {
         cl: ArcStr,
     },
 }
+impl Default for PackageOrder {
+    fn default() -> Self {
+        Self::CLASSPART {
+            cp: Default::default(),
+        }
+    }
+}
 pub use self::PackageOrder::{CLASSPART,ELEMENT,CLASSLOAD};
 
 #[derive(Clone)]
@@ -436,7 +443,7 @@ fn loadCompletePackageFromMp2(mut po: PackageOrder, mut mp: ArcStr, mut strategy
             cps.clone()
         },
         PackageOrder::CLASSLOAD { cl: mut id } => {
-            let mut ei: Arc<Absyn::ElementItem>;
+            let mut ei: Arc<Absyn::ElementItem> = Arc::new(<Absyn::ElementItem as ::std::default::Default>::default());
             let mut pd: ArcStr = arcstr::literal!("");
             let mut file: ArcStr = arcstr::literal!("");
             let mut cl: Option<Arc<Absyn::Class>> = None;
@@ -624,19 +631,19 @@ fn getPackageContentNames(mut cl: Arc<Absyn::Class>, mut filename: ArcStr, mut m
 }
 
 fn makeClassPart(mut part: Arc<Absyn::ClassPart>) -> PackageOrder {
-    let mut po: PackageOrder;
+    let mut po: PackageOrder = <PackageOrder as ::std::default::Default>::default();
     po = PackageOrder::CLASSPART { cp: part.clone() };
     po
 }
 
 fn makeElement(mut el: Arc<Absyn::ElementItem>, mut r#pub: bool) -> PackageOrder {
-    let mut po: PackageOrder;
+    let mut po: PackageOrder = <PackageOrder as ::std::default::Default>::default();
     po = PackageOrder::ELEMENT { element: el.clone(), r#pub: r#pub.clone() };
     po
 }
 
 fn makeClassLoad(mut r#str: ArcStr) -> PackageOrder {
-    let mut po: PackageOrder;
+    let mut po: PackageOrder = <PackageOrder as ::std::default::Default>::default();
     po = PackageOrder::CLASSLOAD { cl: (r#str.clone()).clone() };
     po
 }
@@ -720,7 +727,7 @@ fn getPackageContentNamesinElts(mut inNamesToSort: Arc<metamodelica::List<ArcStr
             let mut names: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let mut compNames: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let mut b: bool = false;
-            let mut orderElt: PackageOrder;
+            let mut orderElt: PackageOrder = <PackageOrder as ::std::default::Default>::default();
             compNames = List::map(comps.clone(), (std::sync::Arc::new(AbsynUtil::componentName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentItem>) -> Result<ArcStr> + 'static>));
             (names, b) = matchCompNames(inNamesToSort.clone(), compNames.clone(), info.clone())?;
             orderElt = if (b.clone()) {makeElement(ei.clone(), r#pub.clone())} else {makeClassLoad((name1.clone()).clone())};
@@ -730,8 +737,8 @@ fn getPackageContentNamesinElts(mut inNamesToSort: Arc<metamodelica::List<ArcStr
         (Deref @ metamodelica::List::Cons { head: name1, tail: namesToSort }, Deref @ metamodelica::List::Cons { head: ei @ Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { info, name: name2, .. }, .. }, .. } }, tail: elts }) => {
             let mut names: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let mut b: bool = false;
-            let mut orderElt: PackageOrder;
-            let mut load: PackageOrder;
+            let mut orderElt: PackageOrder = <PackageOrder as ::std::default::Default>::default();
+            let mut load: PackageOrder = <PackageOrder as ::std::default::Default>::default();
             load = makeClassLoad((name1.clone()).clone());
             b = name1.clone() == name2.clone();
             Error::assertionOrAddSourceMessage(if (b.clone()) {!(listMember(load.clone(), po.clone()))} else {true}, Error::PACKAGE_MO_NOT_IN_ORDER.clone(), list![(name2.clone()).clone()], info.clone())?;
@@ -741,7 +748,7 @@ fn getPackageContentNamesinElts(mut inNamesToSort: Arc<metamodelica::List<ArcStr
         },
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { info, name: name2, .. }, .. }, .. } }, tail: _ }) => {
             let mut names: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut load: PackageOrder;
+            let mut load: PackageOrder = <PackageOrder as ::std::default::Default>::default();
             load = makeClassLoad((name2.clone()).clone());
             Error::assertionOrAddSourceMessage(!(listMember(load.clone(), po.clone())), Error::PACKAGE_MO_NOT_IN_ORDER.clone(), list![(name2.clone()).clone()], info.clone())?;
             Error::addSourceMessage(Error::FOUND_ELEMENT_NOT_IN_ORDER_FILE.clone(), list![(name2.clone()).clone()], info.clone())?;
@@ -750,7 +757,7 @@ fn getPackageContentNamesinElts(mut inNamesToSort: Arc<metamodelica::List<ArcStr
         },
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { info, specification: Deref @ Absyn::ElementSpec::COMPONENTS { components: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ComponentItem { component: Absyn::Component { name: name2, .. }, .. }, tail: _ }, .. }, .. } }, tail: _ }) => {
             let mut names: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            let mut load: PackageOrder;
+            let mut load: PackageOrder = <PackageOrder as ::std::default::Default>::default();
             load = makeClassLoad((name2.clone()).clone());
             Error::assertionOrAddSourceMessage(!(listMember(load.clone(), po.clone())), Error::PACKAGE_MO_NOT_IN_ORDER.clone(), list![(name2.clone()).clone()], info.clone())?;
             Error::addSourceMessage(Error::FOUND_ELEMENT_NOT_IN_ORDER_FILE.clone(), list![(name2.clone()).clone()], info.clone())?;

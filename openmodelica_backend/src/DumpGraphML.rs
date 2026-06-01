@@ -69,7 +69,7 @@ pub fn dumpSystem(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Bac
             let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
             let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
             let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-            let mut graphInfo: GraphML::GraphInfo;
+            let mut graphInfo: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
             let mut graph: i32 = 0;
             let mut eqnsids: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut neqns: i32 = 0;
@@ -97,7 +97,7 @@ pub fn dumpSystem(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Bac
         (Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::NO_MATCHING { .. }, mT: Some(_), m: Some(m), .. }, None) => {
             let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
             let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
-            let mut graphInfo: GraphML::GraphInfo;
+            let mut graphInfo: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
             let mut graph: i32 = 0;
             let mut eqnsids: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut neqns: i32 = 0;
@@ -123,7 +123,7 @@ pub fn dumpSystem(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Bac
             let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
             let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
             let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-            let mut graphInfo: GraphML::GraphInfo;
+            let mut graphInfo: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
             let mut graph: i32 = 0;
             let mut eqnsids: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut neqns: i32 = 0;
@@ -153,7 +153,7 @@ pub fn dumpSystem(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Bac
             let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
             let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
             let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-            let mut graphInfo: GraphML::GraphInfo;
+            let mut graphInfo: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
             let mut graph: i32 = 0;
             let mut eqnsids: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut neqns: i32 = 0;
@@ -181,7 +181,7 @@ pub fn dumpSystem(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Bac
             let mut vars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
             let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
             let mut mt: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-            let mut graphInfo: GraphML::GraphInfo;
+            let mut graphInfo: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
             let mut graph: i32 = 0;
             let mut vec3: metamodelica::Array<i32> = Default::default();
             let mut mapIncRowEqn: metamodelica::Array<i32> = Default::default();
@@ -207,12 +207,12 @@ pub fn dumpSystem(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Bac
 
 fn addVarGraph(mut inVar: BackendDAE::Var, mut inTpl: (bool, i32, (GraphML::GraphInfo, i32))) -> Result<(BackendDAE::Var, (bool, i32, (GraphML::GraphInfo, i32)))> {
     let mut outVar: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
-    let mut outTpl: (bool, i32, (GraphML::GraphInfo, i32));
+    let mut outTpl: (bool, i32, (GraphML::GraphInfo, i32)) = (false, 0, (<GraphML::GraphInfo as ::std::default::Default>::default(), 0));
     (outVar, outTpl) = 'mc: {
         let __mc_input = (inVar.clone(), inTpl.clone());
         if let Ok(__v) = (|| -> Result<_> {
             let (ref v @ BackendDAE::Var { varName: ref cr, .. }, (true, mut id, (mut graphInfo, mut graph))) = __mc_input.clone() else { bail!("nomatch") };
-            let mut label: GraphML::NodeLabel;
+            let mut label: GraphML::NodeLabel = <GraphML::NodeLabel as ::std::default::Default>::default();
             let mut desc: ArcStr = arcstr::literal!("");
             let mut labelText: ArcStr = arcstr::literal!("");
             let true = (BackendVariable::isStateVar(v.clone())) else { bail!("pattern mismatch") };
@@ -224,7 +224,7 @@ fn addVarGraph(mut inVar: BackendDAE::Var, mut inTpl: (bool, i32, (GraphML::Grap
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (ref v @ BackendDAE::Var { varName: ref cr, .. }, (false, mut id, (mut graphInfo, mut graph))) = __mc_input.clone() else { bail!("nomatch") };
-            let mut label: GraphML::NodeLabel;
+            let mut label: GraphML::NodeLabel = <GraphML::NodeLabel as ::std::default::Default>::default();
             let mut labelText: ArcStr = arcstr::literal!("");
             let true = (BackendVariable::isStateVar(v.clone())) else { bail!("pattern mismatch") };
             labelText = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(id.clone())); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(cr.clone())?); ArcStr::from(__mm_s) }).clone();
@@ -234,7 +234,7 @@ fn addVarGraph(mut inVar: BackendDAE::Var, mut inTpl: (bool, i32, (GraphML::Grap
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (ref v @ BackendDAE::Var { varName: ref cr, .. }, (true, mut id, (mut graphInfo, mut graph))) = __mc_input.clone() else { bail!("nomatch") };
-            let mut label: GraphML::NodeLabel;
+            let mut label: GraphML::NodeLabel = <GraphML::NodeLabel as ::std::default::Default>::default();
             let mut b: bool = false;
             let mut color: ArcStr = arcstr::literal!("");
             let mut desc: ArcStr = arcstr::literal!("");
@@ -249,7 +249,7 @@ fn addVarGraph(mut inVar: BackendDAE::Var, mut inTpl: (bool, i32, (GraphML::Grap
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (ref v @ BackendDAE::Var { varName: ref cr, .. }, (false, mut id, (mut graphInfo, mut graph))) = __mc_input.clone() else { bail!("nomatch") };
-            let mut label: GraphML::NodeLabel;
+            let mut label: GraphML::NodeLabel = <GraphML::NodeLabel as ::std::default::Default>::default();
             let mut b: bool = false;
             let mut color: ArcStr = arcstr::literal!("");
             let mut labelText: ArcStr = arcstr::literal!("");
@@ -271,12 +271,12 @@ fn addVarGraph(mut inVar: BackendDAE::Var, mut inTpl: (bool, i32, (GraphML::Grap
 
 fn addVarGraphMatch(mut inVar: BackendDAE::Var, mut inTpl: (bool, i32, metamodelica::Array<i32>, (GraphML::GraphInfo, i32))) -> Result<(BackendDAE::Var, (bool, i32, metamodelica::Array<i32>, (GraphML::GraphInfo, i32)))> {
     let mut outVar: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
-    let mut outTpl: (bool, i32, metamodelica::Array<i32>, (GraphML::GraphInfo, i32));
+    let mut outTpl: (bool, i32, metamodelica::Array<i32>, (GraphML::GraphInfo, i32)) = (false, 0, Default::default(), (<GraphML::GraphInfo as ::std::default::Default>::default(), 0));
     (outVar, outTpl) = 'mc: {
         let __mc_input = (inVar.clone(), inTpl.clone());
         if let Ok(__v) = (|| -> Result<_> {
             let (ref v @ BackendDAE::Var { varName: ref cr, .. }, (false, mut id, mut vec1, (mut graphInfo, mut graph))) = __mc_input.clone() else { bail!("nomatch") };
-            let mut label: GraphML::NodeLabel;
+            let mut label: GraphML::NodeLabel = <GraphML::NodeLabel as ::std::default::Default>::default();
             let mut color: ArcStr = arcstr::literal!("");
             let mut labelText: ArcStr = arcstr::literal!("");
             let true = (BackendVariable::isStateVar(v.clone())) else { bail!("pattern mismatch") };
@@ -288,7 +288,7 @@ fn addVarGraphMatch(mut inVar: BackendDAE::Var, mut inTpl: (bool, i32, metamodel
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (ref v @ BackendDAE::Var { varName: ref cr, .. }, (true, mut id, mut vec1, (mut graphInfo, mut graph))) = __mc_input.clone() else { bail!("nomatch") };
-            let mut label: GraphML::NodeLabel;
+            let mut label: GraphML::NodeLabel = <GraphML::NodeLabel as ::std::default::Default>::default();
             let mut color: ArcStr = arcstr::literal!("");
             let mut desc: ArcStr = arcstr::literal!("");
             let mut labelText: ArcStr = arcstr::literal!("");
@@ -302,7 +302,7 @@ fn addVarGraphMatch(mut inVar: BackendDAE::Var, mut inTpl: (bool, i32, metamodel
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (ref v @ BackendDAE::Var { varName: ref cr, .. }, (false, mut id, mut vec1, (mut graphInfo, mut graph))) = __mc_input.clone() else { bail!("nomatch") };
-            let mut label: GraphML::NodeLabel;
+            let mut label: GraphML::NodeLabel = <GraphML::NodeLabel as ::std::default::Default>::default();
             let mut color: ArcStr = arcstr::literal!("");
             let mut labelText: ArcStr = arcstr::literal!("");
             color = (if (intGt(vec1.borrow()[(id.clone()-1) as usize].clone(), 0)) {arcstr::literal!(GraphML::COLOR_RED)} else {arcstr::literal!(GraphML::COLOR_YELLOW)}).clone();
@@ -313,7 +313,7 @@ fn addVarGraphMatch(mut inVar: BackendDAE::Var, mut inTpl: (bool, i32, metamodel
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (ref v @ BackendDAE::Var { varName: ref cr, .. }, (true, mut id, mut vec1, (mut graphInfo, mut graph))) = __mc_input.clone() else { bail!("nomatch") };
-            let mut label: GraphML::NodeLabel;
+            let mut label: GraphML::NodeLabel = <GraphML::NodeLabel as ::std::default::Default>::default();
             let mut color: ArcStr = arcstr::literal!("");
             let mut desc: ArcStr = arcstr::literal!("");
             let mut labelText: ArcStr = arcstr::literal!("");
@@ -334,12 +334,12 @@ fn addVarGraphMatch(mut inVar: BackendDAE::Var, mut inTpl: (bool, i32, metamodel
 }
 
 fn addEqnGraph(mut inNode: i32, mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut mapIncRowEqn: metamodelica::Array<i32>, mut numberMode: bool, mut inGraph: (GraphML::GraphInfo, i32)) -> Result<(GraphML::GraphInfo, i32)> {
-    let mut outGraph: (GraphML::GraphInfo, i32);
+    let mut outGraph: (GraphML::GraphInfo, i32) = (<GraphML::GraphInfo as ::std::default::Default>::default(), 0);
     let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
     let mut r#str: ArcStr = arcstr::literal!("");
-    let mut graphInfo: GraphML::GraphInfo;
+    let mut graphInfo: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     let mut graph: i32 = 0;
-    let mut label: GraphML::NodeLabel;
+    let mut label: GraphML::NodeLabel = <GraphML::NodeLabel as ::std::default::Default>::default();
     let mut labelText: ArcStr = arcstr::literal!("");
     outGraph = (match (numberMode.clone(), inGraph.clone()) {
         (false, (mut graphInfo, mut graph)) => {
@@ -366,9 +366,9 @@ fn addEqnGraph(mut inNode: i32, mut eqns: Arc<ExpandableArray::ExpandableArray<A
 }
 
 fn addEdgesGraph(mut e: i32, mut inTpl: (i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, GraphML::GraphInfo)) -> (i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, GraphML::GraphInfo) {
-    let mut outTpl: (i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, GraphML::GraphInfo);
+    let mut outTpl: (i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, GraphML::GraphInfo) = (0, Default::default(), <GraphML::GraphInfo as ::std::default::Default>::default());
     let mut id: i32 = 0;
-    let mut graph: GraphML::GraphInfo;
+    let mut graph: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut vars: Arc<metamodelica::List<i32>> = metamodelica::nil();
     (id, m, graph) = inTpl.clone();
@@ -380,7 +380,7 @@ fn addEdgesGraph(mut e: i32, mut inTpl: (i32, metamodelica::Array<Arc<metamodeli
 }
 
 fn addEqnGraphMatch(mut inNode: i32, mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut atpl: (metamodelica::Array<i32>, metamodelica::Array<i32>, metamodelica::Array<bool>), mut numberMode: bool, mut inGraph: (GraphML::GraphInfo, i32)) -> Result<(GraphML::GraphInfo, i32)> {
-    let mut outGraph: (GraphML::GraphInfo, i32);
+    let mut outGraph: (GraphML::GraphInfo, i32) = (<GraphML::GraphInfo as ::std::default::Default>::default(), 0);
     outGraph = 'mc: {
         let __mc_input = (atpl.clone(), numberMode.clone(), inGraph.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -389,7 +389,7 @@ fn addEqnGraphMatch(mut inNode: i32, mut eqns: Arc<ExpandableArray::ExpandableAr
             let mut r#str: ArcStr = arcstr::literal!("");
             let mut color: ArcStr = arcstr::literal!("");
             let mut e: i32 = 0;
-            let mut label: GraphML::NodeLabel;
+            let mut label: GraphML::NodeLabel = <GraphML::NodeLabel as ::std::default::Default>::default();
             e = mapIncRowEqn.borrow()[(inNode.clone()-1) as usize].clone();
             let false = (eqnsflag.borrow()[(e.clone()-1) as usize].clone()) else { bail!("pattern mismatch") };
             eqn = BackendEquation::get(eqns.clone(), mapIncRowEqn.borrow()[(inNode.clone()-1) as usize].clone());
@@ -407,7 +407,7 @@ fn addEqnGraphMatch(mut inNode: i32, mut eqns: Arc<ExpandableArray::ExpandableAr
             let mut r#str: ArcStr = arcstr::literal!("");
             let mut color: ArcStr = arcstr::literal!("");
             let mut e: i32 = 0;
-            let mut label: GraphML::NodeLabel;
+            let mut label: GraphML::NodeLabel = <GraphML::NodeLabel as ::std::default::Default>::default();
             let mut labelText: ArcStr = arcstr::literal!("");
             e = mapIncRowEqn.borrow()[(inNode.clone()-1) as usize].clone();
             let false = (eqnsflag.borrow()[(e.clone()-1) as usize].clone()) else { bail!("pattern mismatch") };
@@ -433,10 +433,10 @@ fn addEqnGraphMatch(mut inNode: i32, mut eqns: Arc<ExpandableArray::ExpandableAr
 }
 
 fn addEdgeGraph(mut V: i32, mut e: i32, mut inTpl: (i32, GraphML::GraphInfo)) -> Result<(i32, GraphML::GraphInfo)> {
-    let mut outTpl: (i32, GraphML::GraphInfo);
+    let mut outTpl: (i32, GraphML::GraphInfo) = (0, <GraphML::GraphInfo as ::std::default::Default>::default());
     let mut id: i32 = 0;
     let mut v: i32 = 0;
-    let mut graph: GraphML::GraphInfo;
+    let mut graph: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     let mut ln: GraphML::LineType = GraphML::LineType::DASHED;
     (id, graph) = inTpl.clone();
     v = intAbs(V.clone());
@@ -447,10 +447,10 @@ fn addEdgeGraph(mut V: i32, mut e: i32, mut inTpl: (i32, GraphML::GraphInfo)) ->
 }
 
 fn addDirectedEdgesGraph(mut e: i32, mut inTpl: (i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, metamodelica::Array<i32>, GraphML::GraphInfo)) -> (i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, metamodelica::Array<i32>, GraphML::GraphInfo) {
-    let mut outTpl: (i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, metamodelica::Array<i32>, GraphML::GraphInfo);
+    let mut outTpl: (i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, metamodelica::Array<i32>, GraphML::GraphInfo) = (0, Default::default(), Default::default(), Default::default(), <GraphML::GraphInfo as ::std::default::Default>::default());
     let mut id: i32 = 0;
     let mut v: i32 = 0;
-    let mut graph: GraphML::GraphInfo;
+    let mut graph: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut vars: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut vec2: metamodelica::Array<i32> = Default::default();
@@ -464,11 +464,11 @@ fn addDirectedEdgesGraph(mut e: i32, mut inTpl: (i32, metamodelica::Array<Arc<me
 }
 
 fn addDirectedEdgeGraph(mut v: i32, mut e: i32, mut inTpl: (i32, i32, GraphML::GraphInfo)) -> Result<(i32, i32, GraphML::GraphInfo)> {
-    let mut outTpl: (i32, i32, GraphML::GraphInfo);
+    let mut outTpl: (i32, i32, GraphML::GraphInfo) = (0, 0, <GraphML::GraphInfo as ::std::default::Default>::default());
     let mut id: i32 = 0;
     let mut r: i32 = 0;
     let mut absv: i32 = 0;
-    let mut graph: GraphML::GraphInfo;
+    let mut graph: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     let mut arrow: (GraphML::ArrowType, GraphML::ArrowType) = (GraphML::ArrowType::ARROWCONCAVE, GraphML::ArrowType::ARROWCONCAVE);
     let mut lt: GraphML::LineType = GraphML::LineType::DASHED;
     (id, r, graph) = inTpl.clone();
@@ -481,10 +481,10 @@ fn addDirectedEdgeGraph(mut v: i32, mut e: i32, mut inTpl: (i32, i32, GraphML::G
 }
 
 fn addDirectedNumEdgesGraph(mut e: i32, mut inTpl: (i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, metamodelica::Array<i32>, GraphML::GraphInfo)) -> (i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, metamodelica::Array<i32>, GraphML::GraphInfo) {
-    let mut outTpl: (i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, metamodelica::Array<i32>, GraphML::GraphInfo);
+    let mut outTpl: (i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, metamodelica::Array<i32>, GraphML::GraphInfo) = (0, Default::default(), Default::default(), Default::default(), <GraphML::GraphInfo as ::std::default::Default>::default());
     let mut id: i32 = 0;
     let mut v: i32 = 0;
-    let mut graph: GraphML::GraphInfo;
+    let mut graph: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut vars: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut vec2: metamodelica::Array<i32> = Default::default();
@@ -500,10 +500,10 @@ fn addDirectedNumEdgesGraph(mut e: i32, mut inTpl: (i32, metamodelica::Array<Arc
 }
 
 fn addDirectedNumEdgeGraph(mut v: i32, mut e: i32, mut inTpl: (i32, i32, ArcStr, GraphML::GraphInfo)) -> Result<(i32, i32, ArcStr, GraphML::GraphInfo)> {
-    let mut outTpl: (i32, i32, ArcStr, GraphML::GraphInfo);
+    let mut outTpl: (i32, i32, ArcStr, GraphML::GraphInfo) = (0, 0, arcstr::literal!(""), <GraphML::GraphInfo as ::std::default::Default>::default());
     let mut id: i32 = 0;
     let mut r: i32 = 0;
-    let mut graph: GraphML::GraphInfo;
+    let mut graph: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     let mut arrow: (GraphML::ArrowType, GraphML::ArrowType) = (GraphML::ArrowType::ARROWCONCAVE, GraphML::ArrowType::ARROWCONCAVE);
     let mut text: ArcStr = arcstr::literal!("");
     let mut labels: Arc<metamodelica::List<GraphML::EdgeLabel>> = metamodelica::nil();
@@ -518,14 +518,14 @@ fn addDirectedNumEdgeGraph(mut v: i32, mut e: i32, mut inTpl: (i32, i32, ArcStr,
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn addCompsGraph(mut iComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut vars: BackendDAE::Variables, mut varcomp: metamodelica::Array<i32>, mut iN: i32, mut iGraph: (GraphML::GraphInfo, i32)) -> Result<(GraphML::GraphInfo, i32)> {
-    let mut oGraph: (GraphML::GraphInfo, i32);
+    let mut oGraph: (GraphML::GraphInfo, i32) = (<GraphML::GraphInfo as ::std::default::Default>::default(), 0);
     oGraph = (::match_deref::match_deref! { match &((iComps.clone(), iGraph.clone())) {
         (Deref @ metamodelica::List::Nil, _) => {
             iGraph.clone()
         },
         (Deref @ metamodelica::List::Cons { head: comp, tail: rest }, (graphInfo, graph)) => {
             let mut vlst: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            let mut label: GraphML::NodeLabel;
+            let mut label: GraphML::NodeLabel = <GraphML::NodeLabel as ::std::default::Default>::default();
             let mut varcomp1: metamodelica::Array<i32> = Default::default();
             let mut text: ArcStr = arcstr::literal!("");
             let mut varlst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
@@ -546,7 +546,7 @@ fn addCompsGraph(mut iComps: Arc<metamodelica::List<Arc<BackendDAE::StrongCompon
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn addCompsEdgesGraph(mut iComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut varcomp: metamodelica::Array<i32>, mut iN: i32, mut id: i32, mut markarray: metamodelica::Array<i32>, mut mark: i32, mut iGraph: GraphML::GraphInfo) -> Result<GraphML::GraphInfo> {
-    let mut oGraph: GraphML::GraphInfo;
+    let mut oGraph: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     oGraph = (::match_deref::match_deref! { match &(iComps.clone()) {
         Deref @ metamodelica::List::Nil => {
             iGraph.clone()
@@ -555,7 +555,7 @@ fn addCompsEdgesGraph(mut iComps: Arc<metamodelica::List<Arc<BackendDAE::StrongC
             let mut elst: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut vlst: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut n: i32 = 0;
-            let mut graph: GraphML::GraphInfo;
+            let mut graph: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
             (elst, vlst) = BackendDAETransform::getEquationAndSolvedVarIndxes(comp.clone())?;
             List::fold1r(vlst.clone(), Arc::new(arrayUpdate.clone()), mark.clone(), markarray.clone());
             vlst = getUsedVarsComp(elst.clone(), m.clone(), markarray.clone(), mark.clone());
@@ -582,7 +582,7 @@ fn getUsedVarsComp(mut iEqns: Arc<metamodelica::List<i32>>, mut m: metamodelica:
 
 fn addCompEdgesGraph(mut iVars: Arc<metamodelica::List<i32>>, mut varcomp: metamodelica::Array<i32>, mut markarray: metamodelica::Array<i32>, mut mark: i32, mut iN: i32, mut id: i32, mut iGraph: GraphML::GraphInfo) -> Result<(i32, GraphML::GraphInfo)> {
     let mut oN: i32 = 0;
-    let mut oGraph: GraphML::GraphInfo;
+    let mut oGraph: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     (oN, oGraph) = 'mc: {
         let __mc_input = iVars.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -598,7 +598,7 @@ fn addCompEdgesGraph(mut iVars: Arc<metamodelica::List<i32>>, mut varcomp: metam
                 Deref @ metamodelica::List::Cons { head: v, tail: rest } => {
                     let mut n: i32 = 0;
                     let mut c: i32 = 0;
-                    let mut graph: GraphML::GraphInfo;
+                    let mut graph: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
                     c = varcomp.borrow()[(v.clone()-1) as usize].clone();
                     let false = (intEq(markarray.borrow()[(c.clone()-1) as usize].clone(), mark.clone())) else { bail!("pattern mismatch") };
                     {let _arr = markarray.clone(); _arr.borrow_mut()[(c.clone()-1) as usize] = mark.clone(); _arr};
@@ -613,7 +613,7 @@ fn addCompEdgesGraph(mut iVars: Arc<metamodelica::List<i32>>, mut varcomp: metam
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: rest } => {
                     let mut n: i32 = 0;
-                    let mut graph: GraphML::GraphInfo;
+                    let mut graph: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
                     (n, graph) = addCompEdgesGraph(rest.clone(), varcomp.clone(), markarray.clone(), mark.clone(), iN.clone(), id.clone(), iGraph.clone())?;
                     Ok((n.clone(), graph.clone()))
                 }

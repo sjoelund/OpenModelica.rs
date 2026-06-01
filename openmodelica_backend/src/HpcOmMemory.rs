@@ -107,6 +107,15 @@ pub enum CacheMap {
         cacheLines: Arc<metamodelica::List<CacheLineMap>>,
     },
 }
+impl Default for CacheMap {
+    fn default() -> Self {
+        Self::UNIFORM_CACHEMAP {
+            cacheLineSize: Default::default(),
+            cacheVariables: Default::default(),
+            cacheLines: Default::default(),
+        }
+    }
+}
 pub use self::CacheMap::{CACHEMAP,UNIFORM_CACHEMAP};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -184,6 +193,13 @@ pub enum PartlyFilledCacheLine {
         cacheLineMap: CacheLineMap,
     },
 }
+impl Default for PartlyFilledCacheLine {
+    fn default() -> Self {
+        Self::PARTLYFILLEDCACHELINE_THREAD {
+            cacheLineMap: Default::default(),
+        }
+    }
+}
 pub use self::PartlyFilledCacheLine::{PARTLYFILLEDCACHELINE_LEVEL,PARTLYFILLEDCACHELINE_THREAD};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -252,9 +268,9 @@ pub fn createMemoryMap(mut iModelInfo: SimCode::ModelInfo, mut iVarToArrayIndexM
     let mut scVarUnsolvedTaskMapping: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut annotInfo: metamodelica::Array<ArcStr> = Default::default();
     let mut scVarCLMapping: metamodelica::Array<(i32, i32)> = Default::default();
-    let mut cacheMap: CacheMap;
+    let mut cacheMap: CacheMap = <CacheMap as ::std::default::Default>::default();
     let mut graphIdx: i32 = 0;
-    let mut graphInfo: GraphML::GraphInfo;
+    let mut graphInfo: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     let mut fileName: ArcStr = arcstr::literal!("");
     let mut eqSimCodeVarMapping: metamodelica::Array<metamodelica::Array<Arc<metamodelica::List<i32>>>> = Default::default();
     let mut eqCompMapping: metamodelica::Array<(i32, i32, i32)> = Default::default();
@@ -315,7 +331,7 @@ pub fn createMemoryMap(mut iModelInfo: SimCode::ModelInfo, mut iVarToArrayIndexM
             let mut boolAliasVarsCnt: i32 = boolAliasVarsCnt.clone();
             let mut boolParamVars: Arc<metamodelica::List<SimCodeVar::SimVar>> = boolParamVars.clone();
             let mut boolParamVarsCnt: i32 = boolParamVarsCnt.clone();
-            let mut cacheMap: CacheMap;
+            let mut cacheMap: CacheMap = cacheMap.clone();
             let mut clTaskMapping: metamodelica::Array<Arc<metamodelica::List<i32>>> = clTaskMapping.clone();
             let mut derivativeVars: Arc<metamodelica::List<SimCodeVar::SimVar>> = derivativeVars.clone();
             let mut derivativeVarsCnt: i32 = derivativeVarsCnt.clone();
@@ -325,7 +341,7 @@ pub fn createMemoryMap(mut iModelInfo: SimCode::ModelInfo, mut iVarToArrayIndexM
             let mut fileName: ArcStr = fileName.clone();
             let mut flatEqSimCodeVarMapping: metamodelica::Array<(i32, Arc<metamodelica::List<i32>>)> = flatEqSimCodeVarMapping.clone();
             let mut graphIdx: i32 = graphIdx.clone();
-            let mut graphInfo: GraphML::GraphInfo;
+            let mut graphInfo: GraphML::GraphInfo = graphInfo.clone();
             let mut inputVars: Arc<metamodelica::List<SimCodeVar::SimVar>> = inputVars.clone();
             let mut inputVarsCnt: i32 = inputVarsCnt.clone();
             let mut intAlgVars: Arc<metamodelica::List<SimCodeVar::SimVar>> = intAlgVars.clone();
@@ -572,10 +588,10 @@ pub fn createMemoryMap(mut iModelInfo: SimCode::ModelInfo, mut iVarToArrayIndexM
 }
 
 fn createCacheMapOptimized(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iSimCodeVars: SimCodeVar::SimVars, mut iAllSCVarsMapping: metamodelica::Array<Option<SimCodeVar::SimVar>>, mut iSimCodeVarTypes: metamodelica::Array<(i32, i32, i32)>, mut iScVarSolvedTaskMapping: metamodelica::Array<i32>, mut iScVarUnsolvedTaskMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iCacheLineSize: i32, mut iAllComponents: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut iSchedule: Arc<HpcOmSimCode::Schedule>, mut iSchedulerInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>, mut iNumberOfThreads: i32, mut iTaskSolvedVarsMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskUnsolvedVarsMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iScVarInfos: metamodelica::Array<ScVarInfo>) -> Result<(CacheMap, metamodelica::Array<(i32, i32)>, i32)> {
-    let mut oCacheMap: CacheMap;
+    let mut oCacheMap: CacheMap = <CacheMap as ::std::default::Default>::default();
     let mut oScVarCLMapping: metamodelica::Array<(i32, i32)> = Default::default();
     let mut oNumCL: i32 = 0;
-    let mut cacheMap: CacheMap;
+    let mut cacheMap: CacheMap = <CacheMap as ::std::default::Default>::default();
     let mut scVarCLMapping: metamodelica::Array<(i32, i32)> = Default::default();
     let mut numCL: i32 = 0;
     let mut tasksOfLevels: Arc<metamodelica::List<HpcOmSimCode::TaskList>> = metamodelica::nil();
@@ -613,10 +629,10 @@ fn createCacheMapOptimized(mut iTaskGraph: metamodelica::Array<Arc<metamodelica:
 }
 
 fn createCacheMapLevelOptimized(mut iAllSCVarsMapping: metamodelica::Array<Option<SimCodeVar::SimVar>>, mut iSimCodeVarTypes: metamodelica::Array<(i32, i32, i32)>, mut iScVarTaskMapping: metamodelica::Array<i32>, mut iCacheLineSize: i32, mut iAllComponents: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut iTasksOfLevels: Arc<metamodelica::List<HpcOmSimCode::TaskList>>, mut iNodeSimCodeVarMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<(CacheMap, metamodelica::Array<(i32, i32)>, i32)> {
-    let mut oCacheMap: CacheMap;
+    let mut oCacheMap: CacheMap = <CacheMap as ::std::default::Default>::default();
     let mut oScVarCLMapping: metamodelica::Array<(i32, i32)> = Default::default();
     let mut oNumCL: i32 = 0;
-    let mut cacheMap: CacheMap;
+    let mut cacheMap: CacheMap = <CacheMap as ::std::default::Default>::default();
     let mut cacheMapMeta: CacheMapMeta = <CacheMapMeta as ::std::default::Default>::default();
     let mut numCL: i32 = 0;
     let mut scVarCLMapping: metamodelica::Array<(i32, i32)> = Default::default();
@@ -633,7 +649,7 @@ fn createCacheMapLevelOptimized(mut iAllSCVarsMapping: metamodelica::Array<Optio
 }
 
 fn createCacheMapLevelOptimized0(mut iLevelTasks: HpcOmSimCode::TaskList, mut iNodeSimCodeVarMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iInfo: (Arc<metamodelica::List<i32>>, CacheMap, CacheMapMeta, i32)) -> Result<(Arc<metamodelica::List<i32>>, CacheMap, CacheMapMeta, i32)> {
-    let mut oInfo: (Arc<metamodelica::List<i32>>, CacheMap, CacheMapMeta, i32);
+    let mut oInfo: (Arc<metamodelica::List<i32>>, CacheMap, CacheMapMeta, i32) = (metamodelica::nil(), <CacheMap as ::std::default::Default>::default(), <CacheMapMeta as ::std::default::Default>::default(), 0);
     let mut createdCL: i32 = 0;
     let mut numCL: i32 = 0;
     let mut cacheLineSize: i32 = 0;
@@ -643,7 +659,7 @@ fn createCacheMapLevelOptimized0(mut iLevelTasks: HpcOmSimCode::TaskList, mut iN
     let mut writtenCL: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut cacheLinesPrevLevel: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut detailedCacheLineInfo: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
-    let mut cacheMap: CacheMap;
+    let mut cacheMap: CacheMap = <CacheMap as ::std::default::Default>::default();
     let mut cacheMapMeta: CacheMapMeta = <CacheMapMeta as ::std::default::Default>::default();
     let mut cacheLinesFloat: Arc<metamodelica::List<CacheLineMap>> = metamodelica::nil();
     (cacheLinesPrevLevel, cacheMap, cacheMapMeta, numCL) = iInfo.clone();
@@ -663,9 +679,9 @@ fn createCacheMapLevelOptimized0(mut iLevelTasks: HpcOmSimCode::TaskList, mut iN
 }
 
 fn createCacheMapLevelOptimizedForTask(mut iTask: Arc<HpcOmSimCode::Task>, mut iNodeSimCodeVarMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iInfo: (CacheMap, CacheMapMeta, i32, Arc<metamodelica::List<(i32, i32)>>)) -> Result<(CacheMap, CacheMapMeta, i32, Arc<metamodelica::List<(i32, i32)>>)> {
-    let mut oInfo: (CacheMap, CacheMapMeta, i32, Arc<metamodelica::List<(i32, i32)>>);
+    let mut oInfo: (CacheMap, CacheMapMeta, i32, Arc<metamodelica::List<(i32, i32)>>) = (<CacheMap as ::std::default::Default>::default(), <CacheMapMeta as ::std::default::Default>::default(), 0, metamodelica::nil());
     let mut nodeIdc: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut tmpInfo: (CacheMap, CacheMapMeta, i32, Arc<metamodelica::List<(i32, i32)>>);
+    let mut tmpInfo: (CacheMap, CacheMapMeta, i32, Arc<metamodelica::List<(i32, i32)>>) = (<CacheMap as ::std::default::Default>::default(), <CacheMapMeta as ::std::default::Default>::default(), 0, metamodelica::nil());
     oInfo = (::match_deref::match_deref! { match &(iTask.clone()) {
         Deref @ HpcOmSimCode::Task::CALCTASK_LEVEL { nodeIdc, .. } => {
             tmpInfo = List::fold(nodeIdc.clone(), (std::sync::Arc::new({ let __pe_b1 = -1; let __pe_b2 = iNodeSimCodeVarMapping.clone(); move |__pe_a0, __pe_a3| appendNodeVarsToCacheMap(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3) }) as std::sync::Arc<dyn ::std::ops::Fn(i32, (CacheMap, CacheMapMeta, i32, Arc<metamodelica::List<(i32, i32)>>)) -> Result<(CacheMap, CacheMapMeta, i32, Arc<metamodelica::List<(i32, i32)>>)> + 'static>), iInfo.clone());
@@ -681,10 +697,10 @@ fn createCacheMapLevelOptimizedForTask(mut iTask: Arc<HpcOmSimCode::Task>, mut i
 }
 
 fn createCacheMapLevelFixedOptimized(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iAllSCVarsMapping: metamodelica::Array<Option<SimCodeVar::SimVar>>, mut iSimCodeVarTypes: metamodelica::Array<(i32, i32, i32)>, mut iScVarSolvedTaskMapping: metamodelica::Array<i32>, mut iScVarUnsolvedTaskMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iCacheLineSize: i32, mut iAllComponents: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut iTasksOfLevels: Arc<metamodelica::List<HpcOmSimCode::TaskList>>, mut iNumberOfThreads: i32, mut iSchedulerInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>, mut iTaskSolvedVarsMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskUnsolvedVarsMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iScVarInfos: metamodelica::Array<ScVarInfo>) -> Result<(CacheMap, metamodelica::Array<(i32, i32)>, i32)> {
-    let mut oCacheMap: CacheMap;
+    let mut oCacheMap: CacheMap = <CacheMap as ::std::default::Default>::default();
     let mut oScVarCLMapping: metamodelica::Array<(i32, i32)> = Default::default();
     let mut oNumCL: i32 = 0;
-    let mut cacheMap: CacheMap;
+    let mut cacheMap: CacheMap = <CacheMap as ::std::default::Default>::default();
     let mut cacheMapMeta: CacheMapMeta = <CacheMapMeta as ::std::default::Default>::default();
     let mut handledVariables: metamodelica::Array<bool> = Default::default();
     let mut scVarCLMapping: metamodelica::Array<(i32, i32)> = Default::default();
@@ -708,13 +724,13 @@ fn createCacheMapLevelFixedOptimized(mut iTaskGraph: metamodelica::Array<Arc<met
 }
 
 fn createCacheMapLevelFixedOptimizedForLevel(mut iLevelTasks: HpcOmSimCode::TaskList, mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iNumberOfThreads: i32, mut iScVarInfos: metamodelica::Array<ScVarInfo>, mut iTaskSolvedVarsMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskUnsolvedVarsMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iHandledVariables: metamodelica::Array<bool>, mut iSchedulerInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>, mut iThreadCacheLines: metamodelica::Array<(Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>)>, mut iSharedCacheLines: metamodelica::Array<((Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>), (Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>))>, mut iInfo: (CacheMap, CacheMapMeta, i32, i32)) -> Result<(CacheMap, CacheMapMeta, i32, i32)> {
-    let mut oInfo: (CacheMap, CacheMapMeta, i32, i32);
+    let mut oInfo: (CacheMap, CacheMapMeta, i32, i32) = (<CacheMap as ::std::default::Default>::default(), <CacheMapMeta as ::std::default::Default>::default(), 0, 0);
     let mut createdCL: i32 = 0;
     let mut numCL: i32 = 0;
     let mut cacheLineSize: i32 = 0;
     let mut level: i32 = 0;
     let mut allCL: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut cacheMap: CacheMap;
+    let mut cacheMap: CacheMap = <CacheMap as ::std::default::Default>::default();
     let mut cacheMapMeta: CacheMapMeta = <CacheMapMeta as ::std::default::Default>::default();
     let mut cacheLinesFloat: Arc<metamodelica::List<CacheLineMap>> = metamodelica::nil();
     let mut cacheVariables: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
@@ -733,13 +749,13 @@ fn createCacheMapLevelFixedOptimizedForLevel(mut iLevelTasks: HpcOmSimCode::Task
 }
 
 fn createCacheMapLevelFixedOptimizedForTask(mut iTask: Arc<HpcOmSimCode::Task>, mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iSchedulerInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>, mut iNumberOfThreads: i32, mut iLevel: i32, mut iScVarInfos: metamodelica::Array<ScVarInfo>, mut iTaskSolvedVarsMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskUnsolvedVarsMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iHandledVariables: metamodelica::Array<bool>, mut iThreadCacheLines: metamodelica::Array<(Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>)>, mut iSharedCacheLines: metamodelica::Array<((Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>), (Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>))>, mut iInfo: (CacheMap, CacheMapMeta, i32)) -> Result<(CacheMap, CacheMapMeta, i32)> {
-    let mut oInfo: (CacheMap, CacheMapMeta, i32);
+    let mut oInfo: (CacheMap, CacheMapMeta, i32) = (<CacheMap as ::std::default::Default>::default(), <CacheMapMeta as ::std::default::Default>::default(), 0);
     let mut nodeIdc: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut solvedVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut unsolvedVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut cacheMap: CacheMap;
+    let mut cacheMap: CacheMap = <CacheMap as ::std::default::Default>::default();
     let mut cacheMapMeta: CacheMapMeta = <CacheMapMeta as ::std::default::Default>::default();
-    let mut tmpInfo: (CacheMap, CacheMapMeta, i32);
+    let mut tmpInfo: (CacheMap, CacheMapMeta, i32) = (<CacheMap as ::std::default::Default>::default(), <CacheMapMeta as ::std::default::Default>::default(), 0);
     let mut threadIdx: i32 = 0;
     let mut numNewCL: i32 = 0;
     let mut allSCVarsMapping: metamodelica::Array<Option<SimCodeVar::SimVar>> = Default::default();
@@ -790,13 +806,13 @@ fn getUnsolvedVarsByNodeList(mut iNodeList: Arc<metamodelica::List<i32>>, mut iV
 }
 
 fn createCacheMapThreadOptimized(mut iTaskGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iAllSCVarsMapping: metamodelica::Array<Option<SimCodeVar::SimVar>>, mut iSimCodeVarTypes: metamodelica::Array<(i32, i32, i32)>, mut iScVarSolvedTaskMapping: metamodelica::Array<i32>, mut iScVarUnsolvedTaskMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iCacheLineSize: i32, mut iAllComponents: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut iThreadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, mut iNumberOfThreads: i32, mut iSchedulerInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>, mut iTaskSolvedVarsMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskUnsolvedVarsMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iScVarInfos: metamodelica::Array<ScVarInfo>) -> Result<(CacheMap, metamodelica::Array<(i32, i32)>, i32)> {
-    let mut oCacheMap: CacheMap;
+    let mut oCacheMap: CacheMap = <CacheMap as ::std::default::Default>::default();
     let mut oScVarCLMapping: metamodelica::Array<(i32, i32)> = Default::default();
     let mut oNumCL: i32 = 0;
     let mut threadCacheLines: metamodelica::Array<(Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>)> = Default::default();
     let mut sharedCacheLines: metamodelica::Array<((Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>), (Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>))> = Default::default();
-    let mut tmpCacheInfo: (CacheMap, CacheMapMeta, i32);
-    let mut cacheMap: CacheMap;
+    let mut tmpCacheInfo: (CacheMap, CacheMapMeta, i32) = (<CacheMap as ::std::default::Default>::default(), <CacheMapMeta as ::std::default::Default>::default(), 0);
+    let mut cacheMap: CacheMap = <CacheMap as ::std::default::Default>::default();
     let mut cacheMapMeta: CacheMapMeta = <CacheMapMeta as ::std::default::Default>::default();
     let mut scVarCLMapping: metamodelica::Array<(i32, i32)> = Default::default();
     let mut handledVariables: metamodelica::Array<bool> = Default::default();
@@ -824,16 +840,16 @@ fn createCacheMapOptimizedForTask<T: Clone + 'static>(mut iTask: Arc<HpcOmSimCod
 
     pub type FactoryMethod<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Option<PartlyFilledCacheLine>, CacheLineMap, T) -> Result<PartlyFilledCacheLine> + 'static>;
 
-    let mut oInfo: (CacheMap, CacheMapMeta, i32);
+    let mut oInfo: (CacheMap, CacheMapMeta, i32) = (<CacheMap as ::std::default::Default>::default(), <CacheMapMeta as ::std::default::Default>::default(), 0);
     let mut threadIdx: i32 = 0;
     let mut taskIdx: i32 = 0;
     let mut solvedVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut unsolvedVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut vars: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut cacheMap: CacheMap;
+    let mut cacheMap: CacheMap = <CacheMap as ::std::default::Default>::default();
     let mut cacheMapMeta: CacheMapMeta = <CacheMapMeta as ::std::default::Default>::default();
     let mut numOfCLs: i32 = 0;
-    let mut tmpInfo: (CacheMap, CacheMapMeta, i32);
+    let mut tmpInfo: (CacheMap, CacheMapMeta, i32) = (<CacheMap as ::std::default::Default>::default(), <CacheMapMeta as ::std::default::Default>::default(), 0);
     let mut allSCVarsMapping: metamodelica::Array<Option<SimCodeVar::SimVar>> = Default::default();
     oInfo = (::match_deref::match_deref! { match &((iTask.clone(), iInfo.clone())) {
         (Deref @ HpcOmSimCode::Task::CALCTASK { threadIdx, index: taskIdx, .. }, (cacheMap, cacheMapMeta @ CacheMapMeta { allSCVarsMapping, .. }, numOfCLs)) => {
@@ -858,9 +874,9 @@ fn createCacheMapOptimizedForTask1<T: Clone + 'static>(mut iScVar: i32, mut iThr
 
     pub type FactoryMethod<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Option<PartlyFilledCacheLine>, CacheLineMap, T) -> Result<PartlyFilledCacheLine> + 'static>;
 
-    let mut oInfo: (CacheMap, CacheMapMeta, i32);
+    let mut oInfo: (CacheMap, CacheMapMeta, i32) = (<CacheMap as ::std::default::Default>::default(), <CacheMapMeta as ::std::default::Default>::default(), 0);
     let mut isShared: bool = false;
-    let mut cacheMap: CacheMap;
+    let mut cacheMap: CacheMap = <CacheMap as ::std::default::Default>::default();
     let mut cacheMapMeta: CacheMapMeta = <CacheMapMeta as ::std::default::Default>::default();
     let mut numOfCLs: i32 = 0;
     let mut ownerThread: i32 = 0;
@@ -930,7 +946,7 @@ fn getVarInfoByScVarIdx(mut iScVarIdx: i32, mut iScVarSolvedTaskMapping: metamod
 }
 
 fn addVarsToThreadCL(mut iNodeVars: Arc<metamodelica::List<i32>>, mut iThreadIdx: i32, mut iThreadCacheLines: metamodelica::Array<(Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>)>, mut iInfo: (CacheMap, CacheMapMeta, i32)) -> Result<(CacheMap, CacheMapMeta, i32)> {
-    let mut oInfo: (CacheMap, CacheMapMeta, i32);
+    let mut oInfo: (CacheMap, CacheMapMeta, i32) = (<CacheMap as ::std::default::Default>::default(), <CacheMapMeta as ::std::default::Default>::default(), 0);
     let mut lastCL: CacheLineMap = <CacheLineMap as ::std::default::Default>::default();
     let mut cacheVariable: SimCodeVar::SimVar = <SimCodeVar::SimVar as ::std::default::Default>::default();
     let mut allSCVarsMapping: metamodelica::Array<Option<SimCodeVar::SimVar>> = Default::default();
@@ -1055,7 +1071,7 @@ fn addVarsToSharedCL<T: Clone + 'static>(mut iNodeVars: Arc<metamodelica::List<i
 
     pub type FactoryMethod<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Option<PartlyFilledCacheLine>, CacheLineMap, T) -> Result<PartlyFilledCacheLine> + 'static>;
 
-    let mut oInfo: (CacheMap, CacheMapMeta, i32);
+    let mut oInfo: (CacheMap, CacheMapMeta, i32) = (<CacheMap as ::std::default::Default>::default(), <CacheMapMeta as ::std::default::Default>::default(), 0);
     let mut allSCVarsMapping: metamodelica::Array<Option<SimCodeVar::SimVar>> = Default::default();
     let mut varIdx: i32 = 0;
     let mut varDataType: i32 = 0;
@@ -1066,7 +1082,7 @@ fn addVarsToSharedCL<T: Clone + 'static>(mut iNodeVars: Arc<metamodelica::List<i
     let mut scVarCLMapping: metamodelica::Array<(i32, i32)> = Default::default();
     let mut cacheVariables: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
     let mut cacheLinesFloat: Arc<metamodelica::List<CacheLineMap>> = metamodelica::nil();
-    let mut cacheMap: CacheMap;
+    let mut cacheMap: CacheMap = <CacheMap as ::std::default::Default>::default();
     let mut cacheMapMeta: CacheMapMeta = <CacheMapMeta as ::std::default::Default>::default();
     let mut matchedCacheLine: Option<(PartlyFilledCacheLine, i32)> = None;
     let (ref __pa3 @ CacheMap::CACHEMAP { cacheLinesFloat: ref __pa0, cacheVariables: ref __pa1, cacheLineSize: ref __pa2, .. }, ref __pa7 @ CacheMapMeta { scVarCLMapping: ref __pa4, simCodeVarTypes: ref __pa5, allSCVarsMapping: ref __pa6 }, __pa8) = (iInfo.clone()) else { bail!("pattern mismatch") };
@@ -1092,7 +1108,7 @@ fn addVarsToSharedCL<T: Clone + 'static>(mut iNodeVars: Arc<metamodelica::List<i
 fn addVarsToSharedCL0<T: Clone + 'static>(mut iMatchedCacheLine: Option<(PartlyFilledCacheLine, i32)>, mut iVarIdx: i32, mut iFactoryMethod: Arc<dyn ::std::ops::Fn(Option<PartlyFilledCacheLine>, CacheLineMap, T) -> Result<PartlyFilledCacheLine> + 'static>, mut iAdditionalArgument: T, mut iThreadIdx: i32, mut iSharedCacheLines: metamodelica::Array<((Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>), (Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>))>, mut iInfo: (CacheMap, CacheMapMeta, i32)) -> Result<(CacheMap, CacheMapMeta, i32)> {
     pub type FactoryMethod<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Option<PartlyFilledCacheLine>, CacheLineMap, T) -> Result<PartlyFilledCacheLine> + 'static>;
 
-    let mut oInfo: (CacheMap, CacheMapMeta, i32);
+    let mut oInfo: (CacheMap, CacheMapMeta, i32) = (<CacheMap as ::std::default::Default>::default(), <CacheMapMeta as ::std::default::Default>::default(), 0);
     let mut threadPartlyFilledCacheLines: PartlyFilledCacheLines = (metamodelica::nil(), metamodelica::nil(), metamodelica::nil());
     let mut partlyFilledClFloat: Arc<metamodelica::List<PartlyFilledCacheLine>> = metamodelica::nil();
     let mut partlyFilledClInt: Arc<metamodelica::List<PartlyFilledCacheLine>> = metamodelica::nil();
@@ -1104,7 +1120,7 @@ fn addVarsToSharedCL0<T: Clone + 'static>(mut iMatchedCacheLine: Option<(PartlyF
     let mut allSCVarsMapping: metamodelica::Array<Option<SimCodeVar::SimVar>> = Default::default();
     let mut simCodeVarTypes: metamodelica::Array<(i32, i32, i32)> = Default::default();
     let mut scVarCLMapping: metamodelica::Array<(i32, i32)> = Default::default();
-    let mut partlyFilledCacheLine: PartlyFilledCacheLine;
+    let mut partlyFilledCacheLine: PartlyFilledCacheLine = <PartlyFilledCacheLine as ::std::default::Default>::default();
     let mut partlyFilledCacheLineOption: Option<PartlyFilledCacheLine> = None;
     let mut matchedClIndex: i32 = 0;
     let mut numOfCLs: i32 = 0;
@@ -1237,7 +1253,7 @@ fn findMatchingSharedCLLevelfix(mut iNodeVar: i32, mut iVarSize: i32, mut iVarTy
 
 fn findMatchingSharedCLLevelfix0(mut iNodeVar: i32, mut iVarSize: i32, mut iLevelIdx: i32, mut iThreadIdx: i32, mut iCurrentListIdx: i32, mut iSharedCacheLines: Arc<metamodelica::List<PartlyFilledCacheLine>>) -> Option<(PartlyFilledCacheLine, i32)> {
     let mut oMatchedCacheLine: Option<(PartlyFilledCacheLine, i32)> = None;
-    let mut head: PartlyFilledCacheLine;
+    let mut head: PartlyFilledCacheLine = <PartlyFilledCacheLine as ::std::default::Default>::default();
     let mut rest: Arc<metamodelica::List<PartlyFilledCacheLine>> = metamodelica::nil();
     let mut tmpMatchedCacheLine: Option<(PartlyFilledCacheLine, i32)> = None;
     let mut cacheLineMap: CacheLineMap = <CacheLineMap as ::std::default::Default>::default();
@@ -1274,7 +1290,7 @@ fn findMatchingSharedCLLevelfix0(mut iNodeVar: i32, mut iVarSize: i32, mut iLeve
 fn findMatchingSharedCLThread(mut iNodeVar: i32, mut iVarSize: i32, mut iVarType: i32, mut iThreadIdx: i32, mut iAdditionalArgument: i32, mut iSharedCacheLines: metamodelica::Array<((Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>), (Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>))>) -> Result<Option<(PartlyFilledCacheLine, i32)>> {
     let mut oMatchedCacheLine: Option<(PartlyFilledCacheLine, i32)> = None;
     let mut partlyFilledCacheLines: Arc<metamodelica::List<PartlyFilledCacheLine>> = metamodelica::nil();
-    let mut partlyFilledCL: PartlyFilledCacheLine;
+    let mut partlyFilledCL: PartlyFilledCacheLine = <PartlyFilledCacheLine as ::std::default::Default>::default();
     let mut numBytesFree: i32 = 0;
     let mut listIdx: i32 = 0;
     oMatchedCacheLine = None;
@@ -1294,13 +1310,13 @@ fn findMatchingSharedCLThread(mut iNodeVar: i32, mut iVarSize: i32, mut iVarType
 }
 
 fn createSharedClThread(mut iOldPartlyFilledCacheLine: Option<PartlyFilledCacheLine>, mut iCacheLineMap: CacheLineMap, mut iAdditionalArgument: i32) -> PartlyFilledCacheLine {
-    let mut oCreatedCacheLine: PartlyFilledCacheLine;
+    let mut oCreatedCacheLine: PartlyFilledCacheLine = <PartlyFilledCacheLine as ::std::default::Default>::default();
     oCreatedCacheLine = PartlyFilledCacheLine::PARTLYFILLEDCACHELINE_THREAD { cacheLineMap: iCacheLineMap.clone() };
     oCreatedCacheLine
 }
 
 fn createSharedClLevelFix(mut iOldPartlyFilledCacheLine: Option<PartlyFilledCacheLine>, mut iCacheLineMap: CacheLineMap, mut iLevelThreadIdx: (i32, i32)) -> Result<PartlyFilledCacheLine> {
-    let mut oCreatedCacheLine: PartlyFilledCacheLine;
+    let mut oCreatedCacheLine: PartlyFilledCacheLine = <PartlyFilledCacheLine as ::std::default::Default>::default();
     let mut prefetchLevel: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut writeLevel: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
     let mut levelIdx: i32 = 0;
@@ -1337,7 +1353,7 @@ fn isCLWrittenByOtherThread(mut iLevelInfo: (i32, i32), mut iLevelIdx: i32, mut 
 }
 
 fn createCacheMapFromThreadAndSharedCLs(mut iThreadCacheLines: CacheLines, mut iSharedCacheLines: ((Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>, Arc<metamodelica::List<PartlyFilledCacheLine>>), (Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>, Arc<metamodelica::List<CacheLineMap>>)), mut iCacheMap: CacheMap) -> Result<CacheMap> {
-    let mut oCacheMap: CacheMap;
+    let mut oCacheMap: CacheMap = <CacheMap as ::std::default::Default>::default();
     let mut cacheLineSize: i32 = 0;
     let mut cacheLinesFloat: Arc<metamodelica::List<CacheLineMap>> = metamodelica::nil();
     let mut cacheLinesInt: Arc<metamodelica::List<CacheLineMap>> = metamodelica::nil();
@@ -1363,7 +1379,7 @@ fn createCacheMapFromThreadAndSharedCLs(mut iThreadCacheLines: CacheLines, mut i
 }
 
 fn createCacheMapDefault(mut iAllSCVars: metamodelica::Array<Option<SimCodeVar::SimVar>>, mut iCacheLineSize: i32, mut iSimCodeVars: SimCodeVar::SimVars, mut iScVarTaskMapping: metamodelica::Array<i32>, mut iSchedulerInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>, mut iSimCodeVarTypes: metamodelica::Array<(i32, i32, i32)>) -> Result<(CacheMap, metamodelica::Array<(i32, i32)>, i32)> {
-    let mut oCacheMap: CacheMap;
+    let mut oCacheMap: CacheMap = <CacheMap as ::std::default::Default>::default();
     let mut oScVarCLMapping: metamodelica::Array<(i32, i32)> = Default::default();
     let mut oNumCL: i32 = 0;
     if stringEqual((Config::simCodeTarget()?).clone(), (literal!("Cpp")).clone()) {
@@ -1377,7 +1393,7 @@ fn createCacheMapDefault(mut iAllSCVars: metamodelica::Array<Option<SimCodeVar::
 }
 
 fn createCacheMapDefaultCppRuntime(mut iAllSCVars: metamodelica::Array<Option<SimCodeVar::SimVar>>, mut iCacheLineSize: i32, mut iSimCodeVars: SimCodeVar::SimVars, mut iScVarTaskMapping: metamodelica::Array<i32>, mut iSchedulerInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>, mut iSimCodeVarTypes: metamodelica::Array<(i32, i32, i32)>) -> Result<(CacheMap, metamodelica::Array<(i32, i32)>, i32)> {
-    let mut oCacheMap: CacheMap;
+    let mut oCacheMap: CacheMap = <CacheMap as ::std::default::Default>::default();
     let mut oScVarCLMapping: metamodelica::Array<(i32, i32)> = Default::default();
     let mut oNumCL: i32 = 0;
     let mut stateVars: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
@@ -1394,7 +1410,7 @@ fn createCacheMapDefaultCppRuntime(mut iAllSCVars: metamodelica::Array<Option<Si
     let mut boolAliasVars: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
     let mut inputVars: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
     let mut outputVars: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
-    let mut cacheMap: CacheMap;
+    let mut cacheMap: CacheMap = <CacheMap as ::std::default::Default>::default();
     let mut lastCacheLine: CacheLineMap = <CacheLineMap as ::std::default::Default>::default();
     let mut scVarCLMapping: metamodelica::Array<(i32, i32)> = Default::default();
     let mut currentScVarIdx: i32 = 0;
@@ -1540,10 +1556,10 @@ fn createCacheMapDefaultCppRuntime1(mut iCacheLineEntry: CacheLineEntry, mut iCa
 }
 
 fn appendNodeVarsToCacheMap(mut iNodeIdx: i32, mut iOwnerThread: i32, mut iNodeSimCodeVarMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iInfo: (CacheMap, CacheMapMeta, i32, Arc<metamodelica::List<(i32, i32)>>)) -> Result<(CacheMap, CacheMapMeta, i32, Arc<metamodelica::List<(i32, i32)>>)> {
-    let mut oInfo: (CacheMap, CacheMapMeta, i32, Arc<metamodelica::List<(i32, i32)>>);
+    let mut oInfo: (CacheMap, CacheMapMeta, i32, Arc<metamodelica::List<(i32, i32)>>) = (<CacheMap as ::std::default::Default>::default(), <CacheMapMeta as ::std::default::Default>::default(), 0, metamodelica::nil());
     let mut simCodeVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut writtenCL: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut iCacheMap: CacheMap;
+    let mut iCacheMap: CacheMap = <CacheMap as ::std::default::Default>::default();
     let mut iCacheMapMeta: CacheMapMeta = <CacheMapMeta as ::std::default::Default>::default();
     let mut iNumNewCL: i32 = 0;
     let mut varsString: ArcStr = arcstr::literal!("");
@@ -1588,7 +1604,7 @@ fn appendNodeVarsToCacheMap0(mut iWrittenCLs: Arc<metamodelica::List<i32>>, mut 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn appendSCVarToCacheMap(mut iSCVarIdx: i32, mut iOwnerThread: i32, mut iInfo: (CacheMap, CacheMapMeta, i32, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, i32)) -> Result<(CacheMap, CacheMapMeta, i32, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, i32)> {
-    let mut oInfo: (CacheMap, CacheMapMeta, i32, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, i32);
+    let mut oInfo: (CacheMap, CacheMapMeta, i32, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, i32) = (<CacheMap as ::std::default::Default>::default(), <CacheMapMeta as ::std::default::Default>::default(), 0, metamodelica::nil(), metamodelica::nil(), 0);
     let mut iAllSCVarsMapping: metamodelica::Array<Option<SimCodeVar::SimVar>> = Default::default();
     let mut iSimCodeVarTypes: metamodelica::Array<(i32, i32, i32)> = Default::default();
     let mut iScVarCLMapping: metamodelica::Array<(i32, i32)> = Default::default();
@@ -1613,10 +1629,10 @@ fn appendSCVarToCacheMap(mut iSCVarIdx: i32, mut iOwnerThread: i32, mut iInfo: (
     let mut numCacheVars: i32 = 0;
     let mut freeSpace: i32 = 0;
     let mut numBytesFree: i32 = 0;
-    let mut cacheMap: CacheMap;
+    let mut cacheMap: CacheMap = <CacheMap as ::std::default::Default>::default();
     let mut cacheMapMeta: CacheMapMeta = <CacheMapMeta as ::std::default::Default>::default();
     let mut writtenCL: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut tmpInfo: (CacheMap, CacheMapMeta, i32, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, i32);
+    let mut tmpInfo: (CacheMap, CacheMapMeta, i32, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, i32) = (<CacheMap as ::std::default::Default>::default(), <CacheMapMeta as ::std::default::Default>::default(), 0, metamodelica::nil(), metamodelica::nil(), 0);
     oInfo = 'mc: {
         let __mc_input = iInfo.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -1677,7 +1693,7 @@ fn appendSCVarToCacheMap(mut iSCVarIdx: i32, mut iOwnerThread: i32, mut iInfo: (
             ::match_deref::match_deref! { match &__mc_input {
                 (cacheMap @ CacheMap::CACHEMAP { cacheLinesBool, cacheLinesInt, cacheLinesFloat, cacheVariables, cacheLineSize }, cacheMapMeta @ CacheMapMeta { allSCVarsMapping: iAllSCVarsMapping, simCodeVarTypes: iSimCodeVarTypes, scVarCLMapping: iScVarCLMapping }, numNewCL, cacheLineCandidates, writtenCL, currentCLCandidateIdx) => {
                     let mut numBytesRequired: i32 = numBytesRequired.clone();
-                    let mut tmpInfo: (CacheMap, CacheMapMeta, i32, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, i32);
+                    let mut tmpInfo: (CacheMap, CacheMapMeta, i32, Arc<metamodelica::List<(i32, i32)>>, Arc<metamodelica::List<i32>>, i32) = tmpInfo.clone();
                     let mut varDataType: i32 = varDataType.clone();
                     let true = (intGe((cacheLineCandidates.clone().len() as i32), currentCLCandidateIdx.clone())) else { bail!("pattern mismatch") };
                     (varDataType, numBytesRequired, _) = iSimCodeVarTypes.clone().borrow()[(iSCVarIdx.clone()-1) as usize].clone();
@@ -2693,10 +2709,10 @@ fn getTaskSimVarMapping(mut iSccEqMapping: metamodelica::Array<Arc<metamodelica:
 // GRAPH
 // -------------------------------------------
 fn appendCacheLinesToGraph(mut iCacheMap: CacheMap, mut iNumberOfNodes: i32, mut iEqSimCodeVarMapping: metamodelica::Array<metamodelica::Array<Arc<metamodelica::List<i32>>>>, mut iEqSystems: Arc<metamodelica::List<Arc<BackendDAE::EqSystem>>>, mut iVarNameSCVarIdxMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<i32>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>) -> Result<ArcStr> + 'static>)), mut ieqCompMapping: metamodelica::Array<(i32, i32, i32)>, mut iScVarTaskMapping: metamodelica::Array<i32>, mut iSchedulerInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>, mut iThreadIdAttributeIdx: i32, mut iCompNodeMapping: metamodelica::Array<i32>, mut iTaskSolvedVarsMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskUnsolvedVarsMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iScVarCLMapping: metamodelica::Array<(i32, i32)>, mut iScVarInfos: metamodelica::Array<ScVarInfo>, mut iGraphInfo: GraphML::GraphInfo) -> Result<GraphML::GraphInfo> {
-    let mut oGraphInfo: GraphML::GraphInfo;
+    let mut oGraphInfo: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     let mut clGroupNodeIdx: i32 = 0;
     let mut graphCount: i32 = 0;
-    let mut tmpGraphInfo: GraphML::GraphInfo;
+    let mut tmpGraphInfo: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     let mut knownEdges: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut addedVariables: metamodelica::Array<bool> = Default::default();
     let mut cacheVariables: metamodelica::Array<SimCodeVar::SimVar> = Default::default();
@@ -2710,7 +2726,7 @@ fn appendCacheLinesToGraph(mut iCacheMap: CacheMap, mut iNumberOfNodes: i32, mut
             let mut cacheVariables: metamodelica::Array<SimCodeVar::SimVar> = cacheVariables.clone();
             let mut clGroupNodeIdx: i32 = clGroupNodeIdx.clone();
             let mut knownEdges: metamodelica::Array<Arc<metamodelica::List<i32>>> = knownEdges.clone();
-            let mut tmpGraphInfo: GraphML::GraphInfo;
+            let mut tmpGraphInfo: GraphML::GraphInfo = tmpGraphInfo.clone();
             let true = (intLe(1, graphCount.clone())) else { bail!("pattern mismatch") };
             knownEdges = arrayCreate(iNumberOfNodes.clone(), metamodelica::nil());
             addedVariables = arrayCreate((iScVarTaskMapping.clone().borrow().len() as i32), false);
@@ -2739,14 +2755,14 @@ fn appendCacheLinesToGraph(mut iCacheMap: CacheMap, mut iNumberOfNodes: i32, mut
 }
 
 fn appendVariablesToGraph(mut iTaskSolvedVarsMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskUnsolvedVarsMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iNumberOfScVars: i32, mut iGraphIdx: i32, mut iThreadIdAttributeIdx: i32, mut iVarNameSCVarIdxMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<i32>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>) -> Result<ArcStr> + 'static>)), mut iAllVarsMapping: metamodelica::Array<Option<SimCodeVar::SimVar>>, mut iScVarInfos: metamodelica::Array<ScVarInfo>, mut iGraphInfo: GraphML::GraphInfo) -> Result<GraphML::GraphInfo> {
-    let mut oGraphInfo: GraphML::GraphInfo;
+    let mut oGraphInfo: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     let mut tmpGraphInfo: GraphML::GraphInfo = iGraphInfo.clone();
     let mut description: ArcStr = arcstr::literal!("");
     let mut threadText: ArcStr = arcstr::literal!("");
     let mut simVarOpt: Option<SimCodeVar::SimVar> = None;
     let mut simVar: SimCodeVar::SimVar = <SimCodeVar::SimVar as ::std::default::Default>::default();
     let mut varCompRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut nodeLabel: GraphML::NodeLabel;
+    let mut nodeLabel: GraphML::NodeLabel = <GraphML::NodeLabel as ::std::default::Default>::default();
     let mut isValidVar: bool = false;
     let mut realScVarIdxOffset: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut realScVarIdx: i32 = 0;
@@ -2783,7 +2799,7 @@ fn appendVariablesToGraph(mut iTaskSolvedVarsMapping: metamodelica::Array<Arc<me
 }
 
 fn appendTaskVarEdgesToGraph(mut iTaskSolvedVarsMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iTaskUnsolvedVarsMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iGraphInfo: GraphML::GraphInfo) -> Result<GraphML::GraphInfo> {
-    let mut oGraphInfo: GraphML::GraphInfo;
+    let mut oGraphInfo: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     let mut tmpGraphInfo: GraphML::GraphInfo = iGraphInfo.clone();
     let mut taskIdx: i32 = 0;
     let mut varIdx: i32 = 0;
@@ -2809,7 +2825,7 @@ fn appendTaskVarEdgesToGraph(mut iTaskSolvedVarsMapping: metamodelica::Array<Arc
 }
 
 fn appendUnmappedVariablesToGraph(mut iScVarCLMapping: metamodelica::Array<(i32, i32)>, mut iGraphInfo: GraphML::GraphInfo) -> Result<GraphML::GraphInfo> {
-    let mut oGraphInfo: GraphML::GraphInfo;
+    let mut oGraphInfo: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     let mut tmpGraphInfo: GraphML::GraphInfo = iGraphInfo.clone();
     let mut scVarIdx: i32 = 0;
     let mut clIdx: i32 = 0;
@@ -2824,14 +2840,14 @@ fn appendUnmappedVariablesToGraph(mut iScVarCLMapping: metamodelica::Array<(i32,
 }
 
 fn appendCacheLineMapToGraph(mut iCacheLineMap: CacheLineMap, mut iCacheVariables: metamodelica::Array<SimCodeVar::SimVar>, mut iAddedVariables: metamodelica::Array<bool>, mut iSchedulerInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>, mut iTopGraphAttThreadIdIdx: (i32, i32), mut iScVarTaskMapping: metamodelica::Array<i32>, mut iVarNameSCVarIdxMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<i32>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>) -> Result<ArcStr> + 'static>)), mut iScVarInfos: metamodelica::Array<ScVarInfo>, mut iGraphInfo: GraphML::GraphInfo) -> Result<GraphML::GraphInfo> {
-    let mut oGraphInfo: GraphML::GraphInfo;
+    let mut oGraphInfo: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     let mut idx: i32 = 0;
     let mut graphIdx: i32 = 0;
     let mut iTopGraphIdx: i32 = 0;
     let mut iAttThreadIdIdx: i32 = 0;
     let mut entries: Arc<metamodelica::List<CacheLineEntry>> = metamodelica::nil();
     let mut entry: CacheLineEntry = <CacheLineEntry as ::std::default::Default>::default();
-    let mut tmpGraphInfo: GraphML::GraphInfo;
+    let mut tmpGraphInfo: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     let mut entryThreadOwner: i32 = 0;
     let mut notOnlyParamters: bool = false;
     let CacheLineMap { entries: __pa0, idx: __pa1, .. } = (iCacheLineMap.clone()) else { bail!("pattern mismatch") };
@@ -2857,7 +2873,7 @@ fn appendCacheLineMapToGraph(mut iCacheLineMap: CacheLineMap, mut iCacheVariable
 }
 
 fn appendCacheLineEntryToGraph(mut iCacheLineEntry: CacheLineEntry, mut iCacheVariables: metamodelica::Array<SimCodeVar::SimVar>, mut iAddedVariables: metamodelica::Array<bool>, mut iSchedulerInfo: metamodelica::Array<(i32, i32, metamodelica::Real)>, mut iTopGraphAttThreadIdIdx: (i32, i32), mut iScVarTaskMapping: metamodelica::Array<i32>, mut iVarNameSCVarIdxMapping: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<i32>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>) -> Result<ArcStr> + 'static>)), mut iScVarInfos: metamodelica::Array<ScVarInfo>, mut iGraphInfo: GraphML::GraphInfo) -> Result<GraphML::GraphInfo> {
-    let mut oGraphInfo: GraphML::GraphInfo;
+    let mut oGraphInfo: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     let mut realScVarIdxOffset: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut scVarIdx: i32 = 0;
     let mut realScVarIdx: i32 = 0;
@@ -2870,7 +2886,7 @@ fn appendCacheLineEntryToGraph(mut iCacheLineEntry: CacheLineEntry, mut iCacheVa
     let mut threadText: ArcStr = arcstr::literal!("");
     let mut nodeLabelText: ArcStr = arcstr::literal!("");
     let mut nodeId: ArcStr = arcstr::literal!("");
-    let mut nodeLabel: GraphML::NodeLabel;
+    let mut nodeLabel: GraphML::NodeLabel = <GraphML::NodeLabel as ::std::default::Default>::default();
     let mut iVar: SimCodeVar::SimVar = <SimCodeVar::SimVar as ::std::default::Default>::default();
     let mut name: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let CacheLineEntry { threadOwner: __pa0, scVarIdx: __pa1, .. } = (iCacheLineEntry.clone()) else { bail!("pattern mismatch") };

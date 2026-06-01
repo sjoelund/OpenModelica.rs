@@ -131,7 +131,7 @@ pub fn cevalCallFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
 pub fn elabCallInteractive(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inCref: Arc<Absyn::ComponentRef>, mut inExps: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplInst: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> (FCore::Cache, Arc<DAE::Exp>, DAE::Properties) {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut functions: BackendInterfaceFunctions = <BackendInterfaceFunctions as ::std::default::Default>::default();
     let mut func: partialElabCallInteractive;
     functions = crate::Globals::backendCevalInterface.with(|__root| __root.borrow().clone());

@@ -93,6 +93,9 @@ pub enum NFSubscript {
         dimIndex: i32,
     },
 }
+impl Default for NFSubscript {
+    fn default() -> Self { Self::WHOLE }
+}
 pub use self::NFSubscript::{RAW_SUBSCRIPT,UNTYPED,INDEX,SLICE,EXPANDED_SLICE,WHOLE,SPLIT_PROXY,SPLIT_INDEX};
 pub fn fromExp(mut exp: Arc<Expression::NFExpression>) -> Arc<NFSubscript> {
     let mut subscript: Arc<NFSubscript> = Arc::new(NFSubscript::WHOLE);
@@ -922,7 +925,7 @@ pub fn expand(mut subscript: Arc<NFSubscript>, mut dimension: Arc<Dimension::NFD
             expandSlice(subscript.clone(), resize.clone())?
         },
         Deref @ WHOLE { .. } => {
-            let mut iter: Arc<RangeIterator::NFRangeIterator>;
+            let mut iter: Arc<RangeIterator::NFRangeIterator> = Arc::new(<RangeIterator::NFRangeIterator as ::std::default::Default>::default());
             iter = RangeIterator::fromDim(dimension.clone(), resize.clone())?;
             if RangeIterator::isValid(iter.clone()) {
                 outSubscript = Arc::new(NFSubscript::EXPANDED_SLICE { indices: RangeIterator::map(iter.clone(), (std::sync::Arc::new(makeIndex) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<NFSubscript>> + 'static>))? });

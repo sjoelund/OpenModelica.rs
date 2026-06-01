@@ -21,7 +21,7 @@ use openmodelica_util_datatypes_basic::List;
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_44(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Function>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -39,7 +39,7 @@ fn lm_44(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Fu
 }
 
 pub fn genProgram(mut in_txt: Tpl::Text, mut in_a_p: MidCode::Program) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_p.clone()) {
         (mut txt, MidCode::Program { name: mut i_name, functions: ref i_functions }) => {
             let mut ret_0: i32 = 0;
@@ -65,7 +65,7 @@ pub fn genProgram(mut in_txt: Tpl::Text, mut in_a_p: MidCode::Program) -> Result
 }
 
 fn fun_46(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_outputs: Arc<metamodelica::List<MidCode::Var>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_outputs.clone())) {
         (txt, false, a_outputs) => {
             let mut ret_0: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
@@ -87,7 +87,7 @@ fn fun_46(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_outputs: Arc<metamo
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_47(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Var>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -109,7 +109,7 @@ fn lm_47(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Va
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_48(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Var>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -129,7 +129,7 @@ fn lm_48(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Va
 }
 
 fn smf_49(mut in_txt: Tpl::Text, mut in_it: Arc<Tpl::StringToken>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_it.clone())) {
         (txt, i_it) => {
             let mut txt = (*txt).clone();
@@ -143,7 +143,7 @@ fn smf_49(mut in_txt: Tpl::Text, mut in_it: Arc<Tpl::StringToken>) -> Result<Tpl
 }
 
 fn smf_50(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_it.clone()) {
         (mut txt, mut i_it) => {
             txt = Tpl::writeText(txt.clone(), i_it.clone())?;
@@ -155,7 +155,7 @@ fn smf_50(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
 }
 
 fn smf_51(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_it.clone()) {
         (mut txt, mut i_it) => {
             txt = Tpl::writeText(txt.clone(), i_it.clone())?;
@@ -167,15 +167,15 @@ fn smf_51(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
 }
 
 pub fn genFunction(mut in_txt: Tpl::Text, mut in_a_fn: MidCode::Function) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_fn.clone()) {
         (mut txt, ref i_fn @ MidCode::Function { body: ref i_body, localBufPtrs: ref i_localBufPtrs, localBufs: ref i_localBufs, locals: ref i_locals, name: ref i_name, inputs: ref i_inputs, outputs: ref i_outputs, .. }) => {
-            let mut txt_4: Tpl::Text;
+            let mut txt_4: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_4: Arc<metamodelica::List<MidCode::Var>> = metamodelica::nil();
-            let mut txt_3: Tpl::Text;
-            let mut l_arguments: Tpl::Text;
+            let mut txt_3: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_arguments: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_1: bool = false;
-            let mut l_returnType: Tpl::Text;
+            let mut l_returnType: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             ret_1 = i_outputs.clone().is_empty();
             l_returnType = fun_46(Tpl::emptyTxt.clone(), ret_1.clone(), i_outputs.clone())?;
             txt_3 = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
@@ -224,7 +224,7 @@ pub fn genFunction(mut in_txt: Tpl::Text, mut in_a_fn: MidCode::Function) -> Res
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_53(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Var>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -247,7 +247,7 @@ fn lm_53(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Va
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_54(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Var>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -270,7 +270,7 @@ fn lm_54(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Va
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_55(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Var>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -292,7 +292,7 @@ fn lm_55(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Va
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_56(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Var>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -311,7 +311,7 @@ fn lm_56(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Va
 }
 
 fn fun_57(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_outputs: Arc<metamodelica::List<MidCode::Var>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_outputs.clone())) {
         (txt, false, a_outputs) => {
             let mut ret_0: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
@@ -332,7 +332,7 @@ fn fun_57(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_outputs: Arc<metamo
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_58(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Var>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -352,7 +352,7 @@ fn lm_58(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Va
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_59(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Var>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -371,7 +371,7 @@ fn lm_59(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Va
 }
 
 fn smf_60(mut in_txt: Tpl::Text, mut in_it: Arc<Tpl::StringToken>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_it.clone())) {
         (txt, i_it) => {
             let mut txt = (*txt).clone();
@@ -385,7 +385,7 @@ fn smf_60(mut in_txt: Tpl::Text, mut in_it: Arc<Tpl::StringToken>) -> Result<Tpl
 }
 
 fn smf_61(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_it.clone()) {
         (mut txt, mut i_it) => {
             txt = Tpl::writeText(txt.clone(), i_it.clone())?;
@@ -397,7 +397,7 @@ fn smf_61(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
 }
 
 fn smf_62(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_it.clone()) {
         (mut txt, mut i_it) => {
             txt = Tpl::writeText(txt.clone(), i_it.clone())?;
@@ -409,7 +409,7 @@ fn smf_62(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
 }
 
 fn fun_63(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -423,20 +423,20 @@ fn fun_63(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 pub fn genInFunction(mut in_txt: Tpl::Text, mut in_a_fn: MidCode::Function) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_fn.clone()) {
         (mut txt, MidCode::Function { name: ref i_name, outputs: ref i_outputs, inputs: ref i_inputs, .. }) => {
             let mut ret_10: bool = false;
-            let mut txt_8: Tpl::Text;
+            let mut txt_8: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_8: Arc<metamodelica::List<MidCode::Var>> = metamodelica::nil();
-            let mut txt_7: Tpl::Text;
-            let mut l_callargs: Tpl::Text;
+            let mut txt_7: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_callargs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_5: bool = false;
-            let mut l_callretval: Tpl::Text;
-            let mut l_outputLines: Tpl::Text;
-            let mut l_inputLines: Tpl::Text;
-            let mut l_outputDefs: Tpl::Text;
-            let mut l_inputDefs: Tpl::Text;
+            let mut l_callretval: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_outputLines: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_inputLines: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_outputDefs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_inputDefs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             l_inputDefs = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
             l_inputDefs = lm_53(l_inputDefs.clone(), i_inputs.clone())?;
             l_inputDefs = Tpl::popIter(l_inputDefs.clone())?;
@@ -498,7 +498,7 @@ pub fn genInFunction(mut in_txt: Tpl::Text, mut in_a_fn: MidCode::Function) -> R
 }
 
 fn fun_65(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("modelica_metatype")).clone() }))?;
@@ -515,7 +515,7 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_66(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Var>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -536,7 +536,7 @@ fn lm_66(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Va
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_67(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Var>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -555,7 +555,7 @@ fn lm_67(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Va
 }
 
 fn smf_68(mut in_txt: Tpl::Text, mut in_it: Arc<Tpl::StringToken>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_it.clone())) {
         (txt, i_it) => {
             let mut txt = (*txt).clone();
@@ -569,7 +569,7 @@ fn smf_68(mut in_txt: Tpl::Text, mut in_it: Arc<Tpl::StringToken>) -> Result<Tpl
 }
 
 fn smf_69(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_it.clone()) {
         (mut txt, mut i_it) => {
             txt = Tpl::writeText(txt.clone(), i_it.clone())?;
@@ -581,7 +581,7 @@ fn smf_69(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
 }
 
 fn smf_70(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_it.clone()) {
         (mut txt, mut i_it) => {
             txt = Tpl::writeText(txt.clone(), i_it.clone())?;
@@ -593,7 +593,7 @@ fn smf_70(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
 }
 
 fn fun_71(mut in_txt: Tpl::Text, mut in_mArg: Tpl::Text, mut in_a_i: MidCode::Var) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_i.clone())) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, _) => {
             txt.clone()
@@ -614,13 +614,13 @@ fn fun_71(mut in_txt: Tpl::Text, mut in_mArg: Tpl::Text, mut in_a_i: MidCode::Va
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_72(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Var>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_i, tail: rest }) => {
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             txt_0 = varBoxType(Tpl::emptyTxt.clone(), i_i.clone())?;
             txt = fun_71(txt.clone(), txt_0.clone(), i_i.clone())?;
@@ -634,7 +634,7 @@ fn lm_72(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Va
 }
 
 fn fun_73(mut in_txt: Tpl::Text, mut in_mArg: Tpl::Text, mut in_a_o: MidCode::Var) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_o.clone())) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, _) => {
             txt.clone()
@@ -655,13 +655,13 @@ fn fun_73(mut in_txt: Tpl::Text, mut in_mArg: Tpl::Text, mut in_a_o: MidCode::Va
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_74(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Var>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_o, tail: rest }) => {
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             txt_0 = varBoxType(Tpl::emptyTxt.clone(), i_o.clone())?;
             txt = fun_73(txt.clone(), txt_0.clone(), i_o.clone())?;
@@ -675,7 +675,7 @@ fn lm_74(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Va
 }
 
 fn fun_75(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_outputs: Arc<metamodelica::List<MidCode::Var>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_outputs.clone())) {
         (txt, false, a_outputs) => {
             let mut ret_0: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
@@ -696,7 +696,7 @@ fn fun_75(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_outputs: Arc<metamo
 }
 
 fn fun_76(mut in_txt: Tpl::Text, mut in_mArg: Tpl::Text, mut in_a_i: MidCode::Var) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_i.clone())) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, _) => {
             txt.clone()
@@ -718,13 +718,13 @@ fn fun_76(mut in_txt: Tpl::Text, mut in_mArg: Tpl::Text, mut in_a_i: MidCode::Va
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_77(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Var>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_i, tail: rest }) => {
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             txt_0 = varBoxType(Tpl::emptyTxt.clone(), i_i.clone())?;
             txt = fun_76(txt.clone(), txt_0.clone(), i_i.clone())?;
@@ -738,7 +738,7 @@ fn lm_77(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Va
 }
 
 fn fun_78(mut in_txt: Tpl::Text, mut in_mArg: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone())) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             let mut txt = (*txt).clone();
@@ -754,11 +754,11 @@ fn fun_78(mut in_txt: Tpl::Text, mut in_mArg: Tpl::Text) -> Result<Tpl::Text> {
 }
 
 fn fun_79(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_outputs: Arc<metamodelica::List<MidCode::Var>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_outputs.clone())) {
         (txt, false, a_outputs) => {
             let mut ret_2: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
-            let mut txt_1: Tpl::Text;
+            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_0: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             ret_0 = listHead(a_outputs.clone())?;
@@ -778,7 +778,7 @@ fn fun_79(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_outputs: Arc<metamo
 }
 
 fn fun_80(mut in_txt: Tpl::Text, mut in_mArg: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone())) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
@@ -796,13 +796,13 @@ fn fun_80(mut in_txt: Tpl::Text, mut in_mArg: Tpl::Text) -> Result<Tpl::Text> {
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_81(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Var>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_i, tail: rest }) => {
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             txt_0 = varBoxType(Tpl::emptyTxt.clone(), i_i.clone())?;
             txt = fun_80(txt.clone(), txt_0.clone())?;
@@ -817,7 +817,7 @@ fn lm_81(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Va
 }
 
 fn fun_82(mut in_txt: Tpl::Text, mut in_mArg: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone())) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             let mut txt = (*txt).clone();
@@ -837,13 +837,13 @@ fn fun_82(mut in_txt: Tpl::Text, mut in_mArg: Tpl::Text) -> Result<Tpl::Text> {
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_83(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Var>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_o, tail: rest }) => {
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             txt_0 = varBoxType(Tpl::emptyTxt.clone(), i_o.clone())?;
             txt = fun_82(txt.clone(), txt_0.clone())?;
@@ -858,7 +858,7 @@ fn lm_83(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Va
 }
 
 fn smf_84(mut in_txt: Tpl::Text, mut in_it: Arc<Tpl::StringToken>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_it.clone())) {
         (txt, i_it) => {
             let mut txt = (*txt).clone();
@@ -872,7 +872,7 @@ fn smf_84(mut in_txt: Tpl::Text, mut in_it: Arc<Tpl::StringToken>) -> Result<Tpl
 }
 
 fn smf_85(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_it.clone()) {
         (mut txt, mut i_it) => {
             txt = Tpl::writeText(txt.clone(), i_it.clone())?;
@@ -884,7 +884,7 @@ fn smf_85(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
 }
 
 fn smf_86(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_it.clone()) {
         (mut txt, mut i_it) => {
             txt = Tpl::writeText(txt.clone(), i_it.clone())?;
@@ -896,7 +896,7 @@ fn smf_86(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
 }
 
 fn fun_87(mut in_txt: Tpl::Text, mut in_mArg: Tpl::Text, mut in_a_outputs: Arc<metamodelica::List<MidCode::Var>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_outputs.clone())) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, _) => {
             txt.clone()
@@ -920,10 +920,10 @@ fn fun_87(mut in_txt: Tpl::Text, mut in_mArg: Tpl::Text, mut in_a_outputs: Arc<m
 }
 
 fn fun_88(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_outputs: Arc<metamodelica::List<MidCode::Var>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_outputs.clone())) {
         (txt, false, a_outputs) => {
-            let mut txt_1: Tpl::Text;
+            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_0: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             ret_0 = listHead(a_outputs.clone())?;
@@ -940,7 +940,7 @@ fn fun_88(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_outputs: Arc<metamo
 }
 
 fn fun_89(mut in_txt: Tpl::Text, mut in_mArg: Tpl::Text, mut in_a_o: MidCode::Var) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_o.clone())) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, _) => {
             txt.clone()
@@ -964,13 +964,13 @@ fn fun_89(mut in_txt: Tpl::Text, mut in_mArg: Tpl::Text, mut in_a_o: MidCode::Va
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_90(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Var>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_o, tail: rest }) => {
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             txt_0 = varBoxType(Tpl::emptyTxt.clone(), i_o.clone())?;
             txt = fun_89(txt.clone(), txt_0.clone(), i_o.clone())?;
@@ -983,7 +983,7 @@ fn lm_90(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Va
 }
 
 fn smf_91(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_it.clone()) {
         (mut txt, mut i_it) => {
             txt = Tpl::writeText(txt.clone(), i_it.clone())?;
@@ -995,7 +995,7 @@ fn smf_91(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
 }
 
 fn smf_92(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_it.clone()) {
         (mut txt, mut i_it) => {
             txt = Tpl::writeText(txt.clone(), i_it.clone())?;
@@ -1007,7 +1007,7 @@ fn smf_92(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
 }
 
 fn fun_93(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_outputs: Arc<metamodelica::List<MidCode::Var>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_outputs.clone())) {
         (txt, false, a_outputs) => {
             let mut ret_0: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
@@ -1029,32 +1029,32 @@ fn fun_93(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_outputs: Arc<metamo
 }
 
 pub fn genBoxPtrFunction(mut in_txt: Tpl::Text, mut in_a_fn: MidCode::Function) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_fn.clone()) {
         (mut txt, MidCode::Function { name: ref i_name, inputs: ref i_inputs, outputs: ref i_outputs, .. }) => {
             let mut ret_22: bool = false;
-            let mut txt_20: Tpl::Text;
+            let mut txt_20: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_20: Arc<metamodelica::List<MidCode::Var>> = metamodelica::nil();
-            let mut txt_18: Tpl::Text;
+            let mut txt_18: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_18: bool = false;
-            let mut l_boxes: Tpl::Text;
-            let mut txt_15: Tpl::Text;
+            let mut l_boxes: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_15: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_15: Arc<metamodelica::List<MidCode::Var>> = metamodelica::nil();
-            let mut txt_14: Tpl::Text;
-            let mut l_callvars: Tpl::Text;
+            let mut txt_14: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_callvars: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_12: bool = false;
-            let mut l_callretval: Tpl::Text;
-            let mut l_unboxes: Tpl::Text;
+            let mut l_callretval: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_unboxes: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_9: bool = false;
-            let mut l_boxDefs: Tpl::Text;
-            let mut l_callOutDefs: Tpl::Text;
-            let mut l_unboxDefs: Tpl::Text;
-            let mut txt_4: Tpl::Text;
+            let mut l_boxDefs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_callOutDefs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_unboxDefs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_4: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_4: Arc<metamodelica::List<MidCode::Var>> = metamodelica::nil();
-            let mut txt_3: Tpl::Text;
-            let mut l_arguments: Tpl::Text;
+            let mut txt_3: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_arguments: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_1: bool = false;
-            let mut l_returnType: Tpl::Text;
+            let mut l_returnType: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             ret_1 = i_outputs.clone().is_empty();
             l_returnType = fun_65(Tpl::emptyTxt.clone(), ret_1.clone())?;
             txt_3 = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
@@ -1145,7 +1145,7 @@ pub fn genBoxPtrFunction(mut in_txt: Tpl::Text, mut in_a_fn: MidCode::Function) 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_95(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Var>>, mut in_a_fn: MidCode::Function) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_fn.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -1165,7 +1165,7 @@ fn lm_95(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Va
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_96(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::VarBuf>>, mut in_a_fn: MidCode::Function) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_fn.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -1185,7 +1185,7 @@ fn lm_96(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Va
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_97(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::VarBufPtr>>, mut in_a_fn: MidCode::Function) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_fn.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -1203,7 +1203,7 @@ fn lm_97(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Va
 }
 
 pub fn genLocalDecls(mut txt: Tpl::Text, mut a_fn: MidCode::Function, mut a_locals: Arc<metamodelica::List<MidCode::Var>>, mut a_localBufs: Arc<metamodelica::List<MidCode::VarBuf>>, mut a_localBufPtrs: Arc<metamodelica::List<MidCode::VarBufPtr>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
     out_txt = lm_95(out_txt.clone(), a_locals.clone(), a_fn.clone())?;
     out_txt = Tpl::popIter(out_txt.clone())?;
@@ -1219,7 +1219,7 @@ pub fn genLocalDecls(mut txt: Tpl::Text, mut a_fn: MidCode::Function, mut a_loca
 }
 
 fn fun_99(mut in_txt: Tpl::Text, mut in_a_var: MidCode::Var) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_var.clone()) {
         (mut txt, MidCode::Var { volatile: true, .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("volatile ")).clone() }))?;
@@ -1233,7 +1233,7 @@ fn fun_99(mut in_txt: Tpl::Text, mut in_a_var: MidCode::Var) -> Result<Tpl::Text
 }
 
 pub fn genLocalDecl(mut txt: Tpl::Text, mut a_fn: MidCode::Function, mut a_var: MidCode::Var) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_99(txt.clone(), a_var.clone())?;
     out_txt = genVarType(out_txt.clone(), a_var.clone())?;
     out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
@@ -1243,7 +1243,7 @@ pub fn genLocalDecl(mut txt: Tpl::Text, mut a_fn: MidCode::Function, mut a_var: 
 }
 
 pub fn genLocalBufDecl(mut txt: Tpl::Text, mut a_fn: MidCode::Function, mut a_var: MidCode::VarBuf) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("jmp_buf ")).clone() }))?;
     out_txt = genVarBufName(out_txt.clone(), a_var.clone())?;
     out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
@@ -1251,7 +1251,7 @@ pub fn genLocalBufDecl(mut txt: Tpl::Text, mut a_fn: MidCode::Function, mut a_va
 }
 
 pub fn genLocalBufPtrDecl(mut txt: Tpl::Text, mut a_fn: MidCode::Function, mut a_var: MidCode::VarBufPtr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("jmp_buf *")).clone() }))?;
     out_txt = genVarBufPtrName(out_txt.clone(), a_var.clone())?;
     out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() }))?;
@@ -1259,7 +1259,7 @@ pub fn genLocalBufPtrDecl(mut txt: Tpl::Text, mut a_fn: MidCode::Function, mut a
 }
 
 pub fn genEntry(mut in_txt: Tpl::Text, mut in_a_fn: MidCode::Function) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_fn.clone()) {
         (mut txt, MidCode::Function { entryId: mut i_entryId, .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("goto ")).clone() }))?;
@@ -1275,7 +1275,7 @@ pub fn genEntry(mut in_txt: Tpl::Text, mut in_a_fn: MidCode::Function) -> Result
 }
 
 fn fun_104(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_outputs: Arc<metamodelica::List<MidCode::Var>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_outputs.clone())) {
         (txt, false, a_outputs) => {
             let mut ret_0: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
@@ -1295,13 +1295,13 @@ fn fun_104(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_outputs: Arc<metam
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_105(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Var>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_v, tail: rest }) => {
-            let mut l_outPtrName: Tpl::Text;
+            let mut l_outPtrName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             l_outPtrName = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("outPtr_")).clone() }))?;
             l_outPtrName = genVarName(l_outPtrName.clone(), i_v.clone())?;
@@ -1325,12 +1325,12 @@ fn lm_105(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::V
 }
 
 pub fn genExit(mut in_txt: Tpl::Text, mut in_a_fn: MidCode::Function) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_fn.clone()) {
         (mut txt, MidCode::Function { exitId: mut i_exitId, outputs: ref i_outputs, .. }) => {
             let mut ret_2: Arc<metamodelica::List<MidCode::Var>> = metamodelica::nil();
             let mut ret_1: bool = false;
-            let mut l_returnString: Tpl::Text;
+            let mut l_returnString: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             ret_1 = i_outputs.clone().is_empty();
             l_returnString = fun_104(Tpl::emptyTxt.clone(), ret_1.clone(), i_outputs.clone())?;
             txt = genLabel(txt.clone(), i_exitId.clone())?;
@@ -1357,7 +1357,7 @@ pub fn genExit(mut in_txt: Tpl::Text, mut in_a_fn: MidCode::Function) -> Result<
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_107(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Block>>, mut in_a_fn: MidCode::Function) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_fn.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -1375,7 +1375,7 @@ fn lm_107(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::B
 }
 
 pub fn genBlocks(mut txt: Tpl::Text, mut a_fn: MidCode::Function, mut a_body: Arc<metamodelica::List<MidCode::Block>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
     out_txt = lm_107(out_txt.clone(), a_body.clone(), a_fn.clone())?;
     out_txt = Tpl::popIter(out_txt.clone())?;
@@ -1385,7 +1385,7 @@ pub fn genBlocks(mut txt: Tpl::Text, mut a_fn: MidCode::Function, mut a_body: Ar
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_109(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Stmt>>, mut in_a_fn: MidCode::Function) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_fn.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -1403,7 +1403,7 @@ fn lm_109(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::S
 }
 
 fn fun_110(mut in_txt: Tpl::Text, mut in_a_block: MidCode::Block, mut in_a_fn: MidCode::Function) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_block.clone(), in_a_fn.clone()) {
         (mut txt, MidCode::Block { terminator: mut i_terminator, stmts: ref i_stmts, id: mut i_id }, mut a_fn) => {
             txt = genLabel(txt.clone(), i_id.clone())?;
@@ -1425,20 +1425,20 @@ fn fun_110(mut in_txt: Tpl::Text, mut in_a_block: MidCode::Block, mut in_a_fn: M
 }
 
 pub fn genBlock(mut txt: Tpl::Text, mut a_fn: MidCode::Function, mut a_block: MidCode::Block) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_110(txt.clone(), a_block.clone(), a_fn.clone())?;
     Ok(out_txt)
 }
 
 pub fn genLabel(mut txt: Tpl::Text, mut a_i: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("label_")).clone() }))?;
     out_txt = Tpl::writeStr(out_txt.clone(), (intString(a_i.clone())).clone())?;
     Ok(out_txt)
 }
 
 pub fn genVarName(mut in_txt: Tpl::Text, mut in_a_v: MidCode::Var) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_v.clone()) {
         (mut txt, MidCode::Var { name: mut i_name, .. }) => {
             txt = Tpl::writeStr(txt.clone(), (i_name.clone()).clone())?;
@@ -1452,7 +1452,7 @@ pub fn genVarName(mut in_txt: Tpl::Text, mut in_a_v: MidCode::Var) -> Result<Tpl
 }
 
 pub fn genVarBufName(mut in_txt: Tpl::Text, mut in_a_v: MidCode::VarBuf) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_v.clone()) {
         (mut txt, MidCode::VarBuf { name: mut i_name }) => {
             txt = Tpl::writeStr(txt.clone(), (i_name.clone()).clone())?;
@@ -1466,7 +1466,7 @@ pub fn genVarBufName(mut in_txt: Tpl::Text, mut in_a_v: MidCode::VarBuf) -> Resu
 }
 
 pub fn genVarBufPtrName(mut in_txt: Tpl::Text, mut in_a_v: MidCode::VarBufPtr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_v.clone()) {
         (mut txt, MidCode::VarBufPtr { name: mut i_name }) => {
             txt = Tpl::writeStr(txt.clone(), (i_name.clone()).clone())?;
@@ -1480,7 +1480,7 @@ pub fn genVarBufPtrName(mut in_txt: Tpl::Text, mut in_a_v: MidCode::VarBufPtr) -
 }
 
 fn fun_116(mut in_txt: Tpl::Text, mut in_a_stmt: MidCode::Stmt) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_stmt.clone()) {
         (mut txt, MidCode::Stmt::NOP { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("; // NOP")).clone() }))?;
@@ -1501,13 +1501,13 @@ fn fun_116(mut in_txt: Tpl::Text, mut in_a_stmt: MidCode::Stmt) -> Result<Tpl::T
 }
 
 pub fn genStmt(mut txt: Tpl::Text, mut a_fn: MidCode::Function, mut a_stmt: MidCode::Stmt) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_116(txt.clone(), a_stmt.clone())?;
     Ok(out_txt)
 }
 
 fn fun_118(mut in_txt: Tpl::Text, mut in_a_value: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_value.clone()) {
         (mut txt, false) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("0")).clone() }))?;
@@ -1524,7 +1524,7 @@ fn fun_118(mut in_txt: Tpl::Text, mut in_a_value: bool) -> Result<Tpl::Text> {
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_119(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Var>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -1542,7 +1542,7 @@ fn lm_119(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::V
 }
 
 fn smf_120(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_it.clone()) {
         (mut txt, mut i_it) => {
             txt = Tpl::writeText(txt.clone(), i_it.clone())?;
@@ -1554,7 +1554,7 @@ fn smf_120(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
 }
 
 fn smf_121(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_it.clone()) {
         (mut txt, mut i_it) => {
             txt = Tpl::writeText(txt.clone(), i_it.clone())?;
@@ -1566,7 +1566,7 @@ fn smf_121(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
 }
 
 fn smf_122(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_it.clone()) {
         (mut txt, mut i_it) => {
             txt = Tpl::writeText(txt.clone(), i_it.clone())?;
@@ -1578,7 +1578,7 @@ fn smf_122(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
 }
 
 fn smf_123(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_it.clone()) {
         (mut txt, mut i_it) => {
             txt = Tpl::writeText(txt.clone(), i_it.clone())?;
@@ -1590,7 +1590,7 @@ fn smf_123(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
 }
 
 fn smf_124(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_it.clone()) {
         (mut txt, mut i_it) => {
             txt = Tpl::writeText(txt.clone(), i_it.clone())?;
@@ -1602,7 +1602,7 @@ fn smf_124(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
 }
 
 fn smf_125(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_it.clone()) {
         (mut txt, mut i_it) => {
             txt = Tpl::writeText(txt.clone(), i_it.clone())?;
@@ -1614,7 +1614,7 @@ fn smf_125(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
 }
 
 fn smf_126(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_it.clone()) {
         (mut txt, mut i_it) => {
             txt = Tpl::writeText(txt.clone(), i_it.clone())?;
@@ -1626,12 +1626,12 @@ fn smf_126(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
 }
 
 fn fun_127(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_elementargs: Tpl::Text, mut in_a_metatypeCtor: Tpl::Text, mut in_a_metatypeSlots: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_elementargs.clone(), in_a_metatypeCtor.clone(), in_a_metatypeSlots.clone())) {
         (txt, i_ty @ Deref @ DAE::Type::T_METARECORD { path: _, .. }, a_elementargs, a_metatypeCtor, a_metatypeSlots) => {
-            let mut txt_2: Tpl::Text;
-            let mut txt_1: Tpl::Text;
-            let mut l_arguments: Tpl::Text;
+            let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_arguments: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             txt_1 = Tpl::writeText(Tpl::emptyTxt.clone(), a_metatypeSlots.clone())?;
             txt_1 = Tpl::writeTok(txt_1.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("+1")).clone() }))?;
@@ -1650,7 +1650,7 @@ fn fun_127(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_elementa
             txt.clone()
         },
         (txt, _, a_elementargs, a_metatypeCtor, a_metatypeSlots) => {
-            let mut l_arguments: Tpl::Text;
+            let mut l_arguments: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             l_arguments = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
             l_arguments = smf_124(l_arguments.clone(), a_metatypeSlots.clone())?;
@@ -1668,7 +1668,7 @@ fn fun_127(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_elementa
 }
 
 pub fn genRValue(mut in_txt: Tpl::Text, mut in_a_rvalue: MidCode::RValue) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_rvalue.clone())) {
         (txt, MidCode::RValue::VARIABLE { src: MidCode::Var { ty: _, name: i_src__name, .. } }) => {
             let mut txt = (*txt).clone();
@@ -1743,10 +1743,10 @@ pub fn genRValue(mut in_txt: Tpl::Text, mut in_a_rvalue: MidCode::RValue) -> Res
             txt.clone()
         },
         (txt, MidCode::RValue::LITERALMETATYPE { ty: i_ty, elements: i_elements }) => {
-            let mut l_elementargs: Tpl::Text;
-            let mut l_metatypeCtor: Tpl::Text;
+            let mut l_elementargs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_metatypeCtor: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_2: i32 = 0;
-            let mut l_metatypeSlots: Tpl::Text;
+            let mut l_metatypeSlots: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             ret_2 = (i_elements.clone().len() as i32);
             l_metatypeSlots = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_2.clone())).clone())?;
@@ -1800,7 +1800,7 @@ pub fn genRValue(mut in_txt: Tpl::Text, mut in_a_rvalue: MidCode::RValue) -> Res
 }
 
 pub fn binaryopToString(mut in_txt: Tpl::Text, mut in_a_op: MidCode::BinaryOp) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_op.clone()) {
         (mut txt, MidCode::BinaryOp::ADD { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("+")).clone() }))?;
@@ -1851,7 +1851,7 @@ pub fn binaryopToString(mut in_txt: Tpl::Text, mut in_a_op: MidCode::BinaryOp) -
 }
 
 pub fn unaryopToString(mut in_txt: Tpl::Text, mut in_a_op: MidCode::UnaryOp) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_op.clone()) {
         (mut txt, MidCode::UnaryOp::MOVE { .. }) => {
             txt.clone()
@@ -1873,7 +1873,7 @@ pub fn unaryopToString(mut in_txt: Tpl::Text, mut in_a_op: MidCode::UnaryOp) -> 
 }
 
 pub fn genStringBinaryop(mut in_txt: Tpl::Text, mut in_a_op: MidCode::BinaryOp, mut in_a_lsrc: MidCode::Var, mut in_a_rsrc: MidCode::Var) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_op.clone(), in_a_lsrc.clone(), in_a_rsrc.clone()) {
         (mut txt, MidCode::BinaryOp::ADD { .. }, mut a_lsrc, mut a_rsrc) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("stringAppend(")).clone() }))?;
@@ -1900,7 +1900,7 @@ pub fn genStringBinaryop(mut in_txt: Tpl::Text, mut in_a_op: MidCode::BinaryOp, 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_132(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(i32, i32)>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -1922,7 +1922,7 @@ fn lm_132(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(i32, i32)
 }
 
 fn fun_133(mut in_txt: Tpl::Text, mut in_a_outputs: Arc<metamodelica::List<MidCode::OutVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_outputs.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -1945,7 +1945,7 @@ fn fun_133(mut in_txt: Tpl::Text, mut in_a_outputs: Arc<metamodelica::List<MidCo
 }
 
 fn fun_134(mut in_txt: Tpl::Text, mut in_a_builtin: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_builtin.clone()) {
         (mut txt, false) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("threadData")).clone() }))?;
@@ -1961,7 +1961,7 @@ fn fun_134(mut in_txt: Tpl::Text, mut in_a_builtin: bool) -> Result<Tpl::Text> {
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_135(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::Var>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -1979,7 +1979,7 @@ fn lm_135(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::V
 }
 
 fn fun_136(mut in_txt: Tpl::Text, mut in_a_o: MidCode::OutVar) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_o.clone()) {
         (mut txt, MidCode::OutVar::OUT_VAR { var: mut i_var }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("&")).clone() }))?;
@@ -1997,7 +1997,7 @@ fn fun_136(mut in_txt: Tpl::Text, mut in_a_o: MidCode::OutVar) -> Result<Tpl::Te
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_137(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::OutVar>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -2015,7 +2015,7 @@ fn lm_137(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<MidCode::O
 }
 
 fn smf_138(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_it.clone()) {
         (mut txt, mut i_it) => {
             txt = Tpl::writeText(txt.clone(), i_it.clone())?;
@@ -2027,7 +2027,7 @@ fn smf_138(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
 }
 
 fn smf_139(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_it.clone()) {
         (mut txt, mut i_it) => {
             txt = Tpl::writeText(txt.clone(), i_it.clone())?;
@@ -2039,7 +2039,7 @@ fn smf_139(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
 }
 
 fn smf_140(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_it.clone()) {
         (mut txt, mut i_it) => {
             txt = Tpl::writeText(txt.clone(), i_it.clone())?;
@@ -2051,7 +2051,7 @@ fn smf_140(mut in_txt: Tpl::Text, mut in_it: Tpl::Text) -> Result<Tpl::Text> {
 }
 
 fn fun_141(mut in_txt: Tpl::Text, mut in_a_builtin: bool, mut in_a_func: Arc<Absyn::Path>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_builtin.clone(), in_a_func.clone())) {
         (txt, false, a_func) => {
             let mut txt = (*txt).clone();
@@ -2070,7 +2070,7 @@ fn fun_141(mut in_txt: Tpl::Text, mut in_a_builtin: bool, mut in_a_func: Arc<Abs
 }
 
 fn fun_142(mut in_txt: Tpl::Text, mut in_a_terminator: MidCode::Terminator, mut in_a_exitId: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_terminator.clone(), in_a_exitId.clone()) {
         (mut txt, MidCode::Terminator::RETURN { .. }, mut a_exitId) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("goto ")).clone() }))?;
@@ -2115,12 +2115,12 @@ fn fun_142(mut in_txt: Tpl::Text, mut in_a_terminator: MidCode::Terminator, mut 
             txt.clone()
         },
         (mut txt, MidCode::Terminator::CALL { next: mut i_next, outputs: ref i_outputs, inputs: ref i_inputs, builtin: mut i_builtin, func: ref i_func }, _) => {
-            let mut txt_4: Tpl::Text;
+            let mut txt_4: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_4: Arc<metamodelica::List<MidCode::OutVar>> = metamodelica::nil();
-            let mut txt_3: Tpl::Text;
-            let mut txt_2: Tpl::Text;
-            let mut l_arguments: Tpl::Text;
-            let mut l_returnAssignment: Tpl::Text;
+            let mut txt_3: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_arguments: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_returnAssignment: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             l_returnAssignment = fun_133(Tpl::emptyTxt.clone(), i_outputs.clone())?;
             txt_2 = fun_134(Tpl::emptyTxt.clone(), i_builtin.clone())?;
             txt_3 = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
@@ -2177,7 +2177,7 @@ fn fun_142(mut in_txt: Tpl::Text, mut in_a_terminator: MidCode::Terminator, mut 
 }
 
 pub fn genTerminator(mut in_txt: Tpl::Text, mut in_a_fn: MidCode::Function, mut in_a_terminator: MidCode::Terminator) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_fn.clone(), in_a_terminator.clone()) {
         (mut txt, MidCode::Function { exitId: mut i_exitId, entryId: _, body: _, outputs: _, inputs: _, locals: _, .. }, mut a_terminator) => {
             txt = fun_142(txt.clone(), a_terminator.clone(), i_exitId.clone())?;
@@ -2191,7 +2191,7 @@ pub fn genTerminator(mut in_txt: Tpl::Text, mut in_a_fn: MidCode::Function, mut 
 }
 
 fn fun_144(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
         (txt, Deref @ DAE::Type::T_INTEGER { varLst: _ }) => {
             let mut txt = (*txt).clone();
@@ -2294,7 +2294,7 @@ fn fun_144(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Te
 }
 
 pub fn genVarType(mut in_txt: Tpl::Text, mut in_a_var: MidCode::Var) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_var.clone()) {
         (mut txt, MidCode::Var { ty: ref i_ty, name: _, .. }) => {
             txt = fun_144(txt.clone(), i_ty.clone())?;
@@ -2308,7 +2308,7 @@ pub fn genVarType(mut in_txt: Tpl::Text, mut in_a_var: MidCode::Var) -> Result<T
 }
 
 fn fun_146(mut in_txt: Tpl::Text, mut in_mArg: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, 0) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("0")).clone() }))?;
@@ -2323,7 +2323,7 @@ fn fun_146(mut in_txt: Tpl::Text, mut in_mArg: i32) -> Result<Tpl::Text> {
 }
 
 fn fun_147(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_elements: Arc<metamodelica::List<MidCode::Var>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_elements.clone())) {
         (txt, Deref @ DAE::Type::T_METARECORD { index: i_index, .. }, _) => {
             let mut ret_0: i32 = 0;
@@ -2365,13 +2365,13 @@ fn fun_147(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_elements
 }
 
 pub fn genTypeCtorIndex(mut txt: Tpl::Text, mut a_elements: Arc<metamodelica::List<MidCode::Var>>, mut a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_147(txt.clone(), a_ty.clone(), a_elements.clone())?;
     Ok(out_txt)
 }
 
 pub fn genTypeUnderscorePath(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
         (txt, Deref @ DAE::Type::T_METARECORD { path: i_path, .. }) => {
             let mut txt = (*txt).clone();
@@ -2394,7 +2394,7 @@ pub fn genTypeUnderscorePath(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>)
 }
 
 fn fun_150(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
         (txt, Deref @ DAE::Type::T_INTEGER { varLst: _ }) => {
             let mut txt = (*txt).clone();
@@ -2425,7 +2425,7 @@ fn fun_150(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Te
 }
 
 pub fn varBoxType(mut in_txt: Tpl::Text, mut in_a_var: MidCode::Var) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_var.clone()) {
         (mut txt, MidCode::Var { ty: ref i_ty, name: _, .. }) => {
             txt = fun_150(txt.clone(), i_ty.clone())?;
@@ -2439,7 +2439,7 @@ pub fn varBoxType(mut in_txt: Tpl::Text, mut in_a_var: MidCode::Var) -> Result<T
 }
 
 fn fun_152(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone())) {
         (txt, Deref @ DAE::Type::T_INTEGER { varLst: _ }, a_name) => {
             let mut txt = (*txt).clone();
@@ -2494,7 +2494,7 @@ fn fun_152(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Ar
 }
 
 pub fn varBox(mut in_txt: Tpl::Text, mut in_a_var: MidCode::Var) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_var.clone()) {
         (mut txt, MidCode::Var { ty: ref i_ty, name: mut i_name, .. }) => {
             txt = fun_152(txt.clone(), i_ty.clone(), (i_name.clone()).clone())?;
@@ -2508,7 +2508,7 @@ pub fn varBox(mut in_txt: Tpl::Text, mut in_a_var: MidCode::Var) -> Result<Tpl::
 }
 
 fn fun_154(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone())) {
         (txt, Deref @ DAE::Type::T_METABOXED { ty: Deref @ DAE::Type::T_INTEGER { varLst: _ } }, a_name) => {
             let mut txt = (*txt).clone();
@@ -2556,7 +2556,7 @@ fn fun_154(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Ar
 }
 
 pub fn varUnbox(mut in_txt: Tpl::Text, mut in_a_var: MidCode::Var) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_var.clone()) {
         (mut txt, MidCode::Var { ty: ref i_ty, name: mut i_name, .. }) => {
             txt = fun_154(txt.clone(), i_ty.clone(), (i_name.clone()).clone())?;
@@ -2570,7 +2570,7 @@ pub fn varUnbox(mut in_txt: Tpl::Text, mut in_a_var: MidCode::Var) -> Result<Tpl
 }
 
 fn fun_156(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone())) {
         (txt, Deref @ DAE::Type::T_INTEGER { varLst: _ }, a_name) => {
             let mut txt = (*txt).clone();
@@ -2618,7 +2618,7 @@ fn fun_156(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Ar
 }
 
 pub fn varUnbox2(mut in_txt: Tpl::Text, mut in_a_var: MidCode::Var) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_var.clone()) {
         (mut txt, MidCode::Var { ty: ref i_ty, name: mut i_name, .. }) => {
             txt = fun_156(txt.clone(), i_ty.clone(), (i_name.clone()).clone())?;
@@ -2632,7 +2632,7 @@ pub fn varUnbox2(mut in_txt: Tpl::Text, mut in_a_var: MidCode::Var) -> Result<Tp
 }
 
 fn fun_158(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone())) {
         (txt, Deref @ DAE::Type::T_INTEGER { varLst: _ }, a_name) => {
             let mut txt = (*txt).clone();
@@ -2720,7 +2720,7 @@ fn fun_158(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Ar
 }
 
 pub fn varModelicaRead(mut in_txt: Tpl::Text, mut in_a_var: MidCode::Var) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_var.clone()) {
         (mut txt, MidCode::Var { ty: ref i_ty, name: mut i_name, .. }) => {
             txt = fun_158(txt.clone(), i_ty.clone(), (i_name.clone()).clone())?;
@@ -2734,7 +2734,7 @@ pub fn varModelicaRead(mut in_txt: Tpl::Text, mut in_a_var: MidCode::Var) -> Res
 }
 
 fn fun_160(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone())) {
         (txt, Deref @ DAE::Type::T_INTEGER { varLst: _ }, a_name) => {
             let mut txt = (*txt).clone();
@@ -2822,7 +2822,7 @@ fn fun_160(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Ar
 }
 
 pub fn varModelicaWrite(mut in_txt: Tpl::Text, mut in_a_var: MidCode::Var) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_var.clone()) {
         (mut txt, MidCode::Var { ty: ref i_ty, name: mut i_name, .. }) => {
             txt = fun_160(txt.clone(), i_ty.clone(), (i_name.clone()).clone())?;
@@ -2836,7 +2836,7 @@ pub fn varModelicaWrite(mut in_txt: Tpl::Text, mut in_a_var: MidCode::Var) -> Re
 }
 
 pub fn identName(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_path.clone())) {
         (txt, Deref @ Absyn::Path::IDENT { name: i_name }) => {
             let mut txt = (*txt).clone();
@@ -2852,7 +2852,7 @@ pub fn identName(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>) -> Resu
 }
 
 pub fn identBuiltinCall(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_path.clone())) {
         (txt, Deref @ Absyn::Path::IDENT { name: Deref @ "clock" }) => {
             let mut txt = (*txt).clone();
@@ -2888,14 +2888,14 @@ pub fn identBuiltinCall(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>) 
 }
 
 pub fn replaceDotAndUnderscore(mut in_txt: Tpl::Text, mut in_a_str: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_str.clone()) {
         (mut txt, mut i_name) => {
             let mut ret_4: ArcStr = arcstr::literal!("");
             let mut ret_3: ArcStr = arcstr::literal!("");
-            let mut l_str__underscores: Tpl::Text;
+            let mut l_str__underscores: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_1: ArcStr = arcstr::literal!("");
-            let mut l_str__dots: Tpl::Text;
+            let mut l_str__dots: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             ret_1 = (System::stringReplace((i_name.clone()).clone(), (literal!(".")).clone(), (literal!("_")).clone())?).clone();
             l_str__dots = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_1.clone()).clone())?;
             ret_3 = (System::stringReplace((Tpl::textString(l_str__dots.clone())?).clone(), (literal!("_")).clone(), (literal!("__")).clone())?).clone();
@@ -2911,7 +2911,7 @@ pub fn replaceDotAndUnderscore(mut in_txt: Tpl::Text, mut in_a_str: ArcStr) -> R
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn underscorePath(mut in_txt: Tpl::Text, mut in_a_path: Arc<Absyn::Path>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_path.clone())) {
         (txt, Deref @ Absyn::Path::QUALIFIED { path: i_path, name: i_name }) => {
             let mut txt = (*txt).clone();

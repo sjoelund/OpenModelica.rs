@@ -978,6 +978,9 @@ impl std::fmt::Debug for StateOrder {
     }
 }
 
+impl Default for StateOrder {
+    fn default() -> Self { Self::NOSTATEORDER }
+}
 pub use self::StateOrder::{STATEORDER,NOSTATEORDER};
 
 /// Order of the equations the have to be solved
@@ -1030,6 +1033,14 @@ pub enum StrongComponent {
         /// true for system that discrete dependencies to the iteration variables
         mixedSystem: bool,
     },
+}
+impl Default for StrongComponent {
+    fn default() -> Self {
+        Self::SINGLEEQUATION {
+            eqn: Default::default(),
+            var: Default::default(),
+        }
+    }
 }
 pub use self::StrongComponent::{SINGLEEQUATION,EQUATIONSYSTEM,SINGLEARRAY,SINGLEALGORITHM,SINGLECOMPLEXEQUATION,SINGLEWHENEQUATION,SINGLEIFEQUATION,TORNSYSTEM};
 
@@ -1307,6 +1318,9 @@ pub enum Solvability {
     ///                     how the variable occurs in the equation.
     SOLVABILITY_SOLVABLE,
 }
+impl Default for Solvability {
+    fn default() -> Self { Self::SOLVABILITY_SOLVED }
+}
 pub use self::Solvability::{SOLVABILITY_SOLVED,SOLVABILITY_CONSTONE,SOLVABILITY_CONST,SOLVABILITY_PARAMETER,SOLVABILITY_LINEAR,SOLVABILITY_NONLINEAR,SOLVABILITY_UNSOLVABLE,SOLVABILITY_SOLVABLE};
 
 /// Constraints on the solvability of the (casual) tearing set; needed for proper Dynamic Tearing
@@ -1351,6 +1365,9 @@ pub enum JacobianType {
     JAC_GENERIC,
     /// No analytic Jacobian available
     JAC_NO_ANALYTIC,
+}
+impl Default for JacobianType {
+    fn default() -> Self { Self::JAC_CONSTANT }
 }
 pub use self::JacobianType::{JAC_CONSTANT,JAC_LINEAR,JAC_NONLINEAR,JAC_GENERIC,JAC_NO_ANALYTIC};
 
@@ -1487,6 +1504,9 @@ pub enum DifferentiationType {
         daeMode: bool,
     },
 }
+impl Default for DifferentiationType {
+    fn default() -> Self { Self::DIFFERENTIATION_TIME }
+}
 pub use self::DifferentiationType::{DIFFERENTIATION_TIME,SIMPLE_DIFFERENTIATION,DIFFERENTIATION_FUNCTION,DIFF_FULL_JACOBIAN,GENERIC_GRADIENT};
 
 /// types to count operations for the components
@@ -1525,6 +1545,16 @@ pub enum CompInfo {
         numOth: i32,
         funcCalls: i32,
     },
+}
+impl Default for CompInfo {
+    fn default() -> Self {
+        Self::SYSTEM {
+            comp: Default::default(),
+            allOperations: Default::default(),
+            size: Default::default(),
+            density: Default::default(),
+        }
+    }
 }
 pub use self::CompInfo::{COUNTER,SYSTEM,TORN_ANALYSE,NO_COMP};
 

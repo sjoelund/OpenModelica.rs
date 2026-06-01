@@ -90,6 +90,15 @@ pub enum Node {
         children: Arc<metamodelica::List<Arc<Node>>>,
     },
 }
+impl Default for Node {
+    fn default() -> Self {
+        Self::NODE {
+            type_: Default::default(),
+            attributes: Default::default(),
+            children: Default::default(),
+        }
+    }
+}
 pub use self::Node::{NODE,LNODE};
 
 pub type Children = Arc<metamodelica::List<Arc<Node>>>;

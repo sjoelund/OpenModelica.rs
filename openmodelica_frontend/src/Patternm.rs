@@ -990,7 +990,7 @@ pub fn patternStr(mut pattern: Arc<DAE::Pattern>) -> Result<ArcStr> {
 pub fn elabMatchExpression(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut matchExp: Arc<Absyn::Exp>, mut r#impl: bool, mut performVectorization: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut numError: i32 = Error::getNumErrorMessages();
     (outCache, outExp, outProperties) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), matchExp.clone(), inPrefix.clone());
@@ -1002,7 +1002,7 @@ pub fn elabMatchExpression(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
                     let mut elabExps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut elabCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>> = metamodelica::nil();
                     let mut tys: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut elabProps: Arc<metamodelica::List<DAE::Properties>> = metamodelica::nil();
                     let mut resType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut et: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -2445,7 +2445,7 @@ fn elabResultExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inBody:
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, body, _) => {
                     let mut elabExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
                     let mut cache = (*cache).clone();
@@ -2481,7 +2481,7 @@ fn elabPatternGuard(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut patt
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Some(exp), info) => {
                     let mut elabExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut cache = (*cache).clone();
                     (cache, elabExp, prop) = Static::elabExp(cache.clone(), env.clone(), exp.clone(), r#impl.clone(), performVectorization.clone(), pre.clone(), info.clone())?;
                     (elabExp, _) = Types::matchType(elabExp.clone(), Types::getPropType(prop.clone())?, DAE::T_BOOL_DEFAULT().clone(), true)?;
@@ -2493,7 +2493,7 @@ fn elabPatternGuard(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut patt
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Some(exp), info) => {
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut r#str: ArcStr = arcstr::literal!("");
                     (_, _, prop) = Static::elabExp(cache.clone(), env.clone(), exp.clone(), r#impl.clone(), performVectorization.clone(), pre.clone(), info.clone())?;
                     r#str = (TypesDump::unparseType(Types::getPropType(prop.clone())?)?).clone();
@@ -2863,7 +2863,7 @@ fn addLocalDecls(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut els: Ar
                     let mut ld_mod: Arc<metamodelica::List<(Arc<SCode::Element>, Arc<DAE::Mod>)>> = metamodelica::nil();
                     let mut dae1: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
                     let mut env2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut dummyFunc: ClassInf::State;
+                    let mut dummyFunc: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
                     let mut b: bool = false;
                     let mut declsTree: Arc<AvlSetString::Tree> = Arc::new(AvlSetString::Tree::EMPTY);
                     let mut names: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();

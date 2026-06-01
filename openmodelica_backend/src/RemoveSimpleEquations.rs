@@ -122,6 +122,17 @@ pub enum SimpleContainer {
         visited: i32,
     },
 }
+impl Default for SimpleContainer {
+    fn default() -> Self {
+        Self::TIMEINDEPENTVAR {
+            cr: Default::default(),
+            i: Default::default(),
+            exp: Default::default(),
+            eqnAttributes: Default::default(),
+            visited: Default::default(),
+        }
+    }
+}
 pub use self::SimpleContainer::{ALIAS,PARAMETERALIAS,TIMEALIAS,TIMEINDEPENTVAR};
 
 pub type AccTuple = (BackendDAE::Variables, Arc<BackendDAE::Shared>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<SimpleContainer>>, i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, bool);
@@ -1973,7 +1984,7 @@ fn getAlias(mut rows: Arc<metamodelica::List<i32>>, mut prevVar: Option<i32>, mu
             (iRmax.clone(), iSmax.clone(), iUnremovable.clone(), iConst.clone(), true)
         },
         Deref @ metamodelica::List::Cons { head: r, tail: rest } => {
-            let mut container: SimpleContainer;
+            let mut container: SimpleContainer = <SimpleContainer as ::std::default::Default>::default();
             let mut rmax: Option<(i32, i32)> = None;
             let mut smax: Option<(i32, i32)> = None;
             let mut unremovable: Option<i32> = None;
@@ -2238,7 +2249,7 @@ fn getVisited(mut iS: SimpleContainer) -> Result<i32> {
 }
 
 fn setVisited(mut visited: i32, mut iS: SimpleContainer) -> Result<SimpleContainer> {
-    let mut oS: SimpleContainer;
+    let mut oS: SimpleContainer = <SimpleContainer as ::std::default::Default>::default();
     oS = (match iS.clone() {
         SimpleContainer::ALIAS { cr1: mut cr1, negatedCr1: mut negatedCr1, i1: mut i1, cr2: mut cr2, negatedCr2: mut negatedCr2, i2: mut i2, eqnAttributes: mut eqnAttributes, visited: _ } => {
             SimpleContainer::ALIAS { cr1: cr1.clone(), negatedCr1: negatedCr1.clone(), i1: i1.clone(), cr2: cr2.clone(), negatedCr2: negatedCr2.clone(), i2: i2.clone(), eqnAttributes: eqnAttributes.clone(), visited: visited.clone() }
@@ -2292,7 +2303,7 @@ fn handleSet(mut iRmax: Option<(i32, i32)>, mut iSmax: Option<(i32, i32)>, mut i
         let __mc_input = (iRmax.clone(), iSmax.clone(), iUnremovable.clone(), iConst.clone());
         if let Ok(__v) = (|| -> Result<_> {
             let (_, _, _, Some(mut r)) = __mc_input.clone() else { bail!("nomatch") };
-            let mut s: SimpleContainer;
+            let mut s: SimpleContainer = <SimpleContainer as ::std::default::Default>::default();
             let mut i1: i32 = 0;
             let mut i2: i32 = 0;
             let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
@@ -2341,7 +2352,7 @@ fn handleSet(mut iRmax: Option<(i32, i32)>, mut iSmax: Option<(i32, i32)>, mut i
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (_, _, _, Some(mut r)) = __mc_input.clone() else { bail!("nomatch") };
-            let mut s: SimpleContainer;
+            let mut s: SimpleContainer = <SimpleContainer as ::std::default::Default>::default();
             let mut i1: i32 = 0;
             let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
             let mut cr1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -2385,7 +2396,7 @@ fn handleSet(mut iRmax: Option<(i32, i32)>, mut iSmax: Option<(i32, i32)>, mut i
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (_, _, _, Some(mut r)) = __mc_input.clone() else { bail!("nomatch") };
-            let mut s: SimpleContainer;
+            let mut s: SimpleContainer = <SimpleContainer as ::std::default::Default>::default();
             let mut i: i32 = 0;
             let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
             let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -2425,7 +2436,7 @@ fn handleSet(mut iRmax: Option<(i32, i32)>, mut iSmax: Option<(i32, i32)>, mut i
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (_, _, _, Some(mut r)) = __mc_input.clone() else { bail!("nomatch") };
-            let mut s: SimpleContainer;
+            let mut s: SimpleContainer = <SimpleContainer as ::std::default::Default>::default();
             let mut i2: i32 = 0;
             let mut i: i32 = 0;
             let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
@@ -2655,7 +2666,7 @@ fn traverseAliasTree(mut rows: Arc<metamodelica::List<i32>>, mut ilast: i32, mut
             let mut eqnslst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
             let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
             let mut repl: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
-            let mut s: SimpleContainer;
+            let mut s: SimpleContainer = <SimpleContainer as ::std::default::Default>::default();
             let mut vsattr: VarSetAttributes = (false, (0, metamodelica::nil()), metamodelica::nil(), (None, None));
             s = simpleeqnsarr.borrow()[(r.clone()-1) as usize].clone();
             {let _arr = simpleeqnsarr.clone(); _arr.borrow_mut()[(r.clone()-1) as usize] = setVisited(mark.clone(), s.clone())?; _arr};

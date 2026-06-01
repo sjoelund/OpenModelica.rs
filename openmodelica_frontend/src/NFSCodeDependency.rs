@@ -88,7 +88,7 @@ fn analyseClass(mut inClassName: Arc<Absyn::Path>, mut inEnv: Env, mut inInfo: S
         let __mc_input = inInfo.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut item: Item;
+            let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut env: Env = metamodelica::nil();
             (item, env) = lookupClass(inClassName.clone(), inEnv.clone(), true, inInfo.clone(), Some(Error::LOOKUP_ERROR.clone()))?;
             checkItemIsClass(item.clone())?;
@@ -107,13 +107,13 @@ fn analyseClass(mut inClassName: Arc<Absyn::Path>, mut inEnv: Env, mut inInfo: S
 }
 
 fn lookupClass(mut inPath: Arc<Absyn::Path>, mut inEnv: Env, mut inBuiltinPossible: bool, mut inInfo: SourceInfo, mut inErrorType: Option<ErrorTypes::Message>) -> Result<(Item, Env)> {
-    let mut outItem: Item;
+    let mut outItem: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
     let mut outEnv: Env = metamodelica::nil();
     (outItem, outEnv) = 'mc: {
         let __mc_input = inErrorType.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut item: Item;
+            let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut env: Env = metamodelica::nil();
             (item, env) = lookupClass2(inPath.clone(), inEnv.clone(), inBuiltinPossible.clone(), inInfo.clone(), inErrorType.clone())?;
             (item, env, _) = NFSCodeEnv::resolveRedeclaredItem(item.clone(), env.clone());
@@ -134,29 +134,29 @@ fn lookupClass(mut inPath: Arc<Absyn::Path>, mut inEnv: Env, mut inBuiltinPossib
 }
 
 fn lookupClass2(mut inPath: Arc<Absyn::Path>, mut inEnv: Env, mut inBuiltinPossible: bool, mut inInfo: SourceInfo, mut inErrorType: Option<ErrorTypes::Message>) -> Result<(Item, Env)> {
-    let mut outItem: Item;
+    let mut outItem: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
     let mut outEnv: Env = metamodelica::nil();
     (outItem, outEnv) = (::match_deref::match_deref! { match &((inPath.clone(), inEnv.clone(), inBuiltinPossible.clone())) {
         (Deref @ Absyn::Path::IDENT { .. }, _, true) => {
-            let mut item: Item;
+            let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut env: Env = metamodelica::nil();
             (item, _, env) = NFSCodeLookup::lookupNameSilent(inPath.clone(), inEnv.clone(), inInfo.clone())?;
             (item.clone(), env.clone())
         },
         (Deref @ Absyn::Path::IDENT { .. }, _, false) => {
-            let mut item: Item;
+            let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut env: Env = metamodelica::nil();
             (item, _, env) = NFSCodeLookup::lookupNameSilentNoBuiltin(inPath.clone(), inEnv.clone(), inInfo.clone())?;
             (item.clone(), env.clone())
         },
         (Deref @ Absyn::Path::QUALIFIED { path: Deref @ Absyn::Path::IDENT { name: id }, name: Deref @ "$ce" }, Deref @ metamodelica::List::Cons { head: _, tail: env }, _) => {
-            let mut item: Item;
+            let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut env = (*env).clone();
             (item, env) = NFSCodeLookup::lookupInheritedName((id.clone()).clone(), env.clone())?;
             (item.clone(), env.clone())
         },
         (Deref @ Absyn::Path::QUALIFIED { path: rest_path, name: id }, _, _) => {
-            let mut item: Item;
+            let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut env: Env = metamodelica::nil();
             (item, _, env) = NFSCodeLookup::lookupNameSilent(Arc::new(Absyn::Path::IDENT { name: (id.clone()).clone() }), inEnv.clone(), inInfo.clone())?;
             (item, env, _) = NFSCodeEnv::resolveRedeclaredItem(item.clone(), env.clone());
@@ -165,7 +165,7 @@ fn lookupClass2(mut inPath: Arc<Absyn::Path>, mut inEnv: Env, mut inBuiltinPossi
             (item.clone(), env.clone())
         },
         (Deref @ Absyn::Path::FULLYQUALIFIED { path: rest_path }, _, _) => {
-            let mut item: Item;
+            let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut env: Env = metamodelica::nil();
             env = NFSCodeEnv::getEnvTopScope(inEnv.clone())?;
             (item, env) = lookupClass2(rest_path.clone(), env.clone(), false, inInfo.clone(), inErrorType.clone())?;
@@ -177,7 +177,7 @@ fn lookupClass2(mut inPath: Arc<Absyn::Path>, mut inEnv: Env, mut inBuiltinPossi
 }
 
 fn lookupNameInItem(mut inName: Arc<Absyn::Path>, mut inItem: Item, mut inEnv: Env, mut inErrorType: Option<ErrorTypes::Message>) -> Result<(Item, Env)> {
-    let mut outItem: Item;
+    let mut outItem: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
     let mut outEnv: Env = metamodelica::nil();
     (outItem, outEnv) = (::match_deref::match_deref! { match &((inItem.clone(), inEnv.clone())) {
         (_, Deref @ metamodelica::List::Nil) => {
@@ -187,7 +187,7 @@ fn lookupNameInItem(mut inName: Arc<Absyn::Path>, mut inItem: Item, mut inEnv: E
             let mut env: Env = metamodelica::nil();
             let mut type_env: Env = metamodelica::nil();
             let mut redeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>> = metamodelica::nil();
-            let mut item: Item;
+            let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             (item, type_env) = lookupClass(type_path.clone(), inEnv.clone(), true, info.clone(), inErrorType.clone())?;
             let true = (NFSCodeEnv::isClassItem(item.clone())) else { bail!("pattern mismatch") };
             redeclares = NFSCodeFlattenRedeclare::extractRedeclaresFromModifier(mods.clone());
@@ -197,7 +197,7 @@ fn lookupNameInItem(mut inName: Arc<Absyn::Path>, mut inItem: Item, mut inEnv: E
         },
         (Deref @ NFSCodeEnv::Item::CLASS { env: Deref @ metamodelica::List::Cons { head: class_env, tail: Deref @ metamodelica::List::Nil }, cls: Deref @ SCode::Element::CLASS { info, .. }, .. }, _) => {
             let mut env: Env = metamodelica::nil();
-            let mut item: Item;
+            let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             env = NFSCodeEnv::enterFrame(class_env.clone(), inEnv.clone());
             (item, env) = lookupClass(inName.clone(), env.clone(), false, info.clone(), inErrorType.clone())?;
             (item.clone(), env.clone())
@@ -469,7 +469,7 @@ fn analyseClassDef(mut inClassDef: Arc<SCode::ClassDef>, mut inRestriction: SCod
                 (Deref @ SCode::ClassDef::DERIVED { modifications: mods, typeSpec: ty, .. }, Deref @ metamodelica::List::Cons { head: _, tail: env }) => {
                     let mut ty_env: Env = metamodelica::nil();
                     let mut nore_env: Env = metamodelica::nil();
-                    let mut ty_item: Item;
+                    let mut ty_item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
                     let mut redecls: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>> = metamodelica::nil();
                     let mut repls: Arc<metamodelica::List<NFSCodeFlattenRedeclare::Replacement>> = metamodelica::nil();
                     let mut env = (*env).clone();
@@ -645,7 +645,7 @@ fn analyseRedeclaredClass(mut inClass: Arc<SCode::Element>, mut inEnv: Env) -> R
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Element::CLASS { .. } => {
-                    let mut item: Item;
+                    let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
                     item = Arc::new(NFSCodeEnv::Item::CLASS { cls: inClass.clone(), env: NFSCodeEnv::emptyEnv.clone(), classType: crate::NFSCodeEnv::ClassType::USERDEFINED });
                     analyseRedeclaredClass2(item.clone(), inEnv.clone())?;
                     Ok(())
@@ -664,7 +664,7 @@ fn analyseRedeclaredClass2(mut inItem: Item, mut inEnv: Env) -> Result<()> {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ NFSCodeEnv::Item::CLASS { cls: Deref @ SCode::Element::CLASS { info, .. }, .. } => {
-                    let mut item: Item;
+                    let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
                     let mut env: Env = metamodelica::nil();
                     (item, env) = NFSCodeLookup::lookupRedeclaredClassByItem(inItem.clone(), inEnv.clone(), info.clone())?;
                     analyseItem(item.clone(), env.clone())?;
@@ -718,7 +718,7 @@ fn analyseElement(mut inElement: Arc<SCode::Element>, mut inEnv: Env, mut inExte
             bail!("fail")
         },
         (Deref @ SCode::Element::EXTENDS { info, modifications: mods, .. }, Deref @ metamodelica::List::Cons { head: Deref @ NFSCodeEnv::Extends { baseClass: bc, .. }, tail: exts }, _) => {
-            let mut ty_item: Item;
+            let mut ty_item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut ty_env: Env = metamodelica::nil();
             (ty_item, _, ty_env) = NFSCodeLookup::lookupBaseClassName(bc.clone(), inEnv.clone(), info.clone())?;
             analyseExtends(bc.clone(), inEnv.clone(), info.clone())?;
@@ -727,7 +727,7 @@ fn analyseElement(mut inElement: Arc<SCode::Element>, mut inEnv: Env, mut inExte
             exts.clone()
         },
         (Deref @ SCode::Element::COMPONENT { info, prefixes, condition: cond_exp, modifications: mods, typeSpec: ty, attributes: attr, name, .. }, _, _) => {
-            let mut ty_item: Item;
+            let mut ty_item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut ty_env: Env = metamodelica::nil();
             let mut redecls: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>> = metamodelica::nil();
             markAsUsedOnRestriction((name.clone()).clone(), inClassRestriction.clone(), inEnv.clone(), info.clone())?;
@@ -875,7 +875,7 @@ fn markAsUsedOnRestriction2(mut inRestriction: SCode::Restriction) -> bool {
 }
 
 fn analyseExtends(mut inClassName: Arc<Absyn::Path>, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<()> {
-    let mut item: Item;
+    let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
     let mut env: Env = metamodelica::nil();
     (item, env) = lookupClass(inClassName.clone(), inEnv.clone(), true, inInfo.clone(), None)?;
     analyseItem(item.clone(), env.clone())?;
@@ -998,7 +998,7 @@ fn lookupNameMod(mut inPath: Arc<Absyn::Path>, mut inEnv: Env, mut inInfo: Sourc
         let __mc_input = inInfo.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut item: Item;
+            let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut env: Env = metamodelica::nil();
             (item, _, env) = NFSCodeLookup::lookupNameSilent(inPath.clone(), inEnv.clone(), inInfo.clone())?;
             (item, env, _) = NFSCodeEnv::resolveRedeclaredItem(item.clone(), env.clone());
@@ -1177,7 +1177,7 @@ fn analyseAnnotationMod(mut inMod: Arc<SCode::SubMod>, mut inEnv: Env, mut inInf
 }
 
 fn analyseAnnotationName(mut inName: ArcStr, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<()> {
-    let mut item: Item;
+    let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
     let mut env: Env = metamodelica::nil();
     (item, _, env) = NFSCodeLookup::lookupNameSilent(Arc::new(Absyn::Path::IDENT { name: (inName.clone()).clone() }), inEnv.clone(), inInfo.clone())?;
     (item, env, _) = NFSCodeEnv::resolveRedeclaredItem(item.clone(), env.clone());
@@ -1265,7 +1265,7 @@ fn analyseCref(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv: Env, mut inInfo:
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-                    let mut item: Item;
+                    let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
                     let mut env: Env = metamodelica::nil();
                     path = AbsynUtil::crefToPathIgnoreSubs(inCref.clone())?;
                     (item, env) = lookupClass(path.clone(), inEnv.clone(), true, inInfo.clone(), None)?;
@@ -1440,7 +1440,7 @@ fn analyseClassExtendsDef(mut inClass: Arc<SCode::Element>, mut inClassType: NFS
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ SCode::Element::CLASS { info, classDef: Deref @ SCode::ClassDef::PARTS { elementLst: Deref @ metamodelica::List::Cons { head: Deref @ SCode::Element::EXTENDS { baseClassPath: bc, .. }, tail: _ }, .. }, name: cls_name, .. }, NFSCodeEnv::ClassType::CLASS_EXTENDS { .. }) => {
-                    let mut item: Item;
+                    let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
                     let mut env: Env = metamodelica::nil();
                     (item, _, env) = NFSCodeLookup::lookupBaseClassName(bc.clone(), inEnv.clone(), info.clone())?;
                     let true = (NFSCodeEnv::isItemUsed(item.clone())) else { bail!("pattern mismatch") };
@@ -1458,7 +1458,7 @@ fn analyseClassExtendsDef(mut inClass: Arc<SCode::Element>, mut inClassType: NFS
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ SCode::Element::CLASS { info, name: cls_name, .. }, NFSCodeEnv::ClassType::USERDEFINED { .. }) => {
-                    let mut item: Item;
+                    let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
                     let mut env: Env = metamodelica::nil();
                     let true = (SCodeUtil::isElementRedeclare(inClass.clone())?) else { bail!("pattern mismatch") };
                     let __pa0 = ::match_deref::match_deref! { match &(inEnv.clone()) {
@@ -1556,8 +1556,8 @@ fn collectUsedClass(mut inClass: Arc<SCode::Element>, mut inEnv: Env, mut inClsA
     (outClass, outAccumEnv) = (::match_deref::match_deref! { match &(inClass.clone()) {
         Deref @ SCode::Element::CLASS { name, prefixes: prefixes @ Deref @ SCode::Prefixes { replaceablePrefix: Deref @ SCode::Replaceable::REPLACEABLE { cc: _ }, .. }, encapsulatedPrefix: ep, partialPrefix: pp, restriction: res, classDef: cdef, cmt, info } => {
             let mut basename: ArcStr = arcstr::literal!("");
-            let mut item: Item;
-            let mut resolved_item: Item;
+            let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
+            let mut resolved_item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut class_frame: Arc<NFSCodeEnv::Frame> = Arc::new(<NFSCodeEnv::Frame as ::std::default::Default>::default());
             let mut class_env: Env = metamodelica::nil();
             let mut env: Env = metamodelica::nil();
@@ -1582,7 +1582,7 @@ fn collectUsedClass(mut inClass: Arc<SCode::Element>, mut inEnv: Env, mut inClsA
             (cls.clone(), env.clone())
         },
         Deref @ SCode::Element::CLASS { name, prefixes, encapsulatedPrefix: ep, partialPrefix: pp, restriction: res, classDef: cdef, cmt, info } => {
-            let mut item: Item;
+            let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut class_frame: Arc<NFSCodeEnv::Frame> = Arc::new(<NFSCodeEnv::Frame as ::std::default::Default>::default());
             let mut class_env: Env = metamodelica::nil();
             let mut env: Env = metamodelica::nil();
@@ -1620,7 +1620,7 @@ fn checkClassUsed(mut inItem: Item, mut inClassDef: Arc<SCode::ClassDef>) -> boo
 }
 
 fn updateItemEnv(mut inItem: Item, mut inClass: Arc<SCode::Element>, mut inEnv: Env) -> Result<Item> {
-    let mut outItem: Item;
+    let mut outItem: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
     outItem = (::match_deref::match_deref! { match &(inItem.clone()) {
         Deref @ NFSCodeEnv::Item::CLASS { classType: cls_ty, .. } => {
             Arc::new(NFSCodeEnv::Item::CLASS { cls: inClass.clone(), env: inEnv.clone(), classType: cls_ty.clone() })
@@ -1699,7 +1699,7 @@ fn collectUsedElement(mut inElement: Arc<SCode::Element>, mut inEnclosingEnv: En
         },
         (Deref @ SCode::Element::COMPONENT { attributes: SCode::Attributes { variability: SCode::Variability::CONST { .. }, .. }, name, .. }, _) => {
             let mut env: Env = metamodelica::nil();
-            let mut item: Item;
+            let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             item = NFSCodeEnv::EnvTree::get(inClsAndVars.clone(), (name.clone()).clone())?;
             let true = (inCollectConstants.clone() || NFSCodeEnv::isItemUsed(item.clone())) else { bail!("pattern mismatch") };
             env = NFSCodeEnv::extendEnvWithItem(item.clone(), inAccumEnv.clone(), (name.clone()).clone())?;
@@ -1707,7 +1707,7 @@ fn collectUsedElement(mut inElement: Arc<SCode::Element>, mut inEnclosingEnv: En
         },
         (Deref @ SCode::Element::COMPONENT { name, .. }, _) => {
             let mut env: Env = metamodelica::nil();
-            let mut item: Item;
+            let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             item = NFSCodeEnv::newVarItem(inElement.clone(), true);
             env = NFSCodeEnv::extendEnvWithItem(item.clone(), inAccumEnv.clone(), (name.clone()).clone())?;
             (inElement.clone(), env.clone())
@@ -1770,7 +1770,7 @@ fn removeUnusedRedeclares2(mut inExtends: Arc<NFSCodeEnv::Extends>, mut inEnv: E
 
 fn removeUnusedRedeclares3(mut inRedeclare: Arc<NFSCodeEnv::Redeclaration>, mut inEnv: Env) -> Result<()> {
     let mut name: ArcStr = arcstr::literal!("");
-    let mut item: Item;
+    let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
     (name, _) = NFSCodeEnv::getRedeclarationNameInfo(inRedeclare.clone())?;
     (item, _, _) = NFSCodeLookup::lookupSimpleName((name.clone()).clone(), inEnv.clone())?;
     let true = (NFSCodeEnv::isItemUsed(item.clone())) else { bail!("pattern mismatch") };

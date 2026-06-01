@@ -297,7 +297,7 @@ pub fn expandEnumeration(mut n: ArcStr, mut l: Arc<metamodelica::List<Arc<SCode:
 }
 
 fn makeEnumParts(mut inEnumLst: Arc<metamodelica::List<Arc<SCode::Enum>>>, mut info: SourceInfo) -> Result<Arc<SCode::ClassDef>> {
-    let mut classDef: Arc<SCode::ClassDef>;
+    let mut classDef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
     classDef = Arc::new(SCode::ClassDef::PARTS { elementLst: makeEnumComponents(inEnumLst.clone(), info.clone())?, normalEquationLst: metamodelica::nil(), initialEquationLst: metamodelica::nil(), normalAlgorithmLst: metamodelica::nil(), initialAlgorithmLst: metamodelica::nil(), constraintLst: metamodelica::nil(), clsattrs: metamodelica::nil(), externalDecl: None });
     Ok(classDef)
 }

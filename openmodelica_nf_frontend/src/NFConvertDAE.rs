@@ -1098,7 +1098,7 @@ fn convertFunction(mut func: Arc<Function::Function>) -> Result<DAE::Function> {
     let mut dfunc: DAE::Function = <DAE::Function as ::std::default::Default>::default();
     let mut cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
     let mut elems: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-    let mut def: DAE::FunctionDefinition;
+    let mut def: DAE::FunctionDefinition = <DAE::FunctionDefinition as ::std::default::Default>::default();
     let mut sections: Arc<Sections::NFSections> = Arc::new(Sections::EMPTY);
     cls = InstNode::getClass(Function::instance(func.clone()))?;
     dfunc = (::match_deref::match_deref! { match &(cls.clone()) {
@@ -1178,7 +1178,7 @@ fn convertFunctionParam(mut node: Arc<InstNode::InstNode>) -> Result<Arc<DAE::El
 }
 
 fn convertExternalDecl(mut extDecl: Arc<Sections::NFSections>, mut parameters: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<DAE::FunctionDefinition> {
-    let mut funcDef: DAE::FunctionDefinition;
+    let mut funcDef: DAE::FunctionDefinition = <DAE::FunctionDefinition as ::std::default::Default>::default();
     let mut decl: DAE::ExternalDecl = <DAE::ExternalDecl as ::std::default::Default>::default();
     let mut args: Arc<metamodelica::List<DAE::ExtArg>> = metamodelica::nil();
     let mut ret_arg: DAE::ExtArg = DAE::ExtArg::NOEXTARG;

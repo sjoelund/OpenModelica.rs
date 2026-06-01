@@ -578,7 +578,7 @@ fn liftUserTypeSubMod(mut inSubMod: Arc<DAE::SubMod>, mut inDims: Arc<metamodeli
 
 fn liftUserTypeEqMod(mut inEqMod: Option<DAE::EqMod>, mut inDims: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> Result<Option<DAE::EqMod>> {
     let mut outEqMod: Option<DAE::EqMod> = None;
-    let mut eq: DAE::EqMod;
+    let mut eq: DAE::EqMod = <DAE::EqMod as ::std::default::Default>::default();
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     if isNone(inEqMod.clone()) {
         outEqMod = inEqMod.clone();
@@ -721,7 +721,7 @@ fn instVar2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<me
                 (cache, env, ih, store, ci_state, r#mod @ Deref @ DAE::Mod::MOD { binding: Some(_), .. }, pre, n, cl, attr, pf, dims, _, inst_dims, r#impl, comment, info, graph, csets) => {
                     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut p: DAE::Properties;
+                    let mut p: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut ty_1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
@@ -964,7 +964,7 @@ pub fn instScalar(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, ih, store, r#mod, Deref @ SCode::Element::CLASS { restriction: res, name: cls_name, .. }, SCode::Attributes { variability: vt, .. }, Deref @ SCode::Prefixes { innerOuter: io, finalPrefix: fin, visibility: vis, .. }, idxs) => {
-                    let mut ci_state: ClassInf::State;
+                    let mut ci_state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
                     let mut csets: DAE::Connect::Sets = <DAE::Connect::Sets as ::std::default::Default>::default();
                     let mut graph: ConnectionGraph::ConnectionGraph = <ConnectionGraph::ConnectionGraph as ::std::default::Default>::default();
                     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
@@ -1291,7 +1291,7 @@ fn instArray(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<m
                     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut lhs: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut rhs: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut p: DAE::Properties;
+                    let mut p: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);

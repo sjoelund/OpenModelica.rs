@@ -142,7 +142,7 @@ pub fn typeDerivative(mut fnDer: Arc<NFFunctionDerivative>) -> Result<()> {
 }
 
 pub fn toDAE(mut fnDer: Arc<NFFunctionDerivative>) -> Result<DAE::FunctionDefinition> {
-    let mut derDef: DAE::FunctionDefinition;
+    let mut derDef: DAE::FunctionDefinition = <DAE::FunctionDefinition as ::std::default::Default>::default();
     let mut order: i32 = 0;
     let __pa0 = ::match_deref::match_deref! { match &(fnDer.order.clone()) {
         Deref @ Expression::INTEGER { value: __pa0 } => __pa0.clone(),

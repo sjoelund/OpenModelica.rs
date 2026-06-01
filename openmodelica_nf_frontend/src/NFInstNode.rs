@@ -124,6 +124,9 @@ pub enum InstNodeType {
     ///     implicitly implicit), but by e.g. the annotation scope.
     IMPLICIT_SCOPE,
 }
+impl Default for InstNodeType {
+    fn default() -> Self { Self::NORMAL_CLASS }
+}
 pub use self::InstNodeType::{NORMAL_CLASS,BASE_CLASS,DERIVED_CLASS,BUILTIN_CLASS,TOP_SCOPE,ROOT_CLASS,NORMAL_COMP,REDECLARED_COMP,REDECLARED_CLASS,GENERATED_INNER,IMPLICIT_SCOPE};
 
 pub const NUMBER_OF_CACHES: i32 = 2;
@@ -158,6 +161,9 @@ pub mod CachedData {
             typed: bool,
             specialBuiltin: bool,
         },
+    }
+    impl Default for CachedData {
+        fn default() -> Self { Self::NO_CACHE }
     }
     pub use self::CachedData::{NO_CACHE,PACKAGE,FUNCTION};
     pub fn empty() -> metamodelica::Array<Arc<CachedData>> {
@@ -1915,7 +1921,7 @@ pub mod InstNode {
         outType = (::match_deref::match_deref! { match &(clsNode.clone()) {
         Deref @ CLASS_NODE { .. } => {
             let mut cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
-            let mut state: ClassInf::State;
+            let mut state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
             let mut res: Arc<Restriction::NFRestriction> = Arc::new(Restriction::BLOCK);
             cls = Pointer::access(var_field!((*clsNode).cls, InstNode::CLASS_NODE).clone());
             (::match_deref::match_deref! { match &(cls.clone()) {
@@ -1952,7 +1958,7 @@ pub mod InstNode {
         Deref @ CLASS_NODE { .. } => {
             let mut cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
             let mut vars: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-            let mut state: ClassInf::State;
+            let mut state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
             let mut res: Arc<Restriction::NFRestriction> = Arc::new(Restriction::BLOCK);
             cls = Pointer::access(var_field!((*clsNode).cls, InstNode::CLASS_NODE).clone());
             (::match_deref::match_deref! { match &(cls.clone()) {

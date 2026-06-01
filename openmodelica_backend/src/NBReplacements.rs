@@ -373,7 +373,7 @@ pub fn addInputArgTpl(mut tpl: (Arc<ComponentRef::NFComponentRef>, Arc<Expressio
     let mut children_args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut children: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
     let mut tmp: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-    let mut call: Arc<Call::NFCall>;
+    let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
     (cref, arg) = tpl.clone();
     UnorderedMap::add(cref.clone(), arg.clone(), replacements.clone())?;

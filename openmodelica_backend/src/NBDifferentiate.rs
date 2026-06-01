@@ -2790,7 +2790,7 @@ fn typeTransposeCall(mut mat: Arc<Expression::NFExpression>) -> Result<Arc<Expre
     let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
     let mut elTy: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut resTy: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut call: Arc<Call::NFCall>;
+    let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut var: Variability = Expression::variability(mat.clone())?;
     let mut pur: Prefixes::Purity = Expression::purity(mat.clone())?;
     if !(Type::isArray(inTy.clone())) {
@@ -2820,7 +2820,7 @@ fn typePromoteCall(mut arr: Arc<Expression::NFExpression>, mut n: i32) -> Arc<Ex
     let mut ones: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
     let mut resDims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
     let mut resTy: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut call: Arc<Call::NFCall>;
+    let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut var: Variability = Expression::variability(arr.clone()).unwrap();
     let mut pur: Prefixes::Purity = Expression::purity(arr.clone()).unwrap();
     elTy = if (Type::isArray(inTy.clone())) {Type::arrayElementType(inTy.clone())} else {inTy.clone()};
@@ -2842,7 +2842,7 @@ fn typeSumCall(mut arr: Arc<Expression::NFExpression>) -> Arc<Expression::NFExpr
     let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
     let mut elTy: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut resTy: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut call: Arc<Call::NFCall>;
+    let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut var: Variability = Expression::variability(arr.clone()).unwrap();
     let mut pur: Prefixes::Purity = Expression::purity(arr.clone()).unwrap();
     if !(Type::isArray(inTy.clone())) {

@@ -172,6 +172,9 @@ pub mod FunctionTreeImpl {
         },
         EMPTY,
     }
+    impl Default for Tree {
+        fn default() -> Self { Self::EMPTY }
+    }
     pub use self::Tree::{NODE,LEAF,EMPTY};
 
     pub type ValueNode = Arc<Path>;
@@ -852,9 +855,17 @@ pub mod Prefix {
             indexedPrefix: Arc<ComponentRef::NFComponentRef>,
         },
     }
+    impl Default for Prefix {
+        fn default() -> Self {
+            Self::PREFIX {
+                root: Default::default(),
+                prefix: Default::default(),
+            }
+        }
+    }
     pub use self::Prefix::{PREFIX,INDEXED_PREFIX};
     pub fn new(mut root: Arc<InstNode::InstNode>, mut indexed: bool) -> Arc<Prefix> {
-        let mut prefix: Arc<Prefix>;
+        let mut prefix: Arc<Prefix> = Arc::new(<Prefix as ::std::default::Default>::default());
         prefix = if (indexed.clone()) {Arc::new(Prefix::INDEXED_PREFIX { root: root.clone(), prefix: Arc::new(crate::NFComponentRef::EMPTY), indexedPrefix: Arc::new(crate::NFComponentRef::EMPTY) })} else {Arc::new(Prefix::PREFIX { root: root.clone(), prefix: Arc::new(crate::NFComponentRef::EMPTY) })};
         prefix
     }
@@ -1013,7 +1024,7 @@ pub fn flatten(mut classInst: Arc<InstNode::InstNode>, mut classPath: Arc<Path>,
     let mut src: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
     let mut settings: FlattenSettings = <FlattenSettings as ::std::default::Default>::default();
     let mut deleted_vars: DeletedVariables = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
-    let mut prefix: Arc<Prefix::Prefix>;
+    let mut prefix: Arc<Prefix::Prefix> = Arc::new(<Prefix::Prefix as ::std::default::Default>::default());
     settings = FlattenSettings { scalarize: Flags::isSet(Flags::NF_SCALARIZE.clone())?, arrayConnect: Flags::isSet(Flags::ARRAY_CONNECT.clone())?, nfAPI: Flags::isSet(Flags::NF_API.clone())?, relaxedErrorChecking: Flags::isSet(Flags::NF_API.clone())? || Flags::getConfigBool(Flags::CHECK_MODEL.clone())?, newBackend: Flags::getConfigBool(Flags::NEW_BACKEND.clone())?, vectorizeBindings: Flags::isSet(Flags::VECTORIZE_BINDINGS.clone())?, implicitStartAttribute: Flags::isConfigFlagSet(Flags::ALLOW_NON_STANDARD_MODELICA.clone(), (literal!("implicitParameterStartAttribute")).clone())?, minimalEval: Flags::getConfigString(Flags::EVALUATE_STRUCTURAL_PARAMETERS.clone())? != literal!("all") };
     prefix = Prefix::new(classInst.clone(), settings.vectorizeBindings.clone());
     sections = Arc::new(crate::NFSections::EMPTY);
@@ -1298,7 +1309,7 @@ fn flattenSimpleComponent(mut node: Arc<InstNode::InstNode>, mut comp: Arc<Compo
     let mut ty_attrs: Arc<metamodelica::List<(ArcStr, Arc<Binding::NFBinding>)>> = metamodelica::nil();
     let mut var: Variability = Variability::CONSTANT;
     let mut unfix: bool = false;
-    let mut pre: Arc<Prefix::Prefix>;
+    let mut pre: Arc<Prefix::Prefix> = Arc::new(<Prefix::Prefix as ::std::default::Default>::default());
     let mut v: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
     let mut fillVectorizedBindingFails: bool = false;
     let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(comp.clone()) {
@@ -1509,7 +1520,7 @@ fn flattenComplexComponent(mut node: Arc<InstNode::InstNode>, mut comp: Arc<Comp
     let mut comp_var: Variability = Variability::CONSTANT;
     let mut binding_var: Variability = Variability::CONSTANT;
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    let mut pre: Arc<Prefix::Prefix>;
+    let mut pre: Arc<Prefix::Prefix> = Arc::new(<Prefix::Prefix as ::std::default::Default>::default());
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     info = InstNode::info(node.clone())?;
     ty = flattenType(nodeTy.clone(), prefix.clone(), info.clone());
@@ -1626,8 +1637,8 @@ fn flattenArray(mut cls: Arc<Class::NFClass>, mut dimensions: Arc<metamodelica::
     let mut sections: Arc<Sections::NFSections> = sections;
     let mut dim: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
     let mut rest_dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
-    let mut sub_pre: Arc<Prefix::Prefix>;
-    let mut range_iter: Arc<RangeIterator::NFRangeIterator>;
+    let mut sub_pre: Arc<Prefix::Prefix> = Arc::new(<Prefix::Prefix as ::std::default::Default>::default());
+    let mut range_iter: Arc<RangeIterator::NFRangeIterator> = Arc::new(<RangeIterator::NFRangeIterator as ::std::default::Default>::default());
     let mut sub_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
     if dimensions.clone().is_empty() {
@@ -1707,7 +1718,7 @@ fn vectorizeBinding(mut binding: Arc<Binding::NFBinding>, mut prefix: Arc<Prefix
     let mut nodes: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
     let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut array_call: Arc<Call::NFCall>;
+    let mut array_call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut binding_ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
     let mut prefix_cr: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
@@ -2492,7 +2503,7 @@ pub fn unrollForLoop(mut forLoop: Arc<Equation::NFEquation>, mut prefix: Arc<Pre
     let mut body: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
     let mut unrolled_body: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
     let mut range: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut range_iter: Arc<RangeIterator::NFRangeIterator>;
+    let mut range_iter: Arc<RangeIterator::NFRangeIterator> = Arc::new(<RangeIterator::NFRangeIterator as ::std::default::Default>::default());
     let mut val: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(forLoop.clone()) {
@@ -2619,7 +2630,7 @@ pub fn unrollForStatement(mut stmt: Arc<Statement::NFStatement>, mut statements:
     let mut range: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut val: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-    let mut range_iter: Arc<RangeIterator::NFRangeIterator>;
+    let mut range_iter: Arc<RangeIterator::NFRangeIterator> = Arc::new(<RangeIterator::NFRangeIterator as ::std::default::Default>::default());
     let mut stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
     let mut has_for: bool = false;
     statements = (::match_deref::match_deref! { match &(stmt.clone()) {

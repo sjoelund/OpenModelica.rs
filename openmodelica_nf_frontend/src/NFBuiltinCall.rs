@@ -366,7 +366,7 @@ fn typeStringCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: Sourc
     let mut args: Arc<metamodelica::List<Arc<TypedArg>>> = metamodelica::nil();
     let mut named_args: Arc<metamodelica::List<Arc<TypedArg>>> = metamodelica::nil();
     let mut arg: Arc<TypedArg> = Arc::new(<TypedArg as ::std::default::Default>::default());
-    let mut ty_call: Arc<Call::NFCall>;
+    let mut ty_call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let (__pa2, __pa0, __pa1) = ::match_deref::match_deref! { match &(Call::typeNormalCall(call.clone(), context.clone(), info.clone())?) {
         __pa2 @ Deref @ Call::ARG_TYPED_CALL { r#ref: _, positional_args: __pa0, named_args: __pa1, .. } => (__pa2.clone(), __pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
@@ -389,7 +389,7 @@ fn typeBuiltinStringCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut var: Variability = Variability::CONSTANT;
     let mut purity: Purity = Purity::PURE;
-    let mut ty_call: Arc<Call::NFCall>;
+    let mut ty_call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     ty_call = Call::matchTypedNormalCall(call.clone(), context.clone(), info.clone(), true)?;
     ty = Call::typeOf(ty_call.clone());
     var = Call::variability(ty_call.clone())?;
@@ -468,7 +468,7 @@ fn typeDiscreteCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: Sou
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut var: Variability = Variability::DISCRETE.clone();
     let mut purity: Purity = Purity::PURE;
-    let mut argtycall: Arc<Call::NFCall>;
+    let mut argtycall: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     argtycall = Call::typeMatchNormalCall(call.clone(), context.clone(), info.clone(), true)?;
     ty = Call::typeOf(argtycall.clone());
     purity = Call::purity(argtycall.clone());
@@ -628,7 +628,7 @@ fn typeEdgeCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: SourceI
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut variability: Variability = Variability::DISCRETE.clone();
     let mut purity: Purity = Purity::PURE;
-    let mut argtycall: Arc<Call::NFCall>;
+    let mut argtycall: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut args: Arc<metamodelica::List<Arc<TypedArg>>> = metamodelica::nil();
     let mut arg: Arc<TypedArg> = Arc::new(<TypedArg as ::std::default::Default>::default());
     let mut fn_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
@@ -1812,7 +1812,7 @@ fn typeSampleCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: Sourc
     let mut outType: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut var: Variability = Variability::CONSTANT;
     let mut purity: Purity = Purity::IMPURE.clone();
-    let mut ty_call: Arc<Call::NFCall>;
+    let mut ty_call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut args: Arc<metamodelica::List<Arc<TypedArg>>> = metamodelica::nil();
     let mut namedArgs: Arc<metamodelica::List<Arc<TypedArg>>> = metamodelica::nil();
     let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
@@ -2029,7 +2029,7 @@ fn typeBackSampleCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: S
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut var: Variability = Variability::CONSTANT;
     let mut purity: Purity = Purity::IMPURE.clone();
-    let mut ty_call: Arc<Call::NFCall>;
+    let mut ty_call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut counter: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut resolution: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let (__pa4, __pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(Call::typeMatchNormalCall(call.clone(), context.clone(), info.clone(), false)?) {
@@ -2052,7 +2052,7 @@ fn typeShiftSampleCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: 
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut var: Variability = Variability::CONSTANT;
     let mut purity: Purity = Purity::IMPURE.clone();
-    let mut ty_call: Arc<Call::NFCall>;
+    let mut ty_call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut counter: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut resolution: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let (__pa4, __pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(Call::typeMatchNormalCall(call.clone(), context.clone(), info.clone(), false)?) {
@@ -2075,7 +2075,7 @@ fn typeSubSampleCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: So
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut var: Variability = Variability::CONSTANT;
     let mut purity: Purity = Purity::IMPURE.clone();
-    let mut ty_call: Arc<Call::NFCall>;
+    let mut ty_call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut factor: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let (__pa3, __pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(Call::typeMatchNormalCall(call.clone(), context.clone(), info.clone(), false)?) {
         __pa3 @ Deref @ Call::TYPED_CALL { var: __pa0, ty: __pa1, arguments: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Nil } }, .. } => (__pa3.clone(), __pa0.clone(), __pa1.clone(), __pa2.clone()),
@@ -2095,7 +2095,7 @@ fn typeSuperSampleCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: 
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut var: Variability = Variability::CONSTANT;
     let mut purity: Purity = Purity::IMPURE.clone();
-    let mut ty_call: Arc<Call::NFCall>;
+    let mut ty_call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut factor: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let (__pa3, __pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(Call::typeMatchNormalCall(call.clone(), context.clone(), info.clone(), false)?) {
         __pa3 @ Deref @ Call::TYPED_CALL { var: __pa0, ty: __pa1, arguments: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Nil } }, .. } => (__pa3.clone(), __pa0.clone(), __pa1.clone(), __pa2.clone()),
@@ -2116,7 +2116,7 @@ fn typePureCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: SourceI
     let mut var: Variability = Variability::CONSTANT;
     let mut purity: Purity = Purity::PURE.clone();
     let mut arg: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut c: Arc<Call::NFCall>;
+    let mut c: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(Call::typeMatchNormalCall(call.clone(), context.clone(), info.clone(), false)?) {
         Deref @ Call::TYPED_CALL { var: __pa0, ty: __pa1, arguments: Deref @ metamodelica::List::Cons { head: __pa2, tail: Deref @ metamodelica::List::Nil }, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
@@ -2145,14 +2145,14 @@ fn typeBuiltinCallExp(mut call: Arc<Call::NFCall>, mut context: i32, mut info: S
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut var: Variability = Variability::CONSTANT;
     let mut pur: Purity = Purity::PURE;
-    let mut c: Arc<Call::NFCall>;
+    let mut c: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     (c, ty, var, pur) = typeBuiltinCall(call.clone(), context.clone(), info.clone(), vectorize.clone())?;
     outExp = Arc::new(Expression::NFExpression::CALL { call: c.clone() });
     Ok((outExp, ty, var, pur))
 }
 
 fn typeBuiltinCall(mut call: Arc<Call::NFCall>, mut context: i32, mut info: SourceInfo, mut vectorize: bool) -> Result<(Arc<Call::NFCall>, Arc<Type::NFType>, Variability, Purity)> {
-    let mut outCall: Arc<Call::NFCall>;
+    let mut outCall: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut var: Variability = Variability::CONSTANT;
     let mut pur: Purity = Purity::PURE;

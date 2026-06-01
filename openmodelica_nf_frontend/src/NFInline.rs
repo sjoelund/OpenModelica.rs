@@ -84,7 +84,7 @@ pub fn inlineCallExp(mut callExp: Arc<Expression::NFExpression>, mut forceInline
 
 pub fn inlineCall(mut callExp: Arc<Expression::NFExpression>, mut forceInline: bool) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    let mut call: Arc<Call::NFCall>;
+    let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
     let mut arg: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();

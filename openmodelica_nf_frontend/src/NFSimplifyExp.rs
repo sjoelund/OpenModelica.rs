@@ -176,7 +176,7 @@ pub fn simplifyRange(mut range: Arc<Expression::NFExpression>) -> Result<Arc<Exp
 
 pub fn simplifyCall(mut callExp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut callExp: Arc<Expression::NFExpression> = callExp;
-    let mut call: Arc<Call::NFCall>;
+    let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut builtin: bool = false;
     let mut is_pure: bool = false;

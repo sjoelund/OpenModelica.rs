@@ -1672,7 +1672,7 @@ fn getSparsePattern(mut inComponents: Arc<metamodelica::List<Arc<BackendDAE::Str
             result.clone()
         },
         _ => {
-            let mut comp: Arc<BackendDAE::StrongComponent>;
+            let mut comp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
             let __pa0 = ::match_deref::match_deref! { match &(inComponents.clone()) {
                 Deref @ metamodelica::List::Cons { head: __pa0, tail: _ } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
@@ -2899,7 +2899,7 @@ fn calculateTearingSetJacobian(mut inVars: BackendDAE::Variables, mut inEqns: Ar
 }
 
 fn calculateJacobianComponent(mut inComp: Arc<BackendDAE::StrongComponent>, mut inVars: BackendDAE::Variables, mut inEqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut inShared: Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::StrongComponent>, Arc<BackendDAE::Shared>)> {
-    let mut outComp: Arc<BackendDAE::StrongComponent>;
+    let mut outComp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
     let mut outShared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
     (outComp, outShared) = ({
         let mut onlySparsePattern: bool = true;

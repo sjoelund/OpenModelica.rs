@@ -464,8 +464,8 @@ pub fn partialInstClass(mut node: Arc<InstNode::InstNode>) -> Result<Arc<InstNod
 
 pub fn partialInstClass2(mut definition: Arc<SCode::Element>, mut scope: Arc<InstNode::InstNode>) -> Result<Arc<Class::NFClass>> {
     let mut cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
-    let mut cdef: Arc<SCode::ClassDef>;
-    let mut ce_cdef: Arc<SCode::ClassDef>;
+    let mut cdef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
+    let mut ce_cdef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut prefs: Arc<Class::Prefixes::Prefixes> = Arc::new(<Class::Prefixes::Prefixes as ::std::default::Default>::default());
     Error::assertion(SCodeUtil::elementIsClass(definition.clone()), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInst.partialInstClass2")); __mm_s.push_str(&*literal!(" got non-class element")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
@@ -534,7 +534,7 @@ pub fn expandClass(mut node: Arc<InstNode::InstNode>, mut context: i32) -> Resul
 pub fn expandClass2(mut node: Arc<InstNode::InstNode>, mut context: i32) -> Result<Arc<InstNode::InstNode>> {
     let mut node: Arc<InstNode::InstNode> = node;
     let mut def: Arc<SCode::Element> = InstNode::definition(node.clone())?;
-    let mut cdef: Arc<SCode::ClassDef>;
+    let mut cdef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     let mut name_map: Option<Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<Absyn::ComponentRef>>>> = None;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(def.clone()) {
@@ -804,7 +804,7 @@ pub fn checkElementNotReplaceable(mut node: Arc<InstNode::InstNode>) -> Result<(
 
 pub fn expandClassDerived(mut element: Arc<SCode::Element>, mut definition: Arc<SCode::ClassDef>, mut node: Arc<InstNode::InstNode>, mut context: i32, mut info: SourceInfo) -> Result<Arc<InstNode::InstNode>> {
     let mut node: Arc<InstNode::InstNode> = node;
-    let mut ty: Arc<Absyn::TypeSpec>;
+    let mut ty: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
     let mut ext_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
     let mut prefs: Arc<Class::Prefixes::Prefixes> = Arc::new(<Class::Prefixes::Prefixes as ::std::default::Default>::default());
@@ -2512,7 +2512,7 @@ pub fn instPartEvalFunction(mut func: Arc<Absyn::ComponentRef>, mut funcArgs: Ar
 pub fn instSections(mut node: Arc<InstNode::InstNode>, mut scope: Arc<InstNode::InstNode>, mut connectBreaks: Arc<ConnectBreakTree::Tree>, mut context: i32, mut sections: Arc<Sections::NFSections>) -> Result<Arc<Sections::NFSections>> {
     let mut sections: Arc<Sections::NFSections> = sections;
     let mut el: Arc<SCode::Element> = InstNode::definition(node.clone())?;
-    let mut def: Arc<SCode::ClassDef>;
+    let mut def: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
     sections = (::match_deref::match_deref! { match &(el.clone()) {
         Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { .. }, .. } => instSections2(var_field!((*el).classDef, SCode::Element::CLASS).clone(), scope.clone(), connectBreaks.clone(), context.clone(), sections.clone())?,
         Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::CLASS_EXTENDS { composition: def @ Deref @ SCode::ClassDef::PARTS { .. }, .. }, .. } => instSections2(def.clone(), scope.clone(), connectBreaks.clone(), context.clone(), sections.clone())?,

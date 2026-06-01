@@ -3490,7 +3490,7 @@ fn addEnumerationLiteralToEnv(mut inEnum: Arc<SCode::Element>, mut inEnv: FCore:
 }
 
 pub fn updateClassInfState(mut inCache: FCore::Cache, mut inNewEnv: FCore::Graph, mut inOldEnv: FCore::Graph, mut inCIState: ClassInf::State) -> Result<ClassInf::State> {
-    let mut outCIState: ClassInf::State;
+    let mut outCIState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
     outCIState = 'mc: {
         let __mc_input = inCIState.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -3505,7 +3505,7 @@ pub fn updateClassInfState(mut inCache: FCore::Cache, mut inNewEnv: FCore::Graph
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut ci_state: ClassInf::State;
+            let mut ci_state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
             let mut rest: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
             let mut id: ArcStr = arcstr::literal!("");
             let mut cls: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
@@ -3821,7 +3821,7 @@ pub fn elabComponentArraydimFromEnv(mut inCache: FCore::Cache, mut inEnv: FCore:
                     let mut cmod_1: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
                     let mut m_2: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
                     let mut mod_2: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
-                    let mut eq: DAE::EqMod;
+                    let mut eq: DAE::EqMod = <DAE::EqMod as ::std::default::Default>::default();
                     let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
                     let mut cache = (*cache).clone();
                     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(Lookup::lookupIdent(cache.clone(), env.clone(), (id.clone()).clone())?) {
@@ -3975,7 +3975,7 @@ pub fn elabArraydim(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inCo
                     let mut dim3: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut t: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut cache = (*cache).clone();
                     (cache, e_1, prop) = Static::elabExp(cache.clone(), env.clone(), aexp.clone(), r#impl.clone(), doVect.clone(), pre.clone(), info.clone())?;
                     (cache, e_1, prop) = Ceval::cevalIfConstant(cache.clone(), env.clone(), e_1.clone(), prop.clone(), r#impl.clone(), info.clone())?;
@@ -4246,7 +4246,7 @@ fn getDeriveAnnotation3(mut inSubs: Arc<metamodelica::List<Arc<SCode::SubMod>>>,
                     let mut defaultDerivative: Option<Arc<Absyn::Path>> = None;
                     let mut order: i32 = 0;
                     let mut conditionRefs: Arc<metamodelica::List<(i32, DAE::derivativeCond)>> = metamodelica::nil();
-                    let mut mapper: DAE::FunctionDefinition;
+                    let mut mapper: DAE::FunctionDefinition = <DAE::FunctionDefinition as ::std::default::Default>::default();
                     deriveFunc = AbsynUtil::crefToPath(acr.clone())?;
                     (_, deriveFunc) = Inst::makeFullyQualified(inCache.clone(), inEnv.clone(), deriveFunc.clone())?;
                     order = getDerivativeOrder(subs2.clone());
@@ -4801,7 +4801,7 @@ fn elabExpListExt(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAbsy
         },
         (cache, env, Deref @ metamodelica::List::Cons { head: e, tail: rest }, r#impl, pre) => {
             let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut p: DAE::Properties;
+            let mut p: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
             let mut exps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             let mut props: Arc<metamodelica::List<DAE::Properties>> = metamodelica::nil();
             let mut cache = (*cache).clone();
@@ -4817,7 +4817,7 @@ fn elabExpListExt(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inAbsy
 fn elabExpExt(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inBoolean: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inExp.clone(), inBoolean.clone(), inPrefix.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -4826,8 +4826,8 @@ fn elabExpExt(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc
                     let mut dimp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut arraycrefe: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut arraycrprop: DAE::Properties;
-                    let mut prop: DAE::Properties;
+                    let mut arraycrprop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut cache = (*cache).clone();
                     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(Static::elabExp(cache.clone(), env.clone(), dim.clone(), r#impl.clone(), false, pre.clone(), info.clone())?) {
                         (__pa0, __pa1, __pa2 @ DAE::Properties::PROP { type_: _, constFlag: _ }) => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
@@ -4849,7 +4849,7 @@ fn elabExpExt(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, absynExp, r#impl, pre) => {
                     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut cache = (*cache).clone();
                     (cache, e, prop) = Static::elabExp(cache.clone(), env.clone(), absynExp.clone(), r#impl.clone(), false, pre.clone(), info.clone())?;
                     (cache, e, prop) = Ceval::cevalIfConstant(cache.clone(), env.clone(), e.clone(), prop.clone(), r#impl.clone(), info.clone())?;
@@ -5061,7 +5061,7 @@ pub fn instExtGetRettype(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ SCode::ExternalDecl { output_: Some(cref), lang, .. }, r#impl, pre) => {
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut extarg: DAE::ExtArg = DAE::ExtArg::NOEXTARG;
                     let mut cache = (*cache).clone();
                     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(Static::elabCref(cache.clone(), env.clone(), cref.clone(), r#impl.clone(), false, pre.clone(), info.clone())?) {
@@ -5238,7 +5238,7 @@ pub fn mktype(mut inPath: Arc<Absyn::Path>, mut inState: ClassInf::State, mut in
             ::match_deref::match_deref! { match &__mc_input {
                 (_, ClassInf::State::TYPE { .. }, _, Some(Deref @ DAE::Type::T_ARRAY { ty: arrayType, .. }), None, _) => {
                     let mut resType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut classState: ClassInf::State;
+                    let mut classState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
                     classState = arrayTTypeToClassInfState(arrayType.clone())?;
                     resType = mktype(inPath.clone(), classState.clone(), inTypesVarLst.clone(), inTypesTypeOption.clone(), inEqualityConstraint.clone(), inClass.clone(), inheritedComment.clone())?;
                     Ok(resType.clone())
@@ -5250,7 +5250,7 @@ pub fn mktype(mut inPath: Arc<Absyn::Path>, mut inState: ClassInf::State, mut in
             ::match_deref::match_deref! { match &__mc_input {
                 (_, ClassInf::State::TYPE { .. }, _, Some(Deref @ DAE::Type::T_ARRAY { ty: arrayType, .. }), Some(_), _) => {
                     let mut resType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut classState: ClassInf::State;
+                    let mut classState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
                     classState = arrayTTypeToClassInfState(arrayType.clone())?;
                     resType = mktype(inPath.clone(), classState.clone(), inTypesVarLst.clone(), inTypesTypeOption.clone(), inEqualityConstraint.clone(), inClass.clone(), inheritedComment.clone())?;
                     resType = Arc::new(DAE::Type::T_SUBTYPE_BASIC { complexClassType: inState.clone(), varLst: metamodelica::nil(), complexType: resType.clone(), equalityConstraint: inEqualityConstraint.clone() });
@@ -5352,7 +5352,7 @@ pub fn mktype(mut inPath: Arc<Absyn::Path>, mut inState: ClassInf::State, mut in
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn arrayTTypeToClassInfState(mut arrayType: Arc<DAE::Type>) -> Result<ClassInf::State> {
-    let mut classInfState: ClassInf::State;
+    let mut classInfState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
     classInfState = (::match_deref::match_deref! { match &(arrayType.clone()) {
         Deref @ DAE::Type::T_INTEGER { .. } => {
             ClassInf::State::TYPE_INTEGER { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }) }
@@ -5370,7 +5370,7 @@ fn arrayTTypeToClassInfState(mut arrayType: Arc<DAE::Type>) -> Result<ClassInf::
             ClassInf::State::TYPE_CLOCK { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }) }
         },
         Deref @ DAE::Type::T_ARRAY { ty: t, .. } => {
-            let mut cs: ClassInf::State;
+            let mut cs: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
             cs = arrayTTypeToClassInfState(t.clone())?;
             cs.clone()
         },

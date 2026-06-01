@@ -90,7 +90,7 @@ pub fn instantiateExternalObject(mut inCache: FCore::Cache, mut inEnv: FCore::Gr
     let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
     let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
-    let mut ciState: ClassInf::State;
+    let mut ciState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
     (outCache, outEnv, outIH, dae, ciState) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), r#impl.clone());
         if let Ok(__v) = (|| -> Result<_> {

@@ -317,6 +317,9 @@ pub mod SimExtArg {
         },
         SIMNOEXTARG,
     }
+    impl Default for SimExtArg {
+        fn default() -> Self { Self::SIMNOEXTARG }
+    }
     pub use self::SimExtArg::{SIMEXTARG,SIMEXTARGEXP,SIMEXTARGSIZE,SIMNOEXTARG};
     pub fn toString(mut simExtArg: Arc<SimExtArg>) -> Result<ArcStr> {
         let mut r#str: ArcStr = literal!("");

@@ -112,7 +112,7 @@ pub fn isDiscreteType(mut inType: Arc<DAE::Type>) -> bool {
 }
 
 pub fn propsAnd(mut inProps: Arc<metamodelica::List<DAE::Properties>>) -> Result<DAE::Properties> {
-    let mut outProp: DAE::Properties;
+    let mut outProp: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     outProp = 'mc: {
         let __mc_input = inProps.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -145,7 +145,7 @@ pub fn propsAnd(mut inProps: Arc<metamodelica::List<DAE::Properties>>) -> Result
 }
 
 pub fn makePropsNotConst(mut inProperties: DAE::Properties) -> Result<DAE::Properties> {
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     outProperties = (match inProperties.clone() {
         DAE::Properties::PROP { type_: ref t, .. } => {
             DAE::Properties::PROP { type_: t.clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_VAR }
@@ -3426,7 +3426,7 @@ pub fn isPropArray(mut p: DAE::Properties) -> Result<bool> {
 }
 
 pub fn propTupleFirstProp(mut inTupleProp: DAE::Properties) -> Result<DAE::Properties> {
-    let mut outFirstProp: DAE::Properties;
+    let mut outFirstProp: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut ty: Type = Arc::new(DAE::Type::T_NORETCALL);
     let mut c: DAE::Const = DAE::Const::C_CONST;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inTupleProp.clone()) {
@@ -3485,7 +3485,7 @@ pub fn getPropType(mut inProperties: DAE::Properties) -> Result<Arc<DAE::Type>> 
 }
 
 pub fn setPropType(mut inProperties: DAE::Properties, mut ty: Arc<DAE::Type>) -> Result<DAE::Properties> {
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     outProperties = (match inProperties.clone() {
         DAE::Properties::PROP { .. } => DAE::Properties::PROP { type_: ty.clone(), constFlag: var_field!(inProperties.constFlag, DAE::Properties::PROP).clone() },
         DAE::Properties::PROP_TUPLE { .. } => DAE::Properties::PROP_TUPLE { type_: ty.clone(), tupleConst: var_field!(inProperties.tupleConst, DAE::Properties::PROP_TUPLE).clone() },
@@ -3917,7 +3917,7 @@ fn varsElabEquivalent(mut inVar1: Arc<DAE::Var>, mut inVar2: Arc<DAE::Var>) -> R
 
 pub fn matchProp(mut inExp: Arc<DAE::Exp>, mut inActualType: DAE::Properties, mut inExpectedType: DAE::Properties, mut printFailtrace: bool) -> Result<(Arc<DAE::Exp>, DAE::Properties)> {
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outExp, outProperties) = 'mc: {
         let __mc_input = (inExp.clone(), inActualType.clone(), inExpectedType.clone(), printFailtrace.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -3938,7 +3938,7 @@ pub fn matchProp(mut inExp: Arc<DAE::Exp>, mut inActualType: DAE::Properties, mu
                 (e, DAE::Properties::PROP_TUPLE { tupleConst: tc1, type_: gt }, DAE::Properties::PROP_TUPLE { tupleConst: tc2, type_: et }, _) => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut t_1: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut tc: TupleConst;
+                    let mut tc: TupleConst = Arc::new(<DAE::TupleConst as ::std::default::Default>::default());
                     (e_1, t_1) = matchType(e.clone(), gt.clone(), et.clone(), printFailtrace.clone())?;
                     tc = constTupleAnd(tc1.clone(), tc2.clone());
                     Ok((e_1.clone(), DAE::Properties::PROP_TUPLE { type_: t_1.clone(), tupleConst: tc.clone() }))
@@ -3982,7 +3982,7 @@ pub fn matchProp(mut inExp: Arc<DAE::Exp>, mut inActualType: DAE::Properties, mu
             ::match_deref::match_deref! { match &__mc_input {
                 (e, DAE::Properties::PROP { type_: gt, .. }, DAE::Properties::PROP_TUPLE { .. }, _) => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: Properties;
+                    let mut prop: Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut gt = (*gt).clone();
                     prop = propTupleFirstProp(inExpectedType.clone())?;
                     (e_1, prop) = matchProp(e.clone(), inActualType.clone(), prop.clone(), printFailtrace.clone())?;
@@ -3998,7 +3998,7 @@ pub fn matchProp(mut inExp: Arc<DAE::Exp>, mut inActualType: DAE::Properties, mu
                 (e, DAE::Properties::PROP_TUPLE { .. }, DAE::Properties::PROP { .. }, _) => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut gt: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut prop: Properties;
+                    let mut prop: Properties = <DAE::Properties as ::std::default::Default>::default();
                     let ref __pa1 @ DAE::PROP { type_: ref __pa0, .. } = (propTupleFirstProp(inActualType.clone())?) else { bail!("pattern mismatch") };
                     gt = __pa0.clone();
                     prop = __pa1.clone();
@@ -5022,7 +5022,7 @@ fn typeConvertMatrixRowToList(mut elist: Arc<metamodelica::List<Arc<DAE::Exp>>>,
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn matchWithPromote(mut inProperties1: DAE::Properties, mut inProperties2: DAE::Properties, mut inBoolean3: bool) -> Result<DAE::Properties> {
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     outProperties = 'mc: {
         let __mc_input = (inProperties1.clone(), inProperties2.clone(), inBoolean3.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -5233,7 +5233,7 @@ pub fn constAnd(mut inConst1: DAE::Const, mut inConst2: DAE::Const) -> DAE::Cons
 }
 
 fn constTupleAnd(mut inTupleConst1: Arc<DAE::TupleConst>, mut inTupleConst2: Arc<DAE::TupleConst>) -> Arc<DAE::TupleConst> {
-    let mut outTupleConst: Arc<DAE::TupleConst>;
+    let mut outTupleConst: Arc<DAE::TupleConst> = Arc::new(<DAE::TupleConst as ::std::default::Default>::default());
     outTupleConst = (::match_deref::match_deref! { match &(inTupleConst1.clone()) {
         c1 => {
             c1.clone()

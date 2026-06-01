@@ -74,6 +74,9 @@ pub enum NFRestriction {
     TYPE,
     UNKNOWN,
 }
+impl Default for NFRestriction {
+    fn default() -> Self { Self::BLOCK }
+}
 pub use self::NFRestriction::{BLOCK,CLASS,CLOCK,CONNECTOR,ENUMERATION,EXTERNAL_OBJECT,FUNCTION,MODEL,PACKAGE,OPERATOR,RECORD,RECORD_CONSTRUCTOR,TYPE,UNKNOWN};
 pub fn fromSCode(mut sres: SCode::Restriction) -> Arc<NFRestriction> {
     let mut res: Arc<NFRestriction> = Arc::new(NFRestriction::BLOCK);
@@ -95,7 +98,7 @@ pub fn fromSCode(mut sres: SCode::Restriction) -> Arc<NFRestriction> {
 }
 
 pub fn toDAE(mut res: Arc<NFRestriction>, mut path: Arc<Absyn::Path>) -> ClassInf::State {
-    let mut state: ClassInf::State;
+    let mut state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
     state = (::match_deref::match_deref! { match &(res.clone()) {
         Deref @ BLOCK { .. } => ClassInf::State::BLOCK { path: path.clone() },
         Deref @ CLOCK { .. } => ClassInf::State::TYPE_CLOCK { path: path.clone() },
@@ -378,7 +381,7 @@ pub fn assertOnlyFunctions(mut elements: Arc<metamodelica::List<Arc<SCode::Eleme
 }
 
 pub fn checkClass(mut node: Arc<InstNode::InstNode>, mut restriction: Arc<NFRestriction>, mut context: i32) -> Result<()> {
-    let mut cdef: Arc<SCode::ClassDef>;
+    let mut cdef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
     if InstContext::inRelaxed(context.clone()) {
         return Ok(());
     }

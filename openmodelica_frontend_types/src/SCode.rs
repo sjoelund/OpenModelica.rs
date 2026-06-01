@@ -98,6 +98,9 @@ pub enum Restriction {
         typeVars: Arc<metamodelica::List<ArcStr>>,
     },
 }
+impl Default for Restriction {
+    fn default() -> Self { Self::R_CLASS }
+}
 pub use self::Restriction::{R_CLASS,R_OPTIMIZATION,R_MODEL,R_RECORD,R_BLOCK,R_CONNECTOR,R_OPERATOR,R_TYPE,R_PACKAGE,R_FUNCTION,R_ENUMERATION,R_PREDEFINED_INTEGER,R_PREDEFINED_REAL,R_PREDEFINED_STRING,R_PREDEFINED_BOOLEAN,R_PREDEFINED_ENUMERATION,R_PREDEFINED_CLOCK,R_METARECORD,R_UNIONTYPE};
 
 // Same as Absyn.FunctionRestriction except this contains
@@ -120,6 +123,9 @@ pub enum FunctionRestriction {
     FR_PARALLEL_FUNCTION,
     /// an OpenCL/CUDA kernel function
     FR_KERNEL_FUNCTION,
+}
+impl Default for FunctionRestriction {
+    fn default() -> Self { Self::FR_OPERATOR_FUNCTION }
 }
 pub use self::FunctionRestriction::{FR_NORMAL_FUNCTION,FR_EXTERNAL_FUNCTION,FR_OPERATOR_FUNCTION,FR_RECORD_CONSTRUCTOR,FR_PARALLEL_FUNCTION,FR_KERNEL_FUNCTION};
 
@@ -274,6 +280,13 @@ pub enum ClassDef {
         /// derived variables
         derivedVariables: Arc<metamodelica::List<ArcStr>>,
     },
+}
+impl Default for ClassDef {
+    fn default() -> Self {
+        Self::ENUMERATION {
+            enumLst: Default::default(),
+        }
+    }
 }
 pub use self::ClassDef::{PARTS,CLASS_EXTENDS,DERIVED,ENUMERATION,OVERLOAD,PDER};
 
@@ -684,6 +697,9 @@ pub enum Each {
     EACH,
     /// a non each prefix
     NOT_EACH,
+}
+impl Default for Each {
+    fn default() -> Self { Self::EACH }
 }
 pub use self::Each::{EACH,NOT_EACH};
 

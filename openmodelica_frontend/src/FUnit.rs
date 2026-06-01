@@ -81,6 +81,13 @@ pub enum Unit {
         unit: ArcStr,
     },
 }
+impl Default for Unit {
+    fn default() -> Self {
+        Self::MASTER {
+            varList: Default::default(),
+        }
+    }
+}
 pub use self::Unit::{UNIT,MASTER,UNKNOWN};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -121,7 +128,7 @@ pub fn getKnownUnits() -> Result<(metamodelica::Array<Arc<metamodelica::List<(Ar
 pub fn getKnownUnitsInverse() -> Result<(metamodelica::Array<Arc<metamodelica::List<(Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit, Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))> {
     let mut outKnownUnitsInverse: (metamodelica::Array<Arc<metamodelica::List<(Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit, ArcStr)>>), i32, (HashTableUnitToString::FuncHashKey, HashTableUnitToString::FuncKeyEqual, HashTableUnitToString::FuncKeyStr, HashTableUnitToString::FuncValueStr));
     let mut s: ArcStr = arcstr::literal!("");
-    let mut ut: Unit;
+    let mut ut: Unit = <Unit as ::std::default::Default>::default();
     outKnownUnitsInverse = HashTableUnitToString::emptyHashTableSized(Util::nextPrime(4 * (LU_COMPLEXUNITS().clone().len() as i32)));
     for mut unit in &*LU_COMPLEXUNITS().clone() {
         let mut unit = unit.clone();
@@ -290,7 +297,7 @@ pub fn printListCr(mut inlCr: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -
 }
 
 pub fn unitMul(mut inUnit1: Unit, mut inUnit2: Unit) -> Result<Unit> {
-    let mut outUnit: Unit;
+    let mut outUnit: Unit = <Unit as ::std::default::Default>::default();
     let mut factor1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut factor2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut i1: i32 = 0;
@@ -338,7 +345,7 @@ pub fn unitMul(mut inUnit1: Unit, mut inUnit2: Unit) -> Result<Unit> {
 }
 
 pub fn unitDiv(mut inUnit1: Unit, mut inUnit2: Unit) -> Result<Unit> {
-    let mut outUnit: Unit;
+    let mut outUnit: Unit = <Unit as ::std::default::Default>::default();
     let mut factor1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut factor2: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut i1: i32 = 0;
@@ -386,7 +393,7 @@ pub fn unitDiv(mut inUnit1: Unit, mut inUnit2: Unit) -> Result<Unit> {
 }
 
 pub fn unitPow(mut inUnit: Unit, mut inExp: i32) -> Result<Unit> {
-    let mut outUnit: Unit;
+    let mut outUnit: Unit = <Unit as ::std::default::Default>::default();
     let mut factor: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut i1: i32 = 0;
     let mut i2: i32 = 0;
@@ -417,7 +424,7 @@ pub fn unitPow(mut inUnit: Unit, mut inExp: i32) -> Result<Unit> {
 }
 
 pub fn unitMulReal(mut inUnit: Unit, mut inFactor: metamodelica::Real) -> Result<Unit> {
-    let mut outUnit: Unit;
+    let mut outUnit: Unit = <Unit as ::std::default::Default>::default();
     outUnit = (match inUnit.clone() {
         mut unit @ Unit::UNIT { .. } => {
             let __owned_variant_factor_0 = var_field!(unit.factor, Unit::UNIT).clone() * inFactor.clone();
@@ -434,7 +441,7 @@ pub fn unitMulReal(mut inUnit: Unit, mut inFactor: metamodelica::Real) -> Result
 }
 
 pub fn unitRoot(mut inUnit: Unit, mut inExponent: metamodelica::Real) -> Result<Unit> {
-    let mut outUnit: Unit;
+    let mut outUnit: Unit = <Unit as ::std::default::Default>::default();
     let mut r: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut factor: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut i: i32 = 0;
@@ -577,7 +584,7 @@ fn prefix2String(mut inReal: metamodelica::Real) -> ArcStr {
 }
 
 pub fn parseUnitString(mut inUnitString: ArcStr, mut inKnownUnits: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit) -> Result<ArcStr> + 'static>))) -> Result<Unit> {
-    let mut outUnit: Unit;
+    let mut outUnit: Unit = <Unit as ::std::default::Default>::default();
     let mut charList: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut tokenList: Arc<metamodelica::List<Token>> = metamodelica::nil();
     charList = stringListStringChar((inUnitString.clone()).clone());
@@ -595,7 +602,7 @@ pub fn parseUnitString(mut inUnitString: ArcStr, mut inKnownUnits: (metamodelica
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn parser3(mut inMul: Arc<metamodelica::List<bool>>, mut inTokenList: Arc<metamodelica::List<Token>>, mut inUnit: Unit, mut inHtS2U: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit) -> Result<ArcStr> + 'static>))) -> Result<Unit> {
-    let mut outUnit: Unit;
+    let mut outUnit: Unit = <Unit as ::std::default::Default>::default();
     outUnit = 'mc: {
         let __mc_input = (inMul.clone(), inTokenList.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -609,7 +616,7 @@ fn parser3(mut inMul: Arc<metamodelica::List<bool>>, mut inTokenList: Arc<metamo
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: bMul, tail: bRest }, Deref @ metamodelica::List::Cons { head: Token::T_NUMBER { number: 1 }, tail: tokens }) => {
-                    let mut ut: Unit;
+                    let mut ut: Unit = <Unit as ::std::default::Default>::default();
                     ut = Unit::UNIT { factor: metamodelica::OrderedFloat(1e0_f64), mol: 0, cd: 0, m: 0, s: 0, A: 0, K: 0, g: 0 };
                     ut = if (bMul.clone()) {unitMul(inUnit.clone(), ut.clone())?} else {unitDiv(inUnit.clone(), ut.clone())?};
                     ut = parser3(bRest.clone(), tokens.clone(), ut.clone(), inHtS2U.clone())?;
@@ -621,7 +628,7 @@ fn parser3(mut inMul: Arc<metamodelica::List<bool>>, mut inTokenList: Arc<metamo
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: bMul, tail: bRest }, Deref @ metamodelica::List::Cons { head: Token::T_UNIT { unit: s }, tail: Deref @ metamodelica::List::Cons { head: Token::T_NUMBER { number: exponent }, tail: tokens } }) => {
-                    let mut ut: Unit;
+                    let mut ut: Unit = <Unit as ::std::default::Default>::default();
                     ut = unitToken2unit((s.clone()).clone(), inHtS2U.clone())?;
                     ut = unitPow(ut.clone(), exponent.clone())?;
                     ut = if (bMul.clone()) {unitMul(inUnit.clone(), ut.clone())?} else {unitDiv(inUnit.clone(), ut.clone())?};
@@ -634,7 +641,7 @@ fn parser3(mut inMul: Arc<metamodelica::List<bool>>, mut inTokenList: Arc<metamo
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: bMul, tail: bRest }, Deref @ metamodelica::List::Cons { head: Token::T_UNIT { unit: s }, tail: tokens }) => {
-                    let mut ut: Unit;
+                    let mut ut: Unit = <Unit as ::std::default::Default>::default();
                     ut = unitToken2unit((s.clone()).clone(), inHtS2U.clone())?;
                     ut = if (bMul.clone()) {unitMul(inUnit.clone(), ut.clone())?} else {unitDiv(inUnit.clone(), ut.clone())?};
                     ut = parser3(bRest.clone(), tokens.clone(), ut.clone(), inHtS2U.clone())?;
@@ -646,7 +653,7 @@ fn parser3(mut inMul: Arc<metamodelica::List<bool>>, mut inTokenList: Arc<metamo
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: bMul, tail: _ }, Deref @ metamodelica::List::Cons { head: Token::T_MUL { .. }, tail: Deref @ metamodelica::List::Cons { head: Token::T_LPAREN { .. }, tail: tokens } }) => {
-                    let mut ut: Unit;
+                    let mut ut: Unit = <Unit as ::std::default::Default>::default();
                     ut = parser3(metamodelica::cons(bMul.clone(), metamodelica::cons(bMul.clone(), inMul.clone())), tokens.clone(), inUnit.clone(), inHtS2U.clone())?;
                     Ok(ut.clone())
                 }
@@ -656,7 +663,7 @@ fn parser3(mut inMul: Arc<metamodelica::List<bool>>, mut inTokenList: Arc<metamo
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: bMul, tail: _ }, Deref @ metamodelica::List::Cons { head: Token::T_DIV { .. }, tail: Deref @ metamodelica::List::Cons { head: Token::T_LPAREN { .. }, tail: tokens } }) => {
-                    let mut ut: Unit;
+                    let mut ut: Unit = <Unit as ::std::default::Default>::default();
                     let mut b: bool = false;
                     b = !(bMul.clone());
                     ut = parser3(metamodelica::cons(b.clone(), metamodelica::cons(b.clone(), inMul.clone())), tokens.clone(), inUnit.clone(), inHtS2U.clone())?;
@@ -668,7 +675,7 @@ fn parser3(mut inMul: Arc<metamodelica::List<bool>>, mut inTokenList: Arc<metamo
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: _, tail: bRest }, Deref @ metamodelica::List::Cons { head: Token::T_RPAREN { .. }, tail: tokens }) => {
-                    let mut ut: Unit;
+                    let mut ut: Unit = <Unit as ::std::default::Default>::default();
                     ut = parser3(bRest.clone(), tokens.clone(), inUnit.clone(), inHtS2U.clone())?;
                     Ok(ut.clone())
                 }
@@ -678,7 +685,7 @@ fn parser3(mut inMul: Arc<metamodelica::List<bool>>, mut inTokenList: Arc<metamo
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: bMul, tail: _ }, Deref @ metamodelica::List::Cons { head: Token::T_MUL { .. }, tail: tokens }) => {
-                    let mut ut: Unit;
+                    let mut ut: Unit = <Unit as ::std::default::Default>::default();
                     ut = parser3(metamodelica::cons(bMul.clone(), inMul.clone()), tokens.clone(), inUnit.clone(), inHtS2U.clone())?;
                     Ok(ut.clone())
                 }
@@ -688,7 +695,7 @@ fn parser3(mut inMul: Arc<metamodelica::List<bool>>, mut inTokenList: Arc<metamo
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: bMul, tail: _ }, Deref @ metamodelica::List::Cons { head: Token::T_DIV { .. }, tail: tokens }) => {
-                    let mut ut: Unit;
+                    let mut ut: Unit = <Unit as ::std::default::Default>::default();
                     let mut b: bool = false;
                     b = !(bMul.clone());
                     ut = parser3(metamodelica::cons(b.clone(), inMul.clone()), tokens.clone(), inUnit.clone(), inHtS2U.clone())?;
@@ -711,12 +718,12 @@ fn parser3(mut inMul: Arc<metamodelica::List<bool>>, mut inTokenList: Arc<metamo
 }
 
 fn unitToken2unit(mut inS: ArcStr, mut inHtS2U: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Unit)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Unit) -> Result<ArcStr> + 'static>))) -> Result<Unit> {
-    let mut outUnit: Unit;
+    let mut outUnit: Unit = <Unit as ::std::default::Default>::default();
     outUnit = 'mc: {
         let __mc_input = inHtS2U.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let mut ut: Unit;
+            let mut ut: Unit = <Unit as ::std::default::Default>::default();
             ut = BaseHashTable::get((inS.clone()).clone(), inHtS2U.clone())?;
             Ok(ut.clone())
         })() { break 'mc __v; }
@@ -724,7 +731,7 @@ fn unitToken2unit(mut inS: ArcStr, mut inHtS2U: (metamodelica::Array<Arc<metamod
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut s: ArcStr = arcstr::literal!("");
             let mut r: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            let mut ut: Unit;
+            let mut ut: Unit = <Unit as ::std::default::Default>::default();
             s = (stringGetStringChar((inS.clone()).clone(), 1)?).clone();
             (r, s) = getPrefix((s.clone()).clone(), (inS.clone()).clone())?;
             ut = unitToken2unit((s.clone()).clone(), inHtS2U.clone())?;

@@ -1526,7 +1526,7 @@ fn generateStateSets(mut iTplLst: StateSets, mut iSetIndex: i32, mut iVars: Back
     let mut expcrdset: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut expcrstatesstart: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut crstates: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-    let mut op: DAE::Operator;
+    let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
     let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
     let mut deqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
     let mut cEqnsLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();

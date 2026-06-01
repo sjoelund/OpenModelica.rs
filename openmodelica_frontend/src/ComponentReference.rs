@@ -1817,7 +1817,7 @@ pub fn crefStripSubs(mut inCref: Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Comp
 pub fn crefStripSubsExceptModelSubs(mut inCref: Arc<DAE::ComponentRef>) -> Arc<DAE::ComponentRef> {
     fn is_model_array(mut ty: Arc<DAE::Type>) -> bool {
         let mut res: bool = false;
-        let mut state: ClassInf::State;
+        let mut state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
         res = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ DAE::Type::T_ARRAY { ty: Deref @ DAE::Type::T_COMPLEX { complexClassType: state, .. }, .. } => (match state.clone() {
         ClassInf::State::MODEL { .. } => true,

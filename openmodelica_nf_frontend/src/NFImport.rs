@@ -71,6 +71,14 @@ pub enum NFImport {
         imp2: Arc<NFImport>,
     },
 }
+impl Default for NFImport {
+    fn default() -> Self {
+        Self::CONFLICTING_IMPORT {
+            imp1: Default::default(),
+            imp2: Default::default(),
+        }
+    }
+}
 pub use self::NFImport::{UNRESOLVED_IMPORT,RESOLVED_IMPORT,CONFLICTING_IMPORT};
 pub fn name(mut imp: Arc<NFImport>) -> Result<ArcStr> {
     let mut name: ArcStr = arcstr::literal!("");
@@ -95,7 +103,7 @@ pub fn info(mut imp: Arc<NFImport>) -> Result<SourceInfo> {
 pub fn resolve(mut imp: Arc<NFImport>) -> Result<(Arc<InstNode::InstNode>, bool, Arc<NFImport>)> {
     let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut changed: bool = false;
-    let mut outImport: Arc<NFImport>;
+    let mut outImport: Arc<NFImport> = Arc::new(<NFImport as ::std::default::Default>::default());
     (outImport, node, changed) = (::match_deref::match_deref! { match &(imp.clone()) {
         Deref @ UNRESOLVED_IMPORT { .. } => {
             (outImport, node) = instQualified(var_field!((*imp).imp, NFImport::UNRESOLVED_IMPORT).clone(), var_field!((*imp).scope, NFImport::UNRESOLVED_IMPORT).clone(), var_field!((*imp).info, NFImport::UNRESOLVED_IMPORT).clone())?;
@@ -130,7 +138,7 @@ pub fn resolveList(mut imps: metamodelica::Array<Arc<NFImport>>) -> Arc<metamode
 }
 
 pub fn instQualified(mut imp: Absyn::Import, mut scope: Arc<InstNode::InstNode>, mut info: SourceInfo) -> Result<(Arc<NFImport>, Arc<InstNode::InstNode>)> {
-    let mut outImport: Arc<NFImport>;
+    let mut outImport: Arc<NFImport> = Arc::new(<NFImport as ::std::default::Default>::default());
     let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut short_name: ArcStr = arcstr::literal!("");
     node = (match imp.clone() {

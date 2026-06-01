@@ -1936,7 +1936,7 @@ pub fn extractValueString(mut val: Arc<Values::Value>) -> Result<ArcStr> {
 }
 
 pub fn getCode(mut val: Arc<Values::Value>) -> Result<Arc<Absyn::CodeNode>> {
-    let mut code: Arc<Absyn::CodeNode>;
+    let mut code: Arc<Absyn::CodeNode> = Arc::new(<Absyn::CodeNode as ::std::default::Default>::default());
     let __pa0 = ::match_deref::match_deref! { match &(val.clone()) {
         Deref @ Values::Value::CODE { A: __pa0 } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -1947,7 +1947,7 @@ pub fn getCode(mut val: Arc<Values::Value>) -> Result<Arc<Absyn::CodeNode>> {
 
 pub fn getPath(mut val: Arc<Values::Value>) -> Result<Arc<Absyn::Path>> {
     let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    let mut code: Arc<Absyn::CodeNode>;
+    let mut code: Arc<Absyn::CodeNode> = Arc::new(<Absyn::CodeNode as ::std::default::Default>::default());
     let __pa0 = ::match_deref::match_deref! { match &(val.clone()) {
         Deref @ Values::Value::CODE { A: __pa0 } => __pa0.clone(),
         _ => bail!("pattern mismatch"),

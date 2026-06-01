@@ -118,7 +118,7 @@ pub fn mkClassNode(mut inClass: Arc<SCode::Element>, mut inParentRef: Ref, mut i
     let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
     outGraph = (match inGraph.clone() {
         mut g => {
-            let mut cdef: Arc<SCode::ClassDef>;
+            let mut cdef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
             let mut cls: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
             let mut name: ArcStr = arcstr::literal!("");
             let mut n: Node = <FCore::Node as ::std::default::Default>::default();
@@ -535,7 +535,7 @@ pub fn mkCompNode(mut inComp: Arc<SCode::Element>, mut inParentRef: Ref, mut inK
     let mut m: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
     let mut cnd: Option<Arc<Absyn::Exp>> = None;
     let mut ad: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = metamodelica::nil();
-    let mut ts: Arc<Absyn::TypeSpec>;
+    let mut ts: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
     let mut tad: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = metamodelica::nil();
     let mut nd: Data = FCore::Data::TOP;
     let mut i: Arc<DAE::Var> = Arc::new(<DAE::Var as ::std::default::Default>::default());

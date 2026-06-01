@@ -2355,7 +2355,7 @@ pub fn prependSubModToMod(mut subMod: Arc<SCode::SubMod>, mut r#mod: Arc<SCode::
 
 pub fn addElementToClass(mut inElement: Arc<SCode::Element>, mut inClassDef: Arc<SCode::Element>) -> Result<Arc<SCode::Element>> {
     let mut outClassDef: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-    let mut cdef: Arc<SCode::ClassDef>;
+    let mut cdef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
     let __pa0 = ::match_deref::match_deref! { match &(inClassDef.clone()) {
         Deref @ SCode::Element::CLASS { classDef: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -3420,7 +3420,7 @@ pub fn setComponentTypeSpec(mut element: Arc<SCode::Element>, mut typeSpec: Arc<
 }
 
 pub fn getComponentTypeSpec(mut inE: Arc<SCode::Element>) -> Result<Arc<Absyn::TypeSpec>> {
-    let mut outTypeSpec: Arc<Absyn::TypeSpec>;
+    let mut outTypeSpec: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
     let __pa0 = ::match_deref::match_deref! { match &(inE.clone()) {
         Deref @ SCode::Element::COMPONENT { typeSpec: __pa0, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -3472,7 +3472,7 @@ pub fn isClassExtends(mut cls: Arc<SCode::Element>) -> bool {
 }
 
 pub fn getDerivedTypeSpec(mut inE: Arc<SCode::Element>) -> Result<Arc<Absyn::TypeSpec>> {
-    let mut outTypeSpec: Arc<Absyn::TypeSpec>;
+    let mut outTypeSpec: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
     let __pa0 = ::match_deref::match_deref! { match &(inE.clone()) {
         Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::DERIVED { typeSpec: __pa0, .. }, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -3504,7 +3504,7 @@ pub fn setClassPrefixes(mut prefixes: Arc<SCode::Prefixes>, mut cl: Arc<SCode::E
 }
 
 pub fn getClassDef(mut inClass: Arc<SCode::Element>) -> Result<Arc<SCode::ClassDef>> {
-    let mut outCdef: Arc<SCode::ClassDef>;
+    let mut outCdef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
     outCdef = (::match_deref::match_deref! { match &(inClass.clone()) {
         Deref @ SCode::Element::CLASS { classDef: __esc_outCdef, .. } => {
             outCdef = (*__esc_outCdef).clone();
@@ -3528,7 +3528,7 @@ pub fn setClassDef(mut classDef: Arc<SCode::ClassDef>, mut cls: Arc<SCode::Eleme
 }
 
 pub fn getClassBody(mut inClass: Arc<SCode::Element>) -> Result<Arc<SCode::ClassDef>> {
-    let mut outCdef: Arc<SCode::ClassDef>;
+    let mut outCdef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
     outCdef = getClassDef(inClass.clone())?;
     outCdef = (::match_deref::match_deref! { match &(outCdef.clone()) {
         Deref @ SCode::ClassDef::CLASS_EXTENDS { .. } => var_field!((*outCdef).composition, SCode::ClassDef::CLASS_EXTENDS).clone(),
@@ -3990,10 +3990,10 @@ pub fn getConstrainedByModifiers(mut inPrefixes: Arc<SCode::Prefixes>) -> Arc<SC
 }
 
 pub fn mergeClassDef(mut inNew: Arc<SCode::ClassDef>, mut inOld: Arc<SCode::ClassDef>, mut inCCModNew: Arc<SCode::Mod>, mut inCCModOld: Arc<SCode::Mod>) -> Result<Arc<SCode::ClassDef>> {
-    let mut outNew: Arc<SCode::ClassDef>;
+    let mut outNew: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
     outNew = (::match_deref::match_deref! { match &((inNew.clone(), inOld.clone())) {
         (Deref @ SCode::ClassDef::DERIVED { typeSpec: ts1, modifications: m1, attributes: a1 }, Deref @ SCode::ClassDef::DERIVED { typeSpec: _, modifications: m2, attributes: a2 }) => {
-            let mut n: Arc<SCode::ClassDef>;
+            let mut n: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
             let mut m1 = (*m1).clone();
             let mut m2 = (*m2).clone();
             let mut a2 = (*a2).clone();
@@ -5139,7 +5139,7 @@ pub fn mapElement(mut element: Arc<SCode::Element>, mut func: Arc<dyn ::std::ops
     pub type Func = std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<Arc<SCode::Element>> + 'static>;
 
     let mut element: Arc<SCode::Element> = element;
-    let mut def: Arc<SCode::ClassDef>;
+    let mut def: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
     let () = (::match_deref::match_deref! { match &(element.clone()) {
         Deref @ SCode::Element::CLASS { .. } => {
             def = mapElementsClassDef(var_field!((*element).classDef, SCode::Element::CLASS).clone(), func.clone());
@@ -5159,7 +5159,7 @@ pub fn mapElementsClassDef(mut classDef: Arc<SCode::ClassDef>, mut func: Arc<dyn
     pub type Func = std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<Arc<SCode::Element>> + 'static>;
 
     let mut classDef: Arc<SCode::ClassDef> = classDef;
-    let mut def: Arc<SCode::ClassDef>;
+    let mut def: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
     let () = (::match_deref::match_deref! { match &(classDef.clone()) {
         Deref @ SCode::ClassDef::PARTS { .. } => {
             assign_variant_field!(classDef => SCode::ClassDef::PARTS; elementLst = ({
@@ -5560,7 +5560,7 @@ pub fn transformPathedElementInElement(mut path: Arc<Absyn::Path>, mut func: Arc
 
     let mut element: Arc<SCode::Element> = element;
     let mut success: bool = false;
-    let mut cdef: Arc<SCode::ClassDef>;
+    let mut cdef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
     success = isElementNamed((AbsynUtil::pathFirstIdent(path.clone())?).clone(), element.clone());
     if success.clone() {
         if AbsynUtil::pathIsIdent(path.clone()) {
@@ -5581,7 +5581,7 @@ pub fn transformPathedElementInClassDef(mut path: Arc<Absyn::Path>, mut func: Ar
     let mut cls: Arc<SCode::ClassDef> = cls;
     let mut success: bool = false;
     let mut elems: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-    let mut cdef: Arc<SCode::ClassDef>;
+    let mut cdef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
     success = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ SCode::ClassDef::PARTS { .. } => {
             (elems, success) = transformPathedElementInProgram(path.clone(), func.clone(), var_field!((*cls).elementLst, SCode::ClassDef::PARTS).clone())?;

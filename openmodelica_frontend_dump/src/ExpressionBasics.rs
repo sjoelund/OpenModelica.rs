@@ -534,7 +534,7 @@ pub fn compare(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<i
         Deref @ DAE::Exp::BINARY { .. } => {
             let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut op: DAE::Operator;
+            let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
             let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(inExp2.clone()) {
                 Deref @ DAE::Exp::BINARY { exp2: __pa0, operator: __pa1, exp1: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
                 _ => bail!("pattern mismatch"),
@@ -549,7 +549,7 @@ pub fn compare(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<i
         Deref @ DAE::Exp::LBINARY { .. } => {
             let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut op: DAE::Operator;
+            let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
             let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(inExp2.clone()) {
                 Deref @ DAE::Exp::LBINARY { exp2: __pa0, operator: __pa1, exp1: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
                 _ => bail!("pattern mismatch"),
@@ -563,7 +563,7 @@ pub fn compare(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<i
         },
         Deref @ DAE::Exp::UNARY { .. } => {
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut op: DAE::Operator;
+            let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inExp2.clone()) {
                 Deref @ DAE::Exp::UNARY { operator: __pa0, exp: __pa1 } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
@@ -575,7 +575,7 @@ pub fn compare(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<i
         },
         Deref @ DAE::Exp::LUNARY { .. } => {
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut op: DAE::Operator;
+            let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inExp2.clone()) {
                 Deref @ DAE::Exp::LUNARY { operator: __pa0, exp: __pa1 } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
@@ -588,7 +588,7 @@ pub fn compare(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<i
         Deref @ DAE::Exp::RELATION { .. } => {
             let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut op: DAE::Operator;
+            let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
             let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(inExp2.clone()) {
                 Deref @ DAE::Exp::RELATION { exp2: __pa0, operator: __pa1, exp1: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
                 _ => bail!("pattern mismatch"),

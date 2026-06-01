@@ -103,6 +103,9 @@ pub enum NFDimension {
     },
     UNKNOWN,
 }
+impl Default for NFDimension {
+    fn default() -> Self { Self::BOOLEAN }
+}
 pub use self::NFDimension::{RAW_DIM,UNTYPED,INTEGER,BOOLEAN,ENUM,EXP,RESIZABLE,UNKNOWN};
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.

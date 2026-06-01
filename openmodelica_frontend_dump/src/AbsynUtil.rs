@@ -182,12 +182,12 @@ fn traverseExpBidirSubExps<Arg: Clone + 'static>(mut exp: Arc<Absyn::Exp>, mut e
             (if (referenceEq(&e1.clone(),&e1m.clone()) && referenceEq(&e2.clone(),&e2m.clone()) && referenceEq(&e3.clone(),&e3m.clone()) && referenceEq(&else_ifs1.clone(),&else_ifs2.clone())) {exp.clone()} else {Arc::new(Absyn::Exp::IFEXP { ifExp: e1m.clone(), trueBranch: e2m.clone(), elseBranch: e3m.clone(), elseIfBranch: else_ifs2.clone() })}, arg.clone())
         },
         Deref @ Absyn::Exp::CALL { functionArgs: fargs1, function_: cref, .. } => {
-            let mut fargs2: Arc<Absyn::FunctionArgs>;
+            let mut fargs2: Arc<Absyn::FunctionArgs> = Arc::new(<Absyn::FunctionArgs as ::std::default::Default>::default());
             (fargs2, arg) = traverseExpBidirFunctionArgs(fargs1.clone(), enterFunc.clone(), exitFunc.clone(), arg.clone())?;
             (if (referenceEq(&fargs1.clone(),&fargs2.clone())) {exp.clone()} else {Arc::new(Absyn::Exp::CALL { function_: cref.clone(), functionArgs: fargs2.clone(), typeVars: var_field!((*exp).typeVars, Absyn::Exp::CALL).clone() })}, arg.clone())
         },
         Deref @ Absyn::Exp::PARTEVALFUNCTION { functionArgs: fargs1, function_: cref } => {
-            let mut fargs2: Arc<Absyn::FunctionArgs>;
+            let mut fargs2: Arc<Absyn::FunctionArgs> = Arc::new(<Absyn::FunctionArgs as ::std::default::Default>::default());
             (fargs2, arg) = traverseExpBidirFunctionArgs(fargs1.clone(), enterFunc.clone(), exitFunc.clone(), arg.clone())?;
             (if (referenceEq(&fargs1.clone(),&fargs2.clone())) {exp.clone()} else {Arc::new(Absyn::Exp::PARTEVALFUNCTION { function_: cref.clone(), functionArgs: fargs2.clone() })}, arg.clone())
         },
@@ -2062,7 +2062,7 @@ pub fn crefToPathIgnoreSubs(mut inComponentRef: Arc<Absyn::ComponentRef>) -> Res
 }
 
 pub fn crefToTypeSpec(mut cref: Arc<Absyn::ComponentRef>) -> Result<Arc<Absyn::TypeSpec>> {
-    let mut ty: Arc<Absyn::TypeSpec>;
+    let mut ty: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
     let mut subs: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = metamodelica::nil();
     let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
     subs = crefGetLastSubs(cref.clone())?;
@@ -3540,7 +3540,7 @@ fn filterNestedClassesParts(mut classPart: Arc<Absyn::ClassPart>, mut inClassPar
 }
 
 pub fn getExternalDecl(mut inCls: Arc<Absyn::Class>) -> Result<Arc<Absyn::ClassPart>> {
-    let mut outExternal: Arc<Absyn::ClassPart>;
+    let mut outExternal: Arc<Absyn::ClassPart> = Arc::new(<Absyn::ClassPart as ::std::default::Default>::default());
     let mut class_parts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
     let __pa0 = ::match_deref::match_deref! { match &(inCls.clone()) {
         Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { classParts: __pa0, .. }, .. } => __pa0.clone(),
@@ -3572,7 +3572,7 @@ pub fn isParts(mut cl: Arc<Absyn::ClassDef>) -> bool {
 }
 
 pub fn makeClassElement(mut cl: Arc<Absyn::Class>) -> Result<Arc<Absyn::ElementItem>> {
-    let mut el: Arc<Absyn::ElementItem>;
+    let mut el: Arc<Absyn::ElementItem> = Arc::new(<Absyn::ElementItem as ::std::default::Default>::default());
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     let mut fp: bool = false;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(cl.clone()) {
@@ -3891,7 +3891,7 @@ pub fn annotationToElementArgs(mut ann: Arc<Absyn::Annotation>) -> Result<Arc<me
 }
 
 pub fn pathToTypeSpec(mut inPath: Arc<Absyn::Path>) -> Arc<Absyn::TypeSpec> {
-    let mut outTypeSpec: Arc<Absyn::TypeSpec>;
+    let mut outTypeSpec: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
     outTypeSpec = Arc::new(Absyn::TypeSpec::TPATH { path: inPath.clone(), arrayDim: None });
     outTypeSpec
 }
@@ -4500,12 +4500,12 @@ fn traverseClassPartComponents<ArgT: Clone + 'static>(mut inClassPart: Arc<Absyn
 fn traverseElementItemComponents<ArgT: Clone + 'static>(mut inItem: Arc<Absyn::ElementItem>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT) -> Result<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT, bool)> + 'static>, mut inArg: ArgT) -> (Arc<Absyn::ElementItem>, ArgT, bool) {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT) -> Result<(Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>, ArgT, bool)> + 'static>;
 
-    let mut outItem: Arc<Absyn::ElementItem>;
+    let mut outItem: Arc<Absyn::ElementItem> = Arc::new(<Absyn::ElementItem as ::std::default::Default>::default());
     let mut outArg: ArgT;
     let mut outContinue: bool = false;
     (outItem, outArg, outContinue) = (::match_deref::match_deref! { match &(inItem.clone()) {
         Deref @ Absyn::ElementItem::ELEMENTITEM { .. } => {
-            let mut elem: Arc<Absyn::Element>;
+            let mut elem: Arc<Absyn::Element> = Arc::new(<Absyn::Element as ::std::default::Default>::default());
             (elem, outArg, outContinue) = traverseElementComponents(var_field!((*inItem).element, Absyn::ElementItem::ELEMENTITEM).clone(), inFunc.clone(), inArg.clone());
             outItem = if (referenceEq(&elem.clone(),&var_field!((*inItem).element, Absyn::ElementItem::ELEMENTITEM).clone())) {inItem.clone()} else {Arc::new(Absyn::ElementItem::ELEMENTITEM { element: elem.clone() })};
             (outItem.clone(), outArg.clone(), outContinue.clone())
@@ -5495,7 +5495,7 @@ fn traverseInnerClassElements<Arg: Clone + 'static>(mut inElements: Arc<metamode
 
     let mut outTpl: (Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, Option<Arc<Absyn::Path>>, Arg);
     let mut elts: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
-    let mut el: Arc<Absyn::Element>;
+    let mut el: Arc<Absyn::Element> = Arc::new(<Absyn::Element as ::std::default::Default>::default());
     let mut arg: Arg = inArg.clone();
     let mut spec: Arc<Absyn::ElementSpec> = Arc::new(<Absyn::ElementSpec as ::std::default::Default>::default());
     let mut cl: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
@@ -5705,12 +5705,12 @@ fn traverseClassPartElements<ArgT: Clone + 'static>(mut inClassPart: Arc<Absyn::
 fn traverseElementItem<ArgT: Clone + 'static>(mut inItem: Arc<Absyn::ElementItem>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Element>, ArgT) -> Result<(Arc<Absyn::Element>, ArgT, bool)> + 'static>, mut inArg: ArgT) -> (Arc<Absyn::ElementItem>, ArgT, bool) {
     pub type FuncType<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Element>, ArgT) -> Result<(Arc<Absyn::Element>, ArgT, bool)> + 'static>;
 
-    let mut outItem: Arc<Absyn::ElementItem>;
+    let mut outItem: Arc<Absyn::ElementItem> = Arc::new(<Absyn::ElementItem as ::std::default::Default>::default());
     let mut outArg: ArgT;
     let mut outContinue: bool = false;
     (outItem, outArg, outContinue) = (::match_deref::match_deref! { match &(inItem.clone()) {
         Deref @ Absyn::ElementItem::ELEMENTITEM { .. } => {
-            let mut elem: Arc<Absyn::Element>;
+            let mut elem: Arc<Absyn::Element> = Arc::new(<Absyn::Element as ::std::default::Default>::default());
             (elem, outArg, outContinue) = inFunc(var_field!((*inItem).element, Absyn::ElementItem::ELEMENTITEM).clone(), inArg.clone()).unwrap();
             outItem = if (referenceEq(&elem.clone(),&var_field!((*inItem).element, Absyn::ElementItem::ELEMENTITEM).clone())) {inItem.clone()} else {Arc::new(Absyn::ElementItem::ELEMENTITEM { element: elem.clone() })};
             (outItem.clone(), outArg.clone(), outContinue.clone())
@@ -6622,8 +6622,8 @@ pub fn equationEqual(mut eq1: Arc<Absyn::Equation>, mut eq2: Arc<Absyn::Equation
     let mut cr1: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
     let mut cr2: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
     let mut iters: Arc<metamodelica::List<Arc<Absyn::ForIterator>>> = metamodelica::nil();
-    let mut args: Arc<Absyn::FunctionArgs>;
-    let mut eq: Arc<Absyn::EquationItem>;
+    let mut args: Arc<Absyn::FunctionArgs> = Arc::new(<Absyn::FunctionArgs as ::std::default::Default>::default());
+    let mut eq: Arc<Absyn::EquationItem> = Arc::new(<Absyn::EquationItem as ::std::default::Default>::default());
     if metamodelica::valueConstructor((&*eq1.clone()))? != metamodelica::valueConstructor((&*eq2.clone()))? {
         equal = false;
         return Ok(equal.clone());

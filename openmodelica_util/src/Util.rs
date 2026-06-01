@@ -56,6 +56,9 @@ pub enum Status {
     SUCCESS,
     FAILURE,
 }
+impl Default for Status {
+    fn default() -> Self { Self::SUCCESS }
+}
 pub use self::Status::{SUCCESS,FAILURE};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]

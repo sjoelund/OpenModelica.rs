@@ -152,7 +152,7 @@ pub fn generateVerificationScenarios(mut package_path: Path, mut in_env: Absyn::
     let mut client_list: Arc<metamodelica::List<Arc<Client_e>>> = metamodelica::nil();
     let mut ag_elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
     let mut autogen_model_list: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
-    let mut autogen_model: Arc<Absyn::ElementItem>;
+    let mut autogen_model: Arc<Absyn::ElementItem> = Arc::new(<Absyn::ElementItem as ::std::default::Default>::default());
     let mut i: i32 = 0;
     scode_def = AbsynToSCode::translateAbsyn2SCode(in_env.clone())?;
     design_alts = getAllElementsOfType(scode_def.clone(), (literal!("VVDRlib.Verification.Design")).clone(), (literal!("")).clone(), metamodelica::nil())?;
@@ -205,7 +205,7 @@ fn populateModel(mut element_defs: Arc<metamodelica::List<(Arc<SCode::Element>, 
             elements_in.clone()
         },
         Deref @ metamodelica::List::Cons { head: (Deref @ SCode::Element::CLASS { name: cname, prefixes: _, encapsulatedPrefix: _, partialPrefix: _, restriction: _, classDef: _, cmt: _, info: _ }, p_path), tail: rest } => {
-            let mut el: Arc<Absyn::Element>;
+            let mut el: Arc<Absyn::Element> = Arc::new(<Absyn::Element as ::std::default::Default>::default());
             let mut nName: ArcStr = arcstr::literal!("");
             nName = (if (p_path.clone() == literal!("")) {cname.clone()} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*p_path.clone()); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*cname.clone()); ArcStr::from(__mm_s) }}).clone();
             el = Arc::new(Absyn::Element::ELEMENT { finalPrefix: false, redeclareKeywords: None, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, specification: Arc::new(Absyn::ElementSpec::COMPONENTS { attributes: Absyn::ElementAttributes { flowPrefix: false, streamPrefix: false, parallelism: openmodelica_ast::Absyn::Parallelism::NON_PARALLEL, variability: openmodelica_ast::Absyn::Variability::VAR, direction: openmodelica_ast::Absyn::Direction::BIDIR, isField: openmodelica_ast::Absyn::IsField::NONFIELD, arrayDim: metamodelica::nil() }, typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: AbsynUtil::stringPath((nName.clone()).clone())?, arrayDim: None }), components: list![Arc::new(Absyn::ComponentItem { component: Absyn::Component { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("_agen_")); __mm_s.push_str(&*cname.clone()); __mm_s.push_str(&*intString(autoVal.clone())); ArcStr::from(__mm_s) }).clone(), arrayDim: metamodelica::nil(), modification: None }, condition: None, comment: None })] }), info: Absyn::dummyInfo.clone(), constrainClass: None });
@@ -438,7 +438,7 @@ fn parseClassParts(mut classes: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, 
         },
         Deref @ metamodelica::List::Cons { head: cls, tail: r_classes } => {
             let mut nr_classes: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
-            let mut n_cls: Arc<Absyn::ClassPart>;
+            let mut n_cls: Arc<Absyn::ClassPart> = Arc::new(<Absyn::ClassPart as ::std::default::Default>::default());
             n_cls = parseClassPart(cls.clone(), defs.clone(), typeSpec.clone(), rootType.clone(), exp.clone(), instance_name.clone(), hasPreferred.clone(), preferred.clone(), (path.clone()).clone())?;
             nr_classes = parseClassParts(r_classes.clone(), defs.clone(), typeSpec.clone(), rootType.clone(), exp.clone(), instance_name.clone(), hasPreferred.clone(), preferred.clone(), (path.clone()).clone())?;
             metamodelica::cons(n_cls.clone(), nr_classes.clone())
@@ -449,7 +449,7 @@ fn parseClassParts(mut classes: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, 
 }
 
 fn parseClassPart(mut in_def: Arc<Absyn::ClassPart>, mut defs: Absyn::Program, mut typeSpec: TypeSpec, mut rootType: TypeSpec, mut exp: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>>, mut instance_name: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut hasPreferred: bool, mut preferred: Arc<metamodelica::List<Preferred>>, mut path: ArcStr) -> Result<Arc<Absyn::ClassPart>> {
-    let mut out_def: Arc<Absyn::ClassPart>;
+    let mut out_def: Arc<Absyn::ClassPart> = Arc::new(<Absyn::ClassPart as ::std::default::Default>::default());
     out_def = (::match_deref::match_deref! { match &(in_def.clone()) {
         Deref @ Absyn::ClassPart::PUBLIC { contents: elems } => {
             let mut elems1: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
@@ -529,7 +529,7 @@ fn applyModifiersPreferred(mut comps: Arc<metamodelica::List<Arc<Absyn::Componen
                 Deref @ metamodelica::List::Cons { head: (e, ename), tail: rest } => {
                     let mut cnew: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>> = metamodelica::nil();
                     let mut client_pref: ArcStr = arcstr::literal!("");
-                    let mut enew: Arc<Absyn::ElementItem>;
+                    let mut enew: Arc<Absyn::ElementItem> = Arc::new(<Absyn::ElementItem as ::std::default::Default>::default());
                     client_pref = (getPreferredBinding((ename.clone()).clone(), preferred.clone())?).clone();
                     cnew = applyModifierPreferred(comps.clone(), e.clone(), (client_pref.clone()).clone(), instance_name.clone(), (ename.clone()).clone())?;
                     enew = Arc::new(Absyn::ElementItem::ELEMENTITEM { element: Arc::new(Absyn::Element::ELEMENT { finalPrefix: finalPrefix.clone(), redeclareKeywords: redeclareKeywords.clone(), innerOuter: innerOuter.clone(), specification: Arc::new(Absyn::ElementSpec::COMPONENTS { attributes: attributes.clone(), typeSpec: tSpec.clone(), components: cnew.clone() }), info: info.clone(), constrainClass: constrainClass.clone() }) });
@@ -643,7 +643,7 @@ fn applyModifiers(mut comps: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>>,
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: (e, _), tail: rest } => {
                     let mut cnew: Arc<metamodelica::List<Arc<Absyn::ComponentItem>>> = metamodelica::nil();
-                    let mut enew: Arc<Absyn::ElementItem>;
+                    let mut enew: Arc<Absyn::ElementItem> = Arc::new(<Absyn::ElementItem as ::std::default::Default>::default());
                     cnew = applyModifier(comps.clone(), e.clone(), instance_name.clone(), counter.clone(), newName.clone())?;
                     enew = Arc::new(Absyn::ElementItem::ELEMENTITEM { element: Arc::new(Absyn::Element::ELEMENT { finalPrefix: finalPrefix.clone(), redeclareKeywords: redeclareKeywords.clone(), innerOuter: innerOuter.clone(), specification: Arc::new(Absyn::ElementSpec::COMPONENTS { attributes: attributes.clone(), typeSpec: tSpec.clone(), components: cnew.clone() }), info: info.clone(), constrainClass: constrainClass.clone() }) });
                     Ok(metamodelica::cons(enew.clone(), applyModifiers(comps.clone(), rest.clone(), instance_name.clone(), counter.clone() + 1, finalPrefix.clone(), redeclareKeywords.clone(), innerOuter.clone(), info.clone(), constrainClass.clone(), attributes.clone(), tSpec.clone(), newName.clone())?))

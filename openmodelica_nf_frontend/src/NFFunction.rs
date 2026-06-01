@@ -604,8 +604,8 @@ pub mod Function {
 
     pub fn makeEnumConversionOp(mut enumNode: Arc<InstNode::InstNode>) -> Result<Arc<InstNode::InstNode>> {
         let mut fnNode: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-        let mut def: Arc<SCode::ClassDef>;
-        let mut fn_def: Arc<SCode::ClassDef>;
+        let mut def: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
+        let mut fn_def: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
         let mut elem: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
         let mut fn_elem: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
         let mut params: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();

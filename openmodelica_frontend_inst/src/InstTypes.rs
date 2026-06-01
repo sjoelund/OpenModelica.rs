@@ -56,6 +56,9 @@ pub enum CallingScope {
     /// a call to determine type of a class
     TYPE_CALL,
 }
+impl Default for CallingScope {
+    fn default() -> Self { Self::TOP_CALL }
+}
 pub use self::CallingScope::{TOP_CALL,INNER_CALL,TYPE_CALL};
 
 pub type PolymorphicBindings = Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<Arc<DAE::Type>>>)>>;

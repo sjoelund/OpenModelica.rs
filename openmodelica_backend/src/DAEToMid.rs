@@ -516,7 +516,7 @@ fn StmtsToMid(mut daestmts: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut st
 }
 
 fn ExpToMid(mut exp: Arc<DAE::Exp>, mut state: State) -> Result<MidCode::RValue> {
-    let mut rval: MidCode::RValue;
+    let mut rval: MidCode::RValue = <MidCode::RValue as ::std::default::Default>::default();
     rval = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ DAE::Exp::ICONST { integer: _ } => {
             MidCode::RValue::LITERALINTEGER { value: var_field!((*exp).integer, DAE::Exp::ICONST).clone() }
@@ -604,7 +604,7 @@ fn ExpToMid(mut exp: Arc<DAE::Exp>, mut state: State) -> Result<MidCode::RValue>
             let mut varCref: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
             let mut varTmp: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
             let mut labelNext: i32 = 0;
-            let mut rvalue: MidCode::RValue;
+            let mut rvalue: MidCode::RValue = <MidCode::RValue as ::std::default::Default>::default();
             varCref = CrefToMidVar(cref.clone(), state.clone())?;
             rvalue = (match GetCrefIndexVar(cref.clone(), state.clone())? {
         None => {
@@ -847,7 +847,7 @@ fn ForToMid(mut type_: Arc<DAE::Type>, mut iter: ArcStr, mut range: Arc<DAE::Exp
             let mut varLast: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
             let mut varStep: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
             let mut labelCondition2: i32 = 0;
-            let mut rvalueStep: MidCode::RValue;
+            let mut rvalueStep: MidCode::RValue = <MidCode::RValue as ::std::default::Default>::default();
             labelCondition2 = GenBlockId();
             varFirst = GenTmpVar(DAE::T_INTEGER_DEFAULT().clone(), state.clone());
             varIter = GenTmpVar(DAE::T_INTEGER_DEFAULT().clone(), state.clone());

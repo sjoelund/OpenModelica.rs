@@ -21,7 +21,7 @@ use openmodelica_util::Settings;
 use openmodelica_util::Util;
 
 fn fun_52(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -35,7 +35,7 @@ fn fun_52(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 pub fn fmiModelDescription(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_guid: ArcStr, mut in_a_FMUType: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_guid.clone(), in_a_FMUType.clone()) {
         (mut txt, ref i_simCode @ SimCode::SimCode { simulationSettingsOpt: ref i_simulationSettingsOpt, .. }, mut a_guid, mut a_FMUType) => {
             let mut ret_0: bool = false;
@@ -64,7 +64,7 @@ pub fn fmiModelDescription(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::Sim
 }
 
 fn fun_54(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_listStates: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_vi_numStateVars: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_listStates.clone(), in_a_vi_numStateVars.clone())) {
         (txt, false, _, a_vi_numStateVars) => {
             let mut txt = (*txt).clone();
@@ -82,25 +82,25 @@ fn fun_54(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_listStates: Arc<met
 }
 
 pub fn fmiModelDescriptionAttributes(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_guid: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_guid.clone()) {
         (mut txt, ref i_simCode @ SimCode::SimCode { modelInfo: SimCode::ModelInfo { description: ref i_modelInfo_description, name: ref i_modelInfo_name, vars: SimCodeVar::SimVars { stateVars: ref i_listStates, .. }, varInfo: SimCode::VarInfo { numStateVars: ref i_vi_numStateVars, .. }, .. }, .. }, mut a_guid) => {
             let mut ret_15: ArcStr = arcstr::literal!("");
             let mut ret_14: ArcStr = arcstr::literal!("");
             let mut ret_13: ArcStr = arcstr::literal!("");
             let mut ret_12: ArcStr = arcstr::literal!("");
-            let mut l_numberOfEventIndicators: Tpl::Text;
+            let mut l_numberOfEventIndicators: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_10: bool = false;
-            let mut l_numberOfContinuousStates: Tpl::Text;
-            let mut l_variableNamingConvention: Tpl::Text;
+            let mut l_numberOfContinuousStates: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_variableNamingConvention: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_7: Util::DateTime = <Util::DateTime as ::std::default::Default>::default();
-            let mut l_generationDateAndTime: Tpl::Text;
+            let mut l_generationDateAndTime: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_5: ArcStr = arcstr::literal!("");
-            let mut l_generationTool: Tpl::Text;
-            let mut l_description: Tpl::Text;
-            let mut l_modelIdentifier: Tpl::Text;
-            let mut l_modelName: Tpl::Text;
-            let mut l_fmiVersion: Tpl::Text;
+            let mut l_generationTool: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_description: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_modelIdentifier: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_modelName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_fmiVersion: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             l_fmiVersion = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("1.0")).clone() }))?;
             l_modelName = CodegenUtil::dotPath(Tpl::emptyTxt.clone(), i_modelInfo_name.clone())?;
             l_modelIdentifier = CodegenUtilSimulation::modelNamePrefix(Tpl::emptyTxt.clone(), i_simCode.clone())?;

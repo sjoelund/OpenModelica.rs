@@ -93,7 +93,7 @@ pub fn solveSimpleEquations(mut dae: Arc<BackendDAE::BackendDAE>) -> Result<Arc<
             let mut eindex: i32 = 0;
             let mut vindx: i32 = 0;
             let mut solved: bool = false;
-            let mut tmpComp: Arc<BackendDAE::StrongComponent>;
+            let mut tmpComp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(comp.clone()) {
                 Deref @ BackendDAE::StrongComponent::SINGLEEQUATION { var: __pa0, eqn: __pa1 } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
@@ -1687,7 +1687,7 @@ fn makeProductLstSort(mut inExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> R
     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut op: DAE::Operator;
+    let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
     if inExpLst.clone().is_empty() {
         outExp = Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1.0_f64) });
         return Ok(outExp.clone());

@@ -400,7 +400,7 @@ pub fn setExtendsModifier(mut className: Arc<Absyn::Path>, mut extendsName: Arc<
     let mut result: bool = false;
     let mut within_: Absyn::Within = Absyn::Within::TOP;
     let mut cls: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-    let mut env: GraphicEnvCache;
+    let mut env: GraphicEnvCache = <Interactive::GraphicEnvCache as ::std::default::Default>::default();
     match '__try0: {
         cls = unwrap_break_err!(ProgramUtil::getPathedClassInProgram(className.clone(), program.clone(), false, false), '__try0);
         env = unwrap_break_err!(Interactive::getClassEnv(program.clone(), className.clone()), '__try0);
@@ -1234,7 +1234,7 @@ pub fn getComponentInClass(mut cls: Arc<Absyn::Class>, mut componentName: ArcStr
 }
 
 pub fn getNthComponentInClass(mut inClass: Arc<Absyn::Class>, mut nth: i32) -> Arc<Absyn::Element> {
-    let mut outElement: Arc<Absyn::Element>;
+    let mut outElement: Arc<Absyn::Element> = Arc::new(<Absyn::Element as ::std::default::Default>::default());
     let mut r#pub: Arc<metamodelica::List<Arc<Absyn::Element>>> = metamodelica::nil();
     let mut pro: Arc<metamodelica::List<Arc<Absyn::Element>>> = metamodelica::nil();
     let mut n: i32 = 0;
@@ -1379,7 +1379,7 @@ pub fn getComponentitemsInElement(mut inElement: Arc<Absyn::Element>) -> Arc<met
 }
 
 pub fn createEnvironment(mut p: Absyn::Program, mut os: Option<Arc<metamodelica::List<Arc<SCode::Element>>>>, mut modelPath: Arc<Absyn::Path>) -> Result<Interactive::GraphicEnvCache> {
-    let mut genv: Interactive::GraphicEnvCache;
+    let mut genv: Interactive::GraphicEnvCache = <Interactive::GraphicEnvCache as ::std::default::Default>::default();
     let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     let mut env2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
@@ -1388,7 +1388,7 @@ pub fn createEnvironment(mut p: Absyn::Program, mut os: Option<Arc<metamodelica:
     let mut id: ArcStr = arcstr::literal!("");
     let mut encflag: SCode::Encapsulated = SCode::Encapsulated::ENCAPSULATED;
     let mut restr: SCode::Restriction = SCode::Restriction::R_BLOCK;
-    let mut ci_state: ClassInf::State;
+    let mut ci_state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut permissive: bool = false;
     if Flags::isSet(Flags::NF_API.clone())? {
@@ -1446,7 +1446,7 @@ pub fn getElementAnnotationsFromElts(mut els: Arc<metamodelica::List<Arc<Absyn::
     let mut graphicProgramSCode: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     let mut placementProgram: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
-    let mut cache: GraphicEnvCache;
+    let mut cache: GraphicEnvCache = <Interactive::GraphicEnvCache as ::std::default::Default>::default();
     if !(Flags::isSet(Flags::NF_API.clone())?) {
         placementProgram = modelicaAnnotationProgram((Config::getAnnotationVersion()?).clone())?;
         graphicProgramSCode = AbsynToSCode::translateAbsyn2SCode(placementProgram.clone())?;
@@ -1579,7 +1579,7 @@ pub fn getElementitemsAnnotationsElArgs(mut inElementArgs: Arc<metamodelica::Lis
     let mut graphic_exp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut eq_dexp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut graphic_dexp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut prop: DAE::Properties;
+    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
@@ -1607,7 +1607,7 @@ pub fn getElementitemsAnnotationsElArgs(mut inElementArgs: Arc<metamodelica::Lis
                     let mut env: FCore::Graph = env.clone();
                     let mut eq_dexp: Arc<DAE::Exp> = eq_dexp.clone();
                     let mut outCache: Interactive::GraphicEnvCache = outCache.clone();
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = prop.clone();
                     let mut r#str: ArcStr = r#str.clone();
                     (cache, env, _, outCache) = buildEnvForGraphicProgram(outCache.clone(), metamodelica::nil())?;
                     (_, eq_dexp, prop) = StaticScript::elabGraphicsExp(cache.clone(), env.clone(), eq_aexp.clone(), false, openmodelica_frontend_types::DAE::Prefix::NOPRE, info.clone())?;
@@ -1637,7 +1637,7 @@ pub fn getElementitemsAnnotationsElArgs(mut inElementArgs: Arc<metamodelica::Lis
                     let mut is_icon: bool = is_icon.clone();
                     let mut outCache: Interactive::GraphicEnvCache = outCache.clone();
                     let mut placement_cls: Arc<SCode::Element> = placement_cls.clone();
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = prop.clone();
                     let mut smod: Arc<SCode::Mod> = smod.clone();
                     let mut r#str: ArcStr = r#str.clone();
                     let mut stripped_mod: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = stripped_mod.clone();
@@ -1767,7 +1767,7 @@ pub fn buildEnvForGraphicProgram(mut inCache: GraphicEnvCache, mut inAnnotationM
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     let mut outGraphicProgram: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
-    let mut outGraphicEnvCache: GraphicEnvCache;
+    let mut outGraphicEnvCache: GraphicEnvCache = <Interactive::GraphicEnvCache as ::std::default::Default>::default();
     (outCache, outEnv, outGraphicProgram, outGraphicEnvCache) = (match inCache.clone() {
         Interactive::GraphicEnvCache::GRAPHIC_ENV_FULL_CACHE { .. } => {
             (var_field!(inCache.cache, Interactive::GraphicEnvCache::GRAPHIC_ENV_FULL_CACHE).clone(), var_field!(inCache.env, Interactive::GraphicEnvCache::GRAPHIC_ENV_FULL_CACHE).clone(), Absyn::dummyProgram.clone(), inCache.clone())
@@ -2595,7 +2595,7 @@ fn namedargToModification(mut inNamedArg: Arc<Absyn::NamedArg>) -> Result<Arc<Ab
 
 pub fn getAllInheritedClasses(mut inClassName: Arc<Absyn::Path>, mut inProgram: Absyn::Program) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> {
     let mut outBaseClassNames: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
-    let mut genv: GraphicEnvCache;
+    let mut genv: GraphicEnvCache = <Interactive::GraphicEnvCache as ::std::default::Default>::default();
     outBaseClassNames = ({
         let mut allPaths: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
         'mc: {
@@ -2607,7 +2607,7 @@ pub fn getAllInheritedClasses(mut inClassName: Arc<Absyn::Path>, mut inProgram: 
                     let mut fqpaths: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
                     let mut cdef: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
                     let mut exts: Arc<metamodelica::List<Arc<Absyn::ElementSpec>>> = metamodelica::nil();
-                    let mut genv: Interactive::GraphicEnvCache;
+                    let mut genv: Interactive::GraphicEnvCache = genv.clone();
                     cdef = ProgramUtil::getPathedClassInProgram(p_class.clone(), p.clone(), false, false)?;
                     exts = getExtendsElementspecInClass(cdef.clone())?;
                     paths = List::map(exts.clone(), (std::sync::Arc::new(getBaseClassNameFromExtends) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ElementSpec>) -> Result<Arc<Absyn::Path>> + 'static>));
@@ -2775,7 +2775,7 @@ pub fn getAllSubtypeOf2(mut baseClass: Arc<Absyn::Path>, mut parentClass: Arc<Ab
     let mut acc: Arc<metamodelica::List<Arc<ClassEntry::ClassEntry>>> = metamodelica::nil();
     let mut locals: Arc<metamodelica::List<Arc<ClassEntry::ClassEntry>>> = metamodelica::nil();
     let mut candidates: Arc<metamodelica::List<(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<ClassEntry::ClassEntry>>>)>> = metamodelica::nil();
-    let mut genv: GraphicEnvCache;
+    let mut genv: GraphicEnvCache = <Interactive::GraphicEnvCache as ::std::default::Default>::default();
     let mut opt_path: Option<Arc<Absyn::Path>> = None;
     for mut ext in &*getAllInheritedClasses(parentClass.clone(), program.clone())? {
         let mut ext = ext.clone();
@@ -3269,7 +3269,7 @@ fn removeClassInElementitemlist(mut inElements: Arc<metamodelica::List<Arc<Absyn
 }
 
 pub fn getPathedElementInProgram(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> Result<Arc<Absyn::Element>> {
-    let mut element: Arc<Absyn::Element>;
+    let mut element: Arc<Absyn::Element> = Arc::new(<Absyn::Element as ::std::default::Default>::default());
     let mut cls: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
     match '__try0: {
         cls = unwrap_break_err!(ProgramUtil::getClassInProgram((AbsynUtil::pathFirstIdent(path.clone())?).clone(), program.clone()), '__try0);
@@ -3308,7 +3308,7 @@ fn getPathedElementInClass(mut path: Arc<Absyn::Path>, mut cls: Arc<Absyn::Class
 
 fn getPathedElementInClassPart(mut path: Arc<Absyn::Path>, mut part: Arc<Absyn::ClassPart>) -> Result<Option<Arc<Absyn::Element>>> {
     let mut element: Option<Arc<Absyn::Element>> = None;
-    let mut e: Arc<Absyn::Element>;
+    let mut e: Arc<Absyn::Element> = Arc::new(<Absyn::Element as ::std::default::Default>::default());
     for mut item in &*AbsynUtil::getElementItemsInClassPart(part.clone()) {
         let mut item = item.clone();
         if AbsynUtil::isElementItemNamed((AbsynUtil::pathFirstIdent(path.clone())?).clone(), item.clone()) {
@@ -3342,7 +3342,7 @@ fn getPathedElementInElement(mut path: Arc<Absyn::Path>, mut element: Arc<Absyn:
 pub fn getPathedExtendsInProgram(mut classPath: Arc<Absyn::Path>, mut extendsPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> Option<Arc<Absyn::ElementSpec>> {
     let mut extendsSpec: Option<Arc<Absyn::ElementSpec>> = None;
     let mut cls: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-    let mut env: GraphicEnvCache;
+    let mut env: GraphicEnvCache = <Interactive::GraphicEnvCache as ::std::default::Default>::default();
     if '__try0: {
         cls = unwrap_break_err!(ProgramUtil::getPathedClassInProgram(classPath.clone(), program.clone(), false, false), '__try0);
         env = unwrap_break_err!(Interactive::getClassEnv(program.clone(), classPath.clone()), '__try0);
@@ -3390,7 +3390,7 @@ pub fn transformPathedElementInProgram(mut path: Arc<Absyn::Path>, mut func: Arc
         let mut cls: Arc<Absyn::Class> = cls;
         let mut outElement: Option<Arc<Absyn::Element>> = None;
         let mut found: bool = false;
-        let mut elem: Arc<Absyn::Element>;
+        let mut elem: Arc<Absyn::Element> = Arc::new(<Absyn::Element as ::std::default::Default>::default());
         found = AbsynUtil::pathFirstIdent(path.clone())? == cls.name.clone();
         if found.clone() {
             if AbsynUtil::pathIsIdent(path.clone()) {
@@ -3498,7 +3498,7 @@ fn transformPathedElementInElementItem(mut path: Arc<Absyn::Path>, mut func: Arc
     let mut item: Arc<Absyn::ElementItem> = item;
     let mut outElement: Option<Arc<Absyn::Element>> = None;
     let mut success: bool = false;
-    let mut element: Arc<Absyn::Element>;
+    let mut element: Arc<Absyn::Element> = Arc::new(<Absyn::Element as ::std::default::Default>::default());
     success = (::match_deref::match_deref! { match &(item.clone()) {
         Deref @ Absyn::ElementItem::ELEMENTITEM { .. } if (AbsynUtil::isElementItemNamed((AbsynUtil::pathFirstIdent(path.clone())?).clone(), item.clone())) => {
             if AbsynUtil::pathIsIdent(path.clone()) {
@@ -3594,7 +3594,7 @@ pub fn getPathedSCodeElementInProgram(mut path: Arc<Absyn::Path>, mut program: A
 
 pub fn getElementAnnotation(mut elementPath: Arc<Absyn::Path>, mut program: Absyn::Program) -> ArcStr {
     let mut annotationString: ArcStr = arcstr::literal!("");
-    let mut elem: Arc<Absyn::Element>;
+    let mut elem: Arc<Absyn::Element> = Arc::new(<Absyn::Element as ::std::default::Default>::default());
     let mut ann: Option<Arc<Absyn::Annotation>> = None;
     let mut eargs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
     match '__try0: {
@@ -3726,7 +3726,7 @@ fn mergeClassParts(mut newParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>,
     let mut outParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
     let mut parts: Arc<Vector::Vector<Arc<Absyn::ClassPart>>>;
     let mut op: Option<Arc<Absyn::ClassPart>> = None;
-    let mut p: Arc<Absyn::ClassPart>;
+    let mut p: Arc<Absyn::ClassPart> = Arc::new(<Absyn::ClassPart as ::std::default::Default>::default());
     let mut index: i32 = 0;
     parts = Vector::fromList(oldParts.clone());
     for mut part in &*newParts.clone() {
@@ -4728,7 +4728,7 @@ pub fn setElementType(mut elementPath: Arc<Absyn::Path>, mut className: Arc<Absy
     let mut program: Absyn::Program = program;
     let mut success: bool = true;
     let mut elem_opt: Option<Arc<Absyn::Element>> = None;
-    let mut ty: Arc<Absyn::TypeSpec>;
+    let mut ty: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
     match '__try0: {
         ty = unwrap_break_err!(AbsynUtil::crefToTypeSpec(className.clone()), '__try0);
         (program, elem_opt, success) = unwrap_break_err!(transformPathedElementInProgram(elementPath.clone(), (std::sync::Arc::new({ let __pe_b1 = ty.clone(); let __pe_b2 = false; move |__pe_a0| AbsynUtil::setElementType(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Element>) -> Result<Arc<Absyn::Element>> + 'static>), program.clone()), '__try0);
@@ -5260,7 +5260,7 @@ pub fn offsetGraphicsItemExpression(mut item: Arc<Absyn::Exp>, mut x: i32, mut y
     }
 
     let mut item: Arc<Absyn::Exp> = item;
-    let mut args: Arc<Absyn::FunctionArgs>;
+    let mut args: Arc<Absyn::FunctionArgs> = Arc::new(<Absyn::FunctionArgs as ::std::default::Default>::default());
     let mut named_args: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
     let mut found: bool = false;
     let mut visible: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);

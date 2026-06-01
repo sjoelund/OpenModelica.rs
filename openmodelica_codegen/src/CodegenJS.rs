@@ -20,13 +20,13 @@ use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
 pub fn markdownFile(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
         (mut txt, ref i_simCode @ SimCode::SimCode { fileNamePrefix: ref i_fileNamePrefix, .. }) => {
-            let mut txt_3: Tpl::Text;
-            let mut txt_2: Tpl::Text;
-            let mut txt_1: Tpl::Text;
-            let mut txt_0: Tpl::Text;
+            let mut txt_3: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             txt_0 = markdownContents(Tpl::emptyTxt.clone(), i_simCode.clone())?;
             txt_1 = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_fileNamePrefix.clone()).clone())?;
             txt_1 = Tpl::writeTok(txt_1.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".md")).clone() }))?;
@@ -45,7 +45,7 @@ pub fn markdownFile(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -
 }
 
 pub fn nodeJSDriver(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
         (mut txt, SimCode::SimCode { fileNamePrefix: mut i_fileNamePrefix, simulationSettingsOpt: Some(SimCode::SimulationSettings { outputFormat: mut i_s_outputFormat, .. }), .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("#!/usr/bin/nodejs --max-old-space-size=8192\n")).clone(), (literal!("var fs = require('fs');\n")).clone(), (literal!("\n")).clone(), (literal!("var initXML = fs.readFileSync('./")).clone()], lastHasNewLine: false }))?;
@@ -73,11 +73,11 @@ pub fn nodeJSDriver(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -
 }
 
 pub fn markdownContents(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
         (mut txt, SimCode::SimCode { fileNamePrefix: mut i_fileNamePrefix, makefileParams: SimCodeFunction::MakefileParams { ccompiler: _, .. }, simulationSettingsOpt: Some(SimCode::SimulationSettings { tolerance: mut i_s_tolerance, numberOfIntervals: mut i_s_numberOfIntervals, stopTime: mut i_s_stopTime, .. }), modelInfo: SimCode::ModelInfo { name: ref i_modelInfo_name, vars: SimCodeVar::SimVars { stateVars: _, .. }, varInfo: SimCode::VarInfo { numZeroCrossings: _, .. }, functions: _, .. }, .. }) => {
             let mut ret_1: ArcStr = arcstr::literal!("");
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("# OpenModelica simulation example\n")).clone(), (literal!("## ")).clone()], lastHasNewLine: false }))?;
             txt_0 = CodegenUtil::dotPath(Tpl::emptyTxt.clone(), i_modelInfo_name.clone())?;
             ret_1 = (Util::escapeModelicaStringToXmlString((Tpl::textString(txt_0.clone())?).clone())?).clone();

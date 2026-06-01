@@ -107,7 +107,7 @@ pub fn typeInverse(mut fnInv: Arc<NFFunctionInverse>) -> Result<Arc<NFFunctionIn
 }
 
 pub fn toDAE(mut fnInv: Arc<NFFunctionInverse>) -> Result<DAE::FunctionDefinition> {
-    let mut invDef: DAE::FunctionDefinition;
+    let mut invDef: DAE::FunctionDefinition = <DAE::FunctionDefinition as ::std::default::Default>::default();
     invDef = DAE::FunctionDefinition::FUNCTION_INVERSE { inputParam: ComponentRef::toDAE(fnInv.inputParam.clone())?, inverseCall: Expression::toDAE(fnInv.inverseCall.clone(), false)? };
     Ok(invDef)
 }
@@ -124,7 +124,7 @@ pub fn toSubMod(mut fnInv: Arc<NFFunctionInverse>) -> Result<Arc<SCode::SubMod>>
 
 pub fn getFunction(mut fnInv: Arc<NFFunctionInverse>) -> Result<Arc<Function::Function>> {
     let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
-    let mut call: Arc<Call::NFCall>;
+    let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let __pa0 = ::match_deref::match_deref! { match &(fnInv.inverseCall.clone()) {
         Deref @ Expression::CALL { call: __pa0 } => __pa0.clone(),
         _ => bail!("pattern mismatch"),

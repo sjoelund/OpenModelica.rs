@@ -129,7 +129,7 @@ fn parseClassParts(mut classes: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, 
         },
         Deref @ metamodelica::List::Cons { head: cls, tail: r_classes } => {
             let mut nr_classes: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
-            let mut n_cls: Arc<Absyn::ClassPart>;
+            let mut n_cls: Arc<Absyn::ClassPart> = Arc::new(<Absyn::ClassPart as ::std::default::Default>::default());
             let mut eqs1: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
             let mut eqs2: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
             let mut elems1: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
@@ -146,7 +146,7 @@ fn parseClassParts(mut classes: Arc<metamodelica::List<Arc<Absyn::ClassPart>>>, 
 }
 
 fn parseClassPart(mut in_def: Arc<Absyn::ClassPart>, mut defs: Absyn::Program, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut oldElems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut instNo: i32) -> Result<(Arc<Absyn::ClassPart>, Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, i32)> {
-    let mut out_def: Arc<Absyn::ClassPart>;
+    let mut out_def: Arc<Absyn::ClassPart> = Arc::new(<Absyn::ClassPart as ::std::default::Default>::default());
     let mut reqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
     let mut relems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
     let mut newInstNo: i32 = 0;
@@ -200,7 +200,7 @@ fn parseEquations(mut classes: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>
             (metamodelica::nil(), oldEqs.clone(), oldElems.clone(), instNo.clone())
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::EquationItem::EQUATIONITEM { equation_: eq, comment: cmt, info }, tail: r_classes } => {
-            let mut neq: Arc<Absyn::Equation>;
+            let mut neq: Arc<Absyn::Equation> = Arc::new(<Absyn::Equation as ::std::default::Default>::default());
             let mut nr_classes: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
             let mut eqs1: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
             let mut eqs2: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
@@ -226,7 +226,7 @@ fn parseEquations(mut classes: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>
 }
 
 fn parseEquation(mut in_eq: Arc<Absyn::Equation>, mut defs: Absyn::Program, mut oldEqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut oldElems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut instNo: i32) -> Result<(Arc<Absyn::Equation>, Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, i32)> {
-    let mut out_eq: Arc<Absyn::Equation>;
+    let mut out_eq: Arc<Absyn::Equation> = Arc::new(<Absyn::Equation as ::std::default::Default>::default());
     let mut eqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
     let mut elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
     let mut newInstNo: i32 = 0;
@@ -434,7 +434,7 @@ fn parseCall(mut in_eq: Arc<Absyn::Exp>, mut defs: Absyn::Program, mut instNo: i
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ Absyn::Exp::CALL { functionArgs: fargs, function_: Deref @ Absyn::ComponentRef::CREF_IDENT { name: id, subscripts: _ }, .. } => {
                     let mut elName: ArcStr = arcstr::literal!("");
-                    let mut elem: Arc<Absyn::ElementItem>;
+                    let mut elem: Arc<Absyn::ElementItem> = Arc::new(<Absyn::ElementItem as ::std::default::Default>::default());
                     let mut mods: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
                     let mut eqs: Arc<metamodelica::List<Arc<Absyn::EquationItem>>> = metamodelica::nil();
                     let mut count: i32 = 0;
@@ -742,7 +742,7 @@ fn matchVarArgs(mut elemId: ArcStr, mut args: Arc<metamodelica::List<Arc<Absyn::
             (oldEqs.clone(), args.clone())
         },
         (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ComponentItem { component: Absyn::Component { name: cName, arrayDim: _, modification: _ }, condition: _, comment: _ }, tail: r_comps }, Deref @ metamodelica::List::Cons { head: arg, tail: r_args }) => {
-            let mut eq: Arc<Absyn::EquationItem>;
+            let mut eq: Arc<Absyn::EquationItem> = Arc::new(<Absyn::EquationItem as ::std::default::Default>::default());
             eq = Arc::new(Absyn::EquationItem::EQUATIONITEM { equation_: Arc::new(Absyn::Equation::EQ_EQUALS { leftSide: Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_QUAL { name: (elemId.clone()).clone(), subscripts: metamodelica::nil(), componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (cName.clone()).clone(), subscripts: metamodelica::nil() }) }) }), rightSide: arg.clone() }), comment: None, info: Absyn::dummyInfo.clone() });
             matchVarArgs((elemId.clone()).clone(), r_args.clone(), r_comps.clone(), metamodelica::cons(eq.clone(), oldEqs.clone()))?
         },
@@ -914,7 +914,7 @@ fn matchVarNamedArg(mut elemId: ArcStr, mut argName: ArcStr, mut argValue: Arc<A
             (oldEqs.clone(), false)
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ComponentItem { component: Absyn::Component { name: cName, arrayDim: _, modification: _ }, condition: _, comment: _ }, tail: _ } if (cName.clone() == argName.clone()) => {
-            let mut eq: Arc<Absyn::EquationItem>;
+            let mut eq: Arc<Absyn::EquationItem> = Arc::new(<Absyn::EquationItem as ::std::default::Default>::default());
             eq = Arc::new(Absyn::EquationItem::EQUATIONITEM { equation_: Arc::new(Absyn::Equation::EQ_EQUALS { leftSide: Arc::new(Absyn::Exp::CREF { componentRef: Arc::new(Absyn::ComponentRef::CREF_QUAL { name: (elemId.clone()).clone(), subscripts: metamodelica::nil(), componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (cName.clone()).clone(), subscripts: metamodelica::nil() }) }) }), rightSide: argValue.clone() }), comment: None, info: Absyn::dummyInfo.clone() });
             (metamodelica::cons(eq.clone(), oldEqs.clone()), true)
         },

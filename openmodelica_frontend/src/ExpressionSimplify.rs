@@ -3089,7 +3089,7 @@ pub fn simplifyScalarProduct(mut inVector1: Arc<DAE::Exp>, mut inVector2: Arc<DA
 }
 
 fn unliftOperator(mut inArray: Arc<DAE::Exp>, mut inOperator: Operator) -> Result<Operator> {
-    let mut outOperator: Operator;
+    let mut outOperator: Operator = <DAE::Operator as ::std::default::Default>::default();
     outOperator = (::match_deref::match_deref! { match &(inArray.clone()) {
         Deref @ DAE::Exp::MATRIX { .. } => Expression::unliftOperatorX(inOperator.clone(), 2)?,
         _ => Expression::unliftOperator(inOperator.clone())?,
@@ -3180,7 +3180,7 @@ fn simplifyVectorBinary(mut inLhs: Arc<DAE::Exp>, mut inOperator: Operator, mut 
     let mut lhs: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut rhs: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut res: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-    let mut op: Operator;
+    let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(inLhs.clone()) {
         Deref @ DAE::Exp::ARRAY { array: __pa0, scalar: __pa1, ty: __pa2 } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
         _ => bail!("pattern mismatch"),
@@ -3210,7 +3210,7 @@ fn simplifyMatrixBinary(mut inLhs: Arc<DAE::Exp>, mut inOperator: Operator, mut 
     let mut lhs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>> = metamodelica::nil();
     let mut rhs: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>> = metamodelica::nil();
     let mut res: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Exp>>>>> = metamodelica::nil();
-    let mut op: Operator;
+    let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
     let mut sz: i32 = 0;
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     lhs = Expression::get2dArrayOrMatrixContent(inLhs.clone())?;
@@ -3231,7 +3231,7 @@ fn simplifyMatrixBinary1(mut inLhs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut 
 
 fn simplifyMatrixBinary2(mut inLhs: Arc<DAE::Exp>, mut inRhs: Arc<DAE::Exp>, mut inOperator: Operator) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut op: Operator;
+    let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
     op = removeOperatorDimension(inOperator.clone())?;
     outExp = Arc::new(DAE::Exp::BINARY { exp1: inLhs.clone(), operator: op.clone(), exp2: inRhs.clone() });
     Ok(outExp)
@@ -4059,7 +4059,7 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op2: Operator;
+                    let mut op2: Operator = <DAE::Operator as ::std::default::Default>::default();
                     let mut b: bool = false;
                     e_1 = simplifyAsub(e.clone(), sub.clone())?;
                     t2 = Expression::r#typeof(e_1.clone())?;
@@ -4092,7 +4092,7 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
                     let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op2: Operator;
+                    let mut op2: Operator = <DAE::Operator as ::std::default::Default>::default();
                     let mut b: bool = false;
                     e1_1 = simplifyAsub(e1.clone(), sub.clone())?;
                     e2_1 = simplifyAsub(e2.clone(), sub.clone())?;
@@ -4111,7 +4111,7 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
                     let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op: Operator;
+                    let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
                     let mut b: bool = false;
                     e1_1 = simplifyAsub(e1.clone(), sub.clone())?;
                     t2 = Expression::r#typeof(e1_1.clone())?;
@@ -4129,7 +4129,7 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
                     let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op: Operator;
+                    let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
                     let mut b: bool = false;
                     e1_1 = simplifyAsub(e1.clone(), sub.clone())?;
                     t2 = Expression::r#typeof(e1_1.clone())?;
@@ -4147,7 +4147,7 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
                     let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op: Operator;
+                    let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
                     let mut b: bool = false;
                     e2_1 = simplifyAsub(e2.clone(), sub.clone())?;
                     t2 = Expression::r#typeof(e2_1.clone())?;
@@ -4176,7 +4176,7 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
                     let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op: Operator;
+                    let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
                     let mut b: bool = false;
                     e2_1 = simplifyAsub(e2.clone(), sub.clone())?;
                     t2 = Expression::r#typeof(e2_1.clone())?;
@@ -4194,7 +4194,7 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
                     let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op: Operator;
+                    let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
                     let mut b: bool = false;
                     e1_1 = simplifyAsub(e1.clone(), sub.clone())?;
                     t2 = Expression::r#typeof(e1_1.clone())?;
@@ -4212,7 +4212,7 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
                     let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op: Operator;
+                    let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
                     let mut b: bool = false;
                     e2_1 = simplifyAsub(e2.clone(), sub.clone())?;
                     t2 = Expression::r#typeof(e2_1.clone())?;
@@ -4230,7 +4230,7 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
                     let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op: Operator;
+                    let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
                     let mut b: bool = false;
                     e1_1 = simplifyAsub(e1.clone(), sub.clone())?;
                     t2 = Expression::r#typeof(e1_1.clone())?;
@@ -4249,7 +4249,7 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
                     let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op2: Operator;
+                    let mut op2: Operator = <DAE::Operator as ::std::default::Default>::default();
                     let mut b: bool = false;
                     e1_1 = simplifyAsub(e1.clone(), sub.clone())?;
                     e2_1 = simplifyAsub(e2.clone(), sub.clone())?;
@@ -4269,7 +4269,7 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
                     let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op2: Operator;
+                    let mut op2: Operator = <DAE::Operator as ::std::default::Default>::default();
                     let mut b: bool = false;
                     e1_1 = simplifyAsub(e1.clone(), sub.clone())?;
                     e2_1 = simplifyAsub(e2.clone(), sub.clone())?;
@@ -4289,7 +4289,7 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
                     let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op2: Operator;
+                    let mut op2: Operator = <DAE::Operator as ::std::default::Default>::default();
                     let mut b: bool = false;
                     e1_1 = simplifyAsub(e1.clone(), sub.clone())?;
                     e2_1 = simplifyAsub(e2.clone(), sub.clone())?;
@@ -4309,7 +4309,7 @@ fn simplifyAsub(mut inExp: Arc<DAE::Exp>, mut inSub: Arc<DAE::Exp>) -> Result<Ar
                     let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut t2: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op2: Operator;
+                    let mut op2: Operator = <DAE::Operator as ::std::default::Default>::default();
                     let mut b: bool = false;
                     e1_1 = simplifyAsub(e1.clone(), sub.clone())?;
                     e2_1 = simplifyAsub(e2.clone(), sub.clone())?;
@@ -4418,7 +4418,7 @@ fn simplifyAsubArrayReduction(mut iter: Arc<DAE::ReductionIterator>, mut sub: Ar
 }
 
 fn simplifyAsubOperator(mut inExp1: Arc<DAE::Exp>, mut inOperator2: Operator, mut inOperator3: Operator) -> Operator {
-    let mut outOperator: Operator;
+    let mut outOperator: Operator = <DAE::Operator as ::std::default::Default>::default();
     outOperator = (::match_deref::match_deref! { match &(inExp1.clone()) {
         Deref @ DAE::Exp::ARRAY { .. } => inOperator3.clone(),
         Deref @ DAE::Exp::MATRIX { .. } => inOperator3.clone(),
@@ -4714,7 +4714,7 @@ fn simplifyBinaryCommutativeWork(mut op: Operator, mut lhs: Arc<DAE::Exp>, mut r
                 (DAE::Operator::MUL { ty: _ }, Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "sin" }, .. }, Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil }, path: Deref @ Absyn::Path::IDENT { name: Deref @ "cos" }, .. }) => {
                     if !((ExpressionBasics::expEqual(e1.clone(), e2.clone())?)) { bail!("guard") }
                     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut op1: Operator;
+                    let mut op1: Operator = <DAE::Operator as ::std::default::Default>::default();
                     op1 = DAE::Operator::MUL { ty: DAE::T_REAL_DEFAULT().clone() };
                     e = Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(2.0_f64) }), operator: op1.clone(), exp2: e1.clone() });
                     e = Expression::makePureBuiltinCall((literal!("sin")).clone(), list![e.clone()], DAE::T_REAL_DEFAULT().clone());
@@ -6440,12 +6440,12 @@ fn simplifyBuiltinConstantDer(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>>
 }
 
 fn removeOperatorDimension(mut inop: Operator) -> Result<Operator> {
-    let mut outop: Operator;
+    let mut outop: Operator = <DAE::Operator as ::std::default::Default>::default();
     outop = (match inop.clone() {
         DAE::Operator::ADD_ARR { ty: ref ty1 } => {
             let mut ty2: Type = Arc::new(DAE::Type::T_NORETCALL);
             let mut b: bool = false;
-            let mut op: Operator;
+            let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
             ty2 = Expression::unliftArray(ty1.clone())?;
             b = DAEUtil::expTypeArray(ty2.clone());
             op = if (b.clone()) {DAE::Operator::ADD_ARR { ty: ty2.clone() }} else {DAE::Operator::ADD { ty: ty2.clone() }};
@@ -6454,7 +6454,7 @@ fn removeOperatorDimension(mut inop: Operator) -> Result<Operator> {
         DAE::Operator::SUB_ARR { ty: ref ty1 } => {
             let mut ty2: Type = Arc::new(DAE::Type::T_NORETCALL);
             let mut b: bool = false;
-            let mut op: Operator;
+            let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
             ty2 = Expression::unliftArray(ty1.clone())?;
             b = DAEUtil::expTypeArray(ty2.clone());
             op = if (b.clone()) {DAE::Operator::SUB_ARR { ty: ty2.clone() }} else {DAE::Operator::SUB { ty: ty2.clone() }};
@@ -6463,7 +6463,7 @@ fn removeOperatorDimension(mut inop: Operator) -> Result<Operator> {
         DAE::Operator::DIV_ARR { ty: ref ty1 } => {
             let mut ty2: Type = Arc::new(DAE::Type::T_NORETCALL);
             let mut b: bool = false;
-            let mut op: Operator;
+            let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
             ty2 = Expression::unliftArray(ty1.clone())?;
             b = DAEUtil::expTypeArray(ty2.clone());
             op = if (b.clone()) {DAE::Operator::DIV_ARR { ty: ty2.clone() }} else {DAE::Operator::DIV { ty: ty2.clone() }};
@@ -6472,7 +6472,7 @@ fn removeOperatorDimension(mut inop: Operator) -> Result<Operator> {
         DAE::Operator::MUL_ARR { ty: ref ty1 } => {
             let mut ty2: Type = Arc::new(DAE::Type::T_NORETCALL);
             let mut b: bool = false;
-            let mut op: Operator;
+            let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
             ty2 = Expression::unliftArray(ty1.clone())?;
             b = DAEUtil::expTypeArray(ty2.clone());
             op = if (b.clone()) {DAE::Operator::MUL_ARR { ty: ty2.clone() }} else {DAE::Operator::MUL { ty: ty2.clone() }};
@@ -6481,7 +6481,7 @@ fn removeOperatorDimension(mut inop: Operator) -> Result<Operator> {
         DAE::Operator::POW_ARR2 { ty: ref ty1 } => {
             let mut ty2: Type = Arc::new(DAE::Type::T_NORETCALL);
             let mut b: bool = false;
-            let mut op: Operator;
+            let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
             ty2 = Expression::unliftArray(ty1.clone())?;
             b = DAEUtil::expTypeArray(ty2.clone());
             op = if (b.clone()) {DAE::Operator::POW_ARR2 { ty: ty2.clone() }} else {DAE::Operator::POW { ty: ty2.clone() }};
@@ -6962,7 +6962,7 @@ fn checkZeroLengthArrayOp(mut op: DAE::Operator) -> Result<()> {
 }
 
 pub fn simplifyAddSymbolicOperation(mut exp: Arc<DAE::EquationExp>, mut source: Arc<DAE::ElementSource>) -> Result<(Arc<DAE::EquationExp>, Arc<DAE::ElementSource>)> {
-    let mut outExp: Arc<DAE::EquationExp>;
+    let mut outExp: Arc<DAE::EquationExp> = Arc::new(<DAE::EquationExp as ::std::default::Default>::default());
     let mut outSource: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
     (outExp, outSource) = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ DAE::EquationExp::PARTIAL_EQUATION { exp: e } => {

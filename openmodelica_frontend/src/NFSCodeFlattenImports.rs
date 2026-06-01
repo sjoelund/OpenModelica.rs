@@ -80,7 +80,7 @@ pub fn flattenClass(mut inClass: Arc<SCode::Element>, mut inEnv: Env) -> Result<
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Element::CLASS { info, classDef: cdef, name, .. } => {
-                    let mut item: Item;
+                    let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
                     let mut env: Env = metamodelica::nil();
                     let mut cls_env: Arc<NFSCodeEnv::Frame> = Arc::new(<NFSCodeEnv::Frame as ::std::default::Default>::default());
                     let mut cls: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
@@ -124,7 +124,7 @@ pub fn flattenClass(mut inClass: Arc<SCode::Element>, mut inEnv: Env) -> Result<
 }
 
 fn flattenClassDef(mut inClassDef: Arc<SCode::ClassDef>, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<(Arc<SCode::ClassDef>, Env)> {
-    let mut outClassDef: Arc<SCode::ClassDef>;
+    let mut outClassDef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
     let mut outEnv: Env = metamodelica::nil();
     (outClassDef, outEnv) = (::match_deref::match_deref! { match &((inClassDef.clone(), inEnv.clone())) {
         (Deref @ SCode::ClassDef::PARTS { elementLst: el, normalEquationLst: neql, initialEquationLst: ieql, normalAlgorithmLst: nal, initialAlgorithmLst: ial, constraintLst: nco, clsattrs: clats, externalDecl: extdecl }, _) => {
@@ -170,8 +170,8 @@ fn flattenClassDef(mut inClassDef: Arc<SCode::ClassDef>, mut inEnv: Env, mut inI
 }
 
 fn flattenDerivedClassDef(mut inClassDef: Arc<SCode::ClassDef>, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<Arc<SCode::ClassDef>> {
-    let mut outClassDef: Arc<SCode::ClassDef>;
-    let mut ty: Arc<Absyn::TypeSpec>;
+    let mut outClassDef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
+    let mut ty: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
     let mut mods: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
     let mut attr: SCode::Attributes = <SCode::Attributes as ::std::default::Default>::default();
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(inClassDef.clone()) {
@@ -204,7 +204,7 @@ fn flattenElement(mut inElement: Arc<SCode::Element>, mut inEnv: Env) -> Result<
         Deref @ SCode::Element::COMPONENT { name, .. } => {
             let mut env: Env = metamodelica::nil();
             let mut elem: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-            let mut item: Item;
+            let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             elem = flattenComponent(inElement.clone(), inEnv.clone())?;
             item = NFSCodeEnv::newVarItem(elem.clone(), true);
             env = NFSCodeEnv::updateItemInEnv(item.clone(), inEnv.clone(), (name.clone()).clone())?;
@@ -232,7 +232,7 @@ fn flattenComponent(mut inComponent: Arc<SCode::Element>, mut inEnv: Env) -> Res
     let mut name: ArcStr = arcstr::literal!("");
     let mut prefixes: Arc<SCode::Prefixes> = Arc::new(<SCode::Prefixes as ::std::default::Default>::default());
     let mut attr: SCode::Attributes = <SCode::Attributes as ::std::default::Default>::default();
-    let mut type_spec: Arc<Absyn::TypeSpec>;
+    let mut type_spec: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
     let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
     let mut cmt: Arc<SCode::Comment> = Arc::new(<SCode::Comment as ::std::default::Default>::default());
     let mut cond: Option<Arc<Absyn::Exp>> = None;
@@ -278,7 +278,7 @@ fn flattenAttributes(mut inAttributes: SCode::Attributes, mut inEnv: Env, mut in
 }
 
 fn flattenTypeSpec(mut inTypeSpec: Arc<Absyn::TypeSpec>, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<Arc<Absyn::TypeSpec>> {
-    let mut outTypeSpec: Arc<Absyn::TypeSpec>;
+    let mut outTypeSpec: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
     outTypeSpec = (::match_deref::match_deref! { match &(inTypeSpec.clone()) {
         Deref @ Absyn::TypeSpec::TPATH { arrayDim: ad, path } => {
             let mut path = (*path).clone();
@@ -472,7 +472,7 @@ fn flattenRedeclare(mut inElement: Arc<SCode::Element>, mut inEnv: Env) -> Resul
     let mut outElement: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     outElement = (::match_deref::match_deref! { match &(inElement.clone()) {
         Deref @ SCode::Element::CLASS { name, prefixes, encapsulatedPrefix: ep, partialPrefix: pp, restriction: res, classDef: cdef @ Deref @ SCode::ClassDef::DERIVED { .. }, cmt, info } => {
-            let mut cdef2: Arc<SCode::ClassDef>;
+            let mut cdef2: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
             cdef2 = flattenDerivedClassDef(cdef.clone(), inEnv.clone(), info.clone())?;
             Arc::new(SCode::Element::CLASS { name: (name.clone()).clone(), prefixes: prefixes.clone(), encapsulatedPrefix: ep.clone(), partialPrefix: pp.clone(), restriction: res.clone(), classDef: cdef2.clone(), cmt: cmt.clone(), info: info.clone() })
         },

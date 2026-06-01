@@ -192,7 +192,7 @@ pub fn checkSimulationArguments(mut args: Arc<metamodelica::List<Arc<Absyn::Name
 pub fn elabCallInteractive(mut cache: FCore::Cache, mut env: FCore::Graph, mut r#fn: Arc<Absyn::ComponentRef>, mut args: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut nargs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut r#impl: bool, mut pre: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut cache: FCore::Cache = cache;
     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut prop: DAE::Properties;
+    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut handles: Arc<metamodelica::List<i32>> = metamodelica::nil();
     if Flags::getConfigBool(Flags::BUILDING_MODEL.clone())? {
         ErrorExt::delCheckpoint((literal!("elabCall_InteractiveFunction")).clone());
@@ -223,7 +223,7 @@ pub fn elabCallInteractive(mut cache: FCore::Cache, mut env: FCore::Graph, mut r
 fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponentRef: Arc<Absyn::ComponentRef>, mut inExps: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplInst: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inComponentRef.clone(), inExps.clone(), inNamedArgs.clone(), inImplInst.clone(), inPrefix.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -231,7 +231,7 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
                 (cache, env, cr2 @ Deref @ Absyn::ComponentRef::CREF_IDENT { .. }, _, _, r#impl, _) => {
                     let mut cr: Arc<Absyn::ComponentRef> = Arc::new(Absyn::ComponentRef::ALLWILD);
                     let mut exp_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut cache = (*cache).clone();
                     ErrorExt::setCheckpoint((literal!("Scripting")).clone());
                     cr = AbsynUtil::joinCrefs(Arc::new(Absyn::ComponentRef::CREF_QUAL { name: (literal!("OpenModelica")).clone(), subscripts: metamodelica::nil(), componentRef: Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (literal!("Scripting")).clone(), subscripts: metamodelica::nil() }) }), cr2.clone())?;
@@ -501,7 +501,7 @@ fn elabCallInteractive_work(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
 pub fn elabExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut performVectorization: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = elabExp2(inCache.clone(), inEnv.clone(), inExp.clone(), inImplicit.clone(), performVectorization.clone(), inPrefix.clone(), info.clone(), Error::getNumErrorMessages())?;
     Ok((outCache, outExp, outProperties))
 }
@@ -509,14 +509,14 @@ pub fn elabExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Ar
 fn elabExp2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplicit: bool, mut performVectorization: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo, mut numErrorMessages: i32) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inExp.clone(), inImplicit.clone(), performVectorization.clone(), inPrefix.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ Absyn::Exp::CALL { functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { argNames: nargs, args }, function_: r#fn, .. }, r#impl, _, pre) => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut cache = (*cache).clone();
                     (cache, e_1, prop) = elabCall(cache.clone(), env.clone(), r#fn.clone(), args.clone(), nargs.clone(), r#impl.clone(), pre.clone(), info.clone(), Error::getNumErrorMessages())?;
                     (e_1, _) = ExpressionSimplify::simplify1(e_1.clone())?;
@@ -529,7 +529,7 @@ fn elabExp2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<A
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, exp, r#impl, doVect, pre) => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut cache = (*cache).clone();
                     (cache, e_1, prop) = Static::elabExp(cache.clone(), env.clone(), exp.clone(), r#impl.clone(), doVect.clone(), pre.clone(), info.clone())?;
                     Ok((cache.clone(), e_1.clone(), prop.clone()))
@@ -545,11 +545,11 @@ fn elabExp2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<A
 fn elabCall(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponentRef: Arc<Absyn::ComponentRef>, mut inAbsynExpLst: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inAbsynNamedArgLst: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplInst: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo, mut numErrorMessages: i32) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inComponentRef.clone(), inAbsynExpLst.clone(), inAbsynNamedArgLst.clone(), inImplInst.clone(), inPrefix.clone())) {
         (cache, env, r#fn, args, nargs, r#impl, pre) => {
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut prop: DAE::Properties;
+            let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
             let mut cache = (*cache).clone();
             (cache, e, prop) = elabCallInteractive_work(cache.clone(), env.clone(), r#fn.clone(), args.clone(), nargs.clone(), r#impl.clone(), pre.clone(), info.clone())?;
             (cache.clone(), e.clone(), prop.clone())
@@ -562,14 +562,14 @@ fn elabCall(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inComponentR
 pub fn elabGraphicsExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<Absyn::Exp>, mut inImplInst: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProperties: DAE::Properties;
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outCache, outExp, outProperties) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inExp.clone(), inImplInst.clone(), inPrefix.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ Absyn::Exp::CALL { functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { argNames: nargs, args }, function_: r#fn, .. }, _, pre) => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut cache = (*cache).clone();
                     (cache, e_1, prop) = elabCall(cache.clone(), env.clone(), r#fn.clone(), args.clone(), nargs.clone(), true, pre.clone(), info.clone(), Error::getNumErrorMessages())?;
                     Ok((cache.clone(), e_1.clone(), prop.clone()))
@@ -581,7 +581,7 @@ pub fn elabGraphicsExp(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, e, r#impl, pre) => {
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut cache = (*cache).clone();
                     (cache, e_1, prop) = Static::elabGraphicsExp(cache.clone(), env.clone(), e.clone(), r#impl.clone(), pre.clone(), info.clone())?;
                     Ok((cache.clone(), e_1.clone(), prop.clone()))

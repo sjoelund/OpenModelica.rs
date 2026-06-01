@@ -2310,7 +2310,7 @@ fn differentiateFunctionCall(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DA
                     let mut dexpl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut dpath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut dinl: DAE::InlineType = DAE::InlineType::AFTER_INDEX_RED_INLINE;
-                    let mut mapper: DAE::FunctionDefinition;
+                    let mut mapper: DAE::FunctionDefinition = <DAE::FunctionDefinition as ::std::default::Default>::default();
                     let mut tp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut dtp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut blst: Arc<metamodelica::List<bool>> = metamodelica::nil();
@@ -2339,7 +2339,7 @@ fn differentiateFunctionCall(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DA
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CALL { expLst: expl, path, .. }, BackendDAE::DifferentiationType::DIFFERENTIATION_TIME { .. }) => {
                     let mut dpath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-                    let mut mapper: DAE::FunctionDefinition;
+                    let mut mapper: DAE::FunctionDefinition = <DAE::FunctionDefinition as ::std::default::Default>::default();
                     let mut tp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut dtp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut blst: Arc<metamodelica::List<bool>> = metamodelica::nil();
@@ -2469,7 +2469,7 @@ fn differentiateFunctionCallPartial(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref:
                     let mut dinl: DAE::InlineType = DAE::InlineType::AFTER_INDEX_RED_INLINE;
                     let mut dtp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut functions: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
-                    let mut mapper: DAE::FunctionDefinition;
+                    let mut mapper: DAE::FunctionDefinition = <DAE::FunctionDefinition as ::std::default::Default>::default();
                     let mut tp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut dtp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut blst: Arc<metamodelica::List<bool>> = metamodelica::nil();
@@ -2509,7 +2509,7 @@ fn differentiateFunctionCallPartial(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref:
                 Deref @ DAE::Exp::CALL { expLst: expl, path, .. } => {
                     let mut dpath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut dtp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut mapper: DAE::FunctionDefinition;
+                    let mut mapper: DAE::FunctionDefinition = <DAE::FunctionDefinition as ::std::default::Default>::default();
                     let mut tp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut dtp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut blst: Arc<metamodelica::List<bool>> = metamodelica::nil();
@@ -3218,7 +3218,7 @@ fn differentiateFunction1(mut inFuncName: Arc<Absyn::Path>, mut inMapper: DAE::F
                     if !((!(intEq(1, derivativeOrder.clone())))) { bail!("guard") }
                     let mut fname: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut bl: Arc<metamodelica::List<bool>> = metamodelica::nil();
-                    let mut mapper: DAE::FunctionDefinition;
+                    let mut mapper: DAE::FunctionDefinition = <DAE::FunctionDefinition as ::std::default::Default>::default();
                     let mut ba: metamodelica::Array<bool> = Default::default();
                     let mut tp = (*tp).clone();
                     let mut blst: Arc<metamodelica::List<bool>> = blst.clone();
@@ -3382,7 +3382,7 @@ fn getlowerOrderDerivative(mut fname: Arc<Absyn::Path>, mut functions: Arc<AvlTr
 }
 
 pub fn getFunctionMapper(mut fname: Arc<Absyn::Path>, mut functions: Arc<AvlTreePathFunction::Tree>) -> Result<(DAE::FunctionDefinition, Arc<DAE::Type>)> {
-    let mut mapper: DAE::FunctionDefinition;
+    let mut mapper: DAE::FunctionDefinition = <DAE::FunctionDefinition as ::std::default::Default>::default();
     let mut tp: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     (mapper, tp) = 'mc: {
         let __mc_input = functions.clone();
@@ -3391,7 +3391,7 @@ pub fn getFunctionMapper(mut fname: Arc<Absyn::Path>, mut functions: Arc<AvlTree
                 _ => {
                     let mut flst: Arc<metamodelica::List<DAE::FunctionDefinition>> = metamodelica::nil();
                     let mut t: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut m: DAE::FunctionDefinition;
+                    let mut m: DAE::FunctionDefinition = <DAE::FunctionDefinition as ::std::default::Default>::default();
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(AvlTreePathFunction::get(functions.clone(), fname.clone())?) {
                         Some(DAE::Function::FUNCTION { type_: __pa0, functions: __pa1, .. }) => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
@@ -3425,7 +3425,7 @@ pub fn getFunctionMapper(mut fname: Arc<Absyn::Path>, mut functions: Arc<AvlTree
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn getFunctionMapper1(mut inFuncDefs: Arc<metamodelica::List<DAE::FunctionDefinition>>) -> Result<DAE::FunctionDefinition> {
-    let mut mapper: DAE::FunctionDefinition;
+    let mut mapper: DAE::FunctionDefinition = <DAE::FunctionDefinition as ::std::default::Default>::default();
     mapper = 'mc: {
         let __mc_input = inFuncDefs.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -3439,7 +3439,7 @@ fn getFunctionMapper1(mut inFuncDefs: Arc<metamodelica::List<DAE::FunctionDefini
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: _, tail: funcDefs } => {
-                    let mut m: DAE::FunctionDefinition;
+                    let mut m: DAE::FunctionDefinition = <DAE::FunctionDefinition as ::std::default::Default>::default();
                     m = getFunctionMapper1(funcDefs.clone())?;
                     Ok(m.clone())
                 }

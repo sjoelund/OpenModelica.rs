@@ -1034,7 +1034,7 @@ fn outputTimeBenchmark2(mut compsIn: Arc<metamodelica::List<Arc<BackendDAE::Stro
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: comp, tail: comps }, Deref @ metamodelica::List::Cons { head: exeCost, tail: restCosts }, Deref @ metamodelica::List::Cons { head: eqSys, tail: _ }) => {
                     let mut estimate: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-                    let mut compInfo: Arc<BackendDAE::CompInfo>;
+                    let mut compInfo: Arc<BackendDAE::CompInfo> = Arc::new(<BackendDAE::CompInfo as ::std::default::Default>::default());
                     let __pa0 = ::match_deref::match_deref! { match &(BackendDAEOptimize::countOperationstraverseComps(list![comp.clone()], eqSys.clone(), shared.clone(), metamodelica::nil())?) {
                         Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),

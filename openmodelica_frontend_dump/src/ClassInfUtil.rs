@@ -339,14 +339,14 @@ fn printEventStr(mut inEvent: ClassInf::Event) -> ArcStr {
 }
 
 pub fn start(mut inRestriction: SCode::Restriction, mut inPath: Arc<Absyn::Path>) -> Result<ClassInf::State> {
-    let mut outState: ClassInf::State;
+    let mut outState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
     outState = start_dispatch(inRestriction.clone(), AbsynUtil::makeFullyQualified(inPath.clone()))?;
     Ok(outState)
 }
 
 // Transitions
 fn start_dispatch(mut inRestriction: SCode::Restriction, mut inPath: Arc<Absyn::Path>) -> Result<ClassInf::State> {
-    let mut outState: ClassInf::State;
+    let mut outState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
     outState = (::match_deref::match_deref! { match &((inRestriction.clone(), inPath.clone())) {
         (SCode::Restriction::R_CLASS { .. }, p) => {
             ClassInf::State::UNKNOWN { path: p.clone() }
@@ -412,7 +412,7 @@ fn start_dispatch(mut inRestriction: SCode::Restriction, mut inPath: Arc<Absyn::
 }
 
 pub fn trans(mut inState: ClassInf::State, mut inEvent: ClassInf::Event) -> Result<ClassInf::State> {
-    let mut outState: ClassInf::State;
+    let mut outState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
     outState = (match (inState.clone(), inEvent.clone()) {
         (ClassInf::State::UNKNOWN { path: ref p }, ClassInf::Event::NEWDEF { .. }) => {
             ClassInf::State::HAS_RESTRICTIONS { path: p.clone(), hasEquations: false, hasAlgorithms: false, hasConstraints: false }
@@ -658,7 +658,7 @@ pub fn assertValid(mut inState: ClassInf::State, mut inRestriction: SCode::Restr
 }
 
 pub fn assertTrans(mut inState: ClassInf::State, mut event: ClassInf::Event, mut info: SourceInfo) -> Result<ClassInf::State> {
-    let mut outState: ClassInf::State;
+    let mut outState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
     outState = 'mc: {
         let __mc_input = inState.clone();
         if let Ok(__v) = (|| -> Result<_> {

@@ -724,7 +724,7 @@ pub fn getProtectedList(mut inAbsynClassPartLst: Arc<metamodelica::List<Arc<Absy
 
 pub fn getClassFromElementitemlist(mut inElements: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mut inIdent: ArcStr) -> Result<Arc<Absyn::Class>> {
     let mut outClass: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-    let mut elem: Arc<Absyn::ElementItem>;
+    let mut elem: Arc<Absyn::ElementItem> = Arc::new(<Absyn::ElementItem as ::std::default::Default>::default());
     elem = List::getMemberOnTrue((inIdent.clone()).clone(), inElements.clone(), (std::sync::Arc::new(fnptr!(classElementItemIsNamed, ArcStr, Arc<Absyn::ElementItem>)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<Absyn::ElementItem>) -> Result<bool> + 'static>))?;
     let __pa0 = ::match_deref::match_deref! { match &(elem.clone()) {
         Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { specification: Deref @ Absyn::ElementSpec::CLASSDEF { class_: __pa0, .. }, .. } } => __pa0.clone(),

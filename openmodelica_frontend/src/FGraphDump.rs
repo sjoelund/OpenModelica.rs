@@ -103,7 +103,7 @@ pub fn dumpGraph(mut inGraph: Graph, mut fileName: ArcStr) -> Result<()> {
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut g: i32 = 0;
-            let mut gi: GraphML::GraphInfo;
+            let mut gi: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
             let mut nr: Ref = Default::default();
             gi = GraphML::createGraphInfo();
             let (__pa0, (_, __pa1)) = GraphML::addGraph((literal!("G")).clone(), false, gi.clone())?;
@@ -124,7 +124,7 @@ pub fn dumpGraph(mut inGraph: Graph, mut fileName: ArcStr) -> Result<()> {
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn addNodes(mut gin: (GraphML::GraphInfo, i32), mut inRefs: Arc<metamodelica::List<metamodelica::Array<FCore::Node>>>) -> Result<(GraphML::GraphInfo, i32)> {
-    let mut gout: (GraphML::GraphInfo, i32);
+    let mut gout: (GraphML::GraphInfo, i32) = (<GraphML::GraphInfo as ::std::default::Default>::default(), 0);
     gout = (::match_deref::match_deref! { match &((gin.clone(), inRefs.clone())) {
         (_, Deref @ metamodelica::List::Nil) => {
             gin.clone()
@@ -143,7 +143,7 @@ fn addNodes(mut gin: (GraphML::GraphInfo, i32), mut inRefs: Arc<metamodelica::Li
 }
 
 fn addNode(mut gin: (GraphML::GraphInfo, i32), mut node: Node) -> Result<(GraphML::GraphInfo, i32)> {
-    let mut gout: (GraphML::GraphInfo, i32);
+    let mut gout: (GraphML::GraphInfo, i32) = (<GraphML::GraphInfo as ::std::default::Default>::default(), 0);
     gout = (::match_deref::match_deref! { match &((gin.clone(), node.clone())) {
         ((gi, i), FCore::Node { children: kids, parents: Deref @ metamodelica::List::Nil, .. }) => {
             let mut nds: ArcStr = arcstr::literal!("");
@@ -151,7 +151,7 @@ fn addNode(mut gin: (GraphML::GraphInfo, i32), mut node: Node) -> Result<(GraphM
             let mut labelText: ArcStr = arcstr::literal!("");
             let mut shape: GraphML::ShapeType = GraphML::ShapeType::DIAMOND;
             let mut nrefs: Arc<metamodelica::List<metamodelica::Array<FCore::Node>>> = metamodelica::nil();
-            let mut label: GraphML::NodeLabel;
+            let mut label: GraphML::NodeLabel = <GraphML::NodeLabel as ::std::default::Default>::default();
             let mut gi = (*gi).clone();
             let mut i = (*i).clone();
             (color, shape, nds) = graphml(node.clone(), true)?;
@@ -168,7 +168,7 @@ fn addNode(mut gin: (GraphML::GraphInfo, i32), mut node: Node) -> Result<(GraphM
             let mut labelText: ArcStr = arcstr::literal!("");
             let mut shape: GraphML::ShapeType = GraphML::ShapeType::DIAMOND;
             let mut nrefs: Arc<metamodelica::List<metamodelica::Array<FCore::Node>>> = metamodelica::nil();
-            let mut label: GraphML::NodeLabel;
+            let mut label: GraphML::NodeLabel = <GraphML::NodeLabel as ::std::default::Default>::default();
             let mut gi = (*gi).clone();
             let mut i = (*i).clone();
             (color, shape, nds) = graphml(node.clone(), true)?;
@@ -186,7 +186,7 @@ fn addNode(mut gin: (GraphML::GraphInfo, i32), mut node: Node) -> Result<(GraphM
             let mut labelText: ArcStr = arcstr::literal!("");
             let mut shape: GraphML::ShapeType = GraphML::ShapeType::DIAMOND;
             let mut nrefs: Arc<metamodelica::List<metamodelica::Array<FCore::Node>>> = metamodelica::nil();
-            let mut label: GraphML::NodeLabel;
+            let mut label: GraphML::NodeLabel = <GraphML::NodeLabel as ::std::default::Default>::default();
             let mut gi = (*gi).clone();
             let mut i = (*i).clone();
             (color, shape, nds) = graphml(node.clone(), true)?;
@@ -207,7 +207,7 @@ fn addNode(mut gin: (GraphML::GraphInfo, i32), mut node: Node) -> Result<(GraphM
             let mut labelText: ArcStr = arcstr::literal!("");
             let mut shape: GraphML::ShapeType = GraphML::ShapeType::DIAMOND;
             let mut nrefs: Arc<metamodelica::List<metamodelica::Array<FCore::Node>>> = metamodelica::nil();
-            let mut label: GraphML::NodeLabel;
+            let mut label: GraphML::NodeLabel = <GraphML::NodeLabel as ::std::default::Default>::default();
             let mut gi = (*gi).clone();
             let mut i = (*i).clone();
             (color, shape, nds) = graphml(node.clone(), true)?;

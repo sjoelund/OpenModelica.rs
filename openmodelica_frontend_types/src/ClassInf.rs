@@ -130,6 +130,13 @@ pub enum State {
         path: Arc<Absyn::Path>,
     },
 }
+impl Default for State {
+    fn default() -> Self {
+        Self::UNKNOWN {
+            path: Default::default(),
+        }
+    }
+}
 pub use self::State::{UNKNOWN,OPTIMIZATION,MODEL,RECORD,BLOCK,CONNECTOR,TYPE,PACKAGE,FUNCTION,ENUMERATION,HAS_RESTRICTIONS,TYPE_INTEGER,TYPE_REAL,TYPE_STRING,TYPE_BOOL,TYPE_CLOCK,TYPE_ENUM,EXTERNAL_OBJ,META_TUPLE,META_LIST,META_OPTION,META_RECORD,META_UNIONTYPE,META_ARRAY,META_POLYMORPHIC};
 
 /// - Events

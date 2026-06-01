@@ -84,7 +84,7 @@ pub fn translateFile(mut inFile: ArcStr) -> Result<()> {
             let mut file = __mc_input.clone() else { bail!("nomatch") };
             let mut destFile: ArcStr = arcstr::literal!("");
             let mut res: ArcStr = arcstr::literal!("");
-            let mut txt: Tpl::Text;
+            let mut txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut tplPackage: TplAbsyn::TemplPackage = <TplAbsyn::TemplPackage as ::std::default::Default>::default();
             let mut mmPckg: TplAbsyn::MMPackage = <TplAbsyn::MMPackage as ::std::default::Default>::default();
             let mut nErrors: i32 = 0;
@@ -206,7 +206,7 @@ pub fn tplMainTest(mut inFile: ArcStr) -> Result<()> {
                     let mut ident: ArcStr = arcstr::literal!("");
                     let mut cval: ArcStr = arcstr::literal!("");
                     let mut chars: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut txt: Tpl::Text;
+                    let mut txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
                     let mut tequal: bool = false;
                     let mut tplPackage: TplAbsyn::TemplPackage = <TplAbsyn::TemplPackage as ::std::default::Default>::default();
                     let mut mmPckg: TplAbsyn::MMPackage = <TplAbsyn::MMPackage as ::std::default::Default>::default();
@@ -634,7 +634,7 @@ pub use self::Operator::{PLUS,TIMES,LESS};
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_1(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Statement>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = 'mc: {
         let __mc_input = (in_txt.clone(), in_items.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -673,7 +673,7 @@ fn lm_1(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Statemen
 }
 
 pub fn statement(mut in_txt: Tpl::Text, mut in_i_it: Arc<Statement>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = 'mc: {
         let __mc_input = (in_txt.clone(), in_i_it.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -722,7 +722,7 @@ pub fn statement(mut in_txt: Tpl::Text, mut in_i_it: Arc<Statement>) -> Result<T
 }
 
 pub fn exp(mut in_txt: Tpl::Text, mut in_i_it: Arc<Exp>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = 'mc: {
         let __mc_input = (in_txt.clone(), in_i_it.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -775,7 +775,7 @@ pub fn exp(mut in_txt: Tpl::Text, mut in_i_it: Arc<Exp>) -> Result<Tpl::Text> {
 }
 
 pub fn oper(mut in_txt: Tpl::Text, mut in_i_it: Operator) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = 'mc: {
         let __mc_input = (in_txt.clone(), in_i_it.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -808,7 +808,7 @@ pub fn oper(mut in_txt: Tpl::Text, mut in_i_it: Operator) -> Result<Tpl::Text> {
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_54(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = 'mc: {
         let __mc_input = (in_txt.clone(), in_items.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -849,7 +849,7 @@ fn lm_54(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> R
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_55(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = 'mc: {
         let __mc_input = (in_txt.clone(), in_items.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -890,7 +890,7 @@ fn lm_55(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamod
 }
 
 pub fn intMatrix(mut txt: Tpl::Text, mut i_lstOfLst: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("[ ")).clone() }))?;
     out_txt = Tpl::pushBlock(out_txt.clone(), Arc::new(Tpl::BlockType::BT_ANCHOR { offset: 0 }))?;
     out_txt = Tpl::pushIter(out_txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(";\n")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(crate::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(crate::Tpl::StringToken::ST_NEW_LINE) }))?;

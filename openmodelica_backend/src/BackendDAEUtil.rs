@@ -2498,7 +2498,7 @@ fn traversingcollateArrExp(mut inExp: Arc<DAE::Exp>, mut inFuncs: Option<Arc<Avl
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn getEquationBlock(mut inInteger: i32, mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>) -> Result<Arc<BackendDAE::StrongComponent>> {
-    let mut outComp: Arc<BackendDAE::StrongComponent>;
+    let mut outComp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
     outComp = 'mc: {
         let __mc_input = (inInteger.clone(), inComps.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -2515,7 +2515,7 @@ pub fn getEquationBlock(mut inInteger: i32, mut inComps: Arc<metamodelica::List<
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (i, Deref @ metamodelica::List::Cons { head: _, tail: comps }) => {
-                    let mut comp: Arc<BackendDAE::StrongComponent>;
+                    let mut comp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
                     comp = getEquationBlock(i.clone(), comps.clone())?;
                     Ok(comp.clone())
                 }
@@ -9854,7 +9854,7 @@ pub fn emptyPartitionsInfo() -> BackendDAE::PartitionsInfo {
 }
 
 pub fn makeSingleEquationComp(mut eqIdx: i32, mut varIdx: i32) -> Arc<BackendDAE::StrongComponent> {
-    let mut comp: Arc<BackendDAE::StrongComponent>;
+    let mut comp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
     comp = Arc::new(BackendDAE::StrongComponent::SINGLEEQUATION { eqn: eqIdx.clone(), var: varIdx.clone() });
     comp
 }
@@ -10312,7 +10312,7 @@ pub fn getStrongComponentsVarsAndEquations(mut comps: Arc<metamodelica::List<Arc
     let mut varIdxsOut: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut eqsOut: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut eqIdxsOut: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut comp: Arc<BackendDAE::StrongComponent>;
+    let mut comp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
     let mut eqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut vars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
     let mut vIdxs: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -10410,7 +10410,7 @@ pub fn getStrongComponentVarsAndEquations(mut comp: Arc<BackendDAE::StrongCompon
 
 pub fn getStrongComponentEquations(mut comps: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut eqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut vars: BackendDAE::Variables) -> Result<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>> {
     let mut eqsOut: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
-    let mut comp: Arc<BackendDAE::StrongComponent>;
+    let mut comp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
     let mut eqLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     eqsOut = metamodelica::nil();
     for mut comp in &*comps.clone() {
@@ -10440,7 +10440,7 @@ pub fn isFuncCallWithNoDerAnnotation1(mut expIn: Arc<DAE::Exp>, mut tplIn: (Arc<
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CALL { expLst, path, .. }, (functionTree, crefsIn)) => {
                     let mut inputPos: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    let mut mapper: DAE::FunctionDefinition;
+                    let mut mapper: DAE::FunctionDefinition = <DAE::FunctionDefinition as ::std::default::Default>::default();
                     let mut noDerivativeInputs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
                     let mut conditionRefs: Arc<metamodelica::List<(i32, DAE::derivativeCond)>> = metamodelica::nil();
                     let mut expLst = (*expLst).clone();

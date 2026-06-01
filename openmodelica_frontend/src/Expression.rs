@@ -740,7 +740,7 @@ pub fn negate(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         },
         e => {
             let mut t: Type = Arc::new(DAE::Type::T_NORETCALL);
-            let mut op: Operator;
+            let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
             let mut b: bool = false;
             t = r#typeof(e.clone())?;
             outExp = (::match_deref::match_deref! { match &(t.clone()) {
@@ -918,7 +918,7 @@ pub fn expStripLastSubs(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         },
         Deref @ DAE::Exp::UNARY { exp: e, .. } => {
             let mut ty: Type = Arc::new(DAE::Type::T_NORETCALL);
-            let mut op1: Operator;
+            let mut op1: Operator = <DAE::Operator as ::std::default::Default>::default();
             let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut b: bool = false;
             e_1 = expStripLastSubs(e.clone())?;
@@ -946,7 +946,7 @@ pub fn expStripLastIdent(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         },
         Deref @ DAE::Exp::UNARY { exp: e, .. } => {
             let mut ty: Type = Arc::new(DAE::Type::T_NORETCALL);
-            let mut op1: Operator;
+            let mut op1: Operator = <DAE::Operator as ::std::default::Default>::default();
             let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut b: bool = false;
             e_1 = expStripLastIdent(e.clone())?;
@@ -1182,7 +1182,7 @@ pub fn liftArrayLeftList(mut inType: Arc<DAE::Type>, mut inDimensions: Arc<metam
 }
 
 pub fn setOpType(mut inOp: DAE::Operator, mut inType: Arc<DAE::Type>) -> Result<DAE::Operator> {
-    let mut outOp: DAE::Operator;
+    let mut outOp: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
     outOp = (match inOp.clone() {
         DAE::Operator::ADD { .. } => DAE::Operator::ADD { ty: inType.clone() },
         DAE::Operator::SUB { .. } => DAE::Operator::SUB { ty: inType.clone() },
@@ -1226,7 +1226,7 @@ pub fn setOpType(mut inOp: DAE::Operator, mut inType: Arc<DAE::Type>) -> Result<
 }
 
 pub fn unliftOperator(mut inOperator: DAE::Operator) -> Result<DAE::Operator> {
-    let mut outOperator: DAE::Operator;
+    let mut outOperator: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
     let mut ty: Type = Arc::new(DAE::Type::T_NORETCALL);
     ty = typeofOp(inOperator.clone())?;
     ty = unliftArray(ty.clone())?;
@@ -1235,7 +1235,7 @@ pub fn unliftOperator(mut inOperator: DAE::Operator) -> Result<DAE::Operator> {
 }
 
 pub fn unliftOperatorX(mut inOperator: DAE::Operator, mut inX: i32) -> Result<DAE::Operator> {
-    let mut outOperator: DAE::Operator;
+    let mut outOperator: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
     let mut ty: Type = Arc::new(DAE::Type::T_NORETCALL);
     ty = typeofOp(inOperator.clone())?;
     ty = unliftArrayX(ty.clone(), inX.clone())?;
@@ -1244,7 +1244,7 @@ pub fn unliftOperatorX(mut inOperator: DAE::Operator, mut inX: i32) -> Result<DA
 }
 
 fn unliftOperator2(mut inOperator: DAE::Operator, mut inType: Arc<DAE::Type>) -> Result<DAE::Operator> {
-    let mut outOperator: DAE::Operator;
+    let mut outOperator: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
     outOperator = (::match_deref::match_deref! { match &(inType.clone()) {
         Deref @ DAE::Type::T_ARRAY { .. } => setOpType(inOperator.clone(), inType.clone())?,
         _ => makeScalarOpFromArrayOp(inOperator.clone(), inType.clone()),
@@ -1254,7 +1254,7 @@ fn unliftOperator2(mut inOperator: DAE::Operator, mut inType: Arc<DAE::Type>) ->
 }
 
 fn makeScalarOpFromArrayOp(mut inOperator: DAE::Operator, mut inType: Arc<DAE::Type>) -> DAE::Operator {
-    let mut outOperator: DAE::Operator;
+    let mut outOperator: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
     outOperator = (match inOperator.clone() {
         DAE::Operator::MUL_ARRAY_SCALAR { .. } => DAE::Operator::MUL { ty: inType.clone() },
         DAE::Operator::ADD_ARRAY_SCALAR { .. } => DAE::Operator::ADD { ty: inType.clone() },
@@ -3666,7 +3666,7 @@ fn expandFactorsWork3(mut inExp: Arc<DAE::Exp>, mut acc: Arc<metamodelica::List<
     let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut op: Operator;
+    let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
     acc = 'mc: {
         let __mc_input = inExp.clone();
         if let Ok(__v) = (|| -> Result<_> {
@@ -4288,7 +4288,7 @@ pub fn expAdd(mut e1: Arc<DAE::Exp>, mut e2: Arc<DAE::Exp>) -> Result<Arc<DAE::E
         (_, _) if (Types::isIntegerOrRealOrSubTypeOfEither(r#typeof(e1.clone())?)?) => {
             let mut tp: Type = Arc::new(DAE::Type::T_NORETCALL);
             let mut b: bool = false;
-            let mut op: Operator;
+            let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
             tp = r#typeof(e1.clone())?;
             b = DAEUtil::expTypeArray(tp.clone());
             op = if (b.clone()) {DAE::Operator::ADD_ARR { ty: tp.clone() }} else {DAE::Operator::ADD { ty: tp.clone() }};
@@ -4348,7 +4348,7 @@ pub fn expSub(mut e1: Arc<DAE::Exp>, mut e2: Arc<DAE::Exp>) -> Result<Arc<DAE::E
         (_, _) if (Types::isIntegerOrRealOrSubTypeOfEither(r#typeof(e1.clone())?)?) => {
             let mut tp: Type = Arc::new(DAE::Type::T_NORETCALL);
             let mut b: bool = false;
-            let mut op: Operator;
+            let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
             tp = r#typeof(e1.clone())?;
             b = DAEUtil::expTypeArray(tp.clone());
             op = if (b.clone()) {DAE::Operator::SUB_ARR { ty: tp.clone() }} else {DAE::Operator::SUB { ty: tp.clone() }};
@@ -4454,7 +4454,7 @@ fn makeSumWork(mut inExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut simplif
     let mut tp: Type = Arc::new(DAE::Type::T_NORETCALL);
     let mut rest: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut eLst: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut op: DAE::Operator;
+    let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(inExpLst.clone()) {
         Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
@@ -4513,7 +4513,7 @@ pub fn makeSum(mut inExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<A
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: e1, tail: Deref @ metamodelica::List::Cons { head: e2, tail: Deref @ metamodelica::List::Nil } } => {
                     let mut tp: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op: Operator;
+                    let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
                     let mut b: bool = false;
                     tp = r#typeof(e1.clone())?;
                     b = DAEUtil::expTypeArray(tp.clone());
@@ -4530,7 +4530,7 @@ pub fn makeSum(mut inExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<A
                     let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut b1: bool = false;
                     let mut tp: Type = Arc::new(DAE::Type::T_NORETCALL);
-                    let mut op: Operator;
+                    let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
                     let mut b: bool = false;
                     b1 = isZero(e1.clone());
                     e2 = makeSum(rest.clone())?;
@@ -4646,7 +4646,7 @@ pub fn expMul(mut e1: Arc<DAE::Exp>, mut e2: Arc<DAE::Exp>) -> Result<Arc<DAE::E
                     let mut tp: Type = Arc::new(DAE::Type::T_NORETCALL);
                     let mut b1: bool = false;
                     let mut b2: bool = false;
-                    let mut op: Operator;
+                    let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
                     let mut e1_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut e2_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     tp = r#typeof(e1.clone())?;
@@ -4702,7 +4702,7 @@ pub fn expPow(mut e1: Arc<DAE::Exp>, mut e2: Arc<DAE::Exp>) -> Result<Arc<DAE::E
         _ => {
             let mut tp: Type = Arc::new(DAE::Type::T_NORETCALL);
             let mut b: bool = false;
-            let mut op: Operator;
+            let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
             tp = r#typeof(e1.clone())?;
             b = DAEUtil::expTypeArray(tp.clone());
             op = if (b.clone()) {DAE::Operator::POW_ARR { ty: tp.clone() }} else {DAE::Operator::POW { ty: tp.clone() }};
@@ -5000,7 +5000,7 @@ pub fn expDiv(mut e1: Arc<DAE::Exp>, mut e2: Arc<DAE::Exp>) -> Result<Arc<DAE::E
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut tp: Type = Arc::new(DAE::Type::T_NORETCALL);
     let mut b: bool = false;
-    let mut op: Operator;
+    let mut op: Operator = <DAE::Operator as ::std::default::Default>::default();
     tp = r#typeof(e1.clone())?;
     let true = (Types::isIntegerOrRealOrSubTypeOfEither(tp.clone())?) else { bail!("pattern mismatch") };
     b = DAEUtil::expTypeArray(tp.clone());
@@ -8648,7 +8648,7 @@ pub fn isSub(mut op: DAE::Operator) -> bool {
 
 pub fn isAddOrSubBinary(mut iExp: Arc<DAE::Exp>) -> bool {
     let mut res: bool = false;
-    let mut op: DAE::Operator;
+    let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
     res = (::match_deref::match_deref! { match &(iExp.clone()) {
         Deref @ DAE::Exp::BINARY { exp1: _, operator: op, exp2: _ } => isAddOrSub(op.clone()),
         _ => false,
@@ -8684,7 +8684,7 @@ pub fn isDiv(mut op: DAE::Operator) -> bool {
 
 pub fn isDivBinary(mut iExp: Arc<DAE::Exp>) -> bool {
     let mut res: bool = false;
-    let mut op: DAE::Operator;
+    let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
     res = (::match_deref::match_deref! { match &(iExp.clone()) {
         Deref @ DAE::Exp::BINARY { exp1: _, operator: op, exp2: _ } => isDiv(op.clone()),
         _ => false,
@@ -8695,7 +8695,7 @@ pub fn isDivBinary(mut iExp: Arc<DAE::Exp>) -> bool {
 
 pub fn isMulorDivBinary(mut iExp: Arc<DAE::Exp>) -> bool {
     let mut res: bool = false;
-    let mut op: DAE::Operator;
+    let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
     res = (::match_deref::match_deref! { match &(iExp.clone()) {
         Deref @ DAE::Exp::BINARY { exp1: _, operator: op, exp2: _ } => isMulOrDiv(op.clone()),
         _ => false,
@@ -11750,7 +11750,7 @@ pub fn fromAbsynExp(mut inAExp: Arc<Absyn::Exp>) -> Result<Arc<DAE::Exp>> {
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut op: DAE::Operator;
+            let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
             op = fromAbsynOperator(aop.clone(), DAE::T_UNKNOWN_DEFAULT().clone())?;
             e1 = fromAbsynExp(ae1.clone())?;
             e2 = fromAbsynExp(ae2.clone())?;
@@ -11759,7 +11759,7 @@ pub fn fromAbsynExp(mut inAExp: Arc<Absyn::Exp>) -> Result<Arc<DAE::Exp>> {
         },
         Deref @ Absyn::Exp::UNARY { op: aop, exp: ae } => {
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut op: DAE::Operator;
+            let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
             op = fromAbsynOperator(aop.clone(), DAE::T_UNKNOWN_DEFAULT().clone())?;
             e = fromAbsynExp(ae.clone())?;
             e = Arc::new(DAE::Exp::UNARY { operator: op.clone(), exp: e.clone() });
@@ -11769,7 +11769,7 @@ pub fn fromAbsynExp(mut inAExp: Arc<Absyn::Exp>) -> Result<Arc<DAE::Exp>> {
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut op: DAE::Operator;
+            let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
             op = fromAbsynOperator(aop.clone(), DAE::T_UNKNOWN_DEFAULT().clone())?;
             e1 = fromAbsynExp(ae1.clone())?;
             e2 = fromAbsynExp(ae2.clone())?;
@@ -11778,7 +11778,7 @@ pub fn fromAbsynExp(mut inAExp: Arc<Absyn::Exp>) -> Result<Arc<DAE::Exp>> {
         },
         Deref @ Absyn::Exp::LUNARY { op: aop, exp: ae } => {
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut op: DAE::Operator;
+            let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
             op = fromAbsynOperator(aop.clone(), DAE::T_UNKNOWN_DEFAULT().clone())?;
             e = fromAbsynExp(ae.clone())?;
             e = Arc::new(DAE::Exp::LUNARY { operator: op.clone(), exp: e.clone() });
@@ -11788,7 +11788,7 @@ pub fn fromAbsynExp(mut inAExp: Arc<Absyn::Exp>) -> Result<Arc<DAE::Exp>> {
             let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut op: DAE::Operator;
+            let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
             op = fromAbsynOperator(aop.clone(), DAE::T_UNKNOWN_DEFAULT().clone())?;
             e1 = fromAbsynExp(ae1.clone())?;
             e2 = fromAbsynExp(ae2.clone())?;
@@ -11921,7 +11921,7 @@ fn fromAbsynExpOpt(mut aoe: Option<Arc<Absyn::Exp>>) -> Result<Option<Arc<DAE::E
 }
 
 fn fromAbsynOperator(mut aop: Absyn::Operator, mut ty: Arc<DAE::Type>) -> Result<DAE::Operator> {
-    let mut op: DAE::Operator;
+    let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
     op = (match aop.clone() {
         Absyn::Operator::ADD { .. } => DAE::Operator::ADD { ty: ty.clone() },
         Absyn::Operator::SUB { .. } => DAE::Operator::SUB { ty: ty.clone() },
@@ -12235,7 +12235,7 @@ pub fn expandExpression(mut inExp: Arc<DAE::Exp>, mut expandRecord: bool) -> Res
             let mut expl2: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut op: DAE::Operator;
+            let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
             op = var_field!((*inExp).operator, DAE::Exp::BINARY).clone();
             expl1 = expandExpression(var_field!((*inExp).exp1, DAE::Exp::BINARY).clone(), expandRecord.clone())?;
             expl2 = expandExpression(var_field!((*inExp).exp2, DAE::Exp::BINARY).clone(), expandRecord.clone())?;
@@ -13178,7 +13178,7 @@ pub fn findCallIsInlineAfterIndexReduction(mut e: Arc<DAE::Exp>, mut res: bool) 
 
 pub fn tupleHead(mut exp: Arc<DAE::Exp>, mut prop: DAE::Properties) -> Result<(Arc<DAE::Exp>, DAE::Properties)> {
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut outProp: DAE::Properties;
+    let mut outProp: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     (outExp, outProp) = (::match_deref::match_deref! { match &((exp.clone(), prop.clone())) {
         (Deref @ DAE::Exp::TUPLE { PR: Deref @ metamodelica::List::Cons { head: _, tail: _ } }, DAE::Properties::PROP_TUPLE { .. }) => {
             (listHead(var_field!((*exp).PR, DAE::Exp::TUPLE).clone())?, Types::propTupleFirstProp(prop.clone())?)

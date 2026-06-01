@@ -441,7 +441,7 @@ pub mod TimeEvent {
         let mut containsTime: Pointer::Pointer<bool> = Pointer::create(false);
         (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CALL { .. } => {
-            let mut call: Arc<Call::NFCall>;
+            let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
             (call, bucket, failed, _) = createSample(var_field!((*exp).call, Expression::NFExpression::CALL).clone(), bucket.clone(), iter.clone())?;
             assign_variant_field!(exp => Expression::NFExpression::CALL; call = call.clone());
             (exp.clone(), failed.clone())

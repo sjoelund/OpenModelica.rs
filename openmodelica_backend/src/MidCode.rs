@@ -116,6 +116,9 @@ pub enum OutVar {
     },
     OUT_WILD,
 }
+impl Default for OutVar {
+    fn default() -> Self { Self::OUT_WILD }
+}
 pub use self::OutVar::{OUT_VAR,OUT_WILD};
 
 pub fn varString(mut var: Var) -> Result<ArcStr> {
@@ -292,6 +295,13 @@ pub enum RValue {
         /// type of value
         ty: Arc<DAE::Type>,
     },
+}
+impl Default for RValue {
+    fn default() -> Self {
+        Self::VARIABLE {
+            src: Default::default(),
+        }
+    }
 }
 pub use self::RValue::{VARIABLE,UNARYOP,BINARYOP,LITERALINTEGER,LITERALREAL,LITERALBOOLEAN,LITERALSTRING,LITERALMETATYPE,UNIONTYPEVARIANT,ISSOME,ISCONS,METAFIELD};
 

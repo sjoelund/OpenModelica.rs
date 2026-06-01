@@ -530,7 +530,7 @@ pub fn mkCompNode(mut inComp: Arc<SCode::Element>, mut inParentRef: Ref, mut inK
     let mut m: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
     let mut cnd: Option<Arc<Absyn::Exp>> = None;
     let mut ad: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = metamodelica::nil();
-    let mut ts: Arc<Absyn::TypeSpec>;
+    let mut ts: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
     let mut nd: Data = FCore::Data::TOP;
     let mut i: Arc<DAE::Var> = Arc::new(<DAE::Var as ::std::default::Default>::default());
     let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(inComp.clone()) {

@@ -101,7 +101,7 @@ fn translateClass2(mut inClass: Arc<Absyn::Class>, mut inNumMessages: i32) -> Re
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 c @ Deref @ Absyn::Class { info: file_info, body: d, restriction: r, encapsulatedPrefix: e, finalPrefix: f, partialPrefix: p, name: n, .. } => {
-                    let mut d_1: Arc<SCode::ClassDef>;
+                    let mut d_1: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
                     let mut r_1: SCode::Restriction = SCode::Restriction::R_BLOCK;
                     let mut scodeClass: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
                     let mut sFin: SCode::Final = SCode::Final::FINAL;
@@ -139,7 +139,7 @@ fn translateClass2(mut inClass: Arc<Absyn::Class>, mut inNumMessages: i32) -> Re
 //mahge: FIX HERE. Check for proper input and output
 //declarations in operators according to the specifications.
 pub fn translateOperatorDef(mut inClassDef: Arc<Absyn::ClassDef>, mut operatorName: ArcStr, mut info: SourceInfo) -> Result<(Arc<SCode::ClassDef>, Arc<SCode::Comment>)> {
-    let mut outOperDef: Arc<SCode::ClassDef>;
+    let mut outOperDef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
     let mut cmt: Arc<SCode::Comment> = Arc::new(<SCode::Comment as ::std::default::Default>::default());
     (outOperDef, cmt) = (::match_deref::match_deref! { match &(inClassDef.clone()) {
         Deref @ Absyn::ClassDef::PARTS { comment: cmtString, ann: aann, classParts: parts, .. } => {
@@ -333,7 +333,7 @@ fn translateConnectorType(mut inFlow: bool, mut inStream: bool) -> Result<SCode:
 }
 
 fn translateClassdef(mut inClassDef: Arc<Absyn::ClassDef>, mut info: SourceInfo, mut re: SCode::Restriction) -> Result<(Arc<SCode::ClassDef>, Arc<SCode::Comment>)> {
-    let mut outClassDef: Arc<SCode::ClassDef>;
+    let mut outClassDef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
     let mut outComment: Arc<SCode::Comment> = Arc::new(<SCode::Comment as ::std::default::Default>::default());
     (outClassDef, outComment) = (::match_deref::match_deref! { match &(inClassDef.clone()) {
         Deref @ Absyn::ClassDef::DERIVED { comment: cmt, arguments: a, attributes: attr, typeSpec: t } => {
@@ -824,8 +824,8 @@ pub fn translateEitemlist(mut inAbsynElementItemLst: Arc<metamodelica::List<Arc<
     let mut outElementLst: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     let mut l: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     let mut es: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = inAbsynElementItemLst.clone();
-    let mut ei: Arc<Absyn::ElementItem>;
-    let mut e: Arc<Absyn::Element>;
+    let mut ei: Arc<Absyn::ElementItem> = Arc::new(<Absyn::ElementItem as ::std::default::Default>::default());
+    let mut e: Arc<Absyn::Element> = Arc::new(<Absyn::Element as ::std::default::Default>::default());
     for mut ei in &*es.clone() {
         let mut ei = ei.clone();
         let () = (::match_deref::match_deref! { match &(ei.clone()) {
@@ -940,7 +940,7 @@ fn translateElementspec(mut cc: Option<Arc<Absyn::ConstrainClass>>, mut finalPre
     let mut outElementLst: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     outElementLst = (::match_deref::match_deref! { match &((inRedeclareKeywords.clone(), inVisibility.clone(), inElementSpec4.clone(), inInfo.clone())) {
         (repl, vis, Deref @ Absyn::ElementSpec::CLASSDEF { class_: Deref @ Absyn::Class { info: i, body: de, restriction: Absyn::Restriction::R_OPERATOR { .. }, encapsulatedPrefix: e, partialPrefix: pa, name: n, .. }, replaceable_: rp }, _) => {
-            let mut de_1: Arc<SCode::ClassDef>;
+            let mut de_1: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
             let mut redecl: bool = false;
             let mut cmt: Arc<SCode::Comment> = Arc::new(<SCode::Comment as ::std::default::Default>::default());
             let mut cls: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
@@ -962,7 +962,7 @@ fn translateElementspec(mut cc: Option<Arc<Absyn::ConstrainClass>>, mut finalPre
             list![cls.clone()]
         },
         (repl, vis, Deref @ Absyn::ElementSpec::CLASSDEF { class_: cl @ Deref @ Absyn::Class { info: i, body: de, restriction: re, encapsulatedPrefix: e, partialPrefix: pa, name: n, .. }, replaceable_: rp }, _) => {
-            let mut de_1: Arc<SCode::ClassDef>;
+            let mut de_1: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
             let mut re_1: SCode::Restriction = SCode::Restriction::R_BLOCK;
             let mut redecl: bool = false;
             let mut cmt: Arc<SCode::Comment> = Arc::new(<SCode::Comment as ::std::default::Default>::default());
@@ -1540,8 +1540,8 @@ fn translateSub(mut inPath: Arc<Absyn::Path>, mut inMod: Arc<SCode::Mod>, mut in
 
 fn makeTypeVarElement(mut r#str: ArcStr, mut info: SourceInfo) -> Arc<SCode::Element> {
     let mut elt: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-    let mut cd: Arc<SCode::ClassDef>;
-    let mut ts: Arc<Absyn::TypeSpec>;
+    let mut cd: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
+    let mut ts: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
     ts = Arc::new(Absyn::TypeSpec::TCOMPLEX { path: Arc::new(Absyn::Path::IDENT { name: (literal!("polymorphic")).clone() }), typeSpecs: list![Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("Any")).clone() }), arrayDim: None })], arrayDim: None });
     cd = Arc::new(SCode::ClassDef::DERIVED { typeSpec: ts.clone(), modifications: Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD), attributes: SCode::Attributes { arrayDims: metamodelica::nil(), connectorType: openmodelica_frontend_types::SCode::ConnectorType::POTENTIAL, parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: openmodelica_frontend_types::SCode::Variability::VAR, direction: openmodelica_ast::Absyn::Direction::BIDIR, isField: openmodelica_ast::Absyn::IsField::NONFIELD } });
     elt = Arc::new(SCode::Element::CLASS { name: (r#str.clone()).clone(), prefixes: Arc::new(SCode::Prefixes { visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, redeclarePrefix: openmodelica_frontend_types::SCode::Redeclare::NOT_REDECLARE, finalPrefix: openmodelica_frontend_types::SCode::Final::FINAL, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, replaceablePrefix: Arc::new(openmodelica_frontend_types::SCode::Replaceable::NOT_REPLACEABLE) }), encapsulatedPrefix: openmodelica_frontend_types::SCode::Encapsulated::NOT_ENCAPSULATED, partialPrefix: openmodelica_frontend_types::SCode::Partial::NOT_PARTIAL, restriction: openmodelica_frontend_types::SCode::Restriction::R_TYPE, classDef: cd.clone(), cmt: SCode::noComment.clone(), info: info.clone() });

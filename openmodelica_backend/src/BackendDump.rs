@@ -4170,7 +4170,7 @@ pub fn dumpBipartiteGraphStrongComponent2(mut varsIn: BackendDAE::Variables, mut
     let mut numEqs: i32 = 0;
     let mut varRange: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut eqRange: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut graphInfo: GraphML::GraphInfo;
+    let mut graphInfo: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     let mut graphIdx: i32 = 0;
     numEqs = BackendEquation::equationArraySize(eqsIn.clone())?;
     numVars = BackendVariable::varsSize(varsIn.clone());
@@ -4197,7 +4197,7 @@ pub fn dumpBipartiteGraphStrongComponent2(mut varsIn: BackendDAE::Variables, mut
 }
 
 fn addEqNodesToGraph(mut eqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut attsIn: Arc<metamodelica::List<(bool, ArcStr)>>, mut attributeIdcs: Arc<metamodelica::List<i32>>, mut graphInfoIn: (GraphML::GraphInfo, i32)) -> Result<(GraphML::GraphInfo, i32)> {
-    let mut graphInfoOut: (GraphML::GraphInfo, i32);
+    let mut graphInfoOut: (GraphML::GraphInfo, i32) = (<GraphML::GraphInfo as ::std::default::Default>::default(), 0);
     let mut eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
     let mut isResEq: bool = false;
     let mut nameAttrIdx: i32 = 0;
@@ -4214,8 +4214,8 @@ fn addEqNodesToGraph(mut eqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDA
     let mut idxString: ArcStr = arcstr::literal!("");
     let mut typeStr: ArcStr = arcstr::literal!("");
     let mut daeIdxStr: ArcStr = arcstr::literal!("");
-    let mut graphInfo: GraphML::GraphInfo;
-    let mut nodeLabel: GraphML::NodeLabel;
+    let mut graphInfo: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
+    let mut nodeLabel: GraphML::NodeLabel = <GraphML::NodeLabel as ::std::default::Default>::default();
     nameAttrIdx = (attributeIdcs.clone()).get(1)?;
     typeAttrIdx = (attributeIdcs.clone()).get(2)?;
     idxAttrIdx = (attributeIdcs.clone()).get(3)?;
@@ -4257,7 +4257,7 @@ fn addEqNodesToGraph(mut eqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDA
 pub fn dumpDAGStrongComponent(mut graphIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut metaIn: HpcOmTaskGraph::TaskGraphMeta, mut fileName: ArcStr) -> Result<()> {
     let mut graphIdx: i32 = 0;
     let mut nameAttIdx: i32 = 0;
-    let mut graphInfo: GraphML::GraphInfo;
+    let mut graphInfo: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     graphInfo = GraphML::createGraphInfo();
     let (__pa0, (_, __pa1)) = GraphML::addGraph((literal!("TornSystemGraph")).clone(), true, graphInfo.clone())?;
     graphInfo = __pa0.clone();
@@ -4271,7 +4271,7 @@ pub fn dumpDAGStrongComponent(mut graphIn: metamodelica::Array<Arc<metamodelica:
 }
 
 fn buildGraphInfoDAG(mut graphIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut metaIn: HpcOmTaskGraph::TaskGraphMeta, mut graphInfoIn: GraphML::GraphInfo, mut graphIdx: i32, mut attIdcs: Arc<metamodelica::List<i32>>) -> Result<GraphML::GraphInfo> {
-    let mut graphInfoOut: GraphML::GraphInfo;
+    let mut graphInfoOut: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     let mut nodeIdcs: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut nodes: Arc<metamodelica::List<GraphML::Node>> = metamodelica::nil();
     let mut nameAttIdx: i32 = 0;
@@ -4284,13 +4284,13 @@ fn buildGraphInfoDAG(mut graphIn: metamodelica::Array<Arc<metamodelica::List<i32
 }
 
 fn addNodeToDAG(mut nodeIdx: i32, mut graphIn: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut metaIn: HpcOmTaskGraph::TaskGraphMeta, mut graphIdx: i32, mut atts: Arc<metamodelica::List<i32>>, mut graphInfoIn: GraphML::GraphInfo) -> Result<GraphML::GraphInfo> {
-    let mut graphInfoOut: GraphML::GraphInfo;
-    let mut tmpGraph: GraphML::GraphInfo;
+    let mut graphInfoOut: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
+    let mut tmpGraph: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     let mut nameAttIdx: i32 = 0;
     let mut childNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut compDescs: metamodelica::Array<ArcStr> = Default::default();
     let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-    let mut nodeLabel: GraphML::NodeLabel;
+    let mut nodeLabel: GraphML::NodeLabel = <GraphML::NodeLabel as ::std::default::Default>::default();
     let mut nodeString: ArcStr = arcstr::literal!("");
     let mut nodeDesc: ArcStr = arcstr::literal!("");
     let mut compName: ArcStr = arcstr::literal!("");
@@ -4309,13 +4309,13 @@ fn addNodeToDAG(mut nodeIdx: i32, mut graphIn: metamodelica::Array<Arc<metamodel
 }
 
 fn addDirectedEdge(mut child: i32, mut parent: i32, mut graphInfoIn: GraphML::GraphInfo) -> Result<GraphML::GraphInfo> {
-    let mut graphInfoOut: GraphML::GraphInfo;
+    let mut graphInfoOut: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     (graphInfoOut, _) = GraphML::addEdge(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Edge")); __mm_s.push_str(&*intString(parent.clone())); __mm_s.push_str(&*intString(child.clone())); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Node")); __mm_s.push_str(&*intString(child.clone())); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Node")); __mm_s.push_str(&*intString(parent.clone())); ArcStr::from(__mm_s) }).clone(), (arcstr::literal!(GraphML::COLOR_BLACK)).clone(), openmodelica_susan::GraphML::LineType::LINE, GraphML::LINEWIDTH_STANDARD.clone(), false, metamodelica::nil(), (openmodelica_susan::GraphML::ArrowType::ARROWNONE, openmodelica_susan::GraphML::ArrowType::ARROWSTANDART), metamodelica::nil(), graphInfoIn.clone())?;
     Ok(graphInfoOut)
 }
 
 fn addVarNodeToGraph(mut indx: i32, mut vars: BackendDAE::Variables, mut attsIn: Arc<metamodelica::List<(bool, ArcStr)>>, mut attributeIdcs: Arc<metamodelica::List<i32>>, mut graphInfoIn: (GraphML::GraphInfo, i32)) -> Result<(GraphML::GraphInfo, i32)> {
-    let mut graphInfoOut: (GraphML::GraphInfo, i32);
+    let mut graphInfoOut: (GraphML::GraphInfo, i32) = (<GraphML::GraphInfo as ::std::default::Default>::default(), 0);
     let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
     let mut isTearVar: bool = false;
     let mut nameAttrIdx: i32 = 0;
@@ -4327,8 +4327,8 @@ fn addVarNodeToGraph(mut indx: i32, mut vars: BackendDAE::Variables, mut attsIn:
     let mut idxString: ArcStr = arcstr::literal!("");
     let mut typeStr: ArcStr = arcstr::literal!("");
     let mut daeIdxStr: ArcStr = arcstr::literal!("");
-    let mut graphInfo: GraphML::GraphInfo;
-    let mut nodeLabel: GraphML::NodeLabel;
+    let mut graphInfo: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
+    let mut nodeLabel: GraphML::NodeLabel = <GraphML::NodeLabel as ::std::default::Default>::default();
     (graphInfo, graphIdx) = graphInfoIn.clone();
     nameAttrIdx = (attributeIdcs.clone()).get(1)?;
     typeAttIdx = (attributeIdcs.clone()).get(2)?;
@@ -4347,7 +4347,7 @@ fn addVarNodeToGraph(mut indx: i32, mut vars: BackendDAE::Variables, mut attsIn:
 }
 
 fn addEqNodeToGraph(mut indx: i32, mut eqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, mut attsIn: Arc<metamodelica::List<(bool, ArcStr)>>, mut attributeIdcs: Arc<metamodelica::List<i32>>, mut graphInfoIn: (GraphML::GraphInfo, i32)) -> Result<(GraphML::GraphInfo, i32)> {
-    let mut graphInfoOut: (GraphML::GraphInfo, i32);
+    let mut graphInfoOut: (GraphML::GraphInfo, i32) = (<GraphML::GraphInfo as ::std::default::Default>::default(), 0);
     let mut eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
     let mut isResEq: bool = false;
     let mut nameAttrIdx: i32 = 0;
@@ -4359,8 +4359,8 @@ fn addEqNodeToGraph(mut indx: i32, mut eqs: Arc<ExpandableArray::ExpandableArray
     let mut idxString: ArcStr = arcstr::literal!("");
     let mut typeStr: ArcStr = arcstr::literal!("");
     let mut daeIdxStr: ArcStr = arcstr::literal!("");
-    let mut graphInfo: GraphML::GraphInfo;
-    let mut nodeLabel: GraphML::NodeLabel;
+    let mut graphInfo: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
+    let mut nodeLabel: GraphML::NodeLabel = <GraphML::NodeLabel as ::std::default::Default>::default();
     (graphInfo, graphIdx) = graphInfoIn.clone();
     nameAttrIdx = (attributeIdcs.clone()).get(1)?;
     typeAttrIdx = (attributeIdcs.clone()).get(2)?;
@@ -4383,7 +4383,7 @@ fn addEqNodeToGraph(mut indx: i32, mut eqs: Arc<ExpandableArray::ExpandableArray
 }
 
 fn addEdgeToGraph(mut eqIdx: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut graphInfoIn: GraphML::GraphInfo) -> Result<GraphML::GraphInfo> {
-    let mut graphInfoOut: GraphML::GraphInfo;
+    let mut graphInfoOut: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     let mut varLst: Arc<metamodelica::List<i32>> = metamodelica::nil();
     varLst = m.clone().borrow()[(eqIdx.clone()-1) as usize].clone();
     graphInfoOut = List::fold1(varLst.clone(), (std::sync::Arc::new(addEdgeToGraph2) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32, GraphML::GraphInfo) -> Result<GraphML::GraphInfo> + 'static>), eqIdx.clone(), graphInfoIn.clone());
@@ -4391,7 +4391,7 @@ fn addEdgeToGraph(mut eqIdx: i32, mut m: metamodelica::Array<Arc<metamodelica::L
 }
 
 fn addEdgeToGraph2(mut varIdxIn: i32, mut eqIdx: i32, mut graphInfoIn: GraphML::GraphInfo) -> Result<GraphML::GraphInfo> {
-    let mut graphInfoOut: GraphML::GraphInfo;
+    let mut graphInfoOut: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     let mut varIdx: i32 = 0;
     let mut eqNodeId: ArcStr = arcstr::literal!("");
     let mut varNodeId: ArcStr = arcstr::literal!("");
@@ -4435,7 +4435,7 @@ pub fn dumpBackendDAEBipartiteGraph(mut dae: Arc<BackendDAE::BackendDAE>, mut fi
     let mut orderAttIdx: i32 = 0;
     let mut tearInfo: ArcStr = arcstr::literal!("");
     let mut nodeColor: ArcStr = arcstr::literal!("");
-    let mut graphInfo: GraphML::GraphInfo;
+    let mut graphInfo: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     let mut shapeType: GraphML::ShapeType = GraphML::ShapeType::DIAMOND;
     let mut lineType: GraphML::LineType = GraphML::LineType::DASHED;
     let mut lineWidth: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);

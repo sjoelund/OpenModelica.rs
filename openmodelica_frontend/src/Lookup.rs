@@ -261,7 +261,7 @@ fn lookupType2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inClass: 
                     let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut types: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
                     let mut names: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut ci_state: ClassInf::State;
+                    let mut ci_state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
                     let mut r#mod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
                     let mut cache = (*cache).clone();
                     env_2 = FGraph::openScope(env_1.clone(), encflag.clone(), (id.clone()).clone(), Some(crate::FCore::ScopeType::CLASS_SCOPE))?;
@@ -624,7 +624,7 @@ fn lookupClassQualified2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
             ::match_deref::match_deref! { match &__mc_input {
                 (cache, env, Deref @ SCode::Element::CLASS { restriction: restr, encapsulatedPrefix: encflag, name: id, .. }, None, _) => {
                     let mut prevFrames: Arc<metamodelica::List<metamodelica::Array<FCore::Node>>> = metamodelica::nil();
-                    let mut ci_state: ClassInf::State;
+                    let mut ci_state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
                     let mut c: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
                     let mut r#mod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
                     let mut cache = (*cache).clone();
@@ -1024,7 +1024,7 @@ fn moreLookupUnqualifiedImportedClassInFrame(mut inCache: FCore::Cache, mut inIm
                     let mut restr: SCode::Restriction = SCode::Restriction::R_BLOCK;
                     let mut env_1: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut env2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut ci_state: ClassInf::State;
+                    let mut ci_state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
                     let mut r: metamodelica::Array<FCore::Node> = Default::default();
                     let mut r#mod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
                     let mut cache = (*cache).clone();
@@ -1099,7 +1099,7 @@ fn lookupUnqualifiedImportedClassInFrame(mut inCache: FCore::Cache, mut inImport
                     let mut env2: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut env3: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut prevFrames: Arc<metamodelica::List<metamodelica::Array<FCore::Node>>> = metamodelica::nil();
-                    let mut ci_state: ClassInf::State;
+                    let mut ci_state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
                     let mut r#mod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
                     let mut cache = (*cache).clone();
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(FGraph::currentScope(env.clone())?.reverse()) {
@@ -1592,7 +1592,7 @@ pub fn lookupVarInPackages(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
                     let mut env5: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut p_env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut componentEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    let mut ci_state: ClassInf::State;
+                    let mut ci_state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
                     let mut attr: Arc<DAE::Attributes> = Arc::new(<DAE::Attributes as ::std::default::Default>::default());
                     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
                     let mut bind: Arc<DAE::Binding> = Arc::new(DAE::Binding::UNBOUND);
@@ -2266,7 +2266,7 @@ fn lookupFunctionsInEnv2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
                     let mut c: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
                     let mut encflag: SCode::Encapsulated = SCode::Encapsulated::ENCAPSULATED;
                     let mut restr: SCode::Restriction = SCode::Restriction::R_BLOCK;
-                    let mut ci_state: ClassInf::State;
+                    let mut ci_state: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
                     let mut r#mod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
                     let mut cache = (*cache).clone();
                     let mut r = (*r).clone();

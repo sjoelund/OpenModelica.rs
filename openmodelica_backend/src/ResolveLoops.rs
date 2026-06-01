@@ -1516,7 +1516,7 @@ fn getPathTillNextCrossEq(mut checkEqCrossNodes: Arc<metamodelica::List<i32>>, m
         __acc.reverse()
     });
                     adjEqs = List::filterOnFalse(adjEqs.clone(), std::sync::Arc::new(fnptr!(listEmpty, _)));
-                    nextEqs = List::map(adjEqs.clone(), Arc::new(listHead.clone()));
+                    nextEqs = List::map(adjEqs.clone(), (std::sync::Arc::new(listHead) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>));
                     (nextEqs, _) = List::deleteMemberOnTrue(prevEq.clone(), nextEqs.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
                     (endEqs, unfinEqs, _) = List::intersection1OnTrue(nextEqs.clone(), allEqCrossNodes.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
                     paths = List::map1(endEqs.clone(), (std::sync::Arc::new(fnptr!(cons1, i32, Arc<metamodelica::List<i32>>)) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), pathStart.clone());
@@ -1990,7 +1990,7 @@ fn isAddOrSubExp(mut inExp: Arc<DAE::Exp>, mut inTuple: (bool, BackendDAE::Varia
 
 fn sumUp2Expressions(mut sumUp: bool, mut exp1: Arc<DAE::Exp>, mut exp2: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     let mut expOut: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut op: DAE::Operator;
+    let mut op: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     ty = DAE::T_REAL_DEFAULT().clone();
     op = if (sumUp.clone()) {DAE::Operator::ADD { ty: ty.clone() }} else {DAE::Operator::SUB { ty: ty.clone() }};

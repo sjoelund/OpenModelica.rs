@@ -148,6 +148,13 @@ pub enum TaskList {
         masterOnly: bool,
     },
 }
+impl Default for TaskList {
+    fn default() -> Self {
+        Self::PARALLELTASKLIST {
+            tasks: Default::default(),
+        }
+    }
+}
 pub use self::TaskList::{PARALLELTASKLIST,SERIALTASKLIST};
 
 //TODO: Use the TaskList for the other schedulers, too

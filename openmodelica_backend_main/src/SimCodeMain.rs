@@ -451,7 +451,7 @@ fn callTargetTemplates(mut simCode: SimCode::SimCode, mut target: ArcStr) -> Res
     fn runCodegenFunc(mut func: Arc<dyn ::std::ops::Fn() -> Result<(bool, Arc<metamodelica::List<ArcStr>>)> + 'static>) -> Result<(bool, Arc<metamodelica::List<ArcStr>>)> {
         let mut res: (bool, Arc<metamodelica::List<ArcStr>>) = (false, metamodelica::nil());
         let mut b: bool = false;
-        let ref __pa1 @ (ref __pa0, _) = &(func()?);
+        let __pa1 @ (__pa0, _) = &(func()?);
         b = __pa0.clone();
         res = __pa1.clone();
         if !(b.clone()) {
@@ -472,7 +472,7 @@ fn callTargetTemplates(mut simCode: SimCode::SimCode, mut target: ArcStr) -> Res
     }
 
     let mut func: Arc<dyn ::std::ops::Fn(Tpl::Text, SimCode::SimCode) -> Result<Tpl::Text> + 'static>;
-    let mut txt: Tpl::Text;
+    let mut txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut generatedObjects: Arc<AvlSetString::Tree> = Arc::new(openmodelica_util::AvlSetString::Tree::EMPTY);
     { let __v = Some(simCode.clone()); openmodelica_backend::Globals::optionSimCode.with(|__root| *__root.borrow_mut() = __v) };
     let () = ({

@@ -97,6 +97,9 @@ pub enum ExtendsWrapper {
     },
     NO_EXTENDS,
 }
+impl Default for ExtendsWrapper {
+    fn default() -> Self { Self::NO_EXTENDS }
+}
 pub use self::ExtendsWrapper::{UNQUALIFIED_EXTENDS,QUALIFIED_EXTENDS,NO_EXTENDS};
 
 pub fn update(mut inEnv: Env) -> Result<Env> {
@@ -569,7 +572,7 @@ fn printInheritedExtendsError(mut inName: ArcStr, mut inExtends: Arc<metamodelic
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: ext @ Deref @ NFSCodeEnv::Extends { info: info2, baseClass: bc, .. }, tail: rest_ext } => {
-                    let mut item: Item;
+                    let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
                     let mut info1: SourceInfo = <SourceInfo as ::std::default::Default>::default();
                     let mut bc_str: ArcStr = arcstr::literal!("");
                     let mut info2 = (*info2).clone();
@@ -674,7 +677,7 @@ fn lookupInLocalScope(mut inName: ArcStr, mut inEnv: Env, mut inExtendsTable: Ex
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    let mut item: Item;
+                    let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
                     let mut env: Env = metamodelica::nil();
                     (item, env) = NFSCodeLookup::lookupInClass((inName.clone()).clone(), inEnv.clone())?;
                     Ok((Some(item.clone()), Some(Arc::new(Absyn::Path::IDENT { name: (inName.clone()).clone() })), Some(env.clone()), false))
@@ -763,7 +766,7 @@ fn lookupInBaseClasses2(mut inName: ArcStr, mut inExtends: Option<Arc<NFSCodeEnv
     let mut outEnv: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>> = None;
     (outItem, outEnv) = (::match_deref::match_deref! { match &(inExtends.clone()) {
         Some(Deref @ NFSCodeEnv::Extends { baseClass: Deref @ Absyn::Path::FULLYQUALIFIED { path: bc }, .. }) => {
-            let mut item: Item;
+            let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut env: Env = metamodelica::nil();
             let mut opt_item: Option<Arc<NFSCodeEnv::Item>> = None;
             let mut opt_env: Option<Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>> = None;
@@ -800,7 +803,7 @@ fn lookupInQualifiedImports(mut inName: ArcStr, mut inImports: Arc<metamodelica:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Absyn::Import::NAMED_IMPORT { path, name }, tail: _ } => {
-                    let mut item: Item;
+                    let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
                     let mut env: Env = metamodelica::nil();
                     let mut path = (*path).clone();
                     let true = (stringEqual((inName.clone()).clone(), (name.clone()).clone())) else { bail!("pattern mismatch") };
@@ -835,7 +838,7 @@ fn lookupInUnqualifiedImports(mut inName: ArcStr, mut inImports: Arc<metamodelic
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: Absyn::Import::UNQUAL_IMPORT { path }, tail: _ } => {
-                    let mut item: Item;
+                    let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
                     let mut env: Env = metamodelica::nil();
                     let mut path = (*path).clone();
                     (item, env) = lookupFullyQualified(path.clone(), inEnv.clone(), inExtendsTable.clone())?;
@@ -866,7 +869,7 @@ fn lookupInUnqualifiedImports(mut inName: ArcStr, mut inImports: Arc<metamodelic
 }
 
 fn lookupFullyQualified(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inExtendsTable: ExtendsTableArray) -> Result<(Item, Env)> {
-    let mut outItem: Item;
+    let mut outItem: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
     let mut outEnv: Env = metamodelica::nil();
     let mut env: Env = metamodelica::nil();
     env = NFSCodeEnv::getEnvTopScope(inEnv.clone())?;
@@ -875,11 +878,11 @@ fn lookupFullyQualified(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inExte
 }
 
 fn lookupFullyQualified2(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inExtendsTable: ExtendsTableArray) -> Result<(Item, Env)> {
-    let mut outItem: Item;
+    let mut outItem: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
     let mut outEnv: Env = metamodelica::nil();
     (outItem, outEnv) = (::match_deref::match_deref! { match &(inName.clone()) {
         Deref @ Absyn::Path::IDENT { name } => {
-            let mut item: Item;
+            let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut env: Env = metamodelica::nil();
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(lookupInLocalScope((name.clone()).clone(), inEnv.clone(), inExtendsTable.clone())?) {
                 (Some(__pa0), _, Some(__pa1), _) => (__pa0.clone(), __pa1.clone()),
@@ -890,7 +893,7 @@ fn lookupFullyQualified2(mut inName: Arc<Absyn::Path>, mut inEnv: Env, mut inExt
             (item.clone(), env.clone())
         },
         Deref @ Absyn::Path::QUALIFIED { path: rest_path, name } => {
-            let mut item: Item;
+            let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut env: Env = metamodelica::nil();
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(lookupInLocalScope((name.clone()).clone(), inEnv.clone(), inExtendsTable.clone())?) {
                 (Some(__pa0), _, Some(__pa1), _) => (__pa0.clone(), __pa1.clone()),
@@ -1065,13 +1068,13 @@ fn updateClassExtends2(mut inClass: Arc<SCode::Element>, mut inName: ArcStr, mut
 
 fn lookupClassExtendsBaseClass(mut inName: ArcStr, mut inEnv: Env, mut inInfo: SourceInfo) -> Result<(Arc<Absyn::Path>, Item)> {
     let mut outPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    let mut outItem: Item;
+    let mut outItem: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
     (outPath, outItem) = 'mc: {
         let __mc_input = inInfo.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-            let mut item: Item;
+            let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             let mut basename: ArcStr = arcstr::literal!("");
             basename = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inName.clone()); __mm_s.push_str(&*arcstr::literal!(NFSCodeEnv::BASE_CLASS_SUFFIX)); ArcStr::from(__mm_s) }).clone();
             (item, _) = NFSCodeLookup::lookupInheritedName((basename.clone()).clone(), inEnv.clone())?;
@@ -1081,7 +1084,7 @@ fn lookupClassExtendsBaseClass(mut inName: ArcStr, mut inEnv: Env, mut inInfo: S
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-            let mut item: Item;
+            let mut item: Item = Arc::new(<NFSCodeEnv::Item as ::std::default::Default>::default());
             (item, _) = NFSCodeLookup::lookupInheritedName((inName.clone()).clone(), inEnv.clone())?;
             path = Arc::new(Absyn::Path::IDENT { name: (inName.clone()).clone() });
             Ok((path.clone(), item.clone()))

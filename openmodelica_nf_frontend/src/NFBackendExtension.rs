@@ -1444,7 +1444,7 @@ pub mod VariableAttributes {
         let mut name: ArcStr = arcstr::literal!("");
         let mut arg: Arc<Expression::NFExpression> = Arc::new(Expression::END);
         let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-        let mut call: Arc<Call::NFCall>;
+        let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
         let mut rest: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
         name = ((::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::ENUM_LITERAL { .. } => var_field!((*exp).name, Expression::NFExpression::ENUM_LITERAL).clone(),

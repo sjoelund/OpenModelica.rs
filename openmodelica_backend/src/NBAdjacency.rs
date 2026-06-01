@@ -2121,6 +2121,9 @@ pub mod Solvability {
             vars: Option<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>>,
         },
     }
+    impl Default for Solvability {
+        fn default() -> Self { Self::UNKNOWN }
+    }
     pub use self::Solvability::{UNKNOWN,UNSOLVABLE,IMPLICIT,EXPLICIT_NONLINEAR,EXPLICIT_LINEAR};
     pub fn toString(mut sol: Arc<Solvability>) -> Result<ArcStr> {
         let mut r#str: ArcStr = arcstr::literal!("");

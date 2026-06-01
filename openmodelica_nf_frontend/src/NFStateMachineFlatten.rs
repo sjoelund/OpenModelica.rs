@@ -693,7 +693,7 @@ fn equationHasPrevious(mut eq: Arc<Equation::NFEquation>, mut varCref: Arc<Compo
 
 fn isPreviousOfCref(mut e: Arc<Expression::NFExpression>, mut varCref: Arc<ComponentRef::NFComponentRef>) -> Result<bool> {
     let mut res: bool = false;
-    let mut expCall: Arc<Call::NFCall>;
+    let mut expCall: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut argCref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     res = (::match_deref::match_deref! { match &(e.clone()) {
@@ -1090,7 +1090,7 @@ fn subsXInState(mut inExp: Arc<Expression::NFExpression>, mut funcName: ArcStr, 
 fn subsXInStateHelper(mut exp: Arc<Expression::NFExpression>, mut funcName: ArcStr, mut substExp: Arc<Expression::NFExpression>, mut found: bool) -> (Arc<Expression::NFExpression>, bool) {
     let mut exp: Arc<Expression::NFExpression> = exp;
     let mut found: bool = found;
-    let mut expCall: Arc<Call::NFCall>;
+    let mut expCall: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     match '__try0: {
         let __pa1 = ::match_deref::match_deref! { match &(exp.clone()) {
             Deref @ Expression::CALL { call: __pa1 } => __pa1.clone(),
@@ -1326,7 +1326,7 @@ fn subsActiveStateInExp(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<Ex
 
 fn subsActiveStateHelper(mut exp: Arc<Expression::NFExpression>) -> Arc<Expression::NFExpression> {
     let mut exp: Arc<Expression::NFExpression> = exp;
-    let mut expCall: Arc<Call::NFCall>;
+    let mut expCall: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut argCref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut newExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     match '__try0: {
@@ -1367,7 +1367,7 @@ fn subsPreviousCrefs(mut exp: Arc<Expression::NFExpression>, mut stateVarCrefs: 
     let mut arg1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut argTy: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut argCref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-    let mut expCall: Arc<Call::NFCall>;
+    let mut expCall: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut newExp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     if '__try0: {
         let __pa1 = ::match_deref::match_deref! { match &(exp.clone()) {
@@ -1436,7 +1436,7 @@ fn extractTransition(mut eq: Arc<Equation::NFEquation>, mut stateCrefs: Arc<meta
     let mut from: i32 = 0;
     let mut to: i32 = 0;
     let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
-    let mut eqCall: Arc<Call::NFCall>;
+    let mut eqCall: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let __pa0 = ::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ Equation::NORETCALL { exp: Deref @ Expression::CALL { call: __pa0 }, .. } => __pa0.clone(),
         _ => bail!("pattern mismatch"),

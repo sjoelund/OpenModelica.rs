@@ -1022,6 +1022,9 @@ pub enum Status {
         instanceOf: ArcStr,
     },
 }
+impl Default for Status {
+    fn default() -> Self { Self::VAR_UNTYPED }
+}
 pub use self::Status::{VAR_UNTYPED,VAR_TYPED,VAR_DAE,VAR_DELETED,CLS_UNTYPED,CLS_PARTIAL,CLS_FULL,CLS_INSTANCE};
 
 // ************************ FVisit structures ***************************

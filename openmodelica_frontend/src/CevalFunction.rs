@@ -97,6 +97,9 @@ pub enum LoopControl {
     /// Exit the function.
     RETURN,
 }
+impl Default for LoopControl {
+    fn default() -> Self { Self::NEXT }
+}
 pub use self::LoopControl::{NEXT,BREAK,RETURN};
 
 // [EVAL]  Constant evaluation functions.

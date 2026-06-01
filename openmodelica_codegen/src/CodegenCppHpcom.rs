@@ -34,7 +34,7 @@ use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;
 
 fn fun_52(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -48,7 +48,7 @@ fn fun_52(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 fn fun_53(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -62,7 +62,7 @@ fn fun_53(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 fn fun_54(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -76,18 +76,18 @@ fn fun_54(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 fn fun_55(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fileNamePrefix: ArcStr, mut in_a_stateDerVectorName: Tpl::Text, mut in_a_className: Tpl::Text, mut in_a_extraFuncsDeclInit: Tpl::Text, mut in_a_extraFuncsInit: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_stateDerVectorName: Tpl::Text;
-    let mut out_a_extraFuncsDeclInit: Tpl::Text;
-    let mut out_a_extraFuncsInit: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_stateDerVectorName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDeclInit: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsInit: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_stateDerVectorName, out_a_extraFuncsDeclInit, out_a_extraFuncsInit) = (match (in_txt.clone(), in_mArg.clone(), in_a_fileNamePrefix.clone(), in_a_stateDerVectorName.clone(), in_a_className.clone(), in_a_extraFuncsDeclInit.clone(), in_a_extraFuncsInit.clone(), in_a_simCode.clone()) {
         (mut txt, true, mut a_fileNamePrefix, mut a_stateDerVectorName, mut a_className, mut a_extraFuncsDeclInit, mut a_extraFuncsInit, mut a_simCode) => {
-            let mut txt_5: Tpl::Text;
-            let mut txt_4: Tpl::Text;
-            let mut txt_3: Tpl::Text;
-            let mut txt_2: Tpl::Text;
-            let mut txt_1: Tpl::Text;
-            let mut txt_0: Tpl::Text;
+            let mut txt_5: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_4: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_3: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             txt_0 = Tpl::writeText(Tpl::emptyTxt.clone(), a_className.clone())?;
             txt_0 = Tpl::writeTok(txt_0.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Initialize")).clone() }))?;
             (txt_1, a_extraFuncsInit, a_extraFuncsDeclInit, txt_0, a_stateDerVectorName) = CodegenCpp::simulationInitParameterCppFile(Tpl::emptyTxt.clone(), a_simCode.clone(), a_extraFuncsInit.clone(), a_extraFuncsDeclInit.clone(), txt_0.clone(), a_stateDerVectorName.clone(), false)?;
@@ -112,10 +112,10 @@ fn fun_55(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fileNamePrefix: Arc
 }
 
 fn lm_56(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode::JacobianColumn>>>, mut in_a_stateDerVectorName: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_stateDerVectorName: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_stateDerVectorName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_stateDerVectorName, out_a_extraFuncsDecl, out_a_extraFuncs) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone())) {
         (txt, Deref @ metamodelica::List::Nil, a_stateDerVectorName, a_extraFuncsDecl, a_extraFuncs, _) => {
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone())
@@ -144,10 +144,10 @@ fn lm_56(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode
 }
 
 fn lm_57(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode::JacobianMatrix>>>, mut in_a_stateDerVectorName: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_stateDerVectorName: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_stateDerVectorName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_stateDerVectorName, out_a_extraFuncsDecl, out_a_extraFuncs) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone())) {
         (txt, Deref @ metamodelica::List::Nil, a_stateDerVectorName, a_extraFuncsDecl, a_extraFuncs, _) => {
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone())
@@ -178,10 +178,10 @@ fn lm_57(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode
 }
 
 fn fun_58(mut in_txt: Tpl::Text, mut in_a_subPartition: SimCode::SubPartition, mut in_a_stateDerVectorName: Tpl::Text, mut in_a_i: i32, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_stateDerVectorName: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_stateDerVectorName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_stateDerVectorName, out_a_extraFuncsDecl, out_a_extraFuncs) = (match (in_txt.clone(), in_a_subPartition.clone(), in_a_stateDerVectorName.clone(), in_a_i.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone()) {
         (mut txt, SimCode::SubPartition { removedEquations: ref i_removedEquations, equations: ref i_equations, .. }, mut a_stateDerVectorName, mut a_i, mut a_extraFuncsDecl, mut a_extraFuncs, mut a_simCode) => {
             let mut ret_0: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
@@ -197,10 +197,10 @@ fn fun_58(mut in_txt: Tpl::Text, mut in_a_subPartition: SimCode::SubPartition, m
 }
 
 fn lm_59(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCode::SubPartition>>, mut in_a_stateDerVectorName: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_stateDerVectorName: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_stateDerVectorName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_stateDerVectorName, out_a_extraFuncsDecl, out_a_extraFuncs) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_stateDerVectorName.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone())) {
         (txt, Deref @ metamodelica::List::Nil, a_stateDerVectorName, a_extraFuncsDecl, a_extraFuncs, _) => {
             (txt.clone(), a_stateDerVectorName.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone())
@@ -223,110 +223,110 @@ fn lm_59(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCode::Su
 }
 
 pub fn translateModel(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
         (mut txt, ref i_simCode @ SimCode::SimCode { clockedPartitions: ref i_clockedPartitions, initialEquations: ref i_initialEquations, jacobianMatrices: ref i_jacobianMatrices, externalFunctionIncludes: ref i_externalFunctionIncludes, literals: ref i_literals, varToArrayIndexMapping: ref i_varToArrayIndexMapping, allEquations: ref i_allEquations, fileNamePrefix: ref i_fileNamePrefix, hpcomData: HpcOmSimCode::HpcOmData { schedules: ref i_hpcomData_schedules, hpcOmMemory: ref i_hpcomData_hpcOmMemory }, makefileParams: SimCodeFunction::MakefileParams { ccompiler: _, .. }, modelInfo: ref i_modelInfo @ SimCode::ModelInfo { functions: ref i_modelInfo_functions, name: ref i_modelInfo_name, .. }, .. }) => {
-            let mut txt_100: Tpl::Text;
-            let mut txt_99: Tpl::Text;
-            let mut txt_98: Tpl::Text;
-            let mut txt_97: Tpl::Text;
+            let mut txt_100: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_99: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_98: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_97: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_96: Arc<metamodelica::List<SimCode::SubPartition>> = metamodelica::nil();
-            let mut l_clk: Tpl::Text;
+            let mut l_clk: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_94: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
-            let mut l_alg: Tpl::Text;
-            let mut l_jac: Tpl::Text;
-            let mut txt_91: Tpl::Text;
-            let mut txt_90: Tpl::Text;
-            let mut txt_89: Tpl::Text;
-            let mut txt_88: Tpl::Text;
-            let mut txt_87: Tpl::Text;
-            let mut txt_86: Tpl::Text;
-            let mut txt_85: Tpl::Text;
-            let mut txt_84: Tpl::Text;
-            let mut txt_83: Tpl::Text;
-            let mut txt_82: Tpl::Text;
-            let mut txt_81: Tpl::Text;
-            let mut txt_80: Tpl::Text;
-            let mut txt_79: Tpl::Text;
-            let mut txt_78: Tpl::Text;
-            let mut txt_77: Tpl::Text;
-            let mut txt_76: Tpl::Text;
-            let mut txt_75: Tpl::Text;
-            let mut txt_74: Tpl::Text;
-            let mut txt_73: Tpl::Text;
-            let mut txt_72: Tpl::Text;
-            let mut txt_71: Tpl::Text;
+            let mut l_alg: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_jac: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_91: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_90: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_89: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_88: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_87: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_86: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_85: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_84: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_83: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_82: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_81: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_80: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_79: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_78: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_77: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_76: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_75: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_74: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_73: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_72: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_71: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_70: bool = false;
-            let mut l_jacobianVarsInit: Tpl::Text;
-            let mut txt_68: Tpl::Text;
-            let mut txt_67: Tpl::Text;
-            let mut txt_66: Tpl::Text;
+            let mut l_jacobianVarsInit: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_68: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_67: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_66: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_65: bool = false;
             let mut ret_64: bool = false;
             let mut ret_63: bool = false;
-            let mut l_0__: Tpl::Text;
-            let mut txt_61: Tpl::Text;
-            let mut txt_60: Tpl::Text;
-            let mut txt_59: Tpl::Text;
-            let mut txt_58: Tpl::Text;
-            let mut txt_57: Tpl::Text;
-            let mut l_complexStartExpressions: Tpl::Text;
-            let mut l_extraFuncsDeclInit: Tpl::Text;
-            let mut l_extraFuncsInit: Tpl::Text;
-            let mut txt_53: Tpl::Text;
-            let mut txt_52: Tpl::Text;
-            let mut txt_51: Tpl::Text;
-            let mut txt_50: Tpl::Text;
-            let mut l_extraFuncsDeclFun: Tpl::Text;
-            let mut l_extraFuncsFun: Tpl::Text;
-            let mut txt_47: Tpl::Text;
-            let mut txt_46: Tpl::Text;
-            let mut txt_45: Tpl::Text;
-            let mut txt_44: Tpl::Text;
-            let mut txt_43: Tpl::Text;
-            let mut txt_42: Tpl::Text;
-            let mut txt_41: Tpl::Text;
+            let mut l_0__: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_61: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_60: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_59: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_58: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_57: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_complexStartExpressions: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_extraFuncsDeclInit: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_extraFuncsInit: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_53: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_52: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_51: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_50: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_extraFuncsDeclFun: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_extraFuncsFun: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_47: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_46: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_45: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_44: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_43: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_42: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_41: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_40: bool = false;
-            let mut txt_39: Tpl::Text;
-            let mut txt_38: Tpl::Text;
-            let mut txt_37: Tpl::Text;
-            let mut txt_36: Tpl::Text;
-            let mut txt_35: Tpl::Text;
-            let mut txt_34: Tpl::Text;
-            let mut txt_33: Tpl::Text;
-            let mut txt_32: Tpl::Text;
-            let mut txt_31: Tpl::Text;
-            let mut txt_30: Tpl::Text;
-            let mut txt_29: Tpl::Text;
-            let mut txt_28: Tpl::Text;
-            let mut txt_27: Tpl::Text;
-            let mut txt_26: Tpl::Text;
-            let mut txt_25: Tpl::Text;
-            let mut txt_24: Tpl::Text;
-            let mut txt_23: Tpl::Text;
-            let mut txt_22: Tpl::Text;
-            let mut txt_21: Tpl::Text;
-            let mut txt_19: Tpl::Text;
+            let mut txt_39: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_38: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_37: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_36: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_35: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_34: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_33: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_32: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_31: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_30: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_29: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_28: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_27: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_26: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_25: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_24: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_23: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_22: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_21: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_19: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_19: bool = false;
-            let mut txt_17: Tpl::Text;
+            let mut txt_17: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_17: bool = false;
-            let mut txt_15: Tpl::Text;
+            let mut txt_15: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_15: bool = false;
-            let mut l_numPreVars: Tpl::Text;
-            let mut l_numStringVars: Tpl::Text;
-            let mut l_numBoolVars: Tpl::Text;
-            let mut l_numIntVars: Tpl::Text;
-            let mut l_numRealVars: Tpl::Text;
-            let mut l_className: Tpl::Text;
+            let mut l_numPreVars: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_numStringVars: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_numBoolVars: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_numIntVars: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_numRealVars: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_className: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_8: bool = false;
-            let mut l_useMemoryOptimization: Tpl::Text;
-            let mut l_stateDerVectorName: Tpl::Text;
-            let mut l_dummyTypeElemCreation: Tpl::Text;
-            let mut l_extraResidualsFuncsDecl: Tpl::Text;
-            let mut l_extraFuncsDecl: Tpl::Text;
-            let mut l_extraFuncs: Tpl::Text;
+            let mut l_useMemoryOptimization: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_stateDerVectorName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_dummyTypeElemCreation: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_extraResidualsFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_1: ArcStr = arcstr::literal!("");
-            let mut l_target: Tpl::Text;
+            let mut l_target: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             ret_1 = (Config::simulationCodeTarget()?).clone();
             l_target = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_1.clone()).clone())?;
             l_extraFuncs = Tpl::emptyTxt.clone();
@@ -515,10 +515,10 @@ pub fn translateModel(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode)
 }
 
 fn fun_61(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_extraFuncs: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncsNamespace: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace) = (match (in_txt.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone()) {
         (mut txt, mut i_simCode @ SimCode::SimCode { modelInfo: _, .. }, mut a_extraFuncs, mut a_extraFuncsDecl, mut a_extraFuncsNamespace) => {
             (txt, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace) = additionalHpcomIncludesForParallelCode(txt.clone(), i_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())?;
@@ -532,16 +532,16 @@ fn fun_61(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_ex
 }
 
 pub fn additionalHpcomIncludes(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCode, mut a_extraFuncs: Tpl::Text, mut a_extraFuncsDecl: Tpl::Text, mut a_extraFuncsNamespace: Tpl::Text, mut a_useFlatArrayNotation: bool) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace) = fun_61(txt.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())?;
     Ok((out_txt, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace))
 }
 
 fn fun_63(mut in_txt: Tpl::Text, mut in_mArg: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone())) {
         (txt, Deref @ "openmp") => {
             let mut txt = (*txt).clone();
@@ -575,13 +575,13 @@ fn fun_63(mut in_txt: Tpl::Text, mut in_mArg: ArcStr) -> Result<Tpl::Text> {
 }
 
 pub fn additionalHpcomIncludesForParallelCode(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCode, mut a_extraFuncs: Tpl::Text, mut a_extraFuncsDecl: Tpl::Text, mut a_extraFuncsNamespace: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut str_2: ArcStr = arcstr::literal!("");
     let mut ret_1: ArcStr = arcstr::literal!("");
-    let mut l_type: Tpl::Text;
+    let mut l_type: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     ret_1 = (Flags::getConfigString(Flags::HPCOM_CODE.clone())?).clone();
     l_type = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_1.clone()).clone())?;
     str_2 = (Tpl::textString(l_type.clone())?).clone();
@@ -593,7 +593,7 @@ pub fn additionalHpcomIncludesForParallelCode(mut txt: Tpl::Text, mut a_simCode:
 }
 
 fn fun_65(mut in_txt: Tpl::Text, mut in_mArg: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone())) {
         (txt, Deref @ "openmp") => {
             let mut txt = (*txt).clone();
@@ -623,7 +623,7 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_mArg: ArcStr) -> Result<Tpl::Text> {
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_66(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -647,7 +647,7 @@ fn lm_66(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> R
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_67(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -669,7 +669,7 @@ fn lm_67(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> R
 }
 
 fn fun_68(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -700,8 +700,8 @@ fn fun_68(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 fn fun_69(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_extraFuncsDecl: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsDecl) = (match (in_txt.clone(), in_a_simCode.clone(), in_a_extraFuncsDecl.clone()) {
         (mut txt, SimCode::SimCode { hpcomData: HpcOmSimCode::HpcOmData { schedules: mut i_hpcomData_schedules, .. }, modelInfo: SimCode::ModelInfo { name: _, .. }, .. }, mut a_extraFuncsDecl) => {
             let mut ret_5: bool = false;
@@ -709,7 +709,7 @@ fn fun_69(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_ex
             let mut ret_3: ArcStr = arcstr::literal!("");
             let mut str_2: ArcStr = arcstr::literal!("");
             let mut ret_1: ArcStr = arcstr::literal!("");
-            let mut l_type: Tpl::Text;
+            let mut l_type: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             a_extraFuncsDecl = generateAdditionalFunctionHeaders(a_extraFuncsDecl.clone(), i_hpcomData_schedules.clone())?;
             a_extraFuncsDecl = generateAdditionalHpcomVarHeaders(a_extraFuncsDecl.clone(), i_hpcomData_schedules.clone())?;
             ret_1 = (Flags::getConfigString(Flags::HPCOM_CODE.clone())?).clone();
@@ -735,10 +735,10 @@ fn fun_69(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_ex
 }
 
 pub fn additionalHpcomProtectedMemberDeclaration(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCode, mut a_extraFuncs: Tpl::Text, mut a_extraFuncsDecl: Tpl::Text, mut a_extraFuncsNamespace: Tpl::Text, mut a_useFlatArrayNotation: bool) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsDecl) = fun_69(txt.clone(), a_simCode.clone(), a_extraFuncsDecl.clone())?;
     out_a_extraFuncs = a_extraFuncs.clone();
     out_a_extraFuncsNamespace = a_extraFuncsNamespace.clone();
@@ -746,7 +746,7 @@ pub fn additionalHpcomProtectedMemberDeclaration(mut txt: Tpl::Text, mut a_simCo
 }
 
 fn fun_71(mut in_txt: Tpl::Text, mut in_mArg: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone())) {
         (txt, Deref @ "openmp") => {
             txt.clone()
@@ -765,7 +765,7 @@ fn fun_71(mut in_txt: Tpl::Text, mut in_mArg: ArcStr) -> Result<Tpl::Text> {
 }
 
 fn fun_72(mut in_txt: Tpl::Text, mut in_a_odeSchedule: Arc<HpcOmSimCode::Schedule>, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_odeSchedule.clone(), in_a_type.clone())) {
         (txt, Deref @ HpcOmSimCode::Schedule::TASKDEPSCHEDULE { tasks: _ }, a_type) => {
             let mut str_0: ArcStr = arcstr::literal!("");
@@ -783,9 +783,9 @@ fn fun_72(mut in_txt: Tpl::Text, mut in_a_odeSchedule: Arc<HpcOmSimCode::Schedul
 }
 
 pub fn generateAdditionalStructHeaders(mut txt: Tpl::Text, mut a_odeSchedule: Arc<HpcOmSimCode::Schedule>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_1: ArcStr = arcstr::literal!("");
-    let mut l_type: Tpl::Text;
+    let mut l_type: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     ret_1 = (Flags::getConfigString(Flags::HPCOM_CODE.clone())?).clone();
     l_type = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_1.clone()).clone())?;
     out_txt = fun_72(txt.clone(), a_odeSchedule.clone(), l_type.clone())?;
@@ -795,7 +795,7 @@ pub fn generateAdditionalStructHeaders(mut txt: Tpl::Text, mut a_odeSchedule: Ar
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_74(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -815,7 +815,7 @@ fn lm_74(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamod
 }
 
 fn fun_75(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_odeSchedule_threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_odeSchedule_threadTasks.clone())) {
         (txt, Deref @ "openmp", _) => {
             txt.clone()
@@ -823,7 +823,7 @@ fn fun_75(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_odeSchedule_threa
         (txt, _, a_odeSchedule_threadTasks) => {
             let mut ret_2: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
             let mut ret_1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-            let mut l_headers: Tpl::Text;
+            let mut l_headers: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             ret_1 = Arc::new(a_odeSchedule_threadTasks.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
             ret_2 = listRest(ret_1.clone())?;
@@ -839,7 +839,7 @@ fn fun_75(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_odeSchedule_threa
 }
 
 fn fun_76(mut in_txt: Tpl::Text, mut in_a_task: (Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_task.clone())) {
         (txt, (Deref @ HpcOmSimCode::Task::CALCTASK { index: i_task_index, .. }, _)) => {
             let mut txt = (*txt).clone();
@@ -859,7 +859,7 @@ fn fun_76(mut in_txt: Tpl::Text, mut in_a_task: (Arc<HpcOmSimCode::Task>, Arc<me
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_77(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -877,7 +877,7 @@ fn lm_77(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<HpcOmS
 }
 
 fn fun_78(mut in_txt: Tpl::Text, mut in_a_task: (Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_task.clone())) {
         (txt, (Deref @ HpcOmSimCode::Task::CALCTASK { index: i_task_index, .. }, _)) => {
             let mut txt = (*txt).clone();
@@ -897,7 +897,7 @@ fn fun_78(mut in_txt: Tpl::Text, mut in_a_task: (Arc<HpcOmSimCode::Task>, Arc<me
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_79(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -915,7 +915,7 @@ fn lm_79(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<HpcOmS
 }
 
 fn fun_80(mut in_txt: Tpl::Text, mut in_a_task: (Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_task.clone())) {
         (txt, (Deref @ HpcOmSimCode::Task::CALCTASK { index: i_task_index, .. }, _)) => {
             let mut txt = (*txt).clone();
@@ -935,7 +935,7 @@ fn fun_80(mut in_txt: Tpl::Text, mut in_a_task: (Arc<HpcOmSimCode::Task>, Arc<me
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_81(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -953,15 +953,15 @@ fn lm_81(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<HpcOmS
 }
 
 fn fun_82(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_odeSchedule: Arc<HpcOmSimCode::Schedule>, mut in_a_zeroFuncSchedule_tasks: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>, mut in_a_daeSchedule_tasks: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>, mut in_a_odeSchedule_tasks: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_odeSchedule.clone(), in_a_zeroFuncSchedule_tasks.clone(), in_a_daeSchedule_tasks.clone(), in_a_odeSchedule_tasks.clone())) {
         (txt, Deref @ "openmp", _, _, _, _) => {
             txt.clone()
         },
         (txt, Deref @ "tbb", a_odeSchedule, a_zeroFuncSchedule_tasks, a_daeSchedule_tasks, a_odeSchedule_tasks) => {
-            let mut l_voidfuncsZeroFunc: Tpl::Text;
-            let mut l_voidfuncsDae: Tpl::Text;
-            let mut l_voidfuncsOde: Tpl::Text;
+            let mut l_voidfuncsZeroFunc: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_voidfuncsDae: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_voidfuncsOde: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             l_voidfuncsOde = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
             l_voidfuncsOde = lm_77(l_voidfuncsOde.clone(), a_odeSchedule_tasks.clone())?;
@@ -991,7 +991,7 @@ fn fun_82(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_odeSchedule: Arc<
 }
 
 fn fun_83(mut in_txt: Tpl::Text, mut in_a_schedulesOpt: Option<(Arc<HpcOmSimCode::Schedule>, Arc<HpcOmSimCode::Schedule>, Arc<HpcOmSimCode::Schedule>)>, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_schedulesOpt.clone(), in_a_type.clone())) {
         (txt, Some((Deref @ HpcOmSimCode::Schedule::THREADSCHEDULE { threadTasks: i_odeSchedule_threadTasks, .. }, _, _)), a_type) => {
             let mut str_0: ArcStr = arcstr::literal!("");
@@ -1016,9 +1016,9 @@ fn fun_83(mut in_txt: Tpl::Text, mut in_a_schedulesOpt: Option<(Arc<HpcOmSimCode
 }
 
 pub fn generateAdditionalFunctionHeaders(mut txt: Tpl::Text, mut a_schedulesOpt: Option<(Arc<HpcOmSimCode::Schedule>, Arc<HpcOmSimCode::Schedule>, Arc<HpcOmSimCode::Schedule>)>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_1: ArcStr = arcstr::literal!("");
-    let mut l_type: Tpl::Text;
+    let mut l_type: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     ret_1 = (Flags::getConfigString(Flags::HPCOM_CODE.clone())?).clone();
     l_type = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_1.clone()).clone())?;
     out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("FORCE_INLINE void evaluateParallel(const UPDATETYPE command, int evaluateMode);\n")).clone() }))?;
@@ -1029,7 +1029,7 @@ pub fn generateAdditionalFunctionHeaders(mut txt: Tpl::Text, mut a_schedulesOpt:
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_85(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_type.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -1051,7 +1051,7 @@ fn lm_85(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_86(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_type.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -1071,7 +1071,7 @@ fn lm_86(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut 
 }
 
 fn fun_87(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_type.clone())) {
         (txt, Deref @ "pthreads", a_type) => {
             let mut ret_2: i32 = 0;
@@ -1122,7 +1122,7 @@ fn fun_87(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_type: Tpl::Text) 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_88(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_type.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -1144,7 +1144,7 @@ fn lm_88(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamod
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_89(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_type.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -1166,7 +1166,7 @@ fn lm_89(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamod
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_90(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_type.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -1188,7 +1188,7 @@ fn lm_90(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamod
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_91(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_type.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -1208,11 +1208,11 @@ fn lm_91(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamod
 }
 
 fn fun_92(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_zeroFuncLocks: Tpl::Text, mut in_a_daeLocks: Tpl::Text, mut in_a_odeLocks: Tpl::Text, mut in_a_type: Tpl::Text, mut in_a_odeSchedule_threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_zeroFuncLocks.clone(), in_a_daeLocks.clone(), in_a_odeLocks.clone(), in_a_type.clone(), in_a_odeSchedule_threadTasks.clone())) {
         (txt, Deref @ "openmp", a_zeroFuncLocks, a_daeLocks, a_odeLocks, a_type, a_odeSchedule_threadTasks) => {
             let mut ret_1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-            let mut l_threadDecl: Tpl::Text;
+            let mut l_threadDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             ret_1 = Arc::new(a_odeSchedule_threadTasks.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
             l_threadDecl = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
@@ -1235,13 +1235,13 @@ fn fun_92(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_zeroFuncLocks: Tp
         (txt, _, a_zeroFuncLocks, a_daeLocks, a_odeLocks, a_type, a_odeSchedule_threadTasks) => {
             let mut ret_9: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
             let mut ret_8: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-            let mut l_thLocks1: Tpl::Text;
+            let mut l_thLocks1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_6: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
             let mut ret_5: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-            let mut l_thLocks: Tpl::Text;
+            let mut l_thLocks: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_3: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
             let mut ret_2: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-            let mut l_threadDecl: Tpl::Text;
+            let mut l_threadDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             ret_2 = Arc::new(a_odeSchedule_threadTasks.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
             ret_3 = listRest(ret_2.clone())?;
@@ -1278,7 +1278,7 @@ fn fun_92(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_zeroFuncLocks: Tp
 }
 
 fn fun_93(mut in_txt: Tpl::Text, mut in_mArg: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone())) {
         (txt, Deref @ "openmp") => {
             let mut txt = (*txt).clone();
@@ -1299,7 +1299,7 @@ fn fun_93(mut in_txt: Tpl::Text, mut in_mArg: ArcStr) -> Result<Tpl::Text> {
 }
 
 fn fun_94(mut in_txt: Tpl::Text, mut in_a_schedulesOpt: Option<(Arc<HpcOmSimCode::Schedule>, Arc<HpcOmSimCode::Schedule>, Arc<HpcOmSimCode::Schedule>)>, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_schedulesOpt.clone(), in_a_type.clone())) {
         (txt, Some((Deref @ HpcOmSimCode::Schedule::LEVELSCHEDULE { useFixedAssignments: true, .. }, _, _)), a_type) => {
             let mut str_0: ArcStr = arcstr::literal!("");
@@ -1311,11 +1311,11 @@ fn fun_94(mut in_txt: Tpl::Text, mut in_a_schedulesOpt: Option<(Arc<HpcOmSimCode
         (txt, Some((Deref @ HpcOmSimCode::Schedule::THREADSCHEDULE { threadTasks: i_odeSchedule_threadTasks, outgoingDepTasks: i_odeSchedule_outgoingDepTasks, .. }, Deref @ HpcOmSimCode::Schedule::THREADSCHEDULE { outgoingDepTasks: i_daeSchedule_outgoingDepTasks, .. }, Deref @ HpcOmSimCode::Schedule::THREADSCHEDULE { outgoingDepTasks: i_zeroFuncSchedule_outgoingDepTasks, .. })), a_type) => {
             let mut str_7: ArcStr = arcstr::literal!("");
             let mut ret_6: i32 = 0;
-            let mut l_zeroFuncLocks: Tpl::Text;
+            let mut l_zeroFuncLocks: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_4: i32 = 0;
-            let mut l_daeLocks: Tpl::Text;
+            let mut l_daeLocks: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_2: i32 = 0;
-            let mut l_odeLocks: Tpl::Text;
+            let mut l_odeLocks: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             ret_2 = (i_odeSchedule_outgoingDepTasks.clone().len() as i32);
             l_odeLocks = createLockArrayByName(Tpl::emptyTxt.clone(), ret_2.clone(), (literal!("_lockOde")).clone(), (Tpl::textString(a_type.clone())?).clone())?;
@@ -1343,9 +1343,9 @@ fn fun_94(mut in_txt: Tpl::Text, mut in_a_schedulesOpt: Option<(Arc<HpcOmSimCode
 }
 
 pub fn generateAdditionalHpcomVarHeaders(mut txt: Tpl::Text, mut a_schedulesOpt: Option<(Arc<HpcOmSimCode::Schedule>, Arc<HpcOmSimCode::Schedule>, Arc<HpcOmSimCode::Schedule>)>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_1: ArcStr = arcstr::literal!("");
-    let mut l_type: Tpl::Text;
+    let mut l_type: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     ret_1 = (Flags::getConfigString(Flags::HPCOM_CODE.clone())?).clone();
     l_type = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_1.clone()).clone())?;
     out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("UPDATETYPE _command;\n")).clone(), (literal!("int _evaluateMode;\n")).clone()], lastHasNewLine: true }))?;
@@ -1354,7 +1354,7 @@ pub fn generateAdditionalHpcomVarHeaders(mut txt: Tpl::Text, mut a_schedulesOpt:
 }
 
 fn fun_96(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_threadIdx: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iType.clone(), in_a_threadIdx.clone())) {
         (txt, Deref @ "openmp", _) => {
             txt.clone()
@@ -1372,13 +1372,13 @@ fn fun_96(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_threadIdx: i32
 }
 
 pub fn generateThreadHeaderDecl(mut txt: Tpl::Text, mut a_threadIdx: i32, mut a_iType: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_96(txt.clone(), (a_iType.clone()).clone(), a_threadIdx.clone())?;
     Ok(out_txt)
 }
 
 pub fn generateThreadFunctionHeaderDecl(mut txt: Tpl::Text, mut a_threadIdx: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("void evaluateThreadFunc")).clone() }))?;
     out_txt = Tpl::writeStr(out_txt.clone(), (intString(a_threadIdx.clone())).clone())?;
     out_txt = Tpl::writeTok(out_txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("();")).clone() }))?;
@@ -1386,7 +1386,7 @@ pub fn generateThreadFunctionHeaderDecl(mut txt: Tpl::Text, mut a_threadIdx: i32
 }
 
 fn fun_99(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_type.clone())) {
         (txt, Deref @ "pthreads", a_type) => {
             let mut ret_0: i32 = 0;
@@ -1413,7 +1413,7 @@ fn fun_99(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_type: Tpl::Text) 
 }
 
 fn fun_100(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_zeroFuncSchedule_tasks: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>, mut in_a_daeSchedule_tasks: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>, mut in_a_odeSchedule_tasks: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_zeroFuncSchedule_tasks.clone(), in_a_daeSchedule_tasks.clone(), in_a_odeSchedule_tasks.clone())) {
         (txt, Deref @ "tbb", a_zeroFuncSchedule_tasks, a_daeSchedule_tasks, a_odeSchedule_tasks) => {
             let mut ret_2: i32 = 0;
@@ -1441,7 +1441,7 @@ fn fun_100(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_zeroFuncSchedule
 }
 
 fn fun_101(mut in_txt: Tpl::Text, mut in_a_scheduleOpt: Option<(Arc<HpcOmSimCode::Schedule>, Arc<HpcOmSimCode::Schedule>, Arc<HpcOmSimCode::Schedule>)>, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_scheduleOpt.clone(), in_a_type.clone())) {
         (txt, Some((Deref @ HpcOmSimCode::Schedule::LEVELSCHEDULE { useFixedAssignments: true, .. }, _, _)), a_type) => {
             let mut str_0: ArcStr = arcstr::literal!("");
@@ -1466,9 +1466,9 @@ fn fun_101(mut in_txt: Tpl::Text, mut in_a_scheduleOpt: Option<(Arc<HpcOmSimCode
 }
 
 pub fn additionalHpcomConstructorDefinitions(mut txt: Tpl::Text, mut a_scheduleOpt: Option<(Arc<HpcOmSimCode::Schedule>, Arc<HpcOmSimCode::Schedule>, Arc<HpcOmSimCode::Schedule>)>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_1: ArcStr = arcstr::literal!("");
-    let mut l_type: Tpl::Text;
+    let mut l_type: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     ret_1 = (Flags::getConfigString(Flags::HPCOM_CODE.clone())?).clone();
     l_type = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_1.clone()).clone())?;
     out_txt = fun_101(txt.clone(), a_scheduleOpt.clone(), l_type.clone())?;
@@ -1476,7 +1476,7 @@ pub fn additionalHpcomConstructorDefinitions(mut txt: Tpl::Text, mut a_scheduleO
 }
 
 fn fun_103(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fullModelName: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_fullModelName.clone()) {
         (mut txt, false, _) => {
             txt.clone()
@@ -1494,7 +1494,7 @@ fn fun_103(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fullModelName: Arc
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_104(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut in_a_modelNamePrefixStr: ArcStr, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_modelNamePrefixStr.clone(), in_a_type.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, _) => {
             txt.clone()
@@ -1516,7 +1516,7 @@ fn lm_104(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_105(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -1542,7 +1542,7 @@ fn lm_105(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_106(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -1568,7 +1568,7 @@ fn lm_106(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_107(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -1592,7 +1592,7 @@ fn lm_107(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> 
 }
 
 fn fun_108(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_zeroFuncSchedule_tasksOfLevels: Arc<metamodelica::List<HpcOmSimCode::TaskList>>, mut in_a_daeSchedule_tasksOfLevels: Arc<metamodelica::List<HpcOmSimCode::TaskList>>, mut in_a_fullModelName: ArcStr, mut in_a_odeSchedule_tasksOfLevels: Arc<metamodelica::List<HpcOmSimCode::TaskList>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_zeroFuncSchedule_tasksOfLevels.clone(), in_a_daeSchedule_tasksOfLevels.clone(), in_a_fullModelName.clone(), in_a_odeSchedule_tasksOfLevels.clone())) {
         (txt, false, _, _, _, _) => {
             txt.clone()
@@ -1655,7 +1655,7 @@ fn fun_108(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_zeroFuncSchedule_t
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_109(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut in_a_modelNamePrefixStr: ArcStr, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_modelNamePrefixStr.clone(), in_a_type.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, _) => {
             txt.clone()
@@ -1677,7 +1677,7 @@ fn lm_109(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_110(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -1703,7 +1703,7 @@ fn lm_110(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_111(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -1729,7 +1729,7 @@ fn lm_111(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_112(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -1753,7 +1753,7 @@ fn lm_112(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> 
 }
 
 fn fun_113(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_zeroFuncSchedule_tasksOfLevels: Arc<metamodelica::List<HpcOmSimCode::TaskList>>, mut in_a_daeSchedule_tasksOfLevels: Arc<metamodelica::List<HpcOmSimCode::TaskList>>, mut in_a_fullModelName: ArcStr, mut in_a_odeSchedule_tasksOfLevels: Arc<metamodelica::List<HpcOmSimCode::TaskList>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_zeroFuncSchedule_tasksOfLevels.clone(), in_a_daeSchedule_tasksOfLevels.clone(), in_a_fullModelName.clone(), in_a_odeSchedule_tasksOfLevels.clone())) {
         (txt, false, _, _, _, _) => {
             txt.clone()
@@ -1814,7 +1814,7 @@ fn fun_113(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_zeroFuncSchedule_t
 }
 
 fn fun_114(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_zeroFuncSchedule_tasksOfLevels: Arc<metamodelica::List<HpcOmSimCode::TaskList>>, mut in_a_daeSchedule_tasksOfLevels: Arc<metamodelica::List<HpcOmSimCode::TaskList>>, mut in_a_fullModelName: ArcStr, mut in_a_odeSchedule_tasksOfLevels: Arc<metamodelica::List<HpcOmSimCode::TaskList>>, mut in_a_modelNamePrefixStr: ArcStr, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_zeroFuncSchedule_tasksOfLevels.clone(), in_a_daeSchedule_tasksOfLevels.clone(), in_a_fullModelName.clone(), in_a_odeSchedule_tasksOfLevels.clone(), in_a_modelNamePrefixStr.clone(), in_a_type.clone())) {
         (txt, Deref @ "pthreads", a_zeroFuncSchedule_tasksOfLevels, a_daeSchedule_tasksOfLevels, a_fullModelName, a_odeSchedule_tasksOfLevels, a_modelNamePrefixStr, a_type) => {
             let mut ret_6: bool = false;
@@ -1823,7 +1823,7 @@ fn fun_114(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_zeroFuncSchedule
             let mut ret_3: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut ret_2: i32 = 0;
             let mut ret_1: i32 = 0;
-            let mut l_threadFuncs: Tpl::Text;
+            let mut l_threadFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             ret_1 = Flags::getConfigInt(Flags::NUM_PROC.clone())?;
             ret_2 = intSub(ret_1.clone(), 1);
@@ -1847,7 +1847,7 @@ fn fun_114(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_zeroFuncSchedule
             let mut ret_9: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut ret_8: i32 = 0;
             let mut ret_7: i32 = 0;
-            let mut l_threadFuncs: Tpl::Text;
+            let mut l_threadFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             ret_7 = Flags::getConfigInt(Flags::NUM_PROC.clone())?;
             ret_8 = intSub(ret_7.clone(), 1);
@@ -1875,7 +1875,7 @@ fn fun_114(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_zeroFuncSchedule
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_115(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_modelNamePrefixStr: ArcStr, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_modelNamePrefixStr.clone(), in_a_type.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, _) => {
             txt.clone()
@@ -1897,7 +1897,7 @@ fn lm_115(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_116(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_modelNamePrefixStr: ArcStr, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_modelNamePrefixStr.clone(), in_a_type.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, _) => {
             txt.clone()
@@ -1919,7 +1919,7 @@ fn lm_116(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_117(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_type.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -1941,7 +1941,7 @@ fn lm_117(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_118(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_type.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -1963,7 +1963,7 @@ fn lm_118(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_119(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_type.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -1985,7 +1985,7 @@ fn lm_119(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_120(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_type.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -2005,11 +2005,11 @@ fn lm_120(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 }
 
 fn fun_121(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_assignLocksZeroFunc: Tpl::Text, mut in_a_assignLocksOde: Tpl::Text, mut in_a_assignLocksDae: Tpl::Text, mut in_a_initLocksZeroFunc: Tpl::Text, mut in_a_initLocksDae: Tpl::Text, mut in_a_initLocksOde: Tpl::Text, mut in_a_modelNamePrefixStr: ArcStr, mut in_a_type: Tpl::Text, mut in_a_odeSchedule_threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_assignLocksZeroFunc.clone(), in_a_assignLocksOde.clone(), in_a_assignLocksDae.clone(), in_a_initLocksZeroFunc.clone(), in_a_initLocksDae.clone(), in_a_initLocksOde.clone(), in_a_modelNamePrefixStr.clone(), in_a_type.clone(), in_a_odeSchedule_threadTasks.clone())) {
         (txt, Deref @ "openmp", _, _, _, a_initLocksZeroFunc, a_initLocksDae, a_initLocksOde, a_modelNamePrefixStr, a_type, a_odeSchedule_threadTasks) => {
             let mut ret_1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-            let mut l_threadFuncs: Tpl::Text;
+            let mut l_threadFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             ret_1 = Arc::new(a_odeSchedule_threadTasks.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
             l_threadFuncs = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
@@ -2033,19 +2033,19 @@ fn fun_121(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_assignLocksZeroF
         (txt, _, a_assignLocksZeroFunc, a_assignLocksOde, a_assignLocksDae, a_initLocksZeroFunc, a_initLocksDae, a_initLocksOde, a_modelNamePrefixStr, a_type, a_odeSchedule_threadTasks) => {
             let mut ret_15: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
             let mut ret_14: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-            let mut l_threadAssignLocks1: Tpl::Text;
+            let mut l_threadAssignLocks1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_12: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
             let mut ret_11: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-            let mut l_threadAssignLocks: Tpl::Text;
+            let mut l_threadAssignLocks: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_9: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
             let mut ret_8: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-            let mut l_threadLocksInit1: Tpl::Text;
+            let mut l_threadLocksInit1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_6: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
             let mut ret_5: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-            let mut l_threadLocksInit: Tpl::Text;
+            let mut l_threadLocksInit: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_3: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
             let mut ret_2: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-            let mut l_threadFuncs: Tpl::Text;
+            let mut l_threadFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             ret_2 = Arc::new(a_odeSchedule_threadTasks.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
             ret_3 = listRest(ret_2.clone())?;
@@ -2104,10 +2104,10 @@ fn fun_121(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_assignLocksZeroF
 }
 
 fn fun_122(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_modelNamePrefixStr: ArcStr, mut in_a_zeroFuncSchedule_tasks: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>, mut in_a_daeSchedule_tasks: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>, mut in_a_odeSchedule_tasks: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_modelNamePrefixStr.clone(), in_a_zeroFuncSchedule_tasks.clone(), in_a_daeSchedule_tasks.clone(), in_a_odeSchedule_tasks.clone())) {
         (txt, Deref @ "tbb", a_modelNamePrefixStr, a_zeroFuncSchedule_tasks, a_daeSchedule_tasks, a_odeSchedule_tasks) => {
-            let mut l_tbbVars: Tpl::Text;
+            let mut l_tbbVars: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             l_tbbVars = generateTbbConstructorExtension(Tpl::emptyTxt.clone(), a_odeSchedule_tasks.clone(), a_daeSchedule_tasks.clone(), a_zeroFuncSchedule_tasks.clone(), (a_modelNamePrefixStr.clone()).clone())?;
             txt = Tpl::writeText(txt.clone(), l_tbbVars.clone())?;
@@ -2122,7 +2122,7 @@ fn fun_122(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_modelNamePrefixS
 }
 
 fn fun_123(mut in_txt: Tpl::Text, mut in_a_schedulesOpt: Option<(Arc<HpcOmSimCode::Schedule>, Arc<HpcOmSimCode::Schedule>, Arc<HpcOmSimCode::Schedule>)>, mut in_a_fullModelName: ArcStr, mut in_a_modelNamePrefixStr: ArcStr, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_schedulesOpt.clone(), in_a_fullModelName.clone(), in_a_modelNamePrefixStr.clone(), in_a_type.clone())) {
         (txt, Some((Deref @ HpcOmSimCode::Schedule::LEVELSCHEDULE { tasksOfLevels: i_odeSchedule_tasksOfLevels, useFixedAssignments: true }, Deref @ HpcOmSimCode::Schedule::LEVELSCHEDULE { tasksOfLevels: i_daeSchedule_tasksOfLevels, useFixedAssignments: true }, Deref @ HpcOmSimCode::Schedule::LEVELSCHEDULE { tasksOfLevels: i_zeroFuncSchedule_tasksOfLevels, useFixedAssignments: true })), a_fullModelName, a_modelNamePrefixStr, a_type) => {
             let mut str_0: ArcStr = arcstr::literal!("");
@@ -2134,17 +2134,17 @@ fn fun_123(mut in_txt: Tpl::Text, mut in_a_schedulesOpt: Option<(Arc<HpcOmSimCod
         (txt, Some((Deref @ HpcOmSimCode::Schedule::THREADSCHEDULE { threadTasks: i_odeSchedule_threadTasks, outgoingDepTasks: i_odeSchedule_outgoingDepTasks, .. }, Deref @ HpcOmSimCode::Schedule::THREADSCHEDULE { outgoingDepTasks: i_daeSchedule_outgoingDepTasks, .. }, Deref @ HpcOmSimCode::Schedule::THREADSCHEDULE { outgoingDepTasks: i_zeroFuncSchedule_outgoingDepTasks, .. })), _, a_modelNamePrefixStr, a_type) => {
             let mut str_13: ArcStr = arcstr::literal!("");
             let mut ret_12: i32 = 0;
-            let mut l_assignLocksZeroFunc: Tpl::Text;
+            let mut l_assignLocksZeroFunc: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_10: i32 = 0;
-            let mut l_initLocksZeroFunc: Tpl::Text;
+            let mut l_initLocksZeroFunc: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_8: i32 = 0;
-            let mut l_assignLocksDae: Tpl::Text;
+            let mut l_assignLocksDae: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_6: i32 = 0;
-            let mut l_initLocksDae: Tpl::Text;
+            let mut l_initLocksDae: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_4: i32 = 0;
-            let mut l_assignLocksOde: Tpl::Text;
+            let mut l_assignLocksOde: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_2: i32 = 0;
-            let mut l_initLocksOde: Tpl::Text;
+            let mut l_initLocksOde: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             ret_2 = (i_odeSchedule_outgoingDepTasks.clone().len() as i32);
             l_initLocksOde = initializeArrayLocks(Tpl::emptyTxt.clone(), ret_2.clone(), (literal!("_lockOde")).clone(), (Tpl::textString(a_type.clone())?).clone())?;
@@ -2178,14 +2178,14 @@ fn fun_123(mut in_txt: Tpl::Text, mut in_a_schedulesOpt: Option<(Arc<HpcOmSimCod
 }
 
 pub fn additionalHpcomConstructorBodyStatements(mut txt: Tpl::Text, mut a_schedulesOpt: Option<(Arc<HpcOmSimCode::Schedule>, Arc<HpcOmSimCode::Schedule>, Arc<HpcOmSimCode::Schedule>)>, mut a_modelNamePrefixStr: ArcStr, mut a_fullModelName: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
-    let mut l_schedulerSpecificReturn: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_schedulerSpecificReturn: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_5: bool = false;
     let mut ret_4: bool = false;
     let mut ret_3: ArcStr = arcstr::literal!("");
-    let mut l_threadMeasureTimeBlocks: Tpl::Text;
+    let mut l_threadMeasureTimeBlocks: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_1: ArcStr = arcstr::literal!("");
-    let mut l_type: Tpl::Text;
+    let mut l_type: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     ret_1 = (Flags::getConfigString(Flags::HPCOM_CODE.clone())?).clone();
     l_type = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_1.clone()).clone())?;
     ret_3 = (Flags::getConfigString(Flags::PROFILING_LEVEL.clone())?).clone();
@@ -2202,7 +2202,7 @@ pub fn additionalHpcomConstructorBodyStatements(mut txt: Tpl::Text, mut a_schedu
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_125(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -2226,7 +2226,7 @@ fn lm_125(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_126(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -2250,7 +2250,7 @@ fn lm_126(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_127(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -2276,7 +2276,7 @@ fn lm_127(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_128(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -2302,7 +2302,7 @@ fn lm_128(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_129(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -2326,7 +2326,7 @@ fn lm_129(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> 
 }
 
 pub fn generateThreadMeasureTimeDeclaration(mut txt: Tpl::Text, mut a_fullModelName: ArcStr, mut a_numberOfThreads: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_4: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut ret_3: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut ret_2: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -2375,7 +2375,7 @@ pub fn generateThreadMeasureTimeDeclaration(mut txt: Tpl::Text, mut a_fullModelN
 }
 
 fn fun_131(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_numComms: i32, mut in_a_lockName: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iType.clone(), in_a_numComms.clone(), in_a_lockName.clone())) {
         (txt, Deref @ "openmp", a_numComms, a_lockName) => {
             let mut txt = (*txt).clone();
@@ -2422,13 +2422,13 @@ fn fun_131(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_numComms: i32
 }
 
 pub fn initializeArrayLocks(mut txt: Tpl::Text, mut a_numComms: i32, mut a_lockName: ArcStr, mut a_iType: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_131(txt.clone(), (a_iType.clone()).clone(), a_numComms.clone(), (a_lockName.clone()).clone())?;
     Ok(out_txt)
 }
 
 fn fun_133(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_numComms: i32, mut in_a_lockName: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iType.clone(), in_a_numComms.clone(), in_a_lockName.clone())) {
         (txt, Deref @ "openmp", a_numComms, a_lockName) => {
             let mut txt = (*txt).clone();
@@ -2475,13 +2475,13 @@ fn fun_133(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_numComms: i32
 }
 
 pub fn assignArrayLocks(mut txt: Tpl::Text, mut a_numComms: i32, mut a_lockName: ArcStr, mut a_iType: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_133(txt.clone(), (a_iType.clone()).clone(), a_numComms.clone(), (a_lockName.clone()).clone())?;
     Ok(out_txt)
 }
 
 fn fun_135(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_numComms: i32, mut in_a_lockName: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iType.clone(), in_a_numComms.clone(), in_a_lockName.clone())) {
         (txt, Deref @ "openmp", a_numComms, a_lockName) => {
             let mut txt = (*txt).clone();
@@ -2521,13 +2521,13 @@ fn fun_135(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_numComms: i32
 }
 
 pub fn createLockArrayByName(mut txt: Tpl::Text, mut a_numComms: i32, mut a_lockName: ArcStr, mut a_iType: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_135(txt.clone(), (a_iType.clone()).clone(), a_numComms.clone(), (a_lockName.clone()).clone())?;
     Ok(out_txt)
 }
 
 fn fun_137(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_numComms: i32, mut in_a_lockName: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iType.clone(), in_a_numComms.clone(), in_a_lockName.clone())) {
         (txt, Deref @ "openmp", a_numComms, a_lockName) => {
             let mut txt = (*txt).clone();
@@ -2576,13 +2576,13 @@ fn fun_137(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_numComms: i32
 }
 
 pub fn destroyArrayLocks(mut txt: Tpl::Text, mut a_numComms: i32, mut a_lockName: ArcStr, mut a_iType: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_137(txt.clone(), (a_iType.clone()).clone(), a_numComms.clone(), (a_lockName.clone()).clone())?;
     Ok(out_txt)
 }
 
 fn fun_139(mut in_txt: Tpl::Text, mut in_mArg: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone())) {
         (txt, Deref @ "pthreads") => {
             let mut txt = (*txt).clone();
@@ -2605,7 +2605,7 @@ fn fun_139(mut in_txt: Tpl::Text, mut in_mArg: ArcStr) -> Result<Tpl::Text> {
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_140(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_type.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -2627,7 +2627,7 @@ fn lm_140(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_141(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_type.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -2649,7 +2649,7 @@ fn lm_141(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_142(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_type.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -2671,7 +2671,7 @@ fn lm_142(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_143(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_type.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -2693,7 +2693,7 @@ fn lm_143(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_144(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_type.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -2713,7 +2713,7 @@ fn lm_144(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 }
 
 fn fun_145(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_type: Tpl::Text, mut in_a_odeSchedule_threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, mut in_a_destroyLocksZeroFunc: Tpl::Text, mut in_a_destroyLocksDae: Tpl::Text, mut in_a_destroyLocksOde: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_type.clone(), in_a_odeSchedule_threadTasks.clone(), in_a_destroyLocksZeroFunc.clone(), in_a_destroyLocksDae.clone(), in_a_destroyLocksOde.clone())) {
         (txt, Deref @ "openmp", _, _, a_destroyLocksZeroFunc, a_destroyLocksDae, a_destroyLocksOde) => {
             let mut txt = (*txt).clone();
@@ -2732,19 +2732,19 @@ fn fun_145(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_type: Tpl::Text,
         (txt, _, a_type, a_odeSchedule_threadTasks, a_destroyLocksZeroFunc, a_destroyLocksDae, a_destroyLocksOde) => {
             let mut ret_14: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
             let mut ret_13: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-            let mut l_threadReleaseLocks: Tpl::Text;
+            let mut l_threadReleaseLocks: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_11: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
             let mut ret_10: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-            let mut l_joinThreads: Tpl::Text;
+            let mut l_joinThreads: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_8: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
             let mut ret_7: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-            let mut l_threadLocksDel1: Tpl::Text;
+            let mut l_threadLocksDel1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_5: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
             let mut ret_4: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-            let mut l_threadLocksDel: Tpl::Text;
+            let mut l_threadLocksDel: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_2: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
             let mut ret_1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-            let mut l_destroyThreads: Tpl::Text;
+            let mut l_destroyThreads: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             ret_1 = Arc::new(a_odeSchedule_threadTasks.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
             ret_2 = listRest(ret_1.clone())?;
@@ -2795,7 +2795,7 @@ fn fun_145(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_type: Tpl::Text,
 }
 
 fn fun_146(mut in_txt: Tpl::Text, mut in_mArg: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone())) {
         (txt, Deref @ "tbb") => {
             let mut txt = (*txt).clone();
@@ -2811,7 +2811,7 @@ fn fun_146(mut in_txt: Tpl::Text, mut in_mArg: ArcStr) -> Result<Tpl::Text> {
 }
 
 fn fun_147(mut in_txt: Tpl::Text, mut in_a_schedulesOpt: Option<(Arc<HpcOmSimCode::Schedule>, Arc<HpcOmSimCode::Schedule>, Arc<HpcOmSimCode::Schedule>)>, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_schedulesOpt.clone(), in_a_type.clone())) {
         (txt, Some((Deref @ HpcOmSimCode::Schedule::LEVELSCHEDULE { useFixedAssignments: true, .. }, _, _)), a_type) => {
             let mut str_0: ArcStr = arcstr::literal!("");
@@ -2823,11 +2823,11 @@ fn fun_147(mut in_txt: Tpl::Text, mut in_a_schedulesOpt: Option<(Arc<HpcOmSimCod
         (txt, Some((Deref @ HpcOmSimCode::Schedule::THREADSCHEDULE { threadTasks: i_odeSchedule_threadTasks, outgoingDepTasks: i_odeSchedule_outgoingDepTasks, .. }, Deref @ HpcOmSimCode::Schedule::THREADSCHEDULE { outgoingDepTasks: i_daeSchedule_outgoingDepTasks, .. }, Deref @ HpcOmSimCode::Schedule::THREADSCHEDULE { outgoingDepTasks: i_zeroFuncSchedule_outgoingDepTasks, .. })), a_type) => {
             let mut str_7: ArcStr = arcstr::literal!("");
             let mut ret_6: i32 = 0;
-            let mut l_destroyLocksZeroFunc: Tpl::Text;
+            let mut l_destroyLocksZeroFunc: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_4: i32 = 0;
-            let mut l_destroyLocksDae: Tpl::Text;
+            let mut l_destroyLocksDae: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_2: i32 = 0;
-            let mut l_destroyLocksOde: Tpl::Text;
+            let mut l_destroyLocksOde: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             ret_2 = (i_odeSchedule_outgoingDepTasks.clone().len() as i32);
             l_destroyLocksOde = destroyArrayLocks(Tpl::emptyTxt.clone(), ret_2.clone(), (literal!("_lockOde")).clone(), (Tpl::textString(a_type.clone())?).clone())?;
@@ -2857,7 +2857,7 @@ fn fun_147(mut in_txt: Tpl::Text, mut in_a_schedulesOpt: Option<(Arc<HpcOmSimCod
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_148(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -2881,7 +2881,7 @@ fn lm_148(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_149(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -2903,14 +2903,14 @@ fn lm_149(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> 
 }
 
 pub fn additionalHpcomDestructorBodyStatements(mut txt: Tpl::Text, mut a_schedulesOpt: Option<(Arc<HpcOmSimCode::Schedule>, Arc<HpcOmSimCode::Schedule>, Arc<HpcOmSimCode::Schedule>)>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_6: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut ret_5: i32 = 0;
     let mut ret_4: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut ret_3: i32 = 0;
-    let mut l_schedulerSpecificCode: Tpl::Text;
+    let mut l_schedulerSpecificCode: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_1: ArcStr = arcstr::literal!("");
-    let mut l_type: Tpl::Text;
+    let mut l_type: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     ret_1 = (Flags::getConfigString(Flags::HPCOM_CODE.clone())?).clone();
     l_type = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_1.clone()).clone())?;
     l_schedulerSpecificCode = fun_147(Tpl::emptyTxt.clone(), a_schedulesOpt.clone(), l_type.clone())?;
@@ -2933,20 +2933,20 @@ pub fn additionalHpcomDestructorBodyStatements(mut txt: Tpl::Text, mut a_schedul
 }
 
 fn fun_151(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_extraFuncs: Tpl::Text, mut in_a_useFlatArrayNotation: bool, mut in_a_stateDerVectorName: Tpl::Text, mut in_a_context: SimCodeFunction::Context, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_stateDerVectorName: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_stateDerVectorName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncs, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_useFlatArrayNotation.clone(), in_a_stateDerVectorName.clone(), in_a_context.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, i_simCode @ SimCode::SimCode { clockedPartitions: i_clockedPartitions, allEquations: i_allEquations, hpcomData: HpcOmSimCode::HpcOmData { schedules: i_hpcomData_schedules, .. }, modelInfo: SimCode::ModelInfo { name: i_modelInfo_name, .. }, .. }, a_extraFuncs, a_useFlatArrayNotation, a_stateDerVectorName, a_context, a_extraFuncsNamespace, a_extraFuncsDecl, a_allEquationsPlusWhen) => {
             let mut ret_6: bool = false;
             let mut ret_5: bool = false;
             let mut ret_4: ArcStr = arcstr::literal!("");
             let mut ret_3: Arc<metamodelica::List<SimCode::SubPartition>> = metamodelica::nil();
-            let mut txt_2: Tpl::Text;
-            let mut l_parCode: Tpl::Text;
-            let mut l_extraFuncsPar: Tpl::Text;
+            let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_parCode: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_extraFuncsPar: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_extraFuncs = (*a_extraFuncs).clone();
             let mut a_stateDerVectorName = (*a_stateDerVectorName).clone();
@@ -2983,19 +2983,19 @@ fn fun_151(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_e
 }
 
 pub fn updateHpcom(mut txt: Tpl::Text, mut a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut a_simCode: SimCode::SimCode, mut a_extraFuncs: Tpl::Text, mut a_extraFuncsDecl: Tpl::Text, mut a_extraFuncsNamespace: Tpl::Text, mut a_context: SimCodeFunction::Context, mut a_stateDerVectorName: Tpl::Text, mut a_useFlatArrayNotation: bool) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut out_a_stateDerVectorName: Tpl::Text;
-    let mut l_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_stateDerVectorName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     l_varDecls = Tpl::emptyTxt.clone();
     (out_txt, out_a_extraFuncs, out_a_stateDerVectorName, out_a_extraFuncsNamespace, out_a_extraFuncsDecl) = fun_151(txt.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_useFlatArrayNotation.clone(), a_stateDerVectorName.clone(), a_context.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_allEquationsPlusWhen.clone())?;
     Ok((out_txt, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName))
 }
 
 fn fun_153(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -3009,7 +3009,7 @@ fn fun_153(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 fn fun_154(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -3023,7 +3023,7 @@ fn fun_154(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 fn fun_155(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -3037,7 +3037,7 @@ fn fun_155(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 fn fun_156(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -3051,7 +3051,7 @@ fn fun_156(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 fn fun_157(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -3065,7 +3065,7 @@ fn fun_157(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 fn fun_158(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -3079,16 +3079,16 @@ fn fun_158(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 fn lm_159(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<HpcOmSimCode::TaskList>>, mut in_a_useFlatArrayNotation: bool, mut in_a_name: Arc<Absyn::Path>, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_type: Tpl::Text, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_name.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_type.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, _, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, _, _) => {
             (txt.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_tasks, tail: rest }, a_useFlatArrayNotation, a_name, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_type, a_allEquationsPlusWhen) => {
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
             let mut a_extraFuncs = (*a_extraFuncs).clone();
@@ -3105,16 +3105,16 @@ fn lm_159(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<HpcOmSimCo
 }
 
 fn lm_160(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<HpcOmSimCode::TaskList>>, mut in_a_useFlatArrayNotation: bool, mut in_a_name: Arc<Absyn::Path>, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_type: Tpl::Text, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_name.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_type.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, _, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, _, _) => {
             (txt.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_tasks, tail: rest }, a_useFlatArrayNotation, a_name, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_type, a_allEquationsPlusWhen) => {
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
             let mut a_extraFuncs = (*a_extraFuncs).clone();
@@ -3131,16 +3131,16 @@ fn lm_160(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<HpcOmSimCo
 }
 
 fn lm_161(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<HpcOmSimCode::TaskList>>, mut in_a_useFlatArrayNotation: bool, mut in_a_name: Arc<Absyn::Path>, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_type: Tpl::Text, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_name.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_type.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, _, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, _, _) => {
             (txt.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_tasks, tail: rest }, a_useFlatArrayNotation, a_name, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_type, a_allEquationsPlusWhen) => {
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
             let mut a_extraFuncs = (*a_extraFuncs).clone();
@@ -3157,8 +3157,8 @@ fn lm_161(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<HpcOmSimCo
 }
 
 fn fun_162(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_type: Tpl::Text, mut in_a_functionHead: Tpl::Text, mut in_a_zeroFuncEqs: Tpl::Text, mut in_a_daeEqs: Tpl::Text, mut in_a_odeEqs: Tpl::Text, mut in_a_name: Arc<Absyn::Path>, mut in_a_extraFuncsDecl: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsDecl) = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_type.clone(), in_a_functionHead.clone(), in_a_zeroFuncEqs.clone(), in_a_daeEqs.clone(), in_a_odeEqs.clone(), in_a_name.clone(), in_a_extraFuncsDecl.clone())) {
         (txt, Deref @ "openmp", _, a_functionHead, a_zeroFuncEqs, a_daeEqs, a_odeEqs, a_name, a_extraFuncsDecl) => {
             let mut ret_2: i32 = 0;
@@ -3234,16 +3234,16 @@ fn fun_162(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_type: Tpl::Text,
 }
 
 fn lm_163(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>>, mut in_a_useFlatArrayNotation: bool, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_name: Arc<Absyn::Path>, mut in_a_varDecls: Tpl::Text, mut in_a_type: Tpl::Text, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_name.clone(), in_a_varDecls.clone(), in_a_type.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, a_extraFuncsDecl, a_extraFuncs, _, _, a_varDecls, _, _) => {
             (txt.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_tasks, tail: rest }, a_useFlatArrayNotation, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_name, a_varDecls, a_type, a_allEquationsPlusWhen) => {
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
             let mut a_extraFuncs = (*a_extraFuncs).clone();
@@ -3260,16 +3260,16 @@ fn lm_163(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<metamodeli
 }
 
 fn lm_164(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>>, mut in_a_useFlatArrayNotation: bool, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_name: Arc<Absyn::Path>, mut in_a_varDecls: Tpl::Text, mut in_a_type: Tpl::Text, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_name.clone(), in_a_varDecls.clone(), in_a_type.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, a_extraFuncsDecl, a_extraFuncs, _, _, a_varDecls, _, _) => {
             (txt.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_tasks, tail: rest }, a_useFlatArrayNotation, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_name, a_varDecls, a_type, a_allEquationsPlusWhen) => {
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
             let mut a_extraFuncs = (*a_extraFuncs).clone();
@@ -3286,16 +3286,16 @@ fn lm_164(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<metamodeli
 }
 
 fn lm_165(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>>, mut in_a_useFlatArrayNotation: bool, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_name: Arc<Absyn::Path>, mut in_a_varDecls: Tpl::Text, mut in_a_type: Tpl::Text, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_name.clone(), in_a_varDecls.clone(), in_a_type.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, a_extraFuncsDecl, a_extraFuncs, _, _, a_varDecls, _, _) => {
             (txt.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_tasks, tail: rest }, a_useFlatArrayNotation, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_name, a_varDecls, a_type, a_allEquationsPlusWhen) => {
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
             let mut a_extraFuncs = (*a_extraFuncs).clone();
@@ -3312,17 +3312,17 @@ fn lm_165(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<metamodeli
 }
 
 fn lm_166(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)>>, mut in_a_useFlatArrayNotation: bool, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_name: Arc<Absyn::Path>, mut in_a_varDecls: Tpl::Text, mut in_a_type: Tpl::Text, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_name.clone(), in_a_varDecls.clone(), in_a_type.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, a_extraFuncsDecl, a_extraFuncs, _, _, a_varDecls, _, _) => {
             (txt.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_tasks, tail: rest }, a_useFlatArrayNotation, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_name, a_varDecls, a_type, a_allEquationsPlusWhen) => {
             let mut x_i0: i32 = 0;
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
             let mut a_extraFuncs = (*a_extraFuncs).clone();
@@ -3342,13 +3342,13 @@ fn lm_166(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<metam
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_167(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_type.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_tt, tail: rest }, a_type) => {
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("threadLock")).clone() }))?;
             txt_0 = Tpl::writeStr(txt_0.clone(), (intString(i_tt.clone())).clone())?;
@@ -3363,17 +3363,17 @@ fn lm_167(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut
 }
 
 fn lm_168(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)>>, mut in_a_useFlatArrayNotation: bool, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_name: Arc<Absyn::Path>, mut in_a_varDecls: Tpl::Text, mut in_a_type: Tpl::Text, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_name.clone(), in_a_varDecls.clone(), in_a_type.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, a_extraFuncsDecl, a_extraFuncs, _, _, a_varDecls, _, _) => {
             (txt.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_tasks, tail: rest }, a_useFlatArrayNotation, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_name, a_varDecls, a_type, a_allEquationsPlusWhen) => {
             let mut x_i0: i32 = 0;
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
             let mut a_extraFuncs = (*a_extraFuncs).clone();
@@ -3393,13 +3393,13 @@ fn lm_168(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<metam
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_169(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_type.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_tt, tail: rest }, a_type) => {
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("threadLock")).clone() }))?;
             txt_0 = Tpl::writeStr(txt_0.clone(), (intString(i_tt.clone())).clone())?;
@@ -3414,11 +3414,11 @@ fn lm_169(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut
 }
 
 fn fun_170(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_functionHead: Tpl::Text, mut in_a_zeroFuncSchedule: Arc<HpcOmSimCode::Schedule>, mut in_a_daeSchedule: Arc<HpcOmSimCode::Schedule>, mut in_a_useFlatArrayNotation: bool, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_name: Arc<Absyn::Path>, mut in_a_varDecls: Tpl::Text, mut in_a_type: Tpl::Text, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut in_a_odeSchedule: Arc<HpcOmSimCode::Schedule>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_extraFuncsNamespace.clone(), in_a_functionHead.clone(), in_a_zeroFuncSchedule.clone(), in_a_daeSchedule.clone(), in_a_useFlatArrayNotation.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_name.clone(), in_a_varDecls.clone(), in_a_type.clone(), in_a_allEquationsPlusWhen.clone(), in_a_odeSchedule.clone())) {
         (txt, Deref @ "openmp", a_extraFuncsNamespace, a_functionHead, a_zeroFuncSchedule, a_daeSchedule, a_useFlatArrayNotation, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_name, a_varDecls, a_type, a_allEquationsPlusWhen, a_odeSchedule) => {
             let mut ret_11: i32 = 0;
@@ -3426,13 +3426,13 @@ fn fun_170(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_extraFuncsNamesp
             let mut ret_9: i32 = 0;
             let mut ret_8: Arc<metamodelica::List<metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>> = metamodelica::nil();
             let mut ret_7: i32 = 0;
-            let mut l_zeroFuncEqs: Tpl::Text;
+            let mut l_zeroFuncEqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_5: Arc<metamodelica::List<metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>> = metamodelica::nil();
             let mut ret_4: i32 = 0;
-            let mut l_daeEqs: Tpl::Text;
+            let mut l_daeEqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_2: Arc<metamodelica::List<metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>> = metamodelica::nil();
             let mut ret_1: i32 = 0;
-            let mut l_odeEqs: Tpl::Text;
+            let mut l_odeEqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
             let mut a_extraFuncs = (*a_extraFuncs).clone();
@@ -3504,11 +3504,11 @@ fn fun_170(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_extraFuncsNamesp
         (txt, Deref @ "pthreads", a_extraFuncsNamespace, a_functionHead, a_zeroFuncSchedule, a_daeSchedule, a_useFlatArrayNotation, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_name, a_varDecls, a_type, a_allEquationsPlusWhen, a_odeSchedule) => {
             let mut ret_18: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut ret_17: i32 = 0;
-            let mut l_threadLocks: Tpl::Text;
+            let mut l_threadLocks: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_15: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)>> = metamodelica::nil();
             let mut ret_14: metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)> = Default::default();
             let mut ret_13: i32 = 0;
-            let mut l_eqsFuncs: Tpl::Text;
+            let mut l_eqsFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_extraFuncsNamespace = (*a_extraFuncsNamespace).clone();
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
@@ -3544,8 +3544,8 @@ fn fun_170(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_extraFuncsNamesp
             let mut ret_21: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)>> = metamodelica::nil();
             let mut ret_20: metamodelica::Array<(Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>)> = Default::default();
             let mut ret_19: i32 = 0;
-            let mut l_threadLocks: Tpl::Text;
-            let mut l_eqsFuncs: Tpl::Text;
+            let mut l_threadLocks: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_eqsFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_extraFuncsNamespace = (*a_extraFuncsNamespace).clone();
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
@@ -3596,7 +3596,7 @@ fn fun_170(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_extraFuncsNamesp
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_171(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_type: Tpl::Text, mut in_a_threadTasksOde: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_type.clone(), in_a_threadTasksOde.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, _) => {
             txt.clone()
@@ -3622,7 +3622,7 @@ fn lm_171(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_172(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_type: Tpl::Text, mut in_a_threadTasksOde: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_type.clone(), in_a_threadTasksOde.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, _) => {
             txt.clone()
@@ -3648,7 +3648,7 @@ fn lm_172(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_173(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_type: Tpl::Text, mut in_a_threadTasksDae: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_type.clone(), in_a_threadTasksDae.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, _) => {
             txt.clone()
@@ -3674,7 +3674,7 @@ fn lm_173(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_174(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_type: Tpl::Text, mut in_a_threadTasksDae: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_type.clone(), in_a_threadTasksDae.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, _) => {
             txt.clone()
@@ -3700,7 +3700,7 @@ fn lm_174(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_175(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_type: Tpl::Text, mut in_a_threadTasksZeroFunc: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_type.clone(), in_a_threadTasksZeroFunc.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, _) => {
             txt.clone()
@@ -3726,7 +3726,7 @@ fn lm_175(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_176(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_type: Tpl::Text, mut in_a_threadTasksZeroFunc: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_type.clone(), in_a_threadTasksZeroFunc.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, _) => {
             txt.clone()
@@ -3750,17 +3750,17 @@ fn lm_176(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 }
 
 fn lm_177(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_useFlatArrayNotation: bool, mut in_a_name: Arc<Absyn::Path>, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_type: Tpl::Text, mut in_a_threadTasksOde: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_name.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_type.clone(), in_a_threadTasksOde.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, _, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, _, _, _) => {
             (txt.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_tt, tail: rest }, a_useFlatArrayNotation, a_name, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_type, a_threadTasksOde, a_allEquationsPlusWhen) => {
             let mut x_i0: i32 = 0;
-            let mut txt_2: Tpl::Text;
+            let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_1: i32 = 0;
             let mut ret_0: i32 = 0;
             let mut txt = (*txt).clone();
@@ -3782,17 +3782,17 @@ fn lm_177(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 }
 
 fn lm_178(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_useFlatArrayNotation: bool, mut in_a_name: Arc<Absyn::Path>, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_type: Tpl::Text, mut in_a_threadTasksDae: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_name.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_type.clone(), in_a_threadTasksDae.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, _, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, _, _, _) => {
             (txt.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_tt, tail: rest }, a_useFlatArrayNotation, a_name, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_type, a_threadTasksDae, a_allEquationsPlusWhen) => {
             let mut x_i0: i32 = 0;
-            let mut txt_2: Tpl::Text;
+            let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_1: i32 = 0;
             let mut ret_0: i32 = 0;
             let mut txt = (*txt).clone();
@@ -3814,17 +3814,17 @@ fn lm_178(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 }
 
 fn lm_179(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_useFlatArrayNotation: bool, mut in_a_name: Arc<Absyn::Path>, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_type: Tpl::Text, mut in_a_threadTasksZeroFunc: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_name.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_type.clone(), in_a_threadTasksZeroFunc.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, _, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, _, _, _) => {
             (txt.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_tt, tail: rest }, a_useFlatArrayNotation, a_name, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_type, a_threadTasksZeroFunc, a_allEquationsPlusWhen) => {
             let mut x_i0: i32 = 0;
-            let mut txt_2: Tpl::Text;
+            let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_1: i32 = 0;
             let mut ret_0: i32 = 0;
             let mut txt = (*txt).clone();
@@ -3846,17 +3846,17 @@ fn lm_179(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 }
 
 fn lm_180(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut in_a_useFlatArrayNotation: bool, mut in_a_mainThreadCode: Tpl::Text, mut in_a_name: Arc<Absyn::Path>, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_modelNamePrefixStr: ArcStr, mut in_a_type: Tpl::Text, mut in_a_zeroFuncSchedule_threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, mut in_a_daeSchedule_threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, mut in_a_odeSchedule_threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_mainThreadCode: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_mainThreadCode: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_mainThreadCode, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_mainThreadCode.clone(), in_a_name.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_modelNamePrefixStr.clone(), in_a_type.clone(), in_a_zeroFuncSchedule_threadTasks.clone(), in_a_daeSchedule_threadTasks.clone(), in_a_odeSchedule_threadTasks.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, a_mainThreadCode, _, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, _, _, _, _, _, _) => {
             (txt.clone(), a_mainThreadCode.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_threadIdx, tail: rest }, a_useFlatArrayNotation, a_mainThreadCode, a_name, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_modelNamePrefixStr, a_type, a_zeroFuncSchedule_threadTasks, a_daeSchedule_threadTasks, a_odeSchedule_threadTasks, a_allEquationsPlusWhen) => {
-            let mut txt_4: Tpl::Text;
+            let mut txt_4: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_3: i32 = 0;
             let mut ret_2: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
             let mut ret_1: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
@@ -3884,7 +3884,7 @@ fn lm_180(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_181(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_type.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -3906,7 +3906,7 @@ fn lm_181(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_182(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_type: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_type.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -3926,33 +3926,33 @@ fn lm_182(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 }
 
 fn fun_183(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_modelNamePrefixStr: ArcStr, mut in_a_zeroFuncSchedule_threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, mut in_a_daeSchedule_threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, mut in_a_odeSchedule_threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, mut in_a_functionHead: Tpl::Text, mut in_a_useFlatArrayNotation: bool, mut in_a_name: Arc<Absyn::Path>, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut in_a_threadTasksZeroFunc: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, mut in_a_threadTasksDae: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, mut in_a_type: Tpl::Text, mut in_a_threadTasksOde: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_modelNamePrefixStr.clone(), in_a_zeroFuncSchedule_threadTasks.clone(), in_a_daeSchedule_threadTasks.clone(), in_a_odeSchedule_threadTasks.clone(), in_a_functionHead.clone(), in_a_useFlatArrayNotation.clone(), in_a_name.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_allEquationsPlusWhen.clone(), in_a_threadTasksZeroFunc.clone(), in_a_threadTasksDae.clone(), in_a_type.clone(), in_a_threadTasksOde.clone())) {
         (txt, Deref @ "openmp", _, _, _, _, a_functionHead, a_useFlatArrayNotation, a_name, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_allEquationsPlusWhen, a_threadTasksZeroFunc, a_threadTasksDae, a_type, a_threadTasksOde) => {
             let mut ret_20: i32 = 0;
             let mut ret_19: i32 = 0;
             let mut ret_18: i32 = 0;
             let mut ret_17: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-            let mut l_zeroFuncEqs: Tpl::Text;
+            let mut l_zeroFuncEqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_15: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-            let mut l_daeEqs: Tpl::Text;
+            let mut l_daeEqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_13: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-            let mut l_odeEqs: Tpl::Text;
+            let mut l_odeEqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_11: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-            let mut l_threadReleaseLocksZeroFunc: Tpl::Text;
+            let mut l_threadReleaseLocksZeroFunc: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_9: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-            let mut l_threadAssignLocksZeroFunc: Tpl::Text;
+            let mut l_threadAssignLocksZeroFunc: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_7: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-            let mut l_threadReleaseLocksDae: Tpl::Text;
+            let mut l_threadReleaseLocksDae: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_5: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-            let mut l_threadAssignLocksDae: Tpl::Text;
+            let mut l_threadAssignLocksDae: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_3: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-            let mut l_threadReleaseLocksOde: Tpl::Text;
+            let mut l_threadReleaseLocksOde: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-            let mut l_threadAssignLocksOde: Tpl::Text;
+            let mut l_threadAssignLocksOde: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
             let mut a_extraFuncs = (*a_extraFuncs).clone();
@@ -4070,14 +4070,14 @@ fn fun_183(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_modelNamePrefixS
         (txt, _, a_modelNamePrefixStr, a_zeroFuncSchedule_threadTasks, a_daeSchedule_threadTasks, a_odeSchedule_threadTasks, a_functionHead, a_useFlatArrayNotation, a_name, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_allEquationsPlusWhen, _, _, a_type, _) => {
             let mut ret_30: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
             let mut ret_29: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-            let mut l_threadReleaseLocks: Tpl::Text;
+            let mut l_threadReleaseLocks: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_27: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
             let mut ret_26: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-            let mut l_threadAssignLocks1: Tpl::Text;
+            let mut l_threadAssignLocks1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_24: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut ret_23: i32 = 0;
-            let mut l_threadFuncs: Tpl::Text;
-            let mut l_mainThreadCode: Tpl::Text;
+            let mut l_threadFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_mainThreadCode: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
             let mut a_extraFuncs = (*a_extraFuncs).clone();
@@ -4121,16 +4121,16 @@ fn fun_183(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_modelNamePrefixS
 }
 
 fn fun_184(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_name: Arc<Absyn::Path>, mut in_a_functionHead: Tpl::Text, mut in_a_zeroFuncSchedule_tasks: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>, mut in_a_daeSchedule_tasks: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>, mut in_a_useFlatArrayNotation: bool, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_type: Tpl::Text, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut in_a_odeSchedule_tasks: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_name.clone(), in_a_functionHead.clone(), in_a_zeroFuncSchedule_tasks.clone(), in_a_daeSchedule_tasks.clone(), in_a_useFlatArrayNotation.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_type.clone(), in_a_allEquationsPlusWhen.clone(), in_a_odeSchedule_tasks.clone())) {
         (txt, Deref @ "openmp", _, a_functionHead, a_zeroFuncSchedule_tasks, a_daeSchedule_tasks, a_useFlatArrayNotation, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_type, a_allEquationsPlusWhen, a_odeSchedule_tasks) => {
-            let mut l_zeroFuncTaskEqs: Tpl::Text;
-            let mut l_daeTaskEqs: Tpl::Text;
-            let mut l_odeTaskEqs: Tpl::Text;
+            let mut l_zeroFuncTaskEqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_daeTaskEqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_odeTaskEqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_extraFuncsNamespace = (*a_extraFuncsNamespace).clone();
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
@@ -4166,7 +4166,7 @@ fn fun_184(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_name: Arc<Absyn:
             (txt.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
         },
         (txt, Deref @ "tbb", a_name, a_functionHead, a_zeroFuncSchedule_tasks, a_daeSchedule_tasks, a_useFlatArrayNotation, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_type, a_allEquationsPlusWhen, a_odeSchedule_tasks) => {
-            let mut l_taskFuncs: Tpl::Text;
+            let mut l_taskFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_extraFuncsNamespace = (*a_extraFuncsNamespace).clone();
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
@@ -4197,16 +4197,16 @@ fn fun_184(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_name: Arc<Absyn:
 }
 
 fn fun_185(mut in_txt: Tpl::Text, mut in_a_schedulesOpt: Option<(Arc<HpcOmSimCode::Schedule>, Arc<HpcOmSimCode::Schedule>, Arc<HpcOmSimCode::Schedule>)>, mut in_a_modelNamePrefixStr: ArcStr, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_type: Tpl::Text, mut in_a_useFlatArrayNotation: bool, mut in_a_name: Arc<Absyn::Path>, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut in_a_functionHead: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_schedulesOpt.clone(), in_a_modelNamePrefixStr.clone(), in_a_extraFuncsNamespace.clone(), in_a_type.clone(), in_a_useFlatArrayNotation.clone(), in_a_name.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_allEquationsPlusWhen.clone(), in_a_functionHead.clone())) {
         (txt, Some((Deref @ HpcOmSimCode::Schedule::EMPTYSCHEDULE { tasks: HpcOmSimCode::TaskList::SERIALTASKLIST { tasks: i_taskListOde, .. } }, Deref @ HpcOmSimCode::Schedule::EMPTYSCHEDULE { tasks: HpcOmSimCode::TaskList::SERIALTASKLIST { tasks: i_taskListDae, .. } }, Deref @ HpcOmSimCode::Schedule::EMPTYSCHEDULE { tasks: HpcOmSimCode::TaskList::SERIALTASKLIST { tasks: i_taskListZeroFunc, .. } })), _, a_extraFuncsNamespace, _, a_useFlatArrayNotation, a_name, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_allEquationsPlusWhen, a_functionHead) => {
-            let mut txt_2: Tpl::Text;
-            let mut txt_1: Tpl::Text;
-            let mut txt_0: Tpl::Text;
+            let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
             let mut a_extraFuncs = (*a_extraFuncs).clone();
@@ -4236,9 +4236,9 @@ fn fun_185(mut in_txt: Tpl::Text, mut in_a_schedulesOpt: Option<(Arc<HpcOmSimCod
         },
         (txt, Some((Deref @ HpcOmSimCode::Schedule::LEVELSCHEDULE { tasksOfLevels: i_tasksOfLevelsOde, useFixedAssignments: false }, Deref @ HpcOmSimCode::Schedule::LEVELSCHEDULE { tasksOfLevels: i_tasksOfLevelsDae, useFixedAssignments: false }, Deref @ HpcOmSimCode::Schedule::LEVELSCHEDULE { tasksOfLevels: i_tasksOfLevelsZeroFunc, useFixedAssignments: false })), _, a_extraFuncsNamespace, a_type, a_useFlatArrayNotation, a_name, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_allEquationsPlusWhen, a_functionHead) => {
             let mut str_6: ArcStr = arcstr::literal!("");
-            let mut l_zeroFuncEqs: Tpl::Text;
-            let mut l_daeEqs: Tpl::Text;
-            let mut l_odeEqs: Tpl::Text;
+            let mut l_zeroFuncEqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_daeEqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_odeEqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
             let mut a_extraFuncs = (*a_extraFuncs).clone();
@@ -4297,41 +4297,41 @@ fn fun_185(mut in_txt: Tpl::Text, mut in_a_schedulesOpt: Option<(Arc<HpcOmSimCod
 }
 
 fn fun_186(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut in_a_name: Arc<Absyn::Path>, mut in_a_extraFuncs: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_schedulesOpt: Option<(Arc<HpcOmSimCode::Schedule>, Arc<HpcOmSimCode::Schedule>, Arc<HpcOmSimCode::Schedule>)>, mut in_a_modelNamePrefixStr: ArcStr, mut in_a_useFlatArrayNotation: bool) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_simCode.clone(), in_a_allEquationsPlusWhen.clone(), in_a_name.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_schedulesOpt.clone(), in_a_modelNamePrefixStr.clone(), in_a_useFlatArrayNotation.clone())) {
         (txt, i_simCode @ SimCode::SimCode { clockedPartitions: i_clockedPartitions, modelInfo: SimCode::ModelInfo { name: _, .. }, .. }, a_allEquationsPlusWhen, a_name, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_schedulesOpt, a_modelNamePrefixStr, a_useFlatArrayNotation) => {
-            let mut txt_28: Tpl::Text;
-            let mut l_functionHead: Tpl::Text;
+            let mut txt_28: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_functionHead: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_26: ArcStr = arcstr::literal!("");
-            let mut l_type: Tpl::Text;
+            let mut l_type: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_24: bool = false;
             let mut ret_23: bool = false;
             let mut ret_22: ArcStr = arcstr::literal!("");
-            let mut l_measureTimeEvaluateZeroFuncEnd: Tpl::Text;
+            let mut l_measureTimeEvaluateZeroFuncEnd: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_20: bool = false;
             let mut ret_19: bool = false;
             let mut ret_18: ArcStr = arcstr::literal!("");
-            let mut l_measureTimeEvaluateZeroFuncStart: Tpl::Text;
+            let mut l_measureTimeEvaluateZeroFuncStart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_16: bool = false;
             let mut ret_15: bool = false;
             let mut ret_14: ArcStr = arcstr::literal!("");
-            let mut l_measureTimeEvaluateAllEnd: Tpl::Text;
+            let mut l_measureTimeEvaluateAllEnd: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_12: bool = false;
             let mut ret_11: bool = false;
             let mut ret_10: ArcStr = arcstr::literal!("");
-            let mut l_measureTimeEvaluateAllStart: Tpl::Text;
+            let mut l_measureTimeEvaluateAllStart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_8: bool = false;
             let mut ret_7: bool = false;
             let mut ret_6: ArcStr = arcstr::literal!("");
-            let mut l_measureTimeEvaluateOdeEnd: Tpl::Text;
+            let mut l_measureTimeEvaluateOdeEnd: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_4: bool = false;
             let mut ret_3: bool = false;
             let mut ret_2: ArcStr = arcstr::literal!("");
-            let mut l_measureTimeEvaluateOdeStart: Tpl::Text;
-            let mut l_varDecls: Tpl::Text;
+            let mut l_measureTimeEvaluateOdeStart: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_extraFuncs = (*a_extraFuncs).clone();
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
@@ -4419,11 +4419,11 @@ fn fun_186(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_a
 }
 
 pub fn generateParallelEvaluate(mut txt: Tpl::Text, mut a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut a_name: Arc<Absyn::Path>, mut a_simCode: SimCode::SimCode, mut a_extraFuncs: Tpl::Text, mut a_extraFuncsDecl: Tpl::Text, mut a_extraFuncsNamespace: Tpl::Text, mut a_schedulesOpt: Option<(Arc<HpcOmSimCode::Schedule>, Arc<HpcOmSimCode::Schedule>, Arc<HpcOmSimCode::Schedule>)>, mut a_context: SimCodeFunction::Context, mut a_stateDerVectorName: Tpl::Text, mut a_modelNamePrefixStr: ArcStr, mut a_useFlatArrayNotation: bool) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut out_a_stateDerVectorName: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_stateDerVectorName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace) = fun_186(txt.clone(), a_simCode.clone(), a_allEquationsPlusWhen.clone(), a_name.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_schedulesOpt.clone(), (a_modelNamePrefixStr.clone()).clone(), a_useFlatArrayNotation.clone())?;
     out_a_stateDerVectorName = a_stateDerVectorName.clone();
     Ok((out_txt, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace, out_a_stateDerVectorName))
@@ -4432,7 +4432,7 @@ pub fn generateParallelEvaluate(mut txt: Tpl::Text, mut a_allEquationsPlusWhen: 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_188(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -4452,7 +4452,7 @@ fn lm_188(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> 
 }
 
 fn fun_189(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
         (mut txt, SimCode::SimCode { modelInfo: SimCode::ModelInfo { vars: SimCodeVar::SimVars { stateVars: ref i_vars_stateVars, .. }, .. }, .. }) => {
             let mut ret_2: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -4474,10 +4474,10 @@ fn fun_189(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<
 }
 
 pub fn generateStateVarPrefetchCode(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCode, mut a_extraFuncs: Tpl::Text, mut a_extraFuncsDecl: Tpl::Text, mut a_extraFuncsNamespace: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_189(txt.clone(), a_simCode.clone())?;
     out_a_extraFuncs = a_extraFuncs.clone();
     out_a_extraFuncsDecl = a_extraFuncsDecl.clone();
@@ -4486,11 +4486,11 @@ pub fn generateStateVarPrefetchCode(mut txt: Tpl::Text, mut a_simCode: SimCode::
 }
 
 fn lm_191(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut in_a_useFlatArrayNotation: bool, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_iType.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, _, _) => {
             (txt.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
@@ -4512,11 +4512,11 @@ fn lm_191(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<HpcOmS
 }
 
 fn lm_192(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut in_a_useFlatArrayNotation: bool, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_iType.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, _, _) => {
             (txt.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
@@ -4538,14 +4538,14 @@ fn lm_192(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<HpcOmS
 }
 
 fn fun_193(mut in_txt: Tpl::Text, mut in_a_tasksOfLevel: HpcOmSimCode::TaskList, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut in_a_iType: ArcStr, mut in_a_varDecls: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_extraFuncs: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_useFlatArrayNotation: bool) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_tasksOfLevel.clone(), in_a_allEquationsPlusWhen.clone(), in_a_iType.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_useFlatArrayNotation.clone())) {
         (txt, HpcOmSimCode::TaskList::PARALLELTASKLIST { tasks: i_tasks }, a_allEquationsPlusWhen, a_iType, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_useFlatArrayNotation) => {
-            let mut l_odeEqs: Tpl::Text;
+            let mut l_odeEqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_extraFuncs = (*a_extraFuncs).clone();
@@ -4563,7 +4563,7 @@ fn fun_193(mut in_txt: Tpl::Text, mut in_a_tasksOfLevel: HpcOmSimCode::TaskList,
             (txt.clone(), a_varDecls.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())
         },
         (txt, HpcOmSimCode::TaskList::SERIALTASKLIST { tasks: i_tasks, .. }, a_allEquationsPlusWhen, a_iType, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_useFlatArrayNotation) => {
-            let mut l_odeEqs: Tpl::Text;
+            let mut l_odeEqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_extraFuncs = (*a_extraFuncs).clone();
@@ -4589,21 +4589,21 @@ fn fun_193(mut in_txt: Tpl::Text, mut in_a_tasksOfLevel: HpcOmSimCode::TaskList,
 }
 
 pub fn generateLevelCodeForLevel(mut txt: Tpl::Text, mut a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut a_tasksOfLevel: HpcOmSimCode::TaskList, mut a_iType: ArcStr, mut a_varDecls: Tpl::Text, mut a_simCode: SimCode::SimCode, mut a_extraFuncs: Tpl::Text, mut a_extraFuncsDecl: Tpl::Text, mut a_extraFuncsNamespace: Tpl::Text, mut a_useFlatArrayNotation: bool) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace) = fun_193(txt.clone(), a_tasksOfLevel.clone(), a_allEquationsPlusWhen.clone(), (a_iType.clone()).clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_useFlatArrayNotation.clone())?;
     Ok((out_txt, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace))
 }
 
 pub fn generateLevelCodeForTask(mut txt: Tpl::Text, mut a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut a_iTask: Arc<HpcOmSimCode::Task>, mut a_iType: ArcStr, mut a_varDecls: Tpl::Text, mut a_simCode: SimCode::SimCode, mut a_extraFuncs: Tpl::Text, mut a_extraFuncsDecl: Tpl::Text, mut a_extraFuncsNamespace: Tpl::Text, mut a_useFlatArrayNotation: bool) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("#pragma omp section\n")).clone(), (literal!("{\n")).clone()], lastHasNewLine: true }))?;
     out_txt = Tpl::pushBlock(out_txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
     (out_txt, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace) = taskCode(out_txt.clone(), a_allEquationsPlusWhen.clone(), a_iTask.clone(), (a_iType.clone()).clone(), (literal!("")).clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_useFlatArrayNotation.clone())?;
@@ -4614,11 +4614,11 @@ pub fn generateLevelCodeForTask(mut txt: Tpl::Text, mut a_allEquationsPlusWhen: 
 }
 
 fn lm_196(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut in_a_useFlatArrayNotation: bool, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_iType.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, _, _) => {
             (txt.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
@@ -4640,11 +4640,11 @@ fn lm_196(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<HpcOmS
 }
 
 fn lm_197(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_useFlatArrayNotation: bool, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_iType.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, _, _) => {
             (txt.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
@@ -4677,13 +4677,13 @@ fn lm_197(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 }
 
 pub fn generateLevelFixedCodeForLevel(mut txt: Tpl::Text, mut a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut a_tasksOfLevel: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>, mut a_iType: ArcStr, mut a_varDecls: Tpl::Text, mut a_name: Arc<Absyn::Path>, mut a_simCode: SimCode::SimCode, mut a_extraFuncs: Tpl::Text, mut a_extraFuncsDecl: Tpl::Text, mut a_extraFuncsNamespace: Tpl::Text, mut a_useFlatArrayNotation: bool) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-    let mut l_eqs: Tpl::Text;
+    let mut l_eqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     ret_1 = Arc::new(a_tasksOfLevel.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
     l_eqs = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
     (l_eqs, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = lm_197(l_eqs.clone(), ret_1.clone(), a_useFlatArrayNotation.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), a_varDecls.clone(), (a_iType.clone()).clone(), a_allEquationsPlusWhen.clone())?;
@@ -4695,11 +4695,11 @@ pub fn generateLevelFixedCodeForLevel(mut txt: Tpl::Text, mut a_allEquationsPlus
 }
 
 fn lm_199(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_useFlatArrayNotation: bool, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_iThreadIdx: i32, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_iType.clone(), in_a_iThreadIdx.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, _, _, _) => {
             (txt.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
@@ -4723,11 +4723,11 @@ fn lm_199(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 }
 
 fn lm_200(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_useFlatArrayNotation: bool, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_iThreadIdx: i32, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_iType.clone(), in_a_iThreadIdx.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, _, _, _) => {
             (txt.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
@@ -4751,11 +4751,11 @@ fn lm_200(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 }
 
 fn lm_201(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_useFlatArrayNotation: bool, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_iThreadIdx: i32, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_iType.clone(), in_a_iThreadIdx.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, _, _, _) => {
             (txt.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
@@ -4779,7 +4779,7 @@ fn lm_201(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 }
 
 fn fun_202(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -4793,13 +4793,13 @@ fn fun_202(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 fn fun_203(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_iThreadIdx: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_iThreadIdx.clone()) {
         (mut txt, false, _) => {
             txt.clone()
         },
         (mut txt, _, mut a_iThreadIdx) => {
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("evaluateODEThread")).clone() }))?;
             txt_0 = Tpl::writeStr(txt_0.clone(), (intString(a_iThreadIdx.clone())).clone())?;
             txt = CodegenCpp::generateMeasureTimeStartCode(txt.clone(), (literal!("valuesStart")).clone(), (Tpl::textString(txt_0.clone())?).clone(), (literal!("MEASURETIME_MODELFUNCTIONS")).clone())?;
@@ -4810,14 +4810,14 @@ fn fun_203(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_iThreadIdx: i32) -
 }
 
 fn fun_204(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_iThreadIdx: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_iThreadIdx.clone()) {
         (mut txt, false, _) => {
             txt.clone()
         },
         (mut txt, _, mut a_iThreadIdx) => {
-            let mut txt_1: Tpl::Text;
-            let mut txt_0: Tpl::Text;
+            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(*measureTimeThreadArrayOdeHpcom)[")).clone() }))?;
             txt_0 = Tpl::writeStr(txt_0.clone(), (intString(a_iThreadIdx.clone())).clone())?;
             txt_0 = Tpl::writeTok(txt_0.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("]")).clone() }))?;
@@ -4831,14 +4831,14 @@ fn fun_204(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_iThreadIdx: i32) -
 }
 
 fn fun_205(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_iThreadIdx: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_iThreadIdx.clone()) {
         (mut txt, false, _) => {
             txt.clone()
         },
         (mut txt, _, mut a_iThreadIdx) => {
-            let mut txt_1: Tpl::Text;
-            let mut txt_0: Tpl::Text;
+            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(*measureTimeThreadArrayDaeHpcom)[")).clone() }))?;
             txt_0 = Tpl::writeStr(txt_0.clone(), (intString(a_iThreadIdx.clone())).clone())?;
             txt_0 = Tpl::writeTok(txt_0.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("]")).clone() }))?;
@@ -4852,14 +4852,14 @@ fn fun_205(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_iThreadIdx: i32) -
 }
 
 fn fun_206(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_iThreadIdx: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_iThreadIdx.clone()) {
         (mut txt, false, _) => {
             txt.clone()
         },
         (mut txt, _, mut a_iThreadIdx) => {
-            let mut txt_1: Tpl::Text;
-            let mut txt_0: Tpl::Text;
+            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(*measureTimeThreadArrayZeroFuncHpcom)[")).clone() }))?;
             txt_0 = Tpl::writeStr(txt_0.clone(), (intString(a_iThreadIdx.clone())).clone())?;
             txt_0 = Tpl::writeTok(txt_0.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("]")).clone() }))?;
@@ -4873,7 +4873,7 @@ fn fun_206(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_iThreadIdx: i32) -
 }
 
 fn fun_207(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -4887,7 +4887,7 @@ fn fun_207(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 fn fun_208(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_iThreadIdx: i32, mut in_a_name: Arc<Absyn::Path>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_iThreadIdx.clone(), in_a_name.clone())) {
         (txt, false, _, _) => {
             txt.clone()
@@ -4981,17 +4981,17 @@ fn fun_208(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_iThreadIdx: i32, m
 }
 
 fn fun_209(mut in_txt: Tpl::Text, mut in_a_tasksOfLevels: (Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>), mut in_a_name: Arc<Absyn::Path>, mut in_a_useFlatArrayNotation: bool, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_iThreadIdx: i32, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_tasksOfLevels.clone(), in_a_name.clone(), in_a_useFlatArrayNotation.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_iType.clone(), in_a_iThreadIdx.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, (i_odeTasksOfLevel, i_daeTasksOfLevel, i_zeroFuncTasksOfLevel), a_name, a_useFlatArrayNotation, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_iType, a_iThreadIdx, a_allEquationsPlusWhen) => {
             let mut ret_3: bool = false;
-            let mut l_zeroFuncEqs: Tpl::Text;
-            let mut l_daeEqs: Tpl::Text;
-            let mut l_odeEqs: Tpl::Text;
+            let mut l_zeroFuncEqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_daeEqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_odeEqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_extraFuncsNamespace = (*a_extraFuncsNamespace).clone();
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
@@ -5057,11 +5057,11 @@ fn fun_209(mut in_txt: Tpl::Text, mut in_a_tasksOfLevels: (Arc<metamodelica::Lis
 }
 
 fn lm_210(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_useFlatArrayNotation: bool, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_iThreadIdx: i32, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_iType.clone(), in_a_iThreadIdx.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, _, _, _) => {
             (txt.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
@@ -5085,11 +5085,11 @@ fn lm_210(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 }
 
 fn lm_211(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_useFlatArrayNotation: bool, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_iThreadIdx: i32, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_iType.clone(), in_a_iThreadIdx.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, _, _, _) => {
             (txt.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
@@ -5113,11 +5113,11 @@ fn lm_211(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 }
 
 fn lm_212(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_useFlatArrayNotation: bool, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_iThreadIdx: i32, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_iType.clone(), in_a_iThreadIdx.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, _, _, _) => {
             (txt.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
@@ -5141,7 +5141,7 @@ fn lm_212(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 }
 
 fn fun_213(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -5155,13 +5155,13 @@ fn fun_213(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 fn fun_214(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_iThreadIdx: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_iThreadIdx.clone()) {
         (mut txt, false, _) => {
             txt.clone()
         },
         (mut txt, _, mut a_iThreadIdx) => {
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("evaluateODEThread")).clone() }))?;
             txt_0 = Tpl::writeStr(txt_0.clone(), (intString(a_iThreadIdx.clone())).clone())?;
             txt = CodegenCpp::generateMeasureTimeStartCode(txt.clone(), (literal!("valuesStart")).clone(), (Tpl::textString(txt_0.clone())?).clone(), (literal!("MEASURETIME_MODELFUNCTIONS")).clone())?;
@@ -5172,14 +5172,14 @@ fn fun_214(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_iThreadIdx: i32) -
 }
 
 fn fun_215(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_iThreadIdx: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_iThreadIdx.clone()) {
         (mut txt, false, _) => {
             txt.clone()
         },
         (mut txt, _, mut a_iThreadIdx) => {
-            let mut txt_1: Tpl::Text;
-            let mut txt_0: Tpl::Text;
+            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(*measureTimeThreadArrayOdeHpcom)[")).clone() }))?;
             txt_0 = Tpl::writeStr(txt_0.clone(), (intString(a_iThreadIdx.clone())).clone())?;
             txt_0 = Tpl::writeTok(txt_0.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("]")).clone() }))?;
@@ -5193,14 +5193,14 @@ fn fun_215(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_iThreadIdx: i32) -
 }
 
 fn fun_216(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_iThreadIdx: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_iThreadIdx.clone()) {
         (mut txt, false, _) => {
             txt.clone()
         },
         (mut txt, _, mut a_iThreadIdx) => {
-            let mut txt_1: Tpl::Text;
-            let mut txt_0: Tpl::Text;
+            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(*measureTimeThreadArrayDaeHpcom)[")).clone() }))?;
             txt_0 = Tpl::writeStr(txt_0.clone(), (intString(a_iThreadIdx.clone())).clone())?;
             txt_0 = Tpl::writeTok(txt_0.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("]")).clone() }))?;
@@ -5214,14 +5214,14 @@ fn fun_216(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_iThreadIdx: i32) -
 }
 
 fn fun_217(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_iThreadIdx: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_iThreadIdx.clone()) {
         (mut txt, false, _) => {
             txt.clone()
         },
         (mut txt, _, mut a_iThreadIdx) => {
-            let mut txt_1: Tpl::Text;
-            let mut txt_0: Tpl::Text;
+            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(*measureTimeThreadArrayZeroFuncHpcom)[")).clone() }))?;
             txt_0 = Tpl::writeStr(txt_0.clone(), (intString(a_iThreadIdx.clone())).clone())?;
             txt_0 = Tpl::writeTok(txt_0.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("]")).clone() }))?;
@@ -5235,7 +5235,7 @@ fn fun_217(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_iThreadIdx: i32) -
 }
 
 fn fun_218(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -5249,7 +5249,7 @@ fn fun_218(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 fn fun_219(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_iThreadIdx: i32, mut in_a_name: Arc<Absyn::Path>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_iThreadIdx.clone(), in_a_name.clone())) {
         (txt, false, _, _) => {
             txt.clone()
@@ -5343,17 +5343,17 @@ fn fun_219(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_iThreadIdx: i32, m
 }
 
 fn fun_220(mut in_txt: Tpl::Text, mut in_a_tasksOfLevels: (Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>), mut in_a_name: Arc<Absyn::Path>, mut in_a_useFlatArrayNotation: bool, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_iThreadIdx: i32, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_tasksOfLevels.clone(), in_a_name.clone(), in_a_useFlatArrayNotation.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_iType.clone(), in_a_iThreadIdx.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, (i_odeTasksOfLevel, i_daeTasksOfLevel, i_zeroFuncTasksOfLevel), a_name, a_useFlatArrayNotation, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_iType, a_iThreadIdx, a_allEquationsPlusWhen) => {
             let mut ret_3: bool = false;
-            let mut l_zeroFuncEqs: Tpl::Text;
-            let mut l_daeEqs: Tpl::Text;
-            let mut l_odeEqs: Tpl::Text;
+            let mut l_zeroFuncEqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_daeEqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_odeEqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_extraFuncsNamespace = (*a_extraFuncsNamespace).clone();
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
@@ -5419,11 +5419,11 @@ fn fun_220(mut in_txt: Tpl::Text, mut in_a_tasksOfLevels: (Arc<metamodelica::Lis
 }
 
 fn fun_221(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut in_a_tasksOfLevels: (Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>), mut in_a_iThreadIdx: i32, mut in_a_varDecls: Tpl::Text, mut in_a_name: Arc<Absyn::Path>, mut in_a_simCode: SimCode::SimCode, mut in_a_extraFuncs: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_useFlatArrayNotation: bool) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iType.clone(), in_a_allEquationsPlusWhen.clone(), in_a_tasksOfLevels.clone(), in_a_iThreadIdx.clone(), in_a_varDecls.clone(), in_a_name.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_useFlatArrayNotation.clone())) {
         (txt, i_iType @ Deref @ "pthreads", a_allEquationsPlusWhen, a_tasksOfLevels, a_iThreadIdx, a_varDecls, a_name, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_useFlatArrayNotation) => {
             let mut txt = (*txt).clone();
@@ -5452,21 +5452,21 @@ fn fun_221(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_allEquationsP
 }
 
 pub fn generateLevelFixedCodeForThread(mut txt: Tpl::Text, mut a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut a_tasksOfLevels: (Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>), mut a_iThreadIdx: i32, mut a_iType: ArcStr, mut a_varDecls: Tpl::Text, mut a_name: Arc<Absyn::Path>, mut a_simCode: SimCode::SimCode, mut a_extraFuncs: Tpl::Text, mut a_extraFuncsDecl: Tpl::Text, mut a_extraFuncsNamespace: Tpl::Text, mut a_useFlatArrayNotation: bool) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace) = fun_221(txt.clone(), (a_iType.clone()).clone(), a_allEquationsPlusWhen.clone(), a_tasksOfLevels.clone(), a_iThreadIdx.clone(), a_varDecls.clone(), a_name.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_useFlatArrayNotation.clone())?;
     Ok((out_txt, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace))
 }
 
 fn lm_223(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut in_a_useFlatArrayNotation: bool, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_iType.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, _, _) => {
             (txt.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
@@ -5488,13 +5488,13 @@ fn lm_223(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<HpcOmS
 }
 
 fn fun_224(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_iLevelIdx: i32, mut in_a_functionName: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_iLevelIdx.clone(), in_a_functionName.clone()) {
         (mut txt, false, _, _) => {
             txt.clone()
         },
         (mut txt, _, mut a_iLevelIdx, mut a_functionName) => {
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_0: i32 = 0;
             txt_0 = Tpl::writeStr(Tpl::emptyTxt.clone(), (a_functionName.clone()).clone())?;
             txt_0 = Tpl::writeTok(txt_0.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_level_")).clone() }))?;
@@ -5508,7 +5508,7 @@ fn fun_224(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_iLevelIdx: i32, mu
 }
 
 fn fun_225(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Tpl::Text {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -5521,15 +5521,15 @@ fn fun_225(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Tpl::Text {
 }
 
 fn fun_226(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_iLevelIdx: i32, mut in_a_functionName: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_iLevelIdx.clone(), in_a_functionName.clone()) {
         (mut txt, false, _, _) => {
             txt.clone()
         },
         (mut txt, _, mut a_iLevelIdx, mut a_functionName) => {
-            let mut txt_1: Tpl::Text;
+            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_1: i32 = 0;
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(*measureTimeSchedulerArrayHpcom_")).clone() }))?;
             txt_0 = Tpl::writeStr(txt_0.clone(), (a_functionName.clone()).clone())?;
             txt_0 = Tpl::writeTok(txt_0.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")[")).clone() }))?;
@@ -5547,15 +5547,15 @@ fn fun_226(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_iLevelIdx: i32, mu
 }
 
 pub fn generateLevelFixedCodeForThreadLevel(mut txt: Tpl::Text, mut a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut a_tasksOfLevel: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut a_iThreadIdx: i32, mut a_functionName: ArcStr, mut a_iType: ArcStr, mut a_iLevelIdx: i32, mut a_varDecls: Tpl::Text, mut a_simCode: SimCode::SimCode, mut a_extraFuncs: Tpl::Text, mut a_extraFuncsDecl: Tpl::Text, mut a_extraFuncsNamespace: Tpl::Text, mut a_useFlatArrayNotation: bool) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_3: bool = false;
     let mut ret_2: bool = false;
     let mut ret_1: bool = false;
-    let mut l_tasks: Tpl::Text;
+    let mut l_tasks: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     l_tasks = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
     (l_tasks, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = lm_223(l_tasks.clone(), a_tasksOfLevel.clone(), a_useFlatArrayNotation.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), a_varDecls.clone(), (a_iType.clone()).clone(), a_allEquationsPlusWhen.clone())?;
     l_tasks = Tpl::popIter(l_tasks.clone())?;
@@ -5581,11 +5581,11 @@ pub fn generateLevelFixedCodeForThreadLevel(mut txt: Tpl::Text, mut a_allEquatio
 }
 
 fn lm_228(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>, mut in_a_useFlatArrayNotation: bool, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_iType.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, _, _) => {
             (txt.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
@@ -5607,12 +5607,12 @@ fn lm_228(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<HpcOm
 }
 
 pub fn function_HPCOM_TaskDep(mut txt: Tpl::Text, mut a_tasks: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>, mut a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut a_iType: ArcStr, mut a_varDecls: Tpl::Text, mut a_simCode: SimCode::SimCode, mut a_extraFuncs: Tpl::Text, mut a_extraFuncsDecl: Tpl::Text, mut a_extraFuncsNamespace: Tpl::Text, mut a_useFlatArrayNotation: bool) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut l_odeEqs: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_odeEqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     l_odeEqs = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
     (l_odeEqs, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = lm_228(l_odeEqs.clone(), a_tasks.clone(), a_useFlatArrayNotation.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), a_varDecls.clone(), (a_iType.clone()).clone(), a_allEquationsPlusWhen.clone())?;
     l_odeEqs = Tpl::popIter(l_odeEqs.clone())?;
@@ -5628,7 +5628,7 @@ pub fn function_HPCOM_TaskDep(mut txt: Tpl::Text, mut a_tasks: Arc<metamodelica:
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_230(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -5650,7 +5650,7 @@ fn lm_230(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_231(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -5668,7 +5668,7 @@ fn lm_231(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> 
 }
 
 fn fun_232(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_parentDependencies: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_parentDependencies.clone()) {
         (mut txt, false, _) => {
             txt.clone()
@@ -5684,19 +5684,19 @@ fn fun_232(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_parentDependencies
 }
 
 pub fn function_HPCOM_TaskDep0(mut in_txt: Tpl::Text, mut in_a_taskIn: (Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>), mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut in_a_iType: ArcStr, mut in_a_varDecls: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_extraFuncs: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_useFlatArrayNotation: bool) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_taskIn.clone(), in_a_allEquationsPlusWhen.clone(), in_a_iType.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_useFlatArrayNotation.clone())) {
         (txt, (i_task @ Deref @ HpcOmSimCode::Task::CALCTASK { index: i_task_index, .. }, i_parents), a_allEquationsPlusWhen, a_iType, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_useFlatArrayNotation) => {
             let mut ret_5: bool = false;
             let mut ret_4: i32 = 0;
-            let mut l_depIn: Tpl::Text;
-            let mut l_taskDependencies: Tpl::Text;
-            let mut l_parentDependencies: Tpl::Text;
-            let mut l_taskEqs: Tpl::Text;
+            let mut l_depIn: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_taskDependencies: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_parentDependencies: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_taskEqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_extraFuncs = (*a_extraFuncs).clone();
@@ -5740,7 +5740,7 @@ pub fn function_HPCOM_TaskDep0(mut in_txt: Tpl::Text, mut in_a_taskIn: (Arc<HpcO
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_234(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>, mut in_a_modelNamePrefixStr: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_modelNamePrefixStr.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -5762,7 +5762,7 @@ fn lm_234(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<HpcOm
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_235(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>, mut in_a_modelNamePrefixStr: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_modelNamePrefixStr.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -5784,7 +5784,7 @@ fn lm_235(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<HpcOm
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_236(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>, mut in_a_modelNamePrefixStr: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_modelNamePrefixStr.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -5806,7 +5806,7 @@ fn lm_236(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<HpcOm
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_237(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>, mut in_a_modelNamePrefixStr: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_modelNamePrefixStr.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -5828,7 +5828,7 @@ fn lm_237(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<HpcOm
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_238(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>, mut in_a_modelNamePrefixStr: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_modelNamePrefixStr.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -5850,7 +5850,7 @@ fn lm_238(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<HpcOm
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_239(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>, mut in_a_modelNamePrefixStr: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_modelNamePrefixStr.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -5870,14 +5870,14 @@ fn lm_239(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<HpcOm
 }
 
 pub fn generateTbbConstructorExtension(mut txt: Tpl::Text, mut a_odeTasks: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>, mut a_daeTasks: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>, mut a_zeroFuncTasks: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>, mut a_modelNamePrefixStr: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_6: i32 = 0;
-    let mut l_zeroFuncEdges: Tpl::Text;
-    let mut l_zeroFuncNodes: Tpl::Text;
-    let mut l_daeEdges: Tpl::Text;
-    let mut l_daeNodes: Tpl::Text;
-    let mut l_odeEdges: Tpl::Text;
-    let mut l_odeNodes: Tpl::Text;
+    let mut l_zeroFuncEdges: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_zeroFuncNodes: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_daeEdges: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_daeNodes: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_odeEdges: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_odeNodes: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     l_odeNodes = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
     l_odeNodes = lm_234(l_odeNodes.clone(), a_odeTasks.clone(), (a_modelNamePrefixStr.clone()).clone())?;
     l_odeNodes = Tpl::popIter(l_odeNodes.clone())?;
@@ -5917,7 +5917,7 @@ pub fn generateTbbConstructorExtension(mut txt: Tpl::Text, mut a_odeTasks: Arc<m
 }
 
 pub fn generateTbbConstructorExtensionNodes(mut in_txt: Tpl::Text, mut in_a_taskIn: (Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>), mut in_a_taskIndex: i32, mut in_a_funcSuffix: ArcStr, mut in_a_modelNamePrefixStr: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_taskIn.clone(), in_a_taskIndex.clone(), in_a_funcSuffix.clone(), in_a_modelNamePrefixStr.clone())) {
         (txt, (Deref @ HpcOmSimCode::Task::CALCTASK { index: i_task_index, .. }, _), a_taskIndex, a_funcSuffix, a_modelNamePrefixStr) => {
             let mut txt = (*txt).clone();
@@ -5947,7 +5947,7 @@ pub fn generateTbbConstructorExtensionNodes(mut in_txt: Tpl::Text, mut in_a_task
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_242(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut in_a_taskIndex: i32, mut in_a_funcSuffix: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_taskIndex.clone(), in_a_funcSuffix.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, _) => {
             txt.clone()
@@ -5975,7 +5975,7 @@ fn lm_242(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut
 }
 
 fn fun_243(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_taskIndex: i32, mut in_a_funcSuffix: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_taskIndex.clone(), in_a_funcSuffix.clone()) {
         (mut txt, false, _, _) => {
             txt.clone()
@@ -5995,13 +5995,13 @@ fn fun_243(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_taskIndex: i32, mu
 }
 
 fn fun_244(mut in_txt: Tpl::Text, mut in_a_taskIn: (Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>), mut in_a_taskIndex: i32, mut in_a_funcSuffix: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_taskIn.clone(), in_a_taskIndex.clone(), in_a_funcSuffix.clone())) {
         (txt, (Deref @ HpcOmSimCode::Task::CALCTASK { weighting: _, .. }, i_parents), a_taskIndex, a_funcSuffix) => {
             let mut ret_3: bool = false;
             let mut ret_2: i32 = 0;
-            let mut l_startNodeEdge: Tpl::Text;
-            let mut l_parentEdges: Tpl::Text;
+            let mut l_startNodeEdge: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_parentEdges: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             l_parentEdges = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
             l_parentEdges = lm_242(l_parentEdges.clone(), i_parents.clone(), a_taskIndex.clone(), (a_funcSuffix.clone()).clone())?;
@@ -6023,17 +6023,17 @@ fn fun_244(mut in_txt: Tpl::Text, mut in_a_taskIn: (Arc<HpcOmSimCode::Task>, Arc
 }
 
 pub fn generateTbbConstructorExtensionEdges(mut txt: Tpl::Text, mut a_taskIn: (Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>), mut a_taskIndex: i32, mut a_funcSuffix: ArcStr, mut a_modelNamePrefixStr: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_244(txt.clone(), a_taskIn.clone(), a_taskIndex.clone(), (a_funcSuffix.clone()).clone())?;
     Ok(out_txt)
 }
 
 fn lm_246(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>, mut in_a_useFlatArrayNotation: bool, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_name: Arc<Absyn::Path>, mut in_a_iType: ArcStr, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_name.clone(), in_a_iType.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, _, _, _) => {
             (txt.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
@@ -6055,11 +6055,11 @@ fn lm_246(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<HpcOm
 }
 
 fn lm_247(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>, mut in_a_useFlatArrayNotation: bool, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_name: Arc<Absyn::Path>, mut in_a_iType: ArcStr, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_name.clone(), in_a_iType.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, _, _, _) => {
             (txt.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
@@ -6081,11 +6081,11 @@ fn lm_247(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<HpcOm
 }
 
 fn lm_248(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>, mut in_a_useFlatArrayNotation: bool, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_name: Arc<Absyn::Path>, mut in_a_iType: ArcStr, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_name.clone(), in_a_iType.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, _, _, _) => {
             (txt.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
@@ -6107,14 +6107,14 @@ fn lm_248(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(Arc<HpcOm
 }
 
 pub fn function_HPCOM_TaskDep_voidfunc(mut txt: Tpl::Text, mut a_odeTasks: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>, mut a_daeTasks: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>, mut a_zeroFuncTasks: Arc<metamodelica::List<(Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>)>>, mut a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut a_iType: ArcStr, mut a_name: Arc<Absyn::Path>, mut a_varDecls: Tpl::Text, mut a_simCode: SimCode::SimCode, mut a_extraFuncs: Tpl::Text, mut a_extraFuncsDecl: Tpl::Text, mut a_extraFuncsNamespace: Tpl::Text, mut a_useFlatArrayNotation: bool) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut l_funcTasksZeroFunc: Tpl::Text;
-    let mut l_funcTasksDae: Tpl::Text;
-    let mut l_funcTasksOde: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_funcTasksZeroFunc: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_funcTasksDae: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_funcTasksOde: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     l_funcTasksOde = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
     (l_funcTasksOde, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = lm_246(l_funcTasksOde.clone(), a_odeTasks.clone(), a_useFlatArrayNotation.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), a_varDecls.clone(), a_name.clone(), (a_iType.clone()).clone(), a_allEquationsPlusWhen.clone())?;
     l_funcTasksOde = Tpl::popIter(l_funcTasksOde.clone())?;
@@ -6133,14 +6133,14 @@ pub fn function_HPCOM_TaskDep_voidfunc(mut txt: Tpl::Text, mut a_odeTasks: Arc<m
 }
 
 fn fun_250(mut in_txt: Tpl::Text, mut in_a_taskIn: (Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>), mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut in_a_iType: ArcStr, mut in_a_funcSuffix: ArcStr, mut in_a_name: Arc<Absyn::Path>, mut in_a_simCode: SimCode::SimCode, mut in_a_extraFuncs: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_useFlatArrayNotation: bool) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_taskIn.clone(), in_a_allEquationsPlusWhen.clone(), in_a_iType.clone(), in_a_funcSuffix.clone(), in_a_name.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_useFlatArrayNotation.clone())) {
         (txt, (i_task @ Deref @ HpcOmSimCode::Task::CALCTASK { index: i_task_index, .. }, _), a_allEquationsPlusWhen, a_iType, a_funcSuffix, a_name, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_useFlatArrayNotation) => {
-            let mut l_taskEqs: Tpl::Text;
-            let mut l_tempvarDecl: Tpl::Text;
+            let mut l_taskEqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_tempvarDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_extraFuncs = (*a_extraFuncs).clone();
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
@@ -6172,19 +6172,19 @@ fn fun_250(mut in_txt: Tpl::Text, mut in_a_taskIn: (Arc<HpcOmSimCode::Task>, Arc
 }
 
 pub fn function_HPCOM_TaskDep_voidfunc0(mut txt: Tpl::Text, mut a_taskIn: (Arc<HpcOmSimCode::Task>, Arc<metamodelica::List<i32>>), mut a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut a_iType: ArcStr, mut a_funcSuffix: ArcStr, mut a_name: Arc<Absyn::Path>, mut a_varDecls: Tpl::Text, mut a_simCode: SimCode::SimCode, mut a_extraFuncs: Tpl::Text, mut a_extraFuncsDecl: Tpl::Text, mut a_extraFuncsNamespace: Tpl::Text, mut a_useFlatArrayNotation: bool) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace) = fun_250(txt.clone(), a_taskIn.clone(), a_allEquationsPlusWhen.clone(), (a_iType.clone()).clone(), (a_funcSuffix.clone()).clone(), a_name.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_useFlatArrayNotation.clone())?;
     out_a_varDecls = a_varDecls.clone();
     Ok((out_txt, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace))
 }
 
 fn fun_252(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_relLock: Tpl::Text, mut in_a_assLock: Tpl::Text, mut in_a_taskEqsZeroFunc: Tpl::Text, mut in_a_taskEqsDae: Tpl::Text, mut in_a_taskEqsOde: Tpl::Text, mut in_a_modelNamePrefixStr: ArcStr, mut in_a_iThreadIdx: i32, mut in_a_varDeclsLoc: Tpl::Text, mut in_a_mainThreadCode: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_mainThreadCode: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_mainThreadCode: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_mainThreadCode) = (match (in_txt.clone(), in_mArg.clone(), in_a_relLock.clone(), in_a_assLock.clone(), in_a_taskEqsZeroFunc.clone(), in_a_taskEqsDae.clone(), in_a_taskEqsOde.clone(), in_a_modelNamePrefixStr.clone(), in_a_iThreadIdx.clone(), in_a_varDeclsLoc.clone(), in_a_mainThreadCode.clone()) {
         (mut txt, false, _, _, mut a_taskEqsZeroFunc, mut a_taskEqsDae, mut a_taskEqsOde, mut a_modelNamePrefixStr, mut a_iThreadIdx, mut a_varDeclsLoc, mut a_mainThreadCode) => {
             a_mainThreadCode = Tpl::writeText(a_mainThreadCode.clone(), a_varDeclsLoc.clone())?;
@@ -6318,19 +6318,19 @@ fn fun_252(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_relLock: Tpl::Text
 }
 
 pub fn generateThreadFunc(mut txt: Tpl::Text, mut a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut a_threadTasksOde: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut a_threadTasksDae: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut a_threadTasksZeroFunc: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut a_iType: ArcStr, mut a_iThreadIdx: i32, mut a_modelNamePrefixStr: ArcStr, mut a_varDecls: Tpl::Text, mut a_simCode: SimCode::SimCode, mut a_extraFuncs: Tpl::Text, mut a_extraFuncsDecl: Tpl::Text, mut a_extraFuncsNamespace: Tpl::Text, mut a_mainThreadCode: Tpl::Text, mut a_useFlatArrayNotation: bool) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut out_a_mainThreadCode: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_mainThreadCode: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_6: bool = false;
-    let mut l_relLock: Tpl::Text;
-    let mut l_assLock: Tpl::Text;
-    let mut l_taskEqsZeroFunc: Tpl::Text;
-    let mut l_taskEqsDae: Tpl::Text;
-    let mut l_taskEqsOde: Tpl::Text;
-    let mut l_varDeclsLoc: Tpl::Text;
+    let mut l_relLock: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_assLock: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_taskEqsZeroFunc: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_taskEqsDae: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_taskEqsOde: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_varDeclsLoc: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     l_varDeclsLoc = Tpl::emptyTxt.clone();
     (l_taskEqsOde, l_varDeclsLoc, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace) = parallelThreadCode(Tpl::emptyTxt.clone(), a_allEquationsPlusWhen.clone(), a_threadTasksOde.clone(), a_iThreadIdx.clone(), (a_iType.clone()).clone(), (literal!("_lockOde")).clone(), l_varDeclsLoc.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), (literal!("evaluateODE")).clone(), a_useFlatArrayNotation.clone())?;
     (l_taskEqsDae, l_varDeclsLoc, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace) = parallelThreadCode(Tpl::emptyTxt.clone(), a_allEquationsPlusWhen.clone(), a_threadTasksDae.clone(), a_iThreadIdx.clone(), (a_iType.clone()).clone(), (literal!("_lockDae")).clone(), l_varDeclsLoc.clone(), a_simCode.clone(), out_a_extraFuncs.clone(), out_a_extraFuncsDecl.clone(), out_a_extraFuncsNamespace.clone(), (literal!("evaluateAll")).clone(), a_useFlatArrayNotation.clone())?;
@@ -6351,7 +6351,7 @@ pub fn generateThreadFunc(mut txt: Tpl::Text, mut a_allEquationsPlusWhen: Arc<me
 }
 
 fn fun_254(mut in_txt: Tpl::Text, mut in_a_tt: Arc<HpcOmSimCode::Task>, mut in_a_iType: ArcStr, mut in_a_iLockPrefix: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_tt.clone(), in_a_iType.clone(), in_a_iLockPrefix.clone())) {
         (txt, i_task @ Deref @ HpcOmSimCode::Task::DEPTASK { outgoing: true, .. }, a_iType, a_iLockPrefix) => {
             let mut txt = (*txt).clone();
@@ -6369,7 +6369,7 @@ fn fun_254(mut in_txt: Tpl::Text, mut in_a_tt: Arc<HpcOmSimCode::Task>, mut in_a
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_255(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut in_a_iType: ArcStr, mut in_a_iLockPrefix: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_iType.clone(), in_a_iLockPrefix.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, _) => {
             txt.clone()
@@ -6387,7 +6387,7 @@ fn lm_255(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<HpcOmS
 }
 
 fn fun_256(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -6401,9 +6401,9 @@ fn fun_256(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 pub fn function_HPCOM_assignThreadLocks(mut txt: Tpl::Text, mut a_iThreadTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut a_iLockPrefix: ArcStr, mut a_iThreadNum: i32, mut a_iType: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_1: bool = false;
-    let mut l_lockAssign: Tpl::Text;
+    let mut l_lockAssign: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     l_lockAssign = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
     l_lockAssign = lm_255(l_lockAssign.clone(), a_iThreadTasks.clone(), (a_iType.clone()).clone(), (a_iLockPrefix.clone()).clone())?;
     l_lockAssign = Tpl::popIter(l_lockAssign.clone())?;
@@ -6421,7 +6421,7 @@ pub fn function_HPCOM_assignThreadLocks(mut txt: Tpl::Text, mut a_iThreadTasks: 
 }
 
 fn fun_258(mut in_txt: Tpl::Text, mut in_a_tt: Arc<HpcOmSimCode::Task>, mut in_a_iType: ArcStr, mut in_a_iLockPrefix: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_tt.clone(), in_a_iType.clone(), in_a_iLockPrefix.clone())) {
         (txt, i_tt @ Deref @ HpcOmSimCode::Task::DEPTASK { outgoing: false, .. }, a_iType, a_iLockPrefix) => {
             let mut txt = (*txt).clone();
@@ -6439,7 +6439,7 @@ fn fun_258(mut in_txt: Tpl::Text, mut in_a_tt: Arc<HpcOmSimCode::Task>, mut in_a
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_259(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut in_a_iType: ArcStr, mut in_a_iLockPrefix: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_iType.clone(), in_a_iLockPrefix.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, _) => {
             txt.clone()
@@ -6457,7 +6457,7 @@ fn lm_259(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<HpcOmS
 }
 
 fn fun_260(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -6471,9 +6471,9 @@ fn fun_260(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 pub fn function_HPCOM_releaseThreadLocks(mut txt: Tpl::Text, mut a_iThreadTasks: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut a_iLockPrefix: ArcStr, mut a_iThreadNum: i32, mut a_iType: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_1: bool = false;
-    let mut l_lockAssign: Tpl::Text;
+    let mut l_lockAssign: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     l_lockAssign = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
     l_lockAssign = lm_259(l_lockAssign.clone(), a_iThreadTasks.clone(), (a_iType.clone()).clone(), (a_iLockPrefix.clone()).clone())?;
     l_lockAssign = Tpl::popIter(l_lockAssign.clone())?;
@@ -6491,18 +6491,18 @@ pub fn function_HPCOM_releaseThreadLocks(mut txt: Tpl::Text, mut a_iThreadTasks:
 }
 
 fn lm_262(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>>, mut in_a_useFlatArrayNotation: bool, mut in_a_iThreadNum: i32, mut in_a_extraFunctionName: ArcStr, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_lockPrefix: ArcStr, mut in_a_iType: ArcStr, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_iThreadNum.clone(), in_a_extraFunctionName.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_lockPrefix.clone(), in_a_iType.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, _, _, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, _, _, _) => {
             (txt.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_tt, tail: rest }, a_useFlatArrayNotation, a_iThreadNum, a_extraFunctionName, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, a_simCode, a_varDecls, a_lockPrefix, a_iType, a_allEquationsPlusWhen) => {
             let mut x_i0: i32 = 0;
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_extraFuncsNamespace = (*a_extraFuncsNamespace).clone();
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
@@ -6523,7 +6523,7 @@ fn lm_262(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
 }
 
 fn fun_263(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -6540,7 +6540,7 @@ fn fun_263(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 fn fun_264(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -6555,7 +6555,7 @@ fn fun_264(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 fn fun_265(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_iMaxThreadNumber: i32, mut in_a_functionCalls: Tpl::Text, mut in_a_iThreadNum: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iType.clone(), in_a_iMaxThreadNumber.clone(), in_a_functionCalls.clone(), in_a_iThreadNum.clone())) {
         (txt, Deref @ "openmp", a_iMaxThreadNumber, a_functionCalls, a_iThreadNum) => {
             let mut ret_1: bool = false;
@@ -6598,13 +6598,13 @@ fn fun_265(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_iMaxThreadNum
 }
 
 pub fn parallelThreadCodeWithSplit(mut txt: Tpl::Text, mut a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut a_threadTaskList: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut a_iThreadNum: i32, mut a_iMaxThreadNumber: i32, mut a_iType: ArcStr, mut a_lockPrefix: ArcStr, mut a_varDecls: Tpl::Text, mut a_simCode: SimCode::SimCode, mut a_extraFuncs: Tpl::Text, mut a_extraFuncsDecl: Tpl::Text, mut a_extraFuncsNamespace: Tpl::Text, mut a_extraFunctionName: ArcStr, mut a_useFlatArrayNotation: bool) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>>> = metamodelica::nil();
-    let mut l_functionCalls: Tpl::Text;
+    let mut l_functionCalls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     ret_1 = List::partition(a_threadTaskList.clone(), 100)?;
     l_functionCalls = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
     (l_functionCalls, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = lm_262(l_functionCalls.clone(), ret_1.clone(), a_useFlatArrayNotation.clone(), a_iThreadNum.clone(), (a_extraFunctionName.clone()).clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), a_varDecls.clone(), (a_lockPrefix.clone()).clone(), (a_iType.clone()).clone(), a_allEquationsPlusWhen.clone())?;
@@ -6614,11 +6614,11 @@ pub fn parallelThreadCodeWithSplit(mut txt: Tpl::Text, mut a_allEquationsPlusWhe
 }
 
 fn lm_267(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut in_a_useFlatArrayNotation: bool, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_lockPrefix: ArcStr, mut in_a_iType: ArcStr, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_lockPrefix.clone(), in_a_iType.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, _, _, _) => {
             (txt.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
@@ -6640,12 +6640,12 @@ fn lm_267(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<HpcOmS
 }
 
 pub fn parallelThreadCode(mut txt: Tpl::Text, mut a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut a_threadTaskList: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>, mut a_iPartitionIndex: i32, mut a_iType: ArcStr, mut a_lockPrefix: ArcStr, mut a_varDecls: Tpl::Text, mut a_simCode: SimCode::SimCode, mut a_extraFuncs: Tpl::Text, mut a_extraFuncsDecl: Tpl::Text, mut a_extraFuncsNamespace: Tpl::Text, mut a_extraFunctionName: ArcStr, mut a_useFlatArrayNotation: bool) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut l_threadTasks: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_threadTasks: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     l_threadTasks = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
     (l_threadTasks, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = lm_267(l_threadTasks.clone(), a_threadTaskList.clone(), a_useFlatArrayNotation.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), a_varDecls.clone(), (a_lockPrefix.clone()).clone(), (a_iType.clone()).clone(), a_allEquationsPlusWhen.clone())?;
     l_threadTasks = Tpl::popIter(l_threadTasks.clone())?;
@@ -6676,11 +6676,11 @@ pub fn parallelThreadCode(mut txt: Tpl::Text, mut a_allEquationsPlusWhen: Arc<me
 }
 
 fn lm_269(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut in_a_useFlatArrayNotation: bool, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, _) => {
             (txt.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
@@ -6702,11 +6702,11 @@ fn lm_269(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut
 }
 
 fn lm_270(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut in_a_useFlatArrayNotation: bool, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncs: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_varDecls: Tpl::Text, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, out_a_varDecls) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_useFlatArrayNotation.clone(), in_a_extraFuncsNamespace.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncs.clone(), in_a_simCode.clone(), in_a_varDecls.clone(), in_a_allEquationsPlusWhen.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs, _, a_varDecls, _) => {
             (txt.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_varDecls.clone())
@@ -6730,7 +6730,7 @@ fn lm_270(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_271(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -6748,15 +6748,15 @@ fn lm_271(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>) -> 
 }
 
 fn fun_272(mut in_txt: Tpl::Text, mut in_a_iTask: Arc<HpcOmSimCode::Task>, mut in_a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut in_a_iType: ArcStr, mut in_a_lockPrefix: ArcStr, mut in_a_varDecls: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_extraFuncs: Tpl::Text, mut in_a_extraFuncsDecl: Tpl::Text, mut in_a_extraFuncsNamespace: Tpl::Text, mut in_a_useFlatArrayNotation: bool) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iTask.clone(), in_a_allEquationsPlusWhen.clone(), in_a_iType.clone(), in_a_lockPrefix.clone(), in_a_varDecls.clone(), in_a_simCode.clone(), in_a_extraFuncs.clone(), in_a_extraFuncsDecl.clone(), in_a_extraFuncsNamespace.clone(), in_a_useFlatArrayNotation.clone())) {
         (txt, Deref @ HpcOmSimCode::Task::CALCTASK { index: i_task_index, eqIdc: i_task_eqIdc, .. }, a_allEquationsPlusWhen, _, _, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_useFlatArrayNotation) => {
-            let mut l_varDeclsLocal: Tpl::Text;
-            let mut l_odeEqs: Tpl::Text;
+            let mut l_varDeclsLocal: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_odeEqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_extraFuncs = (*a_extraFuncs).clone();
@@ -6776,9 +6776,9 @@ fn fun_272(mut in_txt: Tpl::Text, mut in_a_iTask: Arc<HpcOmSimCode::Task>, mut i
             (txt.clone(), a_varDecls.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())
         },
         (txt, Deref @ HpcOmSimCode::Task::CALCTASK_LEVEL { nodeIdc: i_task_nodeIdc, eqIdc: i_task_eqIdc, .. }, a_allEquationsPlusWhen, _, _, a_varDecls, a_simCode, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_useFlatArrayNotation) => {
-            let mut l_taskStr: Tpl::Text;
-            let mut l_varDeclsLocal: Tpl::Text;
-            let mut l_odeEqs: Tpl::Text;
+            let mut l_taskStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_varDeclsLocal: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_odeEqs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_extraFuncs = (*a_extraFuncs).clone();
@@ -6798,14 +6798,14 @@ fn fun_272(mut in_txt: Tpl::Text, mut in_a_iTask: Arc<HpcOmSimCode::Task>, mut i
             (txt.clone(), a_varDecls.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())
         },
         (txt, i_task @ Deref @ HpcOmSimCode::Task::DEPTASK { outgoing: false, .. }, _, a_iType, a_lockPrefix, a_varDecls, _, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, _) => {
-            let mut l_assLck: Tpl::Text;
+            let mut l_assLck: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             l_assLck = assignLockByDepTask(Tpl::emptyTxt.clone(), i_task.clone(), (a_lockPrefix.clone()).clone(), (a_iType.clone()).clone())?;
             txt = Tpl::writeText(txt.clone(), l_assLck.clone())?;
             (txt.clone(), a_varDecls.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())
         },
         (txt, i_task @ Deref @ HpcOmSimCode::Task::DEPTASK { outgoing: true, .. }, _, a_iType, a_lockPrefix, a_varDecls, _, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, _) => {
-            let mut l_relLck: Tpl::Text;
+            let mut l_relLck: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             l_relLck = releaseLockByDepTask(Tpl::emptyTxt.clone(), i_task.clone(), (a_lockPrefix.clone()).clone(), (a_iType.clone()).clone())?;
             txt = Tpl::writeText(txt.clone(), l_relLck.clone())?;
@@ -6820,23 +6820,23 @@ fn fun_272(mut in_txt: Tpl::Text, mut in_a_iTask: Arc<HpcOmSimCode::Task>, mut i
 }
 
 pub fn taskCode(mut txt: Tpl::Text, mut a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut a_iTask: Arc<HpcOmSimCode::Task>, mut a_iType: ArcStr, mut a_lockPrefix: ArcStr, mut a_varDecls: Tpl::Text, mut a_simCode: SimCode::SimCode, mut a_extraFuncs: Tpl::Text, mut a_extraFuncsDecl: Tpl::Text, mut a_extraFuncsNamespace: Tpl::Text, mut a_useFlatArrayNotation: bool) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace) = fun_272(txt.clone(), a_iTask.clone(), a_allEquationsPlusWhen.clone(), (a_iType.clone()).clone(), (a_lockPrefix.clone()).clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_useFlatArrayNotation.clone())?;
     Ok((out_txt, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace))
 }
 
 pub fn equationNamesHPCOM_(mut txt: Tpl::Text, mut a_idx: i32, mut a_allEquationsPlusWhen: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut a_context: SimCodeFunction::Context, mut a_varDecls: Tpl::Text, mut a_simCode: SimCode::SimCode, mut a_extraFuncs: Tpl::Text, mut a_extraFuncsDecl: Tpl::Text, mut a_extraFuncsNamespace: Tpl::Text, mut a_useFlatArrayNotation: bool) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_1: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
-    let mut l_eq: Tpl::Text;
+    let mut l_eq: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     ret_1 = HpcOmTaskGraph::getSimCodeEqByIndex(a_allEquationsPlusWhen.clone(), a_idx.clone())?;
     (l_eq, out_a_varDecls, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace) = equationHPCOM_(Tpl::emptyTxt.clone(), ret_1.clone(), a_idx.clone(), a_context.clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_useFlatArrayNotation.clone())?;
     out_txt = Tpl::writeText(txt.clone(), l_eq.clone())?;
@@ -6844,11 +6844,11 @@ pub fn equationNamesHPCOM_(mut txt: Tpl::Text, mut a_idx: i32, mut a_allEquation
 }
 
 pub fn equationHPCOM_(mut txt: Tpl::Text, mut a_eq: Arc<SimCode::SimEqSystem>, mut a_idx: i32, mut a_context: SimCodeFunction::Context, mut a_varDecls: Tpl::Text, mut a_simCode: SimCode::SimCode, mut a_extraFuncs: Tpl::Text, mut a_extraFuncsDecl: Tpl::Text, mut a_extraFuncsNamespace: Tpl::Text, mut a_useFlatArrayNotation: bool) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_varDecls: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, _) = CodegenCpp::equation_function_call(txt.clone(), a_eq.clone(), a_context.clone(), a_simCode.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("evaluate")).clone() })))?;
     out_a_varDecls = a_varDecls.clone();
     out_a_extraFuncs = a_extraFuncs.clone();
@@ -6858,7 +6858,7 @@ pub fn equationHPCOM_(mut txt: Tpl::Text, mut a_eq: Arc<SimCode::SimEqSystem>, m
 }
 
 fn fun_276(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_threadIdx: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iType.clone(), in_a_threadIdx.clone())) {
         (txt, Deref @ "openmp", _) => {
             txt.clone()
@@ -6876,13 +6876,13 @@ fn fun_276(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_threadIdx: Ar
 }
 
 pub fn function_HPCOM_joinThread(mut txt: Tpl::Text, mut a_threadIdx: ArcStr, mut a_iType: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_276(txt.clone(), (a_iType.clone()).clone(), (a_threadIdx.clone()).clone())?;
     Ok(out_txt)
 }
 
 fn fun_278(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_threadIdx: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iType.clone(), in_a_threadIdx.clone())) {
         (txt, Deref @ "openmp", _) => {
             txt.clone()
@@ -6900,13 +6900,13 @@ fn fun_278(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_threadIdx: Ar
 }
 
 pub fn function_HPCOM_destroyThread(mut txt: Tpl::Text, mut a_threadIdx: ArcStr, mut a_iType: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_278(txt.clone(), (a_iType.clone()).clone(), (a_threadIdx.clone()).clone())?;
     Ok(out_txt)
 }
 
 fn fun_280(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_threadIdx: i32, mut in_a_modelNamePrefixStr: ArcStr, mut in_a_funcName: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iType.clone(), in_a_threadIdx.clone(), in_a_modelNamePrefixStr.clone(), in_a_funcName.clone())) {
         (txt, Deref @ "openmp", _, _, _) => {
             txt.clone()
@@ -6929,13 +6929,13 @@ fn fun_280(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_threadIdx: i3
 }
 
 pub fn generateThread(mut txt: Tpl::Text, mut a_threadIdx: i32, mut a_iType: ArcStr, mut a_modelNamePrefixStr: ArcStr, mut a_funcName: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_280(txt.clone(), (a_iType.clone()).clone(), a_threadIdx.clone(), (a_modelNamePrefixStr.clone()).clone(), (a_funcName.clone()).clone())?;
     Ok(out_txt)
 }
 
 pub fn getLockNameByDepTask(mut in_txt: Tpl::Text, mut in_a_depTask: Arc<HpcOmSimCode::Task>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_depTask.clone())) {
         (txt, Deref @ HpcOmSimCode::Task::DEPTASK { id: i_task_id, .. }) => {
             let mut txt = (*txt).clone();
@@ -6955,15 +6955,15 @@ pub fn getLockNameByDepTask(mut in_txt: Tpl::Text, mut in_a_depTask: Arc<HpcOmSi
 }
 
 pub fn initializeLockByDepTask(mut txt: Tpl::Text, mut a_depTask: Arc<HpcOmSimCode::Task>, mut a_lockPrefix: ArcStr, mut a_iType: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
-    let mut l_lockName: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_lockName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     l_lockName = getLockNameByDepTask(Tpl::emptyTxt.clone(), a_depTask.clone())?;
     out_txt = initializeLockByLockName(txt.clone(), (Tpl::textString(l_lockName.clone())?).clone(), (a_lockPrefix.clone()).clone(), (a_iType.clone()).clone())?;
     Ok(out_txt)
 }
 
 fn fun_284(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_lockName: ArcStr, mut in_a_lockPrefix: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iType.clone(), in_a_lockName.clone(), in_a_lockPrefix.clone())) {
         (txt, Deref @ "openmp", a_lockName, a_lockPrefix) => {
             let mut txt = (*txt).clone();
@@ -6999,13 +6999,13 @@ fn fun_284(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_lockName: Arc
 }
 
 pub fn initializeLockByLockName(mut txt: Tpl::Text, mut a_lockName: ArcStr, mut a_lockPrefix: ArcStr, mut a_iType: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_284(txt.clone(), (a_iType.clone()).clone(), (a_lockName.clone()).clone(), (a_lockPrefix.clone()).clone())?;
     Ok(out_txt)
 }
 
 fn fun_286(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_lockName: ArcStr, mut in_a_lockPrefix: ArcStr, mut in_a_numberOfThreads: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iType.clone(), in_a_lockName.clone(), in_a_lockPrefix.clone(), in_a_numberOfThreads.clone())) {
         (txt, Deref @ "pthreads", a_lockName, a_lockPrefix, a_numberOfThreads) => {
             let mut txt = (*txt).clone();
@@ -7036,21 +7036,21 @@ fn fun_286(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_lockName: Arc
 }
 
 pub fn initializeBarrierByName(mut txt: Tpl::Text, mut a_lockName: ArcStr, mut a_lockPrefix: ArcStr, mut a_numberOfThreads: i32, mut a_iType: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_286(txt.clone(), (a_iType.clone()).clone(), (a_lockName.clone()).clone(), (a_lockPrefix.clone()).clone(), a_numberOfThreads.clone())?;
     Ok(out_txt)
 }
 
 pub fn createLockByDepTask(mut txt: Tpl::Text, mut a_depTask: Arc<HpcOmSimCode::Task>, mut a_lockPrefix: ArcStr, mut a_iType: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
-    let mut l_lockName: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_lockName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     l_lockName = getLockNameByDepTask(Tpl::emptyTxt.clone(), a_depTask.clone())?;
     out_txt = createLockByLockName(txt.clone(), (Tpl::textString(l_lockName.clone())?).clone(), (a_lockPrefix.clone()).clone(), (a_iType.clone()).clone())?;
     Ok(out_txt)
 }
 
 fn fun_289(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_lockName: ArcStr, mut in_a_lockPrefix: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iType.clone(), in_a_lockName.clone(), in_a_lockPrefix.clone())) {
         (txt, Deref @ "openmp", a_lockName, a_lockPrefix) => {
             let mut txt = (*txt).clone();
@@ -7088,13 +7088,13 @@ fn fun_289(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_lockName: Arc
 }
 
 pub fn createLockByLockName(mut txt: Tpl::Text, mut a_lockName: ArcStr, mut a_lockPrefix: ArcStr, mut a_iType: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_289(txt.clone(), (a_iType.clone()).clone(), (a_lockName.clone()).clone(), (a_lockPrefix.clone()).clone())?;
     Ok(out_txt)
 }
 
 fn fun_291(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_lockName: ArcStr, mut in_a_lockPrefix: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iType.clone(), in_a_lockName.clone(), in_a_lockPrefix.clone())) {
         (txt, Deref @ "pthreads", a_lockName, a_lockPrefix) => {
             let mut txt = (*txt).clone();
@@ -7123,21 +7123,21 @@ fn fun_291(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_lockName: Arc
 }
 
 pub fn createBarrierByName(mut txt: Tpl::Text, mut a_lockName: ArcStr, mut a_lockPrefix: ArcStr, mut a_numOfThreads: i32, mut a_iType: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_291(txt.clone(), (a_iType.clone()).clone(), (a_lockName.clone()).clone(), (a_lockPrefix.clone()).clone())?;
     Ok(out_txt)
 }
 
 pub fn destroyLockByDepTask(mut txt: Tpl::Text, mut a_depTask: Arc<HpcOmSimCode::Task>, mut a_lockPrefix: ArcStr, mut a_iType: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
-    let mut l_lockName: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_lockName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     l_lockName = getLockNameByDepTask(Tpl::emptyTxt.clone(), a_depTask.clone())?;
     out_txt = destroyLockByLockName(txt.clone(), (Tpl::textString(l_lockName.clone())?).clone(), (a_lockPrefix.clone()).clone(), (a_iType.clone()).clone())?;
     Ok(out_txt)
 }
 
 fn fun_294(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_lockName: ArcStr, mut in_a_lockPrefix: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iType.clone(), in_a_lockName.clone(), in_a_lockPrefix.clone())) {
         (txt, Deref @ "openmp", a_lockName, a_lockPrefix) => {
             let mut txt = (*txt).clone();
@@ -7175,16 +7175,16 @@ fn fun_294(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_lockName: Arc
 }
 
 pub fn destroyLockByLockName(mut txt: Tpl::Text, mut a_lockName: ArcStr, mut a_lockPrefix: ArcStr, mut a_iType: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_294(txt.clone(), (a_iType.clone()).clone(), (a_lockName.clone()).clone(), (a_lockPrefix.clone()).clone())?;
     Ok(out_txt)
 }
 
 pub fn assignLockByDepTask(mut in_txt: Tpl::Text, mut in_a_depTask: Arc<HpcOmSimCode::Task>, mut in_a_lockPrefix: ArcStr, mut in_a_iType: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_depTask.clone(), in_a_lockPrefix.clone(), in_a_iType.clone())) {
         (txt, i_depTask @ Deref @ HpcOmSimCode::Task::DEPTASK { sourceTask: _, .. }, a_lockPrefix, a_iType) => {
-            let mut l_lockName: Tpl::Text;
+            let mut l_lockName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             l_lockName = getLockNameByDepTask(Tpl::emptyTxt.clone(), i_depTask.clone())?;
             txt = assignLockByLockName(txt.clone(), (Tpl::textString(l_lockName.clone())?).clone(), (a_lockPrefix.clone()).clone(), (a_iType.clone()).clone())?;
@@ -7199,13 +7199,13 @@ pub fn assignLockByDepTask(mut in_txt: Tpl::Text, mut in_a_depTask: Arc<HpcOmSim
 }
 
 pub fn printCommunicationInfoVariables(mut txt: Tpl::Text, mut a_commInfo: HpcOmSimCode::CommunicationInfo) -> Tpl::Text {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = txt.clone();
     out_txt
 }
 
 fn fun_298(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_lockName: ArcStr, mut in_a_lockPrefix: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iType.clone(), in_a_lockName.clone(), in_a_lockPrefix.clone())) {
         (txt, Deref @ "openmp", a_lockName, a_lockPrefix) => {
             let mut txt = (*txt).clone();
@@ -7241,21 +7241,21 @@ fn fun_298(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_lockName: Arc
 }
 
 pub fn assignLockByLockName(mut txt: Tpl::Text, mut a_lockName: ArcStr, mut a_lockPrefix: ArcStr, mut a_iType: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_298(txt.clone(), (a_iType.clone()).clone(), (a_lockName.clone()).clone(), (a_lockPrefix.clone()).clone())?;
     Ok(out_txt)
 }
 
 pub fn releaseLockByDepTask(mut txt: Tpl::Text, mut a_depTask: Arc<HpcOmSimCode::Task>, mut a_lockPrefix: ArcStr, mut a_iType: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
-    let mut l_lockName: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_lockName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     l_lockName = getLockNameByDepTask(Tpl::emptyTxt.clone(), a_depTask.clone())?;
     out_txt = releaseLockByLockName(txt.clone(), (Tpl::textString(l_lockName.clone())?).clone(), (a_lockPrefix.clone()).clone(), (a_iType.clone()).clone())?;
     Ok(out_txt)
 }
 
 fn fun_301(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_lockName: ArcStr, mut in_a_lockPrefix: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_iType.clone(), in_a_lockName.clone(), in_a_lockPrefix.clone())) {
         (txt, Deref @ "openmp", a_lockName, a_lockPrefix) => {
             let mut txt = (*txt).clone();
@@ -7291,27 +7291,27 @@ fn fun_301(mut in_txt: Tpl::Text, mut in_a_iType: ArcStr, mut in_a_lockName: Arc
 }
 
 pub fn releaseLockByLockName(mut txt: Tpl::Text, mut a_lockName: ArcStr, mut a_lockPrefix: ArcStr, mut a_iType: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_301(txt.clone(), (a_iType.clone()).clone(), (a_lockName.clone()).clone(), (a_lockPrefix.clone()).clone())?;
     Ok(out_txt)
 }
 
 pub fn mpiFinalize(mut txt: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("} // End sequential\n")).clone(), (literal!("MPI_Finalize();")).clone()], lastHasNewLine: false }))?;
     Ok(out_txt)
 }
 
 pub fn mpiInit(mut txt: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("char** argvNotConst = const_cast<char**>(argv);\n")).clone(), (literal!("MPI_Init(&argc, &argvNotConst);\n")).clone(), (literal!("int world_rank, world_size;\n")).clone(), (literal!("MPI_Comm_size(MPI_COMM_WORLD, &world_size);\n")).clone(), (literal!("MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);\n")).clone(), (literal!("std::cout << \"Hello world! This is MPI process \" << world_rank\n")).clone(), (literal!("          << \" of \" << world_size << \" processes.\"  << endl;\n")).clone(), (literal!("\n")).clone(), (literal!("// Run simulation in sequential\n")).clone(), (literal!("if (0 == world_rank) {\n")).clone(), (literal!("  std::cout << \"Remark: Simulation is not (yet) MPI parallel!\\n\";")).clone()], lastHasNewLine: false }))?;
     Ok(out_txt)
 }
 
 pub fn mpiRunCommandInRunScript(mut in_txt: Tpl::Text, mut in_a_type: ArcStr, mut in_a_getNumOfProcs: Tpl::Text, mut in_a_execCommandLinux: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_getNumOfProcs: Tpl::Text;
-    let mut out_a_execCommandLinux: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_getNumOfProcs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_execCommandLinux: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_getNumOfProcs, out_a_execCommandLinux) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_type.clone(), in_a_getNumOfProcs.clone(), in_a_execCommandLinux.clone())) {
         (txt, Deref @ "mpi", a_getNumOfProcs, a_execCommandLinux) => {
             let mut a_getNumOfProcs = (*a_getNumOfProcs).clone();
@@ -7331,7 +7331,7 @@ pub fn mpiRunCommandInRunScript(mut in_txt: Tpl::Text, mut in_a_type: ArcStr, mu
 }
 
 fn fun_306(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -7345,16 +7345,16 @@ fn fun_306(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 pub fn simulationMainRunScript(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCode, mut a_extraFuncs: Tpl::Text, mut a_extraFuncsDecl: Tpl::Text, mut a_extraFuncsNamespace: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
-    let mut l_preRunCommandWindows: Tpl::Text;
-    let mut l_0__: Tpl::Text;
-    let mut l_execCommandLinux: Tpl::Text;
-    let mut l_preRunCommandLinux: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_preRunCommandWindows: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_0__: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_execCommandLinux: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_preRunCommandLinux: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_1: bool = false;
-    let mut l_type: Tpl::Text;
+    let mut l_type: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     ret_1 = Flags::isSet(Flags::USEMPI.clone())?;
     l_type = fun_306(Tpl::emptyTxt.clone(), ret_1.clone())?;
     l_preRunCommandLinux = Tpl::emptyTxt.clone();
@@ -7366,7 +7366,7 @@ pub fn simulationMainRunScript(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCo
 }
 
 fn fun_308(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -7380,7 +7380,7 @@ fn fun_308(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 fn fun_309(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -7394,7 +7394,7 @@ fn fun_309(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 fn fun_310(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -7408,7 +7408,7 @@ fn fun_310(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 fn fun_311(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -7422,7 +7422,7 @@ fn fun_311(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 fn fun_312(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
             txt.clone()
@@ -7436,18 +7436,18 @@ fn fun_312(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 }
 
 pub fn getAdditionalMakefileFlags(mut txt: Tpl::Text, mut a_additionalLinkerFlags__GCC: Tpl::Text, mut a_additionalLinkerFlags__MSVC: Tpl::Text, mut a_additionalCFlags__GCC: Tpl::Text, mut a_additionalCFlags__MSVC: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_additionalLinkerFlags__GCC: Tpl::Text;
-    let mut out_a_additionalLinkerFlags__MSVC: Tpl::Text;
-    let mut out_a_additionalCFlags__GCC: Tpl::Text;
-    let mut out_a_additionalCFlags__MSVC: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_additionalLinkerFlags__GCC: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_additionalLinkerFlags__MSVC: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_additionalCFlags__GCC: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_additionalCFlags__MSVC: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_6: bool = false;
     let mut ret_5: bool = false;
     let mut ret_4: bool = false;
     let mut ret_3: bool = false;
     let mut ret_2: bool = false;
     let mut ret_1: ArcStr = arcstr::literal!("");
-    let mut l_type: Tpl::Text;
+    let mut l_type: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     ret_1 = (Flags::getConfigString(Flags::HPCOM_CODE.clone())?).clone();
     l_type = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_1.clone()).clone())?;
     ret_2 = stringEq((Tpl::textString(l_type.clone())?).clone(), (literal!("openmp")).clone());
@@ -7466,15 +7466,15 @@ pub fn getAdditionalMakefileFlags(mut txt: Tpl::Text, mut a_additionalLinkerFlag
 }
 
 pub fn simulationMakefile(mut txt: Tpl::Text, mut a_target: ArcStr, mut a_simCode: SimCode::SimCode, mut a_extraFuncs: Tpl::Text, mut a_extraFuncsDecl: Tpl::Text, mut a_extraFuncsNamespace: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_extraFuncs: Tpl::Text;
-    let mut out_a_extraFuncsDecl: Tpl::Text;
-    let mut out_a_extraFuncsNamespace: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_extraFuncsNamespace: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_4: bool = false;
-    let mut l_additionalLinkerFlags__MSVC: Tpl::Text;
-    let mut l_additionalLinkerFlags__GCC: Tpl::Text;
-    let mut l_additionalCFlags__MSVC: Tpl::Text;
-    let mut l_additionalCFlags__GCC: Tpl::Text;
+    let mut l_additionalLinkerFlags__MSVC: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_additionalLinkerFlags__GCC: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_additionalCFlags__MSVC: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_additionalCFlags__GCC: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     l_additionalCFlags__GCC = Tpl::emptyTxt.clone();
     l_additionalCFlags__MSVC = Tpl::emptyTxt.clone();
     l_additionalLinkerFlags__GCC = Tpl::emptyTxt.clone();
@@ -7487,7 +7487,7 @@ pub fn simulationMakefile(mut txt: Tpl::Text, mut a_target: ArcStr, mut a_simCod
 }
 
 fn fun_315(mut in_txt: Tpl::Text, mut in_a_hpcOmMemoryOpt: Option<HpcOmSimCode::MemoryMap>, mut in_a_modelInfo: SimCode::ModelInfo) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_hpcOmMemoryOpt.clone(), in_a_modelInfo.clone()) {
         (mut txt, Some(HpcOmSimCode::MemoryMap::MEMORYMAP_ARRAY { boolArraySize: mut i_boolArraySize, intArraySize: mut i_intArraySize, floatArraySize: mut i_floatArraySize, .. }), _) => {
             txt = Tpl::writeStr(txt.clone(), (intString(i_floatArraySize.clone())).clone())?;
@@ -7506,13 +7506,13 @@ fn fun_315(mut in_txt: Tpl::Text, mut in_a_hpcOmMemoryOpt: Option<HpcOmSimCode::
 }
 
 pub fn numPreVarsHpcom(mut txt: Tpl::Text, mut a_modelInfo: SimCode::ModelInfo, mut a_hpcOmMemoryOpt: Option<HpcOmSimCode::MemoryMap>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_315(txt.clone(), a_hpcOmMemoryOpt.clone(), a_modelInfo.clone())?;
     Ok(out_txt)
 }
 
 fn fun_317(mut in_txt: Tpl::Text, mut in_a_hpcOmMemoryOpt: Option<HpcOmSimCode::MemoryMap>, mut in_a_modelInfo: SimCode::ModelInfo) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_hpcOmMemoryOpt.clone(), in_a_modelInfo.clone()) {
         (mut txt, Some(HpcOmSimCode::MemoryMap::MEMORYMAP_ARRAY { floatArraySize: mut i_floatArraySize, .. }), _) => {
             txt = Tpl::writeStr(txt.clone(), (intString(i_floatArraySize.clone())).clone())?;
@@ -7527,13 +7527,13 @@ fn fun_317(mut in_txt: Tpl::Text, mut in_a_hpcOmMemoryOpt: Option<HpcOmSimCode::
 }
 
 pub fn numRealvarsHpcom(mut txt: Tpl::Text, mut a_modelInfo: SimCode::ModelInfo, mut a_hpcOmMemoryOpt: Option<HpcOmSimCode::MemoryMap>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_317(txt.clone(), a_hpcOmMemoryOpt.clone(), a_modelInfo.clone())?;
     Ok(out_txt)
 }
 
 fn fun_319(mut in_txt: Tpl::Text, mut in_a_hpcOmMemoryOpt: Option<HpcOmSimCode::MemoryMap>, mut in_a_modelInfo: SimCode::ModelInfo) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_hpcOmMemoryOpt.clone(), in_a_modelInfo.clone()) {
         (mut txt, Some(HpcOmSimCode::MemoryMap::MEMORYMAP_ARRAY { intArraySize: mut i_intArraySize, .. }), _) => {
             txt = Tpl::writeStr(txt.clone(), (intString(i_intArraySize.clone())).clone())?;
@@ -7548,13 +7548,13 @@ fn fun_319(mut in_txt: Tpl::Text, mut in_a_hpcOmMemoryOpt: Option<HpcOmSimCode::
 }
 
 pub fn numIntvarsHpcom(mut txt: Tpl::Text, mut a_modelInfo: SimCode::ModelInfo, mut a_hpcOmMemoryOpt: Option<HpcOmSimCode::MemoryMap>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_319(txt.clone(), a_hpcOmMemoryOpt.clone(), a_modelInfo.clone())?;
     Ok(out_txt)
 }
 
 fn fun_321(mut in_txt: Tpl::Text, mut in_a_hpcOmMemoryOpt: Option<HpcOmSimCode::MemoryMap>, mut in_a_modelInfo: SimCode::ModelInfo) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_hpcOmMemoryOpt.clone(), in_a_modelInfo.clone()) {
         (mut txt, Some(HpcOmSimCode::MemoryMap::MEMORYMAP_ARRAY { boolArraySize: mut i_boolArraySize, .. }), _) => {
             txt = Tpl::writeStr(txt.clone(), (intString(i_boolArraySize.clone())).clone())?;
@@ -7569,13 +7569,13 @@ fn fun_321(mut in_txt: Tpl::Text, mut in_a_hpcOmMemoryOpt: Option<HpcOmSimCode::
 }
 
 pub fn numBoolvarsHpcom(mut txt: Tpl::Text, mut a_modelInfo: SimCode::ModelInfo, mut a_hpcOmMemoryOpt: Option<HpcOmSimCode::MemoryMap>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_321(txt.clone(), a_hpcOmMemoryOpt.clone(), a_modelInfo.clone())?;
     Ok(out_txt)
 }
 
 fn fun_323(mut in_txt: Tpl::Text, mut in_a_hpcOmMemoryOpt: Option<HpcOmSimCode::MemoryMap>, mut in_a_modelInfo: SimCode::ModelInfo) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_hpcOmMemoryOpt.clone(), in_a_modelInfo.clone()) {
         (mut txt, Some(HpcOmSimCode::MemoryMap::MEMORYMAP_ARRAY { stringArraySize: mut i_stringArraySize, .. }), _) => {
             txt = Tpl::writeStr(txt.clone(), (intString(i_stringArraySize.clone())).clone())?;
@@ -7590,7 +7590,7 @@ fn fun_323(mut in_txt: Tpl::Text, mut in_a_hpcOmMemoryOpt: Option<HpcOmSimCode::
 }
 
 pub fn numStringvarsHpcom(mut txt: Tpl::Text, mut a_modelInfo: SimCode::ModelInfo, mut a_hpcOmMemoryOpt: Option<HpcOmSimCode::MemoryMap>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_323(txt.clone(), a_hpcOmMemoryOpt.clone(), a_modelInfo.clone())?;
     Ok(out_txt)
 }

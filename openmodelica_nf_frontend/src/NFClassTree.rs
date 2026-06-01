@@ -123,6 +123,9 @@ pub mod ClassTree {
         },
         EMPTY_TREE,
     }
+    impl Default for ClassTree {
+        fn default() -> Self { Self::EMPTY_TREE }
+    }
     pub use self::ClassTree::{PARTIAL_TREE,EXPANDED_TREE,INSTANTIATED_TREE,FLAT_TREE,EMPTY_TREE};
     pub fn fromSCode(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut isClassExtends: bool, mut parent: Arc<InstNode::InstNode>) -> Result<Arc<ClassTree>> {
         let mut tree: Arc<ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
@@ -202,7 +205,7 @@ pub mod ClassTree {
         let mut tree: Arc<ClassTree> = tree;
         let mut imports: metamodelica::Array<Arc<Import::NFImport>> = Default::default();
         let mut init_imports: Arc<metamodelica::List<Arc<Import::NFImport>>> = metamodelica::nil();
-        let mut imp: Arc<Import::NFImport>;
+        let mut imp: Arc<Import::NFImport> = Arc::new(<Import::NFImport as ::std::default::Default>::default());
         let mut ltree: Arc<LookupTree::Tree> = Arc::new(LookupTree::Tree::EMPTY);
         let () = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ PARTIAL_TREE { imports, tree: ltree, .. } if (!(imports.clone().borrow().is_empty())) => {
@@ -1492,8 +1495,8 @@ pub mod ClassTree {
         let mut entry: Arc<LookupTree::Entry::Entry> = Arc::new(<LookupTree::Entry::Entry as ::std::default::Default>::default());
         entry = (::match_deref::match_deref! { match &((newEntry.clone(), oldEntry.clone())) {
         (Deref @ LookupTree::Entry::IMPORT { .. }, Deref @ LookupTree::Entry::IMPORT { .. }) => {
-            let mut imp1: Arc<Import::NFImport>;
-            let mut imp2: Arc<Import::NFImport>;
+            let mut imp1: Arc<Import::NFImport> = Arc::new(<Import::NFImport as ::std::default::Default>::default());
+            let mut imp2: Arc<Import::NFImport> = Arc::new(<Import::NFImport as ::std::default::Default>::default());
             imp1 = imports.borrow()[(var_field!((*newEntry).index, LookupTree::Entry::Entry::IMPORT).clone()-1) as usize].clone();
             imp2 = imports.borrow()[(var_field!((*oldEntry).index, LookupTree::Entry::Entry::IMPORT).clone()-1) as usize].clone();
             entry = (::match_deref::match_deref! { match &((imp1.clone(), imp2.clone())) {
@@ -1605,7 +1608,7 @@ pub mod ClassTree {
     fn resolveImport(mut index: i32, mut tree: Arc<ClassTree>) -> Result<Arc<InstNode::InstNode>> {
         let mut element: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
         let mut imports: metamodelica::Array<Arc<Import::NFImport>> = Default::default();
-        let mut imp: Arc<Import::NFImport>;
+        let mut imp: Arc<Import::NFImport> = Arc::new(<Import::NFImport as ::std::default::Default>::default());
         let mut changed: bool = false;
         imports = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ PARTIAL_TREE { .. } => var_field!((*tree).imports, ClassTree::PARTIAL_TREE).clone(),
@@ -1994,7 +1997,7 @@ pub mod ClassTree {
     }
 
     fn checkOuterClass(mut outerCls: Arc<InstNode::InstNode>) -> Result<()> {
-        let mut def: Arc<SCode::ClassDef>;
+        let mut def: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
         if InstNode::isOnlyOuter(outerCls.clone())? {
             def = SCodeUtil::getClassDef(InstNode::definition(outerCls.clone())?)?;
             let () = (::match_deref::match_deref! { match &(def.clone()) {

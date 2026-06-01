@@ -93,6 +93,9 @@ pub enum TearingMethod {
     TOTAL_TEARING,
     USER_DEFINED_TEARING,
 }
+impl Default for TearingMethod {
+    fn default() -> Self { Self::MINIMAL_TEARING }
+}
 pub use self::TearingMethod::{MINIMAL_TEARING,OMC_TEARING,CELLIER_TEARING,TOTAL_TEARING,USER_DEFINED_TEARING};
 
 // =============================================================================
@@ -161,7 +164,7 @@ fn getTearingMethod(mut inTearingMethod: ArcStr) -> Result<TearingMethod> {
 }
 
 fn callTearingMethod(mut inTearingMethod: TearingMethod, mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE::Shared>, mut eindex: Arc<metamodelica::List<i32>>, mut vindx: Arc<metamodelica::List<i32>>, mut ojac: Option<Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>>, mut jacType: BackendDAE::JacobianType, mut mixedSystem: bool, mut strongComponentIndex: i32) -> Result<(Arc<BackendDAE::StrongComponent>, bool)> {
-    let mut ocomp: Arc<BackendDAE::StrongComponent>;
+    let mut ocomp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
     let mut outRunMatching: bool = false;
     let debug: bool = false;
     let mut userTVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -287,7 +290,7 @@ fn traverseComponents(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::Strong
 }
 
 fn traverseComponent(mut inComp: Arc<BackendDAE::StrongComponent>, mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE::Shared>, mut inMethod: TearingMethod, mut strongComponentIndexIn: i32) -> Result<(Arc<BackendDAE::StrongComponent>, bool, i32)> {
-    let mut oComp: Arc<BackendDAE::StrongComponent>;
+    let mut oComp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
     let mut outRunMatching: bool = false;
     let mut strongComponentIndexOut: i32 = strongComponentIndexIn.clone();
     let debug: bool = false;
@@ -467,7 +470,7 @@ fn getUserTearingSet(mut userTVars: Arc<metamodelica::List<i32>>, mut userResidu
 //
 // =============================================================================
 fn omcTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE::Shared>, mut eindex: Arc<metamodelica::List<i32>>, mut vindx: Arc<metamodelica::List<i32>>, mut ojac: Option<Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>>, mut jacType: BackendDAE::JacobianType, mut mixedSystem: bool) -> Result<(Arc<BackendDAE::StrongComponent>, bool)> {
-    let mut ocomp: Arc<BackendDAE::StrongComponent>;
+    let mut ocomp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
     let mut outRunMatching: bool = false;
     let mut tvars: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut residual: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -1321,7 +1324,7 @@ fn omcTearing3(mut unassigned: Arc<metamodelica::List<i32>>, mut unsolvables: Ar
 }
 
 fn omcTearing4(mut jacType: BackendDAE::JacobianType, mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE::Shared>, mut subsyst: Arc<BackendDAE::EqSystem>, mut tvars: Arc<metamodelica::List<i32>>, mut residual: Arc<metamodelica::List<i32>>, mut ass1: metamodelica::Array<i32>, mut ass2: metamodelica::Array<i32>, mut othercomps: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut eindex: Arc<metamodelica::List<i32>>, mut vindx: Arc<metamodelica::List<i32>>, mut mapEqnIncRow: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapIncRowEqn: metamodelica::Array<i32>, mut columark: metamodelica::Array<i32>, mut mark: i32, mut mixedSystem: bool) -> Result<(Arc<BackendDAE::StrongComponent>, bool)> {
-    let mut ocomp: Arc<BackendDAE::StrongComponent>;
+    let mut ocomp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
     let mut outRunMatching: bool = false;
     (ocomp, outRunMatching) = 'mc: {
         let __mc_input = mixedSystem.clone();
@@ -1402,7 +1405,7 @@ fn omcTearing4_1(mut othercomps: Arc<metamodelica::List<Arc<metamodelica::List<i
 //   all discrete variables and CSE variables.
 // ============================================================================
 fn minimalTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE::Shared>, mut eindex: Arc<metamodelica::List<i32>>, mut vindx: Arc<metamodelica::List<i32>>, mut jacType: BackendDAE::JacobianType, mut mixedSystem: bool) -> Result<Arc<BackendDAE::StrongComponent>> {
-    let mut ocomp: Arc<BackendDAE::StrongComponent>;
+    let mut ocomp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
     let mut size: i32 = 0;
     let mut qidx: i32 = 0;
     let mut vidx: i32 = 0;
@@ -1647,7 +1650,7 @@ fn getTearingSetfromAssign(mut inDiscreteVars: Arc<metamodelica::List<i32>>, mut
 //
 // =============================================================================
 fn CellierTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE::Shared>, mut eindex: Arc<metamodelica::List<i32>>, mut vindx: Arc<metamodelica::List<i32>>, mut tearingSelect_always: Arc<metamodelica::List<i32>>, mut ojac: Option<Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>>, mut jacType: BackendDAE::JacobianType, mut mixedSystem: bool, mut strongComponentIndex: i32) -> Result<(Arc<BackendDAE::StrongComponent>, bool)> {
-    let mut ocomp: Arc<BackendDAE::StrongComponent>;
+    let mut ocomp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
     let mut outRunMatching: bool = false;
     let mut size: i32 = 0;
     let mut tornsize: i32 = 0;
@@ -3929,7 +3932,7 @@ fn dumpTearingSetsGlobalIndexes(mut tearingSets: Arc<metamodelica::List<BackendD
 //
 // =============================================================================
 fn totalTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE::Shared>, mut eindex: Arc<metamodelica::List<i32>>, mut vindx: Arc<metamodelica::List<i32>>, mut ojac: Option<Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>>, mut jacType: BackendDAE::JacobianType, mut mixedSystem: bool) -> Result<(Arc<BackendDAE::StrongComponent>, bool)> {
-    let mut ocomp: Arc<BackendDAE::StrongComponent>;
+    let mut ocomp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
     let mut outRunMatching: bool = false;
     let mut size: i32 = 0;
     let mut ass1: metamodelica::Array<i32> = Default::default();
@@ -4166,7 +4169,7 @@ fn dumpMatchingList(mut matchingList: Arc<metamodelica::List<(metamodelica::Arra
 //
 // =============================================================================
 fn userDefinedTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE::Shared>, mut eindex: Arc<metamodelica::List<i32>>, mut vindx: Arc<metamodelica::List<i32>>, mut ojac: Option<Arc<metamodelica::List<(i32, i32, Arc<BackendDAE::Equation>)>>>, mut jacType: BackendDAE::JacobianType, mut mixedSystem: bool, mut userTVars: Arc<metamodelica::List<i32>>, mut userResiduals: Arc<metamodelica::List<i32>>) -> Result<(Arc<BackendDAE::StrongComponent>, bool)> {
-    let mut ocomp: Arc<BackendDAE::StrongComponent>;
+    let mut ocomp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
     let mut outRunMatching: bool = false;
     let mut size: i32 = 0;
     let mut ass1: metamodelica::Array<i32> = Default::default();

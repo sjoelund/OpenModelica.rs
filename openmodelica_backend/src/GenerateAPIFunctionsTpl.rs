@@ -24,7 +24,7 @@ use openmodelica_util_datatypes_basic::List;
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_44(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Type>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -49,8 +49,8 @@ fn lm_44(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Ty
 }
 
 pub fn getCevalScriptInterface(mut txt: Tpl::Text, mut a_tys: Arc<metamodelica::List<Arc<DAE::Type>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
-    let mut l_funcs: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_funcs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     l_funcs = lm_44(Tpl::emptyTxt.clone(), a_tys.clone())?;
     out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("import Absyn;\n")).clone(), (literal!("import AbsynUtil;\n")).clone(), (literal!("import CevalScript;\n")).clone(), (literal!("import Parser;\n")).clone(), (literal!("\n")).clone(), (literal!("protected\n")).clone(), (literal!("\n")).clone(), (literal!("import Values;\n")).clone(), (literal!("import ValuesMake;\n")).clone(), (literal!("import ValuesUtil;\n")).clone(), (literal!("constant Absyn.Msg dummyMsg = Absyn.MSG(SOURCEINFO(\"<interactive>\",false,1,1,1,1,0.0));\n")).clone(), (literal!("\n")).clone(), (literal!("public\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
     out_txt = Tpl::writeText(out_txt.clone(), l_funcs.clone())?;
@@ -58,7 +58,7 @@ pub fn getCevalScriptInterface(mut txt: Tpl::Text, mut a_tys: Arc<metamodelica::
 }
 
 pub fn getInType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
         (txt, Deref @ DAE::Type::T_STRING { varLst: _ }) => {
             let mut txt = (*txt).clone();
@@ -93,7 +93,7 @@ pub fn getInType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<T
             txt.clone()
         },
         (txt, i_ty) => {
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_0: ArcStr = arcstr::literal!("");
             let mut txt = (*txt).clone();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("getInType failed for ")).clone() }))?;
@@ -108,7 +108,7 @@ pub fn getInType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<T
 }
 
 fn fun_47(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone())) {
         (txt, Deref @ DAE::Type::T_STRING { varLst: _ }, a_name) => {
             let mut txt = (*txt).clone();
@@ -139,7 +139,7 @@ fn fun_47(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt.clone()
         },
         (txt, Deref @ DAE::Type::T_ARRAY { ty: i_aty_ty, .. }, a_name) => {
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("ValuesMake.makeArray(list(")).clone() }))?;
             txt_0 = Tpl::writeText(Tpl::emptyTxt.clone(), a_name.clone())?;
@@ -160,7 +160,7 @@ fn fun_47(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt.clone()
         },
         (txt, i_ty, _) => {
-            let mut txt_1: Tpl::Text;
+            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_1: ArcStr = arcstr::literal!("");
             let mut txt = (*txt).clone();
             txt_1 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("getInValue failed for ")).clone() }))?;
@@ -175,17 +175,17 @@ fn fun_47(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
 }
 
 pub fn getInValue(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_ty: Arc<DAE::Type>) -> Result<(Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_name: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_name: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_47(txt.clone(), a_ty.clone(), a_name.clone())?;
     out_a_name = a_name.clone();
     Ok((out_txt, out_a_name))
 }
 
 fn fun_49(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl::Text, mut in_a_varDecl: Tpl::Text, mut in_a_postMatch: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_varDecl: Tpl::Text;
-    let mut out_a_postMatch: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_postMatch: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_varDecl, out_a_postMatch) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone(), in_a_varDecl.clone(), in_a_postMatch.clone())) {
         (txt, Deref @ DAE::Type::T_STRING { varLst: _ }, a_name, a_varDecl, a_postMatch) => {
             let mut txt = (*txt).clone();
@@ -216,7 +216,7 @@ fn fun_49(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             (txt.clone(), a_varDecl.clone(), a_postMatch.clone())
         },
         (txt, i_aty @ Deref @ DAE::Type::T_ARRAY { ty: _, .. }, a_name, a_varDecl, a_postMatch) => {
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_varDecl = (*a_varDecl).clone();
             let mut a_postMatch = (*a_postMatch).clone();
@@ -254,7 +254,7 @@ fn fun_49(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             (txt.clone(), a_varDecl.clone(), a_postMatch.clone())
         },
         (txt, i_ty, _, a_varDecl, a_postMatch) => {
-            let mut txt_1: Tpl::Text;
+            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_1: ArcStr = arcstr::literal!("");
             let mut txt = (*txt).clone();
             txt_1 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("getOutValue failed for ")).clone() }))?;
@@ -269,17 +269,17 @@ fn fun_49(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
 }
 
 pub fn getOutValue(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_varDecl: Tpl::Text, mut a_postMatch: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_name: Tpl::Text;
-    let mut out_a_varDecl: Tpl::Text;
-    let mut out_a_postMatch: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_name: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_postMatch: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_varDecl, out_a_postMatch) = fun_49(txt.clone(), a_ty.clone(), a_name.clone(), a_varDecl.clone(), a_postMatch.clone())?;
     out_a_name = a_name.clone();
     Ok((out_txt, out_a_name, out_a_varDecl, out_a_postMatch))
 }
 
 fn fun_51(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone())) {
         (txt, Deref @ DAE::Type::T_STRING { varLst: _ }, a_name) => {
             let mut txt = (*txt).clone();
@@ -318,7 +318,7 @@ fn fun_51(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt.clone()
         },
         (txt, Deref @ DAE::Type::T_ARRAY { ty: i_aty_ty, .. }, a_name) => {
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("list(")).clone() }))?;
             txt_0 = Tpl::writeText(Tpl::emptyTxt.clone(), a_name.clone())?;
@@ -339,7 +339,7 @@ fn fun_51(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt.clone()
         },
         (txt, i_ty, _) => {
-            let mut txt_1: Tpl::Text;
+            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_1: ArcStr = arcstr::literal!("");
             let mut txt = (*txt).clone();
             txt_1 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("getOutValueArray failed for ")).clone() }))?;
@@ -354,8 +354,8 @@ fn fun_51(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
 }
 
 pub fn getOutValueArray(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_ty: Arc<DAE::Type>) -> Result<(Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_name: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_name: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_51(txt.clone(), a_ty.clone(), a_name.clone())?;
     out_a_name = a_name.clone();
     Ok((out_txt, out_a_name))
@@ -364,7 +364,7 @@ pub fn getOutValueArray(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_ty: Arc
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_53(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::FuncArg>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -387,16 +387,16 @@ fn lm_53(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Fu
 }
 
 fn lm_54(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Type>>>, mut in_a_postMatch: Tpl::Text, mut in_a_varDecl: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_postMatch: Tpl::Text;
-    let mut out_a_varDecl: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_postMatch: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_postMatch, out_a_varDecl) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_postMatch.clone(), in_a_varDecl.clone())) {
         (txt, Deref @ metamodelica::List::Nil, a_postMatch, a_varDecl) => {
             (txt.clone(), a_postMatch.clone(), a_varDecl.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_ty, tail: rest }, a_postMatch, a_varDecl) => {
             let mut x_i: i32 = 0;
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_postMatch = (*a_postMatch).clone();
             let mut a_varDecl = (*a_varDecl).clone();
@@ -414,9 +414,9 @@ fn lm_54(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Ty
 }
 
 fn fun_55(mut in_txt: Tpl::Text, mut in_a_res: Arc<DAE::Type>, mut in_a_postMatch: Tpl::Text, mut in_a_varDecl: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_postMatch: Tpl::Text;
-    let mut out_a_varDecl: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_postMatch: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_postMatch, out_a_varDecl) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_res.clone(), in_a_postMatch.clone(), in_a_varDecl.clone())) {
         (txt, Deref @ DAE::Type::T_TUPLE { types: i_types, .. }, a_postMatch, a_varDecl) => {
             let mut txt = (*txt).clone();
@@ -449,7 +449,7 @@ fn fun_55(mut in_txt: Tpl::Text, mut in_a_res: Arc<DAE::Type>, mut in_a_postMatc
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_56(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::FuncArg>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -478,7 +478,7 @@ fn lm_56(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Fu
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_57(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Type>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -502,7 +502,7 @@ fn lm_57(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Ty
 }
 
 fn fun_58(mut in_txt: Tpl::Text, mut in_a_res: Arc<DAE::Type>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_res.clone())) {
         (txt, Deref @ DAE::Type::T_TUPLE { types: i_types, .. }) => {
             let mut txt = (*txt).clone();
@@ -527,7 +527,7 @@ fn fun_58(mut in_txt: Tpl::Text, mut in_a_res: Arc<DAE::Type>) -> Result<Tpl::Te
 }
 
 fn fun_59(mut in_txt: Tpl::Text, mut in_a_varDecl: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_varDecl.clone())) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
@@ -546,11 +546,11 @@ fn fun_59(mut in_txt: Tpl::Text, mut in_a_varDecl: Tpl::Text) -> Result<Tpl::Tex
 }
 
 pub fn getCevalScriptInterfaceFunc(mut txt: Tpl::Text, mut a_name: ArcStr, mut a_args: Arc<metamodelica::List<Arc<DAE::FuncArg>>>, mut a_res: Arc<DAE::Type>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
-    let mut l_outVals: Tpl::Text;
-    let mut l_inVals: Tpl::Text;
-    let mut l_postMatch: Tpl::Text;
-    let mut l_varDecl: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_outVals: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_inVals: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_postMatch: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_varDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     l_varDecl = Tpl::emptyTxt.clone();
     l_postMatch = Tpl::emptyTxt.clone();
     l_inVals = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
@@ -592,7 +592,7 @@ pub fn getCevalScriptInterfaceFunc(mut txt: Tpl::Text, mut a_name: ArcStr, mut a
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_61(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Type>>>, mut in_a_classNameWithColons: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_classNameWithColons.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -617,8 +617,8 @@ fn lm_61(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Ty
 }
 
 pub fn getQtInterface(mut txt: Tpl::Text, mut a_tys: Arc<metamodelica::List<Arc<DAE::Type>>>, mut a_classNameWithColons: ArcStr, mut a_className: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
-    let mut l_funcs: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_funcs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     l_funcs = lm_61(Tpl::emptyTxt.clone(), a_tys.clone(), (a_classNameWithColons.clone()).clone())?;
     out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("/* generated by OpenModelica */\n")).clone(), (literal!("\n")).clone(), (literal!("#include <stdexcept>\n")).clone(), (literal!("#include \"OpenModelicaScriptingAPIQt.h\"\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
     out_txt = Tpl::writeStr(out_txt.clone(), (a_classNameWithColons.clone()).clone())?;
@@ -633,7 +633,7 @@ pub fn getQtInterface(mut txt: Tpl::Text, mut a_tys: Arc<metamodelica::List<Arc<
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_63(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Type>>>, mut in_a_className: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_className.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -659,8 +659,8 @@ fn lm_63(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Ty
 }
 
 pub fn getQtInterfaceHeaders(mut txt: Tpl::Text, mut a_tys: Arc<metamodelica::List<Arc<DAE::Type>>>, mut a_className: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
-    let mut l_heads: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_heads: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     l_heads = lm_63(Tpl::emptyTxt.clone(), a_tys.clone(), (a_className.clone()).clone())?;
     out_txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("/* generated by OpenModelica */\n")).clone(), (literal!("#ifndef OpenModelicaScriptingAPIQt__H\n")).clone(), (literal!("#define OpenModelicaScriptingAPIQt__H\n")).clone(), (literal!("\n")).clone(), (literal!("#include <QOpenGLContext> // must be first include to fix undefined GLDEBUGPROC\n")).clone(), (literal!("#include <QtCore>\n")).clone(), (literal!("/* import the scripting here */\n")).clone(), (literal!("#define IMPORT_INTO\n")).clone(), (literal!("#include \"OpenModelicaScriptingAPI.h\"\n")).clone(), (literal!("\n")).clone(), (literal!("class ")).clone()], lastHasNewLine: false }))?;
     out_txt = Tpl::writeStr(out_txt.clone(), (a_className.clone()).clone())?;
@@ -676,7 +676,7 @@ pub fn getQtInterfaceHeaders(mut txt: Tpl::Text, mut a_tys: Arc<metamodelica::Li
 }
 
 pub fn getQtType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone())) {
         (txt, Deref @ DAE::Type::T_STRING { varLst: _ }) => {
             let mut txt = (*txt).clone();
@@ -711,7 +711,7 @@ pub fn getQtType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<T
             txt.clone()
         },
         (txt, i_ty) => {
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_0: ArcStr = arcstr::literal!("");
             let mut txt = (*txt).clone();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("getQtType failed for ")).clone() }))?;
@@ -726,7 +726,7 @@ pub fn getQtType(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>) -> Result<T
 }
 
 pub fn getQtTupleTypeOutputNameHelper(mut in_txt: Tpl::Text, mut in_a_names: Option<Arc<metamodelica::List<ArcStr>>>, mut in_a_index: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_names.clone(), in_a_index.clone())) {
         (txt, Some(i_lst), a_index) => {
             let mut ret_0: ArcStr = arcstr::literal!("");
@@ -747,7 +747,7 @@ pub fn getQtTupleTypeOutputNameHelper(mut in_txt: Tpl::Text, mut in_a_names: Opt
 }
 
 pub fn getQtTupleTypeOutputName(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_index: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_index.clone())) {
         (txt, Deref @ DAE::Type::T_TUPLE { names: i_names, .. }, a_index) => {
             let mut txt = (*txt).clone();
@@ -766,8 +766,8 @@ pub fn getQtTupleTypeOutputName(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Typ
 }
 
 fn fun_68(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_res: Arc<DAE::Type>, mut in_a_index: i32, mut in_a_name: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_name: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_name: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_name) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_res.clone(), in_a_index.clone(), in_a_name.clone())) {
         (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } }, a_res, a_index, a_name) => {
             let mut txt = (*txt).clone();
@@ -810,9 +810,9 @@ fn fun_68(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_res: Arc<
             (txt.clone(), a_name.clone())
         },
         (txt, Deref @ DAE::Type::T_ARRAY { ty: i_aty_ty, .. }, a_res, a_index, a_name) => {
-            let mut l_counter: Tpl::Text;
-            let mut l_elt: Tpl::Text;
-            let mut l_varName: Tpl::Text;
+            let mut l_counter: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_elt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_varName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_name = (*a_name).clone();
             l_varName = getQtTupleTypeOutputName(Tpl::emptyTxt.clone(), a_res.clone(), a_index.clone())?;
@@ -850,7 +850,7 @@ fn fun_68(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_res: Arc<
             (txt.clone(), a_name.clone())
         },
         (txt, i_ty, _, _, a_name) => {
-            let mut txt_3: Tpl::Text;
+            let mut txt_3: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_3: ArcStr = arcstr::literal!("");
             let mut txt = (*txt).clone();
             txt_3 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("structToString failed for ")).clone() }))?;
@@ -865,8 +865,8 @@ fn fun_68(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_res: Arc<
 }
 
 pub fn structToString(mut txt: Tpl::Text, mut a_res: Arc<DAE::Type>, mut a_ty: Arc<DAE::Type>, mut a_index: i32, mut a_name: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_name: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_name: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_name) = fun_68(txt.clone(), a_ty.clone(), a_res.clone(), a_index.clone(), a_name.clone())?;
     Ok((out_txt, out_a_name))
 }
@@ -874,7 +874,7 @@ pub fn structToString(mut txt: Tpl::Text, mut a_res: Arc<DAE::Type>, mut a_ty: A
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_70(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::FuncArg>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -901,7 +901,7 @@ fn lm_70(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Fu
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_71(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Type>>>, mut in_a_res: Arc<DAE::Type>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_res.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -926,7 +926,7 @@ fn lm_71(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Ty
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_72(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Type>>>, mut in_a_res: Arc<DAE::Type>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_res.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -946,7 +946,7 @@ fn lm_72(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Ty
 }
 
 fn fun_73(mut in_txt: Tpl::Text, mut in_a_addStructs: bool, mut in_a_res: Arc<DAE::Type>, mut in_a_types: Arc<metamodelica::List<Arc<DAE::Type>>>, mut in_a_name: ArcStr, mut in_a_prefix: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_addStructs.clone(), in_a_res.clone(), in_a_types.clone(), in_a_name.clone(), in_a_prefix.clone())) {
         (txt, false, _, _, a_name, a_prefix) => {
             let mut txt = (*txt).clone();
@@ -957,7 +957,7 @@ fn fun_73(mut in_txt: Tpl::Text, mut in_a_addStructs: bool, mut in_a_res: Arc<DA
         },
         (txt, _, a_res, a_types, a_name, _) => {
             let mut ret_1: Arc<Tpl::StringToken> = Arc::new(Tpl::StringToken::ST_NEW_LINE);
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("typedef struct ")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (a_name.clone()).clone())?;
@@ -994,7 +994,7 @@ fn fun_73(mut in_txt: Tpl::Text, mut in_a_addStructs: bool, mut in_a_res: Arc<DA
 }
 
 fn fun_74(mut in_txt: Tpl::Text, mut in_a_res: Arc<DAE::Type>, mut in_a_name: ArcStr, mut in_a_prefix: ArcStr, mut in_a_addStructs: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_res.clone(), in_a_name.clone(), in_a_prefix.clone(), in_a_addStructs.clone())) {
         (txt, i_res @ Deref @ DAE::Type::T_TUPLE { types: i_types, .. }, a_name, a_prefix, a_addStructs) => {
             let mut txt = (*txt).clone();
@@ -1017,9 +1017,9 @@ fn fun_74(mut in_txt: Tpl::Text, mut in_a_res: Arc<DAE::Type>, mut in_a_name: Ar
 }
 
 pub fn getQtInterfaceHeader(mut txt: Tpl::Text, mut a_name: ArcStr, mut a_prefix: ArcStr, mut a_args: Arc<metamodelica::List<Arc<DAE::FuncArg>>>, mut a_res: Arc<DAE::Type>, mut a_className: ArcStr, mut a_addStructs: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
-    let mut l_outType: Tpl::Text;
-    let mut l_inTypes: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_outType: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_inTypes: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     l_inTypes = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(", ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
     l_inTypes = lm_70(l_inTypes.clone(), a_args.clone())?;
     l_inTypes = Tpl::popIter(l_inTypes.clone())?;
@@ -1035,8 +1035,8 @@ pub fn getQtInterfaceHeader(mut txt: Tpl::Text, mut a_name: ArcStr, mut a_prefix
 }
 
 fn fun_76(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl::Text, mut in_a_varDecl: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_varDecl: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_varDecl) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone(), in_a_varDecl.clone())) {
         (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } }, a_name, a_varDecl) => {
             let mut txt = (*txt).clone();
@@ -1082,11 +1082,11 @@ fn fun_76(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             (txt.clone(), a_varDecl.clone())
         },
         (txt, Deref @ DAE::Type::T_ARRAY { ty: i_aty_ty, .. }, a_name, a_varDecl) => {
-            let mut l_i: Tpl::Text;
-            let mut txt_3: Tpl::Text;
-            let mut l_body: Tpl::Text;
-            let mut l_elt: Tpl::Text;
-            let mut l_varDecl2: Tpl::Text;
+            let mut l_i: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_3: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_body: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_elt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_varDecl2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_varDecl = (*a_varDecl).clone();
             l_varDecl2 = Tpl::emptyTxt.clone();
@@ -1132,7 +1132,7 @@ fn fun_76(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             (txt.clone(), a_varDecl.clone())
         },
         (txt, i_ty, _, a_varDecl) => {
-            let mut txt_5: Tpl::Text;
+            let mut txt_5: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_5: ArcStr = arcstr::literal!("");
             let mut txt = (*txt).clone();
             txt_5 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("getQtInArg failed for ")).clone() }))?;
@@ -1147,16 +1147,16 @@ fn fun_76(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
 }
 
 pub fn getQtInArg(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_varDecl: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_name: Tpl::Text;
-    let mut out_a_varDecl: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_name: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_varDecl) = fun_76(txt.clone(), a_ty.clone(), a_name.clone(), a_varDecl.clone())?;
     out_a_name = a_name.clone();
     Ok((out_txt, out_a_name, out_a_varDecl))
 }
 
 fn fun_78(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone())) {
         (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } }, a_name) => {
             let mut txt = (*txt).clone();
@@ -1195,7 +1195,7 @@ fn fun_78(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt.clone()
         },
         (txt, i_ty, _) => {
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_0: ArcStr = arcstr::literal!("");
             let mut txt = (*txt).clone();
             txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("getQtInArgBoxed failed for ")).clone() }))?;
@@ -1210,16 +1210,16 @@ fn fun_78(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
 }
 
 pub fn getQtInArgBoxed(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_ty: Arc<DAE::Type>) -> Result<(Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_name: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_name: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_78(txt.clone(), a_ty.clone(), a_name.clone())?;
     out_a_name = a_name.clone();
     Ok((out_txt, out_a_name))
 }
 
 fn fun_80(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl::Text, mut in_a_commandLog: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_commandLog: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_commandLog: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_commandLog) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone(), in_a_commandLog.clone())) {
         (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } }, a_name, a_commandLog) => {
             let mut txt = (*txt).clone();
@@ -1267,8 +1267,8 @@ fn fun_80(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             (txt.clone(), a_commandLog.clone())
         },
         (txt, Deref @ DAE::Type::T_ARRAY { ty: i_aty_ty, .. }, a_name, a_commandLog) => {
-            let mut l_counter: Tpl::Text;
-            let mut l_elt: Tpl::Text;
+            let mut l_counter: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_elt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_commandLog = (*a_commandLog).clone();
             l_elt = Tpl::writeText(Tpl::emptyTxt.clone(), a_name.clone())?;
@@ -1305,7 +1305,7 @@ fn fun_80(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             (txt.clone(), a_commandLog.clone())
         },
         (txt, i_ty, _, a_commandLog) => {
-            let mut txt_2: Tpl::Text;
+            let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_2: ArcStr = arcstr::literal!("");
             let mut txt = (*txt).clone();
             txt_2 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("getQtCommandLogText failed for ")).clone() }))?;
@@ -1320,20 +1320,20 @@ fn fun_80(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
 }
 
 pub fn getQtCommandLogText(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_commandLog: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_name: Tpl::Text;
-    let mut out_a_commandLog: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_name: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_commandLog: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_commandLog) = fun_80(txt.clone(), a_ty.clone(), a_name.clone(), a_commandLog.clone())?;
     out_a_name = a_name.clone();
     Ok((out_txt, out_a_name, out_a_commandLog))
 }
 
 fn fun_82(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl::Text, mut in_a_shortName: Tpl::Text, mut in_a_varDecl: Tpl::Text, mut in_a_postCall: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_name: Tpl::Text;
-    let mut out_a_shortName: Tpl::Text;
-    let mut out_a_varDecl: Tpl::Text;
-    let mut out_a_postCall: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_name: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_shortName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_postCall: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_name, out_a_shortName, out_a_varDecl, out_a_postCall) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone(), in_a_shortName.clone(), in_a_varDecl.clone(), in_a_postCall.clone())) {
         (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } }, a_name, a_shortName, a_varDecl, a_postCall) => {
             let mut txt = (*txt).clone();
@@ -1385,7 +1385,7 @@ fn fun_82(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             (txt.clone(), a_name.clone(), a_shortName.clone(), a_varDecl.clone(), a_postCall.clone())
         },
         (txt, i_aty @ Deref @ DAE::Type::T_ARRAY { ty: _, .. }, a_name, a_shortName, a_varDecl, a_postCall) => {
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_name = (*a_name).clone();
             let mut a_shortName = (*a_shortName).clone();
@@ -1403,7 +1403,7 @@ fn fun_82(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             (txt.clone(), a_name.clone(), a_shortName.clone(), a_varDecl.clone(), a_postCall.clone())
         },
         (txt, i_ty, a_name, a_shortName, a_varDecl, a_postCall) => {
-            let mut txt_1: Tpl::Text;
+            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_1: ArcStr = arcstr::literal!("");
             let mut txt = (*txt).clone();
             txt_1 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("getQtOutArg failed for ")).clone() }))?;
@@ -1418,17 +1418,17 @@ fn fun_82(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
 }
 
 pub fn getQtOutArg(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_shortName: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_varDecl: Tpl::Text, mut a_postCall: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_name: Tpl::Text;
-    let mut out_a_shortName: Tpl::Text;
-    let mut out_a_varDecl: Tpl::Text;
-    let mut out_a_postCall: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_name: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_shortName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_postCall: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_name, out_a_shortName, out_a_varDecl, out_a_postCall) = fun_82(txt.clone(), a_ty.clone(), a_name.clone(), a_shortName.clone(), a_varDecl.clone(), a_postCall.clone())?;
     Ok((out_txt, out_a_name, out_a_shortName, out_a_varDecl, out_a_postCall))
 }
 
 fn fun_84(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl::Text, mut in_a_shortName: Tpl::Text, mut in_a_mm: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone(), in_a_shortName.clone(), in_a_mm.clone())) {
         (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } }, a_name, _, a_mm) => {
             let mut txt = (*txt).clone();
@@ -1476,8 +1476,8 @@ fn fun_84(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt.clone()
         },
         (txt, Deref @ DAE::Type::T_ARRAY { ty: i_aty_ty, .. }, a_name, a_shortName, a_mm) => {
-            let mut txt_1: Tpl::Text;
-            let mut l_elt: Tpl::Text;
+            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_elt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             l_elt = Tpl::writeText(Tpl::emptyTxt.clone(), a_shortName.clone())?;
             l_elt = Tpl::writeTok(l_elt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_elt")).clone() }))?;
@@ -1509,7 +1509,7 @@ fn fun_84(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             txt.clone()
         },
         (txt, i_ty, _, _, _) => {
-            let mut txt_2: Tpl::Text;
+            let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_2: ArcStr = arcstr::literal!("");
             let mut txt = (*txt).clone();
             txt_2 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("getOutValueArray failed for ")).clone() }))?;
@@ -1524,10 +1524,10 @@ fn fun_84(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
 }
 
 pub fn getQtOutArgArray(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_shortName: Tpl::Text, mut a_mm: Tpl::Text, mut a_ty: Arc<DAE::Type>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_name: Tpl::Text;
-    let mut out_a_shortName: Tpl::Text;
-    let mut out_a_mm: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_name: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_shortName: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_mm: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = fun_84(txt.clone(), a_ty.clone(), a_name.clone(), a_shortName.clone(), a_mm.clone())?;
     out_a_name = a_name.clone();
     out_a_shortName = a_shortName.clone();
@@ -1536,8 +1536,8 @@ pub fn getQtOutArgArray(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_shortNa
 }
 
 fn fun_86(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl::Text, mut in_a_responseLog: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_responseLog: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_responseLog: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_responseLog) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_ty.clone(), in_a_name.clone(), in_a_responseLog.clone())) {
         (txt, Deref @ DAE::Type::T_CODE { ty: DAE::CodeType::C_TYPENAME { .. } }, a_name, a_responseLog) => {
             let mut txt = (*txt).clone();
@@ -1594,8 +1594,8 @@ fn fun_86(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             (txt.clone(), a_responseLog.clone())
         },
         (txt, Deref @ DAE::Type::T_ARRAY { ty: i_aty_ty, .. }, a_name, a_responseLog) => {
-            let mut l_counter: Tpl::Text;
-            let mut l_elt: Tpl::Text;
+            let mut l_counter: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_elt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_responseLog = (*a_responseLog).clone();
             l_elt = Tpl::writeText(Tpl::emptyTxt.clone(), a_name.clone())?;
@@ -1632,7 +1632,7 @@ fn fun_86(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
             (txt.clone(), a_responseLog.clone())
         },
         (txt, i_ty, _, a_responseLog) => {
-            let mut txt_2: Tpl::Text;
+            let mut txt_2: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_2: ArcStr = arcstr::literal!("");
             let mut txt = (*txt).clone();
             txt_2 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("getQtResponseLogText failed for ")).clone() }))?;
@@ -1647,17 +1647,17 @@ fn fun_86(mut in_txt: Tpl::Text, mut in_a_ty: Arc<DAE::Type>, mut in_a_name: Tpl
 }
 
 pub fn getQtResponseLogText(mut txt: Tpl::Text, mut a_name: Tpl::Text, mut a_ty: Arc<DAE::Type>, mut a_responseLog: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_name: Tpl::Text;
-    let mut out_a_responseLog: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_name: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_responseLog: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_responseLog) = fun_86(txt.clone(), a_ty.clone(), a_name.clone(), a_responseLog.clone())?;
     out_a_name = a_name.clone();
     Ok((out_txt, out_a_name, out_a_responseLog))
 }
 
 fn lm_88(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::FuncArg>>>, mut in_a_varDecl: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_varDecl: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_varDecl) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_varDecl.clone())) {
         (txt, Deref @ metamodelica::List::Nil, a_varDecl) => {
             (txt.clone(), a_varDecl.clone())
@@ -1684,7 +1684,7 @@ fn lm_88(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Fu
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_89(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::FuncArg>>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -1707,17 +1707,17 @@ fn lm_89(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Fu
 }
 
 fn lm_90(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Type>>>, mut in_a_postCall: Tpl::Text, mut in_a_varDecl: Tpl::Text, mut in_a_res: Arc<DAE::Type>) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_postCall: Tpl::Text;
-    let mut out_a_varDecl: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_postCall: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_postCall, out_a_varDecl) = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_postCall.clone(), in_a_varDecl.clone(), in_a_res.clone())) {
         (txt, Deref @ metamodelica::List::Nil, a_postCall, a_varDecl, _) => {
             (txt.clone(), a_postCall.clone(), a_varDecl.clone())
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_t, tail: rest }, a_postCall, a_varDecl, a_res) => {
             let mut x_i1: i32 = 0;
-            let mut txt_1: Tpl::Text;
-            let mut txt_0: Tpl::Text;
+            let mut txt_1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_postCall = (*a_postCall).clone();
             let mut a_varDecl = (*a_varDecl).clone();
@@ -1738,17 +1738,17 @@ fn lm_90(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Ty
 }
 
 fn fun_91(mut in_txt: Tpl::Text, mut in_a_res: Arc<DAE::Type>, mut in_a_postCall: Tpl::Text, mut in_a_outArg: Tpl::Text, mut in_a_responseLog: Tpl::Text, mut in_a_name: ArcStr, mut in_a_varDecl: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
-    let mut out_txt: Tpl::Text;
-    let mut out_a_postCall: Tpl::Text;
-    let mut out_a_outArg: Tpl::Text;
-    let mut out_a_responseLog: Tpl::Text;
-    let mut out_a_varDecl: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_postCall: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_outArg: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_responseLog: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut out_a_varDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     (out_txt, out_a_postCall, out_a_outArg, out_a_responseLog, out_a_varDecl) = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_res.clone(), in_a_postCall.clone(), in_a_outArg.clone(), in_a_responseLog.clone(), in_a_name.clone(), in_a_varDecl.clone())) {
         (txt, Deref @ DAE::Type::T_NORETCALL { .. }, a_postCall, a_outArg, a_responseLog, _, a_varDecl) => {
             (txt.clone(), a_postCall.clone(), a_outArg.clone(), a_responseLog.clone(), a_varDecl.clone())
         },
         (txt, i_t @ Deref @ DAE::Type::T_TUPLE { types: Deref @ metamodelica::List::Cons { head: i_type1, tail: i_types2 }, .. }, a_postCall, a_outArg, a_responseLog, a_name, a_varDecl) => {
-            let mut txt_0: Tpl::Text;
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             let mut a_postCall = (*a_postCall).clone();
             let mut a_outArg = (*a_outArg).clone();
@@ -1786,7 +1786,7 @@ fn fun_91(mut in_txt: Tpl::Text, mut in_a_res: Arc<DAE::Type>, mut in_a_postCall
 }
 
 fn fun_92(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_commandLog: Tpl::Text, mut in_a_name: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_commandLog.clone(), in_a_name.clone()) {
         (mut txt, false, _, mut a_name) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("emit logCommand(\"")).clone() }))?;
@@ -1808,7 +1808,7 @@ fn fun_92(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_commandLog: Tpl::Te
 }
 
 fn fun_93(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_name: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_name.clone()) {
         (mut txt, false, mut a_name) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("emit logResponse(\"")).clone() }))?;
@@ -1827,7 +1827,7 @@ fn fun_93(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_name: ArcStr) -> Re
 }
 
 fn fun_94(mut in_txt: Tpl::Text, mut in_a_outArg: Tpl::Text) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_outArg.clone())) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }) => {
             txt.clone()
@@ -1843,20 +1843,20 @@ fn fun_94(mut in_txt: Tpl::Text, mut in_a_outArg: Tpl::Text) -> Result<Tpl::Text
 }
 
 pub fn getQtInterfaceFunc(mut txt: Tpl::Text, mut a_name: ArcStr, mut a_args: Arc<metamodelica::List<Arc<DAE::FuncArg>>>, mut a_res: Arc<DAE::Type>, mut a_className: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_12: bool = false;
     let mut ret_11: i32 = 0;
     let mut ret_10: bool = false;
     let mut ret_9: i32 = 0;
-    let mut l_outArgs: Tpl::Text;
-    let mut l_outArg: Tpl::Text;
+    let mut l_outArgs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_outArg: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_6: Arc<Tpl::StringToken> = Arc::new(Tpl::StringToken::ST_NEW_LINE);
-    let mut txt_5: Tpl::Text;
-    let mut l_commandLog: Tpl::Text;
-    let mut l_inArgs: Tpl::Text;
-    let mut l_postCall: Tpl::Text;
-    let mut l_responseLog: Tpl::Text;
-    let mut l_varDecl: Tpl::Text;
+    let mut txt_5: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_commandLog: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_inArgs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_postCall: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_responseLog: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut l_varDecl: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     l_varDecl = Tpl::emptyTxt.clone();
     l_responseLog = Tpl::emptyTxt.clone();
     l_postCall = Tpl::emptyTxt.clone();

@@ -1312,7 +1312,7 @@ fn setArrayAddConnection(mut set: i32, mut edges: Arc<metamodelica::List<i32>>, 
 
 fn setArrayAddConnection2(mut setPointer: i32, mut setPointee: i32, mut sets: metamodelica::Array<Set>) -> Result<metamodelica::Array<Set>> {
     let mut sets: metamodelica::Array<Set> = sets;
-    let mut set: Set;
+    let mut set: Set = <Set as ::std::default::Default>::default();
     set = sets.borrow()[(setPointee.clone()-1) as usize].clone();
     sets = (match set.clone() {
         DAE::Connect::Set::SET { .. } => {let _arr = sets.clone(); _arr.borrow_mut()[(setPointer.clone()-1) as usize] = Set::SET_POINTER { index: setPointee.clone() }; _arr},
@@ -1415,7 +1415,7 @@ fn buildElementPrefix(mut prefix: Arc<metamodelica::List<Arc<DAE::ComponentRef>>
 
 fn setArrayUpdate(mut sets: metamodelica::Array<Set>, mut index: i32, mut element: ConnectorElement) -> Result<metamodelica::Array<Set>> {
     let mut sets: metamodelica::Array<Set> = sets;
-    let mut set: Set;
+    let mut set: Set = <Set as ::std::default::Default>::default();
     let mut el: Arc<metamodelica::List<ConnectorElement>> = metamodelica::nil();
     set = sets.borrow()[(index.clone()-1) as usize].clone();
     sets = (match (set.clone(), element.clone()) {
@@ -1440,7 +1440,7 @@ fn equSetElementLess(mut element1: ConnectorElement, mut element2: ConnectorElem
 }
 
 fn setArrayGet(mut setArray: metamodelica::Array<Set>, mut index: i32) -> Result<Set> {
-    let mut set: Set;
+    let mut set: Set = <Set as ::std::default::Default>::default();
     set = setArray.borrow()[(index.clone()-1) as usize].clone();
     set = (match set.clone() {
         DAE::Connect::Set::SET { .. } => set.clone(),

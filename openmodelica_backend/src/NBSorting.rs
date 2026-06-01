@@ -87,6 +87,14 @@ pub mod Value {
             eqn_scal_indices: Arc<metamodelica::List<i32>>,
         },
     }
+    impl Default for Value {
+        fn default() -> Self {
+            Self::SINGLE_VAL {
+                cref_to_solve: Default::default(),
+                eqn_scal_indices: Default::default(),
+            }
+        }
+    }
     pub use self::Value::{SINGLE_VAL,MULTI_VAL};
     pub fn toString(mut val: Arc<Value>) -> Result<ArcStr> {
         let mut r#str: ArcStr = arcstr::literal!("");
@@ -203,7 +211,7 @@ pub mod PseudoBucket {
 
     pub fn add(mut eqn_scal_idx: i32, mut mode: Arc<Mode::Mode>, mut buckets: Arc<UnorderedMap::UnorderedMap<Arc<Mode::Mode>, Arc<Value::Value>>>) -> Result<()> {
         let mut val_opt: Option<Arc<Value::Value>> = UnorderedMap::get(mode.clone(), buckets.clone());
-        let mut val: Arc<Value::Value>;
+        let mut val: Arc<Value::Value> = Arc::new(<Value::Value as ::std::default::Default>::default());
         if isSome(val_opt.clone()) {
             let __pa0 = ::match_deref::match_deref! { match &(val_opt.clone()) {
                 Some(__pa0) => __pa0.clone(),
@@ -221,7 +229,7 @@ pub mod PseudoBucket {
 
     pub fn addMulti(mut cref: Arc<ComponentRef::NFComponentRef>, mut eqn_scal_idx: i32, mut mode: Arc<Mode::Mode>, mut buckets: Arc<UnorderedMap::UnorderedMap<Arc<Mode::Mode>, Arc<Value::Value>>>) -> Result<()> {
         let mut val_opt: Option<Arc<Value::Value>> = UnorderedMap::get(mode.clone(), buckets.clone());
-        let mut val: Arc<Value::Value>;
+        let mut val: Arc<Value::Value> = Arc::new(<Value::Value as ::std::default::Default>::default());
         if isSome(val_opt.clone()) {
             let __pa0 = ::match_deref::match_deref! { match &(val_opt.clone()) {
                 Some(__pa0) => __pa0.clone(),
@@ -241,7 +249,7 @@ pub mod PseudoBucket {
     pub fn filter(mut tpl: (Arc<Mode::Mode>, Arc<Value::Value>), mut set: Arc<UnorderedSet::UnorderedSet<i32>>) -> Result<(Arc<Mode::Mode>, Arc<Value::Value>)> {
         let mut tpl: (Arc<Mode::Mode>, Arc<Value::Value>) = tpl;
         let mut mode: Arc<Mode::Mode> = Arc::new(<Mode::Mode as ::std::default::Default>::default());
-        let mut val: Arc<Value::Value>;
+        let mut val: Arc<Value::Value> = Arc::new(<Value::Value as ::std::default::Default>::default());
         (mode, val) = tpl.clone();
         val = Value::filter(val.clone(), set.clone())?;
         tpl = (mode.clone(), val.clone());
@@ -250,7 +258,7 @@ pub mod PseudoBucket {
 
     pub fn relevant(mut tpl: (Arc<Mode::Mode>, Arc<Value::Value>)) -> Result<bool> {
         let mut b: bool = false;
-        let mut val: Arc<Value::Value>;
+        let mut val: Arc<Value::Value> = Arc::new(<Value::Value as ::std::default::Default>::default());
         (_, val) = tpl.clone();
         b = List::hasSeveralElements(Value::getEquations(val.clone())?);
         Ok(b)
@@ -520,7 +528,7 @@ pub mod SuperNode {
     });
         let mut buckets: Arc<metamodelica::List<(Arc<Mode::Mode>, Arc<Value::Value>)>> = UnorderedMap::toList(buck.clone());
         let mut mode: Arc<Mode::Mode> = Arc::new(<Mode::Mode as ::std::default::Default>::default());
-        let mut val: Arc<Value::Value>;
+        let mut val: Arc<Value::Value> = Arc::new(<Value::Value as ::std::default::Default>::default());
         let mut index: i32 = 0;
         let mut shift: i32 = 0;
         let mut var_lst: Arc<metamodelica::List<i32>> = metamodelica::nil();

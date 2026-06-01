@@ -349,7 +349,7 @@ pub fn mergeScalars(mut node: Arc<InstNode::InstNode>, mut classPath: Arc<Absyn:
 
 pub fn mergeScalars2(mut cls: Arc<SCode::Element>, mut classPath: Arc<Absyn::Path>, mut isRootClass: bool, mut nameMap: MergeNameMap) -> Result<Arc<SCode::Element>> {
     let mut cls: Arc<SCode::Element> = cls;
-    let mut cdef: Arc<SCode::ClassDef>;
+    let mut cdef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
     let mut elems: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ SCode::Element::CLASS { classDef: cdef @ Deref @ SCode::ClassDef::PARTS { .. }, .. } => {
@@ -493,7 +493,7 @@ pub fn getComponentSignature(mut element: Arc<SCode::Element>) -> Result<ArcStr>
     let mut signature: ArcStr = arcstr::literal!("");
     let mut prefs: Arc<SCode::Prefixes> = Arc::new(<SCode::Prefixes as ::std::default::Default>::default());
     let mut attrs: SCode::Attributes = <SCode::Attributes as ::std::default::Default>::default();
-    let mut ty: Arc<Absyn::TypeSpec>;
+    let mut ty: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
     let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(element.clone()) {
         Deref @ SCode::Element::COMPONENT { modifications: __pa0, typeSpec: __pa1, attributes: __pa2, prefixes: __pa3, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
@@ -552,7 +552,7 @@ pub fn getModSignature(mut r#mod: Arc<SCode::Mod>, mut name: ArcStr) -> Result<A
 
 pub fn mergeComponents(mut components: Arc<metamodelica::List<Arc<SCode::Element>>>, mut prefix: ArcStr, mut nameMap: MergeNameMap) -> Result<Arc<SCode::Element>> {
     let mut mergedComponent: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-    let mut ty: Arc<Absyn::TypeSpec>;
+    let mut ty: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
     let mut prefs: Arc<SCode::Prefixes> = Arc::new(<SCode::Prefixes as ::std::default::Default>::default());
     let mut attrs: SCode::Attributes = <SCode::Attributes as ::std::default::Default>::default();
     let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
@@ -937,7 +937,7 @@ pub static REAL_TYPE_SPEC: std::sync::LazyLock<Arc<Absyn::TypeSpec>> = std::sync
 
 pub fn createExtractorModelDummyFn(mut connectors: Arc<metamodelica::List<Arc<Variable::NFVariable>>>) -> Result<Arc<Function::Function>> {
     let mut r#fn: Arc<Function::Function> = Arc::new(<Function::Function as ::std::default::Default>::default());
-    let mut cdef: Arc<SCode::ClassDef>;
+    let mut cdef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
     let mut output_param: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     let mut elem: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     let mut fn_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);

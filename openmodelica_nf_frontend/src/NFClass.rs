@@ -124,6 +124,9 @@ pub enum NFClass {
         ty: Arc<DAE::Type>,
     },
 }
+impl Default for NFClass {
+    fn default() -> Self { Self::NOT_INSTANTIATED }
+}
 pub use self::NFClass::{NOT_INSTANTIATED,PARTIAL_CLASS,PARTIAL_BUILTIN,EXPANDED_CLASS,EXPANDED_DERIVED,INSTANCED_CLASS,INSTANCED_BUILTIN,TYPED_DERIVED,DAE_TYPE};
 pub static DEFAULT_PREFIXES: std::sync::LazyLock<Arc<Prefixes::Prefixes>> = std::sync::LazyLock::new(|| { Arc::new(Prefixes::Prefixes { encapsulatedPrefix: openmodelica_frontend_types::SCode::Encapsulated::NOT_ENCAPSULATED, partialPrefix: openmodelica_frontend_types::SCode::Partial::NOT_PARTIAL, finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, replaceablePrefix: Arc::new(openmodelica_frontend_types::SCode::Replaceable::NOT_REPLACEABLE) }) });
 

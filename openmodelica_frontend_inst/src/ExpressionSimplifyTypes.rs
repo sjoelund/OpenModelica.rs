@@ -49,6 +49,9 @@ pub enum Evaluate {
     NO_EVAL,
     DO_EVAL,
 }
+impl Default for Evaluate {
+    fn default() -> Self { Self::NO_EVAL }
+}
 pub use self::Evaluate::{NO_EVAL,DO_EVAL};
 
 pub type Options = Evaluate;

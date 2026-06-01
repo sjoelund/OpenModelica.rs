@@ -4380,7 +4380,7 @@ fn renameFunctionParameter1(mut funcIn: (Arc<Absyn::Path>, Option<DAE::Function>
 }
 
 fn renameFunctionParameter2(mut funcIn: DAE::FunctionDefinition, mut pathName: ArcStr) -> Result<DAE::FunctionDefinition> {
-    let mut funcOut: DAE::FunctionDefinition;
+    let mut funcOut: DAE::FunctionDefinition = <DAE::FunctionDefinition as ::std::default::Default>::default();
     funcOut = 'mc: {
         let __mc_input = funcIn.clone();
         if let Ok(__v) = (|| -> Result<_> {

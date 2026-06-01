@@ -2333,7 +2333,7 @@ pub fn getPackageVersion(mut path: Arc<Absyn::Path>, mut p: Absyn::Program) -> R
     Config::setEvaluateParametersInAnnotations(true)?;
     match '__try0: {
         let __pa1 = ::match_deref::match_deref! { match &(unwrap_break_err!(ProgramUtil::getNamedAnnotationExp(path.clone(), p.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("version")).clone() }), Some(Arc::new(Absyn::Exp::STRING { value: (literal!("")).clone() })), (std::sync::Arc::new(Interactive::getAnnotationExp) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Modification>>) -> Result<Arc<Absyn::Exp>> + 'static>)), '__try0)) {
-            Absyn::Exp::STRING { value: __pa1 } => __pa1.clone(),
+            Deref @ Absyn::Exp::STRING { value: __pa1 } => __pa1.clone(),
             _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
         } };
         version = __pa1.clone();
@@ -3599,7 +3599,7 @@ pub fn translateFunctions(mut program: Absyn::Program, mut name: ArcStr, mut opt
             let mut fnCode: SimCodeFunction::FunctionCode;
             let mut extraRecordDecls: Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>> = metamodelica::nil();
             let mut literals: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut midCode: Tpl::Text;
+            let mut midCode: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut midfuncs: Arc<metamodelica::List<MidCode::Function>> = metamodelica::nil();
             let mut daeElements = (*daeElements).clone();
             let mut includes = (*includes).clone();
@@ -3637,7 +3637,7 @@ pub fn translateFunctions(mut program: Absyn::Program, mut name: ArcStr, mut opt
             let mut fnCode: SimCodeFunction::FunctionCode;
             let mut extraRecordDecls: Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>> = metamodelica::nil();
             let mut literals: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            let mut midCode: Tpl::Text;
+            let mut midCode: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut midfuncs: Arc<metamodelica::List<MidCode::Function>> = metamodelica::nil();
             let mut daeElements = (*daeElements).clone();
             let mut includes = (*includes).clone();

@@ -930,7 +930,7 @@ pub fn makeVariableBinding(mut inType: Arc<DAE::Type>, mut inMod: Arc<DAE::Mod>,
     let mut oeq_mod: Option<DAE::EqMod> = Mod::modEquation(inMod.clone())?;
     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut e2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    let mut p: DAE::Properties;
+    let mut p: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     let mut c: DAE::Const = DAE::Const::C_CONST;
     let mut e_str: ArcStr = arcstr::literal!("");

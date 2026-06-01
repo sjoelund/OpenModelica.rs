@@ -2924,7 +2924,7 @@ pub fn replaceVariableAttributesInVar(mut varIn: BackendDAE::Var, mut repl: Vari
 }
 
 fn negateOperator(mut inOp: DAE::Operator) -> DAE::Operator {
-    let mut outOp: DAE::Operator;
+    let mut outOp: DAE::Operator = <DAE::Operator as ::std::default::Default>::default();
     outOp = (match inOp.clone() {
         DAE::Operator::UMINUS { ty: mut ty } => {
             DAE::Operator::ADD { ty: ty.clone() }

@@ -1135,7 +1135,7 @@ pub fn isConnect(mut eq: Arc<NFEquation>) -> bool {
 
 pub fn isConnection(mut eq: Arc<NFEquation>) -> Result<bool> {
     let mut res: bool = false;
-    let mut call: Arc<Call::NFCall>;
+    let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     res = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ CONNECT { .. } => true,
         Deref @ NORETCALL { exp: Deref @ Expression::CALL { call }, .. } => Call::isConnectionsOperator(call.clone())?,

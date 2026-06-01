@@ -111,6 +111,21 @@ pub enum Visualization {
         transparency: Arc<DAE::Exp>,
     },
 }
+impl Default for Visualization {
+    fn default() -> Self {
+        Self::VECTOR {
+            ident: Default::default(),
+            T: Default::default(),
+            r: Default::default(),
+            coordinates: Default::default(),
+            color: Default::default(),
+            specularCoeff: Default::default(),
+            quantity: Default::default(),
+            headAtOrigin: Default::default(),
+            twoHeadedArrow: Default::default(),
+        }
+    }
+}
 pub use self::Visualization::{SHAPE,VECTOR,SURFACE};
 
 //-------------------------
@@ -345,12 +360,12 @@ fn setBindingForProtectedVars1(mut varIn: BackendDAE::Var, mut tplIn: (i32, meta
 }
 
 fn fillVisualizationObjects(mut visVar: (Arc<DAE::ComponentRef>, ArcStr), mut allVarsIn: Arc<metamodelica::List<BackendDAE::Var>>, mut programIn: Absyn::Program) -> Result<(Visualization, Arc<metamodelica::List<BackendDAE::Var>>, Absyn::Program)> {
-    let mut visOut: Visualization;
+    let mut visOut: Visualization = <Visualization as ::std::default::Default>::default();
     let mut allVarsOut: Arc<metamodelica::List<BackendDAE::Var>> = allVarsIn.clone();
     let mut programOut: Absyn::Program = programIn.clone();
     let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut vis_name: ArcStr = arcstr::literal!("");
-    let mut vis: Visualization;
+    let mut vis: Visualization = <Visualization as ::std::default::Default>::default();
     match '__try0: {
         (cref, vis_name) = visVar.clone();
         vis = unwrap_break_err!(newVisualizer(cref.clone(), (vis_name.clone()).clone()), '__try0);
@@ -372,7 +387,7 @@ fn fillVisualizationObjects(mut visVar: (Arc<DAE::ComponentRef>, ArcStr), mut al
 }
 
 fn newVisualizer(mut cref: Arc<DAE::ComponentRef>, mut visualizerName: ArcStr) -> Result<Visualization> {
-    let mut vis: Visualization;
+    let mut vis: Visualization = <Visualization as ::std::default::Default>::default();
     vis = (::match_deref::match_deref! { match &(visualizerName.clone()) {
         Deref @ "Shape" => Visualization::SHAPE { ident: cref.clone(), shapeType: Arc::new(DAE::Exp::SCONST { string: (literal!("DUMMY")).clone() }), T: arrayCreate(3, list![Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) })]), r: arrayCreate(3, Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) })), r_shape: arrayCreate(3, Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) })), lengthDir: arrayCreate(3, Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) })), widthDir: arrayCreate(3, Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) })), length: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }), width: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }), height: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }), extra: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }), color: arrayCreate(3, Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) })), specularCoeff: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }) },
         Deref @ "Vector" => Visualization::VECTOR { ident: cref.clone(), T: arrayCreate(3, list![Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) })]), r: arrayCreate(3, Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) })), coordinates: arrayCreate(3, Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) })), color: arrayCreate(3, Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) })), specularCoeff: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }), quantity: Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat((-1) as f64) }), headAtOrigin: Arc::new(DAE::Exp::BCONST { bool: false }), twoHeadedArrow: Arc::new(DAE::Exp::BCONST { bool: false }) },
@@ -449,14 +464,14 @@ fn splitCrefAfter(mut crefIn: Arc<DAE::ComponentRef>, mut crefCut: Arc<DAE::Comp
 }
 
 fn fillVisualizationObjects1(mut varIn: BackendDAE::Var, mut storeProtectedCrefs: bool, mut program: Absyn::Program, mut tplIn: (Arc<metamodelica::List<BackendDAE::Var>>, Visualization)) -> Result<(Arc<metamodelica::List<BackendDAE::Var>>, Visualization)> {
-    let mut tplOut: (Arc<metamodelica::List<BackendDAE::Var>>, Visualization);
+    let mut tplOut: (Arc<metamodelica::List<BackendDAE::Var>>, Visualization) = (metamodelica::nil(), <Visualization as ::std::default::Default>::default());
     tplOut = 'mc: {
         let __mc_input = (varIn.clone(), tplIn.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (BackendDAE::Var { varName: cref, .. }, (vars, vis @ Visualization::SHAPE { ident, .. })) => {
                     let mut cref1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-                    let mut filled_vis: Visualization;
+                    let mut filled_vis: Visualization = <Visualization as ::std::default::Default>::default();
                     let __pa0 = ::match_deref::match_deref! { match &(splitCrefAfter(cref.clone(), ident.clone())?) {
                         (__pa0, true) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -472,7 +487,7 @@ fn fillVisualizationObjects1(mut varIn: BackendDAE::Var, mut storeProtectedCrefs
             ::match_deref::match_deref! { match &__mc_input {
                 (BackendDAE::Var { varName: cref, .. }, (vars, vis @ Visualization::VECTOR { ident, .. })) => {
                     let mut cref1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-                    let mut filled_vis: Visualization;
+                    let mut filled_vis: Visualization = <Visualization as ::std::default::Default>::default();
                     let __pa0 = ::match_deref::match_deref! { match &(splitCrefAfter(cref.clone(), ident.clone())?) {
                         (__pa0, true) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -488,7 +503,7 @@ fn fillVisualizationObjects1(mut varIn: BackendDAE::Var, mut storeProtectedCrefs
             ::match_deref::match_deref! { match &__mc_input {
                 (BackendDAE::Var { varName: cref, .. }, (vars, vis @ Visualization::SURFACE { ident, .. })) => {
                     let mut cref1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-                    let mut filled_vis: Visualization;
+                    let mut filled_vis: Visualization = <Visualization as ::std::default::Default>::default();
                     let __pa0 = ::match_deref::match_deref! { match &(splitCrefAfter(cref.clone(), ident.clone())?) {
                         (__pa0, true) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -504,7 +519,7 @@ fn fillVisualizationObjects1(mut varIn: BackendDAE::Var, mut storeProtectedCrefs
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut vars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-                    let mut vis: Visualization;
+                    let mut vis: Visualization = <Visualization as ::std::default::Default>::default();
                     (vars, vis) = tplIn.clone();
                     Ok((metamodelica::cons(varIn.clone(), vars.clone()), vis.clone()))
                 }

@@ -14,8 +14,8 @@ use crate::Tpl;
 use openmodelica_util::Util;
 
 pub fn dumpGraphInfo(mut txt: Tpl::Text, mut a_graphInfo: GraphML::GraphInfo, mut a_fileName: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
-    let mut txt_0: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     txt_0 = dumpGraphInfoInternal(Tpl::emptyTxt.clone(), a_graphInfo.clone())?;
     Tpl::textFile(txt_0.clone(), (a_fileName.clone()).clone())?;
     out_txt = txt.clone();
@@ -25,7 +25,7 @@ pub fn dumpGraphInfo(mut txt: Tpl::Text, mut a_graphInfo: GraphML::GraphInfo, mu
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_5(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<GraphML::Attribute>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -45,7 +45,7 @@ fn lm_5(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<GraphML::Att
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_6(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<GraphML::Edge>>, mut in_a_attributes: metamodelica::Array<GraphML::Attribute>, mut in_a_graphInfo_graphEdgeKey: ArcStr) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_attributes.clone(), in_a_graphInfo_graphEdgeKey.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, _) => {
             txt.clone()
@@ -63,15 +63,15 @@ fn lm_6(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<GraphML::Edg
 }
 
 pub fn dumpGraphInfoInternal(mut in_txt: Tpl::Text, mut in_a_graphInfo: GraphML::GraphInfo) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_graphInfo.clone()) {
         (mut txt, GraphML::GraphInfo::GRAPHINFOARR { nodes: mut i_nodes, graphs: mut i_graphs, graphNodeKey: mut i_graphNodeKey, graphEdgeKey: ref i_graphEdgeKey @ ref i_graphInfo_graphEdgeKey, edges: ref i_edges, attributes: mut i_attributes }) => {
             let mut ret_5: GraphML::Graph = <GraphML::Graph as ::std::default::Default>::default();
             let mut ret_4: i32 = 0;
             let mut ret_3: i32 = 0;
-            let mut l_edgeDump: Tpl::Text;
+            let mut l_edgeDump: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut ret_1: Arc<metamodelica::List<GraphML::Attribute>> = metamodelica::nil();
-            let mut l_attDefDump: Tpl::Text;
+            let mut l_attDefDump: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             ret_1 = Arc::new(i_attributes.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
             l_attDefDump = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(crate::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(crate::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(crate::Tpl::StringToken::ST_NEW_LINE) }))?;
             l_attDefDump = lm_5(l_attDefDump.clone(), ret_1.clone())?;
@@ -110,13 +110,13 @@ pub fn dumpGraphInfoInternal(mut in_txt: Tpl::Text, mut in_a_graphInfo: GraphML:
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_8(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut in_a_graphAttributes: metamodelica::Array<GraphML::Attribute>, mut in_a_graphNodeKey: ArcStr, mut in_a_allGraphs: metamodelica::Array<GraphML::Graph>, mut in_a_allNodes: metamodelica::Array<GraphML::Node>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_graphAttributes.clone(), in_a_graphNodeKey.clone(), in_a_allGraphs.clone(), in_a_allNodes.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _, _, _, _) => {
             txt.clone()
         },
         (txt, Deref @ metamodelica::List::Cons { head: i_idc, tail: rest }, a_graphAttributes, a_graphNodeKey, a_allGraphs, a_allNodes) => {
-            let mut ret_3: GraphML::Node;
+            let mut ret_3: GraphML::Node = <GraphML::Node as ::std::default::Default>::default();
             let mut ret_2: i32 = 0;
             let mut ret_1: i32 = 0;
             let mut ret_0: i32 = 0;
@@ -138,7 +138,7 @@ fn lm_8(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut i
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_9(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(i32, ArcStr)>>, mut in_a_graphAttributes: metamodelica::Array<GraphML::Attribute>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_graphAttributes.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -156,11 +156,11 @@ fn lm_9(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(i32, ArcStr
 }
 
 pub fn dumpGraph(mut in_txt: Tpl::Text, mut in_a_graph: GraphML::Graph, mut in_a_allGraphs: metamodelica::Array<GraphML::Graph>, mut in_a_allNodes: metamodelica::Array<GraphML::Node>, mut in_a_edgeDesc: ArcStr, mut in_a_graphNodeKey: ArcStr, mut in_a_graphAttributes: metamodelica::Array<GraphML::Attribute>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_graph.clone(), in_a_allGraphs.clone(), in_a_allNodes.clone(), in_a_edgeDesc.clone(), in_a_graphNodeKey.clone(), in_a_graphAttributes.clone()) {
         (mut txt, GraphML::Graph { id: mut i_id, directed: mut i_directed, attValues: ref i_attValues, nodeIdc: ref i_nodeIdc }, mut a_allGraphs, mut a_allNodes, mut a_edgeDesc, mut a_graphNodeKey, mut a_graphAttributes) => {
-            let mut l_attKeys: Tpl::Text;
-            let mut l_graphNodes: Tpl::Text;
+            let mut l_attKeys: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_graphNodes: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             l_graphNodes = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(crate::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(crate::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(crate::Tpl::StringToken::ST_NEW_LINE) }))?;
             l_graphNodes = lm_8(l_graphNodes.clone(), i_nodeIdc.clone(), a_graphAttributes.clone(), (a_graphNodeKey.clone()).clone(), a_allGraphs.clone(), a_allNodes.clone())?;
             l_graphNodes = Tpl::popIter(l_graphNodes.clone())?;
@@ -194,7 +194,7 @@ pub fn dumpGraph(mut in_txt: Tpl::Text, mut in_a_graph: GraphML::Graph, mut in_a
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_11(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<GraphML::NodeLabel>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -214,7 +214,7 @@ fn lm_11(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<GraphML::No
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_12(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(i32, ArcStr)>>, mut in_a_graphAttributes: metamodelica::Array<GraphML::Attribute>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_graphAttributes.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -232,7 +232,7 @@ fn lm_12(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(i32, ArcSt
 }
 
 fn fun_13(mut in_txt: Tpl::Text, mut in_mArg: Option<ArcStr>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, Some(mut i_val)) => {
             txt = Tpl::writeStr(txt.clone(), (i_val.clone()).clone())?;
@@ -246,7 +246,7 @@ fn fun_13(mut in_txt: Tpl::Text, mut in_mArg: Option<ArcStr>) -> Result<Tpl::Tex
 }
 
 fn fun_14(mut in_txt: Tpl::Text, mut in_a_isFolded: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_isFolded.clone()) {
         (mut txt, false) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("group")).clone() }))?;
@@ -261,7 +261,7 @@ fn fun_14(mut in_txt: Tpl::Text, mut in_a_isFolded: bool) -> Result<Tpl::Text> {
 }
 
 fn fun_15(mut in_txt: Tpl::Text, mut in_a_isFolded: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_isFolded.clone()) {
         (mut txt, false) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("0")).clone() }))?;
@@ -276,11 +276,11 @@ fn fun_15(mut in_txt: Tpl::Text, mut in_a_isFolded: bool) -> Result<Tpl::Text> {
 }
 
 pub fn dumpNode(mut in_txt: Tpl::Text, mut in_a_node: GraphML::Node, mut in_a_allGraphs: metamodelica::Array<GraphML::Graph>, mut in_a_allNodes: metamodelica::Array<GraphML::Node>, mut in_a_graphNodeKey: ArcStr, mut in_a_graphAttributes: metamodelica::Array<GraphML::Attribute>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_node.clone(), in_a_allGraphs.clone(), in_a_allNodes.clone(), in_a_graphNodeKey.clone(), in_a_graphAttributes.clone()) {
         (mut txt, GraphML::Node::NODE { shapeType: mut i_shapeType, border: mut i_border, color: mut i_color, optDesc: mut i_optDesc, id: mut i_id, attValues: ref i_attValues, nodeLabels: ref i_nodeLabels }, _, _, mut a_graphNodeKey, mut a_graphAttributes) => {
-            let mut l_attKeys: Tpl::Text;
-            let mut l_nodeLabelDump: Tpl::Text;
+            let mut l_attKeys: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_nodeLabelDump: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             l_nodeLabelDump = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(crate::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(crate::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(crate::Tpl::StringToken::ST_NEW_LINE) }))?;
             l_nodeLabelDump = lm_11(l_nodeLabelDump.clone(), i_nodeLabels.clone())?;
             l_nodeLabelDump = Tpl::popIter(l_nodeLabelDump.clone())?;
@@ -323,8 +323,8 @@ pub fn dumpNode(mut in_txt: Tpl::Text, mut in_a_node: GraphML::Node, mut in_a_al
             let mut ret_6: i32 = 0;
             let mut ret_5: i32 = 0;
             let mut ret_4: i32 = 0;
-            let mut l_activeType: Tpl::Text;
-            let mut l_folderType: Tpl::Text;
+            let mut l_activeType: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_folderType: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             l_folderType = fun_14(Tpl::emptyTxt.clone(), i_isFolded.clone())?;
             l_activeType = fun_15(Tpl::emptyTxt.clone(), i_isFolded.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<node id=\"")).clone() }))?;
@@ -379,7 +379,7 @@ pub fn dumpNode(mut in_txt: Tpl::Text, mut in_a_node: GraphML::Node, mut in_a_al
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_17(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<GraphML::EdgeLabel>>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
             txt.clone()
@@ -399,7 +399,7 @@ fn lm_17(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<GraphML::Ed
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 fn lm_18(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(i32, ArcStr)>>, mut in_a_graphAttributes: metamodelica::Array<GraphML::Attribute>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_graphAttributes.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
             txt.clone()
@@ -417,13 +417,13 @@ fn lm_18(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<(i32, ArcSt
 }
 
 pub fn dumpEdge(mut in_txt: Tpl::Text, mut in_a_edge: GraphML::Edge, mut in_a_graphEdgeKey: ArcStr, mut in_a_graphAttributes: metamodelica::Array<GraphML::Attribute>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_edge.clone(), in_a_graphEdgeKey.clone(), in_a_graphAttributes.clone()) {
         (mut txt, GraphML::Edge { smooth: mut i_smooth, arrows: mut i_arrows, lineWidth: mut i_lineWidth, lineType: mut i_lineType, color: mut i_color, target: mut i_target, source: mut i_source, id: mut i_id, attValues: ref i_attValues, edgeLabels: ref i_edgeLabels }, mut a_graphEdgeKey, mut a_graphAttributes) => {
             let mut ret_3: GraphML::ArrowType = GraphML::ArrowType::ARROWCONCAVE;
             let mut ret_2: GraphML::ArrowType = GraphML::ArrowType::ARROWCONCAVE;
-            let mut l_attKeys: Tpl::Text;
-            let mut l_edgeLabelDump: Tpl::Text;
+            let mut l_attKeys: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut l_edgeLabelDump: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             l_edgeLabelDump = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(crate::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(crate::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(crate::Tpl::StringToken::ST_NEW_LINE) }))?;
             l_edgeLabelDump = lm_17(l_edgeLabelDump.clone(), i_edgeLabels.clone())?;
             l_edgeLabelDump = Tpl::popIter(l_edgeLabelDump.clone())?;
@@ -475,10 +475,10 @@ pub fn dumpEdge(mut in_txt: Tpl::Text, mut in_a_edge: GraphML::Edge, mut in_a_gr
 }
 
 pub fn dumpEdgeLabel(mut in_txt: Tpl::Text, mut in_a_edgeLabel: GraphML::EdgeLabel) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_edgeLabel.clone()) {
         (mut txt, GraphML::EdgeLabel { text: mut i_text, fontSize: mut i_fontSize, backgroundColor: mut i_backgroundColor }) => {
-            let mut l_bgColor: Tpl::Text;
+            let mut l_bgColor: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             l_bgColor = dumpColorOpt(Tpl::emptyTxt.clone(), i_backgroundColor.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<y:EdgeLabel alignment=\"center\" distance=\"2.0\" fontFamily=\"Dialog\" ")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), l_bgColor.clone())?;
@@ -497,10 +497,10 @@ pub fn dumpEdgeLabel(mut in_txt: Tpl::Text, mut in_a_edgeLabel: GraphML::EdgeLab
 }
 
 pub fn dumpNodeLabel(mut in_txt: Tpl::Text, mut in_a_nodeLabel: GraphML::NodeLabel) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_nodeLabel.clone()) {
         (mut txt, GraphML::NodeLabel::NODELABEL_INTERNAL { text: mut i_text, fontStyle: mut i_fontStyle, backgroundColor: mut i_backgroundColor }) => {
-            let mut l_bgColor: Tpl::Text;
+            let mut l_bgColor: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             l_bgColor = dumpColorOpt(Tpl::emptyTxt.clone(), i_backgroundColor.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<y:NodeLabel alignment=\"center\" autoSizePolicy=\"content\" ")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), l_bgColor.clone())?;
@@ -512,7 +512,7 @@ pub fn dumpNodeLabel(mut in_txt: Tpl::Text, mut in_a_nodeLabel: GraphML::NodeLab
             txt.clone()
         },
         (mut txt, GraphML::NodeLabel::NODELABEL_CORNER { text: mut i_text, position: mut i_position, fontStyle: mut i_fontStyle, backgroundColor: mut i_backgroundColor }) => {
-            let mut l_bgColor: Tpl::Text;
+            let mut l_bgColor: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             l_bgColor = dumpColorOpt(Tpl::emptyTxt.clone(), i_backgroundColor.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<y:NodeLabel alignment=\"center\" autoSizePolicy=\"content\" ")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), l_bgColor.clone())?;
@@ -533,7 +533,7 @@ pub fn dumpNodeLabel(mut in_txt: Tpl::Text, mut in_a_nodeLabel: GraphML::NodeLab
 }
 
 fn fun_22(mut in_txt: Tpl::Text, mut in_mArg: GraphML::Attribute, mut in_a_val: ArcStr, mut in_a_idx: i32) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_val.clone(), in_a_idx.clone()) {
         (mut txt, GraphML::Attribute { attType: GraphML::AttributeType::TYPE_STRING { .. }, .. }, mut a_val, mut a_idx) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<data key=\"cust")).clone() }))?;
@@ -556,7 +556,7 @@ fn fun_22(mut in_txt: Tpl::Text, mut in_mArg: GraphML::Attribute, mut in_a_val: 
 }
 
 pub fn dumpAttKey(mut in_txt: Tpl::Text, mut in_a_key: (i32, ArcStr), mut in_a_graphAttributes: metamodelica::Array<GraphML::Attribute>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_key.clone(), in_a_graphAttributes.clone()) {
         (mut txt, (mut i_idx, mut i_val), mut a_graphAttributes) => {
             let mut ret_0: GraphML::Attribute = <GraphML::Attribute as ::std::default::Default>::default();
@@ -569,7 +569,7 @@ pub fn dumpAttKey(mut in_txt: Tpl::Text, mut in_a_key: (i32, ArcStr), mut in_a_g
 }
 
 pub fn dumpAttDef(mut in_txt: Tpl::Text, mut in_a_attribute: GraphML::Attribute) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_attribute.clone()) {
         (mut txt, GraphML::Attribute { defaultValue: mut i_defaultValue, attIdx: mut i_attIdx, attTarget: mut i_attTarget, attType: mut i_attType, name: mut i_name }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("<key attr.name=\"")).clone() }))?;
@@ -597,7 +597,7 @@ pub fn dumpAttDef(mut in_txt: Tpl::Text, mut in_a_attribute: GraphML::Attribute)
 }
 
 pub fn dumpAttType(mut in_txt: Tpl::Text, mut in_a_type: GraphML::AttributeType) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_type.clone()) {
         (mut txt, GraphML::AttributeType::TYPE_STRING { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("string")).clone() }))?;
@@ -623,7 +623,7 @@ pub fn dumpAttType(mut in_txt: Tpl::Text, mut in_a_type: GraphML::AttributeType)
 }
 
 pub fn dumpAttTarget(mut in_txt: Tpl::Text, mut in_a_target: GraphML::AttributeTarget) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_target.clone()) {
         (mut txt, GraphML::AttributeTarget::TARGET_NODE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("node")).clone() }))?;
@@ -645,7 +645,7 @@ pub fn dumpAttTarget(mut in_txt: Tpl::Text, mut in_a_target: GraphML::AttributeT
 }
 
 pub fn dumpDirected(mut in_txt: Tpl::Text, mut in_a_directed: bool) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_directed.clone()) {
         (mut txt, true) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("directed")).clone() }))?;
@@ -663,7 +663,7 @@ pub fn dumpDirected(mut in_txt: Tpl::Text, mut in_a_directed: bool) -> Result<Tp
 }
 
 pub fn dumpColorOpt(mut in_txt: Tpl::Text, mut in_a_colorOpt: Option<ArcStr>) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_colorOpt.clone()) {
         (mut txt, Some(mut i_col)) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("backgroundColor=\"#")).clone() }))?;
@@ -679,7 +679,7 @@ pub fn dumpColorOpt(mut in_txt: Tpl::Text, mut in_a_colorOpt: Option<ArcStr>) ->
 }
 
 pub fn dumpFontStyle(mut in_txt: Tpl::Text, mut in_a_fontStyle: GraphML::FontStyle) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_fontStyle.clone()) {
         (mut txt, GraphML::FontStyle::FONTPLAIN { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("plain")).clone() }))?;
@@ -705,7 +705,7 @@ pub fn dumpFontStyle(mut in_txt: Tpl::Text, mut in_a_fontStyle: GraphML::FontSty
 }
 
 pub fn dumpLineType(mut in_txt: Tpl::Text, mut in_a_lineType: GraphML::LineType) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_lineType.clone()) {
         (mut txt, GraphML::LineType::LINE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("line")).clone() }))?;
@@ -727,7 +727,7 @@ pub fn dumpLineType(mut in_txt: Tpl::Text, mut in_a_lineType: GraphML::LineType)
 }
 
 pub fn dumpArrowType(mut in_txt: Tpl::Text, mut in_a_arrowType: GraphML::ArrowType) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_arrowType.clone()) {
         (mut txt, GraphML::ArrowType::ARROWSTANDART { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("standard")).clone() }))?;
@@ -749,7 +749,7 @@ pub fn dumpArrowType(mut in_txt: Tpl::Text, mut in_a_arrowType: GraphML::ArrowTy
 }
 
 pub fn dumpShapeType(mut in_txt: Tpl::Text, mut in_a_shape: GraphML::ShapeType) -> Result<Tpl::Text> {
-    let mut out_txt: Tpl::Text;
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_shape.clone()) {
         (mut txt, GraphML::ShapeType::RECTANGLE { .. }) => {
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("rectangle")).clone() }))?;

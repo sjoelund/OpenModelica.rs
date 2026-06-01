@@ -202,6 +202,9 @@ pub enum ClassType {
     CLASS_EXTENDS,
     BASIC_TYPE,
 }
+impl Default for ClassType {
+    fn default() -> Self { Self::USERDEFINED }
+}
 pub use self::ClassType::{USERDEFINED,BUILTIN,CLASS_EXTENDS,BASIC_TYPE};
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -226,6 +229,14 @@ pub enum Item {
         item: Arc<Item>,
         declaredEnv: Env,
     },
+}
+impl Default for Item {
+    fn default() -> Self {
+        Self::VAR {
+            var: Default::default(),
+            isUsed: Default::default(),
+        }
+    }
 }
 pub use self::Item::{VAR,CLASS,ALIAS,REDECLARED_ITEM};
 
@@ -292,7 +303,7 @@ pub mod EnvTree {
             Arc::new(Tree::LEAF { key: (inKey.clone()).clone(), value: inValue.clone() })
         },
         Deref @ Tree::NODE { key, .. } => {
-            let mut value: Value;
+            let mut value: Value = Arc::new(<Item as ::std::default::Default>::default());
             let mut key_comp: i32 = 0;
             key_comp = keyCompare((inKey.clone()).clone(), (key.clone()).clone());
             if key_comp.clone() == -1 {
@@ -308,7 +319,7 @@ pub mod EnvTree {
             if (key_comp.clone() == 0) {tree.clone()} else {balance(tree.clone())?}
         },
         Deref @ Tree::LEAF { .. } => {
-            let mut value: Value;
+            let mut value: Value = Arc::new(<Item as ::std::default::Default>::default());
             let mut key_comp: i32 = 0;
             let mut outTree: Arc<Tree> = Arc::new(Tree::EMPTY);
             key_comp = keyCompare((inKey.clone()).clone(), (var_field!((*tree).key, Tree::LEAF).clone()).clone());
@@ -331,7 +342,7 @@ pub mod EnvTree {
     }
 
     pub fn addConflictFail(mut newValue: Value, mut oldValue: Value, mut key: Key) -> Result<Value> {
-        let mut value: Value;
+        let mut value: Value = Arc::new(<Item as ::std::default::Default>::default());
         bail!("fail");
         Ok(value)
     }
@@ -349,7 +360,7 @@ pub mod EnvTree {
     pub fn addList(mut tree: Arc<Tree>, mut inValues: Arc<metamodelica::List<(ArcStr, Arc<Item>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<Item>, Arc<Item>, ArcStr) -> Result<Arc<Item>> + 'static>) -> Result<Arc<Tree>> {
         let mut tree: Arc<Tree> = tree;
         let mut key: Key = arcstr::literal!("");
-        let mut value: Value;
+        let mut value: Value = Arc::new(<Item as ::std::default::Default>::default());
         for mut t in &*inValues.clone() {
             let mut t = t.clone();
             (key, value) = t.clone();
@@ -531,7 +542,7 @@ pub mod EnvTree {
     pub fn fromList(mut inValues: Arc<metamodelica::List<(ArcStr, Arc<Item>)>>, mut conflictFunc: Arc<dyn ::std::ops::Fn(Arc<Item>, Arc<Item>, ArcStr) -> Result<Arc<Item>> + 'static>) -> Result<Arc<Tree>> {
         let mut tree: Arc<Tree> = Arc::new(crate::NFSCodeEnv::EnvTree::Tree::EMPTY);
         let mut key: Key = arcstr::literal!("");
-        let mut value: Value;
+        let mut value: Value = Arc::new(<Item as ::std::default::Default>::default());
         for mut t in &*inValues.clone() {
             let mut t = t.clone();
             (key, value) = t.clone();
@@ -541,7 +552,7 @@ pub mod EnvTree {
     }
 
     pub fn get(mut tree: Arc<Tree>, mut key: Key) -> Result<Value> {
-        let mut value: Value;
+        let mut value: Value = Arc::new(<Item as ::std::default::Default>::default());
         let mut k: Key = arcstr::literal!("");
         k = ((::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => var_field!((*tree).key, Tree::NODE).clone(),
@@ -711,7 +722,7 @@ pub mod EnvTree {
         let mut outTree: Arc<Tree> = inTree.clone();
         outTree = (::match_deref::match_deref! { match &(outTree.clone()) {
         Deref @ Tree::NODE { value, key, .. } => {
-            let mut new_value: Value;
+            let mut new_value: Value = Arc::new(<Item as ::std::default::Default>::default());
             let mut new_left: Arc<Tree> = Arc::new(Tree::EMPTY);
             let mut new_right: Arc<Tree> = Arc::new(Tree::EMPTY);
             new_left = map(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone());
@@ -723,7 +734,7 @@ pub mod EnvTree {
             outTree.clone()
         },
         Deref @ Tree::LEAF { value, key } => {
-            let mut new_value: Value;
+            let mut new_value: Value = Arc::new(<Item as ::std::default::Default>::default());
             new_value = inFunc((key.clone()).clone(), value.clone()).unwrap();
             if !(referenceEq(&value.clone(),&new_value.clone())) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
@@ -745,7 +756,7 @@ pub mod EnvTree {
         let mut outResult: FT = inStartValue.clone();
         outTree = (::match_deref::match_deref! { match &(outTree.clone()) {
         Deref @ Tree::NODE { value, key, .. } => {
-            let mut new_value: Value;
+            let mut new_value: Value = Arc::new(<Item as ::std::default::Default>::default());
             let mut new_left: Arc<Tree> = Arc::new(Tree::EMPTY);
             let mut new_right: Arc<Tree> = Arc::new(Tree::EMPTY);
             (new_left, outResult) = mapFold(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone());
@@ -757,7 +768,7 @@ pub mod EnvTree {
             outTree.clone()
         },
         Deref @ Tree::LEAF { value, key } => {
-            let mut new_value: Value;
+            let mut new_value: Value = Arc::new(<Item as ::std::default::Default>::default());
             (new_value, outResult) = inFunc((key.clone()).clone(), value.clone(), outResult.clone()).unwrap();
             if !(referenceEq(&value.clone(),&new_value.clone())) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
@@ -954,7 +965,7 @@ pub fn enterScope(mut inEnv: Env, mut inName: ArcStr) -> Result<Env> {
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut cls_env: Arc<Frame> = Arc::new(<Frame as ::std::default::Default>::default());
-            let mut item: Arc<Item>;
+            let mut item: Arc<Item> = Arc::new(<Item as ::std::default::Default>::default());
             let mut outEnv: Arc<metamodelica::List<Arc<Frame>>> = outEnv.clone();
             (item, _) = NFSCodeLookup::lookupInClass((inName.clone()).clone(), inEnv.clone())?;
             let __pa0 = ::match_deref::match_deref! { match &(getItemEnv(item.clone())?) {
@@ -1054,11 +1065,11 @@ fn newExtendsTable() -> Arc<ExtendsTable> {
 }
 
 pub fn newItem(mut inElement: Arc<SCode::Element>) -> Result<Arc<Item>> {
-    let mut outItem: Arc<Item>;
+    let mut outItem: Arc<Item> = Arc::new(<Item as ::std::default::Default>::default());
     outItem = (::match_deref::match_deref! { match &(inElement.clone()) {
         Deref @ SCode::Element::CLASS { .. } => {
             let mut class_env: Env = metamodelica::nil();
-            let mut item: Arc<Item>;
+            let mut item: Arc<Item> = Arc::new(<Item as ::std::default::Default>::default());
             class_env = makeClassEnvironment(inElement.clone(), true)?;
             item = newClassItem(inElement.clone(), class_env.clone(), crate::NFSCodeEnv::ClassType::USERDEFINED);
             item.clone()
@@ -1072,13 +1083,13 @@ pub fn newItem(mut inElement: Arc<SCode::Element>) -> Result<Arc<Item>> {
 }
 
 pub fn newClassItem(mut inClass: Arc<SCode::Element>, mut inEnv: Env, mut inClassType: ClassType) -> Arc<Item> {
-    let mut outClassItem: Arc<Item>;
+    let mut outClassItem: Arc<Item> = Arc::new(<Item as ::std::default::Default>::default());
     outClassItem = Arc::new(Item::CLASS { cls: inClass.clone(), env: inEnv.clone(), classType: inClassType.clone() });
     outClassItem
 }
 
 pub fn newVarItem(mut inVar: Arc<SCode::Element>, mut inIsUsed: bool) -> Arc<Item> {
-    let mut outVarItem: Arc<Item>;
+    let mut outVarItem: Arc<Item> = Arc::new(<Item as ::std::default::Default>::default());
     let mut is_used: Mutable::Mutable<bool>;
     is_used = Mutable::create(inIsUsed.clone());
     outVarItem = Arc::new(Item::VAR { var: inVar.clone(), isUsed: Some(is_used.clone()) });
@@ -1279,7 +1290,7 @@ pub fn setImportTableHidden(mut inEnv: Env, mut inHidden: bool) -> Result<Env> {
 }
 
 pub fn setImportsInItemHidden(mut inItem: Arc<Item>, mut inHidden: bool) -> Result<Arc<Item>> {
-    let mut outItem: Arc<Item>;
+    let mut outItem: Arc<Item> = Arc::new(<Item as ::std::default::Default>::default());
     outItem = (::match_deref::match_deref! { match &(inItem.clone()) {
         Deref @ Item::CLASS { classType: cls_ty, env, cls } => {
             let mut env = (*env).clone();
@@ -1320,7 +1331,7 @@ pub fn isItemUsed(mut inItem: Arc<Item>) -> bool {
 }
 
 pub fn linkItemUsage(mut inSrcItem: Arc<Item>, mut inDestItem: Arc<Item>) -> Arc<Item> {
-    let mut outDestItem: Arc<Item>;
+    let mut outDestItem: Arc<Item> = Arc::new(<Item as ::std::default::Default>::default());
     outDestItem = (::match_deref::match_deref! { match &((inSrcItem.clone(), inDestItem.clone())) {
         (Deref @ Item::VAR { isUsed: is_used, .. }, Deref @ Item::VAR { var: elem, .. }) => {
             Arc::new(Item::VAR { var: elem.clone(), isUsed: is_used.clone() })
@@ -1432,7 +1443,7 @@ fn extendEnvWithClassDef(mut inClassDefElement: Arc<SCode::Element>, mut inEnv: 
 
 pub fn makeClassEnvironment(mut inClassDefElement: Arc<SCode::Element>, mut inInModifierScope: bool) -> Result<Env> {
     let mut outClassEnv: Env = metamodelica::nil();
-    let mut cdef: Arc<SCode::ClassDef>;
+    let mut cdef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
     let mut cls_name: ArcStr = arcstr::literal!("");
     let mut env: Env = metamodelica::nil();
     let mut enclosing_env: Env = metamodelica::nil();
@@ -1454,7 +1465,7 @@ fn extendEnvWithVar(mut inVar: Arc<SCode::Element>, mut inEnv: Env) -> Result<En
     let mut outEnv: Env = metamodelica::nil();
     let mut var_name: ArcStr = arcstr::literal!("");
     let mut is_used: Mutable::Mutable<bool>;
-    let mut ty: Arc<Absyn::TypeSpec>;
+    let mut ty: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(inVar.clone()) {
         Deref @ SCode::Element::COMPONENT { info: __pa0, typeSpec: __pa1, name: __pa2, .. } => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
@@ -1494,7 +1505,7 @@ pub fn extendEnvWithItem(mut inItem: Arc<Item>, mut inEnv: Env, mut inItemName: 
 }
 
 pub fn extendEnvWithItemConflict(mut newItem: Arc<Item>, mut oldItem: Arc<Item>, mut name: ArcStr) -> Arc<Item> {
-    let mut item: Arc<Item>;
+    let mut item: Arc<Item> = Arc::new(<Item as ::std::default::Default>::default());
     item = linkItemUsage(oldItem.clone(), newItem.clone());
     item
 }
@@ -1775,7 +1786,7 @@ fn extendEnvWithEnum(mut inEnum: Arc<SCode::Enum>, mut inEnumPath: Arc<Absyn::Pa
     let mut outEnv: Env = metamodelica::nil();
     let mut enum_lit: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     let mut lit_name: ArcStr = arcstr::literal!("");
-    let mut ty: Arc<Absyn::TypeSpec>;
+    let mut ty: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
     let mut index: ArcStr = arcstr::literal!("");
     let __pa0 = ::match_deref::match_deref! { match &(inEnum.clone()) {
         Deref @ SCode::Enum { literal: __pa0, .. } => __pa0.clone(),
@@ -2197,7 +2208,7 @@ pub fn getItemEnvNoFail(mut inItem: Arc<Item>) -> Result<Env> {
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn setItemEnv(mut inItem: Arc<Item>, mut inNewEnv: Env) -> Result<Arc<Item>> {
-    let mut outItem: Arc<Item>;
+    let mut outItem: Arc<Item> = Arc::new(<Item as ::std::default::Default>::default());
     outItem = (::match_deref::match_deref! { match &(inItem.clone()) {
         Deref @ Item::CLASS { cls, env: _, classType: ct } => {
             Arc::new(Item::CLASS { cls: cls.clone(), env: inNewEnv.clone(), classType: ct.clone() })
@@ -2263,7 +2274,7 @@ pub fn getItemPrefixes(mut inItem: Arc<Item>) -> Result<Arc<SCode::Prefixes>> {
 }
 
 pub fn resolveRedeclaredItem(mut inItem: Arc<Item>, mut inEnv: Env) -> (Arc<Item>, Env, Arc<metamodelica::List<(Arc<Item>, Arc<metamodelica::List<Arc<Frame>>>)>>) {
-    let mut outItem: Arc<Item>;
+    let mut outItem: Arc<Item> = Arc::new(<Item as ::std::default::Default>::default());
     let mut outEnv: Env = metamodelica::nil();
     let mut outPreviousItem: Arc<metamodelica::List<(Arc<Item>, Arc<metamodelica::List<Arc<Frame>>>)>> = metamodelica::nil();
     (outItem, outEnv, outPreviousItem) = (::match_deref::match_deref! { match &(inItem.clone()) {
@@ -2424,7 +2435,7 @@ pub fn mergePathWithEnvPath(mut inPath: Arc<Absyn::Path>, mut inEnv: Env) -> Res
 }
 
 pub fn mergeTypeSpecWithEnvPath(mut inTS: Arc<Absyn::TypeSpec>, mut inEnv: Env) -> Result<Arc<Absyn::TypeSpec>> {
-    let mut outTS: Arc<Absyn::TypeSpec>;
+    let mut outTS: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
     outTS = 'mc: {
         let __mc_input = inTS.clone();
         if let Ok(__v) = (|| -> Result<_> {

@@ -1502,14 +1502,14 @@ fn BLS_mergeSmallSections(mut sectionsIn: Arc<metamodelica::List<Arc<metamodelic
 }
 
 fn BLS_generateSchedule(mut level: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut iMeta: HpcOmTaskGraph::TaskGraphMeta, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<HpcOmSimCode::TaskList> {
-    let mut taskLstOut: HpcOmSimCode::TaskList;
+    let mut taskLstOut: HpcOmSimCode::TaskList = <HpcOmSimCode::TaskList as ::std::default::Default>::default();
     taskLstOut = 'mc: {
         let __mc_input = (level.clone(), iMeta.clone());
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: section, tail: Deref @ metamodelica::List::Nil }, HpcOmTaskGraph::TaskGraphMeta { inComps, .. }) => {
                     let mut task: Arc<HpcOmSimCode::Task> = Arc::new(HpcOmSimCode::Task::TASKEMPTY);
-                    let mut taskLst: HpcOmSimCode::TaskList;
+                    let mut taskLst: HpcOmSimCode::TaskList = <HpcOmSimCode::TaskList as ::std::default::Default>::default();
                     task = makeCalcTaskLevel(section.clone(), inComps.clone(), iSccSimEqMapping.clone())?;
                     taskLst = HpcOmSimCode::TaskList::SERIALTASKLIST { tasks: list![task.clone()], masterOnly: true };
                     Ok(taskLst.clone())
@@ -1520,7 +1520,7 @@ fn BLS_generateSchedule(mut level: Arc<metamodelica::List<Arc<metamodelica::List
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: _, tail: _ }, HpcOmTaskGraph::TaskGraphMeta { inComps, .. }) => {
-                    let mut taskLst: HpcOmSimCode::TaskList;
+                    let mut taskLst: HpcOmSimCode::TaskList = <HpcOmSimCode::TaskList as ::std::default::Default>::default();
                     taskLst = makeCalcLevelParTaskLstForMergedNodes(level.clone(), iSccSimEqMapping.clone(), inComps.clone());
                     Ok(taskLst.clone())
                 }
@@ -1838,7 +1838,7 @@ pub fn createLevelSchedule(mut iGraph: metamodelica::Array<Arc<metamodelica::Lis
 fn createLevelScheduleForLevel(mut iTasksOfLevel: Arc<metamodelica::List<i32>>, mut iGraph: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iMeta: HpcOmTaskGraph::TaskGraphMeta, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iLevelTaskLists: Arc<metamodelica::List<HpcOmSimCode::TaskList>>) -> Result<Arc<metamodelica::List<HpcOmSimCode::TaskList>>> {
     let mut oLevelTaskLists: Arc<metamodelica::List<HpcOmSimCode::TaskList>> = metamodelica::nil();
     let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
-    let mut taskList: HpcOmSimCode::TaskList;
+    let mut taskList: HpcOmSimCode::TaskList = <HpcOmSimCode::TaskList as ::std::default::Default>::default();
     let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut sortedTasksOfLevel: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let HpcOmTaskGraph::TASKGRAPHMETA { inComps: __pa0, exeCosts: __pa1, .. } = (iMeta.clone()) else { bail!("pattern mismatch") };
@@ -1861,7 +1861,7 @@ fn getLevelAssignment(mut level: Arc<metamodelica::List<i32>>, mut tplIn: (i32, 
 }
 
 fn makeCalcLevelParTaskLst(mut iNodeIdc: Arc<metamodelica::List<i32>>, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iNodeSccMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> HpcOmSimCode::TaskList {
-    let mut oTasks: HpcOmSimCode::TaskList;
+    let mut oTasks: HpcOmSimCode::TaskList = <HpcOmSimCode::TaskList as ::std::default::Default>::default();
     let mut tmpList: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut nodeIdx: i32 = 0;
     for mut nodeIdx in &*iNodeIdc.clone().reverse() {
@@ -1873,7 +1873,7 @@ fn makeCalcLevelParTaskLst(mut iNodeIdc: Arc<metamodelica::List<i32>>, mut iSccS
 }
 
 fn makeCalcLevelParTaskLstForMergedNodes(mut iNodeIdc: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, mut iSccSimEqMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut iNodeSccMapping: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> HpcOmSimCode::TaskList {
-    let mut oTasks: HpcOmSimCode::TaskList;
+    let mut oTasks: HpcOmSimCode::TaskList = <HpcOmSimCode::TaskList as ::std::default::Default>::default();
     let mut tmpList: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     tmpList = List::map(iNodeIdc.clone(), (std::sync::Arc::new({ let __pe_b1 = iNodeSccMapping.clone(); let __pe_b2 = iSccSimEqMapping.clone(); move |__pe_a0| makeCalcTaskLevel(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>) -> Result<Arc<HpcOmSimCode::Task>> + 'static>));
     oTasks = HpcOmSimCode::TaskList::PARALLELTASKLIST { tasks: tmpList.clone() };
@@ -1957,7 +1957,7 @@ fn createFixedLevelScheduleForLevel(mut iTasksOfLevel: Arc<metamodelica::List<i3
     let mut threadReadyList: metamodelica::Array<metamodelica::Real> = Default::default();
     let mut threadTaskList: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut exeCosts: metamodelica::Array<(i32, metamodelica::Real)> = Default::default();
-    let mut taskList: HpcOmSimCode::TaskList;
+    let mut taskList: HpcOmSimCode::TaskList = <HpcOmSimCode::TaskList as ::std::default::Default>::default();
     let mut tasksOfLevel: Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>> = metamodelica::nil();
     let mut inComps: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut sortedTasksOfLevel: Arc<metamodelica::List<i32>> = metamodelica::nil();

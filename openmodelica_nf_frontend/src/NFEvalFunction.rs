@@ -872,7 +872,7 @@ fn assignRecord(mut lhs: Arc<Expression::NFExpression>, mut rhs: Arc<Expression:
 
 fn evaluateFor(mut iterator: Arc<InstNode::InstNode>, mut range: Option<Arc<Expression::NFExpression>>, mut forBody: Arc<metamodelica::List<Arc<Statement::NFStatement>>>, mut source: Arc<DAE::ElementSource>, mut context: i32) -> Result<FlowControl> {
     let mut ctrl: FlowControl = FlowControl::NEXT.clone();
-    let mut range_iter: Arc<RangeIterator::NFRangeIterator>;
+    let mut range_iter: Arc<RangeIterator::NFRangeIterator> = Arc::new(<RangeIterator::NFRangeIterator as ::std::default::Default>::default());
     let mut iter_exp: Mutable::Mutable<Arc<Expression::NFExpression>>;
     let mut range_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut value: Arc<Expression::NFExpression> = Arc::new(Expression::END);

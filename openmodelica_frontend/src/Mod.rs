@@ -115,6 +115,14 @@ pub enum FullMod {
         subMod: Arc<DAE::SubMod>,
     },
 }
+impl Default for FullMod {
+    fn default() -> Self {
+        Self::MOD {
+            cref: Default::default(),
+            r#mod: Default::default(),
+        }
+    }
+}
 pub use self::FullMod::{MOD,SUB_MOD};
 
 pub type SubMod = Arc<DAE::SubMod>;
@@ -140,7 +148,7 @@ pub fn elabMod(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc
             let mut subs_1: Arc<metamodelica::List<Arc<DAE::SubMod>>> = metamodelica::nil();
             let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut e_2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            let mut prop: DAE::Properties;
+            let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
             let mut e_val: Option<Arc<Values::Value>> = None;
             let mut cache = (*cache).clone();
             (cache, subs_1) = elabSubmods(cache.clone(), env.clone(), ih.clone(), pre.clone(), subs.clone(), r#impl.clone(), inModScope.clone(), info.clone())?;
@@ -286,7 +294,7 @@ fn elabModRedeclareElement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Element::CLASS { name: cn, prefixes: prefixes @ Deref @ SCode::Prefixes { visibility: vis, redeclarePrefix: redecl, finalPrefix: fi, innerOuter: io, replaceablePrefix: repl }, encapsulatedPrefix: enc, partialPrefix: p, restriction: restr, classDef: Deref @ SCode::ClassDef::DERIVED { typeSpec: tp, modifications: r#mod, attributes: attr1 }, cmt, info: i } => {
                     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
-                    let mut tp1: Arc<Absyn::TypeSpec>;
+                    let mut tp1: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
                     let mut emod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
                     let mut r#mod = (*r#mod).clone();
                     r#mod = SCodeUtil::mergeModifiers(r#mod.clone(), SCodeUtil::getConstrainedByModifiers(prefixes.clone()))?;
@@ -318,7 +326,7 @@ fn elabModRedeclareElement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Element::COMPONENT { name: compname, prefixes: prefixes @ Deref @ SCode::Prefixes { visibility: vis, redeclarePrefix: redecl, finalPrefix: fi, innerOuter: io, replaceablePrefix: repl }, attributes: attr, typeSpec: tp, modifications: r#mod, comment: cmt, condition: cond, info: i } => {
                     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
-                    let mut tp1: Arc<Absyn::TypeSpec>;
+                    let mut tp1: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
                     let mut emod: Arc<DAE::Mod> = Arc::new(DAE::Mod::NOMOD);
                     let mut r#mod = (*r#mod).clone();
                     r#mod = SCodeUtil::mergeModifiers(r#mod.clone(), SCodeUtil::getConstrainedByModifiers(prefixes.clone()))?;
@@ -346,7 +354,7 @@ fn elabModRedeclareElement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
 
 fn elabModQualifyTypespec(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<metamodelica::List<InnerOuter::TopInstance>>, mut inPrefix: DAE::Prefix, mut r#impl: bool, mut info: SourceInfo, mut name: ArcStr, mut tp: Arc<Absyn::TypeSpec>) -> Result<(FCore::Cache, Arc<Absyn::TypeSpec>)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
-    let mut outTp: Arc<Absyn::TypeSpec>;
+    let mut outTp: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
     (outCache, outTp) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), tp.clone())) {
         (cache, env, _, _, Deref @ Absyn::TypeSpec::TPATH { path: p, arrayDim: None }) => {
             let mut p1: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
@@ -539,7 +547,7 @@ pub fn updateMod(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
                     let mut subs_1: Arc<metamodelica::List<Arc<DAE::SubMod>>> = metamodelica::nil();
                     let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut e_2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    let mut prop: DAE::Properties;
+                    let mut prop: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
                     let mut e_val: Option<Arc<Values::Value>> = None;
                     let mut cache = (*cache).clone();
                     (cache, subs_1) = updateSubmods(cache.clone(), env.clone(), ih.clone(), pre.clone(), subs.clone(), r#impl.clone(), info.clone())?;
@@ -1043,7 +1051,7 @@ fn lookupComplexCompModification(mut inEqMod: Option<DAE::EqMod>, mut inName: Ar
     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut ae: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    let mut eq_mod: DAE::EqMod;
+    let mut eq_mod: DAE::EqMod = <DAE::EqMod as ::std::default::Default>::default();
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     if '__try0: {
         let (__pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(inEqMod.clone()) {
@@ -1340,7 +1348,7 @@ fn indexEqmod(mut inBinding: Option<DAE::EqMod>, mut inIndices: Arc<metamodelica
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut c: DAE::Const = DAE::Const::C_CONST;
     let mut aexp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-    let mut eq: DAE::EqMod;
+    let mut eq: DAE::EqMod = <DAE::EqMod as ::std::default::Default>::default();
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     if isNone(inBinding.clone()) || inIndices.clone().is_empty() {
         return Ok(outBinding.clone());
@@ -2304,7 +2312,7 @@ fn getFullModsFromMod(mut inTopCref: Arc<DAE::ComponentRef>, mut inMod: Arc<DAE:
 }
 
 fn getFullModFromModRedeclare(mut inTopCref: Arc<DAE::ComponentRef>, mut inRedeclare: Arc<DAE::Mod>) -> Result<FullMod> {
-    let mut outFullMod: FullMod;
+    let mut outFullMod: FullMod = <FullMod as ::std::default::Default>::default();
     let mut el: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     let mut id: ArcStr = arcstr::literal!("");
     let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);

@@ -767,6 +767,9 @@ pub enum InstanceTree {
     },
     EMPTY,
 }
+impl Default for InstanceTree {
+    fn default() -> Self { Self::EMPTY }
+}
 pub use self::InstanceTree::{COMPONENT,CLASS,BUILTIN_BASE_CLASS,EMPTY};
 
 thread_local! { static __ENUM_BASE_TLS: Arc<InstanceTree> = Arc::new(InstanceTree::BUILTIN_BASE_CLASS { name: (literal!("enumeration")).clone() }); }
@@ -1513,7 +1516,7 @@ pub fn dumpJSONSCodePrefixes(mut prefixes: Arc<SCode::Prefixes>, mut scope: Arc<
 
 pub fn dumpJSONClassPrefixes(mut element: Arc<SCode::Element>, mut scope: Arc<InstNode::InstNode>) -> Result<Arc<JSON::JSON>> {
     let mut json: Arc<JSON::JSON> = Arc::new(JSON::FALSE);
-    let mut cdef: Arc<SCode::ClassDef>;
+    let mut cdef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
     json = (::match_deref::match_deref! { match &(element.clone()) {
         Deref @ SCode::Element::CLASS { prefixes: _, classDef: cdef, .. } => {
             json = (::match_deref::match_deref! { match &(cdef.clone()) {
@@ -1928,7 +1931,7 @@ pub fn dumpJSONStateCalls(mut callEqs: Arc<metamodelica::List<Arc<Equation::NFEq
 
 pub fn dumpJSONStateCall(mut callEq: Arc<Equation::NFEquation>, mut scope: Arc<InstNode::InstNode>) -> Result<Arc<JSON::JSON>> {
     let mut json: Arc<JSON::JSON> = JSON::makeNull();
-    let mut call: Arc<Call::NFCall>;
+    let mut call: Arc<Call::NFCall> = Arc::new(<Call::NFCall as ::std::default::Default>::default());
     let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut src: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
     let mut j: Arc<JSON::JSON> = Arc::new(JSON::FALSE);

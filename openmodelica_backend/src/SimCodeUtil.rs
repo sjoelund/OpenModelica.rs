@@ -3924,7 +3924,7 @@ fn createTornSystemInnerEqns(mut innerEquations: Arc<metamodelica::List<BackendD
     let mut eqnindx: i32 = 0;
     let mut vars: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
-    let mut comp: Arc<BackendDAE::StrongComponent>;
+    let mut comp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
     let mut simequations: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
     let mut equations: DoubleEnded::MutableList<Arc<SimCode::SimEqSystem>> = <DoubleEnded::MutableList<Arc<SimCode::SimEqSystem>> as ::std::default::Default>::default();
     let mut cons: Arc<metamodelica::List<Arc<DAE::Constraint>>> = metamodelica::nil();
@@ -3955,7 +3955,7 @@ fn createTornSystemInnerEqns(mut innerEquations: Arc<metamodelica::List<BackendD
 }
 
 fn createTornSystemInnerEqns1(mut eqn: Arc<BackendDAE::Equation>, mut eqnindx: i32, mut varindx: Arc<metamodelica::List<i32>>) -> Result<Arc<BackendDAE::StrongComponent>> {
-    let mut ocomp: Arc<BackendDAE::StrongComponent>;
+    let mut ocomp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
     ocomp = (::match_deref::match_deref! { match &((eqn.clone(), varindx.clone())) {
         (Deref @ BackendDAE::Equation::EQUATION { .. }, Deref @ metamodelica::List::Cons { head: v, tail: Deref @ metamodelica::List::Nil }) => {
             Arc::new(BackendDAE::StrongComponent::SINGLEEQUATION { eqn: eqnindx.clone(), var: v.clone() })
@@ -4324,7 +4324,7 @@ fn generateInnerEqns(mut innerEquations: Arc<metamodelica::List<BackendDAE::Inne
     let mut tmpOutputVars: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
     let mut tmpVars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
     let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
-    let mut comp: Arc<BackendDAE::StrongComponent>;
+    let mut comp: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
     let mut dblLstEqns: DoubleEnded::MutableList<Arc<SimCode::SimEqSystem>> = <DoubleEnded::MutableList<Arc<SimCode::SimEqSystem>> as ::std::default::Default>::default();
     let mut omsiFuncEquations: Arc<SimCode::OMSIFunction> = Arc::new(<SimCode::OMSIFunction as ::std::default::Default>::default());
     dblLstEqns = DoubleEnded::fromList(equations.clone())?;
@@ -8664,7 +8664,7 @@ fn addSimVar(mut simVar: SimCodeVar::SimVar, mut index: SimVarsIndex, mut simVar
 
 fn derVarFromStateVar(mut state: SimCodeVar::SimVar, mut timeInterval: Option<Arc<DAE::Exp>>, mut iterationVars: Option<Arc<UnorderedSet::UnorderedSet<Arc<DAE::ComponentRef>>>>) -> Result<SimCodeVar::SimVar> {
     let mut deriv: SimCodeVar::SimVar = state.clone();
-    let mut unit: Unit::Unit;
+    let mut unit: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
     let mut nominal: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     deriv.arrayCref = Util::applyOption(deriv.arrayCref.clone(), (std::sync::Arc::new(fnptr!(ComponentReference::crefPrefixDer, Arc<DAE::ComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> + 'static>));
     deriv.name = ComponentReference::crefPrefixDer(deriv.name.clone());
@@ -9754,7 +9754,7 @@ fn getFmiUnitDefinitions(mut simVars: metamodelica::Array<Arc<metamodelica::List
 fn getFmiUnitDefinitionsHelper(mut inVars: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut unitDefinitions: Arc<metamodelica::List<SimCode::UnitDefinition>>, mut unitNameKeys: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<ArcStr>>), i32, i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))) -> Result<(Arc<metamodelica::List<SimCode::UnitDefinition>>, (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<ArcStr>>), i32, i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>)))> {
     let mut unitDefinitions: Arc<metamodelica::List<SimCode::UnitDefinition>> = unitDefinitions;
     let mut unitNameKeys: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<ArcStr>>), i32, i32, (HashSetString::FuncHashCref, HashSetString::FuncCrefEqual, HashSetString::FuncCrefStr)) = unitNameKeys;
-    let mut unit: Unit::Unit;
+    let mut unit: Unit::Unit = <Unit::Unit as ::std::default::Default>::default();
     for mut var in &*inVars.clone() {
         let mut var = var.clone();
         if isSome(var.exportVar.clone()) {

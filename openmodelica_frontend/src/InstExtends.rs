@@ -457,8 +457,8 @@ fn instClassExtendsList2(mut inEnv: FCore::Graph, mut inMod: Arc<DAE::Mod>, mut 
                 (emod, name1, classExtendsElt, Deref @ metamodelica::List::Cons { head: (cl @ Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { .. }, name: name2, .. }, mod1, b), tail: rest }) => {
                     let mut elt: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
                     let mut compelt: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-                    let mut classDef: Arc<SCode::ClassDef>;
-                    let mut classExtendsCdef: Arc<SCode::ClassDef>;
+                    let mut classDef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
+                    let mut classExtendsCdef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
                     let mut partialPrefix1: SCode::Partial = SCode::Partial::NOT_PARTIAL;
                     let mut partialPrefix2: SCode::Partial = SCode::Partial::NOT_PARTIAL;
                     let mut encapsulatedPrefix1: SCode::Encapsulated = SCode::Encapsulated::ENCAPSULATED;
@@ -552,8 +552,8 @@ fn instClassExtendsList2(mut inEnv: FCore::Graph, mut inMod: Arc<DAE::Mod>, mut 
                 (emod, name1, classExtendsElt, Deref @ metamodelica::List::Cons { head: (cl @ Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::DERIVED { .. }, name: name2, .. }, mod1, b), tail: rest }) => {
                     let mut elt: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
                     let mut compelt: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
-                    let mut classDef: Arc<SCode::ClassDef>;
-                    let mut classExtendsCdef: Arc<SCode::ClassDef>;
+                    let mut classDef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
+                    let mut classExtendsCdef: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
                     let mut partialPrefix1: SCode::Partial = SCode::Partial::NOT_PARTIAL;
                     let mut partialPrefix2: SCode::Partial = SCode::Partial::NOT_PARTIAL;
                     let mut encapsulatedPrefix1: SCode::Encapsulated = SCode::Encapsulated::ENCAPSULATED;
@@ -578,7 +578,7 @@ fn instClassExtendsList2(mut inEnv: FCore::Graph, mut inMod: Arc<DAE::Mod>, mut 
                     let mut info1: SourceInfo = <SourceInfo as ::std::default::Default>::default();
                     let mut info2: SourceInfo = <SourceInfo as ::std::default::Default>::default();
                     let mut attrs: SCode::Attributes = <SCode::Attributes as ::std::default::Default>::default();
-                    let mut derivedTySpec: Arc<Absyn::TypeSpec>;
+                    let mut derivedTySpec: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
                     let mut emod = (*emod).clone();
                     let mut name2 = (*name2).clone();
                     let true = (name1.clone() == name2.clone()) else { bail!("pattern mismatch") };
@@ -944,8 +944,8 @@ fn fixElement(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::
                 (env, elt @ Deref @ SCode::Element::COMPONENT { prefixes: Deref @ SCode::Prefixes { replaceablePrefix: Deref @ SCode::Replaceable::REPLACEABLE { cc: _ }, .. }, .. }) => {
                     let mut name: ArcStr = arcstr::literal!("");
                     let mut prefixes: Arc<SCode::Prefixes> = Arc::new(<SCode::Prefixes as ::std::default::Default>::default());
-                    let mut typeSpec1: Arc<Absyn::TypeSpec>;
-                    let mut typeSpec2: Arc<Absyn::TypeSpec>;
+                    let mut typeSpec1: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
+                    let mut typeSpec2: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
                     let mut modifications1: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
                     let mut modifications2: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
                     let mut comment: Arc<SCode::Comment> = Arc::new(<SCode::Comment as ::std::default::Default>::default());
@@ -986,7 +986,7 @@ fn fixElement(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (env, elt @ Deref @ SCode::Element::COMPONENT { attributes: attr, .. }) => {
-                    let mut typeSpec2: Arc<Absyn::TypeSpec>;
+                    let mut typeSpec2: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
                     let mut modifications2: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
                     let mut ad: Arc<metamodelica::List<Arc<Absyn::Subscript>>> = metamodelica::nil();
                     let mut elt = (*elt).clone();
@@ -1008,8 +1008,8 @@ fn fixElement(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (env, Deref @ SCode::Element::CLASS { name, prefixes: prefixes @ Deref @ SCode::Prefixes { replaceablePrefix: Deref @ SCode::Replaceable::REPLACEABLE { cc: _ }, .. }, encapsulatedPrefix: SCode::Encapsulated::ENCAPSULATED { .. }, partialPrefix, restriction, classDef: _, cmt: comment, info }) => {
-                    let mut classDef1: Arc<SCode::ClassDef>;
-                    let mut classDef2: Arc<SCode::ClassDef>;
+                    let mut classDef1: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
+                    let mut classDef2: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
                     let mut env = (*env).clone();
                     let mut prefixes = (*prefixes).clone();
                     let mut partialPrefix = (*partialPrefix).clone();
@@ -1037,7 +1037,7 @@ fn fixElement(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (env, Deref @ SCode::Element::CLASS { name, prefixes, encapsulatedPrefix: SCode::Encapsulated::ENCAPSULATED { .. }, partialPrefix, restriction, classDef: classDef1, cmt: comment, info }) => {
-                    let mut classDef2: Arc<SCode::ClassDef>;
+                    let mut classDef2: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
                     let mut env = (*env).clone();
                     env = FGraph::openScope(env.clone(), openmodelica_frontend_types::SCode::Encapsulated::ENCAPSULATED, (name.clone()).clone(), FGraph::restrictionToScopeType(restriction.clone()))?;
                     classDef2 = fixClassdef(inCache.clone(), env.clone(), classDef1.clone(), tree.clone())?;
@@ -1049,8 +1049,8 @@ fn fixElement(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (env, Deref @ SCode::Element::CLASS { name, prefixes: prefixes @ Deref @ SCode::Prefixes { replaceablePrefix: Deref @ SCode::Replaceable::REPLACEABLE { cc: _ }, .. }, encapsulatedPrefix: SCode::Encapsulated::NOT_ENCAPSULATED { .. }, partialPrefix, restriction, classDef: _, cmt: comment, info }) => {
-                    let mut classDef1: Arc<SCode::ClassDef>;
-                    let mut classDef2: Arc<SCode::ClassDef>;
+                    let mut classDef1: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
+                    let mut classDef2: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
                     let mut env = (*env).clone();
                     let mut prefixes = (*prefixes).clone();
                     let mut partialPrefix = (*partialPrefix).clone();
@@ -1078,7 +1078,7 @@ fn fixElement(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (env, Deref @ SCode::Element::CLASS { name, prefixes, encapsulatedPrefix: SCode::Encapsulated::NOT_ENCAPSULATED { .. }, partialPrefix, restriction, classDef: classDef1, cmt: comment, info }) => {
-                    let mut classDef2: Arc<SCode::ClassDef>;
+                    let mut classDef2: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
                     let mut env = (*env).clone();
                     env = FGraph::openScope(env.clone(), openmodelica_frontend_types::SCode::Encapsulated::NOT_ENCAPSULATED, (name.clone()).clone(), FGraph::restrictionToScopeType(restriction.clone()))?;
                     classDef2 = fixClassdef(inCache.clone(), env.clone(), classDef1.clone(), tree.clone())?;
@@ -1123,7 +1123,7 @@ fn fixElement(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::
 }
 
 fn fixClassdef(mut cache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Graph, mut inCd: Arc<SCode::ClassDef>, mut inTree: Arc<AvlSetString::Tree>) -> Result<Arc<SCode::ClassDef>> {
-    let mut outCd: Arc<SCode::ClassDef>;
+    let mut outCd: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
     let mut tree: Arc<AvlSetString::Tree> = inTree.clone();
     outCd = 'mc: {
         let __mc_input = (inEnv.clone(), inCd.clone());
@@ -1159,7 +1159,7 @@ fn fixClassdef(mut cache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::G
                     let mut ia_1: Arc<metamodelica::List<Arc<SCode::AlgorithmSection>>> = metamodelica::nil();
                     let mut nc_1: Arc<metamodelica::List<SCode::ConstraintSection>> = metamodelica::nil();
                     let mut mod_1: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
-                    let mut cd_1: Arc<SCode::ClassDef>;
+                    let mut cd_1: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
                     mod_1 = fixModifications(cache.clone(), env.clone(), r#mod.clone(), inTree.clone())?;
                     elts_1 = fixList(cache.clone(), env.clone(), elts.clone(), tree.clone(), (std::sync::Arc::new(fixElement) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Arc<SCode::Element>, Arc<AvlSetString::Tree>) -> Result<Arc<SCode::Element>> + 'static>));
                     ne_1 = fixList(cache.clone(), env.clone(), ne.clone(), tree.clone(), (std::sync::Arc::new(fixEquation) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Cache>, FCore::Graph, Arc<SCode::Equation>, Arc<AvlSetString::Tree>) -> Result<Arc<SCode::Equation>> + 'static>));
@@ -1176,7 +1176,7 @@ fn fixClassdef(mut cache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::G
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (env, Deref @ SCode::ClassDef::DERIVED { typeSpec: ts, modifications: r#mod, attributes: attr }) => {
-                    let mut ts_1: Arc<Absyn::TypeSpec>;
+                    let mut ts_1: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
                     let mut mod_1: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
                     ts_1 = fixTypeSpec(cache.clone(), env.clone(), ts.clone(), tree.clone())?;
                     mod_1 = fixModifications(cache.clone(), env.clone(), r#mod.clone(), tree.clone())?;
@@ -1549,7 +1549,7 @@ fn fixSubscript(mut cache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::
 }
 
 fn fixTypeSpec(mut cache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Graph, mut inTs: Arc<Absyn::TypeSpec>, mut tree: Arc<AvlSetString::Tree>) -> Result<Arc<Absyn::TypeSpec>> {
-    let mut outTs: Arc<Absyn::TypeSpec>;
+    let mut outTs: Arc<Absyn::TypeSpec> = Arc::new(<Absyn::TypeSpec as ::std::default::Default>::default());
     outTs = (::match_deref::match_deref! { match &(inTs.clone()) {
         Deref @ Absyn::TypeSpec::TPATH { path: path1, arrayDim: arrayDim1 } => {
             let mut path2: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());

@@ -74,6 +74,13 @@ pub enum NFRangeIterator {
         exp: Arc<Expression::NFExpression>,
     },
 }
+impl Default for NFRangeIterator {
+    fn default() -> Self {
+        Self::INVALID_RANGE {
+            exp: Default::default(),
+        }
+    }
+}
 pub use self::NFRangeIterator::{INT_RANGE,INT_STEP_RANGE,REAL_RANGE,ARRAY_RANGE,INVALID_RANGE};
 pub fn isValid(mut iterator: Arc<NFRangeIterator>) -> bool {
     let mut isValid: bool = false;
@@ -86,7 +93,7 @@ pub fn isValid(mut iterator: Arc<NFRangeIterator>) -> bool {
 }
 
 pub fn fromExp(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<NFRangeIterator>> {
-    let mut iterator: Arc<NFRangeIterator>;
+    let mut iterator: Arc<NFRangeIterator> = Arc::new(<NFRangeIterator as ::std::default::Default>::default());
     iterator = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::ARRAY { .. } => {
             Arc::new(NFRangeIterator::ARRAY_RANGE { values: var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone(), index: 1 })
@@ -155,7 +162,7 @@ pub fn fromExp(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<NFRangeIter
 }
 
 pub fn fromDim(mut dim: Arc<Dimension::NFDimension>, mut resizable: bool) -> Result<Arc<NFRangeIterator>> {
-    let mut iterator: Arc<NFRangeIterator>;
+    let mut iterator: Arc<NFRangeIterator> = Arc::new(<NFRangeIterator as ::std::default::Default>::default());
     iterator = (::match_deref::match_deref! { match &(dim.clone()) {
         Deref @ Dimension::INTEGER { .. } => {
             Arc::new(NFRangeIterator::INT_RANGE { current: 1, last: var_field!((*dim).size, Dimension::NFDimension::INTEGER).clone() })

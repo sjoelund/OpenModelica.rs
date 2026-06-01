@@ -75,7 +75,7 @@ fn refactorGraphAnnInClass(mut inClass: Arc<Absyn::Class>, mut inProgram: Absyn:
                 (outClass @ Deref @ Absyn::Class { body: d, name: n, .. }, p, Deref @ Absyn::Path::IDENT { name: Deref @ "" }) => {
                     let mut resultClassDef: Arc<Absyn::ClassDef> = Arc::new(<Absyn::ClassDef as ::std::default::Default>::default());
                     let mut cPath: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-                    let mut env: Interactive::GraphicEnvCache;
+                    let mut env: Interactive::GraphicEnvCache = <Interactive::GraphicEnvCache as ::std::default::Default>::default();
                     let mut outClass = (*outClass).clone();
                     cPath = Arc::new(Absyn::Path::IDENT { name: (n.clone()).clone() });
                     env = Interactive::getClassEnv(p.clone(), cPath.clone())?;
@@ -89,7 +89,7 @@ fn refactorGraphAnnInClass(mut inClass: Arc<Absyn::Class>, mut inProgram: Absyn:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (outClass @ Deref @ Absyn::Class { body: d, name: n, .. }, p, cPath) => {
-                    let mut env: Interactive::GraphicEnvCache;
+                    let mut env: Interactive::GraphicEnvCache = <Interactive::GraphicEnvCache as ::std::default::Default>::default();
                     let mut cPath = (*cPath).clone();
                     cPath = AbsynUtil::joinPaths(cPath.clone(), Arc::new(Absyn::Path::IDENT { name: (n.clone()).clone() }))?;
                     env = Interactive::getClassEnv(p.clone(), cPath.clone())?;
@@ -149,7 +149,7 @@ fn refactorGraphAnnInClassParts(mut inParts: Arc<metamodelica::List<Arc<Absyn::C
         },
         (Deref @ metamodelica::List::Cons { head: firstPart, tail: restParts }, p, cPath) => {
             let mut resParts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
-            let mut resultPart: Arc<Absyn::ClassPart>;
+            let mut resultPart: Arc<Absyn::ClassPart> = Arc::new(<Absyn::ClassPart as ::std::default::Default>::default());
             resultPart = refactorGraphAnnInClassPart(firstPart.clone(), p.clone(), cPath.clone(), env.clone())?;
             resParts = refactorGraphAnnInClassParts(restParts.clone(), p.clone(), cPath.clone(), env.clone())?;
             metamodelica::cons(resultPart.clone(), resParts.clone())
@@ -160,7 +160,7 @@ fn refactorGraphAnnInClassParts(mut inParts: Arc<metamodelica::List<Arc<Absyn::C
 }
 
 fn refactorGraphAnnInClassPart(mut inPart: Arc<Absyn::ClassPart>, mut inProgram: Absyn::Program, mut classPath: Arc<Absyn::Path>, mut inClassEnv: Interactive::GraphicEnvCache) -> Result<Arc<Absyn::ClassPart>> {
-    let mut outPart: Arc<Absyn::ClassPart>;
+    let mut outPart: Arc<Absyn::ClassPart> = Arc::new(<Absyn::ClassPart as ::std::default::Default>::default());
     outPart = 'mc: {
         let __mc_input = (inPart.clone(), inProgram.clone(), classPath.clone(), inClassEnv.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -257,10 +257,10 @@ fn refactorGraphAnnInContentList<contentType: Clone + 'static>(mut inList: Arc<m
 }
 
 fn refactorGraphAnnInElItem(mut inItem: Arc<Absyn::ElementItem>, mut inProgram: Absyn::Program, mut classPath: Arc<Absyn::Path>, mut inClassEnv: Interactive::GraphicEnvCache) -> Result<Arc<Absyn::ElementItem>> {
-    let mut outItem: Arc<Absyn::ElementItem>;
+    let mut outItem: Arc<Absyn::ElementItem> = Arc::new(<Absyn::ElementItem as ::std::default::Default>::default());
     outItem = (::match_deref::match_deref! { match &((inItem.clone(), inProgram.clone(), classPath.clone(), inClassEnv.clone())) {
         (Deref @ Absyn::ElementItem::ELEMENTITEM { element: el }, p, cPath, env) => {
-            let mut resultElement: Arc<Absyn::Element>;
+            let mut resultElement: Arc<Absyn::Element> = Arc::new(<Absyn::Element as ::std::default::Default>::default());
             resultElement = refactorGraphAnnInElement(el.clone(), p.clone(), cPath.clone(), env.clone())?;
             Arc::new(Absyn::ElementItem::ELEMENTITEM { element: resultElement.clone() })
         },
@@ -270,7 +270,7 @@ fn refactorGraphAnnInElItem(mut inItem: Arc<Absyn::ElementItem>, mut inProgram: 
 }
 
 fn refactorGraphAnnInEqItem(mut inItem: Arc<Absyn::EquationItem>, mut inProgram: Absyn::Program, mut classPath: Arc<Absyn::Path>, mut inClassEnv: Interactive::GraphicEnvCache) -> Result<Arc<Absyn::EquationItem>> {
-    let mut outItem: Arc<Absyn::EquationItem>;
+    let mut outItem: Arc<Absyn::EquationItem> = Arc::new(<Absyn::EquationItem as ::std::default::Default>::default());
     outItem = 'mc: {
         let __mc_input = (inItem.clone(), inProgram.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -322,7 +322,7 @@ fn refactorGraphAnnInAlgItem(mut inItem: Arc<Absyn::AlgorithmItem>, mut inProgra
 }
 
 fn refactorGraphAnnInElement(mut inElement: Arc<Absyn::Element>, mut inProgram: Absyn::Program, mut classPath: Arc<Absyn::Path>, mut inClassEnv: Interactive::GraphicEnvCache) -> Result<Arc<Absyn::Element>> {
-    let mut outElement: Arc<Absyn::Element>;
+    let mut outElement: Arc<Absyn::Element> = Arc::new(<Absyn::Element as ::std::default::Default>::default());
     outElement = (::match_deref::match_deref! { match &((inElement.clone(), inProgram.clone(), classPath.clone(), inClassEnv.clone())) {
         (Deref @ Absyn::Element::ELEMENT { constrainClass: cc, info: i, specification: es, innerOuter: io, redeclareKeywords: rdk, finalPrefix: f }, p, cPath, env) => {
             let mut resultSpec: Arc<Absyn::ElementSpec> = Arc::new(<Absyn::ElementSpec as ::std::default::Default>::default());

@@ -858,7 +858,7 @@ fn findZeroCrossingsIfEqns(mut inIfEqn: Arc<BackendDAE::Equation>, mut inZeroCro
 
 fn findZeroCrossingsinJacobians(mut inStrongComponents: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>, mut zeroCrossingLst: BackendDAE::ZeroCrossingSet, mut relationsLst: DoubleEnded::MutableList<BackendDAE::ZeroCrossing>, mut samplesLst: BackendDAE::ZeroCrossingSet, mut allVariables: BackendDAE::Variables, mut globalKnownVars: BackendDAE::Variables) -> Result<Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>>> {
     let mut strongComponents: Arc<metamodelica::List<Arc<BackendDAE::StrongComponent>>> = metamodelica::nil();
-    let mut outComponent: Arc<BackendDAE::StrongComponent>;
+    let mut outComponent: Arc<BackendDAE::StrongComponent> = Arc::new(<BackendDAE::StrongComponent as ::std::default::Default>::default());
     for mut component in &*inStrongComponents.clone() {
         let mut component = component.clone();
         outComponent = 'mc: {
