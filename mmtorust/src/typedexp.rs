@@ -1082,6 +1082,23 @@ fn call_ty(func: &str, args: &[TypedExp], top_level: &BTreeMap<String, NameNode<
         "integer" if args.len() == 1 => Ty::I32,
         // `sign(v)` is `input Real v; output Integer` (ModelicaBuiltin.mo).
         "sign" if args.len() == 1 => Ty::I32,
+        // Scalar 2-arg `max(a, b)` / `min(a, b)` (emitted as `std::cmp::max`/
+        // `min`) return the common type of their operands. Inferring this lets a
+        // surrounding real division widen the result correctly — e.g.
+        // `(stopTime - startTime) / max(numberOfIntervals, 1)`, where
+        // `numberOfIntervals` is a pattern binding typed `Unknown` but the `1`
+        // literal pins the result to Integer. (The single-arg/array reduction
+        // forms `max(e for ..)` are typed by the reduction path, not here.)
+        "max" | "min" if args.len() == 2 => {
+            let t0 = args[0].ty();
+            let t1 = args[1].ty();
+            match (&t0, &t1) {
+                (Ty::F64, _) | (_, Ty::F64) => Ty::F64,
+                (Ty::I32, _) | (_, Ty::I32) => Ty::I32,
+                (Ty::Unknown, _) => t1,
+                _ => t0,
+            }
+        }
         "stringBool" => Ty::Bool,
         "intString" | "realString" | "boolString" | "anyString"
         | "stringAppend" | "stringCharAt" | "stringGetStringChar" => Ty::Str,
