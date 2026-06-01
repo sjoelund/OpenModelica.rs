@@ -11,6 +11,7 @@
 
 use std::cell::RefCell;
 use std::sync::Arc;
+use arcstr::ArcStr;
 
 // ── Thread-local roots (process-global by MetaModelica semantics) ─────────────
 
@@ -30,4 +31,34 @@ thread_local! {
         Arc<openmodelica_ast::Absyn::Path>,
         crate::Interactive::GraphicEnvCache,
     )>>>> = const { RefCell::new(None) };
+
+    // Index 10 — instNFInstCacheIndex
+    //
+    // NF instantiation cache (instance path → SCode elements, name, InstNode).
+    //
+    // Declared here rather than in `openmodelica_frontend::Globals` so the old
+    // frontend need not depend on `openmodelica_nf_frontend`. The only accessor
+    // of these three NF caches is `Script/NFApi.mo` (this crate); their value
+    // type uses `NFInstNode.InstNode` from `openmodelica_nf_frontend`, on which
+    // this crate already depends.
+    pub static instNFInstCacheIndex: RefCell<Arc<metamodelica::List<(
+        (openmodelica_ast::Absyn::Program, Arc<openmodelica_ast::Absyn::Path>),
+        (Arc<metamodelica::List<Arc<openmodelica_frontend_types::SCode::Element>>>, ArcStr, Arc<openmodelica_nf_frontend::NFInstNode::InstNode::InstNode>),
+    )>>> = RefCell::new(metamodelica::nil());
+
+    // Index 11 — instNFNodeCacheIndex
+    //
+    // NF node cache (program → SCode elements, InstNode).
+    pub static instNFNodeCacheIndex: RefCell<Arc<metamodelica::List<(
+        openmodelica_ast::Absyn::Program,
+        (Arc<metamodelica::List<Arc<openmodelica_frontend_types::SCode::Element>>>, Arc<openmodelica_nf_frontend::NFInstNode::InstNode::InstNode>),
+    )>>> = RefCell::new(metamodelica::nil());
+
+    // Index 12 — instNFLookupCacheIndex
+    //
+    // NF lookup cache. Same type as instNFInstCacheIndex (index 10).
+    pub static instNFLookupCacheIndex: RefCell<Arc<metamodelica::List<(
+        (openmodelica_ast::Absyn::Program, Arc<openmodelica_ast::Absyn::Path>),
+        (Arc<metamodelica::List<Arc<openmodelica_frontend_types::SCode::Element>>>, ArcStr, Arc<openmodelica_nf_frontend::NFInstNode::InstNode::InstNode>),
+    )>>> = RefCell::new(metamodelica::nil());
 }

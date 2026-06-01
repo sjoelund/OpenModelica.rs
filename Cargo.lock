@@ -416,7 +416,6 @@ dependencies = [
  "openmodelica_frontend_dump",
  "openmodelica_frontend_inst",
  "openmodelica_frontend_types",
- "openmodelica_nf_frontend",
  "openmodelica_script_util",
  "openmodelica_susan",
  "openmodelica_util",

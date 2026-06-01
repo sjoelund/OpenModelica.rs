@@ -11,7 +11,6 @@
 
 use std::cell::RefCell;
 use std::sync::Arc;
-use arcstr::ArcStr;
 
 // ── Thread-local roots (process-global by MetaModelica semantics) ─────────────
 
@@ -23,29 +22,13 @@ thread_local! {
     pub static instHashIndex: RefCell<crate::InstHashTable::HashTable> =
         RefCell::new(todo!("instHashIndex must be initialised by InstHashTable::new() before first use"));
 
-    // Index 10 — instNFInstCacheIndex
+    // Indices 10–12 — instNFInstCacheIndex / instNFNodeCacheIndex /
+    // instNFLookupCacheIndex
     //
-    // NF instantiation cache (instance path → SCode elements, name, InstNode).
-    pub static instNFInstCacheIndex: RefCell<Arc<metamodelica::List<(
-        (openmodelica_ast::Absyn::Program, Arc<openmodelica_ast::Absyn::Path>),
-        (Arc<metamodelica::List<Arc<openmodelica_frontend_types::SCode::Element>>>, ArcStr, Arc<openmodelica_nf_frontend::NFInstNode::InstNode::InstNode>),
-    )>>> = RefCell::new(metamodelica::nil());
-
-    // Index 11 — instNFNodeCacheIndex
-    //
-    // NF node cache (program → SCode elements, InstNode).
-    pub static instNFNodeCacheIndex: RefCell<Arc<metamodelica::List<(
-        openmodelica_ast::Absyn::Program,
-        (Arc<metamodelica::List<Arc<openmodelica_frontend_types::SCode::Element>>>, Arc<openmodelica_nf_frontend::NFInstNode::InstNode::InstNode>),
-    )>>> = RefCell::new(metamodelica::nil());
-
-    // Index 12 — instNFLookupCacheIndex
-    //
-    // NF lookup cache. Same type as instNFInstCacheIndex (index 10).
-    pub static instNFLookupCacheIndex: RefCell<Arc<metamodelica::List<(
-        (openmodelica_ast::Absyn::Program, Arc<openmodelica_ast::Absyn::Path>),
-        (Arc<metamodelica::List<Arc<openmodelica_frontend_types::SCode::Element>>>, ArcStr, Arc<openmodelica_nf_frontend::NFInstNode::InstNode::InstNode>),
-    )>>> = RefCell::new(metamodelica::nil());
+    // These NF caches store `NFInstNode.InstNode` values from
+    // `openmodelica_nf_frontend` and are only accessed by `Script/NFApi.mo`.
+    // They are declared in `openmodelica_backend_main::Globals` so that the old
+    // frontend does not have to depend on the new-frontend crate.
 
     // Index 13 — builtinIndex
     //
