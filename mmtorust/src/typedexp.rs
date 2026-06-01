@@ -920,17 +920,24 @@ pub fn builtin_function_ty(name: &str) -> Option<Ty> {
         // is `Ty::Unknown`, which then propagates into surrounding expressions
         // — most visibly into `+` chains where `binop_ty` can no longer route
         // `listGet(strs, i) + listGet(strs, j)` to the ArcStr concat path.
-        //
-        // `listHead` / `listFirst` / `listRest` are *deliberately* NOT added
-        // here: they are also common local-variable names in MetaModelica
-        // (e.g. `case listHead :: listRest`), and the bare-CREF inference
-        // promotes any in-env name with `Ty::Unknown` to its builtin
-        // signature, which would then make codegen treat
-        // `cons(listHead, ...)` as passing a function pointer (no `.clone()`).
-        // `call_ty` below handles the result types when those names appear in
-        // call position (which is the only context where it matters).
         "listGet" =>
             Some(f(vec![inp("lst", Ty::List(Box::new(tv("T")))), inp("index", Ty::I32)], tv("T"), vec!["T".to_owned()])),
+        // `listHead`/`listFirst` (`list<T> -> T`) and `listRest`/`listTail`
+        // (`list<T> -> list<T>`). Declared in MetaModelicaBuiltin.mo. These
+        // names also occur as ordinary local variables (e.g. `List.mo`'s
+        // `case listHead :: listRest`), but the bare-CREF promotion that
+        // consults this registry is gated on the name *not* being a local
+        // binding (see `infer_exp`'s CREF arm), so adding them here as proper
+        // prelude functions only affects genuine function-pointer references
+        // such as `List.map(lst, listHead)` — it never shadows a local. The
+        // result type at call sites is still computed by `call_ty`, which peels
+        // the element type from the concrete argument; the signature here is
+        // what lets a bare reference lower to a function pointer and what
+        // `builtin_formal_ty` reports as the call-argument formal (`list<T>`).
+        "listHead" | "listFirst" =>
+            Some(f(vec![inp("lst", Ty::List(Box::new(tv("T"))))], tv("T"), vec!["T".to_owned()])),
+        "listRest" | "listTail" =>
+            Some(f(vec![inp("lst", Ty::List(Box::new(tv("T"))))], Ty::List(Box::new(tv("T"))), vec!["T".to_owned()])),
         "arrayEmpty" =>
             Some(f(vec![inp("arr", Ty::Array(Box::new(tv("T"))))], Ty::Bool, vec!["T".to_owned()])),
         // `arrayGet(array<A>, Integer) -> A`. Needed so a partial application
@@ -1597,7 +1604,24 @@ pub fn infer_exp<'a>(
             // If the reference still resolves to Unknown and the name matches a known
             // built-in function (not in the hierarchy), treat it as a function pointer
             // so callers can pass it without `.clone()`.
-            let ty = if ty == Ty::Unknown && segments.len() == 1 && !name.contains('.') {
+            //
+            // Crucially, only promote a name that is *not* a local binding. The
+            // builtin registry acts as a prelude scope, and proper lexical
+            // scoping means a local variable shadows a prelude function of the
+            // same name. Several builtins double as common local names — e.g.
+            // `List.mo`'s `insertListSorted1` declares `T listHead; list<T>
+            // listRest;` and matches `case listHead :: listRest`. If such a
+            // local's type fails to infer (it lands in `env` as `Ty::Unknown`,
+            // e.g. when the matched value comes from a generic call), promoting
+            // it to the `listHead` builtin signature would make codegen treat
+            // `listHead :: inResultList` as consing a *function pointer*. The
+            // `env.contains_key` guard keeps the prelude lookup from ever
+            // overriding an in-scope binding. (A name used genuinely as a
+            // builtin function pointer — `List.map(lst, listHead)` — is not a
+            // local, so it is absent from `env` and still promotes.)
+            let ty = if ty == Ty::Unknown && segments.len() == 1 && !name.contains('.')
+                && !env.contains_key(&name)
+            {
                 builtin_function_ty(&name).unwrap_or(Ty::Unknown)
             } else {
                 ty

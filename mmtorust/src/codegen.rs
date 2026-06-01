@@ -13347,25 +13347,26 @@ fn emit_pat_with_implicit_bind_md<'a>(pat: &TypedPat, allow_implicit_bind: bool,
     // generic-returning call's result emits without `Deref @` and Rust
     // rejects the pattern with E0308.
     let pat_implies_arc_edge = matches!(pat, TypedPat::Cons { .. } | TypedPat::EmptyList);
-    // Extend the same pattern-shape fallback to a `Constructor` sub-pattern whose
-    // own type is an Arc-wrapped uniontype variant. This catches the case where
-    // the *scrutinee* type didn't infer (e.g. a `List.select1`/`List.flatten`
-    // chain whose generic return stays `Ty::Unknown`, so `Cons`'s `elem_ty`
-    // collapses to `Unknown`) yet the head element is still `Arc<T>` — e.g.
-    // `Cons { head: Absyn::ComponentItem { .. }, .. }` over a
-    // `List<Arc<ComponentItem>>`. Only fire when the scrutinee type is genuinely
-    // unknown so we never contradict a position whose type *did* resolve to a
-    // non-Arc value; recursive-uniontype values are uniformly `Arc`-wrapped
-    // (fields, list elements, Option contents), so the peel is always correct
-    // when the pattern's variant belongs to such a type.
-    let scrut_unknown = scrut_ty.map(|t| matches!(t, Ty::Unknown)).unwrap_or(true);
+    // Extend the same pattern-shape fallback to a `Constructor` pattern whose own
+    // type is an Arc-wrapped uniontype variant. `ty_needs_arc_match_deref` only
+    // recognises the bare recursive *enum* qname (`Absyn.Exp`); it misses both
+    //   * a scrutinee whose type didn't infer (`Ty::Unknown` — e.g. a
+    //     `List.select1`/`List.flatten` chain over a generic return), and
+    //   * a scrutinee narrowed to the *variant record* (`Absyn.Exp.STRING`),
+    //     which lives behind the same `Arc<Enum>` but is not itself in
+    //     `recursive_types` (e.g. `let STRING(v) := getNamedAnnotationExp(...)`).
+    // A `Constructor` for a recursive-uniontype variant is ALWAYS matched against
+    // an `Arc<Enum>` value (such values are uniformly Arc-wrapped — as fields,
+    // list elements, Option contents, and bindings), so the `Deref @` peel is
+    // unconditionally correct here; no scrutinee-type guard is needed (and the
+    // single `arc_prefix` is idempotent if the scrutinee type also said so).
     let pat_ty_implies_arc = match pat {
         TypedPat::Constructor { ty, .. } => is_arc_wrapped(ty, ctx) || constructor_needs_arc(ty, ctx),
         _ => false,
     };
     let at_arc_edge = pat_implies_arc_edge
         || scrut_ty.map(|t| ty_needs_arc_match_deref(t, ctx)).unwrap_or(false)
-        || (scrut_unknown && pat_ty_implies_arc);
+        || pat_ty_implies_arc;
     // `match_deref!` recognises the literal token `Deref` in pattern position
     // (it looks for an `i.ident == "Deref"` syn::PatIdent) and rewrites the
     // `Deref @ <subpat>` into an `if let <subpat> = ::core::ops::Deref::deref(binding)`
@@ -14651,9 +14652,23 @@ fn emit_pat_assign<'a>(
                 pat_owned
             };
             let pat_for_render = &pat_owned;
+            // Whether the emitted `let` will match against a borrow of the
+            // scrutinee (`let PAT = &(expr)`) rather than the value itself.
+            // Computed here (ahead of `render_shallow`) because the surface
+            // pattern's `ref` decisions depend on it: when the match is through
+            // a borrow, Rust's match ergonomics already bind every name by
+            // reference, so an explicit `ref` would create a *double* reference
+            // on an `@`-binding (`ref v @ (..)` over `&(..)` yields `v: &&T`),
+            // and the follow-up `.clone()` would then peel only one layer.
+            // The only `surface`-consuming branch that borrows is the
+            // irrefutable, non-Tuple case below (top-level Tuples are always
+            // destructured by value; refutable Arc-crossing patterns take the
+            // separate `match_deref!` path and discard `surface`).
+            let needs_borrow = type_destructure_needs_borrow(scrut_ty, ctx);
+            let scrut_borrowed = needs_borrow && !matches!(pat_for_render, TypedPat::Tuple(_));
             // Render shallow with deferrals for Arc-edge crossings.
             let mut deferrals: Vec<(String, TypedPat, Ty)> = Vec::new();
-            let surface = render_shallow(pat_for_render, scrut_ty, ctx, env, top_level, fresh, &mut deferrals, /*force_ref=*/false);
+            let surface = render_shallow(pat_for_render, scrut_ty, ctx, env, top_level, fresh, &mut deferrals, /*force_ref=*/false, scrut_borrowed);
             // When the scrutinee is Arc-wrapped (list<T> → Arc<List<T>>; recursive
             // uniontypes wrapped in Arc), destructuring a variant pattern such as
             // `Cons { head, tail }` only succeeds via the `deref_patterns`
@@ -14674,7 +14689,6 @@ fn emit_pat_assign<'a>(
             // fields (`ArcStr`, `Arc<T>`, …) out of the shared reference.
             // Borrowing the whole tuple makes match ergonomics auto-ref all
             // bindings uniformly.
-            let needs_borrow = type_destructure_needs_borrow(scrut_ty, ctx);
             let scrut_for_pat = if needs_borrow {
                 format!("&({scrut_expr})")
             } else {
@@ -15033,12 +15047,20 @@ fn render_shallow<'a>(
     // it, the inner field bindings would try to move out of memory that the
     // outer `ref` is already borrowing (E0382/E0507).
     force_ref: bool,
+    // True when the emitted `let` matches against a *borrow* of the scrutinee
+    // (`let PAT = &(expr)`). Under match ergonomics that borrow already makes
+    // every binding by-reference, so explicit `ref` markers must be suppressed:
+    // a `ref v @ (..)` over a `&(..)` scrutinee would bind `v: &&T`, and the
+    // reassign-back `v.clone()` would then yield `&T` instead of the required
+    // owned `T` (E0308). Constant across the recursion — the borrow applies to
+    // the entire matched value tree.
+    scrut_borrowed: bool,
 ) -> String {
     match pat {
         TypedPat::Wildcard => "_".to_owned(),
         TypedPat::Var(name) => {
             env.vars.insert(name.clone(), scrut_ty.clone());
-            if force_ref {
+            if force_ref && !scrut_borrowed {
                 format!("ref {}", escape_ident(name))
             } else {
                 escape_ident(name)
@@ -15051,7 +15073,7 @@ fn render_shallow<'a>(
                 Ty::Option(t) => (**t).clone(),
                 _ => Ty::Unknown,
             };
-            let inner_s = render_shallow(inner, &inner_ty, ctx, env, top_level, fresh, deferrals, force_ref);
+            let inner_s = render_shallow(inner, &inner_ty, ctx, env, top_level, fresh, deferrals, force_ref, scrut_borrowed);
             format!("Some({inner_s})")
         }
         TypedPat::Lit(Lit::Int(v)) => if *v < 0 { format!("({v})") } else { v.to_string() },
@@ -15059,7 +15081,7 @@ fn render_shallow<'a>(
         TypedPat::Lit(_) => "_ /* lit — guard not yet implemented */".to_owned(),
         TypedPat::Cons { head, tail } => {
             let elem_ty = match scrut_ty { Ty::List(t) => (**t).clone(), _ => Ty::Unknown };
-            let h = render_shallow(head, &elem_ty, ctx, env, top_level, fresh, deferrals, force_ref);
+            let h = render_shallow(head, &elem_ty, ctx, env, top_level, fresh, deferrals, force_ref, scrut_borrowed);
             // The `tail` field of `metamodelica::List::Cons` is `Arc<List<T>>`, and
             // the surface MetaModelica type `list<T>` is also lowered to
             // `Arc<List<T>>`, so binding the tail directly in the pattern yields a
@@ -15083,7 +15105,7 @@ fn render_shallow<'a>(
             // into the original user variable.
             let t = match tail.as_ref() {
                 TypedPat::Wildcard => "_".to_owned(),
-                TypedPat::Var(_) => render_shallow(tail, scrut_ty, ctx, env, top_level, fresh, deferrals, force_ref),
+                TypedPat::Var(_) => render_shallow(tail, scrut_ty, ctx, env, top_level, fresh, deferrals, force_ref, scrut_borrowed),
                 _ => {
                     let n = *fresh; *fresh += 1;
                     let tmp = format!("__t{n}");
@@ -15099,7 +15121,7 @@ fn render_shallow<'a>(
                 _ => vec![Ty::Unknown; pats.len()],
             };
             let parts: Vec<String> = pats.iter().zip(tys.iter())
-                .map(|(p, t)| render_shallow(p, t, ctx, env, top_level, fresh, deferrals, force_ref))
+                .map(|(p, t)| render_shallow(p, t, ctx, env, top_level, fresh, deferrals, force_ref, scrut_borrowed))
                 .collect();
             format!("({})", parts.join(", "))
         }
@@ -15266,7 +15288,7 @@ fn render_shallow<'a>(
                     deferrals.push((format!("{tmp}.clone()"), sub.clone(), fty.clone()));
                     tmp
                 } else {
-                    render_shallow(sub, fty, ctx, env, top_level, fresh, deferrals, force_ref)
+                    render_shallow(sub, fty, ctx, env, top_level, fresh, deferrals, force_ref, scrut_borrowed)
                 }
             };
 
@@ -15352,9 +15374,16 @@ fn render_shallow<'a>(
             // also borrow rather than move. Without that propagation, the inner
             // field bindings (e.g. `description: __pa0`) would still move out of
             // the value while the outer `ref __pa2` is borrowing it.
-            let inner_force_ref = force_ref || pat_introduces_binding(inner);
-            let inner_s = render_shallow(inner, scrut_ty, ctx, env, top_level, fresh, deferrals, inner_force_ref);
-            if pat_introduces_binding(inner) || force_ref {
+            //
+            // But suppress the explicit `ref` entirely when the scrutinee is
+            // matched through a borrow (`scrut_borrowed`): there, match
+            // ergonomics already bind the whole `@`-value and its sub-fields by
+            // reference, and an explicit `ref var @ ..` would yield `var: &&T`
+            // (double reference), so the reassign-back `var.clone()` would peel
+            // only one layer and produce `&T` where an owned `T` is required.
+            let want_ref = !scrut_borrowed && (force_ref || pat_introduces_binding(inner));
+            let inner_s = render_shallow(inner, scrut_ty, ctx, env, top_level, fresh, deferrals, want_ref, scrut_borrowed);
+            if want_ref {
                 format!("ref {} @ {}", escape_ident(var), inner_s)
             } else {
                 format!("{} @ {}", escape_ident(var), inner_s)
@@ -18327,10 +18356,17 @@ fn compute_types_needing_default<'a>(
                 .unwrap_or_else(|| typedexp::resolve_typespec(
                     &cm.type_spec, &all_type_vars, top_level, &pkg_prefix,
                 ));
-            // Only struct/alias types need an `impl Default` emitted before
-            // `ty_default_init_with_hier` will return Some on them. Enums
-            // with a unit variant are handled unconditionally there.
-            if !matches!(&ty, Ty::RustStruct(_) | Ty::AliasTo(_)) { continue; }
+            // Struct/alias types, and multi-variant uniontype *enums* without a
+            // unit variant, need an `impl Default` emitted before
+            // `ty_default_init_with_hier` will return Some on them (so a
+            // conditionally-assigned protected local — e.g.
+            // `protected Absyn.ElementItem e;` assigned only inside a loop/branch
+            // but used afterwards — gets Modelica's implicit default initialiser
+            // instead of being left bare and tripping Rust's E0381). Enums that
+            // DO have a unit variant are handled unconditionally there, so they
+            // need no demand seeding. The `defaultable_qnames` filter below still
+            // gates every case to types the analysis proved can be defaulted.
+            if !matches!(&ty, Ty::RustStruct(_) | Ty::AliasTo(_) | Ty::RustEnum(_)) { continue; }
             let mut qnames: HashSet<String> = HashSet::new();
             collect_concrete_qnames_in_ty(&ty, &mut qnames);
             for q in qnames {
