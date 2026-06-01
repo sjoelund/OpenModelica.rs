@@ -240,8 +240,9 @@ dependencies = [
 name = "openmodelica"
 version = "0.1.0"
 dependencies = [
+ "arcstr",
  "metamodelica",
- "openmodelica_backend",
+ "openmodelica_backend_main",
 ]
 
 [[package]]
