@@ -9554,14 +9554,18 @@ fn global_root_var_path(grc: &GlobalRootConst, ctx: &GenCtx) -> String {
     let crate_override: Option<&str> = match grc.const_name.as_str() {
         // openmodelica_frontend — types from Absyn, SCode, FCore, etc.
         "instHashIndex"
-        | "instNFInstCacheIndex"
-        | "instNFNodeCacheIndex"
-        | "instNFLookupCacheIndex"
         | "builtinIndex"
         | "builtinGraphIndex"
         | "inlineHashTable"
         | "operatorOverloadingCache"
         | "backendCevalInterface" => Some("openmodelica_frontend"),
+        // openmodelica_backend_main — the NF instantiation/node/lookup caches
+        // store `NFInstNode.InstNode` (openmodelica_nf_frontend) and are only
+        // accessed by Script/NFApi.mo. Declared in backend_main's Globals so the
+        // old frontend need not depend on the new-frontend crate.
+        "instNFInstCacheIndex"
+        | "instNFNodeCacheIndex"
+        | "instNFLookupCacheIndex" => Some("openmodelica_backend_main"),
         // openmodelica_frontend_dump — backendInterface root holds the
         // function table populated by the frontend_dump-side interface
         // (see FrontEnd/BackendInterface.mo and its `__OpenModelica_Interface`).
