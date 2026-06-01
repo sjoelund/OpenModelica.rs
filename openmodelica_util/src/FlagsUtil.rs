@@ -79,7 +79,7 @@ pub fn saveFlags(mut inFlags: Flags::Flag) -> () {
     ()
 }
 
-fn createConfigFlags() -> metamodelica::Array<Flags::FlagData> {
+pub fn createConfigFlags() -> metamodelica::Array<Flags::FlagData> {
     let mut configFlags: metamodelica::Array<Flags::FlagData> = Default::default();
     configFlags = metamodelica::arrayFromVec(({
         let mut __acc: Arc<metamodelica::List<Flags::FlagData>> = metamodelica::nil();
@@ -92,7 +92,7 @@ fn createConfigFlags() -> metamodelica::Array<Flags::FlagData> {
     configFlags
 }
 
-fn createDebugFlags() -> metamodelica::Array<bool> {
+pub fn createDebugFlags() -> metamodelica::Array<bool> {
     let mut debugFlags: metamodelica::Array<bool> = Default::default();
     debugFlags = metamodelica::arrayFromVec(({
         let mut __acc: Arc<metamodelica::List<bool>> = metamodelica::nil();
