@@ -1,6 +1,8 @@
 cargo-features = ["codegen-backend"]
 [profile.dev]
 codegen-backend = "cranelift"
+opt-level = 0
+debug = false
 
 [workspace]
 resolver = "3"
