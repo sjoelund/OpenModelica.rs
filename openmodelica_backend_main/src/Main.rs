@@ -683,45 +683,35 @@ pub fn main(mut args: Arc<metamodelica::List<ArcStr>>) -> Result<()> {
     let mut args_1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut seconds: i32 = 0;
     execStatReset()?;
-    if '__try0: {
-        match '__try1: {
-            args_1 = unwrap_break_err!(init(args.clone()), '__try1);
-            if unwrap_break_err!(Flags::isSet(Flags::GC_PROF.clone()), '__try1) {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*unwrap_break_err!(GCExt::profStatsStr(GCExt::getProfStats(), (literal!("GC stats after initialization:")).clone(), (literal!("\n  ")).clone()), '__try1)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            }
-            seconds = unwrap_break_err!(Flags::getConfigInt(Flags::ALARM.clone()), '__try1);
-            if seconds.clone() > 0 {
-                System::alarm(seconds.clone());
-            }
-            unwrap_break_err!(main2(args_1.clone()), '__try1);
-            Ok::<_, anyhow::Error>((args_1.clone(), seconds.clone()))
-        } {
-            Ok((__try1_o0, __try1_o1)) => {
-                args_1 = __try1_o0;
-                seconds = __try1_o1;
-            }
-            Err(_) => {
-                ErrorExt::clearMessages();
-                if '__try2: {
-                    unwrap_break_err!(FlagsUtil::new(args.clone()), '__try2);
-                    Ok::<(), anyhow::Error>(())
-                }.is_ok() { bail!("failure(): body succeeded") }
-                println!("{}", (ErrorExt::printMessagesStr(false)).clone());
-                println!("{}", (literal!("\n")).clone());
-                break '__try0 Err::<_, _>(anyhow::anyhow!("fail"));
-            }
-        }
+    match '__try0: {
+        args_1 = unwrap_break_err!(init(args.clone()), '__try0);
         if unwrap_break_err!(Flags::isSet(Flags::GC_PROF.clone()), '__try0) {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*unwrap_break_err!(GCExt::profStatsStr(GCExt::getProfStats(), (literal!("GC stats at end of program:")).clone(), (literal!("\n  ")).clone()), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*unwrap_break_err!(GCExt::profStatsStr(GCExt::getProfStats(), (literal!("GC stats after initialization:")).clone(), (literal!("\n  ")).clone()), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
-        Ok::<(), anyhow::Error>(())
-    }.is_err() {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Stack overflow detected and was not caught.\n")); __mm_s.push_str(&*literal!("Send us a bug report at https://trac.openmodelica.org/OpenModelica/newticket\n")); __mm_s.push_str(&*literal!("    Include the following trace:\n")); ArcStr::from(__mm_s) }).clone());
-        for mut s in &*StackOverflow::readableStacktraceMessages()? {
-            let mut s = s.clone();
-            println!("{}", (s.clone()).clone());
+        seconds = unwrap_break_err!(Flags::getConfigInt(Flags::ALARM.clone()), '__try0);
+        if seconds.clone() > 0 {
+            System::alarm(seconds.clone());
+        }
+        unwrap_break_err!(main2(args_1.clone()), '__try0);
+        Ok::<_, anyhow::Error>((args_1.clone(), seconds.clone()))
+    } {
+        Ok((__try0_o0, __try0_o1)) => {
+            args_1 = __try0_o0;
+            seconds = __try0_o1;
+        }
+        Err(_) => {
+            ErrorExt::clearMessages();
+            if '__try1: {
+                unwrap_break_err!(FlagsUtil::new(args.clone()), '__try1);
+                Ok::<(), anyhow::Error>(())
+            }.is_ok() { bail!("failure(): body succeeded") }
+            println!("{}", (ErrorExt::printMessagesStr(false)).clone());
             println!("{}", (literal!("\n")).clone());
+            bail!("fail");
         }
+    }
+    if Flags::isSet(Flags::GC_PROF.clone())? {
+        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*GCExt::profStatsStr(GCExt::getProfStats(), (literal!("GC stats at end of program:")).clone(), (literal!("\n  ")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     Ok(())
 }

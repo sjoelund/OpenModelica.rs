@@ -1508,25 +1508,11 @@ fn tplCallHandleErrors(mut inFun: Arc<dyn ::std::ops::Fn(Text) -> Result<Text> +
     let mut txt: Text = txt;
     let mut nErr: i32 = 0;
     nErr = Error::getNumErrorMessages();
-    match '__try0: {
-        if let Ok(__iflet1) = inFun(txt.clone()) {
-            txt = __iflet1;
-        } else {
-            unwrap_break_err!(addTemplateErrorFunc(inFun.clone()), '__try0);
-            break '__try0 Err::<_, _>(anyhow::anyhow!("fail"));
-        }
-        Ok::<_, anyhow::Error>((txt.clone(),))
-    } {
-        Ok((__try0_o0,)) => {
-            txt = __try0_o0;
-        }
-        Err(_) => {
-            if StackOverflow::hasStacktraceMessages() {
-                Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Stack overflow when evaluating function:\n")); __mm_s.push_str(&*stringDelimitList(StackOverflow::readableStacktraceMessages()?, (literal!("\n")).clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
-            }
-            addTemplateErrorFunc(inFun.clone())?;
-            bail!("fail");
-        }
+    if let Ok(__iflet0) = inFun(txt.clone()) {
+        txt = __iflet0;
+    } else {
+        addTemplateErrorFunc(inFun.clone())?;
+        bail!("fail");
     }
     Ok(txt)
 }

@@ -123,55 +123,47 @@ pub fn lower(mut lst: DAE::DAElist, mut inCache: FCore::Cache, mut inEnv: FCore:
     let mut numCheckpoints: i32 = 0;
     let mut syst: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
     numCheckpoints = ErrorExt::getNumCheckpoints();
-    if '__try0: {
-        StackOverflow::clearStacktraceMessages();
-        System::tmpTickResetIndex(0, Global::backendDAE_fileSequence.clone());
-        System::tmpTickResetIndex(1, Global::backendDAE_cseIndex.clone());
-        System::tmpTickResetIndex(0, Global::strongComponent_index.clone());
-        functionTree = FCore::getFunctionTree(inCache.clone());
-        functionTree = lowerFunctions(functionTree.clone());
-        let (__pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(processBuiltinExpressions(lst.clone(), functionTree.clone())) {
-            (DAE::DAElist { elementLst: __pa1 }, __pa2, __pa3) => (__pa1.clone(), __pa2.clone(), __pa3.clone()),
-            _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
-        } };
-        elems = __pa1.clone();
-        functionTree = __pa2.clone();
-        timeEvents = __pa3.clone();
-        (varlst, globalKnownVarLst, extvarlst, eqns, reqns, ieqns, constrs, clsAttrs, extObjCls, aliaseqns, _) = unwrap_break_err!(lower2(elems.clone().reverse(), functionTree.clone(), HashTableExpToExp::emptyHashTable(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil()), '__try0);
-        globalKnownVars = BackendVariable::listVar(globalKnownVarLst.clone());
-        localKnownVars = BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone());
-        extVars = BackendVariable::listVar(extvarlst.clone());
-        aliasVars = BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone());
-        if unwrap_break_err!(Flags::isSet(Flags::VECTORIZE.clone()), '__try0) {
-            (varlst, eqns) = unwrap_break_err!(Vectorization::collectForLoops(varlst.clone(), eqns.clone()), '__try0);
-        }
-        vars = BackendVariable::listVar(varlst.clone());
-        (vars, globalKnownVars, extVars, aliasVars, eqns, reqns, ieqns) = unwrap_break_err!(handleAliasEquations(aliaseqns.clone(), vars.clone(), globalKnownVars.clone(), extVars.clone(), aliasVars.clone(), eqns.clone(), reqns.clone(), ieqns.clone()), '__try0);
-        (ieqns, eqns, reqns, extAliasVars, globalKnownVars, extVars) = unwrap_break_err!(getExternalObjectAlias(ieqns.clone(), eqns.clone(), reqns.clone(), globalKnownVars.clone(), extVars.clone()), '__try0);
-        aliasVars = unwrap_break_err!(BackendVariable::addVariables(extAliasVars.clone(), aliasVars.clone()), '__try0);
-        (globalKnownVarLst, eqns, reqns, ieqns) = unwrap_break_err!(patchRecordBindings(varlst.clone(), extvarlst.clone(), globalKnownVarLst.clone(), eqns.clone(), reqns.clone(), ieqns.clone()), '__try0);
-        vars_1 = detectImplicitDiscrete(vars.clone(), globalKnownVars.clone(), eqns.clone());
-        eqnarr = unwrap_break_err!(BackendEquation::listEquation(eqns.clone()), '__try0);
-        reqnarr = unwrap_break_err!(BackendEquation::listEquation(reqns.clone()), '__try0);
-        ieqnarr = unwrap_break_err!(BackendEquation::listEquation(ieqns.clone()), '__try0);
-        einfo = BackendDAE::EventInfo { timeEvents: timeEvents.clone(), zeroCrossings: unwrap_break_err!(ZeroCrossings::new(), '__try0), relations: unwrap_break_err!(DoubleEnded::fromList(metamodelica::nil()), '__try0), samples: unwrap_break_err!(ZeroCrossings::new(), '__try0), numberMathEvents: 0 };
-        symjacs = list![(None, (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), -1), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), -1)), (None, (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), -1), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), -1)), (None, (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), -1), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), -1)), (None, (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), -1), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), -1))];
-        syst = BackendDAEUtil::createEqSystem(vars_1.clone(), eqnarr.clone(), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, reqnarr.clone());
-        outBackendDAE = Arc::new(BackendDAE::BackendDAE { eqs: metamodelica::cons(syst.clone(), metamodelica::nil()), shared: Arc::new(BackendDAE::Shared { globalKnownVars: globalKnownVars.clone(), localKnownVars: localKnownVars.clone(), externalObjects: extVars.clone(), aliasVars: aliasVars.clone(), initialEqs: ieqnarr.clone(), removedEqs: BackendEquation::emptyEqns(), constraints: constrs.clone(), classAttrs: clsAttrs.clone(), cache: inCache.clone(), graph: inEnv.clone(), functionTree: functionTree.clone(), eventInfo: einfo.clone(), extObjClasses: extObjCls.clone(), backendDAEType: crate::BackendDAE::BackendDAEType::SIMULATION, symjacs: symjacs.clone(), info: inExtraInfo.clone(), partitionsInfo: BackendDAEUtil::emptyPartitionsInfo(), daeModeData: BackendDAE::emptyDAEModeData().clone(), dataReconciliationData: None, timeInterval: None }) });
-        unwrap_break_err!(BackendDAEUtil::checkBackendDAEWithErrorMsg(outBackendDAE.clone()), '__try0);
-        unwrap_break_err!(BackendDAEUtil::checkAdjacencyMatrixSolvability(syst.clone(), functionTree.clone(), BackendDAEUtil::isInitializationDAE(outBackendDAE.shared.clone())), '__try0);
-        if unwrap_break_err!(Flags::isSet(Flags::DUMP_BACKENDDAE_INFO.clone()), '__try0) {
-            unwrap_break_err!(Error::addSourceMessage(Error::BACKENDDAEINFO_LOWER.clone(), list![ArcStr::from(::std::format!("{}", BackendEquation::equationArraySize(syst.orderedEqs.clone())?)), ArcStr::from(::std::format!("{}", BackendVariable::varsSize(syst.orderedVars.clone())))], Absyn::dummyInfo.clone()), '__try0);
-        }
-        unwrap_break_err!(execStat((literal!("Generate backend data structure")).clone()), '__try0);
-        return Ok(outBackendDAE.clone());
-        Ok::<(), anyhow::Error>(())
-    }.is_err() {
-        { let __v = None; openmodelica_util::Globals::stackoverFlowIndex.with(|__root| *__root.borrow_mut() = __v) };
-        ErrorExt::rollbackNumCheckpoints(ErrorExt::getNumCheckpoints() - numCheckpoints.clone());
-        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Stack overflow in ")); __mm_s.push_str(&*literal!("BackendDAECreate.lower")); __mm_s.push_str(&*literal!("...\n")); __mm_s.push_str(&*stringDelimitList(StackOverflow::readableStacktraceMessages()?, (literal!("\n")).clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
-        StackOverflow::clearStacktraceMessages();
+    StackOverflow::clearStacktraceMessages();
+    System::tmpTickResetIndex(0, Global::backendDAE_fileSequence.clone());
+    System::tmpTickResetIndex(1, Global::backendDAE_cseIndex.clone());
+    System::tmpTickResetIndex(0, Global::strongComponent_index.clone());
+    functionTree = FCore::getFunctionTree(inCache.clone());
+    functionTree = lowerFunctions(functionTree.clone());
+    let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(processBuiltinExpressions(lst.clone(), functionTree.clone())) {
+        (DAE::DAElist { elementLst: __pa0 }, __pa1, __pa2) => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+        _ => bail!("pattern mismatch"),
+    } };
+    elems = __pa0.clone();
+    functionTree = __pa1.clone();
+    timeEvents = __pa2.clone();
+    (varlst, globalKnownVarLst, extvarlst, eqns, reqns, ieqns, constrs, clsAttrs, extObjCls, aliaseqns, _) = lower2(elems.clone().reverse(), functionTree.clone(), HashTableExpToExp::emptyHashTable(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil())?;
+    globalKnownVars = BackendVariable::listVar(globalKnownVarLst.clone());
+    localKnownVars = BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone());
+    extVars = BackendVariable::listVar(extvarlst.clone());
+    aliasVars = BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone());
+    if Flags::isSet(Flags::VECTORIZE.clone())? {
+        (varlst, eqns) = Vectorization::collectForLoops(varlst.clone(), eqns.clone())?;
     }
+    vars = BackendVariable::listVar(varlst.clone());
+    (vars, globalKnownVars, extVars, aliasVars, eqns, reqns, ieqns) = handleAliasEquations(aliaseqns.clone(), vars.clone(), globalKnownVars.clone(), extVars.clone(), aliasVars.clone(), eqns.clone(), reqns.clone(), ieqns.clone())?;
+    (ieqns, eqns, reqns, extAliasVars, globalKnownVars, extVars) = getExternalObjectAlias(ieqns.clone(), eqns.clone(), reqns.clone(), globalKnownVars.clone(), extVars.clone())?;
+    aliasVars = BackendVariable::addVariables(extAliasVars.clone(), aliasVars.clone())?;
+    (globalKnownVarLst, eqns, reqns, ieqns) = patchRecordBindings(varlst.clone(), extvarlst.clone(), globalKnownVarLst.clone(), eqns.clone(), reqns.clone(), ieqns.clone())?;
+    vars_1 = detectImplicitDiscrete(vars.clone(), globalKnownVars.clone(), eqns.clone());
+    eqnarr = BackendEquation::listEquation(eqns.clone())?;
+    reqnarr = BackendEquation::listEquation(reqns.clone())?;
+    ieqnarr = BackendEquation::listEquation(ieqns.clone())?;
+    einfo = BackendDAE::EventInfo { timeEvents: timeEvents.clone(), zeroCrossings: ZeroCrossings::new()?, relations: DoubleEnded::fromList(metamodelica::nil())?, samples: ZeroCrossings::new()?, numberMathEvents: 0 };
+    symjacs = list![(None, (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), -1), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), -1)), (None, (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), -1), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), -1)), (None, (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), -1), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), -1)), (None, (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), -1), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), -1))];
+    syst = BackendDAEUtil::createEqSystem(vars_1.clone(), eqnarr.clone(), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, reqnarr.clone());
+    outBackendDAE = Arc::new(BackendDAE::BackendDAE { eqs: metamodelica::cons(syst.clone(), metamodelica::nil()), shared: Arc::new(BackendDAE::Shared { globalKnownVars: globalKnownVars.clone(), localKnownVars: localKnownVars.clone(), externalObjects: extVars.clone(), aliasVars: aliasVars.clone(), initialEqs: ieqnarr.clone(), removedEqs: BackendEquation::emptyEqns(), constraints: constrs.clone(), classAttrs: clsAttrs.clone(), cache: inCache.clone(), graph: inEnv.clone(), functionTree: functionTree.clone(), eventInfo: einfo.clone(), extObjClasses: extObjCls.clone(), backendDAEType: crate::BackendDAE::BackendDAEType::SIMULATION, symjacs: symjacs.clone(), info: inExtraInfo.clone(), partitionsInfo: BackendDAEUtil::emptyPartitionsInfo(), daeModeData: BackendDAE::emptyDAEModeData().clone(), dataReconciliationData: None, timeInterval: None }) });
+    BackendDAEUtil::checkBackendDAEWithErrorMsg(outBackendDAE.clone())?;
+    BackendDAEUtil::checkAdjacencyMatrixSolvability(syst.clone(), functionTree.clone(), BackendDAEUtil::isInitializationDAE(outBackendDAE.shared.clone()))?;
+    if Flags::isSet(Flags::DUMP_BACKENDDAE_INFO.clone())? {
+        Error::addSourceMessage(Error::BACKENDDAEINFO_LOWER.clone(), list![ArcStr::from(::std::format!("{}", BackendEquation::equationArraySize(syst.orderedEqs.clone())?)), ArcStr::from(::std::format!("{}", BackendVariable::varsSize(syst.orderedVars.clone())))], Absyn::dummyInfo.clone())?;
+    }
+    execStat((literal!("Generate backend data structure")).clone())?;
+    return Ok(outBackendDAE.clone());
     bail!("fail");
     Ok(outBackendDAE)
 }

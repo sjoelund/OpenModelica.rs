@@ -84,7 +84,6 @@ use openmodelica_frontend::ValuesUtil;
 use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_dump::AvlTreePathFunction;
 use openmodelica_frontend_dump::Dump;
-use openmodelica_frontend_dump::ExpressionBasics;
 use openmodelica_frontend_dump::SCodeDump;
 use openmodelica_frontend_dump::SCodeUtil;
 use openmodelica_frontend_dump::TypesDump;
@@ -2878,31 +2877,8 @@ fn cevalCallFunctionEvaluateOrGenerate(mut inCache: FCore::Cache, mut inEnv: FCo
     if isNone(openmodelica_util::Globals::stackoverFlowIndex.with(|__root| __root.borrow().clone())) {
         { let __v = Some(1); openmodelica_util::Globals::stackoverFlowIndex.with(|__root| *__root.borrow_mut() = __v) };
         numCheckpoints = ErrorExt::getNumCheckpoints();
-        match '__try0: {
-            StackOverflow::clearStacktraceMessages();
-            (outCache, outValue) = unwrap_break_err!(cevalCallFunctionEvaluateOrGenerate2(inCache.clone(), inEnv.clone(), inExp.clone(), inValuesValueLst.clone(), r#impl.clone(), inMsg.clone(), bIsCompleteFunction.clone()), '__try0);
-            Ok::<_, anyhow::Error>((outCache.clone(), outValue.clone()))
-        } {
-            Ok((__try0_o0, __try0_o1)) => {
-                outCache = __try0_o0;
-                outValue = __try0_o1;
-            }
-            Err(_) => {
-                { let __v = None; openmodelica_util::Globals::stackoverFlowIndex.with(|__root| *__root.borrow_mut() = __v) };
-                ErrorExt::rollbackNumCheckpoints(ErrorExt::getNumCheckpoints() - numCheckpoints.clone());
-                Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Stack overflow when evaluating function call: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!("...\n")); __mm_s.push_str(&*stringDelimitList(StackOverflow::readableStacktraceMessages()?, (literal!("\n")).clone())); ArcStr::from(__mm_s) }).clone(), (match inMsg.clone() {
-        Absyn::Msg::MSG { info: mut info } => {
-            info.clone()
-        },
-        _ => {
-            metamodelica::sourceInfo!()
-        },
-    }))?;
-                StackOverflow::clearStacktraceMessages();
-                outCache = inCache.clone();
-                outValue = Arc::new(openmodelica_frontend_types::Values::Value::META_FAIL);
-            }
-        }
+        StackOverflow::clearStacktraceMessages();
+        (outCache, outValue) = cevalCallFunctionEvaluateOrGenerate2(inCache.clone(), inEnv.clone(), inExp.clone(), inValuesValueLst.clone(), r#impl.clone(), inMsg.clone(), bIsCompleteFunction.clone())?;
         { let __v = None; openmodelica_util::Globals::stackoverFlowIndex.with(|__root| *__root.borrow_mut() = __v) };
     } else {
         (outCache, outValue) = cevalCallFunctionEvaluateOrGenerate2(inCache.clone(), inEnv.clone(), inExp.clone(), inValuesValueLst.clone(), r#impl.clone(), inMsg.clone(), bIsCompleteFunction.clone())?;

@@ -8488,94 +8488,86 @@ pub fn getSolvedSystem(mut inDAE: Arc<BackendDAE::BackendDAE>, mut fileNamePrefi
     let mut oldSize: i32 = 0;
     let mut funcTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
     numCheckpoints = ErrorExt::getNumCheckpoints();
-    if '__try0: {
-        StackOverflow::clearStacktraceMessages();
-        preOptModules = unwrap_break_err!(getPreOptModules(strPreOptModules.clone()), '__try0);
-        postOptModules = unwrap_break_err!(getPostOptModules(strPostOptModules.clone()), '__try0);
-        matchingAlgorithm = unwrap_break_err!(getMatchingAlgorithm(strmatchingAlgorithm.clone()), '__try0);
-        daeHandler = unwrap_break_err!(getIndexReductionMethod(strdaeHandler.clone()), '__try0);
-        if unwrap_break_err!(Flags::isSet(Flags::DUMP_DAE_LOW.clone()), '__try0) || unwrap_break_err!(Flags::isSet(Flags::OPT_DAE_DUMP.clone()), '__try0) {
-            unwrap_break_err!(BackendDump::dumpBackendDAE(inDAE.clone(), (literal!("dumpdaelow (before pre-optimization)")).clone()), '__try0);
-            if unwrap_break_err!(Flags::isSet(Flags::ADDITIONAL_GRAPHVIZ_DUMP.clone()), '__try0) {
-                unwrap_break_err!(BackendDump::graphvizAdjacencyMatrix(inDAE.clone(), (literal!("dumpdaelow")).clone()), '__try0);
-            }
+    StackOverflow::clearStacktraceMessages();
+    preOptModules = getPreOptModules(strPreOptModules.clone())?;
+    postOptModules = getPostOptModules(strPostOptModules.clone())?;
+    matchingAlgorithm = getMatchingAlgorithm(strmatchingAlgorithm.clone())?;
+    daeHandler = getIndexReductionMethod(strdaeHandler.clone())?;
+    if Flags::isSet(Flags::DUMP_DAE_LOW.clone())? || Flags::isSet(Flags::OPT_DAE_DUMP.clone())? {
+        BackendDump::dumpBackendDAE(inDAE.clone(), (literal!("dumpdaelow (before pre-optimization)")).clone())?;
+        if Flags::isSet(Flags::ADDITIONAL_GRAPHVIZ_DUMP.clone())? {
+            BackendDump::graphvizAdjacencyMatrix(inDAE.clone(), (literal!("dumpdaelow")).clone())?;
         }
-        dae = unwrap_break_err!(preOptimizeDAE(inDAE.clone(), preOptModules.clone()), '__try0);
-        unwrap_break_err!(execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("pre-optimization done (n=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", daeSize(dae.clone())))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone()), '__try0);
-        dae = unwrap_break_err!(causalizeDAE(dae.clone(), None, matchingAlgorithm.clone(), daeHandler.clone(), true), '__try0);
-        unwrap_break_err!(execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("matching and sorting (n=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", daeSize(dae.clone())))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone()), '__try0);
-        dae = unwrap_break_err!(SynchronousFeatures::synchronousFeatures(dae.clone()), '__try0);
-        if unwrap_break_err!(Flags::isSet(Flags::OPT_DAE_DUMP.clone()), '__try0) {
-            unwrap_break_err!(BackendDump::dumpBackendDAE(dae.clone(), (literal!("synchronousFeatures")).clone()), '__try0);
-        }
-        if unwrap_break_err!(Flags::isSet(Flags::GRAPHML.clone()), '__try0) {
-            unwrap_break_err!(BackendDump::dumpBipartiteGraphDAE(dae.clone(), (fileNamePrefix.clone()).clone()), '__try0);
-        }
-        if unwrap_break_err!(Flags::isSet(Flags::EVAL_OUTPUT_ONLY.clone()), '__try0) {
-            oldSize = daeSize(dae.clone());
-            dae = unwrap_break_err!(BackendDAEOptimize::evaluateOutputsOnly(dae.clone()), '__try0);
-            unwrap_break_err!(execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("evaluateOutputsOnly (n=")); __mm_s.push_str(&*intString(oldSize.clone())); __mm_s.push_str(&*literal!(" -> n=")); __mm_s.push_str(&*intString(daeSize(dae.clone()))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone()), '__try0);
-        }
-        dae = unwrap_break_err!(SymbolicJacobian::calculateStateSetsJacobians(dae.clone()), '__try0);
-        (outInitDAE, outInitDAE_lambda0_option, outRemovedInitialEquationLst, globalKnownVars, dae) = unwrap_break_err!(Initialization::solveInitialSystem(dae.clone()), '__try0);
-        if unwrap_break_err!(Flags::isSet(Flags::WARN_NO_NOMINAL.clone()), '__try0) {
-            unwrap_break_err!(warnAboutIterationVariablesWithNoNominal(outInitDAE.clone()), '__try0);
-        }
-        simDAE = unwrap_break_err!(setFunctionTree(dae.clone(), getFunctions(outInitDAE.shared.clone())?), '__try0);
-        simDAE = unwrap_break_err!(setDAEGlobalKnownVars(simDAE.clone(), globalKnownVars.clone()), '__try0);
-        simDAE = unwrap_break_err!(BackendDAEOptimize::addInitialStmtsToAlgorithms(simDAE.clone(), false), '__try0);
-        simDAE = unwrap_break_err!(Initialization::removeInitializationStuff(simDAE.clone()), '__try0);
-        outInlineData = unwrap_break_err!(SymbolicImplicitSolver::symSolver(simDAE.clone()), '__try0);
-        simDAE = unwrap_break_err!(postOptimizeDAE(simDAE.clone(), postOptModules.clone(), matchingAlgorithm.clone(), daeHandler.clone()), '__try0);
-        if unwrap_break_err!(Flags::isSet(Flags::WARN_NO_NOMINAL.clone()), '__try0) {
-            unwrap_break_err!(warnAboutIterationVariablesWithNoNominal(simDAE.clone()), '__try0);
-        }
-        simDAE = unwrap_break_err!(sortGlobalKnownVarsInDAE(simDAE.clone()), '__try0);
-        unwrap_break_err!(execStat((literal!("sort global known variables")).clone()), '__try0);
-        funcTree = unwrap_break_err!(BackendDAEOptimize::copyRecordConstructorAndExternalObjConstructorDestructor(getFunctions(simDAE.shared.clone())?), '__try0);
-        funcTree = unwrap_break_err!(BackendDAEOptimize::removeUnusedFunctions(outInitDAE.eqs.clone(), outInitDAE.shared.clone(), outRemovedInitialEquationLst.clone(), getFunctions(simDAE.shared.clone())?, funcTree.clone()), '__try0);
-        if isSome(outInitDAE_lambda0_option.clone()) {
-            let __pa1 = ::match_deref::match_deref! { match &(outInitDAE_lambda0_option.clone()) {
-                Some(__pa1) => __pa1.clone(),
-                _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
-            } };
-            outInitDAE_lambda0 = __pa1.clone();
-            funcTree = unwrap_break_err!(BackendDAEOptimize::removeUnusedFunctions(outInitDAE_lambda0.eqs.clone(), simDAE.shared.clone(), metamodelica::nil(), getFunctions(simDAE.shared.clone())?, funcTree.clone()), '__try0);
-        }
-        funcTree = unwrap_break_err!(BackendDAEOptimize::removeUnusedFunctions(simDAE.eqs.clone(), simDAE.shared.clone(), metamodelica::nil(), getFunctions(simDAE.shared.clone())?, funcTree.clone()), '__try0);
-        outSimDAE = unwrap_break_err!(setFunctionTree(simDAE.clone(), funcTree.clone()), '__try0);
-        unwrap_break_err!(execStat((literal!("remove unused functions")).clone()), '__try0);
-        if unwrap_break_err!(Flags::isSet(Flags::DUMP_INDX_DAE.clone()), '__try0) {
-            unwrap_break_err!(BackendDump::dumpBackendDAE(outSimDAE.clone(), (literal!("dumpindxdae")).clone()), '__try0);
-            if unwrap_break_err!(Flags::isSet(Flags::ADDITIONAL_GRAPHVIZ_DUMP.clone()), '__try0) {
-                unwrap_break_err!(BackendDump::graphvizBackendDAE(outSimDAE.clone(), (literal!("dumpindxdae")).clone()), '__try0);
-            }
-        }
-        if unwrap_break_err!(Flags::isSet(Flags::DUMP_BACKENDDAE_INFO.clone()), '__try0) || unwrap_break_err!(Flags::isSet(Flags::DUMP_STATESELECTION_INFO.clone()), '__try0) || unwrap_break_err!(Flags::isSet(Flags::DUMP_DISCRETEVARS_INFO.clone()), '__try0) {
-            unwrap_break_err!(BackendDump::dumpCompShort(outSimDAE.clone()), '__try0);
-        }
-        if unwrap_break_err!(Flags::isSet(Flags::DUMP_EQNINORDER.clone()), '__try0) {
-            unwrap_break_err!(BackendDump::dumpEqnsSolved(outSimDAE.clone(), (literal!("indxdae: eqns in order")).clone()), '__try0);
-        }
-        if unwrap_break_err!(Flags::isSet(Flags::DUMP_LOOPS.clone()), '__try0) || unwrap_break_err!(Flags::isSet(Flags::DUMP_LOOPS_VERBOSE.clone()), '__try0) {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BackendDump::BORDER)); __mm_s.push_str(&*literal!("\n\n Algbraic Loops (Simulation): \n\n")); __mm_s.push_str(&*arcstr::literal!(BackendDump::BORDER)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            unwrap_break_err!(BackendDump::dumpLoops(outSimDAE.clone()), '__try0);
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BackendDump::BORDER)); __mm_s.push_str(&*literal!("\n\n Algbraic Loops (Initialization): \n\n")); __mm_s.push_str(&*arcstr::literal!(BackendDump::BORDER)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            unwrap_break_err!(BackendDump::dumpLoops(outInitDAE.clone()), '__try0);
-            if isSome(outInitDAE_lambda0_option.clone()) {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BackendDump::BORDER)); __mm_s.push_str(&*literal!("\n\n Algbraic Loops (Initialization Lambda=0 (Homotopy)): \n\n")); __mm_s.push_str(&*arcstr::literal!(BackendDump::BORDER)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-                unwrap_break_err!(BackendDump::dumpLoops(Util::getOption(outInitDAE_lambda0_option.clone())?), '__try0);
-            }
-        }
-        unwrap_break_err!(checkBackendDAEWithErrorMsg(outSimDAE.clone()), '__try0);
-        return Ok((outSimDAE.clone(), outInitDAE.clone(), outInitDAE_lambda0_option.clone(), outInlineData.clone(), outRemovedInitialEquationLst.clone()));
-        Ok::<(), anyhow::Error>(())
-    }.is_err() {
-        { let __v = None; openmodelica_util::Globals::stackoverFlowIndex.with(|__root| *__root.borrow_mut() = __v) };
-        ErrorExt::rollbackNumCheckpoints(ErrorExt::getNumCheckpoints() - numCheckpoints.clone());
-        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Stack overflow in ")); __mm_s.push_str(&*literal!("BackendDAEUtil.getSolvedSystem")); __mm_s.push_str(&*literal!("...\n")); __mm_s.push_str(&*stringDelimitList(StackOverflow::readableStacktraceMessages()?, (literal!("\n")).clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
-        StackOverflow::clearStacktraceMessages();
     }
+    dae = preOptimizeDAE(inDAE.clone(), preOptModules.clone())?;
+    execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("pre-optimization done (n=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", daeSize(dae.clone())))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
+    dae = causalizeDAE(dae.clone(), None, matchingAlgorithm.clone(), daeHandler.clone(), true)?;
+    execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("matching and sorting (n=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", daeSize(dae.clone())))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
+    dae = SynchronousFeatures::synchronousFeatures(dae.clone())?;
+    if Flags::isSet(Flags::OPT_DAE_DUMP.clone())? {
+        BackendDump::dumpBackendDAE(dae.clone(), (literal!("synchronousFeatures")).clone())?;
+    }
+    if Flags::isSet(Flags::GRAPHML.clone())? {
+        BackendDump::dumpBipartiteGraphDAE(dae.clone(), (fileNamePrefix.clone()).clone())?;
+    }
+    if Flags::isSet(Flags::EVAL_OUTPUT_ONLY.clone())? {
+        oldSize = daeSize(dae.clone());
+        dae = BackendDAEOptimize::evaluateOutputsOnly(dae.clone())?;
+        execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("evaluateOutputsOnly (n=")); __mm_s.push_str(&*intString(oldSize.clone())); __mm_s.push_str(&*literal!(" -> n=")); __mm_s.push_str(&*intString(daeSize(dae.clone()))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
+    }
+    dae = SymbolicJacobian::calculateStateSetsJacobians(dae.clone())?;
+    (outInitDAE, outInitDAE_lambda0_option, outRemovedInitialEquationLst, globalKnownVars, dae) = Initialization::solveInitialSystem(dae.clone())?;
+    if Flags::isSet(Flags::WARN_NO_NOMINAL.clone())? {
+        warnAboutIterationVariablesWithNoNominal(outInitDAE.clone())?;
+    }
+    simDAE = setFunctionTree(dae.clone(), getFunctions(outInitDAE.shared.clone())?)?;
+    simDAE = setDAEGlobalKnownVars(simDAE.clone(), globalKnownVars.clone())?;
+    simDAE = BackendDAEOptimize::addInitialStmtsToAlgorithms(simDAE.clone(), false)?;
+    simDAE = Initialization::removeInitializationStuff(simDAE.clone())?;
+    outInlineData = SymbolicImplicitSolver::symSolver(simDAE.clone())?;
+    simDAE = postOptimizeDAE(simDAE.clone(), postOptModules.clone(), matchingAlgorithm.clone(), daeHandler.clone())?;
+    if Flags::isSet(Flags::WARN_NO_NOMINAL.clone())? {
+        warnAboutIterationVariablesWithNoNominal(simDAE.clone())?;
+    }
+    simDAE = sortGlobalKnownVarsInDAE(simDAE.clone())?;
+    execStat((literal!("sort global known variables")).clone())?;
+    funcTree = BackendDAEOptimize::copyRecordConstructorAndExternalObjConstructorDestructor(getFunctions(simDAE.shared.clone())?)?;
+    funcTree = BackendDAEOptimize::removeUnusedFunctions(outInitDAE.eqs.clone(), outInitDAE.shared.clone(), outRemovedInitialEquationLst.clone(), getFunctions(simDAE.shared.clone())?, funcTree.clone())?;
+    if isSome(outInitDAE_lambda0_option.clone()) {
+        let __pa0 = ::match_deref::match_deref! { match &(outInitDAE_lambda0_option.clone()) {
+            Some(__pa0) => __pa0.clone(),
+            _ => bail!("pattern mismatch"),
+        } };
+        outInitDAE_lambda0 = __pa0.clone();
+        funcTree = BackendDAEOptimize::removeUnusedFunctions(outInitDAE_lambda0.eqs.clone(), simDAE.shared.clone(), metamodelica::nil(), getFunctions(simDAE.shared.clone())?, funcTree.clone())?;
+    }
+    funcTree = BackendDAEOptimize::removeUnusedFunctions(simDAE.eqs.clone(), simDAE.shared.clone(), metamodelica::nil(), getFunctions(simDAE.shared.clone())?, funcTree.clone())?;
+    outSimDAE = setFunctionTree(simDAE.clone(), funcTree.clone())?;
+    execStat((literal!("remove unused functions")).clone())?;
+    if Flags::isSet(Flags::DUMP_INDX_DAE.clone())? {
+        BackendDump::dumpBackendDAE(outSimDAE.clone(), (literal!("dumpindxdae")).clone())?;
+        if Flags::isSet(Flags::ADDITIONAL_GRAPHVIZ_DUMP.clone())? {
+            BackendDump::graphvizBackendDAE(outSimDAE.clone(), (literal!("dumpindxdae")).clone())?;
+        }
+    }
+    if Flags::isSet(Flags::DUMP_BACKENDDAE_INFO.clone())? || Flags::isSet(Flags::DUMP_STATESELECTION_INFO.clone())? || Flags::isSet(Flags::DUMP_DISCRETEVARS_INFO.clone())? {
+        BackendDump::dumpCompShort(outSimDAE.clone())?;
+    }
+    if Flags::isSet(Flags::DUMP_EQNINORDER.clone())? {
+        BackendDump::dumpEqnsSolved(outSimDAE.clone(), (literal!("indxdae: eqns in order")).clone())?;
+    }
+    if Flags::isSet(Flags::DUMP_LOOPS.clone())? || Flags::isSet(Flags::DUMP_LOOPS_VERBOSE.clone())? {
+        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BackendDump::BORDER)); __mm_s.push_str(&*literal!("\n\n Algbraic Loops (Simulation): \n\n")); __mm_s.push_str(&*arcstr::literal!(BackendDump::BORDER)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        BackendDump::dumpLoops(outSimDAE.clone())?;
+        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BackendDump::BORDER)); __mm_s.push_str(&*literal!("\n\n Algbraic Loops (Initialization): \n\n")); __mm_s.push_str(&*arcstr::literal!(BackendDump::BORDER)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        BackendDump::dumpLoops(outInitDAE.clone())?;
+        if isSome(outInitDAE_lambda0_option.clone()) {
+            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BackendDump::BORDER)); __mm_s.push_str(&*literal!("\n\n Algbraic Loops (Initialization Lambda=0 (Homotopy)): \n\n")); __mm_s.push_str(&*arcstr::literal!(BackendDump::BORDER)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            BackendDump::dumpLoops(Util::getOption(outInitDAE_lambda0_option.clone())?)?;
+        }
+    }
+    checkBackendDAEWithErrorMsg(outSimDAE.clone())?;
+    return Ok((outSimDAE.clone(), outInitDAE.clone(), outInitDAE_lambda0_option.clone(), outInlineData.clone(), outRemovedInitialEquationLst.clone()));
     bail!("fail");
     Ok((outSimDAE, outInitDAE, outInitDAE_lambda0_option, outInlineData, outRemovedInitialEquationLst))
 }

@@ -287,36 +287,17 @@ fn evaluate2(mut inStatement: GlobalScript::Statement) -> Result<ArcStr> {
     let mut algitem: Arc<Absyn::AlgorithmItem> = Arc::new(<Absyn::AlgorithmItem as ::std::default::Default>::default());
     let mut exp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-    match '__try0: {
-        outString = ((::match_deref::match_deref! { match &(inStatement.clone()) {
+    outString = ((::match_deref::match_deref! { match &(inStatement.clone()) {
         GlobalScript::Statement::IALG { algItem: algitem @ Deref @ Absyn::AlgorithmItem::ALGORITHMITEM { .. } } => {
-            unwrap_break_err!(InstHashTable::init(), '__try0);
-            unwrap_break_err!(evaluateAlgItem(algitem.clone()), '__try0)
+            InstHashTable::init()?;
+            evaluateAlgItem(algitem.clone())?
         },
         GlobalScript::Statement::IEXP { info, exp } => {
-            unwrap_break_err!(InstHashTable::init(), '__try0);
+            InstHashTable::init()?;
             evaluateExprToStr(exp.clone(), info.clone())
         },
         _ => bail!("match: no arm matched"),
     } })).clone();
-        Ok::<_, anyhow::Error>((outString.clone(),))
-    } {
-        Ok((__try0_o0,)) => {
-            outString = __try0_o0;
-        }
-        Err(_) => {
-            r#str = (literal!("")).clone();
-            str_1 = (literal!("")).clone();
-            GCExt::gcollect();
-            r#str = (StackOverflow::getReadableMessage((literal!("\n")).clone())?).clone();
-            if Testsuite::isRunning()? {
-                Error::clearCurrentComponent()?;
-            }
-            Error::addMessage(Error::STACK_OVERFLOW_DETAILED.clone(), list![(GlobalScriptDump::printIstmtStr(inStatement.clone())?).clone(), (r#str.clone()).clone()])?;
-            Error::clearCurrentComponent()?;
-            outString = (literal!("")).clone();
-        }
-    }
     Ok(outString)
 }
 
