@@ -856,15 +856,15 @@ macro_rules! list {
     };
     // Case with a trailing comma
     ( $($x:expr),*, ) => {
-        list!($($x),*)
+        $crate::list!($($x),*)
     };
     // General case: peel off the first element and recurse
     ( $x:expr, $($rest:expr),+ ) => {
-        $crate::cons($x, list!($($rest),+))
+        $crate::cons($x, $crate::list!($($rest),+))
     };
     // Single element case
     ( $x:expr ) => {
-        $crate::cons($x, list!())
+        $crate::cons($x, $crate::list!())
     };
 }
 
