@@ -29,7 +29,7 @@ fn init_flags() {
 fn make_ident(name: &str) -> Arc<DAE::ComponentRef> {
     CRB::makeCrefIdent(
         arcstr::format!("{}", name),
-        DAE::T_REAL_DEFAULT.clone(),
+        DAE::T_REAL_DEFAULT().clone(),
         metamodelica::nil(),
     )
 }
@@ -38,13 +38,13 @@ fn make_ident_with_subs(
     name: &str,
     subs: Arc<metamodelica::List<Arc<DAE::Subscript>>>,
 ) -> Arc<DAE::ComponentRef> {
-    CRB::makeCrefIdent(arcstr::format!("{}", name), DAE::T_REAL_DEFAULT.clone(), subs)
+    CRB::makeCrefIdent(arcstr::format!("{}", name), DAE::T_REAL_DEFAULT().clone(), subs)
 }
 
 fn make_qual(name: &str, rest: Arc<DAE::ComponentRef>) -> Arc<DAE::ComponentRef> {
     CRB::makeCrefQual(
         arcstr::format!("{}", name),
-        DAE::T_REAL_DEFAULT.clone(),
+        DAE::T_REAL_DEFAULT().clone(),
         metamodelica::nil(),
         rest,
     )

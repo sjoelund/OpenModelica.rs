@@ -52,11 +52,11 @@ fn wholedim() -> Arc<DAE::Subscript> {
 }
 
 fn add_op() -> DAE::Operator {
-    DAE::Operator::ADD { ty: DAE::T_REAL_DEFAULT.clone() }
+    DAE::Operator::ADD { ty: DAE::T_REAL_DEFAULT().clone() }
 }
 
 fn sub_op() -> DAE::Operator {
-    DAE::Operator::SUB { ty: DAE::T_REAL_DEFAULT.clone() }
+    DAE::Operator::SUB { ty: DAE::T_REAL_DEFAULT().clone() }
 }
 
 fn make_binary(e1: Arc<DAE::Exp>, op: DAE::Operator, e2: Arc<DAE::Exp>) -> Arc<DAE::Exp> {
@@ -255,7 +255,7 @@ fn priority_binary_add_rhs() -> Result<()> {
 
 #[test]
 fn priority_unary_is_four() -> Result<()> {
-    let uminus = DAE::Operator::UMINUS { ty: DAE::T_REAL_DEFAULT.clone() };
+    let uminus = DAE::Operator::UMINUS { ty: DAE::T_REAL_DEFAULT().clone() };
     let e = make_unary(uminus, iconst(1));
     assert_eq!(ExpressionBasics::priority(e, true)?, 4);
     Ok(())
