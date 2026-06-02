@@ -1528,11 +1528,22 @@ pub fn fflush() {
     let _ = std::io::stderr().flush();
 }
 
-pub fn updateUriMapping(_namesAndDirs: metamodelica::Array<ArcStr>) {
-    // Updates the runtime's `package → directory` map used by
-    // `uriToClassAndPath`. Until that resolver is ported there is nothing
-    // to feed.
-    todo!("System.updateUriMapping: package URI mapping not yet ported")
+thread_local! {
+    /// Mirrors `threadData->localRoots[LOCAL_ROOT_URI_LOOKUP]`: the
+    /// `namesAndDirs` array last installed by [`updateUriMapping`]. Odd
+    /// indexes (1-based) are package names, even indexes the corresponding
+    /// directories. Read by the Modelica-URI resolver
+    /// (`uriToClassAndPath`/`uriToFilename`) once it is ported.
+    #[allow(dead_code)]
+    static URI_LOOKUP: RefCell<metamodelica::Array<ArcStr>> = RefCell::new(Default::default());
+}
+
+pub fn updateUriMapping(namesAndDirs: metamodelica::Array<ArcStr>) {
+    // Port of `OpenModelica_updateUriMapping` (util/utility.c), which simply
+    // stashes the array in a thread-local root for the URI resolver to read
+    // later (in C the assignment also pins it against the GC; here the
+    // `Array`'s refcount does that). No parsing happens here.
+    URI_LOOKUP.with(|r| *r.borrow_mut() = namesAndDirs);
 }
 
 pub fn getSizeOfData<T: Clone + 'static>(_data: T) -> (metamodelica::Real, metamodelica::Real, metamodelica::Real) {
