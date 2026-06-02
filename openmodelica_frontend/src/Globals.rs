@@ -74,7 +74,7 @@ thread_local! {
     // Hash table used during inlining. Set to Some(...) when inlining starts,
     // None when done. Source: Inline.mo.
     pub static inlineHashTable: RefCell<Option<(
-        crate::HashTableCG::HashTable,
+        openmodelica_frontend_dump::HashTableCG::HashTable,
         crate::VarTransform::VariableReplacements,
     )>> = const { RefCell::new(None) };
 

@@ -47,8 +47,6 @@ use crate::HashTableCrefSimVar;
 use crate::SimCodeVar;
 use openmodelica_ast::Absyn;
 use openmodelica_ast_collections::HashTableStringToPath;
-use openmodelica_frontend::ComponentReference;
-use openmodelica_frontend::Types;
 use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_dump::ComponentReferenceBasics;
 use openmodelica_frontend_dump::ExpressionBasics;

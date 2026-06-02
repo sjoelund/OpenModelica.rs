@@ -16,7 +16,7 @@ use crate::CodegenFMUCpp;
 use openmodelica_ast::Absyn;
 use openmodelica_backend::CodegenUtil;
 use openmodelica_frontend::Expression;
-use openmodelica_frontend::HashTableCrIListArray;
+use openmodelica_frontend_dump::HashTableCrIListArray;
 use openmodelica_simcode_types::HpcOmSimCode;
 use openmodelica_simcode_types::SimCode;
 use openmodelica_simcode_types::SimCodeFunction;

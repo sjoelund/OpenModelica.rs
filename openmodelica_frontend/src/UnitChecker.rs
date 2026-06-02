@@ -43,9 +43,9 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::HashTable;
 use crate::UnitAbsyn;
 use crate::UnitAbsynBuilder;
+use openmodelica_frontend_dump::HashTable;
 use openmodelica_util::Debug;
 use openmodelica_util::Error;
 use openmodelica_util::Flags;

@@ -1060,3 +1060,380 @@ pub fn printSubscriptStr(mut sub: Arc<DAE::Subscript>) -> Result<ArcStr> {
     Ok(outString)
 }
 
+pub fn hashExp(mut e: Arc<DAE::Exp>) -> Result<i32> {
+    let mut hash: i32 = 0;
+    hash = 'mc: {
+        let __mc_input = e.clone();
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                Deref @ DAE::Exp::ICONST { integer: i } => {
+                    Ok(stringHashDjb2((intString(i.clone())).clone()))
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                Deref @ DAE::Exp::RCONST { real: r } => {
+                    Ok(stringHashDjb2((realString(r.clone())).clone()))
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                Deref @ DAE::Exp::BCONST { bool: b } => {
+                    Ok(stringHashDjb2((boolString(b.clone())).clone()))
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                Deref @ DAE::Exp::SCONST { string: s } => {
+                    Ok(stringHashDjb2((s.clone()).clone()))
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                Deref @ DAE::Exp::ENUM_LITERAL { name: path, .. } => {
+                    Ok(stringHashDjb2((AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone()))
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                Deref @ DAE::Exp::CREF { componentRef: cr, .. } => {
+                    Ok(ComponentReferenceBasics::hashComponentRef(cr.clone())?)
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                Deref @ DAE::Exp::BINARY { exp1: e1, operator: op, exp2: e2 } => {
+                    Ok(1 + hashExp(e1.clone())? + hashOp(op.clone())? + hashExp(e2.clone())?)
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                Deref @ DAE::Exp::UNARY { operator: op, exp: e1 } => {
+                    Ok(2 + hashOp(op.clone())? + hashExp(e1.clone())?)
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                Deref @ DAE::Exp::LBINARY { exp1: e1, operator: op, exp2: e2 } => {
+                    Ok(3 + hashExp(e1.clone())? + hashOp(op.clone())? + hashExp(e2.clone())?)
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                Deref @ DAE::Exp::LUNARY { operator: op, exp: e1 } => {
+                    Ok(4 + hashOp(op.clone())? + hashExp(e1.clone())?)
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                Deref @ DAE::Exp::RELATION { exp1: e1, operator: op, exp2: e2, index: _, optionExpisASUB: _ } => {
+                    Ok(5 + hashExp(e1.clone())? + hashOp(op.clone())? + hashExp(e2.clone())?)
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                Deref @ DAE::Exp::IFEXP { expCond: e1, expThen: e2, expElse: e3 } => {
+                    Ok(6 + hashExp(e1.clone())? + hashExp(e2.clone())? + hashExp(e3.clone())?)
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                Deref @ DAE::Exp::CALL { expLst: expl, path, .. } => {
+                    Ok(7 + stringHashDjb2((AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone()) + List::reduce(List::map(expl.clone(), (std::sync::Arc::new(hashExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>))?, (std::sync::Arc::new(fnptr!(intAdd, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>))?)
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                Deref @ DAE::Exp::RECORD { exps: expl, path, .. } => {
+                    Ok(8 + stringHashDjb2((AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone()) + List::reduce(List::map(expl.clone(), (std::sync::Arc::new(hashExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>))?, (std::sync::Arc::new(fnptr!(intAdd, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>))?)
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                Deref @ DAE::Exp::PARTEVALFUNCTION { expList: expl, path, .. } => {
+                    Ok(9 + stringHashDjb2((AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone()) + List::reduce(List::map(expl.clone(), (std::sync::Arc::new(hashExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>))?, (std::sync::Arc::new(fnptr!(intAdd, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>))?)
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                Deref @ DAE::Exp::ARRAY { array: expl, .. } => {
+                    Ok(10 + List::reduce(List::map(expl.clone(), (std::sync::Arc::new(hashExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>))?, (std::sync::Arc::new(fnptr!(intAdd, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>))?)
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                Deref @ DAE::Exp::MATRIX { matrix: mexpl, .. } => {
+                    Ok(11 + List::reduce(List::map(List::flatten(mexpl.clone())?, (std::sync::Arc::new(hashExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>))?, (std::sync::Arc::new(fnptr!(intAdd, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>))?)
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                Deref @ DAE::Exp::RANGE { ty: _, start: e1, step: Some(e2), stop: e3 } => {
+                    Ok(12 + hashExp(e1.clone())? + hashExp(e2.clone())? + hashExp(e3.clone())?)
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                Deref @ DAE::Exp::RANGE { ty: _, start: e1, step: None, stop: e3 } => {
+                    Ok(13 + hashExp(e1.clone())? + hashExp(e3.clone())?)
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                Deref @ DAE::Exp::TUPLE { PR: expl } => {
+                    Ok(14 + List::reduce(List::map(expl.clone(), (std::sync::Arc::new(hashExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>))?, (std::sync::Arc::new(fnptr!(intAdd, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>))?)
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                Deref @ DAE::Exp::CAST { ty: _, exp: e1 } => {
+                    Ok(15 + hashExp(e1.clone())?)
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                Deref @ DAE::Exp::ASUB { exp: e1, sub: subs } => {
+                    Ok(16 + hashExp(e1.clone())? + List::reduce(({
+        let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
+        for mut sub in (subs.clone()).into_iter().cloned() {
+            let __x = hashExp(getSubscriptExp(sub.clone())?)?;
+            __acc = cons(__x, __acc);
+        }
+        __acc.reverse()
+    }), (std::sync::Arc::new(fnptr!(intAdd, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>))?)
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                Deref @ DAE::Exp::TSUB { exp: e1, ix: i, ty: _ } => {
+                    Ok(17 + hashExp(e1.clone())? + stringHashDjb2((intString(i.clone())).clone()))
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                Deref @ DAE::Exp::SIZE { exp: e1, sz: Some(e2) } => {
+                    Ok(18 + hashExp(e1.clone())? + hashExp(e2.clone())?)
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                Deref @ DAE::Exp::SIZE { exp: e1, sz: None } => {
+                    Ok(19 + hashExp(e1.clone())?)
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                Deref @ DAE::Exp::REDUCTION { reductionInfo: info, expr: e1, iterators: iters } => {
+                    Ok(22 + hashReductionInfo(info.clone())? + hashExp(e1.clone())? + List::reduce(List::map(iters.clone(), (std::sync::Arc::new(hashReductionIter) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ReductionIterator>) -> Result<i32> + 'static>))?, (std::sync::Arc::new(fnptr!(intAdd, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>))?)
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                _ => {
+                    Ok(stringHashDjb2((printExpStr(e.clone())?).clone()))
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        bail!("matchcontinue: no arm matched")
+    };
+    Ok(hash)
+}
+
+fn hashReductionInfo(mut info: Arc<DAE::ReductionInfo>) -> Result<i32> {
+    let mut hash: i32 = 0;
+    hash = (::match_deref::match_deref! { match &(info.clone()) {
+        Deref @ DAE::ReductionInfo { path, .. } => {
+            22 + stringHashDjb2((AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone())
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    Ok(hash)
+}
+
+fn hashReductionIter(mut iter: Arc<DAE::ReductionIterator>) -> Result<i32> {
+    let mut hash: i32 = 0;
+    hash = (::match_deref::match_deref! { match &(iter.clone()) {
+        Deref @ DAE::ReductionIterator { id, exp: e1, guardExp: Some(e2), ty: _ } => {
+            23 + stringHashDjb2((id.clone()).clone()) + hashExp(e1.clone())? + hashExp(e2.clone())?
+        },
+        Deref @ DAE::ReductionIterator { id, exp: e1, guardExp: None, ty: _ } => {
+            24 + stringHashDjb2((id.clone()).clone()) + hashExp(e1.clone())?
+        },
+        _ => bail!("match: no arm matched"),
+    } });
+    Ok(hash)
+}
+
+fn hashOp(mut op: DAE::Operator) -> Result<i32> {
+    let mut hash: i32 = 0;
+    hash = (match op.clone() {
+        DAE::Operator::ADD { ty: _ } => {
+            25
+        },
+        DAE::Operator::SUB { ty: _ } => {
+            26
+        },
+        DAE::Operator::MUL { ty: _ } => {
+            27
+        },
+        DAE::Operator::DIV { ty: _ } => {
+            28
+        },
+        DAE::Operator::POW { ty: _ } => {
+            29
+        },
+        DAE::Operator::UMINUS { ty: _ } => {
+            30
+        },
+        DAE::Operator::UMINUS_ARR { ty: _ } => {
+            31
+        },
+        DAE::Operator::ADD_ARR { ty: _ } => {
+            32
+        },
+        DAE::Operator::SUB_ARR { ty: _ } => {
+            33
+        },
+        DAE::Operator::MUL_ARR { ty: _ } => {
+            34
+        },
+        DAE::Operator::DIV_ARR { ty: _ } => {
+            35
+        },
+        DAE::Operator::MUL_ARRAY_SCALAR { ty: _ } => {
+            36
+        },
+        DAE::Operator::ADD_ARRAY_SCALAR { ty: _ } => {
+            37
+        },
+        DAE::Operator::SUB_SCALAR_ARRAY { ty: _ } => {
+            38
+        },
+        DAE::Operator::MUL_SCALAR_PRODUCT { ty: _ } => {
+            39
+        },
+        DAE::Operator::MUL_MATRIX_PRODUCT { ty: _ } => {
+            40
+        },
+        DAE::Operator::DIV_ARRAY_SCALAR { ty: _ } => {
+            41
+        },
+        DAE::Operator::DIV_SCALAR_ARRAY { ty: _ } => {
+            42
+        },
+        DAE::Operator::POW_ARRAY_SCALAR { ty: _ } => {
+            43
+        },
+        DAE::Operator::POW_SCALAR_ARRAY { ty: _ } => {
+            44
+        },
+        DAE::Operator::POW_ARR { ty: _ } => {
+            45
+        },
+        DAE::Operator::POW_ARR2 { ty: _ } => {
+            46
+        },
+        DAE::Operator::AND { ty: _ } => {
+            47
+        },
+        DAE::Operator::OR { ty: _ } => {
+            48
+        },
+        DAE::Operator::NOT { ty: _ } => {
+            49
+        },
+        DAE::Operator::LESS { ty: _ } => {
+            50
+        },
+        DAE::Operator::LESSEQ { ty: _ } => {
+            51
+        },
+        DAE::Operator::GREATER { ty: _ } => {
+            52
+        },
+        DAE::Operator::GREATEREQ { ty: _ } => {
+            53
+        },
+        DAE::Operator::EQUAL { ty: _ } => {
+            54
+        },
+        DAE::Operator::NEQUAL { ty: _ } => {
+            55
+        },
+        DAE::Operator::USERDEFINED { fqName: ref path } => {
+            56 + stringHashDjb2((AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone())
+        },
+    });
+    Ok(hash)
+}
+
+fn getSubscriptExp(mut inSubscript: Arc<DAE::Subscript>) -> Result<Arc<DAE::Exp>> {
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    outExp = (::match_deref::match_deref! { match &(inSubscript.clone()) {
+        Deref @ DAE::Subscript::SLICE { exp: e } => {
+            e.clone()
+        },
+        Deref @ DAE::Subscript::INDEX { exp: e } => {
+            e.clone()
+        },
+        Deref @ DAE::Subscript::WHOLE_NONEXP { exp: e } => {
+            e.clone()
+        },
+        _ => bail!("match: no arm matched"),
+    } });
+    Ok(outExp)
+}
+

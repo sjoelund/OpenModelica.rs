@@ -50,9 +50,9 @@ use crate::SimCodeFunction;
 use crate::SimCodeVar;
 use openmodelica_ast::Absyn;
 use openmodelica_backend_types::BackendDAE;
-use openmodelica_frontend::HashTable;
-use openmodelica_frontend::HashTableCrIListArray;
-use openmodelica_frontend::HashTableCrILst;
+use openmodelica_frontend_dump::HashTable;
+use openmodelica_frontend_dump::HashTableCrIListArray;
+use openmodelica_frontend_dump::HashTableCrILst;
 use openmodelica_frontend_types::DAE;
 
 // public imports

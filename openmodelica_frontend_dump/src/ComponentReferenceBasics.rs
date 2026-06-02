@@ -1010,3 +1010,73 @@ pub fn printComponentRef2Str(mut inIdent: ArcStr, mut inSubscriptLst: Arc<metamo
     Ok(outString)
 }
 
+pub fn printComponentRefListStr(mut crs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<ArcStr> {
+    let mut res: ArcStr = arcstr::literal!("");
+    res = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*stringDelimitList(List::map(crs.clone(), (std::sync::Arc::new(printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }).clone();
+    Ok(res)
+}
+
+pub fn hashComponentRef(mut cr: Arc<DAE::ComponentRef>) -> Result<i32> {
+    let mut hash: i32 = 0;
+    hash = (::match_deref::match_deref! { match &(cr.clone()) {
+        Deref @ DAE::ComponentRef::CREF_IDENT { ident: id, identType: tp, subscriptLst: subs } => {
+            stringHashDjb2((id.clone()).clone()) + hashSubscripts(tp.clone(), subs.clone())?
+        },
+        Deref @ DAE::ComponentRef::CREF_QUAL { ident: id, identType: tp, subscriptLst: subs, componentRef: cr1 } => {
+            stringHashDjb2((id.clone()).clone()) + hashSubscripts(tp.clone(), subs.clone())? + hashComponentRef(cr1.clone())?
+        },
+        _ => {
+            0
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    Ok(hash)
+}
+
+fn hashSubscripts(mut tp: Arc<DAE::Type>, mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<i32> {
+    let mut hash: i32 = 0;
+    hash = (::match_deref::match_deref! { match &(subs.clone()) {
+        Deref @ metamodelica::List::Nil => 0,
+        _ => hashSubscripts2(List::fill(1, (subs.clone().len() as i32)), subs.clone(), 1)?,
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    Ok(hash)
+}
+
+fn hashSubscripts2(mut dims: Arc<metamodelica::List<i32>>, mut subs: Arc<metamodelica::List<Arc<DAE::Subscript>>>, mut factor: i32) -> Result<i32> {
+    let mut hash: i32 = 0;
+    hash = (::match_deref::match_deref! { match &((dims.clone(), subs.clone())) {
+        (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => {
+            0
+        },
+        (Deref @ metamodelica::List::Cons { head: _, tail: rest_dims }, Deref @ metamodelica::List::Cons { head: s, tail: rest_subs }) => {
+            hashSubscript(s.clone())? * factor.clone() + hashSubscripts2(rest_dims.clone(), rest_subs.clone(), factor.clone() * 1000)?
+        },
+        _ => bail!("match: no arm matched"),
+    } });
+    Ok(hash)
+}
+
+fn hashSubscript(mut sub: Arc<DAE::Subscript>) -> Result<i32> {
+    let mut hash: i32 = 0;
+    hash = (::match_deref::match_deref! { match &(sub.clone()) {
+        Deref @ DAE::Subscript::WHOLEDIM { .. } => {
+            0
+        },
+        Deref @ DAE::Subscript::INDEX { exp: Deref @ DAE::Exp::ICONST { integer: i } } => {
+            i.clone()
+        },
+        Deref @ DAE::Subscript::SLICE { exp } => {
+            ExpressionBasics::hashExp(exp.clone())?
+        },
+        Deref @ DAE::Subscript::INDEX { exp } => {
+            ExpressionBasics::hashExp(exp.clone())?
+        },
+        Deref @ DAE::Subscript::WHOLE_NONEXP { exp } => {
+            ExpressionBasics::hashExp(exp.clone())?
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    Ok(hash)
+}
+
