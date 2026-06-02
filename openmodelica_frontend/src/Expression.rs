@@ -47,9 +47,6 @@ use crate::ComponentReference;
 use crate::DAEUtil;
 use crate::ExpressionDump;
 use crate::ExpressionSimplify;
-use crate::FGraph;
-use crate::Patternm;
-use crate::Static;
 use crate::Types;
 use openmodelica_ast::Absyn;
 use openmodelica_frontend_dump::AbsynUtil;
@@ -58,7 +55,6 @@ use openmodelica_frontend_dump::ComponentReferenceBasics;
 use openmodelica_frontend_dump::Dump;
 use openmodelica_frontend_dump::ExpressionBasics::printExpStr;
 use openmodelica_frontend_dump::ExpressionBasics;
-use openmodelica_frontend_dump::FCore;
 use openmodelica_frontend_dump::TypesDump;
 use openmodelica_frontend_types::ClassInf;
 use openmodelica_frontend_types::DAE;
@@ -568,28 +564,6 @@ pub fn traversingstringifyCrefFinder(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE
             inExp.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    Ok(outExp)
-}
-
-pub fn CodeVarToCref(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
-    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    outExp = (::match_deref::match_deref! { match &(inExp.clone()) {
-        Deref @ DAE::Exp::CODE { code: Deref @ Absyn::CodeNode::C_VARIABLENAME { componentRef: cref }, ty: _ } => {
-            let mut e_cref: ComponentRef = Arc::new(DAE::ComponentRef::WILD);
-            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            (_, e_cref) = Static::elabUntypedCref(FCore::emptyCache(), FGraph::empty(), cref.clone(), false, openmodelica_frontend_types::DAE::Prefix::NOPRE, Absyn::dummyInfo.clone())?;
-            e = crefExp(e_cref.clone())?;
-            e.clone()
-        },
-        Deref @ DAE::Exp::CODE { code: Deref @ Absyn::CodeNode::C_EXPRESSION { exp: Deref @ Absyn::Exp::CALL { functionArgs: Deref @ Absyn::FunctionArgs::FUNCTIONARGS { args: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Exp::CREF { componentRef: cref }, tail: Deref @ metamodelica::List::Nil }, argNames: Deref @ metamodelica::List::Nil }, function_: Deref @ Absyn::ComponentRef::CREF_IDENT { name: Deref @ "der", subscripts: Deref @ metamodelica::List::Nil }, .. } }, ty: _ } => {
-            let mut e_cref: ComponentRef = Arc::new(DAE::ComponentRef::WILD);
-            let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            (_, e_cref) = Static::elabUntypedCref(FCore::emptyCache(), FGraph::empty(), cref.clone(), false, openmodelica_frontend_types::DAE::Prefix::NOPRE, Absyn::dummyInfo.clone())?;
-            e = crefExp(e_cref.clone())?;
-            Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("der")).clone() }), expLst: list![e.clone()], attr: DAE::callAttrBuiltinReal().clone() })
-        },
-        _ => bail!("match: no arm matched"),
     } });
     Ok(outExp)
 }
@@ -5839,7 +5813,7 @@ pub fn traverseExpBottomUp<T: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut inF
             let mut expl_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             let mut cases_1: Arc<metamodelica::List<Arc<DAE::MatchCase>>> = metamodelica::nil();
             (expl_1, ext_arg) = traverseExpList(expl.clone(), inFunc.clone(), inExtArg.clone())?;
-            (cases_1, ext_arg) = Patternm::traverseCases(cases.clone(), inFunc.clone(), ext_arg.clone())?;
+            (cases_1, ext_arg) = traverseCases(cases.clone(), inFunc.clone(), ext_arg.clone())?;
             e = if (referenceEq(&expl.clone(),&expl_1.clone()) && referenceEq(&cases.clone(),&cases_1.clone())) {inExp.clone()} else {Arc::new(DAE::Exp::MATCHEXPRESSION { matchType: matchTy.clone(), inputs: expl_1.clone(), aliases: aliases.clone(), localDecls: localDecls.clone(), cases: cases_1.clone(), et: tp.clone() })};
             (e, ext_arg) = inFunc(e.clone(), ext_arg.clone())?;
             (e.clone(), ext_arg.clone())
@@ -6351,7 +6325,7 @@ fn traverseExpTopDown1<Type_a: Clone + 'static>(mut cont: bool, mut inExp: Arc<D
             let mut cases = (*cases).clone();
             let mut ext_arg = (*ext_arg).clone();
             (expl, ext_arg) = traverseExpListTopDown(expl.clone(), rel.clone(), ext_arg.clone())?;
-            (cases, ext_arg) = Patternm::traverseCasesTopDown(cases.clone(), rel.clone(), ext_arg.clone())?;
+            (cases, ext_arg) = traverseCasesTopDown(cases.clone(), rel.clone(), ext_arg.clone())?;
             (Arc::new(DAE::Exp::MATCHEXPRESSION { matchType: matchType.clone(), inputs: expl.clone(), aliases: aliases.clone(), localDecls: localDecls.clone(), cases: cases.clone(), et: et.clone() }), ext_arg.clone())
         },
         (_, Deref @ DAE::Exp::METARECORDCALL { path: r#fn, args: expl, fieldNames, index: i, typeVars }, rel, ext_arg) => {
@@ -12901,5 +12875,78 @@ pub fn arrayFirstScalar(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(outExp)
+}
+
+pub fn traverseCases<A: Clone + 'static>(mut inCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>, mut inA: A) -> Result<(Arc<metamodelica::List<Arc<DAE::MatchCase>>>, A)> {
+    pub type FuncExpType<A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>;
+
+    let mut outCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>> = metamodelica::nil();
+    let mut oa: A;
+    (outCases, oa) = (::match_deref::match_deref! { match &((inCases.clone(), inA.clone())) {
+        (Deref @ metamodelica::List::Nil, a) => {
+            (metamodelica::nil(), a.clone())
+        },
+        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::MatchCase { patterns, patternGuard, localDecls: decls, body, result, resultInfo, jump, info }, tail: cases }, a) => {
+            let mut body1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
+            let mut result1: Option<Arc<DAE::Exp>> = None;
+            let mut patternGuard1: Option<Arc<DAE::Exp>> = None;
+            let mut cases1: Arc<metamodelica::List<Arc<DAE::MatchCase>>> = metamodelica::nil();
+            let mut cases = (*cases).clone();
+            let mut a = (*a).clone();
+            let (__pa0, (_, __pa1)) = DAEUtil::traverseDAEEquationsStmts(body.clone(), (std::sync::Arc::new(traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), (func.clone(), a.clone()))?;
+            body1 = __pa0.clone();
+            a = __pa1.clone();
+            (patternGuard1, a) = traverseExpOpt(patternGuard.clone(), func.clone(), a.clone())?;
+            (result1, a) = traverseExpOpt(result.clone(), func.clone(), a.clone())?;
+            (cases1, a) = traverseCases(cases.clone(), func.clone(), a.clone())?;
+            cases = if (referenceEq(&cases.clone(),&cases1.clone()) && referenceEq(&patternGuard.clone(),&patternGuard1.clone()) && referenceEq(&result.clone(),&result1.clone()) && referenceEq(&body.clone(),&body1.clone())) {inCases.clone()} else {metamodelica::cons(Arc::new(DAE::MatchCase { patterns: patterns.clone(), patternGuard: patternGuard1.clone(), localDecls: decls.clone(), body: body1.clone(), result: result1.clone(), resultInfo: resultInfo.clone(), jump: jump.clone(), info: info.clone() }), cases1.clone())};
+            (cases.clone(), a.clone())
+        },
+        _ => bail!("match: no arm matched"),
+    } });
+    Ok((outCases, oa))
+}
+
+pub fn traverseCasesTopDown<A: Clone + 'static>(mut inCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, bool, A)> + 'static>, mut inA: A) -> Result<(Arc<metamodelica::List<Arc<DAE::MatchCase>>>, A)> {
+    pub type FuncExpType<A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, bool, A)> + 'static>;
+
+    let mut cases: Arc<metamodelica::List<Arc<DAE::MatchCase>>> = metamodelica::nil();
+    let mut a: A = inA.clone();
+    let mut patterns: Arc<metamodelica::List<Arc<DAE::Pattern>>> = metamodelica::nil();
+    let mut decls: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
+    let mut body: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
+    let mut body1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
+    let mut result: Option<Arc<DAE::Exp>> = None;
+    let mut result1: Option<Arc<DAE::Exp>> = None;
+    let mut patternGuard: Option<Arc<DAE::Exp>> = None;
+    let mut patternGuard1: Option<Arc<DAE::Exp>> = None;
+    let mut jump: i32 = 0;
+    let mut resultInfo: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
+    let mut tpl: (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, bool, A)> + 'static>, A);
+    for mut c in &*inCases.clone() {
+        let mut c = c.clone();
+        let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7) = ::match_deref::match_deref! { match &(c.clone()) {
+            Deref @ DAE::MatchCase { patterns: __pa0, patternGuard: __pa1, localDecls: __pa2, body: __pa3, result: __pa4, resultInfo: __pa5, jump: __pa6, info: __pa7 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone()),
+            _ => bail!("pattern mismatch"),
+        } };
+        patterns = __pa0.clone();
+        patternGuard = __pa1.clone();
+        decls = __pa2.clone();
+        body = __pa3.clone();
+        result = __pa4.clone();
+        resultInfo = __pa5.clone();
+        jump = __pa6.clone();
+        info = __pa7.clone();
+        tpl = (func.clone(), a.clone());
+        let (__pa8, (_, __pa9)) = DAEUtil::traverseDAEEquationsStmts(body.clone(), (std::sync::Arc::new(traverseSubexpressionsTopDownHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), tpl.clone())?;
+        body1 = __pa8.clone();
+        a = __pa9.clone();
+        (patternGuard1, a) = traverseExpOptTopDown(patternGuard.clone(), func.clone(), a.clone())?;
+        (result1, a) = traverseExpOptTopDown(result.clone(), func.clone(), a.clone())?;
+        cases = metamodelica::cons(Arc::new(DAE::MatchCase { patterns: patterns.clone(), patternGuard: patternGuard1.clone(), localDecls: decls.clone(), body: body1.clone(), result: result1.clone(), resultInfo: resultInfo.clone(), jump: jump.clone(), info: info.clone() }), cases.clone());
+    }
+    cases = cases.clone().reverse();
+    Ok((cases, a))
 }
 

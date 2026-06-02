@@ -1421,7 +1421,7 @@ fn getUsedLocalCrefs(mut skipFilterUnusedAsBindings: bool, mut exp: Arc<DAE::Exp
             ht.clone()
         },
         (false, Deref @ DAE::Exp::MATCHEXPRESSION { cases, .. }) => {
-            (_, ht) = traverseCases(cases.clone(), (std::sync::Arc::new(addLocalCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>))) -> Result<(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>)))> + 'static>), HashTableStringToPath::emptyHashTableSized(hashSize.clone()))?;
+            (_, ht) = Expression::traverseCases(cases.clone(), (std::sync::Arc::new(addLocalCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>))) -> Result<(Arc<DAE::Exp>, (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>)))> + 'static>), HashTableStringToPath::emptyHashTableSized(hashSize.clone()))?;
             ht.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -2756,79 +2756,6 @@ pub fn traverseConstantPatternsHelper2<T: Clone + 'static>(mut inPattern: Arc<DA
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((outPattern, extra))
-}
-
-pub fn traverseCases<A: Clone + 'static>(mut inCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>, mut inA: A) -> Result<(Arc<metamodelica::List<Arc<DAE::MatchCase>>>, A)> {
-    pub type FuncExpType<A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>;
-
-    let mut outCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>> = metamodelica::nil();
-    let mut oa: A;
-    (outCases, oa) = (::match_deref::match_deref! { match &((inCases.clone(), inA.clone())) {
-        (Deref @ metamodelica::List::Nil, a) => {
-            (metamodelica::nil(), a.clone())
-        },
-        (Deref @ metamodelica::List::Cons { head: Deref @ DAE::MatchCase { patterns, patternGuard, localDecls: decls, body, result, resultInfo, jump, info }, tail: cases }, a) => {
-            let mut body1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
-            let mut result1: Option<Arc<DAE::Exp>> = None;
-            let mut patternGuard1: Option<Arc<DAE::Exp>> = None;
-            let mut cases1: Arc<metamodelica::List<Arc<DAE::MatchCase>>> = metamodelica::nil();
-            let mut cases = (*cases).clone();
-            let mut a = (*a).clone();
-            let (__pa0, (_, __pa1)) = DAEUtil::traverseDAEEquationsStmts(body.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), (func.clone(), a.clone()))?;
-            body1 = __pa0.clone();
-            a = __pa1.clone();
-            (patternGuard1, a) = Expression::traverseExpOpt(patternGuard.clone(), func.clone(), a.clone())?;
-            (result1, a) = Expression::traverseExpOpt(result.clone(), func.clone(), a.clone())?;
-            (cases1, a) = traverseCases(cases.clone(), func.clone(), a.clone())?;
-            cases = if (referenceEq(&cases.clone(),&cases1.clone()) && referenceEq(&patternGuard.clone(),&patternGuard1.clone()) && referenceEq(&result.clone(),&result1.clone()) && referenceEq(&body.clone(),&body1.clone())) {inCases.clone()} else {metamodelica::cons(Arc::new(DAE::MatchCase { patterns: patterns.clone(), patternGuard: patternGuard1.clone(), localDecls: decls.clone(), body: body1.clone(), result: result1.clone(), resultInfo: resultInfo.clone(), jump: jump.clone(), info: info.clone() }), cases1.clone())};
-            (cases.clone(), a.clone())
-        },
-        _ => bail!("match: no arm matched"),
-    } });
-    Ok((outCases, oa))
-}
-
-pub fn traverseCasesTopDown<A: Clone + 'static>(mut inCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, bool, A)> + 'static>, mut inA: A) -> Result<(Arc<metamodelica::List<Arc<DAE::MatchCase>>>, A)> {
-    pub type FuncExpType<A: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, bool, A)> + 'static>;
-
-    let mut cases: Arc<metamodelica::List<Arc<DAE::MatchCase>>> = metamodelica::nil();
-    let mut a: A = inA.clone();
-    let mut patterns: Arc<metamodelica::List<Arc<DAE::Pattern>>> = metamodelica::nil();
-    let mut decls: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-    let mut body: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
-    let mut body1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
-    let mut result: Option<Arc<DAE::Exp>> = None;
-    let mut result1: Option<Arc<DAE::Exp>> = None;
-    let mut patternGuard: Option<Arc<DAE::Exp>> = None;
-    let mut patternGuard1: Option<Arc<DAE::Exp>> = None;
-    let mut jump: i32 = 0;
-    let mut resultInfo: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-    let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-    let mut tpl: (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, bool, A)> + 'static>, A);
-    for mut c in &*inCases.clone() {
-        let mut c = c.clone();
-        let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7) = ::match_deref::match_deref! { match &(c.clone()) {
-            Deref @ DAE::MatchCase { patterns: __pa0, patternGuard: __pa1, localDecls: __pa2, body: __pa3, result: __pa4, resultInfo: __pa5, jump: __pa6, info: __pa7 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone()),
-            _ => bail!("pattern mismatch"),
-        } };
-        patterns = __pa0.clone();
-        patternGuard = __pa1.clone();
-        decls = __pa2.clone();
-        body = __pa3.clone();
-        result = __pa4.clone();
-        resultInfo = __pa5.clone();
-        jump = __pa6.clone();
-        info = __pa7.clone();
-        tpl = (func.clone(), a.clone());
-        let (__pa8, (_, __pa9)) = DAEUtil::traverseDAEEquationsStmts(body.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsTopDownHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), tpl.clone())?;
-        body1 = __pa8.clone();
-        a = __pa9.clone();
-        (patternGuard1, a) = Expression::traverseExpOptTopDown(patternGuard.clone(), func.clone(), a.clone())?;
-        (result1, a) = Expression::traverseExpOptTopDown(result.clone(), func.clone(), a.clone())?;
-        cases = metamodelica::cons(Arc::new(DAE::MatchCase { patterns: patterns.clone(), patternGuard: patternGuard1.clone(), localDecls: decls.clone(), body: body1.clone(), result: result1.clone(), resultInfo: resultInfo.clone(), jump: jump.clone(), info: info.clone() }), cases.clone());
-    }
-    cases = cases.clone().reverse();
-    Ok((cases, a))
 }
 
 fn filterEmptyPattern(mut tpl: (Arc<DAE::Pattern>, ArcStr, Arc<DAE::Type>)) -> bool {

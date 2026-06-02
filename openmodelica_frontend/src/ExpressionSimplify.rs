@@ -47,13 +47,12 @@ use crate::ComponentReference;
 use crate::DAEUtil;
 use crate::Expression;
 use crate::ExpressionDump;
-use crate::FGraph;
-use crate::Static;
 use crate::Types;
 use crate::ValuesUtil;
 use openmodelica_ast::Absyn;
 use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_dump::ComponentReferenceBasics;
+use openmodelica_frontend_dump::Dump;
 use openmodelica_frontend_dump::ElementSource;
 use openmodelica_frontend_dump::ExpressionBasics;
 use openmodelica_frontend_dump::FCore;
@@ -1312,6 +1311,87 @@ fn reductionExpression(mut name: ArcStr, mut ty: Arc<DAE::Type>, mut foldName: A
     Ok(foldExp)
 }
 
+pub fn elabBuiltinFill2(mut inCache: FCore::Cache, mut inExp: Arc<DAE::Exp>, mut inType: Arc<DAE::Type>, mut inValuesValueLst: Arc<metamodelica::List<Arc<Values::Value>>>, mut constVar: DAE::Const, mut inDims: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
+    let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
+    let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+    let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
+    (outCache, outExp, outProperties) = 'mc: {
+        let __mc_input = (inCache.clone(), inExp.clone(), inType.clone(), inValuesValueLst.clone(), constVar.clone());
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                (cache, s, sty, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: v }, tail: Deref @ metamodelica::List::Nil }, c1) => {
+                    let mut arraylist: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+                    let mut at: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut is_scalar: bool = false;
+                    let mut sty2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut v = (*v).clone();
+                    let true = (intLt(v.clone(), 0)) else { bail!("pattern mismatch") };
+                    v = 0;
+                    arraylist = List::fill(s.clone(), v.clone());
+                    sty2 = Arc::new(DAE::Type::T_ARRAY { ty: sty.clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: v.clone() })] });
+                    at = Types::simplifyType(sty2.clone())?;
+                    is_scalar = !(Types::isArray(sty.clone()));
+                    Ok((cache.clone(), Arc::new(DAE::Exp::ARRAY { ty: at.clone(), scalar: is_scalar.clone(), array: arraylist.clone() }), DAE::Properties::PROP { type_: sty2.clone(), constFlag: c1.clone() }))
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                (cache, s, sty, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: v }, tail: Deref @ metamodelica::List::Nil }, c1) => {
+                    let mut arraylist: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+                    let mut at: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut is_scalar: bool = false;
+                    let mut sty2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+                    arraylist = List::fill(s.clone(), v.clone());
+                    sty2 = Arc::new(DAE::Type::T_ARRAY { ty: sty.clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: v.clone() })] });
+                    at = Types::simplifyType(sty2.clone())?;
+                    is_scalar = !(Types::isArray(sty.clone()));
+                    Ok((cache.clone(), Arc::new(DAE::Exp::ARRAY { ty: at.clone(), scalar: is_scalar.clone(), array: arraylist.clone() }), DAE::Properties::PROP { type_: sty2.clone(), constFlag: c1.clone() }))
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                (cache, s, sty, Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: v }, tail: rest }, c1) => {
+                    let mut arraylist: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
+                    let mut at: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
+                    let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut sty2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
+                    let mut cache = (*cache).clone();
+                    let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(elabBuiltinFill2(cache.clone(), s.clone(), sty.clone(), rest.clone(), c1.clone(), inDims.clone(), inInfo.clone())?) {
+                        (__pa0, __pa1, DAE::Properties::PROP { type_: __pa2, constFlag: _ }) => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
+                        _ => bail!("pattern mismatch"),
+                    } };
+                    cache = __pa0.clone();
+                    exp = __pa1.clone();
+                    ty = __pa2.clone();
+                    arraylist = List::fill(exp.clone(), v.clone());
+                    sty2 = Arc::new(DAE::Type::T_ARRAY { ty: ty.clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: v.clone() })] });
+                    at = Types::simplifyType(sty2.clone())?;
+                    Ok((cache.clone(), Arc::new(DAE::Exp::ARRAY { ty: at.clone(), scalar: false, array: arraylist.clone() }), DAE::Properties::PROP { type_: sty2.clone(), constFlag: c1.clone() }))
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        if let Ok(__v) = (|| -> Result<_> {
+            ::match_deref::match_deref! { match &__mc_input {
+                _ => {
+                    let mut r#str: ArcStr = arcstr::literal!("");
+                    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ExpressionSimplify.elabBuiltinFill2 failed for expression: fill(")); __mm_s.push_str(&*Dump::printExpLstStr(inDims.clone())?); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
+                    Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(r#str.clone()).clone()], inInfo.clone())?;
+                    Ok(bail!("fail"))
+                }
+                _ => bail!("nomatch"),
+            }}
+        })() { break 'mc __v; }
+        bail!("matchcontinue: no arm matched")
+    };
+    Ok((outCache, outExp, outProperties))
+}
+
 fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     outExp = 'mc: {
@@ -1533,7 +1613,7 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
                     let mut valueLst: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
                     let mut outExp: Arc<DAE::Exp> = outExp.clone();
                     valueLst = List::map(expl.clone(), (std::sync::Arc::new(ValuesUtil::expValue) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<Values::Value>> + 'static>))?;
-                    (_, outExp, _) = Static::elabBuiltinFill2(FCore::noCache(), FGraph::empty(), e.clone(), Expression::r#typeof(e.clone())?, valueLst.clone(), openmodelica_frontend_types::DAE::Const::C_CONST, openmodelica_frontend_types::DAE::Prefix::NOPRE, metamodelica::nil(), Absyn::dummyInfo.clone())?;
+                    (_, outExp, _) = elabBuiltinFill2(FCore::noCache(), e.clone(), Expression::r#typeof(e.clone())?, valueLst.clone(), openmodelica_frontend_types::DAE::Const::C_CONST, metamodelica::nil(), Absyn::dummyInfo.clone())?;
                     Ok(outExp.clone())
                 }
                 _ => bail!("nomatch"),
