@@ -73,9 +73,10 @@ pub enum NFImport {
 }
 impl Default for NFImport {
     fn default() -> Self {
-        Self::CONFLICTING_IMPORT {
-            imp1: Default::default(),
-            imp2: Default::default(),
+        Self::UNRESOLVED_IMPORT {
+            imp: Default::default(),
+            scope: Default::default(),
+            info: Default::default(),
         }
     }
 }

@@ -151,9 +151,10 @@ pub mod Branch {
     }
     impl Default for Branch {
         fn default() -> Self {
-            Self::INVALID_BRANCH {
-                branch: Default::default(),
-                errors: Default::default(),
+            Self::BRANCH {
+                condition: Default::default(),
+                conditionVar: Default::default(),
+                body: Default::default(),
             }
         }
     }

@@ -1561,11 +1561,15 @@ pub enum CompInfo {
 }
 impl Default for CompInfo {
     fn default() -> Self {
-        Self::SYSTEM {
-            comp: Default::default(),
-            allOperations: Default::default(),
-            size: Default::default(),
-            density: Default::default(),
+        Self::NO_COMP {
+            numAdds: Default::default(),
+            numMul: Default::default(),
+            numDiv: Default::default(),
+            numTrig: Default::default(),
+            numRelations: Default::default(),
+            numLog: Default::default(),
+            numOth: Default::default(),
+            funcCalls: Default::default(),
         }
     }
 }

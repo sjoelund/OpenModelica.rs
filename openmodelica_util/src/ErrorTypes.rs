@@ -118,15 +118,6 @@ pub struct TotalMessage {
     pub info: SourceInfo,
 }
 
-impl Default for TotalMessage {
-    fn default() -> Self {
-        Self {
-            msg: Default::default(),
-            info: Default::default(),
-        }
-    }
-}
-
 pub type TOTALMESSAGE = TotalMessage;
 
 

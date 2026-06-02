@@ -18425,7 +18425,7 @@ fn compute_defaultable_struct_qnames<'a>(
         changed = false;
         for (qname, fields) in &records {
             if defaultable.contains(qname) { continue; }
-            if fields.iter().all(|t| is_ty_defaultable(t, &defaultable)) {
+            if fields.iter().all(|t| is_ty_defaultable(t, &defaultable, None)) {
                 defaultable.insert(qname.clone());
                 changed = true;
             }
@@ -18436,8 +18436,14 @@ fn compute_defaultable_struct_qnames<'a>(
             // fields. The selection of *which* variant happens in
             // `pick_default_variant_for_enum`, which uses the same rules so
             // the choice is consistent.
+            // No `exclude` needed here: during the fixpoint `qname` is not yet
+            // in `defaultable` (we `continue`d above if it were), so a variant
+            // that eagerly holds this enum's own type already fails the
+            // `is_ty_defaultable` check. An enum therefore becomes defaultable
+            // only once it has a *terminating* (non-self-recursive) variant,
+            // which `pick_default_variant_for_enum` is then guaranteed to find.
             let any = variants.iter().any(|(_, ftys)|
-                ftys.iter().all(|t| is_ty_defaultable(t, &defaultable)));
+                ftys.iter().all(|t| is_ty_defaultable(t, &defaultable, None)));
             if any {
                 defaultable.insert(qname.clone());
                 changed = true;
@@ -18458,6 +18464,20 @@ fn pick_default_variant_for_enum<'a>(
     defaultable_qnames: &HashSet<String>,
 ) -> Option<(String, Vec<(String, Ty)>)> {
     let NodeKind::Class(c) = &node.kind else { return None; };
+    // The chosen variant's `Default` must terminate: it must not require
+    // constructing this very enum again. We exclude the enum's own qname from
+    // the defaultable set while testing each candidate, so a variant that
+    // eagerly holds `Self` (e.g. NFImport::CONFLICTING_IMPORT with two
+    // `Arc<NFImport>`) is rejected, while variants reaching `Self` only through
+    // `Option`/`list`/`array` (which default to `None`/empty) stay eligible.
+    // For any enum in `defaultable_qnames` at least one non-self-recursive
+    // variant exists (that is how it entered the set), so this never spuriously
+    // returns `None`. Mutual recursion between distinct enums is not analysed
+    // here; pure mutual cycles never enter `defaultable_qnames` to begin with.
+    let self_qname = match &node.ty {
+        Ty::RustEnum(q) | Ty::AliasTo(q) => Some(q.as_str()),
+        _ => None,
+    };
     let mut best: Option<(usize, String, Vec<(String, Ty)>)> = None;
     for rec_name in records_in_order(c) {
         let Some(rec_node) = node.children.get(&rec_name) else { continue };
@@ -18467,7 +18487,7 @@ fn pick_default_variant_for_enum<'a>(
             _ => component_fields_with_spec(rc, &rec_node.children)
                 .iter().map(|f| (f.0.to_string(), f.1.clone())).collect(),
         };
-        if !fields.iter().all(|(_, t)| is_ty_defaultable(t, defaultable_qnames)) { continue; }
+        if !fields.iter().all(|(_, t)| is_ty_defaultable(t, defaultable_qnames, self_qname)) { continue; }
         let n_fields = fields.len();
         if best.as_ref().map_or(true, |(best_n, _, _)| n_fields < *best_n) {
             best = Some((n_fields, rec_name.clone(), fields));
@@ -18889,11 +18909,18 @@ fn propagate_default_into_concrete(
     }
 }
 
-fn is_ty_defaultable(ty: &Ty, defaultable_qnames: &HashSet<String>) -> bool {
+/// `exclude` names a single qname to be treated as *not* defaultable even if it
+/// is in `defaultable_qnames`. Used by `pick_default_variant_for_enum` to reject
+/// a candidate default variant that would recurse into the enum being defaulted:
+/// passing the enum's own qname as `exclude` makes any field that *eagerly*
+/// holds that type (directly, in a `Tuple`, or in a `Mutable<…>`) test as
+/// non-defaultable, while references reached only through `Option`/`list`/
+/// `array` stay defaultable (they default to `None`/empty and break the cycle).
+fn is_ty_defaultable(ty: &Ty, defaultable_qnames: &HashSet<String>, exclude: Option<&str>) -> bool {
     match ty {
         Ty::I32 | Ty::F64 | Ty::Bool | Ty::Str => true,
         Ty::Option(_) | Ty::List(_) | Ty::Array(_) => true,
-        Ty::Tuple(elems) => elems.iter().all(|t| is_ty_defaultable(t, defaultable_qnames)),
+        Ty::Tuple(elems) => elems.iter().all(|t| is_ty_defaultable(t, defaultable_qnames, exclude)),
         // `Mutable<T>`'s `Default` impl is `impl<T: Clone + Default>` — it
         // stores a `T`, so it is defaultable only when `T` is. (Contrast the
         // empty-container generics below, whose default is element-agnostic.)
@@ -18901,14 +18928,15 @@ fn is_ty_defaultable(ty: &Ty, defaultable_qnames: &HashSet<String>) -> bool {
         // record carrying a `Mutable<non-Default>` field, which then fails to
         // satisfy `Mutable`'s own bound (e.g. `NFDuplicateTree.Tree`).
         Ty::Generic(name, args) if name == "Mutable" =>
-            args.iter().all(|t| is_ty_defaultable(t, defaultable_qnames)),
+            args.iter().all(|t| is_ty_defaultable(t, defaultable_qnames, exclude)),
         // Container generics (Vec, HashMap, HashSet, ExpandableArray, ...) — empty
         // containers default fine regardless of element type.
         Ty::Generic(_, _) => true,
         // Both structs and enums use the same defaultability map. Enums are
         // included iff codegen will emit an `impl Default for E` for them
         // (currently: those that have at least one unit variant).
-        Ty::RustStruct(qname) | Ty::AliasTo(qname) | Ty::RustEnum(qname) => defaultable_qnames.contains(qname),
+        Ty::RustStruct(qname) | Ty::AliasTo(qname) | Ty::RustEnum(qname) =>
+            exclude != Some(qname.as_str()) && defaultable_qnames.contains(qname),
         // Function-pointer fields don't have a `Default` impl in std, but the
         // codegen-emitted manual `impl Default` (for structs in the
         // defaultable set with fn fields) substitutes a non-capturing
