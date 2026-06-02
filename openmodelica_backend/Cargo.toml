@@ -8,6 +8,7 @@ anyhow.workspace=true
 metamodelica.workspace=true
 openmodelica_ast.workspace=true
 openmodelica_backend_types.workspace=true
+openmodelica_simcode_types.workspace=true
 openmodelica_frontend.workspace=true
 openmodelica_frontend_types.workspace=true
 openmodelica_frontend_dump.workspace=true

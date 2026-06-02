@@ -44,14 +44,12 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::HashTableCrefSimVar;
-use crate::SimCodeFunctionUtil;
 use crate::SimCodeVar;
 use openmodelica_ast::Absyn;
 use openmodelica_ast_collections::HashTableStringToPath;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::Types;
 use openmodelica_frontend_dump::AbsynUtil;
-use openmodelica_frontend_dump::AvlTreePathFunction;
 use openmodelica_frontend_dump::ComponentReferenceBasics;
 use openmodelica_frontend_dump::ExpressionBasics;
 use openmodelica_frontend_dump::TypesDump;
@@ -586,13 +584,4 @@ pub fn listExpLength1() -> Arc<metamodelica::List<Arc<DAE::Exp>>> { __listExpLen
 
 thread_local! { static __boxedRecordOutVars_TLS: Arc<metamodelica::List<Arc<Variable::Variable>>> = metamodelica::cons(Arc::new(Variable::Variable::VARIABLE { name: Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (literal!("")).clone(), identType: DAE::T_COMPLEX_DEFAULT_RECORD().clone(), subscriptLst: metamodelica::nil() }), ty: DAE::T_COMPLEX_DEFAULT_RECORD().clone(), value: None, instDims: metamodelica::nil(), parallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, kind: openmodelica_frontend_types::DAE::VarKind::VARIABLE, bind_from_outside: false }), metamodelica::nil()); }
 pub fn boxedRecordOutVars() -> Arc<metamodelica::List<Arc<Variable::Variable>>> { __boxedRecordOutVars_TLS.with(|__t| __t.clone()) }
-
-pub fn getCalledFunctionsInFunction(mut path: Arc<Absyn::Path>, mut funcs: Arc<AvlTreePathFunction::Tree>) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> {
-    let mut outPaths: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
-    let mut ht: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (HashTableStringToPath::FuncHashCref, HashTableStringToPath::FuncCrefEqual, HashTableStringToPath::FuncCrefStr, HashTableStringToPath::FuncExpStr));
-    ht = HashTableStringToPath::emptyHashTable();
-    ht = SimCodeFunctionUtil::getCalledFunctionsInFunction2(path.clone(), AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), true, false)?, ht.clone(), funcs.clone())?;
-    outPaths = BaseHashTable::hashTableValueList(ht.clone())?;
-    Ok(outPaths)
-}
 

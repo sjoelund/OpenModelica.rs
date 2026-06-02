@@ -43,7 +43,7 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::SimCode;
+use openmodelica_simcode_types::SimCode;
 use openmodelica_util::Error;
 use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::List;

@@ -45,18 +45,18 @@ use arcstr::{ArcStr, literal, format};
 
 use crate::AdjacencyMatrix;
 use crate::BackendVarTransform;
-use crate::HashTableCrefSimVar;
 use crate::HpcOmSchedulerExt;
-use crate::HpcOmSimCode;
 use crate::HpcOmSimCodeMain;
 use crate::HpcOmTaskGraph;
-use crate::SimCode;
 use crate::SimCodeUtil;
-use crate::SimCodeVar;
 use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::Expression;
 use openmodelica_frontend_types::DAE;
+use openmodelica_simcode_types::HashTableCrefSimVar;
+use openmodelica_simcode_types::HpcOmSimCode;
+use openmodelica_simcode_types::SimCode;
+use openmodelica_simcode_types::SimCodeVar;
 use openmodelica_util::BaseHashTable;
 use openmodelica_util::Error;
 use openmodelica_util::Flags;
@@ -895,7 +895,7 @@ fn convertTaskGraphToTasks(mut iTaskGraphT: metamodelica::Array<Arc<metamodelica
 
     let mut oTasks: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = Default::default();
     let mut tmpTaskArray: metamodelica::Array<(Arc<HpcOmSimCode::Task>, i32)> = Default::default();
-    tmpTaskArray = arrayCreate((iTaskGraphT.clone().borrow().len() as i32), (Arc::new(crate::HpcOmSimCode::Task::TASKEMPTY), 0));
+    tmpTaskArray = arrayCreate((iTaskGraphT.clone().borrow().len() as i32), (Arc::new(openmodelica_simcode_types::HpcOmSimCode::Task::TASKEMPTY), 0));
     oTasks = convertTaskGraphToTasks1(iTaskGraphMeta.clone(), iTaskGraphT.clone(), 1, iConverterFunc.clone(), tmpTaskArray.clone())?;
     Ok(oTasks)
 }
@@ -3047,7 +3047,7 @@ fn TDS_schedule1(mut clustersIn: Arc<metamodelica::List<Arc<metamodelica::List<i
             taskGraph = arrayCreate(sizeTasks.clone(), metamodelica::nil());
             taskDuplAss = arrayCreate(sizeTasks.clone(), -1);
             threadTask = arrayCreate(numProc.clone(), metamodelica::nil());
-            allCalcTasks = arrayCreate(sizeTasks.clone(), (Arc::new(crate::HpcOmSimCode::Task::TASKEMPTY), 0));
+            allCalcTasks = arrayCreate(sizeTasks.clone(), (Arc::new(openmodelica_simcode_types::HpcOmSimCode::Task::TASKEMPTY), 0));
             schedule = Arc::new(HpcOmSimCode::Schedule::THREADSCHEDULE { threadTasks: threadTask.clone(), outgoingDepTasks: metamodelica::nil(), scheduledTasks: metamodelica::nil(), allCalcTasks: allCalcTasks.clone() });
             duplSccSimEqMap = metamodelica::nil();
             duplComps = metamodelica::nil();
@@ -5899,7 +5899,7 @@ fn getFinishingTimesForSchedule(mut scheduleIn: Arc<HpcOmSimCode::Schedule>, mut
                     let mut schedule: Arc<HpcOmSimCode::Schedule> = Arc::new(<HpcOmSimCode::Schedule as ::std::default::Default>::default());
                     taskIdcs = arrayCreate((threadTasks.clone().borrow().len() as i32), 1);
                     taskGraphT = AdjacencyMatrix::transposeAdjacencyMatrix(taskGraphIn.clone(), (taskGraphIn.clone().borrow().len() as i32))?;
-                    checkedTasks = arrayCreate((taskGraphIn.clone().borrow().len() as i32), Arc::new(crate::HpcOmSimCode::Task::TASKEMPTY));
+                    checkedTasks = arrayCreate((taskGraphIn.clone().borrow().len() as i32), Arc::new(openmodelica_simcode_types::HpcOmSimCode::Task::TASKEMPTY));
                     computeTimeFinished(threadTasks.clone(), taskIdcs.clone(), 1, checkedTasks.clone(), taskGraphIn.clone(), taskGraphT.clone(), taskGraphMetaIn.clone(), numProc.clone(), metamodelica::nil())?;
                     finTimes = Array::map(threadTasks.clone(), (std::sync::Arc::new(getTimeFinishedOfLastTask) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>) -> Result<metamodelica::Real> + 'static>))?;
                     finTime = Array::fold(finTimes.clone(), (std::sync::Arc::new(fnptr!(realMax, metamodelica::Real, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real, metamodelica::Real) -> Result<metamodelica::Real> + 'static>), metamodelica::OrderedFloat(0.0_f64))?;
@@ -6081,7 +6081,7 @@ fn updateFinishingTime(mut taskIn: Arc<HpcOmSimCode::Task>, mut taskIdxIn: i32, 
             let mut checkedTasks: metamodelica::Array<Arc<HpcOmSimCode::Task>> = Default::default();
             let mut threadTasks: metamodelica::Array<Arc<metamodelica::List<Arc<HpcOmSimCode::Task>>>> = Default::default();
             parentLst = taskGraphTIn.clone().borrow()[(taskID.clone()-1) as usize].clone();
-            (parentLst, latestTask) = List::fold1(parentLst.clone(), (std::sync::Arc::new(updateFinishingTime1) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<HpcOmSimCode::Task>>, (Arc<metamodelica::List<i32>>, Arc<HpcOmSimCode::Task>)) -> Result<(Arc<metamodelica::List<i32>>, Arc<HpcOmSimCode::Task>)> + 'static>), checkedTasksIn.clone(), (metamodelica::nil(), Arc::new(crate::HpcOmSimCode::Task::TASKEMPTY)))?;
+            (parentLst, latestTask) = List::fold1(parentLst.clone(), (std::sync::Arc::new(updateFinishingTime1) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<HpcOmSimCode::Task>>, (Arc<metamodelica::List<i32>>, Arc<HpcOmSimCode::Task>)) -> Result<(Arc<metamodelica::List<i32>>, Arc<HpcOmSimCode::Task>)> + 'static>), checkedTasksIn.clone(), (metamodelica::nil(), Arc::new(openmodelica_simcode_types::HpcOmSimCode::Task::TASKEMPTY)))?;
             isComputable = parentLst.clone().is_empty();
             taskIdxNew = if (isComputable.clone()) {taskIdxIn.clone() + 1} else {taskIdxIn.clone()};
             (threadTasks, checkedTasks) = if (isComputable.clone()) {computeFinishingTimeForOneTask((threadTasksIn.clone(), checkedTasksIn.clone(), taskIdxIn.clone(), threadIdxIn.clone(), latestTask.clone(), taskGraphMetaIn.clone()))?} else {(threadTasksIn.clone(), checkedTasksIn.clone())};
@@ -6204,7 +6204,7 @@ fn getPredecessorCalcTask(mut threadIn: Arc<metamodelica::List<Arc<HpcOmSimCode:
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let true = (indexIn.clone() == 1) else { bail!("pattern mismatch") };
-            Ok(Arc::new(crate::HpcOmSimCode::Task::TASKEMPTY))
+            Ok(Arc::new(openmodelica_simcode_types::HpcOmSimCode::Task::TASKEMPTY))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };

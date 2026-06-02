@@ -10,12 +10,12 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::CodegenUtil;
-use crate::SimCode;
-use crate::SimCodeVar;
 use openmodelica_frontend::Expression;
 use openmodelica_frontend::ExpressionDump;
 use openmodelica_frontend_dump::ExpressionDumpTpl;
 use openmodelica_frontend_types::DAE;
+use openmodelica_simcode_types::SimCode;
+use openmodelica_simcode_types::SimCodeVar;
 use openmodelica_susan::Tpl;
 use openmodelica_util::Util;
 

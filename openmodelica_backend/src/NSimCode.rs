@@ -43,9 +43,6 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::AvlTreeCRToInt;
-use crate::HashTableCrefSimVar;
-use crate::HpcOmSimCode;
 use crate::NBEquation as BEquation;
 use crate::NBEquation::EqData;
 use crate::NBEquation::Equation;
@@ -68,12 +65,8 @@ use crate::NSimVar::ExtObjInfo;
 use crate::NSimVar::SimVar;
 use crate::NSimVar::SimVars;
 use crate::NSimVar::VarInfo;
-use crate::SimCode as OldSimCode;
-use crate::SimCodeFunction as OldSimCodeFunction;
-use crate::SimCodeFunction;
 use crate::SimCodeFunctionUtil as OldSimCodeFunctionUtil;
 use crate::SimCodeUtil as OldSimCodeUtil;
-use crate::SimCodeVar;
 use crate::SymbolTable;
 use openmodelica_ast::Absyn;
 use openmodelica_backend_types::BackendDAE as OldBackendDAE;
@@ -96,6 +89,13 @@ use openmodelica_nf_frontend::NFFunction::Function;
 use openmodelica_nf_frontend::NFInstNode::InstNode;
 use openmodelica_nf_frontend::NFType as Type;
 use openmodelica_program_util::ProgramUtil;
+use openmodelica_simcode_types::AvlTreeCRToInt;
+use openmodelica_simcode_types::HashTableCrefSimVar;
+use openmodelica_simcode_types::HpcOmSimCode;
+use openmodelica_simcode_types::SimCode as OldSimCode;
+use openmodelica_simcode_types::SimCodeFunction as OldSimCodeFunction;
+use openmodelica_simcode_types::SimCodeFunction;
+use openmodelica_simcode_types::SimCodeVar;
 use openmodelica_util::Error;
 use openmodelica_util::Flags;
 use openmodelica_util::StringUtil;
@@ -576,7 +576,7 @@ pub mod SimCode {
             let mut cref = cref.clone();
             discreteModelVars = metamodelica::cons(ComponentRef::toDAE(cref.clone())?, discreteModelVars.clone());
         }
-        oldSimCode = OldSimCode::SimCode { scalarized: Flags::getConfigBool(Flags::SIM_CODE_SCALARIZE.clone())?, omsiData: None, inlineEquations: metamodelica::nil(), daeModeData: if (isSome(simCode.daeModeData.clone())) {Some(DaeModeData::convert(Util::getOption(simCode.daeModeData.clone())?)?)} else {None}, partitionData: OldSimCode::PartitionData { numPartitions: -1, partitions: metamodelica::nil(), activatorsForPartitions: metamodelica::nil(), stateToActivators: metamodelica::nil() }, fmiSimulationFlags: None, modelStructure: None, backendMapping: None, crefToClockIndexHT: crefToClockIndexHT.clone(), crefToSimVarHT: crefToSimVarHT.clone(), varToIndexMapping: varToIndexMapping.clone(), varToArrayIndexMapping: varToArrayIndexMapping.clone(), valueReferences: Arc::new(crate::AvlTreeCRToInt::Tree::EMPTY), hpcomData: HpcOmSimCode::emptyHpcomData().clone(), fmuTargetName: (literal!("")).clone(), fullPathPrefix: (literal!("")).clone(), fileNamePrefix: (simCode.fileNamePrefix.clone()).clone(), simulationSettingsOpt: simCode.simulationSettingsOpt.clone(), jacobianMatrices: ({
+        oldSimCode = OldSimCode::SimCode { scalarized: Flags::getConfigBool(Flags::SIM_CODE_SCALARIZE.clone())?, omsiData: None, inlineEquations: metamodelica::nil(), daeModeData: if (isSome(simCode.daeModeData.clone())) {Some(DaeModeData::convert(Util::getOption(simCode.daeModeData.clone())?)?)} else {None}, partitionData: OldSimCode::PartitionData { numPartitions: -1, partitions: metamodelica::nil(), activatorsForPartitions: metamodelica::nil(), stateToActivators: metamodelica::nil() }, fmiSimulationFlags: None, modelStructure: None, backendMapping: None, crefToClockIndexHT: crefToClockIndexHT.clone(), crefToSimVarHT: crefToSimVarHT.clone(), varToIndexMapping: varToIndexMapping.clone(), varToArrayIndexMapping: varToArrayIndexMapping.clone(), valueReferences: Arc::new(openmodelica_simcode_types::AvlTreeCRToInt::Tree::EMPTY), hpcomData: HpcOmSimCode::emptyHpcomData().clone(), fmuTargetName: (literal!("")).clone(), fullPathPrefix: (literal!("")).clone(), fileNamePrefix: (simCode.fileNamePrefix.clone()).clone(), simulationSettingsOpt: simCode.simulationSettingsOpt.clone(), jacobianMatrices: ({
         let mut __acc: Arc<metamodelica::List<Arc<OldSimCode::JacobianMatrix>>> = metamodelica::nil();
         for mut jac in (simCode.jacobians.clone()).into_iter().cloned() {
             let __x = SimJacobian::convert(jac.clone())?;
@@ -829,8 +829,8 @@ pub mod DaeModeData {
     fn convertMode(mut mode: DaeModeConfig) -> Result<OldSimCode::DaeModeConfig> {
         let mut oldMode: OldSimCode::DaeModeConfig = OldSimCode::DaeModeConfig::ALL_EQUATIONS;
         oldMode = (match mode.clone() {
-        DaeModeConfig::ALL => crate::SimCode::DaeModeConfig::ALL_EQUATIONS,
-        DaeModeConfig::DYNAMIC => crate::SimCode::DaeModeConfig::DYNAMIC_EQUATIONS,
+        DaeModeConfig::ALL => openmodelica_simcode_types::SimCode::DaeModeConfig::ALL_EQUATIONS,
+        DaeModeConfig::DYNAMIC => openmodelica_simcode_types::SimCode::DaeModeConfig::DYNAMIC_EQUATIONS,
     });
         Ok(oldMode)
     }

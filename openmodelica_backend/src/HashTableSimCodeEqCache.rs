@@ -43,8 +43,8 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::SimCode;
 use crate::SimCodeUtil;
+use openmodelica_simcode_types::SimCode;
 use openmodelica_util::BaseHashTable;
 
 /* Below is the instance specific code. For each hashtable the user must define:

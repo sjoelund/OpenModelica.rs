@@ -212,7 +212,7 @@ thread_local! {
 
     // Index 25 — optionSimCode
     // Declared in openmodelica_backend::Globals.
-    // Type: Option<SimCode::SimCode> — from openmodelica_backend::SimCode.
+    // Type: Option<SimCode::SimCode> — from openmodelica_simcode_types::SimCode.
 
     // Index 26 — interactiveCache
     // Declared in openmodelica_backend::Globals.

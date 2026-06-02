@@ -52,12 +52,10 @@ use crate::BackendVarTransform;
 use crate::BackendVariable;
 use crate::ExpressionSolve;
 use crate::HpcOmScheduler;
-use crate::HpcOmSimCode;
 use crate::HpcOmSimCodeMain;
 use crate::HpcOmTaskGraph;
 use crate::IndexReduction;
 use crate::Matching;
-use crate::SimCodeVar;
 use crate::Tearing;
 use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::ComponentReference;
@@ -67,6 +65,8 @@ use openmodelica_frontend::ExpressionSimplify;
 use openmodelica_frontend_dump::ComponentReferenceBasics;
 use openmodelica_frontend_dump::ExpressionBasics;
 use openmodelica_frontend_types::DAE;
+use openmodelica_simcode_types::HpcOmSimCode;
+use openmodelica_simcode_types::SimCodeVar;
 use openmodelica_util::Error;
 use openmodelica_util::ExpandableArray;
 use openmodelica_util::Flags;
@@ -2552,7 +2552,7 @@ pub fn createSingleBlockSchedule(mut graphIn: metamodelica::Array<Arc<metamodeli
     thread1 = List::threadMap1(simEqSys.clone(), nodes.clone(), (std::sync::Arc::new(fnptr!(HpcOmScheduler::makeCalcTask, Arc<metamodelica::List<i32>>, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, i32, i32) -> Result<Arc<HpcOmSimCode::Task>> + 'static>), 1)?;
     threadTasks = arrayCreate(4, metamodelica::nil());
     threadTasks = {let _arr = threadTasks.clone(); _arr.borrow_mut()[(1-1) as usize] = thread1.clone(); _arr};
-    allCalcTasks = arrayCreate((thread1.clone().len() as i32), (Arc::new(crate::HpcOmSimCode::Task::TASKEMPTY), 0));
+    allCalcTasks = arrayCreate((thread1.clone().len() as i32), (Arc::new(openmodelica_simcode_types::HpcOmSimCode::Task::TASKEMPTY), 0));
     schedule = Arc::new(HpcOmSimCode::Schedule::THREADSCHEDULE { threadTasks: threadTasks.clone(), outgoingDepTasks: metamodelica::nil(), scheduledTasks: scheduledTasks.clone(), allCalcTasks: allCalcTasks.clone() });
     Ok(schedule)
 }

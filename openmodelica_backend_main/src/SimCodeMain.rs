@@ -52,8 +52,6 @@ use openmodelica_backend::BackendDump;
 use openmodelica_backend::BackendEquation;
 use openmodelica_backend::BackendVariable;
 use openmodelica_backend::DAEMode;
-use openmodelica_backend::HashTableCrefSimVar;
-use openmodelica_backend::HpcOmSimCode;
 use openmodelica_backend::HpcOmSimCodeMain;
 use openmodelica_backend::HpcOmTaskGraph;
 use openmodelica_backend::NBackendDAE;
@@ -63,11 +61,8 @@ use openmodelica_backend::SerializeInitXML;
 use openmodelica_backend::SerializeModelInfo;
 use openmodelica_backend::SerializeSparsityPattern;
 use openmodelica_backend::SerializeTaskSystemInfo;
-use openmodelica_backend::SimCode;
-use openmodelica_backend::SimCodeFunction;
 use openmodelica_backend::SimCodeFunctionUtil;
 use openmodelica_backend::SimCodeUtil;
-use openmodelica_backend::SimCodeVar;
 use openmodelica_backend::SymbolTable;
 use openmodelica_backend::SymbolicJacobian;
 use openmodelica_backend_types::BackendDAE;
@@ -104,6 +99,11 @@ use openmodelica_nf_frontend::NFFlatten::FunctionTree;
 use openmodelica_nf_frontend::NFFlatten::FunctionTreeImpl;
 use openmodelica_nf_frontend::NFFunction;
 use openmodelica_program_util::ProgramUtil;
+use openmodelica_simcode_types::HashTableCrefSimVar;
+use openmodelica_simcode_types::HpcOmSimCode;
+use openmodelica_simcode_types::SimCode;
+use openmodelica_simcode_types::SimCodeFunction;
+use openmodelica_simcode_types::SimCodeVar;
 use openmodelica_susan::Tpl;
 use openmodelica_util::Autoconf;
 use openmodelica_util::AvlSetString;
@@ -1530,7 +1530,7 @@ fn generateModelCodeDAE(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inIni
         __acc.reverse()
     });
     }
-    daeModeConf = openmodelica_backend::SimCode::DaeModeConfig::ALL_EQUATIONS;
+    daeModeConf = openmodelica_simcode_types::SimCode::DaeModeConfig::ALL_EQUATIONS;
     daeModeData = Some(SimCode::DaeModeData { daeEquations: daeEquations.clone(), sparsityPattern: daeModeSP.clone(), residualVars: residualVars.clone(), algebraicVars: algebraicStateVars.clone(), auxiliaryVars: auxiliaryVars.clone(), modeCreated: daeModeConf.clone() });
     modelInfo = SimCodeUtil::addNumEqns(modelInfo.clone(), uniqueEqIndex.clone() - (jacobianEquations.clone().len() as i32));
     if stringEqual((Config::simCodeTarget()?).clone(), (literal!("Cpp")).clone()) {
@@ -1541,7 +1541,7 @@ fn generateModelCodeDAE(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inIni
         varToIndexMapping = HashTableCrILst::emptyHashTable();
         crefToClockIndexHT = HashTable::emptyHashTable();
     }
-    simCode = SimCode::SimCode { scalarized: true, omsiData: None, inlineEquations: metamodelica::nil(), daeModeData: daeModeData.clone(), partitionData: SimCode::emptyPartitionData.clone(), fmiSimulationFlags: None, modelStructure: None, backendMapping: None, crefToClockIndexHT: crefToClockIndexHT.clone(), crefToSimVarHT: crefToSimVarHT.clone(), varToIndexMapping: varToIndexMapping.clone(), varToArrayIndexMapping: varToArrayIndexMapping.clone(), valueReferences: Arc::new(openmodelica_backend::AvlTreeCRToInt::Tree::EMPTY), hpcomData: HpcOmSimCode::emptyHpcomData().clone(), fmuTargetName: (literal!("")).clone(), fullPathPrefix: (literal!("")).clone(), fileNamePrefix: (filenamePrefix.clone()).clone(), simulationSettingsOpt: simSettingsOpt.clone(), jacobianMatrices: SymbolicJacs.clone(), spatialInfo: spatialInfo.clone(), delayedExps: SimCode::DelayedExpression { delayedExps: delayedExps.clone(), maxDelayedIndex: maxDelayedExpIndex.clone() }, makefileParams: makefileParams.clone(), extObjInfo: extObjInfo.clone(), discreteModelVars: discreteModelVars.clone(), timeEvents: timeEvents.clone(), relations: ZeroCrossings::updateIndices(relations.clone()), zeroCrossings: ZeroCrossings::updateIndices(zeroCrossings.clone()), classAttributes: metamodelica::nil(), constraints: metamodelica::nil(), stateSets: metamodelica::nil(), jacobianEquations: jacobianEquations.clone(), equationsForZeroCrossings: metamodelica::nil(), algorithmAndEquationAsserts: metamodelica::nil(), removedEquations: metamodelica::nil(), parameterEquations: parameterEquations.clone(), maxValueEquations: maxValueEquations.clone(), minValueEquations: minValueEquations.clone(), nominalValueEquations: nominalValueEquations.clone(), startValueEquations: startValueEquations.clone(), removedInitialEquations: removedInitialEquations.clone(), initialEquations_lambda0: initialEquations_lambda0.clone(), initialEquations: initialEquations.clone(), clockedPartitions: metamodelica::nil(), algebraicEquations: metamodelica::nil(), odeEquations: metamodelica::nil(), allEquations: metamodelica::nil(), localKnownVars: metamodelica::nil(), generic_loop_calls: metamodelica::nil(), externalFunctionIncludes: includes.clone(), recordDecls: recordDecls.clone(), literals: metamodelica::nil(), modelInfo: modelInfo.clone() };
+    simCode = SimCode::SimCode { scalarized: true, omsiData: None, inlineEquations: metamodelica::nil(), daeModeData: daeModeData.clone(), partitionData: SimCode::emptyPartitionData.clone(), fmiSimulationFlags: None, modelStructure: None, backendMapping: None, crefToClockIndexHT: crefToClockIndexHT.clone(), crefToSimVarHT: crefToSimVarHT.clone(), varToIndexMapping: varToIndexMapping.clone(), varToArrayIndexMapping: varToArrayIndexMapping.clone(), valueReferences: Arc::new(openmodelica_simcode_types::AvlTreeCRToInt::Tree::EMPTY), hpcomData: HpcOmSimCode::emptyHpcomData().clone(), fmuTargetName: (literal!("")).clone(), fullPathPrefix: (literal!("")).clone(), fileNamePrefix: (filenamePrefix.clone()).clone(), simulationSettingsOpt: simSettingsOpt.clone(), jacobianMatrices: SymbolicJacs.clone(), spatialInfo: spatialInfo.clone(), delayedExps: SimCode::DelayedExpression { delayedExps: delayedExps.clone(), maxDelayedIndex: maxDelayedExpIndex.clone() }, makefileParams: makefileParams.clone(), extObjInfo: extObjInfo.clone(), discreteModelVars: discreteModelVars.clone(), timeEvents: timeEvents.clone(), relations: ZeroCrossings::updateIndices(relations.clone()), zeroCrossings: ZeroCrossings::updateIndices(zeroCrossings.clone()), classAttributes: metamodelica::nil(), constraints: metamodelica::nil(), stateSets: metamodelica::nil(), jacobianEquations: jacobianEquations.clone(), equationsForZeroCrossings: metamodelica::nil(), algorithmAndEquationAsserts: metamodelica::nil(), removedEquations: metamodelica::nil(), parameterEquations: parameterEquations.clone(), maxValueEquations: maxValueEquations.clone(), minValueEquations: minValueEquations.clone(), nominalValueEquations: nominalValueEquations.clone(), startValueEquations: startValueEquations.clone(), removedInitialEquations: removedInitialEquations.clone(), initialEquations_lambda0: initialEquations_lambda0.clone(), initialEquations: initialEquations.clone(), clockedPartitions: metamodelica::nil(), algebraicEquations: metamodelica::nil(), odeEquations: metamodelica::nil(), allEquations: metamodelica::nil(), localKnownVars: metamodelica::nil(), generic_loop_calls: metamodelica::nil(), externalFunctionIncludes: includes.clone(), recordDecls: recordDecls.clone(), literals: metamodelica::nil(), modelInfo: modelInfo.clone() };
     let (__pa9, (_, _, __pa10)) = SimCodeUtil::traverseExpsSimCode(simCode.clone(), (std::sync::Arc::new(SimCodeFunctionUtil::findLiteralsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::Exp>>>)) -> Result<(Arc<DAE::Exp>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::Exp>>>))> + 'static>), literals.clone())?;
     simCode = __pa9.clone();
     lits = __pa10.clone();

@@ -43,9 +43,7 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::SimCode;
 use crate::SimCodeUtil;
-use crate::SimCodeVar;
 use openmodelica_ast::Absyn;
 use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::Algorithm;
@@ -54,6 +52,8 @@ use openmodelica_frontend::DAEDump;
 use openmodelica_frontend::Expression;
 use openmodelica_frontend_dump::ExpressionBasics::printExpStr as expStr;
 use openmodelica_frontend_types::DAE;
+use openmodelica_simcode_types::SimCode;
+use openmodelica_simcode_types::SimCodeVar;
 use openmodelica_util::Error;
 use openmodelica_util::File::Escape::JSON;
 use openmodelica_util::File;

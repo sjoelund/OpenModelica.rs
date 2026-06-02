@@ -53,8 +53,6 @@ use crate::NBVariable as BVariable;
 use crate::NBVariable::VariablePointers;
 use crate::NSimCode as SimCode;
 use crate::NSimCode::SimCodeIndices;
-use crate::SimCode as OldSimCode;
-use crate::SimCodeVar as OldSimCodeVar;
 use openmodelica_backend_types::BackendDAE as OldBackendDAE;
 use openmodelica_frontend_types::DAE;
 use openmodelica_frontend_types::SCode;
@@ -70,6 +68,8 @@ use openmodelica_nf_frontend::NFPrefixes as Prefixes;
 use openmodelica_nf_frontend::NFSimplifyExp as SimplifyExp;
 use openmodelica_nf_frontend::NFType as Type;
 use openmodelica_nf_frontend::NFVariable as Variable;
+use openmodelica_simcode_types::SimCode as OldSimCode;
+use openmodelica_simcode_types::SimCodeVar as OldSimCodeVar;
 use openmodelica_util::Error;
 use openmodelica_util::Flags;
 use openmodelica_util::StringUtil;
@@ -629,7 +629,7 @@ pub mod Alias {
     pub fn convert(mut alias: Arc<Alias>) -> Result<OldSimCodeVar::AliasVariable> {
         let mut oldAlias: OldSimCodeVar::AliasVariable = OldSimCodeVar::AliasVariable::NOALIAS;
         oldAlias = (::match_deref::match_deref! { match &(alias.clone()) {
-        Deref @ NO_ALIAS { .. } => crate::SimCodeVar::AliasVariable::NOALIAS,
+        Deref @ NO_ALIAS { .. } => openmodelica_simcode_types::SimCodeVar::AliasVariable::NOALIAS,
         Deref @ ALIAS { .. } if (realEq(var_field!((*alias).gain, Alias::ALIAS).clone(), metamodelica::OrderedFloat(1.0_f64)) && realEq(var_field!((*alias).offset, Alias::ALIAS).clone(), metamodelica::OrderedFloat(0.0_f64))) => OldSimCodeVar::AliasVariable::ALIAS { varName: ComponentRef::toDAE(var_field!((*alias).alias, Alias::ALIAS).clone())? },
         Deref @ ALIAS { .. } if (realEq(var_field!((*alias).gain, Alias::ALIAS).clone(), metamodelica::OrderedFloat(-1.0_f64)) && realEq(var_field!((*alias).offset, Alias::ALIAS).clone(), metamodelica::OrderedFloat(0.0_f64))) => OldSimCodeVar::AliasVariable::NEGATEDALIAS { varName: ComponentRef::toDAE(var_field!((*alias).alias, Alias::ALIAS).clone())? },
         _ => {

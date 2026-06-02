@@ -43,13 +43,13 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::HashTableCrefSimVar;
 use crate::NSimVar::ExtObjInfo;
 use crate::NSimVar::SimVar;
 use crate::NSimVar::SimVars;
-use crate::SimCodeVar;
 use openmodelica_frontend_types::DAE;
 use openmodelica_nf_frontend::NFComponentRef as ComponentRef;
+use openmodelica_simcode_types::HashTableCrefSimVar;
+use openmodelica_simcode_types::SimCodeVar;
 use openmodelica_util::UnorderedMap;
 use openmodelica_util_datatypes_basic::List;
 

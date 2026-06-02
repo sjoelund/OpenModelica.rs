@@ -43,8 +43,6 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::SimCodeFunction;
-use crate::SimCodeVar;
 use openmodelica_ast::Absyn;
 use openmodelica_ast_collections::HashTableStringToPath;
 use openmodelica_frontend::ComponentReference;
@@ -67,6 +65,8 @@ use openmodelica_frontend_types::ClassInf;
 use openmodelica_frontend_types::DAE;
 use openmodelica_frontend_types::SCode;
 use openmodelica_program_util::ProgramUtil;
+use openmodelica_simcode_types::SimCodeFunction;
+use openmodelica_simcode_types::SimCodeVar;
 use openmodelica_util::Autoconf;
 use openmodelica_util::BaseHashTable;
 use openmodelica_util::Config;
@@ -1022,7 +1022,7 @@ fn extArgsToSimExtArgs(mut extArg: DAE::ExtArg) -> Result<Arc<SimCodeFunction::S
             Arc::new(SimCodeFunction::SimExtArg::SimExtArg::SIMEXTARGSIZE { cref: componentRef.clone(), isInput: true, outputIndex: 0, type_: type_.clone(), exp: exp_.clone() })
         },
         DAE::ExtArg::NOEXTARG { .. } => {
-            Arc::new(crate::SimCodeFunction::SimExtArg::SIMNOEXTARG)
+            Arc::new(openmodelica_simcode_types::SimCodeFunction::SimExtArg::SIMNOEXTARG)
         },
     });
     Ok(simExtArg)
@@ -2983,6 +2983,15 @@ pub fn getCalledFunctionsInFunction2(mut inPath: Arc<Absyn::Path>, mut pathstr: 
         bail!("matchcontinue: no arm matched")
     };
     Ok(outHt)
+}
+
+pub fn getCalledFunctionsInFunction(mut path: Arc<Absyn::Path>, mut funcs: Arc<AvlTreePathFunction::Tree>) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> {
+    let mut outPaths: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
+    let mut ht: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (HashTableStringToPath::FuncHashCref, HashTableStringToPath::FuncCrefEqual, HashTableStringToPath::FuncCrefStr, HashTableStringToPath::FuncExpStr));
+    ht = HashTableStringToPath::emptyHashTable();
+    ht = getCalledFunctionsInFunction2(path.clone(), AbsynUtil::pathStringNoQual(path.clone(), (literal!(".")).clone(), true, false)?, ht.clone(), funcs.clone())?;
+    outPaths = BaseHashTable::hashTableValueList(ht.clone())?;
+    Ok(outPaths)
 }
 
 fn addDestructor(mut func: DAE::Function, mut inHt: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>))> {

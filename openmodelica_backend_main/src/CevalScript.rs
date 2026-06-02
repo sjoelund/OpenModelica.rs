@@ -52,8 +52,6 @@ use openmodelica_backend::CevalScriptOMSimulator;
 use openmodelica_backend::DAEToMid;
 use openmodelica_backend::GenerateAPIFunctionsTpl;
 use openmodelica_backend::MidCode;
-use openmodelica_backend::SimCode;
-use openmodelica_backend::SimCodeFunction;
 use openmodelica_backend::SimCodeFunctionUtil;
 use openmodelica_backend::SymbolTable;
 use openmodelica_backend::Unparsing;
@@ -95,6 +93,8 @@ use openmodelica_frontend_types::Values;
 use openmodelica_program_util::ProgramUtil;
 use openmodelica_script_util::DynLoad;
 use openmodelica_script_util::PackageManagement;
+use openmodelica_simcode_types::SimCode;
+use openmodelica_simcode_types::SimCodeFunction;
 use openmodelica_susan::Tpl;
 use openmodelica_util::Autoconf;
 use openmodelica_util::BaseHashSet;
@@ -2451,7 +2451,7 @@ pub fn getFunctionDependencies(mut cache: FCore::Cache, mut functionName: Arc<Ab
     let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
     funcs = FCore::getFunctionTree(cache.clone());
     mainFunction = DAEUtil::getNamedFunction(functionName.clone(), funcs.clone())?;
-    dependencies = SimCodeFunction::getCalledFunctionsInFunction(functionName.clone(), funcs.clone())?;
+    dependencies = SimCodeFunctionUtil::getCalledFunctionsInFunction(functionName.clone(), funcs.clone())?;
     Ok((mainFunction, dependencies, funcs))
 }
 

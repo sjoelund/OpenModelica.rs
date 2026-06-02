@@ -9667,7 +9667,11 @@ fn global_root_var_path(grc: &GlobalRootConst, ctx: &GenCtx) -> String {
         // function table populated by the frontend_dump-side interface
         // (see FrontEnd/BackendInterface.mo and its `__OpenModelica_Interface`).
         "backendInterface" => Some("openmodelica_frontend_dump"),
-        // openmodelica_backend — types from SymbolTable, SimCode, etc.
+        // openmodelica_backend — symbolTable/rewriteRulesIndex hold SymbolTable
+        // types defined here. optionSimCode holds a SimCode value whose type now
+        // lives in openmodelica_simcode_types, but the root accessor stays in
+        // openmodelica_backend (which depends on simcode_types): the types crate
+        // is datatype-only and must not own mutable global state.
         "symbolTable" | "rewriteRulesIndex" | "optionSimCode" => {
             Some("openmodelica_backend")
         }
