@@ -76,7 +76,7 @@ use openmodelica_backend::TotalModelDebug;
 use openmodelica_backend::Uncertainties;
 use openmodelica_backend::XMLDump;
 use openmodelica_backend_types::BackendDAE;
-use openmodelica_codegen::CodegenFMU;
+use openmodelica_codegen_fmu::CodegenFMU;
 use openmodelica_dump_extra::AbsynJLDumpTpl;
 use openmodelica_dump_extra::BlockCallRewrite;
 use openmodelica_frontend::Ceval;

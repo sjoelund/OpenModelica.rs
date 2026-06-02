@@ -10,9 +10,9 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::CodegenFMUCommon;
-use crate::CodegenUtilSimulation;
 use openmodelica_ast::Absyn;
 use openmodelica_backend::CodegenUtil;
+use openmodelica_codegen::CodegenUtilSimulation;
 use openmodelica_simcode_types::SimCode;
 use openmodelica_simcode_types::SimCodeVar;
 use openmodelica_susan::Tpl;

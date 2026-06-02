@@ -11,10 +11,10 @@ use arcstr::{ArcStr, literal, format};
 
 use crate::CodegenFMU;
 use crate::CodegenOMSI_common;
-use crate::CodegenUtilSimulation;
 use openmodelica_ast::Absyn;
 use openmodelica_backend::CodegenUtil;
 use openmodelica_backend_types::BackendDAE;
+use openmodelica_codegen::CodegenUtilSimulation;
 use openmodelica_frontend_types::DAE;
 use openmodelica_simcode_types::SimCode;
 use openmodelica_simcode_types::SimCodeFunction;
