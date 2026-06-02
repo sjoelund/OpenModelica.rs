@@ -1301,6 +1301,9 @@ pub fn generate_all(hier: &InstanceHierarchy<'_>, output_dir: &str) -> std::io::
     // [`GenCtx::infallible_unwrap_sites`]). Locked once per file on a cold path
     // — never inside the per-call `q()` hot path.
     let infallible_unwraps: std::sync::Mutex<BTreeSet<String>> = std::sync::Mutex::new(BTreeSet::new());
+    // Aggregate the per-file strict-import diagnostics (top-level packages used
+    // without an explicit `import`). Locked once per file on a cold path.
+    let missing_imports: std::sync::Mutex<BTreeSet<String>> = std::sync::Mutex::new(BTreeSet::new());
     let file_phase_t0 = std::time::Instant::now();
     file_jobs.par_iter().try_for_each(|(dir, name, node)| -> std::io::Result<()> {
         let current_crate = if let NodeKind::Class(c) = &node.kind {
@@ -1313,9 +1316,12 @@ pub fn generate_all(hier: &InstanceHierarchy<'_>, output_dir: &str) -> std::io::
             eprintln!("[mmtorust] codegen start {file_path}");
         }
         let file_t0 = std::time::Instant::now();
-        let (content, file_unwraps) = generate_file(name, node, &crate_map, current_crate, &nullable_global_roots, &top_level_uniontype_names, hier.recursive_types.clone(), hier.types_containing_mutable.clone(), hier.types_containing_array.clone(), hier.types_containing_dyn_fn.clone(), hier.types_directly_containing_dyn_fn.clone(), &no_mod_uniontypes, &hier.top_level, &fn_type_vars, &hier.fallible_functions, &hier.partial_eq_required, &hier.default_required, &defaultable_struct_qnames, &types_needing_default);
+        let (content, file_unwraps, file_missing) = generate_file(name, node, &crate_map, current_crate, &nullable_global_roots, &top_level_uniontype_names, hier.recursive_types.clone(), hier.types_containing_mutable.clone(), hier.types_containing_array.clone(), hier.types_containing_dyn_fn.clone(), hier.types_directly_containing_dyn_fn.clone(), &no_mod_uniontypes, &hier.top_level, &fn_type_vars, &hier.fallible_functions, &hier.partial_eq_required, &hier.default_required, &defaultable_struct_qnames, &types_needing_default);
         if !file_unwraps.is_empty() {
             infallible_unwraps.lock().unwrap().extend(file_unwraps);
+        }
+        if !file_missing.is_empty() {
+            missing_imports.lock().unwrap().extend(file_missing);
         }
         let file_elapsed = file_t0.elapsed();
         file_micros_total.fetch_add(file_elapsed.as_micros() as u64, Ordering::Relaxed);
@@ -1366,6 +1372,23 @@ pub fn generate_all(hier: &InstanceHierarchy<'_>, output_dir: &str) -> std::io::
         );
         for qname in &infallible_unwraps {
             eprintln!("    {qname}");
+        }
+    }
+
+    // ── Strict-import diagnostic ───────────────────────────────────────────
+    // Top-level packages referenced in emitted code without an explicit
+    // `import` in the .mo source. The generator silently adds a `use` so the
+    // Rust compiles, but encapsulated packages require the import to be
+    // declared. Report each `<module>: <package>` so the source can be fixed.
+    let missing_imports = missing_imports.into_inner().unwrap();
+    if !missing_imports.is_empty() {
+        eprintln!(
+            "[mmtorust] WARNING: {} module/package reference(s) use a top-level package \
+             that is not imported in the .mo source (encapsulated packages require an explicit import):",
+            missing_imports.len(),
+        );
+        for entry in &missing_imports {
+            eprintln!("    {entry}");
         }
     }
 
@@ -1669,7 +1692,7 @@ fn collect_no_mod_uniontypes(nodes: &BTreeMap<String, NameNode<'_>>, prefix: &st
     }
 }
 
-fn generate_file<'a>(top_name: &str, node: &NameNode<'_>, crate_map: &BTreeMap<String, String>, current_crate: Option<String>, nullable_global_roots: &HashSet<String>, top_level_uniontype_names: &HashSet<String>, recursive_types: BTreeSet<String>, types_containing_mutable: BTreeSet<String>, types_containing_array: BTreeSet<String>, types_containing_dyn_fn: BTreeSet<String>, types_directly_containing_dyn_fn: BTreeSet<String>, no_mod_uniontypes: &HashSet<String>, top_level: &'a BTreeMap<String, NameNode<'a>>, fn_type_vars: &BTreeMap<String, Vec<String>>, fallible_functions: &BTreeSet<String>, partial_eq_required: &BTreeMap<String, HashSet<String>>, default_required: &BTreeMap<String, HashSet<String>>, defaultable_struct_qnames: &HashSet<String>, types_needing_default: &HashSet<String>) -> (String, BTreeSet<String>) {
+fn generate_file<'a>(top_name: &str, node: &NameNode<'_>, crate_map: &BTreeMap<String, String>, current_crate: Option<String>, nullable_global_roots: &HashSet<String>, top_level_uniontype_names: &HashSet<String>, recursive_types: BTreeSet<String>, types_containing_mutable: BTreeSet<String>, types_containing_array: BTreeSet<String>, types_containing_dyn_fn: BTreeSet<String>, types_directly_containing_dyn_fn: BTreeSet<String>, no_mod_uniontypes: &HashSet<String>, top_level: &'a BTreeMap<String, NameNode<'a>>, fn_type_vars: &BTreeMap<String, Vec<String>>, fallible_functions: &BTreeSet<String>, partial_eq_required: &BTreeMap<String, HashSet<String>>, default_required: &BTreeMap<String, HashSet<String>>, defaultable_struct_qnames: &HashSet<String>, types_needing_default: &HashSet<String>) -> (String, BTreeSet<String>, BTreeSet<String>) {
     let mut ctx = GenCtx::new(top_name, current_crate, crate_map.clone(), nullable_global_roots.clone(), top_level_uniontype_names.clone(), recursive_types, types_containing_mutable, types_containing_array, types_containing_dyn_fn, types_directly_containing_dyn_fn, fn_type_vars.clone(), fallible_functions.clone(), partial_eq_required.clone(), default_required.clone(), defaultable_struct_qnames.clone(), types_needing_default.clone());
     ctx.no_mod_uniontypes = no_mod_uniontypes.clone();
     // Build the set of all RustEnum qnames so `constructor_needs_arc` can
@@ -1793,7 +1816,20 @@ use arcstr::{{ArcStr, literal, format}};
         writeln!(out).unwrap();
     }
     out.push_str(&body);
-    (out, ctx.infallible_unwrap_sites.into_inner())
+    // Strict-import check: `implicit_modules` holds the top-level packages this
+    // file references in emitted code but does not explicitly import (a plain
+    // `import M;` routes `M.x` through `named` instead, so it never lands here).
+    // Each is a reference that only resolves because the generator silently adds
+    // a `use`; under encapsulated-package rules the source should import it.
+    // `MetaModelica*` is the builtin namespace (`use metamodelica::*`), not an
+    // importable MM package, so it is excluded.
+    let missing_imports: BTreeSet<String> = ctx
+        .implicit_modules
+        .iter()
+        .filter(|m| !m.starts_with("MetaModelica"))
+        .map(|m| format!("{top_name}: {m}"))
+        .collect();
+    (out, ctx.infallible_unwrap_sites.into_inner(), missing_imports)
 }
 
 // ── Node emission ─────────────────────────────────────────────────────────────
