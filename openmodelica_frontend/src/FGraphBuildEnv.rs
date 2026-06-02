@@ -43,13 +43,13 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::FCore;
 use crate::FGraph;
 use crate::FNode;
 use openmodelica_ast::Absyn;
 use openmodelica_frontend_dump::AbsynToSCode;
 use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_dump::Dump;
+use openmodelica_frontend_dump::FCore;
 use openmodelica_frontend_dump::SCodeDump;
 use openmodelica_frontend_dump::SCodeUtil;
 use openmodelica_frontend_inst::SCodeInstUtil;
@@ -130,7 +130,7 @@ pub fn mkClassNode(mut inClass: Arc<SCode::Element>, mut inPrefix: DAE::Prefix, 
                 _ => bail!("pattern mismatch"),
             } };
             name = __pa0.clone();
-            (g, n) = FGraph::node(g.clone(), (name.clone()).clone(), list![inParentRef.clone()], FCore::Data::CL { e: cls.clone(), pre: inPrefix.clone(), r#mod: inMod.clone(), kind: inKind.clone(), status: crate::FCore::Status::CLS_UNTYPED });
+            (g, n) = FGraph::node(g.clone(), (name.clone()).clone(), list![inParentRef.clone()], FCore::Data::CL { e: cls.clone(), pre: inPrefix.clone(), r#mod: inMod.clone(), kind: inKind.clone(), status: openmodelica_frontend_dump::FCore::Status::CLS_UNTYPED });
             nr = FNode::toRef(n.clone());
             FNode::addChildRef(inParentRef.clone(), (name.clone()).clone(), nr.clone(), checkDuplicate.clone())?;
             g.clone()

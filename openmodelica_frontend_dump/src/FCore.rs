@@ -43,11 +43,10 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
+use crate::AbsynUtil;
 use crate::AvlSetCR;
-use crate::DAEUtil;
+use crate::AvlTreePathFunction;
 use openmodelica_ast::Absyn;
-use openmodelica_frontend_dump::AbsynUtil;
-use openmodelica_frontend_dump::AvlTreePathFunction;
 use openmodelica_frontend_types::DAE;
 use openmodelica_frontend_types::SCode;
 use openmodelica_util::BaseAvlSet;
@@ -1268,7 +1267,7 @@ pub fn emptyCache() -> Cache {
     let mut cache: Cache = Cache::NO_CACHE;
     let mut instFuncs: Mutable::Mutable<Arc<AvlTreePathFunction::Tree>>;
     let mut ht: StructuralParameters = (Arc::new(AvlSetCR::Tree::EMPTY), metamodelica::nil());
-    instFuncs = Mutable::create(Arc::new(openmodelica_frontend_dump::AvlTreePathFunction::Tree::EMPTY));
+    instFuncs = Mutable::create(Arc::new(crate::AvlTreePathFunction::Tree::EMPTY));
     ht = (Arc::new(crate::AvlSetCR::Tree::EMPTY), metamodelica::nil());
     cache = Cache::CACHE { initialGraph: None, functions: instFuncs.clone(), evaluatedParams: ht.clone(), modelName: Arc::new(Absyn::Path::IDENT { name: (literal!("##UNDEFINED##")).clone() }) };
     cache
@@ -1379,7 +1378,7 @@ pub fn getFunctionTree(mut cache: Cache) -> Arc<AvlTreePathFunction::Tree> {
             Mutable::access(ef.clone())
         },
         _ => {
-            Arc::new(openmodelica_frontend_dump::AvlTreePathFunction::Tree::EMPTY)
+            Arc::new(crate::AvlTreePathFunction::Tree::EMPTY)
         },
     });
     ft
@@ -1424,7 +1423,7 @@ pub fn addDaeFunction(mut inCache: Cache, mut funcs: Arc<metamodelica::List<DAE:
     let mut outCache: Cache = Cache::NO_CACHE;
     outCache = (match inCache.clone() {
         Cache::CACHE { initialGraph: _, functions: mut ef, evaluatedParams: _, modelName: _ } => {
-            Mutable::update(ef.clone(), DAEUtil::addDaeFunction(funcs.clone(), Mutable::access(ef.clone()))?);
+            Mutable::update(ef.clone(), AvlTreePathFunction::addDaeFunction(funcs.clone(), Mutable::access(ef.clone()))?);
             inCache.clone()
         },
         _ => {
@@ -1438,7 +1437,7 @@ pub fn addDaeExtFunction(mut inCache: Cache, mut funcs: Arc<metamodelica::List<D
     let mut outCache: Cache = Cache::NO_CACHE;
     outCache = (match inCache.clone() {
         Cache::CACHE { initialGraph: _, functions: mut ef, evaluatedParams: _, modelName: _ } => {
-            Mutable::update(ef.clone(), DAEUtil::addDaeExtFunction(funcs.clone(), Mutable::access(ef.clone()))?);
+            Mutable::update(ef.clone(), AvlTreePathFunction::addDaeExtFunction(funcs.clone(), Mutable::access(ef.clone()))?);
             inCache.clone()
         },
         _ => {

@@ -43,12 +43,12 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::FCore;
 use crate::FGraph;
 use crate::FGraphBuild;
 use crate::FNode;
 use openmodelica_ast::Absyn;
 use openmodelica_frontend_dump::AbsynUtil;
+use openmodelica_frontend_dump::FCore;
 use openmodelica_util_datatypes_basic::List;
 
 pub type Name = ArcStr;

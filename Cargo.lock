@@ -359,7 +359,6 @@ dependencies = [
  "metamodelica",
  "openmodelica_ast",
  "openmodelica_ast_collections",
- "openmodelica_frontend",
  "openmodelica_frontend_dump",
  "openmodelica_frontend_types",
  "openmodelica_util",

@@ -11,11 +11,11 @@ use arcstr::{ArcStr, literal, format};
 
 use crate::CevalScript;
 use openmodelica_ast::Absyn;
-use openmodelica_frontend::FCore;
 use openmodelica_frontend::FGraph;
 use openmodelica_frontend::Parser;
 use openmodelica_frontend::ValuesUtil;
 use openmodelica_frontend_dump::AbsynUtil;
+use openmodelica_frontend_dump::FCore;
 use openmodelica_frontend_dump::ValuesDump;
 use openmodelica_frontend_dump::ValuesMake;
 use openmodelica_frontend_types::Values;

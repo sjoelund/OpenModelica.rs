@@ -50,7 +50,6 @@ use crate::DAEUtil;
 use crate::Expression;
 use crate::ExpressionDump;
 use crate::ExpressionSimplify;
-use crate::FCore;
 use crate::FGraph;
 use crate::FNode;
 use crate::Inline;
@@ -73,6 +72,7 @@ use openmodelica_frontend_dump::BackendInterface;
 use openmodelica_frontend_dump::ComponentReferenceBasics;
 use openmodelica_frontend_dump::Dump;
 use openmodelica_frontend_dump::ExpressionBasics;
+use openmodelica_frontend_dump::FCore;
 use openmodelica_frontend_dump::MetaUtil;
 use openmodelica_frontend_dump::SCodeDump;
 use openmodelica_frontend_dump::SCodeUtil;
@@ -7084,7 +7084,7 @@ fn elabCallArgsEvaluateArrayLength(mut inCache: FCore::Cache, mut env: FCore::Gr
     let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     match '__try0: {
-        let true = (unwrap_break_err!(FGraph::checkScopeType(list![unwrap_break_err!(FGraph::lastScopeRef(env.clone()), '__try0)], Some(crate::FCore::ScopeType::CLASS_SCOPE)), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
+        let true = (unwrap_break_err!(FGraph::checkScopeType(list![unwrap_break_err!(FGraph::lastScopeRef(env.clone()), '__try0)], Some(openmodelica_frontend_dump::FCore::ScopeType::CLASS_SCOPE)), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
         ty = unwrap_break_err!(Types::getPropType(inProperties.clone()), '__try0);
         let (__pa1, (__pa2, _)) = unwrap_break_err!(Types::traverseType(ty.clone(), (inCache.clone(), env.clone()), (std::sync::Arc::new(elabCallArgsEvaluateArrayLength2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, (FCore::Cache, FCore::Graph)) -> Result<(Arc<DAE::Type>, (FCore::Cache, FCore::Graph))> + 'static>)), '__try0);
         ty = __pa1.clone();
@@ -7671,7 +7671,7 @@ fn isValidWRTParallelScope_dispatch(mut inFn: Arc<Absyn::Path>, mut isBuiltin: b
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, DAE::FunctionParallelism::FP_NON_PARALLEL { .. }, Deref @ metamodelica::List::Cons { head: r#ref, tail: _ }) => {
-                    let true = (FGraph::checkScopeType(list![r#ref.clone()], Some(crate::FCore::ScopeType::CLASS_SCOPE))?) else { bail!("pattern mismatch") };
+                    let true = (FGraph::checkScopeType(list![r#ref.clone()], Some(openmodelica_frontend_dump::FCore::ScopeType::CLASS_SCOPE))?) else { bail!("pattern mismatch") };
                     Ok(true)
                 }
                 _ => bail!("nomatch"),
@@ -7680,7 +7680,7 @@ fn isValidWRTParallelScope_dispatch(mut inFn: Arc<Absyn::Path>, mut isBuiltin: b
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, DAE::FunctionParallelism::FP_NON_PARALLEL { .. }, Deref @ metamodelica::List::Cons { head: r#ref, tail: _ }) => {
-                    let true = (FGraph::checkScopeType(list![r#ref.clone()], Some(crate::FCore::ScopeType::FUNCTION_SCOPE))?) else { bail!("pattern mismatch") };
+                    let true = (FGraph::checkScopeType(list![r#ref.clone()], Some(openmodelica_frontend_dump::FCore::ScopeType::FUNCTION_SCOPE))?) else { bail!("pattern mismatch") };
                     Ok(true)
                 }
                 _ => bail!("nomatch"),
@@ -7693,7 +7693,7 @@ fn isValidWRTParallelScope_dispatch(mut inFn: Arc<Absyn::Path>, mut isBuiltin: b
                     let mut errorString: ArcStr = arcstr::literal!("");
                     let false = (FNode::isRefTop(r#ref.clone())?) else { bail!("pattern mismatch") };
                     scopeName = (FNode::refName(r#ref.clone())?).clone();
-                    let true = (FGraph::checkScopeType(list![r#ref.clone()], Some(crate::FCore::ScopeType::PARALLEL_SCOPE))?) else { bail!("pattern mismatch") };
+                    let true = (FGraph::checkScopeType(list![r#ref.clone()], Some(openmodelica_frontend_dump::FCore::ScopeType::PARALLEL_SCOPE))?) else { bail!("pattern mismatch") };
                     errorString = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("- Non-Parallel function '")); __mm_s.push_str(&*AbsynUtil::pathString(inFn.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("' can not be called from a parallel scope.")); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("- Here called from :")); __mm_s.push_str(&*scopeName.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("- Please declare the function as parallel function.")); ArcStr::from(__mm_s) }).clone();
                     Error::addSourceMessage(Error::PARMODELICA_ERROR.clone(), list![(errorString.clone()).clone()], inInfo.clone())?;
                     Ok(false)
@@ -7707,7 +7707,7 @@ fn isValidWRTParallelScope_dispatch(mut inFn: Arc<Absyn::Path>, mut isBuiltin: b
                     let mut scopeName: ArcStr = arcstr::literal!("");
                     let false = (FNode::isRefTop(r#ref.clone())?) else { bail!("pattern mismatch") };
                     scopeName = (FNode::refName(r#ref.clone())?).clone();
-                    let true = (FGraph::checkScopeType(list![r#ref.clone()], Some(crate::FCore::ScopeType::PARALLEL_SCOPE))?) else { bail!("pattern mismatch") };
+                    let true = (FGraph::checkScopeType(list![r#ref.clone()], Some(openmodelica_frontend_dump::FCore::ScopeType::PARALLEL_SCOPE))?) else { bail!("pattern mismatch") };
                     let false = (stringEqual((scopeName.clone()).clone(), (AbsynUtil::pathString(inFn.clone(), (literal!(".")).clone(), true, false)?).clone())) else { bail!("pattern mismatch") };
                     Ok(true)
                 }
@@ -7721,7 +7721,7 @@ fn isValidWRTParallelScope_dispatch(mut inFn: Arc<Absyn::Path>, mut isBuiltin: b
                     let mut errorString: ArcStr = arcstr::literal!("");
                     let false = (FNode::isRefTop(r#ref.clone())?) else { bail!("pattern mismatch") };
                     scopeName = (FNode::refName(r#ref.clone())?).clone();
-                    let true = (FGraph::checkScopeType(list![r#ref.clone()], Some(crate::FCore::ScopeType::PARALLEL_SCOPE))?) else { bail!("pattern mismatch") };
+                    let true = (FGraph::checkScopeType(list![r#ref.clone()], Some(openmodelica_frontend_dump::FCore::ScopeType::PARALLEL_SCOPE))?) else { bail!("pattern mismatch") };
                     let true = (stringEqual((scopeName.clone()).clone(), (AbsynUtil::pathString(inFn.clone(), (literal!(".")).clone(), true, false)?).clone())) else { bail!("pattern mismatch") };
                     errorString = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("- Parallel function '")); __mm_s.push_str(&*AbsynUtil::pathString(inFn.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("' can not call itself. Recurrsion is not allowed for parallel functions currently.")); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("- Parallel functions can only be called from: 'kernel' functions,")); __mm_s.push_str(&*literal!(" OTHER 'parallel' functions (no recurrsion) or from a body of a")); __mm_s.push_str(&*literal!(" 'parfor' loop")); ArcStr::from(__mm_s) }).clone();
                     Error::addSourceMessage(Error::PARMODELICA_ERROR.clone(), list![(errorString.clone()).clone()], inInfo.clone())?;
@@ -7778,7 +7778,7 @@ fn isValidWRTParallelScope_dispatch(mut inFn: Arc<Absyn::Path>, mut isBuiltin: b
                     let mut errorString: ArcStr = arcstr::literal!("");
                     let false = (FNode::isRefTop(r#ref.clone())?) else { bail!("pattern mismatch") };
                     scopeName = (FNode::refName(r#ref.clone())?).clone();
-                    let true = (FGraph::checkScopeType(list![r#ref.clone()], Some(crate::FCore::ScopeType::PARALLEL_SCOPE))?) else { bail!("pattern mismatch") };
+                    let true = (FGraph::checkScopeType(list![r#ref.clone()], Some(openmodelica_frontend_dump::FCore::ScopeType::PARALLEL_SCOPE))?) else { bail!("pattern mismatch") };
                     errorString = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("- Kernel function '")); __mm_s.push_str(&*AbsynUtil::pathString(inFn.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("' can not be called from a parallel scope '")); __mm_s.push_str(&*scopeName.clone()); __mm_s.push_str(&*literal!("'.\n")); __mm_s.push_str(&*literal!("- Kernel functions CAN NOT be called from: 'kernel' functions,")); __mm_s.push_str(&*literal!(" 'parallel' functions or from a body of a")); __mm_s.push_str(&*literal!(" 'parfor' loop")); ArcStr::from(__mm_s) }).clone();
                     Error::addSourceMessage(Error::PARMODELICA_ERROR.clone(), list![(errorString.clone()).clone()], inInfo.clone())?;
                     Ok(false)
@@ -9057,7 +9057,7 @@ fn makeDummyFuncEnv(mut inEnv: FCore::Graph, mut inVars: Arc<metamodelica::List<
     for mut var in &*inVars.clone() {
         let mut var = var.clone();
         dummy_var = SCodeUtil::setComponentName(inDummyVar.clone(), (DAEUtil::typeVarIdent(var.clone())?).clone())?;
-        outEnv = FGraph::mkComponentNode(outEnv.clone(), var.clone(), dummy_var.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), crate::FCore::Status::VAR_TYPED, FGraph::empty())?;
+        outEnv = FGraph::mkComponentNode(outEnv.clone(), var.clone(), dummy_var.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_dump::FCore::Status::VAR_TYPED, FGraph::empty())?;
     }
     Ok(outEnv)
 }

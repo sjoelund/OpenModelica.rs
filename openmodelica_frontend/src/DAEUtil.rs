@@ -44,7 +44,6 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::Algorithm;
-use crate::AvlSetCR;
 use crate::Ceval;
 use crate::ComponentReference;
 use crate::ConnectUtil;
@@ -52,7 +51,6 @@ use crate::DAEDump;
 use crate::Expression;
 use crate::ExpressionDump;
 use crate::ExpressionSimplify;
-use crate::FCore;
 use crate::HashTable2;
 use crate::StateMachineFlatten;
 use crate::Types;
@@ -60,12 +58,14 @@ use crate::ValuesUtil;
 use crate::VarTransform;
 use openmodelica_ast::Absyn;
 use openmodelica_frontend_dump::AbsynUtil;
+use openmodelica_frontend_dump::AvlSetCR;
 use openmodelica_frontend_dump::AvlTreePathFunction;
 use openmodelica_frontend_dump::ClassInfUtil;
 use openmodelica_frontend_dump::ComponentReferenceBasics;
 use openmodelica_frontend_dump::DAEDumpTypes;
 use openmodelica_frontend_dump::ElementSource;
 use openmodelica_frontend_dump::ExpressionBasics;
+use openmodelica_frontend_dump::FCore;
 use openmodelica_frontend_dump::HashTable;
 use openmodelica_frontend_dump::SCodeUtil;
 use openmodelica_frontend_dump::ValuesDump;
@@ -5984,10 +5984,7 @@ pub fn collectFunctionRefVarPaths(mut inElem: Arc<DAE::Element>, mut acc: Arc<me
 
 pub fn addDaeFunction(mut functions: Arc<metamodelica::List<DAE::Function>>, mut functionTree: Arc<AvlTreePathFunction::Tree>) -> Result<Arc<AvlTreePathFunction::Tree>> {
     let mut functionTree: Arc<AvlTreePathFunction::Tree> = functionTree;
-    for mut f in &*functions.clone() {
-        let mut f = f.clone();
-        functionTree = AvlTreePathFunction::add(functionTree.clone(), functionName(f.clone())?, Some(f.clone()), (std::sync::Arc::new(fnptr!(AvlTreePathFunction::addConflictDefault, _, _, _)) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>))?;
-    }
+    functionTree = AvlTreePathFunction::addDaeFunction(functions.clone(), functionTree.clone())?;
     Ok(functionTree)
 }
 
@@ -6006,41 +6003,9 @@ pub fn addFunctionDefinition(mut ifunc: DAE::Function, mut iFuncDef: DAE::Functi
     func
 }
 
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn addDaeExtFunction(mut ifuncs: Arc<metamodelica::List<DAE::Function>>, mut itree: Arc<AvlTreePathFunction::Tree>) -> Result<Arc<AvlTreePathFunction::Tree>> {
     let mut outTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
-    outTree = 'mc: {
-        let __mc_input = (ifuncs.clone(), itree.clone());
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Nil, tree) => {
-                    Ok(tree.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Cons { head: func, tail: funcs }, tree) => {
-                    let mut tree = (*tree).clone();
-                    let true = (isExtFunction(func.clone())) else { bail!("pattern mismatch") };
-                    tree = AvlTreePathFunction::add(tree.clone(), functionName(func.clone())?, Some(func.clone()), (std::sync::Arc::new(fnptr!(AvlTreePathFunction::addConflictDefault, _, _, _)) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>))?;
-                    Ok(addDaeExtFunction(funcs.clone(), tree.clone())?)
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Cons { head: _, tail: funcs }, tree) => {
-                    Ok(addDaeExtFunction(funcs.clone(), tree.clone())?)
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
+    outTree = AvlTreePathFunction::addDaeExtFunction(ifuncs.clone(), itree.clone())?;
     Ok(outTree)
 }
 

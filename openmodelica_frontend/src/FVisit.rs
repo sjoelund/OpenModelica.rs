@@ -43,8 +43,8 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::FCore;
 use crate::FNode;
+use openmodelica_frontend_dump::FCore;
 use openmodelica_util::Error;
 use openmodelica_util_datatypes_basic::List;
 

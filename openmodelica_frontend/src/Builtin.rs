@@ -44,10 +44,10 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::FBuiltin;
-use crate::FCore;
 use crate::FGraph;
 use crate::FGraphBuildEnv;
 use openmodelica_ast::Absyn;
+use openmodelica_frontend_dump::FCore;
 use openmodelica_frontend_types::DAE;
 use openmodelica_frontend_types::SCode;
 use openmodelica_util::Config;
@@ -121,10 +121,10 @@ pub fn initialGraph(mut inCache: FCore::Cache) -> Result<(FCore::Cache, FCore::G
             let mut initialProgram: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
             let mut graph: FCore::Graph = graph.clone();
             graph = FGraph::new((literal!("graph")).clone(), FCore::dummyTopModel.clone())?;
-            graph = FGraphBuildEnv::mkProgramGraph(FBuiltin::getBasicTypes()?, crate::FCore::Kind::BASIC_TYPE, graph.clone())?;
+            graph = FGraphBuildEnv::mkProgramGraph(FBuiltin::getBasicTypes()?, openmodelica_frontend_dump::FCore::Kind::BASIC_TYPE, graph.clone())?;
             graph = FBuiltin::initialGraphModelica(graph.clone(), (std::sync::Arc::new(FGraphBuildEnv::mkTypeNode) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Type>>>, metamodelica::Array<FCore::Node>, ArcStr, FCore::Graph) -> Result<FCore::Graph> + 'static>), (std::sync::Arc::new(FGraphBuildEnv::mkCompNode) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>))?;
             (_, initialProgram) = FBuiltin::getInitialFunctions()?;
-            graph = FGraphBuildEnv::mkProgramGraph(initialProgram.clone(), crate::FCore::Kind::BUILTIN, graph.clone())?;
+            graph = FGraphBuildEnv::mkProgramGraph(initialProgram.clone(), openmodelica_frontend_dump::FCore::Kind::BUILTIN, graph.clone())?;
             graph = FBuiltin::initialGraphOptimica(graph.clone(), (std::sync::Arc::new(FGraphBuildEnv::mkCompNode) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>))?;
             graph = FBuiltin::initialGraphMetaModelica(graph.clone(), (std::sync::Arc::new(FGraphBuildEnv::mkTypeNode) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Type>>>, metamodelica::Array<FCore::Node>, ArcStr, FCore::Graph) -> Result<FCore::Graph> + 'static>))?;
             cache = FCore::setCachedInitialGraph(cache.clone(), graph.clone());

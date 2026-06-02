@@ -3,6 +3,7 @@
 pub mod AbsynDumpTpl;
 pub mod AbsynToSCode;
 pub mod AbsynUtil;
+pub mod AvlSetCR;
 pub mod AvlTreePathFunction;
 pub mod BackendInterface;
 pub mod ClassInfUtil;
@@ -13,6 +14,7 @@ pub mod Dump;
 pub mod ElementSource;
 pub mod ExpressionBasics;
 pub mod ExpressionDumpTpl;
+pub mod FCore;
 pub mod Graphviz;
 pub mod HashTable;
 pub mod HashTable3;

@@ -51,7 +51,6 @@ use crate::ConnectionGraph;
 use crate::DAEDump;
 use crate::DAEUtil;
 use crate::Expression;
-use crate::FCore;
 use crate::FGraph;
 use crate::FGraphBuildEnv;
 use crate::FNode;
@@ -83,6 +82,7 @@ use openmodelica_frontend_dump::ComponentReferenceBasics;
 use openmodelica_frontend_dump::Dump;
 use openmodelica_frontend_dump::ElementSource;
 use openmodelica_frontend_dump::ExpressionBasics;
+use openmodelica_frontend_dump::FCore;
 use openmodelica_frontend_dump::HashTable;
 use openmodelica_frontend_dump::HashTableCG;
 use openmodelica_frontend_dump::SCodeDump;
@@ -147,7 +147,7 @@ fn instantiateClass_dispatch(mut inCache: FCore::Cache, mut inIH: Arc<metamodeli
                 ExecStat::execStat((literal!("FrontEnd - scodeFlatten")).clone())?;
             }
             (cache, env) = Builtin::initialGraph(cache.clone())?;
-            env = FGraphBuildEnv::mkProgramGraph(cdecls.clone(), crate::FCore::Kind::USERDEFINED, env.clone())?;
+            env = FGraphBuildEnv::mkProgramGraph(cdecls.clone(), openmodelica_frontend_dump::FCore::Kind::USERDEFINED, env.clone())?;
             source = ElementSource::addElementSourcePartOfOpt(DAE::emptyElementSource().clone(), FGraph::getScopePath(env.clone())?)?;
             if Flags::isSet(Flags::GC_PROF.clone())? {
                 println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*GCExt::profStatsStr(GCExt::getProfStats(), (literal!("GC stats after pre-frontend work (building graphs):")).clone(), (literal!("\n  ")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -178,7 +178,7 @@ fn instantiateClass_dispatch(mut inCache: FCore::Cache, mut inIH: Arc<metamodeli
             }
             pathstr = (AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone();
             (cache, env) = Builtin::initialGraph(cache.clone())?;
-            env = FGraphBuildEnv::mkProgramGraph(cdecls.clone(), crate::FCore::Kind::USERDEFINED, env.clone())?;
+            env = FGraphBuildEnv::mkProgramGraph(cdecls.clone(), openmodelica_frontend_dump::FCore::Kind::USERDEFINED, env.clone())?;
             let (__pa0, __pa2, __pa1, __pa3) = ::match_deref::match_deref! { match &(Lookup::lookupClass(cache.clone(), env.clone(), path.clone(), Some(Absyn::dummyInfo.clone()))?) {
                 (__pa0, __pa2 @ Deref @ SCode::Element::CLASS { name: __pa1, .. }, __pa3) => (__pa0.clone(), __pa2.clone(), __pa1.clone(), __pa3.clone()),
                 _ => bail!("pattern mismatch"),
@@ -287,7 +287,7 @@ pub fn instantiatePartialClass(mut inCache: FCore::Cache, mut inIH: Arc<metamode
                     let mut ih = (*ih).clone();
                     let mut cdecls = (*cdecls).clone();
                     (cache, env) = Builtin::initialGraph(cache.clone())?;
-                    env_1 = FGraphBuildEnv::mkProgramGraph(cdecls.clone(), crate::FCore::Kind::USERDEFINED, env.clone())?;
+                    env_1 = FGraphBuildEnv::mkProgramGraph(cdecls.clone(), openmodelica_frontend_dump::FCore::Kind::USERDEFINED, env.clone())?;
                     cdecls = List::map1(cdecls.clone(), (std::sync::Arc::new(SCodeUtil::classSetPartial) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, SCode::Partial) -> Result<Arc<SCode::Element>> + 'static>), openmodelica_frontend_types::SCode::Partial::NOT_PARTIAL)?;
                     source = ElementSource::addElementSourcePartOfOpt(DAE::emptyElementSource().clone(), FGraph::getScopePath(env.clone())?)?;
                     (cache, env_2, ih, dae) = instClassInProgram(cache.clone(), env_1.clone(), ih.clone(), cdecls.clone(), path.clone(), source.clone(), true)?;
@@ -312,7 +312,7 @@ pub fn instantiatePartialClass(mut inCache: FCore::Cache, mut inIH: Arc<metamode
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     (cache, env) = Builtin::initialGraph(cache.clone())?;
-                    env_1 = FGraphBuildEnv::mkProgramGraph(cdecls.clone(), crate::FCore::Kind::USERDEFINED, env.clone())?;
+                    env_1 = FGraphBuildEnv::mkProgramGraph(cdecls.clone(), openmodelica_frontend_dump::FCore::Kind::USERDEFINED, env.clone())?;
                     let (__pa0, __pa2, __pa1, __pa3) = ::match_deref::match_deref! { match &(Lookup::lookupClass(cache.clone(), env_1.clone(), path.clone(), Some(Absyn::dummyInfo.clone()))?) {
                         (__pa0, __pa2 @ Deref @ SCode::Element::CLASS { name: __pa1, .. }, __pa3) => (__pa0.clone(), __pa2.clone(), __pa1.clone(), __pa3.clone()),
                         _ => bail!("pattern mismatch"),
@@ -1945,7 +1945,7 @@ fn instClassdef2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: A
                     cn2 = __pa3.clone();
                     c = __pa4.clone();
                     cenv = __pa5.clone();
-                    env3 = FGraph::openScope(cenv.clone(), enc2.clone(), (cn2.clone()).clone(), Some(crate::FCore::ScopeType::CLASS_SCOPE))?;
+                    env3 = FGraph::openScope(cenv.clone(), enc2.clone(), (cn2.clone()).clone(), Some(openmodelica_frontend_dump::FCore::ScopeType::CLASS_SCOPE))?;
                     ci_state2 = ClassInfUtil::start(r.clone(), FGraph::getGraphName(env3.clone())?)?;
                     new_ci_state = ClassInfUtil::start(r.clone(), FGraph::getGraphName(env3.clone())?)?;
                     (cache, cenv_2, _, _, _, _, _, _, _, _, _, _) = instClassIn(cache.clone(), env3.clone(), InnerOuter::emptyInstHierarchy().clone(), UnitAbsyn::noStore().clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_types::DAE::Prefix::NOPRE, ci_state2.clone(), c.clone(), openmodelica_frontend_types::SCode::Visibility::PUBLIC, metamodelica::nil(), false, callscope.clone(), ConnectionGraph::EMPTY().clone(), Connect::emptySet().clone(), None)?;
@@ -3019,7 +3019,7 @@ fn isDeletedComponent(mut element: (Arc<SCode::Element>, Arc<DAE::Mod>), mut pre
         isDeleted = !(cond_val.clone());
         if isDeleted.clone() == true {
             var = Arc::new(DAE::Var { name: (el_name.clone()).clone(), attributes: DAE::dummyAttrVar().clone(), ty: DAE::T_UNKNOWN_DEFAULT().clone(), binding: Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None });
-            env = FGraph::updateComp(env.clone(), var.clone(), crate::FCore::Status::VAR_DELETED, FGraph::emptyGraph().clone())?;
+            env = FGraph::updateComp(env.clone(), var.clone(), openmodelica_frontend_dump::FCore::Status::VAR_DELETED, FGraph::emptyGraph().clone())?;
         }
     } else {
         isDeleted = false;
@@ -3053,7 +3053,7 @@ pub fn instElement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
                 (_, _, _, _, _, _, _, (cls @ Deref @ SCode::Element::CLASS { .. }, cmod), _, _, _, _) => {
                     let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     if !(Mod::isEmptyMod(cmod.clone())) {
-                        env = FGraph::updateClass(inEnv.clone(), cls.clone(), inPrefix.clone(), cmod.clone(), crate::FCore::Status::CLS_UNTYPED, inEnv.clone())?;
+                        env = FGraph::updateClass(inEnv.clone(), cls.clone(), inPrefix.clone(), cmod.clone(), openmodelica_frontend_dump::FCore::Status::CLS_UNTYPED, inEnv.clone())?;
                     } else {
                         env = inEnv.clone();
                     }
@@ -3230,7 +3230,7 @@ pub fn instElement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
                     (ty, _) = Types::traverseType(ty.clone(), 1, (std::sync::Arc::new(fnptr!(Types::setIsFunctionPointer, Arc<DAE::Type>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, i32) -> Result<(Arc<DAE::Type>, i32)> + 'static>))?;
                     binding = removePrefixFromBinding(binding.clone(), pre.clone())?;
                     new_var = Arc::new(DAE::Var { name: (name.clone()).clone(), attributes: dae_attr.clone(), ty: ty.clone(), binding: binding.clone(), bind_from_outside: false, constOfForIteratorRange: None });
-                    env = FGraph::updateComp(env2.clone(), new_var.clone(), crate::FCore::Status::VAR_DAE, comp_env.clone())?;
+                    env = FGraph::updateComp(env2.clone(), new_var.clone(), openmodelica_frontend_dump::FCore::Status::VAR_DAE, comp_env.clone())?;
                     vars = if (already_declared.clone()) {metamodelica::nil()} else {list![new_var.clone()]};
                     dae = if (already_declared.clone()) {DAE::emptyDae().clone()} else {dae.clone()};
                     (_, ih, graph) = InnerOuter::handleInnerOuterEquations(io.clone(), DAE::emptyDae().clone(), ih.clone(), graph_new.clone(), graph.clone())?;
@@ -3283,7 +3283,7 @@ pub fn instElement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
                     dae_attr = DAEUtil::translateSCodeAttrToDAEAttr(attr.clone(), prefixes.clone())?;
                     (ty, _) = Types::traverseType(ty.clone(), 1, (std::sync::Arc::new(fnptr!(Types::setIsFunctionPointer, Arc<DAE::Type>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, i32) -> Result<(Arc<DAE::Type>, i32)> + 'static>))?;
                     new_var = Arc::new(DAE::Var { name: (name.clone()).clone(), attributes: dae_attr.clone(), ty: ty.clone(), binding: binding.clone(), bind_from_outside: false, constOfForIteratorRange: None });
-                    env = FGraph::updateComp(env.clone(), new_var.clone(), crate::FCore::Status::VAR_DAE, comp_env.clone())?;
+                    env = FGraph::updateComp(env.clone(), new_var.clone(), openmodelica_frontend_dump::FCore::Status::VAR_DAE, comp_env.clone())?;
                     vars = if (already_declared.clone()) {metamodelica::nil()} else {list![new_var.clone()]};
                     dae = if (already_declared.clone()) {DAE::emptyDae().clone()} else {dae.clone()};
                     (_, ih, graph) = InnerOuter::handleInnerOuterEquations(io.clone(), DAE::emptyDae().clone(), ih.clone(), graph_new.clone(), graph.clone())?;
@@ -3789,7 +3789,7 @@ fn updateComponentInEnv(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
                     id = (AbsynUtil::crefFirstIdent(cref.clone())?).clone();
                     let true = (stringEq((name.clone()).clone(), (id.clone()).clone())) else { bail!("pattern mismatch") };
                     (cl, _) = Lookup::lookupClassLocal(env.clone(), (name.clone()).clone())?;
-                    env = FGraph::updateClass(env.clone(), SCodeUtil::mergeWithOriginal(var_field!((*r#mod).element, DAE::Mod::REDECL).clone(), cl.clone())?, pre.clone(), r#mod.clone(), crate::FCore::Status::CLS_UNTYPED, env.clone())?;
+                    env = FGraph::updateClass(env.clone(), SCodeUtil::mergeWithOriginal(var_field!((*r#mod).element, DAE::Mod::REDECL).clone(), cl.clone())?, pre.clone(), r#mod.clone(), openmodelica_frontend_dump::FCore::Status::CLS_UNTYPED, env.clone())?;
                     updatedComps = getUpdatedCompsHashTable(inUpdatedComps.clone());
                     updatedComps = BaseHashTable::add((cref.clone(), 0), updatedComps.clone())?;
                     Ok((cache.clone(), env.clone(), ih.clone(), Some(updatedComps.clone())))
@@ -3982,7 +3982,7 @@ fn updateComponentInEnv2_dispatch(mut inCache: FCore::Cache, mut inEnv: FCore::G
         (outCache, comp_env, outIH, _, _, _, ty, _) = InstVar::instVar(outCache.clone(), cls_env.clone(), outIH.clone(), UnitAbsyn::noStore().clone(), inState.clone(), r#mod.clone(), inPrefix.clone(), (inName.clone()).clone(), cls.clone(), inAttr.clone(), inPrefixes.clone(), dims.clone(), metamodelica::nil(), metamodelica::nil(), inImpl.clone(), SCode::noComment.clone(), inInfo.clone(), ConnectionGraph::EMPTY().clone(), Connect::emptySet().clone(), outEnv.clone())?;
         (outCache, binding) = InstBinding::makeBinding(outCache.clone(), outEnv.clone(), inAttr.clone(), r#mod.clone(), ty.clone(), inPrefix.clone(), (inName.clone()).clone(), inInfo.clone())?;
         var = Arc::new(DAE::Var { name: (inName.clone()).clone(), attributes: inDAttr.clone(), ty: ty.clone(), binding: binding.clone(), bind_from_outside: false, constOfForIteratorRange: None });
-        outEnv = FGraph::updateComp(outEnv.clone(), var.clone(), crate::FCore::Status::VAR_TYPED, comp_env.clone())?;
+        outEnv = FGraph::updateComp(outEnv.clone(), var.clone(), openmodelica_frontend_dump::FCore::Status::VAR_TYPED, comp_env.clone())?;
         outUpdatedComps = BaseHashTable::add((inCref.clone(), 1), outUpdatedComps.clone())?;
     }
     Ok((outCache, outEnv, outIH, outUpdatedComps))
@@ -4018,7 +4018,7 @@ pub fn makeEnvFromProgram(mut prog: Arc<metamodelica::List<Arc<SCode::Element>>>
     let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
     (cache, env) = Builtin::initialGraph(FCore::emptyCache())?;
-    env_1 = FGraphBuildEnv::mkProgramGraph(prog.clone(), crate::FCore::Kind::USERDEFINED, env.clone())?;
+    env_1 = FGraphBuildEnv::mkProgramGraph(prog.clone(), openmodelica_frontend_dump::FCore::Kind::USERDEFINED, env.clone())?;
     outCache = cache.clone();
     Ok((outCache, env_1))
 }
@@ -4461,7 +4461,7 @@ pub fn instantiateBoschClass(mut inCache: FCore::Cache, mut inIH: Arc<metamodeli
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     (cache, env) = Builtin::initialGraph(cache.clone())?;
-                    env_1 = FGraphBuildEnv::mkProgramGraph(cdecls.clone(), crate::FCore::Kind::USERDEFINED, env.clone())?;
+                    env_1 = FGraphBuildEnv::mkProgramGraph(cdecls.clone(), openmodelica_frontend_dump::FCore::Kind::USERDEFINED, env.clone())?;
                     (cache, env_2, ih, dae) = instBoschClassInProgram(cache.clone(), env_1.clone(), ih.clone(), cdecls.clone(), path.clone())?;
                     Ok((cache.clone(), env_2.clone(), ih.clone(), dae.clone()))
                 }
@@ -4479,7 +4479,7 @@ pub fn instantiateBoschClass(mut inCache: FCore::Cache, mut inIH: Arc<metamodeli
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     (cache, env) = Builtin::initialGraph(cache.clone())?;
-                    env_1 = FGraphBuildEnv::mkProgramGraph(cdecls.clone(), crate::FCore::Kind::USERDEFINED, env.clone())?;
+                    env_1 = FGraphBuildEnv::mkProgramGraph(cdecls.clone(), openmodelica_frontend_dump::FCore::Kind::USERDEFINED, env.clone())?;
                     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(Lookup::lookupClass(cache.clone(), env_1.clone(), path.clone(), Some(Absyn::dummyInfo.clone()))?) {
                         (__pa0, __pa1 @ Deref @ SCode::Element::CLASS { .. }, __pa2) => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
                         _ => bail!("pattern mismatch"),
@@ -4624,7 +4624,7 @@ fn removeSelfReferenceAndUpdate(mut inCache: FCore::Cache, mut inEnv: FCore::Gra
                     io = SCodeUtil::prefixesInnerOuter(inPrefixes.clone())?;
                     vis = SCodeUtil::prefixesVisibility(inPrefixes.clone())?;
                     new_var = Arc::new(DAE::Var { name: (n.clone()).clone(), attributes: Arc::new(DAE::Attributes { connectorType: DAEUtil::toConnectorTypeNoState(ct.clone(), None), parallelism: prl1.clone(), variability: var1.clone(), direction: dir.clone(), innerOuter: io.clone(), visibility: vis.clone() }), ty: ty.clone(), binding: Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None });
-                    env = FGraph::updateComp(env.clone(), new_var.clone(), crate::FCore::Status::VAR_TYPED, compenv.clone())?;
+                    env = FGraph::updateComp(env.clone(), new_var.clone(), openmodelica_frontend_dump::FCore::Status::VAR_TYPED, compenv.clone())?;
                     ErrorExt::rollBack((literal!("Inst.removeSelfReferenceAndUpdate")).clone());
                     Ok((cache.clone(), env.clone(), ih.clone(), store.clone(), cl2.clone()))
                 }
@@ -4669,7 +4669,7 @@ fn removeSelfReferenceAndUpdate(mut inCache: FCore::Cache, mut inEnv: FCore::Gra
                     io = SCodeUtil::prefixesInnerOuter(inPrefixes.clone())?;
                     vis = SCodeUtil::prefixesVisibility(inPrefixes.clone())?;
                     new_var = Arc::new(DAE::Var { name: (n.clone()).clone(), attributes: Arc::new(DAE::Attributes { connectorType: DAEUtil::toConnectorTypeNoState(ct.clone(), None), parallelism: prl1.clone(), variability: var1.clone(), direction: dir.clone(), innerOuter: io.clone(), visibility: vis.clone() }), ty: ty.clone(), binding: Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None });
-                    env = FGraph::updateComp(env.clone(), new_var.clone(), crate::FCore::Status::VAR_TYPED, compenv.clone())?;
+                    env = FGraph::updateComp(env.clone(), new_var.clone(), openmodelica_frontend_dump::FCore::Status::VAR_TYPED, compenv.clone())?;
                     ErrorExt::rollBack((literal!("Inst.removeSelfReferenceAndUpdate")).clone());
                     Ok((cache.clone(), env.clone(), ih.clone(), store.clone(), cl2.clone()))
                 }
@@ -4714,7 +4714,7 @@ fn removeSelfReferenceAndUpdate(mut inCache: FCore::Cache, mut inEnv: FCore::Gra
                     io = SCodeUtil::prefixesInnerOuter(inPrefixes.clone())?;
                     vis = SCodeUtil::prefixesVisibility(inPrefixes.clone())?;
                     new_var = Arc::new(DAE::Var { name: (n.clone()).clone(), attributes: Arc::new(DAE::Attributes { connectorType: DAEUtil::toConnectorTypeNoState(ct.clone(), None), parallelism: prl1.clone(), variability: var1.clone(), direction: dir.clone(), innerOuter: io.clone(), visibility: vis.clone() }), ty: ty.clone(), binding: Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None });
-                    env = FGraph::updateComp(env.clone(), new_var.clone(), crate::FCore::Status::VAR_TYPED, compenv.clone())?;
+                    env = FGraph::updateComp(env.clone(), new_var.clone(), openmodelica_frontend_dump::FCore::Status::VAR_TYPED, compenv.clone())?;
                     ErrorExt::rollBack((literal!("Inst.removeSelfReferenceAndUpdate")).clone());
                     Ok((cache.clone(), env.clone(), ih.clone(), store.clone(), cl2.clone()))
                 }
@@ -4757,7 +4757,7 @@ fn removeSelfReferenceAndUpdate(mut inCache: FCore::Cache, mut inEnv: FCore::Gra
                     io = SCodeUtil::prefixesInnerOuter(inPrefixes.clone())?;
                     vis = SCodeUtil::prefixesVisibility(inPrefixes.clone())?;
                     new_var = Arc::new(DAE::Var { name: (n.clone()).clone(), attributes: Arc::new(DAE::Attributes { connectorType: DAEUtil::toConnectorTypeNoState(ct.clone(), None), parallelism: prl1.clone(), variability: var1.clone(), direction: dir.clone(), innerOuter: io.clone(), visibility: vis.clone() }), ty: ty.clone(), binding: Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None });
-                    env = FGraph::updateComp(env.clone(), new_var.clone(), crate::FCore::Status::VAR_TYPED, compenv.clone())?;
+                    env = FGraph::updateComp(env.clone(), new_var.clone(), openmodelica_frontend_dump::FCore::Status::VAR_TYPED, compenv.clone())?;
                     ErrorExt::rollBack((literal!("Inst.removeSelfReferenceAndUpdate")).clone());
                     Ok((cache.clone(), env.clone(), ih.clone(), store.clone(), cl2.clone()))
                 }

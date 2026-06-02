@@ -47,7 +47,6 @@ use crate::BackendDAE::ZeroCrossing;
 use crate::BackendDAE::ZeroCrossingSet;
 use crate::BackendDAE;
 use openmodelica_ast::Absyn;
-use openmodelica_frontend::Expression;
 use openmodelica_frontend_dump::ExpressionBasics;
 use openmodelica_frontend_types::DAE;
 use openmodelica_util::BaseAvlSet;

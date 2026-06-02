@@ -43,13 +43,11 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::AvlSetCR;
 use crate::BackendCevalInterface;
 use crate::ComponentReference;
 use crate::Expression;
 use crate::ExpressionDump;
 use crate::ExpressionSimplify;
-use crate::FCore;
 use crate::FGraph;
 use crate::InstBinding;
 use crate::InstUtil;
@@ -59,9 +57,11 @@ use crate::Types;
 use crate::ValuesUtil;
 use openmodelica_ast::Absyn;
 use openmodelica_frontend_dump::AbsynUtil;
+use openmodelica_frontend_dump::AvlSetCR;
 use openmodelica_frontend_dump::AvlTreePathFunction;
 use openmodelica_frontend_dump::ComponentReferenceBasics;
 use openmodelica_frontend_dump::ExpressionBasics;
+use openmodelica_frontend_dump::FCore;
 use openmodelica_frontend_dump::SCodeUtil;
 use openmodelica_frontend_dump::TypesDump;
 use openmodelica_frontend_dump::ValuesDump;
@@ -5711,7 +5711,7 @@ pub fn cevalSimpleWithFunctionTreeReturnExp(mut exp: Arc<DAE::Exp>, mut function
     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut structuralParameters: (Arc<AvlSetCR::Tree>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>>) = (Arc::new(AvlSetCR::Tree::EMPTY), metamodelica::nil());
     let mut functionTree: Mutable::Mutable<Arc<AvlTreePathFunction::Tree>>;
-    structuralParameters = (Arc::new(crate::AvlSetCR::Tree::EMPTY), metamodelica::nil());
+    structuralParameters = (Arc::new(openmodelica_frontend_dump::AvlSetCR::Tree::EMPTY), metamodelica::nil());
     functionTree = Mutable::create(functions.clone());
     cache = FCore::Cache::CACHE { initialGraph: None, functions: functionTree.clone(), evaluatedParams: structuralParameters.clone(), modelName: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }) };
     (_, val) = ceval(cache.clone(), FGraph::empty(), exp.clone(), false, Absyn::Msg::MSG { info: Absyn::dummyInfo.clone() }, 0)?;

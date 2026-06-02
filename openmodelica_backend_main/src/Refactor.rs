@@ -45,9 +45,9 @@ use arcstr::{ArcStr, literal, format};
 
 use crate::Interactive;
 use openmodelica_ast::Absyn;
-use openmodelica_frontend::FCore;
 use openmodelica_frontend::Inst;
 use openmodelica_frontend_dump::AbsynUtil;
+use openmodelica_frontend_dump::FCore;
 use openmodelica_program_util::ProgramUtil;
 use openmodelica_util::System;
 use openmodelica_util_datatypes_basic::List;

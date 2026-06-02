@@ -45,7 +45,6 @@ use arcstr::{ArcStr, literal, format};
 
 use openmodelica_ast::Absyn;
 use openmodelica_frontend::CevalFunction;
-use openmodelica_frontend::FCore;
 use openmodelica_frontend::FGraph;
 use openmodelica_frontend::Inst;
 use openmodelica_frontend::InteractiveTypes;
@@ -53,6 +52,7 @@ use openmodelica_frontend::Lookup;
 use openmodelica_frontend_dump::AbsynToSCode;
 use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_dump::ComponentReferenceBasics;
+use openmodelica_frontend_dump::FCore;
 use openmodelica_frontend_dump::SCodeUtil;
 use openmodelica_frontend_types::DAE;
 use openmodelica_frontend_types::SCode;
@@ -455,14 +455,14 @@ fn addVarToEnv(mut inVariable: InteractiveTypes::Variable, mut inEnv: FCore::Gra
             cref = ComponentReferenceBasics::makeCrefIdent((id.clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil());
             empty_env = FGraph::empty();
             Lookup::lookupVar(FCore::emptyCache(), env.clone(), cref.clone())?;
-            env = FGraph::updateComp(env.clone(), Arc::new(DAE::Var { name: (id.clone()).clone(), attributes: DAE::dummyAttrVar().clone(), ty: tp.clone(), binding: Arc::new(DAE::Binding::VALBOUND { valBound: v.clone(), source: openmodelica_frontend_types::DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE }), bind_from_outside: false, constOfForIteratorRange: None }), openmodelica_frontend::FCore::Status::VAR_TYPED, empty_env.clone())?;
+            env = FGraph::updateComp(env.clone(), Arc::new(DAE::Var { name: (id.clone()).clone(), attributes: DAE::dummyAttrVar().clone(), ty: tp.clone(), binding: Arc::new(DAE::Binding::VALBOUND { valBound: v.clone(), source: openmodelica_frontend_types::DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE }), bind_from_outside: false, constOfForIteratorRange: None }), openmodelica_frontend_dump::FCore::Status::VAR_TYPED, empty_env.clone())?;
             Ok(env.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let (InteractiveTypes::Variable { type_: ref tp, value: ref v, varIdent: mut id }, mut env) = __mc_input.clone() else { bail!("nomatch") };
             let mut empty_env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
             empty_env = FGraph::empty();
-            env = FGraph::mkComponentNode(env.clone(), Arc::new(DAE::Var { name: (id.clone()).clone(), attributes: DAE::dummyAttrVar().clone(), ty: tp.clone(), binding: Arc::new(DAE::Binding::VALBOUND { valBound: v.clone(), source: openmodelica_frontend_types::DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE }), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(SCode::Element::COMPONENT { name: (id.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::Attributes { arrayDims: metamodelica::nil(), connectorType: openmodelica_frontend_types::SCode::ConnectorType::POTENTIAL, parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: openmodelica_frontend_types::SCode::Variability::VAR, direction: openmodelica_ast::Absyn::Direction::BIDIR, isField: openmodelica_ast::Absyn::IsField::NONFIELD }, typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), arrayDim: None }), modifications: Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() }), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend::FCore::Status::VAR_UNTYPED, empty_env.clone())?;
+            env = FGraph::mkComponentNode(env.clone(), Arc::new(DAE::Var { name: (id.clone()).clone(), attributes: DAE::dummyAttrVar().clone(), ty: tp.clone(), binding: Arc::new(DAE::Binding::VALBOUND { valBound: v.clone(), source: openmodelica_frontend_types::DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE }), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(SCode::Element::COMPONENT { name: (id.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::Attributes { arrayDims: metamodelica::nil(), connectorType: openmodelica_frontend_types::SCode::ConnectorType::POTENTIAL, parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: openmodelica_frontend_types::SCode::Variability::VAR, direction: openmodelica_ast::Absyn::Direction::BIDIR, isField: openmodelica_ast::Absyn::IsField::NONFIELD }, typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), arrayDim: None }), modifications: Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() }), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, empty_env.clone())?;
             Ok(env.clone())
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")

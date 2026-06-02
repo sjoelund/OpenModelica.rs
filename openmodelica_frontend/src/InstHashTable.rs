@@ -44,10 +44,10 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::ConnectionGraph;
-use crate::FCore;
 use crate::OperatorOverloading;
 use openmodelica_ast::Absyn;
 use openmodelica_frontend_dump::AbsynUtil;
+use openmodelica_frontend_dump::FCore;
 use openmodelica_frontend_inst::InstTypes;
 use openmodelica_frontend_types::ClassInf;
 use openmodelica_frontend_types::DAE::Connect;

@@ -43,7 +43,7 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use openmodelica_frontend_dump::ComponentReferenceBasics;
+use crate::ComponentReferenceBasics;
 use openmodelica_frontend_types::DAE;
 use openmodelica_util::BaseAvlSet;
 

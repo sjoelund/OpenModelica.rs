@@ -44,11 +44,11 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::DAEUtil;
-use crate::FCore::RefTree;
-use crate::FCore;
 use crate::FGraph;
 use openmodelica_ast::Absyn;
 use openmodelica_frontend_dump::AbsynUtil;
+use openmodelica_frontend_dump::FCore::RefTree;
+use openmodelica_frontend_dump::FCore;
 use openmodelica_frontend_dump::SCodeUtil;
 use openmodelica_frontend_types::DAE;
 use openmodelica_frontend_types::SCode;
@@ -560,7 +560,7 @@ pub fn element2Data(mut inElement: Arc<SCode::Element>, mut inKind: Kind) -> Res
         Deref @ SCode::Element::COMPONENT { name: n, prefixes: Deref @ SCode::Prefixes { visibility: vis, redeclarePrefix: _, finalPrefix: _, innerOuter: io, replaceablePrefix: _ }, attributes: SCode::Attributes { arrayDims: _, connectorType: ct, parallelism: prl, variability: var, direction: dir, .. }, typeSpec: _, modifications: _, comment: _, condition: _, info: _ } => {
             let mut nd: Data = FCore::Data::TOP;
             let mut i: Arc<DAE::Var> = Arc::new(<DAE::Var as ::std::default::Default>::default());
-            nd = FCore::Data::CO { e: inElement.clone(), r#mod: Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), kind: inKind.clone(), status: crate::FCore::Status::VAR_UNTYPED };
+            nd = FCore::Data::CO { e: inElement.clone(), r#mod: Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), kind: inKind.clone(), status: openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED };
             i = Arc::new(DAE::Var { name: (n.clone()).clone(), attributes: Arc::new(DAE::Attributes { connectorType: DAEUtil::toConnectorTypeNoState(ct.clone(), None), parallelism: prl.clone(), variability: var.clone(), direction: dir.clone(), innerOuter: io.clone(), visibility: vis.clone() }), ty: DAE::T_UNKNOWN_DEFAULT().clone(), binding: Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None });
             (nd.clone(), i.clone())
         },

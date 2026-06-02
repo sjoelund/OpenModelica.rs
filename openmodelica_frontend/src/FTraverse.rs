@@ -43,11 +43,11 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::FCore;
 use crate::FGraph;
 use crate::FNode;
 use crate::FVisit;
 use openmodelica_ast::Absyn;
+use openmodelica_frontend_dump::FCore;
 
 // public imports
 // protected imports

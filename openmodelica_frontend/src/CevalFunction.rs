@@ -48,7 +48,6 @@ use crate::ComponentReference;
 use crate::DAEDump;
 use crate::DAEUtil;
 use crate::Expression;
-use crate::FCore;
 use crate::FGraph;
 use crate::FNode;
 use crate::Lookup;
@@ -59,6 +58,7 @@ use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_dump::ComponentReferenceBasics;
 use openmodelica_frontend_dump::ElementSource;
 use openmodelica_frontend_dump::ExpressionBasics;
+use openmodelica_frontend_dump::FCore;
 use openmodelica_frontend_dump::TypesDump;
 use openmodelica_frontend_dump::ValuesMake;
 use openmodelica_frontend_types::ClassInf;
@@ -1520,7 +1520,7 @@ fn cevalExpList(mut inExpLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inCach
 fn setupFunctionEnvironment(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inFuncName: ArcStr, mut inFuncParams: Arc<metamodelica::List<(Arc<DAE::Element>, Option<Arc<Values::Value>>)>>) -> Result<(FCore::Cache, FCore::Graph)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    outEnv = FGraph::openScope(inEnv.clone(), openmodelica_frontend_types::SCode::Encapsulated::NOT_ENCAPSULATED, (inFuncName.clone()).clone(), Some(crate::FCore::ScopeType::FUNCTION_SCOPE))?;
+    outEnv = FGraph::openScope(inEnv.clone(), openmodelica_frontend_types::SCode::Encapsulated::NOT_ENCAPSULATED, (inFuncName.clone()).clone(), Some(openmodelica_frontend_dump::FCore::ScopeType::FUNCTION_SCOPE))?;
     (outCache, outEnv) = extendEnvWithFunctionVars(inCache.clone(), outEnv.clone(), inFuncParams.clone())?;
     Ok((outCache, outEnv))
 }
@@ -1642,7 +1642,7 @@ fn extendEnvWithVar(mut inName: ArcStr, mut inType: Arc<DAE::Type>, mut inOptVal
             (cache, ty) = appendDimensions(inType.clone(), inOptValue.clone(), inDims.clone(), inCache.clone(), inEnv.clone())?;
             var = makeFunctionVariable((inName.clone()).clone(), ty.clone(), binding.clone());
             (cache, record_env) = makeRecordEnvironment(inType.clone(), inOptValue.clone(), cache.clone(), inEnv.clone())?;
-            env = FGraph::mkComponentNode(inEnv.clone(), var.clone(), Arc::new(SCode::Element::COMPONENT { name: (inName.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::Attributes { arrayDims: metamodelica::nil(), connectorType: openmodelica_frontend_types::SCode::ConnectorType::POTENTIAL, parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: openmodelica_frontend_types::SCode::Variability::VAR, direction: openmodelica_ast::Absyn::Direction::BIDIR, isField: openmodelica_ast::Absyn::IsField::NONFIELD }, typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), arrayDim: None }), modifications: Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() }), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), crate::FCore::Status::VAR_TYPED, record_env.clone())?;
+            env = FGraph::mkComponentNode(inEnv.clone(), var.clone(), Arc::new(SCode::Element::COMPONENT { name: (inName.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::Attributes { arrayDims: metamodelica::nil(), connectorType: openmodelica_frontend_types::SCode::ConnectorType::POTENTIAL, parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: openmodelica_frontend_types::SCode::Variability::VAR, direction: openmodelica_ast::Absyn::Direction::BIDIR, isField: openmodelica_ast::Absyn::IsField::NONFIELD }, typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), arrayDim: None }), modifications: Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() }), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_dump::FCore::Status::VAR_TYPED, record_env.clone())?;
             Ok((cache.clone(), env.clone()))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -1655,7 +1655,7 @@ fn extendEnvWithVar(mut inName: ArcStr, mut inType: Arc<DAE::Type>, mut inOptVal
             binding = makeBinding(inOptValue.clone());
             (cache, ty) = appendDimensions(inType.clone(), inOptValue.clone(), inDims.clone(), inCache.clone(), inEnv.clone())?;
             var = makeFunctionVariable((inName.clone()).clone(), ty.clone(), binding.clone());
-            env = FGraph::mkComponentNode(inEnv.clone(), var.clone(), Arc::new(SCode::Element::COMPONENT { name: (inName.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::Attributes { arrayDims: metamodelica::nil(), connectorType: openmodelica_frontend_types::SCode::ConnectorType::POTENTIAL, parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: openmodelica_frontend_types::SCode::Variability::VAR, direction: openmodelica_ast::Absyn::Direction::BIDIR, isField: openmodelica_ast::Absyn::IsField::NONFIELD }, typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), arrayDim: None }), modifications: Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() }), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), crate::FCore::Status::VAR_TYPED, FGraph::empty())?;
+            env = FGraph::mkComponentNode(inEnv.clone(), var.clone(), Arc::new(SCode::Element::COMPONENT { name: (inName.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::Attributes { arrayDims: metamodelica::nil(), connectorType: openmodelica_frontend_types::SCode::ConnectorType::POTENTIAL, parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: openmodelica_frontend_types::SCode::Variability::VAR, direction: openmodelica_ast::Absyn::Direction::BIDIR, isField: openmodelica_ast::Absyn::IsField::NONFIELD }, typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), arrayDim: None }), modifications: Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() }), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_dump::FCore::Status::VAR_TYPED, FGraph::empty())?;
             Ok((cache.clone(), env.clone()))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -2167,7 +2167,7 @@ fn updateVariableBinding(mut inVariableCref: Arc<DAE::ComponentRef>, mut inEnv: 
     let mut var: Arc<DAE::Var> = Arc::new(<DAE::Var as ::std::default::Default>::default());
     var_name = (ComponentReference::crefStr(inVariableCref.clone())?).clone();
     var = makeFunctionVariable((var_name.clone()).clone(), inType.clone(), Arc::new(DAE::Binding::VALBOUND { valBound: inNewValue.clone(), source: openmodelica_frontend_types::DAE::BindingSource::BINDING_FROM_DEFAULT_VALUE }));
-    outEnv = FGraph::updateComp(inEnv.clone(), var.clone(), crate::FCore::Status::VAR_TYPED, FGraph::empty())?;
+    outEnv = FGraph::updateComp(inEnv.clone(), var.clone(), openmodelica_frontend_dump::FCore::Status::VAR_TYPED, FGraph::empty())?;
     Ok(outEnv)
 }
 

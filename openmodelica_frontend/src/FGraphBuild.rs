@@ -43,7 +43,6 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::FCore;
 use crate::FGraph;
 use crate::FMod;
 use crate::FNode;
@@ -51,6 +50,7 @@ use openmodelica_ast::Absyn;
 use openmodelica_frontend_dump::AbsynToSCode;
 use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_dump::Dump;
+use openmodelica_frontend_dump::FCore;
 use openmodelica_frontend_dump::SCodeDump;
 use openmodelica_frontend_dump::SCodeUtil;
 use openmodelica_frontend_inst::SCodeInstUtil;
@@ -130,7 +130,7 @@ pub fn mkClassNode(mut inClass: Arc<SCode::Element>, mut inParentRef: Ref, mut i
             } };
             cdef = __pa0.clone();
             name = __pa1.clone();
-            (g, n) = FGraph::node(g.clone(), (name.clone()).clone(), list![inParentRef.clone()], FCore::Data::CL { e: cls.clone(), pre: openmodelica_frontend_types::DAE::Prefix::NOPRE, r#mod: Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), kind: inKind.clone(), status: crate::FCore::Status::VAR_UNTYPED });
+            (g, n) = FGraph::node(g.clone(), (name.clone()).clone(), list![inParentRef.clone()], FCore::Data::CL { e: cls.clone(), pre: openmodelica_frontend_types::DAE::Prefix::NOPRE, r#mod: Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), kind: inKind.clone(), status: openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED });
             nr = FNode::toRef(n.clone());
             FNode::addChildRef(inParentRef.clone(), (name.clone()).clone(), nr.clone(), false)?;
             g = mkConstrainClass(cls.clone(), nr.clone(), inKind.clone(), g.clone())?;

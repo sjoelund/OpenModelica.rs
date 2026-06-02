@@ -86,6 +86,51 @@ pub fn keyCompare(mut inKey1: Key, mut inKey2: Key) -> Result<i32> {
 
 pub use addConflictReplace as addConflictDefault;
 
+pub fn addDaeFunction(mut functions: Arc<metamodelica::List<DAE::Function>>, mut functionTree: Arc<Tree>) -> Result<Arc<Tree>> {
+    let mut functionTree: Arc<Tree> = functionTree;
+    for mut f in &*functions.clone() {
+        let mut f = f.clone();
+        functionTree = add(functionTree.clone(), functionName(f.clone())?, Some(f.clone()), (std::sync::Arc::new(fnptr!(addConflictDefault, _, _, _)) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>))?;
+    }
+    Ok(functionTree)
+}
+
+pub fn addDaeExtFunction(mut functions: Arc<metamodelica::List<DAE::Function>>, mut functionTree: Arc<Tree>) -> Result<Arc<Tree>> {
+    let mut functionTree: Arc<Tree> = functionTree;
+    for mut f in &*functions.clone() {
+        let mut f = f.clone();
+        if isExtFunction(f.clone()) {
+            functionTree = add(functionTree.clone(), functionName(f.clone())?, Some(f.clone()), (std::sync::Arc::new(fnptr!(addConflictDefault, _, _, _)) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>))?;
+        }
+    }
+    Ok(functionTree)
+}
+
+fn functionName(mut elt: DAE::Function) -> Result<Arc<Absyn::Path>> {
+    let mut name: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
+    name = (match elt.clone() {
+        DAE::Function::FUNCTION { path: ref __esc_name, .. } => {
+            name = __esc_name.clone();
+            name.clone()
+        },
+        DAE::Function::RECORD_CONSTRUCTOR { path: ref __esc_name, .. } => {
+            name = __esc_name.clone();
+            name.clone()
+        },
+    });
+    Ok(name)
+}
+
+fn isExtFunction(mut elt: DAE::Function) -> bool {
+    let mut res: bool = false;
+    res = (::match_deref::match_deref! { match &(elt.clone()) {
+        DAE::Function::FUNCTION { functions: Deref @ metamodelica::List::Cons { head: DAE::FunctionDefinition::FUNCTION_EXT { .. }, tail: _ }, .. } => true,
+        _ => false,
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    res
+}
+
 pub type ConflictFunc = std::sync::Arc<dyn ::std::ops::Fn(Value, Value, Key) -> Result<Value> + 'static>;
 
 /// The binary tree data structure.

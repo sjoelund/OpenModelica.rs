@@ -1,7 +1,6 @@
 // Auto-generated lib file
 #![recursion_limit = "1024"]
 pub mod Algorithm;
-pub mod AvlSetCR;
 pub mod BackendCevalInterface;
 pub mod Builtin;
 pub mod Ceval;
@@ -17,7 +16,6 @@ pub mod Expression;
 pub mod ExpressionDump;
 pub mod ExpressionSimplify;
 pub mod FBuiltin;
-pub mod FCore;
 pub mod FExpand;
 pub mod FGraph;
 pub mod FGraphBuild;

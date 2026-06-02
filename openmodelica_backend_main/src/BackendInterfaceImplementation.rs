@@ -49,9 +49,9 @@ use openmodelica_ast::Absyn;
 use openmodelica_backend::RewriteRules;
 use openmodelica_backend::SymbolTable;
 use openmodelica_frontend::BackendCevalInterface;
-use openmodelica_frontend::FCore;
 use openmodelica_frontend::InstHashTable;
 use openmodelica_frontend_dump::BackendInterface;
+use openmodelica_frontend_dump::FCore;
 use openmodelica_frontend_types::DAE;
 use openmodelica_frontend_types::Values;
 

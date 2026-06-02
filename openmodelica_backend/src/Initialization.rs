@@ -59,7 +59,6 @@ use crate::SynchronousFeatures;
 use openmodelica_ast::Absyn;
 use openmodelica_backend_types::BackendDAE;
 use openmodelica_backend_util::BackendDAEEXT;
-use openmodelica_frontend::AvlSetCR;
 use openmodelica_frontend::CheckModel;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::DAEUtil;
@@ -67,6 +66,7 @@ use openmodelica_frontend::Expression;
 use openmodelica_frontend::ExpressionSimplify;
 use openmodelica_frontend::HashSet;
 use openmodelica_frontend::Types;
+use openmodelica_frontend_dump::AvlSetCR;
 use openmodelica_frontend_dump::AvlTreePathFunction;
 use openmodelica_frontend_dump::ComponentReferenceBasics;
 use openmodelica_frontend_dump::ElementSource;
@@ -134,7 +134,7 @@ pub fn solveInitialSystem(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<(Arc
         fixvars = unwrap_break_err!(BackendVariable::listVar(outAllPrimaryParameters.clone()), '__try0);
         eqns = BackendEquation::emptyEqnsSized(BackendVariable::varsSize(dae.shared.aliasVars.clone()) + BackendVariable::varsSize(dae.shared.globalKnownVars.clone()) + BackendVariable::varsSize(dae.shared.localKnownVars.clone()) + BackendEquation::getNumberOfEquations(dae.shared.initialEqs.clone()) + 2 * unwrap_break_err!(BackendDAEUtil::daeSize(dae.clone()), '__try0));
         reeqns = BackendEquation::emptyEqnsSized(BackendEquation::getNumberOfEquations(dae.shared.removedEqs.clone()));
-        allPrimaryParameters = Arc::new(openmodelica_frontend::AvlSetCR::Tree::EMPTY);
+        allPrimaryParameters = Arc::new(openmodelica_frontend_dump::AvlSetCR::Tree::EMPTY);
         for mut v in &*outAllPrimaryParameters.clone() {
             let mut v = v.clone();
             allPrimaryParameters = unwrap_break_err!(AvlSetCR::add(allPrimaryParameters.clone(), unwrap_break_err!(BackendVariable::varCref(v.clone()), '__try0)), '__try0);

@@ -44,7 +44,6 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::FBuiltin;
-use crate::FCore;
 use crate::FExpand;
 use crate::FGraph;
 use crate::FGraphBuild;
@@ -53,6 +52,7 @@ use crate::FNode;
 use crate::InstUtil;
 use openmodelica_ast::Absyn;
 use openmodelica_frontend_dump::AbsynUtil;
+use openmodelica_frontend_dump::FCore;
 use openmodelica_frontend_types::DAE;
 use openmodelica_frontend_types::SCode;
 use openmodelica_util::ClockIndexes;
@@ -109,7 +109,7 @@ pub fn inst(mut inPath: Arc<Absyn::Path>, mut inProgram: Arc<metamodelica::List<
                     lst = metamodelica::nil();
                     System::realtimeTick(ClockIndexes::RT_CLOCK_FINST.clone())?;
                     (_, g) = FBuiltin::initialGraph(FCore::emptyCache())?;
-                    g = FGraphBuild::mkProgramGraph(p.clone(), crate::FCore::Kind::USERDEFINED, g.clone())?;
+                    g = FGraphBuild::mkProgramGraph(p.clone(), openmodelica_frontend_dump::FCore::Kind::USERDEFINED, g.clone())?;
                     lst = List::consr(lst.clone(), System::realtimeTock(ClockIndexes::RT_CLOCK_FINST.clone())?);
                     println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SCode->FGraph:  ")); __mm_s.push_str(&*realString(listHead(lst.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     System::realtimeTick(ClockIndexes::RT_CLOCK_FINST.clone())?;
@@ -168,7 +168,7 @@ pub fn instPath(mut inPath: Arc<Absyn::Path>, mut inProgram: Arc<metamodelica::L
                     lst = List::consr(lst.clone(), System::realtimeTock(ClockIndexes::RT_CLOCK_FINST.clone())?);
                     println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Initial graph:  ")); __mm_s.push_str(&*realString(listHead(lst.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     System::realtimeTick(ClockIndexes::RT_CLOCK_FINST.clone())?;
-                    g = FGraphBuild::mkProgramGraph(p.clone(), crate::FCore::Kind::USERDEFINED, g.clone())?;
+                    g = FGraphBuild::mkProgramGraph(p.clone(), openmodelica_frontend_dump::FCore::Kind::USERDEFINED, g.clone())?;
                     lst = List::consr(lst.clone(), System::realtimeTock(ClockIndexes::RT_CLOCK_FINST.clone())?);
                     println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SCode->FGraph:  ")); __mm_s.push_str(&*realString(listHead(lst.clone())?)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     System::realtimeTick(ClockIndexes::RT_CLOCK_FINST.clone())?;

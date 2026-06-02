@@ -43,13 +43,11 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::AvlSetCR;
 use crate::Ceval;
 use crate::ComponentReference;
 use crate::DAEDump;
 use crate::DAEUtil;
 use crate::Expression;
-use crate::FCore;
 use crate::FGraph;
 use crate::FNode;
 use crate::HashSet;
@@ -71,11 +69,13 @@ use crate::ValuesUtil;
 use openmodelica_ast::Absyn;
 use openmodelica_ast_collections::HashTable5;
 use openmodelica_frontend_dump::AbsynUtil;
+use openmodelica_frontend_dump::AvlSetCR;
 use openmodelica_frontend_dump::ClassInfUtil;
 use openmodelica_frontend_dump::ComponentReferenceBasics;
 use openmodelica_frontend_dump::Dump;
 use openmodelica_frontend_dump::ElementSource;
 use openmodelica_frontend_dump::ExpressionBasics;
+use openmodelica_frontend_dump::FCore;
 use openmodelica_frontend_dump::HashTable;
 use openmodelica_frontend_dump::InstBasics;
 use openmodelica_frontend_dump::SCodeDump;
@@ -389,7 +389,7 @@ fn updateEnumerationEnvironment1(mut inCache: FCore::Cache, mut inEnv: FCore::Gr
             let mut cache = (*cache).clone();
             (cache, var, _, _, _, compenv) = Lookup::lookupIdentLocal(cache.clone(), env.clone(), (nn.clone()).clone())?;
             assign_field!(var.ty = ty.clone());
-            env_1 = FGraph::updateComp(env.clone(), var.clone(), crate::FCore::Status::VAR_DAE, compenv.clone())?;
+            env_1 = FGraph::updateComp(env.clone(), var.clone(), openmodelica_frontend_dump::FCore::Status::VAR_DAE, compenv.clone())?;
             (cache, env_2) = updateEnumerationEnvironment1(cache.clone(), env_1.clone(), (var.name.clone()).clone(), names.clone(), vars.clone(), p.clone())?;
             (cache.clone(), env_2.clone())
         },
@@ -2389,7 +2389,7 @@ pub fn addComponentsToEnv(mut cache: FCore::Cache, mut env: FCore::Graph, mut ih
                     comp_mod = Mod::lookupCompModification(r#mod.clone(), (var_field!((*comp).name, SCode::Element::COMPONENT).clone()).clone())?;
                     cmod = Mod::merge(comp_mod.clone(), cmod.clone(), (literal!("")).clone(), true)?;
                     dattr = DAEUtil::translateSCodeAttrToDAEAttr(attr.clone(), prefs.clone())?;
-                    env = FGraph::mkComponentNode(env.clone(), Arc::new(DAE::Var { name: (var_field!((*comp).name, SCode::Element::COMPONENT).clone()).clone(), attributes: dattr.clone(), ty: DAE::T_UNKNOWN_DEFAULT().clone(), binding: Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None }), comp.clone(), cmod.clone(), crate::FCore::Status::VAR_UNTYPED, FGraph::empty())?;
+                    env = FGraph::mkComponentNode(env.clone(), Arc::new(DAE::Var { name: (var_field!((*comp).name, SCode::Element::COMPONENT).clone()).clone(), attributes: dattr.clone(), ty: DAE::T_UNKNOWN_DEFAULT().clone(), binding: Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None }), comp.clone(), cmod.clone(), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, FGraph::empty())?;
                     Ok(false)
                 }
                 _ => bail!("nomatch"),
@@ -3469,7 +3469,7 @@ fn addEnumerationLiteralToEnv(mut inEnum: Arc<SCode::Element>, mut inEnv: FCore:
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Element::COMPONENT { name: lit, .. } => {
                     let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-                    env = FGraph::mkComponentNode(inEnv.clone(), Arc::new(DAE::Var { name: (lit.clone()).clone(), attributes: DAE::dummyAttrVar().clone(), ty: DAE::T_UNKNOWN_DEFAULT().clone(), binding: Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None }), inEnum.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), crate::FCore::Status::VAR_UNTYPED, FGraph::empty())?;
+                    env = FGraph::mkComponentNode(inEnv.clone(), Arc::new(DAE::Var { name: (lit.clone()).clone(), attributes: DAE::dummyAttrVar().clone(), ty: DAE::T_UNKNOWN_DEFAULT().clone(), binding: Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None }), inEnum.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, FGraph::empty())?;
                     Ok(env.clone())
                 }
                 _ => bail!("nomatch"),
@@ -7932,7 +7932,7 @@ pub fn checkParallelismWRTEnv(mut inEnv: FCore::Graph, mut inName: ArcStr, mut i
             r = FGraph::lastScopeRef(inEnv.clone())?;
             let false = (FNode::isRefTop(r.clone())?) else { bail!("pattern mismatch") };
             scopeName = (FNode::refName(r.clone())?).clone();
-            let true = (FGraph::checkScopeType(list![r.clone()], Some(crate::FCore::ScopeType::PARALLEL_SCOPE))?) else { bail!("pattern mismatch") };
+            let true = (FGraph::checkScopeType(list![r.clone()], Some(openmodelica_frontend_dump::FCore::ScopeType::PARALLEL_SCOPE))?) else { bail!("pattern mismatch") };
             isparglobal = SCodeUtil::parallelismEqual(prl.clone(), openmodelica_frontend_types::SCode::Parallelism::PARGLOBAL);
             hasnodir = !(AbsynUtil::isInputOrOutput(dir.clone())?);
             let true = (isparglobal.clone() && hasnodir.clone()) else { bail!("pattern mismatch") };

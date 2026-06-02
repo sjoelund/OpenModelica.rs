@@ -44,8 +44,6 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::ComponentReference;
-use crate::FCore::RefTree;
-use crate::FCore;
 use crate::FGraphBuildEnv;
 use crate::FNode;
 use crate::InnerOuter;
@@ -54,6 +52,8 @@ use crate::PrefixUtil;
 use crate::Types;
 use openmodelica_ast::Absyn;
 use openmodelica_frontend_dump::AbsynUtil;
+use openmodelica_frontend_dump::FCore::RefTree;
+use openmodelica_frontend_dump::FCore;
 use openmodelica_frontend_dump::SCodeDump;
 use openmodelica_frontend_dump::SCodeUtil;
 use openmodelica_frontend_dump::TypesDump;
@@ -197,7 +197,7 @@ pub fn new(mut inGraphName: Name, mut inPath: Arc<Absyn::Path>) -> Result<Graph>
     let mut ag: metamodelica::Array<FCore::Graph> = Default::default();
     let mut top: Top = <FCore::Top as ::std::default::Default>::default();
     id = System::tmpTickIndex(Global::fgraph_nextId.clone());
-    n = FNode::new((arcstr::literal!(FNode::topNodeName)).clone(), id.clone(), metamodelica::nil(), crate::FCore::Data::TOP);
+    n = FNode::new((arcstr::literal!(FNode::topNodeName)).clone(), id.clone(), metamodelica::nil(), openmodelica_frontend_dump::FCore::Data::TOP);
     nr = FNode::toRef(n.clone());
     s = list![nr.clone()];
     ag = metamodelica::arrayCreate(1, emptyGraph().clone());
@@ -489,8 +489,8 @@ pub fn addForIterator(mut inGraph: Graph, mut name: ArcStr, mut ty: Arc<DAE::Typ
             c = Arc::new(SCode::Element::COMPONENT { name: (name.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::Attributes { arrayDims: metamodelica::nil(), connectorType: openmodelica_frontend_types::SCode::ConnectorType::POTENTIAL, parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: openmodelica_frontend_types::SCode::Variability::CONST, direction: openmodelica_ast::Absyn::Direction::BIDIR, isField: openmodelica_ast::Absyn::IsField::NONFIELD }, typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), arrayDim: None }), modifications: Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() });
             v = Arc::new(DAE::Var { name: (name.clone()).clone(), attributes: Arc::new(DAE::Attributes { connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: variability.clone(), direction: openmodelica_ast::Absyn::Direction::BIDIR, innerOuter: openmodelica_ast::Absyn::InnerOuter::NOT_INNER_OUTER, visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC }), ty: ty.clone(), binding: binding.clone(), bind_from_outside: false, constOfForIteratorRange: constOfForIteratorRange.clone() });
             r = lastScopeRef(g.clone())?;
-            g = FGraphBuildEnv::mkCompNode(c.clone(), r.clone(), crate::FCore::Kind::BUILTIN, g.clone())?;
-            g = updateVarAndMod(g.clone(), v.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), crate::FCore::Status::VAR_UNTYPED, empty())?;
+            g = FGraphBuildEnv::mkCompNode(c.clone(), r.clone(), openmodelica_frontend_dump::FCore::Kind::BUILTIN, g.clone())?;
+            g = updateVarAndMod(g.clone(), v.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_dump::FCore::Status::VAR_UNTYPED, empty())?;
             g.clone()
         },
     });
@@ -779,10 +779,10 @@ pub fn setScope(mut graph: Graph, mut inScope: Scope) -> Result<Graph> {
 pub fn restrictionToScopeType(mut inRestriction: SCode::Restriction) -> Option<FCore::ScopeType> {
     let mut outType: Option<FCore::ScopeType> = None;
     outType = (match inRestriction.clone() {
-        SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_PARALLEL_FUNCTION { .. } } => Some(crate::FCore::ScopeType::PARALLEL_SCOPE),
-        SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_KERNEL_FUNCTION { .. } } => Some(crate::FCore::ScopeType::PARALLEL_SCOPE),
-        SCode::Restriction::R_FUNCTION { functionRestriction: _ } => Some(crate::FCore::ScopeType::FUNCTION_SCOPE),
-        _ => Some(crate::FCore::ScopeType::CLASS_SCOPE),
+        SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_PARALLEL_FUNCTION { .. } } => Some(openmodelica_frontend_dump::FCore::ScopeType::PARALLEL_SCOPE),
+        SCode::Restriction::R_FUNCTION { functionRestriction: SCode::FunctionRestriction::FR_KERNEL_FUNCTION { .. } } => Some(openmodelica_frontend_dump::FCore::ScopeType::PARALLEL_SCOPE),
+        SCode::Restriction::R_FUNCTION { functionRestriction: _ } => Some(openmodelica_frontend_dump::FCore::ScopeType::FUNCTION_SCOPE),
+        _ => Some(openmodelica_frontend_dump::FCore::ScopeType::CLASS_SCOPE),
     });
     outType
 }
@@ -961,7 +961,7 @@ pub fn mkComponentNode(mut inGraph: Graph, mut inVar: Arc<DAE::Var>, mut inVarEl
                     let mut g = (*g).clone();
                     let true = (stringEq((n.clone()).clone(), (SCodeUtil::elementName(c.clone())?).clone())) else { bail!("pattern mismatch") };
                     r = lastScopeRef(g.clone())?;
-                    g = FGraphBuildEnv::mkCompNode(c.clone(), r.clone(), crate::FCore::Kind::USERDEFINED, g.clone())?;
+                    g = FGraphBuildEnv::mkCompNode(c.clone(), r.clone(), openmodelica_frontend_dump::FCore::Kind::USERDEFINED, g.clone())?;
                     g = updateVarAndMod(g.clone(), v.clone(), m.clone(), i.clone(), cg.clone())?;
                     Ok(g.clone())
                 }
@@ -995,7 +995,7 @@ pub fn mkClassNode(mut inGraph: Graph, mut inClass: Arc<SCode::Element>, mut inP
                     let mut r: Ref = Default::default();
                     let mut g = (*g).clone();
                     r = lastScopeRef(g.clone())?;
-                    g = FGraphBuildEnv::mkClassNode(inClass.clone(), inPrefix.clone(), inMod.clone(), r.clone(), crate::FCore::Kind::USERDEFINED, g.clone(), checkDuplicate.clone())?;
+                    g = FGraphBuildEnv::mkClassNode(inClass.clone(), inPrefix.clone(), inMod.clone(), r.clone(), openmodelica_frontend_dump::FCore::Kind::USERDEFINED, g.clone(), checkDuplicate.clone())?;
                     Ok(g.clone())
                 }
                 _ => bail!("nomatch"),
@@ -1025,7 +1025,7 @@ pub fn mkImportNode(mut inGraph: Graph, mut inImport: Arc<SCode::Element>) -> Re
         mut g => {
             let mut r: Ref = Default::default();
             r = lastScopeRef(g.clone())?;
-            g = FGraphBuildEnv::mkElementNode(inImport.clone(), r.clone(), crate::FCore::Kind::USERDEFINED, g.clone())?;
+            g = FGraphBuildEnv::mkElementNode(inImport.clone(), r.clone(), openmodelica_frontend_dump::FCore::Kind::USERDEFINED, g.clone())?;
             g.clone()
         },
     });
@@ -1038,7 +1038,7 @@ pub fn mkDefunitNode(mut inGraph: Graph, mut inDu: Arc<SCode::Element>) -> Resul
         mut g => {
             let mut r: Ref = Default::default();
             r = lastScopeRef(g.clone())?;
-            g = FGraphBuildEnv::mkElementNode(inDu.clone(), r.clone(), crate::FCore::Kind::USERDEFINED, g.clone())?;
+            g = FGraphBuildEnv::mkElementNode(inDu.clone(), r.clone(), openmodelica_frontend_dump::FCore::Kind::USERDEFINED, g.clone())?;
             g.clone()
         },
     });
@@ -1048,8 +1048,8 @@ pub fn mkDefunitNode(mut inGraph: Graph, mut inDu: Arc<SCode::Element>) -> Resul
 pub fn classInfToScopeType(mut inState: ClassInf::State) -> Option<FCore::ScopeType> {
     let mut outType: Option<FCore::ScopeType> = None;
     outType = (match inState.clone() {
-        ClassInf::State::FUNCTION { .. } => Some(crate::FCore::ScopeType::FUNCTION_SCOPE),
-        _ => Some(crate::FCore::ScopeType::CLASS_SCOPE),
+        ClassInf::State::FUNCTION { .. } => Some(openmodelica_frontend_dump::FCore::ScopeType::FUNCTION_SCOPE),
+        _ => Some(openmodelica_frontend_dump::FCore::ScopeType::CLASS_SCOPE),
     });
     outType
 }
@@ -1094,7 +1094,7 @@ pub fn printGraphStr(mut inGraph: Graph) -> ArcStr {
 pub fn inFunctionScope(mut inGraph: Graph) -> Result<bool> {
     let mut inFunction: bool = false;
     inFunction = (match inGraph.clone() {
-        FCore::Graph::G { scope: ref s, .. } if (checkScopeType(s.clone(), Some(crate::FCore::ScopeType::FUNCTION_SCOPE))? || checkScopeType(s.clone(), Some(crate::FCore::ScopeType::PARALLEL_SCOPE))?) => {
+        FCore::Graph::G { scope: ref s, .. } if (checkScopeType(s.clone(), Some(openmodelica_frontend_dump::FCore::ScopeType::FUNCTION_SCOPE))? || checkScopeType(s.clone(), Some(openmodelica_frontend_dump::FCore::ScopeType::PARALLEL_SCOPE))?) => {
             true
         },
         _ => {

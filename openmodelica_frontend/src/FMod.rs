@@ -43,9 +43,9 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::FCore;
 use openmodelica_ast::Absyn;
 use openmodelica_frontend_dump::AbsynUtil;
+use openmodelica_frontend_dump::FCore;
 use openmodelica_frontend_dump::SCodeUtil;
 use openmodelica_frontend_types::SCode;
 use openmodelica_util::Error;

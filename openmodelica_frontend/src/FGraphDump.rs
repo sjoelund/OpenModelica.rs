@@ -43,12 +43,12 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::FCore::RefTree;
-use crate::FCore;
 use crate::FGraph;
 use crate::FNode;
 use openmodelica_ast::Absyn;
 use openmodelica_frontend_dump::Dump;
+use openmodelica_frontend_dump::FCore::RefTree;
+use openmodelica_frontend_dump::FCore;
 use openmodelica_frontend_dump::SCodeUtil;
 use openmodelica_frontend_types::DAE;
 use openmodelica_frontend_types::SCode;
