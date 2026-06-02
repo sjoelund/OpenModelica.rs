@@ -73,7 +73,6 @@ pub mod SerializeModelInfo;
 pub mod SerializeSparsityPattern;
 pub mod SerializeTaskSystemInfo;
 pub mod SimCodeDump;
-pub mod SimCodeFunctionUtil;
 pub mod SimCodeUtil;
 pub mod SimpleModelicaParser;
 pub mod Sorting;

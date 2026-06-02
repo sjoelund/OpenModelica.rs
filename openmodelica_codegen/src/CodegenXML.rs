@@ -10,7 +10,6 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use openmodelica_ast::Absyn;
-use openmodelica_backend::SimCodeFunctionUtil;
 use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::Algorithm;
 use openmodelica_frontend::ComponentReference;
@@ -27,6 +26,7 @@ use openmodelica_frontend_types::Values;
 use openmodelica_simcode_types::SimCode;
 use openmodelica_simcode_types::SimCodeFunction;
 use openmodelica_simcode_types::SimCodeVar;
+use openmodelica_simcode_util::SimCodeFunctionUtil;
 use openmodelica_susan::Tpl;
 use openmodelica_util::Config;
 use openmodelica_util::Error;

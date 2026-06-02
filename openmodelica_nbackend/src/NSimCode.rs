@@ -66,9 +66,6 @@ use crate::NSimVar::SimVar;
 use crate::NSimVar::SimVars;
 use crate::NSimVar::VarInfo;
 use openmodelica_ast::Absyn;
-use openmodelica_backend::SimCodeFunctionUtil as OldSimCodeFunctionUtil;
-use openmodelica_backend::SimCodeUtil as OldSimCodeUtil;
-use openmodelica_backend::SymbolTable;
 use openmodelica_backend_types::BackendDAE as OldBackendDAE;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::Expression as OldExpression;
@@ -96,6 +93,7 @@ use openmodelica_simcode_types::SimCode as OldSimCode;
 use openmodelica_simcode_types::SimCodeFunction as OldSimCodeFunction;
 use openmodelica_simcode_types::SimCodeFunction;
 use openmodelica_simcode_types::SimCodeVar;
+use openmodelica_simcode_util::SimCodeFunctionUtil as OldSimCodeFunctionUtil;
 use openmodelica_util::Error;
 use openmodelica_util::Flags;
 use openmodelica_util::StringUtil;
@@ -369,7 +367,7 @@ pub mod SimCode {
         Ok(r#str)
     }
 
-    pub fn create(mut bdae: Arc<BackendDAE::NBackendDAE>, mut name: Arc<Absyn::Path>, mut fileNamePrefix: ArcStr, mut simSettingsOpt: Option<OldSimCode::SimulationSettings>) -> Result<(Arc<SimCode>, Arc<AvlTreePathFunction::Tree>)> {
+    pub fn create(mut bdae: Arc<BackendDAE::NBackendDAE>, mut name: Arc<Absyn::Path>, mut fileNamePrefix: ArcStr, mut simSettingsOpt: Option<OldSimCode::SimulationSettings>, mut program: Absyn::Program) -> Result<(Arc<SimCode>, Arc<AvlTreePathFunction::Tree>)> {
         type mapExp = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>;
 
         let mut simCode: Arc<SimCode> = Arc::new(<SimCode as ::std::default::Default>::default());
@@ -384,7 +382,6 @@ pub mod SimCode {
             let mut funcMap: Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Function::Function>>> = <Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Function::Function>>> as ::std::default::Default>::default();
             let mut residual_vars: Arc<VariablePointers::VariablePointers> = Arc::new(<VariablePointers::VariablePointers as ::std::default::Default>::default());
             let mut vars: Arc<SimVars::SimVars> = Arc::new(<SimVars::SimVars as ::std::default::Default>::default());
-            let mut program: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
             let mut libs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let mut includeDirs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let mut libPaths: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -488,10 +485,9 @@ pub mod SimCode {
         __acc.reverse()
     }))?, allSim.clone());
             inlineEquations = metamodelica::nil();
-            program = SymbolTable::getAbsyn();
             directory = (ProgramUtil::getFileDir(AbsynUtil::pathToCref(name.clone())?, program.clone())?).clone();
             oldFunctionTree = ConvertDAE::convertFunctionTree(NFFlatten::FunctionTreeImpl::fromList(UnorderedMap::toList(funcMap.clone()), (std::sync::Arc::new(fnptr!(NFFlatten::FunctionTreeImpl::addConflictDefault, _, _, _)) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>))?)?;
-            (libs, libPaths, externalFunctionIncludes, includeDirs, recordDecls, functions, _) = OldSimCodeUtil::createFunctions(program.clone(), oldFunctionTree.clone())?;
+            (libs, libPaths, externalFunctionIncludes, includeDirs, recordDecls, functions, _) = OldSimCodeFunctionUtil::createFunctions(program.clone(), oldFunctionTree.clone())?;
             makefileParams = OldSimCodeFunctionUtil::createMakefileParams(includeDirs.clone(), libs.clone(), libPaths.clone(), false, false)?;
             fileName = (System::basename((AbsynUtil::classFilename(ProgramUtil::getPathedClassInProgram(name.clone(), program.clone(), false, false)?)?).clone())).clone();
             (linearLoops, nonlinearLoops, jacobians, simCodeIndices) = collectAlgebraicLoops(init.clone(), init_0.clone(), ode.clone(), algebraic.clone(), daeModeData.clone(), simCodeIndices.clone(), simcode_map.clone())?;
@@ -561,7 +557,7 @@ pub mod SimCode {
         let mut residualVars: Arc<metamodelica::List<Arc<SimVar::SimVar>>> = metamodelica::nil();
         modelInfo = ModelInfo::convert(simCode.modelInfo.clone())?;
         (zeroCrossings, relations, timeEvents) = EventInfo::convert(simCode.eventInfo.clone(), simCode.equation_map.clone())?;
-        (varToArrayIndexMapping, varToIndexMapping) = OldSimCodeUtil::createVarToArrayIndexMapping(modelInfo.clone())?;
+        (varToArrayIndexMapping, varToIndexMapping) = OldSimCodeFunctionUtil::createVarToArrayIndexMapping(modelInfo.clone())?;
         crefToSimVarHT = SimCodeUtil::convertSimCodeMap(simCode.simcode_map.clone())?;
         if isSome(simCode.daeModeData.clone()) {
             let __pa0 = ::match_deref::match_deref! { match &(simCode.daeModeData.clone()) {

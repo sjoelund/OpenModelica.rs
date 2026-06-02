@@ -59,7 +59,6 @@ use openmodelica_backend::SerializeInitXML;
 use openmodelica_backend::SerializeModelInfo;
 use openmodelica_backend::SerializeSparsityPattern;
 use openmodelica_backend::SerializeTaskSystemInfo;
-use openmodelica_backend::SimCodeFunctionUtil;
 use openmodelica_backend::SimCodeUtil;
 use openmodelica_backend::SymbolTable;
 use openmodelica_backend::SymbolicJacobian;
@@ -104,6 +103,7 @@ use openmodelica_simcode_types::HpcOmSimCode;
 use openmodelica_simcode_types::SimCode;
 use openmodelica_simcode_types::SimCodeFunction;
 use openmodelica_simcode_types::SimCodeVar;
+use openmodelica_simcode_util::SimCodeFunctionUtil;
 use openmodelica_susan::Tpl;
 use openmodelica_util::Autoconf;
 use openmodelica_util::AvlSetString;
@@ -317,7 +317,7 @@ fn generateModelCodeNewBackend(mut bdae: Arc<NBackendDAE::NBackendDAE>, mut clas
     numCheckpoints = ErrorExt::getNumCheckpoints();
     StackOverflow::clearStacktraceMessages();
     System::realtimeTick(ClockIndexes::RT_CLOCK_SIMCODE.clone())?;
-    (simCode, oldFunctionTree) = NSimCode::SimCode::create(bdae.clone(), className.clone(), (fileNamePrefix.clone()).clone(), simSettingsOpt.clone())?;
+    (simCode, oldFunctionTree) = NSimCode::SimCode::create(bdae.clone(), className.clone(), (fileNamePrefix.clone()).clone(), simSettingsOpt.clone(), SymbolTable::getAbsyn())?;
     if Flags::isSet(Flags::DUMP_SIMCODE.clone())? {
         println!("{}", (NSimCode::SimCode::toString(simCode.clone(), (literal!("")).clone())?).clone());
     }
