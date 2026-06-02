@@ -61,7 +61,7 @@ const EXTERNAL_DEFAULTABLE_QNAMES: &[&str] = &[
 /// registered via [`EXTERNAL_DEFAULTABLE_QNAMES`] instead.
 const HANDWRITTEN_TOP_PACKAGES: &[&str] = &[
     "Mutable", "GCExt", "Pointer", "File", "Global", "Vector",
-    "ErrorExt", "Print", "ParserExt", "System",
+    "ErrorExt", "Print", "ParserExt", "System", "Settings",
 ];
 
 /// How to propagate a Result error from a fallible sub-expression.
@@ -1276,6 +1276,12 @@ pub fn generate_all(hier: &InstanceHierarchy<'_>, output_dir: &str) -> std::io::
                 // ops, env vars, timers, dlopen, regex, ...). Same story as
                 // `Print` — codegen produces `todo!()` for every body.
                 // Hand-write in `openmodelica_util/src/System.rs`.
+                //
+                // `Settings` is likewise all `external "C"`, wrapping
+                // `OMCompiler/Compiler/runtime/settingsimpl.c` — process-global
+                // config (version string, temp dir, installation/Modelica
+                // paths, home dir, echo flag). Hand-write in
+                // `openmodelica_util/src/Settings.rs`.
                 n if HANDWRITTEN_TOP_PACKAGES.contains(&n) => continue,
                 _ => {}
             };
