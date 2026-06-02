@@ -201,6 +201,7 @@ fn interface_to_crate(interface: &str) -> Option<String> {
         "backend_types" => Some("openmodelica_backend_types".to_owned()),
         "simcode_types" => Some("openmodelica_simcode_types".to_owned()),
         "backend_util" => Some("openmodelica_backend_util".to_owned()),
+        "nbackend" => Some("openmodelica_nbackend".to_owned()),
         "nf_frontend" => Some("openmodelica_nf_frontend".to_owned()),
         "frontend" => Some("openmodelica_frontend".to_owned()),
         "parser" => Some("openmodelica_ast".to_owned()),

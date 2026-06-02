@@ -1,29 +1,24 @@
 [package]
-name = "openmodelica_backend_main"
+name = "openmodelica_nbackend"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+anyhow.workspace=true
 metamodelica.workspace=true
 openmodelica_ast.workspace=true
+openmodelica_ast_collections.workspace=true
 openmodelica_backend.workspace=true
 openmodelica_backend_types.workspace=true
-openmodelica_nbackend.workspace=true
+openmodelica_backend_util.workspace=true
 openmodelica_simcode_types.workspace=true
-openmodelica_codegen.workspace=true
-openmodelica_codegen_cpp.workspace=true
-openmodelica_dump_extra.workspace=true
 openmodelica_frontend.workspace=true
-openmodelica_frontend_dump.workspace=true
-openmodelica_frontend_inst.workspace=true
 openmodelica_frontend_types.workspace=true
+openmodelica_frontend_dump.workspace=true
 openmodelica_nf_frontend.workspace=true
 openmodelica_program_util.workspace=true
-openmodelica_script_util.workspace=true
-openmodelica_susan.workspace=true
 openmodelica_util.workspace=true
 openmodelica_util_datatypes_basic.workspace=true
-anyhow.workspace=true
 const-str.workspace=true
 tailcall.workspace=true
 arcstr.workspace=true

@@ -336,6 +336,7 @@ dependencies = [
  "openmodelica_frontend_dump",
  "openmodelica_frontend_inst",
  "openmodelica_frontend_types",
+ "openmodelica_nbackend",
  "openmodelica_nf_frontend",
  "openmodelica_program_util",
  "openmodelica_script_util",
@@ -513,6 +514,32 @@ dependencies = [
  "match_deref",
  "metamodelica",
  "openmodelica_ast",
+ "openmodelica_util_datatypes_basic",
+ "tailcall",
+]
+
+[[package]]
+name = "openmodelica_nbackend"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "arcstr",
+ "const-str",
+ "loop_unwrap",
+ "match_deref",
+ "metamodelica",
+ "openmodelica_ast",
+ "openmodelica_ast_collections",
+ "openmodelica_backend",
+ "openmodelica_backend_types",
+ "openmodelica_backend_util",
+ "openmodelica_frontend",
+ "openmodelica_frontend_dump",
+ "openmodelica_frontend_types",
+ "openmodelica_nf_frontend",
+ "openmodelica_program_util",
+ "openmodelica_simcode_types",
+ "openmodelica_util",
  "openmodelica_util_datatypes_basic",
  "tailcall",
 ]
