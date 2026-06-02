@@ -987,7 +987,7 @@ pub fn evaluateConstantFunction(mut rhsExpIn: Arc<DAE::Exp>, mut lhsExpIn: Arc<D
                     elements = listAppend(allInputs.clone(), elements.clone());
                     elements = List::unique(elements.clone());
                     (func, path) = updateFunctionBody(func.clone(), elements.clone(), idx.clone(), updatedVarOutputs.clone(), allOutputs.clone())?;
-                    funcs = if (funcIsPartConst.clone()) {DAEUtil::addDaeFunction(list![func.clone()], funcs.clone())?} else {funcs.clone()};
+                    funcs = if (funcIsPartConst.clone()) {AvlTreePathFunction::addDaeFunction(list![func.clone()], funcs.clone())?} else {funcs.clone()};
                     idx = if (funcIsPartConst.clone() || funcIsConst.clone()) {idx.clone() + 1} else {idx.clone()};
                     outputExp = if (funcIsPartConst.clone()) {outputExp.clone()} else {lhsExpIn.clone()};
                     lhsExps = getCrefsForRecord(lhsExpIn.clone())?;

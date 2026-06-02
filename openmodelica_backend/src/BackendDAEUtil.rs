@@ -663,12 +663,6 @@ pub fn addVarsToEqSystem(mut syst: Arc<BackendDAE::EqSystem>, mut varlst: Arc<me
     Ok(osyst)
 }
 
-pub fn getSimIteratorSize(mut iters: Arc<metamodelica::List<BackendDAE::SimIterator>>) -> Result<i32> {
-    let mut size: i32 = 0;
-    size = BackendDAE::getSimIteratorSize(iters.clone())?;
-    Ok(size)
-}
-
 pub fn numberOfZeroCrossings(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<(i32, i32, i32, i32)> {
     let mut outNumZeroCrossings: i32 = 0;
     let mut outNumTimeEvents: i32 = 0;
@@ -10874,7 +10868,7 @@ pub fn markNonlinearIterationVariables(mut dae: Arc<BackendDAE::BackendDAE>) -> 
 fn markNonlinearIterationVariablesEqSystem(mut syst: Arc<BackendDAE::EqSystem>) -> Result<Arc<BackendDAE::EqSystem>> {
     let mut syst: Arc<BackendDAE::EqSystem> = syst;
     syst = ({
-        let mut set: Arc<UnorderedSet::UnorderedSet<Arc<DAE::ComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(ComponentReference::hashComponentRef) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>), 13);
+        let mut set: Arc<UnorderedSet::UnorderedSet<Arc<DAE::ComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(ComponentReferenceBasics::hashComponentRef) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>), 13);
         (::match_deref::match_deref! { match &(syst.clone()) {
         Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::MATCHING { comps, .. }, .. } => {
             for mut comp in &*comps.clone() {

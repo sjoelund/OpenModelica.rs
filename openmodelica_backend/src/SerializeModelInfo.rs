@@ -48,7 +48,6 @@ use openmodelica_ast::Absyn;
 use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::Algorithm;
 use openmodelica_frontend::ComponentReference::writeCref;
-use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::DAEDump;
 use openmodelica_frontend::Expression;
 use openmodelica_frontend::PrefixUtil;
@@ -1239,7 +1238,7 @@ fn varKindString(mut varKind: BackendDAE::VarKind, mut var: SimCodeVar::SimVar) 
 fn getWhenUses(mut conditions: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut value: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
     let mut uses: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     uses = listAppend(conditions.clone(), Expression::extractCrefsFromExpDerPreStart(value.clone(), true)?);
-    uses = UnorderedSet::unique_list(uses.clone(), (std::sync::Arc::new(ComponentReference::hashComponentRef) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
+    uses = UnorderedSet::unique_list(uses.clone(), (std::sync::Arc::new(ComponentReferenceBasics::hashComponentRef) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
     Ok(uses)
 }
 

@@ -6772,7 +6772,7 @@ pub fn evaluateOutputsOnly(mut daeIn: Arc<BackendDAE::BackendDAE>) -> Result<Arc
                 println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("No output variables in this system (")); __mm_s.push_str(&*intString(systemNumber.clone())); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*intString(numberOfSystems.clone())); __mm_s.push_str(&*literal!(")\n")); ArcStr::from(__mm_s) }).clone());
             }
         }
-        der_replacement = UnorderedMap::new((std::sync::Arc::new(ComponentReference::hashComponentRef) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>), 1);
+        der_replacement = UnorderedMap::new((std::sync::Arc::new(ComponentReferenceBasics::hashComponentRef) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>), 1);
         for mut state in &*BackendVariable::varList(vars.clone())? {
             let mut state = state.clone();
             if BackendVariable::isStateVar(state.clone()) {

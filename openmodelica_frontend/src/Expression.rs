@@ -11231,12 +11231,6 @@ fn promoteExp3(mut inExp: Arc<DAE::Exp>, mut inTypes: Arc<metamodelica::List<Arc
     Ok(outExp)
 }
 
-pub fn hashExp(mut e: Arc<DAE::Exp>) -> Result<i32> {
-    let mut hash: i32 = 0;
-    hash = ExpressionBasics::hashExp(e.clone())?;
-    Ok(hash)
-}
-
 pub fn matrixToArray(mut inMatrix: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     let mut outArray: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     outArray = (::match_deref::match_deref! { match &(inMatrix.clone()) {

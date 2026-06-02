@@ -3320,7 +3320,7 @@ fn equalFreeStartValues(mut iValues: Arc<metamodelica::List<(Option<Arc<DAE::Exp
 fn replaceCrefWithBindExp(mut exp: Arc<DAE::Exp>, mut vars: BackendDAE::Variables) -> Result<(Arc<DAE::Exp>, bool)> {
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut replaced: bool = false;
-    let mut replaced_crefs: Arc<UnorderedSet::UnorderedSet<Arc<DAE::ComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(ComponentReference::hashComponentRef) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>), 13);
+    let mut replaced_crefs: Arc<UnorderedSet::UnorderedSet<Arc<DAE::ComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(ComponentReferenceBasics::hashComponentRef) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>), 13);
     (outExp, replaced) = Expression::traverseExpBottomUp(exp.clone(), (std::sync::Arc::new({ let __pe_b2 = vars.clone(); let __pe_b3 = replaced_crefs.clone(); move |__pe_a0, __pe_a1| replaceCrefWithBindExp_traverser(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, bool) -> Result<(Arc<DAE::Exp>, bool)> + 'static>), false)?;
     Ok((outExp, replaced))
 }

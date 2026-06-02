@@ -2574,7 +2574,7 @@ pub fn removeVar(mut inIndex: i32, mut inVariables: BackendDAE::Variables) -> Re
     arr = __pa4.clone();
     cr = __pa5.clone();
     outVar = __pa6.clone();
-    hash_idx = intMod(ComponentReference::hashComponentRef(cr.clone())?, buckets.clone()) + 1;
+    hash_idx = intMod(ComponentReferenceBasics::hashComponentRef(cr.clone())?, buckets.clone()) + 1;
     cr_indices = indices.borrow()[(hash_idx.clone()-1) as usize].clone();
     (cr_indices, _) = List::deleteMemberOnTrue(BackendDAE::CrefIndex { cref: cr.clone(), index: inIndex.clone() - 1 }, cr_indices.clone(), (std::sync::Arc::new(fnptr!(removeVar2, BackendDAE::CrefIndex, BackendDAE::CrefIndex)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::CrefIndex, BackendDAE::CrefIndex) -> Result<bool> + 'static>))?;
     {let _arr = indices.clone(); _arr.borrow_mut()[(hash_idx.clone()-1) as usize] = cr_indices.clone(); _arr};
@@ -2716,7 +2716,7 @@ pub fn addVar(mut inVar: BackendDAE::Var, mut inVariables: BackendDAE::Variables
     let mut hash_idx: i32 = 0;
     let mut arr_idx: i32 = 0;
     let mut indices: Arc<metamodelica::List<BackendDAE::CrefIndex>> = metamodelica::nil();
-    hash_idx = intMod(ComponentReference::hashComponentRef(inVar.varName.clone())?, inVariables.bucketSize.clone()) + 1;
+    hash_idx = intMod(ComponentReferenceBasics::hashComponentRef(inVar.varName.clone())?, inVariables.bucketSize.clone()) + 1;
     indices = inVariables.crefIndices.clone().borrow()[(hash_idx.clone()-1) as usize].clone();
     match '__try0: {
         let BackendDAE::CREFINDEX { index: __pa1, .. } = (unwrap_break_err!(List::getMemberOnTrue(inVar.varName.clone(), indices.clone(), (std::sync::Arc::new(crefIndexEqualCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, BackendDAE::CrefIndex) -> Result<bool> + 'static>)), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
@@ -2761,7 +2761,7 @@ pub fn addNewVar(mut inVar: BackendDAE::Var, mut inVariables: BackendDAE::Variab
     varr = __pa1.clone();
     bsize = __pa2.clone();
     num_vars = __pa3.clone();
-    idx = intMod(ComponentReference::hashComponentRef(inVar.varName.clone())?, bsize.clone()) + 1;
+    idx = intMod(ComponentReferenceBasics::hashComponentRef(inVar.varName.clone())?, bsize.clone()) + 1;
     varr = vararrayAdd(varr.clone(), inVar.clone())?;
     indices = hashvec.borrow()[(idx.clone()-1) as usize].clone();
     {let _arr = hashvec.clone(); _arr.borrow_mut()[(idx.clone()-1) as usize] = metamodelica::cons(BackendDAE::CrefIndex { cref: inVar.varName.clone(), index: num_vars.clone() }, indices.clone()); _arr};
@@ -3175,7 +3175,7 @@ pub fn getVar2(mut inCref: Arc<DAE::ComponentRef>, mut inVariables: BackendDAE::
     buckets = __pa0.clone();
     arr = __pa1.clone();
     indices = __pa2.clone();
-    hash_idx = intMod(ComponentReference::hashComponentRef(inCref.clone())?, buckets.clone()) + 1;
+    hash_idx = intMod(ComponentReferenceBasics::hashComponentRef(inCref.clone())?, buckets.clone()) + 1;
     cr_indices = indices.borrow()[(hash_idx.clone()-1) as usize].clone();
     let BackendDAE::CREFINDEX { index: __pa3, .. } = (List::getMemberOnTrue(inCref.clone(), cr_indices.clone(), (std::sync::Arc::new(crefIndexEqualCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, BackendDAE::CrefIndex) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
     outIndex = __pa3.clone();

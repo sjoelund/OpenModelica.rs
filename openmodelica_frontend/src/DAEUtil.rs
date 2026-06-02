@@ -5982,12 +5982,6 @@ pub fn collectFunctionRefVarPaths(mut inElem: Arc<DAE::Element>, mut acc: Arc<me
     outAcc
 }
 
-pub fn addDaeFunction(mut functions: Arc<metamodelica::List<DAE::Function>>, mut functionTree: Arc<AvlTreePathFunction::Tree>) -> Result<Arc<AvlTreePathFunction::Tree>> {
-    let mut functionTree: Arc<AvlTreePathFunction::Tree> = functionTree;
-    functionTree = AvlTreePathFunction::addDaeFunction(functions.clone(), functionTree.clone())?;
-    Ok(functionTree)
-}
-
 pub fn addFunctionDefinition(mut ifunc: DAE::Function, mut iFuncDef: DAE::FunctionDefinition) -> DAE::Function {
     let mut func: DAE::Function = ifunc.clone();
     let () = (match func.clone() {
@@ -6001,12 +5995,6 @@ pub fn addFunctionDefinition(mut ifunc: DAE::Function, mut iFuncDef: DAE::Functi
         _ => (),
     });
     func
-}
-
-pub fn addDaeExtFunction(mut ifuncs: Arc<metamodelica::List<DAE::Function>>, mut itree: Arc<AvlTreePathFunction::Tree>) -> Result<Arc<AvlTreePathFunction::Tree>> {
-    let mut outTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
-    outTree = AvlTreePathFunction::addDaeExtFunction(ifuncs.clone(), itree.clone())?;
-    Ok(outTree)
 }
 
 pub fn getFunctionsInfo(mut ft: Arc<AvlTreePathFunction::Tree>) -> Result<Arc<metamodelica::List<ArcStr>>> {

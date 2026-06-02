@@ -3291,8 +3291,6 @@ pub fn appendCurrentCrefPrefix(mut context: SimCodeFunction::Context, mut in_cre
     Ok(out_context)
 }
 
-// ---- functions moved here from SimCodeUtil so the new backend (NSimCode) can
-// ---- reuse them without depending on the old backend crate ----
 fn simulationFindLiterals(mut fns: Arc<metamodelica::List<DAE::Function>>) -> Result<(Arc<metamodelica::List<DAE::Function>>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::Exp>>>))> {
     let mut ofns: Arc<metamodelica::List<DAE::Function>> = metamodelica::nil();
     let mut literals: (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (HashTableExpToIndex::FuncHashCref, HashTableExpToIndex::FuncCrefEqual, HashTableExpToIndex::FuncCrefStr, HashTableExpToIndex::FuncExpStr)), Arc<metamodelica::List<Arc<DAE::Exp>>>);

@@ -76,7 +76,7 @@ pub type FuncExpStr = std::sync::Arc<dyn ::std::ops::Fn(Value) -> Result<ArcStr>
 
 fn hashFunc(mut tpl: Key) -> Result<i32> {
     let mut res: i32 = 0;
-    res = ComponentReference::hashComponentRef(Util::tuple21(tpl.clone()))? + Util::tuple22(tpl.clone());
+    res = ComponentReferenceBasics::hashComponentRef(Util::tuple21(tpl.clone()))? + Util::tuple22(tpl.clone());
     Ok(res)
 }
 

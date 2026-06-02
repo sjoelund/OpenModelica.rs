@@ -72,12 +72,6 @@ use openmodelica_util_datatypes_basic::List;
 thread_local! { static __dummyCref_TLS: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (literal!("dummy")).clone(), identType: DAE::T_UNKNOWN_DEFAULT().clone(), subscriptLst: metamodelica::nil() }); }
 pub fn dummyCref() -> Arc<DAE::ComponentRef> { __dummyCref_TLS.with(|__t| __t.clone()) }
 
-pub fn hashComponentRef(mut cr: Arc<DAE::ComponentRef>) -> Result<i32> {
-    let mut hash: i32 = 0;
-    hash = ComponentReferenceBasics::hashComponentRef(cr.clone())?;
-    Ok(hash)
-}
-
 pub fn createEmptyCrefMemory() -> metamodelica::Array<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
     let mut crefMemory: metamodelica::Array<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> = Default::default();
     crefMemory = arrayCreate(3, metamodelica::nil());
@@ -1993,12 +1987,6 @@ fn printComponentRef2(mut inString: ArcStr, mut inSubscriptLst: Arc<metamodelica
     Ok(())
 }
 
-pub fn printComponentRefListStr(mut crs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<ArcStr> {
-    let mut res: ArcStr = arcstr::literal!("");
-    res = (ComponentReferenceBasics::printComponentRefListStr(crs.clone())?).clone();
-    Ok(res)
-}
-
 pub fn printComponentRefList(mut crs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<()> {
     let mut buffer: ArcStr = arcstr::literal!("");
     buffer = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*stringDelimitList(List::map(crs.clone(), (std::sync::Arc::new(ComponentReferenceBasics::printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("}\n")); ArcStr::from(__mm_s) }).clone();
@@ -2916,12 +2904,12 @@ pub fn createDifferentiatedCrefName(mut inCref: Arc<DAE::ComponentRef>, mut inX:
     }
     outCref = crefSetLastType(outCref.clone(), DAE::T_UNKNOWN_DEFAULT().clone())?;
     if debug.clone() {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("after strip: ")); __mm_s.push_str(&*printComponentRefListStr(expandCref(outCref.clone(), true)?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("after strip: ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefListStr(expandCref(outCref.clone(), true)?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     outCref = joinCrefs(outCref.clone(), ComponentReferenceBasics::makeCrefIdent(({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(DAE::partialDerivativeNamePrefix)); __mm_s.push_str(&*inMatrixName.clone()); ArcStr::from(__mm_s) }).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil()))?;
     outCref = joinCrefs(outCref.clone(), inX.clone())?;
     if debug.clone() {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("after join: ")); __mm_s.push_str(&*printComponentRefListStr(expandCref(outCref.clone(), true)?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("after join: ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefListStr(expandCref(outCref.clone(), true)?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     outCref = crefSetLastSubs(outCref.clone(), subs.clone())?;
     outCref = crefSetLastType(outCref.clone(), crefLastType(inCref.clone())?)?;
@@ -2953,7 +2941,7 @@ pub fn isWild(mut cref: Arc<DAE::ComponentRef>) -> bool {
 
 pub fn uniqueList(mut crefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
     let mut uniqueCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-    uniqueCrefs = UnorderedSet::unique_list(crefs.clone(), (std::sync::Arc::new(hashComponentRef) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
+    uniqueCrefs = UnorderedSet::unique_list(crefs.clone(), (std::sync::Arc::new(ComponentReferenceBasics::hashComponentRef) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
     Ok(uniqueCrefs)
 }
 

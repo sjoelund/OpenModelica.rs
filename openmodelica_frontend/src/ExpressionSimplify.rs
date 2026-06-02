@@ -3839,7 +3839,7 @@ fn simplifyAddJoinTerms(mut inTplExpRealLst: Arc<metamodelica::List<(Arc<DAE::Ex
             let mut exp1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut coeff1: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
             let mut coeff_map: Arc<UnorderedMap::UnorderedMap<Arc<DAE::Exp>, metamodelica::Real>> = <Arc<UnorderedMap::UnorderedMap<Arc<DAE::Exp>, metamodelica::Real>> as ::std::default::Default>::default();
-            coeff_map = UnorderedMap::new((std::sync::Arc::new(Expression::hashExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>), (std::sync::Arc::new(ExpressionBasics::expEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>), (inTplExpRealLst.clone().len() as i32));
+            coeff_map = UnorderedMap::new((std::sync::Arc::new(ExpressionBasics::hashExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>), (std::sync::Arc::new(ExpressionBasics::expEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>), (inTplExpRealLst.clone().len() as i32));
             for mut tpl in &*inTplExpRealLst.clone() {
                 let mut tpl = tpl.clone();
                 (exp1, coeff1) = tpl.clone();

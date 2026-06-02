@@ -1536,7 +1536,7 @@ pub fn createSeedCrefName(mut inCref: Arc<DAE::ComponentRef>, mut inMatrixName: 
     outCref = ComponentReference::crefSetLastType(outCref.clone(), DAE::T_UNKNOWN_DEFAULT().clone())?;
     outCref = ComponentReference::joinCrefs(outCref.clone(), ComponentReferenceBasics::makeCrefIdent(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Seed")); __mm_s.push_str(&*inMatrixName.clone()); ArcStr::from(__mm_s) }).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil()))?;
     if debug.clone() {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("after join: ")); __mm_s.push_str(&*ComponentReference::printComponentRefListStr(ComponentReference::expandCref(outCref.clone(), true)?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("after join: ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefListStr(ComponentReference::expandCref(outCref.clone(), true)?)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     outCref = ComponentReference::crefSetLastSubs(outCref.clone(), subs.clone())?;
     outCref = ComponentReference::crefSetLastType(outCref.clone(), ComponentReference::crefLastType(inCref.clone())?)?;
@@ -2586,7 +2586,7 @@ fn differentiateFunctionCallPartial(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref:
                             funstring = (Tpl::tplString((std::sync::Arc::new(DAEDumpTpl::dumpFunction) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, DAE::Function) -> Result<Tpl::Text> + 'static>), dfunc.clone())?).clone();
                             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("### Differentiate function: \n")); __mm_s.push_str(&*funstring.clone()); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
                         }
-                        functions = DAEUtil::addDaeFunction(list![dfunc.clone()], functions.clone())?;
+                        functions = AvlTreePathFunction::addDaeFunction(list![dfunc.clone()], functions.clone())?;
                         func = DAEUtil::addFunctionDefinition(func.clone(), DAE::FunctionDefinition::FUNCTION_DER_MAPPER { derivedFunction: path.clone(), derivativeFunction: dpath.clone(), derivativeOrder: 1, conditionRefs: metamodelica::nil(), defaultDerivative: None, lowerOrderDerivatives: metamodelica::nil() });
                         functions = AvlTreePathFunction::add(functions.clone(), path.clone(), Some(func.clone()), (std::sync::Arc::new(fnptr!(AvlTreePathFunction::addConflictDefault, _, _, _)) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>))?;
                     } else {
@@ -3589,7 +3589,7 @@ fn dumpInputData(mut inDiffData: BackendDAE::DifferentiateInputData) -> Result<(
         BackendDump::printVarList(inDiffData.controlVars.clone())?;
     }
     if !(inDiffData.diffCrefs.clone().is_empty()) {
-        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("diffCrefs:\n")); __mm_s.push_str(&*ComponentReference::printComponentRefListStr(inDiffData.diffCrefs.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("diffCrefs:\n")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefListStr(inDiffData.diffCrefs.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     Ok(())
 }
