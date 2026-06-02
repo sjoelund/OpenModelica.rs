@@ -2604,7 +2604,7 @@ fn fixCaseReturnTypes(mut icases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, 
                     ty = Types::makeRegularTupleFromMetaTupleOnTrue(Types::allTuple(tys.clone()), ty.clone())?;
                     ty = Types::getUniontypeIfMetarecordReplaceAllSubtypes(ty.clone())?;
                     (exps, _) = Types::matchTypes(exps.clone(), tys.clone(), ty.clone(), true)?;
-                    cases = fixCaseReturnTypes2(cases.clone(), exps.clone(), info.clone())?;
+                    cases = Types::fixCaseReturnTypes2(cases.clone(), exps.clone(), info.clone())?;
                     Ok((cases.clone(), ty.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2622,7 +2622,7 @@ fn fixCaseReturnTypes(mut icases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, 
                     ty = Types::makeRegularTupleFromMetaTupleOnTrue(Types::allTuple(tys.clone()), ty.clone())?;
                     ty = Types::getUniontypeIfMetarecordReplaceAllSubtypes(ty.clone())?;
                     (exps, _) = Types::matchTypes(exps.clone(), tys.clone(), ty.clone(), true)?;
-                    cases = fixCaseReturnTypes2(cases.clone(), exps.clone(), info.clone())?;
+                    cases = Types::fixCaseReturnTypes2(cases.clone(), exps.clone(), info.clone())?;
                     Ok((cases.clone(), ty.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -2644,52 +2644,6 @@ fn fixCaseReturnTypes(mut icases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, 
         bail!("matchcontinue: no arm matched")
     };
     Ok((outCases, ty))
-}
-
-pub fn fixCaseReturnTypes2(mut inCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, mut inExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inInfo: SourceInfo) -> Result<Arc<metamodelica::List<Arc<DAE::MatchCase>>>> {
-    let mut outCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>> = metamodelica::nil();
-    outCases = 'mc: {
-        let __mc_input = (inCases.clone(), inExps.clone(), inInfo.clone());
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil, _) => {
-                    Ok(metamodelica::nil())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Cons { head: Deref @ DAE::MatchCase { patterns, patternGuard, localDecls: decls, body, result: Some(_), resultInfo, jump, info: info2 }, tail: cases }, Deref @ metamodelica::List::Cons { head: exp, tail: exps }, info) => {
-                    let mut cases = (*cases).clone();
-                    cases = fixCaseReturnTypes2(cases.clone(), exps.clone(), info.clone())?;
-                    Ok(metamodelica::cons(Arc::new(DAE::MatchCase { patterns: patterns.clone(), patternGuard: patternGuard.clone(), localDecls: decls.clone(), body: body.clone(), result: Some(exp.clone()), resultInfo: resultInfo.clone(), jump: jump.clone(), info: info2.clone() }), cases.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                (Deref @ metamodelica::List::Cons { head: case_ @ Deref @ DAE::MatchCase { result: None, .. }, tail: cases }, exps, info) => {
-                    let mut cases = (*cases).clone();
-                    cases = fixCaseReturnTypes2(cases.clone(), exps.clone(), info.clone())?;
-                    Ok(metamodelica::cons(case_.clone(), cases.clone()))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Error::addSourceMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Patternm.fixCaseReturnTypes2 failed")).clone()], inInfo.clone())?;
-                    Ok(bail!("fail"))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    };
-    Ok(outCases)
 }
 
 pub fn traverseConstantPatternsHelper<T: Clone + 'static>(mut inExp: Arc<DAE::Exp>, mut inT: T, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, T)> + 'static>) -> Result<(Arc<DAE::Exp>, T)> {
@@ -2906,24 +2860,6 @@ fn checkLocalShadowing(mut elt: Arc<SCode::Element>, mut env: FCore::Graph, mut 
         outTpl = (cache.clone(), true);
     }
     Ok(outTpl)
-}
-
-pub fn resultExps(mut inCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>) -> Arc<metamodelica::List<Arc<DAE::Exp>>> {
-    let mut exps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-    exps = (::match_deref::match_deref! { match &(inCases.clone()) {
-        Deref @ metamodelica::List::Nil => {
-            metamodelica::nil()
-        },
-        Deref @ metamodelica::List::Cons { head: Deref @ DAE::MatchCase { result: Some(exp), .. }, tail: cases } => {
-            exps = resultExps(cases.clone());
-            metamodelica::cons(exp.clone(), exps.clone())
-        },
-        Deref @ metamodelica::List::Cons { head: _, tail: cases } => {
-            resultExps(cases.clone())
-        },
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    exps
 }
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
