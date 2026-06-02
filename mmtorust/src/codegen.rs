@@ -7072,8 +7072,23 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
             // its `?` must still bubble out of the surrounding fallible
             // function; only `f(...)` itself (or its panic-on-fail equivalent)
             // is governed by the outer QMode.
+            //
+            // Inside a `try`/`else` (QMode::TryBlock) the error-propagation
+            // target is the labeled block, not the function: a fallible
+            // argument such as `setCCompiler(readEnv("CC"))` from
+            //   try setCCompiler(readEnv("CC")); else end try;
+            // must `unwrap_break_err!(readEnv(...), '__tryN)` so a failure is
+            // caught by the else branch. Forcing QMode::Function here would
+            // instead lower it to `?` (escaping the try in a fallible
+            // function) or `.unwrap()` (a panic in an infallible one — the
+            // observed bug). So preserve TryBlock for arguments; only the
+            // non-propagating outer modes (Bare/Filter) switch to Function.
             let outer_qmode = ctx.qmode.clone();
-            let (parts, turbofish): (Vec<String>, Option<String>) = ctx.with_qmode(QMode::Function, |ctx| -> (Vec<String>, Option<String>) {
+            let arg_qmode = match &outer_qmode {
+                QMode::TryBlock(label) => QMode::TryBlock(label.clone()),
+                _ => QMode::Function,
+            };
+            let (parts, turbofish): (Vec<String>, Option<String>) = ctx.with_qmode(arg_qmode, |ctx| -> (Vec<String>, Option<String>) {
             let _ = &outer_qmode;
             if let Some(formals) = formals {
                 // Reorder positional + named arguments into formal-declaration

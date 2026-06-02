@@ -562,7 +562,7 @@ fn evaluateForStmtRangeOpt(mut iter: ArcStr, mut startVal: Arc<Values::Value>, m
     val = startVal.clone();
     if '__try0: {
         while unwrap_break_err!(ValuesUtil::safeLessEq(val.clone(), stopVal.clone()), '__try0) {
-            SymbolTable::appendVar((iter.clone()).clone(), val.clone(), Types::typeOfValue(val.clone()).unwrap());
+            SymbolTable::appendVar((iter.clone()).clone(), val.clone(), unwrap_break_err!(Types::typeOfValue(val.clone()), '__try0));
             unwrap_break_err!(evaluateAlgStmtLst(algItems.clone()), '__try0);
             unwrap_break_err!(SymbolTable::deleteVarFirstEntry((iter.clone()).clone()), '__try0);
             val = unwrap_break_err!(ValuesUtil::safeIntRealOp(val.clone(), stepVal.clone(), openmodelica_frontend_types::Values::IntRealOp::ADDOP), '__try0);
@@ -736,7 +736,7 @@ fn stringRepresOfExpr(mut exp: Arc<Absyn::Exp>) -> Result<ArcStr> {
 fn evaluateExprToStr(mut inExp: Arc<Absyn::Exp>, mut info: SourceInfo) -> ArcStr {
     let mut outString: ArcStr = arcstr::literal!("");
     match '__try0: {
-        outString = (unwrap_break_err!(ValuesDump::valString(evaluateExpr(inExp.clone(), info.clone()).unwrap()), '__try0)).clone();
+        outString = (unwrap_break_err!(ValuesDump::valString(unwrap_break_err!(evaluateExpr(inExp.clone(), info.clone()), '__try0)), '__try0)).clone();
         Ok::<_, anyhow::Error>((outString.clone(),))
     } {
         Ok((__try0_o0,)) => {
@@ -807,7 +807,7 @@ fn extractAllComponentreplacements(mut p: Absyn::Program, mut classPath: Arc<Abs
         ErrorExt::setCheckpoint((literal!("Interactive.extractAllComponentreplacements")).clone());
         comps = unwrap_break_err!(extractAllComponents(p.clone(), classPath.clone()), '__try0);
         ErrorExt::rollBack((literal!("Interactive.extractAllComponentreplacements")).clone());
-        let false = (unwrap_break_err!(isClassReadOnly(ProgramUtil::getPathedClassInProgram(classPath.clone(), p.clone(), false, false)?), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
+        let false = (unwrap_break_err!(isClassReadOnly(unwrap_break_err!(ProgramUtil::getPathedClassInProgram(classPath.clone(), p.clone(), false, false), '__try0)), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
         comp_repsrules = InteractiveTypes::ComponentReplacementRules { componentReplacementLst: list![InteractiveTypes::ComponentReplacement { which1: classPath.clone(), the2: oldName.clone(), the3: newName.clone() }], the: 1 };
         comp_reps = unwrap_break_err!(getComponentreplacementsrules(comps.clone(), comp_repsrules.clone(), 0), '__try0);
         Ok::<_, anyhow::Error>((comp_reps.clone(), comp_repsrules.clone(), comps.clone()))
@@ -843,8 +843,8 @@ pub fn renameComponent(mut classPath: Arc<Absyn::Path>, mut oldName: Arc<Absyn::
     let mut comp_reps: InteractiveTypes::ComponentReplacementRules = <InteractiveTypes::ComponentReplacementRules as ::std::default::Default>::default();
     let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
     match '__try0: {
-        if unwrap_break_err!(isClassReadOnly(ProgramUtil::getPathedClassInProgram(classPath.clone(), program.clone(), false, false).unwrap()), '__try0) {
-            result = ValuesMake::makeCodeTypeNameStr(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Error: class: ")); __mm_s.push_str(&*AbsynUtil::pathString(classPath.clone(), (literal!(".")).clone(), true, false).unwrap()); __mm_s.push_str(&*literal!(" is in a read only file!")); ArcStr::from(__mm_s) }).clone());
+        if unwrap_break_err!(isClassReadOnly(unwrap_break_err!(ProgramUtil::getPathedClassInProgram(classPath.clone(), program.clone(), false, false), '__try0)), '__try0) {
+            result = ValuesMake::makeCodeTypeNameStr(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Error: class: ")); __mm_s.push_str(&*unwrap_break_err!(AbsynUtil::pathString(classPath.clone(), (literal!(".")).clone(), true, false), '__try0)); __mm_s.push_str(&*literal!(" is in a read only file!")); ArcStr::from(__mm_s) }).clone());
             return (program.clone(), result.clone());
         }
         comp_reps = unwrap_break_err!(extractAllComponentreplacements(program.clone(), classPath.clone(), oldName.clone(), newName.clone()), '__try0);
@@ -873,8 +873,8 @@ pub fn renameComponentOnlyInClass(mut classPath: Arc<Absyn::Path>, mut oldName: 
     let mut cl: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
     let mut w: Absyn::Within = Absyn::Within::TOP;
     match '__try0: {
-        if unwrap_break_err!(isClassReadOnly(ProgramUtil::getPathedClassInProgram(classPath.clone(), program.clone(), false, false).unwrap()), '__try0) {
-            result = ValuesMake::makeCodeTypeNameStr(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Error: class: ")); __mm_s.push_str(&*AbsynUtil::pathString(classPath.clone(), (literal!(".")).clone(), true, false).unwrap()); __mm_s.push_str(&*literal!(" is in a read only file!")); ArcStr::from(__mm_s) }).clone());
+        if unwrap_break_err!(isClassReadOnly(unwrap_break_err!(ProgramUtil::getPathedClassInProgram(classPath.clone(), program.clone(), false, false), '__try0)), '__try0) {
+            result = ValuesMake::makeCodeTypeNameStr(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Error: class: ")); __mm_s.push_str(&*unwrap_break_err!(AbsynUtil::pathString(classPath.clone(), (literal!(".")).clone(), true, false), '__try0)); __mm_s.push_str(&*literal!(" is in a read only file!")); ArcStr::from(__mm_s) }).clone());
             return (program.clone(), result.clone());
         }
         cl = unwrap_break_err!(ProgramUtil::getPathedClassInProgram(classPath.clone(), program.clone(), false, false), '__try0);
@@ -3398,7 +3398,7 @@ pub fn getCrefInfo(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Program)
     match '__try0: {
         cls = unwrap_break_err!(ProgramUtil::getPathedClassInProgram(classPath.clone(), program.clone(), false, false), '__try0);
         info = cls.info.clone();
-        result = unwrap_break_err!(ValuesMake::makeArray(list![ValuesMake::makeCodeTypeNameStr((Testsuite::friendly(info.fileName.clone()).unwrap()).clone()), ValuesMake::makeCodeTypeNameStr((if (info.isReadOnly.clone()) {literal!("readonly")} else {literal!("writable")}).clone()), ValuesMake::makeInteger(info.lineNumberStart.clone()), ValuesMake::makeInteger(info.columnNumberStart.clone()), ValuesMake::makeInteger(info.lineNumberEnd.clone()), ValuesMake::makeInteger(info.columnNumberEnd.clone())]), '__try0);
+        result = unwrap_break_err!(ValuesMake::makeArray(list![ValuesMake::makeCodeTypeNameStr((unwrap_break_err!(Testsuite::friendly(info.fileName.clone()), '__try0)).clone()), ValuesMake::makeCodeTypeNameStr((if (info.isReadOnly.clone()) {literal!("readonly")} else {literal!("writable")}).clone()), ValuesMake::makeInteger(info.lineNumberStart.clone()), ValuesMake::makeInteger(info.columnNumberStart.clone()), ValuesMake::makeInteger(info.lineNumberEnd.clone()), ValuesMake::makeInteger(info.columnNumberEnd.clone())]), '__try0);
         Ok::<_, anyhow::Error>((result.clone(),))
     } {
         Ok((__try0_o0,)) => {
@@ -3894,7 +3894,7 @@ pub fn getExtendsModifierValue(mut classPath: Arc<Absyn::Path>, mut extendsPath:
             _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
         } };
         ext_mod = __pa1.clone();
-        result = ValuesMake::makeCodeTypeNameStr((Dump::printExpStr(getModificationValue(ext_mod.clone(), modifierPath.clone()).unwrap()).unwrap()).clone());
+        result = ValuesMake::makeCodeTypeNameStr((unwrap_break_err!(Dump::printExpStr(unwrap_break_err!(getModificationValue(ext_mod.clone(), modifierPath.clone()), '__try0)), '__try0)).clone());
         Ok::<_, anyhow::Error>((result.clone(),))
     } {
         Ok((__try0_o0,)) => {
@@ -3916,7 +3916,7 @@ pub fn isExtendsModifierFinal(mut classPath: Arc<Absyn::Path>, mut extendsPath: 
             _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
         } };
         ext_mod = __pa1.clone();
-        result = ValuesMake::makeBoolean(isModifierfinal(ext_mod.clone(), modifierPath.clone()).unwrap());
+        result = ValuesMake::makeBoolean(unwrap_break_err!(isModifierfinal(ext_mod.clone(), modifierPath.clone()), '__try0));
         Ok::<_, anyhow::Error>((result.clone(),))
     } {
         Ok((__try0_o0,)) => {
@@ -4008,7 +4008,7 @@ pub fn getComponentModifierValue(mut classRef: Arc<Absyn::ComponentRef>, mut var
             _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
         } };
         args = __pa1.clone();
-        valueStr = (unwrap_break_err!(Dump::printExpStr(getModificationValue(args.clone(), AbsynUtil::crefToPath(subModRef.clone()).unwrap()).unwrap()), '__try0)).clone();
+        valueStr = (unwrap_break_err!(Dump::printExpStr(unwrap_break_err!(getModificationValue(args.clone(), unwrap_break_err!(AbsynUtil::crefToPath(subModRef.clone()), '__try0)), '__try0)), '__try0)).clone();
         Ok::<_, anyhow::Error>((valueStr.clone(),))
     } {
         Ok((__try0_o0,)) => {
@@ -4270,7 +4270,7 @@ pub fn getComponentBinding(mut path: Arc<Absyn::Path>, mut parameterName: ArcStr
     match '__try0: {
         cls = unwrap_break_err!(ProgramUtil::getPathedClassInProgram(path.clone(), program.clone(), false, false), '__try0);
         component = unwrap_break_err!(InteractiveUtil::getComponentInClass(cls.clone(), (parameterName.clone()).clone()), '__try0);
-        bindingStr = (unwrap_break_err!(Dump::printExpStr(InteractiveUtil::getVariableBindingInComponentitem(component.clone()).unwrap()), '__try0)).clone();
+        bindingStr = (unwrap_break_err!(Dump::printExpStr(unwrap_break_err!(InteractiveUtil::getVariableBindingInComponentitem(component.clone()), '__try0)), '__try0)).clone();
         Ok::<_, anyhow::Error>((bindingStr.clone(),))
     } {
         Ok((__try0_o0,)) => {
@@ -4902,12 +4902,12 @@ pub fn getShortDefinitionBaseClassInformation(mut classPath: Arc<Absyn::Path>, m
         } };
         attr = __pa1.clone();
         ty = __pa2.clone();
-        vals = metamodelica::cons(unwrap_break_err!(ValuesMake::makeArray(InteractiveUtil::dimensionListValues(AbsynUtil::typeSpecDimensions(ty.clone()))?), '__try0), vals.clone());
-        vals = metamodelica::cons(ValuesMake::makeString((InteractiveUtil::attrDirectionStr(attr.clone())?).clone()), vals.clone());
-        vals = metamodelica::cons(ValuesMake::makeString((InteractiveUtil::attrVariabilityStr(attr.clone())?).clone()), vals.clone());
+        vals = metamodelica::cons(unwrap_break_err!(ValuesMake::makeArray(unwrap_break_err!(InteractiveUtil::dimensionListValues(AbsynUtil::typeSpecDimensions(ty.clone())), '__try0)), '__try0), vals.clone());
+        vals = metamodelica::cons(ValuesMake::makeString((unwrap_break_err!(InteractiveUtil::attrDirectionStr(attr.clone()), '__try0)).clone()), vals.clone());
+        vals = metamodelica::cons(ValuesMake::makeString((unwrap_break_err!(InteractiveUtil::attrVariabilityStr(attr.clone()), '__try0)).clone()), vals.clone());
         vals = metamodelica::cons(ValuesMake::makeString((if (attr.streamPrefix.clone()) {literal!("stream")} else {literal!("")}).clone()), vals.clone());
         vals = metamodelica::cons(ValuesMake::makeString((if (attr.flowPrefix.clone()) {literal!("flow")} else {literal!("")}).clone()), vals.clone());
-        vals = metamodelica::cons(ValuesMake::makeCodeTypeName(AbsynUtil::typeSpecPath(ty.clone())?), vals.clone());
+        vals = metamodelica::cons(ValuesMake::makeCodeTypeName(unwrap_break_err!(AbsynUtil::typeSpecPath(ty.clone()), '__try0)), vals.clone());
         Ok::<_, anyhow::Error>((vals.clone(),))
     } {
         Ok((__try0_o0,)) => {
@@ -4935,11 +4935,11 @@ pub fn getExternalFunctionSpecification(mut functionName: Arc<Absyn::Path>, mut 
         } };
         ext_decl = __pa1.clone();
         ann = __pa2.clone();
-        vals = metamodelica::cons(ValuesMake::makeString((Dump::unparseAnnotationOption(ann.clone())?).clone()), vals.clone());
-        vals = metamodelica::cons(ValuesMake::makeString((Dump::unparseAnnotationOption(ext_decl.annotation_.clone())?).clone()), vals.clone());
-        vals = metamodelica::cons(ValuesMake::makeString((Dump::printExpLstStr(ext_decl.args.clone())?).clone()), vals.clone());
+        vals = metamodelica::cons(ValuesMake::makeString((unwrap_break_err!(Dump::unparseAnnotationOption(ann.clone()), '__try0)).clone()), vals.clone());
+        vals = metamodelica::cons(ValuesMake::makeString((unwrap_break_err!(Dump::unparseAnnotationOption(ext_decl.annotation_.clone()), '__try0)).clone()), vals.clone());
+        vals = metamodelica::cons(ValuesMake::makeString((unwrap_break_err!(Dump::printExpLstStr(ext_decl.args.clone()), '__try0)).clone()), vals.clone());
         vals = metamodelica::cons(ValuesMake::makeString((Util::getOptionOrDefault(ext_decl.funcName.clone(), (literal!("")).clone())).clone()), vals.clone());
-        vals = metamodelica::cons(ValuesMake::makeString((Util::applyOptionOrDefault(ext_decl.output_.clone(), (std::sync::Arc::new(Dump::printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>) -> Result<ArcStr> + 'static>), (literal!("")).clone())?).clone()), vals.clone());
+        vals = metamodelica::cons(ValuesMake::makeString((unwrap_break_err!(Util::applyOptionOrDefault(ext_decl.output_.clone(), (std::sync::Arc::new(Dump::printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>) -> Result<ArcStr> + 'static>), (literal!("")).clone()), '__try0)).clone()), vals.clone());
         vals = metamodelica::cons(ValuesMake::makeString((Util::getOptionOrDefault(ext_decl.lang.clone(), (literal!("")).clone())).clone()), vals.clone());
         Ok::<_, anyhow::Error>((vals.clone(),))
     } {
@@ -5119,7 +5119,7 @@ pub fn isPartial(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> boo
 pub fn isReplaceable(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
     let mut res: bool = false;
     match '__try0: {
-        res = AbsynUtil::isElementReplaceable(InteractiveUtil::getPathedElementInProgram(path.clone(), program.clone()).unwrap());
+        res = AbsynUtil::isElementReplaceable(unwrap_break_err!(InteractiveUtil::getPathedElementInProgram(path.clone(), program.clone()), '__try0));
         Ok::<_, anyhow::Error>((res.clone(),))
     } {
         Ok((__try0_o0,)) => {
@@ -5135,7 +5135,7 @@ pub fn isReplaceable(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) ->
 pub fn isRedeclare(mut path: Arc<Absyn::Path>, mut program: Absyn::Program) -> bool {
     let mut res: bool = false;
     match '__try0: {
-        res = AbsynUtil::isElementRedeclare(InteractiveUtil::getPathedElementInProgram(path.clone(), program.clone()).unwrap());
+        res = AbsynUtil::isElementRedeclare(unwrap_break_err!(InteractiveUtil::getPathedElementInProgram(path.clone(), program.clone()), '__try0));
         Ok::<_, anyhow::Error>((res.clone(),))
     } {
         Ok((__try0_o0,)) => {
@@ -5197,9 +5197,9 @@ pub fn isProtected(mut componentName: Arc<Absyn::Path>, mut className: Arc<Absyn
     let mut parts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
     let mut items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
     match '__try0: {
-        parts = AbsynUtil::getClassPartsInClass(ProgramUtil::getPathedClassInProgram(className.clone(), program.clone(), false, false).unwrap());
+        parts = AbsynUtil::getClassPartsInClass(unwrap_break_err!(ProgramUtil::getPathedClassInProgram(className.clone(), program.clone(), false, false), '__try0));
         items = ProgramUtil::getProtectedList(parts.clone());
-        unwrap_break_err!(getComponentsContainsName(AbsynUtil::pathToCref(componentName.clone()).unwrap(), items.clone()), '__try0);
+        unwrap_break_err!(getComponentsContainsName(unwrap_break_err!(AbsynUtil::pathToCref(componentName.clone()), '__try0), items.clone()), '__try0);
         res = true;
         Ok::<_, anyhow::Error>((res.clone(),))
     } {
@@ -5238,7 +5238,7 @@ pub fn isProtectedClass(mut path: Arc<Absyn::Path>, mut className: ArcStr, mut p
     let mut parts: Arc<metamodelica::List<Arc<Absyn::ClassPart>>> = metamodelica::nil();
     let mut items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
     match '__try0: {
-        parts = AbsynUtil::getClassPartsInClass(ProgramUtil::getPathedClassInProgram(path.clone(), program.clone(), false, false).unwrap());
+        parts = AbsynUtil::getClassPartsInClass(unwrap_break_err!(ProgramUtil::getPathedClassInProgram(path.clone(), program.clone(), false, false), '__try0));
         items = ProgramUtil::getProtectedList(parts.clone());
         res = isProtectedClassInElements(items.clone(), (className.clone()).clone());
         Ok::<_, anyhow::Error>((res.clone(),))
@@ -5321,7 +5321,7 @@ pub fn getDerivedClassModifierValue(mut cls: Arc<Absyn::Class>, mut path: Arc<Ab
             _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
         } };
         args = __pa1.clone();
-        value = (unwrap_break_err!(Dump::printExpStr(getModificationValue(args.clone(), path.clone()).unwrap()), '__try0)).clone();
+        value = (unwrap_break_err!(Dump::printExpStr(unwrap_break_err!(getModificationValue(args.clone(), path.clone()), '__try0)), '__try0)).clone();
         Ok::<_, anyhow::Error>((value.clone(),))
     } {
         Ok((__try0_o0,)) => {
@@ -5976,7 +5976,7 @@ pub fn addComponent(mut componentName: ArcStr, mut typeName: Arc<Absyn::Path>, m
             _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
         } };
         ty_path = __pa3.clone();
-        if unwrap_break_err!(AbsynUtil::pathContains(classPath.clone(), (AbsynUtil::pathFirstIdent(ty_path.clone()).unwrap()).clone()), '__try0) {
+        if unwrap_break_err!(AbsynUtil::pathContains(classPath.clone(), (unwrap_break_err!(AbsynUtil::pathFirstIdent(ty_path.clone()), '__try0)).clone()), '__try0) {
             ty_path = typeName.clone();
         }
         cdef = unwrap_break_err!(InteractiveUtil::addToPublic(cdef.clone(), Arc::new(Absyn::ElementItem::ELEMENTITEM { element: Arc::new(Absyn::Element::ELEMENT { finalPrefix: false, redeclareKeywords: redecl.clone(), innerOuter: io.clone(), specification: Arc::new(Absyn::ElementSpec::COMPONENTS { attributes: attr.clone(), typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: ty_path.clone(), arrayDim: None }), components: list![Arc::new(Absyn::ComponentItem { component: Absyn::Component { name: (componentName.clone()).clone(), arrayDim: metamodelica::nil(), modification: modification.clone() }, condition: None, comment: annotation_.clone() })] }), info: info.clone(), constrainClass: None }) })), '__try0);
@@ -6683,7 +6683,7 @@ pub fn getNthComponent(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Prog
     let mut genv: GraphicEnvCache = <GraphicEnvCache as ::std::default::Default>::default();
     let mut cdef: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
     match '__try0: {
-        genv = unwrap_break_err!(InteractiveUtil::createEnvironment(SymbolTable::getAbsyn(), Some(SymbolTable::getSCode().unwrap()), classPath.clone()), '__try0);
+        genv = unwrap_break_err!(InteractiveUtil::createEnvironment(SymbolTable::getAbsyn(), Some(unwrap_break_err!(SymbolTable::getSCode(), '__try0)), classPath.clone()), '__try0);
         cdef = unwrap_break_err!(ProgramUtil::getPathedClassInProgram(classPath.clone(), program.clone(), false, false), '__try0);
         result = unwrap_break_err!(getNthComponent2(cdef.clone(), n.clone(), genv.clone()), '__try0);
         Ok::<_, anyhow::Error>((result.clone(),))
@@ -6775,7 +6775,7 @@ pub fn getElements(mut classPath: Arc<Absyn::Path>, mut useQuotes: bool, mut pro
             ErrorExt::setCheckpoint(literal!("Interactive.getElements"));
         }
         cls = unwrap_break_err!(ProgramUtil::getPathedClassInProgram(classPath.clone(), program.clone(), false, false), '__try0);
-        env = unwrap_break_err!(InteractiveUtil::createEnvironment(program.clone(), Some(SymbolTable::getSCode()?), classPath.clone()), '__try0);
+        env = unwrap_break_err!(InteractiveUtil::createEnvironment(program.clone(), Some(unwrap_break_err!(SymbolTable::getSCode(), '__try0)), classPath.clone()), '__try0);
         if access.clone() >= Access::diagram.clone() {
             elems = InteractiveUtil::getProtectedElementsInClass(cls.clone());
             infos = unwrap_break_err!(InteractiveUtil::getElementsInfo(elems.clone(), false, useQuotes.clone(), onlyComponents.clone(), env.clone(), metamodelica::nil()), '__try0);
@@ -7578,7 +7578,7 @@ pub fn getConnectorCount(mut classPath: Arc<Absyn::Path>, mut program: Absyn::Pr
     let mut cdef: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
     match '__try0: {
         cdef = unwrap_break_err!(ProgramUtil::getPathedClassInProgram(classPath.clone(), program.clone(), false, false), '__try0);
-        result = ValuesMake::makeInteger(countPublicConnectors(classPath.clone(), program.clone(), cdef.clone()).unwrap());
+        result = ValuesMake::makeInteger(unwrap_break_err!(countPublicConnectors(classPath.clone(), program.clone(), cdef.clone()), '__try0));
         Ok::<_, anyhow::Error>((result.clone(),))
     } {
         Ok((__try0_o0,)) => {
@@ -10950,7 +10950,7 @@ pub fn checkAccessAnnotationAndEncryption(mut path: Arc<Absyn::Path>, mut p: Abs
         Deref @ "Access.nonPackageDuplicate" => Access::nonPackageDuplicate.clone(),
         Deref @ "Access.packageText" => Access::packageText.clone(),
         Deref @ "Access.packageDuplicate" => Access::packageDuplicate.clone(),
-        _ if (!(AbsynUtil::pathIsIdent(path.clone()))) => checkAccessAnnotationAndEncryption(AbsynUtil::stripLast(path.clone()).unwrap(), p.clone()),
+        _ if (!(AbsynUtil::pathIsIdent(path.clone()))) => checkAccessAnnotationAndEncryption(unwrap_break_err!(AbsynUtil::stripLast(path.clone()), '__try0), p.clone()),
         _ => Access::documentation.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

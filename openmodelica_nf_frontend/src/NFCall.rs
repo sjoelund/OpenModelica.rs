@@ -2303,7 +2303,7 @@ fn instNormalCall(mut functionName: Arc<Absyn::ComponentRef>, mut functionArgs: 
         Deref @ "array" => BuiltinCall::makeArrayExp(args.clone(), named_args.clone(), info.clone())?,
         _ if (InstContext::inAnnotation(context.clone())) => {
             match '__try0: {
-                (fn_ref, _, _) = unwrap_break_err!(Function::instFunction(functionName.clone(), InstNode::topScope(scope.clone())?, context.clone(), info.clone()), '__try0);
+                (fn_ref, _, _) = unwrap_break_err!(Function::instFunction(functionName.clone(), unwrap_break_err!(InstNode::topScope(scope.clone()), '__try0), context.clone(), info.clone()), '__try0);
                 Ok::<_, anyhow::Error>((fn_ref.clone(),))
             } {
                 Ok((__try0_o0,)) => {

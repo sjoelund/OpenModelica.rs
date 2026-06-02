@@ -614,7 +614,7 @@ fn getDiscAndContEqns(mut inAllVars: Arc<metamodelica::List<BackendDAE::Var>>, m
     let mut mapEqnScalarArray: metamodelica::Array<i32> = Default::default();
     let debug: bool = false;
     match '__try0: {
-        syst = BackendDAEUtil::createEqSystem(BackendVariable::listVar1(inAllVars.clone())?, BackendEquation::listEquation(inAllEqns.clone())?, metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+        syst = BackendDAEUtil::createEqSystem(unwrap_break_err!(BackendVariable::listVar1(inAllVars.clone()), '__try0), unwrap_break_err!(BackendEquation::listEquation(inAllEqns.clone()), '__try0), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
         if debug.clone() {
             unwrap_break_err!(BackendDump::printEqSystem(syst.clone()), '__try0);
         }
@@ -622,7 +622,7 @@ fn getDiscAndContEqns(mut inAllVars: Arc<metamodelica::List<BackendDAE::Var>>, m
         if debug.clone() {
             unwrap_break_err!(BackendDump::dumpAdjacencyMatrix(adjMatrix.clone()), '__try0);
         }
-        let (__pa1, __pa2, true, _, _) = (unwrap_break_err!(Matching::RegularMatching(adjMatrix.clone(), BackendDAEUtil::systemSize(syst.clone())?, BackendDAEUtil::systemSize(syst.clone())?), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
+        let (__pa1, __pa2, true, _, _) = (unwrap_break_err!(Matching::RegularMatching(adjMatrix.clone(), unwrap_break_err!(BackendDAEUtil::systemSize(syst.clone()), '__try0), unwrap_break_err!(BackendDAEUtil::systemSize(syst.clone()), '__try0)), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
         assignVarEqn = __pa1.clone();
         assignEqnVar = __pa2.clone();
         if debug.clone() {

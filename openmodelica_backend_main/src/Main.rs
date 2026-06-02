@@ -651,7 +651,7 @@ pub fn setWindowsPaths(mut inOMHome: ArcStr) -> Result<()> {
 
 fn setDefaultCC() -> () {
     if '__try0: {
-        System::setCCompiler((System::readEnv((literal!("CC")).clone()).unwrap()).clone());
+        System::setCCompiler((unwrap_break_err!(System::readEnv((literal!("CC")).clone()), '__try0)).clone());
         Ok::<(), anyhow::Error>(())
     }.is_err() {
     }

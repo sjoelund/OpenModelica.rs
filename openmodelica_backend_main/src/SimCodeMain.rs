@@ -351,10 +351,10 @@ fn runTplWriteFile(mut func: Arc<dyn ::std::ops::Fn(Tpl::Text) -> Result<Tpl::Te
         unwrap_break_err!(SimCodeUtil::resetFunctionIndex(), '__try0);
         SimCodeFunctionUtil::codegenResetTryThrowIndex();
         if unwrap_break_err!(Flags::isSet(Flags::GEN_DEBUG_SYMBOLS.clone()), '__try0) {
-            unwrap_break_err!(Tpl::textFileConvertLines(Tpl::tplCallWithFailErrorNoArg(func.clone(), Tpl::emptyTxt.clone()).unwrap(), (file.clone()).clone()), '__try0);
+            unwrap_break_err!(Tpl::textFileConvertLines(unwrap_break_err!(Tpl::tplCallWithFailErrorNoArg(func.clone(), Tpl::emptyTxt.clone()), '__try0), (file.clone()).clone()), '__try0);
         } else {
             nErr = Error::getNumErrorMessages();
-            unwrap_break_err!(Tpl::closeFile(Tpl::tplCallWithFailErrorNoArg(func.clone(), Tpl::redirectToFile(Tpl::emptyTxt.clone(), (file.clone()).clone()).unwrap()).unwrap()), '__try0);
+            unwrap_break_err!(Tpl::closeFile(unwrap_break_err!(Tpl::tplCallWithFailErrorNoArg(func.clone(), unwrap_break_err!(Tpl::redirectToFile(Tpl::emptyTxt.clone(), (file.clone()).clone()), '__try0)), '__try0)), '__try0);
             unwrap_break_err!(Tpl::failIfTrue(Error::getNumErrorMessages() > nErr.clone()), '__try0);
         }
         res = (true, SimCodeUtil::getFunctionIndex());

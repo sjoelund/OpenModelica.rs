@@ -199,7 +199,7 @@ pub fn scalarizeVariable(mut var: Arc<Variable::NFVariable>, mut vars: Arc<metam
             bind_src = Binding::source(binding.clone());
             confidence = Binding::confidence(binding.clone());
             if has_binding.clone() {
-                binding_iter = unwrap_break_err!(ExpressionIterator::fromExp(Binding::getTypedExp(binding.clone())?, false, false), '__try0);
+                binding_iter = unwrap_break_err!(ExpressionIterator::fromExp(unwrap_break_err!(Binding::getTypedExp(binding.clone()), '__try0), false, false), '__try0);
                 bind_var = unwrap_break_err!(Binding::variability(binding.clone()), '__try0);
                 if !(forceScalarize.clone()) && unwrap_break_err!(ExpressionIterator::isSubscriptedArrayCall(binding_iter.clone(), true), '__try0) && !(unwrap_break_err!(Flags::getConfigBool(Flags::BUILDING_FMU.clone()), '__try0)) && !(variableHasForcedScalarAttribute(var.clone())) {
                     vars = metamodelica::cons(var.clone(), vars.clone());
@@ -267,7 +267,7 @@ pub fn scalarizeBackendVariable(mut var: Arc<Variable::NFVariable>, mut indices:
         elem_ty = Type::arrayElementType(var.ty.clone());
         backend_attributes = unwrap_break_err!(BackendInfo::scalarize(var.backendinfo.clone(), (crefs.clone().len() as i32)), '__try0);
         if Binding::isBound(var.binding.clone()) {
-            binding_iter = unwrap_break_err!(ExpressionIterator::fromExp(Binding::getTypedExp(var.binding.clone())?, true, false), '__try0);
+            binding_iter = unwrap_break_err!(ExpressionIterator::fromExp(unwrap_break_err!(Binding::getTypedExp(var.binding.clone()), '__try0), true, false), '__try0);
             bind_var = unwrap_break_err!(Binding::variability(var.binding.clone()), '__try0);
             bind_src = Binding::source(var.binding.clone());
             confidence = Binding::confidence(var.binding.clone());

@@ -974,10 +974,10 @@ fn elabExp_Cons(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: A
     ty2 = __pa7.clone();
     c2 = __pa8.clone();
     match '__try10: {
-        ty1 = unwrap_break_err!(Types::getUniontypeIfMetarecordReplaceAllSubtypes(Types::getPropType(prop1.clone())?), '__try10);
+        ty1 = unwrap_break_err!(Types::getUniontypeIfMetarecordReplaceAllSubtypes(unwrap_break_err!(Types::getPropType(prop1.clone()), '__try10)), '__try10);
         ty2 = unwrap_break_err!(Types::getUniontypeIfMetarecordReplaceAllSubtypes(ty2.clone()), '__try10);
         c1 = unwrap_break_err!(Types::propAllConst(prop1.clone()), '__try10);
-        ty = unwrap_break_err!(Types::getUniontypeIfMetarecordReplaceAllSubtypes(Types::superType(Types::boxIfUnboxedType(ty1.clone())?, Types::boxIfUnboxedType(ty2.clone())?)?), '__try10);
+        ty = unwrap_break_err!(Types::getUniontypeIfMetarecordReplaceAllSubtypes(unwrap_break_err!(Types::superType(unwrap_break_err!(Types::boxIfUnboxedType(ty1.clone()), '__try10), unwrap_break_err!(Types::boxIfUnboxedType(ty2.clone()), '__try10)), '__try10)), '__try10);
         (exp1, _) = unwrap_break_err!(Types::matchType(exp1.clone(), ty1.clone(), ty.clone(), true), '__try10);
         ty = Arc::new(DAE::Type::T_METALIST { ty: ty.clone() });
         (exp2, _) = unwrap_break_err!(Types::matchType(exp2.clone(), ty.clone(), Arc::new(DAE::Type::T_METALIST { ty: ty2.clone() }), true), '__try10);
@@ -1480,7 +1480,7 @@ fn elabCallReduction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inR
         _ => unwrap_break_err!(AbsynUtil::crefToPath(inReductionFn.clone()), '__try0),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        (outCache, exp, exp_ty, res_ty, v, r#fn) = unwrap_break_err!(reductionType(outCache.clone(), inEnv.clone(), r#fn.clone(), exp.clone(), exp_ty.clone(), Types::unboxedType(exp_ty.clone())?, dims.clone(), has_guard_exp.clone(), inInfo.clone()), '__try0);
+        (outCache, exp, exp_ty, res_ty, v, r#fn) = unwrap_break_err!(reductionType(outCache.clone(), inEnv.clone(), r#fn.clone(), exp.clone(), exp_ty.clone(), unwrap_break_err!(Types::unboxedType(exp_ty.clone()), '__try0), dims.clone(), has_guard_exp.clone(), inInfo.clone()), '__try0);
         outProperties = DAE::Properties::PROP { type_: exp_ty.clone(), constFlag: c.clone() };
         fold_id = (Util::getTempVariableIndex()).clone();
         res_id = (Util::getTempVariableIndex()).clone();
@@ -3143,13 +3143,13 @@ fn elabMatrixComma(mut inExpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inPro
             dim1 = __pa18.clone();
             dim2 = __pa19.clone();
             if !(unwrap_break_err!(Expression::dimensionsEqual(dim1.clone(), outDim1.clone()), '__try0)) {
-                unwrap_break_err!(Error::addSourceMessageAndFail(Error::COMMA_OPERATOR_DIFFERENT_SIZES.clone(), list![(ExpressionBasics::printExpStr(listHead(inExpl.clone())?)?).clone(), (ExpressionBasics::dimensionString(outDim1.clone())?).clone(), (ExpressionBasics::printExpStr(exp.clone())?).clone(), (ExpressionBasics::dimensionString(dim1.clone())?).clone()], inInfo.clone()), '__try0);
+                unwrap_break_err!(Error::addSourceMessageAndFail(Error::COMMA_OPERATOR_DIFFERENT_SIZES.clone(), list![(unwrap_break_err!(ExpressionBasics::printExpStr(unwrap_break_err!(listHead(inExpl.clone()), '__try0)), '__try0)).clone(), (unwrap_break_err!(ExpressionBasics::dimensionString(outDim1.clone()), '__try0)).clone(), (unwrap_break_err!(ExpressionBasics::printExpStr(exp.clone()), '__try0)).clone(), (unwrap_break_err!(ExpressionBasics::dimensionString(dim1.clone()), '__try0)).clone()], inInfo.clone()), '__try0);
                 unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
             }
             outDim2 = Expression::dimensionsAdd(dim2.clone(), outDim2.clone());
             outProperties = unwrap_break_err!(Types::matchWithPromote(prop.clone(), outProperties.clone(), inHaveReal.clone()), '__try0);
         }
-        sty = Expression::liftArrayLeftList(Expression::unliftArrayX(ty.clone(), 2)?, list![outDim1.clone(), outDim2.clone()]);
+        sty = Expression::liftArrayLeftList(unwrap_break_err!(Expression::unliftArrayX(ty.clone(), 2), '__try0), list![outDim1.clone(), outDim2.clone()]);
         outExp = Arc::new(DAE::Exp::ARRAY { ty: sty.clone(), scalar: false, array: accum_expl.clone().reverse() });
         Ok::<_, anyhow::Error>((accum_expl.clone(), exp.clone(), outDim1.clone(), outDim2.clone(), outExp.clone(), outProperties.clone(), prop.clone(), rest_expl.clone(), rest_props.clone(), sty.clone(), ty.clone()))
     } {
@@ -7084,7 +7084,7 @@ fn elabCallArgsEvaluateArrayLength(mut inCache: FCore::Cache, mut env: FCore::Gr
     let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     match '__try0: {
-        let true = (unwrap_break_err!(FGraph::checkScopeType(list![FGraph::lastScopeRef(env.clone()).unwrap()], Some(crate::FCore::ScopeType::CLASS_SCOPE)), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
+        let true = (unwrap_break_err!(FGraph::checkScopeType(list![unwrap_break_err!(FGraph::lastScopeRef(env.clone()), '__try0)], Some(crate::FCore::ScopeType::CLASS_SCOPE)), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
         ty = unwrap_break_err!(Types::getPropType(inProperties.clone()), '__try0);
         let (__pa1, (__pa2, _)) = unwrap_break_err!(Types::traverseType(ty.clone(), (inCache.clone(), env.clone()), (std::sync::Arc::new(elabCallArgsEvaluateArrayLength2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, (FCore::Cache, FCore::Graph)) -> Result<(Arc<DAE::Type>, (FCore::Cache, FCore::Graph))> + 'static>)), '__try0);
         ty = __pa1.clone();
@@ -8707,7 +8707,7 @@ fn elabTypes(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: 
             let __x = (::match_deref::match_deref! { match &(p.clone()) {
         funcarg => {
             let mut funcarg = (*funcarg).clone();
-            assign_field!(funcarg.ty = unwrap_break_err!(Types::unboxedType(Types::fixPolymorphicRestype(p.ty.clone(), pb.clone(), inInfo.clone())?), '__try6));
+            assign_field!(funcarg.ty = unwrap_break_err!(Types::unboxedType(unwrap_break_err!(Types::fixPolymorphicRestype(p.ty.clone(), pb.clone(), inInfo.clone()), '__try6)), '__try6));
             funcarg.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

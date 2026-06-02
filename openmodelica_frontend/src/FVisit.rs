@@ -166,7 +166,7 @@ pub fn visit(mut inVisited: Visited, mut inRef: Ref) -> Result<Visited> {
             let mut outVisited: FCore::Visited = outVisited.clone();
             id = FNode::id(FNode::fromRef(inRef.clone())?)?;
             if '__try0: {
-                unwrap_break_err!(avlTreeGet(tree(inVisited.clone())?, id.clone()), '__try0);
+                unwrap_break_err!(avlTreeGet(unwrap_break_err!(tree(inVisited.clone()), '__try0), id.clone()), '__try0);
                 Ok::<(), anyhow::Error>(())
             }.is_ok() { bail!("failure(): body succeeded") }
             let (FCore::V { next: __pa1, .. }, __pa2) = (next(inVisited.clone())?) else { bail!("pattern mismatch") };

@@ -234,14 +234,14 @@ pub fn detect(mut eqn: Arc<Equation::Equation>, mut cref_to_solve: Arc<Component
                 let () = (match opt_factor.clone() {
         Some(mut factor) if (factor.clone() != 0) => {
             if '__try0: {
-                let __pa1 = ::match_deref::match_deref! { match &(unwrap_break_err!(getShift(Subscript::toExp(sub_to_solve.clone())?, iter.clone()), '__try0)) {
+                let __pa1 = ::match_deref::match_deref! { match &(unwrap_break_err!(getShift(unwrap_break_err!(Subscript::toExp(sub_to_solve.clone()), '__try0), iter.clone()), '__try0)) {
                     Deref @ Expression::INTEGER { value: __pa1 } => __pa1.clone(),
                     _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
                 } };
                 shift_value = __pa1.clone();
                 for mut sub in &*local_subs.clone() {
                     let mut sub = sub.clone();
-                    let __pa2 = ::match_deref::match_deref! { match &(unwrap_break_err!(getShift(Subscript::toExp(sub.clone())?, iter.clone()), '__try0)) {
+                    let __pa2 = ::match_deref::match_deref! { match &(unwrap_break_err!(getShift(unwrap_break_err!(Subscript::toExp(sub.clone()), '__try0), iter.clone()), '__try0)) {
                         Deref @ Expression::INTEGER { value: __pa2 } => __pa2.clone(),
                         _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
                     } };
@@ -643,7 +643,7 @@ fn addVariableConstraint(mut cref: Arc<ComponentRef::NFComponentRef>, mut eqn: A
         sub_exp = Subscript::toExp(sub.clone())?;
         r#const = Arc::new(Expression::NFExpression::MULTARY { arguments: list![sub_exp.clone()], inv_arguments: list![Dimension::sizeExp(dim.clone())?], operator: op.clone() });
         match '__try0: {
-            unwrap_break_err!(addConstraint(r#const.clone(), replacements.clone(), c2pi.clone(), (std::sync::Arc::new(Expression::isNonPositive) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentRef::toString(cref.clone())?); __mm_s.push_str(&*literal!(" (variable)")); ArcStr::from(__mm_s) }).clone(), (literal!(">=")).clone()), '__try0);
+            unwrap_break_err!(addConstraint(r#const.clone(), replacements.clone(), c2pi.clone(), (std::sync::Arc::new(Expression::isNonPositive) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*unwrap_break_err!(ComponentRef::toString(cref.clone()), '__try0)); __mm_s.push_str(&*literal!(" (variable)")); ArcStr::from(__mm_s) }).clone(), (literal!(">=")).clone()), '__try0);
             Ok::<(), anyhow::Error>(())
         } {
             Ok(()) => {}
@@ -654,7 +654,7 @@ fn addVariableConstraint(mut cref: Arc<ComponentRef::NFComponentRef>, mut eqn: A
         }
         r#const = Arc::new(Expression::NFExpression::MULTARY { arguments: list![Arc::new(Expression::NFExpression::INTEGER { value: 1 })], inv_arguments: list![Dimension::sizeExp(dim.clone())?], operator: op.clone() });
         match '__try1: {
-            unwrap_break_err!(addConstraint(r#const.clone(), replacements.clone(), c2pi.clone(), (std::sync::Arc::new(Expression::isNonPositive) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentRef::toString(cref.clone())?); __mm_s.push_str(&*literal!(" (variable)")); ArcStr::from(__mm_s) }).clone(), (literal!(">=")).clone()), '__try1);
+            unwrap_break_err!(addConstraint(r#const.clone(), replacements.clone(), c2pi.clone(), (std::sync::Arc::new(Expression::isNonPositive) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*unwrap_break_err!(ComponentRef::toString(cref.clone()), '__try1)); __mm_s.push_str(&*literal!(" (variable)")); ArcStr::from(__mm_s) }).clone(), (literal!(">=")).clone()), '__try1);
             Ok::<(), anyhow::Error>(())
         } {
             Ok(()) => {}

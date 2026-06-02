@@ -280,7 +280,7 @@ pub fn symbolicJacobianDAE(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Res
             unwrap_break_err!(execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SymbolicJacobian.symbolicJacobianDAE")); __mm_s.push_str(&*literal!("-> get all vars ")); ArcStr::from(__mm_s) }).clone()), '__try0);
         }
         if unwrap_break_err!(Flags::getConfigString(Flags::GENERATE_DYNAMIC_JACOBIAN.clone()), '__try0) == literal!("symbolic") {
-            (symjac, funcs, sparsePattern, coloredCols, nonlinearPattern) = unwrap_break_err!(generateGenericJacobian(DAE.clone(), inDepVars.clone(), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()), shared.globalKnownVars.clone(), resVars.clone(), BackendVariable::varList(v.clone())?, (literal!("A")).clone(), false, true), '__try0);
+            (symjac, funcs, sparsePattern, coloredCols, nonlinearPattern) = unwrap_break_err!(generateGenericJacobian(DAE.clone(), inDepVars.clone(), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()), shared.globalKnownVars.clone(), resVars.clone(), unwrap_break_err!(BackendVariable::varList(v.clone()), '__try0), (literal!("A")).clone(), false, true), '__try0);
             if debug.clone() {
                 unwrap_break_err!(execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SymbolicJacobian.symbolicJacobianDAE")); __mm_s.push_str(&*literal!("-> generateGenericJacobian ")); ArcStr::from(__mm_s) }).clone()), '__try0);
             }
@@ -1860,7 +1860,7 @@ pub fn createFMIModelDerivatives(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) 
         varlst = unwrap_break_err!(BackendVariable::varList(v.clone()), '__try0);
         knvarlst = unwrap_break_err!(BackendVariable::varList(globalKnownVars.clone()), '__try0);
         states = if (unwrap_break_err!(Config::languageStandardAtLeast(Config::LanguageStandard::_3_3.clone()), '__try0)) {unwrap_break_err!(BackendVariable::getAllClockedStatesFromVariables(v.clone()), '__try0)} else {metamodelica::nil()};
-        states = listAppend(BackendVariable::getAllStateVarFromVariables(v.clone())?, states.clone());
+        states = listAppend(unwrap_break_err!(BackendVariable::getAllStateVarFromVariables(v.clone()), '__try0), states.clone());
         inputvars = unwrap_break_err!(List::select(knvarlst.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isVarOnTopLevelAndInput, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>)), '__try0);
         outputvars = unwrap_break_err!(List::select(varlst.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isVarOnTopLevelAndOutput, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>)), '__try0);
         indepVars = listAppend(states.clone(), inputvars.clone());
@@ -1882,7 +1882,7 @@ pub fn createFMIModelDerivatives(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) 
             inputvarsarr = unwrap_break_err!(BackendVariable::listVar1(inputvars.clone()), '__try0);
             paramvarsarr = unwrap_break_err!(BackendVariable::listVar1(paramvars.clone()), '__try0);
             depVarsArr = unwrap_break_err!(BackendVariable::listVar1(depVars.clone()), '__try0);
-            (outJacobian, outFunctionTree, sparsePattern, sparseColoring, nonlinearPattern) = unwrap_break_err!(generateGenericJacobian(backendDAE.clone(), indepVars.clone(), statesarr.clone(), inputvarsarr.clone(), paramvarsarr.clone(), depVarsArr.clone(), varlst.clone(), (literal!("FMIDER")).clone(), Flags::isSet(Flags::DIS_SYMJAC_FMI20.clone())?, false), '__try0);
+            (outJacobian, outFunctionTree, sparsePattern, sparseColoring, nonlinearPattern) = unwrap_break_err!(generateGenericJacobian(backendDAE.clone(), indepVars.clone(), statesarr.clone(), inputvarsarr.clone(), paramvarsarr.clone(), depVarsArr.clone(), varlst.clone(), (literal!("FMIDER")).clone(), unwrap_break_err!(Flags::isSet(Flags::DIS_SYMJAC_FMI20.clone()), '__try0), false), '__try0);
             if unwrap_break_err!(Flags::isSet(Flags::JAC_DUMP2.clone()), '__try0) {
                 unwrap_break_err!(BackendDump::dumpSparsityPattern(sparsePattern.clone(), (literal!("FMI sparsity")).clone()), '__try0);
             }
@@ -1955,7 +1955,7 @@ pub fn createFMIModelDerivativesForInitialization(mut initDAE: Arc<BackendDAE::B
                 eqn = Arc::new(BackendDAE::Equation::EQUATION { exp: lhs.clone(), scalar: rhs.clone(), source: DAE::emptyElementSource().clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_BINDING.clone() });
                 unwrap_break_err!(BackendEquation::add(eqn.clone(), currentSystem.orderedEqs.clone()), '__try0);
                 if !(BackendVariable::containsCref(var.varName.clone(), currentSystem.orderedVars.clone())) {
-                    currentSystem = unwrap_break_err!(BackendVariable::addVarDAE(BackendVariable::makeVar(var.varName.clone())?, currentSystem.clone()), '__try0);
+                    currentSystem = unwrap_break_err!(BackendVariable::addVarDAE(unwrap_break_err!(BackendVariable::makeVar(var.varName.clone()), '__try0), currentSystem.clone()), '__try0);
                 }
             }
         }
@@ -2011,7 +2011,7 @@ pub fn createFMIModelDerivativesForInitialization(mut initDAE: Arc<BackendDAE::B
         eqSyst = __pa4.clone();
         v = eqSyst.orderedVars.clone();
         states = if (unwrap_break_err!(Config::languageStandardAtLeast(Config::LanguageStandard::_3_3.clone()), '__try0)) {unwrap_break_err!(BackendVariable::getAllClockedStatesFromVariables(v.clone()), '__try0)} else {metamodelica::nil()};
-        states = listAppend(BackendVariable::getAllStateVarFromVariables(v.clone())?, states.clone());
+        states = listAppend(unwrap_break_err!(BackendVariable::getAllStateVarFromVariables(v.clone()), '__try0), states.clone());
         varlst = unwrap_break_err!(BackendVariable::varList(currentSystem.orderedVars.clone()), '__try0);
         knvarlst = unwrap_break_err!(BackendVariable::varList(simDAE.shared.globalKnownVars.clone()), '__try0);
         inputvars = unwrap_break_err!(List::select(knvarlst.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isVarOnTopLevelAndInput, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>)), '__try0);
@@ -2027,7 +2027,7 @@ pub fn createFMIModelDerivativesForInitialization(mut initDAE: Arc<BackendDAE::B
             inputvarsarr = unwrap_break_err!(BackendVariable::listVar1(inputvars.clone()), '__try0);
             paramvarsarr = unwrap_break_err!(BackendVariable::listVar1(paramvars.clone()), '__try0);
             depVarsArr = unwrap_break_err!(BackendVariable::listVar1(depVars.clone()), '__try0);
-            (outJacobian, _, _, _, _) = unwrap_break_err!(generateGenericJacobian(backendDAE_1.clone(), indepVars.clone(), statesarr.clone(), inputvarsarr.clone(), paramvarsarr.clone(), depVarsArr.clone(), varlst.clone(), (literal!("FMIDERINIT")).clone(), Flags::isSet(Flags::DIS_SYMJAC_FMI20.clone())?, false), '__try0);
+            (outJacobian, _, _, _, _) = unwrap_break_err!(generateGenericJacobian(backendDAE_1.clone(), indepVars.clone(), statesarr.clone(), inputvarsarr.clone(), paramvarsarr.clone(), depVarsArr.clone(), varlst.clone(), (literal!("FMIDERINIT")).clone(), unwrap_break_err!(Flags::isSet(Flags::DIS_SYMJAC_FMI20.clone()), '__try0), false), '__try0);
             if unwrap_break_err!(Flags::isSet(Flags::JAC_DUMP2.clone()), '__try0) {
                 unwrap_break_err!(BackendDump::dumpSparsityPattern(sparsePattern_.clone(), (literal!("FMI sparsity")).clone()), '__try0);
             }
@@ -2234,14 +2234,14 @@ fn generateGenericJacobian(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut in
             outJacobian = Some(symbolicJacobian.clone());
             (jacDAE, _, _, _, _, _) = symbolicJacobian.clone();
             jacDiffedVars = unwrap_break_err!(getJacobianResiduals(jacDAE.clone()), '__try0);
-            (nonlinearPattern, _) = unwrap_break_err!(generateSparsePattern(BackendDAEUtil::copyBackendDAE(jacDAE.clone())?, inDiffVars.clone(), jacDiffedVars.clone(), true), '__try0);
+            (nonlinearPattern, _) = unwrap_break_err!(generateSparsePattern(unwrap_break_err!(BackendDAEUtil::copyBackendDAE(jacDAE.clone()), '__try0), inDiffVars.clone(), jacDiffedVars.clone(), true), '__try0);
             nonlinearPattern = stripPartialDerNonlinearPattern(nonlinearPattern.clone());
         } else {
             outJacobian = None;
             nonlinearPattern = BackendDAE::emptyNonlinearPattern().clone();
         }
         if !(stringEq((inName.clone()).clone(), (literal!("FMIDERINIT")).clone())) {
-            (outSparsePattern, outSparseColoring) = unwrap_break_err!(generateSparsePattern(inBackendDAE.clone(), inDiffVars.clone(), BackendVariable::varList(inDifferentiatedVars.clone())?, false), '__try0);
+            (outSparsePattern, outSparseColoring) = unwrap_break_err!(generateSparsePattern(inBackendDAE.clone(), inDiffVars.clone(), unwrap_break_err!(BackendVariable::varList(inDifferentiatedVars.clone()), '__try0), false), '__try0);
         }
         Ok::<_, anyhow::Error>((nonlinearPattern.clone(), outFunctionTree.clone(), outJacobian.clone()))
     } {
@@ -2749,7 +2749,7 @@ pub fn prepareTornStrongComponentData(mut inVars: BackendDAE::Variables, mut inE
         iterationvars = ({
         let mut __acc: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
         for mut e in (inIterationvarsInts.clone()).into_iter().cloned() {
-            let __x = BackendVariable::transformXToXd(BackendVariable::getVarAt(inVars.clone(), e.clone())?);
+            let __x = BackendVariable::transformXToXd(unwrap_break_err!(BackendVariable::getVarAt(inVars.clone(), e.clone()), '__try0));
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -2780,7 +2780,7 @@ pub fn prepareTornStrongComponentData(mut inVars: BackendDAE::Variables, mut inE
         ovarsLst = ({
         let mut __acc: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
         for mut e in (otherVarsInts.clone()).into_iter().cloned() {
-            let __x = BackendVariable::transformXToXd(BackendVariable::getVarAt(inVars.clone(), e.clone())?);
+            let __x = BackendVariable::transformXToXd(unwrap_break_err!(BackendVariable::getVarAt(inVars.clone(), e.clone()), '__try0));
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -2877,7 +2877,7 @@ fn calculateTearingSetJacobian(mut inVars: BackendDAE::Variables, mut inEqns: Ar
         if debug.clone() {
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("*** ")); __mm_s.push_str(&*prename.clone()); __mm_s.push_str(&*literal!("-JAC *** prepared all data for differentiation at time: ")); __mm_s.push_str(&*realString(clock())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
-        if !(isLinear.clone() || unwrap_break_err!(checkForSymbolicJacobian(BackendEquation::equationList(resEqns.clone())?, BackendEquation::equationList(oEqns.clone())?, (name.clone()).clone()), '__try0)) {
+        if !(isLinear.clone() || unwrap_break_err!(checkForSymbolicJacobian(unwrap_break_err!(BackendEquation::equationList(resEqns.clone()), '__try0), unwrap_break_err!(BackendEquation::equationList(oEqns.clone()), '__try0), (name.clone()).clone()), '__try0)) {
             onlySparsePattern = true;
         }
         (outJacobian, outShared) = unwrap_break_err!(getSymbolicJacobian(diffVars.clone(), resEqns.clone(), resVars.clone(), oEqns.clone(), oVars.clone(), inShared.clone(), inVars.clone(), (name.clone()).clone(), onlySparsePattern.clone()), '__try0);
@@ -3729,7 +3729,7 @@ fn calculateJacobianRow2(mut inExp: Arc<DAE::Exp>, mut vars: BackendDAE::Variabl
                 dcr = ComponentReference::crefPrefixDer(cr.clone());
                 dcrexp = unwrap_break_err!(Expression::crefExp(cr.clone()), '__try0);
                 dcrexp = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("der")).clone() }), expLst: list![dcrexp.clone()], attr: DAE::callAttrBuiltinReal().clone() });
-                (e, _) = unwrap_break_err!(Expression::replaceExp(inExp.clone(), dcrexp.clone(), Expression::crefExp(dcr.clone())?), '__try0);
+                (e, _) = unwrap_break_err!(Expression::replaceExp(inExp.clone(), dcrexp.clone(), unwrap_break_err!(Expression::crefExp(dcr.clone()), '__try0)), '__try0);
             }
             (e_1, oShared) = unwrap_break_err!(Differentiate::differentiateExpCrefFullJacobian(inExp.clone(), cr.clone(), vars.clone(), oShared.clone()), '__try0);
             if !(unwrap_break_err!(Expression::isZero(e_1.clone()), '__try0)) {
@@ -4511,7 +4511,7 @@ pub mod LinearJacobian {
                 for mut loopVar in &*loopVars.clone() {
                     let mut loopVar = loopVar.clone();
                     (var, var_index) = loopVar.clone();
-                    pDer = unwrap_break_err!(Differentiate::differentiateExpSolve(res.clone(), BackendVariable::varCref(var.clone())?, None), '__try0);
+                    pDer = unwrap_break_err!(Differentiate::differentiateExpSolve(res.clone(), unwrap_break_err!(BackendVariable::varCref(var.clone()), '__try0), None), '__try0);
                     (pDer, _) = unwrap_break_err!(ExpressionSimplify::simplify(pDer.clone()), '__try0);
                     constReal = unwrap_break_err!(eFunc(pDer.clone()), '__try0);
                     if !(realEq(constReal.clone(), metamodelica::OrderedFloat(0.0_f64))) {

@@ -363,10 +363,10 @@ pub fn getImplicitBinding(mut component: Arc<NFComponent>, mut scope: Arc<InstNo
             match '__try0: {
                 if isTyped(component.clone()) {
                     record_exp = unwrap_break_err!(Class::makeRecordExp(cls_node.clone(), scope.clone(), true), '__try0);
-                    binding = unwrap_break_err!(Binding::makeTyped(record_exp.clone(), Binding::EachType::NOT_EACH.clone(), Binding::Source::GENERATED.clone(), info(component.clone()).unwrap(), Binding::EvalState::NOT_EVALUATED.clone(), Binding::NO_CONFIDENCE.clone()), '__try0);
+                    binding = unwrap_break_err!(Binding::makeTyped(record_exp.clone(), Binding::EachType::NOT_EACH.clone(), Binding::Source::GENERATED.clone(), unwrap_break_err!(info(component.clone()), '__try0), Binding::EvalState::NOT_EVALUATED.clone(), Binding::NO_CONFIDENCE.clone()), '__try0);
                 } else {
                     record_exp = unwrap_break_err!(Class::makeRecordExp(cls_node.clone(), scope.clone(), false), '__try0);
-                    binding = Binding::makeUntyped(record_exp.clone(), scope.clone(), Binding::EachType::NOT_EACH.clone(), Binding::Source::GENERATED.clone(), info(component.clone()).unwrap(), Binding::NO_CONFIDENCE.clone());
+                    binding = Binding::makeUntyped(record_exp.clone(), scope.clone(), Binding::EachType::NOT_EACH.clone(), Binding::Source::GENERATED.clone(), unwrap_break_err!(info(component.clone()), '__try0), Binding::NO_CONFIDENCE.clone());
                 }
                 Ok::<_, anyhow::Error>((binding.clone(), record_exp.clone()))
             } {
@@ -388,7 +388,7 @@ pub fn getTypeAttributeBinding(mut component: Arc<NFComponent>, mut attrName: Ar
     let mut start_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut start_comp: Arc<NFComponent> = Arc::new(NFComponent::WILD);
     match '__try0: {
-        (start_node, _) = unwrap_break_err!(Class::lookupElement((attrName.clone()).clone(), InstNode::getClass(classInstance(component.clone())).unwrap()), '__try0);
+        (start_node, _) = unwrap_break_err!(Class::lookupElement((attrName.clone()).clone(), unwrap_break_err!(InstNode::getClass(classInstance(component.clone())), '__try0)), '__try0);
         start_comp = unwrap_break_err!(InstNode::component(start_node.clone()), '__try0);
         let true = (isTypeAttribute(start_comp.clone())) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
         binding = getBinding(start_comp.clone());

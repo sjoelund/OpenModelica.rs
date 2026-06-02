@@ -170,7 +170,7 @@ pub fn removeReplacement(mut repl: VariableReplacements, mut inSrc: Arc<DAE::Com
     }
     if '__try0: {
         unwrap_break_err!(UnorderedMap::add(inSrc.clone(), None, repl.hashTable.clone()), '__try0);
-        unwrap_break_err!(removeReplacementInv(repl.invHashTable.clone(), Util::getOption(dst_opt.clone())?), '__try0);
+        unwrap_break_err!(removeReplacementInv(repl.invHashTable.clone(), unwrap_break_err!(Util::getOption(dst_opt.clone()), '__try0)), '__try0);
         Ok::<(), anyhow::Error>(())
     }.is_err() {
         Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("-BackendVarTransform.removeReplacement failed for ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(inSrc.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;

@@ -125,7 +125,7 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NB
             let mut initialVars = (*initialVars).clone();
             let mut variables = (*variables).clone();
             clonedEqns = unwrap_break_err!(BEquation::EquationPointers::clone(equations.clone(), false), '__try0);
-            initialEqs = unwrap_break_err!(BEquation::EquationPointers::addList(BEquation::EquationPointers::toList(initialEqs.clone())?, clonedEqns.clone()), '__try0);
+            initialEqs = unwrap_break_err!(BEquation::EquationPointers::addList(unwrap_break_err!(BEquation::EquationPointers::toList(initialEqs.clone()), '__try0), clonedEqns.clone()), '__try0);
             unwrap_break_err!(BEquation::EquationPointers::mapRemovePtr(initialEqs.clone(), (std::sync::Arc::new(fnptr!(BEquation::Equation::isClocked, Pointer::Pointer<Arc<Equation::Equation>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>)), '__try0);
             unwrap_break_err!(BEquation::EquationPointers::mapPtr(initialEqs.clone(), (std::sync::Arc::new(replaceClockedFunctionsEqn) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<Pointer::Pointer<Arc<Equation::Equation>>> + 'static>)), '__try0);
             initialEqs = unwrap_break_err!(BEquation::EquationPointers::map(initialEqs.clone(), (std::sync::Arc::new({ let __pe_b1 = Arc::new(crate::NBEquation::Iterator::EMPTY); let __pe_b2 = cref_map.clone(); move |__pe_a0| removeWhenEquation(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>)), '__try0);
@@ -150,7 +150,7 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NB
                 initials = unwrap_break_err!(BEquation::EquationPointers::compress(initialEqs.clone()), '__try0)
             );
             assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN; eqData = eqData.clone());
-            unwrap_break_err!(BackendDAE::setVarData(bdae.clone(), BVariable::VarData::addTypedList(varData.clone(), UnorderedSet::toList(new_iters.clone()), BVariable::VarData::VarType::ITERATOR.clone())?), '__try0)
+            unwrap_break_err!(BackendDAE::setVarData(bdae.clone(), unwrap_break_err!(BVariable::VarData::addTypedList(varData.clone(), UnorderedSet::toList(new_iters.clone()), BVariable::VarData::VarType::ITERATOR.clone()), '__try0)), '__try0)
         },
         _ => {
             unwrap_break_err!(Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBInitialization.main")); __mm_s.push_str(&*literal!(" failed to create initial partition!")); ArcStr::from(__mm_s) }).clone()]), '__try0);
@@ -172,7 +172,7 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NB
                 println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut clck in (clocks.clone()).into_iter().cloned() {
-            let __x = Module::moduleClockString(clck.clone())?;
+            let __x = unwrap_break_err!(Module::moduleClockString(clck.clone()), '__try0);
             __acc = cons(__x, __acc);
         }
         __acc.reverse()

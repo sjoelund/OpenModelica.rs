@@ -1007,7 +1007,7 @@ pub fn applyExpSubscriptsFoldCheckSimplify(mut exp: Arc<DAE::Exp>, mut inSubs: A
         let mut sub = sub.clone();
         match '__try0: {
             s = unwrap_break_err!(getSubscriptExp(sub.clone()), '__try0);
-            (exp, b) = unwrap_break_err!(ExpressionSimplify::simplify(makeASUB(exp.clone(), list![s.clone()]).unwrap()), '__try0);
+            (exp, b) = unwrap_break_err!(ExpressionSimplify::simplify(unwrap_break_err!(makeASUB(exp.clone(), list![s.clone()]), '__try0)), '__try0);
             checkSimplify = b.clone() || checkSimplify.clone();
             Ok::<_, anyhow::Error>((b.clone(), checkSimplify.clone(), exp.clone(), s.clone()))
         } {
@@ -5366,7 +5366,7 @@ pub fn makeVar(mut name: ArcStr, mut tp: Arc<DAE::Type>) -> Arc<DAE::Var> {
 pub fn dimensionsAdd(mut dim1: Arc<DAE::Dimension>, mut dim2: Arc<DAE::Dimension>) -> Arc<DAE::Dimension> {
     let mut res: Arc<DAE::Dimension> = Arc::new(DAE::Dimension::DIM_BOOLEAN);
     match '__try0: {
-        res = intDimension(dimensionSize(dim1.clone()).unwrap() + dimensionSize(dim2.clone()).unwrap());
+        res = intDimension(unwrap_break_err!(dimensionSize(dim1.clone()), '__try0) + unwrap_break_err!(dimensionSize(dim2.clone()), '__try0));
         Ok::<_, anyhow::Error>((res.clone(),))
     } {
         Ok((__try0_o0,)) => {

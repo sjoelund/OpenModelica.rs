@@ -1072,7 +1072,7 @@ pub fn isNotEmpty(mut inGraph: Graph) -> bool {
 pub fn isEmptyScope(mut graph: Graph) -> bool {
     let mut isEmpty: bool = false;
     match '__try0: {
-        isEmpty = FCore::RefTree::isEmpty(FNode::children(FNode::fromRef(lastScopeRef(graph.clone()).unwrap()).unwrap()).unwrap());
+        isEmpty = FCore::RefTree::isEmpty(unwrap_break_err!(FNode::children(unwrap_break_err!(FNode::fromRef(unwrap_break_err!(lastScopeRef(graph.clone()), '__try0)), '__try0)), '__try0));
         Ok::<_, anyhow::Error>((isEmpty.clone(),))
     } {
         Ok((__try0_o0,)) => {
@@ -1711,7 +1711,7 @@ pub fn makeScopePartial(mut inEnv: Graph) -> Graph {
     let mut data: Data = FCore::Data::TOP;
     let mut el: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     if '__try0: {
-        node = unwrap_break_err!(FNode::fromRef(lastScopeRef(inEnv.clone()).unwrap()), '__try0);
+        node = unwrap_break_err!(FNode::fromRef(unwrap_break_err!(lastScopeRef(inEnv.clone()), '__try0)), '__try0);
         node = (match node.clone() {
         FCore::Node { data: ref data @ FCore::Data::CL { e: ref el, .. }, .. } => {
             let mut data = data.clone();
@@ -1737,7 +1737,7 @@ pub fn isPartialScope(mut inEnv: Graph) -> bool {
     let mut outIsPartial: bool = false;
     let mut el: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
     match '__try0: {
-        let FCore::N { data: FCore::CL { e: __pa1, .. }, .. } = (unwrap_break_err!(FNode::fromRef(lastScopeRef(inEnv.clone()).unwrap()), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
+        let FCore::N { data: FCore::CL { e: __pa1, .. }, .. } = (unwrap_break_err!(FNode::fromRef(unwrap_break_err!(lastScopeRef(inEnv.clone()), '__try0)), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
         el = __pa1.clone();
         outIsPartial = SCodeUtil::isPartial(el.clone());
         Ok::<_, anyhow::Error>((outIsPartial.clone(),))

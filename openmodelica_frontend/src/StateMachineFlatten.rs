@@ -569,7 +569,7 @@ fn addStateActivationAndReset1(mut inEqn: Arc<DAE::Element>, mut inEnclosingSMCo
         eqn = Arc::new(DAE::Element::EQUATION { exp: exp.clone(), scalar: scalarNew.clone(), source: source.clone() });
         if unwrap_break_err!(List::any(stateVarCrefs.clone(), (std::sync::Arc::new({ let __pe_b0 = crefLHS.clone(); move |__pe_a1| ComponentReferenceBasics::crefEqual(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<bool> + 'static>)), '__try5) {
             eqn1 = unwrap_break_err!(wrapInStateActivationConditional(eqn.clone(), enclosingStateRef.clone(), true), '__try5);
-            var2 = createVarWithDefaults(ComponentReference::appendStringLastIdent((literal!("_previous")).clone(), crefLHS.clone())?, openmodelica_frontend_types::DAE::VarKind::DISCRETE, tyLHS.clone(), metamodelica::nil());
+            var2 = createVarWithDefaults(unwrap_break_err!(ComponentReference::appendStringLastIdent((literal!("_previous")).clone(), crefLHS.clone()), '__try5), openmodelica_frontend_types::DAE::VarKind::DISCRETE, tyLHS.clone(), metamodelica::nil());
             eqn2 = unwrap_break_err!(createResetEquation(crefLHS.clone(), tyLHS.clone(), enclosingStateRef.clone(), inEnclosingFlatSmSemantics.clone(), crToExpOpt.clone()), '__try5);
             outEqnsVars = (metamodelica::cons(eqn1.clone(), metamodelica::cons(eqn2.clone(), Util::tuple21(accEqnsVars.clone()))), metamodelica::cons(var2.clone(), Util::tuple22(accEqnsVars.clone())));
         } else {
@@ -595,7 +595,7 @@ fn addStateActivationAndReset1(mut inEqn: Arc<DAE::Element>, mut inEnclosingSMCo
                     if let Ok(__iflet16) = List::find1(dAElist.clone(), (std::sync::Arc::new(isCrefInVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>), crefLHS.clone()) {
                         varDecl = __iflet16;
                     } else {
-                        unwrap_break_err!(Error::addCompilerError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Couldn't find variable declaration matching to cref ")); __mm_s.push_str(&*ComponentReference::crefStr(crefLHS.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone()), '__try10);
+                        unwrap_break_err!(Error::addCompilerError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Couldn't find variable declaration matching to cref ")); __mm_s.push_str(&*unwrap_break_err!(ComponentReference::crefStr(crefLHS.clone()), '__try10)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone()), '__try10);
                         break '__try10 Err::<_, _>(anyhow::anyhow!("fail"));
                     }
                     isOuterVar = DAEUtil::isOuterVar(varDecl.clone());

@@ -2780,7 +2780,7 @@ fn preferAvoidVariables(mut varsIn: Arc<metamodelica::List<i32>>, mut points: Ar
         let mut preferAvoidVar = preferAvoidVar.clone();
         match '__try0: {
             pos = unwrap_break_err!(List::position(preferAvoidVar.clone(), varsIn.clone()), '__try0);
-            points = unwrap_break_err!(List::set(points.clone(), pos.clone(), (((factor.clone()) * (intReal((points.clone()).get(pos.clone()).unwrap()))).0 as i32)), '__try0);
+            points = unwrap_break_err!(List::set(points.clone(), pos.clone(), (((factor.clone()) * (intReal(unwrap_break_err!((points.clone()).get(pos.clone()), '__try0)))).0 as i32)), '__try0);
             Ok::<_, anyhow::Error>((points.clone(), pos.clone()))
         } {
             Ok((__try0_o0, __try0_o1)) => {

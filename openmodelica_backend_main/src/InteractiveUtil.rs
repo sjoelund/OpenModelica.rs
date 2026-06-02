@@ -804,7 +804,7 @@ pub fn getElementModifierValue(mut classRef: Arc<Absyn::ComponentRef>, mut varRe
             }
         }
         if found.clone() {
-            valueStr = (unwrap_break_err!(getModificationValueStr(args.clone(), AbsynUtil::crefToPath(subModRef.clone()).unwrap()), '__try0)).clone();
+            valueStr = (unwrap_break_err!(getModificationValueStr(args.clone(), unwrap_break_err!(AbsynUtil::crefToPath(subModRef.clone()), '__try0)), '__try0)).clone();
         } else {
             valueStr = (literal!("")).clone();
         }
@@ -1176,7 +1176,7 @@ pub fn getElementBinding(mut path: Arc<Absyn::Path>, mut parameterName: ArcStr, 
     match '__try0: {
         cls = unwrap_break_err!(ProgramUtil::getPathedClassInProgram(path.clone(), program.clone(), false, false), '__try0);
         component = unwrap_break_err!(getComponentInClass(cls.clone(), (parameterName.clone()).clone()), '__try0);
-        bindingStr = (unwrap_break_err!(Dump::printExpStr(getVariableBindingInComponentitem(component.clone()).unwrap()), '__try0)).clone();
+        bindingStr = (unwrap_break_err!(Dump::printExpStr(unwrap_break_err!(getVariableBindingInComponentitem(component.clone()), '__try0)), '__try0)).clone();
         Ok::<_, anyhow::Error>((bindingStr.clone(),))
     } {
         Ok((__try0_o0,)) => {
@@ -2180,7 +2180,7 @@ pub fn qualifyPath(mut inEnv: GraphicEnvCache, mut inPath: Arc<Absyn::Path>, mut
                 if unwrap_break_err!(Flags::isSet(Flags::NF_API.clone()), '__try0) {
                     (_, outPath) = unwrap_break_err!(Interactive::mkFullyQual(inEnv.clone(), inPath.clone(), failOnError.clone()), '__try0);
                 } else {
-                    outPath = unwrap_break_err!(qualifyType(Interactive::envFromGraphicEnvCache(inEnv.clone())?, inPath.clone()), '__try0);
+                    outPath = unwrap_break_err!(qualifyType(unwrap_break_err!(Interactive::envFromGraphicEnvCache(inEnv.clone()), '__try0), inPath.clone()), '__try0);
                 }
                 Ok::<_, anyhow::Error>((outPath.clone(),))
             } {
@@ -3272,7 +3272,7 @@ pub fn getPathedElementInProgram(mut path: Arc<Absyn::Path>, mut program: Absyn:
     let mut element: Arc<Absyn::Element> = Arc::new(<Absyn::Element as ::std::default::Default>::default());
     let mut cls: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
     match '__try0: {
-        cls = unwrap_break_err!(ProgramUtil::getClassInProgram((AbsynUtil::pathFirstIdent(path.clone())?).clone(), program.clone()), '__try0);
+        cls = unwrap_break_err!(ProgramUtil::getClassInProgram((unwrap_break_err!(AbsynUtil::pathFirstIdent(path.clone()), '__try0)).clone(), program.clone()), '__try0);
         Ok::<_, anyhow::Error>((cls.clone(),))
     } {
         Ok((__try0_o0,)) => {
@@ -3349,7 +3349,7 @@ pub fn getPathedExtendsInProgram(mut classPath: Arc<Absyn::Path>, mut extendsPat
         for mut ext in &*unwrap_break_err!(getExtendsElementspecInClass(cls.clone()), '__try0) {
             let mut ext = ext.clone();
             ext = unwrap_break_err!(Interactive::makeExtendsFullyQualified(ext.clone(), env.clone()), '__try0);
-            if AbsynUtil::pathEqual(extendsPath.clone(), AbsynUtil::elementSpecToPath(ext.clone()).unwrap()) {
+            if AbsynUtil::pathEqual(extendsPath.clone(), unwrap_break_err!(AbsynUtil::elementSpecToPath(ext.clone()), '__try0)) {
                 extendsSpec = Some(ext.clone());
                 return extendsSpec.clone();
             }
@@ -3599,7 +3599,7 @@ pub fn getElementAnnotation(mut elementPath: Arc<Absyn::Path>, mut program: Absy
     let mut eargs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
     match '__try0: {
         elem = unwrap_break_err!(getPathedElementInProgram(elementPath.clone(), program.clone()), '__try0);
-        ann = unwrap_break_err!(AbsynUtil::getElementAnnotation(elem.clone(), (AbsynUtil::pathLastIdent(elementPath.clone()).unwrap()).clone()), '__try0);
+        ann = unwrap_break_err!(AbsynUtil::getElementAnnotation(elem.clone(), (unwrap_break_err!(AbsynUtil::pathLastIdent(elementPath.clone()), '__try0)).clone()), '__try0);
         if isSome(ann.clone()) {
             let __pa1 = ::match_deref::match_deref! { match &(ann.clone()) {
                 Some(Deref @ Absyn::Annotation { elementArgs: __pa1 }) => __pa1.clone(),
@@ -3637,7 +3637,7 @@ pub fn setElementAnnotation(mut elementPath: Arc<Absyn::Path>, mut annotationMod
         name = (unwrap_break_err!(AbsynUtil::pathLastIdent(elementPath.clone()), '__try0)).clone();
         (program, elem_opt, success) = unwrap_break_err!(transformPathedElementInProgram(elementPath.clone(), (std::sync::Arc::new({ let __pe_b1 = (name.clone()).clone(); let __pe_b2 = ann.clone(); move |__pe_a0| AbsynUtil::setElementAnnotation(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Element>) -> Result<Arc<Absyn::Element>> + 'static>), program.clone()), '__try0);
         if success.clone() {
-            unwrap_break_err!(SymbolTable::setAbsynElement(program.clone(), Util::getOption(elem_opt.clone()).unwrap(), elementPath.clone()), '__try0);
+            unwrap_break_err!(SymbolTable::setAbsynElement(program.clone(), unwrap_break_err!(Util::getOption(elem_opt.clone()), '__try0), elementPath.clone()), '__try0);
         }
         Ok::<_, anyhow::Error>((ann.clone(), elem_opt.clone(), name.clone(), program.clone(), success.clone()))
     } {
@@ -3661,7 +3661,7 @@ pub fn loadClassContentString(mut content: ArcStr, mut classPath: Arc<Absyn::Pat
     let mut success: bool = true;
     let mut parsed_body: Arc<Absyn::ClassDef> = Arc::new(<Absyn::ClassDef as ::std::default::Default>::default());
     match '__try0: {
-        let __pa1 = ::match_deref::match_deref! { match &(unwrap_break_err!(Parser::parsestring(stringAppendList(list![(literal!("model dummy\n")).clone(), (content.clone()).clone(), (literal!("end dummy;\n")).clone()]), (literal!("<interactive>")).clone(), Config::acceptedGrammar().unwrap(), Flags::getConfigEnum(Flags::LANGUAGE_STANDARD.clone()).unwrap(), Flags::getConfigBool(Flags::STRICT.clone()).unwrap()), '__try0)) {
+        let __pa1 = ::match_deref::match_deref! { match &(unwrap_break_err!(Parser::parsestring(stringAppendList(list![(literal!("model dummy\n")).clone(), (content.clone()).clone(), (literal!("end dummy;\n")).clone()]), (literal!("<interactive>")).clone(), unwrap_break_err!(Config::acceptedGrammar(), '__try0), unwrap_break_err!(Flags::getConfigEnum(Flags::LANGUAGE_STANDARD.clone()), '__try0), unwrap_break_err!(Flags::getConfigBool(Flags::STRICT.clone()), '__try0)), '__try0)) {
             Absyn::Program { classes: Deref @ metamodelica::List::Cons { head: Deref @ Absyn::Class { body: __pa1, .. }, tail: Deref @ metamodelica::List::Nil }, .. } => __pa1.clone(),
             _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
         } };
@@ -4733,7 +4733,7 @@ pub fn setElementType(mut elementPath: Arc<Absyn::Path>, mut className: Arc<Absy
         ty = unwrap_break_err!(AbsynUtil::crefToTypeSpec(className.clone()), '__try0);
         (program, elem_opt, success) = unwrap_break_err!(transformPathedElementInProgram(elementPath.clone(), (std::sync::Arc::new({ let __pe_b1 = ty.clone(); let __pe_b2 = false; move |__pe_a0| AbsynUtil::setElementType(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Element>) -> Result<Arc<Absyn::Element>> + 'static>), program.clone()), '__try0);
         if success.clone() {
-            unwrap_break_err!(SymbolTable::setAbsynElement(program.clone(), Util::getOption(elem_opt.clone()).unwrap(), elementPath.clone()), '__try0);
+            unwrap_break_err!(SymbolTable::setAbsynElement(program.clone(), unwrap_break_err!(Util::getOption(elem_opt.clone()), '__try0), elementPath.clone()), '__try0);
         }
         Ok::<_, anyhow::Error>((elem_opt.clone(), program.clone(), success.clone(), ty.clone()))
     } {

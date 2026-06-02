@@ -86,7 +86,7 @@ fn serializeParModWork(mut code: SimCode::SimCode, mut withOperations: bool) -> 
         File::writeEscape(file.clone(), (mi.description.clone()).clone(), JSON.clone());
         File::write(file.clone(), (literal!("\"},\n\"ode-equations\":[")).clone());
         File::write(file.clone(), (literal!("{\"eqIndex\":0,\"tag\":\"dummy\"}")).clone());
-        for mut eq in &*unwrap_break_err!(SimCodeUtil::sortEqSystems(List::flatten(code.odeEquations.clone())?), '__try0) {
+        for mut eq in &*unwrap_break_err!(SimCodeUtil::sortEqSystems(unwrap_break_err!(List::flatten(code.odeEquations.clone()), '__try0)), '__try0) {
             let mut eq = eq.clone();
             unwrap_break_err!(serializeEquation(file.clone(), eq.clone(), (literal!("regular")).clone(), withOperations.clone(), 0, false, 0), '__try0);
         }

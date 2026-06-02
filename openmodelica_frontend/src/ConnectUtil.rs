@@ -1071,7 +1071,7 @@ fn setTrieGet(mut cref: Arc<DAE::ComponentRef>, mut trie: Arc<SetTrieNode>, mut 
     }
     if !(ComponentReference::crefIsIdent(cref.clone())) {
         match '__try2: {
-            leaf = unwrap_break_err!(setTrieGet(ComponentReference::crefRest(cref.clone())?, leaf.clone(), matchPrefix.clone()), '__try2);
+            leaf = unwrap_break_err!(setTrieGet(unwrap_break_err!(ComponentReference::crefRest(cref.clone()), '__try2), leaf.clone(), matchPrefix.clone()), '__try2);
             Ok::<_, anyhow::Error>((leaf.clone(),))
         } {
             Ok((__try2_o0,)) => {

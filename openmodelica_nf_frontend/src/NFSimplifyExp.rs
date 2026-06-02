@@ -1528,7 +1528,7 @@ pub fn combineConstantNumbers(mut r#const: Arc<metamodelica::List<Arc<Expression
 fn getConstantValue(mut exp: Arc<Expression::NFExpression>) -> Result<metamodelica::Real> {
     let mut value: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     match '__try0: {
-        value = unwrap_break_err!(Expression::realValue(Ceval::evalExp(exp.clone(), Ceval::noTarget().clone())?), '__try0);
+        value = unwrap_break_err!(Expression::realValue(unwrap_break_err!(Ceval::evalExp(exp.clone(), Ceval::noTarget().clone()), '__try0)), '__try0);
         Ok::<_, anyhow::Error>((value.clone(),))
     } {
         Ok((__try0_o0,)) => {

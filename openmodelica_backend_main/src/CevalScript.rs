@@ -462,19 +462,19 @@ fn loadModel1(mut modelToLoad: (Arc<Absyn::Path>, ArcStr, Arc<metamodelica::List
                 pnew = unwrap_break_err!(ClassLoader::loadClass(path.clone(), versionsLst.clone(), (thisModelicaPath.clone()).clone(), None, requireExactVersion.clone(), encrypted.clone()), '__try1);
             } else {
                 dir = (System::dirname((pathToFile.clone()).clone())).clone();
-                cl = unwrap_break_err!(ClassLoader::loadClassFromMp((AbsynUtil::pathFirstIdent(path.clone())?).clone(), (System::dirname((dir.clone()).clone())).clone(), (System::basename((dir.clone()).clone())).clone(), true, None, encrypted.clone()), '__try1);
+                cl = unwrap_break_err!(ClassLoader::loadClassFromMp((unwrap_break_err!(AbsynUtil::pathFirstIdent(path.clone()), '__try1)).clone(), (System::dirname((dir.clone()).clone())).clone(), (System::basename((dir.clone()).clone())).clone(), true, None, encrypted.clone()), '__try1);
                 if isSome(cl.clone()) {
                     pnew = Absyn::Program { classes: list![unwrap_break_err!(Util::getOption(cl.clone()), '__try1)], within_: openmodelica_ast::Absyn::Within::TOP };
                 } else {
                     pnew = Absyn::Program { classes: metamodelica::nil(), within_: openmodelica_ast::Absyn::Within::TOP };
                 }
             }
-            checkPatchedModelicaServices((AbsynUtil::pathFirstIdent(path.clone())?).clone(), pnew.clone());
+            checkPatchedModelicaServices((unwrap_break_err!(AbsynUtil::pathFirstIdent(path.clone()), '__try1)).clone(), pnew.clone());
             if notifyLoad.clone() && !(forceLoad.clone()) {
                 version = (unwrap_break_err!(getPackageVersion(path.clone(), pnew.clone()), '__try1)).clone();
                 msgTokens = list![(unwrap_break_err!(AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false), '__try1)).clone(), (version.clone()).clone(), (requestedBy.clone()).clone()];
                 unwrap_break_err!(Error::addMessage(Error::NOTIFY_LOAD_MODEL_DUE_TO_USES.clone(), msgTokens.clone()), '__try1);
-                System::loadModelCallBack((AbsynUtil::pathFirstIdent(path.clone())?).clone());
+                System::loadModelCallBack((unwrap_break_err!(AbsynUtil::pathFirstIdent(path.clone()), '__try1)).clone());
             }
         }
         program = unwrap_break_err!(ProgramUtil::updateProgram(pnew.clone(), program.clone(), false), '__try1);
@@ -2725,7 +2725,7 @@ fn getNonPartialElementsForInstantiatedClass(mut sp: Arc<metamodelica::List<Arc<
         if '__try0: {
             ErrorExt::setCheckpoint((literal!("getNonPartialElementsForInstantiatedClass")).clone());
             (_, env, _, _) = unwrap_break_err!(Inst::instantiateClass(FCore::emptyCache(), InnerOuter::emptyInstHierarchy().clone(), sp.clone(), AbsynUtil::makeNotFullyQualified(p.clone()), false, true, false), '__try0);
-            elts = unwrap_break_err!(FCore::RefTree::fold(FNode::children(FNode::fromRef(FGraph::lastScopeRef(env.clone())?)?)?, (std::sync::Arc::new(addNonPartialClassRef) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> + 'static>), metamodelica::nil()), '__try0);
+            elts = unwrap_break_err!(FCore::RefTree::fold(unwrap_break_err!(FNode::children(unwrap_break_err!(FNode::fromRef(unwrap_break_err!(FGraph::lastScopeRef(env.clone()), '__try0)), '__try0)), '__try0), (std::sync::Arc::new(addNonPartialClassRef) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> + 'static>), metamodelica::nil()), '__try0);
             ErrorExt::rollBack((literal!("getNonPartialElementsForInstantiatedClass")).clone());
             return Ok(elts.clone());
             Ok::<(), anyhow::Error>(())
@@ -4078,13 +4078,13 @@ fn generateSeparateCodeDependencies(mut args: Arc<metamodelica::List<Arc<Values:
         sp = unwrap_break_err!(SymbolTable::getSCode(), '__try0);
         names = List::filterMap(sp.clone(), (std::sync::Arc::new(SCodeUtil::getElementName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<ArcStr> + 'static>));
         deps = unwrap_break_err!(Graph::buildGraph(names.clone(), (std::sync::Arc::new(buildDependencyGraph) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), sp.clone()), '__try0);
-        namesPublic = unwrap_break_err!(List::map(List::select(sp.clone(), (std::sync::Arc::new(containsPublicInterface) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>)).unwrap(), (std::sync::Arc::new(SCodeUtil::getElementName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<ArcStr> + 'static>)), '__try0);
+        namesPublic = unwrap_break_err!(List::map(unwrap_break_err!(List::select(sp.clone(), (std::sync::Arc::new(containsPublicInterface) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>)), '__try0), (std::sync::Arc::new(SCodeUtil::getElementName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<ArcStr> + 'static>)), '__try0);
         namesChanged = List::filterMap1(sp.clone(), (std::sync::Arc::new(getChangedClass) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, ArcStr) -> Result<ArcStr> + 'static>), (suffix.clone()).clone());
         hashSetString = HashSetString::emptyHashSet();
         hashSetString = unwrap_break_err!(List::fold(namesChanged.clone(), (std::sync::Arc::new(BaseHashSet::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), hashSetString.clone()), '__try0);
-        depstransposed = unwrap_break_err!(Graph::transposeGraph(Graph::emptyGraph(names.clone()).unwrap(), deps.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>)), '__try0);
+        depstransposed = unwrap_break_err!(Graph::transposeGraph(unwrap_break_err!(Graph::emptyGraph(names.clone()), '__try0), deps.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>)), '__try0);
         depstransposedtransitive = unwrap_break_err!(Graph::buildGraph(namesPublic.clone(), (std::sync::Arc::new(buildTransitiveDependencyGraph) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<ArcStr>>)>>) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), depstransposed.clone()), '__try0);
-        depstransitive = unwrap_break_err!(Graph::transposeGraph(Graph::emptyGraph(names.clone()).unwrap(), depstransposedtransitive.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>)), '__try0);
+        depstransitive = unwrap_break_err!(Graph::transposeGraph(unwrap_break_err!(Graph::emptyGraph(names.clone()), '__try0), depstransposedtransitive.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>)), '__try0);
         depstransitive = unwrap_break_err!(List::sort(depstransitive.clone(), (std::sync::Arc::new(fnptr!(compareNumberOfDependencies, (ArcStr, Arc<metamodelica::List<ArcStr>>), (ArcStr, Arc<metamodelica::List<ArcStr>>))) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, Arc<metamodelica::List<ArcStr>>), (ArcStr, Arc<metamodelica::List<ArcStr>>)) -> Result<bool> + 'static>)), '__try0);
         depsmerged = unwrap_break_err!(Graph::merge(deps.clone(), depstransitive.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), (std::sync::Arc::new(fnptr!(compareDependencyNode, (ArcStr, Arc<metamodelica::List<ArcStr>>), (ArcStr, Arc<metamodelica::List<ArcStr>>))) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, Arc<metamodelica::List<ArcStr>>), (ArcStr, Arc<metamodelica::List<ArcStr>>)) -> Result<bool> + 'static>)), '__try0);
         depschanged = unwrap_break_err!(List::select1(depsmerged.clone(), (std::sync::Arc::new(isChanged) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, Arc<metamodelica::List<ArcStr>>), (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<ArcStr>>), i32, i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))) -> Result<bool> + 'static>), hashSetString.clone()), '__try0);
@@ -4094,7 +4094,7 @@ fn generateSeparateCodeDependencies(mut args: Arc<metamodelica::List<Arc<Values:
             let mut f = f.clone();
             System::removeFile((f.clone()).clone());
         }
-        res = unwrap_break_err!(ValuesMake::makeArray(List::map(names.clone(), (std::sync::Arc::new(fnptr!(ValuesMake::makeString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Values::Value>> + 'static>)).unwrap()), '__try0);
+        res = unwrap_break_err!(ValuesMake::makeArray(unwrap_break_err!(List::map(names.clone(), (std::sync::Arc::new(fnptr!(ValuesMake::makeString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Values::Value>> + 'static>)), '__try0)), '__try0);
         Ok::<_, anyhow::Error>((res.clone(),))
     } {
         Ok((__try0_o0,)) => {

@@ -1284,7 +1284,7 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                         ExecStat::execStat((literal!("sanity parsestring(s2)")).clone())?;
                         s5 = (printActual(treeDiffs.clone(), (std::sync::Arc::new(SimpleModelicaParser::parseTreeNodeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimpleModelicaParser::ParseTree>) -> Result<ArcStr> + 'static>))).clone();
                         match '__try0: {
-                            s4 = (unwrap_break_err!(Dump::unparseStr(Parser::parsestring((s5.clone()).clone(), (literal!("<interactive>")).clone(), Config::acceptedGrammar()?, Flags::getConfigEnum(Flags::LANGUAGE_STANDARD.clone())?, Flags::getConfigBool(Flags::STRICT.clone())?)?, false, Dump::defaultDumpOptions.clone()), '__try0)).clone();
+                            s4 = (unwrap_break_err!(Dump::unparseStr(unwrap_break_err!(Parser::parsestring((s5.clone()).clone(), (literal!("<interactive>")).clone(), unwrap_break_err!(Config::acceptedGrammar(), '__try0), unwrap_break_err!(Flags::getConfigEnum(Flags::LANGUAGE_STANDARD.clone()), '__try0), unwrap_break_err!(Flags::getConfigBool(Flags::STRICT.clone()), '__try0)), '__try0), false, Dump::defaultDumpOptions.clone()), '__try0)).clone();
                             unwrap_break_err!(ExecStat::execStat((literal!("sanity parsestring(s5)")).clone()), '__try0);
                             Ok::<_, anyhow::Error>((s4.clone(),))
                         } {
@@ -5656,7 +5656,7 @@ pub fn translateModel(mut cache: FCore::Cache, mut env: FCore::Graph, mut classN
     }
     flags = loadCommandLineOptionsFromModel(className.clone())?;
     match '__try0: {
-        (success, outCache, outLibs, outFileDir, resultValues) = unwrap_break_err!(SimCodeMain::translateModel(crate::SimCodeMain::TranslateModelKind::NORMAL, cache.clone(), env.clone(), className.clone(), (fileNamePrefix.clone()).clone(), runBackend.clone(), Flags::getConfigBool(Flags::DAE_MODE.clone())?, runSilent.clone(), simSettings.clone(), Arc::new(Absyn::FunctionArgs::FUNCTIONARGS { args: metamodelica::nil(), argNames: metamodelica::nil() })), '__try0);
+        (success, outCache, outLibs, outFileDir, resultValues) = unwrap_break_err!(SimCodeMain::translateModel(crate::SimCodeMain::TranslateModelKind::NORMAL, cache.clone(), env.clone(), className.clone(), (fileNamePrefix.clone()).clone(), runBackend.clone(), unwrap_break_err!(Flags::getConfigBool(Flags::DAE_MODE.clone()), '__try0), runSilent.clone(), simSettings.clone(), Arc::new(Absyn::FunctionArgs::FUNCTIONARGS { args: metamodelica::nil(), argNames: metamodelica::nil() })), '__try0);
         FlagsUtil::saveFlags(flags.clone());
         Ok::<_, anyhow::Error>((outCache.clone(), outFileDir.clone(), outLibs.clone(), resultValues.clone(), success.clone()))
     } {
@@ -6500,7 +6500,7 @@ fn moveClass(mut inClassName: Arc<Absyn::Path>, mut inOffset: i32, mut inProgram
     }
     match '__try0: {
         if AbsynUtil::pathIsIdent(inClassName.clone()) {
-            outProgram = unwrap_break_err!(moveClassInProgram((AbsynUtil::pathFirstIdent(inClassName.clone()).unwrap()).clone(), inOffset.clone(), inProgram.clone()), '__try0);
+            outProgram = unwrap_break_err!(moveClassInProgram((unwrap_break_err!(AbsynUtil::pathFirstIdent(inClassName.clone()), '__try0)).clone(), inOffset.clone(), inProgram.clone()), '__try0);
         } else {
             let (__pa1, __pa2) = ::match_deref::match_deref! { match &(unwrap_break_err!(AbsynUtil::splitQualAndIdentPath(inClassName.clone()), '__try0)) {
                 (__pa1, Deref @ Absyn::Path::IDENT { name: __pa2 }) => (__pa1.clone(), __pa2.clone()),
@@ -6536,7 +6536,7 @@ fn moveClassToTop(mut inClassName: Arc<Absyn::Path>, mut inProgram: Absyn::Progr
         Absyn::Program { .. } => {
             let mut classes: Arc<metamodelica::List<Arc<Absyn::Class>>> = metamodelica::nil();
             let mut cls: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(unwrap_break_err!(List::deleteMemberOnTrue((AbsynUtil::pathFirstIdent(inClassName.clone()).unwrap()).clone(), outProgram.classes.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::isClassNamed, ArcStr, Arc<Absyn::Class>)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<Absyn::Class>) -> Result<bool> + 'static>)), '__try0)) {
+            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(unwrap_break_err!(List::deleteMemberOnTrue((unwrap_break_err!(AbsynUtil::pathFirstIdent(inClassName.clone()), '__try0)).clone(), outProgram.classes.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::isClassNamed, ArcStr, Arc<Absyn::Class>)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<Absyn::Class>) -> Result<bool> + 'static>)), '__try0)) {
                 (__pa0, Some(__pa1)) => (__pa0.clone(), __pa1.clone()),
                 _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
             } };
@@ -6579,7 +6579,7 @@ fn moveClassToBottom(mut inClassName: Arc<Absyn::Path>, mut inProgram: Absyn::Pr
         Absyn::Program { .. } => {
             let mut classes: Arc<metamodelica::List<Arc<Absyn::Class>>> = metamodelica::nil();
             let mut cls: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
-            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(unwrap_break_err!(List::deleteMemberOnTrue((AbsynUtil::pathFirstIdent(inClassName.clone()).unwrap()).clone(), outProgram.classes.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::isClassNamed, ArcStr, Arc<Absyn::Class>)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<Absyn::Class>) -> Result<bool> + 'static>)), '__try0)) {
+            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(unwrap_break_err!(List::deleteMemberOnTrue((unwrap_break_err!(AbsynUtil::pathFirstIdent(inClassName.clone()), '__try0)).clone(), outProgram.classes.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::isClassNamed, ArcStr, Arc<Absyn::Class>)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<Absyn::Class>) -> Result<bool> + 'static>)), '__try0)) {
                 (__pa0, Some(__pa1)) => (__pa0.clone(), __pa1.clone()),
                 _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
             } };
@@ -10570,7 +10570,7 @@ fn instantiateModel(mut cache: FCore::Cache, mut env: FCore::Graph, mut path: Ar
             ExecStat::execStatReset()?;
             flags = loadCommandLineOptionsFromModel(path.clone())?;
             match '__try0: {
-                (cache, _, odae, r#str) = unwrap_break_err!(runFrontEnd(cache.clone(), env.clone(), path.clone(), false, Config::flatModelica()? && !(Config::silent()?), false), '__try0);
+                (cache, _, odae, r#str) = unwrap_break_err!(runFrontEnd(cache.clone(), env.clone(), path.clone(), false, unwrap_break_err!(Config::flatModelica(), '__try0) && !(unwrap_break_err!(Config::silent(), '__try0)), false), '__try0);
                 unwrap_break_err!(ExecStat::execStat((literal!("runFrontEnd")).clone()), '__try0);
                 if !(stringEmpty((r#str.clone()).clone())) {
                 } else if isNone(odae.clone()) {
@@ -10578,7 +10578,7 @@ fn instantiateModel(mut cache: FCore::Cache, mut env: FCore::Graph, mut path: Ar
                 } else if unwrap_break_err!(Config::silent(), '__try0) {
                     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("model ")); __mm_s.push_str(&*unwrap_break_err!(AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false), '__try0)); __mm_s.push_str(&*literal!("\n  /* Silent mode */\nend")); __mm_s.push_str(&*unwrap_break_err!(AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false), '__try0)); __mm_s.push_str(&*literal!(";\n")); ArcStr::from(__mm_s) }).clone();
                 } else {
-                    r#str = (unwrap_break_err!(DAEDump::dumpStr(Util::getOption(odae.clone())?, FCore::getFunctionTree(cache.clone())), '__try0)).clone();
+                    r#str = (unwrap_break_err!(DAEDump::dumpStr(unwrap_break_err!(Util::getOption(odae.clone()), '__try0), FCore::getFunctionTree(cache.clone())), '__try0)).clone();
                     unwrap_break_err!(ExecStat::execStat((literal!("DAEDump.dumpStr")).clone()), '__try0);
                 }
                 FlagsUtil::saveFlags(flags.clone());
@@ -10680,29 +10680,29 @@ fn convertPackageToLibrary(mut clsPath: Arc<Absyn::Path>, mut libPath: Arc<Absyn
         cls = unwrap_break_err!(ProgramUtil::getPathedClassInProgram(clsPath.clone(), p.clone(), false, true), '__try0);
         uses_version = unwrap_break_err!(Interactive::getUsedVersion(cls.clone(), libPath.clone()), '__try0);
         if isSome(uses_version.clone()) {
-            lib_version_used = unwrap_break_err!(SemanticVersion::parse((Util::getOption(uses_version.clone()).unwrap()).clone(), true), '__try0);
+            lib_version_used = unwrap_break_err!(SemanticVersion::parse((unwrap_break_err!(Util::getOption(uses_version.clone()), '__try0)).clone(), true), '__try0);
         } else {
-            unwrap_break_err!(Error::addMessage(Error::CONVERSION_MISSING_USES.clone(), list![(AbsynUtil::pathString(clsPath.clone(), (literal!(".")).clone(), true, false).unwrap()).clone(), (AbsynUtil::pathString(libPath.clone(), (literal!(".")).clone(), true, false).unwrap()).clone()]), '__try0);
+            unwrap_break_err!(Error::addMessage(Error::CONVERSION_MISSING_USES.clone(), list![(unwrap_break_err!(AbsynUtil::pathString(clsPath.clone(), (literal!(".")).clone(), true, false), '__try0)).clone(), (unwrap_break_err!(AbsynUtil::pathString(libPath.clone(), (literal!(".")).clone(), true, false), '__try0)).clone()]), '__try0);
             break '__try0 Err::<_, _>(anyhow::anyhow!("fail"));
         }
         lib_name = (unwrap_break_err!(AbsynUtil::pathFirstIdent(libPath.clone()), '__try0)).clone();
-        lib_version = unwrap_break_err!(SemanticVersion::parse((CevalScript::getPackageVersion(libPath.clone(), p.clone()).unwrap()).clone(), false), '__try0);
-        if unwrap_break_err!(SemanticVersion::compare(lib_version.clone(), SemanticVersion::parse((libVersion.clone()).clone(), false).unwrap(), true, false), '__try0) != 0 {
+        lib_version = unwrap_break_err!(SemanticVersion::parse((unwrap_break_err!(CevalScript::getPackageVersion(libPath.clone(), p.clone()), '__try0)).clone(), false), '__try0);
+        if unwrap_break_err!(SemanticVersion::compare(lib_version.clone(), unwrap_break_err!(SemanticVersion::parse((libVersion.clone()).clone(), false), '__try0), true, false), '__try0) != 0 {
             if lib_name.clone() == literal!("Modelica") {
                 unwrap_break_err!(Config::setLanguageStandardFromMSL(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Modelica ")); __mm_s.push_str(&*libVersion.clone()); ArcStr::from(__mm_s) }).clone(), true), '__try0);
             }
-            let (__pa1, true) = (unwrap_break_err!(CevalScript::loadModel(list![(libPath.clone(), lib_name.clone(), list![(libVersion.clone()).clone()], false)], (Settings::getModelicaPath(Testsuite::isRunning().unwrap()).unwrap()).clone(), p.clone(), true, true, false, true, false, (literal!("")).clone()), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
+            let (__pa1, true) = (unwrap_break_err!(CevalScript::loadModel(list![(libPath.clone(), lib_name.clone(), list![(libVersion.clone()).clone()], false)], (unwrap_break_err!(Settings::getModelicaPath(unwrap_break_err!(Testsuite::isRunning(), '__try0)), '__try0)).clone(), p.clone(), true, true, false, true, false, (literal!("")).clone()), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
             lib_program = __pa1.clone();
             unwrap_break_err!(SymbolTable::setAbsyn(lib_program.clone()), '__try0);
         } else {
             lib_program = p.clone();
         }
-        lib_version = unwrap_break_err!(SemanticVersion::parse((CevalScript::getPackageVersion(libPath.clone(), lib_program.clone()).unwrap()).clone(), false), '__try0);
+        lib_version = unwrap_break_err!(SemanticVersion::parse((unwrap_break_err!(CevalScript::getPackageVersion(libPath.clone(), lib_program.clone()), '__try0)).clone(), false), '__try0);
         lib_cls = unwrap_break_err!(ProgramUtil::getPathedClassInProgram(libPath.clone(), lib_program.clone(), false, true), '__try0);
         conversions = unwrap_break_err!(Interactive::getConversionsInClass(lib_cls.clone()), '__try0);
         scripts = unwrap_break_err!(findConversionPaths(conversions.clone(), lib_version.clone(), lib_version_used.clone(), 0), '__try0);
         if scripts.clone().is_empty() {
-            unwrap_break_err!(Error::addMessage(Error::CONVERSION_NO_COMPATIBLE_SCRIPT_FOUND.clone(), list![(AbsynUtil::pathString(libPath.clone(), (literal!(".")).clone(), true, false).unwrap()).clone(), (SemanticVersion::toString(lib_version_used.clone()).unwrap()).clone(), (SemanticVersion::toString(lib_version.clone()).unwrap()).clone()]), '__try0);
+            unwrap_break_err!(Error::addMessage(Error::CONVERSION_NO_COMPATIBLE_SCRIPT_FOUND.clone(), list![(unwrap_break_err!(AbsynUtil::pathString(libPath.clone(), (literal!(".")).clone(), true, false), '__try0)).clone(), (unwrap_break_err!(SemanticVersion::toString(lib_version_used.clone()), '__try0)).clone(), (unwrap_break_err!(SemanticVersion::toString(lib_version.clone()), '__try0)).clone()]), '__try0);
             break '__try0 Err::<_, _>(anyhow::anyhow!("fail"));
         }
         for mut script in &*scripts.clone() {
@@ -10710,7 +10710,7 @@ fn convertPackageToLibrary(mut clsPath: Arc<Absyn::Path>, mut libPath: Arc<Absyn
             script = uriToFilename((script.clone()).clone());
             cls = unwrap_break_err!(Conversion::convertPackage(cls.clone(), (script.clone()).clone()), '__try0);
         }
-        cls = unwrap_break_err!(Interactive::updateUsedVersion(cls.clone(), libPath.clone(), (SemanticVersion::toString(lib_version.clone()).unwrap()).clone()), '__try0);
+        cls = unwrap_break_err!(Interactive::updateUsedVersion(cls.clone(), libPath.clone(), (unwrap_break_err!(SemanticVersion::toString(lib_version.clone()), '__try0)).clone()), '__try0);
         wi = unwrap_break_err!(ProgramUtil::buildWithin(clsPath.clone()), '__try0);
         lib_program = unwrap_break_err!(ProgramUtil::updateProgram(Absyn::Program { classes: list![cls.clone()], within_: wi.clone() }, lib_program.clone(), false), '__try0);
         unwrap_break_err!(SymbolTable::setAbsyn(lib_program.clone()), '__try0);

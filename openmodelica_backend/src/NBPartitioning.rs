@@ -261,7 +261,7 @@ pub mod BClock {
             (clock, baseClock) = unwrap_break_err!(fromExp(exp.clone()), '__try0);
             if isSome(baseClock.clone()) {
                 unwrap_break_err!(UnorderedMap::add(clock_name.clone(), clock.clone(), info.subClocks.clone()), '__try0);
-                unwrap_break_err!(UnorderedMap::add(clock_name.clone(), Util::getOption(baseClock.clone())?, info.subToBase.clone()), '__try0);
+                unwrap_break_err!(UnorderedMap::add(clock_name.clone(), unwrap_break_err!(Util::getOption(baseClock.clone()), '__try0), info.subToBase.clone()), '__try0);
             } else {
                 unwrap_break_err!(UnorderedMap::add(clock_name.clone(), clock.clone(), info.baseClocks.clone()), '__try0);
             }

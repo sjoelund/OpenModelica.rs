@@ -344,7 +344,7 @@ fn augmentExpandableConnector(mut conn: Arc<Connector::NFConnector>, mut expanda
         elem_name = Connector::name(c.clone());
         node = ComponentRef::node(elem_name.clone())?;
         match '__try0: {
-            (comp_node, _) = unwrap_break_err!(ClassTree::lookupElement((InstNode::name(node.clone())?).clone(), cls_tree.clone()), '__try0);
+            (comp_node, _) = unwrap_break_err!(ClassTree::lookupElement((unwrap_break_err!(InstNode::name(node.clone()), '__try0)).clone(), cls_tree.clone()), '__try0);
             Ok::<_, anyhow::Error>((comp_node.clone(),))
         } {
             Ok((__try0_o0,)) => {

@@ -5289,14 +5289,14 @@ pub fn simplifyComplexFunction2(mut e1: Arc<DAE::Exp>) -> Arc<metamodelica::List
     let mut out_lst_e1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut lst_e: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     if '__try0: {
-        if Expression::isArray(e1.clone()) || Expression::isArrayType(Expression::r#typeof(e1.clone()).unwrap()) {
+        if Expression::isArray(e1.clone()) || Expression::isArrayType(unwrap_break_err!(Expression::r#typeof(e1.clone()), '__try0)) {
             lst_e = unwrap_break_err!(Expression::getArrayOrRangeContents(e1.clone()), '__try0);
             for mut e in &*lst_e.clone() {
                 let mut e = e.clone();
                 out_lst_e1 = listAppend(simplifyComplexFunction2(e.clone()), out_lst_e1.clone());
             }
         } else if Expression::isRecord(e1.clone()) {
-            lst_e = unwrap_break_err!(Expression::splitRecord(e1.clone(), Expression::r#typeof(e1.clone()).unwrap()), '__try0);
+            lst_e = unwrap_break_err!(Expression::splitRecord(e1.clone(), unwrap_break_err!(Expression::r#typeof(e1.clone()), '__try0)), '__try0);
             for mut e in &*lst_e.clone() {
                 let mut e = e.clone();
                 out_lst_e1 = listAppend(simplifyComplexFunction2(e.clone()), out_lst_e1.clone());
@@ -5382,7 +5382,7 @@ fn hetsWork(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::Ba
                         eqn = unwrap_break_err!(BackendEquation::get(eqns.clone(), i.clone()), '__try10);
                         let BackendDAE::VAR { varName: __pa14, .. } = (unwrap_break_err!(BackendVariable::getVarAt(vars.clone(), j.clone()), '__try10)) else { break '__try10 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
                         cr = __pa14.clone();
-                        eqn = unwrap_break_err!(BackendEquation::solveEquation(eqn.clone(), Expression::crefExp(cr.clone())?, Some(shared.functionTree.clone())), '__try10);
+                        eqn = unwrap_break_err!(BackendEquation::solveEquation(eqn.clone(), unwrap_break_err!(Expression::crefExp(cr.clone()), '__try10), Some(shared.functionTree.clone())), '__try10);
                         eqn = unwrap_break_err!(hetsSplitRhs(eqn.clone()), '__try10);
                         eqns = unwrap_break_err!(BackendEquation::setAtIndex(eqns.clone(), i.clone(), eqn.clone()), '__try10);
                         Ok::<(), anyhow::Error>(())

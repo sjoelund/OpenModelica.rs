@@ -1322,7 +1322,7 @@ fn typeviewDefsFromInterfaceFile(mut interfaceName: Arc<TplAbsyn::PathIdent>, mu
     file = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*TplAbsyn::pathIdentString(interfaceName.clone())?); __mm_s.push_str(&*literal!(".mo")); ArcStr::from(__mm_s) }).clone();
     match '__try0: {
         if unwrap_break_err!(CacheTree::hasKey(cachedDefs.clone(), (file.clone()).clone()), '__try0) {
-            astDefs = listAppend(CacheTree::get(cachedDefs.clone(), (file.clone()).clone())?, astDefs.clone());
+            astDefs = listAppend(unwrap_break_err!(CacheTree::get(cachedDefs.clone(), (file.clone()).clone()), '__try0), astDefs.clone());
             linfo = LineInfo { parseInfo: ParseInfo { fileName: (literal!("cachedResult")).clone(), errors: metamodelica::nil(), wasFatalError: false }, lineNumber: 0, lineLength: 0, startOfLineChars: metamodelica::nil() };
             errOpt = None;
             return Ok((astDefs.clone(), linfo.clone(), errOpt.clone(), cachedDefs.clone()));

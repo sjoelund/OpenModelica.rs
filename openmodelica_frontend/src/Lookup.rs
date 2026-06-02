@@ -1790,7 +1790,7 @@ pub fn lookupVarInPackagesIdent(mut inCache: FCore::Cache, mut inEnv: FCore::Gra
                         let false = (qimports.clone().is_empty()) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
                         cr = unwrap_break_err!(lookupQualifiedImportedVarInFrame(qimports.clone(), (id.clone()).clone()), '__try0);
                         Mutable::update(inState.clone(), true);
-                        cr = if (unwrap_break_err!(FNode::name(FNode::fromRef(FGraph::lastScopeRef(env.clone())?)?), '__try0) == unwrap_break_err!(ComponentReferenceBasics::crefFirstIdent(cr.clone()), '__try0)) {unwrap_break_err!(ComponentReference::crefStripFirstIdent(cr.clone()), '__try0)} else {cr.clone()};
+                        cr = if (unwrap_break_err!(FNode::name(unwrap_break_err!(FNode::fromRef(unwrap_break_err!(FGraph::lastScopeRef(env.clone()), '__try0)), '__try0)), '__try0) == unwrap_break_err!(ComponentReferenceBasics::crefFirstIdent(cr.clone()), '__try0)) {unwrap_break_err!(ComponentReference::crefStripFirstIdent(cr.clone()), '__try0)} else {cr.clone()};
                         let (__pa1, __pa2) = ::match_deref::match_deref! { match &(unwrap_break_err!(FGraph::currentScope(env.clone()), '__try0).reverse()) {
                             Deref @ metamodelica::List::Cons { head: __pa1, tail: __pa2 } => (__pa1.clone(), __pa2.clone()),
                             _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),

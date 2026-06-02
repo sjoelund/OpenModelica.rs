@@ -1549,7 +1549,7 @@ pub fn hasVarEvaluateAnnotationTrue(mut inVar: BackendDAE::Var) -> bool {
             _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
         } };
         val = __pa2.clone();
-        isTrue = stringEqual((Dump::printExpStr(val.clone()).unwrap()).clone(), (literal!("true")).clone());
+        isTrue = stringEqual((unwrap_break_err!(Dump::printExpStr(val.clone()), '__try0)).clone(), (literal!("true")).clone());
         Ok::<_, anyhow::Error>((isTrue.clone(),))
     } {
         Ok((__try0_o0,)) => {
@@ -1577,7 +1577,7 @@ pub fn hasVarEvaluateAnnotationFalse(mut inVar: BackendDAE::Var) -> bool {
             _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
         } };
         val = __pa2.clone();
-        isFalse = stringEqual((Dump::printExpStr(val.clone()).unwrap()).clone(), (literal!("false")).clone());
+        isFalse = stringEqual((unwrap_break_err!(Dump::printExpStr(val.clone()), '__try0)).clone(), (literal!("false")).clone());
         Ok::<_, anyhow::Error>((isFalse.clone(),))
     } {
         Ok((__try0_o0,)) => {
@@ -2456,7 +2456,7 @@ pub fn deleteVarIfExistsAndReturn(mut inComponentRef: Arc<DAE::ComponentRef>, mu
     if '__try0: {
         (outVarLst, ilst) = unwrap_break_err!(getVar(inComponentRef.clone(), inVariables.clone()), '__try0);
         (outVariables, _) = unwrap_break_err!(removeVars(ilst.clone(), inVariables.clone(), metamodelica::nil()), '__try0);
-        outVariables = unwrap_break_err!(listVar1(varList(outVariables.clone()).unwrap()), '__try0);
+        outVariables = unwrap_break_err!(listVar1(unwrap_break_err!(varList(outVariables.clone()), '__try0)), '__try0);
         Ok::<(), anyhow::Error>(())
     }.is_err() {
     }

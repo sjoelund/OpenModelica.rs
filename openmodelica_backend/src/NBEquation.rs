@@ -842,8 +842,8 @@ pub mod Iterator {
                     range = UnorderedMap::getSafe(cref.clone(), iter_map.clone(), metamodelica::sourceInfo!())?;
                     match '__try0: {
                         (range, status) = (::match_deref::match_deref! { match &(range.clone()) {
-        Deref @ Expression::RANGE { .. } => (unwrap_break_err!(adaptRange(UnorderedMap::getSafe(cref.clone(), iter_map.clone(), metamodelica::sourceInfo!())?, Util::getOption(Equation::getRHS(tmpEqn.clone())?)?, operator.clone()), '__try0), status.clone()),
-        Deref @ Expression::ARRAY { .. } => (unwrap_break_err!(adaptArray(UnorderedMap::getSafe(cref.clone(), iter_map.clone(), metamodelica::sourceInfo!())?, Util::getOption(Equation::getRHS(tmpEqn.clone())?)?, operator.clone()), '__try0), status.clone()),
+        Deref @ Expression::RANGE { .. } => (unwrap_break_err!(adaptRange(unwrap_break_err!(UnorderedMap::getSafe(cref.clone(), iter_map.clone(), metamodelica::sourceInfo!()), '__try0), unwrap_break_err!(Util::getOption(unwrap_break_err!(Equation::getRHS(tmpEqn.clone()), '__try0)), '__try0), operator.clone()), '__try0), status.clone()),
+        Deref @ Expression::ARRAY { .. } => (unwrap_break_err!(adaptArray(unwrap_break_err!(UnorderedMap::getSafe(cref.clone(), iter_map.clone(), metamodelica::sourceInfo!()), '__try0), unwrap_break_err!(Util::getOption(unwrap_break_err!(Equation::getRHS(tmpEqn.clone()), '__try0)), '__try0), operator.clone()), '__try0), status.clone()),
         _ => (range.clone(), Solve::Status::UNSOLVABLE.clone()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

@@ -798,7 +798,7 @@ pub mod ClassTree {
         let mut elements: Arc<metamodelica::List<Mutable::Mutable<Arc<InstNode::InstNode>>>> = metamodelica::nil();
         let mut dup_entry: Arc<DuplicateTree::Entry> = Arc::new(<DuplicateTree::Entry as ::std::default::Default>::default());
         match '__try0: {
-            dup_entry = unwrap_break_err!(DuplicateTree::get(getDuplicates(tree.clone())?, (name.clone()).clone()), '__try0);
+            dup_entry = unwrap_break_err!(DuplicateTree::get(unwrap_break_err!(getDuplicates(tree.clone()), '__try0), (name.clone()).clone()), '__try0);
             elements = unwrap_break_err!(resolveDuplicateEntriesPtr(dup_entry.clone(), tree.clone(), metamodelica::nil()), '__try0);
             Ok::<_, anyhow::Error>((elements.clone(),))
         } {
@@ -1158,7 +1158,7 @@ pub mod ClassTree {
         let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
         let mut entry: Arc<DuplicateTree::Entry> = Arc::new(<DuplicateTree::Entry as ::std::default::Default>::default());
         match '__try0: {
-            entry = unwrap_break_err!(DuplicateTree::get(getDuplicates(tree.clone())?, (name.clone()).clone()), '__try0);
+            entry = unwrap_break_err!(DuplicateTree::get(unwrap_break_err!(getDuplicates(tree.clone()), '__try0), (name.clone()).clone()), '__try0);
             entry = unwrap_break_err!(listHead(entry.children.clone()), '__try0);
             if isSome(entry.node.clone()) {
                 let __pa1 = ::match_deref::match_deref! { match &(entry.node.clone()) {
@@ -2084,9 +2084,9 @@ pub mod ClassTree {
         let mut cls_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
         let mut restriction: SCode::Restriction = SCode::Restriction::R_BLOCK;
         match '__try0: {
-            ty_path = unwrap_break_err!(SCodeUtil::getElementTypePath(InstNode::definition(node.clone())?), '__try0);
+            ty_path = unwrap_break_err!(SCodeUtil::getElementTypePath(unwrap_break_err!(InstNode::definition(node.clone()), '__try0)), '__try0);
             (cls_node, _) = unwrap_break_err!(Lookup::lookupName(ty_path.clone(), scope.clone(), NFInstContext::NO_CONTEXT.clone(), false), '__try0);
-            restriction = unwrap_break_err!(SCodeUtil::getClassRestriction(InstNode::definition(cls_node.clone())?), '__try0);
+            restriction = unwrap_break_err!(SCodeUtil::getClassRestriction(unwrap_break_err!(InstNode::definition(cls_node.clone()), '__try0)), '__try0);
             Ok::<_, anyhow::Error>((restriction.clone(),))
         } {
             Ok((__try0_o0,)) => {

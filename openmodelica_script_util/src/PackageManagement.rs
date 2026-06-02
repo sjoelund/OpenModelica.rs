@@ -1716,14 +1716,14 @@ pub fn getAllProvidedVersionsForLibrary(mut lib: ArcStr, mut printError: bool) -
     tree = AvlSetString::new();
     match '__try0: {
         obj = unwrap_break_err!(getPackageIndex(printError.clone()), '__try0);
-        libobject = unwrap_break_err!(JSON::get(JSON::get(obj.clone(), (literal!("libs")).clone()).unwrap(), (lib.clone()).clone()), '__try0);
+        libobject = unwrap_break_err!(JSON::get(unwrap_break_err!(JSON::get(obj.clone(), (literal!("libs")).clone()), '__try0), (lib.clone()).clone()), '__try0);
         vers = unwrap_break_err!(JSON::get(libobject.clone(), (literal!("versions")).clone()), '__try0);
         for mut version in &*unwrap_break_err!(JSON::getKeys(vers.clone()), '__try0) {
             let mut version = version.clone();
             tree = unwrap_break_err!(AvlSetString::add(tree.clone(), (version.clone()).clone()), '__try0);
-            provides = unwrap_break_err!(JSON::getOrDefault(JSON::get(vers.clone(), (version.clone()).clone()).unwrap(), (literal!("provides")).clone(), JSON::emptyArray(0)), '__try0);
+            provides = unwrap_break_err!(JSON::getOrDefault(unwrap_break_err!(JSON::get(vers.clone(), (version.clone()).clone()), '__try0), (literal!("provides")).clone(), JSON::emptyArray(0)), '__try0);
             for mut i in 1..=JSON::size(provides.clone()) {
-                tree = unwrap_break_err!(AvlSetString::add(tree.clone(), (JSON::getString(JSON::at(provides.clone(), i.clone()).unwrap()).unwrap()).clone()), '__try0);
+                tree = unwrap_break_err!(AvlSetString::add(tree.clone(), (unwrap_break_err!(JSON::getString(unwrap_break_err!(JSON::at(provides.clone(), i.clone()), '__try0)), '__try0)).clone()), '__try0);
             }
         }
         result = AvlSetString::listKeys(tree.clone(), metamodelica::nil());
@@ -1751,18 +1751,18 @@ pub fn versionsThatProvideTheWanted(mut id: ArcStr, mut version: ArcStr, mut pri
     result = metamodelica::nil();
     match '__try0: {
         obj = unwrap_break_err!(getPackageIndex(printError.clone()), '__try0);
-        libobject = unwrap_break_err!(JSON::get(JSON::get(obj.clone(), (literal!("libs")).clone()).unwrap(), (id.clone()).clone()), '__try0);
+        libobject = unwrap_break_err!(JSON::get(unwrap_break_err!(JSON::get(obj.clone(), (literal!("libs")).clone()), '__try0), (id.clone()).clone()), '__try0);
         vers = unwrap_break_err!(JSON::get(libobject.clone(), (literal!("versions")).clone()), '__try0);
         wantedVersion = unwrap_break_err!(SemanticVersion::parse((version.clone()).clone(), true), '__try0);
-        result = unwrap_break_err!(List::map(List::sort(({
+        result = unwrap_break_err!(List::map(unwrap_break_err!(List::sort(({
         let mut __acc: Arc<metamodelica::List<(ArcStr, SemanticVersion::Version, SupportLevel)>> = metamodelica::nil();
-        for mut version in (JSON::getKeys(vers.clone()).unwrap()).into_iter().cloned() {
-            if !(providesExpectedVersion((version.clone()).clone(), JSON::getOrDefault(JSON::get(vers.clone(), (version.clone()).clone()).unwrap(), (literal!("provides")).clone(), JSON::emptyArray(0)).unwrap(), wantedVersion.clone()).unwrap()) { continue; }
-            let __x = (version.clone(), SemanticVersion::parse((version.clone()).clone(), true).unwrap(), getSupportLevel(JSON::get(JSON::get(vers.clone(), (version.clone()).clone()).unwrap(), (literal!("support")).clone()).unwrap()).unwrap());
+        for mut version in (unwrap_break_err!(JSON::getKeys(vers.clone()), '__try0)).into_iter().cloned() {
+            if !(unwrap_break_err!(providesExpectedVersion((version.clone()).clone(), unwrap_break_err!(JSON::getOrDefault(unwrap_break_err!(JSON::get(vers.clone(), (version.clone()).clone()), '__try0), (literal!("provides")).clone(), JSON::emptyArray(0)), '__try0), wantedVersion.clone()), '__try0)) { continue; }
+            let __x = (version.clone(), unwrap_break_err!(SemanticVersion::parse((version.clone()).clone(), true), '__try0), unwrap_break_err!(getSupportLevel(unwrap_break_err!(JSON::get(unwrap_break_err!(JSON::get(vers.clone(), (version.clone()).clone()), '__try0), (literal!("support")).clone()), '__try0)), '__try0));
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }), (std::sync::Arc::new(compareVersionsAndSupportLevel) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, SemanticVersion::Version, SupportLevel), (ArcStr, SemanticVersion::Version, SupportLevel)) -> Result<bool> + 'static>)).unwrap(), std::sync::Arc::new(fnptr!(Util::tuple31, _))), '__try0);
+    }), (std::sync::Arc::new(compareVersionsAndSupportLevel) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, SemanticVersion::Version, SupportLevel), (ArcStr, SemanticVersion::Version, SupportLevel)) -> Result<bool> + 'static>)), '__try0), std::sync::Arc::new(fnptr!(Util::tuple31, _))), '__try0);
         Ok::<_, anyhow::Error>((libobject.clone(), obj.clone(), result.clone(), vers.clone(), wantedVersion.clone()))
     } {
         Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3, __try0_o4)) => {
@@ -1791,12 +1791,12 @@ pub fn versionsThatConvertFromTheWanted(mut id: ArcStr, mut version: ArcStr, mut
     result = metamodelica::nil();
     match '__try0: {
         obj = unwrap_break_err!(getPackageIndex(printError.clone()), '__try0);
-        libobject = unwrap_break_err!(JSON::get(JSON::get(obj.clone(), (literal!("libs")).clone()).unwrap(), (id.clone()).clone()), '__try0);
+        libobject = unwrap_break_err!(JSON::get(unwrap_break_err!(JSON::get(obj.clone(), (literal!("libs")).clone()), '__try0), (id.clone()).clone()), '__try0);
         vers = unwrap_break_err!(JSON::get(libobject.clone(), (literal!("versions")).clone()), '__try0);
         wantedVersion = unwrap_break_err!(SemanticVersion::parse((version.clone()).clone(), true), '__try0);
         for mut v in &*unwrap_break_err!(JSON::getKeys(vers.clone()), '__try0) {
             let mut v = v.clone();
-            convertFrom = unwrap_break_err!(JSON::getOrDefault(JSON::get(vers.clone(), (v.clone()).clone()).unwrap(), (literal!("convertFromVersion")).clone(), JSON::emptyArray(0)), '__try0);
+            convertFrom = unwrap_break_err!(JSON::getOrDefault(unwrap_break_err!(JSON::get(vers.clone(), (v.clone()).clone()), '__try0), (literal!("convertFromVersion")).clone(), JSON::emptyArray(0)), '__try0);
             for mut i in 1..=JSON::size(convertFrom.clone()) {
                 let __pa1 = ::match_deref::match_deref! { match &(unwrap_break_err!(JSON::at(convertFrom.clone(), i.clone()), '__try0)) {
                     Deref @ JSON::STRING { r#str: __pa1 } => __pa1.clone(),
@@ -1835,14 +1835,14 @@ pub fn versionsThatConvertToTheWanted(mut id: ArcStr, mut version: ArcStr, mut p
     result = metamodelica::nil();
     match '__try0: {
         obj = unwrap_break_err!(getPackageIndex(printError.clone()), '__try0);
-        libobject = unwrap_break_err!(JSON::get(JSON::get(obj.clone(), (literal!("libs")).clone()).unwrap(), (id.clone()).clone()), '__try0);
+        libobject = unwrap_break_err!(JSON::get(unwrap_break_err!(JSON::get(obj.clone(), (literal!("libs")).clone()), '__try0), (id.clone()).clone()), '__try0);
         vers = unwrap_break_err!(JSON::get(libobject.clone(), (literal!("versions")).clone()), '__try0);
         wantedVersion = unwrap_break_err!(SemanticVersion::parse((version.clone()).clone(), true), '__try0);
         for mut v in &*unwrap_break_err!(JSON::getKeys(vers.clone()), '__try0) {
             let mut v = v.clone();
             libVersion = unwrap_break_err!(SemanticVersion::parse((v.clone()).clone(), true), '__try0);
             if unwrap_break_err!(SemanticVersion::compare(wantedVersion.clone(), libVersion.clone(), true, false), '__try0) == 0 {
-                result = unwrap_break_err!(JSON::getStringList(JSON::get(JSON::get(vers.clone(), (v.clone()).clone()).unwrap(), (literal!("convertFromVersion")).clone()).unwrap()), '__try0);
+                result = unwrap_break_err!(JSON::getStringList(unwrap_break_err!(JSON::get(unwrap_break_err!(JSON::get(vers.clone(), (v.clone()).clone()), '__try0), (literal!("convertFromVersion")).clone()), '__try0)), '__try0);
                 return result.clone();
             }
         }
@@ -1936,7 +1936,7 @@ pub fn installPackage(mut pkg: ArcStr, mut version: ArcStr, mut exactMatch: bool
         oldSha = (literal!("")).clone();
         if System::regularFileExists((destPathPkgInfo.clone()).clone()) {
             if '__try0: {
-                oldSha = (unwrap_break_err!(getShaOrZipfile(JSON::parseFile((destPathPkgInfo.clone()).clone())?), '__try0)).clone();
+                oldSha = (unwrap_break_err!(getShaOrZipfile(unwrap_break_err!(JSON::parseFile((destPathPkgInfo.clone()).clone()), '__try0)), '__try0)).clone();
                 Ok::<(), anyhow::Error>(())
             }.is_err() {
             }
@@ -2162,7 +2162,7 @@ fn installPackageWork(mut pkg: ArcStr, mut version: ArcStr, mut exactMatch: bool
                 versionObj = JSON::parseFile((jsonPath.clone()).clone())?;
                 zip = (JSON::getString(JSON::get(versionObj.clone(), (literal!("zipfile")).clone())?)?).clone();
                 if '__try0: {
-                    sha = (unwrap_break_err!(JSON::getString(JSON::get(versionObj.clone(), (literal!("sha")).clone())?), '__try0)).clone();
+                    sha = (unwrap_break_err!(JSON::getString(unwrap_break_err!(JSON::get(versionObj.clone(), (literal!("sha")).clone()), '__try0)), '__try0)).clone();
                     Ok::<(), anyhow::Error>(())
                 }.is_err() {
                 }

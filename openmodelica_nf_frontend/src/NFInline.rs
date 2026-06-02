@@ -157,7 +157,7 @@ pub fn inlineCall(mut callExp: Arc<Expression::NFExpression>, mut forceInline: b
                     arg = unwrap_break_err!(inlineCallExp(arg.clone(), forceInline.clone()), '__try0);
                     stmt = unwrap_break_err!(Statement::mapExp(stmt.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new({ let __pe_b1 = i.clone(); let __pe_b2 = arg.clone(); move |__pe_a0| replaceCrefNode(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)), '__try0);
                 }
-                exp = getOutputExp(stmt.clone(), listHead(outputs.clone())?, call.clone());
+                exp = getOutputExp(stmt.clone(), unwrap_break_err!(listHead(outputs.clone()), '__try0), call.clone());
                 exp = unwrap_break_err!(Expression::map(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = forceInline.clone(); move |__pe_a0| inlineCallExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)), '__try0);
                 Ok::<_, anyhow::Error>((exp.clone(),))
             } {

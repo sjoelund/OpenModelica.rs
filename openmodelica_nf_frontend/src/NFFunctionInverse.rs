@@ -179,7 +179,7 @@ fn instInverseSubMod(mut submod: Arc<SCode::SubMod>, mut fnNode: Arc<InstNode::I
             aparam = Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (name.clone()).clone(), subscripts: metamodelica::nil() });
             match '__try0: {
                 (param, _, _) = unwrap_break_err!(Lookup::lookupLocalCref(aparam.clone(), fnNode.clone(), NFInstContext::RELAXED.clone(), info.clone()), '__try0);
-                let true = (InstNode::isInput(ComponentRef::node(param.clone())?)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
+                let true = (InstNode::isInput(unwrap_break_err!(ComponentRef::node(param.clone()), '__try0))) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
                 Ok::<_, anyhow::Error>((param.clone(),))
             } {
                 Ok((__try0_o0,)) => {

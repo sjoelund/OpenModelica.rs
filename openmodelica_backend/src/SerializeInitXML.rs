@@ -427,7 +427,7 @@ fn scalarVariableTypeFixedAttribute(mut file: File::File, mut isFixed: bool) -> 
 fn scalarVariableTypeAttribute(mut file: File::File, mut attr: Option<Arc<Exp>>, mut name: ArcStr) -> () {
     let mut expStr: ArcStr = arcstr::literal!("");
     if '__try0: {
-        expStr = (unwrap_break_err!(expString(Util::getOption(attr.clone()).unwrap()), '__try0)).clone();
+        expStr = (unwrap_break_err!(expString(unwrap_break_err!(Util::getOption(attr.clone()), '__try0)), '__try0)).clone();
         File::write(file.clone(), (literal!(" ")).clone());
         File::write(file.clone(), (name.clone()).clone());
         File::write(file.clone(), (literal!("=\"")).clone());

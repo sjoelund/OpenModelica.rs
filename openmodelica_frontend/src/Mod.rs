@@ -394,7 +394,7 @@ fn elabModValue(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: A
         if '__try0: {
             (_, v) = unwrap_break_err!(Ceval::ceval(inCache.clone(), inEnv.clone(), inExp.clone(), false, msg.clone(), 0), '__try0);
             if ValuesUtil::isRecord(v.clone()) {
-                v = unwrap_break_err!(ValuesUtil::typeConvertRecord(v.clone(), Expression::r#typeof(inExp.clone())?), '__try0);
+                v = unwrap_break_err!(ValuesUtil::typeConvertRecord(v.clone(), unwrap_break_err!(Expression::r#typeof(inExp.clone()), '__try0)), '__try0);
             }
             outValue = Some(v.clone());
             Ok::<(), anyhow::Error>(())
@@ -1072,7 +1072,7 @@ fn lookupComplexCompModification(mut inEqMod: Option<DAE::EqMod>, mut inName: Ar
             if name.clone() == inName.clone() {
                 e = unwrap_break_err!(ValuesUtil::valueExp(v.clone(), None), '__try0);
                 ae = unwrap_break_err!(Expression::unelabExp(e.clone()), '__try0);
-                ty = unwrap_break_err!(Types::complicateType(Expression::r#typeof(e.clone()).unwrap()), '__try0);
+                ty = unwrap_break_err!(Types::complicateType(unwrap_break_err!(Expression::r#typeof(e.clone()), '__try0)), '__try0);
                 eq_mod = DAE::EqMod::TYPED { modifierAsExp: e.clone(), modifierAsValue: Some(v.clone()), properties: DAE::Properties::PROP { type_: ty.clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_CONST }, modifierAsAbsynExp: ae.clone(), info: info.clone() };
                 outMod = Arc::new(DAE::Mod::MOD { finalPrefix: inFinal.clone(), eachPrefix: inEach.clone(), subModLst: metamodelica::nil(), binding: Some(eq_mod.clone()), info: inInfo.clone() });
                 break;

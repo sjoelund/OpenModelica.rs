@@ -316,7 +316,7 @@ pub fn lookupRootClass(mut path: Arc<Path>, mut topScope: Arc<InstNode::InstNode
             match '__try1: {
                 last = (unwrap_break_err!(AbsynUtil::pathLastIdent(path.clone()), '__try1)).clone();
                 let true = (last.clone() == literal!("constructor") || last.clone() == literal!("destructor")) else { break '__try1 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
-                (clsNode, _) = unwrap_break_err!(Lookup::lookupName(AbsynUtil::stripLast(path.clone())?, topScope.clone(), next_context.clone(), false), '__try1);
+                (clsNode, _) = unwrap_break_err!(Lookup::lookupName(unwrap_break_err!(AbsynUtil::stripLast(path.clone()), '__try1), topScope.clone(), next_context.clone(), false), '__try1);
                 let __pa2 = ::match_deref::match_deref! { match &(unwrap_break_err!(InstNode::getType(clsNode.clone()), '__try1)) {
                     Deref @ Type::COMPLEX { complexTy: __pa2, .. } => __pa2.clone(),
                     _ => break '__try1 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
@@ -1201,7 +1201,7 @@ pub fn applyModifier(mut modifier: Arc<Modifier::Modifier>, mut cls: Arc<ClassTr
             for mut r#mod in &*mods.clone() {
                 let mut r#mod = r#mod.clone();
                 if '__try0: {
-                    (node, _) = unwrap_break_err!(ClassTree::lookupElement((Modifier::name(r#mod.clone())?).clone(), cls.clone()), '__try0);
+                    (node, _) = unwrap_break_err!(ClassTree::lookupElement((unwrap_break_err!(Modifier::name(r#mod.clone()), '__try0)).clone(), cls.clone()), '__try0);
                     unwrap_break_err!(InstNode::componentApply(node.clone(), (std::sync::Arc::new(Component::mergeModifier) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Modifier::Modifier>, Arc<Component::NFComponent>) -> Result<Arc<Component::NFComponent>> + 'static>), r#mod.clone()), '__try0);
                     Ok::<(), anyhow::Error>(())
                 }.is_err() {
@@ -1217,7 +1217,7 @@ pub fn applyModifier(mut modifier: Arc<Modifier::Modifier>, mut cls: Arc<ClassTr
             for mut r#mod in &*mods.clone() {
                 let mut r#mod = r#mod.clone();
                 match '__try0: {
-                    node_ptrs = unwrap_break_err!(ClassTree::lookupElementsPtr((Modifier::name(r#mod.clone())?).clone(), cls.clone()), '__try0);
+                    node_ptrs = unwrap_break_err!(ClassTree::lookupElementsPtr((unwrap_break_err!(Modifier::name(r#mod.clone()), '__try0)).clone(), cls.clone()), '__try0);
                     Ok::<_, anyhow::Error>((node_ptrs.clone(),))
                 } {
                     Ok((__try0_o0,)) => {
@@ -3105,12 +3105,12 @@ pub fn insertGeneratedInners(mut node: Arc<InstNode::InstNode>, mut topScope: Ar
             instComponent(n.clone(), Attributes::DEFAULT_ATTR().clone(), Arc::new(crate::NFModifier::Modifier::NOMOD), true, 0, InstContext::CLASS.clone(), None, metamodelica::nil())?;
             if !(InstContext::inInstanceAPI(context.clone())) {
                 if '__try2: {
-                    let __pa3 = ::match_deref::match_deref! { match &(unwrap_break_err!(SCodeUtil::lookupElementAnnotationBinding(InstNode::definition(InstNode::classScope(n.clone()))?, (literal!("missingInnerMessage")).clone()), '__try2)) {
+                    let __pa3 = ::match_deref::match_deref! { match &(unwrap_break_err!(SCodeUtil::lookupElementAnnotationBinding(unwrap_break_err!(InstNode::definition(InstNode::classScope(n.clone())), '__try2), (literal!("missingInnerMessage")).clone()), '__try2)) {
                         Some(Deref @ Absyn::Exp::STRING { value: __pa3 }) => __pa3.clone(),
                         _ => break '__try2 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
                     } };
                     r#str = __pa3.clone();
-                    unwrap_break_err!(Error::addSourceMessage(Error::MISSING_INNER_MESSAGE.clone(), list![(System::unescapedString((r#str.clone()).clone())).clone()], InstNode::info(n.clone())?), '__try2);
+                    unwrap_break_err!(Error::addSourceMessage(Error::MISSING_INNER_MESSAGE.clone(), list![(System::unescapedString((r#str.clone()).clone())).clone()], unwrap_break_err!(InstNode::info(n.clone()), '__try2)), '__try2);
                     Ok::<(), anyhow::Error>(())
                 }.is_err() {
                 }
@@ -3138,12 +3138,12 @@ pub fn checkTopLevelOuter(mut name: ArcStr, mut outerNode: Arc<InstNode::InstNod
         if unwrap_break_err!(InstNode::isInner(node.clone()), '__try0) {
             is_error = !(InstContext::inRelaxed(context.clone()) || unwrap_break_err!(Flags::isConfigFlagSet(Flags::ALLOW_NON_STANDARD_MODELICA.clone(), (literal!("nonStdTopLevelOuter")).clone()), '__try0));
             if is_error.clone() {
-                unwrap_break_err!(Error::addSourceMessageAsError(Error::TOP_LEVEL_OUTER.clone(), list![(name.clone()).clone()], InstNode::info(node.clone())?), '__try0);
+                unwrap_break_err!(Error::addSourceMessageAsError(Error::TOP_LEVEL_OUTER.clone(), list![(name.clone()).clone()], unwrap_break_err!(InstNode::info(node.clone()), '__try0)), '__try0);
             } else {
-                unwrap_break_err!(Error::addSourceMessage(Error::TOP_LEVEL_OUTER.clone(), list![(name.clone()).clone()], InstNode::info(node.clone())?), '__try0);
+                unwrap_break_err!(Error::addSourceMessage(Error::TOP_LEVEL_OUTER.clone(), list![(name.clone()).clone()], unwrap_break_err!(InstNode::info(node.clone()), '__try0)), '__try0);
             }
         } else {
-            unwrap_break_err!(Error::addMultiSourceMessage(Error::MISSING_INNER_NAME_CONFLICT.clone(), list![(name.clone()).clone()], list![InstNode::info(node.clone())?, InstNode::info(outerNode.clone())?]), '__try0);
+            unwrap_break_err!(Error::addMultiSourceMessage(Error::MISSING_INNER_NAME_CONFLICT.clone(), list![(name.clone()).clone()], list![unwrap_break_err!(InstNode::info(node.clone()), '__try0), unwrap_break_err!(InstNode::info(outerNode.clone()), '__try0)]), '__try0);
             is_error = true;
         }
         Ok::<_, anyhow::Error>((is_error.clone(),))

@@ -499,7 +499,7 @@ pub fn mod_one(mut name: Name, mut inRef: Ref, mut ig: Graph) -> Result<Graph> {
             let true = (FNode::isRefMod(r.clone())? && !(FNode::isRefModHolder(r.clone())?) && !(ClassInfUtil::isBasicTypeComponentName((FNode::refName(r.clone())?).clone()))) else { bail!("pattern mismatch") };
             cr = AbsynUtil::pathToCref(AbsynUtil::stringListPath(FNode::namesUpToParentName(r.clone(), (arcstr::literal!(FNode::modNodeName)).clone())?)?)?;
             if '__try0: {
-                unwrap_break_err!(FLookup::cr(g.clone(), FNode::getModifierTarget(r.clone())?, cr.clone(), FLookup::ignoreNothing.clone(), FLookup::dummyLookupOption.clone()), '__try0);
+                unwrap_break_err!(FLookup::cr(g.clone(), unwrap_break_err!(FNode::getModifierTarget(r.clone()), '__try0), cr.clone(), FLookup::ignoreNothing.clone(), FLookup::dummyLookupOption.clone()), '__try0);
                 Ok::<(), anyhow::Error>(())
             }.is_ok() { bail!("failure(): body succeeded") }
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FResolve.mod_one: modifier: ")); __mm_s.push_str(&*AbsynUtil::crefString(cr.clone())?); __mm_s.push_str(&*literal!(" not found in: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(r.clone())?)?); __mm_s.push_str(&*literal!("!\n")); ArcStr::from(__mm_s) }).clone());

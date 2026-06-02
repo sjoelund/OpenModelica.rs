@@ -2217,7 +2217,7 @@ pub mod Function {
         let mut name: ArcStr = arcstr::literal!("");
         match '__try0: {
             comp = unwrap_break_err!(InstNode::component(component.clone()), '__try0);
-            default = Binding::getExpOpt(Component::getImplicitBinding(comp.clone(), InstNode::instanceParent(component.clone())?));
+            default = Binding::getExpOpt(Component::getImplicitBinding(comp.clone(), unwrap_break_err!(InstNode::instanceParent(component.clone()), '__try0)));
             name = (unwrap_break_err!(InstNode::name(component.clone()), '__try0)).clone();
             if StringUtil::startsWith((name.clone()).clone(), (literal!("$in_")).clone()) {
                 name = unwrap_break_err!(substring((name.clone()).clone(), 5, ((name.clone()).clone().len() as i32)), '__try0);

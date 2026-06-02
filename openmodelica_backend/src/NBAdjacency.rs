@@ -1803,7 +1803,7 @@ pub mod Matrix {
                     (names, ranges, maps) = unwrap_break_err!(BEquation::Iterator::getFrames(iter_.clone()), '__try0);
                     iter = unwrap_break_err!(BEquation::Iterator::addFrames(iter.clone(), List::zip3(names.clone(), ranges.clone(), maps.clone())), '__try0);
                 }
-                unwrap_break_err!(Slice::upgradeRow(BEquation::Equation::getEqnName(eqn_ptr.clone())?, eqn_arr_idx.clone(), iter.clone(), ty.clone(), dependencies.clone(), dep.clone(), rep.clone(), map.clone(), fullmap.clone(), m.clone(), mapping.clone(), modes.clone()), '__try0);
+                unwrap_break_err!(Slice::upgradeRow(unwrap_break_err!(BEquation::Equation::getEqnName(eqn_ptr.clone()), '__try0), eqn_arr_idx.clone(), iter.clone(), ty.clone(), dependencies.clone(), dep.clone(), rep.clone(), map.clone(), fullmap.clone(), m.clone(), mapping.clone(), modes.clone()), '__try0);
             }
             Ok::<(), anyhow::Error>(())
         } {

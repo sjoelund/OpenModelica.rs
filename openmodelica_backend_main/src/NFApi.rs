@@ -464,7 +464,7 @@ pub fn mkFullyQual(mut absynProgram: Absyn::Program, mut classPath: Arc<Path>, m
         (program, name, expanded_cls) = unwrap_break_err!(frontEndLookup(absynProgram.clone(), classPath.clone()), '__try0);
         context = InstContext::set(InstContext::RELAXED.clone(), InstContext::FAST_LOOKUP.clone());
         if InstNode::isDerivedClass(expanded_cls.clone()) {
-            cls = unwrap_break_err!(Lookup::lookupClassName(pathToQualify.clone(), InstNode::classParent(expanded_cls.clone())?, context.clone(), Absyn::dummyInfo.clone(), false), '__try0);
+            cls = unwrap_break_err!(Lookup::lookupClassName(pathToQualify.clone(), unwrap_break_err!(InstNode::classParent(expanded_cls.clone()), '__try0), context.clone(), Absyn::dummyInfo.clone(), false), '__try0);
         } else {
             cls = unwrap_break_err!(Lookup::lookupClassName(pathToQualify.clone(), expanded_cls.clone(), context.clone(), Absyn::dummyInfo.clone(), false), '__try0);
         }
@@ -788,10 +788,10 @@ pub fn getModelInstance(mut classPath: Arc<Path>, mut contextPath: Arc<Path>, mu
         context = InstContext::set(InstContext::RELAXED.clone(), InstContext::CLASS.clone());
         context = InstContext::set(context.clone(), InstContext::INSTANCE_API.clone());
         inst_settings = Arc::new(InstSettings::InstSettings { resizableArrays: false, mergeExtendsSections: false });
-        (_, top) = unwrap_break_err!(mkTop(SymbolTable::getAbsyn(), (AbsynUtil::pathString(classPath.clone(), (literal!(".")).clone(), true, false)?).clone()), '__try0);
+        (_, top) = unwrap_break_err!(mkTop(SymbolTable::getAbsyn(), (unwrap_break_err!(AbsynUtil::pathString(classPath.clone(), (literal!(".")).clone(), true, false), '__try0)).clone()), '__try0);
         r#mod = parseModifier((modifier.clone()).clone(), top.clone());
         cls_node = unwrap_break_err!(Inst::lookupRootClass(classPath.clone(), top.clone(), context.clone()), '__try0);
-        if SCodeUtil::isFunction(InstNode::definition(cls_node.clone())?) {
+        if SCodeUtil::isFunction(unwrap_break_err!(InstNode::definition(cls_node.clone()), '__try0)) {
             context = InstContext::unset(context.clone(), InstContext::CLASS.clone());
             context = InstContext::set(context.clone(), InstContext::FUNCTION.clone());
         }
@@ -803,7 +803,7 @@ pub fn getModelInstance(mut classPath: Arc<Path>, mut contextPath: Arc<Path>, mu
         inst_tree = unwrap_break_err!(buildInstanceTree(cls_node.clone(), false), '__try0);
         unwrap_break_err!(execStat((literal!("NFApi.buildInstanceTree")).clone()), '__try0);
         unwrap_break_err!(Inst::instExpressions(cls_node.clone(), cls_node.clone(), Arc::new(openmodelica_nf_frontend::NFSections::EMPTY), NFConnectBreakTree::new(), context.clone(), inst_settings.clone()), '__try0);
-        unwrap_break_err!(Inst::updateImplicitVariability(cls_node.clone(), Flags::isSet(Flags::EVAL_PARAM.clone())?, context.clone()), '__try0);
+        unwrap_break_err!(Inst::updateImplicitVariability(cls_node.clone(), unwrap_break_err!(Flags::isSet(Flags::EVAL_PARAM.clone()), '__try0), context.clone()), '__try0);
         unwrap_break_err!(execStat((literal!("Inst.instExpressions")).clone()), '__try0);
         unwrap_break_err!(Typing::typeClassType(cls_node.clone(), Binding::EMPTY_BINDING().clone(), context.clone(), cls_node.clone()), '__try0);
         unwrap_break_err!(Typing::typeComponents(cls_node.clone(), context.clone(), false), '__try0);
@@ -844,7 +844,7 @@ pub fn getModelInstanceAnnotation(mut classPath: Arc<Path>, mut filter: Arc<meta
     match '__try0: {
         context = InstContext::set(InstContext::RELAXED.clone(), InstContext::CLASS.clone());
         context = InstContext::set(context.clone(), InstContext::INSTANCE_API.clone());
-        (_, top) = unwrap_break_err!(mkTop(SymbolTable::getAbsyn(), (AbsynUtil::pathString(classPath.clone(), (literal!(".")).clone(), true, false)?).clone()), '__try0);
+        (_, top) = unwrap_break_err!(mkTop(SymbolTable::getAbsyn(), (unwrap_break_err!(AbsynUtil::pathString(classPath.clone(), (literal!(".")).clone(), true, false), '__try0)).clone()), '__try0);
         cls_node = unwrap_break_err!(Inst::lookupRootClass(classPath.clone(), top.clone(), context.clone()), '__try0);
         cls_node = InstNode::resolveInner(cls_node.clone());
         json = unwrap_break_err!(dumpJSONInstanceAnnotation(cls_node.clone(), filter.clone()), '__try0);
@@ -1127,7 +1127,7 @@ pub fn dumpJSONInstanceAnnotation(mut node: Arc<InstNode::InstNode>, mut filter:
             context = InstContext::set(InstContext::CLASS.clone(), InstContext::RELAXED.clone());
             scope = InstNode::makeRootClass(scope.clone(), Arc::new(openmodelica_nf_frontend::NFInstNode::InstNode::EMPTY_NODE), None);
             scope = unwrap_break_err!(Inst::instantiate(scope.clone(), Arc::new(openmodelica_nf_frontend::NFModifier::Modifier::NOMOD), Arc::new(openmodelica_nf_frontend::NFInstNode::InstNode::EMPTY_NODE), context.clone(), true), '__try1);
-            unwrap_break_err!(Inst::insertGeneratedInners(scope.clone(), InstNode::topScope(scope.clone())?, context.clone()), '__try1);
+            unwrap_break_err!(Inst::insertGeneratedInners(scope.clone(), unwrap_break_err!(InstNode::topScope(scope.clone()), '__try1), context.clone()), '__try1);
             unwrap_break_err!(Inst::instExpressions(scope.clone(), scope.clone(), Arc::new(openmodelica_nf_frontend::NFSections::EMPTY), NFConnectBreakTree::new(), context.clone(), Inst::DEFAULT_SETTINGS.clone()), '__try1);
             Ok::<(), anyhow::Error>(())
         }.is_err() {
@@ -1304,7 +1304,7 @@ pub fn dumpJSONComponent(mut component: Arc<InstNode::InstNode>, mut originalBin
             path = AbsynUtil::typeSpecPath(var_field!((*elem).typeSpec, SCode::Element::COMPONENT).clone())?;
             match '__try0: {
                 (ty_node, _) = unwrap_break_err!(Lookup::lookupName(path.clone(), scope.clone(), InstContext::set(InstContext::RELAXED.clone(), InstContext::FAST_LOOKUP.clone()), false), '__try0);
-                json = unwrap_break_err!(JSON::addPair((literal!("type")).clone(), dumpJSONSCodeClass(InstNode::definition(ty_node.clone())?, ty_node.clone(), InstNode::resolveInner(component.clone()), false, JSON::makeNull())?, json.clone()), '__try0);
+                json = unwrap_break_err!(JSON::addPair((literal!("type")).clone(), unwrap_break_err!(dumpJSONSCodeClass(unwrap_break_err!(InstNode::definition(ty_node.clone()), '__try0), ty_node.clone(), InstNode::resolveInner(component.clone()), false, JSON::makeNull()), '__try0), json.clone()), '__try0);
                 Ok::<_, anyhow::Error>((json.clone(),))
             } {
                 Ok((__try0_o0,)) => {
@@ -1410,7 +1410,7 @@ pub fn dumpJSONBinding(mut binding: Arc<Binding::NFBinding>, mut originalBinding
     if isSome(originalBinding.clone()) && Binding::isEvaluated(binding.clone()) {
         if '__try0: {
             context = InstContext::set(InstContext::RELAXED.clone(), InstContext::INSTANCE_API.clone());
-            bind = unwrap_break_err!(Inst::instBinding(Util::getOption(originalBinding.clone())?, context.clone()), '__try0);
+            bind = unwrap_break_err!(Inst::instBinding(unwrap_break_err!(Util::getOption(originalBinding.clone()), '__try0), context.clone()), '__try0);
             bind = unwrap_break_err!(Typing::typeBinding(bind.clone(), context.clone()), '__try0);
             Ok::<(), anyhow::Error>(())
         }.is_err() {
@@ -1424,7 +1424,7 @@ pub fn dumpJSONBinding(mut binding: Arc<Binding::NFBinding>, mut originalBinding
         if '__try1: {
             exp = unwrap_break_err!(Ceval::evalExp(exp.clone(), Ceval::EvalTarget::new(Absyn::dummyInfo.clone(), InstContext::INSTANCE_API.clone(), None)), '__try1);
             exp = unwrap_break_err!(Expression::map(exp.clone(), (std::sync::Arc::new(Expression::expandSplitIndices) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)), '__try1);
-            json = unwrap_break_err!(JSON::addPair((literal!("value")).clone(), Expression::toJSON(exp.clone())?, json.clone()), '__try1);
+            json = unwrap_break_err!(JSON::addPair((literal!("value")).clone(), unwrap_break_err!(Expression::toJSON(exp.clone()), '__try1), json.clone()), '__try1);
             Ok::<(), anyhow::Error>(())
         }.is_err() {
         }
@@ -2091,7 +2091,7 @@ pub fn dumpJSONSCodeType(mut path: Arc<Path>, mut scope: Arc<InstNode::InstNode>
     let mut ty_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     match '__try0: {
         (ty_node, _) = unwrap_break_err!(Lookup::lookupName(path.clone(), scope.clone(), InstContext::set(InstContext::RELAXED.clone(), InstContext::FAST_LOOKUP.clone()), false), '__try0);
-        json = unwrap_break_err!(JSON::addPair((literal!("type")).clone(), dumpJSONSCodeClass(InstNode::definition(ty_node.clone())?, ty_node.clone(), scope.clone(), false, JSON::makeNull())?, json.clone()), '__try0);
+        json = unwrap_break_err!(JSON::addPair((literal!("type")).clone(), unwrap_break_err!(dumpJSONSCodeClass(unwrap_break_err!(InstNode::definition(ty_node.clone()), '__try0), ty_node.clone(), scope.clone(), false, JSON::makeNull()), '__try0), json.clone()), '__try0);
         Ok::<_, anyhow::Error>((json.clone(),))
     } {
         Ok((__try0_o0,)) => {
@@ -2142,14 +2142,14 @@ pub fn dumpJSONSCodeTypeExtends(mut node: Arc<InstNode::InstNode>, mut scope: Ar
     }
     if '__try0: {
         expanded_node = unwrap_break_err!(Inst::expand(node.clone(), InstContext::RELAXED.clone()), '__try0);
-        exts = ClassTree::getExtends(Class::classTree(InstNode::getClass(expanded_node.clone()).unwrap()).unwrap());
+        exts = ClassTree::getExtends(unwrap_break_err!(Class::classTree(unwrap_break_err!(InstNode::getClass(expanded_node.clone()), '__try0)), '__try0));
         if !(exts.clone().borrow().is_empty()) {
             json_elements = JSON::makeNull();
             let __range1 = exts.clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut ext in __range1 {
                 json_ext = JSON::makeNull();
                 json_ext = unwrap_break_err!(JSON::addPair((literal!("$kind")).clone(), Arc::new(JSON::JSON::STRING { r#str: (literal!("extends")).clone() }), json_ext.clone()), '__try0);
-                json_ext = unwrap_break_err!(JSON::addPair((literal!("baseClass")).clone(), dumpJSONSCodeClass(InstNode::definition(ext.clone()).unwrap(), ext.clone(), scope.clone(), false, JSON::makeNull()).unwrap(), json_ext.clone()), '__try0);
+                json_ext = unwrap_break_err!(JSON::addPair((literal!("baseClass")).clone(), unwrap_break_err!(dumpJSONSCodeClass(unwrap_break_err!(InstNode::definition(ext.clone()), '__try0), ext.clone(), scope.clone(), false, JSON::makeNull()), '__try0), json_ext.clone()), '__try0);
                 json_elements = unwrap_break_err!(JSON::addElement(json_ext.clone(), json_elements.clone()), '__try0);
             }
             json = unwrap_break_err!(JSON::addPair((literal!("elements")).clone(), json_elements.clone(), json.clone()), '__try0);
@@ -2170,7 +2170,7 @@ pub fn dumpJSONSCodeClassDef(mut classDef: Arc<SCode::ClassDef>, mut scope: Arc<
             if qualifyPath.clone() {
                 match '__try0: {
                     (derivedNode, _) = unwrap_break_err!(Lookup::lookupName(path.clone(), scope.clone(), InstContext::RELAXED.clone(), false), '__try0);
-                    json = unwrap_break_err!(JSON::addPair((literal!("baseClass")).clone(), dumpJSONNodeEnclosingPath(derivedNode.clone())?, json.clone()), '__try0);
+                    json = unwrap_break_err!(JSON::addPair((literal!("baseClass")).clone(), unwrap_break_err!(dumpJSONNodeEnclosingPath(derivedNode.clone()), '__try0), json.clone()), '__try0);
                     Ok::<_, anyhow::Error>((derivedNode.clone(), json.clone()))
                 } {
                     Ok((__try0_o0, __try0_o1)) => {
@@ -2826,7 +2826,7 @@ pub fn translateResidualsDAE(mut path: Arc<Path>, mut fileNamePrefix: ArcStr) ->
         (flat_model, funcs, _) = unwrap_break_err!(CevalScriptBackend::runFrontEndNF(path.clone(), false, false), '__try0);
         (flat_model, funcs) = unwrap_break_err!(InstUtil::createExtractorModel(flat_model.clone(), funcs.clone()), '__try0);
         unwrap_break_err!(InstUtil::dumpFlatModelDebug((literal!("translateResidualsDAE")).clone(), flat_model.clone(), funcs.clone()), '__try0);
-        simSettings = Some(unwrap_break_err!(CevalScriptBackend::convertSimulationOptionsToSimCode(CevalScriptBackend::buildSimulationOptionsFromModelExperimentAnnotation(path.clone(), (fileNamePrefix.clone()).clone(), None)?), '__try0));
+        simSettings = Some(unwrap_break_err!(CevalScriptBackend::convertSimulationOptionsToSimCode(unwrap_break_err!(CevalScriptBackend::buildSimulationOptionsFromModelExperimentAnnotation(path.clone(), (fileNamePrefix.clone()).clone(), None), '__try0)), '__try0));
         unwrap_break_err!(SimCodeMain::translateModelCallBackend(flat_model.clone(), funcs.clone(), path.clone(), (fileNamePrefix.clone()).clone(), true, simSettings.clone()), '__try0);
         Ok::<(), anyhow::Error>(())
     }.is_err() {

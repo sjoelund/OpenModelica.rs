@@ -298,7 +298,7 @@ pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, m
             (list![Arc::new(StrongComponent::NBStrongComponent::SINGLE_COMPONENT { var: var_field!((*comp).var, StrongComponent::NBStrongComponent::SINGLE_COMPONENT).clone(), eqn: Pointer::create(eqn.clone()), status: solve_status.clone() })], solve_status.clone())
         },
         Deref @ StrongComponent::MULTI_COMPONENT { vars: Deref @ metamodelica::List::Cons { head: var_slice, tail: Deref @ metamodelica::List::Nil }, .. } if (!(Equation::isCompound(Slice::getT(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::MULTI_COMPONENT).clone())))) => {
-            (solved_comps, implicit_index) = unwrap_break_err!(solveStrongComponent(StrongComponent::createSliceOrSingle(BVariable::getVarName(Slice::getT(var_slice.clone())), var_slice.clone(), var_field!((*comp).eqn, StrongComponent::NBStrongComponent::MULTI_COMPONENT).clone())?, funcMap.clone(), kind.clone(), implicit_index.clone(), slicing_map.clone(), varData.clone(), eqData.clone()), '__try0);
+            (solved_comps, implicit_index) = unwrap_break_err!(solveStrongComponent(unwrap_break_err!(StrongComponent::createSliceOrSingle(BVariable::getVarName(Slice::getT(var_slice.clone())), var_slice.clone(), var_field!((*comp).eqn, StrongComponent::NBStrongComponent::MULTI_COMPONENT).clone()), '__try0), funcMap.clone(), kind.clone(), implicit_index.clone(), slicing_map.clone(), varData.clone(), eqData.clone()), '__try0);
             (solved_comps.clone(), Status::UNPROCESSED.clone())
         },
         Deref @ StrongComponent::MULTI_COMPONENT { .. } => {
@@ -336,7 +336,7 @@ pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, m
             inputs = unwrap_break_err!(List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>> = metamodelica::nil();
         for mut i in (alg.inputs.clone()).into_iter().cloned() {
-            let __x = BVariable::getRecordChildrenCrefOrSelf(i.clone())?;
+            let __x = unwrap_break_err!(BVariable::getRecordChildrenCrefOrSelf(i.clone()), '__try0);
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -352,7 +352,7 @@ pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, m
             outputs = unwrap_break_err!(List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>> = metamodelica::nil();
         for mut o in (alg.outputs.clone()).into_iter().cloned() {
-            let __x = BVariable::getRecordChildrenCrefOrSelf(o.clone())?;
+            let __x = unwrap_break_err!(BVariable::getRecordChildrenCrefOrSelf(o.clone()), '__try0);
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -387,7 +387,7 @@ pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, m
                 tmp_eqns = ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
         for mut tpl in (tmp_crefs.clone()).into_iter().cloned() {
-            let __x = unwrap_break_err!(Equation::makeAssignment(Expression::fromCref(Util::tuple21(tpl.clone()), false)?, Expression::fromCref(Util::tuple22(tpl.clone()), false)?, idx.clone(), (literal!("TMP")).clone(), Arc::new(crate::NBEquation::Iterator::EMPTY), NBEquation::default(NBEquation::EquationKind::CONTINUOUS.clone(), false, None, None)), '__try0);
+            let __x = unwrap_break_err!(Equation::makeAssignment(unwrap_break_err!(Expression::fromCref(Util::tuple21(tpl.clone()), false), '__try0), unwrap_break_err!(Expression::fromCref(Util::tuple22(tpl.clone()), false), '__try0), idx.clone(), (literal!("TMP")).clone(), Arc::new(crate::NBEquation::Iterator::EMPTY), NBEquation::default(NBEquation::EquationKind::CONTINUOUS.clone(), false, None, None)), '__try0);
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -405,7 +405,7 @@ pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, m
                 for mut tpl in &*tmp_crefs.clone() {
                     let mut tpl = tpl.clone();
                     unwrap_break_err!(UnorderedMap::add(Util::tuple21(tpl.clone()), Util::tuple22(tpl.clone()), cref_repl.clone()), '__try0);
-                    unwrap_break_err!(UnorderedMap::add(Util::tuple21(tpl.clone()), Expression::fromCref(Util::tuple22(tpl.clone()), false)?, exp_repl.clone()), '__try0);
+                    unwrap_break_err!(UnorderedMap::add(Util::tuple21(tpl.clone()), unwrap_break_err!(Expression::fromCref(Util::tuple22(tpl.clone()), false), '__try0), exp_repl.clone()), '__try0);
                 }
                 assign_field!(alg.outputs = ({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
@@ -427,7 +427,7 @@ pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, m
                     status = Status::EXPLICIT.clone()
                 );
                 assign_variant_field!(eqn => Equation::Equation::ALGORITHM; alg = alg.clone());
-                Pointer::update(eqn_ptr.clone(), Equation::map(eqn.clone(), (std::sync::Arc::new({ let __pe_b1 = exp_repl.clone(); move |__pe_a0| Replacements::applySimpleExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?);
+                Pointer::update(eqn_ptr.clone(), unwrap_break_err!(Equation::map(eqn.clone(), (std::sync::Arc::new({ let __pe_b1 = exp_repl.clone(); move |__pe_a0| Replacements::applySimpleExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>), None, (std::sync::Arc::new(Expression::map) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>)), '__try0));
                 strict = Arc::new(Tearing::NBTearing { iteration_vars: ({
         let mut __acc: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>> = metamodelica::nil();
         for mut c in (UnorderedSet::toList(solved_inputs.clone())).into_iter().cloned() {
@@ -505,7 +505,7 @@ pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, m
         Deref @ StrongComponent::SLICED_COMPONENT { .. } => {
             let mut eqn: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
             let mut eqn_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>;
-            (eqn, solve_status, implicit_index) = unwrap_break_err!(solveSingleStrongComponent(Pointer::access(Slice::getT(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::SLICED_COMPONENT).clone())), Variable::fromCref(var_field!((*comp).var_cref, StrongComponent::NBStrongComponent::SLICED_COMPONENT).clone())?, funcMap.clone(), kind.clone(), implicit_index.clone(), slicing_map.clone(), varData.clone(), eqData.clone()), '__try0);
+            (eqn, solve_status, implicit_index) = unwrap_break_err!(solveSingleStrongComponent(Pointer::access(Slice::getT(var_field!((*comp).eqn, StrongComponent::NBStrongComponent::SLICED_COMPONENT).clone())), unwrap_break_err!(Variable::fromCref(var_field!((*comp).var_cref, StrongComponent::NBStrongComponent::SLICED_COMPONENT).clone()), '__try0), funcMap.clone(), kind.clone(), implicit_index.clone(), slicing_map.clone(), varData.clone(), eqData.clone()), '__try0);
             if solve_status.clone() < Status::UNSOLVABLE.clone() {
                 assign_variant_field!(comp => StrongComponent::NBStrongComponent::SLICED_COMPONENT; eqn = Arc::new(Slice::NBSlice { t: Pointer::create(eqn.clone()), indices: metamodelica::nil() }));
             } else {

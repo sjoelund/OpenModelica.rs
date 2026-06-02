@@ -831,7 +831,7 @@ pub fn isConnectBroken(mut lhs: Arc<Absyn::ComponentRef>, mut rhs: Arc<Absyn::Co
     fn is_broken(mut cref: Arc<Absyn::ComponentRef>, mut scope: Arc<InstNode::InstNode>) -> bool {
         let mut isBroken: bool = false;
         match '__try0: {
-            isBroken = InstNode::isEmpty((Lookup::lookupLocalSimpleName((AbsynUtil::crefFirstIdent(cref.clone()).unwrap()).clone(), scope.clone()).unwrap()).0);
+            isBroken = InstNode::isEmpty((unwrap_break_err!(Lookup::lookupLocalSimpleName((unwrap_break_err!(AbsynUtil::crefFirstIdent(cref.clone()), '__try0)).clone(), scope.clone()), '__try0)).0);
             Ok::<_, anyhow::Error>((isBroken.clone(),))
         } {
             Ok((__try0_o0,)) => {

@@ -438,7 +438,7 @@ fn applyReplacementCref(mut map: ArgumentMap, mut cref: Arc<ComponentRef::NFComp
                     let mut cr = cr.clone();
                     node = unwrap_break_err!(ComponentRef::node(cr.clone()), '__try1);
                     outExp = Expression::makeImmutable(outExp.clone());
-                    outExp = unwrap_break_err!(Expression::recordElement((InstNode::name(node.clone())?).clone(), outExp.clone()), '__try1);
+                    outExp = unwrap_break_err!(Expression::recordElement((unwrap_break_err!(InstNode::name(node.clone()), '__try1)).clone(), outExp.clone()), '__try1);
                     outExp = unwrap_break_err!(Expression::applySubscripts(ComponentRef::getSubscripts(cr.clone()), outExp.clone(), false), '__try1);
                 }
                 Ok::<(), anyhow::Error>(())

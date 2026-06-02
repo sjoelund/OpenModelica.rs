@@ -427,7 +427,7 @@ pub fn evalFunctions(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Arc<BackendDAE::
         shared = __pa4.clone();
         changed = __pa5.clone();
         if changed.clone() {
-            outDAE = unwrap_break_err!(updateVarKinds(RemoveSimpleEquations::fastAcausal(Arc::new(BackendDAE::BackendDAE { eqs: eqSysts.clone(), shared: shared.clone() })).unwrap()), '__try0);
+            outDAE = unwrap_break_err!(updateVarKinds(unwrap_break_err!(RemoveSimpleEquations::fastAcausal(Arc::new(BackendDAE::BackendDAE { eqs: eqSysts.clone(), shared: shared.clone() })), '__try0)), '__try0);
         } else {
             outDAE = inDAE.clone();
         }

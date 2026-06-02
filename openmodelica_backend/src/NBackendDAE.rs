@@ -1560,7 +1560,7 @@ fn collectIterators(mut exp: Arc<Expression::NFExpression>, mut variables: Arc<V
     match '__try0: {
         let () = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } if (!(unwrap_break_err!(BVariable::VariablePointers::containsCref(ComponentRef::stripSubscriptsAll(var_field!((*exp).cref, Expression::NFExpression::CREF).clone()), variables.clone()), '__try0) || ComponentRef::isNameNode(var_field!((*exp).cref, Expression::NFExpression::CREF).clone()) || ComponentRef::isWild(var_field!((*exp).cref, Expression::NFExpression::CREF).clone()))) => {
-            unwrap_break_err!(UnorderedSet::add(lowerIterator(var_field!((*exp).cref, Expression::NFExpression::CREF).clone())?, set.clone()), '__try0);
+            unwrap_break_err!(UnorderedSet::add(unwrap_break_err!(lowerIterator(var_field!((*exp).cref, Expression::NFExpression::CREF).clone()), '__try0), set.clone()), '__try0);
             ()
         },
         Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_ARRAY_CONSTRUCTOR { .. } } => {

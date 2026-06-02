@@ -4983,7 +4983,7 @@ fn generateCachePath(mut env: FCore::Graph, mut cls: Arc<SCode::Element>, mut pr
 pub fn generatePrefixStr(mut inPrefix: DAE::Prefix) -> ArcStr {
     let mut r#str: ArcStr = arcstr::literal!("");
     match '__try0: {
-        r#str = (unwrap_break_err!(AbsynUtil::pathString(PrefixUtil::prefixToPath(inPrefix.clone()).unwrap(), (literal!("$")).clone(), false, true), '__try0)).clone();
+        r#str = (unwrap_break_err!(AbsynUtil::pathString(unwrap_break_err!(PrefixUtil::prefixToPath(inPrefix.clone()), '__try0), (literal!("$")).clone(), false, true), '__try0)).clone();
         Ok::<_, anyhow::Error>((r#str.clone(),))
     } {
         Ok((__try0_o0,)) => {

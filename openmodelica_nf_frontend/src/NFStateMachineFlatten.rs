@@ -643,9 +643,9 @@ fn addStateActivationAndReset1(mut inEq: Arc<Equation::NFEquation>, mut stateCre
         lhsTy = __pa7.clone();
         (newRhs, _) = unwrap_break_err!(Expression::mapFold(rhs.clone(), (std::sync::Arc::new({ let __pe_b1 = stateVarCrefs.clone(); move |__pe_a0, __pe_a2| Ok(subsPreviousCrefs(__pe_a0, __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, bool) -> Result<(Arc<Expression::NFExpression>, bool)> + 'static>), false), '__try5);
         eq1 = Arc::new(Equation::NFEquation::EQUALITY { lhs: lhs.clone(), rhs: newRhs.clone(), ty: lhsTy.clone(), scope: eqScope.clone(), source: eqSource.clone(), scalarizeMode: ScalarizeMode::NO_PREFERENCE.clone() });
-        isOuterOutput = !(unwrap_break_err!(crefHasPrefix(stateCref.clone(), lhsCref.clone()), '__try5)) && stringEqual((InstNode::name(eqScope.clone())?).clone(), (ComponentRef::firstName(stateCref.clone(), false)?).clone());
+        isOuterOutput = !(unwrap_break_err!(crefHasPrefix(stateCref.clone(), lhsCref.clone()), '__try5)) && stringEqual((unwrap_break_err!(InstNode::name(eqScope.clone()), '__try5)).clone(), (unwrap_break_err!(ComponentRef::firstName(stateCref.clone(), false), '__try5)).clone());
         if isOuterOutput.clone() {
-            perStateVarCref = ComponentRef::prefixCref(Arc::new(InstNode::InstNode::NAME_NODE { name: (ComponentRef::firstName(lhsCref.clone(), false)?).clone() }), lhsTy.clone(), metamodelica::nil(), stateCref.clone());
+            perStateVarCref = ComponentRef::prefixCref(Arc::new(InstNode::InstNode::NAME_NODE { name: (unwrap_break_err!(ComponentRef::firstName(lhsCref.clone(), false), '__try5)).clone() }), lhsTy.clone(), metamodelica::nil(), stateCref.clone());
             perStateVar = makeVarWithStart(perStateVarCref.clone(), lhsTy.clone(), Variability::DISCRETE.clone(), getDefaultStart(lhsTy.clone()));
             perStateVarExp = makeCrefExp(perStateVarCref.clone(), lhsTy.clone());
             eq1 = Arc::new(Equation::NFEquation::EQUALITY { lhs: perStateVarExp.clone(), rhs: newRhs.clone(), ty: lhsTy.clone(), scope: eqScope.clone(), source: eqSource.clone(), scalarizeMode: ScalarizeMode::NO_PREFERENCE.clone() });
@@ -668,7 +668,7 @@ fn addStateActivationAndReset1(mut inEq: Arc<Equation::NFEquation>, mut stateCre
                 eq1 = unwrap_break_err!(wrapInStateActivationConditional(eq1.clone(), stateCref.clone(), true), '__try5);
                 eq2 = unwrap_break_err!(createResetEquation(lhsCref.clone(), lhsTy.clone(), stateCref.clone(), sem.clone(), crToStart.clone()), '__try5);
                 accEqs = metamodelica::cons(eq1.clone(), metamodelica::cons(eq2.clone(), accEqs.clone()));
-                accVars = metamodelica::cons(makeVar(ComponentRef::prefixCref(Arc::new(InstNode::InstNode::NAME_NODE { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentRef::firstName(lhsCref.clone(), false)?); __mm_s.push_str(&*literal!("_previous")); ArcStr::from(__mm_s) }).clone() }), lhsTy.clone(), metamodelica::nil(), ComponentRef::rest(lhsCref.clone())?), lhsTy.clone(), Variability::CONTINUOUS.clone()), accVars.clone());
+                accVars = metamodelica::cons(makeVar(ComponentRef::prefixCref(Arc::new(InstNode::InstNode::NAME_NODE { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*unwrap_break_err!(ComponentRef::firstName(lhsCref.clone(), false), '__try5)); __mm_s.push_str(&*literal!("_previous")); ArcStr::from(__mm_s) }).clone() }), lhsTy.clone(), metamodelica::nil(), unwrap_break_err!(ComponentRef::rest(lhsCref.clone()), '__try5)), lhsTy.clone(), Variability::CONTINUOUS.clone()), accVars.clone());
             } else {
                 accEqs = metamodelica::cons(unwrap_break_err!(wrapInStateActivationConditional(eq1.clone(), stateCref.clone(), false), '__try5), accEqs.clone());
             }
@@ -1097,7 +1097,7 @@ fn subsXInStateHelper(mut exp: Arc<Expression::NFExpression>, mut funcName: ArcS
             _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
         } };
         expCall = __pa1.clone();
-        if !(stringEq((Call::functionNameLast(expCall.clone()).unwrap()).clone(), (funcName.clone()).clone())) {
+        if !(stringEq((unwrap_break_err!(Call::functionNameLast(expCall.clone()), '__try0)).clone(), (funcName.clone()).clone())) {
             break '__try0 Err::<_, _>(anyhow::anyhow!("fail"));
         }
         if !(unwrap_break_err!(Call::arguments(expCall.clone()), '__try0).is_empty()) {
@@ -1335,7 +1335,7 @@ fn subsActiveStateHelper(mut exp: Arc<Expression::NFExpression>) -> Arc<Expressi
             _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
         } };
         expCall = __pa1.clone();
-        if !(stringEq((Call::functionNameLast(expCall.clone()).unwrap()).clone(), (literal!("activeState")).clone())) {
+        if !(stringEq((unwrap_break_err!(Call::functionNameLast(expCall.clone()), '__try0)).clone(), (literal!("activeState")).clone())) {
             break '__try0 Err::<_, _>(anyhow::anyhow!("fail"));
         }
         let __pa2 = ::match_deref::match_deref! { match &(unwrap_break_err!(Call::arguments(expCall.clone()), '__try0)) {
@@ -1343,7 +1343,7 @@ fn subsActiveStateHelper(mut exp: Arc<Expression::NFExpression>) -> Arc<Expressi
             _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
         } };
         argCref = __pa2.clone();
-        newExp = makeCrefExp(qCref((literal!("active")).clone(), Arc::new(crate::NFType::BOOLEAN), metamodelica::nil(), argCref.clone()).unwrap(), Arc::new(crate::NFType::BOOLEAN));
+        newExp = makeCrefExp(unwrap_break_err!(qCref((literal!("active")).clone(), Arc::new(crate::NFType::BOOLEAN), metamodelica::nil(), argCref.clone()), '__try0), Arc::new(crate::NFType::BOOLEAN));
         exp = newExp.clone();
         Ok::<_, anyhow::Error>((argCref.clone(), exp.clone(), expCall.clone(), newExp.clone()))
     } {
@@ -1375,7 +1375,7 @@ fn subsPreviousCrefs(mut exp: Arc<Expression::NFExpression>, mut stateVarCrefs: 
             _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
         } };
         expCall = __pa1.clone();
-        if !(stringEq((Call::functionNameLast(expCall.clone()).unwrap()).clone(), (literal!("previous")).clone())) {
+        if !(stringEq((unwrap_break_err!(Call::functionNameLast(expCall.clone()), '__try0)).clone(), (literal!("previous")).clone())) {
             break '__try0 Err::<_, _>(anyhow::anyhow!("fail"));
         }
         args = unwrap_break_err!(Call::arguments(expCall.clone()), '__try0);
@@ -1392,7 +1392,7 @@ fn subsPreviousCrefs(mut exp: Arc<Expression::NFExpression>, mut stateVarCrefs: 
         for mut svc in &*stateVarCrefs.clone() {
             let mut svc = svc.clone();
             if unwrap_break_err!(ComponentRef::isEqual(svc.clone(), argCref.clone()), '__try0) {
-                newExp = makeCrefExp(ComponentRef::prefixCref(Arc::new(InstNode::InstNode::NAME_NODE { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*ComponentRef::firstName(argCref.clone(), false).unwrap()); __mm_s.push_str(&*literal!("_previous")); ArcStr::from(__mm_s) }).clone() }), argTy.clone(), metamodelica::nil(), ComponentRef::rest(argCref.clone()).unwrap()), argTy.clone());
+                newExp = makeCrefExp(ComponentRef::prefixCref(Arc::new(InstNode::InstNode::NAME_NODE { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*unwrap_break_err!(ComponentRef::firstName(argCref.clone(), false), '__try0)); __mm_s.push_str(&*literal!("_previous")); ArcStr::from(__mm_s) }).clone() }), argTy.clone(), metamodelica::nil(), unwrap_break_err!(ComponentRef::rest(argCref.clone()), '__try0)), argTy.clone());
                 exp = newExp.clone();
                 found = true;
                 break;

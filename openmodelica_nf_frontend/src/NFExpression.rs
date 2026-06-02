@@ -1687,7 +1687,7 @@ pub fn getIntegerRange(mut range: Arc<NFExpression>, mut resize: bool) -> Result
                 start = unwrap_break_err!(getInteger(var_field!((*range).start, NFExpression::RANGE).clone(), resize.clone()), '__try0);
                 stop = unwrap_break_err!(getInteger(var_field!((*range).stop, NFExpression::RANGE).clone(), resize.clone()), '__try0);
                 if isSome(var_field!((*range).step, NFExpression::RANGE).clone()) {
-                    step = unwrap_break_err!(getInteger(Util::getOption(var_field!((*range).step, NFExpression::RANGE).clone())?, resize.clone()), '__try0);
+                    step = unwrap_break_err!(getInteger(unwrap_break_err!(Util::getOption(var_field!((*range).step, NFExpression::RANGE).clone()), '__try0), resize.clone()), '__try0);
                 } else {
                     step = if (start.clone() > stop.clone()) {-1} else {1};
                 }
@@ -5404,8 +5404,8 @@ pub fn makeOperatorRecordZero(mut recordNode: Arc<InstNode::InstNode>) -> Result
     let mut op_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut r#fn: Arc<Function::Function::Function> = Arc::new(<Function::Function::Function as ::std::default::Default>::default());
     match '__try0: {
-        (op_node, _) = unwrap_break_err!(Class::lookupElement((literal!("'0'")).clone(), InstNode::getClass(recordNode.clone())?), '__try0);
-        unwrap_break_err!(Function::Function::instFunctionNode(op_node.clone(), InstContext::NO_CONTEXT.clone(), InstNode::info(InstNode::parent(op_node.clone()))?), '__try0);
+        (op_node, _) = unwrap_break_err!(Class::lookupElement((literal!("'0'")).clone(), unwrap_break_err!(InstNode::getClass(recordNode.clone()), '__try0)), '__try0);
+        unwrap_break_err!(Function::Function::instFunctionNode(op_node.clone(), InstContext::NO_CONTEXT.clone(), unwrap_break_err!(InstNode::info(InstNode::parent(op_node.clone())), '__try0)), '__try0);
         let __pa1 = ::match_deref::match_deref! { match &(unwrap_break_err!(Function::Function::typeNodeCache(op_node.clone(), InstContext::FUNCTION.clone()), '__try0)) {
             Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil } => __pa1.clone(),
             _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),

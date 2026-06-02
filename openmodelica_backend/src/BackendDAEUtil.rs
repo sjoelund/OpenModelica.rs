@@ -6190,10 +6190,10 @@ fn tryToSolveOrDerive(mut e: Arc<DAE::Exp>, mut cr: Arc<DAE::ComponentRef>, mut 
     let debug: bool = false;
     if trytosolve1.clone() || trytosolve2.clone() {
         if '__try0: {
-            (solvedExp, _, eqnForNewVars, newVarsCrefs) = unwrap_break_err!(ExpressionSolve::solve2(e.clone(), Expression::makeConstZero(tp.clone()), Expression::crefExp(cr.clone())?, functions.clone(), Some(1), true, false), '__try0);
+            (solvedExp, _, eqnForNewVars, newVarsCrefs) = unwrap_break_err!(ExpressionSolve::solve2(e.clone(), Expression::makeConstZero(tp.clone()), unwrap_break_err!(Expression::crefExp(cr.clone()), '__try0), functions.clone(), Some(1), true, false), '__try0);
             if debug.clone() {
                 println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Solve expression:\n")); __mm_s.push_str(&*unwrap_break_err!(ExpressionBasics::printExpStr(e.clone()), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("for variable: ")); __mm_s.push_str(&*unwrap_break_err!(ExpressionBasics::printExpStr(Expression::crefExp(cr.clone())?), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("for variable: ")); __mm_s.push_str(&*unwrap_break_err!(ExpressionBasics::printExpStr(unwrap_break_err!(Expression::crefExp(cr.clone()), '__try0)), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Solved expression:\n")); __mm_s.push_str(&*unwrap_break_err!(ExpressionBasics::printExpStr(solvedExp.clone()), '__try0)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 unwrap_break_err!(ComponentReference::printComponentRefList(newVarsCrefs.clone()), '__try0);
                 unwrap_break_err!(BackendDump::dumpEquationList(eqnForNewVars.clone(), (literal!("eqnForNewVars")).clone()), '__try0);

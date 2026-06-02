@@ -230,7 +230,7 @@ fn addOptimizationVarsEqns1(mut constraintLst: Arc<metamodelica::List<Arc<DAE::E
     for mut elem in &*constraintLst.clone() {
         let mut elem = elem.clone();
         match '__try0: {
-            conCrefName = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*prefConCrefName.clone()); __mm_s.push_str(&*unwrap_break_err!(ComponentReferenceBasics::printComponentRefStr(Expression::expCref(elem.clone())?), '__try0)); ArcStr::from(__mm_s) }).clone();
+            conCrefName = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*prefConCrefName.clone()); __mm_s.push_str(&*unwrap_break_err!(ComponentReferenceBasics::printComponentRefStr(unwrap_break_err!(Expression::expCref(elem.clone()), '__try0)), '__try0)); ArcStr::from(__mm_s) }).clone();
             Ok::<_, anyhow::Error>((conCrefName.clone(),))
         } {
             Ok((__try0_o0,)) => {
@@ -783,7 +783,7 @@ pub fn simplifyConstraints(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
                             e2 = __pa12.clone();
                             e1 = __pa13.clone();
                             eqn_ = __pa14.clone();
-                            let true = (unwrap_break_err!(ExpressionBasics::expEqual(e1.clone(), BackendVariable::varExp(var_con.clone())?), '__try11)) else { break '__try11 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
+                            let true = (unwrap_break_err!(ExpressionBasics::expEqual(e1.clone(), unwrap_break_err!(BackendVariable::varExp(var_con.clone()), '__try11)), '__try11)) else { break '__try11 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
                             Ok::<(), anyhow::Error>(())
                         }.is_err() {
                             b3 = false;
@@ -843,7 +843,7 @@ pub fn simplifyConstraints(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
         __acc.reverse()
     });
                                 }
-                                var_lst = listAppend(BackendEquation::expressionVars(der_e.clone(), vars.clone())?, var_lst.clone());
+                                var_lst = listAppend(unwrap_break_err!(BackendEquation::expressionVars(der_e.clone(), vars.clone()), '__try18), var_lst.clone());
                                 var_lst1 = unwrap_break_err!(BackendEquation::expressionVars(c.clone(), globalKnownVars.clone()), '__try18);
                                 if b3.clone() {
                                     var_lst1 = ({
@@ -856,7 +856,7 @@ pub fn simplifyConstraints(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
         __acc.reverse()
     });
                                 }
-                                var_lst1 = listAppend(BackendEquation::expressionVars(c.clone(), vars.clone())?, var_lst1.clone());
+                                var_lst1 = listAppend(unwrap_break_err!(BackendEquation::expressionVars(c.clone(), vars.clone()), '__try18), var_lst1.clone());
                                 var_lst = listAppend(var_lst1.clone(), var_lst.clone());
                                 b4 = unwrap_break_err!(Expression::expHasCref(der_e.clone(), DAE::crefTime().clone()), '__try18) || unwrap_break_err!(Expression::expHasCref(c.clone(), DAE::crefTime().clone()), '__try18);
                                 if var_lst.clone().is_empty() && !(b4.clone()) {
@@ -870,7 +870,7 @@ pub fn simplifyConstraints(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
                                             _ => break '__try18 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
                                         } };
                                         min_con = __pa19.clone();
-                                        min_con = unwrap_break_err!(Expression::makeDiv(Expression::expSub(min_con.clone(), c.clone())?, der_e.clone()), '__try18);
+                                        min_con = unwrap_break_err!(Expression::makeDiv(unwrap_break_err!(Expression::expSub(min_con.clone(), c.clone()), '__try18), der_e.clone()), '__try18);
                                     } else {
                                         min_con = Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(-1e64_f64) });
                                     }
@@ -880,7 +880,7 @@ pub fn simplifyConstraints(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
                                             _ => break '__try18 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
                                         } };
                                         max_con = __pa20.clone();
-                                        max_con = unwrap_break_err!(Expression::makeDiv(Expression::expSub(max_con.clone(), c.clone())?, der_e.clone()), '__try18);
+                                        max_con = unwrap_break_err!(Expression::makeDiv(unwrap_break_err!(Expression::expSub(max_con.clone(), c.clone()), '__try18), der_e.clone()), '__try18);
                                     } else {
                                         max_con = Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(1e64_f64) });
                                     }

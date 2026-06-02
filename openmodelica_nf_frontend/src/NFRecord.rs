@@ -119,7 +119,7 @@ pub fn instRecord(mut node: Arc<InstNode::InstNode>, mut context: i32) -> Result
     let mut recordNode: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut next_context: i32 = 0;
     match '__try0: {
-        (recordNode, _) = unwrap_break_err!(Lookup::lookupLocalSimpleName((InstNode::name(node.clone())?).clone(), InstNode::classScope(InstNode::parent(node.clone()))), '__try0);
+        (recordNode, _) = unwrap_break_err!(Lookup::lookupLocalSimpleName((unwrap_break_err!(InstNode::name(node.clone()), '__try0)).clone(), InstNode::classScope(InstNode::parent(node.clone()))), '__try0);
         let true = (referenceEq(&unwrap_break_err!(InstNode::definition(node.clone()), '__try0),&unwrap_break_err!(InstNode::definition(recordNode.clone()), '__try0))) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
         Ok::<_, anyhow::Error>((recordNode.clone(),))
     } {

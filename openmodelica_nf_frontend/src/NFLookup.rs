@@ -351,7 +351,7 @@ pub fn lookupInner(mut outerNode: Arc<InstNode::InstNode>, mut scope: Arc<InstNo
     let mut prev_scope: Arc<InstNode::InstNode> = scope.clone();
     while !(InstNode::isEmpty(cur_scope.clone())) {
         if '__try0: {
-            innerNode = InstNode::resolveOuter((Class::lookupElement((name.clone()).clone(), InstNode::getClass(cur_scope.clone())?)?).0);
+            innerNode = InstNode::resolveOuter((unwrap_break_err!(Class::lookupElement((name.clone()).clone(), unwrap_break_err!(InstNode::getClass(cur_scope.clone()), '__try0)), '__try0)).0);
             let true = (unwrap_break_err!(InstNode::isInner(innerNode.clone()), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
             return Ok(innerNode.clone());
             Ok::<(), anyhow::Error>(())
@@ -385,7 +385,7 @@ pub fn lookupSimpleName(mut name: ArcStr, mut scope: Arc<InstNode::InstNode>, mu
     let mut loaded: bool = false;
     if InstContext::inAnnotation(context.clone()) {
         if '__try0: {
-            (node, _) = unwrap_break_err!(lookupLocalSimpleName((name.clone()).clone(), InstNode::annotationScope(scope.clone())?), '__try0);
+            (node, _) = unwrap_break_err!(lookupLocalSimpleName((name.clone()).clone(), unwrap_break_err!(InstNode::annotationScope(scope.clone()), '__try0)), '__try0);
             return Ok((node.clone(), selfReference.clone()));
             Ok::<(), anyhow::Error>(())
         }.is_err() {
@@ -429,7 +429,7 @@ pub fn lookupSimpleNameRootPath(mut name: ArcStr, mut scope: Arc<InstNode::InstN
     let mut in_root_class: bool = true;
     if InstContext::inAnnotation(context.clone()) {
         if '__try0: {
-            unwrap_break_err!(lookupLocalSimpleName((name.clone()).clone(), InstNode::annotationScope(scope.clone())?), '__try0);
+            unwrap_break_err!(lookupLocalSimpleName((name.clone()).clone(), unwrap_break_err!(InstNode::annotationScope(scope.clone()), '__try0)), '__try0);
             path = Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() });
             return Ok(path.clone());
             Ok::<(), anyhow::Error>(())
@@ -438,11 +438,11 @@ pub fn lookupSimpleNameRootPath(mut name: ArcStr, mut scope: Arc<InstNode::InstN
     }
     for mut i in 1..=Global::recursionDepthLimit.clone() {
         if '__try1: {
-            (node, _) = unwrap_break_err!(Class::lookupElement((name.clone()).clone(), InstNode::getClass(cur_scope.clone())?), '__try1);
+            (node, _) = unwrap_break_err!(Class::lookupElement((name.clone()).clone(), unwrap_break_err!(InstNode::getClass(cur_scope.clone()), '__try1)), '__try1);
             if in_root_class.clone() {
                 path = Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() });
             } else {
-                path = AbsynUtil::makeFullyQualified(InstNode::fullPath(node.clone(), false)?);
+                path = AbsynUtil::makeFullyQualified(unwrap_break_err!(InstNode::fullPath(node.clone(), false), '__try1));
             }
             return Ok(path.clone());
             Ok::<(), anyhow::Error>(())
@@ -683,7 +683,7 @@ pub fn lookupSimpleCref(mut name: ArcStr, mut subs: Arc<metamodelica::List<Arc<A
         Err(__try0_err) => {
             if InstContext::inAnnotation(context.clone()) {
                 if '__try1: {
-                    (node, foundScope) = unwrap_break_err!(lookupLocalSimpleCref((name.clone()).clone(), InstNode::annotationScope(foundScope.clone())?), '__try1);
+                    (node, foundScope) = unwrap_break_err!(lookupLocalSimpleCref((name.clone()).clone(), unwrap_break_err!(InstNode::annotationScope(foundScope.clone()), '__try1)), '__try1);
                     state = unwrap_break_err!(LookupState::nodeState(node.clone()), '__try1);
                     cref = ComponentRef::fromAbsyn(node.clone(), subs.clone(), Arc::new(crate::NFComponentRef::EMPTY));
                     return Ok((node.clone(), cref.clone(), foundScope.clone(), inEnclosingScope.clone(), state.clone()));
@@ -944,7 +944,7 @@ pub fn loadLibrary_work(mut name: ArcStr, mut scope: Arc<InstNode::InstNode>) ->
     for mut c in &*aprog.classes.clone() {
         let mut c = c.clone();
         if '__try1: {
-            unwrap_break_err!(lookupLocalSimpleName((AbsynUtil::getClassName(c.clone())?).clone(), scope.clone()), '__try1);
+            unwrap_break_err!(lookupLocalSimpleName((unwrap_break_err!(AbsynUtil::getClassName(c.clone()), '__try1)).clone(), scope.clone()), '__try1);
             Ok::<(), anyhow::Error>(())
         }.is_err() {
             scls = AbsynToSCode::translateClass(c.clone())?;

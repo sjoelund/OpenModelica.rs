@@ -386,7 +386,7 @@ fn fixAliasVarsCausal2(mut inVar: BackendDAE::Var, mut inDAE: Arc<BackendDAE::Ba
             if unwrap_break_err!(BackendVariable::existsAnyVar(rightCrefs.clone(), orderedVars.clone(), false), '__try0) {
                 orderedVars = unwrap_break_err!(BackendVariable::addVar(var.clone(), orderedVars.clone()), '__try0);
                 orderedEqs = unwrap_break_err!(BackendEquation::add(eqn.clone(), orderedEqs.clone()), '__try0);
-                eqs1 = metamodelica::cons(BackendDAEUtil::setEqSystEqs(BackendDAEUtil::setEqSystVars(eq.clone(), orderedVars.clone())?, orderedEqs.clone()), eqs1.clone());
+                eqs1 = metamodelica::cons(BackendDAEUtil::setEqSystEqs(unwrap_break_err!(BackendDAEUtil::setEqSystVars(eq.clone(), orderedVars.clone()), '__try0), orderedEqs.clone()), eqs1.clone());
                 let false = (done.clone()) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
                 done = true;
             } else {
@@ -394,7 +394,7 @@ fn fixAliasVarsCausal2(mut inVar: BackendDAE::Var, mut inDAE: Arc<BackendDAE::Ba
             }
         }
         if !(done.clone()) {
-            eqs1 = metamodelica::cons(BackendDAEUtil::createEqSystem(BackendVariable::listVar(list![var.clone()])?, BackendEquation::listEquation(list![eqn.clone()])?, metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNSPECIFIED_PARTITION, BackendEquation::emptyEqns()), eqs1.clone());
+            eqs1 = metamodelica::cons(BackendDAEUtil::createEqSystem(unwrap_break_err!(BackendVariable::listVar(list![var.clone()]), '__try0), unwrap_break_err!(BackendEquation::listEquation(list![eqn.clone()]), '__try0), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNSPECIFIED_PARTITION, BackendEquation::emptyEqns()), eqs1.clone());
         }
         outDAE = Arc::new(BackendDAE::BackendDAE { eqs: eqs1.clone().reverse(), shared: shared.clone() });
         Ok::<_, anyhow::Error>((binding.clone(), eqn.clone(), eqs.clone(), outDAE.clone(), rightCrefs.clone(), shared.clone(), var.clone()))
@@ -443,7 +443,7 @@ fn fixKnownVarsCausal2(mut inVar: BackendDAE::Var, mut inDAE: Arc<BackendDAE::Ba
             if unwrap_break_err!(BackendVariable::existsAnyVar(rightCrefs.clone(), orderedVars.clone(), false), '__try0) {
                 orderedVars = unwrap_break_err!(BackendVariable::addVar(var.clone(), orderedVars.clone()), '__try0);
                 orderedEqs = unwrap_break_err!(BackendEquation::add(eqn.clone(), orderedEqs.clone()), '__try0);
-                eqs1 = metamodelica::cons(BackendDAEUtil::setEqSystEqs(BackendDAEUtil::setEqSystVars(eq.clone(), orderedVars.clone())?, orderedEqs.clone()), eqs1.clone());
+                eqs1 = metamodelica::cons(BackendDAEUtil::setEqSystEqs(unwrap_break_err!(BackendDAEUtil::setEqSystVars(eq.clone(), orderedVars.clone()), '__try0), orderedEqs.clone()), eqs1.clone());
                 let false = (done.clone()) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
                 done = true;
             } else {
@@ -451,7 +451,7 @@ fn fixKnownVarsCausal2(mut inVar: BackendDAE::Var, mut inDAE: Arc<BackendDAE::Ba
             }
         }
         if !(done.clone()) {
-            eqs1 = metamodelica::cons(BackendDAEUtil::createEqSystem(BackendVariable::listVar(list![var.clone()])?, BackendEquation::listEquation(list![eqn.clone()])?, metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNSPECIFIED_PARTITION, BackendEquation::emptyEqns()), eqs1.clone());
+            eqs1 = metamodelica::cons(BackendDAEUtil::createEqSystem(unwrap_break_err!(BackendVariable::listVar(list![var.clone()]), '__try0), unwrap_break_err!(BackendEquation::listEquation(list![eqn.clone()]), '__try0), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNSPECIFIED_PARTITION, BackendEquation::emptyEqns()), eqs1.clone());
         }
         outDAE = Arc::new(BackendDAE::BackendDAE { eqs: eqs1.clone().reverse(), shared: inDAE.shared.clone() });
         Ok::<_, anyhow::Error>((binding.clone(), eqn.clone(), outDAE.clone(), rightCrefs.clone(), var.clone()))

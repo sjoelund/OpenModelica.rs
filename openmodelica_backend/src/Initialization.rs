@@ -132,12 +132,12 @@ pub fn solveInitialSystem(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<(Arc
         unwrap_break_err!(execStat((literal!("collectPreVariables (initialization)")).clone()), '__try0);
         vars = BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone());
         fixvars = unwrap_break_err!(BackendVariable::listVar(outAllPrimaryParameters.clone()), '__try0);
-        eqns = BackendEquation::emptyEqnsSized(BackendVariable::varsSize(dae.shared.aliasVars.clone()) + BackendVariable::varsSize(dae.shared.globalKnownVars.clone()) + BackendVariable::varsSize(dae.shared.localKnownVars.clone()) + BackendEquation::getNumberOfEquations(dae.shared.initialEqs.clone()) + 2 * BackendDAEUtil::daeSize(dae.clone())?);
+        eqns = BackendEquation::emptyEqnsSized(BackendVariable::varsSize(dae.shared.aliasVars.clone()) + BackendVariable::varsSize(dae.shared.globalKnownVars.clone()) + BackendVariable::varsSize(dae.shared.localKnownVars.clone()) + BackendEquation::getNumberOfEquations(dae.shared.initialEqs.clone()) + 2 * unwrap_break_err!(BackendDAEUtil::daeSize(dae.clone()), '__try0));
         reeqns = BackendEquation::emptyEqnsSized(BackendEquation::getNumberOfEquations(dae.shared.removedEqs.clone()));
         allPrimaryParameters = Arc::new(openmodelica_frontend::AvlSetCR::Tree::EMPTY);
         for mut v in &*outAllPrimaryParameters.clone() {
             let mut v = v.clone();
-            allPrimaryParameters = unwrap_break_err!(AvlSetCR::add(allPrimaryParameters.clone(), BackendVariable::varCref(v.clone())?), '__try0);
+            allPrimaryParameters = unwrap_break_err!(AvlSetCR::add(allPrimaryParameters.clone(), unwrap_break_err!(BackendVariable::varCref(v.clone()), '__try0)), '__try0);
         }
         if isSome(inDAE.shared.dataReconciliationData.clone()) {
             datarecon = true;
@@ -153,7 +153,7 @@ pub fn solveInitialSystem(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<(Arc
         unwrap_break_err!(execStat((literal!("collectInitialBindings (initialization)")).clone()), '__try0);
         eqnsLst = unwrap_break_err!(BackendEquation::equationList(eqns.clone()), '__try0);
         reeqnsLst = unwrap_break_err!(BackendEquation::equationList(reeqns.clone()), '__try0);
-        (_, eqnsLst, reeqnsLst, _) = unwrap_break_err!(BackendDAECreate::patchRecordBindings(metamodelica::nil(), metamodelica::nil(), BackendVariable::varList(dae.shared.globalKnownVars.clone())?, eqnsLst.clone(), reeqnsLst.clone(), metamodelica::nil()), '__try0);
+        (_, eqnsLst, reeqnsLst, _) = unwrap_break_err!(BackendDAECreate::patchRecordBindings(metamodelica::nil(), metamodelica::nil(), unwrap_break_err!(BackendVariable::varList(dae.shared.globalKnownVars.clone()), '__try0), eqnsLst.clone(), reeqnsLst.clone(), metamodelica::nil()), '__try0);
         eqns = unwrap_break_err!(BackendEquation::listEquation(eqnsLst.clone()), '__try0);
         reeqns = unwrap_break_err!(BackendEquation::listEquation(reeqnsLst.clone()), '__try0);
         if unwrap_break_err!(Flags::isSet(Flags::NF_SCALARIZE.clone()), '__try0) {
@@ -181,16 +181,16 @@ pub fn solveInitialSystem(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<(Arc
             disabledModules = list![(literal!("inlineHomotopy")).clone(), (literal!("generateHomotopyComponents")).clone()];
         }
         (initdae, dumpVars, outRemovedInitialEquations) = unwrap_break_err!(createInitialDAEFromSystem(initsyst.clone(), shared.clone(), initVars.clone(), enabledModules.clone(), disabledModules.clone(), outGlobalKnownVars.clone(), false), '__try0);
-        (outSimDAE, _) = unwrap_break_err!(BackendVariable::traverseBackendDAE(outSimDAE.clone(), (std::sync::Arc::new(updateFixedAttribute) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::Variables) -> Result<(BackendDAE::Var, BackendDAE::Variables)> + 'static>), BackendVariable::listVar(dumpVars.clone())?), '__try0);
+        (outSimDAE, _) = unwrap_break_err!(BackendVariable::traverseBackendDAE(outSimDAE.clone(), (std::sync::Arc::new(updateFixedAttribute) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::Variables) -> Result<(BackendDAE::Var, BackendDAE::Variables)> + 'static>), unwrap_break_err!(BackendVariable::listVar(dumpVars.clone()), '__try0)), '__try0);
         if useHomotopy.clone() && unwrap_break_err!(Config::globalHomotopy(), '__try0) {
             initsyst0 = unwrap_break_err!(replaceHomotopyWithSimplifiedEqs(initsyst0.clone()), '__try0);
             initdae0 = Arc::new(BackendDAE::BackendDAE { eqs: list![initsyst0.clone()], shared: shared.clone() });
-            initdae0 = unwrap_break_err!(BackendDAEUtil::setFunctionTree(initdae0.clone(), BackendDAEUtil::getFunctions(initdae.shared.clone())?), '__try0);
+            initdae0 = unwrap_break_err!(BackendDAEUtil::setFunctionTree(initdae0.clone(), unwrap_break_err!(BackendDAEUtil::getFunctions(initdae.shared.clone()), '__try0)), '__try0);
             (initdae0, _, removedEqns) = unwrap_break_err!(createInitialDAEFromSystem(initsyst0.clone(), shared.clone(), initVars.clone(), metamodelica::nil(), list![(literal!("inlineHomotopy")).clone(), (literal!("generateHomotopyComponents")).clone()], outGlobalKnownVars.clone(), true), '__try0);
             outRemovedInitialEquations = listAppend(removedEqns.clone(), outRemovedInitialEquations.clone());
             assign_field!(initdae0.shared = BackendDAEUtil::setSharedGlobalKnownVars(initdae0.shared.clone(), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone())));
             outInitDAE_lambda0 = Some(initdae0.clone());
-            initdae = unwrap_break_err!(BackendDAEUtil::setFunctionTree(initdae.clone(), BackendDAEUtil::getFunctions(initdae0.shared.clone())?), '__try0);
+            initdae = unwrap_break_err!(BackendDAEUtil::setFunctionTree(initdae.clone(), unwrap_break_err!(BackendDAEUtil::getFunctions(initdae0.shared.clone()), '__try0)), '__try0);
         } else {
             outInitDAE_lambda0 = None;
         }

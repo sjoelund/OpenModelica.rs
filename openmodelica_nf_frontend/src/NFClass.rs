@@ -256,7 +256,7 @@ pub fn tryLookupElement(mut name: ArcStr, mut cls: Arc<NFClass>) -> (Option<Arc<
     let mut isImport: bool = false;
     let mut n: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     match '__try0: {
-        (n, isImport) = unwrap_break_err!(ClassTree::lookupElement((name.clone()).clone(), classTree(cls.clone()).unwrap()), '__try0);
+        (n, isImport) = unwrap_break_err!(ClassTree::lookupElement((name.clone()).clone(), unwrap_break_err!(classTree(cls.clone()), '__try0)), '__try0);
         node = Some(n.clone());
         Ok::<_, anyhow::Error>((isImport.clone(), node.clone()))
     } {
@@ -293,8 +293,8 @@ pub fn lookupAttributeBinding(mut name: ArcStr, mut cls: Arc<NFClass>) -> Arc<Bi
     let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
     let mut attr_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     match '__try0: {
-        (attr_node, _) = unwrap_break_err!(ClassTree::lookupElement((name.clone()).clone(), classTree(cls.clone()).unwrap()), '__try0);
-        binding = Component::getBinding(InstNode::component(attr_node.clone()).unwrap());
+        (attr_node, _) = unwrap_break_err!(ClassTree::lookupElement((name.clone()).clone(), unwrap_break_err!(classTree(cls.clone()), '__try0)), '__try0);
+        binding = Component::getBinding(unwrap_break_err!(InstNode::component(attr_node.clone()), '__try0));
         Ok::<_, anyhow::Error>((binding.clone(),))
     } {
         Ok((__try0_o0,)) => {
@@ -567,10 +567,10 @@ pub fn getTypeAttributes(mut cls: Arc<NFClass>) -> Arc<metamodelica::List<Arc<Mo
     let mut comps: metamodelica::Array<Arc<InstNode::InstNode>> = Default::default();
     let mut r#mod: Arc<Modifier::Modifier> = Arc::new(Modifier::NOMOD);
     if '__try0: {
-        comps = unwrap_break_err!(ClassTree::getComponents(classTree(cls.clone()).unwrap()), '__try0);
+        comps = unwrap_break_err!(ClassTree::getComponents(unwrap_break_err!(classTree(cls.clone()), '__try0)), '__try0);
         let __range1 = comps.clone().borrow().iter().cloned().collect::<Vec<_>>();
         for mut c in __range1 {
-            r#mod = Component::getModifier(InstNode::component(c.clone()).unwrap());
+            r#mod = Component::getModifier(unwrap_break_err!(InstNode::component(c.clone()), '__try0));
             if !(Modifier::isEmpty(r#mod.clone())) {
                 attributes = metamodelica::cons(r#mod.clone(), attributes.clone());
             }
@@ -854,7 +854,7 @@ pub fn hasOperator(mut name: ArcStr, mut cls: Arc<NFClass>) -> bool {
     if Restriction::isOperatorRecord(restriction(cls.clone())) {
         match '__try0: {
             (op_node, _) = unwrap_break_err!(lookupElement((name.clone()).clone(), cls.clone()), '__try0);
-            hasOperator = SCodeUtil::isOperator(InstNode::definition(op_node.clone()).unwrap());
+            hasOperator = SCodeUtil::isOperator(unwrap_break_err!(InstNode::definition(op_node.clone()), '__try0));
             Ok::<_, anyhow::Error>((hasOperator.clone(),))
         } {
             Ok((__try0_o0,)) => {

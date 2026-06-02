@@ -157,7 +157,7 @@ fn instEquationCommon(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
                     Ok::<(), anyhow::Error>(())
                 }.is_ok() { bail!("failure(): body succeeded") }
                 s = (ClassInfUtil::printStateStr(inState.clone())).clone();
-                unwrap_break_err!(Error::addSourceMessage(Error::EQUATION_TRANSITION_FAILURE.clone(), list![(s.clone()).clone()], SCodeUtil::getEquationInfo(inEquation.clone())?), '__try1);
+                unwrap_break_err!(Error::addSourceMessage(Error::EQUATION_TRANSITION_FAILURE.clone(), list![(s.clone()).clone()], unwrap_break_err!(SCodeUtil::getEquationInfo(inEquation.clone()), '__try1)), '__try1);
                 Ok::<(), anyhow::Error>(())
             }.is_err() {
                 if errorCount.clone() == Error::getNumErrorMessages() {
