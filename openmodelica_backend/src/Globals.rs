@@ -17,10 +17,15 @@ use std::sync::Arc;
 thread_local! {
     // Index 3 — symbolTable
     //
-    // The compiler symbol table. Initialised by the backend before use.
-    // Uses todo!() as placeholder; always set before first read.
+    // The compiler symbol table. `SymbolTable.reset()` installs the real
+    // (empty) table at startup, but it does so via `symbolTable.with(...)`,
+    // and a thread-local's lazy initializer runs on the *first* `.with()`
+    // access — including a write. A `todo!()` initializer therefore panicked
+    // before `reset()` could store anything. Seed with the default empty
+    // `SymbolTable` (same shape `reset()` builds) so the slot is valid on
+    // first touch; it is overwritten by `reset()`/`update()` as before.
     pub static symbolTable: RefCell<Arc<crate::SymbolTable::SymbolTable>> =
-        RefCell::new(todo!("symbolTable must be initialised before first use"));
+        RefCell::new(Arc::new(<crate::SymbolTable::SymbolTable as ::std::default::Default>::default()));
 
     // Index 19 — rewriteRulesIndex
     //
