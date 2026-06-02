@@ -43,7 +43,6 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAE;
 use crate::BackendDAEUtil;
 use crate::BackendDump;
 use crate::BackendEquation;
@@ -54,6 +53,7 @@ use crate::Sorting;
 use crate::SymbolTable;
 use crate::SymbolicJacobian;
 use openmodelica_ast::Absyn;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::DAEDump;
 use openmodelica_frontend::Expression;
@@ -157,7 +157,7 @@ pub fn newExtractionAlgorithm(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<
         allVarsList = List::intRange(BackendVariable::varsSize(currentSystem.orderedVars.clone()));
         varCount = currentSystem.orderedVars.numberOfVars.clone();
         eqCount = BackendEquation::equationArraySize(currentSystem.orderedEqs.clone())?;
-        (adjacencyMatrix, _, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::adjacencyMatrixScalar(currentSystem.clone(), crate::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
+        (adjacencyMatrix, _, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::adjacencyMatrixScalar(currentSystem.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
         sBltAdjacencyMatrix = getSBLTAdjacencyMatrix(adjacencyMatrix.clone());
         (match1, match2, _, _, _) = Matching::RegularMatching(adjacencyMatrix.clone(), varCount.clone(), eqCount.clone())?;
         BackendDump::dumpMatching(match1.clone())?;
@@ -321,14 +321,12 @@ fn readMeasurementsFromCSV(mut shared: Arc<BackendDAE::Shared>) -> Result<(ArcSt
     let mut content: ArcStr = arcstr::literal!("");
     let mut tokens: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     let mut lines: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    let mut simulationSettings: SimCode::SimulationSettings = <SimCode::SimulationSettings as ::std::default::Default>::default();
     let mut p: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
-    if isNone(shared.info.simSettingsOption.clone()) {
-        Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!(": SimulationSettings is NONE, expected SimulationSettings to be present in shared.info.simSettingsOption for reading measurements from csv file for data reconciliation initialization.")).clone()])?;
+    if isNone(shared.info.simflags.clone()) {
+        Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!(": simflags is NONE, expected the simulation flags to be present in shared.info.simflags for reading measurements from csv file for data reconciliation initialization.")).clone()])?;
         bail!("fail");
     }
-    simulationSettings = Util::getOption(shared.info.simSettingsOption.clone())?;
-    csvFileName = (extractSxPath((simulationSettings.simflags.clone()).clone())?).clone();
+    csvFileName = (extractSxPath((Util::getOption(shared.info.simflags.clone())?).clone())?).clone();
     if stringEmpty((csvFileName.clone()).clone()) {
         Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!(": No csv file provided or failed to read file with -sx flag in simflags.")).clone()])?;
         bail!("fail");
@@ -495,7 +493,7 @@ pub fn extractBoundaryCondition(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Resul
         allVarsList = List::intRange(BackendVariable::varsSize(currentSystem.orderedVars.clone()));
         varCount = currentSystem.orderedVars.numberOfVars.clone();
         eqCount = BackendEquation::equationArraySize(currentSystem.orderedEqs.clone())?;
-        (adjacencyMatrix, _, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::adjacencyMatrixScalar(currentSystem.clone(), crate::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
+        (adjacencyMatrix, _, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::adjacencyMatrixScalar(currentSystem.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
         sBltAdjacencyMatrix = getSBLTAdjacencyMatrix(adjacencyMatrix.clone());
         (match1, match2, _, _, _) = Matching::RegularMatching(adjacencyMatrix.clone(), varCount.clone(), eqCount.clone())?;
         BackendDump::dumpMatching(match1.clone())?;
@@ -700,7 +698,7 @@ pub fn stateEstimation(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<Bac
         allVarsList = List::intRange(BackendVariable::varsSize(currentSystem.orderedVars.clone()));
         varCount = currentSystem.orderedVars.numberOfVars.clone();
         eqCount = BackendEquation::equationArraySize(currentSystem.orderedEqs.clone())?;
-        (adjacencyMatrix, _, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::adjacencyMatrixScalar(currentSystem.clone(), crate::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
+        (adjacencyMatrix, _, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::adjacencyMatrixScalar(currentSystem.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
         sBltAdjacencyMatrix = getSBLTAdjacencyMatrix(adjacencyMatrix.clone());
         (match1, match2, _, _, _) = Matching::RegularMatching(adjacencyMatrix.clone(), varCount.clone(), eqCount.clone())?;
         BackendDump::dumpMatching(match1.clone())?;
@@ -1312,7 +1310,7 @@ pub fn extractionAlgorithm(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
         BackendDump::dumpVariables(shared.globalKnownVars.clone(), (literal!("Updated-GlobalKnownVars-withBoundaryConditionVarsRemoved")).clone())?;
     }
     allVarsList = List::intRange(BackendVariable::varsSize(currentSystem.orderedVars.clone()));
-    (adjacencyMatrix, _, _, _) = BackendDAEUtil::adjacencyMatrixScalar(currentSystem.clone(), crate::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
+    (adjacencyMatrix, _, _, _) = BackendDAEUtil::adjacencyMatrixScalar(currentSystem.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
     (knowns, boundaryConditionVars, exactEquationVars, _) = getVariablesBlockCategories(currentSystem.orderedVars.clone(), allVarsList.clone())?;
     if debug.clone() {
         println!("{}", (literal!("\nVariablesCategories\n=============================")).clone());
@@ -1334,7 +1332,7 @@ pub fn extractionAlgorithm(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
     newEqnsLst = inverseModelicaModel(currentSystem.orderedVars.clone(), knownVariablesWithEquationBinding.clone())?;
     assign_field!(currentSystem.orderedEqs = BackendEquation::merge(currentSystem.orderedEqs.clone(), BackendEquation::listEquation(newEqnsLst.clone())?)?);
     BackendDump::dumpEquationArray(currentSystem.orderedEqs.clone(), (literal!("OverDetermined-System-Equations")).clone())?;
-    (adjacencyMatrix, _, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::adjacencyMatrixScalar(currentSystem.clone(), crate::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
+    (adjacencyMatrix, _, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::adjacencyMatrixScalar(currentSystem.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
     varCount = currentSystem.orderedVars.numberOfVars.clone();
     eqCount = BackendEquation::equationArraySize(currentSystem.orderedEqs.clone())?;
     if debug.clone() {
@@ -1374,7 +1372,7 @@ pub fn extractionAlgorithm(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
     eqCount = BackendEquation::equationArraySize(currentSystem.orderedEqs.clone())?;
     BackendDump::dumpEquationArray(currentSystem.orderedEqs.clone(), (literal!("reOrdered-Equations-after-removal")).clone())?;
     BackendDump::dumpVariables(currentSystem.orderedVars.clone(), (literal!("reOrderedVariables")).clone())?;
-    (adjacencyMatrix, _, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::adjacencyMatrixScalar(currentSystem.clone(), crate::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
+    (adjacencyMatrix, _, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::adjacencyMatrixScalar(currentSystem.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
     (match1, match2, _, _, _) = Matching::RegularMatching(adjacencyMatrix.clone(), varCount.clone(), eqCount.clone())?;
     BackendDump::dumpMatching(match1.clone())?;
     s_BLTBlocks = Sorting::Tarjan(adjacencyMatrix.clone(), match1.clone(), (match1.clone().borrow().len() as i32))?;
@@ -1716,7 +1714,7 @@ pub fn setBoundaryConditionEquationsAndVars(mut currentSystem: Arc<BackendDAE::E
             rhs = BackendVariable::varBindExpStartValueNoFail(var.clone())?;
             eqn = Arc::new(BackendDAE::Equation::EQUATION { exp: lhs.clone(), scalar: rhs.clone(), source: DAE::emptyElementSource().clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_BINDING.clone() });
             eqnLst = metamodelica::cons(eqn.clone(), eqnLst.clone());
-            var = BackendVariable::setVarKind(var.clone(), crate::BackendDAE::VarKind::VARIABLE)?;
+            var = BackendVariable::setVarKind(var.clone(), openmodelica_backend_types::BackendDAE::VarKind::VARIABLE)?;
             var = BackendVariable::setBindExp(var.clone(), None);
             daeVarsLst = metamodelica::cons(var.clone(), daeVarsLst.clone());
         } else if (BackendVariable::isIntParam(var.clone()) || BackendVariable::isBoolParam(var.clone())) && BackendVariable::hasOpenModelicaBoundaryConditionAnnotation(var.clone())? {

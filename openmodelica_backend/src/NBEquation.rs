@@ -43,7 +43,6 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAE as OldBackendDAE;
 use crate::NBBackendUtil as BackendUtil;
 use crate::NBDetectStates as DetectStates;
 use crate::NBEvaluation as Evaluation;
@@ -58,6 +57,7 @@ use crate::NBVariable::VariablePointer;
 use crate::NBVariable::VariablePointers;
 use crate::NBackendDAE as BackendDAE;
 use openmodelica_ast::Absyn::Path;
+use openmodelica_backend_types::BackendDAE as OldBackendDAE;
 use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_dump::ElementSource;
 use openmodelica_frontend_types::DAE;
@@ -4539,22 +4539,22 @@ pub fn convertEquationKind(mut eqKind: EquationKind, mut clock_idx: Option<i32>,
     let mut oldEqKind: OldBackendDAE::EquationKind = OldBackendDAE::EquationKind::AUX_EQUATION;
     oldEqKind = (match (eqKind.clone(), clock_idx.clone()) {
         (_, _) if (exclusively_initial.clone()) => {
-            crate::BackendDAE::EquationKind::INITIAL_EQUATION
+            openmodelica_backend_types::BackendDAE::EquationKind::INITIAL_EQUATION
         },
         (EquationKind::CONTINUOUS { .. }, None) => {
-            crate::BackendDAE::EquationKind::DYNAMIC_EQUATION
+            openmodelica_backend_types::BackendDAE::EquationKind::DYNAMIC_EQUATION
         },
         (EquationKind::CLOCKED { .. }, Some(mut clk)) => {
             OldBackendDAE::EquationKind::CLOCKED_EQUATION { clk: clk.clone() }
         },
         (EquationKind::DISCRETE, None) => {
-            crate::BackendDAE::EquationKind::DISCRETE_EQUATION
+            openmodelica_backend_types::BackendDAE::EquationKind::DISCRETE_EQUATION
         },
         (EquationKind::EMPTY, None) => {
-            crate::BackendDAE::EquationKind::AUX_EQUATION
+            openmodelica_backend_types::BackendDAE::EquationKind::AUX_EQUATION
         },
         (EquationKind::UNKNOWN { .. }, None) => {
-            crate::BackendDAE::EquationKind::UNKNOWN_EQUATION_KIND
+            openmodelica_backend_types::BackendDAE::EquationKind::UNKNOWN_EQUATION_KIND
         },
         (_, Some(_)) => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBEquation.convertEquationKind")); __mm_s.push_str(&*literal!(" failed because the non-clock equation kind ")); __mm_s.push_str(&*equationKindString(eqKind.clone(), clock_idx.clone(), exclusively_initial.clone())?); __mm_s.push_str(&*literal!(" has a clock index.")); ArcStr::from(__mm_s) }).clone()])?;

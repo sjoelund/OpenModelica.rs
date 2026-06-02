@@ -43,7 +43,6 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAE;
 use crate::BackendDAEUtil;
 use crate::BackendEquation;
 use crate::BackendVariable;
@@ -52,8 +51,9 @@ use crate::GraphvizDump;
 use crate::HpcOmTaskGraph;
 use crate::Initialization;
 use crate::Matching;
-use crate::ZeroCrossings;
 use openmodelica_ast::Absyn;
+use openmodelica_backend_types::BackendDAE;
+use openmodelica_backend_types::ZeroCrossings;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::DAEDump;
 use openmodelica_frontend::DAEUtil;
@@ -552,7 +552,7 @@ fn setAdjacencyMatrix(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<A
 
 fn setAdjacencyMatrix1(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut isInitial: bool) -> Result<Arc<BackendDAE::EqSystem>> {
     let mut outEqSystem: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    (outEqSystem, _, _) = BackendDAEUtil::getAdjacencyMatrix(inEqSystem.clone(), crate::BackendDAE::IndexType::NORMAL, None, isInitial.clone())?;
+    (outEqSystem, _, _) = BackendDAEUtil::getAdjacencyMatrix(inEqSystem.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, isInitial.clone())?;
     Ok(outEqSystem)
 }
 
@@ -1285,7 +1285,7 @@ pub fn printComponentAdjacencyMatrixEnhanced(mut comp: Arc<BackendDAE::StrongCom
     (compVarLst, _, compEqnLst, _) = BackendDAEUtil::getStrongComponentVarsAndEquations(comp.clone(), vars.clone(), eqns.clone())?;
     compEqns = BackendEquation::listEquation(compEqnLst.clone())?;
     compVars = BackendVariable::listVar(compVarLst.clone())?;
-    syst = BackendDAEUtil::createEqSystem(compVars.clone(), compEqns.clone(), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+    syst = BackendDAEUtil::createEqSystem(compVars.clone(), compEqns.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
     (m, mT, _, _) = BackendDAEUtil::getAdjacencyMatrixEnhancedScalar(syst.clone(), shared.clone(), false)?;
     println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n dumpLoopsVerbose: UNSORTED COMPONENT WITH ENHANCED ADJACENCY MATRIX \n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
     dumpVariables(compVars.clone(), (literal!("component variables")).clone())?;
@@ -3942,7 +3942,7 @@ pub fn dumpEqSystemMatrixHTML(mut sys: Arc<BackendDAE::EqSystem>) -> Result<()> 
     if isSome(sys.m.clone()) {
         m = Util::getOption(sys.m.clone())?;
     } else {
-        (_, m, _) = BackendDAEUtil::getAdjacencyMatrix(sys.clone(), crate::BackendDAE::IndexType::NORMAL, None, false)?;
+        (_, m, _) = BackendDAEUtil::getAdjacencyMatrix(sys.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, false)?;
     }
     dumpEqSystem(sys.clone(), (literal!("SYS")).clone())?;
     dumpMatrixHTML(m.clone(), List::map(List::intRange(BackendDAEUtil::systemSize(sys.clone())?), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, List::map(BackendVariable::varList(sys.orderedVars.clone())?, (std::sync::Arc::new(varStringShort) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<ArcStr> + 'static>))?, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("MATRIX_")); __mm_s.push_str(&*intString(BackendDAEUtil::systemSize(sys.clone())?)); ArcStr::from(__mm_s) }).clone())?;
@@ -3965,7 +3965,7 @@ pub fn dumpEqSystemBLTmatrixHTML(mut sys: Arc<BackendDAE::EqSystem>) -> Result<(
                     (varLst, vIdxs, eqLst, eIdxs) = BackendDAEUtil::getStrongComponentsVarsAndEquations(comps.clone(), vars.clone(), eqs.clone())?;
                     eqs = BackendEquation::listEquation(eqLst.clone())?;
                     vars = BackendVariable::listVar1(varLst.clone())?;
-                    (m, _) = BackendDAEUtil::adjacencyMatrixDispatch(vars.clone(), eqs.clone(), crate::BackendDAE::IndexType::NORMAL, None, false)?;
+                    (m, _) = BackendDAEUtil::adjacencyMatrixDispatch(vars.clone(), eqs.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, false)?;
                     dumpMatrixHTML(m.clone(), List::map(eIdxs.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, List::map(vIdxs.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BLT_MATRIX_")); __mm_s.push_str(&*intString(BackendDAEUtil::systemSize(sys.clone())?)); ArcStr::from(__mm_s) }).clone())?;
                     Ok(())
                 }
@@ -4021,7 +4021,7 @@ pub fn dumpBipartiteGraphDAE(mut dae: Arc<BackendDAE::BackendDAE>, mut fileName:
     varLst = List::flatten(List::mapMap(eqSysts.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::daeVars, Arc<BackendDAE::EqSystem>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>) -> Result<BackendDAE::Variables> + 'static>), (std::sync::Arc::new(BackendVariable::varList) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> + 'static>))?)?;
     vars = BackendVariable::listVar1(varLst.clone())?;
     eqs = BackendEquation::listEquation(eqLst.clone())?;
-    (_, m, _, _, _) = BackendDAEUtil::getAdjacencyMatrixScalar(Arc::new(BackendDAE::EqSystem { orderedVars: vars.clone(), orderedEqs: eqs.clone(), m: None, mT: None, mapping: None, matching: Arc::new(crate::BackendDAE::Matching::NO_MATCHING), stateSets: metamodelica::nil(), partitionKind: crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, removedEqs: BackendEquation::emptyEqns() }), crate::BackendDAE::IndexType::SOLVABLE, Some(BackendDAEUtil::getFunctions(shared.clone())?), BackendDAEUtil::isInitializationDAE(shared.clone()))?;
+    (_, m, _, _, _) = BackendDAEUtil::getAdjacencyMatrixScalar(Arc::new(BackendDAE::EqSystem { orderedVars: vars.clone(), orderedEqs: eqs.clone(), m: None, mT: None, mapping: None, matching: Arc::new(openmodelica_backend_types::BackendDAE::Matching::NO_MATCHING), stateSets: metamodelica::nil(), partitionKind: openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, removedEqs: BackendEquation::emptyEqns() }), openmodelica_backend_types::BackendDAE::IndexType::SOLVABLE, Some(BackendDAEUtil::getFunctions(shared.clone())?), BackendDAEUtil::isInitializationDAE(shared.clone()))?;
     varAtts = List::threadMap(List::fill(false, (varLst.clone().len() as i32)), List::fill((literal!("")).clone(), (varLst.clone().len() as i32)), std::sync::Arc::new(fnptr!(Util::makeTuple, _, _)))?;
     eqAtts = List::threadMap(List::fill(false, (eqLst.clone().len() as i32)), List::fill((literal!("")).clone(), (eqLst.clone().len() as i32)), std::sync::Arc::new(fnptr!(Util::makeTuple, _, _)))?;
     dumpBipartiteGraphStrongComponent2(vars.clone(), eqs.clone(), m.clone(), varAtts.clone(), eqAtts.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BipartiteGraph_")); __mm_s.push_str(&*fileName.clone()); ArcStr::from(__mm_s) }).clone())?;
@@ -4049,7 +4049,7 @@ pub fn dumpBipartiteGraphEqSystem(mut syst: Arc<BackendDAE::EqSystem>, mut share
     if isSome(mO.clone()) {
         dumpBipartiteGraphStrongComponent2(vars.clone(), eqs.clone(), Util::getOption(mO.clone())?, varAtts.clone(), eqAtts.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BipartiteGraph_")); __mm_s.push_str(&*fileName.clone()); ArcStr::from(__mm_s) }).clone())?;
     } else {
-        (_, m, _, _, _) = BackendDAEUtil::getAdjacencyMatrixScalar(syst.clone(), crate::BackendDAE::IndexType::SOLVABLE, Some(BackendDAEUtil::getFunctions(shared.clone())?), BackendDAEUtil::isInitializationDAE(shared.clone()))?;
+        (_, m, _, _, _) = BackendDAEUtil::getAdjacencyMatrixScalar(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::SOLVABLE, Some(BackendDAEUtil::getFunctions(shared.clone())?), BackendDAEUtil::isInitializationDAE(shared.clone()))?;
         dumpBipartiteGraphStrongComponent2(vars.clone(), eqs.clone(), m.clone(), varAtts.clone(), eqAtts.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BipartiteGraph2_")); __mm_s.push_str(&*fileName.clone()); ArcStr::from(__mm_s) }).clone())?;
     }
     Ok(())
@@ -4093,7 +4093,7 @@ pub fn dumpBipartiteGraphStrongComponent1(mut inComp: Arc<BackendDAE::StrongComp
                     compEqs = BackendEquation::listEquation(compEqLst.clone())?;
                     numEqs = (compEqLst.clone().len() as i32);
                     numVars = (compVarLst.clone().len() as i32);
-                    (_, m, _, _, _) = BackendDAEUtil::getAdjacencyMatrixScalar(Arc::new(BackendDAE::EqSystem { orderedVars: compVars.clone(), orderedEqs: compEqs.clone(), m: None, mT: None, mapping: None, matching: Arc::new(crate::BackendDAE::Matching::NO_MATCHING), stateSets: metamodelica::nil(), partitionKind: crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, removedEqs: BackendEquation::emptyEqns() }), crate::BackendDAE::IndexType::SOLVABLE, funcs.clone(), false)?;
+                    (_, m, _, _, _) = BackendDAEUtil::getAdjacencyMatrixScalar(Arc::new(BackendDAE::EqSystem { orderedVars: compVars.clone(), orderedEqs: compEqs.clone(), m: None, mT: None, mapping: None, matching: Arc::new(openmodelica_backend_types::BackendDAE::Matching::NO_MATCHING), stateSets: metamodelica::nil(), partitionKind: openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, removedEqs: BackendEquation::emptyEqns() }), openmodelica_backend_types::BackendDAE::IndexType::SOLVABLE, funcs.clone(), false)?;
                     varAtts = List::threadMap(List::fill(false, numVars.clone()), List::fill((literal!("")).clone(), numVars.clone()), std::sync::Arc::new(fnptr!(Util::makeTuple, _, _)))?;
                     eqAtts = List::threadMap(List::fill(false, numEqs.clone()), List::fill((literal!("")).clone(), numEqs.clone()), std::sync::Arc::new(fnptr!(Util::makeTuple, _, _)))?;
                     dumpBipartiteGraphStrongComponent2(compVars.clone(), compEqs.clone(), m.clone(), varAtts.clone(), eqAtts.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("rL_eqSys_")); __mm_s.push_str(&*graphName.clone()); ArcStr::from(__mm_s) }).clone())?;
@@ -4131,7 +4131,7 @@ pub fn dumpBipartiteGraphStrongComponent1(mut inComp: Arc<BackendDAE::StrongComp
                     compEqs = BackendEquation::listEquation(compEqLst.clone())?;
                     numEqs = (compEqLst.clone().len() as i32);
                     numVars = (compVarLst.clone().len() as i32);
-                    (_, m, _, _, _) = BackendDAEUtil::getAdjacencyMatrixScalar(Arc::new(BackendDAE::EqSystem { orderedVars: compVars.clone(), orderedEqs: compEqs.clone(), m: None, mT: None, mapping: None, matching: Arc::new(crate::BackendDAE::Matching::NO_MATCHING), stateSets: metamodelica::nil(), partitionKind: crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, removedEqs: BackendEquation::emptyEqns() }), crate::BackendDAE::IndexType::SOLVABLE, funcs.clone(), false)?;
+                    (_, m, _, _, _) = BackendDAEUtil::getAdjacencyMatrixScalar(Arc::new(BackendDAE::EqSystem { orderedVars: compVars.clone(), orderedEqs: compEqs.clone(), m: None, mT: None, mapping: None, matching: Arc::new(openmodelica_backend_types::BackendDAE::Matching::NO_MATCHING), stateSets: metamodelica::nil(), partitionKind: openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, removedEqs: BackendEquation::emptyEqns() }), openmodelica_backend_types::BackendDAE::IndexType::SOLVABLE, funcs.clone(), false)?;
                     addInfo = List::map(varIdcs.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?;
                     tornInfo = List::fill(true, numVars.clone());
                     tVarIdcsNew = List::intRange(numVars.clone() - (tVarIdcs.clone().len() as i32));
@@ -4494,7 +4494,7 @@ pub fn dumpBackendDAEBipartiteGraph(mut dae: Arc<BackendDAE::BackendDAE>, mut fi
         comps = __pa19.clone();
         eqs = __pa20.clone();
         vars = __pa21.clone();
-        (m, mT) = BackendDAEUtil::adjacencyMatrix(sys.clone(), crate::BackendDAE::IndexType::NORMAL, Some(BackendDAEUtil::getFunctions(shared.clone())?), BackendDAEUtil::isInitializationDAE(shared.clone()))?;
+        (m, mT) = BackendDAEUtil::adjacencyMatrix(sys.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, Some(BackendDAEUtil::getFunctions(shared.clone())?), BackendDAEUtil::isInitializationDAE(shared.clone()))?;
         order = 1;
         for mut comp in &*comps.clone() {
             let mut comp = comp.clone();

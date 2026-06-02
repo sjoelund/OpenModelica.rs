@@ -43,13 +43,13 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAE;
 use crate::BackendDAEUtil;
 use crate::BackendDump;
 use crate::BackendEquation;
 use crate::BackendVariable;
 use crate::Sorting;
 use crate::SymbolicJacobian;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::DAEUtil;
 use openmodelica_frontend::Expression;
@@ -291,8 +291,8 @@ fn analyseStrongComponentBlock(mut inComp: Arc<metamodelica::List<i32>>, mut inE
                     eqns_1 = BackendEquation::listEquation(eqn_lst1.clone())?;
                     (mixedSystem, _) = BackendEquation::iterationVarsinRelations(eqn_lst1.clone(), vars_1.clone())?;
                     if !(Flags::isSet(Flags::DISABLE_JACSCC.clone())?) {
-                        syst = BackendDAEUtil::createEqSystem(vars_1.clone(), eqns_1.clone(), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
-                        (m, mt) = BackendDAEUtil::adjacencyMatrix(syst.clone(), crate::BackendDAE::IndexType::ABSOLUTE, None, BackendDAEUtil::isInitializationDAE(ishared.clone()))?;
+                        syst = BackendDAEUtil::createEqSystem(vars_1.clone(), eqns_1.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+                        (m, mt) = BackendDAEUtil::adjacencyMatrix(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::ABSOLUTE, None, BackendDAEUtil::isInitializationDAE(ishared.clone()))?;
                         (jac, shared) = SymbolicJacobian::calculateJacobian(vars_1.clone(), eqns_1.clone(), m.clone(), true, ishared.clone())?;
                         (jac_tp, jacConstant) = SymbolicJacobian::analyzeJacobian(vars_1.clone(), eqns_1.clone(), jac.clone())?;
                         if jacConstant.clone() && isSome(jac.clone()) {
@@ -300,7 +300,7 @@ fn analyseStrongComponentBlock(mut inComp: Arc<metamodelica::List<i32>>, mut inE
                         }
                     } else {
                         jac = None;
-                        jac_tp = crate::BackendDAE::JacobianType::JAC_NO_ANALYTIC;
+                        jac_tp = openmodelica_backend_types::BackendDAE::JacobianType::JAC_NO_ANALYTIC;
                     }
                     Ok(list![Arc::new(BackendDAE::StrongComponent::EQUATIONSYSTEM { eqns: comp.clone(), vars: varindxs.clone(), jac: Arc::new(BackendDAE::Jacobian::FULL_JACOBIAN { jacobian: jac.clone() }), jacType: jac_tp.clone(), mixedSystem: mixedSystem.clone() })])
                 }
@@ -480,7 +480,7 @@ fn transformXToXd(mut inVar: BackendDAE::Var) -> BackendDAE::Var {
     let mut outVar: BackendDAE::Var = inVar.clone();
     if BackendVariable::isStateVar(inVar.clone()) {
         outVar.varName = ComponentReference::crefPrefixDer(inVar.varName.clone());
-        outVar.varKind = crate::BackendDAE::VarKind::STATE_DER;
+        outVar.varKind = openmodelica_backend_types::BackendDAE::VarKind::STATE_DER;
         outVar.unreplaceable = false;
     }
     outVar

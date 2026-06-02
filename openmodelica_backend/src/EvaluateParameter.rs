@@ -44,7 +44,6 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::AvlSetInt;
-use crate::BackendDAE;
 use crate::BackendDAEUtil;
 use crate::BackendDump;
 use crate::BackendEquation;
@@ -52,6 +51,7 @@ use crate::BackendVarTransform;
 use crate::BackendVariable;
 use crate::Sorting;
 use openmodelica_ast::Absyn;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::AvlSetCR;
 use openmodelica_frontend::Ceval;
 use openmodelica_frontend::ComponentReference;

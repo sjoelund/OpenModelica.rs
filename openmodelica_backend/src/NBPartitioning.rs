@@ -43,7 +43,6 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAE as OldBackendDAE;
 use crate::NBAdjacency;
 use crate::NBBackendUtil::Rational;
 use crate::NBCausalize as Causalize;
@@ -65,6 +64,7 @@ use crate::NBVariable::VarData;
 use crate::NBVariable::VariablePointer;
 use crate::NBVariable::VariablePointers;
 use crate::NBackendDAE as BackendDAE;
+use openmodelica_backend_types::BackendDAE as OldBackendDAE;
 use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_types::DAE as OldDAE;
 use openmodelica_nf_frontend::NFBackendExtension::BackendInfo;

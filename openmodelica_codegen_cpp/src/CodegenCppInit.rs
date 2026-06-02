@@ -11,12 +11,12 @@ use arcstr::{ArcStr, literal, format};
 
 use crate::CodegenCppCommon;
 use openmodelica_ast::Absyn;
-use openmodelica_backend::BackendDAE;
 use openmodelica_backend::CodegenUtil;
 use openmodelica_backend::SimCode;
 use openmodelica_backend::SimCodeFunction;
 use openmodelica_backend::SimCodeUtil;
 use openmodelica_backend::SimCodeVar;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_codegen::CodegenFMU2;
 use openmodelica_codegen::CodegenFMUCommon;
 use openmodelica_frontend::Expression;

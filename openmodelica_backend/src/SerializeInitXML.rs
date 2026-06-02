@@ -43,7 +43,6 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAE::VarKind;
 use crate::SimCode::ModelInfo;
 use crate::SimCode::SimCode as SIMCODE;
 use crate::SimCode::SimulationSettings;
@@ -55,6 +54,7 @@ use crate::SimCodeVar::Causality;
 use crate::SimCodeVar::SimVar;
 use crate::SimCodeVar;
 use openmodelica_ast::Absyn;
+use openmodelica_backend_types::BackendDAE::VarKind;
 use openmodelica_frontend::ComponentReference as CR;
 use openmodelica_frontend::DAEUtil;
 use openmodelica_frontend::Expression;

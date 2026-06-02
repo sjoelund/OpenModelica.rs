@@ -9,10 +9,10 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use openmodelica_backend::BackendDAE;
 use openmodelica_backend::CodegenUtil;
 use openmodelica_backend::SimCode;
 use openmodelica_backend::SimCodeVar;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::DAEDump;
 use openmodelica_frontend::Expression;
 use openmodelica_frontend::ExpressionDump;

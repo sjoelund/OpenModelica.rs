@@ -46,7 +46,6 @@ use arcstr::{ArcStr, literal, format};
 use crate::BackendDAE::ZeroCrossing;
 use crate::BackendDAE::ZeroCrossingSet;
 use crate::BackendDAE;
-use crate::BackendDAEUtil;
 use openmodelica_ast::Absyn;
 use openmodelica_frontend::Expression;
 use openmodelica_frontend_dump::ExpressionBasics;
@@ -770,7 +769,7 @@ pub fn zeroCrossingSize(mut zc: ZeroCrossing) -> Result<i32> {
     let mut s: i32 = 0;
     s = (::match_deref::match_deref! { match &(zc.iter.clone()) {
         Some(iter) => {
-            BackendDAEUtil::getSimIteratorSize(iter.clone())?
+            BackendDAE::getSimIteratorSize(iter.clone())?
         },
         _ => {
             1

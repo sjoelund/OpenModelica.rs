@@ -44,12 +44,12 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::AvlTreeCRToInt;
-use crate::BackendDAE;
 use crate::HashTableCrefSimVar;
 use crate::HpcOmSimCode;
 use crate::SimCodeFunction;
 use crate::SimCodeVar;
 use openmodelica_ast::Absyn;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::HashTable;
 use openmodelica_frontend::HashTableCrIListArray;
 use openmodelica_frontend::HashTableCrILst;

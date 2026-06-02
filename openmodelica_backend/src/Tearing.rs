@@ -44,7 +44,6 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::AdjacencyMatrix;
-use crate::BackendDAE;
 use crate::BackendDAEEXT;
 use crate::BackendDAEOptimize;
 use crate::BackendDAEUtil;
@@ -55,6 +54,7 @@ use crate::DumpGraphML;
 use crate::ExpressionSolve;
 use crate::Matching;
 use crate::Sorting;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::Expression;
 use openmodelica_frontend::ExpressionSimplify;
 use openmodelica_frontend_dump::AvlTreePathFunction;
@@ -510,9 +510,9 @@ fn omcTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE:
     eqns = BackendEquation::listEquation(eqn_lst.clone())?;
     var_lst = List::map1r(vindx.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), BackendVariable::daeVars(isyst.clone()))?;
     vars = BackendVariable::listVar1(var_lst.clone())?;
-    subsyst = BackendDAEUtil::createEqSystem(vars.clone(), eqns.clone(), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+    subsyst = BackendDAEUtil::createEqSystem(vars.clone(), eqns.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
     funcs = BackendDAEUtil::getFunctions(ishared.clone())?;
-    (subsyst, m, mt, _, _) = BackendDAEUtil::getAdjacencyMatrixScalar(subsyst.clone(), crate::BackendDAE::IndexType::NORMAL, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(ishared.clone()))?;
+    (subsyst, m, mt, _, _) = BackendDAEUtil::getAdjacencyMatrixScalar(subsyst.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(ishared.clone()))?;
     if Flags::isSet(Flags::TEARING_DUMP.clone())? || Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
         println!("{}", (literal!("\n\n###BEGIN print Strong Component#####################\n(Function:omcTearing)\n")).clone());
         BackendDump::printEqSystem(subsyst.clone())?;
@@ -1348,11 +1348,11 @@ fn omcTearing4(mut jacType: BackendDAE::JacobianType, mut isyst: Arc<BackendDAE:
             ovars = List::map1r(tvars.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), varindxarr.clone())?;
             innerEquations = omcTearing4_1(othercomps.clone(), ass2.clone(), mapIncRowEqn.clone(), eindxarr.clone(), varindxarr.clone(), columark.clone(), mark.clone())?;
             linear = BackendDAEUtil::getLinearfromJacType(jacType.clone())?;
-            Ok((Arc::new(BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: BackendDAE::TearingSet { tearingvars: ovars.clone(), residualequations: ores.clone(), innerEquations: innerEquations.clone(), jac: Arc::new(crate::BackendDAE::Jacobian::EMPTY_JACOBIAN) }, casualTearingSet: None, linear: linear.clone(), mixedSystem: mixedSystem.clone() }), true))
+            Ok((Arc::new(BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: BackendDAE::TearingSet { tearingvars: ovars.clone(), residualequations: ores.clone(), innerEquations: innerEquations.clone(), jac: Arc::new(openmodelica_backend_types::BackendDAE::Jacobian::EMPTY_JACOBIAN) }, casualTearingSet: None, linear: linear.clone(), mixedSystem: mixedSystem.clone() }), true))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            Ok((Arc::new(BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: BackendDAE::TearingSet { tearingvars: metamodelica::nil(), residualequations: metamodelica::nil(), innerEquations: metamodelica::nil(), jac: Arc::new(crate::BackendDAE::Jacobian::EMPTY_JACOBIAN) }, casualTearingSet: None, linear: false, mixedSystem: mixedSystem.clone() }), false))
+            Ok((Arc::new(BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: BackendDAE::TearingSet { tearingvars: metamodelica::nil(), residualequations: metamodelica::nil(), innerEquations: metamodelica::nil(), jac: Arc::new(openmodelica_backend_types::BackendDAE::Jacobian::EMPTY_JACOBIAN) }, casualTearingSet: None, linear: false, mixedSystem: mixedSystem.clone() }), false))
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
@@ -1435,7 +1435,7 @@ fn minimalTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backend
         eqns = unwrap_break_err!(BackendEquation::listEquation(eqn_lst.clone()), '__try0);
         var_lst = unwrap_break_err!(List::map1r(vindx.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), BackendVariable::daeVars(isyst.clone())), '__try0);
         vars = unwrap_break_err!(BackendVariable::listVar1(var_lst.clone()), '__try0);
-        subsyst = BackendDAEUtil::createEqSystem(vars.clone(), eqns.clone(), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+        subsyst = BackendDAEUtil::createEqSystem(vars.clone(), eqns.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
         (adjEnh, adjEnhT) = unwrap_break_err!(BackendDAEUtil::getAdjacencyMatrixEnhanced(subsyst.clone(), ishared.clone(), BackendDAEUtil::isInitializationDAE(ishared.clone())), '__try0);
         size = (vindx.clone().len() as i32);
         varArray = arrayCreate(size.clone(), true);
@@ -1510,7 +1510,7 @@ fn minimalTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backend
     });
         iterationVars = selectFromList_rev(vindx.clone(), iterationVars.clone());
         residualequations = selectFromList_rev(eindex.clone(), residualequations.clone());
-        ocomp = Arc::new(BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: BackendDAE::TearingSet { tearingvars: iterationVars.clone().reverse(), residualequations: residualequations.clone().reverse(), innerEquations: innerEquations.clone().reverse(), jac: Arc::new(crate::BackendDAE::Jacobian::EMPTY_JACOBIAN) }, casualTearingSet: None, linear: linear.clone(), mixedSystem: mixedSystem.clone() });
+        ocomp = Arc::new(BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: BackendDAE::TearingSet { tearingvars: iterationVars.clone().reverse(), residualequations: residualequations.clone().reverse(), innerEquations: innerEquations.clone().reverse(), jac: Arc::new(openmodelica_backend_types::BackendDAE::Jacobian::EMPTY_JACOBIAN) }, casualTearingSet: None, linear: linear.clone(), mixedSystem: mixedSystem.clone() });
         Ok::<_, anyhow::Error>((adjEnh.clone(), adjEnhT.clone(), eqArray.clone(), eqn_lst.clone(), eqns.clone(), innerEquations.clone(), iterationVars.clone(), nE.clone(), nV.clone(), ocomp.clone(), qidx.clone(), residualequations.clone(), size.clone(), subsyst.clone(), unsolvedCSEVars.clone(), unsolvedCombined.clone(), unsolvedDiscreteVars.clone(), varArray.clone(), var_lst.clone(), vars.clone()))
     } {
         Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3, __try0_o4, __try0_o5, __try0_o6, __try0_o7, __try0_o8, __try0_o9, __try0_o10, __try0_o11, __try0_o12, __try0_o13, __try0_o14, __try0_o15, __try0_o16, __try0_o17, __try0_o18, __try0_o19)) => {
@@ -1733,8 +1733,8 @@ fn CellierTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backend
     eqns = BackendEquation::listEquation(eqn_lst.clone())?;
     var_lst = List::map1r(vindx.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), BackendVariable::daeVars(isyst.clone()))?;
     vars = BackendVariable::listVar1(var_lst.clone())?;
-    subsyst = BackendDAEUtil::createEqSystem(vars.clone(), eqns.clone(), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
-    (subsyst, m, mt, _, _) = BackendDAEUtil::getAdjacencyMatrixScalar(subsyst.clone(), crate::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(ishared.clone()))?;
+    subsyst = BackendDAEUtil::createEqSystem(vars.clone(), eqns.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+    (subsyst, m, mt, _, _) = BackendDAEUtil::getAdjacencyMatrixScalar(subsyst.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(ishared.clone()))?;
     if debug.clone() {
         execStat((literal!("Tearing.CellierTearing -> 1")).clone())?;
     }
@@ -1824,7 +1824,7 @@ fn CellierTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backend
     if debug.clone() {
         execStat((literal!("Tearing.CellierTearing -> 5")).clone())?;
     }
-    strictTearingSet = BackendDAE::TearingSet { tearingvars: OutTVars.clone(), residualequations: residual.clone(), innerEquations: innerEquations.clone(), jac: Arc::new(crate::BackendDAE::Jacobian::EMPTY_JACOBIAN) };
+    strictTearingSet = BackendDAE::TearingSet { tearingvars: OutTVars.clone(), residualequations: residual.clone(), innerEquations: innerEquations.clone(), jac: Arc::new(openmodelica_backend_types::BackendDAE::Jacobian::EMPTY_JACOBIAN) };
     if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
         dumpTearingSetGlobalIndexes(strictTearingSet.clone(), size.clone(), (literal!(" - STRICT SET")).clone())?;
     }
@@ -1832,7 +1832,7 @@ fn CellierTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backend
         if Flags::isSet(Flags::TEARING_DUMP.clone())? || Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n\nDetermine CASUAL TEARING SET\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
         }
-        (_, m, mt, _, _) = BackendDAEUtil::getAdjacencyMatrixScalar(subsyst.clone(), crate::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(ishared.clone()))?;
+        (_, m, mt, _, _) = BackendDAEUtil::getAdjacencyMatrixScalar(subsyst.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(ishared.clone()))?;
         m = Array::map(m.clone(), (std::sync::Arc::new(fnptr!(deleteNegativeEntries, Arc<metamodelica::List<i32>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>))?;
         mt = Array::map(mt.clone(), (std::sync::Arc::new(fnptr!(deleteNegativeEntries, Arc<metamodelica::List<i32>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>))?;
         (me, meT, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::getAdjacencyMatrixEnhancedScalar(subsyst.clone(), ishared.clone(), true)?;
@@ -1871,9 +1871,9 @@ fn CellierTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backend
             OutTVars = selectFromList_rev(vindx.clone(), OutTVars.clone());
             residual = selectFromList_rev(eindex.clone(), residual_coll.clone());
             innerEquations = assignInnerEquations(order.clone(), eindex.clone(), vindx.clone(), ass2.clone(), mapEqnIncRow.clone(), Some(me.clone()))?;
-            casualTearingSet = Some(BackendDAE::TearingSet { tearingvars: OutTVars.clone(), residualequations: residual.clone(), innerEquations: innerEquations.clone(), jac: Arc::new(crate::BackendDAE::Jacobian::EMPTY_JACOBIAN) });
+            casualTearingSet = Some(BackendDAE::TearingSet { tearingvars: OutTVars.clone(), residualequations: residual.clone(), innerEquations: innerEquations.clone(), jac: Arc::new(openmodelica_backend_types::BackendDAE::Jacobian::EMPTY_JACOBIAN) });
             if Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
-                dumpTearingSetGlobalIndexes(BackendDAE::TearingSet { tearingvars: OutTVars.clone(), residualequations: residual.clone(), innerEquations: innerEquations.clone(), jac: Arc::new(crate::BackendDAE::Jacobian::EMPTY_JACOBIAN) }, size.clone(), (literal!(" - CASUAL SET")).clone())?;
+                dumpTearingSetGlobalIndexes(BackendDAE::TearingSet { tearingvars: OutTVars.clone(), residualequations: residual.clone(), innerEquations: innerEquations.clone(), jac: Arc::new(openmodelica_backend_types::BackendDAE::Jacobian::EMPTY_JACOBIAN) }, size.clone(), (literal!(" - CASUAL SET")).clone())?;
             }
             if Flags::isSet(Flags::TEARING_DUMP.clone())? || Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
                 if linear.clone() {
@@ -3603,7 +3603,7 @@ fn recursiveTearingMain(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<(Arc<B
         comps = __pa4.clone();
         eqns = __pa5.clone();
         vars = __pa6.clone();
-        (_, mm, _) = BackendDAEUtil::getAdjacencyMatrix(syst.clone(), crate::BackendDAE::IndexType::SPARSE, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(shared.clone()))?;
+        (_, mm, _) = BackendDAEUtil::getAdjacencyMatrix(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::SPARSE, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(shared.clone()))?;
         tmp_update = false;
         for mut comp in &*comps.clone() {
             let mut comp = comp.clone();
@@ -3786,7 +3786,7 @@ fn recursiveTearingMain(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<(Arc<B
     if update.clone() {
         outDAE = Arc::new(BackendDAE::BackendDAE { eqs: systlst_new.clone(), shared: shared.clone() });
         match '__try24: {
-            outDAE = unwrap_break_err!(BackendDAEUtil::transformBackendDAE(outDAE.clone(), Some((crate::BackendDAE::IndexReduction::NO_INDEX_REDUCTION, crate::BackendDAE::EquationConstraints::EXACT)), None, None), '__try24);
+            outDAE = unwrap_break_err!(BackendDAEUtil::transformBackendDAE(outDAE.clone(), Some((openmodelica_backend_types::BackendDAE::IndexReduction::NO_INDEX_REDUCTION, openmodelica_backend_types::BackendDAE::EquationConstraints::EXACT)), None, None), '__try24);
             Ok::<_, anyhow::Error>((outDAE.clone(),))
         } {
             Ok((__try24_o0,)) => {
@@ -3985,8 +3985,8 @@ fn totalTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDA
     eqns = BackendEquation::listEquation(eqn_lst.clone())?;
     var_lst = List::map1r(vindx.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), BackendVariable::daeVars(isyst.clone()))?;
     vars = BackendVariable::listVar1(var_lst.clone())?;
-    subsyst = BackendDAEUtil::createEqSystem(vars.clone(), eqns.clone(), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
-    (subsyst, m, mt, _, _) = BackendDAEUtil::getAdjacencyMatrixScalar(subsyst.clone(), crate::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(ishared.clone()))?;
+    subsyst = BackendDAEUtil::createEqSystem(vars.clone(), eqns.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+    (subsyst, m, mt, _, _) = BackendDAEUtil::getAdjacencyMatrixScalar(subsyst.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(ishared.clone()))?;
     m = Array::map(m.clone(), (std::sync::Arc::new(fnptr!(deleteNegativeEntries, Arc<metamodelica::List<i32>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>))?;
     mt = Array::map(mt.clone(), (std::sync::Arc::new(fnptr!(deleteNegativeEntries, Arc<metamodelica::List<i32>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>))?;
     if Flags::isSet(Flags::TEARING_DUMP.clone())? || Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
@@ -4144,7 +4144,7 @@ fn createTearingSets(mut tVarsIn: Arc<metamodelica::List<i32>>, mut matchingList
         tVars = selectFromList_rev(vindx.clone(), tVarsIn.clone());
         residual = selectFromList_rev(eindex.clone(), residual_coll.clone());
         innerEquations = assignInnerEquations(order.clone(), eindex.clone(), vindx.clone(), ass2.clone(), mapEqnIncRow.clone(), None)?;
-        tearingSetsOut = metamodelica::cons(BackendDAE::TearingSet { tearingvars: tVars.clone(), residualequations: residual.clone(), innerEquations: innerEquations.clone(), jac: Arc::new(crate::BackendDAE::Jacobian::EMPTY_JACOBIAN) }, tearingSetsOut.clone());
+        tearingSetsOut = metamodelica::cons(BackendDAE::TearingSet { tearingvars: tVars.clone(), residualequations: residual.clone(), innerEquations: innerEquations.clone(), jac: Arc::new(openmodelica_backend_types::BackendDAE::Jacobian::EMPTY_JACOBIAN) }, tearingSetsOut.clone());
         if Flags::isSet(Flags::TEARING_DUMP.clone())? || Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nTearing Variables:\n")); __mm_s.push_str(&*stringDelimitList(List::map(tVarsIn.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Residual Equations:\n")); __mm_s.push_str(&*stringDelimitList(List::map(residual_coll.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
@@ -4218,8 +4218,8 @@ fn userDefinedTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Bac
     eqns = BackendEquation::listEquation(eqn_lst.clone())?;
     var_lst = List::map1r(vindx.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), BackendVariable::daeVars(isyst.clone()))?;
     vars = BackendVariable::listVar1(var_lst.clone())?;
-    subsyst = BackendDAEUtil::createEqSystem(vars.clone(), eqns.clone(), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
-    (subsyst, m, mt, _, _) = BackendDAEUtil::getAdjacencyMatrixScalar(subsyst.clone(), crate::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(ishared.clone()))?;
+    subsyst = BackendDAEUtil::createEqSystem(vars.clone(), eqns.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+    (subsyst, m, mt, _, _) = BackendDAEUtil::getAdjacencyMatrixScalar(subsyst.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(ishared.clone()))?;
     m = Array::map(m.clone(), (std::sync::Arc::new(fnptr!(deleteNegativeEntries, Arc<metamodelica::List<i32>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>))?;
     mt = Array::map(mt.clone(), (std::sync::Arc::new(fnptr!(deleteNegativeEntries, Arc<metamodelica::List<i32>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>))?;
     (me, meT, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::getAdjacencyMatrixEnhancedScalar(subsyst.clone(), ishared.clone(), false)?;
@@ -4290,7 +4290,7 @@ fn userDefinedTearing(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Bac
         tVars = selectFromList_rev(vindx.clone(), userTVars.clone());
         residuals = selectFromList_rev(eindex.clone(), userResiduals.clone());
         innerEquations = assignInnerEquations(order.clone(), eindex.clone(), vindx.clone(), ass2.clone(), mapEqnIncRow.clone(), None)?;
-        tearingSet = BackendDAE::TearingSet { tearingvars: tVars.clone(), residualequations: residuals.clone(), innerEquations: innerEquations.clone(), jac: Arc::new(crate::BackendDAE::Jacobian::EMPTY_JACOBIAN) };
+        tearingSet = BackendDAE::TearingSet { tearingvars: tVars.clone(), residualequations: residuals.clone(), innerEquations: innerEquations.clone(), jac: Arc::new(openmodelica_backend_types::BackendDAE::Jacobian::EMPTY_JACOBIAN) };
         ocomp = Arc::new(BackendDAE::StrongComponent::TORNSYSTEM { strictTearingSet: tearingSet.clone(), casualTearingSet: None, linear: linear.clone(), mixedSystem: mixedSystem.clone() });
         outRunMatching = true;
         if Flags::isSet(Flags::TEARING_DUMP.clone())? || Flags::isSet(Flags::TEARING_DUMPVERBOSE.clone())? {

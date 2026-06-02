@@ -44,7 +44,6 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::AdjacencyMatrix;
-use crate::BackendDAE;
 use crate::BackendDAEOptimize;
 use crate::BackendDAEUtil;
 use crate::BackendDump;
@@ -58,6 +57,7 @@ use crate::SimCodeFunction;
 use crate::SimCodeUtil;
 use crate::SimCodeVar;
 use openmodelica_ast::Absyn;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::HashTableCrIListArray;
 use openmodelica_frontend::HashTableCrILst;
 use openmodelica_frontend::HashTableExpToIndex;

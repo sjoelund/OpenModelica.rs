@@ -43,7 +43,7 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAE;
+use openmodelica_backend_types::BackendDAE;
 
 /* ************************************/
 /*   Interfaces */

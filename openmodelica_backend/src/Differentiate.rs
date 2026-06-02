@@ -43,7 +43,6 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAE;
 use crate::BackendDAECreate;
 use crate::BackendDAEUtil;
 use crate::BackendDump;
@@ -53,6 +52,7 @@ use crate::BackendVariable;
 use crate::SymbolicJacobian::DAE_CJ;
 use openmodelica_ast::Absyn;
 use openmodelica_ast_collections::AvlSetPath;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::Algorithm;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::DAEDump;
@@ -112,7 +112,7 @@ pub fn differentiateEquationTime(mut inEquation: Arc<BackendDAE::Equation>, mut 
         diffData.dependenentVars = Some(inVariables.clone());
         diffData.knownVars = Some(knvars.clone());
         diffData.allVars = Some(inVariables.clone());
-        (eqn, funcs) = unwrap_break_err!(differentiateEquation(inEquation.clone(), DAE::crefTime().clone(), diffData.clone(), crate::BackendDAE::DifferentiationType::DIFFERENTIATION_TIME, funcs.clone()), '__try0);
+        (eqn, funcs) = unwrap_break_err!(differentiateEquation(inEquation.clone(), DAE::crefTime().clone(), diffData.clone(), openmodelica_backend_types::BackendDAE::DifferentiationType::DIFFERENTIATION_TIME, funcs.clone()), '__try0);
         outEquation = Some(eqn.clone());
         outShared = unwrap_break_err!(BackendDAEUtil::setSharedFunctionTree(inShared.clone(), funcs.clone()), '__try0);
         if unwrap_break_err!(Flags::isSet(Flags::DEBUG_DIFFERENTIATION.clone()), '__try0) {
@@ -148,7 +148,7 @@ pub fn differentiateExpTime(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDA
         diffData = BackendDAE::emptyInputData().clone();
         diffData.dependenentVars = Some(inVariables.clone());
         diffData.knownVars = Some(knvars.clone());
-        (dexp, funcs) = unwrap_break_err!(differentiateExp(inExp.clone(), DAE::crefTime().clone(), diffData.clone(), crate::BackendDAE::DifferentiationType::DIFFERENTIATION_TIME, funcs.clone(), defaultMaxIter.clone()), '__try0);
+        (dexp, funcs) = unwrap_break_err!(differentiateExp(inExp.clone(), DAE::crefTime().clone(), diffData.clone(), openmodelica_backend_types::BackendDAE::DifferentiationType::DIFFERENTIATION_TIME, funcs.clone(), defaultMaxIter.clone()), '__try0);
         (outExp, _) = unwrap_break_err!(ExpressionSimplify::simplify(dexp.clone()), '__try0);
         outShared = unwrap_break_err!(BackendDAEUtil::setSharedFunctionTree(inShared.clone(), funcs.clone()), '__try0);
         if unwrap_break_err!(Flags::isSet(Flags::DEBUG_DIFFERENTIATION.clone()), '__try0) {
@@ -196,7 +196,7 @@ pub fn differentiateExpSolve(mut inExp: Arc<DAE::Exp>, mut inCref: Arc<DAE::Comp
         if unwrap_break_err!(Flags::isSet(Flags::DEBUG_DIFFERENTIATION.clone()), '__try0) {
             unwrap_break_err!(BackendDump::debugStrExpStrCrefStr((literal!("### differentiateExpSolve\n ")).clone(), inExp.clone(), (literal!(" w.r.t. ")).clone(), inCref.clone(), (literal!("\n")).clone()), '__try0);
         }
-        (dexp, _) = unwrap_break_err!(differentiateExp(inExp.clone(), inCref.clone(), BackendDAE::emptyInputData().clone(), crate::BackendDAE::DifferentiationType::SIMPLE_DIFFERENTIATION, fun.clone(), defaultMaxIter.clone()), '__try0);
+        (dexp, _) = unwrap_break_err!(differentiateExp(inExp.clone(), inCref.clone(), BackendDAE::emptyInputData().clone(), openmodelica_backend_types::BackendDAE::DifferentiationType::SIMPLE_DIFFERENTIATION, fun.clone(), defaultMaxIter.clone()), '__try0);
         (outExp, _) = unwrap_break_err!(ExpressionSimplify::simplify(dexp.clone()), '__try0);
         if unwrap_break_err!(Flags::isSet(Flags::DEBUG_DIFFERENTIATION.clone()), '__try0) {
             unwrap_break_err!(BackendDump::debugStrExpStr((literal!("### Result of differentiateExpSolve\n --> ")).clone(), outExp.clone(), (literal!("\n")).clone()), '__try0);
@@ -231,7 +231,7 @@ pub fn differentiateExpCrefFullJacobian(mut inExp: Arc<DAE::Exp>, mut inCref: Ar
         diffData = BackendDAE::emptyInputData().clone();
         diffData.dependenentVars = Some(inVariables.clone());
         diffData.knownVars = Some(knvars.clone());
-        (dexp, funcs) = unwrap_break_err!(differentiateExp(inExp.clone(), inCref.clone(), diffData.clone(), crate::BackendDAE::DifferentiationType::DIFF_FULL_JACOBIAN, funcs.clone(), defaultMaxIter.clone()), '__try0);
+        (dexp, funcs) = unwrap_break_err!(differentiateExp(inExp.clone(), inCref.clone(), diffData.clone(), openmodelica_backend_types::BackendDAE::DifferentiationType::DIFF_FULL_JACOBIAN, funcs.clone(), defaultMaxIter.clone()), '__try0);
         (outExp, _) = unwrap_break_err!(ExpressionSimplify::simplify(dexp.clone()), '__try0);
         outShared = unwrap_break_err!(BackendDAEUtil::setSharedFunctionTree(inShared.clone(), funcs.clone()), '__try0);
         Ok::<_, anyhow::Error>((dexp.clone(), diffData.clone(), funcs.clone(), knvars.clone(), outExp.clone(), outShared.clone()))
@@ -927,7 +927,7 @@ fn differentiateStatements(mut inStmts: Arc<metamodelica::List<Arc<DAE::Statemen
                     let mut derivedStatements1: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let mut derivedStatements2: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     cref = ComponentReferenceBasics::makeCrefIdent((ident.clone()).clone(), DAE::T_INTEGER_DEFAULT().clone(), metamodelica::nil());
-                    controlVar = BackendDAE::Var { varName: cref.clone(), varKind: crate::BackendDAE::VarKind::DISCRETE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_REAL_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
+                    controlVar = BackendDAE::Var { varName: cref.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::DISCRETE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: DAE::T_REAL_DEFAULT().clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
                     inputData = addGlobalVars(list![controlVar.clone()], inInputData.clone())?;
                     (derivedStatements1, functions) = differentiateStatements(statementLst.clone(), inDiffwrtCref.clone(), inputData.clone(), inDiffType.clone(), metamodelica::nil(), inFunctionTree.clone(), maxIter.clone())?;
                     derivedStatements1 = list![Arc::new(DAE::Statement::STMT_FOR { type_: type_.clone(), iterIsArray: iterIsArray.clone(), iter: (ident.clone()).clone(), range: exp.clone(), statementLst: derivedStatements1.clone(), source: source.clone() })];
@@ -1314,7 +1314,7 @@ fn differentiateCrefs(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Comp
                     let mut zero: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let (BackendDAE::VAR { varKind: __pa0, .. }, _) = (BackendVariable::getVarSingle(cr.clone(), timevars.clone())?) else { bail!("pattern mismatch") };
                     kind = __pa0.clone();
-                    let true = (listMember(kind.clone(), list![crate::BackendDAE::VarKind::DISCRETE]) || !(Types::isReal(tp.clone()))) else { bail!("pattern mismatch") };
+                    let true = (listMember(kind.clone(), list![openmodelica_backend_types::BackendDAE::VarKind::DISCRETE]) || !(Types::isReal(tp.clone()))) else { bail!("pattern mismatch") };
                     (zero, _) = Expression::makeZeroExpression(Expression::arrayDimension(tp.clone()))?;
                     Ok((zero.clone(), inFunctionTree.clone()))
                 }
@@ -2039,7 +2039,7 @@ fn differentiateCallExpNArg(mut name: ArcStr, mut inExpl: Arc<metamodelica::List
             if Expression::isZero(res2.clone())? {
                 (res, _) = Expression::makeZeroExpression(Expression::arrayDimension(tp.clone()))?;
             } else {
-                (e, funcs) = differentiateExp(e2.clone(), inDiffwrtCref.clone(), inInputData.clone(), crate::BackendDAE::DifferentiationType::DIFFERENTIATION_TIME, funcs.clone(), maxIter.clone())?;
+                (e, funcs) = differentiateExp(e2.clone(), inDiffwrtCref.clone(), inInputData.clone(), openmodelica_backend_types::BackendDAE::DifferentiationType::DIFFERENTIATION_TIME, funcs.clone(), maxIter.clone())?;
                 e = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() }), expLst: list![Arc::new(DAE::Exp::ICONST { integer: -1 }), e.clone(), e3.clone(), e4.clone()], attr: inAttr.clone() });
                 res = Arc::new(DAE::Exp::BINARY { exp1: res2.clone(), operator: DAE::Operator::MUL { ty: tp.clone() }, exp2: e.clone() });
                 (res, _) = ExpressionSimplify::simplify(res.clone())?;
@@ -2975,13 +2975,13 @@ fn differentiatePartialFunction(mut inFunction: DAE::Function, mut inDiffwrtCref
             diffFuncData.diffedFunctions = inInputData.diffedFunctions.clone();
             (inputData, _) = addElementVars2Dep(inputVarsNoDer.clone(), functions.clone(), diffFuncData.clone())?;
             (inputData, _) = addElementVars2Dep(outputVarsNoDer.clone(), functions.clone(), inputData.clone())?;
-            (protectedVarsDer, functions, protectedVarsNoDer, _) = differentiateElementVars(protectedVars.clone(), inDiffwrtCref.clone(), inputData.clone(), crate::BackendDAE::DifferentiationType::DIFFERENTIATION_FUNCTION, functions.clone(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), maxIter.clone(), false)?;
+            (protectedVarsDer, functions, protectedVarsNoDer, _) = differentiateElementVars(protectedVars.clone(), inDiffwrtCref.clone(), inputData.clone(), openmodelica_backend_types::BackendDAE::DifferentiationType::DIFFERENTIATION_FUNCTION, functions.clone(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), maxIter.clone(), false)?;
             (inputData, _) = addElementVars2Dep(protectedVarsNoDer.clone(), functions.clone(), inputData.clone())?;
             if Flags::isSet(Flags::DEBUG_DIFFERENTIATION_VERBOSE.clone())? {
                 dumpInputData(inputData.clone())?;
             }
             inputData.knownVars = addFunctionConstantsAndParameters(inputData.knownVars.clone(), func.clone())?;
-            (derbodyStmts, functions) = differentiateStatements(bodyStmts.clone().reverse(), inDiffwrtCref.clone(), inputData.clone(), crate::BackendDAE::DifferentiationType::DIFFERENTIATION_FUNCTION, metamodelica::nil(), functions.clone(), maxIter.clone())?;
+            (derbodyStmts, functions) = differentiateStatements(bodyStmts.clone().reverse(), inDiffwrtCref.clone(), inputData.clone(), openmodelica_backend_types::BackendDAE::DifferentiationType::DIFFERENTIATION_FUNCTION, metamodelica::nil(), functions.clone(), maxIter.clone())?;
             if Flags::isSet(Flags::DEBUG_DIFFERENTIATION_VERBOSE.clone())? {
                 funstring = (DAEDump::ppStmtListStr(derbodyStmts.clone(), 0)?).clone();
                 println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("### Differentiate differentiateFunctionCallPartial stmts: \n")); __mm_s.push_str(&*funstring.clone()); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
@@ -3037,8 +3037,8 @@ fn getFunctionInOutVars(mut inFunction: DAE::Function, mut inFunctionTree: Arc<A
     outputVars = DAEUtil::getFunctionOutputVars(inFunction.clone())?;
     diffData = BackendDAE::emptyInputData().clone();
     diffData.matrixName = Some((BackendUtil::modelicaStringToCStr((AbsynUtil::pathString(DAEUtil::functionName(inFunction.clone())?, (literal!(".")).clone(), true, false)?).clone(), false)?).clone());
-    (inputVarsDer, functions, inputVarsNoDer, blst) = differentiateElementVars(inputVars.clone(), inDiffwrtCref.clone(), diffData.clone(), crate::BackendDAE::DifferentiationType::DIFFERENTIATION_FUNCTION, functions.clone(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), maxIter.clone(), true)?;
-    (outputVarsDer, functions, outputVarsNoDer, _) = differentiateElementVars(outputVars.clone(), inDiffwrtCref.clone(), diffData.clone(), crate::BackendDAE::DifferentiationType::DIFFERENTIATION_FUNCTION, functions.clone(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), maxIter.clone(), false)?;
+    (inputVarsDer, functions, inputVarsNoDer, blst) = differentiateElementVars(inputVars.clone(), inDiffwrtCref.clone(), diffData.clone(), openmodelica_backend_types::BackendDAE::DifferentiationType::DIFFERENTIATION_FUNCTION, functions.clone(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), maxIter.clone(), true)?;
+    (outputVarsDer, functions, outputVarsNoDer, _) = differentiateElementVars(outputVars.clone(), inDiffwrtCref.clone(), diffData.clone(), openmodelica_backend_types::BackendDAE::DifferentiationType::DIFFERENTIATION_FUNCTION, functions.clone(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), maxIter.clone(), false)?;
     Ok((functions, inputVarsDer, inputVarsNoDer, outputVarsDer, outputVarsNoDer, blst))
 }
 

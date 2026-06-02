@@ -45,7 +45,6 @@ use arcstr::{ArcStr, literal, format};
 
 use crate::AdjacencyMatrix;
 use crate::AvlSetInt;
-use crate::BackendDAE;
 use crate::BackendDAEEXT;
 use crate::BackendDAEUtil;
 use crate::BackendDump;
@@ -58,6 +57,7 @@ use crate::InlineArrayEquations;
 use crate::Matching;
 use crate::Sorting;
 use openmodelica_ast::Absyn;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::DAEUtil;
 use openmodelica_frontend::Expression;
@@ -534,7 +534,7 @@ fn differentiateEqns(mut inEqnsTpl: Arc<metamodelica::List<(i32, Option<Arc<Back
             println!("{}", (literal!("\n")).clone());
         }
         funcs = BackendDAEUtil::getFunctions(inShared.clone())?;
-        (syst, omapEqnIncRow, omapIncRowEqn) = BackendDAEUtil::updateAdjacencyMatrixScalar(syst.clone(), crate::BackendDAE::IndexType::SOLVABLE, Some(funcs.clone()), eqnslst.clone(), imapEqnIncRow.clone(), imapIncRowEqn.clone(), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
+        (syst, omapEqnIncRow, omapIncRowEqn) = BackendDAEUtil::updateAdjacencyMatrixScalar(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::SOLVABLE, Some(funcs.clone()), eqnslst.clone(), imapEqnIncRow.clone(), imapIncRowEqn.clone(), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
         osyst = syst.clone();
         oshared = inShared.clone();
         oNotDiffableMSS = iNotDiffableMSS.clone();
@@ -867,7 +867,7 @@ fn handleundifferntiableMSS(mut b: bool, mut statesWithUnusedDer: Arc<metamodeli
                         BackendDump::debuglst(eqnslst.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!(" ")).clone(), (literal!("\n")).clone())?;
                     }
                     funcs = BackendDAEUtil::getFunctions(inShared.clone())?;
-                    (syst, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::updateAdjacencyMatrixScalar(syst.clone(), crate::BackendDAE::IndexType::SOLVABLE, Some(funcs.clone()), eqnslst.clone(), imapEqnIncRow.clone(), imapIncRowEqn.clone(), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
+                    (syst, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::updateAdjacencyMatrixScalar(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::SOLVABLE, Some(funcs.clone()), eqnslst.clone(), imapEqnIncRow.clone(), imapIncRowEqn.clone(), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
                     Ok((syst.clone(), inShared.clone(), ass1.clone(), ass2.clone(), inStateOrd.clone(), inOrgEqnsLst.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -887,7 +887,7 @@ fn handleundifferntiableMSS(mut b: bool, mut statesWithUnusedDer: Arc<metamodeli
                         println!("{}", (literal!("Change varKind to algebraic for\n")).clone());
                         BackendDump::printVarList(varlst.clone())?;
                     }
-                    varlst = BackendVariable::setVarsKind(varlst.clone(), crate::BackendDAE::VarKind::VARIABLE)?;
+                    varlst = BackendVariable::setVarsKind(varlst.clone(), openmodelica_backend_types::BackendDAE::VarKind::VARIABLE)?;
                     assign_field!(syst.orderedVars = BackendVariable::addVars(varlst.clone(), syst.orderedVars.clone())?);
                     eqnslst1 = collectVarEqns(statesWithUnusedDer.clone(), mt.clone(), (mt.clone().borrow().len() as i32), (m.clone().borrow().len() as i32))?;
                     eqnslst1 = List::map1r(eqnslst1.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), imapIncRowEqn.clone())?;
@@ -896,7 +896,7 @@ fn handleundifferntiableMSS(mut b: bool, mut statesWithUnusedDer: Arc<metamodeli
                         BackendDump::debuglst(eqnslst1.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!(" ")).clone(), (literal!("\n")).clone())?;
                     }
                     funcs = BackendDAEUtil::getFunctions(inShared.clone())?;
-                    (syst, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::updateAdjacencyMatrixScalar(syst.clone(), crate::BackendDAE::IndexType::SOLVABLE, Some(funcs.clone()), eqnslst1.clone(), imapEqnIncRow.clone(), imapIncRowEqn.clone(), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
+                    (syst, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::updateAdjacencyMatrixScalar(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::SOLVABLE, Some(funcs.clone()), eqnslst1.clone(), imapEqnIncRow.clone(), imapIncRowEqn.clone(), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
                     Ok((syst.clone(), inShared.clone(), inAss1.clone(), inAss2.clone(), inStateOrd.clone(), inOrgEqnsLst.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -918,7 +918,7 @@ fn handleundifferntiableMSS(mut b: bool, mut statesWithUnusedDer: Arc<metamodeli
                         println!("{}", (literal!("Change varKind to algebraic for\n")).clone());
                         BackendDump::printVarList(varlst.clone())?;
                     }
-                    varlst = BackendVariable::setVarsKind(varlst.clone(), crate::BackendDAE::VarKind::VARIABLE)?;
+                    varlst = BackendVariable::setVarsKind(varlst.clone(), openmodelica_backend_types::BackendDAE::VarKind::VARIABLE)?;
                     assign_field!(syst.orderedVars = BackendVariable::addVars(varlst.clone(), v.clone())?);
                     if Flags::isSet(Flags::BLT_DUMP.clone())? {
                         varlst = List::map1r(ilst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), v.clone())?;
@@ -932,7 +932,7 @@ fn handleundifferntiableMSS(mut b: bool, mut statesWithUnusedDer: Arc<metamodeli
                         BackendDump::debuglst(eqnslst1.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!(" ")).clone(), (literal!("\n")).clone())?;
                     }
                     funcs = BackendDAEUtil::getFunctions(inShared.clone())?;
-                    (syst, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::updateAdjacencyMatrixScalar(syst.clone(), crate::BackendDAE::IndexType::SOLVABLE, Some(funcs.clone()), eqnslst1.clone(), imapEqnIncRow.clone(), imapIncRowEqn.clone(), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
+                    (syst, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::updateAdjacencyMatrixScalar(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::SOLVABLE, Some(funcs.clone()), eqnslst1.clone(), imapEqnIncRow.clone(), imapIncRowEqn.clone(), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
                     Ok((syst.clone(), inShared.clone(), inAss1.clone(), inAss2.clone(), inStateOrd.clone(), inOrgEqnsLst.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1111,11 +1111,11 @@ pub fn getStructurallySingularSystemHandlerArg(mut inSystem: Arc<BackendDAE::EqS
     let mut eqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     let mut count: i32 = 0;
     if Config::getIndexReductionMethod()? == literal!("uode") {
-        so = crate::BackendDAE::StateOrder::NOSTATEORDER;
+        so = openmodelica_backend_types::BackendDAE::StateOrder::NOSTATEORDER;
     } else {
         count = ((metamodelica::OrderedFloat((8) as f64) / metamodelica::OrderedFloat((3) as f64) * metamodelica::OrderedFloat((BackendVariable::getNumStateVarFromVariables(inSystem.orderedVars.clone())?) as f64)).0.floor() as i32);
         if count.clone() == 0 {
-            so = crate::BackendDAE::StateOrder::NOSTATEORDER;
+            so = openmodelica_backend_types::BackendDAE::StateOrder::NOSTATEORDER;
         } else {
             ht = HashTableCG::emptyHashTableSized(count.clone());
             dht = HashTable3::emptyHashTableSized(count.clone());
@@ -1571,9 +1571,9 @@ fn generateStateSets(mut iTplLst: StateSets, mut iSetIndex: i32, mut iVars: Back
         oVars = BackendVariable::addVars(setVars.clone(), oVars.clone())?;
         oEqns = BackendEquation::add(eqn.clone(), oEqns.clone())?;
         oEqns = BackendEquation::add(deqn.clone(), oEqns.clone())?;
-        stateCandidates = List::map1(stateCandidates.clone(), (std::sync::Arc::new(BackendVariable::setVarKind) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::VarKind) -> Result<BackendDAE::Var> + 'static>), crate::BackendDAE::VarKind::DUMMY_STATE)?;
-        otherVars = List::map1(otherVars.clone(), (std::sync::Arc::new(BackendVariable::setVarKind) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::VarKind) -> Result<BackendDAE::Var> + 'static>), crate::BackendDAE::VarKind::DUMMY_STATE)?;
-        oStateSets = metamodelica::cons(BackendDAE::StateSet { index: oSetIndex.clone(), rang: rang.clone(), state: crset.clone(), crA: crA.clone(), varA: aVars.clone(), statescandidates: stateCandidates.clone(), ovars: otherVars.clone(), eqns: cEqnsLst.clone(), oeqns: oEqnLst.clone(), crJ: crJ.clone(), varJ: varJ.clone(), jacobian: Arc::new(crate::BackendDAE::Jacobian::EMPTY_JACOBIAN) }, oStateSets.clone());
+        stateCandidates = List::map1(stateCandidates.clone(), (std::sync::Arc::new(BackendVariable::setVarKind) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::VarKind) -> Result<BackendDAE::Var> + 'static>), openmodelica_backend_types::BackendDAE::VarKind::DUMMY_STATE)?;
+        otherVars = List::map1(otherVars.clone(), (std::sync::Arc::new(BackendVariable::setVarKind) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::VarKind) -> Result<BackendDAE::Var> + 'static>), openmodelica_backend_types::BackendDAE::VarKind::DUMMY_STATE)?;
+        oStateSets = metamodelica::cons(BackendDAE::StateSet { index: oSetIndex.clone(), rang: rang.clone(), state: crset.clone(), crA: crA.clone(), varA: aVars.clone(), statescandidates: stateCandidates.clone(), ovars: otherVars.clone(), eqns: cEqnsLst.clone(), oeqns: oEqnLst.clone(), crJ: crJ.clone(), varJ: varJ.clone(), jacobian: Arc::new(openmodelica_backend_types::BackendDAE::Jacobian::EMPTY_JACOBIAN) }, oStateSets.clone());
         oSetIndex = oSetIndex.clone() + 1;
     }
     if Flags::isSet(Flags::BLT_DUMP.clone())? {
@@ -1623,7 +1623,7 @@ fn selectStates(mut nfreeStates: i32, mut nOrgEqns: i32, mut inSystem: Arc<Backe
                     syst = BackendEquation::equationsAddDAE(eqnslst.clone(), inSystem.clone())?;
                     (syst, ht) = addAllDummyStates(syst.clone(), iSo.clone(), iHt.clone())?;
                     funcs = BackendDAEUtil::getFunctions(inShared.clone())?;
-                    (syst, m, _, _, _) = BackendDAEUtil::getAdjacencyMatrixScalar(syst.clone(), crate::BackendDAE::IndexType::SOLVABLE, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
+                    (syst, m, _, _, _) = BackendDAEUtil::getAdjacencyMatrixScalar(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::SOLVABLE, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
                     ass1 = Array::expand(nfreeStates.clone(), ass1.clone(), -1)?;
                     ass2 = Array::expand(nOrgEqns.clone(), ass2.clone(), -1)?;
                     nv = BackendVariable::varsSize(BackendVariable::daeVars(syst.clone()));
@@ -1660,7 +1660,7 @@ fn selectStates(mut nfreeStates: i32, mut nOrgEqns: i32, mut inSystem: Arc<Backe
                     }
                     funcs = BackendDAEUtil::getFunctions(inShared.clone())?;
                     syst = replaceHigherDerivatives(inSystem.clone())?;
-                    (syst, _, _, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::getAdjacencyMatrixScalar(syst.clone(), crate::BackendDAE::IndexType::SOLVABLE, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
+                    (syst, _, _, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::getAdjacencyMatrixScalar(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::SOLVABLE, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
                     (syst, shared, ht, setIndex) = selectStatesWork(1, hov.clone(), syst.clone(), inShared.clone(), so.clone(), orgEqnsLst.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), iHt.clone(), iSetIndex.clone())?;
                     ErrorExt::rollBack((literal!("DynamicStateSelection")).clone());
                     Ok((syst.clone(), shared.clone(), ht.clone(), setIndex.clone()))
@@ -1751,7 +1751,7 @@ fn selectStatesWork(mut level: i32, mut iHov: Arc<metamodelica::List<BackendDAE:
             (setIndex, syst) = addStateSets(stateSets.clone(), iSetIndex.clone(), syst.clone())?;
             (syst, ht) = addDummyStates(dummyVars.clone(), level.clone(), repl.clone(), syst.clone(), iHt.clone())?;
             List::fold1(iHov.clone(), (std::sync::Arc::new(fixDerivativeIndex) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, i32, BackendDAE::Variables) -> Result<BackendDAE::Variables> + 'static>), level.clone(), BackendVariable::daeVars(syst.clone()))?;
-            (syst, m, _, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::getAdjacencyMatrixScalar(syst.clone(), crate::BackendDAE::IndexType::SOLVABLE, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
+            (syst, m, _, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::getAdjacencyMatrixScalar(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::SOLVABLE, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
             nv1 = BackendVariable::varsSize(BackendVariable::daeVars(syst.clone()));
             ne1 = BackendDAEUtil::systemSize(syst.clone())?;
             ass1 = Array::expand(nv1.clone() - nv.clone(), ass1.clone(), -1)?;
@@ -1883,7 +1883,7 @@ fn selectStatesWork1(mut nfreeStates: i32, mut statecandidates: Arc<metamodelica
             let mut vars = (*vars).clone();
             hovvars = BackendVariable::listVar1(statecandidates.clone())?;
             eqns1 = BackendEquation::listEquation(eqnslst.clone())?;
-            syst = BackendDAEUtil::createEqSystem(hovvars.clone(), eqns1.clone(), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+            syst = BackendDAEUtil::createEqSystem(hovvars.clone(), eqns1.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
             (me, meT, _, _) = BackendDAEUtil::getAdjacencyMatrixEnhancedScalar(syst.clone(), inShared.clone(), false)?;
             m1 = adjacencyMatrixfromEnhancedStrict(me.clone(), hovvars.clone())?;
             mT1 = AdjacencyMatrix::transposeAdjacencyMatrix(m1.clone(), nfreeStates.clone())?;
@@ -1929,7 +1929,7 @@ fn selectStatesWork1(mut nfreeStates: i32, mut statecandidates: Arc<metamodelica
             eqns = BackendEquation::addList(eqnslst1.clone(), eqns.clone())?;
             vars = BackendVariable::listVar1(vlst.clone())?;
             vars = BackendVariable::addVars(BackendVariable::varList(hovvars.clone())?, vars.clone())?;
-            syst = BackendDAEUtil::createEqSystem(vars.clone(), eqns.clone(), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+            syst = BackendDAEUtil::createEqSystem(vars.clone(), eqns.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
             (me, meT, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::getAdjacencyMatrixEnhancedScalar(syst.clone(), inShared.clone(), false)?;
             if Flags::isSet(Flags::BLT_DUMP.clone())? {
                 BackendDump::dumpAdjacencyMatrixEnhanced(me.clone())?;
@@ -1981,7 +1981,7 @@ fn selectStatesWork1(mut nfreeStates: i32, mut statecandidates: Arc<metamodelica
                 }
             }
             syst = BackendDAEUtil::setEqSystMatching(syst.clone(), Arc::new(BackendDAE::Matching::MATCHING { ass1: vec1.clone(), ass2: vec2.clone(), comps: metamodelica::nil() }))?;
-            (syst, m, mT, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::getAdjacencyMatrixScalar(syst.clone(), crate::BackendDAE::IndexType::ABSOLUTE, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
+            (syst, m, mT, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::getAdjacencyMatrixScalar(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::ABSOLUTE, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
             comps = partitionSystem(m.clone(), mT.clone())?;
             (vlst, _, stateSets) = processComps4New(comps.clone(), nv.clone(), ne.clone(), vars.clone(), eqns.clone(), m.clone(), mT.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), vec2.clone(), vec1.clone(), level.clone(), inShared.clone(), iStateSets.clone())?;
             vlst = List::select(vlst.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isStateVar, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?;
@@ -2076,7 +2076,7 @@ fn forceStateSelectNever(mut vec_old1: metamodelica::Array<i32>, mut vec_old2: m
         if !(neverVars.clone().is_empty()) {
             neverVarsArray = BackendVariable::listVar1(neverVars.clone())?;
             nv2 = BackendVariable::varsSize(neverVarsArray.clone());
-            syst2 = BackendDAEUtil::createEqSystem(neverVarsArray.clone(), eqns.clone(), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+            syst2 = BackendDAEUtil::createEqSystem(neverVarsArray.clone(), eqns.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
             (me2, _, _, _) = BackendDAEUtil::getAdjacencyMatrixEnhancedScalar(syst2.clone(), inShared.clone(), false)?;
             m = adjacencyMatrixfromEnhancedPartial(me2.clone(), vars.clone(), neverVarsArray.clone(), vec2.clone(), so.clone())?;
             if !(AdjacencyMatrix::isEmpty(m.clone())) {
@@ -2266,7 +2266,7 @@ fn getAdjacencyMatrixLevelEquations(mut iEqns: Arc<metamodelica::List<Arc<Backen
             let mut i1: i32 = 0;
             let mut rowSize: i32 = 0;
             let mut size: i32 = 0;
-            (rowTree, size) = BackendDAEUtil::adjacencyRow(e.clone(), vars.clone(), crate::BackendDAE::IndexType::SOLVABLE, Some(functionTree.clone()), Arc::new(crate::AvlSetInt::Tree::EMPTY), isInitial.clone())?;
+            (rowTree, size) = BackendDAEUtil::adjacencyRow(e.clone(), vars.clone(), openmodelica_backend_types::BackendDAE::IndexType::SOLVABLE, Some(functionTree.clone()), Arc::new(crate::AvlSetInt::Tree::EMPTY), isInitial.clone())?;
             row = AvlSetInt::listKeys(rowTree.clone(), metamodelica::nil());
             rowSize = sindex.clone() + size.clone();
             i1 = index.clone() + 1;
@@ -2430,7 +2430,7 @@ fn processComps4New(mut iSets: Arc<metamodelica::List<Arc<metamodelica::List<i32
                 (eqnlst, varlst, ass1, ass2, eqns1) = unwrap_break_err!(getSetSystem(assigned.clone(), inMapEqnIncRow.clone(), inMapIncRowEqn.clone(), vec1.clone(), iVars.clone(), eqns1.clone(), flag.clone(), nassigned.clone(), eqnlst.clone(), varlst.clone(), ass1.clone(), ass2.clone()), '__try0);
                 eqns = unwrap_break_err!(BackendEquation::listEquation(eqnlst.clone()), '__try0);
                 vars = unwrap_break_err!(BackendVariable::listVar1(varlst.clone()), '__try0);
-                syst = BackendDAEUtil::createEqSystem(vars.clone(), eqns.clone(), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+                syst = BackendDAEUtil::createEqSystem(vars.clone(), eqns.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
                 (_, _, _, mapIncRowEqn1) = unwrap_break_err!(BackendDAEUtil::getAdjacencyMatrixEnhancedScalar(syst.clone(), iShared.clone(), false), '__try0);
                 ass1arr = metamodelica::arrayFromVec(ass1.clone().into_iter().cloned().collect());
                 nass1arr = (ass1arr.clone().borrow().len() as i32);
@@ -3260,7 +3260,7 @@ fn makeHigherStatesRepl1(mut diffCount: i32, mut diffedCount: i32, mut iOrigName
             dattr = BackendVariable::getVariableAttributefromType(tp.clone())?;
             odattr = DAEUtil::setFixedAttr(Some(dattr.clone()), Some(Arc::new(DAE::Exp::BCONST { bool: false })))?;
             odattr = DAEUtil::setProtectedAttr(odattr.clone(), DAEUtil::getProtectedAttr(inVar.values.clone()))?;
-            kind = if (intGt(diffCount.clone(), 0)) {BackendDAE::VarKind::STATE { index: diffCount.clone(), derName: None, natural: true }} else {crate::BackendDAE::VarKind::DUMMY_DER};
+            kind = if (intGt(diffCount.clone(), 0)) {BackendDAE::VarKind::STATE { index: diffCount.clone(), derName: None, natural: true }} else {openmodelica_backend_types::BackendDAE::VarKind::DUMMY_DER};
             var = BackendDAE::Var { varName: name.clone(), varKind: kind.clone(), varDirection: dir.clone(), varParallelism: prl.clone(), varType: tp.clone(), bindExp: None, tplExp: None, arryDim: dim.clone(), source: source.clone(), values: odattr.clone(), tearingSelectOption: ts.clone(), hideResult: hideResult.clone(), comment: comment.clone(), connectorType: ct.clone(), innerOuter: io.clone(), unreplaceable: false, initNonlinear: false, encrypted: encrypted.clone() };
             (vlst, ht, n) = makeHigherStatesRepl1(diffCount.clone() - 1, diffedCount.clone() + 1, iOrigName.clone(), name.clone(), inVar.clone(), vars.clone(), metamodelica::cons(var.clone(), iVarLst.clone()), ht.clone(), iN.clone() + 1)?;
             (vlst.clone(), ht.clone(), n.clone())
@@ -3337,7 +3337,7 @@ fn makeAllDummyVarandDummyDerivativeRepl(mut inVar: BackendDAE::Var, mut inTpl: 
                     (varlst, ht) = makeAllDummyVarandDummyDerivativeRepl1(1, 1, name.clone(), name.clone(), var.clone(), vars.clone(), so.clone(), varlst.clone(), ht.clone())?;
                     cr = ComponentReference::crefPrefixDer(name.clone());
                     source = ElementSource::addSymbolicTransformation(source.clone(), Arc::new(DAE::SymbolicOperation::NEW_DUMMY_DER { chosen: cr.clone(), candidates: metamodelica::nil() }))?;
-                    Ok((BackendDAE::Var { varName: name.clone(), varKind: crate::BackendDAE::VarKind::DUMMY_STATE, varDirection: dir.clone(), varParallelism: prl.clone(), varType: tp.clone(), bindExp: bind.clone(), tplExp: tplExp.clone(), arryDim: dim.clone(), source: source.clone(), values: attr.clone(), tearingSelectOption: ts.clone(), hideResult: hideResult.clone(), comment: comment.clone(), connectorType: ct.clone(), innerOuter: io.clone(), unreplaceable: false, initNonlinear: false, encrypted: var.encrypted.clone() }, (vars.clone(), so.clone(), varlst.clone(), ht.clone())))
+                    Ok((BackendDAE::Var { varName: name.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::DUMMY_STATE, varDirection: dir.clone(), varParallelism: prl.clone(), varType: tp.clone(), bindExp: bind.clone(), tplExp: tplExp.clone(), arryDim: dim.clone(), source: source.clone(), values: attr.clone(), tearingSelectOption: ts.clone(), hideResult: hideResult.clone(), comment: comment.clone(), connectorType: ct.clone(), innerOuter: io.clone(), unreplaceable: false, initNonlinear: false, encrypted: var.encrypted.clone() }, (vars.clone(), so.clone(), varlst.clone(), ht.clone())))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3352,7 +3352,7 @@ fn makeAllDummyVarandDummyDerivativeRepl(mut inVar: BackendDAE::Var, mut inTpl: 
                     (varlst, ht) = makeAllDummyVarandDummyDerivativeRepl1(diffcount.clone(), 1, name.clone(), name.clone(), var.clone(), vars.clone(), so.clone(), varlst.clone(), ht.clone())?;
                     cr = ComponentReference::crefPrefixDer(name.clone());
                     source = ElementSource::addSymbolicTransformation(source.clone(), Arc::new(DAE::SymbolicOperation::NEW_DUMMY_DER { chosen: cr.clone(), candidates: metamodelica::nil() }))?;
-                    Ok((BackendDAE::Var { varName: name.clone(), varKind: crate::BackendDAE::VarKind::DUMMY_STATE, varDirection: dir.clone(), varParallelism: prl.clone(), varType: tp.clone(), bindExp: bind.clone(), tplExp: tplExp.clone(), arryDim: dim.clone(), source: source.clone(), values: attr.clone(), tearingSelectOption: ts.clone(), hideResult: hideResult.clone(), comment: comment.clone(), connectorType: ct.clone(), innerOuter: io.clone(), unreplaceable: false, initNonlinear: false, encrypted: var.encrypted.clone() }, (vars.clone(), so.clone(), varlst.clone(), ht.clone())))
+                    Ok((BackendDAE::Var { varName: name.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::DUMMY_STATE, varDirection: dir.clone(), varParallelism: prl.clone(), varType: tp.clone(), bindExp: bind.clone(), tplExp: tplExp.clone(), arryDim: dim.clone(), source: source.clone(), values: attr.clone(), tearingSelectOption: ts.clone(), hideResult: hideResult.clone(), comment: comment.clone(), connectorType: ct.clone(), innerOuter: io.clone(), unreplaceable: false, initNonlinear: false, encrypted: var.encrypted.clone() }, (vars.clone(), so.clone(), varlst.clone(), ht.clone())))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3368,7 +3368,7 @@ fn makeAllDummyVarandDummyDerivativeRepl(mut inVar: BackendDAE::Var, mut inTpl: 
                     (varlst, ht) = makeAllDummyVarandDummyDerivativeRepl1(1, 1, name.clone(), name.clone(), var.clone(), vars.clone(), so.clone(), varlst.clone(), ht.clone())?;
                     cr = ComponentReference::crefPrefixDer(name.clone());
                     source = ElementSource::addSymbolicTransformation(source.clone(), Arc::new(DAE::SymbolicOperation::NEW_DUMMY_DER { chosen: cr.clone(), candidates: metamodelica::nil() }))?;
-                    Ok((BackendDAE::Var { varName: name.clone(), varKind: crate::BackendDAE::VarKind::DUMMY_STATE, varDirection: dir.clone(), varParallelism: prl.clone(), varType: tp.clone(), bindExp: bind.clone(), tplExp: tplExp.clone(), arryDim: dim.clone(), source: source.clone(), values: attr.clone(), tearingSelectOption: ts.clone(), hideResult: hideResult.clone(), comment: comment.clone(), connectorType: ct.clone(), innerOuter: io.clone(), unreplaceable: false, initNonlinear: false, encrypted: var.encrypted.clone() }, (vars.clone(), so.clone(), varlst.clone(), ht.clone())))
+                    Ok((BackendDAE::Var { varName: name.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::DUMMY_STATE, varDirection: dir.clone(), varParallelism: prl.clone(), varType: tp.clone(), bindExp: bind.clone(), tplExp: tplExp.clone(), arryDim: dim.clone(), source: source.clone(), values: attr.clone(), tearingSelectOption: ts.clone(), hideResult: hideResult.clone(), comment: comment.clone(), connectorType: ct.clone(), innerOuter: io.clone(), unreplaceable: false, initNonlinear: false, encrypted: var.encrypted.clone() }, (vars.clone(), so.clone(), varlst.clone(), ht.clone())))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3407,7 +3407,7 @@ fn makeAllDummyVarandDummyDerivativeRepl1(mut diffCount: i32, mut diffedCount: i
             dattr = BackendVariable::getVariableAttributefromType(tp.clone())?;
             odattr = DAEUtil::setFixedAttr(Some(dattr.clone()), Some(Arc::new(DAE::Exp::BCONST { bool: false })))?;
             odattr = DAEUtil::setProtectedAttr(odattr.clone(), DAEUtil::getProtectedAttr(inVar.values.clone()))?;
-            var = BackendDAE::Var { varName: name.clone(), varKind: crate::BackendDAE::VarKind::DUMMY_DER, varDirection: dir.clone(), varParallelism: prl.clone(), varType: tp.clone(), bindExp: None, tplExp: None, arryDim: dim.clone(), source: source.clone(), values: odattr.clone(), tearingSelectOption: ts.clone(), hideResult: hideResult.clone(), comment: comment.clone(), connectorType: ct.clone(), innerOuter: io.clone(), unreplaceable: false, initNonlinear: false, encrypted: encrypted.clone() };
+            var = BackendDAE::Var { varName: name.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::DUMMY_DER, varDirection: dir.clone(), varParallelism: prl.clone(), varType: tp.clone(), bindExp: None, tplExp: None, arryDim: dim.clone(), source: source.clone(), values: odattr.clone(), tearingSelectOption: ts.clone(), hideResult: hideResult.clone(), comment: comment.clone(), connectorType: ct.clone(), innerOuter: io.clone(), unreplaceable: false, initNonlinear: false, encrypted: encrypted.clone() };
             (vlst, ht) = makeAllDummyVarandDummyDerivativeRepl1(diffCount.clone() - 1, diffedCount.clone() + 1, iOrigName.clone(), name.clone(), inVar.clone(), vars.clone(), so.clone(), metamodelica::cons(var.clone(), iVarLst.clone()), ht.clone())?;
             (vlst.clone(), ht.clone())
         },
@@ -3461,8 +3461,8 @@ fn makeDummyVarandDummyDerivative(mut inVar: BackendDAE::Var, mut level: i32, mu
             dattr = BackendVariable::getVariableAttributefromType(tp.clone())?;
             odattr = DAEUtil::setFixedAttr(Some(dattr.clone()), Some(Arc::new(DAE::Exp::BCONST { bool: false })))?;
             odattr = DAEUtil::setProtectedAttr(odattr.clone(), DAEUtil::getProtectedAttr(inVar.values.clone()))?;
-            dummy_derstate = BackendDAE::Var { varName: dummyderName.clone(), varKind: crate::BackendDAE::VarKind::DUMMY_DER, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: prl.clone(), varType: tp.clone(), bindExp: None, tplExp: None, arryDim: dim.clone(), source: source.clone(), values: odattr.clone(), tearingSelectOption: ts.clone(), hideResult: hideResult.clone(), comment: comment.clone(), connectorType: ct.clone(), innerOuter: io.clone(), unreplaceable: false, initNonlinear: false, encrypted: e.clone() };
-            kind = if (intEq(dn.clone(), 0)) {crate::BackendDAE::VarKind::DUMMY_STATE} else {crate::BackendDAE::VarKind::DUMMY_DER};
+            dummy_derstate = BackendDAE::Var { varName: dummyderName.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::DUMMY_DER, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: prl.clone(), varType: tp.clone(), bindExp: None, tplExp: None, arryDim: dim.clone(), source: source.clone(), values: odattr.clone(), tearingSelectOption: ts.clone(), hideResult: hideResult.clone(), comment: comment.clone(), connectorType: ct.clone(), innerOuter: io.clone(), unreplaceable: false, initNonlinear: false, encrypted: e.clone() };
+            kind = if (intEq(dn.clone(), 0)) {openmodelica_backend_types::BackendDAE::VarKind::DUMMY_STATE} else {openmodelica_backend_types::BackendDAE::VarKind::DUMMY_DER};
             dummy_state = BackendDAE::Var { varName: name.clone(), varKind: kind.clone(), varDirection: dir.clone(), varParallelism: prl.clone(), varType: tp.clone(), bindExp: None, tplExp: None, arryDim: dim.clone(), source: source.clone(), values: odattr.clone(), tearingSelectOption: ts.clone(), hideResult: hideResult.clone(), comment: comment.clone(), connectorType: ct.clone(), innerOuter: io.clone(), unreplaceable: false, initNonlinear: false, encrypted: e.clone() };
             dummy_state = if (intEq(dn.clone(), 0)) {inVar.clone()} else {dummy_state.clone()};
             dummy_state = BackendVariable::setVarKind(dummy_state.clone(), kind.clone())?;
@@ -3649,7 +3649,7 @@ pub fn splitEqnsinConstraintAndOther(mut inVarLst: Arc<metamodelica::List<Backen
     vars = BackendVariable::listVar1(inVarLst.clone())?;
     (eqnslst, _) = InlineArrayEquations::getScalarArrayEqns(inEqnsLst.clone())?;
     eqns = BackendEquation::listEquation(eqnslst.clone())?;
-    syst = BackendDAEUtil::createEqSystem(vars.clone(), eqns.clone(), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+    syst = BackendDAEUtil::createEqSystem(vars.clone(), eqns.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
     (me, _, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::getAdjacencyMatrixEnhancedScalar(syst.clone(), shared.clone(), false)?;
     m = adjacencyMatrixfromEnhancedStrict(me.clone(), vars.clone())?;
     nv = BackendVariable::varsSize(vars.clone());
@@ -3810,13 +3810,13 @@ fn getSetVars(mut index: i32, mut setsize: i32, mut nCandidates: i32, mut nCEqns
     tp = if (intGt(setsize.clone(), 1)) {Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_INTEGER_DEFAULT().clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: setsize.clone() }), Arc::new(DAE::Dimension::DIM_INTEGER { integer: nCandidates.clone() })] })} else {Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_INTEGER_DEFAULT().clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: nCandidates.clone() })] })};
     realtp = if (intGt(setsize.clone(), 1)) {Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_REAL_DEFAULT().clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: setsize.clone() }), Arc::new(DAE::Dimension::DIM_INTEGER { integer: nCandidates.clone() })] })} else {Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_REAL_DEFAULT().clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: nCandidates.clone() })] })};
     ocrA = ComponentReference::joinCrefs(set.clone(), ComponentReferenceBasics::makeCrefIdent((literal!("A")).clone(), tp.clone(), metamodelica::nil()))?;
-    oAVars = BackendVariable::generateArrayVar(ocrA.clone(), crate::BackendDAE::VarKind::VARIABLE, tp.clone(), None)?;
+    oAVars = BackendVariable::generateArrayVar(ocrA.clone(), openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, tp.clone(), None)?;
     oAVars = List::map1(oAVars.clone(), (std::sync::Arc::new(BackendVariable::setVarFixed) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, bool) -> Result<BackendDAE::Var> + 'static>), true)?;
     oAVars = List::map1(oAVars.clone(), (std::sync::Arc::new(BackendVariable::setVarStartValue) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, Arc<DAE::Exp>) -> Result<BackendDAE::Var> + 'static>), Arc::new(DAE::Exp::ICONST { integer: 0 }))?;
     oAVars = setSetAStart(oAVars.clone(), 1, 1, nCandidates.clone(), metamodelica::nil())?;
     tp = if (intGt(nCEqns.clone(), 1)) {Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_REAL_DEFAULT().clone(), dims: list![Arc::new(DAE::Dimension::DIM_INTEGER { integer: nCEqns.clone() })] })} else {DAE::T_REAL_DEFAULT().clone()};
     ocrJ = ComponentReference::joinCrefs(set.clone(), ComponentReferenceBasics::makeCrefIdent((literal!("J")).clone(), tp.clone(), metamodelica::nil()))?;
-    oJVars = BackendVariable::generateArrayVar(ocrJ.clone(), crate::BackendDAE::VarKind::VARIABLE, tp.clone(), None)?;
+    oJVars = BackendVariable::generateArrayVar(ocrJ.clone(), openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, tp.clone(), None)?;
     oJVars = List::map1(oJVars.clone(), (std::sync::Arc::new(BackendVariable::setVarFixed) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, bool) -> Result<BackendDAE::Var> + 'static>), false)?;
     Ok((crstates, crset, oSetVars, ocrA, oAVars, realtp, ocrJ, oJVars))
 }

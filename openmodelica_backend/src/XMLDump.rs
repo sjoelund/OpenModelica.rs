@@ -75,13 +75,13 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAE;
 use crate::BackendDAETransform;
 use crate::BackendDAEUtil;
 use crate::BackendEquation;
 use crate::BackendVariable;
-use crate::ZeroCrossings;
 use openmodelica_ast::Absyn;
+use openmodelica_backend_types::BackendDAE;
+use openmodelica_backend_types::ZeroCrossings;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::DAEDump;
 use openmodelica_frontend::DAEUtil;
@@ -2303,7 +2303,7 @@ fn dumpAdjacencyMatrixWork(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<
     let mut m: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
     funcs = BackendDAEUtil::getFunctions(shared.clone())?;
-    (_, m, _) = BackendDAEUtil::getAdjacencyMatrixfromOption(syst.clone(), crate::BackendDAE::IndexType::NORMAL, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(shared.clone()))?;
+    (_, m, _) = BackendDAEUtil::getAdjacencyMatrixfromOption(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(shared.clone()))?;
     Array::fold(m.clone(), (std::sync::Arc::new(dumpAdjacencyMatrix2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, (i32, i32)) -> Result<(i32, i32)> + 'static>), (inOffset.clone(), 1))?;
     outOffset = inOffset.clone() + (m.clone().borrow().len() as i32);
     Ok(outOffset)

@@ -43,7 +43,6 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAE;
 use crate::BackendDAEUtil;
 use crate::BackendDump;
 use crate::BackendEquation;
@@ -51,8 +50,9 @@ use crate::BackendVarTransform;
 use crate::BackendVariable;
 use crate::ExpressionSolve;
 use crate::Vectorization;
-use crate::ZeroCrossings;
 use openmodelica_ast::Absyn;
+use openmodelica_backend_types::BackendDAE;
+use openmodelica_backend_types::ZeroCrossings;
 use openmodelica_frontend::CheckModel;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::DAEDump;
@@ -155,8 +155,8 @@ pub fn lower(mut lst: DAE::DAElist, mut inCache: FCore::Cache, mut inEnv: FCore:
     ieqnarr = BackendEquation::listEquation(ieqns.clone())?;
     einfo = BackendDAE::EventInfo { timeEvents: timeEvents.clone(), zeroCrossings: ZeroCrossings::new()?, relations: DoubleEnded::fromList(metamodelica::nil())?, samples: ZeroCrossings::new()?, numberMathEvents: 0 };
     symjacs = list![(None, (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), -1), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), -1)), (None, (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), -1), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), -1)), (None, (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), -1), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), -1)), (None, (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), -1), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil(), (metamodelica::nil(), metamodelica::nil()), -1))];
-    syst = BackendDAEUtil::createEqSystem(vars_1.clone(), eqnarr.clone(), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, reqnarr.clone());
-    outBackendDAE = Arc::new(BackendDAE::BackendDAE { eqs: metamodelica::cons(syst.clone(), metamodelica::nil()), shared: Arc::new(BackendDAE::Shared { globalKnownVars: globalKnownVars.clone(), localKnownVars: localKnownVars.clone(), externalObjects: extVars.clone(), aliasVars: aliasVars.clone(), initialEqs: ieqnarr.clone(), removedEqs: BackendEquation::emptyEqns(), constraints: constrs.clone(), classAttrs: clsAttrs.clone(), cache: inCache.clone(), graph: inEnv.clone(), functionTree: functionTree.clone(), eventInfo: einfo.clone(), extObjClasses: extObjCls.clone(), backendDAEType: crate::BackendDAE::BackendDAEType::SIMULATION, symjacs: symjacs.clone(), info: inExtraInfo.clone(), partitionsInfo: BackendDAEUtil::emptyPartitionsInfo(), daeModeData: BackendDAE::emptyDAEModeData().clone(), dataReconciliationData: None, timeInterval: None }) });
+    syst = BackendDAEUtil::createEqSystem(vars_1.clone(), eqnarr.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, reqnarr.clone());
+    outBackendDAE = Arc::new(BackendDAE::BackendDAE { eqs: metamodelica::cons(syst.clone(), metamodelica::nil()), shared: Arc::new(BackendDAE::Shared { globalKnownVars: globalKnownVars.clone(), localKnownVars: localKnownVars.clone(), externalObjects: extVars.clone(), aliasVars: aliasVars.clone(), initialEqs: ieqnarr.clone(), removedEqs: BackendEquation::emptyEqns(), constraints: constrs.clone(), classAttrs: clsAttrs.clone(), cache: inCache.clone(), graph: inEnv.clone(), functionTree: functionTree.clone(), eventInfo: einfo.clone(), extObjClasses: extObjCls.clone(), backendDAEType: openmodelica_backend_types::BackendDAE::BackendDAEType::SIMULATION, symjacs: symjacs.clone(), info: inExtraInfo.clone(), partitionsInfo: BackendDAEUtil::emptyPartitionsInfo(), daeModeData: BackendDAE::emptyDAEModeData().clone(), dataReconciliationData: None, timeInterval: None }) });
     BackendDAEUtil::checkBackendDAEWithErrorMsg(outBackendDAE.clone())?;
     BackendDAEUtil::checkAdjacencyMatrixSolvability(syst.clone(), functionTree.clone(), BackendDAEUtil::isInitializationDAE(outBackendDAE.shared.clone()))?;
     if Flags::isSet(Flags::DUMP_BACKENDDAE_INFO.clone())? {
@@ -1509,11 +1509,11 @@ fn lowerVarkind(mut inVarKind: DAE::VarKind, mut inType: Arc<DAE::Type>, mut inC
         _ => {
             let false = (DAEUtil::topLevelInput(inComponentRef.clone(), inVarDirection.clone(), inConnectorType.clone(), protection.clone())?) else { bail!("pattern mismatch") };
             (::match_deref::match_deref! { match &((inVarKind.clone(), inType.clone())) {
-        (DAE::VarKind::VARIABLE { .. }, Deref @ DAE::Type::T_BOOL { .. }) => crate::BackendDAE::VarKind::DISCRETE,
-        (DAE::VarKind::VARIABLE { .. }, Deref @ DAE::Type::T_INTEGER { .. }) => crate::BackendDAE::VarKind::DISCRETE,
-        (DAE::VarKind::VARIABLE { .. }, Deref @ DAE::Type::T_ENUMERATION { .. }) => crate::BackendDAE::VarKind::DISCRETE,
-        (DAE::VarKind::VARIABLE { .. }, _) => crate::BackendDAE::VarKind::VARIABLE,
-        (DAE::VarKind::DISCRETE { .. }, _) => crate::BackendDAE::VarKind::DISCRETE,
+        (DAE::VarKind::VARIABLE { .. }, Deref @ DAE::Type::T_BOOL { .. }) => openmodelica_backend_types::BackendDAE::VarKind::DISCRETE,
+        (DAE::VarKind::VARIABLE { .. }, Deref @ DAE::Type::T_INTEGER { .. }) => openmodelica_backend_types::BackendDAE::VarKind::DISCRETE,
+        (DAE::VarKind::VARIABLE { .. }, Deref @ DAE::Type::T_ENUMERATION { .. }) => openmodelica_backend_types::BackendDAE::VarKind::DISCRETE,
+        (DAE::VarKind::VARIABLE { .. }, _) => openmodelica_backend_types::BackendDAE::VarKind::VARIABLE,
+        (DAE::VarKind::DISCRETE { .. }, _) => openmodelica_backend_types::BackendDAE::VarKind::DISCRETE,
         _ => bail!("match: no arm matched"),
     } })
         },
@@ -1528,16 +1528,16 @@ fn lowerKnownVarkind(mut varKind: DAE::VarKind, mut componentRef: Arc<DAE::Compo
         let __mc_input = varKind.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let DAE::VarKind::PARAM { .. } = __mc_input.clone() else { bail!("nomatch") };
-            Ok(crate::BackendDAE::VarKind::PARAM)
+            Ok(openmodelica_backend_types::BackendDAE::VarKind::PARAM)
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let DAE::VarKind::CONST { .. } = __mc_input.clone() else { bail!("nomatch") };
-            Ok(crate::BackendDAE::VarKind::CONST)
+            Ok(openmodelica_backend_types::BackendDAE::VarKind::CONST)
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let DAE::VarKind::VARIABLE { .. } = __mc_input.clone() else { bail!("nomatch") };
             let true = (DAEUtil::topLevelInput(componentRef.clone(), varDirection.clone(), connectorType.clone(), visibility.clone())?) else { bail!("pattern mismatch") };
-            Ok(crate::BackendDAE::VarKind::VARIABLE)
+            Ok(openmodelica_backend_types::BackendDAE::VarKind::VARIABLE)
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
@@ -2427,7 +2427,7 @@ fn createWhenClock(mut whenClkCnt: i32, mut e: Arc<DAE::Exp>, mut inEqs: Arc<met
     let mut outEqAttrs: BackendDAE::EquationAttributes = <BackendDAE::EquationAttributes as ::std::default::Default>::default();
     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     cr = Arc::new(DAE::ComponentRef::CREF_IDENT { ident: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(BackendDAE::WHENCLK_PRREFIX)); __mm_s.push_str(&*intString(whenClkCnt.clone())); ArcStr::from(__mm_s) }).clone(), identType: DAE::T_CLOCK_DEFAULT().clone(), subscriptLst: metamodelica::nil() });
-    outVars = metamodelica::cons(BackendDAE::Var { encrypted: false, initNonlinear: false, unreplaceable: true, innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), comment: None, hideResult: None, tearingSelectOption: Some(crate::BackendDAE::TearingSelect::DEFAULT), values: None, source: DAE::emptyElementSource().clone(), arryDim: metamodelica::nil(), tplExp: None, bindExp: None, varType: DAE::T_CLOCK_DEFAULT().clone(), varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varKind: crate::BackendDAE::VarKind::VARIABLE, varName: cr.clone() }, inVars.clone());
+    outVars = metamodelica::cons(BackendDAE::Var { encrypted: false, initNonlinear: false, unreplaceable: true, innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), comment: None, hideResult: None, tearingSelectOption: Some(openmodelica_backend_types::BackendDAE::TearingSelect::DEFAULT), values: None, source: DAE::emptyElementSource().clone(), arryDim: metamodelica::nil(), tplExp: None, bindExp: None, varType: DAE::T_CLOCK_DEFAULT().clone(), varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, varName: cr.clone() }, inVars.clone());
     outEqs = metamodelica::cons(Arc::new(BackendDAE::Equation::EQUATION { attr: BackendDAE::EQ_ATTR_DEFAULT_DYNAMIC.clone(), source: DAE::emptyElementSource().clone(), scalar: e.clone(), exp: Arc::new(DAE::Exp::CREF { ty: DAE::T_CLOCK_DEFAULT().clone(), componentRef: cr.clone() }) }), inEqs.clone());
     outEqAttrs = BackendEquation::defaultClockedEqAttr(whenClkCnt.clone());
     (outEqs, outVars, outEqAttrs)
@@ -3854,7 +3854,7 @@ fn selectAliasVar(mut v1: BackendDAE::Var, mut index1: i32, mut arrayIndx1: i32,
             ops = ElementSource::getSymbolicTransformations(source.clone());
             avar = BackendVariable::mergeVariableOperations(avar.clone(), metamodelica::cons(Arc::new(DAE::SymbolicOperation::SOLVED { cr: acr.clone(), exp: e.clone() }), ops.clone()))?;
             avar = BackendVariable::setBindExp(avar.clone(), Some(e.clone()));
-            avar = if (b1.clone()) {BackendVariable::setVarKind(avar.clone(), crate::BackendDAE::VarKind::DUMMY_STATE)?} else {avar.clone()};
+            avar = if (b1.clone()) {BackendVariable::setVarKind(avar.clone(), openmodelica_backend_types::BackendDAE::VarKind::DUMMY_STATE)?} else {avar.clone()};
             (vars, _) = BackendVariable::removeVar(aindx.clone(), iVars.clone())?;
             avars = BackendVariable::addVar(avar.clone(), iAVars.clone())?;
             vars = BackendVariable::addVar(var.clone(), vars.clone())?;
@@ -3877,7 +3877,7 @@ fn selectAliasVar(mut v1: BackendDAE::Var, mut index1: i32, mut arrayIndx1: i32,
             ops = ElementSource::getSymbolicTransformations(source.clone());
             avar = BackendVariable::mergeVariableOperations(v1.clone(), metamodelica::cons(Arc::new(DAE::SymbolicOperation::SOLVED { cr: cr1.clone(), exp: e2.clone() }), ops.clone()))?;
             avar = BackendVariable::setBindExp(avar.clone(), Some(e2.clone()));
-            avar = if (BackendVariable::isStateVar(v1.clone())) {BackendVariable::setVarKind(avar.clone(), crate::BackendDAE::VarKind::DUMMY_STATE)?} else {avar.clone()};
+            avar = if (BackendVariable::isStateVar(v1.clone())) {BackendVariable::setVarKind(avar.clone(), openmodelica_backend_types::BackendDAE::VarKind::DUMMY_STATE)?} else {avar.clone()};
             (vars, _) = BackendVariable::removeVar(index1.clone(), iVars.clone())?;
             avars = BackendVariable::addVar(avar.clone(), iAVars.clone())?;
             globalKnownVars = BackendVariable::addVar(var.clone(), inGlobalKnownVars.clone())?;
@@ -3900,7 +3900,7 @@ fn selectAliasVar(mut v1: BackendDAE::Var, mut index1: i32, mut arrayIndx1: i32,
             ops = ElementSource::getSymbolicTransformations(source.clone());
             avar = BackendVariable::mergeVariableOperations(v2.clone(), metamodelica::cons(Arc::new(DAE::SymbolicOperation::SOLVED { cr: cr2.clone(), exp: e1.clone() }), ops.clone()))?;
             avar = BackendVariable::setBindExp(avar.clone(), Some(e1.clone()));
-            avar = if (BackendVariable::isStateVar(v2.clone())) {BackendVariable::setVarKind(avar.clone(), crate::BackendDAE::VarKind::DUMMY_STATE)?} else {avar.clone()};
+            avar = if (BackendVariable::isStateVar(v2.clone())) {BackendVariable::setVarKind(avar.clone(), openmodelica_backend_types::BackendDAE::VarKind::DUMMY_STATE)?} else {avar.clone()};
             (vars, _) = BackendVariable::removeVar(index2.clone(), iVars.clone())?;
             avars = BackendVariable::addVar(avar.clone(), iAVars.clone())?;
             globalKnownVars = BackendVariable::addVar(var.clone(), inGlobalKnownVars.clone())?;
@@ -3923,7 +3923,7 @@ fn selectAliasVar(mut v1: BackendDAE::Var, mut index1: i32, mut arrayIndx1: i32,
             ops = ElementSource::getSymbolicTransformations(source.clone());
             avar = BackendVariable::mergeVariableOperations(v1.clone(), metamodelica::cons(Arc::new(DAE::SymbolicOperation::SOLVED { cr: cr1.clone(), exp: e2.clone() }), ops.clone()))?;
             avar = BackendVariable::setBindExp(avar.clone(), Some(e2.clone()));
-            avar = if (BackendVariable::isStateVar(v1.clone())) {BackendVariable::setVarKind(avar.clone(), crate::BackendDAE::VarKind::DUMMY_STATE)?} else {avar.clone()};
+            avar = if (BackendVariable::isStateVar(v1.clone())) {BackendVariable::setVarKind(avar.clone(), openmodelica_backend_types::BackendDAE::VarKind::DUMMY_STATE)?} else {avar.clone()};
             (vars, _) = BackendVariable::removeVar(index1.clone(), iVars.clone())?;
             avars = BackendVariable::addVar(avar.clone(), iAVars.clone())?;
             extvars = BackendVariable::addVar(var.clone(), iExtVars.clone())?;
@@ -3946,7 +3946,7 @@ fn selectAliasVar(mut v1: BackendDAE::Var, mut index1: i32, mut arrayIndx1: i32,
             ops = ElementSource::getSymbolicTransformations(source.clone());
             avar = BackendVariable::mergeVariableOperations(v2.clone(), metamodelica::cons(Arc::new(DAE::SymbolicOperation::SOLVED { cr: cr2.clone(), exp: e1.clone() }), ops.clone()))?;
             avar = BackendVariable::setBindExp(avar.clone(), Some(e1.clone()));
-            avar = if (BackendVariable::isStateVar(v2.clone())) {BackendVariable::setVarKind(avar.clone(), crate::BackendDAE::VarKind::DUMMY_STATE)?} else {avar.clone()};
+            avar = if (BackendVariable::isStateVar(v2.clone())) {BackendVariable::setVarKind(avar.clone(), openmodelica_backend_types::BackendDAE::VarKind::DUMMY_STATE)?} else {avar.clone()};
             (vars, _) = BackendVariable::removeVar(index2.clone(), iVars.clone())?;
             avars = BackendVariable::addVar(avar.clone(), iAVars.clone())?;
             extvars = BackendVariable::addVar(var.clone(), iExtVars.clone())?;
@@ -3991,7 +3991,7 @@ fn detectImplicitDiscreteFold(mut inEquation: Arc<BackendDAE::Equation>, mut inG
                 Deref @ BackendDAE::Equation::WHEN_EQUATION { whenEquation: Deref @ BackendDAE::WhenEquation { whenStmtLst: Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::ASSIGN { left: Deref @ DAE::Exp::CREF { componentRef: cr, .. }, .. }, tail: Deref @ metamodelica::List::Nil }, .. }, .. } => {
                     let mut vars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
                     (vars, _) = BackendVariable::getVar(cr.clone(), inVariables.clone())?;
-                    vars = List::map1(vars.clone(), (std::sync::Arc::new(BackendVariable::setVarKind) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::VarKind) -> Result<BackendDAE::Var> + 'static>), crate::BackendDAE::VarKind::DISCRETE)?;
+                    vars = List::map1(vars.clone(), (std::sync::Arc::new(BackendVariable::setVarKind) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::VarKind) -> Result<BackendDAE::Var> + 'static>), openmodelica_backend_types::BackendDAE::VarKind::DISCRETE)?;
                     Ok(BackendVariable::addVars(vars.clone(), inVariables.clone())?)
                 }
                 _ => bail!("nomatch"),
@@ -4005,7 +4005,7 @@ fn detectImplicitDiscreteFold(mut inEquation: Arc<BackendDAE::Equation>, mut inG
                     crefs = Expression::getAllCrefs(e.clone())?;
                     crefs = List::flatten(List::map1(crefs.clone(), (std::sync::Arc::new(ComponentReference::expandCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, bool) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> + 'static>), true)?)?;
                     (vars, _) = BackendVariable::getVarLst(crefs.clone(), inVariables.clone());
-                    vars = List::map1(vars.clone(), (std::sync::Arc::new(BackendVariable::setVarKind) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::VarKind) -> Result<BackendDAE::Var> + 'static>), crate::BackendDAE::VarKind::DISCRETE)?;
+                    vars = List::map1(vars.clone(), (std::sync::Arc::new(BackendVariable::setVarKind) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::VarKind) -> Result<BackendDAE::Var> + 'static>), openmodelica_backend_types::BackendDAE::VarKind::DISCRETE)?;
                     Ok(BackendVariable::addVars(vars.clone(), inVariables.clone())?)
                 }
                 _ => bail!("nomatch"),
@@ -4094,7 +4094,7 @@ fn detectImplicitDiscreteAlgsStatemens(mut inVariables: BackendDAE::Variables, m
                     let mut v_2: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
                     let mut vars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
                     (vars, _) = BackendVariable::getVar(cr.clone(), v.clone())?;
-                    vars = List::map(vars.clone(), (std::sync::Arc::new({ let __pe_b1 = crate::BackendDAE::VarKind::DISCRETE; move |__pe_a0| BackendVariable::setVarKind(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<BackendDAE::Var> + 'static>))?;
+                    vars = List::map(vars.clone(), (std::sync::Arc::new({ let __pe_b1 = openmodelica_backend_types::BackendDAE::VarKind::DISCRETE; move |__pe_a0| BackendVariable::setVarKind(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<BackendDAE::Var> + 'static>))?;
                     v_1 = BackendVariable::addVars(vars.clone(), v.clone())?;
                     v_2 = detectImplicitDiscreteAlgsStatemens(v_1.clone(), globalKnownVars.clone(), xs.clone(), true)?;
                     Ok(v_2.clone())
@@ -4111,7 +4111,7 @@ fn detectImplicitDiscreteAlgsStatemens(mut inVariables: BackendDAE::Variables, m
                     let mut cr = (*cr).clone();
                     cr = ComponentReference::subscriptCref(cr.clone(), subs.clone())?;
                     (vars, _) = BackendVariable::getVar(cr.clone(), v.clone())?;
-                    vars = List::map1(vars.clone(), (std::sync::Arc::new(BackendVariable::setVarKind) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::VarKind) -> Result<BackendDAE::Var> + 'static>), crate::BackendDAE::VarKind::DISCRETE)?;
+                    vars = List::map1(vars.clone(), (std::sync::Arc::new(BackendVariable::setVarKind) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::VarKind) -> Result<BackendDAE::Var> + 'static>), openmodelica_backend_types::BackendDAE::VarKind::DISCRETE)?;
                     v_1 = BackendVariable::addVars(vars.clone(), v.clone())?;
                     v_2 = detectImplicitDiscreteAlgsStatemens(v_1.clone(), globalKnownVars.clone(), xs.clone(), true)?;
                     Ok(v_2.clone())
@@ -4126,7 +4126,7 @@ fn detectImplicitDiscreteAlgsStatemens(mut inVariables: BackendDAE::Variables, m
                     let mut v_2: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
                     let mut vars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
                     vars = getVarsFromExp(expExpLst.clone(), v.clone())?;
-                    vars = List::map1(vars.clone(), (std::sync::Arc::new(BackendVariable::setVarKind) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::VarKind) -> Result<BackendDAE::Var> + 'static>), crate::BackendDAE::VarKind::DISCRETE)?;
+                    vars = List::map1(vars.clone(), (std::sync::Arc::new(BackendVariable::setVarKind) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::VarKind) -> Result<BackendDAE::Var> + 'static>), openmodelica_backend_types::BackendDAE::VarKind::DISCRETE)?;
                     v_1 = BackendVariable::addVars(vars.clone(), v.clone())?;
                     v_2 = detectImplicitDiscreteAlgsStatemens(v_1.clone(), globalKnownVars.clone(), xs.clone(), true)?;
                     Ok(v_2.clone())
@@ -4141,7 +4141,7 @@ fn detectImplicitDiscreteAlgsStatemens(mut inVariables: BackendDAE::Variables, m
                     let mut v_2: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
                     let mut vars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
                     (vars, _) = BackendVariable::getVar(cr.clone(), v.clone())?;
-                    vars = List::map1(vars.clone(), (std::sync::Arc::new(BackendVariable::setVarKind) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::VarKind) -> Result<BackendDAE::Var> + 'static>), crate::BackendDAE::VarKind::DISCRETE)?;
+                    vars = List::map1(vars.clone(), (std::sync::Arc::new(BackendVariable::setVarKind) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::VarKind) -> Result<BackendDAE::Var> + 'static>), openmodelica_backend_types::BackendDAE::VarKind::DISCRETE)?;
                     v_1 = BackendVariable::addVars(vars.clone(), v.clone())?;
                     v_2 = detectImplicitDiscreteAlgsStatemens(v_1.clone(), globalKnownVars.clone(), xs.clone(), true)?;
                     Ok(v_2.clone())

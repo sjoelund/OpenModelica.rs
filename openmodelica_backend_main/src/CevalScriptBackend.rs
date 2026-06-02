@@ -54,7 +54,6 @@ use crate::StaticScript;
 use openmodelica_ast::Absyn;
 use openmodelica_ast::GlobalScript;
 use openmodelica_backend::AbsynToJulia;
-use openmodelica_backend::BackendDAE;
 use openmodelica_backend::BackendDAECreate;
 use openmodelica_backend::BackendDAEOptimize;
 use openmodelica_backend::BackendDAEUtil;
@@ -79,6 +78,7 @@ use openmodelica_backend::SymbolicJacobian;
 use openmodelica_backend::TotalModelDebug;
 use openmodelica_backend::Uncertainties;
 use openmodelica_backend::XMLDump;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_codegen::CodegenFMU;
 use openmodelica_dump_extra::AbsynJLDumpTpl;
 use openmodelica_dump_extra::BlockCallRewrite;
@@ -1475,14 +1475,14 @@ pub fn cevalInteractiveFunctions3(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     dae = __pa2.clone();
                     filenameprefix = (AbsynUtil::pathString(path.clone(), (literal!(".")).clone(), true, false)?).clone();
                     description = (DAEUtil::daeDescription(dae.clone())).clone();
-                    daelow = BackendDAECreate::lower(dae.clone(), outCache.clone(), env.clone(), BackendDAE::ExtraInfo { description: (description.clone()).clone(), fileNamePrefix: (filenameprefix.clone()).clone(), simSettingsOption: None })?;
+                    daelow = BackendDAECreate::lower(dae.clone(), outCache.clone(), env.clone(), BackendDAE::ExtraInfo { description: (description.clone()).clone(), fileNamePrefix: (filenameprefix.clone()).clone(), simflags: None })?;
                     let (__pa3, __pa4) = ::match_deref::match_deref! { match &(BackendDAEUtil::preOptimizeBackendDAE(daelow.clone(), None)?) {
                         Deref @ BackendDAE::BackendDAE { eqs: Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Nil }, shared: __pa4 } => (__pa3.clone(), __pa4.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
                     syst = __pa3.clone();
                     shared = __pa4.clone();
-                    (syst, m, _) = BackendDAEUtil::getAdjacencyMatrixfromOption(syst.clone(), openmodelica_backend::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
+                    (syst, m, _) = BackendDAEUtil::getAdjacencyMatrixfromOption(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
                     vars = BackendVariable::daeVars(syst.clone());
                     eqnarr = BackendEquation::getEqnsFromEqSystem(syst.clone());
                     (jac, _) = SymbolicJacobian::calculateJacobian(vars.clone(), eqnarr.clone(), m.clone(), false, shared.clone())?;
@@ -5423,7 +5423,7 @@ pub fn getAdjacencyMatrix(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
             description = (DAEUtil::daeDescription(dae.clone())).clone();
             a_cref = AbsynUtil::pathToCref(className.clone())?;
             file_dir = (ProgramUtil::getFileDir(a_cref.clone(), SymbolTable::getAbsyn())?).clone();
-            dlow = BackendDAECreate::lower(dae.clone(), cache.clone(), env.clone(), BackendDAE::ExtraInfo { description: (description.clone()).clone(), fileNamePrefix: (filenameprefix.clone()).clone(), simSettingsOption: None })?;
+            dlow = BackendDAECreate::lower(dae.clone(), cache.clone(), env.clone(), BackendDAE::ExtraInfo { description: (description.clone()).clone(), fileNamePrefix: (filenameprefix.clone()).clone(), simflags: None })?;
             dlow = FindZeroCrossings::findZeroCrossings(dlow.clone())?;
             flatModelicaStr = (DAEDump::dumpStr(dae.clone(), FCore::getFunctionTree(cache.clone()))?).clone();
             flatModelicaStr = (stringAppend((literal!("OldEqStr={'")).clone(), (flatModelicaStr.clone()).clone())).clone();
@@ -7908,7 +7908,7 @@ fn dumpXMLDAE(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut vals: Arc<
                     compileDir = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*System::pwd()); __mm_s.push_str(&*arcstr::literal!(Autoconf::pathDelimiter)); ArcStr::from(__mm_s) }).clone();
                     cname_str = (AbsynUtil::pathString(classname.clone(), (literal!(".")).clone(), true, false)?).clone();
                     filenameprefix = (if (filenameprefix.clone() == literal!("<default>")) {cname_str.clone()} else {filenameprefix.clone()}).clone();
-                    dlow = BackendDAECreate::lower(dae.clone(), cache.clone(), env.clone(), BackendDAE::ExtraInfo { description: (description.clone()).clone(), fileNamePrefix: (filenameprefix.clone()).clone(), simSettingsOption: None })?;
+                    dlow = BackendDAECreate::lower(dae.clone(), cache.clone(), env.clone(), BackendDAE::ExtraInfo { description: (description.clone()).clone(), fileNamePrefix: (filenameprefix.clone()).clone(), simflags: None })?;
                     dlow_1 = BackendDAEUtil::preOptimizeBackendDAE(dlow.clone(), None)?;
                     dlow_1 = FindZeroCrossings::findZeroCrossings(dlow_1.clone())?;
                     xml_filename = stringAppendList(list![(filenameprefix.clone()).clone(), (literal!(".xml")).clone()]);
@@ -7952,7 +7952,7 @@ fn dumpXMLDAE(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut vals: Arc<
                     compileDir = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*System::pwd()); __mm_s.push_str(&*arcstr::literal!(Autoconf::pathDelimiter)); ArcStr::from(__mm_s) }).clone();
                     cname_str = (AbsynUtil::pathString(classname.clone(), (literal!(".")).clone(), true, false)?).clone();
                     filenameprefix = (if (filenameprefix.clone() == literal!("<default>")) {cname_str.clone()} else {filenameprefix.clone()}).clone();
-                    dlow = BackendDAECreate::lower(dae.clone(), cache.clone(), env.clone(), BackendDAE::ExtraInfo { description: (description.clone()).clone(), fileNamePrefix: (filenameprefix.clone()).clone(), simSettingsOption: None })?;
+                    dlow = BackendDAECreate::lower(dae.clone(), cache.clone(), env.clone(), BackendDAE::ExtraInfo { description: (description.clone()).clone(), fileNamePrefix: (filenameprefix.clone()).clone(), simflags: None })?;
                     dlow_1 = BackendDAEUtil::preOptimizeBackendDAE(dlow.clone(), None)?;
                     dlow_1 = BackendDAEUtil::transformBackendDAE(dlow_1.clone(), None, None, None)?;
                     dlow_1 = FindZeroCrossings::findZeroCrossings(dlow_1.clone())?;
@@ -7997,7 +7997,7 @@ fn dumpXMLDAE(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut vals: Arc<
                     compileDir = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*System::pwd()); __mm_s.push_str(&*arcstr::literal!(Autoconf::pathDelimiter)); ArcStr::from(__mm_s) }).clone();
                     cname_str = (AbsynUtil::pathString(classname.clone(), (literal!(".")).clone(), true, false)?).clone();
                     filenameprefix = (if (filenameprefix.clone() == literal!("<default>")) {cname_str.clone()} else {filenameprefix.clone()}).clone();
-                    dlow = BackendDAECreate::lower(dae.clone(), cache.clone(), env.clone(), BackendDAE::ExtraInfo { description: (description.clone()).clone(), fileNamePrefix: (filenameprefix.clone()).clone(), simSettingsOption: None })?;
+                    dlow = BackendDAECreate::lower(dae.clone(), cache.clone(), env.clone(), BackendDAE::ExtraInfo { description: (description.clone()).clone(), fileNamePrefix: (filenameprefix.clone()).clone(), simflags: None })?;
                     (indexed_dlow, _, _, _, _) = BackendDAEUtil::getSolvedSystem(dlow.clone(), (literal!("")).clone(), None, None, None, None)?;
                     xml_filename = stringAppendList(list![(filenameprefix.clone()).clone(), (literal!(".xml")).clone()]);
                     indexed_dlow = applyRewriteRulesOnBackend(indexed_dlow.clone())?;
@@ -8040,7 +8040,7 @@ fn dumpXMLDAE(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut vals: Arc<
                     compileDir = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*System::pwd()); __mm_s.push_str(&*arcstr::literal!(Autoconf::pathDelimiter)); ArcStr::from(__mm_s) }).clone();
                     cname_str = (AbsynUtil::pathString(classname.clone(), (literal!(".")).clone(), true, false)?).clone();
                     filenameprefix = (if (filenameprefix.clone() == literal!("<default>")) {cname_str.clone()} else {filenameprefix.clone()}).clone();
-                    dlow = BackendDAECreate::lower(dae.clone(), cache.clone(), env.clone(), BackendDAE::ExtraInfo { description: (description.clone()).clone(), fileNamePrefix: (filenameprefix.clone()).clone(), simSettingsOption: None })?;
+                    dlow = BackendDAECreate::lower(dae.clone(), cache.clone(), env.clone(), BackendDAE::ExtraInfo { description: (description.clone()).clone(), fileNamePrefix: (filenameprefix.clone()).clone(), simflags: None })?;
                     (indexed_dlow, _, _, _, _) = BackendDAEUtil::getSolvedSystem(dlow.clone(), (literal!("")).clone(), None, None, None, None)?;
                     xml_filename = stringAppendList(list![(filenameprefix.clone()).clone(), (literal!(".xml")).clone()]);
                     indexed_dlow = applyRewriteRulesOnBackend(indexed_dlow.clone())?;

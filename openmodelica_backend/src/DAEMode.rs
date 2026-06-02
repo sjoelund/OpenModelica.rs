@@ -43,7 +43,6 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAE;
 use crate::BackendDAEFunc;
 use crate::BackendDAEOptimize;
 use crate::BackendDAEUtil;
@@ -53,6 +52,7 @@ use crate::BackendVariable;
 use crate::ExpressionSolve;
 use crate::Initialization;
 use crate::Matching;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::CheckModel;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::Expression;
@@ -218,7 +218,7 @@ fn createDAEmodeEqSystem(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<Ba
     if exec.clone() {
         execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAEmode: adding residual variables:  ")); __mm_s.push_str(&*intString(BackendVariable::varsSize(Util::getOption(globalDAEData.modelVars.clone())?))); __mm_s.push_str(&*literal!(": ")); ArcStr::from(__mm_s) }).clone())?;
     }
-    retSystem = BackendDAEUtil::createEqSystem(travArgs.newDAEVars.clone(), BackendEquation::emptyEqns(), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+    retSystem = BackendDAEUtil::createEqSystem(travArgs.newDAEVars.clone(), BackendEquation::emptyEqns(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
     retSystem = BackendDAEUtil::setEqSystEqs(retSystem.clone(), travArgs.newDAEEquations.clone());
     retSystem = BackendDAEUtil::setEqSystRemovedEqns(retSystem.clone(), syst.removedEqs.clone());
     retSystem = BackendEquation::requationsAddDAE(ExpandableArray::toList(shared.removedEqs.clone())?, retSystem.clone())?;
@@ -267,7 +267,7 @@ fn traverserStrongComponents(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::
                     newResVars = ({
         let mut __acc: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
         for mut v in (vars.clone()).into_iter().cloned() {
-                    let __x = BackendVariable::setVarKind(v.clone(), crate::BackendDAE::VarKind::DAE_AUX_VAR)?;
+                    let __x = BackendVariable::setVarKind(v.clone(), openmodelica_backend_types::BackendDAE::VarKind::DAE_AUX_VAR)?;
                     __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -420,7 +420,7 @@ fn traverserStrongComponents(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::
                     newAuxVars = ({
         let mut __acc: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
         for mut v in (newAuxVars.clone()).into_iter().cloned() {
-                    let __x = BackendVariable::setVarKind(v.clone(), crate::BackendDAE::VarKind::DAE_AUX_VAR)?;
+                    let __x = BackendVariable::setVarKind(v.clone(), openmodelica_backend_types::BackendDAE::VarKind::DAE_AUX_VAR)?;
                     __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -518,7 +518,7 @@ fn traverserStrongComponents(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::
                     newAuxVars = ({
         let mut __acc: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
         for mut v in (newAuxVars.clone()).into_iter().cloned() {
-                    let __x = BackendVariable::setVarKind(v.clone(), crate::BackendDAE::VarKind::DAE_AUX_VAR)?;
+                    let __x = BackendVariable::setVarKind(v.clone(), openmodelica_backend_types::BackendDAE::VarKind::DAE_AUX_VAR)?;
                     __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -614,11 +614,11 @@ fn getDiscAndContEqns(mut inAllVars: Arc<metamodelica::List<BackendDAE::Var>>, m
     let mut mapEqnScalarArray: metamodelica::Array<i32> = Default::default();
     let debug: bool = false;
     match '__try0: {
-        syst = BackendDAEUtil::createEqSystem(unwrap_break_err!(BackendVariable::listVar1(inAllVars.clone()), '__try0), unwrap_break_err!(BackendEquation::listEquation(inAllEqns.clone()), '__try0), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+        syst = BackendDAEUtil::createEqSystem(unwrap_break_err!(BackendVariable::listVar1(inAllVars.clone()), '__try0), unwrap_break_err!(BackendEquation::listEquation(inAllEqns.clone()), '__try0), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
         if debug.clone() {
             unwrap_break_err!(BackendDump::printEqSystem(syst.clone()), '__try0);
         }
-        (adjMatrix, _, _, mapEqnScalarArray) = unwrap_break_err!(BackendDAEUtil::adjacencyMatrixScalar(syst.clone(), crate::BackendDAE::IndexType::NORMAL, Some(functionTree.clone()), isInitial.clone()), '__try0);
+        (adjMatrix, _, _, mapEqnScalarArray) = unwrap_break_err!(BackendDAEUtil::adjacencyMatrixScalar(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, Some(functionTree.clone()), isInitial.clone()), '__try0);
         if debug.clone() {
             unwrap_break_err!(BackendDump::dumpAdjacencyMatrix(adjMatrix.clone()), '__try0);
         }
@@ -695,7 +695,7 @@ fn addVarsGlobalData(mut globalDAEData: BackendDAE::BackendDAEModeData, mut inVa
     vars = ({
         let mut __acc: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
         for mut v in (vars.clone()).into_iter().cloned() {
-            let __x = BackendVariable::setVarKind(v.clone(), crate::BackendDAE::VarKind::ALG_STATE)?;
+            let __x = BackendVariable::setVarKind(v.clone(), openmodelica_backend_types::BackendDAE::VarKind::ALG_STATE)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -712,7 +712,7 @@ fn setNonStateVarAlgState(mut varList: Arc<metamodelica::List<BackendDAE::Var>>)
         v = (match v.clone() {
         BackendDAE::Var { varKind: BackendDAE::VarKind::STATE { .. }, .. } => v.clone(),
         BackendDAE::Var { varKind: BackendDAE::VarKind::VARIABLE { .. }, .. } => {
-            v = BackendVariable::setVarKind(v.clone(), crate::BackendDAE::VarKind::ALG_STATE)?;
+            v = BackendVariable::setVarKind(v.clone(), openmodelica_backend_types::BackendDAE::VarKind::ALG_STATE)?;
             v.clone()
         },
         _ => bail!("fail"),

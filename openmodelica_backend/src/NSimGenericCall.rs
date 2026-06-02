@@ -43,7 +43,6 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAE as OldBackendDAE;
 use crate::NBEquation::Equation;
 use crate::NBEquation::EquationPointer;
 use crate::NBEquation::IfEquationBody;
@@ -52,6 +51,7 @@ use crate::NBEquation::WhenEquationBody;
 use crate::NBEquation::WhenStatement;
 use crate::NSimCode::Identifier;
 use crate::SimCode as OldSimCode;
+use openmodelica_backend_types::BackendDAE as OldBackendDAE;
 use openmodelica_frontend_types::DAE;
 use openmodelica_nf_frontend::NFComponentRef as ComponentRef;
 use openmodelica_nf_frontend::NFConvertDAE as ConvertDAE;

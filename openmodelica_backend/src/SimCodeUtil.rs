@@ -44,7 +44,6 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::AvlTreeCRToInt;
-use crate::BackendDAE;
 use crate::BackendDAEOptimize;
 use crate::BackendDAETransform;
 use crate::BackendDAEUtil;
@@ -68,8 +67,9 @@ use crate::SimCodeFunctionUtil;
 use crate::SimCodeVar;
 use crate::SymbolicJacobian;
 use crate::VisualXML;
-use crate::ZeroCrossings;
 use openmodelica_ast::Absyn;
+use openmodelica_backend_types::BackendDAE;
+use openmodelica_backend_types::ZeroCrossings;
 use openmodelica_frontend::Builtin;
 use openmodelica_frontend::Ceval;
 use openmodelica_frontend::CheckModel;
@@ -935,7 +935,7 @@ fn translateClockedEquations(mut inSysts: Arc<metamodelica::List<Arc<BackendDAE:
         comps = __pa1.clone();
         ass1 = __pa2.clone();
         subPartition = inShared.partitionsInfo.subPartitions.borrow()[(subPartIdx.clone()-1) as usize].clone();
-        (syst, _, _) = BackendDAEUtil::getAdjacencyMatrixfromOption(syst.clone(), crate::BackendDAE::IndexType::ABSOLUTE, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
+        (syst, _, _) = BackendDAEUtil::getAdjacencyMatrixfromOption(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::ABSOLUTE, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
         stateeqnsmark = arrayCreate(BackendDAEUtil::equationArraySizeDAE(syst.clone()), 0);
         stateeqnsmark = BackendDAEUtil::markStateEquations(syst.clone(), stateeqnsmark.clone(), ass1.clone())?;
         zceqnsmarks = arrayCreate(BackendDAEUtil::equationArraySizeDAE(syst.clone()), 0);
@@ -1575,7 +1575,7 @@ fn createEquationsForSystems1(mut inSyst: Arc<BackendDAE::EqSystem>, mut inArg: 
             (shared, zeroCrossings, createAlgebraicEquations) = inArg.clone();
             (uniqueEqIndex, odeEquations, algebraicEquations, allEquations, equationsForZeroCrossings, tempvars, eqSccMapping, eqBackendSimCodeMapping, backendMapping, sccOffset) = inFold.clone();
             funcs = BackendDAEUtil::getFunctions(shared.clone())?;
-            (syst, _, _) = BackendDAEUtil::getAdjacencyMatrixfromOption(inSyst.clone(), crate::BackendDAE::IndexType::ABSOLUTE, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(shared.clone()))?;
+            (syst, _, _) = BackendDAEUtil::getAdjacencyMatrixfromOption(inSyst.clone(), openmodelica_backend_types::BackendDAE::IndexType::ABSOLUTE, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(shared.clone()))?;
             stateeqnsmark = arrayCreate(BackendDAEUtil::equationArraySizeDAE(syst.clone()), 0);
             zceqnsmarks = arrayCreate(BackendDAEUtil::equationArraySizeDAE(syst.clone()), 0);
             stateeqnsmark = BackendDAEUtil::markStateEquations(syst.clone(), stateeqnsmark.clone(), ass1.clone())?;
@@ -2897,9 +2897,9 @@ fn createArrayTempVar(mut name: Arc<DAE::ComponentRef>, mut dims: Arc<metamodeli
             let mut slst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             slst = List::map(dims.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?;
             if FMI::isFMIVersion20((FMI::getFMIVersionString()?).clone())? {
-                var = SimCodeVar::SimVar { name: cr.clone(), varKind: crate::BackendDAE::VarKind::VARIABLE, comment: (literal!("")).clone(), unit: (literal!("")).clone(), displayUnit: (literal!("")).clone(), index: 0, minValue: None, maxValue: None, initialValue: None, nominalValue: None, isFixed: false, type_: ty.clone(), isDiscrete: false, arrayCref: Some(name.clone()), aliasvar: crate::SimCodeVar::AliasVariable::NOALIAS, source: DAE::emptyElementSource().clone(), causality: Some(crate::SimCodeVar::Causality::LOCAL), variable_index: None, fmi_index: None, numArrayElement: slst.clone(), isValueChangeable: false, isProtected: true, hideResult: Some(true), isEncrypted: false, inputIndex: None, initNonlinear: false, matrixName: None, variability: None, initial_: None, exportVar: Some(cr.clone()), relativeQuantity: false };
+                var = SimCodeVar::SimVar { name: cr.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, comment: (literal!("")).clone(), unit: (literal!("")).clone(), displayUnit: (literal!("")).clone(), index: 0, minValue: None, maxValue: None, initialValue: None, nominalValue: None, isFixed: false, type_: ty.clone(), isDiscrete: false, arrayCref: Some(name.clone()), aliasvar: crate::SimCodeVar::AliasVariable::NOALIAS, source: DAE::emptyElementSource().clone(), causality: Some(crate::SimCodeVar::Causality::LOCAL), variable_index: None, fmi_index: None, numArrayElement: slst.clone(), isValueChangeable: false, isProtected: true, hideResult: Some(true), isEncrypted: false, inputIndex: None, initNonlinear: false, matrixName: None, variability: None, initial_: None, exportVar: Some(cr.clone()), relativeQuantity: false };
             } else {
-                var = SimCodeVar::SimVar { name: cr.clone(), varKind: crate::BackendDAE::VarKind::VARIABLE, comment: (literal!("")).clone(), unit: (literal!("")).clone(), displayUnit: (literal!("")).clone(), index: 0, minValue: None, maxValue: None, initialValue: None, nominalValue: None, isFixed: false, type_: ty.clone(), isDiscrete: false, arrayCref: Some(name.clone()), aliasvar: crate::SimCodeVar::AliasVariable::NOALIAS, source: DAE::emptyElementSource().clone(), causality: Some(crate::SimCodeVar::Causality::NONECAUS), variable_index: None, fmi_index: None, numArrayElement: slst.clone(), isValueChangeable: false, isProtected: true, hideResult: Some(true), isEncrypted: false, inputIndex: None, initNonlinear: false, matrixName: None, variability: None, initial_: None, exportVar: Some(cr.clone()), relativeQuantity: false };
+                var = SimCodeVar::SimVar { name: cr.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, comment: (literal!("")).clone(), unit: (literal!("")).clone(), displayUnit: (literal!("")).clone(), index: 0, minValue: None, maxValue: None, initialValue: None, nominalValue: None, isFixed: false, type_: ty.clone(), isDiscrete: false, arrayCref: Some(name.clone()), aliasvar: crate::SimCodeVar::AliasVariable::NOALIAS, source: DAE::emptyElementSource().clone(), causality: Some(crate::SimCodeVar::Causality::NONECAUS), variable_index: None, fmi_index: None, numArrayElement: slst.clone(), isValueChangeable: false, isProtected: true, hideResult: Some(true), isEncrypted: false, inputIndex: None, initNonlinear: false, matrixName: None, variability: None, initial_: None, exportVar: Some(cr.clone()), relativeQuantity: false };
             }
             tempvars = createTempVarsforCrefs(rest.clone(), list![var.clone()])?;
             List::append_reverse(tempvars.clone(), itempvars.clone())
@@ -2936,9 +2936,9 @@ fn createTempVarsforCrefs(mut inTmpCrefsLst: Arc<metamodelica::List<Arc<DAE::Exp
             inst_dims = ComponentReferenceBasics::crefDims(cr.clone())?;
             numArrayElement = List::map(inst_dims.clone(), (std::sync::Arc::new(ExpressionBasics::dimensionString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>) -> Result<ArcStr> + 'static>))?;
             if FMI::isFMIVersion20((FMI::getFMIVersionString()?).clone())? {
-                var = SimCodeVar::SimVar { name: cr.clone(), varKind: crate::BackendDAE::VarKind::VARIABLE, comment: (literal!("")).clone(), unit: (literal!("")).clone(), displayUnit: (literal!("")).clone(), index: 0, minValue: None, maxValue: None, initialValue: None, nominalValue: None, isFixed: false, type_: ty.clone(), isDiscrete: false, arrayCref: arrayCref.clone(), aliasvar: crate::SimCodeVar::AliasVariable::NOALIAS, source: DAE::emptyElementSource().clone(), causality: Some(crate::SimCodeVar::Causality::LOCAL), variable_index: None, fmi_index: None, numArrayElement: numArrayElement.clone(), isValueChangeable: false, isProtected: true, hideResult: Some(true), isEncrypted: false, inputIndex: None, initNonlinear: false, matrixName: None, variability: None, initial_: None, exportVar: Some(cr.clone()), relativeQuantity: false };
+                var = SimCodeVar::SimVar { name: cr.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, comment: (literal!("")).clone(), unit: (literal!("")).clone(), displayUnit: (literal!("")).clone(), index: 0, minValue: None, maxValue: None, initialValue: None, nominalValue: None, isFixed: false, type_: ty.clone(), isDiscrete: false, arrayCref: arrayCref.clone(), aliasvar: crate::SimCodeVar::AliasVariable::NOALIAS, source: DAE::emptyElementSource().clone(), causality: Some(crate::SimCodeVar::Causality::LOCAL), variable_index: None, fmi_index: None, numArrayElement: numArrayElement.clone(), isValueChangeable: false, isProtected: true, hideResult: Some(true), isEncrypted: false, inputIndex: None, initNonlinear: false, matrixName: None, variability: None, initial_: None, exportVar: Some(cr.clone()), relativeQuantity: false };
             } else {
-                var = SimCodeVar::SimVar { name: cr.clone(), varKind: crate::BackendDAE::VarKind::VARIABLE, comment: (literal!("")).clone(), unit: (literal!("")).clone(), displayUnit: (literal!("")).clone(), index: 0, minValue: None, maxValue: None, initialValue: None, nominalValue: None, isFixed: false, type_: ty.clone(), isDiscrete: false, arrayCref: arrayCref.clone(), aliasvar: crate::SimCodeVar::AliasVariable::NOALIAS, source: DAE::emptyElementSource().clone(), causality: Some(crate::SimCodeVar::Causality::NONECAUS), variable_index: None, fmi_index: None, numArrayElement: numArrayElement.clone(), isValueChangeable: false, isProtected: true, hideResult: Some(true), isEncrypted: false, inputIndex: None, initNonlinear: false, matrixName: None, variability: None, initial_: None, exportVar: Some(cr.clone()), relativeQuantity: false };
+                var = SimCodeVar::SimVar { name: cr.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, comment: (literal!("")).clone(), unit: (literal!("")).clone(), displayUnit: (literal!("")).clone(), index: 0, minValue: None, maxValue: None, initialValue: None, nominalValue: None, isFixed: false, type_: ty.clone(), isDiscrete: false, arrayCref: arrayCref.clone(), aliasvar: crate::SimCodeVar::AliasVariable::NOALIAS, source: DAE::emptyElementSource().clone(), causality: Some(crate::SimCodeVar::Causality::NONECAUS), variable_index: None, fmi_index: None, numArrayElement: numArrayElement.clone(), isValueChangeable: false, isProtected: true, hideResult: Some(true), isEncrypted: false, inputIndex: None, initNonlinear: false, matrixName: None, variability: None, initial_: None, exportVar: Some(cr.clone()), relativeQuantity: false };
             }
             createTempVarsforCrefs(rest.clone(), metamodelica::cons(var.clone(), itempvars.clone()))?
         },
@@ -2979,18 +2979,18 @@ fn createTempVars(mut varLst: Arc<metamodelica::List<Arc<DAE::Var>>>, mut inCref
             numArrayElement = List::map(ComponentReferenceBasics::crefDims(cr.clone())?, (std::sync::Arc::new(ExpressionBasics::dimensionString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>) -> Result<ArcStr> + 'static>))?;
             ty = ComponentReference::crefTypeFull(cr.clone())?;
             if FMI::isFMIVersion20((FMI::getFMIVersionString()?).clone())? {
-                var = SimCodeVar::SimVar { name: cr.clone(), varKind: crate::BackendDAE::VarKind::VARIABLE, comment: (literal!("")).clone(), unit: (literal!("")).clone(), displayUnit: (literal!("")).clone(), index: 0, minValue: None, maxValue: None, initialValue: None, nominalValue: None, isFixed: false, type_: ty.clone(), isDiscrete: false, arrayCref: Some(arraycref.clone()), aliasvar: crate::SimCodeVar::AliasVariable::NOALIAS, source: DAE::emptyElementSource().clone(), causality: Some(crate::SimCodeVar::Causality::LOCAL), variable_index: None, fmi_index: None, numArrayElement: numArrayElement.clone(), isValueChangeable: false, isProtected: true, hideResult: Some(true), isEncrypted: false, inputIndex: None, initNonlinear: false, matrixName: None, variability: None, initial_: None, exportVar: Some(cr.clone()), relativeQuantity: false };
+                var = SimCodeVar::SimVar { name: cr.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, comment: (literal!("")).clone(), unit: (literal!("")).clone(), displayUnit: (literal!("")).clone(), index: 0, minValue: None, maxValue: None, initialValue: None, nominalValue: None, isFixed: false, type_: ty.clone(), isDiscrete: false, arrayCref: Some(arraycref.clone()), aliasvar: crate::SimCodeVar::AliasVariable::NOALIAS, source: DAE::emptyElementSource().clone(), causality: Some(crate::SimCodeVar::Causality::LOCAL), variable_index: None, fmi_index: None, numArrayElement: numArrayElement.clone(), isValueChangeable: false, isProtected: true, hideResult: Some(true), isEncrypted: false, inputIndex: None, initNonlinear: false, matrixName: None, variability: None, initial_: None, exportVar: Some(cr.clone()), relativeQuantity: false };
             } else {
-                var = SimCodeVar::SimVar { name: cr.clone(), varKind: crate::BackendDAE::VarKind::VARIABLE, comment: (literal!("")).clone(), unit: (literal!("")).clone(), displayUnit: (literal!("")).clone(), index: 0, minValue: None, maxValue: None, initialValue: None, nominalValue: None, isFixed: false, type_: ty.clone(), isDiscrete: false, arrayCref: Some(arraycref.clone()), aliasvar: crate::SimCodeVar::AliasVariable::NOALIAS, source: DAE::emptyElementSource().clone(), causality: Some(crate::SimCodeVar::Causality::NONECAUS), variable_index: None, fmi_index: None, numArrayElement: numArrayElement.clone(), isValueChangeable: false, isProtected: true, hideResult: Some(true), isEncrypted: false, inputIndex: None, initNonlinear: false, matrixName: None, variability: None, initial_: None, exportVar: Some(cr.clone()), relativeQuantity: false };
+                var = SimCodeVar::SimVar { name: cr.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, comment: (literal!("")).clone(), unit: (literal!("")).clone(), displayUnit: (literal!("")).clone(), index: 0, minValue: None, maxValue: None, initialValue: None, nominalValue: None, isFixed: false, type_: ty.clone(), isDiscrete: false, arrayCref: Some(arraycref.clone()), aliasvar: crate::SimCodeVar::AliasVariable::NOALIAS, source: DAE::emptyElementSource().clone(), causality: Some(crate::SimCodeVar::Causality::NONECAUS), variable_index: None, fmi_index: None, numArrayElement: numArrayElement.clone(), isValueChangeable: false, isProtected: true, hideResult: Some(true), isEncrypted: false, inputIndex: None, initNonlinear: false, matrixName: None, variability: None, initial_: None, exportVar: Some(cr.clone()), relativeQuantity: false };
             }
             ttmpvars = list![var.clone()];
             for mut cr in &*crlst.clone() {
                 let mut cr = cr.clone();
                 ty = ComponentReference::crefTypeFull(cr.clone())?;
                 if FMI::isFMIVersion20((FMI::getFMIVersionString()?).clone())? {
-                    var = SimCodeVar::SimVar { name: cr.clone(), varKind: crate::BackendDAE::VarKind::VARIABLE, comment: (literal!("")).clone(), unit: (literal!("")).clone(), displayUnit: (literal!("")).clone(), index: 0, minValue: None, maxValue: None, initialValue: None, nominalValue: None, isFixed: false, type_: ty.clone(), isDiscrete: false, arrayCref: None, aliasvar: crate::SimCodeVar::AliasVariable::NOALIAS, source: DAE::emptyElementSource().clone(), causality: Some(crate::SimCodeVar::Causality::LOCAL), variable_index: None, fmi_index: None, numArrayElement: numArrayElement.clone(), isValueChangeable: false, isProtected: true, hideResult: Some(true), isEncrypted: false, inputIndex: None, initNonlinear: false, matrixName: None, variability: None, initial_: None, exportVar: Some(cr.clone()), relativeQuantity: false };
+                    var = SimCodeVar::SimVar { name: cr.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, comment: (literal!("")).clone(), unit: (literal!("")).clone(), displayUnit: (literal!("")).clone(), index: 0, minValue: None, maxValue: None, initialValue: None, nominalValue: None, isFixed: false, type_: ty.clone(), isDiscrete: false, arrayCref: None, aliasvar: crate::SimCodeVar::AliasVariable::NOALIAS, source: DAE::emptyElementSource().clone(), causality: Some(crate::SimCodeVar::Causality::LOCAL), variable_index: None, fmi_index: None, numArrayElement: numArrayElement.clone(), isValueChangeable: false, isProtected: true, hideResult: Some(true), isEncrypted: false, inputIndex: None, initNonlinear: false, matrixName: None, variability: None, initial_: None, exportVar: Some(cr.clone()), relativeQuantity: false };
                 } else {
-                    var = SimCodeVar::SimVar { name: cr.clone(), varKind: crate::BackendDAE::VarKind::VARIABLE, comment: (literal!("")).clone(), unit: (literal!("")).clone(), displayUnit: (literal!("")).clone(), index: 0, minValue: None, maxValue: None, initialValue: None, nominalValue: None, isFixed: false, type_: ty.clone(), isDiscrete: false, arrayCref: None, aliasvar: crate::SimCodeVar::AliasVariable::NOALIAS, source: DAE::emptyElementSource().clone(), causality: Some(crate::SimCodeVar::Causality::NONECAUS), variable_index: None, fmi_index: None, numArrayElement: numArrayElement.clone(), isValueChangeable: false, isProtected: true, hideResult: Some(true), isEncrypted: false, inputIndex: None, initNonlinear: false, matrixName: None, variability: None, initial_: None, exportVar: Some(cr.clone()), relativeQuantity: false };
+                    var = SimCodeVar::SimVar { name: cr.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, comment: (literal!("")).clone(), unit: (literal!("")).clone(), displayUnit: (literal!("")).clone(), index: 0, minValue: None, maxValue: None, initialValue: None, nominalValue: None, isFixed: false, type_: ty.clone(), isDiscrete: false, arrayCref: None, aliasvar: crate::SimCodeVar::AliasVariable::NOALIAS, source: DAE::emptyElementSource().clone(), causality: Some(crate::SimCodeVar::Causality::NONECAUS), variable_index: None, fmi_index: None, numArrayElement: numArrayElement.clone(), isValueChangeable: false, isProtected: true, hideResult: Some(true), isEncrypted: false, inputIndex: None, initNonlinear: false, matrixName: None, variability: None, initial_: None, exportVar: Some(cr.clone()), relativeQuantity: false };
                 }
                 ttmpvars = metamodelica::cons(var.clone(), ttmpvars.clone());
             }
@@ -4118,7 +4118,7 @@ fn generateEquationsForComponents(mut components: Arc<metamodelica::List<Arc<Bac
             uniqueEqIndex = uniqueEqIndex.clone() + 1;
             tvars = List::map1r(tearingVars.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), constSyst.orderedVars.clone())?;
             tvars = List::map(tvars.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::transformXToXd, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<BackendDAE::Var> + 'static>))?;
-            tvars = BackendVariable::setVarsKind(tvars.clone(), crate::BackendDAE::VarKind::LOOP_ITERATION)?;
+            tvars = BackendVariable::setVarsKind(tvars.clone(), openmodelica_backend_types::BackendDAE::VarKind::LOOP_ITERATION)?;
             (loopIterationVars, _) = List::fold(tvars.clone(), (std::sync::Arc::new(traversingdlowvarToSimvarFold) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (Arc<metamodelica::List<SimCodeVar::SimVar>>, BackendDAE::Variables)) -> Result<(Arc<metamodelica::List<SimCodeVar::SimVar>>, BackendDAE::Variables)> + 'static>), (metamodelica::nil(), BackendVariable::emptyVars(0)))?;
             loopIterationVars = loopIterationVars.clone().reverse();
             (simequations, loopSolvedVars, uniqueEqIndex) = generateInnerEqns(innerEquations.clone(), constSyst.clone(), shared.clone(), uniqueEqIndex.clone())?;
@@ -4335,7 +4335,7 @@ fn generateInnerEqns(mut innerEquations: Arc<metamodelica::List<BackendDAE::Inne
         let mut eq = eq.clone();
         (eqnindx, vars, _) = BackendDAEUtil::getEqnAndVarsFromInnerEquation(eq.clone())?;
         tmpVars = List::map1r(vars.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), syst.orderedVars.clone())?;
-        tmpVars = BackendVariable::setVarsKind(tmpVars.clone(), crate::BackendDAE::VarKind::LOOP_SOLVED)?;
+        tmpVars = BackendVariable::setVarsKind(tmpVars.clone(), openmodelica_backend_types::BackendDAE::VarKind::LOOP_SOLVED)?;
         (tmpOutputVars, _) = List::fold(tmpVars.clone(), (std::sync::Arc::new(traversingdlowvarToSimvarFold) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (Arc<metamodelica::List<SimCodeVar::SimVar>>, BackendDAE::Variables)) -> Result<(Arc<metamodelica::List<SimCodeVar::SimVar>>, BackendDAE::Variables)> + 'static>), (metamodelica::nil(), BackendVariable::emptyVars(0)))?;
         outputVars = List::append_reverse(tmpOutputVars.clone(), outputVars.clone());
         eqn = BackendEquation::get(syst.orderedEqs.clone(), eqnindx.clone())?;
@@ -4545,7 +4545,7 @@ pub fn createSymbolicSimulationJacobian(mut inJacobian: Arc<BackendDAE::Jacobian
                     seedVars = ({
         let mut __acc: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
         for mut cr in (independentComRefs.clone()).into_iter().cloned() {
-                    let __x = makeTmpRealSimCodeVar(cr.clone(), crate::BackendDAE::VarKind::SEED_VAR)?;
+                    let __x = makeTmpRealSimCodeVar(cr.clone(), openmodelica_backend_types::BackendDAE::VarKind::SEED_VAR)?;
                     __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -4553,7 +4553,7 @@ pub fn createSymbolicSimulationJacobian(mut inJacobian: Arc<BackendDAE::Jacobian
                     indexVars = ({
         let mut __acc: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
         for mut cr in (dependentVarsComRefs.clone()).into_iter().cloned() {
-                    let __x = makeTmpRealSimCodeVar(cr.clone(), crate::BackendDAE::VarKind::VARIABLE)?;
+                    let __x = makeTmpRealSimCodeVar(cr.clone(), openmodelica_backend_types::BackendDAE::VarKind::VARIABLE)?;
                     __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -4613,7 +4613,7 @@ pub fn createSymbolicSimulationJacobian(mut inJacobian: Arc<BackendDAE::Jacobian
                     (allVars, _) = BackendVariable::traverseBackendDAEVars(BackendVariable::listVar1(BackendVariable::equationSystemsVarsLst(systs.clone())?)?, (std::sync::Arc::new(getFurtherVars) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (Arc<metamodelica::List<BackendDAE::Var>>, Arc<DAE::ComponentRef>)) -> Result<(BackendDAE::Var, (Arc<metamodelica::List<BackendDAE::Var>>, Arc<DAE::ComponentRef>))> + 'static>), (metamodelica::nil(), x.clone()))?;
                     systvars = BackendVariable::listVar1(allVars.clone())?;
                     (columnVars, _) = BackendVariable::traverseBackendDAEVars(systvars.clone(), (std::sync::Arc::new(traversingdlowvarToSimvar) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (Arc<metamodelica::List<SimCodeVar::SimVar>>, BackendDAE::Variables)) -> Result<(BackendDAE::Var, (Arc<metamodelica::List<SimCodeVar::SimVar>>, BackendDAE::Variables))> + 'static>), (metamodelica::nil(), emptyVars.clone()))?;
-                    columnVars = List::map1(columnVars.clone(), (std::sync::Arc::new(fnptr!(setSimVarKind, SimCodeVar::SimVar, BackendDAE::VarKind)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, BackendDAE::VarKind) -> Result<SimCodeVar::SimVar> + 'static>), crate::BackendDAE::VarKind::JAC_TMP_VAR)?;
+                    columnVars = List::map1(columnVars.clone(), (std::sync::Arc::new(fnptr!(setSimVarKind, SimCodeVar::SimVar, BackendDAE::VarKind)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, BackendDAE::VarKind) -> Result<SimCodeVar::SimVar> + 'static>), openmodelica_backend_types::BackendDAE::VarKind::JAC_TMP_VAR)?;
                     columnVars = List::map1(columnVars.clone(), (std::sync::Arc::new(fnptr!(setSimVarMatrixName, SimCodeVar::SimVar, Option<ArcStr>)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, Option<ArcStr>) -> Result<SimCodeVar::SimVar> + 'static>), Some((name.clone()).clone()))?;
                     (columnVars, _) = rewriteIndex(columnVars.clone(), 0);
                     columnVars = createAllDiffedSimVars(dependentVarsLst.clone(), x.clone(), residualVars.clone(), 0, (columnVars.clone().len() as i32), (name.clone()).clone(), columnVars.clone())?;
@@ -4647,7 +4647,7 @@ pub fn createSymbolicSimulationJacobian(mut inJacobian: Arc<BackendDAE::Jacobian
                     maxColor = (sparseColoring.clone().len() as i32);
                     nRows = (residualVarsLst.clone().len() as i32);
                     seedVars = replaceSeedVarsName(seedVars.clone(), (name.clone()).clone())?;
-                    seedVars = List::map1(seedVars.clone(), (std::sync::Arc::new(fnptr!(setSimVarKind, SimCodeVar::SimVar, BackendDAE::VarKind)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, BackendDAE::VarKind) -> Result<SimCodeVar::SimVar> + 'static>), crate::BackendDAE::VarKind::SEED_VAR)?;
+                    seedVars = List::map1(seedVars.clone(), (std::sync::Arc::new(fnptr!(setSimVarKind, SimCodeVar::SimVar, BackendDAE::VarKind)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, BackendDAE::VarKind) -> Result<SimCodeVar::SimVar> + 'static>), openmodelica_backend_types::BackendDAE::VarKind::SEED_VAR)?;
                     seedVars = List::map1(seedVars.clone(), (std::sync::Arc::new(fnptr!(setSimVarMatrixName, SimCodeVar::SimVar, Option<ArcStr>)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, Option<ArcStr>) -> Result<SimCodeVar::SimVar> + 'static>), Some((name.clone()).clone()))?;
                     if Flags::isSet(Flags::JAC_DUMP2.clone())? {
                         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("analytical Jacobians -> transformed to SimCode for Matrix ")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(" time: ")); __mm_s.push_str(&*realString(clock())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -4911,7 +4911,7 @@ pub fn createSymbolicJacobianssSimCode(mut inSymJacobians: Arc<metamodelica::Lis
                         dumpSparsePatternInt(sparseIntsT.clone())?;
                     }
                     seedVars = replaceSeedVarsName(seedVars.clone(), (name.clone()).clone())?;
-                    seedVars = List::map1(seedVars.clone(), (std::sync::Arc::new(fnptr!(setSimVarKind, SimCodeVar::SimVar, BackendDAE::VarKind)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, BackendDAE::VarKind) -> Result<SimCodeVar::SimVar> + 'static>), crate::BackendDAE::VarKind::SEED_VAR)?;
+                    seedVars = List::map1(seedVars.clone(), (std::sync::Arc::new(fnptr!(setSimVarKind, SimCodeVar::SimVar, BackendDAE::VarKind)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, BackendDAE::VarKind) -> Result<SimCodeVar::SimVar> + 'static>), openmodelica_backend_types::BackendDAE::VarKind::SEED_VAR)?;
                     seedVars = List::map1(seedVars.clone(), (std::sync::Arc::new(fnptr!(setSimVarMatrixName, SimCodeVar::SimVar, Option<ArcStr>)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, Option<ArcStr>) -> Result<SimCodeVar::SimVar> + 'static>), Some((name.clone()).clone()))?;
                     tmpJac = Arc::new(SimCode::JacobianMatrix { columns: list![Arc::new(SimCode::JacobianColumn { columnEqns: metamodelica::nil(), columnVars: metamodelica::nil(), numberOfResultVars: nRows.clone(), constantEqns: metamodelica::nil() })], seedVars: seedVars.clone(), matrixName: (name.clone()).clone(), sparsity: sparseInts.clone(), sparsityT: sparseIntsT.clone(), nonlinear: nonlinearPat.clone(), nonlinearT: nonlinearPatT.clone(), coloredCols: coloring.clone(), coloredRows: metamodelica::nil(), maxColorCols: maxColor.clone(), jacobianIndex: -1, partitionIndex: 0, generic_loop_calls: metamodelica::nil(), crefsHT: None, isAdjoint: false });
                     linearModelMatrices = metamodelica::cons(tmpJac.clone(), inJacobianMatrices.clone());
@@ -4955,7 +4955,7 @@ pub fn createSymbolicJacobianssSimCode(mut inSymJacobians: Arc<metamodelica::Lis
                     (allVars, _) = BackendVariable::traverseBackendDAEVars(BackendVariable::listVar1(BackendVariable::equationSystemsVarsLst(systs.clone())?)?, (std::sync::Arc::new(getFurtherVars) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (Arc<metamodelica::List<BackendDAE::Var>>, Arc<DAE::ComponentRef>)) -> Result<(BackendDAE::Var, (Arc<metamodelica::List<BackendDAE::Var>>, Arc<DAE::ComponentRef>))> + 'static>), (metamodelica::nil(), x.clone()))?;
                     systvars = BackendVariable::listVar1(allVars.clone())?;
                     (otherColumnVars, _) = BackendVariable::traverseBackendDAEVars(systvars.clone(), (std::sync::Arc::new(traversingdlowvarToSimvar) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (Arc<metamodelica::List<SimCodeVar::SimVar>>, BackendDAE::Variables)) -> Result<(BackendDAE::Var, (Arc<metamodelica::List<SimCodeVar::SimVar>>, BackendDAE::Variables))> + 'static>), (metamodelica::nil(), emptyVars.clone()))?;
-                    otherColumnVars = List::map1(otherColumnVars.clone(), (std::sync::Arc::new(fnptr!(setSimVarKind, SimCodeVar::SimVar, BackendDAE::VarKind)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, BackendDAE::VarKind) -> Result<SimCodeVar::SimVar> + 'static>), crate::BackendDAE::VarKind::JAC_TMP_VAR)?;
+                    otherColumnVars = List::map1(otherColumnVars.clone(), (std::sync::Arc::new(fnptr!(setSimVarKind, SimCodeVar::SimVar, BackendDAE::VarKind)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, BackendDAE::VarKind) -> Result<SimCodeVar::SimVar> + 'static>), openmodelica_backend_types::BackendDAE::VarKind::JAC_TMP_VAR)?;
                     otherColumnVars = List::map1(otherColumnVars.clone(), (std::sync::Arc::new(fnptr!(setSimVarMatrixName, SimCodeVar::SimVar, Option<ArcStr>)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, Option<ArcStr>) -> Result<SimCodeVar::SimVar> + 'static>), Some((name.clone()).clone()))?;
                     (otherColumnVars, _) = rewriteIndex(otherColumnVars.clone(), 0);
                     empty = BackendVariable::listVar1(alldiffedVars.clone())?;
@@ -5018,7 +5018,7 @@ pub fn createSymbolicJacobianssSimCode(mut inSymJacobians: Arc<metamodelica::Lis
                         dumpSparsePatternInt(sparseIntsT.clone())?;
                     }
                     seedVars = replaceSeedVarsName(seedVars.clone(), (name.clone()).clone())?;
-                    seedVars = List::map1(seedVars.clone(), (std::sync::Arc::new(fnptr!(setSimVarKind, SimCodeVar::SimVar, BackendDAE::VarKind)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, BackendDAE::VarKind) -> Result<SimCodeVar::SimVar> + 'static>), crate::BackendDAE::VarKind::SEED_VAR)?;
+                    seedVars = List::map1(seedVars.clone(), (std::sync::Arc::new(fnptr!(setSimVarKind, SimCodeVar::SimVar, BackendDAE::VarKind)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, BackendDAE::VarKind) -> Result<SimCodeVar::SimVar> + 'static>), openmodelica_backend_types::BackendDAE::VarKind::SEED_VAR)?;
                     seedVars = List::map1(seedVars.clone(), (std::sync::Arc::new(fnptr!(setSimVarMatrixName, SimCodeVar::SimVar, Option<ArcStr>)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, Option<ArcStr>) -> Result<SimCodeVar::SimVar> + 'static>), Some((name.clone()).clone()))?;
                     crefToSimVarHTJacobian = HashTableCrefSimVar::emptyHashTableSized((seedVars.clone().len() as i32) + (columnVars.clone().len() as i32));
                     crefToSimVarHTJacobian = List::fold(seedVars.clone(), (std::sync::Arc::new(HashTableCrefSimVar::addSimVarToHashTable) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, SimCodeVar::SimVar)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, SimCodeVar::SimVar)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar) -> Result<ArcStr> + 'static>))> + 'static>), crefToSimVarHTJacobian.clone())?;
@@ -5106,7 +5106,7 @@ fn createJacSimVarsColumn(mut inVars: Arc<metamodelica::List<BackendDAE::Var>>, 
     });
                 derivedCref = unwrap_break_err!(ComponentReference::createDifferentiatedCrefName(currVar.clone(), inCref.clone(), (inMatrixName.clone()).clone()), '__try0);
                 v1 = BackendVariable::copyVarNewName(derivedCref.clone(), v.clone());
-                v1 = unwrap_break_err!(BackendVariable::setVarKind(v1.clone(), crate::BackendDAE::VarKind::JAC_VAR), '__try0);
+                v1 = unwrap_break_err!(BackendVariable::setVarKind(v1.clone(), openmodelica_backend_types::BackendDAE::VarKind::JAC_VAR), '__try0);
                 simVar = unwrap_break_err!(dlowvarToSimvar(v1.clone(), None, inAllVars.clone(), None), '__try0);
                 simVar.index = inResIndex.clone();
                 resIndex = inResIndex.clone() + 1;
@@ -5129,7 +5129,7 @@ fn createJacSimVarsColumn(mut inVars: Arc<metamodelica::List<BackendDAE::Var>>, 
     });
                     derivedCref = ComponentReference::createDifferentiatedCrefName(currVar.clone(), inCref.clone(), (inMatrixName.clone()).clone())?;
                     v1 = BackendVariable::copyVarNewName(derivedCref.clone(), v.clone());
-                    v1 = BackendVariable::setVarKind(v1.clone(), crate::BackendDAE::VarKind::JAC_TMP_VAR)?;
+                    v1 = BackendVariable::setVarKind(v1.clone(), openmodelica_backend_types::BackendDAE::VarKind::JAC_TMP_VAR)?;
                     simVar = dlowvarToSimvar(v1.clone(), None, inAllVars.clone(), None)?;
                     simVar.index = inTmpIndex.clone();
                     simVar.matrixName = Some((inMatrixName.clone()).clone());
@@ -5221,7 +5221,7 @@ pub fn collectAllSeedVars(mut inJacobianMatrices: Arc<metamodelica::List<Arc<Sim
         seedVars = __pa0.clone();
         outVars = listAppend(seedVars.clone(), outVars.clone());
     }
-    outVars = List::map1(outVars.clone(), (std::sync::Arc::new(fnptr!(setSimVarKind, SimCodeVar::SimVar, BackendDAE::VarKind)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, BackendDAE::VarKind) -> Result<SimCodeVar::SimVar> + 'static>), crate::BackendDAE::VarKind::SEED_VAR)?;
+    outVars = List::map1(outVars.clone(), (std::sync::Arc::new(fnptr!(setSimVarKind, SimCodeVar::SimVar, BackendDAE::VarKind)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, BackendDAE::VarKind) -> Result<SimCodeVar::SimVar> + 'static>), openmodelica_backend_types::BackendDAE::VarKind::SEED_VAR)?;
     Ok(outVars)
 }
 
@@ -5424,7 +5424,7 @@ fn createDerivativeMatrix(mut inJacobian: Arc<BackendDAE::Jacobian>, mut iunique
                     seedVars = ({
         let mut __acc: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
         for mut cr in (independentComRefs.clone()).into_iter().cloned() {
-                    let __x = makeTmpRealSimCodeVar(cr.clone(), crate::BackendDAE::VarKind::SEED_VAR)?;
+                    let __x = makeTmpRealSimCodeVar(cr.clone(), openmodelica_backend_types::BackendDAE::VarKind::SEED_VAR)?;
                     __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -5432,7 +5432,7 @@ fn createDerivativeMatrix(mut inJacobian: Arc<BackendDAE::Jacobian>, mut iunique
                     indexVars = ({
         let mut __acc: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
         for mut cr in (dependentVarsComRefs.clone()).into_iter().cloned() {
-                    let __x = makeTmpRealSimCodeVar(cr.clone(), crate::BackendDAE::VarKind::VARIABLE)?;
+                    let __x = makeTmpRealSimCodeVar(cr.clone(), openmodelica_backend_types::BackendDAE::VarKind::VARIABLE)?;
                     __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -5498,7 +5498,7 @@ fn createDerivativeMatrix(mut inJacobian: Arc<BackendDAE::Jacobian>, mut iunique
                     (allVars, _) = BackendVariable::traverseBackendDAEVars(syst.orderedVars.clone(), (std::sync::Arc::new(getFurtherVars) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (Arc<metamodelica::List<BackendDAE::Var>>, Arc<DAE::ComponentRef>)) -> Result<(BackendDAE::Var, (Arc<metamodelica::List<BackendDAE::Var>>, Arc<DAE::ComponentRef>))> + 'static>), (metamodelica::nil(), x.clone()))?;
                     systvars = BackendVariable::listVar1(allVars.clone())?;
                     (columnVars, _) = BackendVariable::traverseBackendDAEVars(systvars.clone(), (std::sync::Arc::new(traversingdlowvarToSimvar) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, (Arc<metamodelica::List<SimCodeVar::SimVar>>, BackendDAE::Variables)) -> Result<(BackendDAE::Var, (Arc<metamodelica::List<SimCodeVar::SimVar>>, BackendDAE::Variables))> + 'static>), (metamodelica::nil(), emptyVars.clone()))?;
-                    columnVars = List::map1(columnVars.clone(), (std::sync::Arc::new(fnptr!(setSimVarKind, SimCodeVar::SimVar, BackendDAE::VarKind)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, BackendDAE::VarKind) -> Result<SimCodeVar::SimVar> + 'static>), crate::BackendDAE::VarKind::JAC_TMP_VAR)?;
+                    columnVars = List::map1(columnVars.clone(), (std::sync::Arc::new(fnptr!(setSimVarKind, SimCodeVar::SimVar, BackendDAE::VarKind)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, BackendDAE::VarKind) -> Result<SimCodeVar::SimVar> + 'static>), openmodelica_backend_types::BackendDAE::VarKind::JAC_TMP_VAR)?;
                     columnVars = List::map1(columnVars.clone(), (std::sync::Arc::new(fnptr!(setSimVarMatrixName, SimCodeVar::SimVar, Option<ArcStr>)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, Option<ArcStr>) -> Result<SimCodeVar::SimVar> + 'static>), Some((name.clone()).clone()))?;
                     (innerVars, _) = rewriteIndex(columnVars.clone(), 0);
                     (innerVars, columnVars) = createJacSimVarsColumn(dependentVarsLst.clone(), x.clone(), residualVars.clone(), 0, (innerVars.clone().len() as i32), (name.clone()).clone(), innerVars.clone(), metamodelica::nil())?;
@@ -5523,7 +5523,7 @@ fn createDerivativeMatrix(mut inJacobian: Arc<BackendDAE::Jacobian>, mut iunique
                     coloring = sortColoring(varsSeedIndex.clone(), sparseColoring.clone())?;
                     maxColor = (sparseColoring.clone().len() as i32);
                     seedVars = replaceSeedVarsName(seedVars.clone(), (name.clone()).clone())?;
-                    seedVars = List::map1(seedVars.clone(), (std::sync::Arc::new(fnptr!(setSimVarKind, SimCodeVar::SimVar, BackendDAE::VarKind)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, BackendDAE::VarKind) -> Result<SimCodeVar::SimVar> + 'static>), crate::BackendDAE::VarKind::SEED_VAR)?;
+                    seedVars = List::map1(seedVars.clone(), (std::sync::Arc::new(fnptr!(setSimVarKind, SimCodeVar::SimVar, BackendDAE::VarKind)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, BackendDAE::VarKind) -> Result<SimCodeVar::SimVar> + 'static>), openmodelica_backend_types::BackendDAE::VarKind::SEED_VAR)?;
                     seedVars = List::map1(seedVars.clone(), (std::sync::Arc::new(fnptr!(setSimVarMatrixName, SimCodeVar::SimVar, Option<ArcStr>)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar, Option<ArcStr>) -> Result<SimCodeVar::SimVar> + 'static>), Some((name.clone()).clone()))?;
                     if Flags::isSet(Flags::JAC_DUMP2.clone())? {
                         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("analytical Jacobians -> transformed to SimCode for Matrix ")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(" time: ")); __mm_s.push_str(&*realString(clock())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -6159,10 +6159,10 @@ pub fn createEquationsfromList(mut inEquations: Arc<metamodelica::List<Arc<Backe
                     let mut equations_: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = equations_.clone();
                     eqns_1 = BackendEquation::listEquation(inEquations.clone())?;
                     vars1 = BackendVariable::listVar1(inVars.clone())?;
-                    syst = BackendDAEUtil::createEqSystem(vars1.clone(), eqns_1.clone(), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
-                    shared = BackendDAEUtil::createEmptyShared(crate::BackendDAE::BackendDAEType::ARRAYSYSTEM, iextra.clone(), FCore::emptyCache(), FGraph::empty())?;
+                    syst = BackendDAEUtil::createEqSystem(vars1.clone(), eqns_1.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+                    shared = BackendDAEUtil::createEmptyShared(openmodelica_backend_types::BackendDAE::BackendDAEType::ARRAYSYSTEM, iextra.clone(), FCore::emptyCache(), FGraph::empty())?;
                     subsystem_dae = Arc::new(BackendDAE::BackendDAE { eqs: list![syst.clone()], shared: shared.clone() });
-                    let (__pa1, __pa0, __pa2) = ::match_deref::match_deref! { match &(BackendDAEUtil::transformBackendDAE(subsystem_dae.clone(), Some((crate::BackendDAE::IndexReduction::NO_INDEX_REDUCTION, crate::BackendDAE::EquationConstraints::ALLOW_UNDERCONSTRAINED)), None, None)?) {
+                    let (__pa1, __pa0, __pa2) = ::match_deref::match_deref! { match &(BackendDAEUtil::transformBackendDAE(subsystem_dae.clone(), Some((openmodelica_backend_types::BackendDAE::IndexReduction::NO_INDEX_REDUCTION, openmodelica_backend_types::BackendDAE::EquationConstraints::ALLOW_UNDERCONSTRAINED)), None, None)?) {
                         Deref @ BackendDAE::BackendDAE { eqs: Deref @ metamodelica::List::Cons { head: __pa1 @ Deref @ BackendDAE::EqSystem { matching: Deref @ BackendDAE::Matching::MATCHING { comps: __pa0, .. }, .. }, tail: Deref @ metamodelica::List::Nil }, shared: __pa2 } => (__pa1.clone(), __pa0.clone(), __pa2.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -7844,7 +7844,7 @@ fn preCalculateStartValues(mut systIn: Arc<BackendDAE::EqSystem>, mut globalKnow
     let mut stateKinds: Arc<metamodelica::List<BackendDAE::VarKind>> = metamodelica::nil();
     vars = systIn.orderedVars.clone();
     stateInfo = List::fold1(List::intRange(BackendVariable::varsSize(vars.clone())), (std::sync::Arc::new(getStateInfo) as std::sync::Arc<dyn ::std::ops::Fn(i32, BackendDAE::Variables, Arc<metamodelica::List<(i32, BackendDAE::VarKind)>>) -> Result<Arc<metamodelica::List<(i32, BackendDAE::VarKind)>>> + 'static>), vars.clone(), metamodelica::nil())?;
-    (vars, _) = BackendVariable::traverseBackendDAEVarsWithUpdate(vars.clone(), (std::sync::Arc::new(setVarKindForStates) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::VarKind) -> Result<(BackendDAE::Var, BackendDAE::VarKind)> + 'static>), crate::BackendDAE::VarKind::VARIABLE)?;
+    (vars, _) = BackendVariable::traverseBackendDAEVarsWithUpdate(vars.clone(), (std::sync::Arc::new(setVarKindForStates) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::VarKind) -> Result<(BackendDAE::Var, BackendDAE::VarKind)> + 'static>), openmodelica_backend_types::BackendDAE::VarKind::VARIABLE)?;
     varLst = BackendVariable::varList(vars.clone())?;
     varMap = List::intRange(BackendVariable::varsSize(vars.clone()));
     (noStartVarLst, varMap) = List::filterOnTrueSync(varLst.clone(), (std::sync::Arc::new(BackendVariable::varHasNoStartValue) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>), varMap.clone())?;
@@ -7852,8 +7852,8 @@ fn preCalculateStartValues(mut systIn: Arc<BackendDAE::EqSystem>, mut globalKnow
     BackendDAEUtil::traverseBackendDAEExpsEqns(eqs.clone(), (std::sync::Arc::new(replaceCrefWithStartValue) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables) -> Result<(Arc<DAE::Exp>, BackendDAE::Variables)> + 'static>), globalKnownVars.clone())?;
     BackendDAEUtil::traverseBackendDAEExpsEqns(eqs.clone(), (std::sync::Arc::new(replaceCrefWithStartValue) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables) -> Result<(Arc<DAE::Exp>, BackendDAE::Variables)> + 'static>), vars.clone())?;
     vars1 = BackendVariable::listVar1(noStartVarLst.clone())?;
-    syst = BackendDAEUtil::createEqSystem(vars1.clone(), eqs.clone(), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
-    (syst, mStart, mTStart) = BackendDAEUtil::getAdjacencyMatrix(syst.clone(), crate::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
+    syst = BackendDAEUtil::createEqSystem(vars1.clone(), eqs.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+    (syst, mStart, mTStart) = BackendDAEUtil::getAdjacencyMatrix(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
     varMapArr = metamodelica::arrayFromVec(varMap.clone().into_iter().cloned().collect());
     vars = preCalculateStartValues1(List::intRange((mStart.clone().borrow().len() as i32)), mStart.clone(), mTStart.clone(), varMapArr.clone(), eqs.clone(), vars.clone())?;
     stateIdcs = List::map(stateInfo.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)))?;
@@ -8671,7 +8671,7 @@ fn derVarFromStateVar(mut state: SimCodeVar::SimVar, mut timeInterval: Option<Ar
     let mut nominal: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     deriv.arrayCref = Util::applyOption(deriv.arrayCref.clone(), (std::sync::Arc::new(fnptr!(ComponentReference::crefPrefixDer, Arc<DAE::ComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> + 'static>))?;
     deriv.name = ComponentReference::crefPrefixDer(deriv.name.clone());
-    deriv.varKind = crate::BackendDAE::VarKind::STATE_DER;
+    deriv.varKind = openmodelica_backend_types::BackendDAE::VarKind::STATE_DER;
     if deriv.comment.clone() != literal!("") {
         deriv.comment = { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("der(")); __mm_s.push_str(&*deriv.comment.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) };
     }
@@ -10180,7 +10180,7 @@ fn dlowvarToSimvar(mut dlowVar: BackendDAE::Var, mut optAliasVars: Option<Backen
             let mut hideResult: Option<bool> = None;
             let mut relativeQuantity: bool = false;
             let () = (match BackendVariable::varStateSelect(dlowVar.clone()) {
-        DAE::StateSelect::ALWAYS { .. } if (kind.clone() == crate::BackendDAE::VarKind::VARIABLE && !(ComponentReference::isPreviousCref(cr.clone()))) => {
+        DAE::StateSelect::ALWAYS { .. } if (kind.clone() == openmodelica_backend_types::BackendDAE::VarKind::VARIABLE && !(ComponentReference::isPreviousCref(cr.clone()))) => {
             Error::addSourceMessage(Error::NON_STATE_STATESELECT_ALWAYS.clone(), list![(ComponentReferenceBasics::printComponentRefStr(cr.clone())?).clone()], source.info.clone())?;
             ()
         },
@@ -10875,7 +10875,7 @@ fn adjustStatesForInlineSolver(mut inStates: Arc<metamodelica::List<SimCodeVar::
         for mut var in &*inStates.clone() {
             let mut var = var.clone();
             var.name = unwrap_break_err!(ComponentReference::appendStringLastIdent((literal!("$Old")).clone(), var.name.clone()), '__try0);
-            var.varKind = crate::BackendDAE::VarKind::ALG_STATE_OLD;
+            var.varKind = openmodelica_backend_types::BackendDAE::VarKind::ALG_STATE_OLD;
             outStates = metamodelica::cons(var.clone(), outStates.clone());
         }
         Ok::<(), anyhow::Error>(())
@@ -13078,7 +13078,7 @@ fn setUpSystMapping(mut dae: Arc<BackendDAE::EqSystem>, mut isInitial: bool) -> 
                     } };
                     ass2 = __pa1.clone();
                     ass1 = __pa2.clone();
-                    (_, m, mt) = BackendDAEUtil::getAdjacencyMatrix(dae.clone(), crate::BackendDAE::IndexType::NORMAL, None, isInitial.clone())?;
+                    (_, m, mt) = BackendDAEUtil::getAdjacencyMatrix(dae.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, isInitial.clone())?;
                     sizeE = BackendDAEUtil::equationArraySizeDAE(dae.clone());
                     sizeV = BackendVariable::daenumVariables(dae.clone());
                     Ok((sizeE.clone(), sizeV.clone(), m.clone(), mt.clone(), ass2.clone(), ass1.clone()))
@@ -14431,7 +14431,7 @@ fn getFmiInitialUnknowns(mut inInitDAE: Arc<BackendDAE::BackendDAE>, mut inSimDA
             shared = BackendVariable::addGlobalKnownVarDAE(var.clone(), shared.clone())?;
         }
     }
-    (outAdjacencyMatrix, _, _, _) = BackendDAEUtil::adjacencyMatrixScalar(currentSystem.clone(), crate::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
+    (outAdjacencyMatrix, _, _, _) = BackendDAEUtil::adjacencyMatrixScalar(currentSystem.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
     (match1, match2) = Matching::PerfectMatching(outAdjacencyMatrix.clone())?;
     assign_field!(currentSystem.matching = Arc::new(BackendDAE::Matching::MATCHING { ass1: match1.clone(), ass2: match2.clone(), comps: BackendDAEUtil::getStrongComponents(currentSystem.clone()) }));
     tmpBDAE = Arc::new(BackendDAE::BackendDAE { eqs: list![currentSystem.clone()], shared: shared.clone() });
@@ -15291,7 +15291,7 @@ pub fn cref2simvar(mut inCref: Arc<DAE::ComponentRef>, mut simCode: SimCode::Sim
         }
         Err(_) => {
             badcref = ComponentReferenceBasics::makeCrefIdent(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ERROR_cref2simvar_failed ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(inCref.clone())?); ArcStr::from(__mm_s) }).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil());
-            outSimVar = SimCodeVar::SimVar { name: badcref.clone(), varKind: crate::BackendDAE::VarKind::VARIABLE, comment: (literal!("")).clone(), unit: (literal!("")).clone(), displayUnit: (literal!("")).clone(), index: -2, minValue: None, maxValue: None, initialValue: None, nominalValue: None, isFixed: false, type_: DAE::T_REAL_DEFAULT().clone(), isDiscrete: false, arrayCref: None, aliasvar: crate::SimCodeVar::AliasVariable::NOALIAS, source: DAE::emptyElementSource().clone(), causality: Some(crate::SimCodeVar::Causality::LOCAL), variable_index: None, fmi_index: None, numArrayElement: metamodelica::nil(), isValueChangeable: false, isProtected: true, hideResult: None, isEncrypted: false, inputIndex: None, initNonlinear: false, matrixName: None, variability: None, initial_: None, exportVar: Some(badcref.clone()), relativeQuantity: false };
+            outSimVar = SimCodeVar::SimVar { name: badcref.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, comment: (literal!("")).clone(), unit: (literal!("")).clone(), displayUnit: (literal!("")).clone(), index: -2, minValue: None, maxValue: None, initialValue: None, nominalValue: None, isFixed: false, type_: DAE::T_REAL_DEFAULT().clone(), isDiscrete: false, arrayCref: None, aliasvar: crate::SimCodeVar::AliasVariable::NOALIAS, source: DAE::emptyElementSource().clone(), causality: Some(crate::SimCodeVar::Causality::LOCAL), variable_index: None, fmi_index: None, numArrayElement: metamodelica::nil(), isValueChangeable: false, isProtected: true, hideResult: None, isEncrypted: false, inputIndex: None, initNonlinear: false, matrixName: None, variability: None, initial_: None, exportVar: Some(badcref.clone()), relativeQuantity: false };
         }
     }
     Ok(outSimVar)
@@ -15345,7 +15345,7 @@ pub fn simVarFromHT(mut inCref: Arc<DAE::ComponentRef>, mut crefToSimVarHT: (met
         }
         Err(_) => {
             badcref = ComponentReferenceBasics::makeCrefIdent(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ERROR_simVarFromHT_failed ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(inCref.clone())?); ArcStr::from(__mm_s) }).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil());
-            sv = SimCodeVar::SimVar { name: badcref.clone(), varKind: crate::BackendDAE::VarKind::VARIABLE, comment: (literal!("")).clone(), unit: (literal!("")).clone(), displayUnit: (literal!("")).clone(), index: -2, minValue: None, maxValue: None, initialValue: None, nominalValue: None, isFixed: false, type_: DAE::T_REAL_DEFAULT().clone(), isDiscrete: false, arrayCref: None, aliasvar: crate::SimCodeVar::AliasVariable::NOALIAS, source: DAE::emptyElementSource().clone(), causality: Some(crate::SimCodeVar::Causality::LOCAL), variable_index: None, fmi_index: None, numArrayElement: metamodelica::nil(), isValueChangeable: false, isProtected: true, hideResult: None, isEncrypted: false, inputIndex: None, initNonlinear: false, matrixName: None, variability: None, initial_: None, exportVar: Some(badcref.clone()), relativeQuantity: false };
+            sv = SimCodeVar::SimVar { name: badcref.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, comment: (literal!("")).clone(), unit: (literal!("")).clone(), displayUnit: (literal!("")).clone(), index: -2, minValue: None, maxValue: None, initialValue: None, nominalValue: None, isFixed: false, type_: DAE::T_REAL_DEFAULT().clone(), isDiscrete: false, arrayCref: None, aliasvar: crate::SimCodeVar::AliasVariable::NOALIAS, source: DAE::emptyElementSource().clone(), causality: Some(crate::SimCodeVar::Causality::LOCAL), variable_index: None, fmi_index: None, numArrayElement: metamodelica::nil(), isValueChangeable: false, isProtected: true, hideResult: None, isEncrypted: false, inputIndex: None, initNonlinear: false, matrixName: None, variability: None, initial_: None, exportVar: Some(badcref.clone()), relativeQuantity: false };
         }
     }
     outSimVar = sv.clone();
@@ -15377,7 +15377,7 @@ pub fn localCref2SimVar(mut inCref: Arc<DAE::ComponentRef>, mut inCrefToSimVarHT
                 (_, _) => {
                     let mut badcref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     badcref = ComponentReferenceBasics::makeCrefIdent(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("ERROR_localCref2SimVar_failed ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(inCref.clone())?); ArcStr::from(__mm_s) }).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil());
-                    Ok(SimCodeVar::SimVar { name: badcref.clone(), varKind: crate::BackendDAE::VarKind::VARIABLE, comment: (literal!("")).clone(), unit: (literal!("")).clone(), displayUnit: (literal!("")).clone(), index: -2, minValue: None, maxValue: None, initialValue: None, nominalValue: None, isFixed: false, type_: DAE::T_REAL_DEFAULT().clone(), isDiscrete: false, arrayCref: None, aliasvar: crate::SimCodeVar::AliasVariable::NOALIAS, source: DAE::emptyElementSource().clone(), causality: Some(crate::SimCodeVar::Causality::LOCAL), variable_index: None, fmi_index: None, numArrayElement: metamodelica::nil(), isValueChangeable: false, isProtected: true, hideResult: None, isEncrypted: false, inputIndex: None, initNonlinear: false, matrixName: None, variability: None, initial_: None, exportVar: Some(badcref.clone()), relativeQuantity: false })
+                    Ok(SimCodeVar::SimVar { name: badcref.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, comment: (literal!("")).clone(), unit: (literal!("")).clone(), displayUnit: (literal!("")).clone(), index: -2, minValue: None, maxValue: None, initialValue: None, nominalValue: None, isFixed: false, type_: DAE::T_REAL_DEFAULT().clone(), isDiscrete: false, arrayCref: None, aliasvar: crate::SimCodeVar::AliasVariable::NOALIAS, source: DAE::emptyElementSource().clone(), causality: Some(crate::SimCodeVar::Causality::LOCAL), variable_index: None, fmi_index: None, numArrayElement: metamodelica::nil(), isValueChangeable: false, isProtected: true, hideResult: None, isEncrypted: false, inputIndex: None, initNonlinear: false, matrixName: None, variability: None, initial_: None, exportVar: Some(badcref.clone()), relativeQuantity: false })
                 }
                 _ => bail!("nomatch"),
             }}

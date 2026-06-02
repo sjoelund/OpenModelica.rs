@@ -43,7 +43,6 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAE as OldBackendDAE;
 use crate::NBEquation::Equation;
 use crate::NBEvents::Condition;
 use crate::NBEvents::EventInfo;
@@ -56,6 +55,7 @@ use crate::NSimCode as SimCode;
 use crate::NSimCode::SimCodeIndices;
 use crate::SimCode as OldSimCode;
 use crate::SimCodeVar as OldSimCodeVar;
+use openmodelica_backend_types::BackendDAE as OldBackendDAE;
 use openmodelica_frontend_types::DAE;
 use openmodelica_frontend_types::SCode;
 use openmodelica_nf_frontend::NFBackendExtension::BackendInfo;
@@ -471,7 +471,7 @@ pub mod SimVar {
         let mut oldVarKind: OldBackendDAE::VarKind = OldBackendDAE::VarKind::ALG_STATE;
         oldVarKind = (::match_deref::match_deref! { match &(varKind.clone()) {
         Deref @ VariableKind::ALGEBRAIC => {
-            crate::BackendDAE::VarKind::VARIABLE
+            openmodelica_backend_types::BackendDAE::VarKind::VARIABLE
         },
         Deref @ VariableKind::STATE { .. } => {
             let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
@@ -485,82 +485,82 @@ pub mod SimVar {
             OldBackendDAE::VarKind::STATE { index: var_field!((*varKind).index, VariableKind::VariableKind::STATE).clone(), derName: oldCrefOpt.clone(), natural: var_field!((*varKind).natural, VariableKind::VariableKind::STATE).clone() }
         },
         Deref @ VariableKind::STATE_DER { .. } => {
-            crate::BackendDAE::VarKind::STATE_DER
+            openmodelica_backend_types::BackendDAE::VarKind::STATE_DER
         },
         Deref @ VariableKind::DUMMY_DER { .. } => {
-            crate::BackendDAE::VarKind::DUMMY_DER
+            openmodelica_backend_types::BackendDAE::VarKind::DUMMY_DER
         },
         Deref @ VariableKind::DUMMY_STATE { .. } => {
-            crate::BackendDAE::VarKind::DUMMY_STATE
+            openmodelica_backend_types::BackendDAE::VarKind::DUMMY_STATE
         },
         Deref @ VariableKind::DISCRETE => {
-            crate::BackendDAE::VarKind::DISCRETE
+            openmodelica_backend_types::BackendDAE::VarKind::DISCRETE
         },
         Deref @ VariableKind::DISCRETE_STATE => {
-            crate::BackendDAE::VarKind::DISCRETE
+            openmodelica_backend_types::BackendDAE::VarKind::DISCRETE
         },
         Deref @ VariableKind::CLOCKED => {
-            crate::BackendDAE::VarKind::DISCRETE
+            openmodelica_backend_types::BackendDAE::VarKind::DISCRETE
         },
         Deref @ VariableKind::PREVIOUS => {
-            crate::BackendDAE::VarKind::DISCRETE
+            openmodelica_backend_types::BackendDAE::VarKind::DISCRETE
         },
         Deref @ VariableKind::PARAMETER { .. } => {
-            crate::BackendDAE::VarKind::PARAM
+            openmodelica_backend_types::BackendDAE::VarKind::PARAM
         },
         Deref @ VariableKind::CONSTANT => {
-            crate::BackendDAE::VarKind::CONST
+            openmodelica_backend_types::BackendDAE::VarKind::CONST
         },
         Deref @ VariableKind::START { .. } => {
-            crate::BackendDAE::VarKind::VARIABLE
+            openmodelica_backend_types::BackendDAE::VarKind::VARIABLE
         },
         Deref @ VariableKind::EXTOBJ { .. } => {
             OldBackendDAE::VarKind::EXTOBJ { fullClassName: var_field!((*varKind).fullClassName, VariableKind::VariableKind::EXTOBJ).clone() }
         },
         Deref @ VariableKind::JAC_VAR => {
-            crate::BackendDAE::VarKind::JAC_VAR
+            openmodelica_backend_types::BackendDAE::VarKind::JAC_VAR
         },
         Deref @ VariableKind::JAC_TMP_VAR => {
-            crate::BackendDAE::VarKind::JAC_TMP_VAR
+            openmodelica_backend_types::BackendDAE::VarKind::JAC_TMP_VAR
         },
         Deref @ VariableKind::SEED_VAR => {
-            crate::BackendDAE::VarKind::SEED_VAR
+            openmodelica_backend_types::BackendDAE::VarKind::SEED_VAR
         },
         Deref @ VariableKind::OPT_CONSTR => {
-            crate::BackendDAE::VarKind::OPT_CONSTR
+            openmodelica_backend_types::BackendDAE::VarKind::OPT_CONSTR
         },
         Deref @ VariableKind::OPT_FCONSTR => {
-            crate::BackendDAE::VarKind::OPT_FCONSTR
+            openmodelica_backend_types::BackendDAE::VarKind::OPT_FCONSTR
         },
         Deref @ VariableKind::OPT_INPUT_WITH_DER => {
-            crate::BackendDAE::VarKind::OPT_INPUT_WITH_DER
+            openmodelica_backend_types::BackendDAE::VarKind::OPT_INPUT_WITH_DER
         },
         Deref @ VariableKind::OPT_INPUT_DER => {
-            crate::BackendDAE::VarKind::OPT_INPUT_DER
+            openmodelica_backend_types::BackendDAE::VarKind::OPT_INPUT_DER
         },
         Deref @ VariableKind::OPT_TGRID => {
-            crate::BackendDAE::VarKind::OPT_TGRID
+            openmodelica_backend_types::BackendDAE::VarKind::OPT_TGRID
         },
         Deref @ VariableKind::OPT_LOOP_INPUT { .. } => {
             OldBackendDAE::VarKind::OPT_LOOP_INPUT { replaceExp: ComponentRef::toDAE(var_field!((*varKind).replaceCref, VariableKind::VariableKind::OPT_LOOP_INPUT).clone())? }
         },
         Deref @ VariableKind::ALG_STATE => {
-            crate::BackendDAE::VarKind::ALG_STATE
+            openmodelica_backend_types::BackendDAE::VarKind::ALG_STATE
         },
         Deref @ VariableKind::ALG_STATE_OLD => {
-            crate::BackendDAE::VarKind::ALG_STATE_OLD
+            openmodelica_backend_types::BackendDAE::VarKind::ALG_STATE_OLD
         },
         Deref @ VariableKind::RESIDUAL_VAR => {
-            crate::BackendDAE::VarKind::DAE_RESIDUAL_VAR
+            openmodelica_backend_types::BackendDAE::VarKind::DAE_RESIDUAL_VAR
         },
         Deref @ VariableKind::DAE_AUX_VAR => {
-            crate::BackendDAE::VarKind::DAE_AUX_VAR
+            openmodelica_backend_types::BackendDAE::VarKind::DAE_AUX_VAR
         },
         Deref @ VariableKind::LOOP_ITERATION => {
-            crate::BackendDAE::VarKind::LOOP_ITERATION
+            openmodelica_backend_types::BackendDAE::VarKind::LOOP_ITERATION
         },
         Deref @ VariableKind::LOOP_SOLVED => {
-            crate::BackendDAE::VarKind::LOOP_SOLVED
+            openmodelica_backend_types::BackendDAE::VarKind::LOOP_SOLVED
         },
         Deref @ VariableKind::FRONTEND_DUMMY => {
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NSimVar.SimVar.convertVarKind")); __mm_s.push_str(&*literal!(" failed because of wrong VariableKind FRONTEND_DUMMY(). This should not exist after frontend.")); ArcStr::from(__mm_s) }).clone()])?;

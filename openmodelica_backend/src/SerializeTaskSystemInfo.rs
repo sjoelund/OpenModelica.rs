@@ -43,11 +43,11 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAE;
 use crate::SimCode;
 use crate::SimCodeUtil;
 use crate::SimCodeVar;
 use openmodelica_ast::Absyn;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::Algorithm;
 use openmodelica_frontend::ComponentReference::writeCref;
 use openmodelica_frontend::DAEDump;

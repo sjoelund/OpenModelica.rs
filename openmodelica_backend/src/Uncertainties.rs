@@ -44,7 +44,6 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::AdjacencyMatrix;
-use crate::BackendDAE;
 use crate::BackendDAECreate;
 use crate::BackendDAEEXT;
 use crate::BackendDAEUtil;
@@ -59,6 +58,7 @@ use crate::Sorting;
 use crate::SymbolTable;
 use crate::SymbolicJacobian;
 use openmodelica_ast::Absyn;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::Algorithm;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::DAEUtil;
@@ -196,7 +196,7 @@ pub fn modelEquationsUC(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
             p = SymbolTable::getAbsyn();
             (dae, cache, graph) = flattenModel(className.clone(), p.clone(), cache.clone())?;
             description = (DAEUtil::daeDescription(dae.clone())).clone();
-            dlow = BackendDAECreate::lower(dae.clone(), cache.clone(), graph.clone(), BackendDAE::ExtraInfo { description: (description.clone()).clone(), fileNamePrefix: (outputFile.clone()).clone(), simSettingsOption: None })?;
+            dlow = BackendDAECreate::lower(dae.clone(), cache.clone(), graph.clone(), BackendDAE::ExtraInfo { description: (description.clone()).clone(), fileNamePrefix: (outputFile.clone()).clone(), simflags: None })?;
             FlagsUtil::setConfigBool(Flags::DEFAULT_OPT_MODULES_ORDERING.clone(), false)?;
             (dlow_1, _, _, _, _) = BackendDAEUtil::getSolvedSystem(dlow.clone(), (literal!("")).clone(), Some(list![(literal!("removeSimpleEquations")).clone(), (literal!("removeUnusedVariables")).clone(), (literal!("removeEqualRHS")).clone(), (literal!("expandDerOperator")).clone()]), None, None, Some(metamodelica::nil()))?;
             FlagsUtil::setConfigBool(Flags::DEFAULT_OPT_MODULES_ORDERING.clone(), forceOrdering.clone())?;
@@ -219,7 +219,7 @@ pub fn modelEquationsUC(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
                 _ => bail!("pattern mismatch"),
             } };
             globalKnownVars = __pa5.clone();
-            (m, _, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::adjacencyMatrixScalar(currentSystem.clone(), crate::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
+            (m, _, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::adjacencyMatrixScalar(currentSystem.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
             let true = (eqsyslist.clone().is_empty()) else { bail!("pattern mismatch") };
             mExt = getExtAdjacencyMatrix(m.clone());
             variables = List::intRange(BackendVariable::varsSize(allVars.clone()));
@@ -247,7 +247,7 @@ pub fn modelEquationsUC(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut 
                 _ => bail!("pattern mismatch"),
             } };
             globalKnownVars = __pa10.clone();
-            (m, _, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::adjacencyMatrixScalar(currentSystem.clone(), crate::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
+            (m, _, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::adjacencyMatrixScalar(currentSystem.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
             printSep((getMathematicaText((literal!("After Symbolic Elimination")).clone())).clone())?;
             printSep((getMathematicaText((literal!("Equations (Function calls represent more than one equation)")).clone())).clone())?;
             printSep((equationsToMathematicaGrid(List::intRange(BackendEquation::equationArraySize(allEqs.clone())?), allEqs.clone(), allVars.clone(), globalKnownVars.clone(), mapIncRowEqn.clone())?).clone())?;
@@ -406,7 +406,7 @@ pub fn dataReconciliation(mut inDae: Arc<BackendDAE::BackendDAE>) -> Result<Arc<
             globalKnownVars = __pa6.clone();
             let BackendDAE::EXTRA_INFO { fileNamePrefix: __pa7, .. } = (einfo.clone()) else { bail!("pattern mismatch") };
             modelname = __pa7.clone();
-            (m, _, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::adjacencyMatrixScalar(currentSystem.clone(), crate::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
+            (m, _, mapEqnIncRow, mapIncRowEqn) = BackendDAEUtil::adjacencyMatrixScalar(currentSystem.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nModelInfo: ")); __mm_s.push_str(&*modelname.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
             BackendDump::dumpEquationArray(allEqs.clone(), (literal!("orderedEquation")).clone())?;
             BackendDump::dumpVariables(allVars.clone(), (literal!("orderedVariables")).clone())?;
@@ -3069,15 +3069,15 @@ pub fn eliminateVariablesDAE(mut elimVarIndexList: Arc<metamodelica::List<i32>>,
             eqnLst = BackendEquation::equationList(eqns.clone())?;
             crefDouble = findArraysPartiallyIndexed(eqnLst.clone())?;
             repl = BackendVarTransform::emptyReplacements();
-            (m, _, _, _) = BackendDAEUtil::adjacencyMatrixScalar(syst.clone(), crate::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
+            (m, _, _, _) = BackendDAEUtil::adjacencyMatrixScalar(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(shared.clone()))?;
             (eqnLst, _, movedvars_1, repl) = eliminateVariablesDAE2(eqnLst.clone(), 1, vars.clone(), globalKnownVars.clone(), HashTable::emptyHashTable(), repl.clone(), crefDouble.clone(), m.clone(), elimVarIndexList.clone(), false)?;
             dae = setDaeEqns(dae.clone(), BackendEquation::listEquation(eqnLst.clone())?, false)?;
             dae = replaceDAElow(dae.clone(), repl.clone(), None, false)?;
             (vars_1, kvars_1) = moveVariables(BackendVariable::daeVars(syst.clone()), BackendVariable::daeGlobalKnownVars(shared.clone()), movedvars_1.clone())?;
             dae = setDaeVars(dae.clone(), vars_1.clone())?;
             dae = BackendDAEUtil::setDAEGlobalKnownVars(dae.clone(), kvars_1.clone())?;
-            dae = BackendDAEUtil::transformBackendDAE(dae.clone(), Some((crate::BackendDAE::IndexReduction::NO_INDEX_REDUCTION, crate::BackendDAE::EquationConstraints::ALLOW_UNDERCONSTRAINED)), None, None)?;
-            dae = BackendDAEUtil::mapEqSystem1(dae.clone(), (std::sync::Arc::new(BackendDAEUtil::getAdjacencyMatrixfromOptionForMapEqSystem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, BackendDAE::IndexType, Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> + 'static>), crate::BackendDAE::IndexType::NORMAL)?;
+            dae = BackendDAEUtil::transformBackendDAE(dae.clone(), Some((openmodelica_backend_types::BackendDAE::IndexReduction::NO_INDEX_REDUCTION, openmodelica_backend_types::BackendDAE::EquationConstraints::ALLOW_UNDERCONSTRAINED)), None, None)?;
+            dae = BackendDAEUtil::mapEqSystem1(dae.clone(), (std::sync::Arc::new(BackendDAEUtil::getAdjacencyMatrixfromOptionForMapEqSystem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, BackendDAE::IndexType, Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> + 'static>), openmodelica_backend_types::BackendDAE::IndexType::NORMAL)?;
             dae.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -3724,8 +3724,8 @@ fn removeSimpleEquationsUC(mut daeIn: Arc<BackendDAE::BackendDAE>) -> Result<Arc
             dae = setDaeVars(dae.clone(), vars.clone())?;
             dae = BackendDAEUtil::setDAEGlobalKnownVars(dae.clone(), globalKnownVars.clone())?;
             dae = setDaeEqns(dae.clone(), BackendEquation::listEquation(listAppend(simple_eqns.clone(), other_eqns.clone()))?, false)?;
-            dae = BackendDAEUtil::transformBackendDAE(dae.clone(), Some((crate::BackendDAE::IndexReduction::NO_INDEX_REDUCTION, crate::BackendDAE::EquationConstraints::ALLOW_UNDERCONSTRAINED)), None, None)?;
-            dae = BackendDAEUtil::mapEqSystem1(dae.clone(), (std::sync::Arc::new(BackendDAEUtil::getAdjacencyMatrixfromOptionForMapEqSystem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, BackendDAE::IndexType, Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> + 'static>), crate::BackendDAE::IndexType::NORMAL)?;
+            dae = BackendDAEUtil::transformBackendDAE(dae.clone(), Some((openmodelica_backend_types::BackendDAE::IndexReduction::NO_INDEX_REDUCTION, openmodelica_backend_types::BackendDAE::EquationConstraints::ALLOW_UNDERCONSTRAINED)), None, None)?;
+            dae = BackendDAEUtil::mapEqSystem1(dae.clone(), (std::sync::Arc::new(BackendDAEUtil::getAdjacencyMatrixfromOptionForMapEqSystem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, BackendDAE::IndexType, Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> + 'static>), openmodelica_backend_types::BackendDAE::IndexType::NORMAL)?;
             dae.clone()
         },
         _ => bail!("match: no arm matched"),

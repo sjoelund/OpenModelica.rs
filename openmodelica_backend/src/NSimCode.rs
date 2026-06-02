@@ -44,7 +44,6 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::AvlTreeCRToInt;
-use crate::BackendDAE as OldBackendDAE;
 use crate::HashTableCrefSimVar;
 use crate::HpcOmSimCode;
 use crate::NBEquation as BEquation;
@@ -77,6 +76,7 @@ use crate::SimCodeUtil as OldSimCodeUtil;
 use crate::SimCodeVar;
 use crate::SymbolTable;
 use openmodelica_ast::Absyn;
+use openmodelica_backend_types::BackendDAE as OldBackendDAE;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::Expression as OldExpression;
 use openmodelica_frontend::HashTable;

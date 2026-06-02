@@ -44,7 +44,6 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::AdjacencyMatrix;
-use crate::BackendDAE;
 use crate::BackendDAEOptimize;
 use crate::BackendDAEUtil;
 use crate::BackendDump;
@@ -56,6 +55,7 @@ use crate::HpcOmSimCode;
 use crate::SimCode;
 use crate::SimCodeUtil;
 use crate::SimCodeVar;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::Expression;
 use openmodelica_frontend_dump::AvlTreePathFunction;
@@ -241,7 +241,7 @@ pub fn createTaskGraph0(mut iSyst: Arc<BackendDAE::EqSystem>, mut iShared: Arc<B
     } };
     sharedFuncs = __pa3.clone();
     (iGraph, iGraphData, eqSysIdx) = iGraphInfo.clone();
-    (_, adjacencyMatrix, _) = BackendDAEUtil::getAdjacencyMatrix(iSyst.clone(), crate::BackendDAE::IndexType::NORMAL, Some(sharedFuncs.clone()), BackendDAEUtil::isInitializationDAE(iShared.clone()))?;
+    (_, adjacencyMatrix, _) = BackendDAEUtil::getAdjacencyMatrix(iSyst.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, Some(sharedFuncs.clone()), BackendDAEUtil::isInitializationDAE(iShared.clone()))?;
     numberOfVars = BackendVariable::varsSize(vars.clone());
     (tmpGraph, tmpGraphData) = getEmptyTaskGraph((comps.clone().len() as i32), numberOfVars.clone(), ExpandableArray::getNumberOfElements(orderedEqs.clone()));
     let TaskGraphMeta { compInformations: __pa4, compParamMapping: __pa5, eqCompMapping: __pa6, varCompMapping: __pa7, nodeMark: __pa8, commCosts: __pa9, exeCosts: __pa10, compNames: __pa11, inComps: __pa12, .. } = (tmpGraphData.clone()) else { bail!("pattern mismatch") };

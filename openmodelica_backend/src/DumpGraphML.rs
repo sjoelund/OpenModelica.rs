@@ -43,12 +43,12 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAE;
 use crate::BackendDAETransform;
 use crate::BackendDAEUtil;
 use crate::BackendDump;
 use crate::BackendEquation;
 use crate::BackendVariable;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend_dump::AvlTreePathFunction;
 use openmodelica_frontend_dump::ComponentReferenceBasics;
@@ -78,7 +78,7 @@ pub fn dumpSystem(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Bac
             vars = BackendVariable::daeVars(inSystem.clone());
             eqns = BackendEquation::getEqnsFromEqSystem(inSystem.clone());
             funcs = BackendDAEUtil::getFunctions(inShared.clone())?;
-            (_, m, _) = BackendDAEUtil::getAdjacencyMatrix(inSystem.clone(), crate::BackendDAE::IndexType::NORMAL, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
+            (_, m, _) = BackendDAEUtil::getAdjacencyMatrix(inSystem.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
             mapIncRowEqn = Array::createIntRange((m.clone().borrow().len() as i32));
             graphInfo = GraphML::createGraphInfo();
             let (__pa0, (_, __pa1)) = GraphML::addGraph((literal!("G")).clone(), false, graphInfo.clone())?;
@@ -133,7 +133,7 @@ pub fn dumpSystem(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Bac
             vars = BackendVariable::daeVars(inSystem.clone());
             eqns = BackendEquation::getEqnsFromEqSystem(inSystem.clone());
             funcs = BackendDAEUtil::getFunctions(inShared.clone())?;
-            (_, m, _, _, mapIncRowEqn) = BackendDAEUtil::getAdjacencyMatrixScalar(inSystem.clone(), crate::BackendDAE::IndexType::NORMAL, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
+            (_, m, _, _, mapIncRowEqn) = BackendDAEUtil::getAdjacencyMatrixScalar(inSystem.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
             graphInfo = GraphML::createGraphInfo();
             let (__pa0, (_, __pa1)) = GraphML::addGraph((literal!("G")).clone(), false, graphInfo.clone())?;
             graphInfo = __pa0.clone();
@@ -162,7 +162,7 @@ pub fn dumpSystem(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Bac
             vars = BackendVariable::daeVars(inSystem.clone());
             eqns = BackendEquation::getEqnsFromEqSystem(inSystem.clone());
             funcs = BackendDAEUtil::getFunctions(inShared.clone())?;
-            (_, m, _, _, mapIncRowEqn) = BackendDAEUtil::getAdjacencyMatrixScalar(inSystem.clone(), crate::BackendDAE::IndexType::NORMAL, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
+            (_, m, _, _, mapIncRowEqn) = BackendDAEUtil::getAdjacencyMatrixScalar(inSystem.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
             graphInfo = GraphML::createGraphInfo();
             let (__pa0, (_, __pa1)) = GraphML::addGraph((literal!("G")).clone(), false, graphInfo.clone())?;
             graphInfo = __pa0.clone();
@@ -188,7 +188,7 @@ pub fn dumpSystem(mut inSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Bac
             let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
             vars = BackendVariable::daeVars(inSystem.clone());
             funcs = BackendDAEUtil::getFunctions(inShared.clone())?;
-            (_, m, mt) = BackendDAEUtil::getAdjacencyMatrix(inSystem.clone(), crate::BackendDAE::IndexType::NORMAL, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
+            (_, m, mt) = BackendDAEUtil::getAdjacencyMatrix(inSystem.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
             graphInfo = GraphML::createGraphInfo();
             let (__pa0, (_, __pa1)) = GraphML::addGraph((literal!("G")).clone(), false, graphInfo.clone())?;
             graphInfo = __pa0.clone();

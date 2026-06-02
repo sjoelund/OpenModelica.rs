@@ -43,12 +43,12 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAE;
 use crate::BackendDAEUtil;
 use crate::BackendDump;
 use crate::BackendEquation;
 use crate::BackendVariable;
 use openmodelica_ast::Absyn;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::Expression;
 use openmodelica_frontend_dump::ComponentReferenceBasics;
@@ -99,7 +99,7 @@ fn symSolverWork(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<BackendDAE::I
     knownVariables = BackendVariable::addVariables(shared.globalKnownVars.clone(), knownVariables.clone())?;
     assign_field!(
         shared.globalKnownVars = knownVariables.clone(),
-        shared.backendDAEType = crate::BackendDAE::BackendDAEType::INLINESYSTEM
+        shared.backendDAEType = openmodelica_backend_types::BackendDAE::BackendDAEType::INLINESYSTEM
     );
     inlineBDAE = Arc::new(BackendDAE::BackendDAE { eqs: osystlst.clone(), shared: shared.clone() });
     execbool = FlagsUtil::disableDebug(Flags::EXEC_STAT.clone())?;
@@ -167,10 +167,10 @@ fn symSolverState(mut vars: BackendDAE::Variables, mut knvars: BackendDAE::Varia
     for mut cref in &*crlst.clone() {
         let mut cref = cref.clone();
         (var, idx) = BackendVariable::getVar2(cref.clone(), ovars.clone())?;
-        ovars = BackendVariable::setVarKindForVar(idx.clone(), crate::BackendDAE::VarKind::ALG_STATE, ovars.clone())?;
+        ovars = BackendVariable::setVarKindForVar(idx.clone(), openmodelica_backend_types::BackendDAE::VarKind::ALG_STATE, ovars.clone())?;
         oldCref = ComponentReference::appendStringLastIdent((literal!("$Old")).clone(), cref.clone())?;
         var = BackendVariable::copyVarNewName(oldCref.clone(), var.clone());
-        var = BackendVariable::setVarKind(var.clone(), crate::BackendDAE::VarKind::ALG_STATE_OLD)?;
+        var = BackendVariable::setVarKind(var.clone(), openmodelica_backend_types::BackendDAE::VarKind::ALG_STATE_OLD)?;
         oknvars = BackendVariable::addVars(list![var.clone()], oknvars.clone())?;
     }
     Ok((ovars, oknvars))

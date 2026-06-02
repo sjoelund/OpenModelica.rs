@@ -44,7 +44,6 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::AdjacencyMatrix;
-use crate::BackendDAE;
 use crate::BackendVarTransform;
 use crate::HashTableCrefSimVar;
 use crate::HpcOmSchedulerExt;
@@ -54,6 +53,7 @@ use crate::HpcOmTaskGraph;
 use crate::SimCode;
 use crate::SimCodeUtil;
 use crate::SimCodeVar;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::Expression;
 use openmodelica_frontend_types::DAE;

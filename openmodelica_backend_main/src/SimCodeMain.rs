@@ -46,7 +46,6 @@ use arcstr::{ArcStr, literal, format};
 use crate::CevalScriptBackend;
 use crate::Interactive;
 use openmodelica_ast::Absyn;
-use openmodelica_backend::BackendDAE;
 use openmodelica_backend::BackendDAECreate;
 use openmodelica_backend::BackendDAEUtil;
 use openmodelica_backend::BackendDump;
@@ -71,7 +70,8 @@ use openmodelica_backend::SimCodeUtil;
 use openmodelica_backend::SimCodeVar;
 use openmodelica_backend::SymbolTable;
 use openmodelica_backend::SymbolicJacobian;
-use openmodelica_backend::ZeroCrossings;
+use openmodelica_backend_types::BackendDAE;
+use openmodelica_backend_types::ZeroCrossings;
 use openmodelica_codegen::CodegenC;
 use openmodelica_codegen::CodegenEmbeddedC;
 use openmodelica_codegen::CodegenFMU;
@@ -1088,6 +1088,19 @@ pub fn translateModelCallBackend(mut flatModel: Arc<FlatModel::NFFlatModel>, mut
     Ok((outLibs, outFileDir, resultValues))
 }
 
+fn simSettingsSimflags(mut inSimSettingsOpt: Option<SimCode::SimulationSettings>) -> Option<ArcStr> {
+    let mut simflags: Option<ArcStr> = None;
+    simflags = (match inSimSettingsOpt.clone() {
+        Some(SimCode::SimulationSettings { simflags: mut s, .. }) => {
+            Some((s.clone()).clone())
+        },
+        _ => {
+            None
+        },
+    });
+    simflags
+}
+
 fn translateModelCallBackendOB(mut kind: TranslateModelKind, mut cache: FCore::Cache, mut inEnv: FCore::Graph, mut inDae: DAE::DAElist, mut className: Arc<Absyn::Path>, mut inFileNamePrefix: ArcStr, mut inSimSettingsOpt: Option<SimCode::SimulationSettings>, mut args: Arc<Absyn::FunctionArgs>) -> Result<(FCore::Cache, Arc<metamodelica::List<ArcStr>>, ArcStr, Arc<metamodelica::List<(ArcStr, Arc<Values::Value>)>>)> {
     let mut cache: FCore::Cache = cache;
     let mut outLibs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
@@ -1128,7 +1141,7 @@ fn translateModelCallBackendOB(mut kind: TranslateModelKind, mut cache: FCore::C
                 (cache, graph) = Builtin::initialGraph(cache.clone())?;
             }
             description = (DAEUtil::daeDescription(dae.clone())).clone();
-            dlow = BackendDAECreate::lower(dae.clone(), cache.clone(), graph.clone(), BackendDAE::ExtraInfo { description: (description.clone()).clone(), fileNamePrefix: (inFileNamePrefix.clone()).clone(), simSettingsOption: inSimSettingsOpt.clone() })?;
+            dlow = BackendDAECreate::lower(dae.clone(), cache.clone(), graph.clone(), BackendDAE::ExtraInfo { description: (description.clone()).clone(), fileNamePrefix: (inFileNamePrefix.clone()).clone(), simflags: simSettingsSimflags(inSimSettingsOpt.clone()) })?;
             GCExt::free(dae.clone());
             if Flags::isSet(Flags::SERIALIZED_SIZE.clone())? {
                 serializeNotify(dlow.clone(), (literal!("BackendDAECreate.lower")).clone())?;
@@ -1224,7 +1237,7 @@ pub fn translateModelCallBackendOBDAEMode(mut cache: FCore::Cache, mut inEnv: FC
                 (cache, graph) = Builtin::initialGraph(cache.clone())?;
             }
             description = (DAEUtil::daeDescription(dae.clone())).clone();
-            dlow = BackendDAECreate::lower(dae.clone(), cache.clone(), graph.clone(), BackendDAE::ExtraInfo { description: (description.clone()).clone(), fileNamePrefix: (inFileNamePrefix.clone()).clone(), simSettingsOption: inSimSettingsOpt.clone() })?;
+            dlow = BackendDAECreate::lower(dae.clone(), cache.clone(), graph.clone(), BackendDAE::ExtraInfo { description: (description.clone()).clone(), fileNamePrefix: (inFileNamePrefix.clone()).clone(), simflags: simSettingsSimflags(inSimSettingsOpt.clone()) })?;
             GCExt::free(dae.clone());
             if Flags::isSet(Flags::SERIALIZED_SIZE.clone())? {
                 serializeNotify(dlow.clone(), (literal!("dlow")).clone())?;
@@ -1425,7 +1438,7 @@ fn generateModelCodeDAE(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inIni
     }
     discreteModelVars = BackendDAEUtil::foldEqSystem(inBackendDAE.clone(), (std::sync::Arc::new(SimCodeUtil::extractDiscreteModelVars) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> + 'static>), metamodelica::nil())?;
     (daeEquations, uniqueEqIndex, tempVars) = SimCodeUtil::createEquationsfromBackendDAE(inBackendDAE.clone(), uniqueEqIndex.clone(), tempVars.clone(), true, true, false, false)?;
-    emptyBDAE = Arc::new(BackendDAE::BackendDAE { eqs: metamodelica::cons(BackendDAEUtil::createEqSystem(Util::getOption(inBackendDAE.shared.daeModeData.modelVars.clone())?, BackendEquation::emptyEqns(), metamodelica::nil(), openmodelica_backend::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns()), metamodelica::nil()), shared: inBackendDAE.shared.clone() });
+    emptyBDAE = Arc::new(BackendDAE::BackendDAE { eqs: metamodelica::cons(BackendDAEUtil::createEqSystem(Util::getOption(inBackendDAE.shared.daeModeData.modelVars.clone())?, BackendEquation::emptyEqns(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns()), metamodelica::nil()), shared: inBackendDAE.shared.clone() });
     if Flags::getConfigString(Flags::GENERATE_DYNAMIC_JACOBIAN.clone())? == literal!("symbolic") {
         (daeModeJac, daeModeSparsity, daeModeColoring, nonlinearPattern) = (inBackendDAE.shared.symjacs.clone()).get(BackendDAE::SymbolicJacobianAIndex.clone())?;
         if isSome(inBackendDAE.shared.dataReconciliationData.clone()) {

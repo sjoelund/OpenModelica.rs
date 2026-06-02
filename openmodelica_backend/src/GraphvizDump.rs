@@ -9,11 +9,11 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAE;
 use crate::BackendDump;
 use crate::BackendEquation;
 use crate::BackendVariable;
 use crate::CodegenUtil;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend_types::DAE;
 use openmodelica_susan::Tpl;
 

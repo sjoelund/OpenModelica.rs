@@ -43,9 +43,9 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAE;
 use crate::BackendDAEUtil;
 use crate::BackendEquation;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::DAEUtil;
 use openmodelica_frontend::Expression;
 use openmodelica_frontend::ExpressionSimplify;

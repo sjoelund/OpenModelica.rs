@@ -43,7 +43,6 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAE;
 use crate::BackendDAEUtil;
 use crate::BackendDump;
 use crate::BackendEquation;
@@ -55,6 +54,7 @@ use crate::SimCode;
 use crate::SimCodeUtil;
 use crate::SimCodeVar;
 use openmodelica_ast::Absyn;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::Expression;
 use openmodelica_frontend::HashTableCrIListArray;
@@ -551,7 +551,7 @@ pub fn createMemoryMap(mut iModelInfo: SimCode::ModelInfo, mut iVarToArrayIndexM
                 _ => bail!("pattern mismatch"),
             } };
             threadAttIdx = __pa22.clone();
-            (_, adjacencyMatrix, _) = BackendDAEUtil::getAdjacencyMatrix(listHead(iEqSystems.clone())?, crate::BackendDAE::IndexType::ABSOLUTE, None, isInitial.clone())?;
+            (_, adjacencyMatrix, _) = BackendDAEUtil::getAdjacencyMatrix(listHead(iEqSystems.clone())?, openmodelica_backend_types::BackendDAE::IndexType::ABSOLUTE, None, isInitial.clone())?;
             graphInfo = appendCacheLinesToGraph(cacheMap.clone(), (iTaskGraph.clone().borrow().len() as i32), eqSimCodeVarMapping.clone(), iEqSystems.clone(), simVarIdxMappingHashTable.clone(), eqCompMapping.clone(), scVarSolvedTaskMapping.clone(), iSchedulerInfo.clone(), threadAttIdx.clone(), sccNodeMapping.clone(), taskSolvedVarsMapping.clone(), taskUnsolvedVarsMapping.clone(), scVarCLMapping.clone(), scVarInfos.clone(), graphInfo.clone())?;
             fileName = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("taskGraph")); __mm_s.push_str(&*iFileNamePrefix.clone()); __mm_s.push_str(&*literal!("ODE_schedule_CL.graphml")); ArcStr::from(__mm_s) }).clone();
             GraphML::dumpGraph(graphInfo.clone(), (fileName.clone()).clone())?;

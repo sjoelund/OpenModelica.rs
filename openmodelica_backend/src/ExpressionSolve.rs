@@ -43,12 +43,12 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAE;
 use crate::BackendDAEUtil;
 use crate::BackendEquation;
 use crate::BackendVariable;
 use crate::Differentiate;
 use openmodelica_ast::Absyn;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::Expression;
 use openmodelica_frontend::ExpressionDump;
@@ -107,7 +107,7 @@ pub fn solveSimpleEquations(mut dae: Arc<BackendDAE::BackendDAE>) -> Result<Arc<
                 (eqn, solved) = solveSimpleEquation(eqn.clone(), var.clone(), dae.shared.clone())?;
                 assign_field!(syst.orderedEqs = BackendEquation::setAtIndex(syst.orderedEqs.clone(), eindex.clone(), eqn.clone())?);
                 if !(solved.clone()) {
-                    tmpComp = Arc::new(BackendDAE::StrongComponent::EQUATIONSYSTEM { eqns: list![eindex.clone()], vars: list![vindx.clone()], jac: Arc::new(crate::BackendDAE::Jacobian::EMPTY_JACOBIAN), jacType: crate::BackendDAE::JacobianType::JAC_NONLINEAR, mixedSystem: false });
+                    tmpComp = Arc::new(BackendDAE::StrongComponent::EQUATIONSYSTEM { eqns: list![eindex.clone()], vars: list![vindx.clone()], jac: Arc::new(openmodelica_backend_types::BackendDAE::Jacobian::EMPTY_JACOBIAN), jacType: openmodelica_backend_types::BackendDAE::JacobianType::JAC_NONLINEAR, mixedSystem: false });
                 }
             }
             tmpComp.clone()

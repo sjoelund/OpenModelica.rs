@@ -43,9 +43,9 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAE;
 use crate::BackendDump;
 use crate::Matching;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_util_datatypes_basic::GCExt;
 
 pub fn Tarjan(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut ass1: metamodelica::Array<i32>, mut N: i32) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>> {

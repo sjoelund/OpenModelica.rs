@@ -43,7 +43,6 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAE;
 use crate::BackendDAEOptimize;
 use crate::BackendDAEUtil;
 use crate::BackendDump;
@@ -52,6 +51,7 @@ use crate::BackendUtil;
 use crate::BackendVarTransform;
 use crate::BackendVariable;
 use crate::InlineArrayEquations;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::DAEDump;
 use openmodelica_frontend::DAEUtil;
@@ -682,7 +682,7 @@ fn inlineEquationArrayAppend(mut inEquationArray: Arc<ExpandableArray::Expandabl
         }
         Err(_) => {
             oInlined = false;
-            outEqs = BackendDAEUtil::createEqSystem(BackendVariable::listVar(metamodelica::nil())?, BackendEquation::listEquation(metamodelica::nil())?, metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+            outEqs = BackendDAEUtil::createEqSystem(BackendVariable::listVar(metamodelica::nil())?, BackendEquation::listEquation(metamodelica::nil())?, metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
             if Flags::isSet(Flags::FAILTRACE.clone())? {
                 Debug::trace((literal!("BackendInline.inlineEquationArrayAppend failed\n")).clone())?;
             }
@@ -698,7 +698,7 @@ fn inlineEquationOptArrayAppend(mut inEqnArray: Arc<ExpandableArray::ExpandableA
     let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
     let mut inlined: bool = false;
     let mut tmpEqs: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    outEqs = BackendDAEUtil::createEqSystem(BackendVariable::listVar(metamodelica::nil())?, BackendEquation::listEquation(metamodelica::nil())?, metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+    outEqs = BackendDAEUtil::createEqSystem(BackendVariable::listVar(metamodelica::nil())?, BackendEquation::listEquation(metamodelica::nil())?, metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
     for mut i in 1..=ExpandableArray::getLastUsedIndex(inEqnArray.clone()) {
         if ExpandableArray::occupied(i.clone(), inEqnArray.clone()) {
             (eqn, tmpEqs, inlined, shared) = inlineEqAppend_debug(ExpandableArray::get(i.clone(), inEqnArray.clone())?, fns.clone(), shared.clone())?;
@@ -717,7 +717,7 @@ pub fn inlineEqAppend_debug(mut inEquationOption: Arc<BackendDAE::Equation>, mut
     let mut outEqs: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
     let mut inlined: bool = false;
     let mut shared: Arc<BackendDAE::Shared> = iShared.clone();
-    outEqs = BackendDAEUtil::createEqSystem(BackendVariable::listVar(metamodelica::nil())?, BackendEquation::listEquation(metamodelica::nil())?, metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+    outEqs = BackendDAEUtil::createEqSystem(BackendVariable::listVar(metamodelica::nil())?, BackendEquation::listEquation(metamodelica::nil())?, metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
     (outEquationOption, outEqs, inlined, shared) = inlineEqAppend(inEquationOption.clone(), inElementList.clone(), outEqs.clone(), shared.clone())?;
     if Flags::isSet(Flags::DUMPBACKENDINLINE_VERBOSE.clone())? && inlined.clone() {
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Equation before inline: ")); __mm_s.push_str(&*BackendDump::equationString(inEquationOption.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -1098,7 +1098,7 @@ fn createEqnSysfromFunction(mut fns: Arc<metamodelica::List<Arc<DAE::Element>>>,
     if Flags::isSet(Flags::DUMPBACKENDINLINE_VERBOSE.clone())? {
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\ncreate EqnSys from function: ")); __mm_s.push_str(&*funcname.clone()); ArcStr::from(__mm_s) }).clone());
     }
-    outEqs = BackendDAEUtil::createEqSystem(BackendVariable::listVar(metamodelica::nil())?, BackendEquation::listEquation(metamodelica::nil())?, metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+    outEqs = BackendDAEUtil::createEqSystem(BackendVariable::listVar(metamodelica::nil())?, BackendEquation::listEquation(metamodelica::nil())?, metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
     repl = BackendVarTransform::emptyReplacements();
     for mut r#fn in &*fns.clone() {
         let mut r#fn = r#fn.clone();
@@ -1121,7 +1121,7 @@ fn createEqnSysfromFunction(mut fns: Arc<metamodelica::List<Arc<DAE::Element>>>,
             varLst = ({
         let mut __acc: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
         for mut _var in (varLst.clone()).into_iter().cloned() {
-            let __x = BackendVariable::setVarTS(_var.clone(), Some(crate::BackendDAE::TearingSelect::AVOID));
+            let __x = BackendVariable::setVarTS(_var.clone(), Some(openmodelica_backend_types::BackendDAE::TearingSelect::AVOID));
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -1139,7 +1139,7 @@ fn createEqnSysfromFunction(mut fns: Arc<metamodelica::List<Arc<DAE::Element>>>,
             varLst = ({
         let mut __acc: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
         for mut _var in (varLst.clone()).into_iter().cloned() {
-            let __x = BackendVariable::setVarTS(_var.clone(), Some(crate::BackendDAE::TearingSelect::AVOID));
+            let __x = BackendVariable::setVarTS(_var.clone(), Some(openmodelica_backend_types::BackendDAE::TearingSelect::AVOID));
             __acc = cons(__x, __acc);
         }
         __acc.reverse()

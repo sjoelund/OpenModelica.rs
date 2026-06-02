@@ -43,7 +43,6 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAE;
 use crate::BackendDAECreate;
 use crate::BackendDAEEXT;
 use crate::BackendDAEFunc;
@@ -59,6 +58,7 @@ use crate::Sorting;
 use crate::SymbolicJacobian;
 use crate::SynchronousFeatures;
 use openmodelica_ast::Absyn;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::AvlSetCR;
 use openmodelica_frontend::CheckModel;
 use openmodelica_frontend::ComponentReference;
@@ -164,13 +164,13 @@ pub fn solveInitialSystem(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<(Arc
         unwrap_break_err!(execStat((literal!("simplifyInitialFunctions (initialization)")).clone()), '__try0);
         vars = unwrap_break_err!(BackendVariable::rehashVariables(vars.clone()), '__try0);
         fixvars = unwrap_break_err!(BackendVariable::rehashVariables(fixvars.clone()), '__try0);
-        shared = unwrap_break_err!(BackendDAEUtil::createEmptyShared(crate::BackendDAE::BackendDAEType::INITIALSYSTEM, dae.shared.info.clone(), dae.shared.cache.clone(), dae.shared.graph.clone()), '__try0);
+        shared = unwrap_break_err!(BackendDAEUtil::createEmptyShared(openmodelica_backend_types::BackendDAE::BackendDAEType::INITIALSYSTEM, dae.shared.info.clone(), dae.shared.cache.clone(), dae.shared.graph.clone()), '__try0);
         shared = unwrap_break_err!(BackendDAEUtil::setSharedRemovedEqns(shared.clone(), BackendEquation::emptyEqns()), '__try0);
         shared = BackendDAEUtil::setSharedGlobalKnownVars(shared.clone(), fixvars.clone());
         shared = unwrap_break_err!(BackendDAEUtil::setSharedOptimica(shared.clone(), dae.shared.constraints.clone(), dae.shared.classAttrs.clone()), '__try0);
         shared = unwrap_break_err!(BackendDAEUtil::setSharedFunctionTree(shared.clone(), dae.shared.functionTree.clone()), '__try0);
         unwrap_break_err!(execStat((literal!("setup shared object (initialization)")).clone()), '__try0);
-        initsyst = BackendDAEUtil::createEqSystem(vars.clone(), eqns.clone(), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+        initsyst = BackendDAEUtil::createEqSystem(vars.clone(), eqns.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
         initsyst = BackendDAEUtil::setEqSystRemovedEqns(initsyst.clone(), reeqns.clone());
         if useHomotopy.clone() {
             initsyst0 = unwrap_break_err!(BackendDAEUtil::copyEqSystem(initsyst.clone()), '__try0);
@@ -276,7 +276,7 @@ pub fn createInitialDAEFromSystem(mut inInitsyst: Arc<BackendDAE::EqSystem>, mut
     }
     initdae = BackendDAEUtil::mapEqSystem(initdae.clone(), (std::sync::Arc::new(solveInitialSystemEqSystem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>) -> Result<(Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>)> + 'static>))?;
     execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("solveInitialSystemEqSystem (")); __mm_s.push_str(&*systemStr.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
-    initdae = BackendDAEUtil::transformBackendDAE(initdae.clone(), Some((crate::BackendDAE::IndexReduction::NO_INDEX_REDUCTION, crate::BackendDAE::EquationConstraints::EXACT)), None, None)?;
+    initdae = BackendDAEUtil::transformBackendDAE(initdae.clone(), Some((openmodelica_backend_types::BackendDAE::IndexReduction::NO_INDEX_REDUCTION, openmodelica_backend_types::BackendDAE::EquationConstraints::EXACT)), None, None)?;
     execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("matching and sorting (n=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", BackendDAEUtil::daeSize(initdae.clone())?))); __mm_s.push_str(&*literal!(") (")); __mm_s.push_str(&*systemStr.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
     initdae = BackendDAEOptimize::addInitialStmtsToAlgorithms(initdae.clone(), true)?;
     initdae = BackendDAEUtil::setDAEGlobalKnownVars(initdae.clone(), globalKnownVars.clone())?;
@@ -726,8 +726,8 @@ fn selectInitializationVariablesDAE(mut dae: Arc<BackendDAE::BackendDAE>) -> Res
     globalKnownVarsEqns = BackendEquation::emptyEqnsSized(nGlobalKnownVars.clone());
     globalKnownVarsEqns = BackendVariable::traverseBackendDAEVars(globalKnownVars.clone(), (std::sync::Arc::new(createGlobalKnownVarsEquations) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>) -> Result<(BackendDAE::Var, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>)> + 'static>), globalKnownVarsEqns.clone())?;
     if nGlobalKnownVars.clone() > 0 {
-        globalKnownVarsSystem = BackendDAEUtil::createEqSystem(globalKnownVars.clone(), globalKnownVarsEqns.clone(), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
-        (m, mT) = BackendDAEUtil::adjacencyMatrix(globalKnownVarsSystem.clone(), crate::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(dae.shared.clone()))?;
+        globalKnownVarsSystem = BackendDAEUtil::createEqSystem(globalKnownVars.clone(), globalKnownVarsEqns.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+        (m, mT) = BackendDAEUtil::adjacencyMatrix(globalKnownVarsSystem.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(dae.shared.clone()))?;
         (ass1, ass2) = Matching::PerfectMatching(m.clone())?;
         comps = Sorting::Tarjan(m.clone(), ass1.clone(), (ass1.clone().borrow().len() as i32))?;
         comps = mapListIndices(comps.clone(), ass2.clone())?;
@@ -829,7 +829,7 @@ fn createGlobalKnownVarsEquations(mut var: BackendDAE::Var, mut parameterEqns: A
         s = (ExpressionBasics::printExpStr(lhs.clone())?).clone();
         startValue = BackendVariable::varStartValue(var.clone())?;
         r#str = (ExpressionBasics::printExpStr(startValue.clone())?).clone();
-        v = BackendVariable::setVarKind(var.clone(), crate::BackendDAE::VarKind::VARIABLE)?;
+        v = BackendVariable::setVarKind(var.clone(), openmodelica_backend_types::BackendDAE::VarKind::VARIABLE)?;
         v = BackendVariable::setBindExp(v.clone(), Some(startValue.clone()));
         v = BackendVariable::setVarFixed(v.clone(), true)?;
         info = ElementSource::getElementSourceFileInfo(BackendVariable::getVarSource(v.clone()));
@@ -925,7 +925,7 @@ fn selectInitializationVariables2(mut inVar: BackendDAE::Var, mut inVars: Backen
             let mut preCR: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             let false = (BackendVariable::varFixed(inVar.clone())) else { bail!("pattern mismatch") };
             preCR = ComponentReference::crefPrefixPre(cr.clone());
-            preVar = BackendDAE::Var { varName: preCR.clone(), varKind: crate::BackendDAE::VarKind::VARIABLE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: ty.clone(), bindExp: None, tplExp: None, arryDim: arryDim.clone(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
+            preVar = BackendDAE::Var { varName: preCR.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: ty.clone(), bindExp: None, tplExp: None, arryDim: arryDim.clone(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
             vars = BackendVariable::addVar(preVar.clone(), vars.clone())?;
             Ok((inVar.clone(), vars.clone()))
         })() { break 'mc __v; }
@@ -986,7 +986,7 @@ fn preBalanceInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut initVa
     let mut orderedEqs: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
     let mut b: bool = false;
     let mut mt: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-    (_, mt) = BackendDAEUtil::adjacencyMatrix(inEqSystem.clone(), crate::BackendDAE::IndexType::NORMAL, None, true)?;
+    (_, mt) = BackendDAEUtil::adjacencyMatrix(inEqSystem.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, true)?;
     (orderedVars, orderedEqs, b, outDumpVars) = preBalanceInitialSystem1((mt.clone().borrow().len() as i32), mt.clone(), inEqSystem.orderedVars.clone(), inEqSystem.orderedEqs.clone(), initVars.clone(), isLambda0.clone(), false, metamodelica::nil())?;
     if b.clone() {
         assign_field!(
@@ -1142,15 +1142,15 @@ fn balanceInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared:
     let mut initASSC: bool = Flags::getConfigBool(Flags::INIT_ASSC.clone())?;
     if BackendVariable::varsSize(inEqSystem.orderedVars.clone()) > 0 {
         (init_eqns, sim_eqns) = List::splitOnTrue(BackendEquation::equationList(inEqSystem.orderedEqs.clone())?, (std::sync::Arc::new(BackendEquation::isInitialEquation) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>) -> Result<bool> + 'static>))?;
-        outEqSystem = BackendDAEUtil::createEqSystem(BackendVariable::sortInitialVars(inEqSystem.orderedVars.clone(), initVars.clone())?, BackendEquation::listEquation(sim_eqns.clone())?, metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+        outEqSystem = BackendDAEUtil::createEqSystem(BackendVariable::sortInitialVars(inEqSystem.orderedVars.clone(), initVars.clone())?, BackendEquation::listEquation(sim_eqns.clone())?, metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
         assign_field!(outEqSystem.removedEqs = inEqSystem.removedEqs.clone());
         funcs = BackendDAEUtil::getFunctions(inShared.clone())?;
-        (outEqSystem, m, mT, _, scal_to_arr) = BackendDAEUtil::getAdjacencyMatrixScalar(outEqSystem.clone(), crate::BackendDAE::IndexType::SOLVABLE, Some(funcs.clone()), true)?;
+        (outEqSystem, m, mT, _, scal_to_arr) = BackendDAEUtil::getAdjacencyMatrixScalar(outEqSystem.clone(), openmodelica_backend_types::BackendDAE::IndexType::SOLVABLE, Some(funcs.clone()), true)?;
         nVars = BackendVariable::varsSize(outEqSystem.orderedVars.clone());
         nEqns = BackendEquation::equationArraySize(inEqSystem.orderedEqs.clone())?;
         (eqn_to_var, var_to_eqn, _, _, _) = Matching::RegularMatching(mT.clone(), nEqns.clone(), nVars.clone())?;
         assign_field!(outEqSystem.orderedEqs = BackendEquation::addList(init_eqns.clone(), outEqSystem.orderedEqs.clone())?);
-        (outEqSystem, m, mT, _, scal_to_arr) = BackendDAEUtil::getAdjacencyMatrixScalar(outEqSystem.clone(), crate::BackendDAE::IndexType::SOLVABLE, Some(funcs.clone()), true)?;
+        (outEqSystem, m, mT, _, scal_to_arr) = BackendDAEUtil::getAdjacencyMatrixScalar(outEqSystem.clone(), openmodelica_backend_types::BackendDAE::IndexType::SOLVABLE, Some(funcs.clone()), true)?;
         (eqn_to_var, var_to_eqn, _, _, _) = Matching::ContinueMatching(mT.clone(), nEqns.clone(), nVars.clone(), eqn_to_var.clone(), var_to_eqn.clone(), false)?;
         unfixedVars = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -1182,7 +1182,7 @@ fn balanceInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared:
         __acc.reverse()
     }));
             outEqSystem = resolveOverAndUnderconstraints(outEqSystem.clone(), initVars.clone(), unfixedVars.clone(), redundantEqns.clone(), dumpVars.clone(), removedEqns.clone())?;
-            (outEqSystem, m, mT, _, scal_to_arr) = BackendDAEUtil::getAdjacencyMatrixScalar(outEqSystem.clone(), crate::BackendDAE::IndexType::SOLVABLE, Some(funcs.clone()), true)?;
+            (outEqSystem, m, mT, _, scal_to_arr) = BackendDAEUtil::getAdjacencyMatrixScalar(outEqSystem.clone(), openmodelica_backend_types::BackendDAE::IndexType::SOLVABLE, Some(funcs.clone()), true)?;
             nVars = BackendVariable::varsSize(outEqSystem.orderedVars.clone());
             nEqns = BackendEquation::equationArraySize(outEqSystem.orderedEqs.clone())?;
             (eqn_to_var, var_to_eqn, _, _, _) = Matching::RegularMatching(mT.clone(), nEqns.clone(), nVars.clone())?;
@@ -1208,7 +1208,7 @@ fn balanceInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared:
                 } };
                 mT = __pa0.clone();
                 m = __pa1.clone();
-                (outEqSystem, m, mT, _, scal_to_arr) = BackendDAEUtil::getAdjacencyMatrixScalar(outEqSystem.clone(), crate::BackendDAE::IndexType::NORMAL, Some(funcs.clone()), true)?;
+                (outEqSystem, m, mT, _, scal_to_arr) = BackendDAEUtil::getAdjacencyMatrixScalar(outEqSystem.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, Some(funcs.clone()), true)?;
                 (eqn_to_var, var_to_eqn, _, _, _) = Matching::ContinueMatching(mT.clone(), nEqns.clone(), nVars.clone(), eqn_to_var.clone(), var_to_eqn.clone(), false)?;
                 unfixedVars = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -1240,7 +1240,7 @@ fn balanceInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared:
                     (me, _, _, _) = BackendDAEUtil::getAdjacencyMatrixEnhancedScalar(outEqSystem.clone(), inShared.clone(), false)?;
                     consistencyCheck(redundantEqns.clone(), outEqSystem.orderedEqs.clone(), outEqSystem.orderedVars.clone(), inShared.clone(), 0, m.clone(), me.clone(), var_to_eqn.clone(), eqn_to_var.clone(), scal_to_arr.clone())?;
                     outEqSystem = resolveOverAndUnderconstraints(outEqSystem.clone(), initVars.clone(), unfixedVars.clone(), redundantEqns.clone(), dumpVars.clone(), removedEqns.clone())?;
-                    (outEqSystem, m, mT, _, scal_to_arr) = BackendDAEUtil::getAdjacencyMatrixScalar(outEqSystem.clone(), crate::BackendDAE::IndexType::SOLVABLE, Some(funcs.clone()), true)?;
+                    (outEqSystem, m, mT, _, scal_to_arr) = BackendDAEUtil::getAdjacencyMatrixScalar(outEqSystem.clone(), openmodelica_backend_types::BackendDAE::IndexType::SOLVABLE, Some(funcs.clone()), true)?;
                 }
             }
         }
@@ -1327,9 +1327,9 @@ fn fixInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc
     for mut index in 0..=maxMixedDeterminedIndex.clone() {
         nVars = BackendVariable::varsSize(inEqSystem.orderedVars.clone());
         nEqns = BackendEquation::equationArraySize(inEqSystem.orderedEqs.clone())?;
-        syst = BackendDAEUtil::createEqSystem(inEqSystem.orderedVars.clone(), inEqSystem.orderedEqs.clone(), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+        syst = BackendDAEUtil::createEqSystem(inEqSystem.orderedVars.clone(), inEqSystem.orderedEqs.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
         funcs = BackendDAEUtil::getFunctions(inShared.clone())?;
-        (m_, _, _, mapIncRowEqn) = BackendDAEUtil::adjacencyMatrixScalar(syst.clone(), crate::BackendDAE::IndexType::SOLVABLE, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
+        (m_, _, _, mapIncRowEqn) = BackendDAEUtil::adjacencyMatrixScalar(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::SOLVABLE, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
         if debug.clone() {
             BackendDump::dumpEqSystem(syst.clone(), (literal!("fixInitialSystem")).clone())?;
             BackendDump::dumpVariables(initVars.clone(), (literal!("selected initialization variables")).clone())?;
@@ -1973,8 +1973,8 @@ fn getConsistentEquation(mut inUnassignedEqn: i32, mut inEqns: Arc<ExpandableArr
             list_inEqns = List::set(list_inEqns.clone(), inUnassignedEqn.clone(), eqn.clone())?;
             eqns = BackendEquation::listEquation(list_inEqns.clone())?;
             funcs = BackendDAEUtil::getFunctions(shared.clone())?;
-            system = BackendDAEUtil::createEqSystem(vars.clone(), eqns.clone(), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
-            (m, _) = BackendDAEUtil::adjacencyMatrix(system.clone(), crate::BackendDAE::IndexType::NORMAL, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(shared.clone()))?;
+            system = BackendDAEUtil::createEqSystem(vars.clone(), eqns.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+            (m, _) = BackendDAEUtil::adjacencyMatrix(system.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(shared.clone()))?;
             listVar = m.borrow()[(inUnassignedEqn.clone()-1) as usize].clone();
             let false = (listVar.clone().is_empty()) else { bail!("pattern mismatch") };
             BackendEquation::get(inEqnsOrig.clone(), inUnassignedEqn.clone())?;
@@ -2072,7 +2072,7 @@ fn introducePreVarsForAliasVariables(mut inVar: BackendDAE::Var, mut inTpl: (Bac
                     isFixed = BackendVariable::varFixed(var.clone());
                     startValue = BackendVariable::varStartValue(var.clone())?;
                     preCR = ComponentReference::crefPrefixPre(cr.clone());
-                    preVar = BackendDAE::Var { varName: preCR.clone(), varKind: crate::BackendDAE::VarKind::DISCRETE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: ty.clone(), bindExp: None, tplExp: None, arryDim: arryDim.clone(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
+                    preVar = BackendDAE::Var { varName: preCR.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::DISCRETE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: ty.clone(), bindExp: None, tplExp: None, arryDim: arryDim.clone(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
                     preVar = BackendVariable::setVarFixed(preVar.clone(), false)?;
                     preVar = BackendVariable::setVarStartValueOption(preVar.clone(), Some(startValue.clone()))?;
                     eqn = Arc::new(BackendDAE::Equation::EQUATION { exp: Arc::new(DAE::Exp::CREF { componentRef: preCR.clone(), ty: ty.clone() }), scalar: startValue.clone(), source: DAE::emptyElementSource().clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_INITIAL.clone() });
@@ -2094,7 +2094,7 @@ fn introducePreVarsForAliasVariables(mut inVar: BackendDAE::Var, mut inTpl: (Bac
                     let mut eqns = (*eqns).clone();
                     preUsed = BaseHashSet::has(cr.clone(), hs.clone())?;
                     preCR = ComponentReference::crefPrefixPre(cr.clone());
-                    preVar = BackendDAE::Var { varName: preCR.clone(), varKind: crate::BackendDAE::VarKind::VARIABLE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: ty.clone(), bindExp: None, tplExp: None, arryDim: arryDim.clone(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
+                    preVar = BackendDAE::Var { varName: preCR.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: ty.clone(), bindExp: None, tplExp: None, arryDim: arryDim.clone(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
                     preVar = BackendVariable::setVarFixed(preVar.clone(), false)?;
                     preVar = BackendVariable::setVarStartValueOption(preVar.clone(), Some(Arc::new(DAE::Exp::CREF { componentRef: cr.clone(), ty: ty.clone() })))?;
                     eqn = Arc::new(BackendDAE::Equation::EQUATION { exp: Arc::new(DAE::Exp::CREF { componentRef: preCR.clone(), ty: ty.clone() }), scalar: Arc::new(DAE::Exp::CREF { componentRef: cr.clone(), ty: ty.clone() }), source: DAE::emptyElementSource().clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_INITIAL.clone() });
@@ -2261,7 +2261,7 @@ fn collectInitialVars(mut inVar: BackendDAE::Var, mut inTpl: (BackendDAE::Variab
                     startVar = BackendVariable::setBindExp(startVar.clone(), None);
                     startVar = BackendVariable::setVarDirection(startVar.clone(), openmodelica_frontend_types::DAE::VarDirection::BIDIR);
                     startVar = BackendVariable::setVarFixed(startVar.clone(), false)?;
-                    startVar = BackendVariable::setVarKind(startVar.clone(), crate::BackendDAE::VarKind::VARIABLE)?;
+                    startVar = BackendVariable::setVarKind(startVar.clone(), openmodelica_backend_types::BackendDAE::VarKind::VARIABLE)?;
                     startVar = BackendVariable::setVarStartValueOption(startVar.clone(), None)?;
                     startExp = BackendVariable::varStartValue(var.clone())?;
                     parameters = Expression::getAllCrefs(startExp.clone())?;
@@ -2298,7 +2298,7 @@ fn collectInitialVars(mut inVar: BackendDAE::Var, mut inTpl: (BackendDAE::Variab
                             eqns = BackendEquation::add(eqn.clone(), eqns.clone())?;
                         }
                     }
-                    var = BackendVariable::setVarKind(var.clone(), crate::BackendDAE::VarKind::VARIABLE)?;
+                    var = BackendVariable::setVarKind(var.clone(), openmodelica_backend_types::BackendDAE::VarKind::VARIABLE)?;
                     derCR = ComponentReference::crefPrefixDer(cr.clone());
                     derVar = BackendVariable::copyVarNewName(derCR.clone(), var.clone());
                     derVar = BackendVariable::setVarDirection(derVar.clone(), openmodelica_frontend_types::DAE::VarDirection::BIDIR);
@@ -2385,7 +2385,7 @@ fn collectInitialVars(mut inVar: BackendDAE::Var, mut inTpl: (BackendDAE::Variab
                     startExp = BackendVariable::varStartValueType(var.clone())?;
                     s = (ComponentReferenceBasics::printComponentRefStr(cr.clone())?).clone();
                     r#str = (ExpressionBasics::printExpStr(startExp.clone())?).clone();
-                    var = BackendVariable::setVarKind(var.clone(), crate::BackendDAE::VarKind::VARIABLE)?;
+                    var = BackendVariable::setVarKind(var.clone(), openmodelica_backend_types::BackendDAE::VarKind::VARIABLE)?;
                     var = BackendVariable::setBindExp(var.clone(), Some(startExp.clone()));
                     var = BackendVariable::setVarFixed(var.clone(), true)?;
                     info = ElementSource::getElementSourceFileInfo(BackendVariable::getVarSource(var.clone()));
@@ -2407,7 +2407,7 @@ fn collectInitialVars(mut inVar: BackendDAE::Var, mut inTpl: (BackendDAE::Variab
                     let mut eqns = (*eqns).clone();
                     let true = (intGt(Flags::getConfigEnum(Flags::LANGUAGE_STANDARD.clone())?, 31)) else { bail!("pattern mismatch") };
                     let false = (BackendVariable::varFixed(var.clone())) else { bail!("pattern mismatch") };
-                    var = BackendVariable::setVarKind(var.clone(), crate::BackendDAE::VarKind::VARIABLE)?;
+                    var = BackendVariable::setVarKind(var.clone(), openmodelica_backend_types::BackendDAE::VarKind::VARIABLE)?;
                     var = BackendVariable::setBindExp(var.clone(), None);
                     s = (ComponentReferenceBasics::printComponentRefStr(cr.clone())?).clone();
                     r#str = (ExpressionBasics::printExpStr(bindExp.clone())?).clone();
@@ -2431,7 +2431,7 @@ fn collectInitialVars(mut inVar: BackendDAE::Var, mut inTpl: (BackendDAE::Variab
                     let mut vars = (*vars).clone();
                     let true = (intLe(Flags::getConfigEnum(Flags::LANGUAGE_STANDARD.clone())?, 31)) else { bail!("pattern mismatch") };
                     let false = (BackendVariable::varFixed(var.clone())) else { bail!("pattern mismatch") };
-                    var = BackendVariable::setVarKind(var.clone(), crate::BackendDAE::VarKind::VARIABLE)?;
+                    var = BackendVariable::setVarKind(var.clone(), openmodelica_backend_types::BackendDAE::VarKind::VARIABLE)?;
                     var = BackendVariable::setBindExp(var.clone(), None);
                     ::match_deref::match_deref! { match &(BackendVariable::varStartValueOption(var.clone())?) {
                         None => (),
@@ -2460,7 +2460,7 @@ fn collectInitialVars(mut inVar: BackendDAE::Var, mut inTpl: (BackendDAE::Variab
                     let mut vars = (*vars).clone();
                     let true = (intLe(Flags::getConfigEnum(Flags::LANGUAGE_STANDARD.clone())?, 31)) else { bail!("pattern mismatch") };
                     let false = (BackendVariable::varFixed(var.clone())) else { bail!("pattern mismatch") };
-                    var = BackendVariable::setVarKind(var.clone(), crate::BackendDAE::VarKind::VARIABLE)?;
+                    var = BackendVariable::setVarKind(var.clone(), openmodelica_backend_types::BackendDAE::VarKind::VARIABLE)?;
                     var = BackendVariable::setBindExp(var.clone(), None);
                     let __pa0 = ::match_deref::match_deref! { match &(BackendVariable::varStartValueOption(var.clone())?) {
                         Some(__pa0) => __pa0.clone(),
@@ -2483,7 +2483,7 @@ fn collectInitialVars(mut inVar: BackendDAE::Var, mut inTpl: (BackendDAE::Variab
                 (var @ BackendDAE::Var { varKind: BackendDAE::VarKind::PARAM { .. }, .. }, (vars, fixvars, eqns, stateSetFixCounts, hs, allPrimaryParameters, datarecon)) => {
                     let mut var = (*var).clone();
                     let mut vars = (*vars).clone();
-                    var = BackendVariable::setVarKind(var.clone(), crate::BackendDAE::VarKind::VARIABLE)?;
+                    var = BackendVariable::setVarKind(var.clone(), openmodelica_backend_types::BackendDAE::VarKind::VARIABLE)?;
                     vars = BackendVariable::addVar(var.clone(), vars.clone())?;
                     Ok((var.clone(), (vars.clone(), fixvars.clone(), eqns.clone(), stateSetFixCounts.clone(), hs.clone(), allPrimaryParameters.clone(), datarecon.clone())))
                 }
@@ -2536,7 +2536,7 @@ fn collectInitialVars(mut inVar: BackendDAE::Var, mut inTpl: (BackendDAE::Variab
                     startVar = BackendVariable::setBindExp(startVar.clone(), None);
                     startVar = BackendVariable::setVarDirection(startVar.clone(), openmodelica_frontend_types::DAE::VarDirection::BIDIR);
                     startVar = BackendVariable::setVarFixed(startVar.clone(), false)?;
-                    startVar = BackendVariable::setVarKind(startVar.clone(), crate::BackendDAE::VarKind::VARIABLE)?;
+                    startVar = BackendVariable::setVarKind(startVar.clone(), openmodelica_backend_types::BackendDAE::VarKind::VARIABLE)?;
                     startVar = BackendVariable::setVarStartValueOption(startVar.clone(), None)?;
                     startExp = BackendVariable::varStartValue(var.clone())?;
                     parameters = Expression::getAllCrefs(startExp.clone())?;
@@ -2600,7 +2600,7 @@ fn collectInitialVars(mut inVar: BackendDAE::Var, mut inTpl: (BackendDAE::Variab
                     startVar = BackendVariable::setBindExp(startVar.clone(), None);
                     startVar = BackendVariable::setVarDirection(startVar.clone(), openmodelica_frontend_types::DAE::VarDirection::BIDIR);
                     startVar = BackendVariable::setVarFixed(startVar.clone(), false)?;
-                    startVar = BackendVariable::setVarKind(startVar.clone(), crate::BackendDAE::VarKind::VARIABLE)?;
+                    startVar = BackendVariable::setVarKind(startVar.clone(), openmodelica_backend_types::BackendDAE::VarKind::VARIABLE)?;
                     startVar = BackendVariable::setVarStartValueOption(startVar.clone(), None)?;
                     startExp = BackendVariable::varStartValue(var.clone())?;
                     parameters = Expression::getAllCrefs(startExp.clone())?;
@@ -2677,7 +2677,7 @@ fn collectInitialClockedVarsEqns(mut inVar: BackendDAE::Var, mut inTpl: (Backend
             let mut previousVar: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
             let mut previousExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             previousVar = BackendVariable::copyVarNewName(previousCR.clone(), var.clone());
-            previousVar = BackendVariable::setVarKind(previousVar.clone(), crate::BackendDAE::VarKind::VARIABLE)?;
+            previousVar = BackendVariable::setVarKind(previousVar.clone(), openmodelica_backend_types::BackendDAE::VarKind::VARIABLE)?;
             previousVar = BackendVariable::setVarDirection(previousVar.clone(), openmodelica_frontend_types::DAE::VarDirection::BIDIR);
             previousVar = BackendVariable::setBindExp(previousVar.clone(), None);
             previousVar = BackendVariable::setVarFixed(previousVar.clone(), true)?;

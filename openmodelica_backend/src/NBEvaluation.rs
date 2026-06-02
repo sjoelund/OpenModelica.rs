@@ -43,11 +43,11 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAE as OldBackendDAE;
 use crate::NBModule as Module;
 use crate::NBPartition::Partition;
 use crate::NBStrongComponent as StrongComponent;
 use crate::NBackendDAE as BackendDAE;
+use openmodelica_backend_types::BackendDAE as OldBackendDAE;
 use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::Array;
 

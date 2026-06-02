@@ -43,13 +43,13 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAE;
 use crate::BackendDAEOptimize;
 use crate::BackendDAEUtil;
 use crate::BackendDump;
 use crate::BackendEquation;
 use crate::BackendVariable;
 use openmodelica_ast::Absyn;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::DAEDump;
 use openmodelica_frontend::DAEUtil;
@@ -262,7 +262,7 @@ fn treatClockedStates(mut inSysts: Arc<metamodelica::List<Arc<BackendDAE::EqSyst
             for mut derVar in &*derVars.clone() {
                 let mut derVar = derVar.clone();
                 var = ((BackendVariable::getVar(derVar.clone(), syst.orderedVars.clone())?).0).get(1)?;
-                var = BackendDAE::Var { varName: ComponentReference::crefPrefixDer(derVar.clone()), varKind: crate::BackendDAE::VarKind::VARIABLE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: var.varType.clone(), bindExp: None, tplExp: None, arryDim: var.arryDim.clone(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
+                var = BackendDAE::Var { varName: ComponentReference::crefPrefixDer(derVar.clone()), varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: var.varType.clone(), bindExp: None, tplExp: None, arryDim: var.arryDim.clone(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
                 assign_field!(syst.orderedVars = BackendVariable::addVar(var.clone(), syst.orderedVars.clone())?);
             }
             for mut derVar in &*derVars.clone() {
@@ -973,8 +973,8 @@ fn getConnectedSubPartitions(mut eq: Arc<BackendDAE::Equation>, mut varPartMap: 
             v2 = __pa2.clone();
             p2 = varPartMap.borrow()[(v2.clone()-1) as usize].clone();
             if infered.clone() {
-                sub1 = crate::BackendDAE::SubClock::INFERED_SUBCLOCK;
-                sub2 = crate::BackendDAE::SubClock::INFERED_SUBCLOCK;
+                sub1 = openmodelica_backend_types::BackendDAE::SubClock::INFERED_SUBCLOCK;
+                sub2 = openmodelica_backend_types::BackendDAE::SubClock::INFERED_SUBCLOCK;
             } else {
                 sub1 = setSubClockFactor(sub1.clone(), MMath::divRational(MMath::RAT1.clone(), MMath::Rational { nom: factor.clone(), denom: 1 })?);
                 sub2 = setSubClockFactor(sub2.clone(), MMath::Rational { nom: factor.clone(), denom: 1 });
@@ -1000,8 +1000,8 @@ fn getConnectedSubPartitions(mut eq: Arc<BackendDAE::Equation>, mut varPartMap: 
             v2 = __pa2.clone();
             p2 = varPartMap.borrow()[(v2.clone()-1) as usize].clone();
             if infered.clone() {
-                sub1 = crate::BackendDAE::SubClock::INFERED_SUBCLOCK;
-                sub2 = crate::BackendDAE::SubClock::INFERED_SUBCLOCK;
+                sub1 = openmodelica_backend_types::BackendDAE::SubClock::INFERED_SUBCLOCK;
+                sub2 = openmodelica_backend_types::BackendDAE::SubClock::INFERED_SUBCLOCK;
             } else {
                 sub1 = setSubClockFactor(sub1.clone(), MMath::Rational { nom: factor.clone(), denom: 1 });
                 sub2 = setSubClockFactor(sub2.clone(), MMath::divRational(MMath::RAT1.clone(), MMath::Rational { nom: factor.clone(), denom: 1 })?);
@@ -1412,11 +1412,11 @@ fn subClockPartitioning(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared:
     (eqs, vars) = replaceSampledClocks(eqs.clone(), vars.clone())?;
     sys = BackendDAEUtil::setEqSystVars(inEqSystem.clone(), vars.clone())?;
     sys = BackendDAEUtil::setEqSystEqs(sys.clone(), eqs.clone());
-    (sys, m, mT) = BackendDAEUtil::getAdjacencyMatrix(sys.clone(), crate::BackendDAE::IndexType::SUBCLOCK_IDX, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
+    (sys, m, mT) = BackendDAEUtil::getAdjacencyMatrix(sys.clone(), openmodelica_backend_types::BackendDAE::IndexType::SUBCLOCK_IDX, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
     (baseClockEquations, subClockInterfaceEqIdxs, subClockInterfaceEqs) = findBaseClockInterfaces(eqs.clone(), vars.clone(), m.clone(), mT.clone())?;
     (clockEqs, clockedEqsMask) = splitClockEqs(eqs.clone())?;
     (clockVars, clockedVarsMask) = splitClockVars(vars.clone())?;
-    (rm, rmT) = BackendDAEUtil::removedAdjacencyMatrix(sys.clone(), crate::BackendDAE::IndexType::SUBCLOCK_IDX, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
+    (rm, rmT) = BackendDAEUtil::removedAdjacencyMatrix(sys.clone(), openmodelica_backend_types::BackendDAE::IndexType::SUBCLOCK_IDX, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
     remEqPartMap = arrayCreate((rm.clone().borrow().len() as i32), 0);
     eqPartMap = arrayCreate((m.clone().borrow().len() as i32), 0);
     varPartMap = arrayCreate((mT.clone().borrow().len() as i32), 0);
@@ -1425,7 +1425,7 @@ fn subClockPartitioning(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared:
     partitionsCnt = partitionIndependentBlocksMasked(m.clone(), mT.clone(), rm.clone(), rmT.clone(), arrayCreate(BackendEquation::getNumberOfEquations(eqs.clone()), true), eqPartMap.clone(), varPartMap.clone(), remEqPartMap.clone(), usedVars.clone(), usedRemovedVars.clone())?;
     (outBaseClock, baseClockEqIdx) = chooseBaseClock(baseClockEquations.clone(), partitionsCnt.clone(), eqPartMap.clone(), eqs.clone())?;
     (partAdjacency, order) = getSubPartitionAdjacency(partitionsCnt.clone(), baseClockEqIdx.clone(), subClockInterfaceEqIdxs.clone(), eqPartMap.clone(), varPartMap.clone(), clockedVarsMask.clone(), eqs.clone(), vars.clone())?;
-    (m, mT) = BackendDAEUtil::adjacencyMatrixMasked(inEqSystem.clone(), crate::BackendDAE::IndexType::SUBCLOCK_IDX, clockedEqsMask.clone(), Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
+    (m, mT) = BackendDAEUtil::adjacencyMatrixMasked(inEqSystem.clone(), openmodelica_backend_types::BackendDAE::IndexType::SUBCLOCK_IDX, clockedEqsMask.clone(), Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
     (newClockEqs, newClockVars, contPartitions, subclksCnt) = collectSubclkInfo(eqs.clone(), inEqSystem.removedEqs.clone(), partitionsCnt.clone(), eqPartMap.clone(), remEqPartMap.clone(), vars.clone(), mT.clone())?;
     (outBaseClock, subclocks) = findSubClocks(partitionsCnt.clone(), baseClockEqIdx.clone(), outBaseClock.clone(), baseClockEquations.clone(), subClockInterfaceEqIdxs.clone(), eqPartMap.clone(), varPartMap.clone(), eqs.clone(), partAdjacency.clone())?;
     let __range3 = 1..=(clockedEqsMask.clone().borrow().len() as i32);
@@ -1845,7 +1845,7 @@ fn collectEquationArrayClocks(mut eqs: Arc<ExpandableArray::ExpandableArray<Arc<
             if whenIdx.clone() != 0 && List::notMember(whenIdx.clone(), partitionsWhenClocksLst.clone()) {
                 {let _arr = partitionsWhenClocks.clone(); _arr.borrow_mut()[(partitionIdx.clone()-1) as usize] = metamodelica::cons(whenIdx.clone(), partitionsWhenClocksLst.clone()); _arr};
             }
-            eqAttr.kind = crate::BackendDAE::EquationKind::DYNAMIC_EQUATION;
+            eqAttr.kind = openmodelica_backend_types::BackendDAE::EquationKind::DYNAMIC_EQUATION;
             eqAttr.clone()
         },
         _ => {
@@ -2080,7 +2080,7 @@ fn substituteExpsCall(mut inPath: Arc<Absyn::Path>, mut inExps: Arc<metamodelica
 
 fn createVar(mut inComp: Arc<DAE::ComponentRef>, mut inType: Arc<DAE::Type>) -> Result<BackendDAE::Var> {
     let mut outVar: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
-    outVar = BackendDAE::Var { encrypted: false, initNonlinear: false, unreplaceable: false, innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), comment: None, hideResult: None, tearingSelectOption: Some(crate::BackendDAE::TearingSelect::DEFAULT), values: DAEUtil::setProtectedAttr(DAEUtil::getEmptyVarAttr(inType.clone()), true)?, source: DAE::emptyElementSource().clone(), arryDim: metamodelica::nil(), tplExp: None, bindExp: None, varType: inType.clone(), varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varKind: crate::BackendDAE::VarKind::VARIABLE, varName: inComp.clone() };
+    outVar = BackendDAE::Var { encrypted: false, initNonlinear: false, unreplaceable: false, innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), comment: None, hideResult: None, tearingSelectOption: Some(openmodelica_backend_types::BackendDAE::TearingSelect::DEFAULT), values: DAEUtil::setProtectedAttr(DAEUtil::getEmptyVarAttr(inType.clone()), true)?, source: DAE::emptyElementSource().clone(), arryDim: metamodelica::nil(), tplExp: None, bindExp: None, varType: inType.clone(), varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, varName: inComp.clone() };
     Ok(outVar)
 }
 
@@ -2188,8 +2188,8 @@ fn baseClockPartitioning(mut inSyst: Arc<BackendDAE::EqSystem>, mut inShared: Ar
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     funcs = BackendDAEUtil::getFunctions(inShared.clone())?;
     isInitial = BackendDAEUtil::isInitializationDAE(inShared.clone());
-    (syst, m, mT) = BackendDAEUtil::getAdjacencyMatrixfromOption(inSyst.clone(), crate::BackendDAE::IndexType::BASECLOCK_IDX, Some(funcs.clone()), isInitial.clone())?;
-    (rm, rmT) = BackendDAEUtil::removedAdjacencyMatrix(inSyst.clone(), crate::BackendDAE::IndexType::BASECLOCK_IDX, Some(funcs.clone()), isInitial.clone())?;
+    (syst, m, mT) = BackendDAEUtil::getAdjacencyMatrixfromOption(inSyst.clone(), openmodelica_backend_types::BackendDAE::IndexType::BASECLOCK_IDX, Some(funcs.clone()), isInitial.clone())?;
+    (rm, rmT) = BackendDAEUtil::removedAdjacencyMatrix(inSyst.clone(), openmodelica_backend_types::BackendDAE::IndexType::BASECLOCK_IDX, Some(funcs.clone()), isInitial.clone())?;
     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(syst.clone()) {
         Deref @ BackendDAE::EqSystem { orderedEqs: __pa0, orderedVars: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
@@ -2249,8 +2249,8 @@ fn baseClockPartitioning(mut inSyst: Arc<BackendDAE::EqSystem>, mut inShared: Ar
     for mut syst in &*systs.clone() {
         let mut syst = syst.clone();
         (outContSysts, outClockedSysts) = (match clockedPartitions.clone().borrow()[(i.clone()-1) as usize].clone() {
-        Some(false) => (metamodelica::cons(setSystPartition(syst.clone(), crate::BackendDAE::BaseClockPartitionKind::CONTINUOUS_TIME_PARTITION)?, outContSysts.clone()), outClockedSysts.clone()),
-        None => (metamodelica::cons(setSystPartition(syst.clone(), crate::BackendDAE::BaseClockPartitionKind::UNSPECIFIED_PARTITION)?, outContSysts.clone()), outClockedSysts.clone()),
+        Some(false) => (metamodelica::cons(setSystPartition(syst.clone(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::CONTINUOUS_TIME_PARTITION)?, outContSysts.clone()), outClockedSysts.clone()),
+        None => (metamodelica::cons(setSystPartition(syst.clone(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNSPECIFIED_PARTITION)?, outContSysts.clone()), outClockedSysts.clone()),
         Some(true) => (outContSysts.clone(), metamodelica::cons(syst.clone(), outClockedSysts.clone())),
         _ => bail!("match: no arm matched"),
     });
@@ -2777,7 +2777,7 @@ fn createEqSystem(mut el: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mu
         Error::addSourceMessage(Error::IMBALANCED_EQUATIONS.clone(), list![(s1.clone()).clone(), (s2.clone()).clone(), (s3.clone()).clone(), (s4.clone()).clone()], Absyn::dummyInfo.clone())?;
         bail!("fail");
     }
-    syst = BackendDAEUtil::createEqSystem(vars.clone(), arr.clone(), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, remArr.clone());
+    syst = BackendDAEUtil::createEqSystem(vars.clone(), arr.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, remArr.clone());
     success = success.clone() && i1.clone() == i2.clone();
     oTpl = (success.clone(), throwNoError.clone());
     Ok((syst, oTpl))

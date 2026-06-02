@@ -43,8 +43,6 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAE as OldBackendDAE;
-use crate::BackendDAE::SimIterator as OldSimIterator;
 use crate::NBBackendUtil as BackendUtil;
 use crate::NBEquation as BEquation;
 use crate::NBEquation::EqData;
@@ -65,6 +63,8 @@ use crate::NBackendDAE as BackendDAE;
 use crate::NSimGenericCall::SimIterator;
 use crate::NSimStrongComponent::Block;
 use openmodelica_ast::Absyn::Path;
+use openmodelica_backend_types::BackendDAE as OldBackendDAE;
+use openmodelica_backend_types::BackendDAE::SimIterator as OldSimIterator;
 use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_types::DAE;
 use openmodelica_nf_frontend::NFAlgorithm as Algorithm;

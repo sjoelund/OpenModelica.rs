@@ -43,7 +43,6 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAE;
 use crate::BackendDAEEXT;
 use crate::BackendDAEFunc;
 use crate::BackendDAEUtil;
@@ -54,6 +53,7 @@ use crate::Differentiate;
 use crate::DumpGraphML;
 use crate::IndexReduction;
 use crate::Sorting;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::Expression;
 use openmodelica_frontend::Inline;
 use openmodelica_frontend_dump::AvlTreePathFunction;
@@ -5119,7 +5119,7 @@ fn matchingExternal(mut meqns: Arc<metamodelica::List<Arc<metamodelica::List<i32
             syst = isyst.clone();
             if !(Flags::getConfigBool(Flags::NO_ASSC.clone())?) && BackendDAEUtil::hasIndexTypeSolvableAndUnprocessedScalar(syst.clone()) && BackendDAEUtil::doIndexReduction(inMatchingOptions.clone()) {
                 syst = BackendDAEUtil::setAnalyticalToStructuralProcessed(syst.clone(), true)?;
-                (_, m1, _, _, _) = BackendDAEUtil::getAdjacencyMatrixScalar(isyst.clone(), crate::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(ishared.clone()))?;
+                (_, m1, _, _, _) = BackendDAEUtil::getAdjacencyMatrixScalar(isyst.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(ishared.clone()))?;
                 comps = Sorting::Tarjan(m1.clone(), ass2_1.clone(), (ass2_1.clone().borrow().len() as i32))?;
                 for mut comp in &*comps.clone() {
                     let mut comp = comp.clone();
@@ -5278,7 +5278,7 @@ fn sanityCheckArtificialStates(mut syst: Arc<BackendDAE::EqSystem>, mut shared: 
                     println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("### The Equation ### \n")); __mm_s.push_str(&*BackendDump::equationString(eqn.clone())?); __mm_s.push_str(&*literal!("\n\n--- could not be differentiated for artificial variable ---\n ")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(var.varName.clone())?); __mm_s.push_str(&*literal!(".\n\n")); ArcStr::from(__mm_s) }).clone());
                 }
                 if !(unique_flag.clone()) {
-                    undiffable_artificial = metamodelica::cons(BackendVariable::setVarKind(var.clone(), crate::BackendDAE::VarKind::VARIABLE)?, undiffable_artificial.clone());
+                    undiffable_artificial = metamodelica::cons(BackendVariable::setVarKind(var.clone(), openmodelica_backend_types::BackendDAE::VarKind::VARIABLE)?, undiffable_artificial.clone());
                     unique_flag = true;
                 }
             }
@@ -5286,7 +5286,7 @@ fn sanityCheckArtificialStates(mut syst: Arc<BackendDAE::EqSystem>, mut shared: 
     }
     if !(undiffable_artificial.clone().is_empty()) {
         assign_field!(syst.orderedVars = BackendVariable::addVars(undiffable_artificial.clone(), syst.orderedVars.clone())?);
-        (syst, _, _, _, _) = BackendDAEUtil::getAdjacencyMatrixScalar(syst.clone(), crate::BackendDAE::IndexType::SOLVABLE, Some(shared.functionTree.clone()), BackendDAEUtil::isInitializationDAE(shared.clone()))?;
+        (syst, _, _, _, _) = BackendDAEUtil::getAdjacencyMatrixScalar(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::SOLVABLE, Some(shared.functionTree.clone()), BackendDAEUtil::isInitializationDAE(shared.clone()))?;
         if isSome(syst.m.clone()) && isSome(syst.mT.clone()) {
             let __pa6 = ::match_deref::match_deref! { match &(syst.m.clone()) {
                 Some(__pa6) => __pa6.clone(),
@@ -5867,7 +5867,7 @@ pub fn testMatchingAlgorithms(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared:
     syst = randSortSystem(isyst.clone(), ishared.clone())?;
     testMatchingAlgorithms1(matchingAlgorithms.clone(), syst.clone(), ishared.clone(), inMatchingOptions.clone())?;
     System::realtimeTick(ClockIndexes::RT_PROFILER0.clone())?;
-    (_, m, _) = BackendDAEUtil::getAdjacencyMatrixfromOption(syst.clone(), crate::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(ishared.clone()))?;
+    (_, m, _) = BackendDAEUtil::getAdjacencyMatrixfromOption(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(ishared.clone()))?;
     matchingExternalsetAdjacencyMatrix(nv.clone(), ne.clone(), m.clone());
     cheapID = 3;
     t = System::realtimeTock(ClockIndexes::RT_PROFILER0.clone())?;
@@ -6000,7 +6000,7 @@ fn randSortSystem(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backend
                 syst.orderedEqs = randSortSystem1(ne.clone(), 0, randarr.clone(), eqns.clone(), BackendEquation::listEquation(metamodelica::nil())?, (std::sync::Arc::new(BackendEquation::get) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, i32) -> Result<Arc<BackendDAE::Equation>> + 'static>), (std::sync::Arc::new(BackendEquation::add) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>) -> Result<Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>> + 'static>))?,
                 syst.orderedVars = randSortSystem1(nv.clone(), 0, randarr1.clone(), vars.clone(), BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone()), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), (std::sync::Arc::new(BackendVariable::addVar) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendDAE::Variables) -> Result<BackendDAE::Variables> + 'static>))?
             );
-            (syst, _, _) = BackendDAEUtil::getAdjacencyMatrix(BackendDAEUtil::clearEqSyst(syst.clone())?, crate::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(ishared.clone()))?;
+            (syst, _, _) = BackendDAEUtil::getAdjacencyMatrix(BackendDAEUtil::clearEqSyst(syst.clone())?, openmodelica_backend_types::BackendDAE::IndexType::NORMAL, None, BackendDAEUtil::isInitializationDAE(ishared.clone()))?;
             syst.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

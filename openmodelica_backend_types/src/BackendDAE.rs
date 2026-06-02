@@ -43,7 +43,6 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::SimCode;
 use crate::ZeroCrossings;
 use openmodelica_ast::Absyn;
 use openmodelica_ast_collections::AvlSetPath;
@@ -313,8 +312,8 @@ pub struct ExtraInfo {
     pub description: ArcStr,
     /// the model name to be used in the dumps
     pub fileNamePrefix: ArcStr,
-    /// simulation settings options needed for data reconciliation to apply start values from csv files
-    pub simSettingsOption: Option<SimCode::SimulationSettings>,
+    /// the simulation flag string (-sx=...) needed for data reconciliation to read measurement start values from a csv file. Kept as a plain String rather than a SimCode.SimulationSettings reference so this datatype package does not depend on SimCode.
+    pub simflags: Option<ArcStr>,
 }
 
 impl Default for ExtraInfo {
@@ -322,7 +321,7 @@ impl Default for ExtraInfo {
         Self {
             description: Default::default(),
             fileNamePrefix: Default::default(),
-            simSettingsOption: Default::default(),
+            simflags: Default::default(),
         }
     }
 }
@@ -1238,6 +1237,20 @@ impl Default for SimIterator {
     }
 }
 pub use self::SimIterator::{SIM_ITERATOR_RANGE,SIM_ITERATOR_LIST};
+
+pub fn getSimIteratorSize(mut iters: Arc<metamodelica::List<SimIterator>>) -> Result<i32> {
+    let mut size: i32 = 1;
+    let mut local_size: i32 = 0;
+    for mut iter in &*iters.clone() {
+        let mut iter = iter.clone();
+        local_size = (match iter.clone() {
+        SimIterator::SIM_ITERATOR_RANGE { .. } => var_field!(iter.non_resizable_size, SimIterator::SIM_ITERATOR_RANGE).clone(),
+        SimIterator::SIM_ITERATOR_LIST { .. } => var_field!(iter.size, SimIterator::SIM_ITERATOR_LIST).clone(),
+    });
+        size = size.clone() * local_size.clone();
+    }
+    Ok(size)
+}
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum TimeEvent {

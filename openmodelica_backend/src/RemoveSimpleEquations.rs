@@ -44,7 +44,6 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::AvlSetInt;
-use crate::BackendDAE;
 use crate::BackendDAEUtil;
 use crate::BackendDump;
 use crate::BackendEquation;
@@ -55,6 +54,7 @@ use crate::ExpressionSolve;
 use crate::HashTableCrToCrEqLst;
 use crate::SimCodeUtil;
 use openmodelica_ast::Absyn;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::Ceval;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::DAEUtil;
@@ -229,10 +229,10 @@ pub fn fixAliasVarsVariablity(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<
             r#const = List::all(referencevar.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isConst, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?;
         }
         if r#const.clone() {
-            tempvar = BackendVariable::setVarKind(var.clone(), crate::BackendDAE::VarKind::CONST)?;
+            tempvar = BackendVariable::setVarKind(var.clone(), openmodelica_backend_types::BackendDAE::VarKind::CONST)?;
             knownVarList = metamodelica::cons(BackendVariable::setVarFixed(tempvar.clone(), true)?, knownVarList.clone());
         } else if paramOrConst.clone() {
-            tempvar = BackendVariable::setVarKind(var.clone(), crate::BackendDAE::VarKind::PARAM)?;
+            tempvar = BackendVariable::setVarKind(var.clone(), openmodelica_backend_types::BackendDAE::VarKind::PARAM)?;
             knownVarList = metamodelica::cons(BackendVariable::setVarFixed(tempvar.clone(), true)?, knownVarList.clone());
         } else {
             aliasVarList = metamodelica::cons(var.clone(), aliasVarList.clone());
@@ -308,7 +308,7 @@ fn fixKnownVars(mut dae: Arc<BackendDAE::BackendDAE>) -> Result<Arc<BackendDAE::
         }
     }
     if !(varList.clone().is_empty()) {
-        eqs = BackendDAEUtil::createEqSystem(BackendVariable::listVar(varList.clone())?, BackendEquation::listEquation(eqnList.clone())?, metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNSPECIFIED_PARTITION, BackendEquation::emptyEqns());
+        eqs = BackendDAEUtil::createEqSystem(BackendVariable::listVar(varList.clone())?, BackendEquation::listEquation(eqnList.clone())?, metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNSPECIFIED_PARTITION, BackendEquation::emptyEqns());
         assign_field!(dae.eqs = metamodelica::cons(eqs.clone(), dae.eqs.clone()));
     }
     dae = BackendDAEUtil::setDAEGlobalKnownVars(dae.clone(), BackendVariable::listVar(knownVarList.clone())?)?;
@@ -394,7 +394,7 @@ fn fixAliasVarsCausal2(mut inVar: BackendDAE::Var, mut inDAE: Arc<BackendDAE::Ba
             }
         }
         if !(done.clone()) {
-            eqs1 = metamodelica::cons(BackendDAEUtil::createEqSystem(unwrap_break_err!(BackendVariable::listVar(list![var.clone()]), '__try0), unwrap_break_err!(BackendEquation::listEquation(list![eqn.clone()]), '__try0), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNSPECIFIED_PARTITION, BackendEquation::emptyEqns()), eqs1.clone());
+            eqs1 = metamodelica::cons(BackendDAEUtil::createEqSystem(unwrap_break_err!(BackendVariable::listVar(list![var.clone()]), '__try0), unwrap_break_err!(BackendEquation::listEquation(list![eqn.clone()]), '__try0), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNSPECIFIED_PARTITION, BackendEquation::emptyEqns()), eqs1.clone());
         }
         outDAE = Arc::new(BackendDAE::BackendDAE { eqs: eqs1.clone().reverse(), shared: shared.clone() });
         Ok::<_, anyhow::Error>((binding.clone(), eqn.clone(), eqs.clone(), outDAE.clone(), rightCrefs.clone(), shared.clone(), var.clone()))
@@ -451,7 +451,7 @@ fn fixKnownVarsCausal2(mut inVar: BackendDAE::Var, mut inDAE: Arc<BackendDAE::Ba
             }
         }
         if !(done.clone()) {
-            eqs1 = metamodelica::cons(BackendDAEUtil::createEqSystem(unwrap_break_err!(BackendVariable::listVar(list![var.clone()]), '__try0), unwrap_break_err!(BackendEquation::listEquation(list![eqn.clone()]), '__try0), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNSPECIFIED_PARTITION, BackendEquation::emptyEqns()), eqs1.clone());
+            eqs1 = metamodelica::cons(BackendDAEUtil::createEqSystem(unwrap_break_err!(BackendVariable::listVar(list![var.clone()]), '__try0), unwrap_break_err!(BackendEquation::listEquation(list![eqn.clone()]), '__try0), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNSPECIFIED_PARTITION, BackendEquation::emptyEqns()), eqs1.clone());
         }
         outDAE = Arc::new(BackendDAE::BackendDAE { eqs: eqs1.clone().reverse(), shared: inDAE.shared.clone() });
         Ok::<_, anyhow::Error>((binding.clone(), eqn.clone(), outDAE.clone(), rightCrefs.clone(), var.clone()))
@@ -2645,7 +2645,7 @@ fn moveVarShared(mut v: BackendDAE::Var, mut i: i32, mut source: Arc<DAE::Elemen
     ops = ElementSource::getSymbolicTransformations(source.clone());
     v1 = BackendVariable::mergeVariableOperations(v1.clone(), metamodelica::cons(Arc::new(DAE::SymbolicOperation::SOLVED { cr: cr.clone(), exp: exp.clone() }), ops.clone()))?;
     bs = BackendVariable::isStateVar(v.clone());
-    v1 = if (bs.clone()) {BackendVariable::setVarKind(v1.clone(), crate::BackendDAE::VarKind::DUMMY_STATE)?} else {v1.clone()};
+    v1 = if (bs.clone()) {BackendVariable::setVarKind(v1.clone(), openmodelica_backend_types::BackendDAE::VarKind::DUMMY_STATE)?} else {v1.clone()};
     (oVars, _) = BackendVariable::removeVar(i.clone(), iVars.clone())?;
     oshared = func(v1.clone(), ishared.clone())?;
     Ok((oVars, oshared, bs))
@@ -4665,7 +4665,7 @@ fn moveVars(mut cr_exp_lst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<
             ops = ElementSource::getSymbolicTransformations(DAE::emptyElementSource().clone());
             v = unwrap_break_err!(BackendVariable::mergeVariableOperations(v.clone(), metamodelica::cons(Arc::new(DAE::SymbolicOperation::SOLVED { cr: cr.clone(), exp: e.clone() }), ops.clone())), '__try0);
             bs = BackendVariable::isStateVar(v.clone());
-            v = if (bs.clone()) {unwrap_break_err!(BackendVariable::setVarKind(v.clone(), crate::BackendDAE::VarKind::DUMMY_STATE), '__try0)} else {v.clone()};
+            v = if (bs.clone()) {unwrap_break_err!(BackendVariable::setVarKind(v.clone(), openmodelica_backend_types::BackendDAE::VarKind::DUMMY_STATE), '__try0)} else {v.clone()};
             (outVars, _) = unwrap_break_err!(BackendVariable::removeVar(i.clone(), outVars.clone()), '__try0);
             outAliasVars = unwrap_break_err!(BackendVariable::addVar(v.clone(), outAliasVars.clone()), '__try0);
             Ok::<_, anyhow::Error>((outAliasVars.clone(), outVars.clone()))

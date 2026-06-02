@@ -43,7 +43,6 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAE;
 use crate::BackendDAEUtil;
 use crate::BackendDump;
 use crate::BackendEquation;
@@ -51,6 +50,7 @@ use crate::BackendVarTransform;
 use crate::BackendVariable;
 use crate::RemoveSimpleEquations;
 use openmodelica_ast::Absyn;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::DAEDump;
 use openmodelica_frontend::DAEUtil;
@@ -3795,7 +3795,7 @@ fn setVarKindForStates(mut inVar: BackendDAE::Var, mut inCrefs: Arc<metamodelica
                     let mut isState: bool = false;
                     let mut varNew: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
                     isState = List::isMemberOnTrue(cr1.clone(), derVars.clone(), (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
-                    varNew = if (!(isState.clone())) {BackendVariable::setVarKind(varOld.clone(), crate::BackendDAE::VarKind::VARIABLE)?} else {varOld.clone()};
+                    varNew = if (!(isState.clone())) {BackendVariable::setVarKind(varOld.clone(), openmodelica_backend_types::BackendDAE::VarKind::VARIABLE)?} else {varOld.clone()};
                     Ok((varNew.clone(), derVars.clone()))
                 }
                 _ => bail!("nomatch"),

@@ -44,7 +44,6 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::AvlSetInt;
-use crate::BackendDAE;
 use crate::BackendDAEUtil;
 use crate::BackendDump;
 use crate::BackendEquation;
@@ -54,6 +53,7 @@ use crate::ExpressionSolve;
 use crate::HpcOmTaskGraph;
 use crate::ResolveLoops;
 use openmodelica_ast::Absyn;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::DAEUtil;
 use openmodelica_frontend::Expression;
@@ -217,7 +217,7 @@ pub fn wrapFunctionCalls(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<B
             assign_field!(
                 syst.m = None,
                 syst.mT = None,
-                syst.matching = Arc::new(crate::BackendDAE::Matching::NO_MATCHING)
+                syst.matching = Arc::new(openmodelica_backend_types::BackendDAE::Matching::NO_MATCHING)
             );
             if Flags::isSet(Flags::DUMP_CSE.clone())? || Flags::isSet(Flags::DUMP_CSE_VERBOSE.clone())? {
                 println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n\n\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\nFinal Results\n")); __mm_s.push_str(&*arcstr::literal!(BORDER)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -2079,7 +2079,7 @@ fn commonSubExpression(mut sysIn: Arc<BackendDAE::EqSystem>, mut sharedIn: Arc<B
                     let mut cseLst: Arc<metamodelica::List<CommonSubExp>> = metamodelica::nil();
                     let mut isInitial: bool = false;
                     isInitial = BackendDAEUtil::isInitializationDAE(sharedIn.clone());
-                    (_, m, mT) = BackendDAEUtil::getAdjacencyMatrix(sysIn.clone(), crate::BackendDAE::IndexType::ABSOLUTE, Some(functionTree.clone()), isInitial.clone())?;
+                    (_, m, mT) = BackendDAEUtil::getAdjacencyMatrix(sysIn.clone(), openmodelica_backend_types::BackendDAE::IndexType::ABSOLUTE, Some(functionTree.clone()), isInitial.clone())?;
                     cseLst = commonSubExpressionFind(m.clone(), mT.clone(), vars.clone(), eqs.clone(), isInitial.clone());
                     syst = commonSubExpressionUpdate(cseLst.clone(), m.clone(), mT.clone(), sysIn.clone())?;
                     GCExt::free(m.clone());
@@ -2130,8 +2130,8 @@ fn commonSubExpressionFind(mut mIn: metamodelica::Array<Arc<metamodelica::List<i
         varIdcs = unwrap_break_err!(UnorderedSet::unique_list(unwrap_break_err!(List::flatten(unwrap_break_err!(List::map1(eqIdcs.clone(), (std::sync::Arc::new(Array::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), mIn.clone()), '__try0)), '__try0), std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>)), '__try0);
         varLst = unwrap_break_err!(List::map1(varIdcs.clone(), (std::sync::Arc::new(BackendVariable::getVarAtIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, BackendDAE::Variables) -> Result<BackendDAE::Var> + 'static>), varsIn.clone()), '__try0);
         vars = unwrap_break_err!(BackendVariable::listVar1(varLst.clone()), '__try0);
-        eqSys = BackendDAEUtil::createEqSystem(vars.clone(), eqs.clone(), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
-        (_, m, mT) = unwrap_break_err!(BackendDAEUtil::getAdjacencyMatrix(eqSys.clone(), crate::BackendDAE::IndexType::ABSOLUTE, None, isInitial.clone()), '__try0);
+        eqSys = BackendDAEUtil::createEqSystem(vars.clone(), eqs.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+        (_, m, mT) = unwrap_break_err!(BackendDAEUtil::getAdjacencyMatrix(eqSys.clone(), openmodelica_backend_types::BackendDAE::IndexType::ABSOLUTE, None, isInitial.clone()), '__try0);
         partitions = unwrap_break_err!(ResolveLoops::partitionBipartiteGraph(m.clone(), mT.clone()), '__try0);
         partitions = unwrap_break_err!(List::filterOnFalse(partitions.clone(), std::sync::Arc::new(fnptr!(listEmpty, _))), '__try0);
         cseLst2 = unwrap_break_err!(List::fold(partitions.clone(), (std::sync::Arc::new({ let __pe_b1 = m.clone(); let __pe_b2 = mT.clone(); let __pe_b3 = vars.clone(); let __pe_b4 = eqs.clone(); let __pe_b5 = eqIdcs.clone(); let __pe_b6 = varIdcs.clone(); move |__pe_a0, __pe_a7| getCSE2(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone(), __pe_a7) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<CommonSubExp>>) -> Result<Arc<metamodelica::List<CommonSubExp>>> + 'static>), metamodelica::nil()), '__try0);
@@ -2147,8 +2147,8 @@ fn commonSubExpressionFind(mut mIn: metamodelica::Array<Arc<metamodelica::List<i
         varIdcs = AvlSetInt::listKeysReverse(varIdcsSet.clone(), metamodelica::nil());
         varLst = unwrap_break_err!(List::map1(varIdcs.clone(), (std::sync::Arc::new(BackendVariable::getVarAtIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, BackendDAE::Variables) -> Result<BackendDAE::Var> + 'static>), varsIn.clone()), '__try0);
         vars = unwrap_break_err!(BackendVariable::listVar1(varLst.clone()), '__try0);
-        eqSys = BackendDAEUtil::createEqSystem(vars.clone(), eqs.clone(), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
-        (_, m, mT) = unwrap_break_err!(BackendDAEUtil::getAdjacencyMatrix(eqSys.clone(), crate::BackendDAE::IndexType::ABSOLUTE, None, isInitial.clone()), '__try0);
+        eqSys = BackendDAEUtil::createEqSystem(vars.clone(), eqs.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+        (_, m, mT) = unwrap_break_err!(BackendDAEUtil::getAdjacencyMatrix(eqSys.clone(), openmodelica_backend_types::BackendDAE::IndexType::ABSOLUTE, None, isInitial.clone()), '__try0);
         partitions = unwrap_break_err!(ResolveLoops::partitionBipartiteGraph(m.clone(), mT.clone()), '__try0);
         cseLst3 = unwrap_break_err!(List::fold(partitions.clone(), (std::sync::Arc::new({ let __pe_b1 = m.clone(); let __pe_b2 = mT.clone(); let __pe_b3 = vars.clone(); let __pe_b4 = eqs.clone(); let __pe_b5 = eqIdcs.clone(); let __pe_b6 = varIdcs.clone(); move |__pe_a0, __pe_a7| getCSE3(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone(), __pe_b6.clone(), __pe_a7) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<CommonSubExp>>) -> Result<Arc<metamodelica::List<CommonSubExp>>> + 'static>), metamodelica::nil()), '__try0);
         cseOut = listAppend(cseLst2.clone(), listAppend(cseLst3.clone(), shortenPathsCSE.clone()));
@@ -2197,8 +2197,8 @@ fn shortenPaths(mut allPartitions: Arc<metamodelica::List<Arc<metamodelica::List
         __acc.reverse()
     });
                 eqs = unwrap_break_err!(BackendEquation::listEquation(eqLst.clone()), '__try0);
-                eqSys = BackendDAEUtil::createEqSystem(pathVars.clone(), eqs.clone(), metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
-                (_, m, mT) = unwrap_break_err!(BackendDAEUtil::getAdjacencyMatrix(eqSys.clone(), crate::BackendDAE::IndexType::SOLVABLE, None, isInitial.clone()), '__try0);
+                eqSys = BackendDAEUtil::createEqSystem(pathVars.clone(), eqs.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+                (_, m, mT) = unwrap_break_err!(BackendDAEUtil::getAdjacencyMatrix(eqSys.clone(), openmodelica_backend_types::BackendDAE::IndexType::SOLVABLE, None, isInitial.clone()), '__try0);
                 let __range1 = 1..=(mT.clone().borrow().len() as i32);
                 for mut idx in __range1 {
                     adjEqs = metamodelica::Dangerous::arrayGetNoBoundsChecking(mT.clone(), idx.clone());

@@ -44,12 +44,12 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::AvlSetInt;
-use crate::BackendDAE;
 use crate::BackendDAEUtil;
 use crate::BackendDump;
 use crate::BackendVariable;
 use crate::ExpressionSolve;
 use openmodelica_ast::Absyn;
+use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::Algorithm;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::DAEUtil;
@@ -78,7 +78,7 @@ pub fn emptyEqns() -> Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equat
 }
 
 pub fn emptyEqnsSized(mut size: i32) -> Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> {
-    let mut outEquationArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = ExpandableArray::new(size.clone(), Arc::new(crate::BackendDAE::Equation::DUMMY_EQUATION));
+    let mut outEquationArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = ExpandableArray::new(size.clone(), Arc::new(openmodelica_backend_types::BackendDAE::Equation::DUMMY_EQUATION));
     outEquationArray
 }
 
@@ -122,7 +122,7 @@ pub fn merge(mut inEqns1: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::E
 
 pub fn listEquation(mut inEquationList: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>> {
     let mut outEquationArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
-    outEquationArray = ExpandableArray::new((inEquationList.clone().len() as i32), Arc::new(crate::BackendDAE::Equation::DUMMY_EQUATION));
+    outEquationArray = ExpandableArray::new((inEquationList.clone().len() as i32), Arc::new(openmodelica_backend_types::BackendDAE::Equation::DUMMY_EQUATION));
     for mut eq in &*inEquationList.clone() {
         let mut eq = eq.clone();
         ExpandableArray::add(eq.clone(), outEquationArray.clone())?;
@@ -136,7 +136,7 @@ pub fn equationList(mut equationArray: Arc<ExpandableArray::ExpandableArray<Arc<
 }
 
 pub fn copyEquationArray(mut inEquationArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>) -> Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> {
-    let mut outEquationArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = ExpandableArray::copy(inEquationArray.clone(), Arc::new(crate::BackendDAE::Equation::DUMMY_EQUATION));
+    let mut outEquationArray: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = ExpandableArray::copy(inEquationArray.clone(), Arc::new(openmodelica_backend_types::BackendDAE::Equation::DUMMY_EQUATION));
     outEquationArray
 }
 
@@ -1212,7 +1212,7 @@ pub fn equationEqual(mut e1: Arc<BackendDAE::Equation>, mut e2: Arc<BackendDAE::
 pub fn equationAddDAE(mut inEquation: Arc<BackendDAE::Equation>, mut inEqSystem: Arc<BackendDAE::EqSystem>) -> Result<Arc<BackendDAE::EqSystem>> {
     let mut outEqSystem: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
     outEqSystem = BackendDAEUtil::setEqSystEqs(inEqSystem.clone(), add(inEquation.clone(), inEqSystem.orderedEqs.clone())?);
-    assign_field!(outEqSystem.matching = Arc::new(crate::BackendDAE::Matching::NO_MATCHING));
+    assign_field!(outEqSystem.matching = Arc::new(openmodelica_backend_types::BackendDAE::Matching::NO_MATCHING));
     Ok(outEqSystem)
 }
 
@@ -1220,7 +1220,7 @@ pub fn equationsAddDAE(mut inEquations: Arc<metamodelica::List<Arc<BackendDAE::E
     let mut outEqSystem: Arc<BackendDAE::EqSystem> = inEqSystem.clone();
     assign_field!(
         outEqSystem.orderedEqs = addList(inEquations.clone(), outEqSystem.orderedEqs.clone())?,
-        outEqSystem.matching = Arc::new(crate::BackendDAE::Matching::NO_MATCHING)
+        outEqSystem.matching = Arc::new(openmodelica_backend_types::BackendDAE::Matching::NO_MATCHING)
     );
     Ok(outEqSystem)
 }
@@ -1595,7 +1595,7 @@ pub fn convertResidualsIntoSolvedEquations(mut inResidualList: Arc<metamodelica:
             currEquation = Arc::new(BackendDAE::Equation::SOLVED_EQUATION { componentRef: componentRef.clone(), exp: exp.clone(), source: source.clone(), attr: eqAttr.clone() });
             currVariable = BackendVariable::makeVar(componentRef.clone())?;
             if isResidual.clone() {
-                currVariable = BackendVariable::setVarKind(currVariable.clone(), crate::BackendDAE::VarKind::DAE_RESIDUAL_VAR)?;
+                currVariable = BackendVariable::setVarKind(currVariable.clone(), openmodelica_backend_types::BackendDAE::VarKind::DAE_RESIDUAL_VAR)?;
             }
             outVarIndex = outVarIndex.clone() + 1;
             outEquationList = metamodelica::cons(currEquation.clone(), outEquationList.clone());
@@ -2321,7 +2321,7 @@ pub fn makeTmpEqnForExp(mut iExp: Arc<DAE::Exp>, mut name: ArcStr, mut offset: i
         cr = ComponentReferenceBasics::makeCrefIdent((name_.clone()).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil());
         oExp = Expression::crefExp(cr.clone())?;
         tmpvar = BackendVariable::makeVar(cr.clone())?;
-        tmpvar = BackendVariable::setVarTS(tmpvar.clone(), Some(crate::BackendDAE::TearingSelect::AVOID));
+        tmpvar = BackendVariable::setVarTS(tmpvar.clone(), Some(openmodelica_backend_types::BackendDAE::TearingSelect::AVOID));
         eqn = Arc::new(BackendDAE::Equation::EQUATION { exp: oExp.clone(), scalar: y.clone(), source: DAE::emptyElementSource().clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_DYNAMIC.clone() });
         if Flags::isSet(Flags::DUMP_SIMPLIFY_LOOPS.clone())? {
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*BackendDump::equationString(eqn.clone())?); __mm_s.push_str(&*literal!(" -- new eqn--\n")); ArcStr::from(__mm_s) }).clone());
@@ -2341,7 +2341,7 @@ pub fn makeTmpEqnForExp(mut iExp: Arc<DAE::Exp>, mut name: ArcStr, mut offset: i
                 update = false;
             } else {
                 tmpvar = BackendVariable::setBindExp(tmpvar.clone(), Some(y.clone()));
-                tmpvar = BackendVariable::setVarKind(tmpvar.clone(), crate::BackendDAE::VarKind::PARAM)?;
+                tmpvar = BackendVariable::setVarKind(tmpvar.clone(), openmodelica_backend_types::BackendDAE::VarKind::PARAM)?;
                 oshared = BackendVariable::addGlobalKnownVarDAE(tmpvar.clone(), oshared.clone())?;
                 para = true;
             }
