@@ -399,7 +399,7 @@ pub mod Block {
         (out_blcks, new_blcks, indices) = (::match_deref::match_deref! { match &(blcks.clone()) {
         Deref @ metamodelica::List::Cons { head: Deref @ WHEN { .. }, tail: rest } => filterWhen(rest.clone(), out_blcks.clone(), new_blcks.clone(), indices.clone())?,
         Deref @ metamodelica::List::Cons { head: blck @ Deref @ ALGORITHM { .. }, tail: rest } => {
-            stmts = Statement::filterDiscrete(var_field!((**blck).stmts, Block::ALGORITHM).clone(), metamodelica::nil());
+            stmts = Statement::filterDiscrete(var_field!((**blck).stmts, Block::ALGORITHM).clone(), metamodelica::nil())?;
             if stmts.clone().is_empty() {
                 (out_blcks, new_blcks, indices) = filterWhen(rest.clone(), out_blcks.clone(), new_blcks.clone(), indices.clone())?;
             } else if List::compareLength(stmts.clone(), var_field!((**blck).stmts, Block::ALGORITHM).clone())? != 0 {
@@ -502,7 +502,7 @@ pub mod Block {
             (tmp, simCodeIndices) = fromPartition(partition.clone(), simCodeIndices.clone(), simcode_map.clone(), equation_map.clone())?;
             tmp_lst = metamodelica::cons(tmp.clone(), tmp_lst.clone());
         }
-        blcks = List::flatten(tmp_lst.clone());
+        blcks = List::flatten(tmp_lst.clone())?;
         Ok((blcks, simCodeIndices))
     }
 
@@ -530,7 +530,7 @@ pub mod Block {
         let mut baseParts: Arc<metamodelica::List<Arc<SimPartition::NSimPartition>>> = metamodelica::nil();
         let mut eventClocks: Arc<metamodelica::List<Arc<Block>>> = metamodelica::nil();
         let mut simCodeIndices: SimCodeIndices = simCodeIndices;
-        let mut clock_collector: Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<metamodelica::List<Arc<SimPartition::NSimPartition>>>>> = UnorderedMap::new((std::sync::Arc::new(fnptr!(Partitioning::BClock::hash, Arc<BClock::BClock>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>) -> Result<i32> + 'static>), (std::sync::Arc::new(Partitioning::BClock::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>, Arc<BClock::BClock>) -> Result<bool> + 'static>), 1);
+        let mut clock_collector: Arc<UnorderedMap::UnorderedMap<Arc<BClock::BClock>, Arc<metamodelica::List<Arc<SimPartition::NSimPartition>>>>> = UnorderedMap::new((std::sync::Arc::new(Partitioning::BClock::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>) -> Result<i32> + 'static>), (std::sync::Arc::new(Partitioning::BClock::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BClock::BClock>, Arc<BClock::BClock>) -> Result<bool> + 'static>), 1);
         let mut blcks: Arc<metamodelica::List<Arc<Block>>> = metamodelica::nil();
         let mut vars: Arc<metamodelica::List<Arc<SimVar::SimVar>>> = metamodelica::nil();
         let mut clock: Arc<BClock::BClock> = Arc::new(<BClock::BClock as ::std::default::Default>::default());
@@ -622,7 +622,7 @@ pub mod Block {
                 (tmp, simCodeIndices, index) = fromStrongComponent(comps.borrow()[(i.clone()-1) as usize].clone(), simCodeIndices.clone(), kind.clone(), simcode_map.clone(), equation_map.clone())?;
                 alias_index = (::match_deref::match_deref! { match &(comps.borrow()[(i.clone()-1) as usize].clone()) {
         Deref @ StrongComponent::ALIAS { aliasInfo, .. } => {
-            UnorderedMap::getOrDefault(aliasInfo.clone(), simCodeIndices.alias_map.clone(), -1)
+            UnorderedMap::getOrDefault(aliasInfo.clone(), simCodeIndices.alias_map.clone(), -1)?
         },
         _ => {
             index.clone()
@@ -713,7 +713,7 @@ pub mod Block {
             let mut eqn_ptr: Pointer::Pointer<Arc<Equation::Equation>>;
             let mut single_call: Arc<Block> = Arc::new(<Block as ::std::default::Default>::default());
             let mut entwined_index_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
-            entwined_index_map = UnorderedMap::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
+            entwined_index_map = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
             for mut slice in &*var_field!((*comp).entwined_slices, StrongComponent::NBStrongComponent::ENTWINED_COMPONENT).clone() {
                 let mut slice = slice.clone();
                 (single_call, simCodeIndices, _) = fromStrongComponent(slice.clone(), simCodeIndices.clone(), kind.clone(), simcode_map.clone(), equation_map.clone())?;
@@ -747,7 +747,7 @@ pub mod Block {
             for mut slice in &*strict.iteration_vars.clone() {
                 let mut slice = slice.clone();
                 var = Pointer::access(Slice::getT(slice.clone()));
-                if Variable::size(var.clone(), false) > 1 {
+                if Variable::size(var.clone(), false)? > 1 {
                     for mut scal_var in &*Scalarize::scalarizeBackendVariable(var.clone(), slice.indices.clone())? {
                         let mut scal_var = scal_var.clone();
                         crefs = metamodelica::cons(scal_var.name.clone(), crefs.clone());
@@ -769,7 +769,7 @@ pub mod Block {
         Deref @ StrongComponent::ALIAS { .. } => {
             let mut tmp: Arc<Block> = Arc::new(<Block as ::std::default::Default>::default());
             let mut aliasOf: i32 = 0;
-            aliasOf = UnorderedMap::getOrDefault(var_field!((*comp).aliasInfo, StrongComponent::NBStrongComponent::ALIAS).clone(), simCodeIndices.alias_map.clone(), -1);
+            aliasOf = UnorderedMap::getOrDefault(var_field!((*comp).aliasInfo, StrongComponent::NBStrongComponent::ALIAS).clone(), simCodeIndices.alias_map.clone(), -1)?;
             tmp = Arc::new(Block::ALIAS { index: simCodeIndices.equationIndex.clone(), aliasInfo: var_field!((*comp).aliasInfo, StrongComponent::NBStrongComponent::ALIAS).clone(), aliasOf: aliasOf.clone(), isDiscrete: StrongComponent::isDiscrete(comp.clone())? && !(StrongComponent::isAlgebraicLoop(var_field!((*comp).original, StrongComponent::NBStrongComponent::ALIAS).clone())) });
             simCodeIndices.equationIndex = simCodeIndices.equationIndex.clone() + 1;
             (tmp.clone(), getIndex(tmp.clone())?)
@@ -1142,7 +1142,7 @@ pub mod Block {
             Arc::new(OldSimCode::SimEqSystem::SES_IFEQUATION { eqAttr: BEquation::EquationAttributes::convert(var_field!((*blck).attr, Block::IF).clone())?, source: var_field!((*blck).source, Block::IF).clone(), elsebranch: else_branch.clone(), ifbranches: oldBranches.clone().reverse(), index: var_field!((*blck).index, Block::IF).clone() })
         },
         Deref @ WHEN { .. } => {
-            Arc::new(OldSimCode::SimEqSystem::SES_WHEN { eqAttr: BEquation::EquationAttributes::convert(var_field!((*blck).attr, Block::WHEN).clone())?, source: var_field!((*blck).source, Block::WHEN).clone(), elseWhen: Util::applyOption(var_field!((*blck).else_when, Block::WHEN).clone(), (std::sync::Arc::new(convert) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Block>) -> Result<Arc<OldSimCode::SimEqSystem>> + 'static>)), whenStmtLst: ({
+            Arc::new(OldSimCode::SimEqSystem::SES_WHEN { eqAttr: BEquation::EquationAttributes::convert(var_field!((*blck).attr, Block::WHEN).clone())?, source: var_field!((*blck).source, Block::WHEN).clone(), elseWhen: Util::applyOption(var_field!((*blck).else_when, Block::WHEN).clone(), (std::sync::Arc::new(convert) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Block>) -> Result<Arc<OldSimCode::SimEqSystem>> + 'static>))?, whenStmtLst: ({
         let mut __acc: Arc<metamodelica::List<OldBackendDAE::WhenOperator>> = metamodelica::nil();
         for mut stmt in (var_field!((*blck).when_stmts, Block::WHEN).clone()).into_iter().cloned() {
             let __x = BEquation::WhenStatement::convert(stmt.clone())?;
@@ -1181,28 +1181,28 @@ pub mod Block {
         Ok(oldBlck)
     }
 
-    pub fn convertList(mut blck_lst: Arc<metamodelica::List<Arc<Block>>>) -> Arc<metamodelica::List<Arc<OldSimCode::SimEqSystem>>> {
+    pub fn convertList(mut blck_lst: Arc<metamodelica::List<Arc<Block>>>) -> Result<Arc<metamodelica::List<Arc<OldSimCode::SimEqSystem>>>> {
         let mut oldBlck_lst: Arc<metamodelica::List<Arc<OldSimCode::SimEqSystem>>> = ({
         let mut __acc: Arc<metamodelica::List<Arc<OldSimCode::SimEqSystem>>> = metamodelica::nil();
         for mut blck in (blck_lst.clone()).into_iter().cloned() {
-            let __x = convert(blck.clone()).unwrap();
+            let __x = convert(blck.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-        oldBlck_lst
+        Ok(oldBlck_lst)
     }
 
-    pub fn convertListList(mut blck_lst_lst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Block>>>>>) -> Arc<metamodelica::List<Arc<metamodelica::List<Arc<OldSimCode::SimEqSystem>>>>> {
+    pub fn convertListList(mut blck_lst_lst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Block>>>>>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<Arc<OldSimCode::SimEqSystem>>>>>> {
         let mut oldBlck_lst_lst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<OldSimCode::SimEqSystem>>>>> = ({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<OldSimCode::SimEqSystem>>>>> = metamodelica::nil();
         for mut blck_lst in (blck_lst_lst.clone()).into_iter().cloned() {
-            let __x = convertList(blck_lst.clone());
+            let __x = convertList(blck_lst.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-        oldBlck_lst_lst
+        Ok(oldBlck_lst_lst)
     }
 
     pub fn fixIndices(mut blcks: Arc<metamodelica::List<Arc<Block>>>, mut acc: Arc<metamodelica::List<Arc<Block>>>, mut indices: SimCodeIndices) -> Result<(Arc<metamodelica::List<Arc<Block>>>, SimCodeIndices)> {
@@ -1472,7 +1472,7 @@ pub mod NonlinearSystem {
             let mut cref = cref.clone();
             crefs = metamodelica::cons(ComponentRef::toDAE(cref.clone())?, crefs.clone());
         }
-        oldSystem = Arc::new(OldSimCode::NonlinearSystem { clockIndex: None, tornSystem: system.torn.clone(), mixedSystem: system.mixed.clone(), homotopySupport: system.homotopy.clone(), jacobianMatrix: Util::applyOption(Pointer::access(system.jacobian.clone()), (std::sync::Arc::new(SimJacobian::convert) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimJacobian::SimJacobian>) -> Result<Arc<OldSimCode::JacobianMatrix>> + 'static>)), nUnknowns: system.size.clone(), indexNonLinearSystem: system.indexSystem.clone(), crefs: crefs.clone().reverse(), eqs: Block::convertList(system.blcks.clone()), index: system.index.clone() });
+        oldSystem = Arc::new(OldSimCode::NonlinearSystem { clockIndex: None, tornSystem: system.torn.clone(), mixedSystem: system.mixed.clone(), homotopySupport: system.homotopy.clone(), jacobianMatrix: Util::applyOption(Pointer::access(system.jacobian.clone()), (std::sync::Arc::new(SimJacobian::convert) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimJacobian::SimJacobian>) -> Result<Arc<OldSimCode::JacobianMatrix>> + 'static>))?, nUnknowns: system.size.clone(), indexNonLinearSystem: system.indexSystem.clone(), crefs: crefs.clone().reverse(), eqs: Block::convertList(system.blcks.clone())?, index: system.index.clone() });
         Ok(oldSystem)
     }
 

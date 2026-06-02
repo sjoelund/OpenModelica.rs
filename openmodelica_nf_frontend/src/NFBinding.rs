@@ -612,30 +612,30 @@ pub fn applyExp(mut binding: Arc<NFBinding>, mut r#fn: Arc<dyn ::std::ops::Fn(Ar
     Ok(())
 }
 
-pub fn applyExpShallow(mut binding: Arc<NFBinding>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>) -> () {
+pub fn applyExpShallow(mut binding: Arc<NFBinding>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>) -> Result<()> {
     pub type ApplyFn = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>;
 
     let () = (::match_deref::match_deref! { match &(binding.clone()) {
         Deref @ UNTYPED_BINDING { .. } => {
-            r#fn(var_field!((*binding).bindingExp, NFBinding::UNTYPED_BINDING).clone()).unwrap();
+            r#fn(var_field!((*binding).bindingExp, NFBinding::UNTYPED_BINDING).clone())?;
             ()
         },
         Deref @ TYPED_BINDING { .. } => {
-            r#fn(var_field!((*binding).bindingExp, NFBinding::TYPED_BINDING).clone()).unwrap();
+            r#fn(var_field!((*binding).bindingExp, NFBinding::TYPED_BINDING).clone())?;
             ()
         },
         Deref @ FLAT_BINDING { .. } => {
-            r#fn(var_field!((*binding).bindingExp, NFBinding::FLAT_BINDING).clone()).unwrap();
+            r#fn(var_field!((*binding).bindingExp, NFBinding::FLAT_BINDING).clone())?;
             ()
         },
         Deref @ CEVAL_BINDING { .. } => {
-            r#fn(var_field!((*binding).bindingExp, NFBinding::CEVAL_BINDING).clone()).unwrap();
+            r#fn(var_field!((*binding).bindingExp, NFBinding::CEVAL_BINDING).clone())?;
             ()
         },
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    ()
+    Ok(())
 }
 
 pub fn mapExp(mut binding: Arc<NFBinding>, mut mapFn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<NFBinding>> {
@@ -679,7 +679,7 @@ pub fn mapExp(mut binding: Arc<NFBinding>, mut mapFn: Arc<dyn ::std::ops::Fn(Arc
     Ok(binding)
 }
 
-pub fn mapExpShallow(mut binding: Arc<NFBinding>, mut mapFn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Arc<NFBinding> {
+pub fn mapExpShallow(mut binding: Arc<NFBinding>, mut mapFn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<NFBinding>> {
     pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>;
 
     let mut binding: Arc<NFBinding> = binding;
@@ -687,28 +687,28 @@ pub fn mapExpShallow(mut binding: Arc<NFBinding>, mut mapFn: Arc<dyn ::std::ops:
     let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let () = (::match_deref::match_deref! { match &(binding.clone()) {
         Deref @ UNTYPED_BINDING { bindingExp: e1, .. } => {
-            e2 = mapFn(e1.clone()).unwrap();
+            e2 = mapFn(e1.clone())?;
             if !(referenceEq(&e1.clone(),&e2.clone())) {
                 assign_variant_field!(binding => NFBinding::UNTYPED_BINDING; bindingExp = e2.clone());
             }
             ()
         },
         Deref @ TYPED_BINDING { bindingExp: e1, .. } => {
-            e2 = mapFn(e1.clone()).unwrap();
+            e2 = mapFn(e1.clone())?;
             if !(referenceEq(&e1.clone(),&e2.clone())) {
                 assign_variant_field!(binding => NFBinding::TYPED_BINDING; bindingExp = e2.clone());
             }
             ()
         },
         Deref @ FLAT_BINDING { bindingExp: e1, .. } => {
-            e2 = mapFn(e1.clone()).unwrap();
+            e2 = mapFn(e1.clone())?;
             if !(referenceEq(&e1.clone(),&e2.clone())) {
                 assign_variant_field!(binding => NFBinding::FLAT_BINDING; bindingExp = e2.clone());
             }
             ()
         },
         Deref @ CEVAL_BINDING { bindingExp: e1 } => {
-            e2 = mapFn(e1.clone()).unwrap();
+            e2 = mapFn(e1.clone())?;
             if !(referenceEq(&e1.clone(),&e2.clone())) {
                 assign_variant_field!(binding => NFBinding::CEVAL_BINDING; bindingExp = e2.clone());
             }
@@ -717,7 +717,7 @@ pub fn mapExpShallow(mut binding: Arc<NFBinding>, mut mapFn: Arc<dyn ::std::ops:
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    binding
+    Ok(binding)
 }
 
 pub fn foldExp<ArgT: Clone + 'static>(mut binding: Arc<NFBinding>, mut foldFn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
@@ -912,7 +912,7 @@ pub fn isEvaluated(mut binding: Arc<NFBinding>) -> bool {
 pub fn hasTypeOrigin(mut binding: Arc<NFBinding>) -> Result<bool> {
     let mut res: bool = false;
     res = (::match_deref::match_deref! { match &(binding.clone()) {
-        Deref @ RAW_BINDING { .. } if (!(var_field!((*binding).subs, NFBinding::RAW_BINDING).clone().is_empty())) => Subscript::isSplitClassProxy(listHead(var_field!((*binding).subs, NFBinding::RAW_BINDING).clone())?),
+        Deref @ RAW_BINDING { .. } if (!(var_field!((*binding).subs, NFBinding::RAW_BINDING).clone().is_empty())) => Subscript::isSplitClassProxy(listHead(var_field!((*binding).subs, NFBinding::RAW_BINDING).clone())?)?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -983,9 +983,9 @@ pub fn actualConfidence(mut binding: Arc<NFBinding>) -> Result<i32> {
         let () = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } if (ComponentRef::isCref(var_field!((*exp).cref, Expression::NFExpression::CREF).clone())) => {
             node = InstNode::resolveInner(ComponentRef::node(var_field!((*exp).cref, Expression::NFExpression::CREF).clone())?);
-            if InstNode::isComponent(node.clone()) {
+            if InstNode::isComponent(node.clone())? {
                 comp = InstNode::component(node.clone())?;
-                if Component::variability(comp.clone()) < Variability::DISCRETE.clone() {
+                if Component::variability(comp.clone())? < Variability::DISCRETE.clone() {
                     b = Component::getBinding(comp.clone());
                 }
             }

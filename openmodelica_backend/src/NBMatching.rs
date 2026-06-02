@@ -116,7 +116,7 @@ pub fn regular(mut matching: Arc<NBMatching>, mut adj: Arc<Adjacency::Matrix::Ma
     let mut matching: Arc<NBMatching> = matching;
     let mut marked_eqns: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     (matching, marked_eqns, _, _) = continue_(matching.clone(), adj.clone(), transposed.clone(), clear.clone())?;
-    if !(partially.clone()) && !(List::flatten(marked_eqns.clone()).is_empty()) {
+    if !(partially.clone()) && !(List::flatten(marked_eqns.clone())?.is_empty()) {
         Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBMatching.regular")); __mm_s.push_str(&*literal!(" failed because the partition is structurally singular.")); ArcStr::from(__mm_s) }).clone()])?;
         bail!("fail");
     }
@@ -151,7 +151,7 @@ pub fn singular(mut matching: Arc<NBMatching>, mut adj: Arc<Adjacency::Matrix::M
     }
     if changed.clone() {
         full = Adjacency::Matrix::createFull(vars.clone(), eqns.clone(), kind.clone())?;
-        adj = Adjacency::Matrix::fullToFinal(full.clone(), vars.map.clone(), eqns.map.clone(), eqns.clone(), matrixStrictness.clone(), Arc::new(crate::NBEquation::Iterator::EMPTY));
+        adj = Adjacency::Matrix::fullToFinal(full.clone(), vars.map.clone(), eqns.map.clone(), eqns.clone(), matrixStrictness.clone(), Arc::new(crate::NBEquation::Iterator::EMPTY))?;
         if Partition::kindIsInitial(kind.clone()) {
             matching = regular(EMPTY_MATCHING().clone(), adj.clone(), false, false, true)?;
         } else {
@@ -190,14 +190,14 @@ pub fn isEmpty(mut matching: Arc<NBMatching>) -> bool {
     b
 }
 
-pub fn isPerfect(mut matching: Arc<NBMatching>) -> bool {
+pub fn isPerfect(mut matching: Arc<NBMatching>) -> Result<bool> {
     let mut b: bool = false;
     if (matching.var_to_eqn.clone().borrow().len() as i32) > (matching.eqn_to_var.clone().borrow().len() as i32) {
-        b = Array::all(matching.eqn_to_var.clone(), (std::sync::Arc::new({ let __pe_b1 = 0; move |__pe_a0| Ok(intGt(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>));
+        b = Array::all(matching.eqn_to_var.clone(), (std::sync::Arc::new({ let __pe_b1 = 0; move |__pe_a0| Ok(intGt(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
     } else {
-        b = Array::all(matching.var_to_eqn.clone(), (std::sync::Arc::new({ let __pe_b1 = 0; move |__pe_a0| Ok(intGt(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>));
+        b = Array::all(matching.var_to_eqn.clone(), (std::sync::Arc::new({ let __pe_b1 = 0; move |__pe_a0| Ok(intGt(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
     }
-    b
+    Ok(b)
 }
 
 pub fn getAssignments(mut matching: Arc<NBMatching>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<(metamodelica::Array<i32>, metamodelica::Array<i32>)> {
@@ -225,10 +225,10 @@ pub fn getMatches(mut matching: Arc<NBMatching>, mut mapping_opt: Option<Arc<Adj
     let mut start_idx: i32 = 0;
     if isSome(mapping_opt.clone()) {
         mapping = Util::getOption(mapping_opt.clone())?;
-        var_map_matched = UnorderedMap::new((std::sync::Arc::new(fnptr!(BVariable::hash, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(BVariable::equalName, Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 1);
-        var_map_unmatched = UnorderedMap::new((std::sync::Arc::new(fnptr!(BVariable::hash, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(BVariable::equalName, Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 1);
-        eqn_map_matched = UnorderedMap::new((std::sync::Arc::new(fnptr!(Equation::hash, Pointer::Pointer<Arc<Equation::Equation>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(Equation::equalName, Pointer::Pointer<Arc<Equation::Equation>>, Pointer::Pointer<Arc<Equation::Equation>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>, Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>), 1);
-        eqn_map_unmatched = UnorderedMap::new((std::sync::Arc::new(fnptr!(Equation::hash, Pointer::Pointer<Arc<Equation::Equation>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(Equation::equalName, Pointer::Pointer<Arc<Equation::Equation>>, Pointer::Pointer<Arc<Equation::Equation>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>, Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>), 1);
+        var_map_matched = UnorderedMap::new((std::sync::Arc::new(BVariable::hash) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(BVariable::equalName) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 1);
+        var_map_unmatched = UnorderedMap::new((std::sync::Arc::new(BVariable::hash) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(BVariable::equalName) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 1);
+        eqn_map_matched = UnorderedMap::new((std::sync::Arc::new(Equation::hash) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<i32> + 'static>), (std::sync::Arc::new(Equation::equalName) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>, Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>), 1);
+        eqn_map_unmatched = UnorderedMap::new((std::sync::Arc::new(Equation::hash) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<i32> + 'static>), (std::sync::Arc::new(Equation::equalName) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>, Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>), 1);
         let __range0 = 1..=(matching.var_to_eqn.clone().borrow().len() as i32);
         for mut var in __range0 {
             arr_var = ExpandableArray::get(mapping.var_StA.borrow()[(var.clone()-1) as usize].clone(), variables.varArr.clone())?;
@@ -252,7 +252,7 @@ pub fn getMatches(mut matching: Arc<NBMatching>, mut mapping_opt: Option<Arc<Adj
         matched_vars = ({
         let mut __acc: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>> = metamodelica::nil();
         for mut slice in (Slice::fromMap(var_map_matched.clone())).into_iter().cloned() {
-            let __x = Slice::simplify(slice.clone(), (std::sync::Arc::new({ let __pe_b1 = true; move |__pe_a0| Ok(BVariable::size(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>))?;
+            let __x = Slice::simplify(slice.clone(), (std::sync::Arc::new({ let __pe_b1 = true; move |__pe_a0| BVariable::size(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>))?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -260,7 +260,7 @@ pub fn getMatches(mut matching: Arc<NBMatching>, mut mapping_opt: Option<Arc<Adj
         unmatched_vars = ({
         let mut __acc: Arc<metamodelica::List<Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>>> = metamodelica::nil();
         for mut slice in (Slice::fromMap(var_map_unmatched.clone())).into_iter().cloned() {
-            let __x = Slice::simplify(slice.clone(), (std::sync::Arc::new({ let __pe_b1 = true; move |__pe_a0| Ok(BVariable::size(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>))?;
+            let __x = Slice::simplify(slice.clone(), (std::sync::Arc::new({ let __pe_b1 = true; move |__pe_a0| BVariable::size(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>))?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()

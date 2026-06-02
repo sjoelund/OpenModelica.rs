@@ -334,7 +334,7 @@ pub fn matchesFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inUnifyWith: Arc<Absyn::E
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::Exp::CALL { function_: cr1a, functionArgs: fargs1a, .. }, Deref @ Absyn::Exp::CALL { function_: cr1b, functionArgs: fargs1b, .. }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
-                    let true = (AbsynUtil::crefEqual(cr1a.clone(), cr1b.clone())) else { bail!("pattern mismatch") };
+                    let true = (AbsynUtil::crefEqual(cr1a.clone(), cr1b.clone())?) else { bail!("pattern mismatch") };
                     outBinds = matchesFargsFrontEnd(fargs1a.clone(), fargs1b.clone(), inAcc.clone())?;
                     Ok(outBinds.clone())
                 }
@@ -345,7 +345,7 @@ pub fn matchesFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inUnifyWith: Arc<Absyn::E
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ Absyn::Exp::PARTEVALFUNCTION { function_: cr1a, functionArgs: fargs1a }, Deref @ Absyn::Exp::PARTEVALFUNCTION { function_: cr1b, functionArgs: fargs1b }) => {
                     let mut outBinds: Arc<metamodelica::List<Bind>> = outBinds.clone();
-                    let true = (AbsynUtil::crefEqual(cr1a.clone(), cr1b.clone())) else { bail!("pattern mismatch") };
+                    let true = (AbsynUtil::crefEqual(cr1a.clone(), cr1b.clone())?) else { bail!("pattern mismatch") };
                     outBinds = matchesFargsFrontEnd(fargs1a.clone(), fargs1b.clone(), inAcc.clone())?;
                     Ok(outBinds.clone())
                 }

@@ -284,7 +284,7 @@ fn flattenArray(mut exp: Arc<Expression::NFExpression>, mut arrays: Arc<metamode
 
 fn flattenArray_impl(mut exp: Arc<Expression::NFExpression>, mut arrays: Arc<metamodelica::List<metamodelica::Array<Arc<Expression::NFExpression>>>>) -> Result<Arc<metamodelica::List<metamodelica::Array<Arc<Expression::NFExpression>>>>> {
     let mut arrays: Arc<metamodelica::List<metamodelica::Array<Arc<Expression::NFExpression>>>> = arrays;
-    if Expression::isVector(exp.clone()) {
+    if Expression::isVector(exp.clone())? {
         arrays = metamodelica::cons(Expression::arrayElements(exp.clone())?, arrays.clone());
     } else {
         let __range0 = Expression::arrayElements(exp.clone())?.borrow().iter().cloned().collect::<Vec<_>>();

@@ -216,7 +216,7 @@ pub fn perfectFit(mut fnDer: Arc<NFFunctionDerivative>, mut interface_map: Arc<U
     for mut condition in &*fnDer.conditions.clone() {
         let mut condition = condition.clone();
         (_, name, cond) = condition.clone();
-        if cond.clone() == Condition::ZERO_DERIVATIVE.clone() && !(UnorderedMap::contains((name.clone()).clone(), interface_map.clone())) {
+        if cond.clone() == Condition::ZERO_DERIVATIVE.clone() && !(UnorderedMap::contains((name.clone()).clone(), interface_map.clone())?) {
             b = false;
             return Ok(b.clone());
         }

@@ -195,8 +195,8 @@ pub fn makeConnections(mut lhsCref: Arc<ComponentRef::NFComponentRef>, mut lhsTy
         return Ok(connections.clone());
     }
     if InstNode::isName(ComponentRef::node(lhsCref.clone())?) || InstNode::isName(ComponentRef::node(rhsCref.clone())?) {
-        cl1 = list![Connector::fromCref(lhsCref.clone(), lhsType.clone(), source.clone())];
-        cl2 = list![Connector::fromCref(rhsCref.clone(), rhsType.clone(), source.clone())];
+        cl1 = list![Connector::fromCref(lhsCref.clone(), lhsType.clone(), source.clone())?];
+        cl2 = list![Connector::fromCref(rhsCref.clone(), rhsType.clone(), source.clone())?];
     } else {
         cl1 = makeConnectors(lhsCref.clone(), lhsType.clone(), source.clone())?;
         cl2 = makeConnectors(rhsCref.clone(), rhsType.clone(), source.clone())?;
@@ -221,7 +221,7 @@ pub fn makeConnectors(mut cref: Arc<ComponentRef::NFComponentRef>, mut ty: Arc<T
     let mut cref_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut expanded: bool = false;
     if !(Flags::isSet(Flags::NF_SCALARIZE.clone())?) {
-        connectors = list![Connector::fromCref(cref.clone(), ComponentRef::getSubscriptedType(cref.clone(), false)?, source.clone())];
+        connectors = list![Connector::fromCref(cref.clone(), ComponentRef::getSubscriptedType(cref.clone(), false)?, source.clone())?];
         return Ok(connectors.clone());
     }
     cref_exp = Arc::new(Expression::NFExpression::CREF { ty: ComponentRef::getSubscriptedType(cref.clone(), false)?, cref: cref.clone() });
@@ -234,19 +234,19 @@ pub fn makeConnectors(mut cref: Arc<ComponentRef::NFComponentRef>, mut ty: Arc<T
     Ok(connectors)
 }
 
-pub fn split(mut conns: Arc<NFConnections>) -> Arc<NFConnections> {
+pub fn split(mut conns: Arc<NFConnections>) -> Result<Arc<NFConnections>> {
     let mut conns: Arc<NFConnections> = conns;
     assign_field!(
-        conns.flows = List::mapFlat(conns.flows.clone(), (std::sync::Arc::new(Connector::split) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<Arc<metamodelica::List<Arc<Connector::NFConnector>>>> + 'static>)),
-        conns.connections = List::mapFlat(conns.connections.clone(), (std::sync::Arc::new(Connection::split) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connection::NFConnection>) -> Result<Arc<metamodelica::List<Arc<Connection::NFConnection>>>> + 'static>))
+        conns.flows = List::mapFlat(conns.flows.clone(), (std::sync::Arc::new(Connector::split) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<Arc<metamodelica::List<Arc<Connector::NFConnector>>>> + 'static>))?,
+        conns.connections = List::mapFlat(conns.connections.clone(), (std::sync::Arc::new(Connection::split) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connection::NFConnection>) -> Result<Arc<metamodelica::List<Arc<Connection::NFConnection>>>> + 'static>))?
     );
-    conns
+    Ok(conns)
 }
 
-pub fn connectCount(mut conn: Arc<Connector::NFConnector>, mut connectCounts: Arc<UnorderedMap::UnorderedMap<Arc<Connector::NFConnector>, i32>>) -> i32 {
+pub fn connectCount(mut conn: Arc<Connector::NFConnector>, mut connectCounts: Arc<UnorderedMap::UnorderedMap<Arc<Connector::NFConnector>, i32>>) -> Result<i32> {
     let mut count: i32 = 0;
-    count = UnorderedMap::getOrDefault(conn.clone(), connectCounts.clone(), 0);
-    count
+    count = UnorderedMap::getOrDefault(conn.clone(), connectCounts.clone(), 0)?;
+    Ok(count)
 }
 
 pub fn scalarize(mut conns: Arc<NFConnections>, mut keepSingleConnectedArrays: bool) -> Result<Arc<NFConnections>> {
@@ -259,7 +259,7 @@ pub fn scalarize(mut conns: Arc<NFConnections>, mut keepSingleConnectedArrays: b
         connect_counts = analyseArrayConnections(conns.clone())?;
         for mut f in &*conns.flows.clone() {
             let mut f = f.clone();
-            count = connectCount(f.clone(), connect_counts.clone());
+            count = connectCount(f.clone(), connect_counts.clone())?;
             if count.clone() == 0 {
                 flows = metamodelica::cons(f.clone(), flows.clone());
             } else if count.clone() > 1 || count.clone() == -1 {
@@ -268,7 +268,7 @@ pub fn scalarize(mut conns: Arc<NFConnections>, mut keepSingleConnectedArrays: b
         }
         for mut c in &*conns.connections.clone() {
             let mut c = c.clone();
-            if !(ConnectorType::isStream(c.lhs.cty.clone())) && connectCount(c.lhs.clone(), connect_counts.clone()) == 1 && connectCount(c.rhs.clone(), connect_counts.clone()) == 1 {
+            if !(ConnectorType::isStream(c.lhs.cty.clone())) && connectCount(c.lhs.clone(), connect_counts.clone())? == 1 && connectCount(c.rhs.clone(), connect_counts.clone())? == 1 {
                 connections = metamodelica::cons(c.clone(), connections.clone());
             } else {
                 connections = listAppend(Connection::scalarize(c.clone())?, connections.clone());
@@ -280,8 +280,8 @@ pub fn scalarize(mut conns: Arc<NFConnections>, mut keepSingleConnectedArrays: b
         );
     } else {
         assign_field!(
-            conns.flows = List::mapFlat(conns.flows.clone(), (std::sync::Arc::new(Connector::scalarize) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<Arc<metamodelica::List<Arc<Connector::NFConnector>>>> + 'static>)),
-            conns.connections = List::mapFlat(conns.connections.clone(), (std::sync::Arc::new(Connection::scalarize) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connection::NFConnection>) -> Result<Arc<metamodelica::List<Arc<Connection::NFConnection>>>> + 'static>))
+            conns.flows = List::mapFlat(conns.flows.clone(), (std::sync::Arc::new(Connector::scalarize) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<Arc<metamodelica::List<Arc<Connector::NFConnector>>>> + 'static>))?,
+            conns.connections = List::mapFlat(conns.connections.clone(), (std::sync::Arc::new(Connection::scalarize) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connection::NFConnection>) -> Result<Arc<metamodelica::List<Arc<Connection::NFConnection>>>> + 'static>))?
         );
     }
     Ok(conns)
@@ -289,7 +289,7 @@ pub fn scalarize(mut conns: Arc<NFConnections>, mut keepSingleConnectedArrays: b
 
 pub fn analyseArrayConnections(mut conns: Arc<NFConnections>) -> Result<Arc<UnorderedMap::UnorderedMap<Arc<Connector::NFConnector>, i32>>> {
     let mut connectCounts: Arc<UnorderedMap::UnorderedMap<Arc<Connector::NFConnector>, i32>> = <Arc<UnorderedMap::UnorderedMap<Arc<Connector::NFConnector>, i32>> as ::std::default::Default>::default();
-    connectCounts = UnorderedMap::new((std::sync::Arc::new(fnptr!(Connector::hashNoSubs, Arc<Connector::NFConnector>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(Connector::isEqualNoSubs, Arc<Connector::NFConnector>, Arc<Connector::NFConnector>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>, Arc<Connector::NFConnector>) -> Result<bool> + 'static>), (conns.connections.clone().len() as i32));
+    connectCounts = UnorderedMap::new((std::sync::Arc::new(Connector::hashNoSubs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<i32> + 'static>), (std::sync::Arc::new(Connector::isEqualNoSubs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>, Arc<Connector::NFConnector>) -> Result<bool> + 'static>), (conns.connections.clone().len() as i32));
     for mut conn in &*conns.connections.clone() {
         let mut conn = conn.clone();
         analyseArrayConnector(conn.lhs.clone(), connectCounts.clone())?;
@@ -313,41 +313,41 @@ pub fn analyseArrayConnector(mut conn: Arc<Connector::NFConnector>, mut connectC
 
     if Connector::isArray(conn.clone()) {
         UnorderedMap::addUpdate(conn.clone(), (std::sync::Arc::new(fnptr!(update, Option<i32>)) as std::sync::Arc<dyn ::std::ops::Fn(Option<i32>) -> Result<i32> + 'static>), connectCounts.clone())?;
-    } else if ComponentRef::hasSubscripts(conn.name.clone()) {
+    } else if ComponentRef::hasSubscripts(conn.name.clone())? {
         UnorderedMap::add(conn.clone(), -1, connectCounts.clone())?;
     }
     Ok(())
 }
 
-pub fn toString(mut conns: Arc<NFConnections>) -> ArcStr {
+pub fn toString(mut conns: Arc<NFConnections>) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     let mut strl: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     strl = metamodelica::cons((literal!("FLOWS:")).clone(), strl.clone());
     for mut f in &*conns.flows.clone() {
         let mut f = f.clone();
-        strl = metamodelica::cons((Connector::toString(f.clone())).clone(), strl.clone());
+        strl = metamodelica::cons((Connector::toString(f.clone())?).clone(), strl.clone());
     }
     strl = metamodelica::cons((literal!("\nCONNECTIONS:")).clone(), strl.clone());
     for mut c in &*conns.connections.clone() {
         let mut c = c.clone();
-        strl = metamodelica::cons((Connection::toString(c.clone())).clone(), strl.clone());
+        strl = metamodelica::cons((Connection::toString(c.clone())?).clone(), strl.clone());
     }
     strl = metamodelica::Dangerous::listReverseInPlace(strl.clone());
     r#str = stringDelimitList(strl.clone(), (literal!("\n")).clone());
-    r#str
+    Ok(r#str)
 }
 
-pub fn toStringList(mut conns: Arc<NFConnections>) -> Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> {
+pub fn toStringList(mut conns: Arc<NFConnections>) -> Result<Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>> {
     let mut strl: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
     strl = ({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
         for mut c in (conns.connections.clone()).into_iter().cloned() {
-            let __x = list![(Connector::toString(c.lhs.clone())).clone(), (Connector::toString(c.rhs.clone())).clone()];
+            let __x = list![(Connector::toString(c.lhs.clone())?).clone(), (Connector::toString(c.rhs.clone())?).clone()];
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-    strl
+    Ok(strl)
 }
 
 

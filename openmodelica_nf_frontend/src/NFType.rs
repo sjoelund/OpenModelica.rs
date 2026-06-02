@@ -201,7 +201,7 @@ pub fn unliftArray(mut ty: Arc<NFType>) -> Result<Arc<NFType>> {
             let mut fty: Arc<NFType> = Arc::new(NFType::ANY);
             tty = unliftArray(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone())?;
             fty = unliftArray(var_field!((*ty).falseType, NFType::CONDITIONAL_ARRAY).clone())?;
-            if (isEqual(tty.clone(), fty.clone())) {tty.clone()} else {Arc::new(NFType::CONDITIONAL_ARRAY { trueType: tty.clone(), falseType: fty.clone(), matchedBranch: var_field!((*ty).matchedBranch, NFType::CONDITIONAL_ARRAY).clone() })}
+            if (isEqual(tty.clone(), fty.clone())?) {tty.clone()} else {Arc::new(NFType::CONDITIONAL_ARRAY { trueType: tty.clone(), falseType: fty.clone(), matchedBranch: var_field!((*ty).matchedBranch, NFType::CONDITIONAL_ARRAY).clone() })}
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -226,7 +226,7 @@ pub fn unliftArrayN(mut N: i32, mut ty: Arc<NFType>) -> Result<Arc<NFType>> {
             let mut fty: Arc<NFType> = Arc::new(NFType::ANY);
             tty = unliftArrayN(N.clone(), var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone())?;
             fty = unliftArrayN(N.clone(), var_field!((*ty).falseType, NFType::CONDITIONAL_ARRAY).clone())?;
-            if (isEqual(tty.clone(), fty.clone())) {tty.clone()} else {Arc::new(NFType::CONDITIONAL_ARRAY { trueType: tty.clone(), falseType: fty.clone(), matchedBranch: var_field!((*ty).matchedBranch, NFType::CONDITIONAL_ARRAY).clone() })}
+            if (isEqual(tty.clone(), fty.clone())?) {tty.clone()} else {Arc::new(NFType::CONDITIONAL_ARRAY { trueType: tty.clone(), falseType: fty.clone(), matchedBranch: var_field!((*ty).matchedBranch, NFType::CONDITIONAL_ARRAY).clone() })}
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -235,28 +235,28 @@ pub fn unliftArrayN(mut N: i32, mut ty: Arc<NFType>) -> Result<Arc<NFType>> {
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-pub fn isInteger(mut ty: Arc<NFType>) -> bool {
+pub fn isInteger(mut ty: Arc<NFType>) -> Result<bool> {
     let mut isInteger: bool = false;
     isInteger = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ INTEGER { .. } => true,
-        Deref @ METABOXED { .. } => self::isInteger(var_field!((*ty).ty, NFType::METABOXED).clone()),
+        Deref @ METABOXED { .. } => self::isInteger(var_field!((*ty).ty, NFType::METABOXED).clone())?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    isInteger
+    Ok(isInteger)
 }
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-pub fn isReal(mut ty: Arc<NFType>) -> bool {
+pub fn isReal(mut ty: Arc<NFType>) -> Result<bool> {
     let mut isReal: bool = false;
     isReal = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ REAL { .. } => true,
-        Deref @ METABOXED { .. } => self::isReal(var_field!((*ty).ty, NFType::METABOXED).clone()),
+        Deref @ METABOXED { .. } => self::isReal(var_field!((*ty).ty, NFType::METABOXED).clone())?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    isReal
+    Ok(isReal)
 }
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
@@ -274,28 +274,28 @@ pub fn isBoolean(mut ty: Arc<NFType>) -> bool {
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-pub fn isString(mut ty: Arc<NFType>) -> bool {
+pub fn isString(mut ty: Arc<NFType>) -> Result<bool> {
     let mut isString: bool = false;
     isString = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ STRING { .. } => true,
-        Deref @ METABOXED { .. } => self::isString(var_field!((*ty).ty, NFType::METABOXED).clone()),
+        Deref @ METABOXED { .. } => self::isString(var_field!((*ty).ty, NFType::METABOXED).clone())?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    isString
+    Ok(isString)
 }
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-pub fn isClock(mut ty: Arc<NFType>) -> bool {
+pub fn isClock(mut ty: Arc<NFType>) -> Result<bool> {
     let mut isClock: bool = false;
     isClock = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ CLOCK { .. } => true,
-        Deref @ METABOXED { .. } => self::isClock(var_field!((*ty).ty, NFType::METABOXED).clone()),
+        Deref @ METABOXED { .. } => self::isClock(var_field!((*ty).ty, NFType::METABOXED).clone())?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    isClock
+    Ok(isClock)
 }
 
 pub fn isContinuous(mut ty: Arc<NFType>) -> Result<bool> {
@@ -309,10 +309,10 @@ pub fn isContinuous(mut ty: Arc<NFType>) -> Result<bool> {
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }), (std::sync::Arc::new(isContinuous) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFType>) -> Result<bool> + 'static>))
+    }), (std::sync::Arc::new(isContinuous) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFType>) -> Result<bool> + 'static>))?
         },
         _ => {
-            isReal(elementType(ty.clone()))
+            isReal(elementType(ty.clone()))?
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -351,14 +351,14 @@ pub fn isConditionalArray(mut ty: Arc<NFType>) -> bool {
     isConditionalArray
 }
 
-pub fn isResizable(mut ty: Arc<NFType>) -> bool {
-    let mut b: bool = List::any(arrayDims(ty.clone()), (std::sync::Arc::new(fnptr!(Dimension::isResizable, Arc<Dimension::NFDimension>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<bool> + 'static>));
-    b
+pub fn isResizable(mut ty: Arc<NFType>) -> Result<bool> {
+    let mut b: bool = List::any(arrayDims(ty.clone()), (std::sync::Arc::new(fnptr!(Dimension::isResizable, Arc<Dimension::NFDimension>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<bool> + 'static>))?;
+    Ok(b)
 }
 
-pub fn sizeKnown(mut ty: Arc<NFType>) -> bool {
-    let mut b: bool = !(List::any(arrayDims(ty.clone()), (std::sync::Arc::new(fnptr!(Dimension::isUnknown, Arc<Dimension::NFDimension>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<bool> + 'static>)));
-    b
+pub fn sizeKnown(mut ty: Arc<NFType>) -> Result<bool> {
+    let mut b: bool = !(List::any(arrayDims(ty.clone()), (std::sync::Arc::new(fnptr!(Dimension::isUnknown, Arc<Dimension::NFDimension>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<bool> + 'static>))?);
+    Ok(b)
 }
 
 pub fn isAny(mut ty: Arc<NFType>) -> bool {
@@ -439,28 +439,28 @@ pub fn simplifyConditionalArray(mut ty: Arc<NFType>) -> Arc<NFType> {
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-pub fn isVector(mut ty: Arc<NFType>) -> bool {
+pub fn isVector(mut ty: Arc<NFType>) -> Result<bool> {
     let mut isVector: bool = false;
     isVector = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ ARRAY { dimensions: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }, .. } => true,
-        Deref @ CONDITIONAL_ARRAY { .. } => self::isVector(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone()),
+        Deref @ CONDITIONAL_ARRAY { .. } => self::isVector(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone())?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    isVector
+    Ok(isVector)
 }
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-pub fn isMatrix(mut ty: Arc<NFType>) -> bool {
+pub fn isMatrix(mut ty: Arc<NFType>) -> Result<bool> {
     let mut isMatrix: bool = false;
     isMatrix = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ ARRAY { dimensions: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } }, .. } => true,
-        Deref @ CONDITIONAL_ARRAY { .. } => self::isMatrix(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone()),
+        Deref @ CONDITIONAL_ARRAY { .. } => self::isMatrix(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone())?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    isMatrix
+    Ok(isMatrix)
 }
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
@@ -484,15 +484,15 @@ pub fn isSquareMatrix(mut ty: Arc<NFType>) -> Result<bool> {
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-pub fn isEmptyArray(mut ty: Arc<NFType>) -> bool {
+pub fn isEmptyArray(mut ty: Arc<NFType>) -> Result<bool> {
     let mut isEmpty: bool = false;
     isEmpty = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ ARRAY { .. } => List::any(var_field!((*ty).dimensions, NFType::ARRAY).clone(), (std::sync::Arc::new(Dimension::isZero) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<bool> + 'static>)),
-        Deref @ CONDITIONAL_ARRAY { .. } => isEmptyArray(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone()),
+        Deref @ ARRAY { .. } => List::any(var_field!((*ty).dimensions, NFType::ARRAY).clone(), (std::sync::Arc::new(Dimension::isZero) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<bool> + 'static>))?,
+        Deref @ CONDITIONAL_ARRAY { .. } => isEmptyArray(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone())?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    isEmpty
+    Ok(isEmpty)
 }
 
 pub fn isSingleElementArray(mut ty: Arc<NFType>) -> Result<bool> {
@@ -555,14 +555,14 @@ pub fn isComplex(mut ty: Arc<NFType>) -> bool {
     isComplex
 }
 
-pub fn isComplexArray(mut ty: Arc<NFType>) -> bool {
+pub fn isComplexArray(mut ty: Arc<NFType>) -> Result<bool> {
     let mut isComplex: bool = false;
     isComplex = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ ARRAY { .. } => self::isComplex(var_field!((*ty).elementType, NFType::ARRAY).clone()),
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    isComplex
+    Ok(isComplex)
 }
 
 pub fn complexNode(mut ty: Arc<NFType>) -> Result<Arc<InstNode::InstNode>> {
@@ -662,20 +662,20 @@ pub fn isBasicNumeric(mut ty: Arc<NFType>) -> bool {
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-pub fn isNumeric(mut ty: Arc<NFType>) -> bool {
+pub fn isNumeric(mut ty: Arc<NFType>) -> Result<bool> {
     let mut isNumeric: bool = false;
     isNumeric = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ ARRAY { .. } => isBasicNumeric(var_field!((*ty).elementType, NFType::ARRAY).clone()),
-        Deref @ CONDITIONAL_ARRAY { .. } => self::isNumeric(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone()),
+        Deref @ CONDITIONAL_ARRAY { .. } => self::isNumeric(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone())?,
         _ => isBasicNumeric(ty.clone()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    isNumeric
+    Ok(isNumeric)
 }
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-pub fn isScalarBuiltin(mut ty: Arc<NFType>) -> bool {
+pub fn isScalarBuiltin(mut ty: Arc<NFType>) -> Result<bool> {
     let mut isScalarBuiltin: bool = false;
     isScalarBuiltin = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ INTEGER { .. } => true,
@@ -684,11 +684,11 @@ pub fn isScalarBuiltin(mut ty: Arc<NFType>) -> bool {
         Deref @ BOOLEAN { .. } => true,
         Deref @ CLOCK { .. } => true,
         Deref @ ENUMERATION { .. } => true,
-        Deref @ FUNCTION { .. } => self::isScalarBuiltin(Function::returnType(var_field!((*ty).r#fn, NFType::FUNCTION).clone())),
+        Deref @ FUNCTION { .. } => self::isScalarBuiltin(Function::returnType(var_field!((*ty).r#fn, NFType::FUNCTION).clone()))?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    isScalarBuiltin
+    Ok(isScalarBuiltin)
 }
 
 pub fn isTuple(mut ty: Arc<NFType>) -> bool {
@@ -920,30 +920,30 @@ pub fn dimensionDiff(mut ty1: Arc<NFType>, mut ty2: Arc<NFType>) -> i32 {
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-pub fn hasKnownSize(mut ty: Arc<NFType>) -> bool {
+pub fn hasKnownSize(mut ty: Arc<NFType>) -> Result<bool> {
     let mut isKnown: bool = false;
     isKnown = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ ARRAY { .. } => List::all(var_field!((*ty).dimensions, NFType::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = false; move |__pe_a0| Ok(Dimension::isKnown(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<bool> + 'static>)),
+        Deref @ ARRAY { .. } => List::all(var_field!((*ty).dimensions, NFType::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = false; move |__pe_a0| Ok(Dimension::isKnown(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<bool> + 'static>))?,
         Deref @ CONDITIONAL_ARRAY { .. } => false,
-        Deref @ FUNCTION { .. } => hasKnownSize(Function::returnType(var_field!((*ty).r#fn, NFType::FUNCTION).clone())),
+        Deref @ FUNCTION { .. } => hasKnownSize(Function::returnType(var_field!((*ty).r#fn, NFType::FUNCTION).clone()))?,
         _ => true,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    isKnown
+    Ok(isKnown)
 }
 
-pub fn hasZeroDimension(mut ty: Arc<NFType>) -> bool {
+pub fn hasZeroDimension(mut ty: Arc<NFType>) -> Result<bool> {
     let mut hasZero: bool = false;
     hasZero = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ ARRAY { .. } => List::any(var_field!((*ty).dimensions, NFType::ARRAY).clone(), (std::sync::Arc::new(Dimension::isZero) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<bool> + 'static>)),
-        Deref @ CONDITIONAL_ARRAY { .. } => hasZeroDimension(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone()) && hasZeroDimension(var_field!((*ty).falseType, NFType::CONDITIONAL_ARRAY).clone()),
+        Deref @ ARRAY { .. } => List::any(var_field!((*ty).dimensions, NFType::ARRAY).clone(), (std::sync::Arc::new(Dimension::isZero) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<bool> + 'static>))?,
+        Deref @ CONDITIONAL_ARRAY { .. } => hasZeroDimension(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone())? && hasZeroDimension(var_field!((*ty).falseType, NFType::CONDITIONAL_ARRAY).clone())?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    hasZero
+    Ok(hasZero)
 }
 
-pub fn mapDims(mut ty: Arc<NFType>, mut func: Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>) -> Arc<NFType> {
+pub fn mapDims(mut ty: Arc<NFType>, mut func: Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>) -> Result<Arc<NFType>> {
     pub type FuncT = std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>;
 
     let mut ty: Arc<NFType> = ty;
@@ -952,7 +952,7 @@ pub fn mapDims(mut ty: Arc<NFType>, mut func: Arc<dyn ::std::ops::Fn(Arc<Dimensi
             assign_variant_field!(ty => NFType::ARRAY; dimensions = ({
         let mut __acc: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
         for mut d in (var_field!((*ty).dimensions, NFType::ARRAY).clone()).into_iter().cloned() {
-            let __x = func(d.clone()).unwrap();
+            let __x = func(d.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -963,7 +963,7 @@ pub fn mapDims(mut ty: Arc<NFType>, mut func: Arc<dyn ::std::ops::Fn(Arc<Dimensi
             assign_variant_field!(ty => NFType::TUPLE; types = ({
         let mut __acc: Arc<metamodelica::List<Arc<NFType>>> = metamodelica::nil();
         for mut t in (var_field!((*ty).types, NFType::TUPLE).clone()).into_iter().cloned() {
-            let __x = mapDims(t.clone(), func.clone());
+            let __x = mapDims(t.clone(), func.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -971,17 +971,17 @@ pub fn mapDims(mut ty: Arc<NFType>, mut func: Arc<dyn ::std::ops::Fn(Arc<Dimensi
             ()
         },
         Deref @ FUNCTION { r#fn, .. } => {
-            assign_variant_field!(ty => NFType::FUNCTION; r#fn = Function::setReturnType(mapDims(Function::returnType(r#fn.clone()), func.clone()), r#fn.clone()));
+            assign_variant_field!(ty => NFType::FUNCTION; r#fn = Function::setReturnType(mapDims(Function::returnType(r#fn.clone()), func.clone())?, r#fn.clone()));
             ()
         },
         Deref @ METABOXED { .. } => {
-            assign_variant_field!(ty => NFType::METABOXED; ty = mapDims(var_field!((*ty).ty, NFType::METABOXED).clone(), func.clone()));
+            assign_variant_field!(ty => NFType::METABOXED; ty = mapDims(var_field!((*ty).ty, NFType::METABOXED).clone(), func.clone())?);
             ()
         },
         Deref @ CONDITIONAL_ARRAY { .. } => {
             assign_variant_field!(ty => NFType::CONDITIONAL_ARRAY;
-                trueType = mapDims(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone(), func.clone()),
-                falseType = mapDims(var_field!((*ty).falseType, NFType::CONDITIONAL_ARRAY).clone(), func.clone())
+                trueType = mapDims(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone(), func.clone())?,
+                falseType = mapDims(var_field!((*ty).falseType, NFType::CONDITIONAL_ARRAY).clone(), func.clone())?
             );
             ()
         },
@@ -990,22 +990,22 @@ pub fn mapDims(mut ty: Arc<NFType>, mut func: Arc<dyn ::std::ops::Fn(Arc<Dimensi
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    ty
+    Ok(ty)
 }
 
-pub fn foldDims<ArgT: Clone + 'static>(mut ty: Arc<NFType>, mut func: Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> ArgT {
+pub fn foldDims<ArgT: Clone + 'static>(mut ty: Arc<NFType>, mut func: Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
     pub type FuncT<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut arg: ArgT = arg;
     arg = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ ARRAY { .. } => List::fold(var_field!((*ty).dimensions, NFType::ARRAY).clone(), func.clone(), arg.clone()),
-        Deref @ TUPLE { .. } => List::fold(var_field!((*ty).types, NFType::TUPLE).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>, _) -> Result<_> + 'static> = func.clone(); move |__pe_a0, __pe_a2| Ok(foldDims(__pe_a0, __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFType>, _) -> Result<_> + 'static>), arg.clone()),
-        Deref @ FUNCTION { .. } => foldDims(Function::returnType(var_field!((*ty).r#fn, NFType::FUNCTION).clone()), func.clone(), arg.clone()),
-        Deref @ METABOXED { .. } => foldDims(var_field!((*ty).ty, NFType::METABOXED).clone(), func.clone(), arg.clone()),
+        Deref @ ARRAY { .. } => List::fold(var_field!((*ty).dimensions, NFType::ARRAY).clone(), func.clone(), arg.clone())?,
+        Deref @ TUPLE { .. } => List::fold(var_field!((*ty).types, NFType::TUPLE).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>, _) -> Result<_> + 'static> = func.clone(); move |__pe_a0, __pe_a2| foldDims(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFType>, _) -> Result<_> + 'static>), arg.clone())?,
+        Deref @ FUNCTION { .. } => foldDims(Function::returnType(var_field!((*ty).r#fn, NFType::FUNCTION).clone()), func.clone(), arg.clone())?,
+        Deref @ METABOXED { .. } => foldDims(var_field!((*ty).ty, NFType::METABOXED).clone(), func.clone(), arg.clone())?,
         _ => arg.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    arg
+    Ok(arg)
 }
 
 pub fn nthEnumLiteral(mut ty: Arc<NFType>, mut index: i32) -> Result<ArcStr> {
@@ -1032,7 +1032,7 @@ pub fn toString(mut ty: Arc<NFType>) -> Result<ArcStr> {
         Deref @ CLOCK => literal!("Clock"),
         Deref @ ENUMERATION { .. } => if (var_field!((*ty).literals, NFType::ENUMERATION).clone().is_empty()) {literal!("enumeration(:)")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("enumeration ")); __mm_s.push_str(&*AbsynUtil::pathString(var_field!((*ty).typePath, NFType::ENUMERATION).clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*stringDelimitList(var_field!((*ty).literals, NFType::ENUMERATION).clone(), (literal!(", ")).clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }},
         Deref @ ARRAY { .. } => List::toString(var_field!((*ty).dimensions, NFType::ARRAY).clone(), (std::sync::Arc::new(Dimension::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<ArcStr> + 'static>), (toString(var_field!((*ty).elementType, NFType::ARRAY).clone())?).clone(), (literal!("[")).clone(), (literal!(", ")).clone(), (literal!("]")).clone(), false, 0)?,
-        Deref @ TUPLE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*stringDelimitList(List::map(var_field!((*ty).types, NFType::TUPLE).clone(), (std::sync::Arc::new(toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFType>) -> Result<ArcStr> + 'static>)), (literal!(", ")).clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) },
+        Deref @ TUPLE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*stringDelimitList(List::map(var_field!((*ty).types, NFType::TUPLE).clone(), (std::sync::Arc::new(toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFType>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) },
         Deref @ NORETCALL => literal!("()"),
         Deref @ UNKNOWN => literal!("unknown()"),
         Deref @ COMPLEX { .. } => AbsynUtil::pathString(InstNode::scopePath(var_field!((*ty).cls, NFType::COMPLEX).clone(), InstNode::ScopeType::RELATIVE.clone(), false)?, (literal!(".")).clone(), true, false)?,
@@ -1063,7 +1063,7 @@ pub fn toFlatString(mut ty: Arc<NFType>, mut format: BaseModelica::OutputFormat)
         Deref @ CLOCK => literal!("Clock"),
         Deref @ ENUMERATION { .. } => if (var_field!((*ty).literals, NFType::ENUMERATION).clone().is_empty()) {literal!("enumeration(:)")} else if (isBuiltinEnumeration(ty.clone())) {AbsynUtil::pathString(var_field!((*ty).typePath, NFType::ENUMERATION).clone(), (literal!(".")).clone(), true, false)?} else {Util::makeQuotedIdentifier((AbsynUtil::pathString(var_field!((*ty).typePath, NFType::ENUMERATION).clone(), (literal!(".")).clone(), true, false)?).clone())?},
         Deref @ ARRAY { .. } => Dimension::toFlatStringList(var_field!((*ty).dimensions, NFType::ARRAY).clone(), format.clone(), (toFlatString(var_field!((*ty).elementType, NFType::ARRAY).clone(), format.clone())?).clone())?,
-        Deref @ TUPLE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*stringDelimitList(List::map(var_field!((*ty).types, NFType::TUPLE).clone(), (std::sync::Arc::new({ let __pe_b1 = format.clone(); move |__pe_a0| toFlatString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFType>) -> Result<ArcStr> + 'static>)), (literal!(", ")).clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) },
+        Deref @ TUPLE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*stringDelimitList(List::map(var_field!((*ty).types, NFType::TUPLE).clone(), (std::sync::Arc::new({ let __pe_b1 = format.clone(); move |__pe_a0| toFlatString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFType>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) },
         Deref @ NORETCALL => literal!("()"),
         Deref @ UNKNOWN => literal!("unknown()"),
         Deref @ COMPLEX { .. } => Util::makeQuotedIdentifier((AbsynUtil::pathString(InstNode::scopePath(var_field!((*ty).cls, NFType::COMPLEX).clone(), InstNode::ScopeType::RELATIVE.clone(), false)?, (literal!(".")).clone(), true, false)?).clone())?,
@@ -1085,7 +1085,7 @@ pub fn toFlatString(mut ty: Arc<NFType>, mut format: BaseModelica::OutputFormat)
 pub fn dimensionsToFlatString(mut ty: Arc<NFType>, mut format: BaseModelica::OutputFormat) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = (::match_deref::match_deref! { match &(ty.clone()) {
-        Deref @ ARRAY { .. } => stringDelimitList(List::map(var_field!((*ty).dimensions, NFType::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = format.clone(); move |__pe_a0| Dimension::toFlatString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<ArcStr> + 'static>)), (literal!(", ")).clone()),
+        Deref @ ARRAY { .. } => stringDelimitList(List::map(var_field!((*ty).dimensions, NFType::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = format.clone(); move |__pe_a0| Dimension::toFlatString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone()),
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFType.dimensionsToFlatString")); __mm_s.push_str(&*literal!(" got unknown or not array type: ")); __mm_s.push_str(&*anyString(ty.clone())); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
             bail!("fail")
@@ -1258,31 +1258,31 @@ pub fn subscript(mut ty: Arc<NFType>, mut subs: Arc<metamodelica::List<Arc<Subsc
     Ok(ty)
 }
 
-pub fn isEqual(mut ty1: Arc<NFType>, mut ty2: Arc<NFType>) -> bool {
+pub fn isEqual(mut ty1: Arc<NFType>, mut ty2: Arc<NFType>) -> Result<bool> {
     let mut equal: bool = false;
     if referenceEq(&ty1.clone(),&ty2.clone()) {
         equal = true;
-        return equal.clone();
+        return Ok(equal.clone());
     }
-    if metamodelica::valueConstructor((&*ty1.clone())).unwrap() != metamodelica::valueConstructor((&*ty2.clone())).unwrap() {
+    if metamodelica::valueConstructor((&*ty1.clone()))? != metamodelica::valueConstructor((&*ty2.clone()))? {
         equal = false;
-        return equal.clone();
+        return Ok(equal.clone());
     }
     equal = (::match_deref::match_deref! { match &((ty1.clone(), ty2.clone())) {
         (Deref @ ENUMERATION { .. }, Deref @ ENUMERATION { .. }) => {
-            List::isEqualOnTrue(var_field!((*ty1).literals, NFType::ENUMERATION).clone(), var_field!((*ty2).literals, NFType::ENUMERATION).clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))
+            List::isEqualOnTrue(var_field!((*ty1).literals, NFType::ENUMERATION).clone(), var_field!((*ty2).literals, NFType::ENUMERATION).clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?
         },
         (Deref @ ARRAY { .. }, Deref @ ARRAY { .. }) => {
-            isEqual(var_field!((*ty1).elementType, NFType::ARRAY).clone(), var_field!((*ty2).elementType, NFType::ARRAY).clone()) && List::isEqualOnTrue(var_field!((*ty1).dimensions, NFType::ARRAY).clone(), var_field!((*ty2).dimensions, NFType::ARRAY).clone(), (std::sync::Arc::new(Dimension::isEqualKnown) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>, Arc<Dimension::NFDimension>) -> Result<bool> + 'static>))
+            isEqual(var_field!((*ty1).elementType, NFType::ARRAY).clone(), var_field!((*ty2).elementType, NFType::ARRAY).clone())? && List::isEqualOnTrue(var_field!((*ty1).dimensions, NFType::ARRAY).clone(), var_field!((*ty2).dimensions, NFType::ARRAY).clone(), (std::sync::Arc::new(Dimension::isEqualKnown) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>, Arc<Dimension::NFDimension>) -> Result<bool> + 'static>))?
         },
         (Deref @ CONDITIONAL_ARRAY { .. }, Deref @ CONDITIONAL_ARRAY { .. }) => {
-            isEqual(var_field!((*ty1).trueType, NFType::CONDITIONAL_ARRAY).clone(), var_field!((*ty2).trueType, NFType::CONDITIONAL_ARRAY).clone()) && isEqual(var_field!((*ty1).falseType, NFType::CONDITIONAL_ARRAY).clone(), var_field!((*ty2).falseType, NFType::CONDITIONAL_ARRAY).clone())
+            isEqual(var_field!((*ty1).trueType, NFType::CONDITIONAL_ARRAY).clone(), var_field!((*ty2).trueType, NFType::CONDITIONAL_ARRAY).clone())? && isEqual(var_field!((*ty1).falseType, NFType::CONDITIONAL_ARRAY).clone(), var_field!((*ty2).falseType, NFType::CONDITIONAL_ARRAY).clone())?
         },
         (Deref @ TUPLE { names: Some(names1), .. }, Deref @ TUPLE { names: Some(names2), .. }) => {
-            List::isEqualOnTrue(names1.clone(), names2.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>)) && List::isEqualOnTrue(var_field!((*ty1).types, NFType::TUPLE).clone(), var_field!((*ty2).types, NFType::TUPLE).clone(), (std::sync::Arc::new(fnptr!(isEqual, Arc<NFType>, Arc<NFType>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFType>, Arc<NFType>) -> Result<bool> + 'static>))
+            List::isEqualOnTrue(names1.clone(), names2.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))? && List::isEqualOnTrue(var_field!((*ty1).types, NFType::TUPLE).clone(), var_field!((*ty2).types, NFType::TUPLE).clone(), (std::sync::Arc::new(isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFType>, Arc<NFType>) -> Result<bool> + 'static>))?
         },
         (Deref @ TUPLE { names: None, .. }, Deref @ TUPLE { names: None, .. }) => {
-            List::isEqualOnTrue(var_field!((*ty1).types, NFType::TUPLE).clone(), var_field!((*ty2).types, NFType::TUPLE).clone(), (std::sync::Arc::new(fnptr!(isEqual, Arc<NFType>, Arc<NFType>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFType>, Arc<NFType>) -> Result<bool> + 'static>))
+            List::isEqualOnTrue(var_field!((*ty1).types, NFType::TUPLE).clone(), var_field!((*ty2).types, NFType::TUPLE).clone(), (std::sync::Arc::new(isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFType>, Arc<NFType>) -> Result<bool> + 'static>))?
         },
         (Deref @ TUPLE { .. }, Deref @ TUPLE { .. }) => {
             false
@@ -1291,14 +1291,14 @@ pub fn isEqual(mut ty1: Arc<NFType>, mut ty2: Arc<NFType>) -> bool {
             InstNode::isSame(var_field!((*ty1).cls, NFType::COMPLEX).clone(), var_field!((*ty2).cls, NFType::COMPLEX).clone())
         },
         (Deref @ UNTYPED { .. }, Deref @ UNTYPED { .. }) => {
-            InstNode::isSame(var_field!((*ty1).typeNode, NFType::UNTYPED).clone(), var_field!((*ty2).typeNode, NFType::UNTYPED).clone()) && Array::isEqualOnTrue(var_field!((*ty1).dimensions, NFType::UNTYPED).clone(), var_field!((*ty2).dimensions, NFType::UNTYPED).clone(), (std::sync::Arc::new(Dimension::isEqualKnown) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>, Arc<Dimension::NFDimension>) -> Result<bool> + 'static>))
+            InstNode::isSame(var_field!((*ty1).typeNode, NFType::UNTYPED).clone(), var_field!((*ty2).typeNode, NFType::UNTYPED).clone()) && Array::isEqualOnTrue(var_field!((*ty1).dimensions, NFType::UNTYPED).clone(), var_field!((*ty2).dimensions, NFType::UNTYPED).clone(), (std::sync::Arc::new(Dimension::isEqualKnown) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>, Arc<Dimension::NFDimension>) -> Result<bool> + 'static>))?
         },
         _ => {
             true
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    equal
+    Ok(equal)
 }
 
 pub fn hashContinue(mut ty: Arc<NFType>, mut hash: i32) -> Result<i32> {
@@ -1377,20 +1377,20 @@ pub fn hashContinue(mut ty: Arc<NFType>, mut hash: i32) -> Result<i32> {
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-pub fn isDiscrete(mut ty: Arc<NFType>) -> bool {
+pub fn isDiscrete(mut ty: Arc<NFType>) -> Result<bool> {
     let mut isDiscrete: bool = false;
     isDiscrete = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ INTEGER { .. } => true,
         Deref @ STRING { .. } => true,
         Deref @ BOOLEAN { .. } => true,
         Deref @ ENUMERATION { .. } => true,
-        Deref @ ARRAY { .. } => self::isDiscrete(var_field!((*ty).elementType, NFType::ARRAY).clone()),
-        Deref @ CONDITIONAL_ARRAY { .. } => self::isDiscrete(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone()),
-        Deref @ FUNCTION { .. } => self::isDiscrete(Function::returnType(var_field!((*ty).r#fn, NFType::FUNCTION).clone())),
+        Deref @ ARRAY { .. } => self::isDiscrete(var_field!((*ty).elementType, NFType::ARRAY).clone())?,
+        Deref @ CONDITIONAL_ARRAY { .. } => self::isDiscrete(var_field!((*ty).trueType, NFType::CONDITIONAL_ARRAY).clone())?,
+        Deref @ FUNCTION { .. } => self::isDiscrete(Function::returnType(var_field!((*ty).r#fn, NFType::FUNCTION).clone()))?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    isDiscrete
+    Ok(isDiscrete)
 }
 
 pub fn lookupRecordFieldType(mut name: ArcStr, mut recordType: Arc<NFType>) -> Result<Arc<NFType>> {
@@ -1563,9 +1563,9 @@ pub fn simplify(mut ty: Arc<NFType>) -> Result<Arc<NFType>> {
 }
 
 pub fn sizeOf(mut ty: Arc<NFType>, mut resize: bool) -> Result<i32> {
-    pub fn fold_comp_size(mut comp: Arc<InstNode::InstNode>, mut sz: i32) -> i32 {
-        let mut outSize: i32 = sz.clone() + sizeOf(InstNode::getType(comp.clone()).unwrap(), false).unwrap();
-        outSize
+    pub fn fold_comp_size(mut comp: Arc<InstNode::InstNode>, mut sz: i32) -> Result<i32> {
+        let mut outSize: i32 = sz.clone() + sizeOf(InstNode::getType(comp.clone())?, false)?;
+        Ok(outSize)
     }
 
     let mut sz: i32 = 0;
@@ -1576,7 +1576,7 @@ pub fn sizeOf(mut ty: Arc<NFType>, mut resize: bool) -> Result<i32> {
         Deref @ BOOLEAN { .. } => 1,
         Deref @ CLOCK { .. } => 1,
         Deref @ ENUMERATION { .. } => 1,
-        Deref @ ARRAY { .. } => sizeOf(var_field!((*ty).elementType, NFType::ARRAY).clone(), false)? * Dimension::sizesProduct(var_field!((*ty).dimensions, NFType::ARRAY).clone(), resize.clone()),
+        Deref @ ARRAY { .. } => sizeOf(var_field!((*ty).elementType, NFType::ARRAY).clone(), false)? * Dimension::sizesProduct(var_field!((*ty).dimensions, NFType::ARRAY).clone(), resize.clone())?,
         Deref @ TUPLE { .. } => ({
         let mut __acc: i32 = 0;
         for mut t in (var_field!((*ty).types, NFType::TUPLE).clone()).into_iter().cloned() {
@@ -1586,7 +1586,7 @@ pub fn sizeOf(mut ty: Arc<NFType>, mut resize: bool) -> Result<i32> {
         __acc
     }),
         Deref @ COMPLEX { complexTy: Deref @ ComplexType::EXTERNAL_OBJECT { .. }, .. } => 1,
-        Deref @ COMPLEX { complexTy: Deref @ ComplexType::RECORD { .. }, .. } => ClassTree::foldComponents(Class::classTree(InstNode::getClass(var_field!((*ty).cls, NFType::COMPLEX).clone())?)?, (std::sync::Arc::new(fnptr!(fold_comp_size, Arc<InstNode::InstNode>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, i32) -> Result<i32> + 'static>), 0),
+        Deref @ COMPLEX { complexTy: Deref @ ComplexType::RECORD { .. }, .. } => ClassTree::foldComponents(Class::classTree(InstNode::getClass(var_field!((*ty).cls, NFType::COMPLEX).clone())?)?, (std::sync::Arc::new(fold_comp_size) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, i32) -> Result<i32> + 'static>), 0)?,
         Deref @ COMPLEX { .. } => 1,
         _ => 0,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

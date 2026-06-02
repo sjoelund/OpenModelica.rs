@@ -160,14 +160,14 @@ pub mod Prefixes {
         isEqual
     }
 
-    pub fn isPartial(mut prefs: Arc<Prefixes>) -> bool {
-        let mut isPartial: bool = SCodeUtil::partialBool(prefs.partialPrefix.clone()).unwrap();
-        isPartial
+    pub fn isPartial(mut prefs: Arc<Prefixes>) -> Result<bool> {
+        let mut isPartial: bool = SCodeUtil::partialBool(prefs.partialPrefix.clone())?;
+        Ok(isPartial)
     }
 
-    pub fn isEncapsulated(mut prefs: Arc<Prefixes>) -> bool {
-        let mut isEncapsulated: bool = SCodeUtil::encapsulatedBool(prefs.encapsulatedPrefix.clone()).unwrap();
-        isEncapsulated
+    pub fn isEncapsulated(mut prefs: Arc<Prefixes>) -> Result<bool> {
+        let mut isEncapsulated: bool = SCodeUtil::encapsulatedBool(prefs.encapsulatedPrefix.clone())?;
+        Ok(isEncapsulated)
     }
 
 }
@@ -284,9 +284,9 @@ pub fn nthComponent(mut index: i32, mut cls: Arc<NFClass>) -> Result<Arc<InstNod
     Ok(component)
 }
 
-pub fn getComponents(mut cls: Arc<NFClass>) -> metamodelica::Array<Arc<InstNode::InstNode>> {
-    let mut comps: metamodelica::Array<Arc<InstNode::InstNode>> = ClassTree::getComponents(classTree(cls.clone()).unwrap()).unwrap();
-    comps
+pub fn getComponents(mut cls: Arc<NFClass>) -> Result<metamodelica::Array<Arc<InstNode::InstNode>>> {
+    let mut comps: metamodelica::Array<Arc<InstNode::InstNode>> = ClassTree::getComponents(classTree(cls.clone())?)?;
+    Ok(comps)
 }
 
 pub fn lookupAttributeBinding(mut name: ArcStr, mut cls: Arc<NFClass>) -> Arc<Binding::NFBinding> {
@@ -384,35 +384,35 @@ pub fn setClassTree(mut tree: Arc<ClassTree::ClassTree>, mut cls: Arc<NFClass>) 
     Ok(cls)
 }
 
-pub fn classTreeApply(mut cls: Arc<NFClass>, mut func: Arc<dyn ::std::ops::Fn(Arc<ClassTree::ClassTree>) -> Result<Arc<ClassTree::ClassTree>> + 'static>) -> Arc<NFClass> {
+pub fn classTreeApply(mut cls: Arc<NFClass>, mut func: Arc<dyn ::std::ops::Fn(Arc<ClassTree::ClassTree>) -> Result<Arc<ClassTree::ClassTree>> + 'static>) -> Result<Arc<NFClass>> {
     pub type FuncType = std::sync::Arc<dyn ::std::ops::Fn(Arc<ClassTree::ClassTree>) -> Result<Arc<ClassTree::ClassTree>> + 'static>;
 
     let mut cls: Arc<NFClass> = cls;
     let () = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ PARTIAL_CLASS { .. } => {
-            assign_variant_field!(cls => NFClass::PARTIAL_CLASS; elements = func(var_field!((*cls).elements, NFClass::PARTIAL_CLASS).clone()).unwrap());
+            assign_variant_field!(cls => NFClass::PARTIAL_CLASS; elements = func(var_field!((*cls).elements, NFClass::PARTIAL_CLASS).clone())?);
             ()
         },
         Deref @ EXPANDED_CLASS { .. } => {
-            assign_variant_field!(cls => NFClass::EXPANDED_CLASS; elements = func(var_field!((*cls).elements, NFClass::EXPANDED_CLASS).clone()).unwrap());
+            assign_variant_field!(cls => NFClass::EXPANDED_CLASS; elements = func(var_field!((*cls).elements, NFClass::EXPANDED_CLASS).clone())?);
             ()
         },
         Deref @ PARTIAL_BUILTIN { .. } => {
-            assign_variant_field!(cls => NFClass::PARTIAL_BUILTIN; elements = func(var_field!((*cls).elements, NFClass::PARTIAL_BUILTIN).clone()).unwrap());
+            assign_variant_field!(cls => NFClass::PARTIAL_BUILTIN; elements = func(var_field!((*cls).elements, NFClass::PARTIAL_BUILTIN).clone())?);
             ()
         },
         Deref @ INSTANCED_CLASS { .. } => {
-            assign_variant_field!(cls => NFClass::INSTANCED_CLASS; elements = func(var_field!((*cls).elements, NFClass::INSTANCED_CLASS).clone()).unwrap());
+            assign_variant_field!(cls => NFClass::INSTANCED_CLASS; elements = func(var_field!((*cls).elements, NFClass::INSTANCED_CLASS).clone())?);
             ()
         },
         Deref @ INSTANCED_BUILTIN { .. } => {
-            assign_variant_field!(cls => NFClass::INSTANCED_BUILTIN; elements = func(var_field!((*cls).elements, NFClass::INSTANCED_BUILTIN).clone()).unwrap());
+            assign_variant_field!(cls => NFClass::INSTANCED_BUILTIN; elements = func(var_field!((*cls).elements, NFClass::INSTANCED_BUILTIN).clone())?);
             ()
         },
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    cls
+    Ok(cls)
 }
 
 pub fn getModifier(mut cls: Arc<NFClass>) -> Arc<Modifier::Modifier> {
@@ -496,7 +496,7 @@ pub fn mergeModifier(mut modifier: Arc<Modifier::Modifier>, mut cls: Arc<NFClass
     Ok(cls)
 }
 
-pub fn isIdentical(mut cls1: Arc<NFClass>, mut cls2: Arc<NFClass>) -> bool {
+pub fn isIdentical(mut cls1: Arc<NFClass>, mut cls2: Arc<NFClass>) -> Result<bool> {
     let mut identical: bool = false;
     if referenceEq(&cls1.clone(),&cls2.clone()) {
         identical = true;
@@ -504,8 +504,8 @@ pub fn isIdentical(mut cls1: Arc<NFClass>, mut cls2: Arc<NFClass>) -> bool {
         identical = (::match_deref::match_deref! { match &((cls1.clone(), cls2.clone())) {
         (Deref @ EXPANDED_CLASS { .. }, Deref @ EXPANDED_CLASS { .. }) => Prefixes::isEqual(var_field!((*cls1).prefixes, NFClass::EXPANDED_CLASS).clone(), var_field!((*cls2).prefixes, NFClass::EXPANDED_CLASS).clone()) && ClassTree::isIdentical(var_field!((*cls1).elements, NFClass::EXPANDED_CLASS).clone(), var_field!((*cls2).elements, NFClass::EXPANDED_CLASS).clone()),
         (Deref @ INSTANCED_BUILTIN { .. }, Deref @ INSTANCED_BUILTIN { .. }) => {
-            if !(Type::isEqual(var_field!((*cls1).ty, NFClass::INSTANCED_BUILTIN).clone(), var_field!((*cls2).ty, NFClass::INSTANCED_BUILTIN).clone())) {
-                return identical.clone();
+            if !(Type::isEqual(var_field!((*cls1).ty, NFClass::INSTANCED_BUILTIN).clone(), var_field!((*cls2).ty, NFClass::INSTANCED_BUILTIN).clone())?) {
+                return Ok(identical.clone());
             }
             true
         },
@@ -513,7 +513,7 @@ pub fn isIdentical(mut cls1: Arc<NFClass>, mut cls2: Arc<NFClass>) -> bool {
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    identical
+    Ok(identical)
 }
 
 pub fn hasDimensions(mut cls: Arc<NFClass>) -> Result<bool> {
@@ -794,26 +794,26 @@ pub fn setPrefixes(mut prefs: Arc<Prefixes::Prefixes>, mut cls: Arc<NFClass>) ->
     Ok(cls)
 }
 
-pub fn isEncapsulated(mut cls: Arc<NFClass>) -> bool {
-    let mut isEncapsulated: bool = Prefixes::isEncapsulated(getPrefixes(cls.clone()).unwrap());
-    isEncapsulated
+pub fn isEncapsulated(mut cls: Arc<NFClass>) -> Result<bool> {
+    let mut isEncapsulated: bool = Prefixes::isEncapsulated(getPrefixes(cls.clone())?)?;
+    Ok(isEncapsulated)
 }
 
-pub fn isPartial(mut cls: Arc<NFClass>) -> bool {
-    let mut isPartial: bool = Prefixes::isPartial(getPrefixes(cls.clone()).unwrap());
-    isPartial
+pub fn isPartial(mut cls: Arc<NFClass>) -> Result<bool> {
+    let mut isPartial: bool = Prefixes::isPartial(getPrefixes(cls.clone())?)?;
+    Ok(isPartial)
 }
 
-pub fn lastBaseClass(mut node: Arc<InstNode::InstNode>) -> Arc<InstNode::InstNode> {
+pub fn lastBaseClass(mut node: Arc<InstNode::InstNode>) -> Result<Arc<InstNode::InstNode>> {
     let mut node: Arc<InstNode::InstNode> = node;
-    let mut cls: Arc<NFClass> = InstNode::getClass(node.clone()).unwrap();
+    let mut cls: Arc<NFClass> = InstNode::getClass(node.clone())?;
     node = (::match_deref::match_deref! { match &(cls.clone()) {
-        Deref @ EXPANDED_DERIVED { .. } => lastBaseClass(var_field!((*cls).baseClass, NFClass::EXPANDED_DERIVED).clone()),
-        Deref @ TYPED_DERIVED { .. } => lastBaseClass(var_field!((*cls).baseClass, NFClass::TYPED_DERIVED).clone()),
+        Deref @ EXPANDED_DERIVED { .. } => lastBaseClass(var_field!((*cls).baseClass, NFClass::EXPANDED_DERIVED).clone())?,
+        Deref @ TYPED_DERIVED { .. } => lastBaseClass(var_field!((*cls).baseClass, NFClass::TYPED_DERIVED).clone())?,
         _ => node.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    node
+    Ok(node)
 }
 
 pub fn getDerivedComments(mut cls: Arc<NFClass>, mut cmts: Arc<metamodelica::List<Arc<SCode::Comment>>>) -> Arc<metamodelica::List<Arc<SCode::Comment>>> {
@@ -835,7 +835,7 @@ pub fn getDerivedComments(mut cls: Arc<NFClass>, mut cmts: Arc<metamodelica::Lis
 
 pub fn constrainingClassPath(mut clsNode: Arc<InstNode::InstNode>) -> Result<Arc<Absyn::Path>> {
     let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-    let mut cls_node: Arc<InstNode::InstNode> = lastBaseClass(clsNode.clone());
+    let mut cls_node: Arc<InstNode::InstNode> = lastBaseClass(clsNode.clone())?;
     let mut prefs: Arc<Prefixes::Prefixes> = getPrefixes(InstNode::getClass(cls_node.clone())?)?;
     path = (::match_deref::match_deref! { match &(prefs.clone()) {
         Deref @ Prefixes::PREFIXES { replaceablePrefix: Deref @ SCode::Replaceable::REPLACEABLE { cc: Some(Deref @ SCode::ConstrainClass { constrainingClass: __esc_path, .. }) }, .. } => {
@@ -895,7 +895,7 @@ pub fn makeRecordExp(mut clsNode: Arc<InstNode::InstNode>, mut scope: Arc<InstNo
         }
         __acc.reverse()
     });
-        exp = Expression::makeRecord(InstNode::fullPath(ty_node.clone(), false), ty.clone(), args.clone());
+        exp = Expression::makeRecord(InstNode::fullPath(ty_node.clone(), false)?, ty.clone(), args.clone());
     } else {
         args = metamodelica::nil();
         let __range3 = comps.clone().borrow().iter().cloned().collect::<Vec<_>>();

@@ -83,11 +83,11 @@ pub fn verify(mut flatModel: Arc<FlatModel::NFFlatModel>, mut isPartial: bool) -
     }
     for mut alg in &*flatModel.algorithms.clone() {
         let mut alg = alg.clone();
-        verifyAlgorithm(alg.clone(), isPartial.clone());
+        verifyAlgorithm(alg.clone(), isPartial.clone())?;
     }
     for mut ialg in &*flatModel.initialAlgorithms.clone() {
         let mut ialg = ialg.clone();
-        verifyAlgorithm(ialg.clone(), isPartial.clone());
+        verifyAlgorithm(ialg.clone(), isPartial.clone())?;
     }
     if !(isPartial.clone()) {
         checkDiscreteReal(flatModel.clone())?;
@@ -125,7 +125,7 @@ fn verifyEquation(mut eq: Arc<Equation::NFEquation>, mut isPartial: bool) -> Res
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    Equation::applyExpShallow(eq.clone(), (std::sync::Arc::new({ let __pe_b1 = isPartial.clone(); let __pe_b2 = Equation::info(eq.clone()); move |__pe_a0| checkSubscriptBounds(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>))?;
+    Equation::applyExpShallow(eq.clone(), (std::sync::Arc::new({ let __pe_b1 = isPartial.clone(); let __pe_b2 = Equation::info(eq.clone())?; move |__pe_a0| checkSubscriptBounds(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>))?;
     Ok(())
 }
 
@@ -168,7 +168,7 @@ fn whenEquationBranchCrefs(mut eql: Arc<metamodelica::List<Arc<Equation::NFEquat
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    crefs = List::sort(crefs.clone(), (std::sync::Arc::new(fnptr!(ComponentRef::isGreater, Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
+    crefs = List::sort(crefs.clone(), (std::sync::Arc::new(ComponentRef::isGreater) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
     crefs = List::sortedUnique(crefs.clone(), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
     Ok(crefs)
 }
@@ -177,7 +177,7 @@ fn whenEquationEqualityCrefs(mut lhsExp: Arc<Expression::NFExpression>, mut cref
     let mut crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = crefs;
     crefs = (::match_deref::match_deref! { match &(lhsExp.clone()) {
         Deref @ Expression::CREF { .. } => metamodelica::cons(var_field!((*lhsExp).cref, Expression::NFExpression::CREF).clone(), crefs.clone()),
-        Deref @ Expression::TUPLE { .. } => List::fold(var_field!((*lhsExp).elements, Expression::NFExpression::TUPLE).clone(), (std::sync::Arc::new(whenEquationEqualityCrefs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> + 'static>), crefs.clone()),
+        Deref @ Expression::TUPLE { .. } => List::fold(var_field!((*lhsExp).elements, Expression::NFExpression::TUPLE).clone(), (std::sync::Arc::new(whenEquationEqualityCrefs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> + 'static>), crefs.clone())?,
         _ => bail!("match: no arm matched"),
     } });
     Ok(crefs)
@@ -211,10 +211,10 @@ fn whenEquationIfCrefs(mut branches: Arc<metamodelica::List<Arc<Equation::Branch
 }
 
 fn checkCrefSetEquality(mut crefs1: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut crefs2: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut errMsg: ErrorTypes::Message, mut source: Arc<DAE::ElementSource>) -> Result<()> {
-    if List::isEqualOnTrue(crefs1.clone(), crefs2.clone(), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>)) {
+    if List::isEqualOnTrue(crefs1.clone(), crefs2.clone(), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))? {
         return Ok(());
     }
-    if List::isEqualOnTrue(expandCrefSet(crefs1.clone())?, expandCrefSet(crefs2.clone())?, (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>)) {
+    if List::isEqualOnTrue(expandCrefSet(crefs1.clone())?, expandCrefSet(crefs2.clone())?, (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))? {
         return Ok(());
     }
     Error::addSourceMessage(errMsg.clone(), metamodelica::nil(), ElementSource::getInfo(source.clone()))?;
@@ -244,18 +244,18 @@ fn expandCrefSet(mut crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponent
             outCrefs = metamodelica::cons(cref.clone(), outCrefs.clone());
         }
     }
-    outCrefs = List::sort(outCrefs.clone(), (std::sync::Arc::new(fnptr!(ComponentRef::isGreater, Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
+    outCrefs = List::sort(outCrefs.clone(), (std::sync::Arc::new(ComponentRef::isGreater) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
     outCrefs = List::sortedUnique(outCrefs.clone(), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
     Ok(outCrefs)
 }
 
-fn verifyAlgorithm(mut alg: Arc<Algorithm::NFAlgorithm>, mut isPartial: bool) -> () {
-    Algorithm::apply(alg.clone(), (std::sync::Arc::new({ let __pe_b1 = isPartial.clone(); move |__pe_a0| verifyStatement(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>) -> Result<()> + 'static>));
-    ()
+fn verifyAlgorithm(mut alg: Arc<Algorithm::NFAlgorithm>, mut isPartial: bool) -> Result<()> {
+    Algorithm::apply(alg.clone(), (std::sync::Arc::new({ let __pe_b1 = isPartial.clone(); move |__pe_a0| verifyStatement(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>) -> Result<()> + 'static>))?;
+    Ok(())
 }
 
 fn verifyStatement(mut stmt: Arc<Statement::NFStatement>, mut isPartial: bool) -> Result<()> {
-    Statement::applyExp(stmt.clone(), (std::sync::Arc::new({ let __pe_b1 = isPartial.clone(); let __pe_b2 = Statement::info(stmt.clone()); move |__pe_a0| checkSubscriptBounds(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>))?;
+    Statement::applyExp(stmt.clone(), (std::sync::Arc::new({ let __pe_b1 = isPartial.clone(); let __pe_b2 = Statement::info(stmt.clone())?; move |__pe_a0| checkSubscriptBounds(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>))?;
     Ok(())
 }
 
@@ -317,7 +317,7 @@ fn checkSubscriptBoundsCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut isP
 fn checkDiscreteReal(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<()> {
     let mut discrete_reals: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
     let mut illegal_discrete_vars: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
-    discrete_reals = UnorderedSet::new((std::sync::Arc::new(fnptr!(ComponentRef::hashStrip, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqualStrip) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
+    discrete_reals = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hashStrip) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqualStrip) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
     for mut eqn in &*flatModel.equations.clone() {
         let mut eqn = eqn.clone();
         checkDiscreteRealEquation(eqn.clone(), discrete_reals.clone(), false)?;
@@ -331,7 +331,7 @@ fn checkDiscreteReal(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<()> {
     }
     for mut variable in &*flatModel.variables.clone() {
         let mut variable = variable.clone();
-        if Variable::variability(variable.clone()) == Variability::DISCRETE.clone() && Type::isReal(Type::arrayElementType(variable.ty.clone())) && !(UnorderedSet::contains(variable.name.clone(), discrete_reals.clone())?) {
+        if Variable::variability(variable.clone()) == Variability::DISCRETE.clone() && Type::isReal(Type::arrayElementType(variable.ty.clone()))? && !(UnorderedSet::contains(variable.name.clone(), discrete_reals.clone())?) {
             illegal_discrete_vars = metamodelica::cons(variable.clone(), illegal_discrete_vars.clone());
         }
     }
@@ -443,7 +443,7 @@ fn checkDiscreteRealStatement(mut statement: Arc<Statement::NFStatement>, mut di
 
 fn checkDiscreteRealExp(mut exp: Arc<Expression::NFExpression>, mut discreteReals: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CREF { cref, ty } if (Type::isReal(Type::arrayElementType(ty.clone()))) => {
+        Deref @ Expression::CREF { cref, ty } if (Type::isReal(Type::arrayElementType(ty.clone()))?) => {
             UnorderedSet::add(cref.clone(), discreteReals.clone())?;
             ()
         },

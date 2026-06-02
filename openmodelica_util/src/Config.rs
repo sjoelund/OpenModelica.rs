@@ -593,9 +593,9 @@ pub fn replacedHomotopy() -> Result<bool> {
     Ok(outBoolean)
 }
 
-pub fn synchronousFeaturesAllowed() -> bool {
-    let mut outRes: bool = getLanguageStandard().unwrap() >= LanguageStandard::_3_3.clone();
-    outRes
+pub fn synchronousFeaturesAllowed() -> Result<bool> {
+    let mut outRes: bool = getLanguageStandard()? >= LanguageStandard::_3_3.clone();
+    Ok(outRes)
 }
 
 pub fn flatModelica() -> Result<bool> {

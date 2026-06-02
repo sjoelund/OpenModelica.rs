@@ -347,38 +347,38 @@ pub fn noNameHashExp(mut exp: Arc<Expression::NFExpression>, mut r#mod: i32) -> 
 
 pub fn isOnlyTimeDependent(mut exp: Arc<Expression::NFExpression>) -> Result<bool> {
     let mut b: bool = false;
-    b = Expression::fold(exp.clone(), (std::sync::Arc::new(fnptr!(isOnlyTimeDependentFold, Arc<Expression::NFExpression>, bool)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, bool) -> Result<bool> + 'static>), true)?;
+    b = Expression::fold(exp.clone(), (std::sync::Arc::new(isOnlyTimeDependentFold) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, bool) -> Result<bool> + 'static>), true)?;
     Ok(b)
 }
 
-pub fn isOnlyTimeDependentFold(mut exp: Arc<Expression::NFExpression>, mut b: bool) -> bool {
+pub fn isOnlyTimeDependentFold(mut exp: Arc<Expression::NFExpression>, mut b: bool) -> Result<bool> {
     let mut b: bool = b;
     if b.clone() {
         b = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CREF { .. } => ComponentRef::isTime(var_field!((*exp).cref, Expression::NFExpression::CREF).clone()) || BVariable::checkCref(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), (std::sync::Arc::new(fnptr!(BVariable::isParamOrConst, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!()),
+        Deref @ Expression::CREF { .. } => ComponentRef::isTime(var_field!((*exp).cref, Expression::NFExpression::CREF).clone())? || BVariable::checkCref(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), (std::sync::Arc::new(fnptr!(BVariable::isParamOrConst, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!())?,
         _ => true,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    b
+    Ok(b)
 }
 
 pub fn isContinuous(mut exp: Arc<Expression::NFExpression>, mut staticAsContinuous: bool) -> Result<bool> {
     let mut b: bool = false;
-    b = Expression::fold(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = staticAsContinuous.clone(); move |__pe_a0, __pe_a2| Ok(isContinuousFold(__pe_a0, __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, bool) -> Result<bool> + 'static>), true)?;
+    b = Expression::fold(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = staticAsContinuous.clone(); move |__pe_a0, __pe_a2| isContinuousFold(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, bool) -> Result<bool> + 'static>), true)?;
     Ok(b)
 }
 
-pub fn isContinuousFold(mut exp: Arc<Expression::NFExpression>, mut staticAsContinuous: bool, mut b: bool) -> bool {
+pub fn isContinuousFold(mut exp: Arc<Expression::NFExpression>, mut staticAsContinuous: bool, mut b: bool) -> Result<bool> {
     let mut b: bool = b;
     if b.clone() {
         b = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CREF { .. } => BVariable::checkCref(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), (std::sync::Arc::new({ let __pe_b1 = staticAsContinuous.clone(); move |__pe_a0| BVariable::isContinuous(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!()),
+        Deref @ Expression::CREF { .. } => BVariable::checkCref(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), (std::sync::Arc::new({ let __pe_b1 = staticAsContinuous.clone(); move |__pe_a0| BVariable::isContinuous(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!())?,
         _ => true,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    b
+    Ok(b)
 }
 
 pub fn getLocalSystem(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut matching: Arc<Matching::NBMatching>, mut eqn_indices: Arc<metamodelica::List<i32>>) -> Result<(metamodelica::Array<Arc<metamodelica::List<i32>>>, Arc<Matching::NBMatching>, metamodelica::Array<i32>)> {
@@ -419,10 +419,10 @@ pub fn getLocalSystem(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, 
     Ok((m_loc, matching_loc, map_back))
 }
 
-pub fn makeFDerString(mut r#str: ArcStr, mut i_opt: Option<i32>) -> ArcStr {
+pub fn makeFDerString(mut r#str: ArcStr, mut i_opt: Option<i32>) -> Result<ArcStr> {
     let mut r#str: ArcStr = r#str;
-    let mut i: ArcStr = if (isSome(i_opt.clone())) {intString(Util::getOption(i_opt.clone()).unwrap())} else {literal!("")};
+    let mut i: ArcStr = if (isSome(i_opt.clone())) {intString(Util::getOption(i_opt.clone())?)} else {literal!("")};
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*arcstr::literal!(BVariable::FUNCTION_DERIVATIVE_STR)); __mm_s.push_str(&*i.clone()); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone();
-    r#str
+    Ok(r#str)
 }
 

@@ -644,7 +644,7 @@ fn fun_78(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_stateVars: Arc<meta
         (txt, false, a_stateVars, a_simCode, a_exportVar, a_simVar, a_FMUVersion) => {
             let mut ret_0: bool = false;
             let mut txt = (*txt).clone();
-            ret_0 = FMI::isFMIVersion20((a_FMUVersion.clone()).clone());
+            ret_0 = FMI::isFMIVersion20((a_FMUVersion.clone()).clone())?;
             txt = fun_77(txt.clone(), ret_0.clone(), a_stateVars.clone(), a_simCode.clone(), a_exportVar.clone(), a_simVar.clone())?;
             txt.clone()
         },
@@ -2969,7 +2969,7 @@ fn fun_182(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in
     out_txt = (match (in_txt.clone(), in_a_modelInfo.clone(), in_a_FMUVersion.clone(), in_a_simCode.clone()) {
         (mut txt, SimCode::ModelInfo { vars: mut i_vars @ SimCodeVar::SimVars { stateVars: _, .. }, .. }, mut a_FMUVersion, mut a_simCode) => {
             let mut ret_0: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
-            ret_0 = SimCodeUtil::getEnumerationTypes(i_vars.clone());
+            ret_0 = SimCodeUtil::getEnumerationTypes(i_vars.clone())?;
             txt = TypeDefinitionsHelper(txt.clone(), a_simCode.clone(), ret_0.clone(), (a_FMUVersion.clone()).clone())?;
             txt.clone()
         },
@@ -3197,7 +3197,7 @@ pub fn TypeDefinitionType(mut in_txt: Tpl::Text, mut in_a_type__: Arc<DAE::Type>
         (txt, Deref @ DAE::Type::T_ENUMERATION { names: i_names, path: i_path, .. }, a_FMUVersion) => {
             let mut ret_0: bool = false;
             let mut txt = (*txt).clone();
-            ret_0 = FMI::isFMIVersion20((a_FMUVersion.clone()).clone());
+            ret_0 = FMI::isFMIVersion20((a_FMUVersion.clone()).clone())?;
             txt = fun_192(txt.clone(), ret_0.clone(), i_names.clone(), i_path.clone())?;
             txt.clone()
         },
@@ -3259,7 +3259,7 @@ pub fn DefaultExperimentAttribute(mut in_txt: Tpl::Text, mut in_a_simulationSett
     out_txt = (match (in_txt.clone(), in_a_simulationSettings.clone(), in_a_FMUVersion.clone()) {
         (mut txt, SimCode::SimulationSettings { stepSize: mut i_stepSize, tolerance: mut i_tolerance, stopTime: mut i_stopTime, startTime: mut i_startTime, .. }, mut a_FMUVersion) => {
             let mut ret_0: bool = false;
-            ret_0 = FMI::isFMIVersion20((a_FMUVersion.clone()).clone());
+            ret_0 = FMI::isFMIVersion20((a_FMUVersion.clone()).clone())?;
             txt = fun_195(txt.clone(), ret_0.clone(), i_stepSize.clone(), i_tolerance.clone(), i_stopTime.clone(), i_startTime.clone())?;
             txt.clone()
         },

@@ -70,16 +70,16 @@ impl Default for SBLinearMap {
 
 pub type LINEAR_MAP = SBLinearMap;
 
-pub fn new(mut gain: metamodelica::Array<metamodelica::Real>, mut offset: metamodelica::Array<metamodelica::Real>) -> Arc<SBLinearMap> {
+pub fn new(mut gain: metamodelica::Array<metamodelica::Real>, mut offset: metamodelica::Array<metamodelica::Real>) -> Result<Arc<SBLinearMap>> {
     let mut map: Arc<SBLinearMap> = Arc::new(<SBLinearMap as ::std::default::Default>::default());
-    if Array::any(gain.clone(), (std::sync::Arc::new(fnptr!(Util::realNegative, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real) -> Result<bool> + 'static>)) {
+    if Array::any(gain.clone(), (std::sync::Arc::new(fnptr!(Util::realNegative, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real) -> Result<bool> + 'static>))? {
         map = newEmpty();
     } else if (gain.clone().borrow().len() as i32) == (offset.clone().borrow().len() as i32) {
         map = Arc::new(SBLinearMap { gain: metamodelica::arrayFromVec(gain.clone().borrow().clone()), offset: metamodelica::arrayFromVec(offset.clone().borrow().clone()) });
     } else {
         map = newEmpty();
     }
-    map
+    Ok(map)
 }
 
 pub fn newEmpty() -> Arc<SBLinearMap> {
@@ -124,16 +124,16 @@ pub fn isEmpty(mut map: Arc<SBLinearMap>) -> bool {
     empty
 }
 
-pub fn isIdentity(mut map: Arc<SBLinearMap>) -> bool {
+pub fn isIdentity(mut map: Arc<SBLinearMap>) -> Result<bool> {
     let mut isIdentity: bool = false;
-    isIdentity = Array::all(map.gain.clone(), (std::sync::Arc::new({ let __pe_b0 = metamodelica::OrderedFloat(1.0_f64); move |__pe_a1| Ok(realEq(__pe_b0.clone(), __pe_a1)) }) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real) -> Result<bool> + 'static>)) && Array::all(map.offset.clone(), (std::sync::Arc::new({ let __pe_b0 = metamodelica::OrderedFloat(0.0_f64); move |__pe_a1| Ok(realEq(__pe_b0.clone(), __pe_a1)) }) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real) -> Result<bool> + 'static>));
-    isIdentity
+    isIdentity = Array::all(map.gain.clone(), (std::sync::Arc::new({ let __pe_b0 = metamodelica::OrderedFloat(1.0_f64); move |__pe_a1| Ok(realEq(__pe_b0.clone(), __pe_a1)) }) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real) -> Result<bool> + 'static>))? && Array::all(map.offset.clone(), (std::sync::Arc::new({ let __pe_b0 = metamodelica::OrderedFloat(0.0_f64); move |__pe_a1| Ok(realEq(__pe_b0.clone(), __pe_a1)) }) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real) -> Result<bool> + 'static>))?;
+    Ok(isIdentity)
 }
 
-pub fn isEqual(mut map1: Arc<SBLinearMap>, mut map2: Arc<SBLinearMap>) -> bool {
+pub fn isEqual(mut map1: Arc<SBLinearMap>, mut map2: Arc<SBLinearMap>) -> Result<bool> {
     let mut equal: bool = false;
-    equal = Array::isEqualOnTrue(map1.gain.clone(), map2.gain.clone(), (std::sync::Arc::new(fnptr!(realEq, metamodelica::Real, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real, metamodelica::Real) -> Result<bool> + 'static>)) && Array::isEqualOnTrue(map1.offset.clone(), map2.offset.clone(), (std::sync::Arc::new(fnptr!(realEq, metamodelica::Real, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real, metamodelica::Real) -> Result<bool> + 'static>));
-    equal
+    equal = Array::isEqualOnTrue(map1.gain.clone(), map2.gain.clone(), (std::sync::Arc::new(fnptr!(realEq, metamodelica::Real, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real, metamodelica::Real) -> Result<bool> + 'static>))? && Array::isEqualOnTrue(map1.offset.clone(), map2.offset.clone(), (std::sync::Arc::new(fnptr!(realEq, metamodelica::Real, metamodelica::Real)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Real, metamodelica::Real) -> Result<bool> + 'static>))?;
+    Ok(equal)
 }
 
 pub fn compose(mut map1: Arc<SBLinearMap>, mut map2: Arc<SBLinearMap>) -> Arc<SBLinearMap> {
@@ -190,7 +190,7 @@ pub fn inverse(mut map: Arc<SBLinearMap>) -> Arc<SBLinearMap> {
 
 pub fn apply(mut domain: Arc<SBSet::SBSet>, mut map: Arc<SBLinearMap>) -> Result<Arc<SBSet::SBSet>> {
     let mut target: Arc<SBSet::SBSet> = SBSet::copy(domain.clone());
-    if !(isIdentity(map.clone())) {
+    if !(isIdentity(map.clone())?) {
         UnorderedSet::apply(target.asets.clone(), (std::sync::Arc::new({ let __pe_b1 = map.clone(); move |__pe_a0| Ok(applyAtomicSet(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<Arc<SBAtomicSet::SBAtomicSet>> + 'static>))?;
     }
     Ok(target)

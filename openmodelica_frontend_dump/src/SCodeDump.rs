@@ -439,10 +439,10 @@ pub fn prefixesStr(mut prefixes: Arc<SCode::Prefixes>) -> Result<ArcStr> {
     Ok(r#str)
 }
 
-pub fn filterElements(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut options: SCodeDumpOptions) -> Arc<metamodelica::List<Arc<SCode::Element>>> {
+pub fn filterElements(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut options: SCodeDumpOptions) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
     let mut outElements: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-    outElements = List::select1(elements.clone(), (std::sync::Arc::new(fnptr!(filterElement, Arc<SCode::Element>, SCodeDumpOptions)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, SCodeDumpOptions) -> Result<bool> + 'static>), options.clone());
-    outElements
+    outElements = List::select1(elements.clone(), (std::sync::Arc::new(fnptr!(filterElement, Arc<SCode::Element>, SCodeDumpOptions)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, SCodeDumpOptions) -> Result<bool> + 'static>), options.clone())?;
+    Ok(outElements)
 }
 
 fn filterElement(mut element: Arc<SCode::Element>, mut options: SCodeDumpOptions) -> bool {

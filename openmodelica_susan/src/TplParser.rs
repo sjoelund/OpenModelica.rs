@@ -262,19 +262,19 @@ pub mod CacheTree {
         outBalance
     }
 
-    pub fn fold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> FT {
+    pub fn fold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> Result<FT> {
         pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<FT> + 'static>;
 
         let mut outResult: FT = inStartValue.clone();
         outResult = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { value, key, .. } => {
-            outResult = fold(var_field!((*inTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone());
-            outResult = inFunc((key.clone()).clone(), value.clone(), outResult.clone()).unwrap();
-            outResult = fold(var_field!((*inTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone());
+            outResult = fold(var_field!((*inTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
+            outResult = inFunc((key.clone()).clone(), value.clone(), outResult.clone())?;
+            outResult = fold(var_field!((*inTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
             outResult.clone()
         },
         Deref @ Tree::LEAF { value, key } => {
-            outResult = inFunc((key.clone()).clone(), value.clone(), outResult.clone()).unwrap();
+            outResult = inFunc((key.clone()).clone(), value.clone(), outResult.clone())?;
             outResult.clone()
         },
         _ => {
@@ -282,26 +282,26 @@ pub mod CacheTree {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        outResult
+        Ok(outResult)
     }
 
-    pub fn foldCond<FT: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> FT {
+    pub fn foldCond<FT: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> Result<FT> {
         pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<(FT, bool)> + 'static>;
 
         let mut value: FT = value;
         value = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => {
             let mut c: bool = false;
-            (value, c) = foldFunc((var_field!((*tree).key, Tree::NODE).clone()).clone(), var_field!((*tree).value, Tree::NODE).clone(), value.clone()).unwrap();
+            (value, c) = foldFunc((var_field!((*tree).key, Tree::NODE).clone()).clone(), var_field!((*tree).value, Tree::NODE).clone(), value.clone())?;
             if c.clone() {
-                value = foldCond(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), value.clone());
-                value = foldCond(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), value.clone());
+                value = foldCond(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), value.clone())?;
+                value = foldCond(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), value.clone())?;
             }
             value.clone()
         },
         Deref @ Tree::LEAF { .. } => {
             let mut c: bool = false;
-            (value, c) = foldFunc((var_field!((*tree).key, Tree::LEAF).clone()).clone(), var_field!((*tree).value, Tree::LEAF).clone(), value.clone()).unwrap();
+            (value, c) = foldFunc((var_field!((*tree).key, Tree::LEAF).clone()).clone(), var_field!((*tree).value, Tree::LEAF).clone(), value.clone())?;
             value.clone()
         },
         _ => {
@@ -309,29 +309,29 @@ pub mod CacheTree {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        value
+        Ok(value)
     }
 
-    pub fn fold_2<FT1: Clone + 'static, FT2: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> (FT1, FT2) {
+    pub fn fold_2<FT1: Clone + 'static, FT2: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> Result<(FT1, FT2)> {
         pub type FoldFunc<FT1: Clone + 'static, FT2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT1, FT2) -> Result<(FT1, FT2)> + 'static>;
 
         let mut foldArg1: FT1 = foldArg1;
         let mut foldArg2: FT2 = foldArg2;
         let () = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => {
-            (foldArg1, foldArg2) = fold_2(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone());
-            (foldArg1, foldArg2) = foldFunc((var_field!((*tree).key, Tree::NODE).clone()).clone(), var_field!((*tree).value, Tree::NODE).clone(), foldArg1.clone(), foldArg2.clone()).unwrap();
-            (foldArg1, foldArg2) = fold_2(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone());
+            (foldArg1, foldArg2) = fold_2(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone())?;
+            (foldArg1, foldArg2) = foldFunc((var_field!((*tree).key, Tree::NODE).clone()).clone(), var_field!((*tree).value, Tree::NODE).clone(), foldArg1.clone(), foldArg2.clone())?;
+            (foldArg1, foldArg2) = fold_2(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone())?;
             ()
         },
         Deref @ Tree::LEAF { .. } => {
-            (foldArg1, foldArg2) = foldFunc((var_field!((*tree).key, Tree::LEAF).clone()).clone(), var_field!((*tree).value, Tree::LEAF).clone(), foldArg1.clone(), foldArg2.clone()).unwrap();
+            (foldArg1, foldArg2) = foldFunc((var_field!((*tree).key, Tree::LEAF).clone()).clone(), var_field!((*tree).value, Tree::LEAF).clone(), foldArg1.clone(), foldArg2.clone())?;
             ()
         },
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        (foldArg1, foldArg2)
+        Ok((foldArg1, foldArg2))
     }
 
     pub fn forEach(mut tree: Arc<Tree>, mut func: Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>) -> Result<()> + 'static>) -> Result<()> {
@@ -531,7 +531,7 @@ pub mod CacheTree {
         lst
     }
 
-    pub fn map(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>) -> Result<Arc<metamodelica::List<TplAbsyn::ASTDef>>> + 'static>) -> Arc<Tree> {
+    pub fn map(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>) -> Result<Arc<metamodelica::List<TplAbsyn::ASTDef>>> + 'static>) -> Result<Arc<Tree>> {
         pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Key, Value) -> Result<Value> + 'static>;
 
         let mut outTree: Arc<Tree> = inTree.clone();
@@ -540,9 +540,9 @@ pub mod CacheTree {
             let mut new_value: Value = metamodelica::nil();
             let mut new_left: Arc<Tree> = Arc::new(Tree::EMPTY);
             let mut new_right: Arc<Tree> = Arc::new(Tree::EMPTY);
-            new_left = map(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone());
-            new_value = inFunc((key.clone()).clone(), value.clone()).unwrap();
-            new_right = map(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone());
+            new_left = map(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone())?;
+            new_value = inFunc((key.clone()).clone(), value.clone())?;
+            new_right = map(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone())?;
             if !(referenceEq(&new_left.clone(),&var_field!((*outTree).left, Tree::NODE).clone())) || !(referenceEq(&value.clone(),&new_value.clone())) || !(referenceEq(&new_right.clone(),&var_field!((*outTree).right, Tree::NODE).clone())) {
                 outTree = Arc::new(Tree::NODE { key: (key.clone()).clone(), value: new_value.clone(), height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left.clone(), right: new_right.clone() });
             }
@@ -550,7 +550,7 @@ pub mod CacheTree {
         },
         Deref @ Tree::LEAF { value, key } => {
             let mut new_value: Value = metamodelica::nil();
-            new_value = inFunc((key.clone()).clone(), value.clone()).unwrap();
+            new_value = inFunc((key.clone()).clone(), value.clone())?;
             if !(referenceEq(&value.clone(),&new_value.clone())) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
             }
@@ -561,10 +561,10 @@ pub mod CacheTree {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        outTree
+        Ok(outTree)
     }
 
-    pub fn mapFold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>, FT) -> Result<(Arc<metamodelica::List<TplAbsyn::ASTDef>>, FT)> + 'static>, mut inStartValue: FT) -> (Arc<Tree>, FT) {
+    pub fn mapFold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<TplAbsyn::ASTDef>>, FT) -> Result<(Arc<metamodelica::List<TplAbsyn::ASTDef>>, FT)> + 'static>, mut inStartValue: FT) -> Result<(Arc<Tree>, FT)> {
         pub type MapFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<Value> + 'static>;
 
         let mut outTree: Arc<Tree> = inTree.clone();
@@ -574,9 +574,9 @@ pub mod CacheTree {
             let mut new_value: Value = metamodelica::nil();
             let mut new_left: Arc<Tree> = Arc::new(Tree::EMPTY);
             let mut new_right: Arc<Tree> = Arc::new(Tree::EMPTY);
-            (new_left, outResult) = mapFold(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone());
-            (new_value, outResult) = inFunc((key.clone()).clone(), value.clone(), outResult.clone()).unwrap();
-            (new_right, outResult) = mapFold(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone());
+            (new_left, outResult) = mapFold(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
+            (new_value, outResult) = inFunc((key.clone()).clone(), value.clone(), outResult.clone())?;
+            (new_right, outResult) = mapFold(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
             if !(referenceEq(&new_left.clone(),&var_field!((*outTree).left, Tree::NODE).clone())) || !(referenceEq(&value.clone(),&new_value.clone())) || !(referenceEq(&new_right.clone(),&var_field!((*outTree).right, Tree::NODE).clone())) {
                 outTree = Arc::new(Tree::NODE { key: (key.clone()).clone(), value: new_value.clone(), height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left.clone(), right: new_right.clone() });
             }
@@ -584,7 +584,7 @@ pub mod CacheTree {
         },
         Deref @ Tree::LEAF { value, key } => {
             let mut new_value: Value = metamodelica::nil();
-            (new_value, outResult) = inFunc((key.clone()).clone(), value.clone(), outResult.clone()).unwrap();
+            (new_value, outResult) = inFunc((key.clone()).clone(), value.clone(), outResult.clone())?;
             if !(referenceEq(&value.clone(),&new_value.clone())) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
             }
@@ -595,7 +595,7 @@ pub mod CacheTree {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        (outTree, outResult)
+        Ok((outTree, outResult))
     }
 
     pub fn new() -> Arc<Tree> {
@@ -736,9 +736,9 @@ pub mod CacheTree {
         lst
     }
 
-    pub fn update(mut tree: Arc<Tree>, mut key: Key, mut value: Value) -> Arc<Tree> {
-        let mut outTree: Arc<Tree> = add(tree.clone(), (key.clone()).clone(), value.clone(), (std::sync::Arc::new(fnptr!(addConflictReplace, Arc<metamodelica::List<TplAbsyn::ASTDef>>, Arc<metamodelica::List<TplAbsyn::ASTDef>>, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<TplAbsyn::ASTDef>>, Arc<metamodelica::List<TplAbsyn::ASTDef>>, ArcStr) -> Result<Arc<metamodelica::List<TplAbsyn::ASTDef>>> + 'static>)).unwrap();
-        outTree
+    pub fn update(mut tree: Arc<Tree>, mut key: Key, mut value: Value) -> Result<Arc<Tree>> {
+        let mut outTree: Arc<Tree> = add(tree.clone(), (key.clone()).clone(), value.clone(), (std::sync::Arc::new(fnptr!(addConflictReplace, Arc<metamodelica::List<TplAbsyn::ASTDef>>, Arc<metamodelica::List<TplAbsyn::ASTDef>>, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<TplAbsyn::ASTDef>>, Arc<metamodelica::List<TplAbsyn::ASTDef>>, ArcStr) -> Result<Arc<metamodelica::List<TplAbsyn::ASTDef>>> + 'static>))?;
+        Ok(outTree)
     }
 
 }
@@ -1385,7 +1385,7 @@ fn typeviewDefsFromTemplateFile(mut packageName: Arc<TplAbsyn::PathIdent>, mut i
         (_, linfo) = unwrap_break_err!(interleaveExpectEndOfFile(chars.clone(), linfo.clone()), '__try0);
         let TplAbsyn::TEMPL_PACKAGE { templateDefs: __pa3, .. } = (unwrap_break_err!(TplAbsyn::fullyQualifyTemplatePackage(tplPackage.clone()), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
         templateDefs = __pa3.clone();
-        astTypes = List::map(templateDefs.clone(), (std::sync::Arc::new(templateDefToAstDefType) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, TplAbsyn::TemplateDef)) -> Result<(ArcStr, TplAbsyn::TypeInfo)> + 'static>));
+        astTypes = unwrap_break_err!(List::map(templateDefs.clone(), (std::sync::Arc::new(templateDefToAstDefType) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, TplAbsyn::TemplateDef)) -> Result<(ArcStr, TplAbsyn::TypeInfo)> + 'static>)), '__try0);
         newAstDef = TplAbsyn::ASTDef { importPackage: packageName.clone(), isDefault: isUnqualifiedImport.clone(), types: astTypes.clone() };
         cachedDefs = unwrap_break_err!(CacheTree::add(cachedDefs.clone(), (file.clone()).clone(), metamodelica::cons(newAstDef.clone(), metamodelica::nil()), (std::sync::Arc::new(CacheTree::addConflictDefault) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>)), '__try0);
         astDefs = metamodelica::cons(newAstDef.clone(), astDefs.clone());
@@ -1432,7 +1432,7 @@ pub fn templateDefToAstDefType(mut inTemplateDef: (ArcStr, TplAbsyn::TemplateDef
             let mut oargs: Arc<metamodelica::List<(ArcStr, Arc<TplAbsyn::TypeSignature>)>> = metamodelica::nil();
             let mut iargs = iargs.clone();
             iargs = metamodelica::cons(TplAbsyn::imlicitTxtArg.clone(), iargs.clone());
-            oargs = List::filterOnTrue(iargs.clone(), (std::sync::Arc::new(fnptr!(TplAbsyn::isText, (ArcStr, Arc<TplAbsyn::TypeSignature>))) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, Arc<TplAbsyn::TypeSignature>)) -> Result<bool> + 'static>));
+            oargs = List::filterOnTrue(iargs.clone(), (std::sync::Arc::new(fnptr!(TplAbsyn::isText, (ArcStr, Arc<TplAbsyn::TypeSignature>))) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, Arc<TplAbsyn::TypeSignature>)) -> Result<bool> + 'static>))?;
             Ok((id.clone(), TplAbsyn::TypeInfo::TI_FUN_TYPE { inArgs: iargs.clone(), outArgs: oargs.clone(), tyVars: metamodelica::nil() }))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {

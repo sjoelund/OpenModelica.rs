@@ -87,7 +87,7 @@ pub fn serialize(mut code: SimCode::SimCode) -> Result<ArcStr> {
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    })).into_iter().cloned().collect());
+    }))?.into_iter().cloned().collect());
             serializeJacobian((fname.clone()).clone(), (columnPointers.clone().borrow().len() as i32), (rowIndices.clone().borrow().len() as i32), columnPointers.clone(), rowIndices.clone());
             for mut color in &*colorList.clone() {
                 let mut color = color.clone();

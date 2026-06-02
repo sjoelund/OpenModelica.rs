@@ -100,7 +100,7 @@ pub fn convertModel(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<DAE::D
     elems = convertInitialEquations(flatModel.initialEquations.clone(), elems.clone())?;
     elems = convertAlgorithms(flatModel.algorithms.clone(), elems.clone())?;
     elems = convertInitialAlgorithms(flatModel.initialAlgorithms.clone(), elems.clone())?;
-    class_elem = Arc::new(DAE::Element::COMP { ident: (FlatModel::fullName(flatModel.clone())).clone(), dAElist: elems.clone(), source: flatModel.source.clone(), comment: ElementSource::getOptComment(flatModel.source.clone())? });
+    class_elem = Arc::new(DAE::Element::COMP { ident: (FlatModel::fullName(flatModel.clone())?).clone(), dAElist: elems.clone(), source: flatModel.source.clone(), comment: ElementSource::getOptComment(flatModel.source.clone())? });
     dae = DAE::DAElist { elementLst: list![class_elem.clone()] };
     Ok(dae)
 }
@@ -233,31 +233,31 @@ fn convertRealVarAttributes(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Bindi
         (name, b) = attr.clone();
         let () = (::match_deref::match_deref! { match &(name.clone()) {
         Deref @ "displayUnit" => {
-            displayUnit = convertVarAttribute(b.clone());
+            displayUnit = convertVarAttribute(b.clone())?;
             ()
         },
         Deref @ "fixed" => {
-            fixed = convertVarAttribute(b.clone());
+            fixed = convertVarAttribute(b.clone())?;
             ()
         },
         Deref @ "max" => {
-            max = convertVarAttribute(b.clone());
+            max = convertVarAttribute(b.clone())?;
             ()
         },
         Deref @ "min" => {
-            min = convertVarAttribute(b.clone());
+            min = convertVarAttribute(b.clone())?;
             ()
         },
         Deref @ "nominal" => {
-            nominal = convertVarAttribute(b.clone());
+            nominal = convertVarAttribute(b.clone())?;
             ()
         },
         Deref @ "quantity" => {
-            quantity = convertVarAttribute(b.clone());
+            quantity = convertVarAttribute(b.clone())?;
             ()
         },
         Deref @ "start" => {
-            start = convertVarAttribute(b.clone());
+            start = convertVarAttribute(b.clone())?;
             start_origin = convertStartOrigin(b.clone());
             ()
         },
@@ -271,7 +271,7 @@ fn convertRealVarAttributes(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Bindi
             ()
         },
         Deref @ "unit" => {
-            unit = convertVarAttribute(b.clone());
+            unit = convertVarAttribute(b.clone())?;
             ()
         },
         _ => {
@@ -300,24 +300,24 @@ fn convertIntVarAttributes(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Bindin
         (name, b) = attr.clone();
         let () = (::match_deref::match_deref! { match &(name.clone()) {
         Deref @ "quantity" => {
-            quantity = convertVarAttribute(b.clone());
+            quantity = convertVarAttribute(b.clone())?;
             ()
         },
         Deref @ "min" => {
-            min = convertVarAttribute(b.clone());
+            min = convertVarAttribute(b.clone())?;
             ()
         },
         Deref @ "max" => {
-            max = convertVarAttribute(b.clone());
+            max = convertVarAttribute(b.clone())?;
             ()
         },
         Deref @ "start" => {
-            start = convertVarAttribute(b.clone());
+            start = convertVarAttribute(b.clone())?;
             start_origin = convertStartOrigin(b.clone());
             ()
         },
         Deref @ "fixed" => {
-            fixed = convertVarAttribute(b.clone());
+            fixed = convertVarAttribute(b.clone())?;
             ()
         },
         _ => {
@@ -344,16 +344,16 @@ fn convertBoolVarAttributes(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Bindi
         (name, b) = attr.clone();
         let () = (::match_deref::match_deref! { match &(name.clone()) {
         Deref @ "quantity" => {
-            quantity = convertVarAttribute(b.clone());
+            quantity = convertVarAttribute(b.clone())?;
             ()
         },
         Deref @ "start" => {
-            start = convertVarAttribute(b.clone());
+            start = convertVarAttribute(b.clone())?;
             start_origin = convertStartOrigin(b.clone());
             ()
         },
         Deref @ "fixed" => {
-            fixed = convertVarAttribute(b.clone());
+            fixed = convertVarAttribute(b.clone())?;
             ()
         },
         _ => {
@@ -380,16 +380,16 @@ fn convertStringVarAttributes(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Bin
         (name, b) = attr.clone();
         let () = (::match_deref::match_deref! { match &(name.clone()) {
         Deref @ "quantity" => {
-            quantity = convertVarAttribute(b.clone());
+            quantity = convertVarAttribute(b.clone())?;
             ()
         },
         Deref @ "start" => {
-            start = convertVarAttribute(b.clone());
+            start = convertVarAttribute(b.clone())?;
             start_origin = convertStartOrigin(b.clone());
             ()
         },
         Deref @ "fixed" => {
-            fixed = convertVarAttribute(b.clone());
+            fixed = convertVarAttribute(b.clone())?;
             ()
         },
         _ => {
@@ -418,23 +418,23 @@ fn convertEnumVarAttributes(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Bindi
         (name, b) = attr.clone();
         let () = (::match_deref::match_deref! { match &(name.clone()) {
         Deref @ "fixed" => {
-            fixed = convertVarAttribute(b.clone());
+            fixed = convertVarAttribute(b.clone())?;
             ()
         },
         Deref @ "max" => {
-            max = convertVarAttribute(b.clone());
+            max = convertVarAttribute(b.clone())?;
             ()
         },
         Deref @ "min" => {
-            min = convertVarAttribute(b.clone());
+            min = convertVarAttribute(b.clone())?;
             ()
         },
         Deref @ "quantity" => {
-            quantity = convertVarAttribute(b.clone());
+            quantity = convertVarAttribute(b.clone())?;
             ()
         },
         Deref @ "start" => {
-            start = convertVarAttribute(b.clone());
+            start = convertVarAttribute(b.clone())?;
             start_origin = convertStartOrigin(b.clone());
             ()
         },
@@ -449,9 +449,9 @@ fn convertEnumVarAttributes(mut attrs: Arc<metamodelica::List<(ArcStr, Arc<Bindi
     Ok(attributes)
 }
 
-fn convertVarAttribute(mut binding: Arc<Binding::NFBinding>) -> Option<Arc<DAE::Exp>> {
-    let mut attribute: Option<Arc<DAE::Exp>> = Some(Expression::toDAE(Binding::getTypedExp(binding.clone()).unwrap(), false).unwrap());
-    attribute
+fn convertVarAttribute(mut binding: Arc<Binding::NFBinding>) -> Result<Option<Arc<DAE::Exp>>> {
+    let mut attribute: Option<Arc<DAE::Exp>> = Some(Expression::toDAE(Binding::getTypedExp(binding.clone())?, false)?);
+    Ok(attribute)
 }
 
 fn convertStateSelectAttribute(mut binding: Arc<Binding::NFBinding>) -> Result<Option<DAE::StateSelect>> {
@@ -548,7 +548,7 @@ fn convertEquations(mut equations: Arc<metamodelica::List<Arc<Equation::NFEquati
 fn convertEquation(mut eq: Arc<Equation::NFEquation>, mut elements: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Element>>>> {
     let mut elements: Arc<metamodelica::List<Arc<DAE::Element>>> = elements;
     elements = (::match_deref::match_deref! { match &(eq.clone()) {
-        Deref @ Equation::EQUALITY { rhs: rhs @ Deref @ Expression::CREF { .. }, lhs: lhs @ Deref @ Expression::CREF { .. }, .. } if (Type::isScalarBuiltin(var_field!((*eq).ty, Equation::NFEquation::EQUALITY).clone())) => {
+        Deref @ Equation::EQUALITY { rhs: rhs @ Deref @ Expression::CREF { .. }, lhs: lhs @ Deref @ Expression::CREF { .. }, .. } if (Type::isScalarBuiltin(var_field!((*eq).ty, Equation::NFEquation::EQUALITY).clone())?) => {
             let mut cr1: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             let mut cr2: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             cr1 = ComponentRef::toDAE(var_field!((**lhs).cref, Expression::NFExpression::CREF).clone())?;
@@ -1024,7 +1024,7 @@ fn convertWhenStatement(mut whenBranches: Arc<metamodelica::List<(Arc<Expression
         co = Util::tuple21(b.clone());
         conditions = ({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-        for mut c in (UnorderedSet::toList(Expression::extractCrefs(co.clone()))).into_iter().cloned() {
+        for mut c in (UnorderedSet::toList(Expression::extractCrefs(co.clone())?)).into_iter().cloned() {
             if !(Type::isBoolean(ComponentRef::getSubscriptedType(c.clone(), false)?)) { continue; }
             let __x = c.clone();
             __acc = cons(__x, __acc);
@@ -1103,7 +1103,7 @@ fn convertFunction(mut func: Arc<Function::Function>) -> Result<DAE::Function> {
     cls = InstNode::getClass(Function::instance(func.clone()))?;
     dfunc = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ Class::TYPED_DERIVED { restriction: Deref @ Restriction::FUNCTION, .. } if (Function::isPartialDerivative(func.clone())) => {
-            def = DAE::FunctionDefinition::FUNCTION_PARTIAL_DERIVATIVE { derivedFunction: Function::getDerivedFunctionName(func.clone()), derivedVars: Function::getDerivedInputNames(func.clone())? };
+            def = DAE::FunctionDefinition::FUNCTION_PARTIAL_DERIVATIVE { derivedFunction: Function::getDerivedFunctionName(func.clone())?, derivedVars: Function::getDerivedInputNames(func.clone())? };
             Function::toDAE(func.clone(), def.clone())?
         },
         Deref @ Class::INSTANCED_CLASS { restriction: Deref @ Restriction::FUNCTION, sections, .. } => {
@@ -1301,7 +1301,7 @@ pub fn makeTypeRecordVar(mut component: Arc<InstNode::InstNode>) -> Result<Arc<D
     binding = Flatten::flattenBinding(binding.clone(), Flatten::EMPTY_PREFIX().clone(), false)?;
     bind_from_outside = Binding::source(binding.clone()) == Binding::Source::MODIFIER.clone();
     ty = Component::getType(comp.clone())?;
-    ty = Type::mapDims(ty.clone(), (std::sync::Arc::new(stripScopePrefixFromDim) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>));
+    ty = Type::mapDims(ty.clone(), (std::sync::Arc::new(stripScopePrefixFromDim) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>))?;
     typeVar = Arc::new(DAE::Var { name: (InstNode::name(component.clone())?).clone(), attributes: Attributes::toDAE(attr.clone(), vis.clone())?, ty: Type::toDAE(ty.clone(), true)?, binding: Binding::toDAE(binding.clone())?, bind_from_outside: bind_from_outside.clone(), constOfForIteratorRange: None });
     Ok(typeVar)
 }

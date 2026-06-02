@@ -185,16 +185,16 @@ pub mod Value {
 pub mod PseudoBucket {
     use super::*;
     pub fn create(mut eqn_to_var: metamodelica::Array<i32>, mut eqns: Arc<EquationPointers::EquationPointers>, mut mapping: Arc<Adjacency::Mapping::Mapping>, mut modes: Arc<UnorderedMap::UnorderedMap<(i32, i32), Arc<Mode::Mode>>>) -> Result<Arc<UnorderedMap::UnorderedMap<Arc<Mode::Mode>, Arc<Value::Value>>>> {
-        let mut buckets: Arc<UnorderedMap::UnorderedMap<Arc<Mode::Mode>, Arc<Value::Value>>> = UnorderedMap::new((std::sync::Arc::new(fnptr!(Adjacency::Mode::hash, Arc<Mode::Mode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Mode::Mode>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(Adjacency::Mode::isEqual, Arc<Mode::Mode>, Arc<Mode::Mode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Mode::Mode>, Arc<Mode::Mode>) -> Result<bool> + 'static>), 1);
+        let mut buckets: Arc<UnorderedMap::UnorderedMap<Arc<Mode::Mode>, Arc<Value::Value>>> = UnorderedMap::new((std::sync::Arc::new(Adjacency::Mode::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Mode::Mode>) -> Result<i32> + 'static>), (std::sync::Arc::new(Adjacency::Mode::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Mode::Mode>, Arc<Mode::Mode>) -> Result<bool> + 'static>), 1);
         let mut mode_opt: Option<Arc<Mode::Mode>> = None;
         let mut mode: Arc<Mode::Mode> = Arc::new(<Mode::Mode as ::std::default::Default>::default());
         let mut cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
         let __range0 = 1..=(eqn_to_var.clone().borrow().len() as i32);
         for mut eqn_scal_idx in __range0 {
-            mode_opt = UnorderedMap::get((eqn_scal_idx.clone(), eqn_to_var.borrow()[(eqn_scal_idx.clone()-1) as usize].clone()), modes.clone());
+            mode_opt = UnorderedMap::get((eqn_scal_idx.clone(), eqn_to_var.borrow()[(eqn_scal_idx.clone()-1) as usize].clone()), modes.clone())?;
             if isSome(mode_opt.clone()) {
                 mode = Util::getOption(mode_opt.clone())?;
-                if BEquation::Equation::isRecordOrTupleEquation(BEquation::EquationPointers::getEqnAt(eqns.clone(), mapping.eqn_StA.borrow()[(eqn_scal_idx.clone()-1) as usize].clone())?) {
+                if BEquation::Equation::isRecordOrTupleEquation(BEquation::EquationPointers::getEqnAt(eqns.clone(), mapping.eqn_StA.borrow()[(eqn_scal_idx.clone()-1) as usize].clone())?)? {
                     cref = listHead(mode.crefs.clone())?;
                     assign_field!(mode.crefs = metamodelica::nil());
                     addMulti(cref.clone(), eqn_scal_idx.clone(), mode.clone(), buckets.clone())?;
@@ -204,13 +204,13 @@ pub mod PseudoBucket {
             }
         }
         if Flags::isSet(Flags::DUMP_SORTING.clone())? {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*UnorderedMap::toString(buckets.clone(), (std::sync::Arc::new(fnptr!(Adjacency::Mode::toString, Arc<Mode::Mode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Mode::Mode>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(Value::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Value::Value>) -> Result<ArcStr> + 'static>), (literal!("\n")).clone(), (literal!(", ")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*UnorderedMap::toString(buckets.clone(), (std::sync::Arc::new(Adjacency::Mode::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Mode::Mode>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(Value::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Value::Value>) -> Result<ArcStr> + 'static>), (literal!("\n")).clone(), (literal!(", ")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         Ok(buckets)
     }
 
     pub fn add(mut eqn_scal_idx: i32, mut mode: Arc<Mode::Mode>, mut buckets: Arc<UnorderedMap::UnorderedMap<Arc<Mode::Mode>, Arc<Value::Value>>>) -> Result<()> {
-        let mut val_opt: Option<Arc<Value::Value>> = UnorderedMap::get(mode.clone(), buckets.clone());
+        let mut val_opt: Option<Arc<Value::Value>> = UnorderedMap::get(mode.clone(), buckets.clone())?;
         let mut val: Arc<Value::Value> = Arc::new(<Value::Value as ::std::default::Default>::default());
         if isSome(val_opt.clone()) {
             let __pa0 = ::match_deref::match_deref! { match &(val_opt.clone()) {
@@ -228,7 +228,7 @@ pub mod PseudoBucket {
     }
 
     pub fn addMulti(mut cref: Arc<ComponentRef::NFComponentRef>, mut eqn_scal_idx: i32, mut mode: Arc<Mode::Mode>, mut buckets: Arc<UnorderedMap::UnorderedMap<Arc<Mode::Mode>, Arc<Value::Value>>>) -> Result<()> {
-        let mut val_opt: Option<Arc<Value::Value>> = UnorderedMap::get(mode.clone(), buckets.clone());
+        let mut val_opt: Option<Arc<Value::Value>> = UnorderedMap::get(mode.clone(), buckets.clone())?;
         let mut val: Arc<Value::Value> = Arc::new(<Value::Value as ::std::default::Default>::default());
         if isSome(val_opt.clone()) {
             let __pa0 = ::match_deref::match_deref! { match &(val_opt.clone()) {
@@ -390,20 +390,20 @@ pub mod LoopIdentifier {
 
     pub type LOOP_IDENTIFIER = LoopIdentifier;
 
-    pub fn hash(mut li: Arc<LoopIdentifier>) -> i32 {
-        let mut i: i32 = stringHashDjb2((toString(li.clone())).clone());
-        i
+    pub fn hash(mut li: Arc<LoopIdentifier>) -> Result<i32> {
+        let mut i: i32 = stringHashDjb2((toString(li.clone())?).clone());
+        Ok(i)
     }
 
-    pub fn isEqual(mut li1: Arc<LoopIdentifier>, mut li2: Arc<LoopIdentifier>) -> bool {
-        let mut b: bool = UnorderedSet::isEqual(li1.eqns.clone(), li2.eqns.clone()).unwrap() && UnorderedSet::isEqual(li1.vars.clone(), li2.vars.clone()).unwrap();
-        b
+    pub fn isEqual(mut li1: Arc<LoopIdentifier>, mut li2: Arc<LoopIdentifier>) -> Result<bool> {
+        let mut b: bool = UnorderedSet::isEqual(li1.eqns.clone(), li2.eqns.clone())? && UnorderedSet::isEqual(li1.vars.clone(), li2.vars.clone())?;
+        Ok(b)
     }
 
-    pub fn toString(mut li: Arc<LoopIdentifier>) -> ArcStr {
+    pub fn toString(mut li: Arc<LoopIdentifier>) -> Result<ArcStr> {
         let mut r#str: ArcStr = arcstr::literal!("");
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" eqns: ")); __mm_s.push_str(&*UnorderedSet::toString(li.eqns.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n vars:")); __mm_s.push_str(&*UnorderedSet::toString(li.vars.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
-        r#str
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" eqns: ")); __mm_s.push_str(&*UnorderedSet::toString(li.eqns.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!("\n")).clone())?); __mm_s.push_str(&*literal!("\n vars:")); __mm_s.push_str(&*UnorderedSet::toString(li.vars.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!("\n")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+        Ok(r#str)
     }
 
     pub fn fromSCC(mut scc: Arc<metamodelica::List<i32>>, mut mapping: Arc<Adjacency::Mapping::Mapping>, mut matching: Arc<Matching::NBMatching>) -> Result<Arc<LoopIdentifier>> {
@@ -516,7 +516,7 @@ pub mod SuperNode {
         let mut phase2_matching: Arc<Matching::NBMatching> = matching.clone();
         let mut super_nodes: metamodelica::Array<Arc<SuperNode>> = Default::default();
         let mut li: Arc<LoopIdentifier::LoopIdentifier> = Arc::new(<LoopIdentifier::LoopIdentifier as ::std::default::Default>::default());
-        let mut loop_map: Arc<UnorderedMap::UnorderedMap<Arc<LoopIdentifier::LoopIdentifier>, Arc<metamodelica::List<i32>>>> = UnorderedMap::new((std::sync::Arc::new(fnptr!(LoopIdentifier::hash, Arc<LoopIdentifier::LoopIdentifier>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<LoopIdentifier::LoopIdentifier>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(LoopIdentifier::isEqual, Arc<LoopIdentifier::LoopIdentifier>, Arc<LoopIdentifier::LoopIdentifier>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<LoopIdentifier::LoopIdentifier>, Arc<LoopIdentifier::LoopIdentifier>) -> Result<bool> + 'static>), 1);
+        let mut loop_map: Arc<UnorderedMap::UnorderedMap<Arc<LoopIdentifier::LoopIdentifier>, Arc<metamodelica::List<i32>>>> = UnorderedMap::new((std::sync::Arc::new(LoopIdentifier::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<LoopIdentifier::LoopIdentifier>) -> Result<i32> + 'static>), (std::sync::Arc::new(LoopIdentifier::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<LoopIdentifier::LoopIdentifier>, Arc<LoopIdentifier::LoopIdentifier>) -> Result<bool> + 'static>), 1);
         let mut algebraic_loops: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = ({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
         for mut scc in (scc_phase1.clone()).into_iter().cloned() {
@@ -539,7 +539,7 @@ pub mod SuperNode {
             for mut scc in &*algebraic_loops.clone() {
                 let mut scc = scc.clone();
                 li = LoopIdentifier::fromSCC(scc.clone(), mapping.clone(), matching.clone())?;
-                UnorderedMap::add(li.clone(), listAppend(scc.clone(), UnorderedMap::getOrDefault(li.clone(), loop_map.clone(), metamodelica::nil())), loop_map.clone())?;
+                UnorderedMap::add(li.clone(), listAppend(scc.clone(), UnorderedMap::getOrDefault(li.clone(), loop_map.clone(), metamodelica::nil())?), loop_map.clone())?;
             }
             algebraic_loops = UnorderedMap::valueList(loop_map.clone());
             for mut scc in &*algebraic_loops.clone() {
@@ -695,7 +695,7 @@ pub mod SuperNode {
             let mut var_arr_idx: i32 = 0;
             (m_local, matching_local, map_back) = BackendUtil::getLocalSystem(m.clone(), matching.clone(), var_field!((**node).eqn_indices, SuperNode::ARRAY_BUCKET).clone())?;
             sorted_body_components = tarjanScalar(m_local.clone(), matching_local.clone())?;
-            sorted_body_indices = List::flatten(sorted_body_components.clone());
+            sorted_body_indices = List::flatten(sorted_body_components.clone())?;
             sorted_body_indices = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in (sorted_body_indices.clone()).into_iter().cloned() {
@@ -707,12 +707,12 @@ pub mod SuperNode {
             if List::compareLength(sorted_body_components.clone(), sorted_body_indices.clone())? != 0 {
                 Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBSorting.SuperNode.collapse")); __mm_s.push_str(&*literal!(" crucially failed for the following Phase II strong component")); __mm_s.push_str(&*literal!(" because the body turned out to still have strong components:\n")); __mm_s.push_str(&*List::toString(node_comp.clone(), (std::sync::Arc::new(toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SuperNode>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("\t")).clone(), (literal!("\n\t")).clone(), (literal!("\n")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone()])?;
             }
-            indep = Array::all(m_local.clone(), std::sync::Arc::new(fnptr!(List::hasOneElement, _)));
+            indep = Array::all(m_local.clone(), std::sync::Arc::new(fnptr!(List::hasOneElement, _)))?;
             eqn_arr_idx = mapping.eqn_StA.borrow()[(listHead(var_field!((**node).eqn_indices, SuperNode::ARRAY_BUCKET).clone())?-1) as usize].clone();
             var_arr_idx = mapping.var_StA.borrow()[(matching.eqn_to_var.borrow()[(listHead(var_field!((**node).eqn_indices, SuperNode::ARRAY_BUCKET).clone())?-1) as usize].clone()-1) as usize].clone();
             StrongComponent::createPseudoSlice(var_arr_idx.clone(), eqn_arr_idx.clone(), var_field!((**node).cref_to_solve, SuperNode::ARRAY_BUCKET).clone(), sorted_body_indices.clone(), matching.eqn_to_var.clone(), eqns.clone(), mapping.clone(), indep.clone())?
         },
-        _ if (List::all(node_comp.clone(), (std::sync::Arc::new(fnptr!(isArrayBucket, Arc<SuperNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SuperNode>) -> Result<bool> + 'static>))) => {
+        _ if (List::all(node_comp.clone(), (std::sync::Arc::new(fnptr!(isArrayBucket, Arc<SuperNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SuperNode>) -> Result<bool> + 'static>))?) => {
             let mut m_local: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
             let mut matching_local: Arc<Matching::NBMatching> = Arc::new(<Matching::NBMatching as ::std::default::Default>::default());
             let mut map_back: metamodelica::Array<i32> = Default::default();
@@ -723,9 +723,9 @@ pub mod SuperNode {
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    })))?;
+    }))?)?;
             sorted_body_components = tarjanScalar(m_local.clone(), matching_local.clone())?;
-            sorted_body_indices = List::flatten(sorted_body_components.clone());
+            sorted_body_indices = List::flatten(sorted_body_components.clone())?;
             sorted_body_indices = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in (sorted_body_indices.clone()).into_iter().cloned() {
@@ -749,7 +749,7 @@ pub mod SuperNode {
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }));
+    }))?;
             StrongComponent::createPseudoScalar(sorted_body_indices.clone(), matching.eqn_to_var.clone(), mapping.clone(), vars.clone(), eqns.clone())?
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -767,7 +767,7 @@ pub mod SuperNode {
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    })), std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>)); _arr.borrow_mut()[(new_idx.clone()-1) as usize] = _val; _arr};
+    }))?, std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?; _arr.borrow_mut()[(new_idx.clone()-1) as usize] = _val; _arr};
         for mut idx in &*rows_to_merge.clone() {
             let mut idx = idx.clone();
             {let _arr = m.clone(); _arr.borrow_mut()[(idx.clone()-1) as usize] = metamodelica::nil(); _arr};

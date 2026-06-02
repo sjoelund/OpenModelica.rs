@@ -309,7 +309,7 @@ fn sbinterval_intersection_misaligned_step_is_empty() {
 
 /// Helper: create a 1D SBMultiInterval from a single SBInterval.
 fn mi1d(lo: i32, step: i32, hi: i32) -> Arc<SBMultiInterval::SBMultiInterval> {
-    SBMultiInterval::fromList(metamodelica::list![SBInterval::new(lo, step, hi)])
+    SBMultiInterval::fromList(metamodelica::list![SBInterval::new(lo, step, hi)]).unwrap()
 }
 
 /// Helper: create a 2D SBMultiInterval.
@@ -320,7 +320,7 @@ fn mi2d(
     SBMultiInterval::fromList(metamodelica::list![
         SBInterval::new(lo1, s1, hi1),
         SBInterval::new(lo2, s2, hi2)
-    ])
+    ]).unwrap()
 }
 
 #[test]
@@ -341,7 +341,7 @@ fn sbmultiinterval_from_list_containing_empty_interval_is_empty() {
     let mi = SBMultiInterval::fromList(metamodelica::list![
         SBInterval::new(1, 1, 3),
         SBInterval::newEmpty()
-    ]);
+    ]).unwrap();
     assert!(
         SBMultiInterval::isEmpty(mi),
         "MI with an empty interval component should itself be empty"
@@ -364,21 +364,21 @@ fn sbmultiinterval_ndim_2d() {
 fn sbmultiinterval_contains_1d() {
     let mi = mi1d(1, 1, 5);
     let vals = metamodelica::arrayFromVec(vec![3]);
-    assert!(SBMultiInterval::contains(vals, mi));
+    assert!(SBMultiInterval::contains(vals, mi).unwrap());
 }
 
 #[test]
 fn sbmultiinterval_contains_1d_out_of_range_false() {
     let mi = mi1d(1, 1, 5);
     let vals = metamodelica::arrayFromVec(vec![7]);
-    assert!(!SBMultiInterval::contains(vals, mi));
+    assert!(!SBMultiInterval::contains(vals, mi).unwrap());
 }
 
 #[test]
 fn sbmultiinterval_contains_wrong_ndim_is_false() {
     let mi = mi2d(1, 1, 3, 1, 1, 3);
     let vals = metamodelica::arrayFromVec(vec![1]); // 1D value for 2D MI
-    assert!(!SBMultiInterval::contains(vals, mi));
+    assert!(!SBMultiInterval::contains(vals, mi).unwrap());
 }
 
 #[test]
@@ -442,7 +442,7 @@ fn sbmultiinterval_cross_prod_increases_ndim() -> Result<()> {
 fn sbmultiinterval_is_equal_same() -> Result<()> {
     let mi1 = mi1d(1, 1, 5);
     let mi2 = mi1d(1, 1, 5);
-    assert!(SBMultiInterval::isEqual(mi1, mi2));
+    assert!(SBMultiInterval::isEqual(mi1, mi2).unwrap());
     Ok(())
 }
 
@@ -450,7 +450,7 @@ fn sbmultiinterval_is_equal_same() -> Result<()> {
 fn sbmultiinterval_is_equal_different() -> Result<()> {
     let mi1 = mi1d(1, 1, 5);
     let mi2 = mi1d(1, 2, 5);
-    assert!(!SBMultiInterval::isEqual(mi1, mi2));
+    assert!(!SBMultiInterval::isEqual(mi1, mi2).unwrap());
     Ok(())
 }
 
@@ -484,14 +484,14 @@ fn sbatomicset_ndim_matches_underlying_mi() {
 fn sbatomicset_contains_in_range() {
     let s = aset1d(1, 1, 5);
     let vals = metamodelica::arrayFromVec(vec![3]);
-    assert!(SBAtomicSet::contains(vals, s));
+    assert!(SBAtomicSet::contains(vals, s).unwrap());
 }
 
 #[test]
 fn sbatomicset_contains_out_of_range_false() {
     let s = aset1d(1, 1, 5);
     let vals = metamodelica::arrayFromVec(vec![7]);
-    assert!(!SBAtomicSet::contains(vals, s));
+    assert!(!SBAtomicSet::contains(vals, s).unwrap());
 }
 
 #[test]
@@ -539,14 +539,14 @@ fn sbatomicset_cardinality_adds_to_given_accumulator() {
 fn sbatomicset_is_equal_same() {
     let s1 = aset1d(1, 1, 5);
     let s2 = aset1d(1, 1, 5);
-    assert!(SBAtomicSet::isEqual(s1, s2));
+    assert!(SBAtomicSet::isEqual(s1, s2).unwrap());
 }
 
 #[test]
 fn sbatomicset_is_equal_different() {
     let s1 = aset1d(1, 1, 5);
     let s2 = aset1d(1, 2, 5);
-    assert!(!SBAtomicSet::isEqual(s1, s2));
+    assert!(!SBAtomicSet::isEqual(s1, s2).unwrap());
 }
 
 #[test]
@@ -564,7 +564,7 @@ fn sbatomicset_to_string_wraps_multiinterval_in_braces() {
 fn sbatomicset_replace_changes_specified_dimension() {
     let s = aset1d(1, 1, 5);
     let new_i = SBInterval::new(2, 2, 8);
-    let replaced = SBAtomicSet::replace(new_i.clone(), 1, s);
+    let replaced = SBAtomicSet::replace(new_i.clone(), 1, s).unwrap();
     let mi = SBAtomicSet::aset(replaced);
     let ints = SBMultiInterval::intervals(mi);
     let int0 = ints.borrow()[0].clone();
@@ -575,7 +575,7 @@ fn sbatomicset_replace_changes_specified_dimension() {
 fn sbatomicset_copy_is_independent() {
     let s = aset1d(1, 1, 5);
     let s2 = SBAtomicSet::copy(s.clone());
-    assert!(SBAtomicSet::isEqual(s, s2));
+    assert!(SBAtomicSet::isEqual(s, s2).unwrap());
 }
 
 // ===========================================================================
@@ -596,7 +596,7 @@ fn raw_interval(lo: i32, step: i32, hi: i32) -> Arc<SBInterval::SBInterval> {
 
 /// Helper: build a 1D SBMultiInterval directly.
 fn raw_mi1d(lo: i32, step: i32, hi: i32) -> Arc<SBMultiInterval::SBMultiInterval> {
-    SBMultiInterval::fromList(metamodelica::list![raw_interval(lo, step, hi)])
+    SBMultiInterval::fromList(metamodelica::list![raw_interval(lo, step, hi)]).unwrap()
 }
 
 // ---------------------------------------------------------------------------
@@ -748,7 +748,7 @@ fn partb_sbmi_from_list_not_empty() {
 fn partb_sbmi_contains_in_range() {
     let mi = raw_mi1d(1, 1, 5);
     let vals = metamodelica::arrayFromVec(vec![3]);
-    assert!(SBMultiInterval::contains(vals, mi));
+    assert!(SBMultiInterval::contains(vals, mi).unwrap());
 }
 
 /// contains: out-of-range value.
@@ -756,7 +756,7 @@ fn partb_sbmi_contains_in_range() {
 fn partb_sbmi_contains_out_of_range() {
     let mi = raw_mi1d(1, 1, 5);
     let vals = metamodelica::arrayFromVec(vec![7]);
-    assert!(!SBMultiInterval::contains(vals, mi));
+    assert!(!SBMultiInterval::contains(vals, mi).unwrap());
 }
 
 /// cardinality for 1D [1:1:3] = SBInterval::cardinality = 2.
@@ -774,7 +774,7 @@ fn partb_sbmi_cardinality_2d_sums_not_product() {
     let mi = SBMultiInterval::fromList(metamodelica::list![
         raw_interval(1, 1, 3),
         raw_interval(1, 1, 5)
-    ]);
+    ]).unwrap();
     let card = SBMultiInterval::cardinality(mi);
     // 2 + 4 = 6  (sums)
     assert_eq!(card, 6,
@@ -810,7 +810,7 @@ fn partb_sbmi_intersection_1d_overlapping() -> anyhow::Result<()> {
 fn partb_sbmi_is_equal_same() {
     let mi1 = raw_mi1d(1, 1, 5);
     let mi2 = raw_mi1d(1, 1, 5);
-    assert!(SBMultiInterval::isEqual(mi1, mi2));
+    assert!(SBMultiInterval::isEqual(mi1, mi2).unwrap());
 }
 
 /// isEqual: different step → false.
@@ -818,7 +818,7 @@ fn partb_sbmi_is_equal_same() {
 fn partb_sbmi_is_equal_different() {
     let mi1 = raw_mi1d(1, 1, 5);
     let mi2 = raw_mi1d(1, 2, 5);
-    assert!(!SBMultiInterval::isEqual(mi1, mi2));
+    assert!(!SBMultiInterval::isEqual(mi1, mi2).unwrap());
 }
 
 // ---------------------------------------------------------------------------
@@ -848,7 +848,7 @@ fn partb_sbas_ndim_1d() {
 fn partb_sbas_contains_in_range() {
     let s = raw_aset1d(1, 1, 5);
     let vals = metamodelica::arrayFromVec(vec![3]);
-    assert!(SBAtomicSet::contains(vals, s));
+    assert!(SBAtomicSet::contains(vals, s).unwrap());
 }
 
 /// isEqual: same set → true.
@@ -856,7 +856,7 @@ fn partb_sbas_contains_in_range() {
 fn partb_sbas_is_equal_same() {
     let s1 = raw_aset1d(1, 1, 5);
     let s2 = raw_aset1d(1, 1, 5);
-    assert!(SBAtomicSet::isEqual(s1, s2));
+    assert!(SBAtomicSet::isEqual(s1, s2).unwrap());
 }
 
 /// isEqual: different step → false.
@@ -864,7 +864,7 @@ fn partb_sbas_is_equal_same() {
 fn partb_sbas_is_equal_different() {
     let s1 = raw_aset1d(1, 1, 5);
     let s2 = raw_aset1d(1, 2, 5);
-    assert!(!SBAtomicSet::isEqual(s1, s2));
+    assert!(!SBAtomicSet::isEqual(s1, s2).unwrap());
 }
 
 /// toString wraps the MI string in curly braces.
@@ -897,6 +897,6 @@ fn partb_sbas_cardinality_accumulates() {
 fn partb_sbas_copy_is_equal() {
     let s  = raw_aset1d(1, 1, 5);
     let s2 = SBAtomicSet::copy(s.clone());
-    assert!(SBAtomicSet::isEqual(s, s2));
+    assert!(SBAtomicSet::isEqual(s, s2).unwrap());
 }
 

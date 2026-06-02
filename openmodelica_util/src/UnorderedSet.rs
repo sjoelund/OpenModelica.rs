@@ -259,7 +259,7 @@ pub fn toArray<T: Clone + 'static + Default>(mut set: Arc<UnorderedSet<T>>) -> m
     outArray
 }
 
-pub fn fold<T: Clone + 'static, FT: Clone + 'static>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T, FT) -> Result<FT> + 'static>, mut startValue: FT) -> FT {
+pub fn fold<T: Clone + 'static, FT: Clone + 'static>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T, FT) -> Result<FT> + 'static>, mut startValue: FT) -> Result<FT> {
     pub type FoldFn<T: Clone + 'static, FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T, FT) -> Result<FT> + 'static>;
 
     let mut result: FT = startValue.clone();
@@ -267,10 +267,10 @@ pub fn fold<T: Clone + 'static, FT: Clone + 'static>(mut set: Arc<UnorderedSet<T
     for mut b in __range0 {
         for mut k in &*b.clone() {
             let mut k = k.clone();
-            result = r#fn(k.clone(), result.clone()).unwrap();
+            result = r#fn(k.clone(), result.clone())?;
         }
     }
-    result
+    Ok(result)
 }
 
 pub fn apply<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<T> + 'static>) -> Result<()> {
@@ -313,70 +313,70 @@ pub fn apply<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dy
     Ok(())
 }
 
-pub fn all<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>) -> bool {
+pub fn all<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>) -> Result<bool> {
     pub type PredFn<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>;
 
     let mut res: bool = false;
     if isEmpty(set.clone()) {
         res = true;
-        return res.clone();
+        return Ok(res.clone());
     }
     let __range0 = Mutable::access(set.buckets.clone()).borrow().iter().cloned().collect::<Vec<_>>();
     for mut b in __range0 {
         for mut k in &*b.clone() {
             let mut k = k.clone();
-            if !(r#fn(k.clone()).unwrap()) {
+            if !(r#fn(k.clone())?) {
                 res = false;
-                return res.clone();
+                return Ok(res.clone());
             }
         }
     }
     res = true;
-    res
+    Ok(res)
 }
 
-pub fn any<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>) -> bool {
+pub fn any<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>) -> Result<bool> {
     pub type PredFn<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>;
 
     let mut res: bool = false;
     if isEmpty(set.clone()) {
         res = false;
-        return res.clone();
+        return Ok(res.clone());
     }
     let __range0 = Mutable::access(set.buckets.clone()).borrow().iter().cloned().collect::<Vec<_>>();
     for mut b in __range0 {
         for mut k in &*b.clone() {
             let mut k = k.clone();
-            if r#fn(k.clone()).unwrap() {
+            if r#fn(k.clone())? {
                 res = true;
-                return res.clone();
+                return Ok(res.clone());
             }
         }
     }
     res = false;
-    res
+    Ok(res)
 }
 
-pub fn none<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>) -> bool {
+pub fn none<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>) -> Result<bool> {
     pub type PredFn<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>;
 
     let mut res: bool = false;
     if isEmpty(set.clone()) {
         res = true;
-        return res.clone();
+        return Ok(res.clone());
     }
     let __range0 = Mutable::access(set.buckets.clone()).borrow().iter().cloned().collect::<Vec<_>>();
     for mut b in __range0 {
         for mut k in &*b.clone() {
             let mut k = k.clone();
-            if r#fn(k.clone()).unwrap() {
+            if r#fn(k.clone())? {
                 res = false;
-                return res.clone();
+                return Ok(res.clone());
             }
         }
     }
     res = true;
-    res
+    Ok(res)
 }
 
 pub fn filterOnFalse<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>, mut r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>) -> Result<Arc<UnorderedSet<T>>> {
@@ -450,32 +450,32 @@ pub fn rehash<T: Clone + 'static>(mut set: Arc<UnorderedSet<T>>) -> Result<()> {
     Ok(())
 }
 
-pub fn toString<T: Clone + 'static + Default>(mut set: Arc<UnorderedSet<T>>, mut stringFn: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>, mut delimiter: ArcStr) -> ArcStr {
+pub fn toString<T: Clone + 'static + Default>(mut set: Arc<UnorderedSet<T>>, mut stringFn: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>, mut delimiter: ArcStr) -> Result<ArcStr> {
     pub type StringFn<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>;
 
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut k in (toArray(set.clone())).borrow().iter() {
-            let __x = stringFn(k.clone()).unwrap();
+            let __x = stringFn(k.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }), (delimiter.clone()).clone());
-    r#str
+    Ok(r#str)
 }
 
-pub fn dump<T: Clone + 'static + Default>(mut set: Arc<UnorderedSet<T>>, mut stringFn: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> () {
+pub fn dump<T: Clone + 'static + Default>(mut set: Arc<UnorderedSet<T>>, mut stringFn: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> Result<()> {
     pub type StringFn<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>;
 
-    println!("{}", (toString(set.clone(), stringFn.clone(), (literal!("\n")).clone())).clone());
+    println!("{}", (toString(set.clone(), stringFn.clone(), (literal!("\n")).clone())?).clone());
     println!("{}", (literal!("\n")).clone());
-    ()
+    Ok(())
 }
 
-pub fn unique_list<T: Clone + 'static>(mut inList: Arc<metamodelica::List<T>>, mut hashFunc: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>, mut keyEqFunc: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>) -> Arc<metamodelica::List<T>> {
-    let mut outList: Arc<metamodelica::List<T>> = if (List::hasSeveralElements(inList.clone())) {toList(fromList(inList.clone(), hashFunc.clone(), keyEqFunc.clone()).unwrap())} else {inList.clone()};
-    outList
+pub fn unique_list<T: Clone + 'static>(mut inList: Arc<metamodelica::List<T>>, mut hashFunc: Arc<dyn ::std::ops::Fn(T) -> Result<i32> + 'static>, mut keyEqFunc: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>) -> Result<Arc<metamodelica::List<T>>> {
+    let mut outList: Arc<metamodelica::List<T>> = if (List::hasSeveralElements(inList.clone())) {toList(fromList(inList.clone(), hashFunc.clone(), keyEqFunc.clone())?)} else {inList.clone()};
+    Ok(outList)
 }
 
 pub fn union<T: Clone + 'static>(mut set1: Arc<UnorderedSet<T>>, mut set2: Arc<UnorderedSet<T>>) -> Result<Arc<UnorderedSet<T>>> {
@@ -561,7 +561,7 @@ pub fn intersection_list<T: Clone + 'static>(mut set_lst: Arc<metamodelica::List
         for mut b in __range0 {
             for mut k in &*b.clone() {
                 let mut k = k.clone();
-                if List::all(rest.clone(), (std::sync::Arc::new({ let __pe_b0 = k.clone(); move |__pe_a1| contains(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<bool> + 'static>)) {
+                if List::all(rest.clone(), (std::sync::Arc::new({ let __pe_b0 = k.clone(); move |__pe_a1| contains(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<bool> + 'static>))? {
                     acc = metamodelica::cons(k.clone(), acc.clone());
                 }
             }

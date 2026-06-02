@@ -287,14 +287,14 @@ pub fn isEmptyArray(mut exp: Arc<NFExpression>) -> bool {
     emptyArray
 }
 
-pub fn isVector(mut exp: Arc<NFExpression>) -> bool {
+pub fn isVector(mut exp: Arc<NFExpression>) -> Result<bool> {
     let mut res: bool = false;
     res = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ ARRAY { .. } => Type::isVector(var_field!((*exp).ty, NFExpression::ARRAY).clone()),
+        Deref @ ARRAY { .. } => Type::isVector(var_field!((*exp).ty, NFExpression::ARRAY).clone())?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    res
+    Ok(res)
 }
 
 pub fn isCref(mut exp: Arc<NFExpression>) -> bool {
@@ -370,7 +370,7 @@ pub fn isCallNamed(mut exp: Arc<NFExpression>, mut name: ArcStr) -> Result<bool>
 pub fn isConnectionCall(mut exp: Arc<NFExpression>) -> Result<bool> {
     let mut isConnection: bool = false;
     isConnection = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ CALL { .. } => Call::isConnectionsOperator(var_field!((*exp).call, NFExpression::CALL).clone())? || Call::isStreamOperator(var_field!((*exp).call, NFExpression::CALL).clone()) || Call::isCardinality(var_field!((*exp).call, NFExpression::CALL).clone()),
+        Deref @ CALL { .. } => Call::isConnectionsOperator(var_field!((*exp).call, NFExpression::CALL).clone())? || Call::isStreamOperator(var_field!((*exp).call, NFExpression::CALL).clone())? || Call::isCardinality(var_field!((*exp).call, NFExpression::CALL).clone())?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -389,24 +389,24 @@ pub fn isTrue(mut exp: Arc<NFExpression>) -> bool {
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-pub fn isAllTrue(mut exp: Arc<NFExpression>) -> bool {
+pub fn isAllTrue(mut exp: Arc<NFExpression>) -> Result<bool> {
     let mut isTrue: bool = false;
     isTrue = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ BOOLEAN { value: true } => {
             true
         },
         Deref @ ARRAY { .. } => {
-            Array::all(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new(fnptr!(isAllTrue, Arc<NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>))
+            Array::all(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new(isAllTrue) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>))?
         },
         Deref @ CALL { call: Deref @ Call::TYPED_ARRAY_CONSTRUCTOR { exp: e, .. } } => {
-            isAllTrue(e.clone())
+            isAllTrue(e.clone())?
         },
         _ => {
             false
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    isTrue
+    Ok(isTrue)
 }
 
 pub fn isFalse(mut exp: Arc<NFExpression>) -> bool {
@@ -431,9 +431,9 @@ pub fn isTrivialCref(mut exp: Arc<NFExpression>) -> bool {
     b
 }
 
-pub fn hash(mut exp: Arc<NFExpression>) -> i32 {
-    let mut hash: i32 = hashContinue(exp.clone(), Util::HASH_SEED.clone()).unwrap();
-    hash
+pub fn hash(mut exp: Arc<NFExpression>) -> Result<i32> {
+    let mut hash: i32 = hashContinue(exp.clone(), Util::HASH_SEED.clone())?;
+    Ok(hash)
 }
 
 pub fn hashContinue(mut exp: Arc<NFExpression>, mut hash: i32) -> Result<i32> {
@@ -790,7 +790,7 @@ pub fn compare(mut exp1: Arc<NFExpression>, mut exp2: Arc<NFExpression>) -> Resu
             arr = __pa0.clone();
             ty = __pa1.clone();
             comp = valueCompare(ty.clone(), var_field!((*exp1).ty, NFExpression::ARRAY).clone());
-            if (comp.clone() == 0) {Array::compare(var_field!((*exp1).elements, NFExpression::ARRAY).clone(), arr.clone(), (std::sync::Arc::new(compare) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>, Arc<NFExpression>) -> Result<i32> + 'static>))} else {comp.clone()}
+            if (comp.clone() == 0) {Array::compare(var_field!((*exp1).elements, NFExpression::ARRAY).clone(), arr.clone(), (std::sync::Arc::new(compare) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>, Arc<NFExpression>) -> Result<i32> + 'static>))?} else {comp.clone()}
         },
         Deref @ MATRIX { .. } => {
             let mut mat: Arc<metamodelica::List<Arc<metamodelica::List<Arc<NFExpression>>>>> = metamodelica::nil();
@@ -879,10 +879,10 @@ pub fn compare(mut exp1: Arc<NFExpression>, mut exp2: Arc<NFExpression>) -> Resu
             expl = __pa2.clone();
             comp = Operator::compare(var_field!((*exp1).operator, NFExpression::MULTARY).clone(), op.clone());
             if comp.clone() == 0 {
-                comp = compareList(var_field!((*exp1).arguments, NFExpression::MULTARY).clone(), expl.clone());
+                comp = compareList(var_field!((*exp1).arguments, NFExpression::MULTARY).clone(), expl.clone())?;
             }
             if comp.clone() == 0 {
-                comp = compareList(var_field!((*exp1).inv_arguments, NFExpression::MULTARY).clone(), inv_expl.clone());
+                comp = compareList(var_field!((*exp1).inv_arguments, NFExpression::MULTARY).clone(), inv_expl.clone())?;
             }
             comp.clone()
         },
@@ -1145,9 +1145,9 @@ pub fn compareOpt(mut expl1: Option<Arc<NFExpression>>, mut expl2: Option<Arc<NF
     Ok(comp)
 }
 
-pub fn compareList(mut expl1: Arc<metamodelica::List<Arc<NFExpression>>>, mut expl2: Arc<metamodelica::List<Arc<NFExpression>>>) -> i32 {
-    let mut comp: i32 = List::compare(expl1.clone(), expl2.clone(), (std::sync::Arc::new(compare) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>, Arc<NFExpression>) -> Result<i32> + 'static>)).unwrap();
-    comp
+pub fn compareList(mut expl1: Arc<metamodelica::List<Arc<NFExpression>>>, mut expl2: Arc<metamodelica::List<Arc<NFExpression>>>) -> Result<i32> {
+    let mut comp: i32 = List::compare(expl1.clone(), expl2.clone(), (std::sync::Arc::new(compare) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>, Arc<NFExpression>) -> Result<i32> + 'static>))?;
+    Ok(comp)
 }
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
@@ -1195,15 +1195,15 @@ pub fn typeOf(mut exp: Arc<NFExpression>) -> Arc<Type::NFType> {
     ty
 }
 
-pub fn sizeOf(mut exp: Arc<NFExpression>) -> i32 {
-    let mut sz: i32 = Type::sizeOf(typeOf(exp.clone()), false).unwrap();
-    sz
+pub fn sizeOf(mut exp: Arc<NFExpression>) -> Result<i32> {
+    let mut sz: i32 = Type::sizeOf(typeOf(exp.clone()), false)?;
+    Ok(sz)
 }
 
 pub fn sizeZero(mut exp: Arc<NFExpression>) -> bool {
     let mut b: bool = false;
     match '__try0: {
-        b = 0 == sizeOf(exp.clone());
+        b = 0 == unwrap_break_err!(sizeOf(exp.clone()), '__try0);
         Ok::<_, anyhow::Error>((b.clone(),))
     } {
         Ok((__try0_o0,)) => {
@@ -1317,7 +1317,7 @@ pub fn applyToType(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops::Fn(
         Deref @ CREF { .. } => {
             assign_variant_field!(exp => NFExpression::CREF;
                 ty = func(var_field!((*exp).ty, NFExpression::CREF).clone())?,
-                cref = ComponentRef::applyToType(var_field!((*exp).cref, NFExpression::CREF).clone(), func.clone())
+                cref = ComponentRef::applyToType(var_field!((*exp).cref, NFExpression::CREF).clone(), func.clone())?
             );
             exp.clone()
         },
@@ -1437,9 +1437,9 @@ pub fn applyToType(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops::Fn(
     Ok(exp)
 }
 
-pub fn typeCastOpt(mut exp: Option<Arc<NFExpression>>, mut ty: Arc<Type::NFType>) -> Option<Arc<NFExpression>> {
-    let mut outExp: Option<Arc<NFExpression>> = Util::applyOption(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = ty.clone(); move |__pe_a0| typeCast(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>));
-    outExp
+pub fn typeCastOpt(mut exp: Option<Arc<NFExpression>>, mut ty: Arc<Type::NFType>) -> Result<Option<Arc<NFExpression>>> {
+    let mut outExp: Option<Arc<NFExpression>> = Util::applyOption(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = ty.clone(); move |__pe_a0| typeCast(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>))?;
+    Ok(outExp)
 }
 
 pub fn typeCast(mut exp: Arc<NFExpression>, mut ty: Arc<Type::NFType>) -> Result<Arc<NFExpression>> {
@@ -1451,21 +1451,21 @@ pub fn typeCast(mut exp: Arc<NFExpression>, mut ty: Arc<Type::NFType>) -> Result
     let mut arr: metamodelica::Array<Arc<NFExpression>> = Default::default();
     ety = Type::arrayElementType(ty.clone());
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ INTEGER { .. } => if (Type::isReal(ety.clone())) {Arc::new(NFExpression::REAL { value: intReal(var_field!((*exp).value, NFExpression::INTEGER).clone()) })} else if (Type::isEnumeration(ety.clone()) && Flags::isConfigFlagSet(Flags::ALLOW_NON_STANDARD_MODELICA.clone(), (literal!("nonStdIntegersAsEnumeration")).clone())?) {Arc::new(NFExpression::ENUM_LITERAL { ty: ety.clone(), name: (Type::nthEnumLiteral(ety.clone(), var_field!((*exp).value, NFExpression::INTEGER).clone())?).clone(), index: var_field!((*exp).value, NFExpression::INTEGER).clone() })} else {typeCastGeneric(exp.clone(), ety.clone())},
-        Deref @ ENUM_LITERAL { .. } if (Flags::isConfigFlagSet(Flags::ALLOW_NON_STANDARD_MODELICA.clone(), (literal!("nonStdEnumerationAsIntegers")).clone())?) => if (Type::isInteger(ety.clone())) {Arc::new(NFExpression::INTEGER { value: toInteger(exp.clone())? })} else {typeCastGeneric(exp.clone(), ety.clone())},
-        Deref @ BOOLEAN { .. } => if (Type::isReal(ety.clone()) && Flags::isSet(Flags::NF_API.clone())?) {Arc::new(NFExpression::REAL { value: if (var_field!((*exp).value, NFExpression::BOOLEAN).clone()) {metamodelica::OrderedFloat(1.0_f64)} else {metamodelica::OrderedFloat(0.0_f64)} })} else {typeCastGeneric(exp.clone(), ety.clone())},
-        Deref @ REAL { .. } => if (Type::isReal(ety.clone())) {exp.clone()} else {typeCastGeneric(exp.clone(), ety.clone())},
+        Deref @ INTEGER { .. } => if (Type::isReal(ety.clone())?) {Arc::new(NFExpression::REAL { value: intReal(var_field!((*exp).value, NFExpression::INTEGER).clone()) })} else if (Type::isEnumeration(ety.clone()) && Flags::isConfigFlagSet(Flags::ALLOW_NON_STANDARD_MODELICA.clone(), (literal!("nonStdIntegersAsEnumeration")).clone())?) {Arc::new(NFExpression::ENUM_LITERAL { ty: ety.clone(), name: (Type::nthEnumLiteral(ety.clone(), var_field!((*exp).value, NFExpression::INTEGER).clone())?).clone(), index: var_field!((*exp).value, NFExpression::INTEGER).clone() })} else {typeCastGeneric(exp.clone(), ety.clone())?},
+        Deref @ ENUM_LITERAL { .. } if (Flags::isConfigFlagSet(Flags::ALLOW_NON_STANDARD_MODELICA.clone(), (literal!("nonStdEnumerationAsIntegers")).clone())?) => if (Type::isInteger(ety.clone())?) {Arc::new(NFExpression::INTEGER { value: toInteger(exp.clone())? })} else {typeCastGeneric(exp.clone(), ety.clone())?},
+        Deref @ BOOLEAN { .. } => if (Type::isReal(ety.clone())? && Flags::isSet(Flags::NF_API.clone())?) {Arc::new(NFExpression::REAL { value: if (var_field!((*exp).value, NFExpression::BOOLEAN).clone()) {metamodelica::OrderedFloat(1.0_f64)} else {metamodelica::OrderedFloat(0.0_f64)} })} else {typeCastGeneric(exp.clone(), ety.clone())?},
+        Deref @ REAL { .. } => if (Type::isReal(ety.clone())?) {exp.clone()} else {typeCastGeneric(exp.clone(), ety.clone())?},
         Deref @ ARRAY { elements: arr, ty: t, .. } => {
             let mut arr = (*arr).clone();
             let mut t = (*t).clone();
-            arr = Array::map(arr.clone(), (std::sync::Arc::new({ let __pe_b1 = ety.clone(); move |__pe_a0| typeCast(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>));
+            arr = Array::map(arr.clone(), (std::sync::Arc::new({ let __pe_b1 = ety.clone(); move |__pe_a0| typeCast(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>))?;
             t = Type::setArrayElementType(t.clone(), ety.clone());
             makeArray(t.clone(), arr.clone(), var_field!((*exp).literal, NFExpression::ARRAY).clone())
         },
         Deref @ RANGE { ty: t, .. } => {
             let mut t = (*t).clone();
             t = Type::setArrayElementType(t.clone(), ety.clone());
-            Arc::new(NFExpression::RANGE { ty: t.clone(), start: typeCast(var_field!((*exp).start, NFExpression::RANGE).clone(), ety.clone())?, step: typeCastOpt(var_field!((*exp).step, NFExpression::RANGE).clone(), ety.clone()), stop: typeCast(var_field!((*exp).stop, NFExpression::RANGE).clone(), ety.clone())? })
+            Arc::new(NFExpression::RANGE { ty: t.clone(), start: typeCast(var_field!((*exp).start, NFExpression::RANGE).clone(), ety.clone())?, step: typeCastOpt(var_field!((*exp).step, NFExpression::RANGE).clone(), ety.clone())?, stop: typeCast(var_field!((*exp).stop, NFExpression::RANGE).clone(), ety.clone())? })
         },
         Deref @ UNARY { .. } => {
             t = Type::setArrayElementType(Operator::typeOf(var_field!((*exp).operator, NFExpression::UNARY).clone()), ety.clone());
@@ -1484,19 +1484,19 @@ pub fn typeCast(mut exp: Arc<NFExpression>, mut ty: Arc<Type::NFType>) -> Result
             t = Type::setArrayElementType(var_field!((*exp).ty, NFExpression::SUBSCRIPTED_EXP).clone(), ety.clone());
             Arc::new(NFExpression::SUBSCRIPTED_EXP { exp: e1.clone(), subscripts: var_field!((*exp).subscripts, NFExpression::SUBSCRIPTED_EXP).clone(), ty: t.clone(), split: var_field!((*exp).split, NFExpression::SUBSCRIPTED_EXP).clone() })
         },
-        _ => typeCastGeneric(exp.clone(), ety.clone()),
+        _ => typeCastGeneric(exp.clone(), ety.clone())?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(exp)
 }
 
-pub fn typeCastGeneric(mut exp: Arc<NFExpression>, mut ty: Arc<Type::NFType>) -> Arc<NFExpression> {
+pub fn typeCastGeneric(mut exp: Arc<NFExpression>, mut ty: Arc<Type::NFType>) -> Result<Arc<NFExpression>> {
     let mut exp: Arc<NFExpression> = exp;
     let mut exp_ty: Arc<Type::NFType> = typeOf(exp.clone());
-    if !(Type::isEqual(ty.clone(), Type::arrayElementType(exp_ty.clone()))) {
+    if !(Type::isEqual(ty.clone(), Type::arrayElementType(exp_ty.clone()))?) {
         exp = Arc::new(NFExpression::CAST { ty: Type::setArrayElementType(exp_ty.clone(), ty.clone()), exp: exp.clone() });
     }
-    exp
+    Ok(exp)
 }
 
 pub fn realValue(mut exp: Arc<NFExpression>) -> Result<metamodelica::Real> {
@@ -1587,10 +1587,10 @@ pub fn makeArray(mut ty: Arc<Type::NFType>, mut expl: metamodelica::Array<Arc<NF
     outExp
 }
 
-pub fn makeArrayCheckLiteral(mut ty: Arc<Type::NFType>, mut expl: metamodelica::Array<Arc<NFExpression>>) -> Arc<NFExpression> {
+pub fn makeArrayCheckLiteral(mut ty: Arc<Type::NFType>, mut expl: metamodelica::Array<Arc<NFExpression>>) -> Result<Arc<NFExpression>> {
     let mut outExp: Arc<NFExpression> = Arc::new(NFExpression::END);
-    outExp = Arc::new(NFExpression::ARRAY { ty: ty.clone(), elements: expl.clone(), literal: Array::all(expl.clone(), (std::sync::Arc::new(fnptr!(isLiteral, Arc<NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>)) });
-    outExp
+    outExp = Arc::new(NFExpression::ARRAY { ty: ty.clone(), elements: expl.clone(), literal: Array::all(expl.clone(), (std::sync::Arc::new(isLiteral) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>))? });
+    Ok(outExp)
 }
 
 pub fn makeEmptyArray(mut ty: Arc<Type::NFType>) -> Arc<NFExpression> {
@@ -1755,14 +1755,14 @@ pub fn makeTuple(mut expl: Arc<metamodelica::List<Arc<NFExpression>>>) -> Result
     Ok(tupleExp)
 }
 
-pub fn rangeSize(mut range: Arc<NFExpression>, mut resize: bool) -> i32 {
-    let mut size: i32 = Dimension::size(Type::nthDimension(typeOf(range.clone()), 1).unwrap(), resize.clone()).unwrap();
-    size
+pub fn rangeSize(mut range: Arc<NFExpression>, mut resize: bool) -> Result<i32> {
+    let mut size: i32 = Dimension::size(Type::nthDimension(typeOf(range.clone()), 1)?, resize.clone())?;
+    Ok(size)
 }
 
-pub fn rangeSizeExp(mut range: Arc<NFExpression>) -> Arc<NFExpression> {
-    let mut size: Arc<NFExpression> = Dimension::sizeExp(Type::nthDimension(typeOf(range.clone()), 1).unwrap()).unwrap();
-    size
+pub fn rangeSizeExp(mut range: Arc<NFExpression>) -> Result<Arc<NFExpression>> {
+    let mut size: Arc<NFExpression> = Dimension::sizeExp(Type::nthDimension(typeOf(range.clone()), 1)?)?;
+    Ok(size)
 }
 
 pub fn applySubscripts(mut subscripts: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>>, mut exp: Arc<NFExpression>, mut applyToScope: bool) -> Result<Arc<NFExpression>> {
@@ -1878,7 +1878,7 @@ pub fn applySubscriptArray(mut subscript: Arc<Subscript::NFSubscript>, mut exp: 
                 } };
                 s = __pa3.clone();
                 rest_subs = __pa4.clone();
-                expl = Array::map(expl.clone(), (std::sync::Arc::new({ let __pe_b0 = s.clone(); let __pe_b2 = rest_subs.clone(); let __pe_b3 = applyToScope.clone(); move |__pe_a1| applySubscript(__pe_b0.clone(), __pe_a1, __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>));
+                expl = Array::map(expl.clone(), (std::sync::Arc::new({ let __pe_b0 = s.clone(); let __pe_b2 = rest_subs.clone(); let __pe_b3 = applyToScope.clone(); move |__pe_a1| applySubscript(__pe_b0.clone(), __pe_a1, __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>))?;
                 (ty, literal) = typeSubscriptedArray(expl.clone(), restSubscripts.clone(), ty.clone(), literal.clone())?;
                 outExp = makeArray(ty.clone(), expl.clone(), literal.clone());
             }
@@ -1910,7 +1910,7 @@ pub fn typeSubscriptedArray(mut elements: metamodelica::Array<Arc<NFExpression>>
     if count.clone() > 0 {
         e = elements.borrow()[(1-1) as usize].clone();
         ty = typeOf(e.clone());
-        literal = literal.clone() && isLiteral(e.clone());
+        literal = literal.clone() && isLiteral(e.clone())?;
     } else {
         ty = Type::subscript(Type::unliftArray(ty.clone())?, subscripts.clone(), true)?;
     }
@@ -2163,7 +2163,7 @@ pub fn makeSubscriptedExp(mut subscripts: Arc<metamodelica::List<Arc<Subscript::
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     if !(split.clone()) {
-        split = List::any(subscripts.clone(), (std::sync::Arc::new(fnptr!(Subscript::isSplitIndex, Arc<Subscript::NFSubscript>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>) -> Result<bool> + 'static>));
+        split = List::any(subscripts.clone(), (std::sync::Arc::new(fnptr!(Subscript::isSplitIndex, Arc<Subscript::NFSubscript>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>) -> Result<bool> + 'static>))?;
     }
     dim_count = Type::dimensionCount(ty.clone());
     (subs, extra_subs) = Subscript::mergeList(subscripts.clone(), subs.clone(), dim_count.clone(), backend.clone())?;
@@ -2195,7 +2195,7 @@ pub fn replaceIterator2(mut exp: Arc<NFExpression>, mut iterator: Arc<InstNode::
                 outExp = iteratorValue.clone();
                 fields = ({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-        for mut n in (listRest(ComponentRef::nodes(var_field!((*exp).cref, NFExpression::CREF).clone(), metamodelica::nil()))?).into_iter().cloned() {
+        for mut n in (listRest(ComponentRef::nodes(var_field!((*exp).cref, NFExpression::CREF).clone(), metamodelica::nil())?)?).into_iter().cloned() {
             let __x = InstNode::name(n.clone())?;
             __acc = cons(__x, __acc);
         }
@@ -2511,11 +2511,11 @@ pub fn operandString(mut operand: Arc<NFExpression>, mut operator: Arc<NFExpress
     let mut operator_prio: i32 = 0;
     let mut parenthesize: bool = false;
     r#str = (toString(operand.clone())?).clone();
-    operand_prio = priority(operand.clone(), lhs.clone());
+    operand_prio = priority(operand.clone(), lhs.clone())?;
     if operand_prio.clone() == 4 {
         parenthesize = true;
     } else {
-        operator_prio = priority(operator.clone(), lhs.clone());
+        operator_prio = priority(operator.clone(), lhs.clone())?;
         if operand_prio.clone() > operator_prio.clone() {
             parenthesize = true;
         } else if operand_prio.clone() == operator_prio.clone() {
@@ -2534,11 +2534,11 @@ pub fn operandFlatString(mut operand: Arc<NFExpression>, mut operator: Arc<NFExp
     let mut operator_prio: i32 = 0;
     let mut parenthesize: bool = false;
     r#str = (toFlatString(operand.clone(), format.clone())?).clone();
-    operand_prio = priority(operand.clone(), lhs.clone());
+    operand_prio = priority(operand.clone(), lhs.clone())?;
     if operand_prio.clone() == 4 {
         parenthesize = true;
     } else {
-        operator_prio = priority(operator.clone(), lhs.clone());
+        operator_prio = priority(operator.clone(), lhs.clone())?;
         if operand_prio.clone() > operator_prio.clone() {
             parenthesize = true;
         } else if operand_prio.clone() == operator_prio.clone() {
@@ -2585,7 +2585,7 @@ pub fn multaryFlatString(mut arguments: Arc<metamodelica::List<Arc<NFExpression>
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-pub fn priority(mut exp: Arc<NFExpression>, mut lhs: bool) -> i32 {
+pub fn priority(mut exp: Arc<NFExpression>, mut lhs: bool) -> Result<i32> {
     let mut priority: i32 = 0;
     priority = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ INTEGER { .. } => if (var_field!((*exp).value, NFExpression::INTEGER).clone() < 0) {4} else {0},
@@ -2598,13 +2598,13 @@ pub fn priority(mut exp: Arc<NFExpression>, mut lhs: bool) -> i32 {
         Deref @ RELATION { .. } => 6,
         Deref @ RANGE { .. } => 10,
         Deref @ IF { .. } => 11,
-        Deref @ CAST { .. } => self::priority(var_field!((*exp).exp, NFExpression::CAST).clone(), lhs.clone()),
-        Deref @ BOX { .. } => self::priority(var_field!((*exp).exp, NFExpression::BOX).clone(), lhs.clone()),
-        Deref @ UNBOX { .. } => self::priority(var_field!((*exp).exp, NFExpression::UNBOX).clone(), lhs.clone()),
+        Deref @ CAST { .. } => self::priority(var_field!((*exp).exp, NFExpression::CAST).clone(), lhs.clone())?,
+        Deref @ BOX { .. } => self::priority(var_field!((*exp).exp, NFExpression::BOX).clone(), lhs.clone())?,
+        Deref @ UNBOX { .. } => self::priority(var_field!((*exp).exp, NFExpression::UNBOX).clone(), lhs.clone())?,
         _ => 0,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    priority
+    Ok(priority)
 }
 
 pub fn isAssociativeExp(mut exp: Arc<NFExpression>) -> bool {
@@ -2765,7 +2765,7 @@ pub fn toAbsyn(mut exp: Arc<NFExpression>) -> Result<Arc<Absyn::Exp>> {
     }) })
         },
         Deref @ RANGE { .. } => {
-            Arc::new(Absyn::Exp::RANGE { start: toAbsyn(var_field!((*exp).start, NFExpression::RANGE).clone())?, step: Util::applyOption(var_field!((*exp).step, NFExpression::RANGE).clone(), (std::sync::Arc::new(toAbsyn) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<Absyn::Exp>> + 'static>)), stop: toAbsyn(var_field!((*exp).stop, NFExpression::RANGE).clone())? })
+            Arc::new(Absyn::Exp::RANGE { start: toAbsyn(var_field!((*exp).start, NFExpression::RANGE).clone())?, step: Util::applyOption(var_field!((*exp).step, NFExpression::RANGE).clone(), (std::sync::Arc::new(toAbsyn) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<Absyn::Exp>> + 'static>))?, stop: toAbsyn(var_field!((*exp).stop, NFExpression::RANGE).clone())? })
         },
         Deref @ TUPLE { .. } => {
             Arc::new(Absyn::Exp::TUPLE { expressions: ({
@@ -2884,7 +2884,7 @@ pub fn toDAE(mut exp: Arc<NFExpression>, mut allowEmpty: bool) -> Result<Arc<DAE
             toDAE(ExpandExp::expandTypename(var_field!((*exp).ty, NFExpression::TYPENAME).clone())?, false)?
         },
         Deref @ ARRAY { .. } => {
-            Arc::new(DAE::Exp::ARRAY { ty: Type::toDAE(var_field!((*exp).ty, NFExpression::ARRAY).clone(), true)?, scalar: Type::isVector(var_field!((*exp).ty, NFExpression::ARRAY).clone()), array: ({
+            Arc::new(DAE::Exp::ARRAY { ty: Type::toDAE(var_field!((*exp).ty, NFExpression::ARRAY).clone(), true)?, scalar: Type::isVector(var_field!((*exp).ty, NFExpression::ARRAY).clone())?, array: ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
         for mut e in (var_field!((*exp).elements, NFExpression::ARRAY).clone()).borrow().iter() {
             let __x = toDAE(e.clone(), false)?;
@@ -3155,7 +3155,7 @@ pub fn map(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFEx
             Arc::new(NFExpression::CREF { ty: var_field!((*exp).ty, NFExpression::CREF).clone(), cref: ComponentRef::mapExp(var_field!((*exp).cref, NFExpression::CREF).clone(), func.clone())? })
         },
         Deref @ ARRAY { .. } if (!(var_field!((*exp).literal, NFExpression::ARRAY).clone())) => {
-            makeArray(var_field!((*exp).ty, NFExpression::ARRAY).clone(), Array::map(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static> = func.clone(); move |__pe_a0| map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>)), var_field!((*exp).literal, NFExpression::ARRAY).clone())
+            makeArray(var_field!((*exp).ty, NFExpression::ARRAY).clone(), Array::map(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static> = func.clone(); move |__pe_a0| map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>))?, var_field!((*exp).literal, NFExpression::ARRAY).clone())
         },
         Deref @ MATRIX { .. } => {
             Arc::new(NFExpression::MATRIX { elements: ({
@@ -3349,11 +3349,11 @@ pub fn map(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFEx
     Ok(outExp)
 }
 
-pub fn fakeMap(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>) -> Arc<NFExpression> {
+pub fn fakeMap(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>) -> Result<Arc<NFExpression>> {
     pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>;
 
-    let mut outExp: Arc<NFExpression> = func(exp.clone()).unwrap();
-    outExp
+    let mut outExp: Arc<NFExpression> = func(exp.clone())?;
+    Ok(outExp)
 }
 
 pub fn mapOpt(mut exp: Option<Arc<NFExpression>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>) -> Result<Option<Arc<NFExpression>>> {
@@ -3382,7 +3382,7 @@ pub fn mapReverse(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops::Fn(A
             Arc::new(NFExpression::CREF { ty: var_field!((*exp).ty, NFExpression::CREF).clone(), cref: ComponentRef::mapExp(var_field!((*exp).cref, NFExpression::CREF).clone(), func.clone())? })
         },
         Deref @ ARRAY { .. } if (!(var_field!((*exp).literal, NFExpression::ARRAY).clone())) => {
-            makeArray(var_field!((*exp).ty, NFExpression::ARRAY).clone(), Array::map(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static> = func.clone(); move |__pe_a0| mapReverse(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>)), var_field!((*exp).literal, NFExpression::ARRAY).clone())
+            makeArray(var_field!((*exp).ty, NFExpression::ARRAY).clone(), Array::map(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static> = func.clone(); move |__pe_a0| mapReverse(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>))?, var_field!((*exp).literal, NFExpression::ARRAY).clone())
         },
         Deref @ MATRIX { .. } => {
             Arc::new(NFExpression::MATRIX { elements: ({
@@ -3581,13 +3581,13 @@ pub fn mapShallow(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops::Fn(A
     let mut outExp: Arc<NFExpression> = Arc::new(NFExpression::END);
     outExp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ CLKCONST { .. } => {
-            Arc::new(NFExpression::CLKCONST { clk: ClockKind::mapExpShallow(var_field!((*exp).clk, NFExpression::CLKCONST).clone(), func.clone()) })
+            Arc::new(NFExpression::CLKCONST { clk: ClockKind::mapExpShallow(var_field!((*exp).clk, NFExpression::CLKCONST).clone(), func.clone())? })
         },
         Deref @ CREF { .. } => {
-            Arc::new(NFExpression::CREF { ty: var_field!((*exp).ty, NFExpression::CREF).clone(), cref: ComponentRef::mapExpShallow(var_field!((*exp).cref, NFExpression::CREF).clone(), func.clone()) })
+            Arc::new(NFExpression::CREF { ty: var_field!((*exp).ty, NFExpression::CREF).clone(), cref: ComponentRef::mapExpShallow(var_field!((*exp).cref, NFExpression::CREF).clone(), func.clone())? })
         },
         Deref @ ARRAY { .. } if (!(var_field!((*exp).literal, NFExpression::ARRAY).clone())) => {
-            makeArray(var_field!((*exp).ty, NFExpression::ARRAY).clone(), Array::map(var_field!((*exp).elements, NFExpression::ARRAY).clone(), func.clone()), var_field!((*exp).literal, NFExpression::ARRAY).clone())
+            makeArray(var_field!((*exp).ty, NFExpression::ARRAY).clone(), Array::map(var_field!((*exp).elements, NFExpression::ARRAY).clone(), func.clone())?, var_field!((*exp).literal, NFExpression::ARRAY).clone())
         },
         Deref @ MATRIX { .. } => {
             Arc::new(NFExpression::MATRIX { elements: ({
@@ -3737,7 +3737,7 @@ pub fn mapShallow(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops::Fn(A
             Arc::new(NFExpression::SUBSCRIPTED_EXP { exp: func(var_field!((*exp).exp, NFExpression::SUBSCRIPTED_EXP).clone())?, subscripts: ({
         let mut __acc: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
         for mut e in (var_field!((*exp).subscripts, NFExpression::SUBSCRIPTED_EXP).clone()).into_iter().cloned() {
-            let __x = Subscript::mapShallowExp(e.clone(), func.clone());
+            let __x = Subscript::mapShallowExp(e.clone(), func.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -3780,35 +3780,35 @@ pub fn mapShallow(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops::Fn(A
     Ok(outExp)
 }
 
-pub fn mapShallowOpt(mut exp: Option<Arc<NFExpression>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>) -> Option<Arc<NFExpression>> {
+pub fn mapShallowOpt(mut exp: Option<Arc<NFExpression>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>) -> Result<Option<Arc<NFExpression>>> {
     pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>;
 
     let mut outExp: Option<Arc<NFExpression>> = None;
     let mut e: Arc<NFExpression> = Arc::new(NFExpression::END);
     outExp = (::match_deref::match_deref! { match &(exp.clone()) {
-        Some(e) => Some(func(e.clone()).unwrap()),
+        Some(e) => Some(func(e.clone())?),
         _ => exp.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    outExp
+    Ok(outExp)
 }
 
-pub fn mapArrayElements(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>) -> Arc<NFExpression> {
+pub fn mapArrayElements(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>) -> Result<Arc<NFExpression>> {
     pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>;
 
     let mut outExp: Arc<NFExpression> = Arc::new(NFExpression::END);
     outExp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ ARRAY { .. } => {
             assign_variant_field!(exp => NFExpression::ARRAY;
-                elements = Array::map(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static> = func.clone(); move |__pe_a0| Ok(mapArrayElements(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>)),
-                literal = Array::all(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new(fnptr!(isLiteral, Arc<NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>))
+                elements = Array::map(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static> = func.clone(); move |__pe_a0| mapArrayElements(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>))?,
+                literal = Array::all(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new(isLiteral) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>))?
             );
             exp.clone()
         },
-        _ => func(exp.clone()).unwrap(),
+        _ => func(exp.clone())?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    outExp
+    Ok(outExp)
 }
 
 pub fn foldArray<ArgT: Clone + 'static>(mut expl: metamodelica::Array<Arc<NFExpression>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
@@ -3833,20 +3833,20 @@ pub fn foldList<ArgT: Clone + 'static>(mut expl: Arc<metamodelica::List<Arc<NFEx
     Ok(result)
 }
 
-pub fn foldOpt<ArgT: Clone + 'static>(mut exp: Option<Arc<NFExpression>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> ArgT {
+pub fn foldOpt<ArgT: Clone + 'static>(mut exp: Option<Arc<NFExpression>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
     pub type FoldFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<ArgT> + 'static>;
 
     let mut result: ArgT;
     result = (::match_deref::match_deref! { match &(exp.clone()) {
         Some(e) => {
-            func(e.clone(), arg.clone()).unwrap()
+            func(e.clone(), arg.clone())?
         },
         _ => {
             arg.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    result
+    Ok(result)
 }
 
 pub fn fold<ArgT: Clone + 'static>(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
@@ -3858,7 +3858,7 @@ pub fn fold<ArgT: Clone + 'static>(mut exp: Arc<NFExpression>, mut func: Arc<dyn
             ClockKind::foldExp(var_field!((*exp).clk, NFExpression::CLKCONST).clone(), func.clone(), arg.clone())?
         },
         Deref @ CREF { .. } => {
-            ComponentRef::foldExp(var_field!((*exp).cref, NFExpression::CREF).clone(), func.clone(), arg.clone())
+            ComponentRef::foldExp(var_field!((*exp).cref, NFExpression::CREF).clone(), func.clone(), arg.clone())?
         },
         Deref @ ARRAY { .. } => {
             foldArray(var_field!((*exp).elements, NFExpression::ARRAY).clone(), func.clone(), arg.clone())?
@@ -3873,7 +3873,7 @@ pub fn fold<ArgT: Clone + 'static>(mut exp: Arc<NFExpression>, mut func: Arc<dyn
         },
         Deref @ RANGE { .. } => {
             result = fold(var_field!((*exp).start, NFExpression::RANGE).clone(), func.clone(), arg.clone())?;
-            result = foldOpt(var_field!((*exp).step, NFExpression::RANGE).clone(), func.clone(), result.clone());
+            result = foldOpt(var_field!((*exp).step, NFExpression::RANGE).clone(), func.clone(), result.clone())?;
             fold(var_field!((*exp).stop, NFExpression::RANGE).clone(), func.clone(), result.clone())?
         },
         Deref @ TUPLE { .. } => {
@@ -3938,7 +3938,7 @@ pub fn fold<ArgT: Clone + 'static>(mut exp: Arc<NFExpression>, mut func: Arc<dyn
         },
         Deref @ SUBSCRIPTED_EXP { .. } => {
             result = fold(var_field!((*exp).exp, NFExpression::SUBSCRIPTED_EXP).clone(), func.clone(), arg.clone())?;
-            List::fold(var_field!((*exp).subscripts, NFExpression::SUBSCRIPTED_EXP).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, _) -> Result<_> + 'static> = func.clone(); move |__pe_a0, __pe_a2| Subscript::foldExp(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>, _) -> Result<_> + 'static>), result.clone())
+            List::fold(var_field!((*exp).subscripts, NFExpression::SUBSCRIPTED_EXP).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, _) -> Result<_> + 'static> = func.clone(); move |__pe_a0, __pe_a2| Subscript::foldExp(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>, _) -> Result<_> + 'static>), result.clone())?
         },
         Deref @ TUPLE_ELEMENT { .. } => {
             fold(var_field!((*exp).tupleExp, NFExpression::TUPLE_ELEMENT).clone(), func.clone(), arg.clone())?
@@ -4132,24 +4132,24 @@ pub fn apply(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops::Fn(Arc<NF
     Ok(())
 }
 
-pub fn applyArrayShallow(mut expl: metamodelica::Array<Arc<NFExpression>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<()> + 'static>) -> () {
+pub fn applyArrayShallow(mut expl: metamodelica::Array<Arc<NFExpression>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<()> + 'static>) -> Result<()> {
     pub type ApplyFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<()> + 'static>;
 
     let __range0 = expl.clone().borrow().iter().cloned().collect::<Vec<_>>();
     for mut e in __range0 {
-        func(e.clone()).unwrap();
+        func(e.clone())?;
     }
-    ()
+    Ok(())
 }
 
-pub fn applyListShallow(mut expl: Arc<metamodelica::List<Arc<NFExpression>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<()> + 'static>) -> () {
+pub fn applyListShallow(mut expl: Arc<metamodelica::List<Arc<NFExpression>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<()> + 'static>) -> Result<()> {
     pub type ApplyFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<()> + 'static>;
 
     for mut e in &*expl.clone() {
         let mut e = e.clone();
-        func(e.clone()).unwrap();
+        func(e.clone())?;
     }
-    ()
+    Ok(())
 }
 
 pub fn applyShallow(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<()> + 'static>) -> Result<()> {
@@ -4157,21 +4157,21 @@ pub fn applyShallow(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops::Fn
 
     let () = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ CLKCONST { .. } => {
-            ClockKind::applyExpShallow(var_field!((*exp).clk, NFExpression::CLKCONST).clone(), func.clone());
+            ClockKind::applyExpShallow(var_field!((*exp).clk, NFExpression::CLKCONST).clone(), func.clone())?;
             ()
         },
         Deref @ CREF { .. } => {
-            ComponentRef::applyExpShallow(var_field!((*exp).cref, NFExpression::CREF).clone(), func.clone());
+            ComponentRef::applyExpShallow(var_field!((*exp).cref, NFExpression::CREF).clone(), func.clone())?;
             ()
         },
         Deref @ ARRAY { .. } => {
-            applyArrayShallow(var_field!((*exp).elements, NFExpression::ARRAY).clone(), func.clone());
+            applyArrayShallow(var_field!((*exp).elements, NFExpression::ARRAY).clone(), func.clone())?;
             ()
         },
         Deref @ MATRIX { .. } => {
             for mut row in &*var_field!((*exp).elements, NFExpression::MATRIX).clone() {
                 let mut row = row.clone();
-                applyListShallow(row.clone(), func.clone());
+                applyListShallow(row.clone(), func.clone())?;
             }
             ()
         },
@@ -4182,11 +4182,11 @@ pub fn applyShallow(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops::Fn
             ()
         },
         Deref @ TUPLE { .. } => {
-            applyListShallow(var_field!((*exp).elements, NFExpression::TUPLE).clone(), func.clone());
+            applyListShallow(var_field!((*exp).elements, NFExpression::TUPLE).clone(), func.clone())?;
             ()
         },
         Deref @ RECORD { .. } => {
-            applyListShallow(var_field!((*exp).elements, NFExpression::RECORD).clone(), func.clone());
+            applyListShallow(var_field!((*exp).elements, NFExpression::RECORD).clone(), func.clone())?;
             ()
         },
         Deref @ CALL { .. } => {
@@ -4254,7 +4254,7 @@ pub fn applyShallow(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops::Fn
             func(var_field!((*exp).exp, NFExpression::SUBSCRIPTED_EXP).clone())?;
             for mut s in &*var_field!((*exp).subscripts, NFExpression::SUBSCRIPTED_EXP).clone() {
                 let mut s = s.clone();
-                Subscript::applyExpShallow(s.clone(), func.clone());
+                Subscript::applyExpShallow(s.clone(), func.clone())?;
             }
             ()
         },
@@ -4275,7 +4275,7 @@ pub fn applyShallow(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops::Fn
             ()
         },
         Deref @ PARTIAL_FUNCTION_APPLICATION { .. } => {
-            applyListShallow(var_field!((*exp).args, NFExpression::PARTIAL_FUNCTION_APPLICATION).clone(), func.clone());
+            applyListShallow(var_field!((*exp).args, NFExpression::PARTIAL_FUNCTION_APPLICATION).clone(), func.clone())?;
             ()
         },
         _ => (),
@@ -4312,17 +4312,17 @@ pub fn mapFold<ArgT: Clone + 'static>(mut exp: Arc<NFExpression>, mut func: Arc<
         },
         Deref @ CREF { .. } => {
             let mut cr: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-            (cr, arg) = ComponentRef::mapFoldExp(var_field!((*exp).cref, NFExpression::CREF).clone(), func.clone(), arg.clone());
+            (cr, arg) = ComponentRef::mapFoldExp(var_field!((*exp).cref, NFExpression::CREF).clone(), func.clone(), arg.clone())?;
             if (referenceEq(&var_field!((*exp).cref, NFExpression::CREF).clone(),&cr.clone())) {exp.clone()} else {Arc::new(NFExpression::CREF { ty: var_field!((*exp).ty, NFExpression::CREF).clone(), cref: cr.clone() })}
         },
         Deref @ ARRAY { .. } => {
             let mut arr: metamodelica::Array<Arc<NFExpression>> = Default::default();
-            (arr, arg) = Array::mapFold(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, _) -> Result<_> + 'static> = func.clone(); move |__pe_a0, __pe_a2| mapFold(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>, _) -> Result<_> + 'static>), arg.clone());
+            (arr, arg) = Array::mapFold(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, _) -> Result<_> + 'static> = func.clone(); move |__pe_a0, __pe_a2| mapFold(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>, _) -> Result<_> + 'static>), arg.clone())?;
             makeArray(var_field!((*exp).ty, NFExpression::ARRAY).clone(), arr.clone(), var_field!((*exp).literal, NFExpression::ARRAY).clone())
         },
         Deref @ MATRIX { .. } => {
             let mut mat: Arc<metamodelica::List<Arc<metamodelica::List<Arc<NFExpression>>>>> = metamodelica::nil();
-            (mat, arg) = List::mapFoldList(var_field!((*exp).elements, NFExpression::MATRIX).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, _) -> Result<_> + 'static> = func.clone(); move |__pe_a0, __pe_a2| mapFold(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>, _) -> Result<_> + 'static>), arg.clone());
+            (mat, arg) = List::mapFoldList(var_field!((*exp).elements, NFExpression::MATRIX).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, _) -> Result<_> + 'static> = func.clone(); move |__pe_a0, __pe_a2| mapFold(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>, _) -> Result<_> + 'static>), arg.clone())?;
             Arc::new(NFExpression::MATRIX { elements: mat.clone() })
         },
         Deref @ RANGE { step: Some(e2), .. } => {
@@ -4343,12 +4343,12 @@ pub fn mapFold<ArgT: Clone + 'static>(mut exp: Arc<NFExpression>, mut func: Arc<
         },
         Deref @ TUPLE { .. } => {
             let mut expl: Arc<metamodelica::List<Arc<NFExpression>>> = metamodelica::nil();
-            (expl, arg) = List::map1Fold(var_field!((*exp).elements, NFExpression::TUPLE).clone(), (std::sync::Arc::new(mapFold) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>, _, _) -> Result<_> + 'static>), func.clone(), arg.clone());
+            (expl, arg) = List::map1Fold(var_field!((*exp).elements, NFExpression::TUPLE).clone(), (std::sync::Arc::new(mapFold) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>, _, _) -> Result<_> + 'static>), func.clone(), arg.clone())?;
             Arc::new(NFExpression::TUPLE { ty: var_field!((*exp).ty, NFExpression::TUPLE).clone(), elements: expl.clone() })
         },
         Deref @ RECORD { .. } => {
             let mut expl: Arc<metamodelica::List<Arc<NFExpression>>> = metamodelica::nil();
-            (expl, arg) = List::map1Fold(var_field!((*exp).elements, NFExpression::RECORD).clone(), (std::sync::Arc::new(mapFold) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>, _, _) -> Result<_> + 'static>), func.clone(), arg.clone());
+            (expl, arg) = List::map1Fold(var_field!((*exp).elements, NFExpression::RECORD).clone(), (std::sync::Arc::new(mapFold) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>, _, _) -> Result<_> + 'static>), func.clone(), arg.clone())?;
             Arc::new(NFExpression::RECORD { path: var_field!((*exp).path, NFExpression::RECORD).clone(), ty: var_field!((*exp).ty, NFExpression::RECORD).clone(), elements: expl.clone() })
         },
         Deref @ CALL { .. } => {
@@ -4446,7 +4446,7 @@ pub fn mapFold<ArgT: Clone + 'static>(mut exp: Arc<NFExpression>, mut func: Arc<
             let mut e1: Arc<NFExpression> = Arc::new(NFExpression::END);
             let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
             (e1, arg) = mapFold(var_field!((*exp).exp, NFExpression::SUBSCRIPTED_EXP).clone(), func.clone(), arg.clone())?;
-            (subs, arg) = List::mapFold(var_field!((*exp).subscripts, NFExpression::SUBSCRIPTED_EXP).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, _) -> Result<_> + 'static> = func.clone(); move |__pe_a0, __pe_a2| Subscript::mapFoldExp(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>, _) -> Result<_> + 'static>), arg.clone());
+            (subs, arg) = List::mapFold(var_field!((*exp).subscripts, NFExpression::SUBSCRIPTED_EXP).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, _) -> Result<_> + 'static> = func.clone(); move |__pe_a0, __pe_a2| Subscript::mapFoldExp(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>, _) -> Result<_> + 'static>), arg.clone())?;
             Arc::new(NFExpression::SUBSCRIPTED_EXP { exp: e1.clone(), subscripts: subs.clone(), ty: var_field!((*exp).ty, NFExpression::SUBSCRIPTED_EXP).clone(), split: var_field!((*exp).split, NFExpression::SUBSCRIPTED_EXP).clone() })
         },
         Deref @ TUPLE_ELEMENT { .. } => {
@@ -4473,7 +4473,7 @@ pub fn mapFold<ArgT: Clone + 'static>(mut exp: Arc<NFExpression>, mut func: Arc<
         },
         Deref @ PARTIAL_FUNCTION_APPLICATION { .. } => {
             let mut expl: Arc<metamodelica::List<Arc<NFExpression>>> = metamodelica::nil();
-            (expl, arg) = List::map1Fold(var_field!((*exp).args, NFExpression::PARTIAL_FUNCTION_APPLICATION).clone(), (std::sync::Arc::new(mapFold) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>, _, _) -> Result<_> + 'static>), func.clone(), arg.clone());
+            (expl, arg) = List::map1Fold(var_field!((*exp).args, NFExpression::PARTIAL_FUNCTION_APPLICATION).clone(), (std::sync::Arc::new(mapFold) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>, _, _) -> Result<_> + 'static>), func.clone(), arg.clone())?;
             assign_variant_field!(exp => NFExpression::PARTIAL_FUNCTION_APPLICATION; args = expl.clone());
             exp.clone()
         },
@@ -4517,17 +4517,17 @@ pub fn mapFoldShallow<ArgT: Clone + 'static>(mut exp: Arc<NFExpression>, mut fun
         },
         Deref @ CREF { .. } => {
             let mut cr: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
-            (cr, arg) = ComponentRef::mapFoldExpShallow(var_field!((*exp).cref, NFExpression::CREF).clone(), func.clone(), arg.clone());
+            (cr, arg) = ComponentRef::mapFoldExpShallow(var_field!((*exp).cref, NFExpression::CREF).clone(), func.clone(), arg.clone())?;
             if (referenceEq(&var_field!((*exp).cref, NFExpression::CREF).clone(),&cr.clone())) {exp.clone()} else {Arc::new(NFExpression::CREF { ty: var_field!((*exp).ty, NFExpression::CREF).clone(), cref: cr.clone() })}
         },
         Deref @ ARRAY { .. } => {
             let mut arr: metamodelica::Array<Arc<NFExpression>> = Default::default();
-            (arr, arg) = Array::mapFold(var_field!((*exp).elements, NFExpression::ARRAY).clone(), func.clone(), arg.clone());
+            (arr, arg) = Array::mapFold(var_field!((*exp).elements, NFExpression::ARRAY).clone(), func.clone(), arg.clone())?;
             makeArray(var_field!((*exp).ty, NFExpression::ARRAY).clone(), arr.clone(), var_field!((*exp).literal, NFExpression::ARRAY).clone())
         },
         Deref @ MATRIX { .. } => {
             let mut mat: Arc<metamodelica::List<Arc<metamodelica::List<Arc<NFExpression>>>>> = metamodelica::nil();
-            (mat, arg) = List::mapFoldList(var_field!((*exp).elements, NFExpression::MATRIX).clone(), func.clone(), arg.clone());
+            (mat, arg) = List::mapFoldList(var_field!((*exp).elements, NFExpression::MATRIX).clone(), func.clone(), arg.clone())?;
             Arc::new(NFExpression::MATRIX { elements: mat.clone() })
         },
         Deref @ RANGE { step: oe, .. } => {
@@ -4535,18 +4535,18 @@ pub fn mapFoldShallow<ArgT: Clone + 'static>(mut exp: Arc<NFExpression>, mut fun
             let mut e3: Arc<NFExpression> = Arc::new(NFExpression::END);
             let mut oe = (*oe).clone();
             (e1, arg) = func(var_field!((*exp).start, NFExpression::RANGE).clone(), arg.clone())?;
-            (oe, arg) = mapFoldOptShallow(var_field!((*exp).step, NFExpression::RANGE).clone(), func.clone(), arg.clone());
+            (oe, arg) = mapFoldOptShallow(var_field!((*exp).step, NFExpression::RANGE).clone(), func.clone(), arg.clone())?;
             (e3, arg) = func(var_field!((*exp).stop, NFExpression::RANGE).clone(), arg.clone())?;
             if (referenceEq(&e1.clone(),&var_field!((*exp).start, NFExpression::RANGE).clone()) && referenceEq(&oe.clone(),&var_field!((*exp).step, NFExpression::RANGE).clone()) && referenceEq(&e3.clone(),&var_field!((*exp).stop, NFExpression::RANGE).clone())) {exp.clone()} else {Arc::new(NFExpression::RANGE { ty: var_field!((*exp).ty, NFExpression::RANGE).clone(), start: e1.clone(), step: oe.clone(), stop: e3.clone() })}
         },
         Deref @ TUPLE { .. } => {
             let mut expl: Arc<metamodelica::List<Arc<NFExpression>>> = metamodelica::nil();
-            (expl, arg) = List::mapFold(var_field!((*exp).elements, NFExpression::TUPLE).clone(), func.clone(), arg.clone());
+            (expl, arg) = List::mapFold(var_field!((*exp).elements, NFExpression::TUPLE).clone(), func.clone(), arg.clone())?;
             Arc::new(NFExpression::TUPLE { ty: var_field!((*exp).ty, NFExpression::TUPLE).clone(), elements: expl.clone() })
         },
         Deref @ RECORD { .. } => {
             let mut expl: Arc<metamodelica::List<Arc<NFExpression>>> = metamodelica::nil();
-            (expl, arg) = List::mapFold(var_field!((*exp).elements, NFExpression::RECORD).clone(), func.clone(), arg.clone());
+            (expl, arg) = List::mapFold(var_field!((*exp).elements, NFExpression::RECORD).clone(), func.clone(), arg.clone())?;
             Arc::new(NFExpression::RECORD { path: var_field!((*exp).path, NFExpression::RECORD).clone(), ty: var_field!((*exp).ty, NFExpression::RECORD).clone(), elements: expl.clone() })
         },
         Deref @ CALL { .. } => {
@@ -4558,7 +4558,7 @@ pub fn mapFoldShallow<ArgT: Clone + 'static>(mut exp: Arc<NFExpression>, mut fun
             let mut e1: Arc<NFExpression> = Arc::new(NFExpression::END);
             let mut oe: Option<Arc<NFExpression>> = None;
             (e1, arg) = func(var_field!((*exp).exp, NFExpression::SIZE).clone(), arg.clone())?;
-            (oe, arg) = mapFoldOptShallow(var_field!((*exp).dimIndex, NFExpression::SIZE).clone(), func.clone(), arg.clone());
+            (oe, arg) = mapFoldOptShallow(var_field!((*exp).dimIndex, NFExpression::SIZE).clone(), func.clone(), arg.clone())?;
             if (referenceEq(&var_field!((*exp).exp, NFExpression::SIZE).clone(),&e1.clone()) && referenceEq(&var_field!((*exp).dimIndex, NFExpression::SIZE).clone(),&oe.clone())) {exp.clone()} else {Arc::new(NFExpression::SIZE { exp: e1.clone(), dimIndex: oe.clone() })}
         },
         Deref @ BINARY { .. } => {
@@ -4639,7 +4639,7 @@ pub fn mapFoldShallow<ArgT: Clone + 'static>(mut exp: Arc<NFExpression>, mut fun
             let mut e1: Arc<NFExpression> = Arc::new(NFExpression::END);
             let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
             (e1, arg) = func(var_field!((*exp).exp, NFExpression::SUBSCRIPTED_EXP).clone(), arg.clone())?;
-            (subs, arg) = List::mapFold(var_field!((*exp).subscripts, NFExpression::SUBSCRIPTED_EXP).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, _) -> Result<_> + 'static> = func.clone(); move |__pe_a0, __pe_a2| Ok(Subscript::mapFoldExpShallow(__pe_a0, __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>, _) -> Result<_> + 'static>), arg.clone());
+            (subs, arg) = List::mapFold(var_field!((*exp).subscripts, NFExpression::SUBSCRIPTED_EXP).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, _) -> Result<_> + 'static> = func.clone(); move |__pe_a0, __pe_a2| Subscript::mapFoldExpShallow(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>, _) -> Result<_> + 'static>), arg.clone())?;
             Arc::new(NFExpression::SUBSCRIPTED_EXP { exp: e1.clone(), subscripts: subs.clone(), ty: var_field!((*exp).ty, NFExpression::SUBSCRIPTED_EXP).clone(), split: var_field!((*exp).split, NFExpression::SUBSCRIPTED_EXP).clone() })
         },
         Deref @ TUPLE_ELEMENT { .. } => {
@@ -4666,7 +4666,7 @@ pub fn mapFoldShallow<ArgT: Clone + 'static>(mut exp: Arc<NFExpression>, mut fun
         },
         Deref @ PARTIAL_FUNCTION_APPLICATION { .. } => {
             let mut expl: Arc<metamodelica::List<Arc<NFExpression>>> = metamodelica::nil();
-            (expl, arg) = List::mapFold(var_field!((*exp).args, NFExpression::PARTIAL_FUNCTION_APPLICATION).clone(), func.clone(), arg.clone());
+            (expl, arg) = List::mapFold(var_field!((*exp).args, NFExpression::PARTIAL_FUNCTION_APPLICATION).clone(), func.clone(), arg.clone())?;
             assign_variant_field!(exp => NFExpression::PARTIAL_FUNCTION_APPLICATION; args = expl.clone());
             exp.clone()
         },
@@ -4678,7 +4678,7 @@ pub fn mapFoldShallow<ArgT: Clone + 'static>(mut exp: Arc<NFExpression>, mut fun
     Ok((outExp, arg))
 }
 
-pub fn mapFoldOptShallow<ArgT: Clone + 'static>(mut exp: Option<Arc<NFExpression>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<(Arc<NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> (Option<Arc<NFExpression>>, ArgT) {
+pub fn mapFoldOptShallow<ArgT: Clone + 'static>(mut exp: Option<Arc<NFExpression>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<(Arc<NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Option<Arc<NFExpression>>, ArgT)> {
     pub type MapFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>, ArgT) -> Result<(Arc<NFExpression>, ArgT)> + 'static>;
 
     let mut outExp: Option<Arc<NFExpression>> = None;
@@ -4687,13 +4687,13 @@ pub fn mapFoldOptShallow<ArgT: Clone + 'static>(mut exp: Option<Arc<NFExpression
     let mut e2: Arc<NFExpression> = Arc::new(NFExpression::END);
     outExp = (::match_deref::match_deref! { match &(exp.clone()) {
         Some(e1) => {
-            (e2, arg) = func(e1.clone(), arg.clone()).unwrap();
+            (e2, arg) = func(e1.clone(), arg.clone())?;
             if (referenceEq(&e1.clone(),&e2.clone())) {exp.clone()} else {Some(e2.clone())}
         },
         _ => exp.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    (outExp, arg)
+    Ok((outExp, arg))
 }
 
 pub fn containsOpt(mut exp: Option<Arc<NFExpression>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>) -> Result<bool> {
@@ -4811,25 +4811,25 @@ pub fn containsShallow(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops:
 
     let mut res: bool = false;
     res = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ CLKCONST { .. } => ClockKind::containsExpShallow(var_field!((*exp).clk, NFExpression::CLKCONST).clone(), func.clone()),
-        Deref @ CREF { .. } => ComponentRef::containsExpShallow(var_field!((*exp).cref, NFExpression::CREF).clone(), func.clone()),
-        Deref @ ARRAY { .. } => Array::any(var_field!((*exp).elements, NFExpression::ARRAY).clone(), func.clone()),
+        Deref @ CLKCONST { .. } => ClockKind::containsExpShallow(var_field!((*exp).clk, NFExpression::CLKCONST).clone(), func.clone())?,
+        Deref @ CREF { .. } => ComponentRef::containsExpShallow(var_field!((*exp).cref, NFExpression::CREF).clone(), func.clone())?,
+        Deref @ ARRAY { .. } => Array::any(var_field!((*exp).elements, NFExpression::ARRAY).clone(), func.clone())?,
         Deref @ MATRIX { .. } => {
             res = false;
             for mut row in &*var_field!((*exp).elements, NFExpression::MATRIX).clone() {
                 let mut row = row.clone();
-                if List::any(row.clone(), func.clone()) {
+                if List::any(row.clone(), func.clone())? {
                     res = true;
                     break;
                 }
             }
             res.clone()
         },
-        Deref @ RANGE { .. } => func(var_field!((*exp).start, NFExpression::RANGE).clone())? || Util::applyOptionOrDefault(var_field!((*exp).step, NFExpression::RANGE).clone(), func.clone(), false) || func(var_field!((*exp).stop, NFExpression::RANGE).clone())?,
-        Deref @ TUPLE { .. } => List::any(var_field!((*exp).elements, NFExpression::TUPLE).clone(), func.clone()),
-        Deref @ RECORD { .. } => List::any(var_field!((*exp).elements, NFExpression::RECORD).clone(), func.clone()),
+        Deref @ RANGE { .. } => func(var_field!((*exp).start, NFExpression::RANGE).clone())? || Util::applyOptionOrDefault(var_field!((*exp).step, NFExpression::RANGE).clone(), func.clone(), false)? || func(var_field!((*exp).stop, NFExpression::RANGE).clone())?,
+        Deref @ TUPLE { .. } => List::any(var_field!((*exp).elements, NFExpression::TUPLE).clone(), func.clone())?,
+        Deref @ RECORD { .. } => List::any(var_field!((*exp).elements, NFExpression::RECORD).clone(), func.clone())?,
         Deref @ CALL { .. } => Call::containsExpShallow(var_field!((*exp).call, NFExpression::CALL).clone(), func.clone())?,
-        Deref @ SIZE { .. } => Util::applyOptionOrDefault(var_field!((*exp).dimIndex, NFExpression::SIZE).clone(), func.clone(), false) || func(var_field!((*exp).exp, NFExpression::SIZE).clone())?,
+        Deref @ SIZE { .. } => Util::applyOptionOrDefault(var_field!((*exp).dimIndex, NFExpression::SIZE).clone(), func.clone(), false)? || func(var_field!((*exp).exp, NFExpression::SIZE).clone())?,
         Deref @ BINARY { .. } => func(var_field!((*exp).exp1, NFExpression::BINARY).clone())? || func(var_field!((*exp).exp2, NFExpression::BINARY).clone())?,
         Deref @ MULTARY { .. } => {
             res = false;
@@ -4857,7 +4857,7 @@ pub fn containsShallow(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops:
         Deref @ CAST { .. } => func(var_field!((*exp).exp, NFExpression::CAST).clone())?,
         Deref @ BOX { .. } => func(var_field!((*exp).exp, NFExpression::BOX).clone())?,
         Deref @ UNBOX { .. } => func(var_field!((*exp).exp, NFExpression::UNBOX).clone())?,
-        Deref @ SUBSCRIPTED_EXP { .. } => func(var_field!((*exp).exp, NFExpression::SUBSCRIPTED_EXP).clone())? || Subscript::listContainsExpShallow(var_field!((*exp).subscripts, NFExpression::SUBSCRIPTED_EXP).clone(), func.clone()),
+        Deref @ SUBSCRIPTED_EXP { .. } => func(var_field!((*exp).exp, NFExpression::SUBSCRIPTED_EXP).clone())? || Subscript::listContainsExpShallow(var_field!((*exp).subscripts, NFExpression::SUBSCRIPTED_EXP).clone(), func.clone())?,
         Deref @ TUPLE_ELEMENT { .. } => func(var_field!((*exp).tupleExp, NFExpression::TUPLE_ELEMENT).clone())?,
         Deref @ RECORD_ELEMENT { .. } => func(var_field!((*exp).recordExp, NFExpression::RECORD_ELEMENT).clone())?,
         Deref @ MUTABLE { .. } => func(Mutable::access(var_field!((*exp).exp, NFExpression::MUTABLE).clone()))?,
@@ -4909,8 +4909,8 @@ pub fn arrayAllEqual(mut arrayExp: Arc<NFExpression>) -> Result<bool> {
 pub fn arrayAllEqual2(mut arrayExp: Arc<NFExpression>, mut element: Arc<NFExpression>) -> Result<bool> {
     let mut allEqual: bool = false;
     allEqual = (::match_deref::match_deref! { match &(arrayExp.clone()) {
-        Deref @ ARRAY { .. } if (!(var_field!((*arrayExp).elements, NFExpression::ARRAY).clone().borrow().is_empty()) && isArray(var_field!((*arrayExp).elements, NFExpression::ARRAY).clone().borrow()[(1-1) as usize].clone())) => Array::all(var_field!((*arrayExp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = element.clone(); move |__pe_a0| arrayAllEqual2(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>)),
-        Deref @ ARRAY { .. } => Array::all(var_field!((*arrayExp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = element.clone(); move |__pe_a0| isEqual(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>)),
+        Deref @ ARRAY { .. } if (!(var_field!((*arrayExp).elements, NFExpression::ARRAY).clone().borrow().is_empty()) && isArray(var_field!((*arrayExp).elements, NFExpression::ARRAY).clone().borrow()[(1-1) as usize].clone())) => Array::all(var_field!((*arrayExp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = element.clone(); move |__pe_a0| arrayAllEqual2(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>))?,
+        Deref @ ARRAY { .. } => Array::all(var_field!((*arrayExp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = element.clone(); move |__pe_a0| isEqual(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>))?,
         _ => true,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -4938,9 +4938,9 @@ pub fn toCref(mut exp: Arc<NFExpression>) -> Result<Arc<ComponentRef::NFComponen
     Ok(cref)
 }
 
-pub fn extractCrefs(mut exp: Arc<NFExpression>) -> Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> {
-    let mut crefs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = fold(exp.clone(), (std::sync::Arc::new(extractCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> + 'static>), UnorderedSet::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13)).unwrap();
-    crefs
+pub fn extractCrefs(mut exp: Arc<NFExpression>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> {
+    let mut crefs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = fold(exp.clone(), (std::sync::Arc::new(extractCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> + 'static>), UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13))?;
+    Ok(crefs)
 }
 
 pub fn extractCref(mut exp: Arc<NFExpression>, mut crefs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>> {
@@ -4986,82 +4986,20 @@ pub fn containsAnyIterator(mut exp: Arc<NFExpression>, mut context: i32) -> Resu
     Ok(iter)
 }
 
-pub fn isTime(mut exp: Arc<NFExpression>) -> bool {
+pub fn isTime(mut exp: Arc<NFExpression>) -> Result<bool> {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ CREF { .. } => ComponentRef::isTime(var_field!((*exp).cref, NFExpression::CREF).clone()),
+        Deref @ CREF { .. } => ComponentRef::isTime(var_field!((*exp).cref, NFExpression::CREF).clone())?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    b
+    Ok(b)
 }
 
-pub fn isSubstitute(mut exp: Arc<NFExpression>) -> bool {
+pub fn isSubstitute(mut exp: Arc<NFExpression>) -> Result<bool> {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ CREF { .. } => ComponentRef::isSubstitute(var_field!((*exp).cref, NFExpression::CREF).clone()),
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    b
-}
-
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-pub fn isZero(mut exp: Arc<NFExpression>) -> bool {
-    let mut b: bool = false;
-    b = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ INTEGER { .. } => var_field!((*exp).value, NFExpression::INTEGER).clone() == 0,
-        Deref @ REAL { .. } => var_field!((*exp).value, NFExpression::REAL).clone() == metamodelica::OrderedFloat(0.0_f64),
-        Deref @ CAST { .. } => isZero(var_field!((*exp).exp, NFExpression::CAST).clone()),
-        Deref @ UNARY { .. } => isZero(var_field!((*exp).exp, NFExpression::UNARY).clone()),
-        Deref @ ARRAY { .. } => Array::all(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new(fnptr!(isZero, Arc<NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>)),
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    b
-}
-
-pub fn isNonZero(mut exp: Arc<NFExpression>) -> bool {
-    let mut res: bool = isPositive(exp.clone()) || isNegative(exp.clone());
-    res
-}
-
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-pub fn isOne(mut exp: Arc<NFExpression>) -> bool {
-    let mut b: bool = false;
-    b = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ INTEGER { .. } => var_field!((*exp).value, NFExpression::INTEGER).clone() == 1,
-        Deref @ REAL { .. } => var_field!((*exp).value, NFExpression::REAL).clone() == metamodelica::OrderedFloat(1.0_f64),
-        Deref @ CAST { .. } => isOne(var_field!((*exp).exp, NFExpression::CAST).clone()),
-        Deref @ UNARY { .. } => isMinusOne(var_field!((*exp).exp, NFExpression::UNARY).clone()),
-        Deref @ ARRAY { .. } => Array::all(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new(fnptr!(isOne, Arc<NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>)),
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    b
-}
-
-// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
-// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-pub fn isMinusOne(mut exp: Arc<NFExpression>) -> bool {
-    let mut isOne: bool = false;
-    isOne = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ INTEGER { .. } => var_field!((*exp).value, NFExpression::INTEGER).clone() == -1,
-        Deref @ REAL { .. } => var_field!((*exp).value, NFExpression::REAL).clone() == metamodelica::OrderedFloat(-1.0_f64),
-        Deref @ CAST { .. } => isMinusOne(var_field!((*exp).exp, NFExpression::CAST).clone()),
-        Deref @ UNARY { .. } => self::isOne(var_field!((*exp).exp, NFExpression::UNARY).clone()),
-        _ => false,
-        _ => unreachable!("match_deref! exhaustiveness placeholder"),
-    } });
-    isOne
-}
-
-pub fn isNaN(mut nan: Arc<NFExpression>) -> Result<bool> {
-    let mut b: bool = false;
-    b = (::match_deref::match_deref! { match &(nan.clone()) {
-        Deref @ BINARY { .. } => Operator::getMathClassification(var_field!((*nan).operator, NFExpression::BINARY).clone())? == Operator::MathClassification::DIVISION.clone() && isZero(var_field!((*nan).exp1, NFExpression::BINARY).clone()) && isZero(var_field!((*nan).exp2, NFExpression::BINARY).clone()),
+        Deref @ CREF { .. } => ComponentRef::isSubstitute(var_field!((*exp).cref, NFExpression::CREF).clone())?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -5070,82 +5008,144 @@ pub fn isNaN(mut nan: Arc<NFExpression>) -> Result<bool> {
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-pub fn isPositive(mut exp: Arc<NFExpression>) -> bool {
+pub fn isZero(mut exp: Arc<NFExpression>) -> Result<bool> {
+    let mut b: bool = false;
+    b = (::match_deref::match_deref! { match &(exp.clone()) {
+        Deref @ INTEGER { .. } => var_field!((*exp).value, NFExpression::INTEGER).clone() == 0,
+        Deref @ REAL { .. } => var_field!((*exp).value, NFExpression::REAL).clone() == metamodelica::OrderedFloat(0.0_f64),
+        Deref @ CAST { .. } => isZero(var_field!((*exp).exp, NFExpression::CAST).clone())?,
+        Deref @ UNARY { .. } => isZero(var_field!((*exp).exp, NFExpression::UNARY).clone())?,
+        Deref @ ARRAY { .. } => Array::all(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new(isZero) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>))?,
+        _ => false,
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    Ok(b)
+}
+
+pub fn isNonZero(mut exp: Arc<NFExpression>) -> Result<bool> {
+    let mut res: bool = isPositive(exp.clone())? || isNegative(exp.clone())?;
+    Ok(res)
+}
+
+// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
+// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+pub fn isOne(mut exp: Arc<NFExpression>) -> Result<bool> {
+    let mut b: bool = false;
+    b = (::match_deref::match_deref! { match &(exp.clone()) {
+        Deref @ INTEGER { .. } => var_field!((*exp).value, NFExpression::INTEGER).clone() == 1,
+        Deref @ REAL { .. } => var_field!((*exp).value, NFExpression::REAL).clone() == metamodelica::OrderedFloat(1.0_f64),
+        Deref @ CAST { .. } => isOne(var_field!((*exp).exp, NFExpression::CAST).clone())?,
+        Deref @ UNARY { .. } => isMinusOne(var_field!((*exp).exp, NFExpression::UNARY).clone())?,
+        Deref @ ARRAY { .. } => Array::all(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new(isOne) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>))?,
+        _ => false,
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    Ok(b)
+}
+
+// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
+// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+pub fn isMinusOne(mut exp: Arc<NFExpression>) -> Result<bool> {
+    let mut isOne: bool = false;
+    isOne = (::match_deref::match_deref! { match &(exp.clone()) {
+        Deref @ INTEGER { .. } => var_field!((*exp).value, NFExpression::INTEGER).clone() == -1,
+        Deref @ REAL { .. } => var_field!((*exp).value, NFExpression::REAL).clone() == metamodelica::OrderedFloat(-1.0_f64),
+        Deref @ CAST { .. } => isMinusOne(var_field!((*exp).exp, NFExpression::CAST).clone())?,
+        Deref @ UNARY { .. } => self::isOne(var_field!((*exp).exp, NFExpression::UNARY).clone())?,
+        _ => false,
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    Ok(isOne)
+}
+
+pub fn isNaN(mut nan: Arc<NFExpression>) -> Result<bool> {
+    let mut b: bool = false;
+    b = (::match_deref::match_deref! { match &(nan.clone()) {
+        Deref @ BINARY { .. } => Operator::getMathClassification(var_field!((*nan).operator, NFExpression::BINARY).clone())? == Operator::MathClassification::DIVISION.clone() && isZero(var_field!((*nan).exp1, NFExpression::BINARY).clone())? && isZero(var_field!((*nan).exp2, NFExpression::BINARY).clone())?,
+        _ => false,
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    Ok(b)
+}
+
+// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
+// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+pub fn isPositive(mut exp: Arc<NFExpression>) -> Result<bool> {
     let mut positive: bool = false;
     positive = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ INTEGER { .. } => var_field!((*exp).value, NFExpression::INTEGER).clone() > 0,
         Deref @ REAL { .. } => var_field!((*exp).value, NFExpression::REAL).clone() > metamodelica::OrderedFloat(0.0_f64),
-        Deref @ CAST { .. } => isPositive(var_field!((*exp).exp, NFExpression::CAST).clone()),
-        Deref @ UNARY { .. } => isNegative(var_field!((*exp).exp, NFExpression::UNARY).clone()),
-        Deref @ CREF { .. } => Util::applyOptionOrDefault(ComponentRef::lookupVarAttr(var_field!((*exp).cref, NFExpression::CREF).clone(), (literal!("min")).clone()), (std::sync::Arc::new(fnptr!(isPositive, Arc<NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>), false),
+        Deref @ CAST { .. } => isPositive(var_field!((*exp).exp, NFExpression::CAST).clone())?,
+        Deref @ UNARY { .. } => isNegative(var_field!((*exp).exp, NFExpression::UNARY).clone())?,
+        Deref @ CREF { .. } => Util::applyOptionOrDefault(ComponentRef::lookupVarAttr(var_field!((*exp).cref, NFExpression::CREF).clone(), (literal!("min")).clone()), (std::sync::Arc::new(isPositive) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>), false)?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    positive
+    Ok(positive)
 }
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-pub fn isNegative(mut exp: Arc<NFExpression>) -> bool {
+pub fn isNegative(mut exp: Arc<NFExpression>) -> Result<bool> {
     let mut negative: bool = false;
     negative = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ INTEGER { .. } => var_field!((*exp).value, NFExpression::INTEGER).clone() < 0,
         Deref @ REAL { .. } => var_field!((*exp).value, NFExpression::REAL).clone() < metamodelica::OrderedFloat(0.0_f64),
-        Deref @ CAST { .. } => isNegative(var_field!((*exp).exp, NFExpression::CAST).clone()),
-        Deref @ UNARY { .. } => isPositive(var_field!((*exp).exp, NFExpression::UNARY).clone()),
-        Deref @ CREF { .. } => Util::applyOptionOrDefault(ComponentRef::lookupVarAttr(var_field!((*exp).cref, NFExpression::CREF).clone(), (literal!("max")).clone()), (std::sync::Arc::new(fnptr!(isNegative, Arc<NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>), false),
+        Deref @ CAST { .. } => isNegative(var_field!((*exp).exp, NFExpression::CAST).clone())?,
+        Deref @ UNARY { .. } => isPositive(var_field!((*exp).exp, NFExpression::UNARY).clone())?,
+        Deref @ CREF { .. } => Util::applyOptionOrDefault(ComponentRef::lookupVarAttr(var_field!((*exp).cref, NFExpression::CREF).clone(), (literal!("max")).clone()), (std::sync::Arc::new(isNegative) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>), false)?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    negative
+    Ok(negative)
 }
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-pub fn isNonPositive(mut exp: Arc<NFExpression>) -> bool {
+pub fn isNonPositive(mut exp: Arc<NFExpression>) -> Result<bool> {
     let mut res: bool = false;
     res = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ INTEGER { .. } => var_field!((*exp).value, NFExpression::INTEGER).clone() <= 0,
         Deref @ REAL { .. } => var_field!((*exp).value, NFExpression::REAL).clone() <= metamodelica::OrderedFloat(0.0_f64),
-        Deref @ CAST { .. } => isNonPositive(var_field!((*exp).exp, NFExpression::CAST).clone()),
-        Deref @ UNARY { .. } => isNonNegative(var_field!((*exp).exp, NFExpression::UNARY).clone()),
-        Deref @ CREF { .. } => Util::applyOptionOrDefault(ComponentRef::lookupVarAttr(var_field!((*exp).cref, NFExpression::CREF).clone(), (literal!("max")).clone()), (std::sync::Arc::new(fnptr!(isNonPositive, Arc<NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>), false),
+        Deref @ CAST { .. } => isNonPositive(var_field!((*exp).exp, NFExpression::CAST).clone())?,
+        Deref @ UNARY { .. } => isNonNegative(var_field!((*exp).exp, NFExpression::UNARY).clone())?,
+        Deref @ CREF { .. } => Util::applyOptionOrDefault(ComponentRef::lookupVarAttr(var_field!((*exp).cref, NFExpression::CREF).clone(), (literal!("max")).clone()), (std::sync::Arc::new(isNonPositive) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>), false)?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    res
+    Ok(res)
 }
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-pub fn isNonNegative(mut exp: Arc<NFExpression>) -> bool {
+pub fn isNonNegative(mut exp: Arc<NFExpression>) -> Result<bool> {
     let mut res: bool = false;
     res = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ INTEGER { .. } => var_field!((*exp).value, NFExpression::INTEGER).clone() >= 0,
         Deref @ REAL { .. } => var_field!((*exp).value, NFExpression::REAL).clone() >= metamodelica::OrderedFloat(0.0_f64),
-        Deref @ CAST { .. } => isNonNegative(var_field!((*exp).exp, NFExpression::CAST).clone()),
-        Deref @ UNARY { .. } => isNonPositive(var_field!((*exp).exp, NFExpression::UNARY).clone()),
-        Deref @ CREF { .. } => Util::applyOptionOrDefault(ComponentRef::lookupVarAttr(var_field!((*exp).cref, NFExpression::CREF).clone(), (literal!("min")).clone()), (std::sync::Arc::new(fnptr!(isNonNegative, Arc<NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>), false),
+        Deref @ CAST { .. } => isNonNegative(var_field!((*exp).exp, NFExpression::CAST).clone())?,
+        Deref @ UNARY { .. } => isNonPositive(var_field!((*exp).exp, NFExpression::UNARY).clone())?,
+        Deref @ CREF { .. } => Util::applyOptionOrDefault(ComponentRef::lookupVarAttr(var_field!((*exp).cref, NFExpression::CREF).clone(), (literal!("min")).clone()), (std::sync::Arc::new(isNonNegative) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>), false)?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    res
+    Ok(res)
 }
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-pub fn isGreaterOrEqual(mut lhs: Arc<NFExpression>, mut rhs: Arc<NFExpression>) -> bool {
+pub fn isGreaterOrEqual(mut lhs: Arc<NFExpression>, mut rhs: Arc<NFExpression>) -> Result<bool> {
     let mut res: bool = false;
     res = (::match_deref::match_deref! { match &((lhs.clone(), rhs.clone())) {
         (Deref @ REAL { .. }, Deref @ REAL { .. }) => var_field!((*lhs).value, NFExpression::REAL).clone() >= var_field!((*rhs).value, NFExpression::REAL).clone(),
-        (Deref @ CREF { .. }, _) => Util::applyOptionOrDefault(ComponentRef::lookupVarAttr(var_field!((*lhs).cref, NFExpression::CREF).clone(), (literal!("min")).clone()), (std::sync::Arc::new({ let __pe_b1 = rhs.clone(); move |__pe_a0| Ok(isGreaterOrEqual(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>), false),
-        (_, Deref @ CREF { .. }) => Util::applyOptionOrDefault(ComponentRef::lookupVarAttr(var_field!((*rhs).cref, NFExpression::CREF).clone(), (literal!("max")).clone()), (std::sync::Arc::new({ let __pe_b0 = lhs.clone(); move |__pe_a1| Ok(isGreaterOrEqual(__pe_b0.clone(), __pe_a1)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>), false),
-        (Deref @ UNARY { exp: Deref @ CREF { .. }, .. }, _) => isGreaterOrEqual(negate(rhs.clone()), var_field!((*lhs).exp, NFExpression::UNARY).clone()),
-        (_, Deref @ UNARY { exp: Deref @ CREF { .. }, .. }) => isGreaterOrEqual(var_field!((*rhs).exp, NFExpression::UNARY).clone(), negate(lhs.clone())),
+        (Deref @ CREF { .. }, _) => Util::applyOptionOrDefault(ComponentRef::lookupVarAttr(var_field!((*lhs).cref, NFExpression::CREF).clone(), (literal!("min")).clone()), (std::sync::Arc::new({ let __pe_b1 = rhs.clone(); move |__pe_a0| isGreaterOrEqual(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>), false)?,
+        (_, Deref @ CREF { .. }) => Util::applyOptionOrDefault(ComponentRef::lookupVarAttr(var_field!((*rhs).cref, NFExpression::CREF).clone(), (literal!("max")).clone()), (std::sync::Arc::new({ let __pe_b0 = lhs.clone(); move |__pe_a1| isGreaterOrEqual(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>), false)?,
+        (Deref @ UNARY { exp: Deref @ CREF { .. }, .. }, _) => isGreaterOrEqual(negate(rhs.clone()), var_field!((*lhs).exp, NFExpression::UNARY).clone())?,
+        (_, Deref @ UNARY { exp: Deref @ CREF { .. }, .. }) => isGreaterOrEqual(var_field!((*rhs).exp, NFExpression::UNARY).clone(), negate(lhs.clone()))?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    res
+    Ok(res)
 }
 
 pub fn hasArrayType(mut exp: Arc<NFExpression>) -> bool {
@@ -5173,7 +5173,7 @@ pub fn isScalarLiteral(mut exp: Arc<NFExpression>) -> bool {
     literal
 }
 
-pub fn isLiteral(mut exp: Arc<NFExpression>) -> bool {
+pub fn isLiteral(mut exp: Arc<NFExpression>) -> Result<bool> {
     let mut literal: bool = false;
     literal = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ INTEGER { .. } => true,
@@ -5181,19 +5181,19 @@ pub fn isLiteral(mut exp: Arc<NFExpression>) -> bool {
         Deref @ STRING { .. } => true,
         Deref @ BOOLEAN { .. } => true,
         Deref @ ENUM_LITERAL { .. } => true,
-        Deref @ ARRAY { .. } => var_field!((*exp).literal, NFExpression::ARRAY).clone() || Array::all(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new(fnptr!(isLiteral, Arc<NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>)),
-        Deref @ RECORD { .. } => List::all(var_field!((*exp).elements, NFExpression::RECORD).clone(), (std::sync::Arc::new(fnptr!(isLiteral, Arc<NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>)),
-        Deref @ RANGE { .. } => isLiteral(var_field!((*exp).start, NFExpression::RANGE).clone()) && isLiteral(var_field!((*exp).stop, NFExpression::RANGE).clone()) && Util::applyOptionOrDefault(var_field!((*exp).step, NFExpression::RANGE).clone(), (std::sync::Arc::new(fnptr!(isLiteral, Arc<NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>), true),
+        Deref @ ARRAY { .. } => var_field!((*exp).literal, NFExpression::ARRAY).clone() || Array::all(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new(isLiteral) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>))?,
+        Deref @ RECORD { .. } => List::all(var_field!((*exp).elements, NFExpression::RECORD).clone(), (std::sync::Arc::new(isLiteral) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>))?,
+        Deref @ RANGE { .. } => isLiteral(var_field!((*exp).start, NFExpression::RANGE).clone())? && isLiteral(var_field!((*exp).stop, NFExpression::RANGE).clone())? && Util::applyOptionOrDefault(var_field!((*exp).step, NFExpression::RANGE).clone(), (std::sync::Arc::new(isLiteral) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>), true)?,
         Deref @ FILENAME { .. } => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    literal
+    Ok(literal)
 }
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-pub fn isLiteralXML(mut exp: Arc<NFExpression>) -> bool {
+pub fn isLiteralXML(mut exp: Arc<NFExpression>) -> Result<bool> {
     let mut literal: bool = false;
     literal = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ INTEGER { .. } => {
@@ -5212,39 +5212,39 @@ pub fn isLiteralXML(mut exp: Arc<NFExpression>) -> bool {
             true
         },
         Deref @ ARRAY { .. } => {
-            Array::all(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new(fnptr!(isLiteralXML, Arc<NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>))
+            Array::all(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new(isLiteralXML) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>))?
         },
         Deref @ RECORD { .. } => {
-            List::all(var_field!((*exp).elements, NFExpression::RECORD).clone(), (std::sync::Arc::new(fnptr!(isLiteralXML, Arc<NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>))
+            List::all(var_field!((*exp).elements, NFExpression::RECORD).clone(), (std::sync::Arc::new(isLiteralXML) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>))?
         },
         Deref @ RANGE { .. } => {
-            isLiteralXML(var_field!((*exp).start, NFExpression::RANGE).clone()) && isLiteralXML(var_field!((*exp).stop, NFExpression::RANGE).clone()) && Util::applyOptionOrDefault(var_field!((*exp).step, NFExpression::RANGE).clone(), (std::sync::Arc::new(fnptr!(isLiteralXML, Arc<NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>), true)
+            isLiteralXML(var_field!((*exp).start, NFExpression::RANGE).clone())? && isLiteralXML(var_field!((*exp).stop, NFExpression::RANGE).clone())? && Util::applyOptionOrDefault(var_field!((*exp).step, NFExpression::RANGE).clone(), (std::sync::Arc::new(isLiteralXML) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>), true)?
         },
         Deref @ FILENAME { .. } => {
             true
         },
         Deref @ CALL { call: Deref @ Call::TYPED_ARRAY_CONSTRUCTOR { exp: call_exp, .. } } => {
-            isLiteralXML(call_exp.clone())
+            isLiteralXML(call_exp.clone())?
         },
         _ => {
             false
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    literal
+    Ok(literal)
 }
 
-pub fn isLiteralReplace(mut exp: Arc<NFExpression>) -> bool {
+pub fn isLiteralReplace(mut exp: Arc<NFExpression>) -> Result<bool> {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ STRING { .. } => true,
         Deref @ BOX { exp: Deref @ STRING { .. } } => true,
-        Deref @ RECORD { .. } => isLiteral(exp.clone()),
-        Deref @ ARRAY { .. } => isLiteral(exp.clone()),
+        Deref @ RECORD { .. } => isLiteral(exp.clone())?,
+        Deref @ ARRAY { .. } => isLiteral(exp.clone())?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    b
+    Ok(b)
 }
 
 pub fn isKnownSizeFill(mut exp: Arc<NFExpression>) -> Result<bool> {
@@ -5312,25 +5312,25 @@ pub fn isRecord(mut exp: Arc<NFExpression>) -> bool {
     isRecord
 }
 
-pub fn isRecordOrRecordArray(mut exp: Arc<NFExpression>) -> bool {
+pub fn isRecordOrRecordArray(mut exp: Arc<NFExpression>) -> Result<bool> {
     let mut isRecord: bool = false;
     isRecord = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ RECORD { .. } => true,
-        Deref @ ARRAY { .. } => Array::all(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new(fnptr!(isRecordOrRecordArray, Arc<NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>)),
+        Deref @ ARRAY { .. } => Array::all(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new(isRecordOrRecordArray) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>))?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    isRecord
+    Ok(isRecord)
 }
 
 pub fn fillType(mut ty: Arc<Type::NFType>, mut fillExp: Arc<NFExpression>) -> Result<Arc<NFExpression>> {
     let mut exp: Arc<NFExpression> = fillExp.clone();
     let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = Type::arrayDims(ty.clone());
     let mut arr_ty: Arc<Type::NFType> = Type::arrayElementType(ty.clone());
-    let mut is_literal: bool = isLiteral(exp.clone());
+    let mut is_literal: bool = isLiteral(exp.clone())?;
     for mut dim in &*dims.clone().reverse() {
         let mut dim = dim.clone();
-        (exp, arr_ty) = fillArray_impl(Dimension::size(dim.clone(), false)?, exp.clone(), arr_ty.clone(), is_literal.clone());
+        (exp, arr_ty) = fillArray_impl(Dimension::size(dim.clone(), false)?, exp.clone(), arr_ty.clone(), is_literal.clone())?;
     }
     Ok(exp)
 }
@@ -5338,46 +5338,46 @@ pub fn fillType(mut ty: Arc<Type::NFType>, mut fillExp: Arc<NFExpression>) -> Re
 pub fn fillArgs(mut fillExp: Arc<NFExpression>, mut dims: Arc<metamodelica::List<Arc<NFExpression>>>) -> Result<Arc<NFExpression>> {
     let mut result: Arc<NFExpression> = fillExp.clone();
     let mut arr_ty: Arc<Type::NFType> = typeOf(result.clone());
-    let mut is_literal: bool = isLiteral(fillExp.clone());
+    let mut is_literal: bool = isLiteral(fillExp.clone())?;
     let mut d_resizable: Arc<NFExpression> = Arc::new(NFExpression::END);
     for mut d in &*dims.clone().reverse() {
         let mut d = d.clone();
         d_resizable = map(d.clone(), (std::sync::Arc::new(move |__pe_a0| replaceResizableParameter(__pe_a0)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>))?;
-        (result, arr_ty) = fillArray_impl(toInteger(d_resizable.clone())?, result.clone(), arr_ty.clone(), is_literal.clone());
+        (result, arr_ty) = fillArray_impl(toInteger(d_resizable.clone())?, result.clone(), arr_ty.clone(), is_literal.clone())?;
     }
     Ok(result)
 }
 
-pub fn fillArray(mut n: i32, mut fillExp: Arc<NFExpression>) -> Arc<NFExpression> {
+pub fn fillArray(mut n: i32, mut fillExp: Arc<NFExpression>) -> Result<Arc<NFExpression>> {
     let mut result: Arc<NFExpression> = Arc::new(NFExpression::END);
-    (result, _) = fillArray_impl(n.clone(), fillExp.clone(), typeOf(fillExp.clone()), isLiteral(fillExp.clone()));
-    result
+    (result, _) = fillArray_impl(n.clone(), fillExp.clone(), typeOf(fillExp.clone()), isLiteral(fillExp.clone())?)?;
+    Ok(result)
 }
 
-pub fn fillArray_impl(mut n: i32, mut fillExp: Arc<NFExpression>, mut ty: Arc<Type::NFType>, mut isLiteral: bool) -> (Arc<NFExpression>, Arc<Type::NFType>) {
+pub fn fillArray_impl(mut n: i32, mut fillExp: Arc<NFExpression>, mut ty: Arc<Type::NFType>, mut isLiteral: bool) -> Result<(Arc<NFExpression>, Arc<Type::NFType>)> {
     let mut result: Arc<NFExpression> = Arc::new(NFExpression::END);
     let mut resultType: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut arr: metamodelica::Array<Arc<NFExpression>> = Default::default();
-    arr = Array::generate(n.clone(), (std::sync::Arc::new({ let __pe_b0 = fillExp.clone(); move || Ok(clone(__pe_b0.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn() -> Result<Arc<NFExpression>> + 'static>));
+    arr = Array::generate(n.clone(), (std::sync::Arc::new({ let __pe_b0 = fillExp.clone(); move || Ok(clone(__pe_b0.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn() -> Result<Arc<NFExpression>> + 'static>))?;
     resultType = Type::liftArrayLeft(ty.clone(), Dimension::fromInteger(n.clone(), Prefixes::Variability::CONSTANT.clone()));
     result = makeArray(resultType.clone(), arr.clone(), isLiteral.clone());
-    (result, resultType)
+    Ok((result, resultType))
 }
 
 pub fn liftArray(mut dim: Arc<Dimension::NFDimension>, mut exp: Arc<NFExpression>) -> Result<(Arc<NFExpression>, Arc<Type::NFType>)> {
     let mut exp: Arc<NFExpression> = exp;
     let mut arrayType: Arc<Type::NFType> = typeOf(exp.clone());
-    (exp, arrayType) = fillArray_impl(Dimension::size(dim.clone(), false)?, exp.clone(), arrayType.clone(), isLiteral(exp.clone()));
+    (exp, arrayType) = fillArray_impl(Dimension::size(dim.clone(), false)?, exp.clone(), arrayType.clone(), isLiteral(exp.clone())?)?;
     Ok((exp, arrayType))
 }
 
 pub fn liftArrayList(mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>, mut exp: Arc<NFExpression>) -> Result<(Arc<NFExpression>, Arc<Type::NFType>)> {
     let mut exp: Arc<NFExpression> = exp;
     let mut arrayType: Arc<Type::NFType> = typeOf(exp.clone());
-    let mut is_literal: bool = isLiteral(exp.clone());
+    let mut is_literal: bool = isLiteral(exp.clone())?;
     for mut dim in &*dims.clone().reverse() {
         let mut dim = dim.clone();
-        (exp, arrayType) = fillArray_impl(Dimension::size(dim.clone(), false)?, exp.clone(), arrayType.clone(), is_literal.clone());
+        (exp, arrayType) = fillArray_impl(Dimension::size(dim.clone(), false)?, exp.clone(), arrayType.clone(), is_literal.clone())?;
     }
     Ok((exp, arrayType))
 }
@@ -5458,11 +5458,11 @@ pub fn makeMinusOne(mut ty: Arc<Type::NFType>) -> Result<Arc<NFExpression>> {
     Ok(oneExp)
 }
 
-pub fn makeNaN(mut ty: Arc<Type::NFType>) -> Arc<NFExpression> {
+pub fn makeNaN(mut ty: Arc<Type::NFType>) -> Result<Arc<NFExpression>> {
     let mut nan: Arc<NFExpression> = Arc::new(NFExpression::END);
-    let mut zero: Arc<NFExpression> = makeZero(ty.clone()).unwrap();
+    let mut zero: Arc<NFExpression> = makeZero(ty.clone())?;
     nan = Arc::new(NFExpression::BINARY { exp1: zero.clone(), operator: Operator::makeDiv(ty.clone()), exp2: zero.clone() });
-    nan
+    Ok(nan)
 }
 
 pub fn makeMaxValue(mut ty: Arc<Type::NFType>) -> Result<Arc<NFExpression>> {
@@ -5497,13 +5497,13 @@ pub fn makeDefaultValue(mut ty: Arc<Type::NFType>, mut min: Option<Arc<NFExpress
     let mut exp: Arc<NFExpression> = Arc::new(NFExpression::END);
     exp = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ Type::INTEGER => {
-            if isSome(min.clone()) && isNonNegative(Util::getOption(min.clone())?) {
+            if isSome(min.clone()) && isNonNegative(Util::getOption(min.clone())?)? {
                 let __pa0 = ::match_deref::match_deref! { match &(min.clone()) {
                     Some(__pa0) => __pa0.clone(),
                     _ => bail!("pattern mismatch"),
                 } };
                 exp = __pa0.clone();
-            } else if isSome(max.clone()) && isNonPositive(Util::getOption(max.clone())?) {
+            } else if isSome(max.clone()) && isNonPositive(Util::getOption(max.clone())?)? {
                 let __pa1 = ::match_deref::match_deref! { match &(max.clone()) {
                     Some(__pa1) => __pa1.clone(),
                     _ => bail!("pattern mismatch"),
@@ -5515,13 +5515,13 @@ pub fn makeDefaultValue(mut ty: Arc<Type::NFType>, mut min: Option<Arc<NFExpress
             exp.clone()
         },
         Deref @ Type::REAL => {
-            if isSome(min.clone()) && isNonNegative(Util::getOption(min.clone())?) {
+            if isSome(min.clone()) && isNonNegative(Util::getOption(min.clone())?)? {
                 let __pa0 = ::match_deref::match_deref! { match &(min.clone()) {
                     Some(__pa0) => __pa0.clone(),
                     _ => bail!("pattern mismatch"),
                 } };
                 exp = __pa0.clone();
-            } else if isSome(max.clone()) && isNonPositive(Util::getOption(max.clone())?) {
+            } else if isSome(max.clone()) && isNonPositive(Util::getOption(max.clone())?)? {
                 let __pa1 = ::match_deref::match_deref! { match &(max.clone()) {
                     Some(__pa1) => __pa1.clone(),
                     _ => bail!("pattern mismatch"),
@@ -5660,7 +5660,7 @@ pub fn sliceRange(mut range: Arc<NFExpression>, mut slice: (i32, i32, i32)) -> R
             let mut start: i32 = 0;
             let mut step: i32 = 0;
             let mut stop: i32 = 0;
-            step = Util::applyOptionOrDefault(var_field!((*range).step, NFExpression::RANGE).clone(), (std::sync::Arc::new(integerValue) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<i32> + 'static>), 1);
+            step = Util::applyOptionOrDefault(var_field!((*range).step, NFExpression::RANGE).clone(), (std::sync::Arc::new(integerValue) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<i32> + 'static>), 1)?;
             start = integerValue(var_field!((*range).start, NFExpression::RANGE).clone())?;
             stop = start.clone() + slice_stop.clone() * step.clone();
             start = start.clone() + slice_start.clone() * step.clone();
@@ -5767,9 +5767,9 @@ pub fn transposeArray(mut arrayExp: Arc<NFExpression>) -> Result<Arc<NFExpressio
             let mut arr = (*arr).clone();
             if !(arr.clone().borrow().is_empty()) {
                 row_ty = Arc::new(Type::NFType::ARRAY { elementType: ty.clone(), dimensions: metamodelica::cons(dim1.clone(), rest_dims.clone()) });
-                matrix_arr = Array::map(arr.clone(), (std::sync::Arc::new(arrayElements) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<metamodelica::Array<Arc<NFExpression>>> + 'static>));
+                matrix_arr = Array::map(arr.clone(), (std::sync::Arc::new(arrayElements) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<metamodelica::Array<Arc<NFExpression>>> + 'static>))?;
                 matrix_arr = Array::transpose(matrix_arr.clone());
-                arr = Array::map(matrix_arr.clone(), (std::sync::Arc::new({ let __pe_b0 = row_ty.clone(); let __pe_b2 = literal.clone(); move |__pe_a1| Ok(makeArray(__pe_b0.clone(), __pe_a1, __pe_b2.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<Arc<NFExpression>>) -> Result<Arc<NFExpression>> + 'static>));
+                arr = Array::map(matrix_arr.clone(), (std::sync::Arc::new({ let __pe_b0 = row_ty.clone(); let __pe_b2 = literal.clone(); move |__pe_a1| Ok(makeArray(__pe_b0.clone(), __pe_a1, __pe_b2.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<Arc<NFExpression>>) -> Result<Arc<NFExpression>> + 'static>))?;
             }
             makeArray(Arc::new(Type::NFType::ARRAY { elementType: ty.clone(), dimensions: metamodelica::cons(dim2.clone(), metamodelica::cons(dim1.clone(), rest_dims.clone())) }), arr.clone(), literal.clone())
         },
@@ -5860,11 +5860,11 @@ pub fn promote2(mut exp: Arc<NFExpression>, mut isArray: bool, mut dims: i32, mu
             exp.clone()
         },
         (Deref @ ARRAY { .. }, Deref @ metamodelica::List::Cons { head: ty, tail: rest_ty }) => {
-            makeArray(ty.clone(), Array::map(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = false; let __pe_b2 = dims.clone(); let __pe_b3 = rest_ty.clone(); move |__pe_a0| promote2(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>)), false)
+            makeArray(ty.clone(), Array::map(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = false; let __pe_b2 = dims.clone(); let __pe_b3 = rest_ty.clone(); move |__pe_a0| promote2(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>))?, false)
         },
         (_, _) if (isArray.clone()) => {
             let mut expanded: bool = false;
-            if Flags::getConfigBool(Flags::NEW_BACKEND.clone())? && !(isLiteral(exp.clone())) {
+            if Flags::getConfigBool(Flags::NEW_BACKEND.clone())? && !(isLiteral(exp.clone())?) {
                 expanded = false;
             } else {
                 (outExp, expanded) = ExpandExp::expand(exp.clone(), false, false)?;
@@ -5899,10 +5899,10 @@ pub fn variability(mut exp: Arc<NFExpression>) -> Result<Variability> {
         Deref @ BOOLEAN { .. } => Variability::CONSTANT.clone(),
         Deref @ ENUM_LITERAL { .. } => Variability::CONSTANT.clone(),
         Deref @ CLKCONST { .. } => Variability::DISCRETE.clone(),
-        Deref @ CREF { .. } => ComponentRef::variability(var_field!((*exp).cref, NFExpression::CREF).clone()),
+        Deref @ CREF { .. } => ComponentRef::variability(var_field!((*exp).cref, NFExpression::CREF).clone())?,
         Deref @ TYPENAME { .. } => Variability::CONSTANT.clone(),
         Deref @ ARRAY { .. } => variabilityArray(var_field!((*exp).elements, NFExpression::ARRAY).clone(), Prefixes::Variability::CONSTANT.clone())?,
-        Deref @ MATRIX { .. } => List::fold(var_field!((*exp).elements, NFExpression::MATRIX).clone(), (std::sync::Arc::new(variabilityList) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<NFExpression>>>, Variability) -> Result<Variability> + 'static>), Variability::CONSTANT.clone()),
+        Deref @ MATRIX { .. } => List::fold(var_field!((*exp).elements, NFExpression::MATRIX).clone(), (std::sync::Arc::new(variabilityList) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<NFExpression>>>, Variability) -> Result<Variability> + 'static>), Variability::CONSTANT.clone())?,
         Deref @ RANGE { .. } => {
             var = variability(var_field!((*exp).start, NFExpression::RANGE).clone())?;
             var = Prefixes::variabilityMax(var.clone(), variability(var_field!((*exp).stop, NFExpression::RANGE).clone())?);
@@ -5978,10 +5978,10 @@ pub fn purity(mut exp: Arc<NFExpression>) -> Result<Purity> {
         Deref @ BOOLEAN { .. } => Purity::PURE.clone(),
         Deref @ ENUM_LITERAL { .. } => Purity::PURE.clone(),
         Deref @ CLKCONST { .. } => Purity::PURE.clone(),
-        Deref @ CREF { .. } => ComponentRef::purity(var_field!((*exp).cref, NFExpression::CREF).clone()),
+        Deref @ CREF { .. } => ComponentRef::purity(var_field!((*exp).cref, NFExpression::CREF).clone())?,
         Deref @ TYPENAME { .. } => Purity::PURE.clone(),
         Deref @ ARRAY { .. } => purityArray(var_field!((*exp).elements, NFExpression::ARRAY).clone(), Prefixes::Purity::PURE.clone())?,
-        Deref @ MATRIX { .. } => List::fold(var_field!((*exp).elements, NFExpression::MATRIX).clone(), (std::sync::Arc::new(purityList) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<NFExpression>>>, Purity) -> Result<Purity> + 'static>), Purity::PURE.clone()),
+        Deref @ MATRIX { .. } => List::fold(var_field!((*exp).elements, NFExpression::MATRIX).clone(), (std::sync::Arc::new(purityList) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<NFExpression>>>, Purity) -> Result<Purity> + 'static>), Purity::PURE.clone())?,
         Deref @ RANGE { .. } => {
             pur = purity(var_field!((*exp).start, NFExpression::RANGE).clone())?;
             pur = Prefixes::purityMin(pur.clone(), purity(var_field!((*exp).stop, NFExpression::RANGE).clone())?);
@@ -6142,7 +6142,7 @@ pub fn tupleElement(mut exp: Arc<NFExpression>, mut ty: Arc<Type::NFType>, mut i
         Deref @ ARRAY { .. } => {
             let mut ety: Arc<Type::NFType> = Arc::new(Type::ANY);
             ety = Type::unliftArray(ty.clone())?;
-            assign_variant_field!(exp => NFExpression::ARRAY; elements = Array::map(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = ety.clone(); let __pe_b2 = index.clone(); move |__pe_a0| tupleElement(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>)));
+            assign_variant_field!(exp => NFExpression::ARRAY; elements = Array::map(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = ety.clone(); let __pe_b2 = index.clone(); move |__pe_a0| tupleElement(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>))?);
             exp.clone()
         },
         Deref @ SUBSCRIPTED_EXP { split: true, .. } => {
@@ -6202,7 +6202,7 @@ pub fn recordElement(mut elementName: ArcStr, mut recordExp: Arc<NFExpression>) 
             let mut index: i32 = 0;
             let mut arr: metamodelica::Array<Arc<NFExpression>> = Default::default();
             index = Class::lookupComponentIndex((elementName.clone()).clone(), InstNode::getClass(node.clone())?)?;
-            arr = Array::map(var_field!((*recordExp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b0 = index.clone(); move |__pe_a1| nthRecordElement(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>));
+            arr = Array::map(var_field!((*recordExp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b0 = index.clone(); move |__pe_a1| nthRecordElement(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>))?;
             ty = Type::liftArrayLeft(typeOf(arr.clone().borrow()[(1-1) as usize].clone()), Dimension::fromInteger((arr.clone().borrow().len() as i32), Prefixes::Variability::CONSTANT.clone()));
             makeArray(ty.clone(), arr.clone(), var_field!((*recordExp).literal, NFExpression::ARRAY).clone())
         },
@@ -6258,7 +6258,7 @@ pub fn nthRecordElement(mut index: i32, mut recordExp: Arc<NFExpression>) -> Res
         Deref @ ARRAY { .. } => {
             let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
             let mut arr: metamodelica::Array<Arc<NFExpression>> = Default::default();
-            arr = Array::map(var_field!((*recordExp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b0 = index.clone(); move |__pe_a1| nthRecordElement(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>));
+            arr = Array::map(var_field!((*recordExp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b0 = index.clone(); move |__pe_a1| nthRecordElement(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>))?;
             ty = Type::liftArrayLeft(typeOf(arr.clone().borrow()[(1-1) as usize].clone()), listHead(Type::arrayDims(var_field!((*recordExp).ty, NFExpression::ARRAY).clone()))?);
             makeArray(ty.clone(), arr.clone(), false)
         },
@@ -6487,7 +6487,7 @@ pub fn filterSplitIndices(mut exp: Arc<NFExpression>, mut node: Arc<InstNode::In
         }
         __acc.reverse()
     });
-            if (subs.clone().is_empty()) {var_field!((*exp).exp, NFExpression::SUBSCRIPTED_EXP).clone()} else if (Type::isUnknown(var_field!((*exp).ty, NFExpression::SUBSCRIPTED_EXP).clone())) {Arc::new(NFExpression::SUBSCRIPTED_EXP { exp: var_field!((*exp).exp, NFExpression::SUBSCRIPTED_EXP).clone(), subscripts: subs.clone(), ty: var_field!((*exp).ty, NFExpression::SUBSCRIPTED_EXP).clone(), split: List::any(subs.clone(), (std::sync::Arc::new(fnptr!(Subscript::isSplit, Arc<Subscript::NFSubscript>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>) -> Result<bool> + 'static>)) })} else {applySubscripts(subs.clone(), var_field!((*exp).exp, NFExpression::SUBSCRIPTED_EXP).clone(), false)?}
+            if (subs.clone().is_empty()) {var_field!((*exp).exp, NFExpression::SUBSCRIPTED_EXP).clone()} else if (Type::isUnknown(var_field!((*exp).ty, NFExpression::SUBSCRIPTED_EXP).clone())) {Arc::new(NFExpression::SUBSCRIPTED_EXP { exp: var_field!((*exp).exp, NFExpression::SUBSCRIPTED_EXP).clone(), subscripts: subs.clone(), ty: var_field!((*exp).ty, NFExpression::SUBSCRIPTED_EXP).clone(), split: List::any(subs.clone(), (std::sync::Arc::new(fnptr!(Subscript::isSplit, Arc<Subscript::NFSubscript>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>) -> Result<bool> + 'static>))? })} else {applySubscripts(subs.clone(), var_field!((*exp).exp, NFExpression::SUBSCRIPTED_EXP).clone(), false)?}
         },
         _ => exp.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -6591,7 +6591,7 @@ pub fn replaceSplitSubscripts(mut exp: Arc<NFExpression>, mut subRepls: Option<A
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ SUBSCRIPTED_EXP { split: true, .. } => {
             let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
-            (subs, subRepls) = List::mapFold(var_field!((*exp).subscripts, NFExpression::SUBSCRIPTED_EXP).clone(), (std::sync::Arc::new(replaceSplitSubscripts2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>, Option<Arc<UnorderedMap::UnorderedMap<Arc<Subscript::NFSubscript>, Arc<NFExpression>>>>) -> Result<(Arc<Subscript::NFSubscript>, Option<Arc<UnorderedMap::UnorderedMap<Arc<Subscript::NFSubscript>, Arc<NFExpression>>>>)> + 'static>), subRepls.clone());
+            (subs, subRepls) = List::mapFold(var_field!((*exp).subscripts, NFExpression::SUBSCRIPTED_EXP).clone(), (std::sync::Arc::new(replaceSplitSubscripts2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>, Option<Arc<UnorderedMap::UnorderedMap<Arc<Subscript::NFSubscript>, Arc<NFExpression>>>>) -> Result<(Arc<Subscript::NFSubscript>, Option<Arc<UnorderedMap::UnorderedMap<Arc<Subscript::NFSubscript>, Arc<NFExpression>>>>)> + 'static>), subRepls.clone())?;
             applySubscripts(subs.clone(), var_field!((*exp).exp, NFExpression::SUBSCRIPTED_EXP).clone(), false)?
         },
         _ => {
@@ -6616,7 +6616,7 @@ pub fn replaceSplitSubscripts2(mut subscript: Arc<Subscript::NFSubscript>, mut s
                 } };
                 sub_repls = __pa0.clone();
             } else {
-                sub_repls = UnorderedMap::new((std::sync::Arc::new(fnptr!(Subscript::hash, Arc<Subscript::NFSubscript>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>) -> Result<i32> + 'static>), (std::sync::Arc::new(Subscript::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>, Arc<Subscript::NFSubscript>) -> Result<bool> + 'static>), 1);
+                sub_repls = UnorderedMap::new((std::sync::Arc::new(Subscript::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>) -> Result<i32> + 'static>), (std::sync::Arc::new(Subscript::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>, Arc<Subscript::NFSubscript>) -> Result<bool> + 'static>), 1);
                 subRepls = Some(sub_repls.clone());
             }
             sub_exp = makeMutable(Arc::new(NFExpression::INTEGER { value: 0 }));
@@ -6663,7 +6663,7 @@ pub fn mapSplitExpressions2(mut exp: Arc<NFExpression>, mut dimSizes: Arc<metamo
             unsafe { metamodelica::Dangerous::arrayInitSlot(expl.clone(), i.clone(), mapSplitExpressions2(exp.clone(), rest_dims.clone(), rest_subs.clone(), func.clone())?) };
         }
         ty = typeOf(if (expl.clone().borrow().is_empty()) {exp.clone()} else {expl.clone().borrow()[(1-1) as usize].clone()});
-        outExp = makeExpArray(expl.clone(), ty.clone(), Array::all(expl.clone(), (std::sync::Arc::new(fnptr!(isLiteral, Arc<NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>)));
+        outExp = makeExpArray(expl.clone(), ty.clone(), Array::all(expl.clone(), (std::sync::Arc::new(isLiteral) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>))?);
     }
     Ok(outExp)
 }
@@ -6699,9 +6699,9 @@ pub fn mapCrefScalars2(mut exp: Arc<NFExpression>, mut mapFn: Arc<dyn ::std::ops
     let mut arr: metamodelica::Array<Arc<NFExpression>> = Default::default();
     outExp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ ARRAY { .. } if (!(var_field!((*exp).elements, NFExpression::ARRAY).clone().borrow().is_empty())) => {
-            arr = Array::map(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<Arc<NFExpression>> + 'static> = mapFn.clone(); move |__pe_a0| mapCrefScalars2(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>));
+            arr = Array::map(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<Arc<NFExpression>> + 'static> = mapFn.clone(); move |__pe_a0| mapCrefScalars2(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>))?;
             ty = typeOf(arr.clone().borrow()[(1-1) as usize].clone());
-            literal = Array::all(arr.clone(), (std::sync::Arc::new(fnptr!(isLiteral, Arc<NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>));
+            literal = Array::all(arr.clone(), (std::sync::Arc::new(isLiteral) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>))?;
             makeExpArray(arr.clone(), ty.clone(), literal.clone())
         },
         Deref @ CREF { .. } => mapFn(var_field!((*exp).cref, NFExpression::CREF).clone())?,
@@ -6727,7 +6727,7 @@ pub fn isClockOrSampleFunction(mut exp: Arc<NFExpression>) -> Result<bool> {
     b = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ CALL { call: call @ Deref @ Call::TYPED_CALL { arguments: Deref @ metamodelica::List::Cons { head: arg, tail: _ }, .. } } => {
             (::match_deref::match_deref! { match &(AbsynUtil::pathString(Function::Function::nameConsiderBuiltin(var_field!((**call).r#fn, Call::NFCall::TYPED_CALL).clone())?, (literal!(".")).clone(), true, false)?) {
-        Deref @ "sample" => !(isLiteral(arg.clone())),
+        Deref @ "sample" => !(isLiteral(arg.clone())?),
         Deref @ "subSample" => true,
         Deref @ "superSample" => true,
         Deref @ "shiftSample" => true,
@@ -6753,7 +6753,7 @@ pub fn isConnector(mut exp: Arc<NFExpression>) -> Result<bool> {
     res = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ CREF { .. } => {
             node = ComponentRef::node(var_field!((*exp).cref, NFExpression::CREF).clone())?;
-            InstNode::isComponent(node.clone()) && InstNode::isConnector(node.clone())?
+            InstNode::isComponent(node.clone())? && InstNode::isConnector(node.clone())?
         },
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -6764,7 +6764,7 @@ pub fn isConnector(mut exp: Arc<NFExpression>) -> Result<bool> {
 pub fn isComponentExpression(mut exp: Arc<NFExpression>) -> Result<bool> {
     let mut res: bool = false;
     res = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ CREF { .. } => ComponentRef::isCref(var_field!((*exp).cref, NFExpression::CREF).clone()) && InstNode::isComponent(ComponentRef::node(var_field!((*exp).cref, NFExpression::CREF).clone())?),
+        Deref @ CREF { .. } => ComponentRef::isCref(var_field!((*exp).cref, NFExpression::CREF).clone()) && InstNode::isComponent(ComponentRef::node(var_field!((*exp).cref, NFExpression::CREF).clone())?)?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -6994,19 +6994,19 @@ pub fn tupleElements(mut exp: Arc<NFExpression>) -> Arc<metamodelica::List<Arc<N
     expl
 }
 
-pub fn wrapCall(mut exp: Arc<NFExpression>, mut fun: Arc<dyn ::std::ops::Fn(Arc<Call::NFCall>) -> Result<Arc<Call::NFCall>> + 'static>) -> Arc<NFExpression> {
+pub fn wrapCall(mut exp: Arc<NFExpression>, mut fun: Arc<dyn ::std::ops::Fn(Arc<Call::NFCall>) -> Result<Arc<Call::NFCall>> + 'static>) -> Result<Arc<NFExpression>> {
     pub type callFun = std::sync::Arc<dyn ::std::ops::Fn(Arc<Call::NFCall>) -> Result<Arc<Call::NFCall>> + 'static>;
 
     let mut exp: Arc<NFExpression> = exp;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ CALL { .. } => {
-            assign_variant_field!(exp => NFExpression::CALL; call = fun(var_field!((*exp).call, NFExpression::CALL).clone()).unwrap());
+            assign_variant_field!(exp => NFExpression::CALL; call = fun(var_field!((*exp).call, NFExpression::CALL).clone())?);
             exp.clone()
         },
         _ => exp.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    exp
+    Ok(exp)
 }
 
 pub fn repairOperator(mut exp: Arc<NFExpression>) -> Result<Arc<NFExpression>> {
@@ -7050,7 +7050,7 @@ pub fn replaceLiteral(mut exp: Arc<NFExpression>, mut map: Arc<UnorderedMap::Uno
         let mut exp: Arc<NFExpression> = exp;
         let mut idx: i32 = 0;
         let mut idx_opt: Option<i32> = None;
-        idx_opt = UnorderedMap::get(exp.clone(), map.clone());
+        idx_opt = UnorderedMap::get(exp.clone(), map.clone())?;
         if isSome(idx_opt.clone()) {
             idx = Util::getOption(idx_opt.clone())?;
         } else {
@@ -7065,8 +7065,8 @@ pub fn replaceLiteral(mut exp: Arc<NFExpression>, mut map: Arc<UnorderedMap::Uno
     let mut exp: Arc<NFExpression> = exp;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ SHARED_LITERAL { .. } => exp.clone(),
-        Deref @ ARRAY { .. } if (isLiteralReplace(exp.clone())) => replace(replaceLiteralArrayElements(exp.clone(), map.clone(), idx_ptr.clone())?, map.clone(), idx_ptr.clone())?,
-        Deref @ RECORD { .. } if (isLiteralReplace(exp.clone())) => {
+        Deref @ ARRAY { .. } if (isLiteralReplace(exp.clone())?) => replace(replaceLiteralArrayElements(exp.clone(), map.clone(), idx_ptr.clone())?, map.clone(), idx_ptr.clone())?,
+        Deref @ RECORD { .. } if (isLiteralReplace(exp.clone())?) => {
             assign_variant_field!(exp => NFExpression::RECORD; elements = ({
         let mut __acc: Arc<metamodelica::List<Arc<NFExpression>>> = metamodelica::nil();
         for mut elem in (var_field!((*exp).elements, NFExpression::RECORD).clone()).into_iter().cloned() {
@@ -7077,7 +7077,7 @@ pub fn replaceLiteral(mut exp: Arc<NFExpression>, mut map: Arc<UnorderedMap::Uno
     }));
             replace(exp.clone(), map.clone(), idx_ptr.clone())?
         },
-        _ if (isLiteralReplace(exp.clone())) => replace(exp.clone(), map.clone(), idx_ptr.clone())?,
+        _ if (isLiteralReplace(exp.clone())?) => replace(exp.clone(), map.clone(), idx_ptr.clone())?,
         _ => mapShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = map.clone(); let __pe_b2 = idx_ptr.clone(); move |__pe_a0| replaceLiteral(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>))?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -7088,7 +7088,7 @@ pub fn replaceLiteralArrayElements(mut exp: Arc<NFExpression>, mut map: Arc<Unor
     let mut exp: Arc<NFExpression> = exp;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ ARRAY { .. } => {
-            assign_variant_field!(exp => NFExpression::ARRAY; elements = Array::map(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = map.clone(); let __pe_b2 = idx_ptr.clone(); move |__pe_a0| replaceLiteralArrayElements(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>)));
+            assign_variant_field!(exp => NFExpression::ARRAY; elements = Array::map(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = map.clone(); let __pe_b2 = idx_ptr.clone(); move |__pe_a0| replaceLiteralArrayElements(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>))?);
             exp.clone()
         },
         _ => replaceLiteral(exp.clone(), map.clone(), idx_ptr.clone())?,
@@ -7102,7 +7102,7 @@ pub fn replaceCrefWithBinding(mut cref: Arc<ComponentRef::NFComponentRef>, mut e
 
     let mut exp: Arc<NFExpression> = exp;
     let mut e: Arc<NFExpression> = Arc::new(NFExpression::END);
-    exp = (::match_deref::match_deref! { match &(InstNode::getBindingExpOpt(ComponentRef::node(cref.clone())?)) {
+    exp = (::match_deref::match_deref! { match &(InstNode::getBindingExpOpt(ComponentRef::node(cref.clone())?)?) {
         Some(e @ Deref @ INTEGER { .. }) => e.clone(),
         Some(e @ Deref @ CREF { .. }) => replaceCrefWithBinding(var_field!((**e).cref, NFExpression::CREF).clone(), e.clone(), func.clone())?,
         Some(Deref @ SUBSCRIPTED_EXP { exp: e @ Deref @ INTEGER { .. }, .. }) => e.clone(),

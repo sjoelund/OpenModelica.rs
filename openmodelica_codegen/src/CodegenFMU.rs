@@ -102,7 +102,7 @@ pub fn translateModel(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode,
             l_guid = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_1.clone()).clone())?;
             ret_3 = (Config::simulationCodeTarget()?).clone();
             l_target = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_3.clone()).clone())?;
-            ret_5 = (Util::hashFileNamePrefix((i_fileNamePrefix.clone()).clone())).clone();
+            ret_5 = (Util::hashFileNamePrefix((i_fileNamePrefix.clone()).clone())?).clone();
             l_fileNamePrefixHash = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_5.clone()).clone())?;
             l_fileNamePrefixTmpDir = Tpl::writeText(Tpl::emptyTxt.clone(), l_fileNamePrefixHash.clone())?;
             l_fileNamePrefixTmpDir = Tpl::writeTok(l_fileNamePrefixTmpDir.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".fmutmp/sources/")).clone() }))?;
@@ -384,7 +384,7 @@ pub fn fmuModelDescriptionFile(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode:
             let mut ret_0: bool = false;
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")).clone() }))?;
-            ret_0 = FMI::isFMIVersion20((a_FMUVersion.clone()).clone());
+            ret_0 = FMI::isFMIVersion20((a_FMUVersion.clone()).clone())?;
             txt = fun_58(txt.clone(), ret_0.clone(), a_sourceFiles.clone(), (a_FMUType.clone()).clone(), (a_guid.clone()).clone(), i_simCode.clone())?;
             txt.clone()
         },
@@ -538,15 +538,15 @@ fn fun_66(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_gu
             txt_0 = CodegenUtilSimulation::modelNamePrefix(Tpl::emptyTxt.clone(), i_simCode.clone())?;
             txt = CodegenUtil::symbolName(txt.clone(), (Tpl::textString(txt_0.clone())?).clone(), (literal!("setupDataStruc")).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("(DATA *data, threadData_t *threadData);\n")).clone() }))?;
-            ret_1 = FMI::isFMIVersion20((a_FMUVersion.clone()).clone());
+            ret_1 = FMI::isFMIVersion20((a_FMUVersion.clone()).clone())?;
             txt = fun_63(txt.clone(), ret_1.clone(), i_simCode.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE))?;
-            ret_2 = FMI::isFMIVersion20((a_FMUVersion.clone()).clone());
+            ret_2 = FMI::isFMIVersion20((a_FMUVersion.clone()).clone())?;
             txt = fun_64(txt.clone(), ret_2.clone(), i_simCode.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("void setStartValues(ModelInstance *comp);\n")).clone(), (literal!("void setDefaultStartValues(ModelInstance *comp);\n")).clone()], lastHasNewLine: true }))?;
-            ret_3 = FMI::isFMIVersion20((a_FMUVersion.clone()).clone());
+            ret_3 = FMI::isFMIVersion20((a_FMUVersion.clone()).clone())?;
             txt = fun_65(txt.clone(), ret_3.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("#ifdef __cplusplus\n")).clone(), (literal!("}\n")).clone(), (literal!("#endif\n")).clone(), (literal!("\n")).clone(), (literal!("#endif /* ")).clone()], lastHasNewLine: false }))?;
@@ -643,7 +643,7 @@ fn fun_69(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_FM
             txt = setStartValues(txt.clone(), i_modelInfo.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("// implementation of the Model Exchange functions\n")).clone()], lastHasNewLine: true }))?;
-            ret_0 = FMI::isFMIVersion20((a_FMUVersion.clone()).clone());
+            ret_0 = FMI::isFMIVersion20((a_FMUVersion.clone()).clone())?;
             txt = fun_68(txt.clone(), ret_0.clone(), (a_FMUType.clone()).clone(), i_modelInfo.clone(), i_simCode.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE))?;
@@ -4933,7 +4933,7 @@ pub fn getPlatformString2(mut txt: Tpl::Text, mut a_modelNamePrefix: ArcStr, mut
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_1: ArcStr = arcstr::literal!("");
     let mut l_fmudirname: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    ret_1 = (Util::hashFileNamePrefix((a_fileNamePrefix.clone()).clone())).clone();
+    ret_1 = (Util::hashFileNamePrefix((a_fileNamePrefix.clone()).clone())?).clone();
     l_fmudirname = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_1.clone()).clone())?;
     l_fmudirname = Tpl::writeTok(l_fmudirname.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".fmutmp")).clone() }))?;
     out_txt = fun_256(txt.clone(), (a_platform.clone()).clone(), (a_libsPos2.clone()).clone(), (a_libsPos1.clone()).clone(), (a_dirExtra.clone()).clone(), (a_modelNamePrefix.clone()).clone(), (a_fmuTargetName.clone()).clone(), (a_fileNamePrefix.clone()).clone())?;
@@ -5281,7 +5281,7 @@ fn fun_273(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_c
             l_libsStr = Tpl::popIter(l_libsStr.clone())?;
             l_libsPos1 = fun_268(Tpl::emptyTxt.clone(), l_dirExtra.clone(), l_libsStr.clone())?;
             l_libsPos2 = fun_269(Tpl::emptyTxt.clone(), l_dirExtra.clone(), l_libsStr.clone())?;
-            ret_5 = (Util::hashFileNamePrefix((i_fileNamePrefix.clone()).clone())).clone();
+            ret_5 = (Util::hashFileNamePrefix((i_fileNamePrefix.clone()).clone())?).clone();
             l_fmudirname = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_5.clone()).clone())?;
             l_fmudirname = Tpl::writeTok(l_fmudirname.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".fmutmp")).clone() }))?;
             txt_7 = CodegenUtilSimulation::modelNamePrefix(Tpl::emptyTxt.clone(), i_simCode.clone())?;
@@ -5292,7 +5292,7 @@ fn fun_273(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_c
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/include/omc/c\" /I\"")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_makefileParams_omhome.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/include/omc/msvc/\" ")).clone() }))?;
-            ret_9 = FMI::isFMIVersion20((a_FMUVersion.clone()).clone());
+            ret_9 = FMI::isFMIVersion20((a_FMUVersion.clone()).clone())?;
             txt = fun_271(txt.clone(), ret_9.clone(), (i_makefileParams_omhome.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" /I. /DNOMINMAX /TP /DNO_INTERACTIVE_DEPENDENCY  ")).clone() }))?;
             ret_10 = Flags::isSet(Flags::FMU_EXPERIMENTAL.clone())?;
@@ -5935,7 +5935,7 @@ pub fn fmudeffile(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut
     out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_FMUVersion.clone()) {
         (mut txt, SimCode::SimCode { fileNamePrefix: mut i_fileNamePrefix, simulationSettingsOpt: _, makefileParams: SimCodeFunction::MakefileParams { ccompiler: _, .. }, modelInfo: SimCode::ModelInfo { name: _, .. }, .. }, mut a_FMUVersion) => {
             let mut ret_0: bool = false;
-            ret_0 = FMI::isFMIVersion20((a_FMUVersion.clone()).clone());
+            ret_0 = FMI::isFMIVersion20((a_FMUVersion.clone()).clone())?;
             txt = fun_289(txt.clone(), ret_0.clone(), (i_fileNamePrefix.clone()).clone())?;
             txt.clone()
         },
@@ -8196,49 +8196,49 @@ pub fn importFMU2ModelExchange(mut in_txt: Tpl::Text, mut in_a_fmi: FMI::FmiImpo
             l_booleanDependentParametersNames = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("boolean")).clone(), (literal!("parameter")).clone(), true, 2, (literal!("2.0")).clone())?;
             l_stringDependentParametersVRs = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("string")).clone(), (literal!("parameter")).clone(), true, 1, (literal!("2.0")).clone())?;
             l_stringDependentParametersNames = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("string")).clone(), (literal!("parameter")).clone(), true, 2, (literal!("2.0")).clone())?;
-            ret_17 = FMI::filterModelVariables(i_fmiModelVariablesList.clone(), (literal!("real")).clone(), (literal!("input")).clone());
+            ret_17 = FMI::filterModelVariables(i_fmiModelVariablesList.clone(), (literal!("real")).clone(), (literal!("input")).clone())?;
             ret_18 = (ret_17.clone().len() as i32);
             l_nRealInputVariables = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_18.clone())).clone())?;
             l_realInputVariablesVRs = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("real")).clone(), (literal!("input")).clone(), false, 1, (literal!("2.0")).clone())?;
             l_realInputVariablesNames = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("real")).clone(), (literal!("input")).clone(), false, 2, (literal!("2.0")).clone())?;
             l_realInputVariablesReturnNames = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("real")).clone(), (literal!("input")).clone(), false, 3, (literal!("2.0")).clone())?;
-            ret_23 = FMI::filterModelVariables(i_fmiModelVariablesList.clone(), (literal!("integer")).clone(), (literal!("input")).clone());
+            ret_23 = FMI::filterModelVariables(i_fmiModelVariablesList.clone(), (literal!("integer")).clone(), (literal!("input")).clone())?;
             ret_24 = (ret_23.clone().len() as i32);
             l_nIntegerInputVariables = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_24.clone())).clone())?;
             l_integerInputVariablesVRs = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("integer")).clone(), (literal!("input")).clone(), false, 1, (literal!("2.0")).clone())?;
             l_integerInputVariablesNames = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("integer")).clone(), (literal!("input")).clone(), false, 2, (literal!("2.0")).clone())?;
             l_integerInputVariablesReturnNames = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("integer")).clone(), (literal!("input")).clone(), false, 3, (literal!("2.0")).clone())?;
-            ret_29 = FMI::filterModelVariables(i_fmiModelVariablesList.clone(), (literal!("boolean")).clone(), (literal!("input")).clone());
+            ret_29 = FMI::filterModelVariables(i_fmiModelVariablesList.clone(), (literal!("boolean")).clone(), (literal!("input")).clone())?;
             ret_30 = (ret_29.clone().len() as i32);
             l_nBooleanInputVariables = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_30.clone())).clone())?;
             l_booleanInputVariablesVRs = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("boolean")).clone(), (literal!("input")).clone(), false, 1, (literal!("2.0")).clone())?;
             l_booleanInputVariablesNames = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("boolean")).clone(), (literal!("input")).clone(), false, 2, (literal!("2.0")).clone())?;
             l_booleanInputVariablesReturnNames = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("boolean")).clone(), (literal!("input")).clone(), false, 3, (literal!("2.0")).clone())?;
-            ret_35 = FMI::filterModelVariables(i_fmiModelVariablesList.clone(), (literal!("string")).clone(), (literal!("input")).clone());
+            ret_35 = FMI::filterModelVariables(i_fmiModelVariablesList.clone(), (literal!("string")).clone(), (literal!("input")).clone())?;
             ret_36 = (ret_35.clone().len() as i32);
             l_nStringInputVariables = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_36.clone())).clone())?;
             l_stringInputVariablesVRs = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("string")).clone(), (literal!("input")).clone(), false, 1, (literal!("2.0")).clone())?;
             l_stringStartVariablesNames = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("string")).clone(), (literal!("input")).clone(), false, 2, (literal!("2.0")).clone())?;
             l_stringInputVariablesReturnNames = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("string")).clone(), (literal!("input")).clone(), false, 3, (literal!("2.0")).clone())?;
-            ret_41 = FMI::filterModelVariables(i_fmiModelVariablesList.clone(), (literal!("real")).clone(), (literal!("input")).clone());
+            ret_41 = FMI::filterModelVariables(i_fmiModelVariablesList.clone(), (literal!("real")).clone(), (literal!("input")).clone())?;
             ret_42 = (ret_41.clone().len() as i32);
             l_nRealEventInputVariables = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_42.clone())).clone())?;
             l_realEventInputVariablesVRs = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("real")).clone(), (literal!("input")).clone(), false, 1, (literal!("2.0")).clone())?;
             l_realEventInputVariablesNames = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("real")).clone(), (literal!("input")).clone(), false, 2, (literal!("2.0")).clone())?;
             l_realEventInputVariablesReturnNames = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("real")).clone(), (literal!("input")).clone(), false, 3, (literal!("2.0")).clone())?;
-            ret_47 = FMI::filterModelVariables(i_fmiModelVariablesList.clone(), (literal!("integer")).clone(), (literal!("input")).clone());
+            ret_47 = FMI::filterModelVariables(i_fmiModelVariablesList.clone(), (literal!("integer")).clone(), (literal!("input")).clone())?;
             ret_48 = (ret_47.clone().len() as i32);
             l_nIntegerEventInputVariables = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_48.clone())).clone())?;
             l_integerEventInputVariablesVRs = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("integer")).clone(), (literal!("input")).clone(), false, 1, (literal!("2.0")).clone())?;
             l_integerEventInputVariablesNames = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("integer")).clone(), (literal!("input")).clone(), false, 2, (literal!("2.0")).clone())?;
             l_integerEventInputVariablesReturnNames = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("integer")).clone(), (literal!("input")).clone(), false, 3, (literal!("2.0")).clone())?;
-            ret_53 = FMI::filterModelVariables(i_fmiModelVariablesList.clone(), (literal!("boolean")).clone(), (literal!("input")).clone());
+            ret_53 = FMI::filterModelVariables(i_fmiModelVariablesList.clone(), (literal!("boolean")).clone(), (literal!("input")).clone())?;
             ret_54 = (ret_53.clone().len() as i32);
             l_nBooleanEventInputVariables = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_54.clone())).clone())?;
             l_booleanEventInputVariablesVRs = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("boolean")).clone(), (literal!("input")).clone(), false, 1, (literal!("2.0")).clone())?;
             l_booleanEventInputVariablesNames = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("boolean")).clone(), (literal!("input")).clone(), false, 2, (literal!("2.0")).clone())?;
             l_booleanEventInputVariablesReturnNames = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("boolean")).clone(), (literal!("input")).clone(), false, 3, (literal!("2.0")).clone())?;
-            ret_59 = FMI::filterModelVariables(i_fmiModelVariablesList.clone(), (literal!("string")).clone(), (literal!("input")).clone());
+            ret_59 = FMI::filterModelVariables(i_fmiModelVariablesList.clone(), (literal!("string")).clone(), (literal!("input")).clone())?;
             ret_60 = (ret_59.clone().len() as i32);
             l_nStringEventInputVariables = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_60.clone())).clone())?;
             l_stringEventInputVariablesVRs = dumpVariables(Tpl::emptyTxt.clone(), i_fmiModelVariablesList.clone(), (literal!("string")).clone(), (literal!("input")).clone(), false, 1, (literal!("2.0")).clone())?;

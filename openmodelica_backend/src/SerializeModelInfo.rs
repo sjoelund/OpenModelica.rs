@@ -101,7 +101,7 @@ fn serializeWork(mut code: SimCode::SimCode, mut withOperations: bool) -> Result
             serializeVars(file.clone(), mi.vars.clone(), withOperations.clone())?;
             File::write(file.clone(), (literal!("\n},\n\"equations\":[")).clone());
             File::write(file.clone(), (literal!("{\"eqIndex\":0,\"tag\":\"dummy\"}")).clone());
-            for mut tpl in &*list![(literal!("initial"), code.initialEquations.clone()), (literal!("initial-lambda0"), code.initialEquations_lambda0.clone()), (literal!("removed-initial"), code.removedInitialEquations.clone()), (literal!("regular"), code.allEquations.clone()), (literal!("synchronous"), SimCodeUtil::getClockedEquations(SimCodeUtil::getSubPartitions(code.clockedPartitions.clone()))), (literal!("start"), code.startValueEquations.clone()), (literal!("nominal"), code.nominalValueEquations.clone()), (literal!("min"), code.minValueEquations.clone()), (literal!("max"), code.maxValueEquations.clone()), (literal!("parameter"), code.parameterEquations.clone()), (literal!("assertions"), code.algorithmAndEquationAsserts.clone()), (literal!("inline"), code.inlineEquations.clone()), (literal!("residuals"), List::flatten(SimCodeUtil::getSimCodeDAEModeDataEqns(code.daeModeData.clone())?)), (literal!("jacobian"), code.jacobianEquations.clone())] {
+            for mut tpl in &*list![(literal!("initial"), code.initialEquations.clone()), (literal!("initial-lambda0"), code.initialEquations_lambda0.clone()), (literal!("removed-initial"), code.removedInitialEquations.clone()), (literal!("regular"), code.allEquations.clone()), (literal!("synchronous"), SimCodeUtil::getClockedEquations(SimCodeUtil::getSubPartitions(code.clockedPartitions.clone())?)), (literal!("start"), code.startValueEquations.clone()), (literal!("nominal"), code.nominalValueEquations.clone()), (literal!("min"), code.minValueEquations.clone()), (literal!("max"), code.maxValueEquations.clone()), (literal!("parameter"), code.parameterEquations.clone()), (literal!("assertions"), code.algorithmAndEquationAsserts.clone()), (literal!("inline"), code.inlineEquations.clone()), (literal!("residuals"), List::flatten(SimCodeUtil::getSimCodeDAEModeDataEqns(code.daeModeData.clone())?)?), (literal!("jacobian"), code.jacobianEquations.clone())] {
                 let mut tpl = tpl.clone();
                 (eqsName, eqsLst) = tpl.clone();
                 for mut eq in &*SimCodeUtil::sortEqSystems(eqsLst.clone())? {
@@ -996,7 +996,7 @@ fn serializeEquation(mut file: File::File, mut eq: Arc<SimCode::SimEqSystem>, mu
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    })), var_field!((*eq).elsebranch, SimCode::SimEqSystem::SES_IFEQUATION).clone());
+    }))?, var_field!((*eq).elsebranch, SimCode::SimEqSystem::SES_IFEQUATION).clone());
             serializeEquation(file.clone(), listHead(eqs.clone())?, (section.clone()).clone(), withOperations.clone(), 0, true, AssignType::NORMAL.clone())?;
             for mut e in &*listRest(eqs.clone())? {
                 let mut e = e.clone();
@@ -1239,7 +1239,7 @@ fn varKindString(mut varKind: BackendDAE::VarKind, mut var: SimCodeVar::SimVar) 
 fn getWhenUses(mut conditions: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mut value: Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
     let mut uses: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     uses = listAppend(conditions.clone(), Expression::extractCrefsFromExpDerPreStart(value.clone(), true)?);
-    uses = UnorderedSet::unique_list(uses.clone(), (std::sync::Arc::new(ComponentReference::hashComponentRef) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>));
+    uses = UnorderedSet::unique_list(uses.clone(), (std::sync::Arc::new(ComponentReference::hashComponentRef) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
     Ok(uses)
 }
 

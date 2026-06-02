@@ -285,19 +285,19 @@ pub fn isFMIVersion10(mut inFMUVersion: ArcStr) -> bool {
     success
 }
 
-pub fn isFMIVersion20(mut inFMUVersion: ArcStr) -> bool {
+pub fn isFMIVersion20(mut inFMUVersion: ArcStr) -> Result<bool> {
     let mut success: bool = false;
     success = (::match_deref::match_deref! { match &(inFMUVersion.clone()) {
         Deref @ "2.0" => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    success
+    Ok(success)
 }
 
-pub fn getFMIVersionString() -> ArcStr {
-    let mut version: ArcStr = Flags::getConfigString(Flags::FMI_VERSION.clone()).unwrap();
-    version
+pub fn getFMIVersionString() -> Result<ArcStr> {
+    let mut version: ArcStr = Flags::getConfigString(Flags::FMI_VERSION.clone())?;
+    Ok(version)
 }
 
 pub fn checkFMIType(mut inFMIType: ArcStr) -> bool {
@@ -368,10 +368,10 @@ pub fn getEnumerationTypeFromTypes(mut inTypeDefinitionsList: Arc<metamodelica::
     Ok(outEnumerationType)
 }
 
-pub fn filterModelVariables(mut inModelVariables: Arc<metamodelica::List<ModelVariables>>, mut tipe: ArcStr, mut variableCausality: ArcStr) -> Arc<metamodelica::List<ModelVariables>> {
+pub fn filterModelVariables(mut inModelVariables: Arc<metamodelica::List<ModelVariables>>, mut tipe: ArcStr, mut variableCausality: ArcStr) -> Result<Arc<metamodelica::List<ModelVariables>>> {
     let mut outModelVariables: Arc<metamodelica::List<ModelVariables>> = metamodelica::nil();
-    outModelVariables = List::filter2OnTrue(inModelVariables.clone(), (std::sync::Arc::new(fnptr!(filterModelVariable, ModelVariables, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ModelVariables, ArcStr, ArcStr) -> Result<bool> + 'static>), (tipe.clone()).clone(), (variableCausality.clone()).clone());
-    outModelVariables
+    outModelVariables = List::filter2OnTrue(inModelVariables.clone(), (std::sync::Arc::new(fnptr!(filterModelVariable, ModelVariables, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ModelVariables, ArcStr, ArcStr) -> Result<bool> + 'static>), (tipe.clone()).clone(), (variableCausality.clone()).clone())?;
+    Ok(outModelVariables)
 }
 
 fn filterModelVariable(mut modelVar: ModelVariables, mut tipe: ArcStr, mut variableCausality: ArcStr) -> bool {

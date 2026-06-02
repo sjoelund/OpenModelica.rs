@@ -365,7 +365,7 @@ fn deoverloadBinaryUserdefNoConstructor(mut inTypeList: Arc<metamodelica::List<A
                     let mut acc = (*acc).clone();
                     (lhs, _) = Types::matchType(inLhs.clone(), lhsType.clone(), ty1.clone(), false)?;
                     (rhs, _) = Types::matchType(inRhs.clone(), rhsType.clone(), ty2.clone(), false)?;
-                    daeExp = makeCallFillRestDefaults(path.clone(), list![lhs.clone(), rhs.clone()], restArgs.clone(), Types::makeCallAttr(ty.clone(), attr.clone()));
+                    daeExp = makeCallFillRestDefaults(path.clone(), list![lhs.clone(), rhs.clone()], restArgs.clone(), Types::makeCallAttr(ty.clone(), attr.clone()))?;
                     tpl = (daeExp.clone(), overloadFoldType(ty1.clone(), ty2.clone(), ty.clone())?);
                     acc = deoverloadBinaryUserdefNoConstructor(types.clone(), inLhs.clone(), inRhs.clone(), lhsType.clone(), rhsType.clone(), metamodelica::cons(tpl.clone(), acc.clone()))?;
                     Ok(acc.clone())
@@ -453,7 +453,7 @@ fn deoverloadUnaryUserdefNoConstructor(mut inTypeList: Arc<metamodelica::List<Ar
                     let mut daeExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut acc = (*acc).clone();
                     (exp, _) = Types::matchType(inExp.clone(), inType.clone(), ty1.clone(), false)?;
-                    daeExp = makeCallFillRestDefaults(path.clone(), list![exp.clone()], restArgs.clone(), Types::makeCallAttr(ty.clone(), attr.clone()));
+                    daeExp = makeCallFillRestDefaults(path.clone(), list![exp.clone()], restArgs.clone(), Types::makeCallAttr(ty.clone(), attr.clone()))?;
                     acc = deoverloadUnaryUserdefNoConstructor(types.clone(), inExp.clone(), ty.clone(), metamodelica::cons(daeExp.clone(), acc.clone()))?;
                     Ok(acc.clone())
                 }
@@ -508,7 +508,7 @@ fn binaryUserdef(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inOper:
                 (cache, types1) = getOperatorFuncsOrEmpty(cache.clone(), env.clone(), list![type1.clone()], (opStr.clone()).clone(), info.clone(), metamodelica::nil())?;
                 (cache, types2) = getOperatorFuncsOrEmpty(cache.clone(), env.clone(), list![type2.clone()], (opStr.clone()).clone(), info.clone(), metamodelica::nil())?;
                 types = List::union(types1.clone(), types2.clone());
-                types = List::select1(types.clone(), (std::sync::Arc::new(fnptr!(isOperatorBinaryFunctionOrWarn, Arc<DAE::Type>, SourceInfo)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, SourceInfo) -> Result<bool> + 'static>), info.clone());
+                types = List::select1(types.clone(), (std::sync::Arc::new(isOperatorBinaryFunctionOrWarn) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, SourceInfo) -> Result<bool> + 'static>), info.clone())?;
             }
             exps = deoverloadBinaryUserdefNoConstructor(types.clone(), exp1.clone(), exp2.clone(), type1.clone(), type2.clone(), metamodelica::nil())?;
             (cache, exps) = binaryCastConstructor(cache.clone(), env.clone(), inExp1.clone(), inExp2.clone(), inType1.clone(), inType2.clone(), exps.clone(), types.clone(), info.clone())?;
@@ -553,7 +553,7 @@ fn binaryUserdefArray(mut inCache: FCore::Cache, mut env: FCore::Graph, mut inEx
             (cache.clone(), exps.clone())
         },
         _ => {
-            errorMultipleValid(List::map(inExps.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _))), info.clone())?;
+            errorMultipleValid(List::map(inExps.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)))?, info.clone())?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1088,7 +1088,7 @@ fn operatorsBinary(mut inOperator: Absyn::Operator, mut t1: Arc<DAE::Type>, mut 
             scalars = list![(DAE::Operator::POW { ty: DAE::T_REAL_DEFAULT().clone() }, list![DAE::T_REAL_DEFAULT().clone(), DAE::T_REAL_DEFAULT().clone()], DAE::T_REAL_DEFAULT().clone())];
             realscalararrs = operatorReturn(DAE::Operator::POW_SCALAR_ARRAY { ty: Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_REAL_DEFAULT().clone(), dims: list![Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN)] }) }, realtypes().clone(), realarrtypes().clone(), realarrtypes().clone());
             realarrsscalar = operatorReturn(DAE::Operator::POW_ARRAY_SCALAR { ty: Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_REAL_DEFAULT().clone(), dims: list![Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN)] }) }, realarrtypes().clone(), realtypes().clone(), realarrtypes().clone());
-            types = List::flatten(list![scalars.clone(), realscalararrs.clone(), realarrsscalar.clone(), realarrs.clone()]);
+            types = unwrap_break_err!(List::flatten(list![scalars.clone(), realscalararrs.clone(), realarrsscalar.clone(), realarrs.clone()]), '__try0);
             types.clone()
         },
         Absyn::Operator::AND { .. } => {
@@ -1103,7 +1103,7 @@ fn operatorsBinary(mut inOperator: Absyn::Operator, mut t1: Arc<DAE::Type>, mut 
             let mut enum_op: (DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>) = (<DAE::Operator as ::std::default::Default>::default(), metamodelica::nil(), Arc::new(DAE::Type::T_NORETCALL));
             enum_op = unwrap_break_err!(makeEnumOperator(DAE::Operator::LESS { ty: DAE::T_ENUMERATION_DEFAULT().clone() }, t1.clone(), t2.clone()), '__try0);
             scalars = list![(DAE::Operator::LESS { ty: DAE::T_INTEGER_DEFAULT().clone() }, list![DAE::T_INTEGER_DEFAULT().clone(), DAE::T_INTEGER_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), enum_op.clone(), (DAE::Operator::LESS { ty: DAE::T_REAL_DEFAULT().clone() }, list![DAE::T_REAL_DEFAULT().clone(), DAE::T_REAL_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), (DAE::Operator::LESS { ty: DAE::T_BOOL_DEFAULT().clone() }, list![DAE::T_BOOL_DEFAULT().clone(), DAE::T_BOOL_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), (DAE::Operator::LESS { ty: DAE::T_STRING_DEFAULT().clone() }, list![DAE::T_STRING_DEFAULT().clone(), DAE::T_STRING_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone())];
-            types = List::flatten(list![scalars.clone()]);
+            types = unwrap_break_err!(List::flatten(list![scalars.clone()]), '__try0);
             types.clone()
         },
         Absyn::Operator::LESSEQ { .. } => {
@@ -1112,7 +1112,7 @@ fn operatorsBinary(mut inOperator: Absyn::Operator, mut t1: Arc<DAE::Type>, mut 
             let mut enum_op: (DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>) = (<DAE::Operator as ::std::default::Default>::default(), metamodelica::nil(), Arc::new(DAE::Type::T_NORETCALL));
             enum_op = unwrap_break_err!(makeEnumOperator(DAE::Operator::LESSEQ { ty: DAE::T_ENUMERATION_DEFAULT().clone() }, t1.clone(), t2.clone()), '__try0);
             scalars = list![(DAE::Operator::LESSEQ { ty: DAE::T_INTEGER_DEFAULT().clone() }, list![DAE::T_INTEGER_DEFAULT().clone(), DAE::T_INTEGER_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), enum_op.clone(), (DAE::Operator::LESSEQ { ty: DAE::T_REAL_DEFAULT().clone() }, list![DAE::T_REAL_DEFAULT().clone(), DAE::T_REAL_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), (DAE::Operator::LESSEQ { ty: DAE::T_BOOL_DEFAULT().clone() }, list![DAE::T_BOOL_DEFAULT().clone(), DAE::T_BOOL_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), (DAE::Operator::LESSEQ { ty: DAE::T_STRING_DEFAULT().clone() }, list![DAE::T_STRING_DEFAULT().clone(), DAE::T_STRING_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone())];
-            types = List::flatten(list![scalars.clone()]);
+            types = unwrap_break_err!(List::flatten(list![scalars.clone()]), '__try0);
             types.clone()
         },
         Absyn::Operator::GREATER { .. } => {
@@ -1121,7 +1121,7 @@ fn operatorsBinary(mut inOperator: Absyn::Operator, mut t1: Arc<DAE::Type>, mut 
             let mut enum_op: (DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>) = (<DAE::Operator as ::std::default::Default>::default(), metamodelica::nil(), Arc::new(DAE::Type::T_NORETCALL));
             enum_op = unwrap_break_err!(makeEnumOperator(DAE::Operator::GREATER { ty: DAE::T_ENUMERATION_DEFAULT().clone() }, t1.clone(), t2.clone()), '__try0);
             scalars = list![(DAE::Operator::GREATER { ty: DAE::T_INTEGER_DEFAULT().clone() }, list![DAE::T_INTEGER_DEFAULT().clone(), DAE::T_INTEGER_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), enum_op.clone(), (DAE::Operator::GREATER { ty: DAE::T_REAL_DEFAULT().clone() }, list![DAE::T_REAL_DEFAULT().clone(), DAE::T_REAL_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), (DAE::Operator::GREATER { ty: DAE::T_BOOL_DEFAULT().clone() }, list![DAE::T_BOOL_DEFAULT().clone(), DAE::T_BOOL_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), (DAE::Operator::GREATER { ty: DAE::T_STRING_DEFAULT().clone() }, list![DAE::T_STRING_DEFAULT().clone(), DAE::T_STRING_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone())];
-            types = List::flatten(list![scalars.clone()]);
+            types = unwrap_break_err!(List::flatten(list![scalars.clone()]), '__try0);
             types.clone()
         },
         Absyn::Operator::GREATEREQ { .. } => {
@@ -1130,7 +1130,7 @@ fn operatorsBinary(mut inOperator: Absyn::Operator, mut t1: Arc<DAE::Type>, mut 
             let mut enum_op: (DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>) = (<DAE::Operator as ::std::default::Default>::default(), metamodelica::nil(), Arc::new(DAE::Type::T_NORETCALL));
             enum_op = unwrap_break_err!(makeEnumOperator(DAE::Operator::GREATEREQ { ty: DAE::T_ENUMERATION_DEFAULT().clone() }, t1.clone(), t2.clone()), '__try0);
             scalars = list![(DAE::Operator::GREATEREQ { ty: DAE::T_INTEGER_DEFAULT().clone() }, list![DAE::T_INTEGER_DEFAULT().clone(), DAE::T_INTEGER_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), enum_op.clone(), (DAE::Operator::GREATEREQ { ty: DAE::T_REAL_DEFAULT().clone() }, list![DAE::T_REAL_DEFAULT().clone(), DAE::T_REAL_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), (DAE::Operator::GREATEREQ { ty: DAE::T_BOOL_DEFAULT().clone() }, list![DAE::T_BOOL_DEFAULT().clone(), DAE::T_BOOL_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone()), (DAE::Operator::GREATEREQ { ty: DAE::T_STRING_DEFAULT().clone() }, list![DAE::T_STRING_DEFAULT().clone(), DAE::T_STRING_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone())];
-            types = List::flatten(list![scalars.clone()]);
+            types = unwrap_break_err!(List::flatten(list![scalars.clone()]), '__try0);
             types.clone()
         },
         Absyn::Operator::EQUAL { .. } => {
@@ -1174,7 +1174,7 @@ fn operatorsUnary(mut op: Absyn::Operator) -> Result<Arc<metamodelica::List<(DAE
             scalars = list![(DAE::Operator::UMINUS { ty: DAE::T_INTEGER_DEFAULT().clone() }, list![DAE::T_INTEGER_DEFAULT().clone()], DAE::T_INTEGER_DEFAULT().clone()), (DAE::Operator::UMINUS { ty: DAE::T_REAL_DEFAULT().clone() }, list![DAE::T_REAL_DEFAULT().clone()], DAE::T_REAL_DEFAULT().clone())];
             intarrs = operatorReturnUnary(DAE::Operator::UMINUS_ARR { ty: Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_INTEGER_DEFAULT().clone(), dims: list![Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN)] }) }, intarrtypes().clone(), intarrtypes().clone())?;
             realarrs = operatorReturnUnary(DAE::Operator::UMINUS_ARR { ty: Arc::new(DAE::Type::T_ARRAY { ty: DAE::T_REAL_DEFAULT().clone(), dims: list![Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN)] }) }, realarrtypes().clone(), realarrtypes().clone())?;
-            types = List::flatten(list![scalars.clone(), intarrs.clone(), realarrs.clone()]);
+            types = List::flatten(list![scalars.clone(), intarrs.clone(), realarrs.clone()])?;
             types.clone()
         },
         Absyn::Operator::NOT { .. } => {
@@ -1183,7 +1183,7 @@ fn operatorsUnary(mut op: Absyn::Operator) -> Result<Arc<metamodelica::List<(DAE
             let mut types: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
             scalars = list![(DAE::Operator::NOT { ty: DAE::T_BOOL_DEFAULT().clone() }, list![DAE::T_BOOL_DEFAULT().clone()], DAE::T_BOOL_DEFAULT().clone())];
             boolarrs = operatorReturnUnary(DAE::Operator::NOT { ty: DAE::T_BOOL_DEFAULT().clone() }, boolarrtypes().clone(), boolarrtypes().clone())?;
-            types = List::flatten(list![scalars.clone(), boolarrs.clone()]);
+            types = List::flatten(list![scalars.clone(), boolarrs.clone()])?;
             types.clone()
         },
         _ => {
@@ -1257,7 +1257,7 @@ fn buildOperatorTypes(mut inTypes: Arc<metamodelica::List<Arc<DAE::Type>>>, mut 
         (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Type::T_FUNCTION { funcResultType: tp, funcArg: args, .. }, tail: tps }, funcname) => {
             let mut argtypes: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
             let mut rest: Arc<metamodelica::List<(DAE::Operator, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<DAE::Type>)>> = metamodelica::nil();
-            argtypes = List::map(args.clone(), (std::sync::Arc::new(Types::funcArgType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>) -> Result<Arc<DAE::Type>> + 'static>));
+            argtypes = List::map(args.clone(), (std::sync::Arc::new(Types::funcArgType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>) -> Result<Arc<DAE::Type>> + 'static>))?;
             rest = buildOperatorTypes(tps.clone(), funcname.clone())?;
             metamodelica::cons((DAE::Operator::USERDEFINED { fqName: funcname.clone() }, argtypes.clone(), tp.clone()), rest.clone())
         },
@@ -1554,19 +1554,19 @@ pub mod AvlTreePathPathEnv {
         outBalance
     }
 
-    pub fn fold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> FT {
+    pub fn fold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> Result<FT> {
         pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<FT> + 'static>;
 
         let mut outResult: FT = inStartValue.clone();
         outResult = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { value, key, .. } => {
-            outResult = fold(var_field!((*inTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone());
-            outResult = inFunc(key.clone(), value.clone(), outResult.clone()).unwrap();
-            outResult = fold(var_field!((*inTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone());
+            outResult = fold(var_field!((*inTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
+            outResult = inFunc(key.clone(), value.clone(), outResult.clone())?;
+            outResult = fold(var_field!((*inTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
             outResult.clone()
         },
         Deref @ Tree::LEAF { value, key } => {
-            outResult = inFunc(key.clone(), value.clone(), outResult.clone()).unwrap();
+            outResult = inFunc(key.clone(), value.clone(), outResult.clone())?;
             outResult.clone()
         },
         _ => {
@@ -1574,26 +1574,26 @@ pub mod AvlTreePathPathEnv {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        outResult
+        Ok(outResult)
     }
 
-    pub fn foldCond<FT: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> FT {
+    pub fn foldCond<FT: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> Result<FT> {
         pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<(FT, bool)> + 'static>;
 
         let mut value: FT = value;
         value = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => {
             let mut c: bool = false;
-            (value, c) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), var_field!((*tree).value, Tree::NODE).clone(), value.clone()).unwrap();
+            (value, c) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), var_field!((*tree).value, Tree::NODE).clone(), value.clone())?;
             if c.clone() {
-                value = foldCond(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), value.clone());
-                value = foldCond(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), value.clone());
+                value = foldCond(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), value.clone())?;
+                value = foldCond(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), value.clone())?;
             }
             value.clone()
         },
         Deref @ Tree::LEAF { .. } => {
             let mut c: bool = false;
-            (value, c) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), var_field!((*tree).value, Tree::LEAF).clone(), value.clone()).unwrap();
+            (value, c) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), var_field!((*tree).value, Tree::LEAF).clone(), value.clone())?;
             value.clone()
         },
         _ => {
@@ -1601,29 +1601,29 @@ pub mod AvlTreePathPathEnv {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        value
+        Ok(value)
     }
 
-    pub fn fold_2<FT1: Clone + 'static, FT2: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> (FT1, FT2) {
+    pub fn fold_2<FT1: Clone + 'static, FT2: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> Result<(FT1, FT2)> {
         pub type FoldFunc<FT1: Clone + 'static, FT2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT1, FT2) -> Result<(FT1, FT2)> + 'static>;
 
         let mut foldArg1: FT1 = foldArg1;
         let mut foldArg2: FT2 = foldArg2;
         let () = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => {
-            (foldArg1, foldArg2) = fold_2(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone());
-            (foldArg1, foldArg2) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), var_field!((*tree).value, Tree::NODE).clone(), foldArg1.clone(), foldArg2.clone()).unwrap();
-            (foldArg1, foldArg2) = fold_2(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone());
+            (foldArg1, foldArg2) = fold_2(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone())?;
+            (foldArg1, foldArg2) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), var_field!((*tree).value, Tree::NODE).clone(), foldArg1.clone(), foldArg2.clone())?;
+            (foldArg1, foldArg2) = fold_2(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone())?;
             ()
         },
         Deref @ Tree::LEAF { .. } => {
-            (foldArg1, foldArg2) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), var_field!((*tree).value, Tree::LEAF).clone(), foldArg1.clone(), foldArg2.clone()).unwrap();
+            (foldArg1, foldArg2) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), var_field!((*tree).value, Tree::LEAF).clone(), foldArg1.clone(), foldArg2.clone())?;
             ()
         },
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        (foldArg1, foldArg2)
+        Ok((foldArg1, foldArg2))
     }
 
     pub fn forEach(mut tree: Arc<Tree>, mut func: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<()> + 'static>) -> Result<()> {
@@ -1823,7 +1823,7 @@ pub mod AvlTreePathPathEnv {
         lst
     }
 
-    pub fn map(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> + 'static>) -> Arc<Tree> {
+    pub fn map(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> + 'static>) -> Result<Arc<Tree>> {
         pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Key, Value) -> Result<Value> + 'static>;
 
         let mut outTree: Arc<Tree> = inTree.clone();
@@ -1832,9 +1832,9 @@ pub mod AvlTreePathPathEnv {
             let mut new_value: Value = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut new_left: Arc<Tree> = Arc::new(Tree::EMPTY);
             let mut new_right: Arc<Tree> = Arc::new(Tree::EMPTY);
-            new_left = map(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone());
-            new_value = inFunc(key.clone(), value.clone()).unwrap();
-            new_right = map(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone());
+            new_left = map(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone())?;
+            new_value = inFunc(key.clone(), value.clone())?;
+            new_right = map(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone())?;
             if !(referenceEq(&new_left.clone(),&var_field!((*outTree).left, Tree::NODE).clone())) || !(referenceEq(&value.clone(),&new_value.clone())) || !(referenceEq(&new_right.clone(),&var_field!((*outTree).right, Tree::NODE).clone())) {
                 outTree = Arc::new(Tree::NODE { key: key.clone(), value: new_value.clone(), height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left.clone(), right: new_right.clone() });
             }
@@ -1842,7 +1842,7 @@ pub mod AvlTreePathPathEnv {
         },
         Deref @ Tree::LEAF { value, key } => {
             let mut new_value: Value = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-            new_value = inFunc(key.clone(), value.clone()).unwrap();
+            new_value = inFunc(key.clone(), value.clone())?;
             if !(referenceEq(&value.clone(),&new_value.clone())) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
             }
@@ -1853,10 +1853,10 @@ pub mod AvlTreePathPathEnv {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        outTree
+        Ok(outTree)
     }
 
-    pub fn mapFold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>, FT) -> Result<(Arc<Absyn::Path>, FT)> + 'static>, mut inStartValue: FT) -> (Arc<Tree>, FT) {
+    pub fn mapFold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>, FT) -> Result<(Arc<Absyn::Path>, FT)> + 'static>, mut inStartValue: FT) -> Result<(Arc<Tree>, FT)> {
         pub type MapFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<Value> + 'static>;
 
         let mut outTree: Arc<Tree> = inTree.clone();
@@ -1866,9 +1866,9 @@ pub mod AvlTreePathPathEnv {
             let mut new_value: Value = Arc::new(<Absyn::Path as ::std::default::Default>::default());
             let mut new_left: Arc<Tree> = Arc::new(Tree::EMPTY);
             let mut new_right: Arc<Tree> = Arc::new(Tree::EMPTY);
-            (new_left, outResult) = mapFold(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone());
-            (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult.clone()).unwrap();
-            (new_right, outResult) = mapFold(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone());
+            (new_left, outResult) = mapFold(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
+            (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult.clone())?;
+            (new_right, outResult) = mapFold(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
             if !(referenceEq(&new_left.clone(),&var_field!((*outTree).left, Tree::NODE).clone())) || !(referenceEq(&value.clone(),&new_value.clone())) || !(referenceEq(&new_right.clone(),&var_field!((*outTree).right, Tree::NODE).clone())) {
                 outTree = Arc::new(Tree::NODE { key: key.clone(), value: new_value.clone(), height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left.clone(), right: new_right.clone() });
             }
@@ -1876,7 +1876,7 @@ pub mod AvlTreePathPathEnv {
         },
         Deref @ Tree::LEAF { value, key } => {
             let mut new_value: Value = Arc::new(<Absyn::Path as ::std::default::Default>::default());
-            (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult.clone()).unwrap();
+            (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult.clone())?;
             if !(referenceEq(&value.clone(),&new_value.clone())) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
             }
@@ -1887,7 +1887,7 @@ pub mod AvlTreePathPathEnv {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        (outTree, outResult)
+        Ok((outTree, outResult))
     }
 
     pub fn new() -> Arc<Tree> {
@@ -2028,9 +2028,9 @@ pub mod AvlTreePathPathEnv {
         lst
     }
 
-    pub fn update(mut tree: Arc<Tree>, mut key: Key, mut value: Value) -> Arc<Tree> {
-        let mut outTree: Arc<Tree> = add(tree.clone(), key.clone(), value.clone(), (std::sync::Arc::new(fnptr!(addConflictReplace, Arc<Absyn::Path>, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> + 'static>)).unwrap();
-        outTree
+    pub fn update(mut tree: Arc<Tree>, mut key: Key, mut value: Value) -> Result<Arc<Tree>> {
+        let mut outTree: Arc<Tree> = add(tree.clone(), key.clone(), value.clone(), (std::sync::Arc::new(fnptr!(addConflictReplace, Arc<Absyn::Path>, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> + 'static>))?;
+        Ok(outTree)
     }
 
 }
@@ -2242,19 +2242,19 @@ pub mod AvlTreePathOperatorTypes {
         outBalance
     }
 
-    pub fn fold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> FT {
+    pub fn fold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> Result<FT> {
         pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<FT> + 'static>;
 
         let mut outResult: FT = inStartValue.clone();
         outResult = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { value, key, .. } => {
-            outResult = fold(var_field!((*inTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone());
-            outResult = inFunc(key.clone(), value.clone(), outResult.clone()).unwrap();
-            outResult = fold(var_field!((*inTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone());
+            outResult = fold(var_field!((*inTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
+            outResult = inFunc(key.clone(), value.clone(), outResult.clone())?;
+            outResult = fold(var_field!((*inTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
             outResult.clone()
         },
         Deref @ Tree::LEAF { value, key } => {
-            outResult = inFunc(key.clone(), value.clone(), outResult.clone()).unwrap();
+            outResult = inFunc(key.clone(), value.clone(), outResult.clone())?;
             outResult.clone()
         },
         _ => {
@@ -2262,26 +2262,26 @@ pub mod AvlTreePathOperatorTypes {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        outResult
+        Ok(outResult)
     }
 
-    pub fn foldCond<FT: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> FT {
+    pub fn foldCond<FT: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> Result<FT> {
         pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<(FT, bool)> + 'static>;
 
         let mut value: FT = value;
         value = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => {
             let mut c: bool = false;
-            (value, c) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), var_field!((*tree).value, Tree::NODE).clone(), value.clone()).unwrap();
+            (value, c) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), var_field!((*tree).value, Tree::NODE).clone(), value.clone())?;
             if c.clone() {
-                value = foldCond(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), value.clone());
-                value = foldCond(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), value.clone());
+                value = foldCond(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), value.clone())?;
+                value = foldCond(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), value.clone())?;
             }
             value.clone()
         },
         Deref @ Tree::LEAF { .. } => {
             let mut c: bool = false;
-            (value, c) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), var_field!((*tree).value, Tree::LEAF).clone(), value.clone()).unwrap();
+            (value, c) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), var_field!((*tree).value, Tree::LEAF).clone(), value.clone())?;
             value.clone()
         },
         _ => {
@@ -2289,29 +2289,29 @@ pub mod AvlTreePathOperatorTypes {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        value
+        Ok(value)
     }
 
-    pub fn fold_2<FT1: Clone + 'static, FT2: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> (FT1, FT2) {
+    pub fn fold_2<FT1: Clone + 'static, FT2: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> Result<(FT1, FT2)> {
         pub type FoldFunc<FT1: Clone + 'static, FT2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT1, FT2) -> Result<(FT1, FT2)> + 'static>;
 
         let mut foldArg1: FT1 = foldArg1;
         let mut foldArg2: FT2 = foldArg2;
         let () = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => {
-            (foldArg1, foldArg2) = fold_2(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone());
-            (foldArg1, foldArg2) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), var_field!((*tree).value, Tree::NODE).clone(), foldArg1.clone(), foldArg2.clone()).unwrap();
-            (foldArg1, foldArg2) = fold_2(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone());
+            (foldArg1, foldArg2) = fold_2(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone())?;
+            (foldArg1, foldArg2) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), var_field!((*tree).value, Tree::NODE).clone(), foldArg1.clone(), foldArg2.clone())?;
+            (foldArg1, foldArg2) = fold_2(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone())?;
             ()
         },
         Deref @ Tree::LEAF { .. } => {
-            (foldArg1, foldArg2) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), var_field!((*tree).value, Tree::LEAF).clone(), foldArg1.clone(), foldArg2.clone()).unwrap();
+            (foldArg1, foldArg2) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), var_field!((*tree).value, Tree::LEAF).clone(), foldArg1.clone(), foldArg2.clone())?;
             ()
         },
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        (foldArg1, foldArg2)
+        Ok((foldArg1, foldArg2))
     }
 
     pub fn forEach(mut tree: Arc<Tree>, mut func: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>) -> Result<()> + 'static>) -> Result<()> {
@@ -2511,7 +2511,7 @@ pub mod AvlTreePathOperatorTypes {
         lst
     }
 
-    pub fn map(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Type>>>> + 'static>) -> Arc<Tree> {
+    pub fn map(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Type>>>> + 'static>) -> Result<Arc<Tree>> {
         pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Key, Value) -> Result<Value> + 'static>;
 
         let mut outTree: Arc<Tree> = inTree.clone();
@@ -2520,9 +2520,9 @@ pub mod AvlTreePathOperatorTypes {
             let mut new_value: Value = metamodelica::nil();
             let mut new_left: Arc<Tree> = Arc::new(Tree::EMPTY);
             let mut new_right: Arc<Tree> = Arc::new(Tree::EMPTY);
-            new_left = map(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone());
-            new_value = inFunc(key.clone(), value.clone()).unwrap();
-            new_right = map(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone());
+            new_left = map(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone())?;
+            new_value = inFunc(key.clone(), value.clone())?;
+            new_right = map(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone())?;
             if !(referenceEq(&new_left.clone(),&var_field!((*outTree).left, Tree::NODE).clone())) || !(referenceEq(&value.clone(),&new_value.clone())) || !(referenceEq(&new_right.clone(),&var_field!((*outTree).right, Tree::NODE).clone())) {
                 outTree = Arc::new(Tree::NODE { key: key.clone(), value: new_value.clone(), height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left.clone(), right: new_right.clone() });
             }
@@ -2530,7 +2530,7 @@ pub mod AvlTreePathOperatorTypes {
         },
         Deref @ Tree::LEAF { value, key } => {
             let mut new_value: Value = metamodelica::nil();
-            new_value = inFunc(key.clone(), value.clone()).unwrap();
+            new_value = inFunc(key.clone(), value.clone())?;
             if !(referenceEq(&value.clone(),&new_value.clone())) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
             }
@@ -2541,10 +2541,10 @@ pub mod AvlTreePathOperatorTypes {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        outTree
+        Ok(outTree)
     }
 
-    pub fn mapFold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>, FT) -> Result<(Arc<metamodelica::List<Arc<DAE::Type>>>, FT)> + 'static>, mut inStartValue: FT) -> (Arc<Tree>, FT) {
+    pub fn mapFold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<metamodelica::List<Arc<DAE::Type>>>, FT) -> Result<(Arc<metamodelica::List<Arc<DAE::Type>>>, FT)> + 'static>, mut inStartValue: FT) -> Result<(Arc<Tree>, FT)> {
         pub type MapFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<Value> + 'static>;
 
         let mut outTree: Arc<Tree> = inTree.clone();
@@ -2554,9 +2554,9 @@ pub mod AvlTreePathOperatorTypes {
             let mut new_value: Value = metamodelica::nil();
             let mut new_left: Arc<Tree> = Arc::new(Tree::EMPTY);
             let mut new_right: Arc<Tree> = Arc::new(Tree::EMPTY);
-            (new_left, outResult) = mapFold(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone());
-            (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult.clone()).unwrap();
-            (new_right, outResult) = mapFold(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone());
+            (new_left, outResult) = mapFold(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
+            (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult.clone())?;
+            (new_right, outResult) = mapFold(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
             if !(referenceEq(&new_left.clone(),&var_field!((*outTree).left, Tree::NODE).clone())) || !(referenceEq(&value.clone(),&new_value.clone())) || !(referenceEq(&new_right.clone(),&var_field!((*outTree).right, Tree::NODE).clone())) {
                 outTree = Arc::new(Tree::NODE { key: key.clone(), value: new_value.clone(), height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left.clone(), right: new_right.clone() });
             }
@@ -2564,7 +2564,7 @@ pub mod AvlTreePathOperatorTypes {
         },
         Deref @ Tree::LEAF { value, key } => {
             let mut new_value: Value = metamodelica::nil();
-            (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult.clone()).unwrap();
+            (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult.clone())?;
             if !(referenceEq(&value.clone(),&new_value.clone())) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
             }
@@ -2575,7 +2575,7 @@ pub mod AvlTreePathOperatorTypes {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        (outTree, outResult)
+        Ok((outTree, outResult))
     }
 
     pub fn new() -> Arc<Tree> {
@@ -2716,9 +2716,9 @@ pub mod AvlTreePathOperatorTypes {
         lst
     }
 
-    pub fn update(mut tree: Arc<Tree>, mut key: Key, mut value: Value) -> Arc<Tree> {
-        let mut outTree: Arc<Tree> = add(tree.clone(), key.clone(), value.clone(), (std::sync::Arc::new(fnptr!(addConflictReplace, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<Absyn::Path>) -> Result<Arc<metamodelica::List<Arc<DAE::Type>>>> + 'static>)).unwrap();
-        outTree
+    pub fn update(mut tree: Arc<Tree>, mut key: Key, mut value: Value) -> Result<Arc<Tree>> {
+        let mut outTree: Arc<Tree> = add(tree.clone(), key.clone(), value.clone(), (std::sync::Arc::new(fnptr!(addConflictReplace, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<metamodelica::List<Arc<DAE::Type>>>, Arc<Absyn::Path>) -> Result<Arc<metamodelica::List<Arc<DAE::Type>>>> + 'static>))?;
+        Ok(outTree)
     }
 
 }
@@ -2769,7 +2769,7 @@ fn getOperatorFuncsOrEmptySingleTy(mut cache: FCore::Cache, mut env: FCore::Grap
             let true = (SCodeUtil::isOperator(operatorCl.clone())) else { bail!("pattern mismatch") };
             paths = AbsynToSCode::getListofQualOperatorFuncsfromOperator(operatorCl.clone())?;
             (cache, funcs) = Lookup::lookupFunctionsListInEnv(cache.clone(), operEnv.clone(), paths.clone(), info.clone(), metamodelica::nil())?;
-            funcs = List::select2(funcs.clone(), (if (opName.clone() == literal!("'constructor'") || opName.clone() == literal!("'0'")) { ((std::sync::Arc::new(checkOperatorFunctionOutput) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, Arc<DAE::Type>, SourceInfo) -> Result<bool> + 'static>) as _) } else { ((std::sync::Arc::new(checkOperatorFunctionOneOutput) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, Arc<DAE::Type>, SourceInfo) -> Result<bool> + 'static>) as _) }), scalarType.clone(), info.clone());
+            funcs = List::select2(funcs.clone(), (if (opName.clone() == literal!("'constructor'") || opName.clone() == literal!("'0'")) { ((std::sync::Arc::new(checkOperatorFunctionOutput) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, Arc<DAE::Type>, SourceInfo) -> Result<bool> + 'static>) as _) } else { ((std::sync::Arc::new(checkOperatorFunctionOneOutput) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, Arc<DAE::Type>, SourceInfo) -> Result<bool> + 'static>) as _) }), scalarType.clone(), info.clone())?;
             tree2 = AvlTreePathOperatorTypes::add(tree2.clone(), path.clone(), funcs.clone(), (std::sync::Arc::new(fnptr!(AvlTreePathOperatorTypes::addConflictDefault, _, _, _)) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>))?;
             { let __v = (tree1.clone(), tree2.clone()); crate::Globals::operatorOverloadingCache.with(|__root| *__root.borrow_mut() = __v) };
         }
@@ -2860,14 +2860,14 @@ fn checkOperatorFunctionOutput(mut ty: Arc<DAE::Type>, mut expected: Arc<DAE::Ty
     Ok(isOK)
 }
 
-fn isOperatorBinaryFunctionOrWarn(mut ty: Arc<DAE::Type>, mut info: SourceInfo) -> bool {
+fn isOperatorBinaryFunctionOrWarn(mut ty: Arc<DAE::Type>, mut info: SourceInfo) -> Result<bool> {
     let mut isBinaryFunc: bool = false;
     isBinaryFunc = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ DAE::Type::T_FUNCTION { funcArg: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }, .. } => {
             false
         },
         Deref @ DAE::Type::T_FUNCTION { funcArg: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { defaultBinding: None, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { defaultBinding: None, .. }, tail: rest } }, .. } => {
-            isBinaryFunc = List::mapMapBoolAnd(rest.clone(), (std::sync::Arc::new(Types::funcArgDefaultBinding) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>) -> Result<Option<Arc<DAE::Exp>>> + 'static>), std::sync::Arc::new(fnptr!(isSome, _)));
+            isBinaryFunc = List::mapMapBoolAnd(rest.clone(), (std::sync::Arc::new(Types::funcArgDefaultBinding) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>) -> Result<Option<Arc<DAE::Exp>>> + 'static>), std::sync::Arc::new(fnptr!(isSome, _)))?;
             isBinaryFunc.clone()
         },
         _ => {
@@ -2875,14 +2875,14 @@ fn isOperatorBinaryFunctionOrWarn(mut ty: Arc<DAE::Type>, mut info: SourceInfo) 
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    isBinaryFunc
+    Ok(isBinaryFunc)
 }
 
-fn isOperatorUnaryFunction(mut ty: Arc<DAE::Type>) -> bool {
+fn isOperatorUnaryFunction(mut ty: Arc<DAE::Type>) -> Result<bool> {
     let mut isBinaryFunc: bool = false;
     isBinaryFunc = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ DAE::Type::T_FUNCTION { funcArg: Deref @ metamodelica::List::Cons { head: Deref @ DAE::FuncArg { defaultBinding: None, .. }, tail: rest }, .. } => {
-            isBinaryFunc = List::mapMapBoolAnd(rest.clone(), (std::sync::Arc::new(Types::funcArgDefaultBinding) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>) -> Result<Option<Arc<DAE::Exp>>> + 'static>), std::sync::Arc::new(fnptr!(isSome, _)));
+            isBinaryFunc = List::mapMapBoolAnd(rest.clone(), (std::sync::Arc::new(Types::funcArgDefaultBinding) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>) -> Result<Option<Arc<DAE::Exp>>> + 'static>), std::sync::Arc::new(fnptr!(isSome, _)))?;
             isBinaryFunc.clone()
         },
         _ => {
@@ -2890,14 +2890,14 @@ fn isOperatorUnaryFunction(mut ty: Arc<DAE::Type>) -> bool {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    isBinaryFunc
+    Ok(isBinaryFunc)
 }
 
 fn getZeroConstructorExpression(mut ty: Arc<DAE::Type>) -> Result<Arc<DAE::Exp>> {
     let mut result: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     result = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ DAE::Type::T_FUNCTION { path, functionAttributes: attr, funcArg: args, .. } => {
-            result = makeCallFillRestDefaults(path.clone(), metamodelica::nil(), args.clone(), Types::makeCallAttr(ty.clone(), attr.clone()));
+            result = makeCallFillRestDefaults(path.clone(), metamodelica::nil(), args.clone(), Types::makeCallAttr(ty.clone(), attr.clone()))?;
             result.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -2905,12 +2905,12 @@ fn getZeroConstructorExpression(mut ty: Arc<DAE::Type>) -> Result<Arc<DAE::Exp>>
     Ok(result)
 }
 
-fn makeCallFillRestDefaults(mut path: Arc<Absyn::Path>, mut inExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut restArgs: Arc<metamodelica::List<Arc<DAE::FuncArg>>>, mut attr: Arc<DAE::CallAttributes>) -> Arc<DAE::Exp> {
+fn makeCallFillRestDefaults(mut path: Arc<Absyn::Path>, mut inExps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut restArgs: Arc<metamodelica::List<Arc<DAE::FuncArg>>>, mut attr: Arc<DAE::CallAttributes>) -> Result<Arc<DAE::Exp>> {
     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut exps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-    exps = listAppend(inExps.clone(), List::mapMap(restArgs.clone(), (std::sync::Arc::new(Types::funcArgDefaultBinding) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>) -> Result<Option<Arc<DAE::Exp>>> + 'static>), (std::sync::Arc::new(Util::getOption) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>)));
+    exps = listAppend(inExps.clone(), List::mapMap(restArgs.clone(), (std::sync::Arc::new(Types::funcArgDefaultBinding) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>) -> Result<Option<Arc<DAE::Exp>>> + 'static>), (std::sync::Arc::new(Util::getOption) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>))?);
     exp = Arc::new(DAE::Exp::CALL { path: path.clone(), expLst: exps.clone(), attr: attr.clone() });
-    exp
+    Ok(exp)
 }
 
 fn getRecordPath(mut inType1: Arc<DAE::Type>) -> Result<Arc<Absyn::Path>> {
@@ -2969,11 +2969,11 @@ fn deoverload(mut inOperators: Arc<metamodelica::List<(DAE::Operator, Arc<metamo
                     let mut s: ArcStr = arcstr::literal!("");
                     let mut tpsstr: ArcStr = arcstr::literal!("");
                     s = (Dump::printExpStr(aexp.clone())?).clone();
-                    exps = List::map(args.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)));
-                    tps = List::map(args.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)));
-                    exps_str = List::map(exps.clone(), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>));
+                    exps = List::map(args.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)))?;
+                    tps = List::map(args.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)))?;
+                    exps_str = List::map(exps.clone(), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))?;
                     stringDelimitList(exps_str.clone(), (literal!(", ")).clone());
-                    tps_str = List::map(tps.clone(), (std::sync::Arc::new(TypesDump::unparseType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<ArcStr> + 'static>));
+                    tps_str = List::map(tps.clone(), (std::sync::Arc::new(TypesDump::unparseType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<ArcStr> + 'static>))?;
                     tpsstr = stringDelimitList(tps_str.clone(), (literal!(", ")).clone());
                     pre_str = (PrefixUtil::printPrefixStr3(pre.clone())?).clone();
                     Error::addSourceMessage(Error::UNRESOLVABLE_TYPE.clone(), list![(s.clone()).clone(), (tpsstr.clone()).clone(), (pre_str.clone()).clone()], info.clone())?;
@@ -3728,7 +3728,7 @@ fn errorMultipleValid(mut exps: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut info
     let mut str1: ArcStr = arcstr::literal!("");
     let mut str2: ArcStr = arcstr::literal!("");
     str1 = (intString((exps.clone().len() as i32))).clone();
-    str2 = stringDelimitList(List::map(exps.clone(), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)), (literal!(",")).clone());
+    str2 = stringDelimitList(List::map(exps.clone(), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone());
     Error::addSourceMessage(Error::OP_OVERLOAD_MULTIPLE_VALID.clone(), list![(str1.clone()).clone(), (str2.clone()).clone()], info.clone())?;
     Ok(())
 }
@@ -3746,16 +3746,16 @@ fn binaryCastConstructor(mut inCache: FCore::Cache, mut env: FCore::Graph, mut i
             let mut tys2: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
             let mut exps1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             let mut exps2: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            args = List::map(types.clone(), (std::sync::Arc::new(Types::getFuncArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<metamodelica::List<Arc<DAE::FuncArg>>>> + 'static>));
-            tys1 = List::mapMap(args.clone(), (std::sync::Arc::new(listHead) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>), (std::sync::Arc::new(Types::funcArgType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>) -> Result<Arc<DAE::Type>> + 'static>));
-            args = List::map(args.clone(), (std::sync::Arc::new(listRest) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>));
-            tys2 = List::mapMap(args.clone(), (std::sync::Arc::new(listHead) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>), (std::sync::Arc::new(Types::funcArgType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>) -> Result<Arc<DAE::Type>> + 'static>));
+            args = List::map(types.clone(), (std::sync::Arc::new(Types::getFuncArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<metamodelica::List<Arc<DAE::FuncArg>>>> + 'static>))?;
+            tys1 = List::mapMap(args.clone(), (std::sync::Arc::new(listHead) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>), (std::sync::Arc::new(Types::funcArgType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>) -> Result<Arc<DAE::Type>> + 'static>))?;
+            args = List::map(args.clone(), (std::sync::Arc::new(listRest) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>))?;
+            tys2 = List::mapMap(args.clone(), (std::sync::Arc::new(listHead) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>), (std::sync::Arc::new(Types::funcArgType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>) -> Result<Arc<DAE::Type>> + 'static>))?;
             tys1 = List::setDifference(List::union(tys1.clone(), metamodelica::nil()), list![inType1.clone()])?;
             tys2 = List::setDifference(List::union(tys2.clone(), metamodelica::nil()), list![inType2.clone()])?;
             (cache, tys1) = getOperatorFuncsOrEmpty(inCache.clone(), env.clone(), tys1.clone(), (literal!("'constructor'")).clone(), info.clone(), metamodelica::nil())?;
             (cache, tys2) = getOperatorFuncsOrEmpty(cache.clone(), env.clone(), tys2.clone(), (literal!("'constructor'")).clone(), info.clone(), metamodelica::nil())?;
-            tys1 = List::select(tys1.clone(), (std::sync::Arc::new(fnptr!(isOperatorUnaryFunction, Arc<DAE::Type>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<bool> + 'static>));
-            tys2 = List::select(tys2.clone(), (std::sync::Arc::new(fnptr!(isOperatorUnaryFunction, Arc<DAE::Type>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<bool> + 'static>));
+            tys1 = List::select(tys1.clone(), (std::sync::Arc::new(isOperatorUnaryFunction) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<bool> + 'static>))?;
+            tys2 = List::select(tys2.clone(), (std::sync::Arc::new(isOperatorUnaryFunction) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<bool> + 'static>))?;
             exps1 = deoverloadUnaryUserdefNoConstructor(tys1.clone(), inExp1.clone(), inType1.clone(), metamodelica::nil())?;
             exps2 = deoverloadUnaryUserdefNoConstructor(tys2.clone(), inExp2.clone(), inType2.clone(), metamodelica::nil())?;
             resExps = deoverloadBinaryUserdefNoConstructorListLhs(types.clone(), exps1.clone(), inExp2.clone(), inType2.clone(), metamodelica::nil())?;
@@ -3763,7 +3763,7 @@ fn binaryCastConstructor(mut inCache: FCore::Cache, mut env: FCore::Graph, mut i
             (cache.clone(), resExps.clone())
         },
         _ => {
-            errorMultipleValid(List::map(exps.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _))), info.clone())?;
+            errorMultipleValid(List::map(exps.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)))?, info.clone())?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

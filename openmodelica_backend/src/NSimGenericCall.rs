@@ -100,15 +100,15 @@ impl Default for NSimGenericCall {
     }
 }
 pub use self::NSimGenericCall::{SINGLE_GENERIC_CALL,IF_GENERIC_CALL,WHEN_GENERIC_CALL};
-pub fn mapShallow(mut call: Arc<NSimGenericCall>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Arc<NSimGenericCall> {
+pub fn mapShallow(mut call: Arc<NSimGenericCall>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<NSimGenericCall>> {
     pub type mapExp = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>;
 
     let mut call: Arc<NSimGenericCall> = call;
     call = (::match_deref::match_deref! { match &(call.clone()) {
         Deref @ SINGLE_GENERIC_CALL { .. } => {
             assign_variant_field!(call => NSimGenericCall::SINGLE_GENERIC_CALL;
-                lhs = func(var_field!((*call).lhs, NSimGenericCall::SINGLE_GENERIC_CALL).clone()).unwrap(),
-                rhs = func(var_field!((*call).rhs, NSimGenericCall::SINGLE_GENERIC_CALL).clone()).unwrap()
+                lhs = func(var_field!((*call).lhs, NSimGenericCall::SINGLE_GENERIC_CALL).clone())?,
+                rhs = func(var_field!((*call).rhs, NSimGenericCall::SINGLE_GENERIC_CALL).clone())?
             );
             call.clone()
         },
@@ -116,7 +116,7 @@ pub fn mapShallow(mut call: Arc<NSimGenericCall>, mut func: Arc<dyn ::std::ops::
             assign_variant_field!(call => NSimGenericCall::IF_GENERIC_CALL; branches = ({
         let mut __acc: Arc<metamodelica::List<Arc<SimBranch::SimBranch>>> = metamodelica::nil();
         for mut branch in (var_field!((*call).branches, NSimGenericCall::IF_GENERIC_CALL).clone()).into_iter().cloned() {
-            let __x = SimBranch::mapShallow(branch.clone(), func.clone());
+            let __x = SimBranch::mapShallow(branch.clone(), func.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -127,7 +127,7 @@ pub fn mapShallow(mut call: Arc<NSimGenericCall>, mut func: Arc<dyn ::std::ops::
             assign_variant_field!(call => NSimGenericCall::WHEN_GENERIC_CALL; branches = ({
         let mut __acc: Arc<metamodelica::List<Arc<SimBranch::SimBranch>>> = metamodelica::nil();
         for mut branch in (var_field!((*call).branches, NSimGenericCall::WHEN_GENERIC_CALL).clone()).into_iter().cloned() {
-            let __x = SimBranch::mapShallow(branch.clone(), func.clone());
+            let __x = SimBranch::mapShallow(branch.clone(), func.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -137,7 +137,7 @@ pub fn mapShallow(mut call: Arc<NSimGenericCall>, mut func: Arc<dyn ::std::ops::
         _ => call.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    call
+    Ok(call)
 }
 
 pub fn toString(mut call: Arc<NSimGenericCall>) -> Result<ArcStr> {
@@ -273,7 +273,7 @@ pub mod SimIterator {
     }
     pub use self::SimIterator::{SIM_ITERATOR_RANGE,SIM_ITERATOR_LIST};
     pub fn toString(mut iter: Arc<SimIterator>) -> Result<ArcStr> {
-        pub fn subIterString(mut sub_iter: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, metamodelica::Array<Arc<Expression::NFExpression>>)>>) -> ArcStr {
+        pub fn subIterString(mut sub_iter: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, metamodelica::Array<Arc<Expression::NFExpression>>)>>) -> Result<ArcStr> {
             let mut r#str: ArcStr = List::toString(({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
         for mut tpl in (sub_iter.clone()).into_iter().cloned() {
@@ -281,14 +281,14 @@ pub mod SimIterator {
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("(")).clone(), (literal!(", ")).clone(), (literal!(")")).clone(), false, 0).unwrap();
-            r#str
+    }), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("(")).clone(), (literal!(", ")).clone(), (literal!(")")).clone(), false, 0)?;
+            Ok(r#str)
         }
 
         let mut r#str: ArcStr = arcstr::literal!("");
         r#str = ((::match_deref::match_deref! { match &(iter.clone()) {
-        Deref @ SIM_ITERATOR_RANGE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*ComponentRef::toString(var_field!((*iter).name, SimIterator::SIM_ITERATOR_RANGE).clone())?); __mm_s.push_str(&*literal!(" | start:")); __mm_s.push_str(&*Expression::toString(var_field!((*iter).start, SimIterator::SIM_ITERATOR_RANGE).clone())?); __mm_s.push_str(&*literal!(", step:")); __mm_s.push_str(&*Expression::toString(var_field!((*iter).step, SimIterator::SIM_ITERATOR_RANGE).clone())?); __mm_s.push_str(&*literal!(", stop:")); __mm_s.push_str(&*Expression::toString(var_field!((*iter).stop, SimIterator::SIM_ITERATOR_RANGE).clone())?); __mm_s.push_str(&*literal!(", size: ")); __mm_s.push_str(&*Expression::toString(var_field!((*iter).size, SimIterator::SIM_ITERATOR_RANGE).clone())?); __mm_s.push_str(&*literal!("}")); __mm_s.push_str(&*subIterString(var_field!((*iter).sub_iter, SimIterator::SIM_ITERATOR_RANGE).clone())); ArcStr::from(__mm_s) },
-        Deref @ SIM_ITERATOR_LIST { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*ComponentRef::toString(var_field!((*iter).name, SimIterator::SIM_ITERATOR_LIST).clone())?); __mm_s.push_str(&*literal!(" | list: ")); __mm_s.push_str(&*List::toString(var_field!((*iter).lst, SimIterator::SIM_ITERATOR_LIST).clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 10)?); __mm_s.push_str(&*literal!("}")); __mm_s.push_str(&*subIterString(var_field!((*iter).sub_iter, SimIterator::SIM_ITERATOR_LIST).clone())); ArcStr::from(__mm_s) },
+        Deref @ SIM_ITERATOR_RANGE { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*ComponentRef::toString(var_field!((*iter).name, SimIterator::SIM_ITERATOR_RANGE).clone())?); __mm_s.push_str(&*literal!(" | start:")); __mm_s.push_str(&*Expression::toString(var_field!((*iter).start, SimIterator::SIM_ITERATOR_RANGE).clone())?); __mm_s.push_str(&*literal!(", step:")); __mm_s.push_str(&*Expression::toString(var_field!((*iter).step, SimIterator::SIM_ITERATOR_RANGE).clone())?); __mm_s.push_str(&*literal!(", stop:")); __mm_s.push_str(&*Expression::toString(var_field!((*iter).stop, SimIterator::SIM_ITERATOR_RANGE).clone())?); __mm_s.push_str(&*literal!(", size: ")); __mm_s.push_str(&*Expression::toString(var_field!((*iter).size, SimIterator::SIM_ITERATOR_RANGE).clone())?); __mm_s.push_str(&*literal!("}")); __mm_s.push_str(&*subIterString(var_field!((*iter).sub_iter, SimIterator::SIM_ITERATOR_RANGE).clone())?); ArcStr::from(__mm_s) },
+        Deref @ SIM_ITERATOR_LIST { .. } => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*ComponentRef::toString(var_field!((*iter).name, SimIterator::SIM_ITERATOR_LIST).clone())?); __mm_s.push_str(&*literal!(" | list: ")); __mm_s.push_str(&*List::toString(var_field!((*iter).lst, SimIterator::SIM_ITERATOR_LIST).clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 10)?); __mm_s.push_str(&*literal!("}")); __mm_s.push_str(&*subIterString(var_field!((*iter).sub_iter, SimIterator::SIM_ITERATOR_LIST).clone())?); ArcStr::from(__mm_s) },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } })).clone();
         Ok(r#str)
@@ -369,16 +369,16 @@ pub mod SimIterator {
     }
 
     pub fn convert(mut iter: Arc<SimIterator>) -> Result<OldBackendDAE::SimIterator> {
-        pub fn convertSubIterator(mut sub_iter: (Arc<ComponentRef::NFComponentRef>, metamodelica::Array<Arc<Expression::NFExpression>>)) -> (Arc<DAE::ComponentRef>, metamodelica::Array<Arc<DAE::Exp>>) {
-            let mut old_sub_iter: (Arc<DAE::ComponentRef>, metamodelica::Array<Arc<DAE::Exp>>) = (ComponentRef::toDAE(Util::tuple21(sub_iter.clone())).unwrap(), metamodelica::arrayFromVec(({
+        pub fn convertSubIterator(mut sub_iter: (Arc<ComponentRef::NFComponentRef>, metamodelica::Array<Arc<Expression::NFExpression>>)) -> Result<(Arc<DAE::ComponentRef>, metamodelica::Array<Arc<DAE::Exp>>)> {
+            let mut old_sub_iter: (Arc<DAE::ComponentRef>, metamodelica::Array<Arc<DAE::Exp>>) = (ComponentRef::toDAE(Util::tuple21(sub_iter.clone()))?, metamodelica::arrayFromVec(({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
         for mut e in (Util::tuple22(sub_iter.clone())).borrow().iter() {
-            let __x = Expression::toDAE(e.clone(), false).unwrap();
+            let __x = Expression::toDAE(e.clone(), false)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }).into_iter().cloned().collect()));
-            old_sub_iter
+            Ok(old_sub_iter)
         }
 
         let mut old_iter: OldBackendDAE::SimIterator = <OldBackendDAE::SimIterator as ::std::default::Default>::default();
@@ -386,7 +386,7 @@ pub mod SimIterator {
         Deref @ SIM_ITERATOR_RANGE { .. } => OldBackendDAE::SimIterator::SIM_ITERATOR_RANGE { name: ComponentRef::toDAE(var_field!((*iter).name, SimIterator::SIM_ITERATOR_RANGE).clone())?, start: Expression::toDAE(var_field!((*iter).start, SimIterator::SIM_ITERATOR_RANGE).clone(), false)?, step: Expression::toDAE(var_field!((*iter).step, SimIterator::SIM_ITERATOR_RANGE).clone(), false)?, stop: Expression::toDAE(var_field!((*iter).stop, SimIterator::SIM_ITERATOR_RANGE).clone(), false)?, size: Expression::toDAE(var_field!((*iter).size, SimIterator::SIM_ITERATOR_RANGE).clone(), false)?, non_resizable_size: Expression::getInteger(var_field!((*iter).size, SimIterator::SIM_ITERATOR_RANGE).clone(), false)?, sub_iter: ({
         let mut __acc: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, metamodelica::Array<Arc<DAE::Exp>>)>> = metamodelica::nil();
         for mut si in (var_field!((*iter).sub_iter, SimIterator::SIM_ITERATOR_RANGE).clone()).into_iter().cloned() {
-            let __x = convertSubIterator(si.clone());
+            let __x = convertSubIterator(si.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -394,7 +394,7 @@ pub mod SimIterator {
         Deref @ SIM_ITERATOR_LIST { .. } => OldBackendDAE::SimIterator::SIM_ITERATOR_LIST { name: ComponentRef::toDAE(var_field!((*iter).name, SimIterator::SIM_ITERATOR_LIST).clone())?, lst: var_field!((*iter).lst, SimIterator::SIM_ITERATOR_LIST).clone(), size: var_field!((*iter).size, SimIterator::SIM_ITERATOR_LIST).clone(), sub_iter: ({
         let mut __acc: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, metamodelica::Array<Arc<DAE::Exp>>)>> = metamodelica::nil();
         for mut si in (var_field!((*iter).sub_iter, SimIterator::SIM_ITERATOR_LIST).clone()).into_iter().cloned() {
-            let __x = convertSubIterator(si.clone());
+            let __x = convertSubIterator(si.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -431,7 +431,7 @@ pub mod SimBranch {
         }
     }
     pub use self::SimBranch::{SIM_BRANCH,SIM_BRANCH_STMT};
-    pub fn mapShallow(mut branch: Arc<SimBranch>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Arc<SimBranch> {
+    pub fn mapShallow(mut branch: Arc<SimBranch>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<SimBranch>> {
         type mapExp = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>;
 
         let mut branch: Arc<SimBranch> = branch;
@@ -440,7 +440,7 @@ pub mod SimBranch {
             assign_variant_field!(branch => SimBranch::SIM_BRANCH; body = ({
         let mut __acc: Arc<metamodelica::List<(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>)>> = metamodelica::nil();
         for mut tpl in (var_field!((*branch).body, SimBranch::SIM_BRANCH).clone()).into_iter().cloned() {
-            let __x = (func(Util::tuple21(tpl.clone())).unwrap(), func(Util::tuple22(tpl.clone())).unwrap());
+            let __x = (func(Util::tuple21(tpl.clone()))?, func(Util::tuple22(tpl.clone()))?);
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -451,7 +451,7 @@ pub mod SimBranch {
             assign_variant_field!(branch => SimBranch::SIM_BRANCH_STMT; body = ({
         let mut __acc: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
         for mut stmt in (var_field!((*branch).body, SimBranch::SIM_BRANCH_STMT).clone()).into_iter().cloned() {
-            let __x = Statement::mapExp(stmt.clone(), func.clone());
+            let __x = Statement::mapExp(stmt.clone(), func.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -461,7 +461,7 @@ pub mod SimBranch {
         _ => branch.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        branch
+        Ok(branch)
     }
 
     pub fn toString(mut branch: Arc<SimBranch>) -> Result<ArcStr> {

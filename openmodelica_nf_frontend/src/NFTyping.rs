@@ -266,7 +266,7 @@ pub fn typeClassType(mut clsNode: Arc<InstNode::InstNode>, mut componentBinding:
             InstNode::updateClass(cls.clone(), clsNode.clone())?;
             ty.clone()
         },
-        Deref @ Class::INSTANCED_CLASS { restriction: Deref @ Restriction::FUNCTION, .. } if (InstNode::isComponent(instanceNode.clone())) => {
+        Deref @ Class::INSTANCED_CLASS { restriction: Deref @ Restriction::FUNCTION, .. } if (InstNode::isComponent(instanceNode.clone())?) => {
             let __pa0 = ::match_deref::match_deref! { match &(Function::typeNodeCache(clsNode.clone(), InstContext::FUNCTION.clone())?) {
                 Deref @ metamodelica::List::Cons { head: __pa0, tail: _ } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
@@ -349,8 +349,8 @@ pub fn checkConnectorTypeBalance(mut component: Arc<InstNode::InstNode>) -> Resu
     if !(Prefixes::ConnectorType::isConnector(Component::connectorType(comp.clone()))) {
         return Ok(());
     }
-    parent = InstNode::instanceParent(component.clone());
-    if InstNode::isComponent(parent.clone()) && Component::isConnector(InstNode::component(parent.clone())?) {
+    parent = InstNode::instanceParent(component.clone())?;
+    if InstNode::isComponent(parent.clone())? && Component::isConnector(InstNode::component(parent.clone())?) {
         return Ok(());
     }
     (pots, flows, streams, known_size) = Component::countConnectorVars(comp.clone(), true)?;
@@ -478,7 +478,7 @@ pub fn checkComponentStreamAttribute(mut cty: i32, mut ty: Arc<Type::NFType>, mu
     let mut ety: Arc<Type::NFType> = Arc::new(Type::ANY);
     if Prefixes::ConnectorType::isFlowOrStream(cty.clone()) {
         ety = Type::arrayElementType(ty.clone());
-        if !(Type::isReal(ety.clone()) || Type::isComplex(ety.clone())) {
+        if !(Type::isReal(ety.clone())? || Type::isComplex(ety.clone())) {
             Error::addSourceMessageAndFail(Error::NON_REAL_FLOW_OR_STREAM.clone(), list![(Prefixes::ConnectorType::toString(cty.clone())).clone(), (InstNode::name(component.clone())?).clone()], InstNode::info(component.clone())?)?;
             unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
         }
@@ -501,7 +501,7 @@ pub fn typeIterator(mut iterator: Arc<InstNode::InstNode>, mut range: Arc<Expres
                 Error::addSourceMessageAndFail(Error::NON_PARAMETER_ITERATOR_RANGE.clone(), list![(Expression::toString(exp.clone())?).clone()], info.clone())?;
                 unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
             }
-            if !(Type::isVector(ty.clone())) {
+            if !(Type::isVector(ty.clone())?) {
                 Error::addSourceMessageAndFail(Error::FOR_EXPRESSION_TYPE_ERROR.clone(), list![(Expression::toString(exp.clone())?).clone(), (Type::toString(ty.clone())?).clone()], info.clone())?;
                 unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
             }
@@ -680,7 +680,7 @@ pub fn subscriptDimExp(mut dimExp: Arc<Expression::NFExpression>, mut component:
         return Ok(dimExp.clone());
     }
     subs = metamodelica::nil();
-    parent = InstNode::instanceParent(component.clone());
+    parent = InstNode::instanceParent(component.clone())?;
     while exp_dims.clone() > 0 && !(InstNode::isEmpty(parent.clone())) {
         parent_dims = InstNode::dimensionCount(parent.clone());
         for mut i in (1..=parent_dims.clone()).rev() {
@@ -690,7 +690,7 @@ pub fn subscriptDimExp(mut dimExp: Arc<Expression::NFExpression>, mut component:
                 break;
             }
         }
-        parent = InstNode::instanceParent(parent.clone());
+        parent = InstNode::instanceParent(parent.clone())?;
     }
     dimExp = Expression::applySubscripts(subs.clone(), dimExp.clone(), false)?;
     Ok(dimExp)
@@ -726,8 +726,8 @@ pub fn getRecordElementBinding(mut component: Arc<InstNode::InstNode>, mut conte
     let mut parent: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);
     let mut parent_binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
-    parent = InstNode::instanceParent(component.clone());
-    if InstNode::isComponent(parent.clone()) {
+    parent = InstNode::instanceParent(component.clone())?;
+    if InstNode::isComponent(parent.clone())? {
         comp = InstNode::component(parent.clone())?;
         parent_binding = Component::getBinding(comp.clone());
         if Binding::isUnbound(parent_binding.clone()) {
@@ -887,7 +887,7 @@ pub fn checkComponentBindingVariability(mut name: ArcStr, mut component: Arc<Com
     let mut comp_eff_var: Variability = Variability::CONSTANT;
     let mut bind_var: Variability = Variability::CONSTANT;
     let mut bind_eff_var: Variability = Variability::CONSTANT;
-    comp_var = Component::variability(component.clone());
+    comp_var = Component::variability(component.clone())?;
     comp_eff_var = Prefixes::effectiveVariability(comp_var.clone());
     bind_var = Binding::variability(binding.clone())?;
     bind_eff_var = Prefixes::effectiveVariability(bind_var.clone());
@@ -1470,7 +1470,7 @@ pub fn typeCrefDim(mut cref: Arc<ComponentRef::NFComponentRef>, mut dimIndex: i3
     let mut c: Arc<Component::NFComponent> = Arc::new(Component::WILD);
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut dims: metamodelica::Array<Arc<Dimension::NFDimension>> = Default::default();
-    if ComponentRef::hasSubscripts(cref.clone()) {
+    if ComponentRef::hasSubscripts(cref.clone())? {
         (_, ty, _, _) = typeCref(cref.clone(), context.clone(), info.clone())?;
         (dim, error) = nthDimensionBoundsChecked(ty.clone(), dimIndex.clone(), 0)?;
         return Ok((dim.clone(), error.clone()));
@@ -1559,7 +1559,7 @@ pub fn typeCrefExp(mut cref: Arc<ComponentRef::NFComponentRef>, mut context: i32
     (cr, ty, node_var, subs_var) = typeCref(cref.clone(), context.clone(), info.clone())?;
     exp = Arc::new(Expression::NFExpression::CREF { ty: ty.clone(), cref: cr.clone() });
     variability = Prefixes::variabilityMax(node_var.clone(), subs_var.clone());
-    purity = ComponentRef::purity(cref.clone());
+    purity = ComponentRef::purity(cref.clone())?;
     Ok((exp, ty, variability, purity))
 }
 
@@ -1568,7 +1568,7 @@ pub fn typeCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut context: i32, m
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut nodeVariability: Variability = Variability::CONSTANT;
     let mut subsVariability: Variability = Variability::CONSTANT;
-    if InstContext::inFunction(context.clone()) && ComponentRef::isTime(cref.clone()) {
+    if InstContext::inFunction(context.clone()) && ComponentRef::isTime(cref.clone())? {
         Error::addSourceMessage(Error::EXP_INVALID_IN_FUNCTION.clone(), list![(literal!("time")).clone()], info.clone())?;
         bail!("fail");
     }
@@ -1890,7 +1890,7 @@ pub fn typeMatrixComma(mut elements: Arc<metamodelica::List<Arc<Expression::NFEx
             let mut e = e.clone();
             (exp, ty1, var, pur) = typeExp(e.clone(), context.clone(), info.clone(), false)?;
             expl = metamodelica::cons(exp.clone(), expl.clone());
-            if Type::isEqual(ty.clone(), Arc::new(crate::NFType::UNKNOWN)) {
+            if Type::isEqual(ty.clone(), Arc::new(crate::NFType::UNKNOWN))? {
                 ty = ty1.clone();
             } else {
                 (_, _, ty2, mk) = TypeCheck::matchExpressions(Arc::new(Expression::NFExpression::INTEGER { value: 0 }), Type::arrayElementType(ty1.clone()), Arc::new(Expression::NFExpression::INTEGER { value: 0 }), Type::arrayElementType(ty.clone()), TypeCheck::DEFAULT_OPTIONS.clone())?;
@@ -2015,7 +2015,7 @@ pub fn typeTuple(mut elements: Arc<metamodelica::List<Arc<Expression::NFExpressi
     (expl, tyl, valr) = typeExpl(elements.clone(), next_context.clone(), info.clone())?;
     tupleType = Arc::new(Type::NFType::TUPLE { types: tyl.clone(), names: None });
     tupleExp = Arc::new(Expression::NFExpression::TUPLE { ty: tupleType.clone(), elements: expl.clone() });
-    if !(List::all(expl.clone(), (std::sync::Arc::new(fnptr!(Expression::isCref, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>))) {
+    if !(List::all(expl.clone(), (std::sync::Arc::new(fnptr!(Expression::isCref, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>))?) {
         Error::addSourceMessage(Error::TUPLE_ASSIGN_CREFS_ONLY.clone(), list![(Expression::toString(tupleExp.clone())?).clone()], info.clone())?;
         bail!("fail");
     }
@@ -2090,7 +2090,7 @@ pub fn typeSize(mut sizeExp: Arc<Expression::NFExpression>, mut context: i32, mu
                     Error::addSourceMessage(Error::INVALID_ARGUMENT_TYPE_FIRST_ARRAY.clone(), list![(literal!("size")).clone()], info.clone())?;
                     bail!("fail");
                 }
-                if Type::isEmptyArray(exp_ty.clone()) && !(InstContext::inFunction(context.clone())) {
+                if Type::isEmptyArray(exp_ty.clone())? && !(InstContext::inFunction(context.clone())) {
                     expl = Array::mapList(Type::arrayDims(exp_ty.clone()), (std::sync::Arc::new(Dimension::sizeExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
                     exp = Expression::makeExpArray(expl.clone(), Arc::new(crate::NFType::INTEGER), false);
                     exp = Expression::makeSubscriptedExp(list![Subscript::makeIndex(index.clone())?], exp.clone(), false)?;
@@ -2203,7 +2203,7 @@ pub fn typeClassSections(mut classNode: Arc<InstNode::InstNode>, mut context: i3
             sections = (::match_deref::match_deref! { match &(sections.clone()) {
         Deref @ Sections::SECTIONS { .. } => {
             initial_context = InstContext::set(context.clone(), InstContext::INITIAL.clone());
-            Sections::map(sections.clone(), (std::sync::Arc::new({ let __pe_b1 = InstContext::set(context.clone(), InstContext::EQUATION.clone()); move |__pe_a0| typeEquation(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<Arc<Equation::NFEquation>> + 'static>), (std::sync::Arc::new({ let __pe_b1 = InstContext::set(context.clone(), InstContext::ALGORITHM.clone()); move |__pe_a0| typeAlgorithm(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Algorithm::NFAlgorithm>) -> Result<Arc<Algorithm::NFAlgorithm>> + 'static>), (std::sync::Arc::new({ let __pe_b1 = InstContext::set(initial_context.clone(), InstContext::EQUATION.clone()); move |__pe_a0| typeEquation(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<Arc<Equation::NFEquation>> + 'static>), (std::sync::Arc::new({ let __pe_b1 = InstContext::set(initial_context.clone(), InstContext::ALGORITHM.clone()); move |__pe_a0| typeAlgorithm(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Algorithm::NFAlgorithm>) -> Result<Arc<Algorithm::NFAlgorithm>> + 'static>))
+            Sections::map(sections.clone(), (std::sync::Arc::new({ let __pe_b1 = InstContext::set(context.clone(), InstContext::EQUATION.clone()); move |__pe_a0| typeEquation(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<Arc<Equation::NFEquation>> + 'static>), (std::sync::Arc::new({ let __pe_b1 = InstContext::set(context.clone(), InstContext::ALGORITHM.clone()); move |__pe_a0| typeAlgorithm(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Algorithm::NFAlgorithm>) -> Result<Arc<Algorithm::NFAlgorithm>> + 'static>), (std::sync::Arc::new({ let __pe_b1 = InstContext::set(initial_context.clone(), InstContext::EQUATION.clone()); move |__pe_a0| typeEquation(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<Arc<Equation::NFEquation>> + 'static>), (std::sync::Arc::new({ let __pe_b1 = InstContext::set(initial_context.clone(), InstContext::ALGORITHM.clone()); move |__pe_a0| typeAlgorithm(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Algorithm::NFAlgorithm>) -> Result<Arc<Algorithm::NFAlgorithm>> + 'static>))?
         },
         Deref @ Sections::EXTERNAL { .. } => {
             Error::addSourceMessage(Error::TRANS_VIOLATION.clone(), list![(InstNode::name(classNode.clone())?).clone(), (Restriction::toString(var_field!((*cls).restriction, Class::NFClass::INSTANCED_CLASS).clone())).clone(), (literal!("external declaration")).clone()], InstNode::info(classNode.clone())?)?;
@@ -2315,7 +2315,7 @@ pub fn typeExternalArg(mut arg: Arc<Expression::NFExpression>, mut info: SourceI
             (::match_deref::match_deref! { match &(arg.clone()) {
         Deref @ Expression::CREF { .. } => outArg.clone(),
         _ => {
-            if Type::isScalarBuiltin(ty.clone()) && var.clone() == Variability::CONSTANT.clone() {
+            if Type::isScalarBuiltin(ty.clone())? && var.clone() == Variability::CONSTANT.clone() {
                 outArg = Ceval::evalExp(outArg.clone(), Ceval::EvalTarget::new(info.clone(), InstContext::FUNCTION.clone(), None))?;
             } else {
                 Error::addSourceMessage(Error::EXTERNAL_ARG_WRONG_EXP.clone(), list![(Expression::toString(outArg.clone())?).clone()], info.clone())?;
@@ -2399,7 +2399,7 @@ pub fn checkExternalCallResult(mut result: Arc<ComponentRef::NFComponentRef>, mu
         Error::addSourceMessage(Error::EXTERNAL_FUNCTION_RESULT_ARRAY_TYPE.clone(), list![(Type::toString(ty.clone())?).clone()], info.clone())?;
         bail!("fail");
     }
-    if ComponentRef::variability(result.clone()) < Variability::DISCRETE.clone() {
+    if ComponentRef::variability(result.clone())? < Variability::DISCRETE.clone() {
         Error::addSourceMessage(Error::EXTERNAL_FUNCTION_RESULT_NOT_VAR.clone(), metamodelica::nil(), info.clone())?;
         bail!("fail");
     }
@@ -2560,7 +2560,7 @@ pub fn checkConnector(mut connExp: Arc<Expression::NFExpression>, mut info: Sour
                 unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
             }
             if ComponentRef::subscriptsVariability(cr.clone(), Prefixes::Variability::CONSTANT.clone())? > Variability::PARAMETER.clone() {
-                subs = ComponentRef::subscriptsAllFlat(cr.clone());
+                subs = ComponentRef::subscriptsAllFlat(cr.clone())?;
                 for mut sub in &*subs.clone() {
                     let mut sub = sub.clone();
                     if Subscript::variability(sub.clone())? > Variability::PARAMETER.clone() {
@@ -2917,7 +2917,7 @@ pub fn typeCondition(mut condition: Arc<Expression::NFExpression>, mut context: 
     } else {
         ety = ty.clone();
     }
-    if !(Type::isBoolean(ety.clone()) || allowClock.clone() && Type::isClock(ety.clone())) {
+    if !(Type::isBoolean(ety.clone()) || allowClock.clone() && Type::isClock(ety.clone())?) {
         Error::addSourceMessage(errorMsg.clone(), list![(Expression::toString(condition.clone())?).clone(), (Type::toString(ty.clone())?).clone()], info.clone())?;
         bail!("fail");
     }
@@ -2945,7 +2945,7 @@ pub fn typeIfEquation(mut branches: Arc<metamodelica::List<Arc<Equation::Branch:
         (cond, _, var) = typeCondition(cond.clone(), cond_context.clone(), source.clone(), Error::IF_CONDITION_TYPE_ERROR.clone(), false, false)?;
         if var.clone() > Variability::PARAMETER.clone() || Structural::isExpressionNotFixed(cond.clone(), false, 100)? {
             next_context = InstContext::set(next_context.clone(), InstContext::NONEXPANDABLE.clone());
-        } else if var.clone() == Variability::PARAMETER.clone() && (accum_var.clone() <= Variability::PARAMETER.clone() || Equation::containsList(eql.clone(), (std::sync::Arc::new(Equation::isConnection) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<bool> + 'static>))) {
+        } else if var.clone() == Variability::PARAMETER.clone() && (accum_var.clone() <= Variability::PARAMETER.clone() || Equation::containsList(eql.clone(), (std::sync::Arc::new(Equation::isConnection) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<bool> + 'static>))?) {
             var = Variability::STRUCTURAL_PARAMETER.clone();
         }
         accum_var = Prefixes::variabilityMax(accum_var.clone(), var.clone());
@@ -3003,7 +3003,7 @@ pub fn typeWhenEquation(mut branches: Arc<metamodelica::List<Arc<Equation::Branc
         cond = __pa0.clone();
         body = __pa1.clone();
         (cond, ty, var) = typeWhenCondition(cond.clone(), context.clone(), source.clone(), true)?;
-        if Type::isClock(ty.clone()) {
+        if Type::isClock(ty.clone())? {
             if (branches.clone().len() as i32) != 1 {
                 if referenceEq(&branch.clone(),&listHead(branches.clone())?) {
                     Error::addSourceMessage(Error::ELSE_WHEN_CLOCK.clone(), metamodelica::nil(), ElementSource::getInfo(source.clone()))?;
@@ -3034,7 +3034,7 @@ pub fn typeWhenCondition(mut condition: Arc<Expression::NFExpression>, mut conte
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut variability: Variability = Variability::CONSTANT;
     (outCondition, ty, variability) = typeCondition(condition.clone(), context.clone(), source.clone(), Error::WHEN_CONDITION_TYPE_ERROR.clone(), true, allowClock.clone())?;
-    if variability.clone() > Variability::IMPLICITLY_DISCRETE.clone() && !(Type::isClock(ty.clone())) {
+    if variability.clone() > Variability::IMPLICITLY_DISCRETE.clone() && !(Type::isClock(ty.clone())?) {
         Error::addSourceMessage(Error::NON_DISCRETE_WHEN_CONDITION.clone(), list![(Expression::toString(condition.clone())?).clone()], ElementSource::getInfo(source.clone()))?;
         bail!("fail");
     }

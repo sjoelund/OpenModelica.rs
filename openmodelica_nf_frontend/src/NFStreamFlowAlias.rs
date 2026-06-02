@@ -88,17 +88,17 @@ pub mod FlowAlias {
 
     pub type FLOW_ALIAS = FlowAlias;
 
-    pub fn isFlow(mut alias: Arc<FlowAlias>) -> bool {
-        let mut isFlow: bool = Util::applyOptionOrDefault(alias.variable.clone(), (std::sync::Arc::new(fnptr!(Variable::isFlow, Arc<Variable::NFVariable>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Variable::NFVariable>) -> Result<bool> + 'static>), false);
-        isFlow
+    pub fn isFlow(mut alias: Arc<FlowAlias>) -> Result<bool> {
+        let mut isFlow: bool = Util::applyOptionOrDefault(alias.variable.clone(), (std::sync::Arc::new(fnptr!(Variable::isFlow, Arc<Variable::NFVariable>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Variable::NFVariable>) -> Result<bool> + 'static>), false)?;
+        Ok(isFlow)
     }
 
 }
 
-pub fn EntryHash(mut entry: Entry) -> i32 {
+pub fn EntryHash(mut entry: Entry) -> Result<i32> {
     let mut hash: i32 = 0;
-    hash = ComponentRef::hash(entry.name.clone());
-    hash
+    hash = ComponentRef::hash(entry.name.clone())?;
+    Ok(hash)
 }
 
 pub fn EntryEqual(mut entry1: Entry, mut entry2: Entry) -> Result<bool> {
@@ -124,7 +124,7 @@ pub fn eliminateAliases(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Ar
     (flatModel, sets) = fromModel(flatModel.clone())?;
     (flatModel, aliases) = createAliases(sets.clone(), flatModel.clone())?;
     replacements = buildReplacements(aliases.clone())?;
-    flatModel = applyReplacements(replacements.clone(), flatModel.clone());
+    flatModel = applyReplacements(replacements.clone(), flatModel.clone())?;
     Ok(flatModel)
 }
 
@@ -141,11 +141,11 @@ pub fn fromModel(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<(Arc<Flat
     (alias_eqs, flow_aliases, other_eqs) = sortEquations(flatModel.equations.clone())?;
     assign_field!(flatModel.equations = other_eqs.clone());
     sets = List::threadFold(flow_aliases.clone(), alias_eqs.clone(), (std::sync::Arc::new(addAliasEquation) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>, Arc<Equation::NFEquation>, Sets) -> Result<Sets> + 'static>), sets.clone())?;
-    sets = List::fold(flatModel.variables.clone(), (std::sync::Arc::new(addAliasBinding) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Variable::NFVariable>, Sets) -> Result<Sets> + 'static>), sets.clone());
+    sets = List::fold(flatModel.variables.clone(), (std::sync::Arc::new(addAliasBinding) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Variable::NFVariable>, Sets) -> Result<Sets> + 'static>), sets.clone())?;
     for mut v in &*flatModel.variables.clone() {
         let mut v = v.clone();
         alias = Arc::new(FlowAlias::FlowAlias { name: v.name.clone(), negative: false, variable: None });
-        opt_alias = getEntry(alias.clone(), sets.clone());
+        opt_alias = getEntry(alias.clone(), sets.clone())?;
         if isSome(opt_alias.clone()) {
             let __pa0 = ::match_deref::match_deref! { match &(opt_alias.clone()) {
                 Some(__pa0) => __pa0.clone(),
@@ -244,7 +244,7 @@ pub fn addAliasPair(mut alias1: Arc<FlowAlias::FlowAlias>, mut alias2: Arc<FlowA
         let mut flippedSign: bool = false;
         let mut entry: Arc<FlowAlias::FlowAlias> = Arc::new(<FlowAlias::FlowAlias as ::std::default::Default>::default());
         (set, sets) = findSet(alias.clone(), sets.clone())?;
-        let __pa0 = ::match_deref::match_deref! { match &(getEntry(alias.clone(), sets.clone())) {
+        let __pa0 = ::match_deref::match_deref! { match &(getEntry(alias.clone(), sets.clone())?) {
             Some(__pa0) => __pa0.clone(),
             _ => bail!("pattern mismatch"),
         } };
@@ -288,7 +288,7 @@ pub fn getAliasVarsFromExpPair(mut exp1: Arc<Expression::NFExpression>, mut exp2
     let mut aliases: Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>> = metamodelica::nil();
     aliases = getAliasVarsFromExp(exp1.clone(), exp2.clone(), metamodelica::nil())?;
     aliases = getAliasVarsFromExp(exp2.clone(), exp1.clone(), aliases.clone())?;
-    if (aliases.clone().len() as i32) != 2 || List::none(aliases.clone(), (std::sync::Arc::new(isStreamConnectorFlow) as std::sync::Arc<dyn ::std::ops::Fn(Arc<FlowAlias::FlowAlias>) -> Result<bool> + 'static>)) {
+    if (aliases.clone().len() as i32) != 2 || List::none(aliases.clone(), (std::sync::Arc::new(isStreamConnectorFlow) as std::sync::Arc<dyn ::std::ops::Fn(Arc<FlowAlias::FlowAlias>) -> Result<bool> + 'static>))? {
         aliases = metamodelica::nil();
     }
     Ok(aliases)
@@ -304,7 +304,7 @@ pub fn getAliasVarsFromExp(mut exp: Arc<Expression::NFExpression>, mut otherExp:
     aliases = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } if (ComponentRef::nodeVariability(var_field!((*exp).cref, Expression::NFExpression::CREF).clone())? > Variability::DISCRETE.clone()) => metamodelica::cons(Arc::new(FlowAlias::FlowAlias { name: var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), negative: false, variable: None }), aliases.clone()),
         Deref @ Expression::UNARY { exp: e @ Deref @ Expression::CREF { .. }, .. } if (ComponentRef::nodeVariability(var_field!((**e).cref, Expression::NFExpression::CREF).clone())? > Variability::DISCRETE.clone()) => metamodelica::cons(Arc::new(FlowAlias::FlowAlias { name: var_field!((**e).cref, Expression::NFExpression::CREF).clone(), negative: true, variable: None }), aliases.clone()),
-        Deref @ Expression::BINARY { operator: Deref @ Operator::OPERATOR { op: Operator::Op::ADD, .. }, .. } if (Expression::isZero(otherExp.clone())) => {
+        Deref @ Expression::BINARY { operator: Deref @ Operator::OPERATOR { op: Operator::Op::ADD, .. }, .. } if (Expression::isZero(otherExp.clone())?) => {
             aliases1 = getAliasVarsFromExp(var_field!((*exp).exp1, Expression::NFExpression::BINARY).clone(), var_field!((*exp).exp2, Expression::NFExpression::BINARY).clone(), metamodelica::nil())?;
             aliases2 = getAliasVarsFromExp(var_field!((*exp).exp2, Expression::NFExpression::BINARY).clone(), var_field!((*exp).exp1, Expression::NFExpression::BINARY).clone(), metamodelica::nil())?;
             if (aliases1.clone().len() as i32) == 1 && (aliases2.clone().len() as i32) == 1 {
@@ -337,7 +337,7 @@ pub fn isStreamConnectorFlow(mut alias: Arc<FlowAlias::FlowAlias>) -> Result<boo
         return Ok(isStreamFlow.clone());
     }
     node = ComponentRef::node(alias.name.clone())?;
-    if !(InstNode::isComponent(node.clone())) || !(Component::isFlow(InstNode::component(node.clone())?)) {
+    if !(InstNode::isComponent(node.clone())?) || !(Component::isFlow(InstNode::component(node.clone())?)) {
         isStreamFlow = false;
         return Ok(isStreamFlow.clone());
     }
@@ -371,7 +371,7 @@ pub fn negateSet(mut set: i32, mut sets: Sets) -> Result<Sets> {
     let __range0 = 1..=(indices.clone().borrow().len() as i32);
     for mut i in __range0 {
         if findRoot(i.clone(), nodes.clone())? == root.clone() {
-            alias = UnorderedMap::keyAt(elements.clone(), i.clone());
+            alias = UnorderedMap::keyAt(elements.clone(), i.clone())?;
             assign_field!(alias.negative = !(alias.negative.clone()));
             Vector::updateNoBounds(elements.keys.clone(), i.clone(), alias.clone());
         }
@@ -421,7 +421,7 @@ pub fn buildReplacements(mut aliases: Arc<metamodelica::List<(Arc<FlowAlias::Flo
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut negative_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut rest_aliases: Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>> = metamodelica::nil();
-    replacements = UnorderedMap::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
+    replacements = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
     for mut set in &*aliases.clone() {
         let mut set = set.clone();
         (representative, rest_aliases) = set.clone();
@@ -436,10 +436,10 @@ pub fn buildReplacements(mut aliases: Arc<metamodelica::List<(Arc<FlowAlias::Flo
     Ok(replacements)
 }
 
-pub fn applyReplacements(mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>, mut flatModel: Arc<FlatModel::NFFlatModel>) -> Arc<FlatModel::NFFlatModel> {
+pub fn applyReplacements(mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>, mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<FlatModel::NFFlatModel>> {
     let mut flatModel: Arc<FlatModel::NFFlatModel> = flatModel;
-    flatModel = FlatModel::mapExp(flatModel.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new({ let __pe_b0 = replacements.clone(); move |__pe_a1| applyReplacementsInExp(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>));
-    flatModel
+    flatModel = FlatModel::mapExp(flatModel.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new({ let __pe_b0 = replacements.clone(); move |__pe_a1| applyReplacementsInExp(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+    Ok(flatModel)
 }
 
 pub fn applyReplacementsInExp(mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>, mut exp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
@@ -447,7 +447,7 @@ pub fn applyReplacementsInExp(mut replacements: Arc<UnorderedMap::UnorderedMap<A
     let mut opt_val: Option<Arc<Expression::NFExpression>> = None;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } => {
-            opt_val = UnorderedMap::get(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), replacements.clone());
+            opt_val = UnorderedMap::get(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), replacements.clone())?;
             if (isSome(opt_val.clone())) {Util::getOption(opt_val.clone())?} else {exp.clone()}
         },
         _ => exp.clone(),
@@ -473,7 +473,7 @@ pub fn defineRepresentative(mut aliases: Arc<metamodelica::List<Arc<FlowAlias::F
         (alias, start_values, nominal_values, min_values, max_values) = evalAliasAttributes(alias.clone(), start_values.clone(), nominal_values.clone(), min_values.clone(), max_values.clone())?;
         accum_aliases = metamodelica::cons(alias.clone(), accum_aliases.clone());
     }
-    (representative, restAliases) = List::findAndRemove(aliases.clone(), (std::sync::Arc::new(fnptr!(FlowAlias::isFlow, Arc<FlowAlias::FlowAlias>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<FlowAlias::FlowAlias>) -> Result<bool> + 'static>))?;
+    (representative, restAliases) = List::findAndRemove(aliases.clone(), (std::sync::Arc::new(FlowAlias::isFlow) as std::sync::Arc<dyn ::std::ops::Fn(Arc<FlowAlias::FlowAlias>) -> Result<bool> + 'static>))?;
     start_binding = if (start_values.clone().is_empty()) {Binding::EMPTY_BINDING().clone()} else {listHead(start_values.clone())?};
     nominal_binding = if (nominal_values.clone().is_empty()) {Binding::EMPTY_BINDING().clone()} else {listHead(nominal_values.clone())?};
     min_binding = computeLimit(min_values.clone(), (std::sync::Arc::new(Ceval::evalBuiltinMax2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
@@ -699,10 +699,10 @@ pub fn addList(mut entries: Arc<metamodelica::List<Arc<FlowAlias::FlowAlias>>>, 
     Ok(sets)
 }
 
-pub fn contains(mut entry: Entry, mut sets: Sets) -> bool {
+pub fn contains(mut entry: Entry, mut sets: Sets) -> Result<bool> {
     let mut found: bool = false;
-    found = isSome(UnorderedMap::get(entry.clone(), sets.elements.clone()));
-    found
+    found = isSome(UnorderedMap::get(entry.clone(), sets.elements.clone())?);
+    Ok(found)
 }
 
 pub fn emptySets(mut setCount: i32) -> Sets {
@@ -712,7 +712,7 @@ pub fn emptySets(mut setCount: i32) -> Sets {
     let mut sz: i32 = 0;
     sz = std::cmp::max(setCount.clone(), 3);
     nodes = arrayCreate(sz.clone(), -1);
-    elements = UnorderedMap::new((std::sync::Arc::new(fnptr!(EntryHash, Arc<FlowAlias::FlowAlias>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<FlowAlias::FlowAlias>) -> Result<i32> + 'static>), (std::sync::Arc::new(EntryEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<FlowAlias::FlowAlias>, Arc<FlowAlias::FlowAlias>) -> Result<bool> + 'static>), 1);
+    elements = UnorderedMap::new((std::sync::Arc::new(EntryHash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<FlowAlias::FlowAlias>) -> Result<i32> + 'static>), (std::sync::Arc::new(EntryEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<FlowAlias::FlowAlias>, Arc<FlowAlias::FlowAlias>) -> Result<bool> + 'static>), 1);
     sets = Sets { nodes: nodes.clone(), elements: elements.clone(), nodeCount: 0 };
     sets
 }
@@ -758,7 +758,7 @@ pub fn find(mut entry: Entry, mut sets: Sets) -> Result<(Sets, i32)> {
     let mut sets: Sets = sets;
     let mut index: i32 = 0;
     let mut oindex: Option<i32> = None;
-    oindex = UnorderedMap::get(entry.clone(), sets.elements.clone());
+    oindex = UnorderedMap::get(entry.clone(), sets.elements.clone())?;
     if isSome(oindex.clone()) {
         let __pa0 = ::match_deref::match_deref! { match &(oindex.clone()) {
             Some(__pa0) => __pa0.clone(),
@@ -797,20 +797,20 @@ pub fn findSet(mut entry: Entry, mut sets: Sets) -> Result<(i32, Sets)> {
     Ok((set, updatedSets))
 }
 
-pub fn findSetArrayIndex(mut entry: Entry, mut sets: Sets) -> i32 {
+pub fn findSetArrayIndex(mut entry: Entry, mut sets: Sets) -> Result<i32> {
     let mut set: i32 = 0;
-    set = UnorderedMap::getOrFail(entry.clone(), sets.elements.clone());
+    set = UnorderedMap::getOrFail(entry.clone(), sets.elements.clone())?;
     while set.clone() > 0 {
         set = sets.nodes.borrow()[(set.clone()-1) as usize].clone();
     }
     set = -(set.clone());
-    set
+    Ok(set)
 }
 
-pub fn getEntry(mut entry: Entry, mut sets: Sets) -> Option<Arc<FlowAlias::FlowAlias>> {
+pub fn getEntry(mut entry: Entry, mut sets: Sets) -> Result<Option<Arc<FlowAlias::FlowAlias>>> {
     let mut outEntry: Option<Arc<FlowAlias::FlowAlias>> = None;
-    outEntry = UnorderedMap::getKey(entry.clone(), sets.elements.clone());
-    outEntry
+    outEntry = UnorderedMap::getKey(entry.clone(), sets.elements.clone())?;
+    Ok(outEntry)
 }
 
 pub fn getNodeCount(mut sets: Sets) -> i32 {

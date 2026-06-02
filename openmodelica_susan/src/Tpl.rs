@@ -426,7 +426,7 @@ pub fn pushBlock(mut txt: Text, mut inBlockType: Arc<BlockType>) -> Result<Text>
             nchars = Mutable::access(var_field!(txt.nchars, Text::FILE_TEXT).clone());
             aind = Mutable::access(var_field!(txt.aind, Text::FILE_TEXT).clone());
             isstart = Mutable::access(var_field!(txt.isstart, Text::FILE_TEXT).clone());
-            Mutable::update(var_field!(txt.blocksStack, Text::FILE_TEXT).clone(), metamodelica::cons(BlockTypeFileText { bt: inBlockType.clone(), nchars: nchars.clone(), aind: aind.clone(), isstart: isstart.clone(), tell: Mutable::create(textFileTell(txt.clone())), septok: Mutable::create(None) }, Mutable::access(var_field!(txt.blocksStack, Text::FILE_TEXT).clone())));
+            Mutable::update(var_field!(txt.blocksStack, Text::FILE_TEXT).clone(), metamodelica::cons(BlockTypeFileText { bt: inBlockType.clone(), nchars: nchars.clone(), aind: aind.clone(), isstart: isstart.clone(), tell: Mutable::create(textFileTell(txt.clone())?), septok: Mutable::create(None) }, Mutable::access(var_field!(txt.blocksStack, Text::FILE_TEXT).clone())));
             let () = (::match_deref::match_deref! { match &(inBlockType.clone()) {
         Deref @ BlockType::BT_INDENT { width: w } => {
             Mutable::update(var_field!(txt.nchars, Text::FILE_TEXT).clone(), nchars.clone() + w.clone());
@@ -498,7 +498,7 @@ pub fn popBlock(mut txt: Text) -> Result<Text> {
     } })) => {
             oldisstart = Mutable::access(var_field!(txt.isstart, Text::FILE_TEXT).clone());
             if oldisstart.clone() {
-                if textFileTell(txt.clone()) == Mutable::access(blk.tell.clone()) {
+                if textFileTell(txt.clone())? == Mutable::access(blk.tell.clone()) {
                     Mutable::update(var_field!(txt.nchars, Text::FILE_TEXT).clone(), blk.nchars.clone());
                 } else {
                     if Mutable::access(var_field!(txt.isstart, Text::FILE_TEXT).clone()) {
@@ -609,7 +609,7 @@ pub fn nextIter(mut txt: Text) -> Result<Text> {
             let mut septok: Mutable::Mutable<Option<Arc<StringToken>>>;
             let () = (::match_deref::match_deref! { match &((Mutable::access(var_field!(txt.blocksStack, Text::FILE_TEXT).clone())).get(1)?) {
         BlockTypeFileText { septok, tell, bt: Deref @ BlockType::BT_ITER { index0: i0, options: iopts }, .. } => {
-            tellpos = textFileTell(txt.clone());
+            tellpos = textFileTell(txt.clone())?;
             if Mutable::access(tell.clone()) != tellpos.clone() {
                 Mutable::update(tell.clone(), tellpos.clone());
                 txt2 = txt.clone();
@@ -1759,12 +1759,12 @@ pub fn redirectToFile(mut text: Text, mut fileName: ArcStr) -> Result<Text> {
     Ok(text)
 }
 
-pub fn closeFile(mut text: Text) -> Text {
+pub fn closeFile(mut text: Text) -> Result<Text> {
     let mut text: Text = text;
-    let mut file: File::File = File::File(getTextOpaqueFile(text.clone()).unwrap()).unwrap();
+    let mut file: File::File = File::File(getTextOpaqueFile(text.clone())?)?;
     File::releaseReference(file.clone());
     text = emptyTxt.clone();
-    text
+    Ok(text)
 }
 
 pub fn booleanString(mut b: bool) -> ArcStr {
@@ -1833,11 +1833,11 @@ fn newlineFile(mut inText: Text) -> Result<()> {
     Ok(())
 }
 
-fn textFileTell(mut inText: Text) -> i32 {
+fn textFileTell(mut inText: Text) -> Result<i32> {
     let mut tell: i32 = 0;
-    let mut file: File::File = File::File(getTextOpaqueFile(inText.clone()).unwrap()).unwrap();
+    let mut file: File::File = File::File(getTextOpaqueFile(inText.clone())?)?;
     tell = File::tell(file.clone());
-    tell
+    Ok(tell)
 }
 
 fn handleTok(mut txt: Text) -> Result<()> {

@@ -137,8 +137,8 @@ fn singularSystemCheck1(mut nVars: i32, mut nEqns: i32, mut iSyst: Arc<BackendDA
     mT = __pa5.clone();
     m = __pa6.clone();
     (matchingFunc, _) = matchingAlgorithm.clone();
-    m = AdjacencyMatrix::absAdjacencyMatrix(m.clone());
-    mT = AdjacencyMatrix::absAdjacencyMatrix(mT.clone());
+    m = AdjacencyMatrix::absAdjacencyMatrix(m.clone())?;
+    mT = AdjacencyMatrix::absAdjacencyMatrix(mT.clone())?;
     syst = BackendDAEUtil::setEqSystMatrices(iSyst.clone(), Some(m.clone()), Some(mT.clone()), Some((mapEqnIncRow.clone(), mapIncRowEqn.clone(), crate::BackendDAE::IndexType::ABSOLUTE, scalar.clone(), processed.clone())))?;
     assign_field!(syst.matching = Arc::new(crate::BackendDAE::Matching::NO_MATCHING));
     let (__pa9, __pa7, __pa8) = ::match_deref::match_deref! { match &(matchingFunc(syst.clone(), iShared.clone(), true, (crate::BackendDAE::IndexReduction::INDEX_REDUCTION, eqnConstr.clone()), (std::sync::Arc::new(foundSingularSystem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>, i32, Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, metamodelica::Array<i32>, metamodelica::Array<i32>, (BackendDAE::StateOrder, metamodelica::Array<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, i32)) -> Result<(Arc<metamodelica::List<i32>>, i32, Arc<BackendDAE::EqSystem>, Arc<BackendDAE::Shared>, metamodelica::Array<i32>, metamodelica::Array<i32>, (BackendDAE::StateOrder, metamodelica::Array<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, i32))> + 'static>), arg.clone())?) {
@@ -190,13 +190,13 @@ fn foundSingularSystem(mut eqns: Arc<metamodelica::List<Arc<metamodelica::List<i
     let mut var_str: ArcStr = arcstr::literal!("");
     if !(eqns.clone().is_empty()) {
         (_, _, _, mapIncRowEqn, _) = inArg.clone();
-        n = BackendDAEUtil::systemSize(isyst.clone());
-        unmatched = List::flatten(eqns.clone());
-        unmatched1 = List::map1r(unmatched.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), mapIncRowEqn.clone());
+        n = BackendDAEUtil::systemSize(isyst.clone())?;
+        unmatched = List::flatten(eqns.clone())?;
+        unmatched1 = List::map1r(unmatched.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), mapIncRowEqn.clone())?;
         unmatched1 = List::uniqueIntN(unmatched1.clone(), (mapIncRowEqn.clone().borrow().len() as i32))?;
         eqn_str = (BackendDump::dumpMarkedEqns(isyst.clone(), List::sort(unmatched1.clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?)?).clone();
         vars = Matching::getUnassigned(n.clone(), inAssignments2.clone(), metamodelica::nil());
-        vars = List::fold1(unmatched.clone(), (std::sync::Arc::new(fnptr!(getAssignedVars, i32, metamodelica::Array<i32>, Arc<metamodelica::List<i32>>)) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>, Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), inAssignments1.clone(), vars.clone());
+        vars = List::fold1(unmatched.clone(), (std::sync::Arc::new(fnptr!(getAssignedVars, i32, metamodelica::Array<i32>, Arc<metamodelica::List<i32>>)) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>, Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), inAssignments1.clone(), vars.clone())?;
         var_str = (BackendDump::dumpMarkedVars(isyst.clone(), List::sort(vars.clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?)?).clone();
         source = BackendEquation::markedEquationSource(isyst.clone(), listHead(unmatched1.clone())?)?;
         info = ElementSource::getElementSourceFileInfo(source.clone());

@@ -1749,12 +1749,15 @@ pub mod Dangerous {
     ///
     /// Mirrors `stringGet`'s `ArcStr` parameter (MetaModelica `String` values
     /// are `ArcStr` in the translation); `ArcStr` derefs to `str` so
-    /// `as_bytes()` works directly. Returns `Result` for signature parity with
-    /// `stringGet`, though the unchecked read never returns `Err`.
-    pub fn stringGetNoBoundsChecking(str: ArcStr, index: i32) -> Result<i32> {
+    /// `as_bytes()` works directly. This is the *dangerous*, no-bounds-checking
+    /// variant: it performs an unchecked read and therefore returns the raw
+    /// `i32` byte value, never a `Result`. The caller is responsible for
+    /// supplying an in-bounds index — matching the MetaModelica
+    /// `MetaModelica.Dangerous.stringGetNoBoundsChecking` contract.
+    pub fn stringGetNoBoundsChecking(str: ArcStr, index: i32) -> i32 {
         let idx = (index - 1) as usize; // 1-based to 0-based
         // SAFETY: Caller must ensure index is in bounds.
-        unsafe { Ok((*str.as_bytes().get_unchecked(idx)) as i32) }
+        unsafe { (*str.as_bytes().get_unchecked(idx)) as i32 }
     }
     /// Reverses a list in place, destructively.
     ///
@@ -2859,8 +2862,8 @@ mod tests {
         #[test]
         fn test_string_get_no_bounds_checking() {
             let s = arcstr::literal!("hello");
-            assert_eq!(stringGetNoBoundsChecking(s.clone(), 1).unwrap(), b'h' as i32);
-            assert_eq!(stringGetNoBoundsChecking(s, 5).unwrap(), b'o' as i32);
+            assert_eq!(stringGetNoBoundsChecking(s.clone(), 1), b'h' as i32);
+            assert_eq!(stringGetNoBoundsChecking(s, 5), b'o' as i32);
         }
 
         #[test]

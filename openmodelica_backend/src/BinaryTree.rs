@@ -530,7 +530,7 @@ pub fn binTreeintersection(mut bt1: Arc<BinTree>, mut bt2: Arc<BinTree>, mut iBt
     let mut oBt: Arc<BinTree> = Arc::new(<BinTree as ::std::default::Default>::default());
     let mut keys: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     (keys, _) = bintreeToList(bt1.clone())?;
-    oBt = List::fold1(keys.clone(), (std::sync::Arc::new(binTreeintersection1) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<BinTree>, Arc<BinTree>) -> Result<Arc<BinTree>> + 'static>), bt2.clone(), iBt.clone());
+    oBt = List::fold1(keys.clone(), (std::sync::Arc::new(binTreeintersection1) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<BinTree>, Arc<BinTree>) -> Result<Arc<BinTree>> + 'static>), bt2.clone(), iBt.clone())?;
     Ok(oBt)
 }
 

@@ -50,17 +50,17 @@ use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_dump::Dump;
 use openmodelica_util_datatypes_basic::List;
 
-pub fn printIstmtsStr(mut inStatements: GlobalScript::Statements) -> ArcStr {
+pub fn printIstmtsStr(mut inStatements: GlobalScript::Statements) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inStatements.clone() {
         GlobalScript::Statements { interactiveStmtLst: ref stmts, .. } => {
-            stringDelimitList(List::map(stmts.clone(), (std::sync::Arc::new(printIstmtStr) as std::sync::Arc<dyn ::std::ops::Fn(GlobalScript::Statement) -> Result<ArcStr> + 'static>)), (literal!("; ")).clone())
+            stringDelimitList(List::map(stmts.clone(), (std::sync::Arc::new(printIstmtStr) as std::sync::Arc<dyn ::std::ops::Fn(GlobalScript::Statement) -> Result<ArcStr> + 'static>))?, (literal!("; ")).clone())
         },
         _ => {
             literal!("printIstmtsStr: unknown")
         },
     })).clone();
-    outString
+    Ok(outString)
 }
 
 pub fn printIstmtStr(mut inStatement: GlobalScript::Statement) -> Result<ArcStr> {

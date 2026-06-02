@@ -57,9 +57,12 @@
 //! * Walking `for`/`while` loop bodies — these are walked uniformly with the
 //!   surrounding scope (no special semantics needed for fallibility).
 //! * Distinguishing `pure` external annotations.
-//! * Identifying which uses of a function value are as a function pointer
-//!   vs. as a direct call — that classification belongs to codegen, not to
-//!   this purely-analytical phase.
+//!
+//! Calls *through* a function value (higher-order callbacks) ARE handled: see
+//! [`Walk::calls_fn_value`]. Because every function value lowers to
+//! `Arc<dyn Fn(...) -> Result<...>>`, invoking one is unconditionally fallible,
+//! so a function that calls one of its own function-typed parameters/locals is
+//! marked fallible without needing to resolve the callback's target.
 //! * Refining the analysis from `Absyn::Exp`/`Absyn::Algorithm` to
 //!   `typedexp::TypedExp`. The typed IR carries resolved call targets that
 //!   would yield more precise results, but it is also expensive to compute
@@ -169,7 +172,10 @@ pub fn builtin_fallibility(name: &str) -> Option<Fallibility> {
         "fail" => Fallible,
 
         // ── MetaModelica::Dangerous — bounds-checked variants drop the check ─
-        // The "no bounds checking" variants are infallible by construction.
+        // The "no bounds checking" variants are infallible by construction:
+        // their Rust impls perform an unchecked read/write and return the raw
+        // value (`arrayGetNoBoundsChecking` → element, `stringGetNoBoundsChecking`
+        // → `i32`, `arrayUpdateNoBoundsChecking` → array), never a `Result`.
         // listSetRest / listSetFirst bail on Nil — fallible.
         "arrayGetNoBoundsChecking"
         | "arrayUpdateNoBoundsChecking"
@@ -282,6 +288,17 @@ struct Walk {
     /// True if the body contains an explicit `fail()` call outside a catch
     /// boundary.  (Catch boundaries are not yet tracked; see module docs.)
     has_fail: bool,
+    /// True if the body calls *through a function value* — i.e. invokes one of
+    /// the function's own function-typed parameters/locals (a callback), or a
+    /// function-typed field of such a local. Every function value in our
+    /// codegen lowers to `Arc<dyn Fn(...) -> Result<...>>` (see codegen
+    /// `fmt_param_ty` / partial-alias emission), so calling one is *always*
+    /// fallible regardless of the target — which we cannot, and need not,
+    /// resolve. This is what makes higher-order functions (`Array.map`,
+    /// `List.fold`, the `AvlTree*` walkers, …) fallible; the older analysis
+    /// silently dropped these unresolved callee names and let codegen emit a
+    /// latent `.unwrap()` instead.
+    calls_fn_value: bool,
     /// Function-level variable names (inputs/outputs/protected component
     /// declarations) that are visible as bindings inside any match in this
     /// function. Used by [`match_is_exhaustive`] / [`absyn_pat_is_irrefutable`]
@@ -310,9 +327,36 @@ impl Walk {
         // names up-front; per-match additions (matchExp.localDecls and
         // each case's localDecls) are layered on top inside
         // `match_is_exhaustive`.
+        // First pass: collect every component name so `outer_scope` is fully
+        // populated before any expression is scanned. `record_call` consults it
+        // to recognise calls through function-typed locals (see
+        // [`Walk::calls_fn_value`]), and a default binding can legally refer to
+        // a local declared later in the same parameter/protected list, so the
+        // scope must be complete up front.
         for m in members {
             if let MM::ClassMember::Component(cm) = m {
                 w.outer_scope.insert(cm.name.clone());
+            }
+        }
+        // Second pass: scan the eagerly-evaluated component bindings.
+        for m in members {
+            if let MM::ClassMember::Component(cm) = m {
+                // A component's default-value binding (`output T x = <exp>;` or
+                // a protected local with an initializer) is evaluated in the
+                // function body — codegen lowers it to a `let x = <exp>;`
+                // statement (see `extract_default_exp` uses in codegen). If
+                // `<exp>` calls a fallible function (e.g. `StringUtil.rest`'s
+                // `output String rest = substring(str, 2, stringLength(str))`),
+                // the enclosing function is fallible too. Scanning the body
+                // algorithms alone misses these bindings, so walk them here.
+                if let Some(exp) = crate::hierarchy::extract_default_exp(&cm.modification) {
+                    w.scan_exp(exp);
+                }
+                // A component `condition` (`T x if <cond>;`) is likewise
+                // evaluated eagerly; fallible calls within it propagate.
+                if let Some(cond) = cm.condition.as_deref() {
+                    w.scan_exp(cond);
+                }
             }
         }
         for it in algorithms {
@@ -525,6 +569,19 @@ impl Walk {
     fn record_call(&mut self, name: &str) {
         if name == "fail" {
             self.has_fail = true;
+        }
+        // A call whose first dotted segment names one of this function's own
+        // parameters/locals is a call *through a function value*: you can only
+        // "call" something of function type, and every function value lowers to
+        // `Arc<dyn Fn(...) -> Result<...>>`, so the call is fallible regardless
+        // of which target the value holds. This covers both a bare callback
+        // parameter `f(x)` and a function-typed field of a local record
+        // `obj.fn(x)`. Package-qualified calls (`List.map`, `SOME(...)`) have a
+        // first segment that is a package / constructor, never a local, so they
+        // are correctly excluded and resolved through the normal call graph.
+        let first_seg = name.split('.').next().unwrap_or(name);
+        if self.outer_scope.contains(first_seg) {
+            self.calls_fn_value = true;
         }
         self.calls.insert(name.to_owned());
     }
@@ -870,7 +927,7 @@ pub fn analyze(hier: &InstanceHierarchy<'_>) -> FallibilityInfo {
                 .unwrap_or_else(|| external_c_calls::lookup_or_panic(c_name, qname));
             matches!(f, Fallibility::Fallible)
         } else {
-            w.has_fail || w.has_match
+            w.has_fail || w.has_match || w.calls_fn_value
         };
         if local {
             fallible.insert(qname.clone());
@@ -907,11 +964,15 @@ pub fn analyze(hier: &InstanceHierarchy<'_>) -> FallibilityInfo {
                 }
                 continue;
             }
-            // Unresolved names: conservatively ignored at this stage. They
-            // typically correspond to user-supplied callback parameters
-            // (function-typed arguments) whose target is only known at the
-            // call site. A precise treatment requires the typed IR — see
-            // module-level docs.
+            // Otherwise unresolved: a call through a function value (a
+            // callback parameter or function-typed local/field) is already
+            // accounted for via [`Walk::calls_fn_value`] during scanning, so it
+            // does not need a call-graph edge here. Anything else that reaches
+            // this point is a name we genuinely could not resolve (e.g. a
+            // resolution gap); it contributes no edge. Marking it fallible
+            // would be sound but would conflate true callbacks with resolution
+            // bugs, so we leave it — `calls_fn_value` already covers the real
+            // higher-order cases.
         }
         // `function Foo = Bar(...)` aliases have no body of their own; their
         // fallibility comes from the base function. Add the resolved edge so

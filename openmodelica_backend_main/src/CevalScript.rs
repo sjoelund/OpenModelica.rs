@@ -377,7 +377,7 @@ fn checkDuplicateTopLevelClasses(mut program: Absyn::Program) -> Result<bool> {
         Deref @ Absyn::Class { info: SourceInfo { .. }, .. } => {
             skip = stringEq(cl.info.fileName.clone(), (literal!("<interactive>")).clone()) || stringEq((System::basename(cl.info.fileName.clone())).clone(), (literal!("ModelicaBuiltin.mo")).clone()) || stringEq((System::basename(cl.info.fileName.clone())).clone(), (literal!("MetaModelicaBuiltin.mo")).clone());
             if !(skip.clone()) {
-                optClassInfo = UnorderedMap::get((cl.name.clone()).clone(), classInfoMap.clone());
+                optClassInfo = UnorderedMap::get((cl.name.clone()).clone(), classInfoMap.clone())?;
                 if isSome(optClassInfo.clone()) {
                     infos = list![Util::getOption(optClassInfo.clone())?, cl.info.clone()];
                     Error::addMultiSourceMessage(Error::DOUBLE_DECLARATION_OF_ELEMENTS.clone(), list![(cl.name.clone()).clone()], infos.clone())?;
@@ -649,7 +649,7 @@ pub fn cevalInteractiveFunctions(mut inCache: FCore::Cache, mut inEnv: FCore::Gr
                     let mut value: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
                     let mut cache = (*cache).clone();
                     (cache, valLst) = Ceval::cevalList(cache.clone(), env.clone(), eLst.clone(), true, msg.clone(), numIter.clone())?;
-                    valLst = List::map1(valLst.clone(), (std::sync::Arc::new(evalCodeTypeName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>, FCore::Graph) -> Result<Arc<Values::Value>> + 'static>), env.clone());
+                    valLst = List::map1(valLst.clone(), (std::sync::Arc::new(evalCodeTypeName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>, FCore::Graph) -> Result<Arc<Values::Value>> + 'static>), env.clone())?;
                     (cache, value) = cevalInteractiveFunctions2(cache.clone(), env.clone(), (name.clone()).clone(), valLst.clone(), msg.clone())?;
                     Ok((cache.clone(), value.clone()))
                 }
@@ -683,7 +683,7 @@ pub fn cevalInteractiveFunctions2(mut cache: FCore::Cache, mut env: FCore::Graph
         }
         __acc.reverse()
     });
-                    paths = List::map1r(paths.clone(), (std::sync::Arc::new(AbsynUtil::joinWithinPath) as std::sync::Arc<dyn ::std::ops::Fn(Absyn::Within, Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> + 'static>), within_.clone());
+                    paths = List::map1r(paths.clone(), (std::sync::Arc::new(AbsynUtil::joinWithinPath) as std::sync::Arc<dyn ::std::ops::Fn(Absyn::Within, Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> + 'static>), within_.clone())?;
                     Ok(ValuesMake::makeCodeTypeNameArray(paths.clone())?)
                 }
                 _ => bail!("nomatch"),
@@ -727,7 +727,7 @@ pub fn cevalInteractiveFunctions2(mut cache: FCore::Cache, mut env: FCore::Graph
                     let mut vals: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
                     let mut newp: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
                     newp = loadFile((str1.clone()).clone(), (encoding.clone()).clone(), SymbolTable::getAbsyn(), b.clone(), b1.clone(), requireExactVersion.clone(), true)?;
-                    vals = List::map(Interactive::getTopClassnames(newp.clone())?, (std::sync::Arc::new(fnptr!(ValuesMake::makeCodeTypeName, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<Arc<Values::Value>> + 'static>));
+                    vals = List::map(Interactive::getTopClassnames(newp.clone())?, (std::sync::Arc::new(fnptr!(ValuesMake::makeCodeTypeName, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<Arc<Values::Value>> + 'static>))?;
                     SymbolTable::setAbsyn(newp.clone())?;
                     Ok(ValuesMake::makeArray(vals.clone())?)
                 }
@@ -880,9 +880,9 @@ pub fn cevalInteractiveFunctions2(mut cache: FCore::Cache, mut env: FCore::Graph
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "sortStrings", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: vals, .. }, tail: Deref @ metamodelica::List::Nil }) => {
                     let mut strs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    strs = List::map(vals.clone(), (std::sync::Arc::new(ValuesUtil::extractValueString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>));
+                    strs = List::map(vals.clone(), (std::sync::Arc::new(ValuesUtil::extractValueString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>))?;
                     strs = List::sort(strs.clone(), (std::sync::Arc::new(fnptr!(Util::strcmpBool, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?;
-                    Ok(ValuesMake::makeArray(List::map(strs.clone(), (std::sync::Arc::new(fnptr!(ValuesMake::makeString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Values::Value>> + 'static>)))?)
+                    Ok(ValuesMake::makeArray(List::map(strs.clone(), (std::sync::Arc::new(fnptr!(ValuesMake::makeString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Values::Value>> + 'static>))?)?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1338,7 +1338,7 @@ pub fn cevalInteractiveFunctions2(mut cache: FCore::Cache, mut env: FCore::Graph
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "system_parallel", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { valueLst: vals, .. }, tail: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::INTEGER { integer: i }, tail: Deref @ metamodelica::List::Nil } }) => {
                     let mut strs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    strs = List::map(vals.clone(), (std::sync::Arc::new(ValuesUtil::extractValueString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>));
+                    strs = List::map(vals.clone(), (std::sync::Arc::new(ValuesUtil::extractValueString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>))?;
                     Ok(ValuesMake::makeIntArray(System::systemCallParallel(strs.clone(), i.clone()))?)
                 }
                 _ => bail!("nomatch"),
@@ -1487,7 +1487,7 @@ pub fn cevalInteractiveFunctions2(mut cache: FCore::Cache, mut env: FCore::Graph
                 (Deref @ "getMessagesStringInternal", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: true }, tail: Deref @ metamodelica::List::Nil }) => {
                     let mut messages: Arc<metamodelica::List<ErrorTypes::TotalMessage>> = metamodelica::nil();
                     messages = List::unique(Error::getMessages());
-                    Ok(ValuesMake::makeArray(List::map(messages.clone(), (std::sync::Arc::new(errorToValue) as std::sync::Arc<dyn ::std::ops::Fn(ErrorTypes::TotalMessage) -> Result<Arc<Values::Value>> + 'static>)))?)
+                    Ok(ValuesMake::makeArray(List::map(messages.clone(), (std::sync::Arc::new(errorToValue) as std::sync::Arc<dyn ::std::ops::Fn(ErrorTypes::TotalMessage) -> Result<Arc<Values::Value>> + 'static>))?)?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1495,7 +1495,7 @@ pub fn cevalInteractiveFunctions2(mut cache: FCore::Cache, mut env: FCore::Graph
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "getMessagesStringInternal", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::BOOL { boolean: false }, tail: Deref @ metamodelica::List::Nil }) => {
-                    Ok(ValuesMake::makeArray(List::map(Error::getMessages(), (std::sync::Arc::new(errorToValue) as std::sync::Arc<dyn ::std::ops::Fn(ErrorTypes::TotalMessage) -> Result<Arc<Values::Value>> + 'static>)))?)
+                    Ok(ValuesMake::makeArray(List::map(Error::getMessages(), (std::sync::Arc::new(errorToValue) as std::sync::Arc<dyn ::std::ops::Fn(ErrorTypes::TotalMessage) -> Result<Arc<Values::Value>> + 'static>))?)?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1527,7 +1527,7 @@ pub fn cevalInteractiveFunctions2(mut cache: FCore::Cache, mut env: FCore::Graph
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ "typeNameStrings", Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::CODE { A: Deref @ Absyn::CodeNode::C_TYPENAME { path } }, tail: Deref @ metamodelica::List::Nil }) => {
-                    Ok(ValuesMake::makeArray(List::map(AbsynUtil::pathToStringList(path.clone())?, (std::sync::Arc::new(fnptr!(ValuesMake::makeString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Values::Value>> + 'static>)))?)
+                    Ok(ValuesMake::makeArray(List::map(AbsynUtil::pathToStringList(path.clone())?, (std::sync::Arc::new(fnptr!(ValuesMake::makeString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Values::Value>> + 'static>))?)?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1686,9 +1686,9 @@ pub fn cevalInteractiveFunctions2(mut cache: FCore::Cache, mut env: FCore::Graph
                     let mut interfaceTypeAssoc: Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<ArcStr>>)>> = metamodelica::nil();
                     sp = SymbolTable::getSCode()?;
                     cl = SCodeUtil::getElementWithPath(sp.clone(), path.clone())?;
-                    interfaceTypeAssoc = List::map1(vals.clone(), (std::sync::Arc::new(getInterfaceTypeAssocElt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>, SourceInfo) -> Result<(ArcStr, Arc<metamodelica::List<ArcStr>>)> + 'static>), SCodeUtil::elementInfo(cl.clone()));
+                    interfaceTypeAssoc = List::map1(vals.clone(), (std::sync::Arc::new(getInterfaceTypeAssocElt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>, SourceInfo) -> Result<(ArcStr, Arc<metamodelica::List<ArcStr>>)> + 'static>), SCodeUtil::elementInfo(cl.clone()))?;
                     interfaceType = getInterfaceType(cl.clone(), interfaceTypeAssoc.clone())?;
-                    List::map1_0(sp.clone(), (std::sync::Arc::new(verifyInterfaceType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Arc<metamodelica::List<ArcStr>>) -> Result<()> + 'static>), interfaceType.clone());
+                    List::map1_0(sp.clone(), (std::sync::Arc::new(verifyInterfaceType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Arc<metamodelica::List<ArcStr>>) -> Result<()> + 'static>), interfaceType.clone())?;
                     Ok(Arc::new(Values::Value::BOOL { boolean: true }))
                 }
                 _ => bail!("nomatch"),
@@ -1790,7 +1790,7 @@ pub fn cevalInteractiveFunctions2(mut cache: FCore::Cache, mut env: FCore::Graph
                     p = SymbolTable::getAbsyn();
                     execStatReset()?;
                     pathstr = (Settings::getModelicaPath(Testsuite::isRunning()?)?).clone();
-                    strs = List::map(cvars.clone(), (std::sync::Arc::new(ValuesUtil::extractValueString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>));
+                    strs = List::map(cvars.clone(), (std::sync::Arc::new(ValuesUtil::extractValueString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>))?;
                     oldLanguageStd = Config::getLanguageStandard()?;
                     b1 = !(stringEq((r#str.clone()).clone(), (literal!("")).clone()));
                     if b1.clone() {
@@ -1854,7 +1854,7 @@ pub fn cevalInteractiveFunctions2(mut cache: FCore::Cache, mut env: FCore::Graph
                     let mut newps: Arc<metamodelica::List<Absyn::Program>> = metamodelica::nil();
                     let mut strs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut outCache: FCore::Cache = outCache.clone();
-                    strs = List::mapMap(vals.clone(), (std::sync::Arc::new(ValuesUtil::extractValueString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(Testsuite::friendlyPath) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>));
+                    strs = List::mapMap(vals.clone(), (std::sync::Arc::new(ValuesUtil::extractValueString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(Testsuite::friendlyPath) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))?;
                     newps = Parser::parallelParseFilesToProgramList(strs.clone(), (encoding.clone()).clone(), i.clone())?;
                     newp = SymbolTable::getAbsyn();
                     for mut p in &*newps.clone() {
@@ -1904,7 +1904,7 @@ pub fn cevalInteractiveFunctions2(mut cache: FCore::Cache, mut env: FCore::Graph
                             Print::clearErrorBuf();
                             filename = (unwrap_break_err!(Testsuite::friendlyPath((filename.clone()).clone()), '__try0)).clone();
                             paths = unwrap_break_err!(Interactive::parseFile((filename.clone()).clone(), (literal!("UTF-8")).clone(), false), '__try0);
-                            vals = List::map(paths.clone(), (std::sync::Arc::new(fnptr!(ValuesMake::makeCodeTypeName, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<Arc<Values::Value>> + 'static>));
+                            vals = unwrap_break_err!(List::map(paths.clone(), (std::sync::Arc::new(fnptr!(ValuesMake::makeCodeTypeName, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<Arc<Values::Value>> + 'static>)), '__try0);
                         }
                         Ok::<_, anyhow::Error>((b.clone(),))
                     } {
@@ -2464,7 +2464,7 @@ pub fn collectDependencies(mut inCache: FCore::Cache, mut env: FCore::Graph, mut
     let mut paths: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
     let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
     (mainFunction, paths, funcs) = getFunctionDependencies(inCache.clone(), functionName.clone())?;
-    dependencies = List::map1(paths.clone(), (std::sync::Arc::new(DAEUtil::getNamedFunction) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<AvlTreePathFunction::Tree>) -> Result<DAE::Function> + 'static>), funcs.clone());
+    dependencies = List::map1(paths.clone(), (std::sync::Arc::new(DAEUtil::getNamedFunction) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<AvlTreePathFunction::Tree>) -> Result<DAE::Function> + 'static>), funcs.clone())?;
     dependencies = List::setDifference(dependencies.clone(), list![mainFunction.clone()])?;
     uniontypePaths = DAEUtil::getUniontypePaths(dependencies.clone(), metamodelica::nil())?;
     (outCache, metarecordTypes) = Lookup::lookupMetarecordsRecursive(inCache.clone(), env.clone(), uniontypePaths.clone())?;
@@ -2649,8 +2649,8 @@ fn generateFunctions2(mut icache: FCore::Cache, mut ienv: FCore::Graph, mut p: A
                 pathsMetarecord = metamodelica::nil();
             } else {
                 path = Arc::new(Absyn::Path::FULLYQUALIFIED { path: Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() }) });
-                elements = getNonPartialElementsForInstantiatedClass(sp.clone(), cl.clone(), path.clone());
-                (paths, pathsMetarecord) = List::fold22(elements.clone(), (std::sync::Arc::new(findFunctionsToCompile) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Arc<Absyn::Path>, Arc<metamodelica::List<Arc<SCode::Element>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Result<(Arc<metamodelica::List<Arc<Absyn::Path>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>)> + 'static>), path.clone(), sp.clone(), metamodelica::nil(), metamodelica::nil());
+                elements = getNonPartialElementsForInstantiatedClass(sp.clone(), cl.clone(), path.clone())?;
+                (paths, pathsMetarecord) = List::fold22(elements.clone(), (std::sync::Arc::new(findFunctionsToCompile) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Arc<Absyn::Path>, Arc<metamodelica::List<Arc<SCode::Element>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Result<(Arc<metamodelica::List<Arc<Absyn::Path>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>)> + 'static>), path.clone(), sp.clone(), metamodelica::nil(), metamodelica::nil())?;
             }
             metarecords = metamodelica::nil();
             for mut mr in &*pathsMetarecord.clone() {
@@ -2661,16 +2661,16 @@ fn generateFunctions2(mut icache: FCore::Cache, mut ienv: FCore::Graph, mut p: A
             cache = instantiateDaeFunctions(cache.clone(), env.clone(), paths.clone())?;
             InstHashTable::release()?;
             funcs = FCore::getFunctionTree(cache.clone());
-            d = List::map2(paths.clone(), (std::sync::Arc::new(DAEUtil::getNamedFunctionWithError) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<AvlTreePathFunction::Tree>, SourceInfo) -> Result<DAE::Function> + 'static>), funcs.clone(), info.clone());
-            let (_, (_, __pa0)) = DAEUtil::traverseDAEFunctions(d.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(fnptr!(matchQualifiedCalls, Arc<DAE::Exp>, Arc<metamodelica::List<ArcStr>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<ArcStr>>)> + 'static>), metamodelica::nil()));
+            d = List::map2(paths.clone(), (std::sync::Arc::new(DAEUtil::getNamedFunctionWithError) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<AvlTreePathFunction::Tree>, SourceInfo) -> Result<DAE::Function> + 'static>), funcs.clone(), info.clone())?;
+            let (_, (_, __pa0)) = DAEUtil::traverseDAEFunctions(d.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(fnptr!(matchQualifiedCalls, Arc<DAE::Exp>, Arc<metamodelica::List<ArcStr>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<ArcStr>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<ArcStr>>)> + 'static>), metamodelica::nil()))?;
             dependencies = __pa0.clone();
             dependencies = List::sort(dependencies.clone(), (std::sync::Arc::new(fnptr!(Util::strcmpBool, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?;
-            dependencies = List::map1(dependencies.clone(), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (literal!(".h")).clone());
+            dependencies = List::map1(dependencies.clone(), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (literal!(".h")).clone())?;
             nameHeader = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(".h")); ArcStr::from(__mm_s) }).clone();
-            strs = List::map1r(metamodelica::cons((nameHeader.clone()).clone(), dependencies.clone()), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (literal!("$(GEN_DIR)")).clone());
+            strs = List::map1r(metamodelica::cons((nameHeader.clone()).clone(), dependencies.clone()), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (literal!("$(GEN_DIR)")).clone())?;
             System::writeFile(({ let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(".deps")); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$(GEN_DIR)")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(".o: $(GEN_DIR)")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(".c")); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*stringDelimitList(strs.clone(), (literal!(" ")).clone())); ArcStr::from(__mm_s) }).clone())?;
-            dependencies = List::map1(dependencies.clone(), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (literal!("\"")).clone());
-            dependencies = List::map1r(dependencies.clone(), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (literal!("#include \"")).clone());
+            dependencies = List::map1(dependencies.clone(), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (literal!("\"")).clone())?;
+            dependencies = List::map1r(dependencies.clone(), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (literal!("#include \"")).clone())?;
             translateFunctions(p.clone(), (name.clone()).clone(), None, d.clone(), metamodelica::nil(), dependencies.clone())?;
             r#str = (Tpl::tplString((std::sync::Arc::new(Unparsing::programExternalHeaderFromTypes) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<metamodelica::List<Arc<DAE::Type>>>) -> Result<Tpl::Text> + 'static>), metarecords.clone())?).clone();
             System::writeFile(({ let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!("_records.c")); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("#include <meta/meta_modelica.h>\n")); __mm_s.push_str(&*r#str.clone()); ArcStr::from(__mm_s) }).clone())?;
@@ -2705,19 +2705,19 @@ fn findFunctionsToCompile(mut elt: Arc<SCode::Element>, mut pathPrefix: Arc<Absy
         _ => accMetarecord.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    elements = getNonPartialElementsForInstantiatedClass(sp.clone(), elt.clone(), path.clone());
-    (paths, pathsMetarecord) = List::fold22(elements.clone(), (std::sync::Arc::new(findFunctionsToCompile) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Arc<Absyn::Path>, Arc<metamodelica::List<Arc<SCode::Element>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Result<(Arc<metamodelica::List<Arc<Absyn::Path>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>)> + 'static>), path.clone(), sp.clone(), paths.clone(), pathsMetarecord.clone());
+    elements = getNonPartialElementsForInstantiatedClass(sp.clone(), elt.clone(), path.clone())?;
+    (paths, pathsMetarecord) = List::fold22(elements.clone(), (std::sync::Arc::new(findFunctionsToCompile) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Arc<Absyn::Path>, Arc<metamodelica::List<Arc<SCode::Element>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Result<(Arc<metamodelica::List<Arc<Absyn::Path>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>)> + 'static>), path.clone(), sp.clone(), paths.clone(), pathsMetarecord.clone())?;
     Ok((paths, pathsMetarecord))
 }
 
-fn getNonPartialElementsForInstantiatedClass(mut sp: Arc<metamodelica::List<Arc<SCode::Element>>>, mut cl: Arc<SCode::Element>, mut p: Arc<Absyn::Path>) -> Arc<metamodelica::List<Arc<SCode::Element>>> {
+fn getNonPartialElementsForInstantiatedClass(mut sp: Arc<metamodelica::List<Arc<SCode::Element>>>, mut cl: Arc<SCode::Element>, mut p: Arc<Absyn::Path>) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
     let mut elts: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     let mut env: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
     let mut skip: bool = false;
     let mut eltsTmp: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     skip = (::match_deref::match_deref! { match &(cl.clone()) {
         Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::CLASS_EXTENDS { .. }, .. } => false,
-        Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { elementLst: eltsTmp, .. }, .. } => !(List::any(eltsTmp.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::isElementExtendsOrClassExtends, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>))),
+        Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { elementLst: eltsTmp, .. }, .. } => !(List::any(eltsTmp.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::isElementExtendsOrClassExtends, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>))?),
         _ => true,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -2725,9 +2725,9 @@ fn getNonPartialElementsForInstantiatedClass(mut sp: Arc<metamodelica::List<Arc<
         if '__try0: {
             ErrorExt::setCheckpoint((literal!("getNonPartialElementsForInstantiatedClass")).clone());
             (_, env, _, _) = unwrap_break_err!(Inst::instantiateClass(FCore::emptyCache(), InnerOuter::emptyInstHierarchy().clone(), sp.clone(), AbsynUtil::makeNotFullyQualified(p.clone()), false, true, false), '__try0);
-            elts = FCore::RefTree::fold(FNode::children(FNode::fromRef(FGraph::lastScopeRef(env.clone()).unwrap()).unwrap()).unwrap(), (std::sync::Arc::new(addNonPartialClassRef) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> + 'static>), metamodelica::nil());
+            elts = unwrap_break_err!(FCore::RefTree::fold(FNode::children(FNode::fromRef(FGraph::lastScopeRef(env.clone())?)?)?, (std::sync::Arc::new(addNonPartialClassRef) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>, Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> + 'static>), metamodelica::nil()), '__try0);
             ErrorExt::rollBack((literal!("getNonPartialElementsForInstantiatedClass")).clone());
-            return elts.clone();
+            return Ok(elts.clone());
             Ok::<(), anyhow::Error>(())
         }.is_err() {
         }
@@ -2749,7 +2749,7 @@ fn getNonPartialElementsForInstantiatedClass(mut sp: Arc<metamodelica::List<Arc<
         _ => metamodelica::nil(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    elts
+    Ok(elts)
 }
 
 fn addNonPartialClassRef(mut name: ArcStr, mut r#ref: metamodelica::Array<FCore::Node>, mut accum: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
@@ -2805,11 +2805,11 @@ pub fn cevalCallFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
                         Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("CALL: record constructor: func: ")); __mm_s.push_str(&*AbsynUtil::pathString(funcpath.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" type path: ")); __mm_s.push_str(&*AbsynUtil::pathString(complexName.clone(), (literal!(".")).clone(), true, false)?); ArcStr::from(__mm_s) }).clone())?;
                     }
                     let true = (AbsynUtil::pathEqual(funcpath.clone(), complexName.clone())) else { bail!("pattern mismatch") };
-                    (pubVarLst, proVarLst) = List::splitOnTrue(varLst.clone(), (std::sync::Arc::new(Types::isPublicVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<bool> + 'static>));
-                    expl = List::map1(proVarLst.clone(), (std::sync::Arc::new(Types::getBindingExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<Absyn::Path>) -> Result<Arc<DAE::Exp>> + 'static>), funcpath.clone());
+                    (pubVarLst, proVarLst) = List::splitOnTrue(varLst.clone(), (std::sync::Arc::new(Types::isPublicVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<bool> + 'static>))?;
+                    expl = List::map1(proVarLst.clone(), (std::sync::Arc::new(Types::getBindingExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<Absyn::Path>) -> Result<Arc<DAE::Exp>> + 'static>), funcpath.clone())?;
                     (cache, proVallst) = Ceval::cevalList(cache.clone(), env.clone(), expl.clone(), r#impl.clone(), msg.clone(), numIter.clone())?;
-                    pubVarNames = List::map(pubVarLst.clone(), (std::sync::Arc::new(Expression::varName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>));
-                    proVarNames = List::map(proVarLst.clone(), (std::sync::Arc::new(Expression::varName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>));
+                    pubVarNames = List::map(pubVarLst.clone(), (std::sync::Arc::new(Expression::varName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>))?;
+                    proVarNames = List::map(proVarLst.clone(), (std::sync::Arc::new(Expression::varName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>))?;
                     varNames = listAppend(pubVarNames.clone(), proVarNames.clone());
                     vallst = listAppend(pubVallst.clone(), proVallst.clone());
                     Ok((cache.clone(), Arc::new(Values::Value::RECORD { record_: funcpath.clone(), orderd: vallst.clone(), comp: varNames.clone(), index: -1 })))
@@ -3025,7 +3025,7 @@ fn checkLibraryUsage(mut inLibrary: ArcStr, mut inExp: Arc<Absyn::Exp>) -> Resul
             stringEq((s.clone()).clone(), (inLibrary.clone()).clone())
         },
         Deref @ Absyn::Exp::ARRAY { arrayExp: exps } => {
-            List::isMemberOnTrue((inLibrary.clone()).clone(), exps.clone(), (std::sync::Arc::new(checkLibraryUsage) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<Absyn::Exp>) -> Result<bool> + 'static>))
+            List::isMemberOnTrue((inLibrary.clone()).clone(), exps.clone(), (std::sync::Arc::new(checkLibraryUsage) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<Absyn::Exp>) -> Result<bool> + 'static>))?
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -3207,7 +3207,7 @@ fn getInterfaceTypeAssocElt(mut val: Arc<Values::Value>, mut info: SourceInfo) -
         },
         Deref @ Values::Value::ARRAY { valueLst: Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::STRING { string: r#str }, tail: vals }, .. } => {
             let mut strs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            strs = List::select(List::map(vals.clone(), (std::sync::Arc::new(ValuesUtil::extractValueString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>)), (std::sync::Arc::new(fnptr!(Util::isNotEmptyString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<bool> + 'static>));
+            strs = List::select(List::map(vals.clone(), (std::sync::Arc::new(ValuesUtil::extractValueString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>))?, (std::sync::Arc::new(fnptr!(Util::isNotEmptyString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<bool> + 'static>))?;
             (r#str.clone(), metamodelica::cons((r#str.clone()).clone(), strs.clone()))
         },
         _ => bail!("match: no arm matched"),
@@ -3234,7 +3234,7 @@ fn buildDependencyGraph(mut name: ArcStr, mut sp: Arc<metamodelica::List<Arc<SCo
         }
         __acc.reverse()
     });
-            List::map(elts.clone(), (std::sync::Arc::new(importDependency) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<ArcStr> + 'static>))
+            List::map(elts.clone(), (std::sync::Arc::new(importDependency) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<ArcStr> + 'static>))?
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -3251,8 +3251,8 @@ fn buildDependencyGraphPublicImports(mut name: ArcStr, mut sp: Arc<metamodelica:
                 _ => bail!("pattern mismatch"),
             } };
             elts = __pa0.clone();
-            elts = List::select(elts.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::elementIsPublicImport, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>));
-            List::map(elts.clone(), (std::sync::Arc::new(importDependency) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<ArcStr> + 'static>))
+            elts = List::select(elts.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::elementIsPublicImport, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>))?;
+            List::map(elts.clone(), (std::sync::Arc::new(importDependency) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<ArcStr> + 'static>))?
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -3356,7 +3356,7 @@ fn containsPublicInterface(mut elt: Arc<SCode::Element>) -> Result<bool> {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(elt.clone()) {
         Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { elementLst: elts, .. }, encapsulatedPrefix: SCode::Encapsulated::ENCAPSULATED { .. }, restriction: SCode::Restriction::R_PACKAGE { .. }, .. } => {
-            List::any(elts.clone(), (std::sync::Arc::new(fnptr!(containsPublicInterface2, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>))
+            List::any(elts.clone(), (std::sync::Arc::new(fnptr!(containsPublicInterface2, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>))?
         },
         _ => {
             let mut name: ArcStr = arcstr::literal!("");
@@ -3388,7 +3388,7 @@ fn containsImport(mut elt: Arc<SCode::Element>, mut visibility: SCode::Visibilit
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(elt.clone()) {
         Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { elementLst: elts, .. }, encapsulatedPrefix: SCode::Encapsulated::ENCAPSULATED { .. }, restriction: SCode::Restriction::R_PACKAGE { .. }, .. } => {
-            List::exist1(elts.clone(), (std::sync::Arc::new(fnptr!(containsImport2, Arc<SCode::Element>, SCode::Visibility)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, SCode::Visibility) -> Result<bool> + 'static>), visibility.clone())
+            List::exist1(elts.clone(), (std::sync::Arc::new(fnptr!(containsImport2, Arc<SCode::Element>, SCode::Visibility)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, SCode::Visibility) -> Result<bool> + 'static>), visibility.clone())?
         },
         _ => {
             let mut name: ArcStr = arcstr::literal!("");
@@ -3434,15 +3434,15 @@ fn writeModuleDepends(mut cl: Arc<SCode::Element>, mut prefix: ArcStr, mut suffi
                     let mut allDepends: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut protectedDepends: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut r#str: ArcStr = r#str.clone();
-                    protectedDepends = List::map(List::select(elts.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::elementIsProtectedImport, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>)), (std::sync::Arc::new(importDependency) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<ArcStr> + 'static>));
-                    protectedDepends = List::select(protectedDepends.clone(), (std::sync::Arc::new(fnptr!(isNotBuiltinImport, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<bool> + 'static>));
+                    protectedDepends = List::map(List::select(elts.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::elementIsProtectedImport, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>))?, (std::sync::Arc::new(importDependency) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<ArcStr> + 'static>))?;
+                    protectedDepends = List::select(protectedDepends.clone(), (std::sync::Arc::new(fnptr!(isNotBuiltinImport, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<bool> + 'static>))?;
                     let __pa0 = ::match_deref::match_deref! { match &(Graph::allReachableNodes((metamodelica::cons((name.clone()).clone(), protectedDepends.clone()), metamodelica::nil()), deps.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?) {
                         Deref @ metamodelica::List::Cons { head: _, tail: __pa0 } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
                     allDepends = __pa0.clone();
-                    allDepends = List::map1r(allDepends.clone(), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (prefix.clone()).clone());
-                    allDepends = List::map1(allDepends.clone(), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (literal!(".interface.mo")).clone());
+                    allDepends = List::map1r(allDepends.clone(), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (prefix.clone()).clone())?;
+                    allDepends = List::map1(allDepends.clone(), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (literal!(".interface.mo")).clone())?;
                     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*prefix.clone()); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*suffix.clone()); __mm_s.push_str(&*literal!(": $(RELPATH_")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!(") ")); __mm_s.push_str(&*stringDelimitList(allDepends.clone(), (literal!(" ")).clone())); ArcStr::from(__mm_s) }).clone();
                     Ok(r#str.clone())
                 }
@@ -3456,8 +3456,8 @@ fn writeModuleDepends(mut cl: Arc<SCode::Element>, mut prefix: ArcStr, mut suffi
                     let mut allDepends: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut protectedDepends: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut tmp2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    protectedDepends = List::map(List::select(elts.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::elementIsProtectedImport, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>)), (std::sync::Arc::new(importDependency) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<ArcStr> + 'static>));
-                    protectedDepends = List::select(protectedDepends.clone(), (std::sync::Arc::new(fnptr!(isNotBuiltinImport, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<bool> + 'static>));
+                    protectedDepends = List::map(List::select(elts.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::elementIsProtectedImport, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>))?, (std::sync::Arc::new(importDependency) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<ArcStr> + 'static>))?;
+                    protectedDepends = List::select(protectedDepends.clone(), (std::sync::Arc::new(fnptr!(isNotBuiltinImport, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<bool> + 'static>))?;
                     allDepends = ({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut e in (deps.clone()).into_iter().cloned() {
@@ -3545,13 +3545,13 @@ fn getChangedClass(mut elt: Arc<SCode::Element>, mut suffix: ArcStr) -> Result<A
     Ok(name)
 }
 
-fn isChanged(mut node: (ArcStr, Arc<metamodelica::List<ArcStr>>), mut hs: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<ArcStr>>), i32, i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))) -> bool {
+fn isChanged(mut node: (ArcStr, Arc<metamodelica::List<ArcStr>>), mut hs: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<ArcStr>>), i32, i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))) -> Result<bool> {
     let mut b: bool = false;
     let mut r#str: ArcStr = arcstr::literal!("");
     let mut strs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     (r#str, strs) = node.clone();
-    b = List::exist1(metamodelica::cons((r#str.clone()).clone(), strs.clone()), (std::sync::Arc::new(BaseHashSet::has) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<bool> + 'static>), hs.clone());
-    b
+    b = List::exist1(metamodelica::cons((r#str.clone()).clone(), strs.clone()), (std::sync::Arc::new(BaseHashSet::has) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<bool> + 'static>), hs.clone())?;
+    Ok(b)
 }
 
 fn reloadClass(mut filename: ArcStr, mut encoding: ArcStr) -> Result<()> {
@@ -3579,7 +3579,7 @@ pub fn translateFunctions(mut program: Absyn::Program, mut name: ArcStr, mut opt
             let mut midfuncs: Arc<metamodelica::List<MidCode::Function>> = metamodelica::nil();
             let mut daeElements = (*daeElements).clone();
             let mut includes = (*includes).clone();
-            (daeElements, literals) = SimCodeFunctionUtil::findLiterals(metamodelica::cons(daeMainFunction.clone(), daeElements.clone()));
+            (daeElements, literals) = SimCodeFunctionUtil::findLiterals(metamodelica::cons(daeMainFunction.clone(), daeElements.clone()))?;
             let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6) = ::match_deref::match_deref! { match &(SimCodeFunctionUtil::elaborateFunctions(program.clone(), daeElements.clone(), metarecordTypes.clone(), literals.clone(), includes.clone())?) {
                 (Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 }, __pa2, __pa3, __pa4, __pa5, __pa6) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone()),
                 _ => bail!("pattern mismatch"),
@@ -3617,7 +3617,7 @@ pub fn translateFunctions(mut program: Absyn::Program, mut name: ArcStr, mut opt
             let mut midfuncs: Arc<metamodelica::List<MidCode::Function>> = metamodelica::nil();
             let mut daeElements = (*daeElements).clone();
             let mut includes = (*includes).clone();
-            (daeElements, literals) = SimCodeFunctionUtil::findLiterals(daeElements.clone());
+            (daeElements, literals) = SimCodeFunctionUtil::findLiterals(daeElements.clone())?;
             (fns, extraRecordDecls, includes, includeDirs, libs, libPaths) = SimCodeFunctionUtil::elaborateFunctions(program.clone(), daeElements.clone(), metarecordTypes.clone(), literals.clone(), includes.clone())?;
             makefileParams = SimCodeFunctionUtil::createMakefileParams(includeDirs.clone(), libs.clone(), libPaths.clone(), true, false)?;
             fns = removeThreadDataFunction(fns.clone(), metamodelica::nil());
@@ -3880,7 +3880,7 @@ fn listFile(mut args: Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc
                     r#str = __pa0.clone();
                     restriction = __pa1.clone();
                     absynClass = __pa2.clone();
-                    absynClass = if (nested.clone()) {absynClass.clone()} else {AbsynUtil::filterNestedClasses(absynClass.clone())};
+                    absynClass = if (nested.clone()) {absynClass.clone()} else {AbsynUtil::filterNestedClasses(absynClass.clone())?};
                     if access.clone() >= Access::packageText.clone() || access.clone() >= Access::nonPackageText.clone() && !(AbsynUtil::isPackageRestriction(restriction.clone())) {
                         r#str = (Dump::unparseStr(Absyn::Program { classes: list![absynClass.clone()], within_: (::match_deref::match_deref! { match &(path.clone()) {
         Deref @ Absyn::Path::IDENT { .. } => openmodelica_ast::Absyn::Within::TOP,
@@ -4038,8 +4038,8 @@ fn generateSeparateCodeDependenciesMakefile(mut args: Arc<metamodelica::List<Arc
         suffix = __pa3.clone();
         sp = unwrap_break_err!(SymbolTable::getSCode(), '__try0);
         names = List::filterMap(sp.clone(), (std::sync::Arc::new(SCodeUtil::getElementName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<ArcStr> + 'static>));
-        deps = Graph::buildGraph(names.clone(), (std::sync::Arc::new(buildDependencyGraphPublicImports) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), sp.clone());
-        strs = List::map3(sp.clone(), (std::sync::Arc::new(writeModuleDepends) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, ArcStr, ArcStr, Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<ArcStr>>)>>) -> Result<ArcStr> + 'static>), (prefix.clone()).clone(), (suffix.clone()).clone(), deps.clone());
+        deps = unwrap_break_err!(Graph::buildGraph(names.clone(), (std::sync::Arc::new(buildDependencyGraphPublicImports) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), sp.clone()), '__try0);
+        strs = unwrap_break_err!(List::map3(sp.clone(), (std::sync::Arc::new(writeModuleDepends) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, ArcStr, ArcStr, Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<ArcStr>>)>>) -> Result<ArcStr> + 'static>), (prefix.clone()).clone(), (suffix.clone()).clone(), deps.clone()), '__try0);
         unwrap_break_err!(System::writeFile((filename.clone()).clone(), stringDelimitList(strs.clone(), (literal!("\n")).clone())), '__try0);
         res = Arc::new(Values::Value::BOOL { boolean: true });
         Ok::<_, anyhow::Error>((res.clone(),))
@@ -4077,24 +4077,24 @@ fn generateSeparateCodeDependencies(mut args: Arc<metamodelica::List<Arc<Values:
         suffix = __pa1.clone();
         sp = unwrap_break_err!(SymbolTable::getSCode(), '__try0);
         names = List::filterMap(sp.clone(), (std::sync::Arc::new(SCodeUtil::getElementName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<ArcStr> + 'static>));
-        deps = Graph::buildGraph(names.clone(), (std::sync::Arc::new(buildDependencyGraph) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), sp.clone());
-        namesPublic = List::map(List::select(sp.clone(), (std::sync::Arc::new(containsPublicInterface) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>)), (std::sync::Arc::new(SCodeUtil::getElementName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<ArcStr> + 'static>));
+        deps = unwrap_break_err!(Graph::buildGraph(names.clone(), (std::sync::Arc::new(buildDependencyGraph) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), sp.clone()), '__try0);
+        namesPublic = unwrap_break_err!(List::map(List::select(sp.clone(), (std::sync::Arc::new(containsPublicInterface) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>)).unwrap(), (std::sync::Arc::new(SCodeUtil::getElementName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<ArcStr> + 'static>)), '__try0);
         namesChanged = List::filterMap1(sp.clone(), (std::sync::Arc::new(getChangedClass) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, ArcStr) -> Result<ArcStr> + 'static>), (suffix.clone()).clone());
         hashSetString = HashSetString::emptyHashSet();
-        hashSetString = List::fold(namesChanged.clone(), (std::sync::Arc::new(BaseHashSet::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), hashSetString.clone());
-        depstransposed = unwrap_break_err!(Graph::transposeGraph(Graph::emptyGraph(names.clone()), deps.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>)), '__try0);
-        depstransposedtransitive = Graph::buildGraph(namesPublic.clone(), (std::sync::Arc::new(buildTransitiveDependencyGraph) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<ArcStr>>)>>) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), depstransposed.clone());
-        depstransitive = unwrap_break_err!(Graph::transposeGraph(Graph::emptyGraph(names.clone()), depstransposedtransitive.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>)), '__try0);
+        hashSetString = unwrap_break_err!(List::fold(namesChanged.clone(), (std::sync::Arc::new(BaseHashSet::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), hashSetString.clone()), '__try0);
+        depstransposed = unwrap_break_err!(Graph::transposeGraph(Graph::emptyGraph(names.clone()).unwrap(), deps.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>)), '__try0);
+        depstransposedtransitive = unwrap_break_err!(Graph::buildGraph(namesPublic.clone(), (std::sync::Arc::new(buildTransitiveDependencyGraph) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<metamodelica::List<(ArcStr, Arc<metamodelica::List<ArcStr>>)>>) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), depstransposed.clone()), '__try0);
+        depstransitive = unwrap_break_err!(Graph::transposeGraph(Graph::emptyGraph(names.clone()).unwrap(), depstransposedtransitive.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>)), '__try0);
         depstransitive = unwrap_break_err!(List::sort(depstransitive.clone(), (std::sync::Arc::new(fnptr!(compareNumberOfDependencies, (ArcStr, Arc<metamodelica::List<ArcStr>>), (ArcStr, Arc<metamodelica::List<ArcStr>>))) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, Arc<metamodelica::List<ArcStr>>), (ArcStr, Arc<metamodelica::List<ArcStr>>)) -> Result<bool> + 'static>)), '__try0);
         depsmerged = unwrap_break_err!(Graph::merge(deps.clone(), depstransitive.clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), (std::sync::Arc::new(fnptr!(compareDependencyNode, (ArcStr, Arc<metamodelica::List<ArcStr>>), (ArcStr, Arc<metamodelica::List<ArcStr>>))) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, Arc<metamodelica::List<ArcStr>>), (ArcStr, Arc<metamodelica::List<ArcStr>>)) -> Result<bool> + 'static>)), '__try0);
-        depschanged = List::select1(depsmerged.clone(), (std::sync::Arc::new(fnptr!(isChanged, (ArcStr, Arc<metamodelica::List<ArcStr>>), (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<ArcStr>>), i32, i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>)))) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, Arc<metamodelica::List<ArcStr>>), (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<ArcStr>>), i32, i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))) -> Result<bool> + 'static>), hashSetString.clone());
-        names = List::map(depschanged.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)));
-        fileNames = List::map1(names.clone(), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (suffix.clone()).clone());
+        depschanged = unwrap_break_err!(List::select1(depsmerged.clone(), (std::sync::Arc::new(isChanged) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, Arc<metamodelica::List<ArcStr>>), (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<ArcStr>>), i32, i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))) -> Result<bool> + 'static>), hashSetString.clone()), '__try0);
+        names = unwrap_break_err!(List::map(depschanged.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _))), '__try0);
+        fileNames = unwrap_break_err!(List::map1(names.clone(), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (suffix.clone()).clone()), '__try0);
         for mut f in &*fileNames.clone() {
             let mut f = f.clone();
             System::removeFile((f.clone()).clone());
         }
-        res = unwrap_break_err!(ValuesMake::makeArray(List::map(names.clone(), (std::sync::Arc::new(fnptr!(ValuesMake::makeString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Values::Value>> + 'static>))), '__try0);
+        res = unwrap_break_err!(ValuesMake::makeArray(List::map(names.clone(), (std::sync::Arc::new(fnptr!(ValuesMake::makeString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Values::Value>> + 'static>)).unwrap()), '__try0);
         Ok::<_, anyhow::Error>((res.clone(),))
     } {
         Ok((__try0_o0,)) => {
@@ -4145,7 +4145,7 @@ fn generateSeparateCode(mut args: Arc<metamodelica::List<Arc<Values::Value>>>, m
                     let mut sp: Arc<metamodelica::List<Arc<SCode::Element>>> = sp.clone();
                     sp = SymbolTable::getSCode()?;
                     name = (getTypeNameIdent(v.clone())?).clone();
-                    let false = (List::isMemberOnTrue((name.clone()).clone(), sp.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::isClassNamed, ArcStr, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<SCode::Element>) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
+                    let false = (List::isMemberOnTrue((name.clone()).clone(), sp.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::isClassNamed, ArcStr, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<SCode::Element>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
                     Error::addMessage(Error::LOOKUP_ERROR.clone(), list![(name.clone()).clone(), (literal!("<TOP>")).clone()])?;
                     Ok(bail!("fail"))
                 }

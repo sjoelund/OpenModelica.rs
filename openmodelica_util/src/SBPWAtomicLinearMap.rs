@@ -194,7 +194,7 @@ pub fn image(mut map: Arc<SBPWAtomicLinearMap>, mut set: Arc<SBAtomicSet::SBAtom
         }
         unsafe { metamodelica::Dangerous::arrayInitSlot(res.clone(), i.clone(), SBInterval::new(new_lo.clone(), new_step.clone(), new_hi.clone())) };
     }
-    outSet = SBAtomicSet::new(SBMultiInterval::fromArray(res.clone()));
+    outSet = SBAtomicSet::new(SBMultiInterval::fromArray(res.clone())?);
     Ok(outSet)
 }
 
@@ -212,10 +212,10 @@ pub fn preImage(mut map: Arc<SBPWAtomicLinearMap>, mut set: Arc<SBAtomicSet::SBA
     Ok(outSet)
 }
 
-pub fn isEqual(mut map1: Arc<SBPWAtomicLinearMap>, mut map2: Arc<SBPWAtomicLinearMap>) -> bool {
+pub fn isEqual(mut map1: Arc<SBPWAtomicLinearMap>, mut map2: Arc<SBPWAtomicLinearMap>) -> Result<bool> {
     let mut equal: bool = false;
-    equal = SBAtomicSet::isEqual(map1.dom.clone(), map2.dom.clone()) && SBLinearMap::isEqual(map1.lmap.clone(), map2.lmap.clone());
-    equal
+    equal = SBAtomicSet::isEqual(map1.dom.clone(), map2.dom.clone())? && SBLinearMap::isEqual(map1.lmap.clone(), map2.lmap.clone())?;
+    Ok(equal)
 }
 
 pub fn toString(mut map: Arc<SBPWAtomicLinearMap>) -> ArcStr {

@@ -102,10 +102,10 @@ pub fn evaluate(mut flatModel: Arc<FlatModel::NFFlatModel>, mut context: i32) ->
         }
         __acc.reverse()
     }),
-        flatModel.equations = evaluateEquations(flatModel.equations.clone()),
-        flatModel.initialEquations = evaluateEquations(flatModel.initialEquations.clone()),
-        flatModel.algorithms = evaluateAlgorithms(flatModel.algorithms.clone()),
-        flatModel.initialAlgorithms = evaluateAlgorithms(flatModel.initialAlgorithms.clone())
+        flatModel.equations = evaluateEquations(flatModel.equations.clone())?,
+        flatModel.initialEquations = evaluateEquations(flatModel.initialEquations.clone())?,
+        flatModel.algorithms = evaluateAlgorithms(flatModel.algorithms.clone())?,
+        flatModel.initialAlgorithms = evaluateAlgorithms(flatModel.initialAlgorithms.clone())?
     );
     execStat(literal!("NFEvalConstants.evaluate"))?;
     Ok(flatModel)
@@ -154,7 +154,7 @@ pub fn evaluateBinding(mut binding: Arc<Binding::NFBinding>, mut prefix: Arc<Com
             info = Binding::getInfo(binding.clone());
             eexp = evaluateExp(exp.clone(), info.clone())?;
             eexp = SimplifyExp::simplify(eexp.clone(), false)?;
-            if !(Expression::isLiteral(eexp.clone()) || Expression::isKnownSizeFill(eexp.clone())?) {
+            if !(Expression::isLiteral(eexp.clone())? || Expression::isKnownSizeFill(eexp.clone())?) {
                 if variability.clone() > Variability::CONSTANT.clone() || InstContext::inRelaxed(context.clone()) {
                     eexp = Ceval::tryEvalExp(eexp.clone(), Ceval::noTarget().clone());
                 } else {
@@ -352,35 +352,35 @@ pub fn evaluateIfExp(mut exp: Arc<Expression::NFExpression>, mut info: SourceInf
     Ok((outExp, outChanged))
 }
 
-pub fn evaluateEquations(mut eql: Arc<metamodelica::List<Arc<Equation::NFEquation>>>) -> Arc<metamodelica::List<Arc<Equation::NFEquation>>> {
+pub fn evaluateEquations(mut eql: Arc<metamodelica::List<Arc<Equation::NFEquation>>>) -> Result<Arc<metamodelica::List<Arc<Equation::NFEquation>>>> {
     let mut outEql: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = ({
         let mut __acc: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
         for mut e in (eql.clone()).into_iter().cloned() {
-            let __x = evaluateEquation(e.clone()).unwrap();
+            let __x = evaluateEquation(e.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-    outEql
+    Ok(outEql)
 }
 
 pub fn evaluateEquation(mut eq: Arc<Equation::NFEquation>) -> Result<Arc<Equation::NFEquation>> {
     let mut eq: Arc<Equation::NFEquation> = eq;
-    let mut info: SourceInfo = Equation::info(eq.clone());
+    let mut info: SourceInfo = Equation::info(eq.clone())?;
     eq = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ Equation::EQUALITY { .. } => {
             let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-            ty = Type::mapDims(var_field!((*eq).ty, Equation::NFEquation::EQUALITY).clone(), (std::sync::Arc::new({ let __pe_b1 = info.clone(); move |__pe_a0| evaluateDimension(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>));
+            ty = Type::mapDims(var_field!((*eq).ty, Equation::NFEquation::EQUALITY).clone(), (std::sync::Arc::new({ let __pe_b1 = info.clone(); move |__pe_a0| evaluateDimension(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>))?;
             e1 = evaluateExp(var_field!((*eq).lhs, Equation::NFEquation::EQUALITY).clone(), info.clone())?;
             e2 = evaluateExp(var_field!((*eq).rhs, Equation::NFEquation::EQUALITY).clone(), info.clone())?;
             Arc::new(Equation::NFEquation::EQUALITY { lhs: e1.clone(), rhs: e2.clone(), ty: ty.clone(), scope: var_field!((*eq).scope, Equation::NFEquation::EQUALITY).clone(), source: var_field!((*eq).source, Equation::NFEquation::EQUALITY).clone(), scalarizeMode: var_field!((*eq).scalarizeMode, Equation::NFEquation::EQUALITY).clone() })
         },
         Deref @ Equation::FOR { .. } => {
             assign_variant_field!(eq => Equation::NFEquation::FOR;
-                range = Util::applyOption(var_field!((*eq).range, Equation::NFEquation::FOR).clone(), (std::sync::Arc::new({ let __pe_b1 = info.clone(); move |__pe_a0| evaluateExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
-                body = evaluateEquations(var_field!((*eq).body, Equation::NFEquation::FOR).clone())
+                range = Util::applyOption(var_field!((*eq).range, Equation::NFEquation::FOR).clone(), (std::sync::Arc::new({ let __pe_b1 = info.clone(); move |__pe_a0| evaluateExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
+                body = evaluateEquations(var_field!((*eq).body, Equation::NFEquation::FOR).clone())?
             );
             eq.clone()
         },
@@ -442,7 +442,7 @@ pub fn evaluateEqBranch(mut branch: Arc<Branch::Branch>, mut info: SourceInfo) -
             let mut body = (*body).clone();
             let mut condition = (*condition).clone();
             condition = evaluateExp(condition.clone(), info.clone())?;
-            body = evaluateEquations(body.clone());
+            body = evaluateEquations(body.clone())?;
             Arc::new(Branch::Branch::BRANCH { condition: condition.clone(), conditionVar: var_field!((*branch).conditionVar, Branch::Branch::BRANCH).clone(), body: body.clone() })
         },
         _ => {
@@ -453,53 +453,53 @@ pub fn evaluateEqBranch(mut branch: Arc<Branch::Branch>, mut info: SourceInfo) -
     Ok(outBranch)
 }
 
-pub fn evaluateAlgorithms(mut algs: Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>>) -> Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>> {
+pub fn evaluateAlgorithms(mut algs: Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>>) -> Result<Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>>> {
     let mut outAlgs: Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>> = ({
         let mut __acc: Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>> = metamodelica::nil();
         for mut a in (algs.clone()).into_iter().cloned() {
-            let __x = evaluateAlgorithm(a.clone());
+            let __x = evaluateAlgorithm(a.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-    outAlgs
+    Ok(outAlgs)
 }
 
-pub fn evaluateAlgorithm(mut alg: Arc<Algorithm::NFAlgorithm>) -> Arc<Algorithm::NFAlgorithm> {
+pub fn evaluateAlgorithm(mut alg: Arc<Algorithm::NFAlgorithm>) -> Result<Arc<Algorithm::NFAlgorithm>> {
     let mut alg: Arc<Algorithm::NFAlgorithm> = alg;
-    assign_field!(alg.statements = evaluateStatements(alg.statements.clone()));
-    alg
+    assign_field!(alg.statements = evaluateStatements(alg.statements.clone())?);
+    Ok(alg)
 }
 
-pub fn evaluateStatements(mut stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>>) -> Arc<metamodelica::List<Arc<Statement::NFStatement>>> {
+pub fn evaluateStatements(mut stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>>) -> Result<Arc<metamodelica::List<Arc<Statement::NFStatement>>>> {
     let mut outStmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = ({
         let mut __acc: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
         for mut s in (stmts.clone()).into_iter().cloned() {
-            let __x = evaluateStatement(s.clone()).unwrap();
+            let __x = evaluateStatement(s.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-    outStmts
+    Ok(outStmts)
 }
 
 pub fn evaluateStatement(mut stmt: Arc<Statement::NFStatement>) -> Result<Arc<Statement::NFStatement>> {
     let mut stmt: Arc<Statement::NFStatement> = stmt;
-    let mut info: SourceInfo = Statement::info(stmt.clone());
+    let mut info: SourceInfo = Statement::info(stmt.clone())?;
     stmt = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ Statement::ASSIGNMENT { .. } => {
             let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-            ty = Type::mapDims(var_field!((*stmt).ty, Statement::NFStatement::ASSIGNMENT).clone(), (std::sync::Arc::new({ let __pe_b1 = info.clone(); move |__pe_a0| evaluateDimension(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>));
+            ty = Type::mapDims(var_field!((*stmt).ty, Statement::NFStatement::ASSIGNMENT).clone(), (std::sync::Arc::new({ let __pe_b1 = info.clone(); move |__pe_a0| evaluateDimension(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>))?;
             e1 = evaluateExp(var_field!((*stmt).lhs, Statement::NFStatement::ASSIGNMENT).clone(), info.clone())?;
             e2 = evaluateExp(var_field!((*stmt).rhs, Statement::NFStatement::ASSIGNMENT).clone(), info.clone())?;
             Arc::new(Statement::NFStatement::ASSIGNMENT { lhs: e1.clone(), rhs: e2.clone(), ty: ty.clone(), source: var_field!((*stmt).source, Statement::NFStatement::ASSIGNMENT).clone() })
         },
         Deref @ Statement::FOR { .. } => {
             assign_variant_field!(stmt => Statement::NFStatement::FOR;
-                range = Util::applyOption(var_field!((*stmt).range, Statement::NFStatement::FOR).clone(), (std::sync::Arc::new({ let __pe_b1 = info.clone(); move |__pe_a0| evaluateExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
-                body = evaluateStatements(var_field!((*stmt).body, Statement::NFStatement::FOR).clone())
+                range = Util::applyOption(var_field!((*stmt).range, Statement::NFStatement::FOR).clone(), (std::sync::Arc::new({ let __pe_b1 = info.clone(); move |__pe_a0| evaluateExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
+                body = evaluateStatements(var_field!((*stmt).body, Statement::NFStatement::FOR).clone())?
             );
             stmt.clone()
         },
@@ -549,7 +549,7 @@ pub fn evaluateStatement(mut stmt: Arc<Statement::NFStatement>) -> Result<Arc<St
         Deref @ Statement::WHILE { .. } => {
             assign_variant_field!(stmt => Statement::NFStatement::WHILE;
                 condition = evaluateExp(var_field!((*stmt).condition, Statement::NFStatement::WHILE).clone(), info.clone())?,
-                body = evaluateStatements(var_field!((*stmt).body, Statement::NFStatement::WHILE).clone())
+                body = evaluateStatements(var_field!((*stmt).body, Statement::NFStatement::WHILE).clone())?
             );
             stmt.clone()
         },
@@ -567,7 +567,7 @@ pub fn evaluateStmtBranch(mut branch: (Arc<Expression::NFExpression>, Arc<metamo
     let mut body: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
     (cond, body) = branch.clone();
     cond = evaluateExp(cond.clone(), info.clone())?;
-    body = evaluateStatements(body.clone());
+    body = evaluateStatements(body.clone())?;
     outBranch = (cond.clone(), body.clone());
     Ok(outBranch)
 }
@@ -643,8 +643,8 @@ pub fn isLocalFunctionVariable(mut cref: Arc<ComponentRef::NFComponentRef>, mut 
     if ComponentRef::isPackageConstant(cref.clone())? {
         res = false;
     } else if ComponentRef::nodeVariability(cref.clone())? <= Variability::PARAMETER.clone() && ComponentRef::isCref(cref.clone()) {
-        node = InstNode::instanceParent(ComponentRef::node(ComponentRef::last(cref.clone()))?);
-        if InstNode::isClass(node.clone()) {
+        node = InstNode::instanceParent(ComponentRef::node(ComponentRef::last(cref.clone()))?)?;
+        if InstNode::isClass(node.clone())? {
             fnl = Function::getCachedFuncs(node.clone())?;
             if fnl.clone().is_empty() {
                 res = false;
@@ -662,7 +662,7 @@ pub fn isLocalFunctionVariable(mut cref: Arc<ComponentRef::NFComponentRef>, mut 
 }
 
 pub fn evaluateRecordDeclaration(mut recordNode: Arc<InstNode::InstNode>) -> Result<()> {
-    ClassTree::applyComponents(Class::classTree(InstNode::getClass(recordNode.clone())?)?, (std::sync::Arc::new({ let __pe_b1 = recordNode.clone(); move |__pe_a0| evaluateRecordDeclarationField(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<()> + 'static>));
+    ClassTree::applyComponents(Class::classTree(InstNode::getClass(recordNode.clone())?)?, (std::sync::Arc::new({ let __pe_b1 = recordNode.clone(); move |__pe_a0| evaluateRecordDeclarationField(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<()> + 'static>))?;
     Ok(())
 }
 
@@ -678,7 +678,7 @@ pub fn evaluateRecordDeclarationField(mut fieldNode: Arc<InstNode::InstNode>, mu
     }
     cls_inst = Component::classInstance(comp.clone());
     if !(InstNode::isEmpty(cls_inst.clone())) {
-        ClassTree::applyComponents(Class::classTree(InstNode::getClass(cls_inst.clone())?)?, (std::sync::Arc::new({ let __pe_b1 = recordNode.clone(); move |__pe_a0| evaluateRecordDeclarationField(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<()> + 'static>));
+        ClassTree::applyComponents(Class::classTree(InstNode::getClass(cls_inst.clone())?)?, (std::sync::Arc::new({ let __pe_b1 = recordNode.clone(); move |__pe_a0| evaluateRecordDeclarationField(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<()> + 'static>))?;
     }
     InstNode::updateComponent(comp.clone(), fieldNode.clone())?;
     Ok(())

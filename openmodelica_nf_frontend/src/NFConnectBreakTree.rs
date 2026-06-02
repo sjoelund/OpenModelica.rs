@@ -281,19 +281,19 @@ pub mod EntryTree {
         outBalance
     }
 
-    pub fn fold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Mutable::Mutable<Entry>, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> FT {
+    pub fn fold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Mutable::Mutable<Entry>, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> Result<FT> {
         pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<FT> + 'static>;
 
         let mut outResult: FT = inStartValue.clone();
         outResult = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { value, key, .. } => {
-            outResult = fold(var_field!((*inTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone());
-            outResult = inFunc(key.clone(), value.clone(), outResult.clone()).unwrap();
-            outResult = fold(var_field!((*inTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone());
+            outResult = fold(var_field!((*inTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
+            outResult = inFunc(key.clone(), value.clone(), outResult.clone())?;
+            outResult = fold(var_field!((*inTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
             outResult.clone()
         },
         Deref @ Tree::LEAF { value, key } => {
-            outResult = inFunc(key.clone(), value.clone(), outResult.clone()).unwrap();
+            outResult = inFunc(key.clone(), value.clone(), outResult.clone())?;
             outResult.clone()
         },
         _ => {
@@ -301,26 +301,26 @@ pub mod EntryTree {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        outResult
+        Ok(outResult)
     }
 
-    pub fn foldCond<FT: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Mutable::Mutable<Entry>, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> FT {
+    pub fn foldCond<FT: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Mutable::Mutable<Entry>, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> Result<FT> {
         pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<(FT, bool)> + 'static>;
 
         let mut value: FT = value;
         value = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => {
             let mut c: bool = false;
-            (value, c) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), var_field!((*tree).value, Tree::NODE).clone(), value.clone()).unwrap();
+            (value, c) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), var_field!((*tree).value, Tree::NODE).clone(), value.clone())?;
             if c.clone() {
-                value = foldCond(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), value.clone());
-                value = foldCond(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), value.clone());
+                value = foldCond(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), value.clone())?;
+                value = foldCond(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), value.clone())?;
             }
             value.clone()
         },
         Deref @ Tree::LEAF { .. } => {
             let mut c: bool = false;
-            (value, c) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), var_field!((*tree).value, Tree::LEAF).clone(), value.clone()).unwrap();
+            (value, c) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), var_field!((*tree).value, Tree::LEAF).clone(), value.clone())?;
             value.clone()
         },
         _ => {
@@ -328,29 +328,29 @@ pub mod EntryTree {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        value
+        Ok(value)
     }
 
-    pub fn fold_2<FT1: Clone + 'static, FT2: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Mutable::Mutable<Entry>, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> (FT1, FT2) {
+    pub fn fold_2<FT1: Clone + 'static, FT2: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Mutable::Mutable<Entry>, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> Result<(FT1, FT2)> {
         pub type FoldFunc<FT1: Clone + 'static, FT2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT1, FT2) -> Result<(FT1, FT2)> + 'static>;
 
         let mut foldArg1: FT1 = foldArg1;
         let mut foldArg2: FT2 = foldArg2;
         let () = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => {
-            (foldArg1, foldArg2) = fold_2(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone());
-            (foldArg1, foldArg2) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), var_field!((*tree).value, Tree::NODE).clone(), foldArg1.clone(), foldArg2.clone()).unwrap();
-            (foldArg1, foldArg2) = fold_2(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone());
+            (foldArg1, foldArg2) = fold_2(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone())?;
+            (foldArg1, foldArg2) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), var_field!((*tree).value, Tree::NODE).clone(), foldArg1.clone(), foldArg2.clone())?;
+            (foldArg1, foldArg2) = fold_2(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone())?;
             ()
         },
         Deref @ Tree::LEAF { .. } => {
-            (foldArg1, foldArg2) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), var_field!((*tree).value, Tree::LEAF).clone(), foldArg1.clone(), foldArg2.clone()).unwrap();
+            (foldArg1, foldArg2) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), var_field!((*tree).value, Tree::LEAF).clone(), foldArg1.clone(), foldArg2.clone())?;
             ()
         },
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        (foldArg1, foldArg2)
+        Ok((foldArg1, foldArg2))
     }
 
     pub fn forEach(mut tree: Arc<Tree>, mut func: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Mutable::Mutable<Entry>) -> Result<()> + 'static>) -> Result<()> {
@@ -550,7 +550,7 @@ pub mod EntryTree {
         lst
     }
 
-    pub fn map(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Mutable::Mutable<Entry>) -> Result<Mutable::Mutable<Entry>> + 'static>) -> Arc<Tree> {
+    pub fn map(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Mutable::Mutable<Entry>) -> Result<Mutable::Mutable<Entry>> + 'static>) -> Result<Arc<Tree>> {
         pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Key, Value) -> Result<Value> + 'static>;
 
         let mut outTree: Arc<Tree> = inTree.clone();
@@ -559,9 +559,9 @@ pub mod EntryTree {
             let mut new_value: Value;
             let mut new_left: Arc<Tree> = Arc::new(Tree::EMPTY);
             let mut new_right: Arc<Tree> = Arc::new(Tree::EMPTY);
-            new_left = map(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone());
-            new_value = inFunc(key.clone(), value.clone()).unwrap();
-            new_right = map(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone());
+            new_left = map(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone())?;
+            new_value = inFunc(key.clone(), value.clone())?;
+            new_right = map(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone())?;
             if !(referenceEq(&new_left.clone(),&var_field!((*outTree).left, Tree::NODE).clone())) || !(referenceEq(&value.clone(),&new_value.clone())) || !(referenceEq(&new_right.clone(),&var_field!((*outTree).right, Tree::NODE).clone())) {
                 outTree = Arc::new(Tree::NODE { key: key.clone(), value: new_value.clone(), height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left.clone(), right: new_right.clone() });
             }
@@ -569,7 +569,7 @@ pub mod EntryTree {
         },
         Deref @ Tree::LEAF { value, key } => {
             let mut new_value: Value;
-            new_value = inFunc(key.clone(), value.clone()).unwrap();
+            new_value = inFunc(key.clone(), value.clone())?;
             if !(referenceEq(&value.clone(),&new_value.clone())) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
             }
@@ -580,10 +580,10 @@ pub mod EntryTree {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        outTree
+        Ok(outTree)
     }
 
-    pub fn mapFold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Mutable::Mutable<Entry>, FT) -> Result<(Mutable::Mutable<Entry>, FT)> + 'static>, mut inStartValue: FT) -> (Arc<Tree>, FT) {
+    pub fn mapFold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Mutable::Mutable<Entry>, FT) -> Result<(Mutable::Mutable<Entry>, FT)> + 'static>, mut inStartValue: FT) -> Result<(Arc<Tree>, FT)> {
         pub type MapFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<Value> + 'static>;
 
         let mut outTree: Arc<Tree> = inTree.clone();
@@ -593,9 +593,9 @@ pub mod EntryTree {
             let mut new_value: Value;
             let mut new_left: Arc<Tree> = Arc::new(Tree::EMPTY);
             let mut new_right: Arc<Tree> = Arc::new(Tree::EMPTY);
-            (new_left, outResult) = mapFold(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone());
-            (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult.clone()).unwrap();
-            (new_right, outResult) = mapFold(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone());
+            (new_left, outResult) = mapFold(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
+            (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult.clone())?;
+            (new_right, outResult) = mapFold(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
             if !(referenceEq(&new_left.clone(),&var_field!((*outTree).left, Tree::NODE).clone())) || !(referenceEq(&value.clone(),&new_value.clone())) || !(referenceEq(&new_right.clone(),&var_field!((*outTree).right, Tree::NODE).clone())) {
                 outTree = Arc::new(Tree::NODE { key: key.clone(), value: new_value.clone(), height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left.clone(), right: new_right.clone() });
             }
@@ -603,7 +603,7 @@ pub mod EntryTree {
         },
         Deref @ Tree::LEAF { value, key } => {
             let mut new_value: Value;
-            (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult.clone()).unwrap();
+            (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult.clone())?;
             if !(referenceEq(&value.clone(),&new_value.clone())) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
             }
@@ -614,7 +614,7 @@ pub mod EntryTree {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        (outTree, outResult)
+        Ok((outTree, outResult))
     }
 
     pub fn new() -> Arc<Tree> {
@@ -755,9 +755,9 @@ pub mod EntryTree {
         lst
     }
 
-    pub fn update(mut tree: Arc<Tree>, mut key: Key, mut value: Value) -> Arc<Tree> {
-        let mut outTree: Arc<Tree> = add(tree.clone(), key.clone(), value.clone(), (std::sync::Arc::new(fnptr!(addConflictReplace, Mutable::Mutable<Entry>, Mutable::Mutable<Entry>, Arc<Absyn::ComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Mutable::Mutable<Entry>, Mutable::Mutable<Entry>, Arc<Absyn::ComponentRef>) -> Result<Mutable::Mutable<Entry>> + 'static>)).unwrap();
-        outTree
+    pub fn update(mut tree: Arc<Tree>, mut key: Key, mut value: Value) -> Result<Arc<Tree>> {
+        let mut outTree: Arc<Tree> = add(tree.clone(), key.clone(), value.clone(), (std::sync::Arc::new(fnptr!(addConflictReplace, Mutable::Mutable<Entry>, Mutable::Mutable<Entry>, Arc<Absyn::ComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Mutable::Mutable<Entry>, Mutable::Mutable<Entry>, Arc<Absyn::ComponentRef>) -> Result<Mutable::Mutable<Entry>> + 'static>))?;
+        Ok(outTree)
     }
 
 }
@@ -794,7 +794,7 @@ pub fn appendBreaksInNode(mut node: Arc<InstNode::InstNode>, mut tree: Arc<Tree>
         } else {
             outTree = EntryTree::new();
         }
-        outTree = EntryTree::update(outTree.clone(), name.clone(), entry.clone());
+        outTree = EntryTree::update(outTree.clone(), name.clone(), entry.clone())?;
         Ok(outTree)
     }
 
@@ -1077,19 +1077,19 @@ fn calculateBalance(mut inNode: Arc<Tree>) -> i32 {
     outBalance
 }
 
-pub fn fold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Arc<EntryTree::Tree>, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> FT {
+pub fn fold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Arc<EntryTree::Tree>, FT) -> Result<FT> + 'static>, mut inStartValue: FT) -> Result<FT> {
     pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<FT> + 'static>;
 
     let mut outResult: FT = inStartValue.clone();
     outResult = (::match_deref::match_deref! { match &(inTree.clone()) {
         Deref @ Tree::NODE { value, key, .. } => {
-            outResult = fold(var_field!((*inTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone());
-            outResult = inFunc(key.clone(), value.clone(), outResult.clone()).unwrap();
-            outResult = fold(var_field!((*inTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone());
+            outResult = fold(var_field!((*inTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
+            outResult = inFunc(key.clone(), value.clone(), outResult.clone())?;
+            outResult = fold(var_field!((*inTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
             outResult.clone()
         },
         Deref @ Tree::LEAF { value, key } => {
-            outResult = inFunc(key.clone(), value.clone(), outResult.clone()).unwrap();
+            outResult = inFunc(key.clone(), value.clone(), outResult.clone())?;
             outResult.clone()
         },
         _ => {
@@ -1097,26 +1097,26 @@ pub fn fold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::st
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    outResult
+    Ok(outResult)
 }
 
-pub fn foldCond<FT: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Arc<EntryTree::Tree>, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> FT {
+pub fn foldCond<FT: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Arc<EntryTree::Tree>, FT) -> Result<(FT, bool)> + 'static>, mut value: FT) -> Result<FT> {
     pub type FoldFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<(FT, bool)> + 'static>;
 
     let mut value: FT = value;
     value = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => {
             let mut c: bool = false;
-            (value, c) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), var_field!((*tree).value, Tree::NODE).clone(), value.clone()).unwrap();
+            (value, c) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), var_field!((*tree).value, Tree::NODE).clone(), value.clone())?;
             if c.clone() {
-                value = foldCond(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), value.clone());
-                value = foldCond(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), value.clone());
+                value = foldCond(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), value.clone())?;
+                value = foldCond(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), value.clone())?;
             }
             value.clone()
         },
         Deref @ Tree::LEAF { .. } => {
             let mut c: bool = false;
-            (value, c) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), var_field!((*tree).value, Tree::LEAF).clone(), value.clone()).unwrap();
+            (value, c) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), var_field!((*tree).value, Tree::LEAF).clone(), value.clone())?;
             value.clone()
         },
         _ => {
@@ -1124,29 +1124,29 @@ pub fn foldCond<FT: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn 
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    value
+    Ok(value)
 }
 
-pub fn fold_2<FT1: Clone + 'static, FT2: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Arc<EntryTree::Tree>, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> (FT1, FT2) {
+pub fn fold_2<FT1: Clone + 'static, FT2: Clone + 'static>(mut tree: Arc<Tree>, mut foldFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Arc<EntryTree::Tree>, FT1, FT2) -> Result<(FT1, FT2)> + 'static>, mut foldArg1: FT1, mut foldArg2: FT2) -> Result<(FT1, FT2)> {
     pub type FoldFunc<FT1: Clone + 'static, FT2: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT1, FT2) -> Result<(FT1, FT2)> + 'static>;
 
     let mut foldArg1: FT1 = foldArg1;
     let mut foldArg2: FT2 = foldArg2;
     let () = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ Tree::NODE { .. } => {
-            (foldArg1, foldArg2) = fold_2(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone());
-            (foldArg1, foldArg2) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), var_field!((*tree).value, Tree::NODE).clone(), foldArg1.clone(), foldArg2.clone()).unwrap();
-            (foldArg1, foldArg2) = fold_2(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone());
+            (foldArg1, foldArg2) = fold_2(var_field!((*tree).left, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone())?;
+            (foldArg1, foldArg2) = foldFunc(var_field!((*tree).key, Tree::NODE).clone(), var_field!((*tree).value, Tree::NODE).clone(), foldArg1.clone(), foldArg2.clone())?;
+            (foldArg1, foldArg2) = fold_2(var_field!((*tree).right, Tree::NODE).clone(), foldFunc.clone(), foldArg1.clone(), foldArg2.clone())?;
             ()
         },
         Deref @ Tree::LEAF { .. } => {
-            (foldArg1, foldArg2) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), var_field!((*tree).value, Tree::LEAF).clone(), foldArg1.clone(), foldArg2.clone()).unwrap();
+            (foldArg1, foldArg2) = foldFunc(var_field!((*tree).key, Tree::LEAF).clone(), var_field!((*tree).value, Tree::LEAF).clone(), foldArg1.clone(), foldArg2.clone())?;
             ()
         },
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    (foldArg1, foldArg2)
+    Ok((foldArg1, foldArg2))
 }
 
 pub fn forEach(mut tree: Arc<Tree>, mut func: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Arc<EntryTree::Tree>) -> Result<()> + 'static>) -> Result<()> {
@@ -1346,7 +1346,7 @@ pub fn listValues(mut tree: Arc<Tree>, mut lst: Arc<metamodelica::List<Arc<Entry
     lst
 }
 
-pub fn map(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Arc<EntryTree::Tree>) -> Result<Arc<EntryTree::Tree>> + 'static>) -> Arc<Tree> {
+pub fn map(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Arc<EntryTree::Tree>) -> Result<Arc<EntryTree::Tree>> + 'static>) -> Result<Arc<Tree>> {
     pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Key, Value) -> Result<Value> + 'static>;
 
     let mut outTree: Arc<Tree> = inTree.clone();
@@ -1355,9 +1355,9 @@ pub fn map(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::
             let mut new_value: Value = Arc::new(EntryTree::Tree::EMPTY);
             let mut new_left: Arc<Tree> = Arc::new(Tree::EMPTY);
             let mut new_right: Arc<Tree> = Arc::new(Tree::EMPTY);
-            new_left = map(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone());
-            new_value = inFunc(key.clone(), value.clone()).unwrap();
-            new_right = map(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone());
+            new_left = map(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone())?;
+            new_value = inFunc(key.clone(), value.clone())?;
+            new_right = map(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone())?;
             if !(referenceEq(&new_left.clone(),&var_field!((*outTree).left, Tree::NODE).clone())) || !(referenceEq(&value.clone(),&new_value.clone())) || !(referenceEq(&new_right.clone(),&var_field!((*outTree).right, Tree::NODE).clone())) {
                 outTree = Arc::new(Tree::NODE { key: key.clone(), value: new_value.clone(), height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left.clone(), right: new_right.clone() });
             }
@@ -1365,7 +1365,7 @@ pub fn map(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::
         },
         Deref @ Tree::LEAF { value, key } => {
             let mut new_value: Value = Arc::new(EntryTree::Tree::EMPTY);
-            new_value = inFunc(key.clone(), value.clone()).unwrap();
+            new_value = inFunc(key.clone(), value.clone())?;
             if !(referenceEq(&value.clone(),&new_value.clone())) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
             }
@@ -1376,10 +1376,10 @@ pub fn map(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    outTree
+    Ok(outTree)
 }
 
-pub fn mapFold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Arc<EntryTree::Tree>, FT) -> Result<(Arc<EntryTree::Tree>, FT)> + 'static>, mut inStartValue: FT) -> (Arc<Tree>, FT) {
+pub fn mapFold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>, Arc<EntryTree::Tree>, FT) -> Result<(Arc<EntryTree::Tree>, FT)> + 'static>, mut inStartValue: FT) -> Result<(Arc<Tree>, FT)> {
     pub type MapFunc<FT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Key, Value, FT) -> Result<Value> + 'static>;
 
     let mut outTree: Arc<Tree> = inTree.clone();
@@ -1389,9 +1389,9 @@ pub fn mapFold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn :
             let mut new_value: Value = Arc::new(EntryTree::Tree::EMPTY);
             let mut new_left: Arc<Tree> = Arc::new(Tree::EMPTY);
             let mut new_right: Arc<Tree> = Arc::new(Tree::EMPTY);
-            (new_left, outResult) = mapFold(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone());
-            (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult.clone()).unwrap();
-            (new_right, outResult) = mapFold(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone());
+            (new_left, outResult) = mapFold(var_field!((*outTree).left, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
+            (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult.clone())?;
+            (new_right, outResult) = mapFold(var_field!((*outTree).right, Tree::NODE).clone(), inFunc.clone(), outResult.clone())?;
             if !(referenceEq(&new_left.clone(),&var_field!((*outTree).left, Tree::NODE).clone())) || !(referenceEq(&value.clone(),&new_value.clone())) || !(referenceEq(&new_right.clone(),&var_field!((*outTree).right, Tree::NODE).clone())) {
                 outTree = Arc::new(Tree::NODE { key: key.clone(), value: new_value.clone(), height: var_field!((*outTree).height, Tree::NODE).clone(), left: new_left.clone(), right: new_right.clone() });
             }
@@ -1399,7 +1399,7 @@ pub fn mapFold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn :
         },
         Deref @ Tree::LEAF { value, key } => {
             let mut new_value: Value = Arc::new(EntryTree::Tree::EMPTY);
-            (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult.clone()).unwrap();
+            (new_value, outResult) = inFunc(key.clone(), value.clone(), outResult.clone())?;
             if !(referenceEq(&value.clone(),&new_value.clone())) {
                 assign_variant_field!(outTree => Tree::LEAF; value = new_value.clone());
             }
@@ -1410,7 +1410,7 @@ pub fn mapFold<FT: Clone + 'static>(mut inTree: Arc<Tree>, mut inFunc: Arc<dyn :
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    (outTree, outResult)
+    Ok((outTree, outResult))
 }
 
 pub fn new() -> Arc<Tree> {
@@ -1551,8 +1551,8 @@ pub fn toList(mut inTree: Arc<Tree>, mut lst: Arc<metamodelica::List<(Arc<Absyn:
     lst
 }
 
-pub fn update(mut tree: Arc<Tree>, mut key: Key, mut value: Value) -> Arc<Tree> {
-    let mut outTree: Arc<Tree> = add(tree.clone(), key.clone(), value.clone(), (std::sync::Arc::new(fnptr!(addConflictReplace, Arc<EntryTree::Tree>, Arc<EntryTree::Tree>, Arc<Absyn::ComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<EntryTree::Tree>, Arc<EntryTree::Tree>, Arc<Absyn::ComponentRef>) -> Result<Arc<EntryTree::Tree>> + 'static>)).unwrap();
-    outTree
+pub fn update(mut tree: Arc<Tree>, mut key: Key, mut value: Value) -> Result<Arc<Tree>> {
+    let mut outTree: Arc<Tree> = add(tree.clone(), key.clone(), value.clone(), (std::sync::Arc::new(fnptr!(addConflictReplace, Arc<EntryTree::Tree>, Arc<EntryTree::Tree>, Arc<Absyn::ComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<EntryTree::Tree>, Arc<EntryTree::Tree>, Arc<Absyn::ComponentRef>) -> Result<Arc<EntryTree::Tree>> + 'static>))?;
+    Ok(outTree)
 }
 

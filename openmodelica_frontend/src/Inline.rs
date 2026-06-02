@@ -1256,10 +1256,10 @@ pub fn inlineCall(mut exp: Arc<DAE::Exp>, mut assrtLst: Arc<metamodelica::List<A
                     (r#fn, comment) = getFunctionBody(p.clone(), fns.clone())?;
                     (checkcr, repl) = getInlineHashTableVarTransform()?;
                     if Config::acceptMetaModelicaGrammar()? {
-                        crefs = List::map(r#fn.clone(), (std::sync::Arc::new(fnptr!(getInputCrefs, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<DAE::ComponentRef>> + 'static>));
-                        crefs = List::select(crefs.clone(), (std::sync::Arc::new(fnptr!(removeWilds, Arc<DAE::ComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<bool> + 'static>));
+                        crefs = List::map(r#fn.clone(), (std::sync::Arc::new(fnptr!(getInputCrefs, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<DAE::ComponentRef>> + 'static>))?;
+                        crefs = List::select(crefs.clone(), (std::sync::Arc::new(fnptr!(removeWilds, Arc<DAE::ComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
                         argmap = List::zip(crefs.clone(), args.clone());
-                        let false = (List::any(r#fn.clone(), (std::sync::Arc::new(fnptr!(DAEUtil::isProtectedVar, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
+                        let false = (List::any(r#fn.clone(), (std::sync::Arc::new(fnptr!(DAEUtil::isProtectedVar, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
                         newExp = getRhsExp(r#fn.clone())?;
                         let true = (checkExpsTypeEquiv(e1.clone(), newExp.clone())?) else { bail!("pattern mismatch") };
                         (argmap, checkcr) = extendCrefRecords(argmap.clone(), checkcr.clone())?;
@@ -1722,7 +1722,7 @@ pub fn extendCrefRecords(mut inArgmap: Arc<metamodelica::List<(Arc<DAE::Componen
                     let mut new: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>> = metamodelica::nil();
                     let mut new1: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>> = metamodelica::nil();
                     (res1, ht1) = extendCrefRecords(res.clone(), ht.clone())?;
-                    new = List::map2(varLst.clone(), (std::sync::Arc::new(extendCrefRecords1) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)> + 'static>), c.clone(), cref.clone());
+                    new = List::map2(varLst.clone(), (std::sync::Arc::new(extendCrefRecords1) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)> + 'static>), c.clone(), cref.clone())?;
                     (new1, ht2) = extendCrefRecords(new.clone(), ht1.clone())?;
                     res2 = listAppend(new1.clone(), res1.clone());
                     Ok((metamodelica::cons((c.clone(), e.clone()), res2.clone()), ht2.clone()))
@@ -1746,7 +1746,7 @@ pub fn extendCrefRecords(mut inArgmap: Arc<metamodelica::List<(Arc<DAE::Componen
                     } };
                     varLst = __pa0.clone();
                     (res1, ht1) = extendCrefRecords(res.clone(), ht.clone())?;
-                    new = List::map2(varLst.clone(), (std::sync::Arc::new(extendCrefRecords1) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)> + 'static>), c.clone(), cref.clone());
+                    new = List::map2(varLst.clone(), (std::sync::Arc::new(extendCrefRecords1) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)> + 'static>), c.clone(), cref.clone())?;
                     (new1, ht2) = extendCrefRecords(new.clone(), ht1.clone())?;
                     res2 = listAppend(new1.clone(), res1.clone());
                     Ok((metamodelica::cons((c.clone(), e.clone()), res2.clone()), ht2.clone()))
@@ -1766,7 +1766,7 @@ pub fn extendCrefRecords(mut inArgmap: Arc<metamodelica::List<(Arc<DAE::Componen
                     let mut new1: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>> = metamodelica::nil();
                     let mut crlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
                     (res1, ht1) = extendCrefRecords(res.clone(), ht.clone())?;
-                    crlst = List::map1(varLst.clone(), (std::sync::Arc::new(extendCrefRecords2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> + 'static>), c.clone());
+                    crlst = List::map1(varLst.clone(), (std::sync::Arc::new(extendCrefRecords2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> + 'static>), c.clone())?;
                     new = List::zip(crlst.clone(), expl.clone());
                     (new1, ht2) = extendCrefRecords(new.clone(), ht1.clone())?;
                     res2 = listAppend(new1.clone(), res1.clone());
@@ -1786,7 +1786,7 @@ pub fn extendCrefRecords(mut inArgmap: Arc<metamodelica::List<(Arc<DAE::Componen
                     let mut new1: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>> = metamodelica::nil();
                     let mut crlst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
                     (res1, ht1) = extendCrefRecords(res.clone(), ht.clone())?;
-                    crlst = List::map1(varLst.clone(), (std::sync::Arc::new(extendCrefRecords2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> + 'static>), c.clone());
+                    crlst = List::map1(varLst.clone(), (std::sync::Arc::new(extendCrefRecords2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> + 'static>), c.clone())?;
                     new = List::zip(crlst.clone(), expl.clone());
                     (new1, ht2) = extendCrefRecords(new.clone(), ht1.clone())?;
                     res2 = listAppend(new1.clone(), res1.clone());
@@ -1810,9 +1810,9 @@ pub fn extendCrefRecords(mut inArgmap: Arc<metamodelica::List<(Arc<DAE::Componen
                         _ => bail!("pattern mismatch"),
                     } };
                     varLst = __pa0.clone();
-                    crlst = List::map1(varLst.clone(), (std::sync::Arc::new(extendCrefRecords2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> + 'static>), c.clone());
-                    creftpllst = List::map1(crlst.clone(), std::sync::Arc::new(fnptr!(Util::makeTuple, _, _)), c.clone());
-                    ht1 = List::fold(creftpllst.clone(), (std::sync::Arc::new(BaseHashTable::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), ht.clone());
+                    crlst = List::map1(varLst.clone(), (std::sync::Arc::new(extendCrefRecords2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> + 'static>), c.clone())?;
+                    creftpllst = List::map1(crlst.clone(), std::sync::Arc::new(fnptr!(Util::makeTuple, _, _)), c.clone())?;
+                    ht1 = List::fold(creftpllst.clone(), (std::sync::Arc::new(BaseHashTable::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), ht.clone())?;
                     ht2 = getCheckCref(crlst.clone(), ht1.clone())?;
                     (res1, ht3) = extendCrefRecords(res.clone(), ht2.clone())?;
                     Ok((metamodelica::cons((c.clone(), e.clone()), res1.clone()), ht3.clone()))
@@ -1864,10 +1864,10 @@ fn getCheckCref(mut inCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>>, mu
                         _ => bail!("pattern mismatch"),
                     } };
                     varLst = __pa0.clone();
-                    crlst = List::map1(varLst.clone(), (std::sync::Arc::new(extendCrefRecords2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> + 'static>), cr.clone());
+                    crlst = List::map1(varLst.clone(), (std::sync::Arc::new(extendCrefRecords2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> + 'static>), cr.clone())?;
                     ht1 = getCheckCref(crlst.clone(), ht.clone())?;
-                    creftpllst = List::map1(crlst.clone(), std::sync::Arc::new(fnptr!(Util::makeTuple, _, _)), cr.clone());
-                    ht2 = List::fold(creftpllst.clone(), (std::sync::Arc::new(BaseHashTable::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), ht1.clone());
+                    creftpllst = List::map1(crlst.clone(), std::sync::Arc::new(fnptr!(Util::makeTuple, _, _)), cr.clone())?;
+                    ht2 = List::fold(creftpllst.clone(), (std::sync::Arc::new(BaseHashTable::add) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<_> + 'static>), ht1.clone())?;
                     ht3 = getCheckCref(rest.clone(), ht2.clone())?;
                     Ok(ht3.clone())
                 }
@@ -2068,7 +2068,7 @@ pub fn replaceArgs(mut inExp: Arc<DAE::Exp>, mut inTuple: (Arc<metamodelica::Lis
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::CREF { componentRef: cref, .. }, (argmap, checkcr, true)) => {
-                    if !((BaseHashTable::hasKey(ComponentReferenceBasics::crefFirstCref(cref.clone())?, checkcr.clone()))) { bail!("guard") }
+                    if !((BaseHashTable::hasKey(ComponentReferenceBasics::crefFirstCref(cref.clone())?, checkcr.clone())?)) { bail!("guard") }
                     Ok((inExp.clone(), (argmap.clone(), checkcr.clone(), false)))
                 }
                 _ => bail!("nomatch"),
@@ -2127,7 +2127,7 @@ pub fn replaceArgs(mut inExp: Arc<DAE::Exp>, mut inTuple: (Arc<metamodelica::Lis
                     cref = __pa1.clone();
                     e = __pa2.clone();
                     path = ComponentReference::crefToPath(cref.clone())?;
-                    expLst = List::map(expLst.clone(), (std::sync::Arc::new(fnptr!(Expression::unboxExp, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>));
+                    expLst = List::map(expLst.clone(), (std::sync::Arc::new(fnptr!(Expression::unboxExp, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>))?;
                     b = Expression::isBuiltinFunctionReference(e.clone());
                     isFunctionPointerCall = Types::isFunctionReferenceVar(ty2.clone());
                     e = Arc::new(DAE::Exp::CALL { path: path.clone(), expLst: expLst.clone(), attr: Arc::new(DAE::CallAttributes { ty: ty.clone(), tuple_: tuple_.clone(), builtin: b.clone(), isImpure: isImpure.clone(), isFunctionPointerCall: isFunctionPointerCall.clone(), inlineType: inlineType.clone(), tailCall: tc.clone() }) });
@@ -2142,7 +2142,7 @@ pub fn replaceArgs(mut inExp: Arc<DAE::Exp>, mut inTuple: (Arc<metamodelica::Lis
                 (e @ Deref @ DAE::Exp::UNBOX { exp: Deref @ DAE::Exp::CALL { path, expLst: _, attr: Deref @ DAE::CallAttributes { builtin: false, .. } }, ty: _ }, (argmap, checkcr, true)) => {
                     let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     cref = ComponentReference::pathToCref(path.clone())?;
-                    let true = (BaseHashTable::hasKey(cref.clone(), checkcr.clone())) else { bail!("pattern mismatch") };
+                    let true = (BaseHashTable::hasKey(cref.clone(), checkcr.clone())?) else { bail!("pattern mismatch") };
                     Ok((e.clone(), (argmap.clone(), checkcr.clone(), false)))
                 }
                 _ => bail!("nomatch"),
@@ -2169,7 +2169,7 @@ pub fn replaceArgs(mut inExp: Arc<DAE::Exp>, mut inTuple: (Arc<metamodelica::Lis
                     cref = __pa1.clone();
                     e = __pa2.clone();
                     path = ComponentReference::crefToPath(cref.clone())?;
-                    expLst = List::map(expLst.clone(), (std::sync::Arc::new(fnptr!(Expression::unboxExp, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>));
+                    expLst = List::map(expLst.clone(), (std::sync::Arc::new(fnptr!(Expression::unboxExp, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>))?;
                     b = Expression::isBuiltinFunctionReference(e.clone());
                     (ty2, inlineType) = functionReferenceType(ty.clone())?;
                     isFunctionPointerCall = Types::isFunctionReferenceVar(ty2.clone());
@@ -2186,7 +2186,7 @@ pub fn replaceArgs(mut inExp: Arc<DAE::Exp>, mut inTuple: (Arc<metamodelica::Lis
                 (e @ Deref @ DAE::Exp::CALL { path, expLst: _, attr: Deref @ DAE::CallAttributes { builtin: false, ty: Deref @ DAE::Type::T_METATYPE { .. }, .. } }, (argmap, checkcr, true)) => {
                     let mut cref: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
                     cref = ComponentReference::pathToCref(path.clone())?;
-                    let true = (BaseHashTable::hasKey(cref.clone(), checkcr.clone())) else { bail!("pattern mismatch") };
+                    let true = (BaseHashTable::hasKey(cref.clone(), checkcr.clone())?) else { bail!("pattern mismatch") };
                     Ok((e.clone(), (argmap.clone(), checkcr.clone(), false)))
                 }
                 _ => bail!("nomatch"),
@@ -2387,8 +2387,8 @@ fn getReplacementCheckComplex(mut repl: VarTransform::VariableReplacements, mut 
                 Deref @ DAE::Type::T_COMPLEX { varLst: vars, complexClassType: ClassInf::State::RECORD { path }, .. } => {
                     let mut crs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
                     let mut exps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-                    crs = List::map1(List::map(vars.clone(), (std::sync::Arc::new(TypesDump::getVarName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>)), (std::sync::Arc::new(ComponentReference::appendStringCref) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> + 'static>), cr.clone());
-                    exps = List::map1r(crs.clone(), (std::sync::Arc::new(VarTransform::getReplacement) as std::sync::Arc<dyn ::std::ops::Fn(VarTransform::VariableReplacements, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> + 'static>), repl.clone());
+                    crs = List::map1(List::map(vars.clone(), (std::sync::Arc::new(TypesDump::getVarName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>))?, (std::sync::Arc::new(ComponentReference::appendStringCref) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::ComponentRef>> + 'static>), cr.clone())?;
+                    exps = List::map1r(crs.clone(), (std::sync::Arc::new(VarTransform::getReplacement) as std::sync::Arc<dyn ::std::ops::Fn(VarTransform::VariableReplacements, Arc<DAE::ComponentRef>) -> Result<Arc<DAE::Exp>> + 'static>), repl.clone())?;
                     Ok(Arc::new(DAE::Exp::CALL { path: path.clone(), expLst: exps.clone(), attr: Arc::new(DAE::CallAttributes { ty: ty.clone(), tuple_: false, builtin: false, isImpure: false, isFunctionPointerCall: false, inlineType: openmodelica_frontend_types::DAE::InlineType::NO_INLINE, tailCall: openmodelica_frontend_types::DAE::TailCall::NO_TAIL }) }))
                 }
                 _ => bail!("nomatch"),

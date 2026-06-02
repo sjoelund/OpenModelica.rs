@@ -207,7 +207,7 @@ fn emptyInstHashTable() -> Result<HashTable> {
 
 fn emptyInstHashTableSized(mut size: i32) -> HashTable {
     let mut hashTable: HashTable;
-    hashTable = BaseHashTable::emptyHashTableWork(size.clone(), ((std::sync::Arc::new(AbsynUtil::pathHash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(AbsynUtil::pathEqual, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<bool> + 'static>), (std::sync::Arc::new(fnptr!(AbsynUtil::pathStringDefault, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(fnptr!(opaqVal, Arc<metamodelica::List<Option<CachedInstItem>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Option<CachedInstItem>>>) -> Result<ArcStr> + 'static>)));
+    hashTable = BaseHashTable::emptyHashTableWork(size.clone(), ((std::sync::Arc::new(AbsynUtil::pathHash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(AbsynUtil::pathEqual, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<bool> + 'static>), (std::sync::Arc::new(AbsynUtil::pathStringDefault) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(fnptr!(opaqVal, Arc<metamodelica::List<Option<CachedInstItem>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Option<CachedInstItem>>>) -> Result<ArcStr> + 'static>)));
     hashTable
 }
 

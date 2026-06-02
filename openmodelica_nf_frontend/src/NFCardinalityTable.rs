@@ -88,7 +88,7 @@ pub fn addConnector(mut conn: Arc<Connector::NFConnector>, mut table: Table) -> 
     }
 
     let mut conn_str: ArcStr = arcstr::literal!("");
-    conn_str = (Connector::toString(conn.clone())).clone();
+    conn_str = (Connector::toString(conn.clone())?).clone();
     UnorderedMap::addUpdate((conn_str.clone()).clone(), (std::sync::Arc::new(fnptr!(update, Option<i32>)) as std::sync::Arc<dyn ::std::ops::Fn(Option<i32>) -> Result<i32> + 'static>), table.clone())?;
     Ok(())
 }
@@ -96,7 +96,7 @@ pub fn addConnector(mut conn: Arc<Connector::NFConnector>, mut table: Table) -> 
 pub fn evaluateCardinality(mut arg: Arc<Expression::NFExpression>, mut table: Table) -> Result<Arc<Expression::NFExpression>> {
     let mut res: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut count: i32 = 0;
-    count = UnorderedMap::getOrDefault((Expression::toString(arg.clone())?).clone(), table.clone(), 0);
+    count = UnorderedMap::getOrDefault((Expression::toString(arg.clone())?).clone(), table.clone(), 0)?;
     res = Arc::new(Expression::NFExpression::INTEGER { value: count.clone() });
     Ok(res)
 }

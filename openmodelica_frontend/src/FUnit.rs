@@ -133,7 +133,7 @@ pub fn getKnownUnitsInverse() -> Result<(metamodelica::Array<Arc<metamodelica::L
     for mut unit in &*LU_COMPLEXUNITS().clone() {
         let mut unit = unit.clone();
         (s, ut) = unit.clone();
-        if !(BaseHashTable::hasKey(ut.clone(), outKnownUnitsInverse.clone())) {
+        if !(BaseHashTable::hasKey(ut.clone(), outKnownUnitsInverse.clone())?) {
             outKnownUnitsInverse = BaseHashTable::add((ut.clone(), s.clone()), outKnownUnitsInverse.clone())?;
         }
     }
@@ -492,7 +492,7 @@ pub fn unitRoot(mut inUnit: Unit, mut inExponent: metamodelica::Real) -> Result<
 pub fn unitString(mut inUnit: Unit, mut inHtU2S: (metamodelica::Array<Arc<metamodelica::List<(Unit, i32)>>>, (i32, i32, metamodelica::Array<Option<(Unit, ArcStr)>>), i32, (Arc<dyn ::std::ops::Fn(Unit) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Unit, Unit) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Unit) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>))) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     outString = ((match inUnit.clone() {
-        _ if (BaseHashTable::hasKey(inUnit.clone(), inHtU2S.clone())) => {
+        _ if (BaseHashTable::hasKey(inUnit.clone(), inHtU2S.clone())?) => {
             let mut s: ArcStr = arcstr::literal!("");
             s = (BaseHashTable::get(inUnit.clone(), inHtU2S.clone())?).clone();
             s.clone()

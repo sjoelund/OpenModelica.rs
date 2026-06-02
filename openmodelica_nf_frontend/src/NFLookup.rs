@@ -106,7 +106,7 @@ pub fn lookupBaseClassName(mut name: Arc<Absyn::Path>, mut scope: Arc<InstNode::
         nodes = __pa0.clone();
         state = __pa1.clone();
     } else {
-        Error::addSourceMessage(Error::LOOKUP_BASECLASS_ERROR.clone(), list![(AbsynUtil::pathString(name.clone(), (literal!(".")).clone(), true, false)?).clone(), (InstNode::scopeName(scope.clone())).clone()], info.clone())?;
+        Error::addSourceMessage(Error::LOOKUP_BASECLASS_ERROR.clone(), list![(AbsynUtil::pathString(name.clone(), (literal!(".")).clone(), true, false)?).clone(), (InstNode::scopeName(scope.clone())?).clone()], info.clone())?;
         bail!("fail");
     }
     LookupState::assertClass(state.clone(), listHead(nodes.clone())?, name.clone(), context.clone(), info.clone())?;
@@ -131,7 +131,7 @@ pub fn lookupComponent(mut cref: Arc<Absyn::ComponentRef>, mut scope: Arc<InstNo
             state = __try0_o3;
         }
         Err(_) => {
-            Error::addSourceMessageAndFail(Error::LOOKUP_VARIABLE_ERROR.clone(), list![(Dump::printComponentRefStr(cref.clone())?).clone(), (InstNode::scopeName(scope.clone())).clone()], info.clone())?;
+            Error::addSourceMessageAndFail(Error::LOOKUP_VARIABLE_ERROR.clone(), list![(Dump::printComponentRefStr(cref.clone())?).clone(), (InstNode::scopeName(scope.clone())?).clone()], info.clone())?;
             unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
         }
     }
@@ -150,7 +150,7 @@ pub fn lookupConnector(mut cref: Arc<Absyn::ComponentRef>, mut scope: Arc<InstNo
         foundScope = __pa1.clone();
         state = __pa2.clone();
     } else {
-        Error::addSourceMessageAndFail(Error::LOOKUP_VARIABLE_ERROR.clone(), list![(Dump::printComponentRefStr(cref.clone())?).clone(), (InstNode::scopeName(scope.clone())).clone()], info.clone())?;
+        Error::addSourceMessageAndFail(Error::LOOKUP_VARIABLE_ERROR.clone(), list![(Dump::printComponentRefStr(cref.clone())?).clone(), (InstNode::scopeName(scope.clone())?).clone()], info.clone())?;
         unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
     }
     node = ComponentRef::node(foundCref.clone())?;
@@ -162,7 +162,7 @@ pub fn lookupConnector(mut cref: Arc<Absyn::ComponentRef>, mut scope: Arc<InstNo
 pub fn fixTypenameState(mut component: Arc<InstNode::InstNode>, mut state: Arc<LookupState::LookupState>, mut context: i32) -> Result<Arc<LookupState::LookupState>> {
     let mut state: Arc<LookupState::LookupState> = state;
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    if InstNode::isClass(component.clone()) {
+    if InstNode::isClass(component.clone())? {
         ty = InstNode::getType(Inst::expand(component.clone(), context.clone())?)?;
         state = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ Type::ENUMERATION { .. } => Arc::new(crate::NFLookupState::LookupState::COMP),
@@ -202,7 +202,7 @@ pub fn lookupFunctionName(mut cref: Arc<Absyn::ComponentRef>, mut scope: Arc<Ins
             state = __try0_o3;
         }
         Err(_) => {
-            Error::addSourceMessageAndFail(Error::LOOKUP_FUNCTION_ERROR.clone(), list![(Dump::printComponentRefStr(cref.clone())?).clone(), (InstNode::scopeName(scope.clone())).clone()], info.clone())?;
+            Error::addSourceMessageAndFail(Error::LOOKUP_FUNCTION_ERROR.clone(), list![(Dump::printComponentRefStr(cref.clone())?).clone(), (InstNode::scopeName(scope.clone())?).clone()], info.clone())?;
             unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
         }
     }
@@ -248,7 +248,7 @@ pub fn fixExternalObjectCall(mut node: Arc<InstNode::InstNode>, mut cref: Arc<Co
 pub fn lookupImport(mut name: Arc<Absyn::Path>, mut scope: Arc<InstNode::InstNode>, mut info: SourceInfo) -> Result<Arc<InstNode::InstNode>> {
     let mut element: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut state: Arc<LookupState::LookupState> = Arc::new(LookupState::BEGIN);
-    (element, state) = lookupNameWithError(name.clone(), InstNode::topScope(scope.clone()), InstContext::NO_CONTEXT.clone(), info.clone(), Error::LOOKUP_IMPORT_ERROR.clone(), true)?;
+    (element, state) = lookupNameWithError(name.clone(), InstNode::topScope(scope.clone())?, InstContext::NO_CONTEXT.clone(), info.clone(), Error::LOOKUP_IMPORT_ERROR.clone(), true)?;
     LookupState::assertImport(state.clone(), element.clone(), name.clone(), info.clone())?;
     Ok(element)
 }
@@ -262,7 +262,7 @@ pub fn lookupCrefWithError(mut cref: Arc<Absyn::ComponentRef>, mut scope: Arc<In
         foundScope = __pa1.clone();
         state = __pa2.clone();
     } else {
-        Error::addSourceMessage(errMsg.clone(), list![(Dump::printComponentRefStr(cref.clone())?).clone(), (InstNode::scopeName(scope.clone())).clone()], info.clone())?;
+        Error::addSourceMessage(errMsg.clone(), list![(Dump::printComponentRefStr(cref.clone())?).clone(), (InstNode::scopeName(scope.clone())?).clone()], info.clone())?;
         bail!("fail");
     }
     Ok((foundCref, foundScope, state))
@@ -286,7 +286,7 @@ pub fn lookupCref(mut cref: Arc<Absyn::ComponentRef>, mut scope: Arc<InstNode::I
             state = LookupState::checkCrefVariability(foundCref.clone(), in_enclosing.clone(), context.clone(), state.clone())?;
             (foundCref.clone(), foundScope.clone(), state.clone())
         },
-        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => lookupCref(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(), InstNode::topScope(scope.clone()), context.clone())?,
+        Deref @ Absyn::ComponentRef::CREF_FULLYQUALIFIED { .. } => lookupCref(var_field!((*cref).componentRef, Absyn::ComponentRef::CREF_FULLYQUALIFIED).clone(), InstNode::topScope(scope.clone())?, context.clone())?,
         Deref @ Absyn::ComponentRef::WILD { .. } => (Arc::new(crate::NFComponentRef::WILD), scope.clone(), Arc::new(crate::NFLookupState::LookupState::PREDEF_COMP)),
         Deref @ Absyn::ComponentRef::ALLWILD { .. } => (Arc::new(crate::NFComponentRef::WILD), scope.clone(), Arc::new(crate::NFLookupState::LookupState::PREDEF_COMP)),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -333,7 +333,7 @@ pub fn lookupLocalCref(mut cref: Arc<Absyn::ComponentRef>, mut scope: Arc<InstNo
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addSourceMessage(Error::LOOKUP_VARIABLE_ERROR.clone(), list![(Dump::printComponentRefStr(cref.clone())?).clone(), (InstNode::scopeName(scope.clone())).clone()], info.clone())?;
+                    Error::addSourceMessage(Error::LOOKUP_VARIABLE_ERROR.clone(), list![(Dump::printComponentRefStr(cref.clone())?).clone(), (InstNode::scopeName(scope.clone())?).clone()], info.clone())?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -357,15 +357,15 @@ pub fn lookupInner(mut outerNode: Arc<InstNode::InstNode>, mut scope: Arc<InstNo
             Ok::<(), anyhow::Error>(())
         }.is_err() {
             if InstNode::isRootClass(cur_scope.clone()) {
-                prev_scope = InstNode::topScope(cur_scope.clone());
+                prev_scope = InstNode::topScope(cur_scope.clone())?;
                 cur_scope = Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE);
             } else {
                 prev_scope = cur_scope.clone();
-                cur_scope = InstNode::instanceParent(cur_scope.clone());
+                cur_scope = InstNode::instanceParent(cur_scope.clone())?;
             }
         }
     }
-    innerNode = generateInner(outerNode.clone(), InstNode::topScope(prev_scope.clone()))?;
+    innerNode = generateInner(outerNode.clone(), InstNode::topScope(prev_scope.clone())?)?;
     Ok(innerNode)
 }
 
@@ -401,9 +401,9 @@ pub fn lookupSimpleName(mut name: ArcStr, mut scope: Arc<InstNode::InstNode>, mu
             Ok::<(), anyhow::Error>(())
         }.is_err() {
             if InstNode::isEncapsulated(cur_scope.clone())? {
-                cur_scope = InstNode::topScope(InstNode::parentScope(cur_scope.clone(), false)?);
+                cur_scope = InstNode::topScope(InstNode::parentScope(cur_scope.clone(), false)?)?;
                 require_builtin = true;
-            } else if name.clone() == InstNode::name(cur_scope.clone())? && InstNode::isClass(cur_scope.clone()) || name.clone() == InstNode::name(InstNode::classScope(cur_scope.clone()))? {
+            } else if name.clone() == InstNode::name(cur_scope.clone())? && InstNode::isClass(cur_scope.clone())? || name.clone() == InstNode::name(InstNode::classScope(cur_scope.clone()))? {
                 node = InstNode::classScope(cur_scope.clone());
                 selfReference = true;
                 return Ok((node.clone(), selfReference.clone()));
@@ -442,7 +442,7 @@ pub fn lookupSimpleNameRootPath(mut name: ArcStr, mut scope: Arc<InstNode::InstN
             if in_root_class.clone() {
                 path = Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() });
             } else {
-                path = AbsynUtil::makeFullyQualified(InstNode::fullPath(node.clone(), false));
+                path = AbsynUtil::makeFullyQualified(InstNode::fullPath(node.clone(), false)?);
             }
             return Ok(path.clone());
             Ok::<(), anyhow::Error>(())
@@ -450,8 +450,8 @@ pub fn lookupSimpleNameRootPath(mut name: ArcStr, mut scope: Arc<InstNode::InstN
             if InstNode::isEncapsulated(cur_scope.clone())? {
                 path = Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() });
                 return Ok(path.clone());
-            } else if name.clone() == InstNode::name(cur_scope.clone())? && InstNode::isClass(cur_scope.clone()) {
-                path = if (in_root_class.clone()) {Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() })} else {AbsynUtil::makeFullyQualified(InstNode::fullPath(cur_scope.clone(), false))};
+            } else if name.clone() == InstNode::name(cur_scope.clone())? && InstNode::isClass(cur_scope.clone())? {
+                path = if (in_root_class.clone()) {Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() })} else {AbsynUtil::makeFullyQualified(InstNode::fullPath(cur_scope.clone(), false)?)};
                 return Ok(path.clone());
             } else if InstNode::isTopScope(cur_scope.clone()) {
                 path = Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() });
@@ -475,7 +475,7 @@ pub fn lookupNameWithError(mut name: Arc<Absyn::Path>, mut scope: Arc<InstNode::
         node = __pa0.clone();
         state = __pa1.clone();
     } else {
-        Error::addSourceMessage(errorType.clone(), list![(AbsynUtil::pathString(name.clone(), (literal!(".")).clone(), true, false)?).clone(), (InstNode::scopeName(scope.clone())).clone()], info.clone())?;
+        Error::addSourceMessage(errorType.clone(), list![(AbsynUtil::pathString(name.clone(), (literal!(".")).clone(), true, false)?).clone(), (InstNode::scopeName(scope.clone())?).clone()], info.clone())?;
         bail!("fail");
     }
     Ok((node, state))
@@ -494,7 +494,7 @@ pub fn lookupName(mut name: Arc<Absyn::Path>, mut scope: Arc<InstNode::InstNode>
             (node, state, self_reference) = lookupFirstIdent((var_field!((*name).name, Absyn::Path::QUALIFIED).clone()).clone(), scope.clone(), context.clone())?;
             lookupLocalName(var_field!((*name).path, Absyn::Path::QUALIFIED).clone(), node.clone(), state.clone(), context.clone(), checkAccessViolations.clone(), self_reference.clone())?
         },
-        Deref @ Absyn::Path::FULLYQUALIFIED { .. } => lookupName(var_field!((*name).path, Absyn::Path::FULLYQUALIFIED).clone(), InstNode::topScope(scope.clone()), context.clone(), checkAccessViolations.clone())?,
+        Deref @ Absyn::Path::FULLYQUALIFIED { .. } => lookupName(var_field!((*name).path, Absyn::Path::FULLYQUALIFIED).clone(), InstNode::topScope(scope.clone())?, context.clone(), checkAccessViolations.clone())?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok((node, state))
@@ -516,7 +516,7 @@ pub fn lookupNames(mut name: Arc<Absyn::Path>, mut scope: Arc<InstNode::InstNode
             lookupLocalNames(var_field!((*name).path, Absyn::Path::QUALIFIED).clone(), node.clone(), list![node.clone()], state.clone(), context.clone(), self_reference.clone())?
         },
         Deref @ Absyn::Path::FULLYQUALIFIED { .. } => {
-            lookupNames(var_field!((*name).path, Absyn::Path::FULLYQUALIFIED).clone(), InstNode::topScope(scope.clone()), context.clone())?
+            lookupNames(var_field!((*name).path, Absyn::Path::FULLYQUALIFIED).clone(), InstNode::topScope(scope.clone())?, context.clone())?
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -550,13 +550,13 @@ pub fn lookupLocalName(mut name: Arc<Absyn::Path>, mut node: Arc<InstNode::InstN
     let mut node: Arc<InstNode::InstNode> = node;
     let mut state: Arc<LookupState::LookupState> = state;
     let mut is_import: bool = false;
-    if !(InstNode::isClass(node.clone())) {
+    if !(InstNode::isClass(node.clone())?) {
         state = Arc::new(crate::NFLookupState::LookupState::COMP_CLASS);
         return Ok((node.clone(), state.clone()));
     }
     if !(selfReference.clone()) {
         node = Inst::instPackage(node.clone(), context.clone())?;
-        if InstNode::isPartial(node.clone()) && !(InstContext::inRelaxed(context.clone()) || InstContext::inRedeclared(context.clone())) {
+        if InstNode::isPartial(node.clone())? && !(InstContext::inRelaxed(context.clone()) || InstContext::inRedeclared(context.clone())) {
             state = Arc::new(LookupState::LookupState::ERROR { errorState: Arc::new(crate::NFLookupState::LookupState::PARTIAL_CLASS) });
             return Ok((node.clone(), state.clone()));
         }
@@ -594,13 +594,13 @@ pub fn lookupLocalNames(mut name: Arc<Absyn::Path>, mut scope: Arc<InstNode::Ins
     let mut nodes: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = nodes;
     let mut state: Arc<LookupState::LookupState> = state;
     let mut node: Arc<InstNode::InstNode> = scope.clone();
-    if !(InstNode::isClass(scope.clone())) {
+    if !(InstNode::isClass(scope.clone())?) {
         state = Arc::new(crate::NFLookupState::LookupState::COMP_CLASS);
         return Ok((nodes.clone(), state.clone()));
     }
     if !(selfReference.clone()) {
         node = Inst::instPackage(node.clone(), context.clone())?;
-        if InstNode::isPartial(node.clone()) && !(InstContext::inRelaxed(context.clone()) || InstContext::inRedeclared(context.clone())) && !(InstNode::name(node.clone())? == literal!("PartialModelicaServices")) {
+        if InstNode::isPartial(node.clone())? && !(InstContext::inRelaxed(context.clone()) || InstContext::inRedeclared(context.clone())) && !(InstNode::name(node.clone())? == literal!("PartialModelicaServices")) {
             state = Arc::new(LookupState::LookupState::ERROR { errorState: Arc::new(crate::NFLookupState::LookupState::PARTIAL_CLASS) });
             return Ok((nodes.clone(), state.clone()));
         }
@@ -671,7 +671,7 @@ pub fn lookupSimpleCref(mut name: ArcStr, mut subs: Arc<metamodelica::List<Arc<A
     let mut loaded: bool = false;
     match '__try0: {
         (node, cref, state) = unwrap_break_err!(lookupSimpleBuiltinCref((name.clone()).clone(), subs.clone()), '__try0);
-        foundScope = InstNode::topScope(foundScope.clone());
+        foundScope = unwrap_break_err!(InstNode::topScope(foundScope.clone()), '__try0);
         Ok::<_, anyhow::Error>((cref.clone(), foundScope.clone(), node.clone(), state.clone()))
     } {
         Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3)) => {
@@ -703,7 +703,7 @@ pub fn lookupSimpleCref(mut name: ArcStr, mut subs: Arc<metamodelica::List<Arc<A
                     Ok::<(), anyhow::Error>(())
                 }.is_err() {
                     if InstNode::isEncapsulated(foundScope.clone())? {
-                        foundScope = InstNode::topScope(InstNode::parentScope(foundScope.clone(), false)?);
+                        foundScope = InstNode::topScope(InstNode::parentScope(foundScope.clone(), false)?)?;
                         require_builtin = true;
                     } else {
                         if InstNode::isTopScope(foundScope.clone()) && !(loaded.clone()) && !(require_builtin.clone()) {
@@ -716,7 +716,7 @@ pub fn lookupSimpleCref(mut name: ArcStr, mut subs: Arc<metamodelica::List<Arc<A
                     }
                 }
             }
-            Error::addMessage(Error::RECURSION_DEPTH_REACHED.clone(), list![ArcStr::from(::std::format!("{}", Global::recursionDepthLimit.clone())), (InstNode::scopeName(foundScope.clone())).clone()])?;
+            Error::addMessage(Error::RECURSION_DEPTH_REACHED.clone(), list![ArcStr::from(::std::format!("{}", Global::recursionDepthLimit.clone())), (InstNode::scopeName(foundScope.clone())?).clone()])?;
             return Err(__try0_err);
         }
     }
@@ -771,10 +771,10 @@ pub fn lookupCrefInNode(mut cref: Arc<Absyn::ComponentRef>, mut node: Arc<InstNo
         return Ok((foundCref.clone(), foundScope.clone(), state.clone()));
     }
     scope = node.clone();
-    scope_is_class = InstNode::isClass(scope.clone());
+    scope_is_class = InstNode::isClass(scope.clone())?;
     if scope_is_class.clone() {
         scope = Inst::instPackage(node.clone(), context.clone())?;
-        if InstNode::isPartial(scope.clone()) && !(InstContext::inRelaxed(context.clone()) || InstContext::inRedeclared(context.clone())) {
+        if InstNode::isPartial(scope.clone())? && !(InstContext::inRelaxed(context.clone()) || InstContext::inRedeclared(context.clone())) {
             state = Arc::new(LookupState::LookupState::ERROR { errorState: Arc::new(crate::NFLookupState::LookupState::PARTIAL_CLASS) });
             return Ok((foundCref.clone(), foundScope.clone(), state.clone()));
         }
@@ -792,7 +792,7 @@ pub fn lookupCrefInNode(mut cref: Arc<Absyn::ComponentRef>, mut node: Arc<InstNo
         n = __pa0.clone();
         is_import = __pa1.clone();
     } else {
-        let true = (InstNode::isComponent(node.clone())) else { bail!("pattern mismatch") };
+        let true = (InstNode::isComponent(node.clone())?) else { bail!("pattern mismatch") };
         let true = (Class::isExpandableConnectorClass(cls.clone()) || InstContext::inInstanceAPI(context.clone())) else { bail!("pattern mismatch") };
         foundCref = ComponentRef::fromAbsynCref(cref.clone(), foundCref.clone())?;
         return Ok((foundCref.clone(), foundScope.clone(), state.clone()));
@@ -849,7 +849,7 @@ pub fn generateInner(mut outerNode: Arc<InstNode::InstNode>, mut topScope: Arc<I
     let () = (::match_deref::match_deref! { match &(node_ty.clone()) {
         Deref @ InstNodeType::TOP_SCOPE { .. } => {
             name = (InstNode::name(outerNode.clone())?).clone();
-            inner_node_opt = UnorderedMap::get((name.clone()).clone(), var_field!((*node_ty).generatedInners, InstNodeType::TOP_SCOPE).clone());
+            inner_node_opt = UnorderedMap::get((name.clone()).clone(), var_field!((*node_ty).generatedInners, InstNodeType::TOP_SCOPE).clone())?;
             if isSome(inner_node_opt.clone()) {
                 let __pa0 = ::match_deref::match_deref! { match &(inner_node_opt.clone()) {
                     Some(__pa0) => __pa0.clone(),
@@ -939,7 +939,7 @@ pub fn loadLibrary_work(mut name: ArcStr, mut scope: Arc<InstNode::InstNode>) ->
     let mut lib_node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     let mut new_libs: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = metamodelica::nil();
     modelica_path = (Settings::getModelicaPath(Testsuite::isRunning()?)?).clone();
-    let (__pa0, true) = (BackendInterface::appendLibrary(Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() }), (modelica_path.clone()).clone())) else { bail!("pattern mismatch") };
+    let (__pa0, true) = (BackendInterface::appendLibrary(Arc::new(Absyn::Path::IDENT { name: (name.clone()).clone() }), (modelica_path.clone()).clone())?) else { bail!("pattern mismatch") };
     aprog = __pa0.clone();
     for mut c in &*aprog.classes.clone() {
         let mut c = c.clone();
@@ -964,7 +964,7 @@ pub fn loadLibrary_work(mut name: ArcStr, mut scope: Arc<InstNode::InstNode>) ->
         }
     }
     cls = InstNode::getClass(scope.clone())?;
-    cls = Class::classTreeApply(cls.clone(), (std::sync::Arc::new({ let __pe_b0 = new_libs.clone(); move |__pe_a1| ClassTree::appendClasses(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ClassTree::ClassTree>) -> Result<Arc<ClassTree::ClassTree>> + 'static>));
+    cls = Class::classTreeApply(cls.clone(), (std::sync::Arc::new({ let __pe_b0 = new_libs.clone(); move |__pe_a1| ClassTree::appendClasses(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ClassTree::ClassTree>) -> Result<Arc<ClassTree::ClassTree>> + 'static>))?;
     InstNode::updateClass(cls.clone(), scope.clone())?;
     Ok(version)
 }

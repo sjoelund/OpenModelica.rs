@@ -72,7 +72,7 @@ pub fn dumpProgram(mut in_txt: Tpl::Text, mut in_a_program: Absyn::Program) -> R
 pub fn dumpSCodeElements(mut txt: Tpl::Text, mut a_elements: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_0: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-    ret_0 = SCodeDump::filterElements(a_elements.clone(), SCodeDump::defaultOptions.clone());
+    ret_0 = SCodeDump::filterElements(a_elements.clone(), SCodeDump::defaultOptions.clone())?;
     out_txt = dumpSCodeElements2(txt.clone(), ret_0.clone())?;
     Ok(out_txt)
 }
@@ -2863,7 +2863,7 @@ pub fn dumpAlgorithm(mut in_txt: Tpl::Text, mut in_a_alg: Arc<Absyn::Algorithm>,
             ret_1 = MMToJuliaUtil::makeFunctionContext((literal!("listMatchAssign")).clone());
             l_lhs__str = dumpLhsExp(Tpl::emptyTxt.clone(), i_assignComponent.clone(), ret_1.clone())?;
             l_rhs__str = dumpExp(Tpl::emptyTxt.clone(), i_value.clone(), a_context.clone())?;
-            ret_3 = AbsynUtil::complexIsCref(i_assignComponent.clone());
+            ret_3 = AbsynUtil::complexIsCref(i_assignComponent.clone())?;
             txt = fun_146(txt.clone(), ret_3.clone(), i_assignComponent.clone(), l_rhs__str.clone(), l_lhs__str.clone())?;
             txt.clone()
         },

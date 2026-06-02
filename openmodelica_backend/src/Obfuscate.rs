@@ -117,7 +117,7 @@ pub fn obfuscateProgram(mut program: Arc<metamodelica::List<Arc<SCode::Element>>
         __acc.reverse()
     });
     classPath = obfuscatePath(classPath.clone(), env.clone(), ElementType::TYPE.clone())?;
-    classComment = obfuscateComment(classComment.clone(), env.clone());
+    classComment = obfuscateComment(classComment.clone(), env.clone())?;
     mapStr = (UnorderedMap::toJSON(env.mapping.clone(), std::sync::Arc::new(fnptr!(Util::id, _)), std::sync::Arc::new(fnptr!(Util::id, _)))?).clone();
     Ok((program, classPath, classComment, mapStr, mapping))
 }
@@ -168,7 +168,7 @@ pub fn obfuscateElement(mut element: Arc<SCode::Element>, mut env: Env) -> Resul
             assign_variant_field!(element => SCode::Element::EXTENDS;
                 baseClassPath = obfuscatePath(var_field!((*element).baseClassPath, SCode::Element::EXTENDS).clone(), env.clone(), ElementType::TYPE.clone())?,
                 modifications = obfuscateMod(var_field!((*element).modifications, SCode::Element::EXTENDS).clone(), env.clone())?,
-                ann = obfuscateAnnotationOpt(var_field!((*element).ann, SCode::Element::EXTENDS).clone(), env.clone())
+                ann = obfuscateAnnotationOpt(var_field!((*element).ann, SCode::Element::EXTENDS).clone(), env.clone())?
             );
             ()
         },
@@ -177,7 +177,7 @@ pub fn obfuscateElement(mut element: Arc<SCode::Element>, mut env: Env) -> Resul
                 name = obfuscateIdentifier((var_field!((*element).name, SCode::Element::CLASS).clone()).clone(), env.clone(), ElementType::TYPE_AND_FUNCTION.clone())?.0,
                 prefixes = obfuscatePrefixes(var_field!((*element).prefixes, SCode::Element::CLASS).clone(), env.clone())?,
                 classDef = obfuscateClassDef(var_field!((*element).classDef, SCode::Element::CLASS).clone(), env.clone())?,
-                cmt = obfuscateComment(var_field!((*element).cmt, SCode::Element::CLASS).clone(), env.clone())
+                cmt = obfuscateComment(var_field!((*element).cmt, SCode::Element::CLASS).clone(), env.clone())?
             );
             ()
         },
@@ -188,8 +188,8 @@ pub fn obfuscateElement(mut element: Arc<SCode::Element>, mut env: Env) -> Resul
                 attributes = obfuscateAttributes(var_field!((*element).attributes, SCode::Element::COMPONENT).clone(), env.clone())?,
                 typeSpec = obfuscateTypeSpec(var_field!((*element).typeSpec, SCode::Element::COMPONENT).clone(), env.clone())?,
                 modifications = obfuscateMod(var_field!((*element).modifications, SCode::Element::COMPONENT).clone(), env.clone())?,
-                comment = obfuscateComment(var_field!((*element).comment, SCode::Element::COMPONENT).clone(), env.clone()),
-                condition = obfuscateExpOpt(var_field!((*element).condition, SCode::Element::COMPONENT).clone(), env.clone())
+                comment = obfuscateComment(var_field!((*element).comment, SCode::Element::COMPONENT).clone(), env.clone())?,
+                condition = obfuscateExpOpt(var_field!((*element).condition, SCode::Element::COMPONENT).clone(), env.clone())?
             );
             ()
         },
@@ -313,7 +313,7 @@ pub fn obfuscateClassDef(mut cdef: Arc<SCode::ClassDef>, mut env: Env) -> Result
         }
         __acc.reverse()
     }),
-                externalDecl = Util::applyOption(var_field!((*cdef).externalDecl, SCode::ClassDef::PARTS).clone(), (std::sync::Arc::new({ let __pe_b1 = env.clone(); move |__pe_a0| obfuscateExternalDecl(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::ExternalDecl>) -> Result<Arc<SCode::ExternalDecl>> + 'static>))
+                externalDecl = Util::applyOption(var_field!((*cdef).externalDecl, SCode::ClassDef::PARTS).clone(), (std::sync::Arc::new({ let __pe_b1 = env.clone(); move |__pe_a0| obfuscateExternalDecl(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::ExternalDecl>) -> Result<Arc<SCode::ExternalDecl>> + 'static>))?
             );
             ()
         },
@@ -379,7 +379,7 @@ pub fn obfuscateTypeSpec(mut ty: Arc<Absyn::TypeSpec>, mut env: Env) -> Result<A
         Deref @ Absyn::TypeSpec::TPATH { .. } => {
             assign_variant_field!(ty => Absyn::TypeSpec::TPATH;
                 path = obfuscatePath(var_field!((*ty).path, Absyn::TypeSpec::TPATH).clone(), env.clone(), ElementType::TYPE.clone())?,
-                arrayDim = obfuscateArrayDimsOpt(var_field!((*ty).arrayDim, Absyn::TypeSpec::TPATH).clone(), env.clone())
+                arrayDim = obfuscateArrayDimsOpt(var_field!((*ty).arrayDim, Absyn::TypeSpec::TPATH).clone(), env.clone())?
             );
             ()
         },
@@ -394,7 +394,7 @@ pub fn obfuscateTypeSpec(mut ty: Arc<Absyn::TypeSpec>, mut env: Env) -> Result<A
         }
         __acc.reverse()
     }),
-                arrayDim = obfuscateArrayDimsOpt(var_field!((*ty).arrayDim, Absyn::TypeSpec::TCOMPLEX).clone(), env.clone())
+                arrayDim = obfuscateArrayDimsOpt(var_field!((*ty).arrayDim, Absyn::TypeSpec::TCOMPLEX).clone(), env.clone())?
             );
             ()
         },
@@ -407,7 +407,7 @@ pub fn obfuscateEnum(mut r#enum: Arc<SCode::Enum>, mut env: Env) -> Result<Arc<S
     let mut r#enum: Arc<SCode::Enum> = r#enum;
     assign_field!(
         r#enum.literal = obfuscateIdentifier((r#enum.literal.clone()).clone(), env.clone(), ElementType::OTHER.clone())?.0,
-        r#enum.comment = obfuscateComment(r#enum.comment.clone(), env.clone())
+        r#enum.comment = obfuscateComment(r#enum.comment.clone(), env.clone())?
     );
     Ok(r#enum)
 }
@@ -427,7 +427,7 @@ pub fn obfuscateReplaceable(mut repl: Arc<SCode::Replaceable>, mut env: Env) -> 
             assign_field!(
                 cc.constrainingClass = obfuscatePath(cc.constrainingClass.clone(), env.clone(), ElementType::OTHER.clone())?,
                 cc.modifier = obfuscateMod(cc.modifier.clone(), env.clone())?,
-                cc.comment = obfuscateComment(cc.comment.clone(), env.clone())
+                cc.comment = obfuscateComment(cc.comment.clone(), env.clone())?
             );
             assign_variant_field!(repl => SCode::Replaceable::REPLACEABLE; cc = Some(cc.clone()));
             ()
@@ -457,7 +457,7 @@ pub fn obfuscateMod(mut r#mod: Arc<SCode::Mod>, mut env: Env) -> Result<Arc<SCod
         }
         __acc.reverse()
     }),
-                binding = obfuscateExpOpt(var_field!((*r#mod).binding, SCode::Mod::MOD).clone(), env.clone())
+                binding = obfuscateExpOpt(var_field!((*r#mod).binding, SCode::Mod::MOD).clone(), env.clone())?
             );
             ()
         },
@@ -518,7 +518,7 @@ pub fn obfuscateIdentifier(mut id: ArcStr, mut env: Env, mut etype: ElementType)
     let mut builtins: Builtins = env.builtins.clone();
     let mut mapping: Mapping = env.mapping.clone();
     let mut opt_ety: Option<ElementType> = None;
-    opt_ety = UnorderedMap::get((id.clone()).clone(), builtins.clone());
+    opt_ety = UnorderedMap::get((id.clone()).clone(), builtins.clone())?;
     if isSome(opt_ety.clone()) {
         let __pa0 = ::match_deref::match_deref! { match &(opt_ety.clone()) {
             Some(__pa0) => __pa0.clone(),
@@ -567,19 +567,19 @@ pub fn makeId(mut oldId: Option<ArcStr>, mut index: i32) -> Result<ArcStr> {
     Ok(id)
 }
 
-pub fn obfuscateComment(mut comment: Arc<SCode::Comment>, mut env: Env) -> Arc<SCode::Comment> {
+pub fn obfuscateComment(mut comment: Arc<SCode::Comment>, mut env: Env) -> Result<Arc<SCode::Comment>> {
     let mut comment: Arc<SCode::Comment> = comment;
     assign_field!(
-        comment.annotation_ = obfuscateAnnotationOpt(comment.annotation_.clone(), env.clone()),
+        comment.annotation_ = obfuscateAnnotationOpt(comment.annotation_.clone(), env.clone())?,
         comment.comment = None
     );
-    comment
+    Ok(comment)
 }
 
-pub fn obfuscateAnnotationOpt(mut ann: Option<Arc<SCode::Annotation>>, mut env: Env) -> Option<Arc<SCode::Annotation>> {
+pub fn obfuscateAnnotationOpt(mut ann: Option<Arc<SCode::Annotation>>, mut env: Env) -> Result<Option<Arc<SCode::Annotation>>> {
     let mut ann: Option<Arc<SCode::Annotation>> = ann;
-    ann = Util::applyOption(ann.clone(), (std::sync::Arc::new({ let __pe_b1 = env.clone(); move |__pe_a0| obfuscateAnnotation(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Annotation>) -> Result<Arc<SCode::Annotation>> + 'static>));
-    ann
+    ann = Util::applyOption(ann.clone(), (std::sync::Arc::new({ let __pe_b1 = env.clone(); move |__pe_a0| obfuscateAnnotation(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Annotation>) -> Result<Arc<SCode::Annotation>> + 'static>))?;
+    Ok(ann)
 }
 
 pub fn obfuscateAnnotation(mut ann: Arc<SCode::Annotation>, mut env: Env) -> Result<Arc<SCode::Annotation>> {
@@ -602,7 +602,7 @@ pub fn obfuscateAnnotationMod(mut r#mod: Arc<SCode::Mod>, mut env: Env, mut obfu
         __acc.reverse()
     }));
             if obfuscateBinding.clone() {
-                assign_variant_field!(r#mod => SCode::Mod::MOD; binding = obfuscateExpOpt(var_field!((*r#mod).binding, SCode::Mod::MOD).clone(), env.clone()));
+                assign_variant_field!(r#mod => SCode::Mod::MOD; binding = obfuscateExpOpt(var_field!((*r#mod).binding, SCode::Mod::MOD).clone(), env.clone())?);
             }
             ()
         },
@@ -657,10 +657,10 @@ pub fn obfuscateAnnotationSubMod(mut r#mod: Arc<SCode::SubMod>, mut env: Env, mu
     Ok(r#mod)
 }
 
-pub fn obfuscateExpOpt(mut exp: Option<Arc<Absyn::Exp>>, mut env: Env) -> Option<Arc<Absyn::Exp>> {
+pub fn obfuscateExpOpt(mut exp: Option<Arc<Absyn::Exp>>, mut env: Env) -> Result<Option<Arc<Absyn::Exp>>> {
     let mut exp: Option<Arc<Absyn::Exp>> = exp;
-    exp = Util::applyOption(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = env.clone(); move |__pe_a0| obfuscateExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<Arc<Absyn::Exp>> + 'static>));
-    exp
+    exp = Util::applyOption(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = env.clone(); move |__pe_a0| obfuscateExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<Arc<Absyn::Exp>> + 'static>))?;
+    Ok(exp)
 }
 
 pub fn obfuscateExp(mut exp: Arc<Absyn::Exp>, mut env: Env) -> Result<Arc<Absyn::Exp>> {
@@ -805,10 +805,10 @@ pub fn obfuscateForIterator(mut iterator: Arc<Absyn::ForIterator>, mut env: Env)
     Ok(iterator)
 }
 
-pub fn obfuscateArrayDimsOpt(mut dims: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>, mut env: Env) -> Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>> {
+pub fn obfuscateArrayDimsOpt(mut dims: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>, mut env: Env) -> Result<Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>> {
     let mut dims: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>> = dims;
-    dims = Util::applyOption(dims.clone(), (std::sync::Arc::new({ let __pe_b1 = env.clone(); move |__pe_a0| obfuscateArrayDims(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::Subscript>>>> + 'static>));
-    dims
+    dims = Util::applyOption(dims.clone(), (std::sync::Arc::new({ let __pe_b1 = env.clone(); move |__pe_a0| obfuscateArrayDims(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::Subscript>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::Subscript>>>> + 'static>))?;
+    Ok(dims)
 }
 
 pub use obfuscateSubscripts as obfuscateArrayDims;
@@ -824,8 +824,8 @@ pub fn obfuscateExternalDecl(mut extDecl: Arc<SCode::ExternalDecl>, mut env: Env
         }
         __acc.reverse()
     }),
-        extDecl.output_ = Util::applyOption(extDecl.output_.clone(), (std::sync::Arc::new({ let __pe_b1 = env.clone(); let __pe_b2 = ElementType::OTHER.clone(); let __pe_b3 = true; move |__pe_a0| obfuscateCref(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>) -> Result<Arc<Absyn::ComponentRef>> + 'static>)),
-        extDecl.annotation_ = obfuscateAnnotationOpt(extDecl.annotation_.clone(), env.clone())
+        extDecl.output_ = Util::applyOption(extDecl.output_.clone(), (std::sync::Arc::new({ let __pe_b1 = env.clone(); let __pe_b2 = ElementType::OTHER.clone(); let __pe_b3 = true; move |__pe_a0| obfuscateCref(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>) -> Result<Arc<Absyn::ComponentRef>> + 'static>))?,
+        extDecl.annotation_ = obfuscateAnnotationOpt(extDecl.annotation_.clone(), env.clone())?
     );
     Ok(extDecl)
 }
@@ -865,7 +865,7 @@ pub fn obfuscateEquation(mut eq: Arc<SCode::Equation>, mut env: Env) -> Result<A
         __acc.reverse()
     }),
                 elseBranch = obfuscateEquations(var_field!((*eq).elseBranch, SCode::Equation::EQ_IF).clone(), env.clone())?,
-                comment = obfuscateComment(var_field!((*eq).comment, SCode::Equation::EQ_IF).clone(), env.clone())
+                comment = obfuscateComment(var_field!((*eq).comment, SCode::Equation::EQ_IF).clone(), env.clone())?
             );
             ()
         },
@@ -873,7 +873,7 @@ pub fn obfuscateEquation(mut eq: Arc<SCode::Equation>, mut env: Env) -> Result<A
             assign_variant_field!(eq => SCode::Equation::EQ_EQUALS;
                 expLeft = obfuscateExp(var_field!((*eq).expLeft, SCode::Equation::EQ_EQUALS).clone(), env.clone())?,
                 expRight = obfuscateExp(var_field!((*eq).expRight, SCode::Equation::EQ_EQUALS).clone(), env.clone())?,
-                comment = obfuscateComment(var_field!((*eq).comment, SCode::Equation::EQ_EQUALS).clone(), env.clone())
+                comment = obfuscateComment(var_field!((*eq).comment, SCode::Equation::EQ_EQUALS).clone(), env.clone())?
             );
             ()
         },
@@ -881,7 +881,7 @@ pub fn obfuscateEquation(mut eq: Arc<SCode::Equation>, mut env: Env) -> Result<A
             assign_variant_field!(eq => SCode::Equation::EQ_PDE;
                 expLeft = obfuscateExp(var_field!((*eq).expLeft, SCode::Equation::EQ_PDE).clone(), env.clone())?,
                 expRight = obfuscateExp(var_field!((*eq).expRight, SCode::Equation::EQ_PDE).clone(), env.clone())?,
-                comment = obfuscateComment(var_field!((*eq).comment, SCode::Equation::EQ_PDE).clone(), env.clone())
+                comment = obfuscateComment(var_field!((*eq).comment, SCode::Equation::EQ_PDE).clone(), env.clone())?
             );
             ()
         },
@@ -889,16 +889,16 @@ pub fn obfuscateEquation(mut eq: Arc<SCode::Equation>, mut env: Env) -> Result<A
             assign_variant_field!(eq => SCode::Equation::EQ_CONNECT;
                 crefLeft = obfuscateCref(var_field!((*eq).crefLeft, SCode::Equation::EQ_CONNECT).clone(), env.clone(), ElementType::OTHER.clone(), true)?,
                 crefRight = obfuscateCref(var_field!((*eq).crefRight, SCode::Equation::EQ_CONNECT).clone(), env.clone(), ElementType::OTHER.clone(), true)?,
-                comment = obfuscateComment(var_field!((*eq).comment, SCode::Equation::EQ_CONNECT).clone(), env.clone())
+                comment = obfuscateComment(var_field!((*eq).comment, SCode::Equation::EQ_CONNECT).clone(), env.clone())?
             );
             ()
         },
         Deref @ SCode::Equation::EQ_FOR { .. } => {
             assign_variant_field!(eq => SCode::Equation::EQ_FOR;
                 index = obfuscateIdentifier((var_field!((*eq).index, SCode::Equation::EQ_FOR).clone()).clone(), env.clone(), ElementType::OTHER.clone())?.0,
-                range = obfuscateExpOpt(var_field!((*eq).range, SCode::Equation::EQ_FOR).clone(), env.clone()),
+                range = obfuscateExpOpt(var_field!((*eq).range, SCode::Equation::EQ_FOR).clone(), env.clone())?,
                 eEquationLst = obfuscateEquations(var_field!((*eq).eEquationLst, SCode::Equation::EQ_FOR).clone(), env.clone())?,
-                comment = obfuscateComment(var_field!((*eq).comment, SCode::Equation::EQ_FOR).clone(), env.clone())
+                comment = obfuscateComment(var_field!((*eq).comment, SCode::Equation::EQ_FOR).clone(), env.clone())?
             );
             ()
         },
@@ -914,7 +914,7 @@ pub fn obfuscateEquation(mut eq: Arc<SCode::Equation>, mut env: Env) -> Result<A
         }
         __acc.reverse()
     }),
-                comment = obfuscateComment(var_field!((*eq).comment, SCode::Equation::EQ_WHEN).clone(), env.clone())
+                comment = obfuscateComment(var_field!((*eq).comment, SCode::Equation::EQ_WHEN).clone(), env.clone())?
             );
             ()
         },
@@ -923,14 +923,14 @@ pub fn obfuscateEquation(mut eq: Arc<SCode::Equation>, mut env: Env) -> Result<A
                 condition = obfuscateExp(var_field!((*eq).condition, SCode::Equation::EQ_ASSERT).clone(), env.clone())?,
                 message = obfuscateMessage(var_field!((*eq).message, SCode::Equation::EQ_ASSERT).clone(), (literal!("assert")).clone())?,
                 level = obfuscateExp(var_field!((*eq).level, SCode::Equation::EQ_ASSERT).clone(), env.clone())?,
-                comment = obfuscateComment(var_field!((*eq).comment, SCode::Equation::EQ_ASSERT).clone(), env.clone())
+                comment = obfuscateComment(var_field!((*eq).comment, SCode::Equation::EQ_ASSERT).clone(), env.clone())?
             );
             ()
         },
         Deref @ SCode::Equation::EQ_TERMINATE { .. } => {
             assign_variant_field!(eq => SCode::Equation::EQ_TERMINATE;
                 message = obfuscateMessage(var_field!((*eq).message, SCode::Equation::EQ_TERMINATE).clone(), (literal!("terminate")).clone())?,
-                comment = obfuscateComment(var_field!((*eq).comment, SCode::Equation::EQ_TERMINATE).clone(), env.clone())
+                comment = obfuscateComment(var_field!((*eq).comment, SCode::Equation::EQ_TERMINATE).clone(), env.clone())?
             );
             ()
         },
@@ -938,14 +938,14 @@ pub fn obfuscateEquation(mut eq: Arc<SCode::Equation>, mut env: Env) -> Result<A
             assign_variant_field!(eq => SCode::Equation::EQ_REINIT;
                 cref = obfuscateExp(var_field!((*eq).cref, SCode::Equation::EQ_REINIT).clone(), env.clone())?,
                 expReinit = obfuscateExp(var_field!((*eq).expReinit, SCode::Equation::EQ_REINIT).clone(), env.clone())?,
-                comment = obfuscateComment(var_field!((*eq).comment, SCode::Equation::EQ_REINIT).clone(), env.clone())
+                comment = obfuscateComment(var_field!((*eq).comment, SCode::Equation::EQ_REINIT).clone(), env.clone())?
             );
             ()
         },
         Deref @ SCode::Equation::EQ_NORETCALL { .. } => {
             assign_variant_field!(eq => SCode::Equation::EQ_NORETCALL;
                 exp = obfuscateExp(var_field!((*eq).exp, SCode::Equation::EQ_NORETCALL).clone(), env.clone())?,
-                comment = obfuscateComment(var_field!((*eq).comment, SCode::Equation::EQ_NORETCALL).clone(), env.clone())
+                comment = obfuscateComment(var_field!((*eq).comment, SCode::Equation::EQ_NORETCALL).clone(), env.clone())?
             );
             ()
         },
@@ -994,7 +994,7 @@ pub fn obfuscateStatement(mut stmt: Arc<SCode::Statement>, mut env: Env) -> Resu
             assign_variant_field!(stmt => SCode::Statement::ALG_ASSIGN;
                 assignComponent = obfuscateExp(var_field!((*stmt).assignComponent, SCode::Statement::ALG_ASSIGN).clone(), env.clone())?,
                 value = obfuscateExp(var_field!((*stmt).value, SCode::Statement::ALG_ASSIGN).clone(), env.clone())?,
-                comment = obfuscateComment(var_field!((*stmt).comment, SCode::Statement::ALG_ASSIGN).clone(), env.clone())
+                comment = obfuscateComment(var_field!((*stmt).comment, SCode::Statement::ALG_ASSIGN).clone(), env.clone())?
             );
             ()
         },
@@ -1011,25 +1011,25 @@ pub fn obfuscateStatement(mut stmt: Arc<SCode::Statement>, mut env: Env) -> Resu
         __acc.reverse()
     }),
                 elseBranch = obfuscateStatements(var_field!((*stmt).elseBranch, SCode::Statement::ALG_IF).clone(), env.clone())?,
-                comment = obfuscateComment(var_field!((*stmt).comment, SCode::Statement::ALG_IF).clone(), env.clone())
+                comment = obfuscateComment(var_field!((*stmt).comment, SCode::Statement::ALG_IF).clone(), env.clone())?
             );
             ()
         },
         Deref @ SCode::Statement::ALG_FOR { .. } => {
             assign_variant_field!(stmt => SCode::Statement::ALG_FOR;
                 index = obfuscateIdentifier((var_field!((*stmt).index, SCode::Statement::ALG_FOR).clone()).clone(), env.clone(), ElementType::OTHER.clone())?.0,
-                range = obfuscateExpOpt(var_field!((*stmt).range, SCode::Statement::ALG_FOR).clone(), env.clone()),
+                range = obfuscateExpOpt(var_field!((*stmt).range, SCode::Statement::ALG_FOR).clone(), env.clone())?,
                 forBody = obfuscateStatements(var_field!((*stmt).forBody, SCode::Statement::ALG_FOR).clone(), env.clone())?,
-                comment = obfuscateComment(var_field!((*stmt).comment, SCode::Statement::ALG_FOR).clone(), env.clone())
+                comment = obfuscateComment(var_field!((*stmt).comment, SCode::Statement::ALG_FOR).clone(), env.clone())?
             );
             ()
         },
         Deref @ SCode::Statement::ALG_PARFOR { .. } => {
             assign_variant_field!(stmt => SCode::Statement::ALG_PARFOR;
                 index = obfuscateIdentifier((var_field!((*stmt).index, SCode::Statement::ALG_PARFOR).clone()).clone(), env.clone(), ElementType::OTHER.clone())?.0,
-                range = obfuscateExpOpt(var_field!((*stmt).range, SCode::Statement::ALG_PARFOR).clone(), env.clone()),
+                range = obfuscateExpOpt(var_field!((*stmt).range, SCode::Statement::ALG_PARFOR).clone(), env.clone())?,
                 parforBody = obfuscateStatements(var_field!((*stmt).parforBody, SCode::Statement::ALG_PARFOR).clone(), env.clone())?,
-                comment = obfuscateComment(var_field!((*stmt).comment, SCode::Statement::ALG_PARFOR).clone(), env.clone())
+                comment = obfuscateComment(var_field!((*stmt).comment, SCode::Statement::ALG_PARFOR).clone(), env.clone())?
             );
             ()
         },
@@ -1037,7 +1037,7 @@ pub fn obfuscateStatement(mut stmt: Arc<SCode::Statement>, mut env: Env) -> Resu
             assign_variant_field!(stmt => SCode::Statement::ALG_WHILE;
                 boolExpr = obfuscateExp(var_field!((*stmt).boolExpr, SCode::Statement::ALG_WHILE).clone(), env.clone())?,
                 whileBody = obfuscateStatements(var_field!((*stmt).whileBody, SCode::Statement::ALG_WHILE).clone(), env.clone())?,
-                comment = obfuscateComment(var_field!((*stmt).comment, SCode::Statement::ALG_WHILE).clone(), env.clone())
+                comment = obfuscateComment(var_field!((*stmt).comment, SCode::Statement::ALG_WHILE).clone(), env.clone())?
             );
             ()
         },
@@ -1051,7 +1051,7 @@ pub fn obfuscateStatement(mut stmt: Arc<SCode::Statement>, mut env: Env) -> Resu
         }
         __acc.reverse()
     }),
-                comment = obfuscateComment(var_field!((*stmt).comment, SCode::Statement::ALG_WHEN_A).clone(), env.clone())
+                comment = obfuscateComment(var_field!((*stmt).comment, SCode::Statement::ALG_WHEN_A).clone(), env.clone())?
             );
             ()
         },
@@ -1060,14 +1060,14 @@ pub fn obfuscateStatement(mut stmt: Arc<SCode::Statement>, mut env: Env) -> Resu
                 condition = obfuscateExp(var_field!((*stmt).condition, SCode::Statement::ALG_ASSERT).clone(), env.clone())?,
                 message = obfuscateMessage(var_field!((*stmt).message, SCode::Statement::ALG_ASSERT).clone(), (literal!("assert")).clone())?,
                 level = obfuscateExp(var_field!((*stmt).level, SCode::Statement::ALG_ASSERT).clone(), env.clone())?,
-                comment = obfuscateComment(var_field!((*stmt).comment, SCode::Statement::ALG_ASSERT).clone(), env.clone())
+                comment = obfuscateComment(var_field!((*stmt).comment, SCode::Statement::ALG_ASSERT).clone(), env.clone())?
             );
             ()
         },
         Deref @ SCode::Statement::ALG_TERMINATE { .. } => {
             assign_variant_field!(stmt => SCode::Statement::ALG_TERMINATE;
                 message = obfuscateMessage(var_field!((*stmt).message, SCode::Statement::ALG_TERMINATE).clone(), (literal!("terminate")).clone())?,
-                comment = obfuscateComment(var_field!((*stmt).comment, SCode::Statement::ALG_TERMINATE).clone(), env.clone())
+                comment = obfuscateComment(var_field!((*stmt).comment, SCode::Statement::ALG_TERMINATE).clone(), env.clone())?
             );
             ()
         },
@@ -1075,23 +1075,23 @@ pub fn obfuscateStatement(mut stmt: Arc<SCode::Statement>, mut env: Env) -> Resu
             assign_variant_field!(stmt => SCode::Statement::ALG_REINIT;
                 cref = obfuscateExp(var_field!((*stmt).cref, SCode::Statement::ALG_REINIT).clone(), env.clone())?,
                 newValue = obfuscateExp(var_field!((*stmt).newValue, SCode::Statement::ALG_REINIT).clone(), env.clone())?,
-                comment = obfuscateComment(var_field!((*stmt).comment, SCode::Statement::ALG_REINIT).clone(), env.clone())
+                comment = obfuscateComment(var_field!((*stmt).comment, SCode::Statement::ALG_REINIT).clone(), env.clone())?
             );
             ()
         },
         Deref @ SCode::Statement::ALG_NORETCALL { .. } => {
             assign_variant_field!(stmt => SCode::Statement::ALG_NORETCALL;
                 exp = obfuscateExp(var_field!((*stmt).exp, SCode::Statement::ALG_NORETCALL).clone(), env.clone())?,
-                comment = obfuscateComment(var_field!((*stmt).comment, SCode::Statement::ALG_NORETCALL).clone(), env.clone())
+                comment = obfuscateComment(var_field!((*stmt).comment, SCode::Statement::ALG_NORETCALL).clone(), env.clone())?
             );
             ()
         },
         Deref @ SCode::Statement::ALG_RETURN { .. } => {
-            assign_variant_field!(stmt => SCode::Statement::ALG_RETURN; comment = obfuscateComment(var_field!((*stmt).comment, SCode::Statement::ALG_RETURN).clone(), env.clone()));
+            assign_variant_field!(stmt => SCode::Statement::ALG_RETURN; comment = obfuscateComment(var_field!((*stmt).comment, SCode::Statement::ALG_RETURN).clone(), env.clone())?);
             ()
         },
         Deref @ SCode::Statement::ALG_BREAK { .. } => {
-            assign_variant_field!(stmt => SCode::Statement::ALG_BREAK; comment = obfuscateComment(var_field!((*stmt).comment, SCode::Statement::ALG_BREAK).clone(), env.clone()));
+            assign_variant_field!(stmt => SCode::Statement::ALG_BREAK; comment = obfuscateComment(var_field!((*stmt).comment, SCode::Statement::ALG_BREAK).clone(), env.clone())?);
             ()
         },
         _ => (),
@@ -1105,7 +1105,7 @@ pub fn isBuiltinCall(mut callName: Arc<Absyn::ComponentRef>, mut env: Env) -> Re
     let mut name: ArcStr = arcstr::literal!("");
     let mut ety: ElementType = ElementType::TYPE;
     name = (AbsynUtil::crefFirstIdent(callName.clone())?).clone();
-    ety = UnorderedMap::getOrDefault((name.clone()).clone(), env.builtins.clone(), ElementType::OTHER.clone());
+    ety = UnorderedMap::getOrDefault((name.clone()).clone(), env.builtins.clone(), ElementType::OTHER.clone())?;
     res = ety.clone() == ElementType::FUNCTION.clone() || ety.clone() == ElementType::TYPE_AND_FUNCTION.clone();
     Ok(res)
 }

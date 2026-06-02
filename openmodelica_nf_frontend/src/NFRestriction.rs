@@ -302,9 +302,9 @@ pub fn assertNoAlgorithms(mut algorithms: Arc<metamodelica::List<Arc<SCode::Algo
     let mut alg_opt: Option<Arc<SCode::AlgorithmSection>> = None;
     let mut alg: Arc<SCode::AlgorithmSection> = Arc::new(<SCode::AlgorithmSection as ::std::default::Default>::default());
     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-    alg_opt = List::findOption(algorithms.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::isNonEmptyAlgorithm, Arc<SCode::AlgorithmSection>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::AlgorithmSection>) -> Result<bool> + 'static>));
+    alg_opt = List::findOption(algorithms.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::isNonEmptyAlgorithm, Arc<SCode::AlgorithmSection>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::AlgorithmSection>) -> Result<bool> + 'static>))?;
     if isNone(alg_opt.clone()) {
-        alg_opt = List::findOption(initialAlgorithms.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::isNonEmptyAlgorithm, Arc<SCode::AlgorithmSection>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::AlgorithmSection>) -> Result<bool> + 'static>));
+        alg_opt = List::findOption(initialAlgorithms.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::isNonEmptyAlgorithm, Arc<SCode::AlgorithmSection>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::AlgorithmSection>) -> Result<bool> + 'static>))?;
     }
     if isSome(alg_opt.clone()) {
         let __pa0 = ::match_deref::match_deref! { match &(alg_opt.clone()) {

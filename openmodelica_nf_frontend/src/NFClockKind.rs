@@ -166,19 +166,19 @@ pub fn containsExp(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(Ar
     Ok(res)
 }
 
-pub fn containsExpShallow(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>) -> bool {
+pub fn containsExpShallow(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>) -> Result<bool> {
     pub type ContainsPred = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>;
 
     let mut res: bool = false;
     res = (::match_deref::match_deref! { match &(ck.clone()) {
-        Deref @ RATIONAL_CLOCK { .. } => func(var_field!((*ck).intervalCounter, NFClockKind::RATIONAL_CLOCK).clone()).unwrap() || func(var_field!((*ck).resolution, NFClockKind::RATIONAL_CLOCK).clone()).unwrap(),
-        Deref @ REAL_CLOCK { .. } => func(var_field!((*ck).interval, NFClockKind::REAL_CLOCK).clone()).unwrap(),
-        Deref @ EVENT_CLOCK { .. } => func(var_field!((*ck).condition, NFClockKind::EVENT_CLOCK).clone()).unwrap() || func(var_field!((*ck).startInterval, NFClockKind::EVENT_CLOCK).clone()).unwrap(),
-        Deref @ SOLVER_CLOCK { .. } => func(var_field!((*ck).c, NFClockKind::SOLVER_CLOCK).clone()).unwrap() || func(var_field!((*ck).solverMethod, NFClockKind::SOLVER_CLOCK).clone()).unwrap(),
+        Deref @ RATIONAL_CLOCK { .. } => func(var_field!((*ck).intervalCounter, NFClockKind::RATIONAL_CLOCK).clone())? || func(var_field!((*ck).resolution, NFClockKind::RATIONAL_CLOCK).clone())?,
+        Deref @ REAL_CLOCK { .. } => func(var_field!((*ck).interval, NFClockKind::REAL_CLOCK).clone())?,
+        Deref @ EVENT_CLOCK { .. } => func(var_field!((*ck).condition, NFClockKind::EVENT_CLOCK).clone())? || func(var_field!((*ck).startInterval, NFClockKind::EVENT_CLOCK).clone())?,
+        Deref @ SOLVER_CLOCK { .. } => func(var_field!((*ck).c, NFClockKind::SOLVER_CLOCK).clone())? || func(var_field!((*ck).solverMethod, NFClockKind::SOLVER_CLOCK).clone())?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    res
+    Ok(res)
 }
 
 pub fn applyExp(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>) -> Result<()> {
@@ -210,33 +210,33 @@ pub fn applyExp(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(Arc<E
     Ok(())
 }
 
-pub fn applyExpShallow(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>) -> () {
+pub fn applyExpShallow(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>) -> Result<()> {
     pub type ApplyFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>;
 
     let () = (::match_deref::match_deref! { match &(ck.clone()) {
         Deref @ RATIONAL_CLOCK { .. } => {
-            func(var_field!((*ck).intervalCounter, NFClockKind::RATIONAL_CLOCK).clone()).unwrap();
-            func(var_field!((*ck).resolution, NFClockKind::RATIONAL_CLOCK).clone()).unwrap();
+            func(var_field!((*ck).intervalCounter, NFClockKind::RATIONAL_CLOCK).clone())?;
+            func(var_field!((*ck).resolution, NFClockKind::RATIONAL_CLOCK).clone())?;
             ()
         },
         Deref @ REAL_CLOCK { .. } => {
-            func(var_field!((*ck).interval, NFClockKind::REAL_CLOCK).clone()).unwrap();
+            func(var_field!((*ck).interval, NFClockKind::REAL_CLOCK).clone())?;
             ()
         },
         Deref @ EVENT_CLOCK { .. } => {
-            func(var_field!((*ck).condition, NFClockKind::EVENT_CLOCK).clone()).unwrap();
-            func(var_field!((*ck).startInterval, NFClockKind::EVENT_CLOCK).clone()).unwrap();
+            func(var_field!((*ck).condition, NFClockKind::EVENT_CLOCK).clone())?;
+            func(var_field!((*ck).startInterval, NFClockKind::EVENT_CLOCK).clone())?;
             ()
         },
         Deref @ SOLVER_CLOCK { .. } => {
-            func(var_field!((*ck).c, NFClockKind::SOLVER_CLOCK).clone()).unwrap();
-            func(var_field!((*ck).solverMethod, NFClockKind::SOLVER_CLOCK).clone()).unwrap();
+            func(var_field!((*ck).c, NFClockKind::SOLVER_CLOCK).clone())?;
+            func(var_field!((*ck).solverMethod, NFClockKind::SOLVER_CLOCK).clone())?;
             ()
         },
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    ()
+    Ok(())
 }
 
 pub fn foldExp<ArgT: Clone + 'static>(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
@@ -297,7 +297,7 @@ pub fn mapExp(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(Arc<Exp
     Ok(outCk)
 }
 
-pub fn mapExpShallow(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Arc<NFClockKind> {
+pub fn mapExpShallow(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<NFClockKind>> {
     pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>;
 
     let mut outCk: Arc<NFClockKind> = Arc::new(<NFClockKind as ::std::default::Default>::default());
@@ -307,28 +307,28 @@ pub fn mapExpShallow(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(
     let mut e4: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     outCk = (::match_deref::match_deref! { match &(ck.clone()) {
         Deref @ RATIONAL_CLOCK { intervalCounter: e1, resolution: e2 } => {
-            e3 = func(e1.clone()).unwrap();
-            e4 = func(e2.clone()).unwrap();
+            e3 = func(e1.clone())?;
+            e4 = func(e2.clone())?;
             if (referenceEq(&e1.clone(),&e3.clone()) && referenceEq(&e2.clone(),&e4.clone())) {ck.clone()} else {Arc::new(NFClockKind::RATIONAL_CLOCK { intervalCounter: e3.clone(), resolution: e4.clone() })}
         },
         Deref @ REAL_CLOCK { interval: e1 } => {
-            e3 = func(e1.clone()).unwrap();
+            e3 = func(e1.clone())?;
             if (referenceEq(&e1.clone(),&e3.clone())) {ck.clone()} else {Arc::new(NFClockKind::REAL_CLOCK { interval: e3.clone() })}
         },
         Deref @ EVENT_CLOCK { condition: e1, startInterval: e2 } => {
-            e3 = func(e1.clone()).unwrap();
-            e4 = func(e2.clone()).unwrap();
+            e3 = func(e1.clone())?;
+            e4 = func(e2.clone())?;
             if (referenceEq(&e1.clone(),&e3.clone()) && referenceEq(&e2.clone(),&e4.clone())) {ck.clone()} else {Arc::new(NFClockKind::EVENT_CLOCK { condition: e3.clone(), startInterval: e4.clone() })}
         },
         Deref @ SOLVER_CLOCK { c: e1, solverMethod: e2 } => {
-            e3 = func(e1.clone()).unwrap();
-            e4 = func(e2.clone()).unwrap();
+            e3 = func(e1.clone())?;
+            e4 = func(e2.clone())?;
             if (referenceEq(&e1.clone(),&e3.clone()) && referenceEq(&e2.clone(),&e4.clone())) {ck.clone()} else {Arc::new(NFClockKind::SOLVER_CLOCK { c: e3.clone(), solverMethod: e4.clone() })}
         },
         _ => ck.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    outCk
+    Ok(outCk)
 }
 
 pub fn mapFoldExp<ArgT: Clone + 'static>(mut ck: Arc<NFClockKind>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<(Arc<Expression::NFExpression>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<NFClockKind>, ArgT)> {

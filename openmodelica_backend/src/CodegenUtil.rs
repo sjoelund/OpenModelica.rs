@@ -662,7 +662,7 @@ pub fn initValXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_s
         (txt, Deref @ DAE::Exp::REDUCTION { expr: i_expr, .. }, a_stringQuotes) => {
             let mut ret_1: bool = false;
             let mut txt = (*txt).clone();
-            ret_1 = Expression::isSimpleLiteralValue(i_expr.clone(), true);
+            ret_1 = Expression::isSimpleLiteralValue(i_expr.clone(), true)?;
             txt = fun_66(txt.clone(), ret_1.clone(), (a_stringQuotes.clone()).clone(), i_expr.clone())?;
             txt.clone()
         },

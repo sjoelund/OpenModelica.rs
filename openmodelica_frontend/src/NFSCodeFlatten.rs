@@ -113,11 +113,11 @@ pub fn flattenClassInProgram(mut inClassName: Arc<Absyn::Path>, mut inProgram: A
                     System::tmpTickResetIndex(1, NFSCodeEnv::extendsTickIndex.clone());
                     System::setUsesCardinality(false);
                     env = NFSCodeEnv::buildInitialEnv()?;
-                    env = NFSCodeEnv::extendEnvWithClasses(prog.clone(), env.clone());
+                    env = NFSCodeEnv::extendEnvWithClasses(prog.clone(), env.clone())?;
                     env = NFEnvExtends::update(env.clone())?;
                     (prog, env) = NFSCodeDependency::analyse(inClassName.clone(), env.clone(), prog.clone())?;
                     if !(Flags::isSet(Flags::SCODE_INST.clone())?) {
-                        (prog, env) = NFSCodeFlattenImports::flattenProgram(prog.clone(), env.clone());
+                        (prog, env) = NFSCodeFlattenImports::flattenProgram(prog.clone(), env.clone())?;
                     }
                     Ok((prog.clone(), env.clone()))
                 }
@@ -149,9 +149,9 @@ pub fn flattenCompleteProgram(mut inProgram: Arc<metamodelica::List<Arc<SCode::E
                     let mut env: Env = metamodelica::nil();
                     let mut prog = (*prog).clone();
                     env = NFSCodeEnv::buildInitialEnv()?;
-                    env = NFSCodeEnv::extendEnvWithClasses(prog.clone(), env.clone());
+                    env = NFSCodeEnv::extendEnvWithClasses(prog.clone(), env.clone())?;
                     env = NFEnvExtends::update(env.clone())?;
-                    (prog, env) = NFSCodeFlattenImports::flattenProgram(prog.clone(), env.clone());
+                    (prog, env) = NFSCodeFlattenImports::flattenProgram(prog.clone(), env.clone())?;
                     Ok(prog.clone())
                 }
                 _ => bail!("nomatch"),

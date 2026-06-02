@@ -160,7 +160,7 @@ pub fn setAbsynElement(mut ast: Absyn::Program, mut element: Arc<Absyn::Element>
     if isSome(table.explodedAst.clone()) {
         scode_elems = AbsynToSCode::translateElement(element.clone(), openmodelica_frontend_types::SCode::Visibility::PUBLIC)?;
         if (scode_elems.clone().len() as i32) > 1 {
-            let __pa0 = ::match_deref::match_deref! { match &(List::findOption(scode_elems.clone(), (std::sync::Arc::new({ let __pe_b0 = (AbsynUtil::pathLastIdent(path.clone())?).clone(); move |__pe_a1| Ok(SCodeUtil::isElementNamed(__pe_b0.clone(), __pe_a1)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>))) {
+            let __pa0 = ::match_deref::match_deref! { match &(List::findOption(scode_elems.clone(), (std::sync::Arc::new({ let __pe_b0 = (AbsynUtil::pathLastIdent(path.clone())?).clone(); move |__pe_a1| Ok(SCodeUtil::isElementNamed(__pe_b0.clone(), __pe_a1)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>))?) {
                 Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
@@ -434,14 +434,14 @@ pub fn buildEnv() -> Result<FCore::Graph> {
     let mut table: Arc<SymbolTable> = Arc::new(<SymbolTable as ::std::default::Default>::default());
     table = get();
     (_, env) = Inst::makeEnvFromProgram(getSCode()?)?;
-    env = addVarsToEnv(table.vars.clone().reverse(), env.clone());
+    env = addVarsToEnv(table.vars.clone().reverse(), env.clone())?;
     Ok(env)
 }
 
-fn addVarsToEnv(mut inVariableLst: Arc<metamodelica::List<InteractiveTypes::Variable>>, mut inEnv: FCore::Graph) -> FCore::Graph {
+fn addVarsToEnv(mut inVariableLst: Arc<metamodelica::List<InteractiveTypes::Variable>>, mut inEnv: FCore::Graph) -> Result<FCore::Graph> {
     let mut outEnv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
-    outEnv = List::fold(inVariableLst.clone(), (std::sync::Arc::new(addVarToEnv) as std::sync::Arc<dyn ::std::ops::Fn(InteractiveTypes::Variable, FCore::Graph) -> Result<FCore::Graph> + 'static>), inEnv.clone());
-    outEnv
+    outEnv = List::fold(inVariableLst.clone(), (std::sync::Arc::new(addVarToEnv) as std::sync::Arc<dyn ::std::ops::Fn(InteractiveTypes::Variable, FCore::Graph) -> Result<FCore::Graph> + 'static>), inEnv.clone())?;
+    Ok(outEnv)
 }
 
 fn addVarToEnv(mut inVariable: InteractiveTypes::Variable, mut inEnv: FCore::Graph) -> Result<FCore::Graph> {

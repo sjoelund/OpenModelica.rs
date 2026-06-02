@@ -423,7 +423,7 @@ pub fn setBinding(mut binding: Arc<Binding::NFBinding>, mut component: Arc<NFCom
 pub fn hasBinding(mut component: Arc<NFComponent>, mut parent: Arc<InstNode::InstNode>) -> Result<bool> {
     fn has_missing_binding(mut component: Arc<InstNode::InstNode>) -> Result<bool> {
         let mut noBinding: bool = false;
-        noBinding = InstNode::isComponent(component.clone()) && !(hasBinding(InstNode::component(component.clone())?, Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE))?);
+        noBinding = InstNode::isComponent(component.clone())? && !(hasBinding(InstNode::component(component.clone())?, Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE))?);
         Ok(noBinding)
     }
 
@@ -438,7 +438,7 @@ pub fn hasBinding(mut component: Arc<NFComponent>, mut parent: Arc<InstNode::Ins
         b = false;
         return Ok(b.clone());
     }
-    if isSome(ClassTree::findComponent(Class::classTree(cls.clone())?, (std::sync::Arc::new(has_missing_binding) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<bool> + 'static>))) {
+    if isSome(ClassTree::findComponent(Class::classTree(cls.clone())?, (std::sync::Arc::new(has_missing_binding) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<bool> + 'static>))?) {
         b = false;
     }
     b = true;
@@ -513,7 +513,7 @@ pub fn parallelism(mut component: Arc<NFComponent>) -> Prefixes::Parallelism {
     parallelism
 }
 
-pub fn variability(mut component: Arc<NFComponent>) -> Prefixes::Variability {
+pub fn variability(mut component: Arc<NFComponent>) -> Result<Prefixes::Variability> {
     let mut variability: Prefixes::Variability = Prefixes::Variability::CONSTANT;
     variability = (::match_deref::match_deref! { match &(component.clone()) {
         Deref @ COMPONENT { attributes: Deref @ Attributes::ATTRIBUTES { variability: __esc_variability, .. }, .. } => {
@@ -522,11 +522,11 @@ pub fn variability(mut component: Arc<NFComponent>) -> Prefixes::Variability {
         },
         Deref @ ITERATOR { .. } => var_field!((*component).variability, NFComponent::ITERATOR).clone(),
         Deref @ ENUM_LITERAL { .. } => Variability::CONSTANT.clone(),
-        Deref @ INVALID_COMPONENT { .. } => self::variability(var_field!((*component).component, NFComponent::INVALID_COMPONENT).clone()),
+        Deref @ INVALID_COMPONENT { .. } => self::variability(var_field!((*component).component, NFComponent::INVALID_COMPONENT).clone())?,
         _ => Variability::CONTINUOUS.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    variability
+    Ok(variability)
 }
 
 pub fn setVariability(mut variability: Prefixes::Variability, mut component: Arc<NFComponent>) -> Arc<NFComponent> {
@@ -546,24 +546,24 @@ pub fn setVariability(mut variability: Prefixes::Variability, mut component: Arc
     component
 }
 
-pub fn isConst(mut component: Arc<NFComponent>) -> bool {
-    let mut isConst: bool = variability(component.clone()) == Variability::CONSTANT.clone();
-    isConst
+pub fn isConst(mut component: Arc<NFComponent>) -> Result<bool> {
+    let mut isConst: bool = variability(component.clone())? == Variability::CONSTANT.clone();
+    Ok(isConst)
 }
 
-pub fn isParameter(mut component: Arc<NFComponent>) -> bool {
-    let mut b: bool = variability(component.clone()) == Variability::PARAMETER.clone();
-    b
+pub fn isParameter(mut component: Arc<NFComponent>) -> Result<bool> {
+    let mut b: bool = variability(component.clone())? == Variability::PARAMETER.clone();
+    Ok(b)
 }
 
-pub fn isStructuralParameter(mut component: Arc<NFComponent>) -> bool {
-    let mut b: bool = variability(component.clone()) == Variability::STRUCTURAL_PARAMETER.clone();
-    b
+pub fn isStructuralParameter(mut component: Arc<NFComponent>) -> Result<bool> {
+    let mut b: bool = variability(component.clone())? == Variability::STRUCTURAL_PARAMETER.clone();
+    Ok(b)
 }
 
-pub fn isVar(mut component: Arc<NFComponent>) -> bool {
-    let mut isVar: bool = variability(component.clone()) == Variability::CONTINUOUS.clone();
-    isVar
+pub fn isVar(mut component: Arc<NFComponent>) -> Result<bool> {
+    let mut isVar: bool = variability(component.clone())? == Variability::CONTINUOUS.clone();
+    Ok(isVar)
 }
 
 pub fn isRedeclare(mut component: Arc<NFComponent>) -> Result<bool> {
@@ -639,23 +639,23 @@ pub fn isInnerOuter(mut component: Arc<NFComponent>) -> Result<bool> {
     Ok(isInnerOuter)
 }
 
-pub fn isInner(mut component: Arc<NFComponent>) -> bool {
+pub fn isInner(mut component: Arc<NFComponent>) -> Result<bool> {
     let mut isInner: bool = false;
-    let mut io: Prefixes::InnerOuter = innerOuter(component.clone()).unwrap();
+    let mut io: Prefixes::InnerOuter = innerOuter(component.clone())?;
     isInner = io.clone() == InnerOuter::INNER.clone() || io.clone() == InnerOuter::INNER_OUTER.clone();
-    isInner
+    Ok(isInner)
 }
 
-pub fn isOuter(mut component: Arc<NFComponent>) -> bool {
+pub fn isOuter(mut component: Arc<NFComponent>) -> Result<bool> {
     let mut isOuter: bool = false;
-    let mut io: Prefixes::InnerOuter = innerOuter(component.clone()).unwrap();
+    let mut io: Prefixes::InnerOuter = innerOuter(component.clone())?;
     isOuter = io.clone() == InnerOuter::OUTER.clone() || io.clone() == InnerOuter::INNER_OUTER.clone();
-    isOuter
+    Ok(isOuter)
 }
 
-pub fn isOnlyOuter(mut component: Arc<NFComponent>) -> bool {
-    let mut isOuter: bool = innerOuter(component.clone()).unwrap() == InnerOuter::OUTER.clone();
-    isOuter
+pub fn isOnlyOuter(mut component: Arc<NFComponent>) -> Result<bool> {
+    let mut isOuter: bool = innerOuter(component.clone())? == InnerOuter::OUTER.clone();
+    Ok(isOuter)
 }
 
 pub fn connectorType(mut component: Arc<NFComponent>) -> i32 {
@@ -721,7 +721,7 @@ pub fn isIdentical(mut comp1: Arc<NFComponent>, mut comp2: Arc<NFComponent>) -> 
     } else {
         identical = (::match_deref::match_deref! { match &((comp1.clone(), comp2.clone())) {
         (Deref @ COMPONENT { .. }, Deref @ COMPONENT { .. }) => {
-            if !(Class::isIdentical(InstNode::getClass(var_field!((*comp1).classInst, NFComponent::COMPONENT).clone())?, InstNode::getClass(var_field!((*comp2).classInst, NFComponent::COMPONENT).clone())?)) {
+            if !(Class::isIdentical(InstNode::getClass(var_field!((*comp1).classInst, NFComponent::COMPONENT).clone())?, InstNode::getClass(var_field!((*comp2).classInst, NFComponent::COMPONENT).clone())?)?) {
                 return Ok(identical.clone());
             }
             if !(Binding::isEqual(var_field!((*comp1).binding, NFComponent::COMPONENT).clone(), var_field!((*comp2).binding, NFComponent::COMPONENT).clone())?) {
@@ -743,7 +743,7 @@ pub fn toString(mut name: ArcStr, mut component: Arc<NFComponent>) -> Result<Arc
             SCodeDump::unparseElementStr(def.clone(), SCodeDump::defaultOptions.clone())?
         },
         Deref @ COMPONENT { .. } => {
-            { let mut __mm_s = String::new(); __mm_s.push_str(&*Attributes::toString(var_field!((*component).attributes, NFComponent::COMPONENT).clone(), var_field!((*component).ty, NFComponent::COMPONENT).clone())); __mm_s.push_str(&*Type::toString(var_field!((*component).ty, NFComponent::COMPONENT).clone())?); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*Binding::toString(var_field!((*component).binding, NFComponent::COMPONENT).clone(), (literal!(" = ")).clone())?); ArcStr::from(__mm_s) }
+            { let mut __mm_s = String::new(); __mm_s.push_str(&*Attributes::toString(var_field!((*component).attributes, NFComponent::COMPONENT).clone(), var_field!((*component).ty, NFComponent::COMPONENT).clone())?); __mm_s.push_str(&*Type::toString(var_field!((*component).ty, NFComponent::COMPONENT).clone())?); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*Binding::toString(var_field!((*component).binding, NFComponent::COMPONENT).clone(), (literal!(" = ")).clone())?); ArcStr::from(__mm_s) }
         },
         Deref @ TYPE_ATTRIBUTE { .. } => {
             { let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*Modifier::toString(var_field!((*component).modifier, NFComponent::TYPE_ATTRIBUTE).clone(), false)?); ArcStr::from(__mm_s) }
@@ -870,7 +870,7 @@ pub fn getEvaluateAnnotation(mut component: Arc<NFComponent>) -> Result<Option<b
 pub fn isFixed(mut component: Arc<NFComponent>) -> Result<bool> {
     let mut fixed: bool = false;
     let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
-    fixed = isParameter(component.clone()) || isStructuralParameter(component.clone());
+    fixed = isParameter(component.clone())? || isStructuralParameter(component.clone())?;
     binding = Class::lookupAttributeBinding((literal!("fixed")).clone(), InstNode::getClass(classInstance(component.clone()))?);
     if Binding::isUnbound(binding.clone()) {
         return Ok(fixed.clone());
@@ -966,7 +966,7 @@ pub fn countConnectorVars(mut component: Arc<NFComponent>, mut isRoot: bool) -> 
         Function::instFunctionNode(eq_node.clone(), NFInstContext::NO_CONTEXT.clone(), info(component.clone())?)?;
         r#fn = listHead(Function::typeNodeCache(eq_node.clone(), NFInstContext::FUNCTION.clone())?)?;
         ty = Function::returnType(r#fn.clone());
-        if Type::hasKnownSize(ty.clone()) {
+        if Type::hasKnownSize(ty.clone())? {
             comp_size = Type::sizeOf(ty.clone(), false)?;
         } else {
             comp_size = 0;
@@ -976,8 +976,8 @@ pub fn countConnectorVars(mut component: Arc<NFComponent>, mut isRoot: bool) -> 
         ty = getType(component.clone())?;
         if isRoot.clone() {
             comp_size = 1;
-        } else if Type::hasKnownSize(ty.clone()) {
-            comp_size = Dimension::sizesProduct(Type::arrayDims(ty.clone()), false);
+        } else if Type::hasKnownSize(ty.clone())? {
+            comp_size = Dimension::sizesProduct(Type::arrayDims(ty.clone()), false)?;
         } else {
             comp_size = 0;
             knownSize = false;
@@ -1003,7 +1003,7 @@ pub fn countConnectorVars(mut component: Arc<NFComponent>, mut isRoot: bool) -> 
             flows = flows.clone() + comp_size.clone();
         } else if Prefixes::ConnectorType::isStream(cty.clone()) {
             streams = streams.clone() + comp_size.clone();
-        } else if variability(component.clone()) >= Variability::DISCRETE.clone() && direction(component.clone()) == Direction::NONE.clone() {
+        } else if variability(component.clone())? >= Variability::DISCRETE.clone() && direction(component.clone()) == Direction::NONE.clone() {
             potentials = potentials.clone() + comp_size.clone();
         }
     }

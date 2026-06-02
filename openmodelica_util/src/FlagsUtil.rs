@@ -219,7 +219,7 @@ pub fn getConfigOptionsStringList(mut inFlag: Flags::ConfigFlag) -> Result<(Arc<
     let mut outComments: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     (outOptions, outComments) = (match inFlag.clone() {
         Flags::ConfigFlag { validOptions: Some(Flags::ValidOptions::STRING_DESC_OPTION { options: mut options }), .. } => {
-            (List::map(options.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _))), List::mapMap(options.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)), (std::sync::Arc::new(Gettext::translateContent) as std::sync::Arc<dyn ::std::ops::Fn(Gettext::TranslatableContent) -> Result<ArcStr> + 'static>)))
+            (List::map(options.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)))?, List::mapMap(options.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)), (std::sync::Arc::new(Gettext::translateContent) as std::sync::Arc<dyn ::std::ops::Fn(Gettext::TranslatableContent) -> Result<ArcStr> + 'static>))?)
         },
         Flags::ConfigFlag { validOptions: Some(Flags::ValidOptions::STRING_OPTION { options: ref flags }), .. } => {
             (flags.clone(), List::fill((literal!("")).clone(), (flags.clone().len() as i32)))
@@ -272,7 +272,7 @@ pub fn readArgs(mut inArgs: Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metam
         }
     }
     outArgs = List::append_reverse(outArgs.clone(), rest_args.clone());
-    List::map2(outArgs.clone(), (std::sync::Arc::new(fnptr!(System::iconv, ArcStr, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (literal!("UTF-8")).clone(), (literal!("UTF-8")).clone());
+    List::map2(outArgs.clone(), (std::sync::Arc::new(fnptr!(System::iconv, ArcStr, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (literal!("UTF-8")).clone(), (literal!("UTF-8")).clone())?;
     Error::assertionOrAddSourceMessage(numError.clone() == Error::getNumErrorMessages(), Error::UTF8_COMMAND_LINE_ARGS.clone(), metamodelica::nil(), Util::dummyInfo.clone())?;
     saveFlags(flags.clone());
     handleDeprecatedFlags()?;
@@ -384,10 +384,10 @@ fn setAdditionalOptModules(mut inFlag: Flags::ConfigFlag, mut inOppositeFlag: Fl
     for mut value in &*inValues.clone() {
         let mut value = value.clone();
         values = Flags::getConfigStringList(inOppositeFlag.clone())?;
-        values = List::removeOnTrue((value.clone()).clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), values.clone());
+        values = List::removeOnTrue((value.clone()).clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), values.clone())?;
         setConfigStringList(inOppositeFlag.clone(), values.clone())?;
         values = Flags::getConfigStringList(inFlag.clone())?;
-        values = List::removeOnTrue((value.clone()).clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), values.clone());
+        values = List::removeOnTrue((value.clone()).clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), values.clone())?;
         setConfigStringList(inFlag.clone(), metamodelica::cons((value.clone()).clone(), values.clone()))?;
     }
     Ok(())
@@ -396,7 +396,7 @@ fn setAdditionalOptModules(mut inFlag: Flags::ConfigFlag, mut inOppositeFlag: Fl
 fn evaluateConfigFlag(mut inFlag: Flags::ConfigFlag, mut inValue: ArcStr, mut inFlags: Flags::Flag) -> Result<()> {
     let () = (match (inFlag.clone(), inFlags.clone()) {
         (Flags::ConfigFlag { index: 1, .. }, Flags::Flag::FLAGS { debugFlags: mut debug_flags, .. }) => {
-            List::map1_0(splitCSV((inValue.clone()).clone()), (std::sync::Arc::new(setDebugFlag) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<bool>) -> Result<()> + 'static>), debug_flags.clone());
+            List::map1_0(splitCSV((inValue.clone()).clone()), (std::sync::Arc::new(setDebugFlag) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<bool>) -> Result<()> + 'static>), debug_flags.clone())?;
             ()
         },
         (Flags::ConfigFlag { index: 2, .. }, _) => {
@@ -448,8 +448,8 @@ fn setDebugFlag(mut inFlag: ArcStr, mut inFlags: metamodelica::Array<bool>) -> R
     neg1 = stringEq((stringGetStringChar((inFlag.clone()).clone(), 1)?).clone(), (literal!("-")).clone());
     neg2 = System::strncmp((literal!("no")).clone(), (inFlag.clone()).clone(), 2) == 0;
     negated = neg1.clone() || neg2.clone();
-    flag_str = (if (negated.clone()) {StringUtil::rest((inFlag.clone()).clone())} else {inFlag.clone()}).clone();
-    flag_str = (if (neg2.clone()) {StringUtil::rest((flag_str.clone()).clone())} else {flag_str.clone()}).clone();
+    flag_str = (if (negated.clone()) {StringUtil::rest((inFlag.clone()).clone())?} else {inFlag.clone()}).clone();
+    flag_str = (if (neg2.clone()) {StringUtil::rest((flag_str.clone()).clone())?} else {flag_str.clone()}).clone();
     setDebugFlag2((flag_str.clone()).clone(), !(negated.clone()), inFlags.clone())?;
     Ok(())
 }
@@ -659,7 +659,7 @@ fn printExpectedTypeStr(mut inType: Flags::FlagData) -> Result<ArcStr> {
         },
         Flags::FlagData::ENUM_FLAG { validValues: ref enums, .. } => {
             let mut enum_strs: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            enum_strs = List::map(enums.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)));
+            enum_strs = List::map(enums.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)))?;
             { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("one of the values {")); __mm_s.push_str(&*stringDelimitList(enum_strs.clone(), (literal!(", ")).clone())); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }
         },
         _ => bail!("match: no arm matched"),
@@ -911,7 +911,7 @@ pub fn printHelp(mut inTopics: Arc<metamodelica::List<ArcStr>>) -> Result<ArcStr
                     let mut help: ArcStr = help.clone();
                     topics = list![(literal!("omc"), System::gettext((literal!("The command-line options available for omc.")).clone())), (literal!("debug"), System::gettext((literal!("Flags that enable debugging, diagnostics, and research prototypes.")).clone())), (literal!("optmodules"), System::gettext((literal!("Flags that determine which symbolic methods are used to produce the causalized equation system.")).clone())), (literal!("simulation"), System::gettext((literal!("The command-line options available for simulation executables generated by OpenModelica.")).clone())), (literal!("<flagname>"), System::gettext((literal!("Displays option descriptions for multi-option flag <flagname>.")).clone())), (literal!("topics"), System::gettext((literal!("This help-text.")).clone()))];
                     r#str = (System::gettext((literal!("The available topics (help(\"topics\")) are as follows:\n")).clone())).clone();
-                    strs = List::map(topics.clone(), (std::sync::Arc::new(makeTopicString) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, ArcStr)) -> Result<ArcStr> + 'static>));
+                    strs = List::map(topics.clone(), (std::sync::Arc::new(makeTopicString) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, ArcStr)) -> Result<ArcStr> + 'static>))?;
                     help = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*stringDelimitList(strs.clone(), (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
                     Ok(help.clone())
                 }
@@ -1101,8 +1101,8 @@ fn getValidOptionsAndDescription2(mut validOptions: Flags::ValidOptions) -> Resu
             (validStrings.clone(), metamodelica::nil())
         },
         Flags::ValidOptions::STRING_DESC_OPTION { options: mut options } => {
-            validStrings = List::map(options.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)));
-            descriptions = List::mapMap(options.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)), (std::sync::Arc::new(Gettext::translateContent) as std::sync::Arc<dyn ::std::ops::Fn(Gettext::TranslatableContent) -> Result<ArcStr> + 'static>));
+            validStrings = List::map(options.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)))?;
+            descriptions = List::mapMap(options.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)), (std::sync::Arc::new(Gettext::translateContent) as std::sync::Arc<dyn ::std::ops::Fn(Gettext::TranslatableContent) -> Result<ArcStr> + 'static>))?;
             (validStrings.clone(), descriptions.clone())
         },
     });
@@ -1141,7 +1141,7 @@ pub fn printUsage() -> Result<ArcStr> {
     Print::printBuf((System::gettext((literal!("Distributed under OMSC-PL and GPL, see www.openmodelica.org\n\n")).clone())).clone())?;
     Print::printBuf((System::gettext((literal!("Usage: omc [Options] (Model.mo | Script.mos) [Libraries | .mo-files]\n* Libraries: Fully qualified names of libraries to load before processing Model or Script.\n             The libraries should be separated by spaces: Lib1 Lib2 ... LibN.\n")).clone())).clone())?;
     Print::printBuf((System::gettext((literal!("\n* Options:\n")).clone())).clone())?;
-    Print::printBuf((printAllConfigFlags()).clone())?;
+    Print::printBuf((printAllConfigFlags()?).clone())?;
     Print::printBuf((System::gettext((literal!("\nFor more details on a specific topic, use --help=topics or help(\"topics\")\n\n")).clone())).clone())?;
     Print::printBuf((System::gettext((literal!("* Examples:\n")).clone())).clone())?;
     Print::printBuf((System::gettext((literal!("  omc Model.mo             will produce flattened Model on standard output.\n")).clone())).clone())?;
@@ -1245,10 +1245,10 @@ pub fn printUsageSphinxAll() -> Result<ArcStr> {
     Ok(usage)
 }
 
-pub fn printAllConfigFlags() -> ArcStr {
+pub fn printAllConfigFlags() -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
-    outString = stringAppendList(List::map(allConfigFlags.clone(), (std::sync::Arc::new(printConfigFlag) as std::sync::Arc<dyn ::std::ops::Fn(Flags::ConfigFlag) -> Result<ArcStr> + 'static>)));
-    outString
+    outString = stringAppendList(List::map(allConfigFlags.clone(), (std::sync::Arc::new(printConfigFlag) as std::sync::Arc<dyn ::std::ops::Fn(Flags::ConfigFlag) -> Result<ArcStr> + 'static>))?);
+    Ok(outString)
 }
 
 fn printConfigFlag(mut inFlag: Flags::ConfigFlag) -> Result<ArcStr> {
@@ -1562,26 +1562,26 @@ fn getValidStringOptions(mut inOptions: Flags::ValidOptions) -> Result<Arc<metam
             validOptions.clone()
         },
         Flags::ValidOptions::STRING_DESC_OPTION { options: mut options } => {
-            List::map(options.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)))
+            List::map(options.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)))?
         },
     });
     Ok(validOptions)
 }
 
-pub fn flagDataEq(mut data1: Flags::FlagData, mut data2: Flags::FlagData) -> bool {
+pub fn flagDataEq(mut data1: Flags::FlagData, mut data2: Flags::FlagData) -> Result<bool> {
     let mut eq: bool = false;
     eq = (match (data1.clone(), data2.clone()) {
         (Flags::FlagData::EMPTY_FLAG { .. }, Flags::FlagData::EMPTY_FLAG { .. }) => true,
         (Flags::FlagData::BOOL_FLAG { .. }, Flags::FlagData::BOOL_FLAG { .. }) => var_field!(data1.data, Flags::FlagData::BOOL_FLAG).clone() == var_field!(data2.data, Flags::FlagData::BOOL_FLAG).clone(),
         (Flags::FlagData::INT_FLAG { .. }, Flags::FlagData::INT_FLAG { .. }) => var_field!(data1.data, Flags::FlagData::INT_FLAG).clone() == var_field!(data2.data, Flags::FlagData::INT_FLAG).clone(),
-        (Flags::FlagData::INT_LIST_FLAG { .. }, Flags::FlagData::INT_LIST_FLAG { .. }) => List::isEqualOnTrue(var_field!(data1.data, Flags::FlagData::INT_LIST_FLAG).clone(), var_field!(data2.data, Flags::FlagData::INT_LIST_FLAG).clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>)),
+        (Flags::FlagData::INT_LIST_FLAG { .. }, Flags::FlagData::INT_LIST_FLAG { .. }) => List::isEqualOnTrue(var_field!(data1.data, Flags::FlagData::INT_LIST_FLAG).clone(), var_field!(data2.data, Flags::FlagData::INT_LIST_FLAG).clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?,
         (Flags::FlagData::REAL_FLAG { .. }, Flags::FlagData::REAL_FLAG { .. }) => var_field!(data1.data, Flags::FlagData::REAL_FLAG).clone() == var_field!(data2.data, Flags::FlagData::REAL_FLAG).clone(),
         (Flags::FlagData::STRING_FLAG { .. }, Flags::FlagData::STRING_FLAG { .. }) => var_field!(data1.data, Flags::FlagData::STRING_FLAG).clone() == var_field!(data2.data, Flags::FlagData::STRING_FLAG).clone(),
-        (Flags::FlagData::STRING_LIST_FLAG { .. }, Flags::FlagData::STRING_LIST_FLAG { .. }) => List::isEqualOnTrue(var_field!(data1.data, Flags::FlagData::STRING_LIST_FLAG).clone(), var_field!(data2.data, Flags::FlagData::STRING_LIST_FLAG).clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>)),
+        (Flags::FlagData::STRING_LIST_FLAG { .. }, Flags::FlagData::STRING_LIST_FLAG { .. }) => List::isEqualOnTrue(var_field!(data1.data, Flags::FlagData::STRING_LIST_FLAG).clone(), var_field!(data2.data, Flags::FlagData::STRING_LIST_FLAG).clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?,
         (Flags::FlagData::ENUM_FLAG { .. }, Flags::FlagData::ENUM_FLAG { .. }) => referenceEq(&var_field!(data1.validValues, Flags::FlagData::ENUM_FLAG).clone(),&var_field!(data2.validValues, Flags::FlagData::ENUM_FLAG).clone()) && var_field!(data1.data, Flags::FlagData::ENUM_FLAG).clone() == var_field!(data2.data, Flags::FlagData::ENUM_FLAG).clone(),
         _ => false,
     });
-    eq
+    Ok(eq)
 }
 
 pub fn flagDataString(mut flagData: Flags::FlagData) -> Result<ArcStr> {
@@ -1638,7 +1638,7 @@ pub fn unparseFlags() -> Result<Arc<metamodelica::List<ArcStr>>> {
     }
     for mut f in &*allConfigFlags.clone() {
         let mut f = f.clone();
-        if !(flagDataEq(f.defaultValue.clone(), config_flags.borrow()[(f.index.clone()-1) as usize].clone())) {
+        if !(flagDataEq(f.defaultValue.clone(), config_flags.borrow()[(f.index.clone()-1) as usize].clone())?) {
             name = ((match f.shortname.clone() {
         Some(mut name) => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("-")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) },
         _ => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("--")); __mm_s.push_str(&*f.name.clone()); ArcStr::from(__mm_s) },

@@ -874,7 +874,7 @@ fn getCoordsInClass(mut inClass: Arc<Absyn::Class>, mut contextToGetCoordsFrom: 
     (x1, y1, x2, y2) = (::match_deref::match_deref! { match &((inClass.clone(), contextToGetCoordsFrom.clone())) {
         (Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { ann, .. }, .. }, context) => {
             let mut annlst: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = metamodelica::nil();
-            annlst = List::flatten(List::map(ann.clone(), (std::sync::Arc::new(AbsynUtil::annotationToElementArgs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Annotation>) -> Result<Arc<metamodelica::List<Arc<Absyn::ElementArg>>>> + 'static>)));
+            annlst = List::flatten(List::map(ann.clone(), (std::sync::Arc::new(AbsynUtil::annotationToElementArgs) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Annotation>) -> Result<Arc<metamodelica::List<Arc<Absyn::ElementArg>>>> + 'static>))?)?;
             (x1, y1, x2, y2) = getCoordsInAnnList(annlst.clone(), context.clone())?;
             (x1.clone(), y1.clone(), x2.clone(), y2.clone())
         },
@@ -1062,7 +1062,7 @@ fn transformConnectAnnList(mut inArgs: Arc<metamodelica::List<Arc<Absyn::Element
                     let mut context = (*context).clone();
                     let mut res = (*res).clone();
                     context = addContext(context.clone(), (literal!("Line")).clone());
-                    expLst = List::map(expMatrix.clone(), (std::sync::Arc::new(fnptr!(matrixToArray, Arc<metamodelica::List<Arc<Absyn::Exp>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Result<Arc<Absyn::Exp>> + 'static>));
+                    expLst = List::map(expMatrix.clone(), (std::sync::Arc::new(fnptr!(matrixToArray, Arc<metamodelica::List<Arc<Absyn::Exp>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Result<Arc<Absyn::Exp>> + 'static>))?;
                     res = transformConnectAnnList(rest.clone(), context.clone(), res.clone(), p.clone())?;
                     Ok(list![Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: fi.clone(), eachPrefix: e.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("Line")).clone() }), modification: Some(Arc::new(Absyn::Modification { elementArgLst: metamodelica::cons(Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: false, eachPrefix: openmodelica_ast::Absyn::Each::NON_EACH, path: Arc::new(Absyn::Path::IDENT { name: (literal!("points")).clone() }), modification: Some(Arc::new(Absyn::Modification { elementArgLst: metamodelica::nil(), eqMod: Arc::new(Absyn::EqMod::EQMOD { exp: Arc::new(Absyn::Exp::ARRAY { arrayExp: expLst.clone() }), info: info.clone() }) })), comment: None, info: mod_info.clone() }), res.clone()), eqMod: Arc::new(openmodelica_ast::Absyn::EqMod::NOMOD) })), comment: com.clone(), info: mod_info.clone() })])
                 }
@@ -1074,7 +1074,7 @@ fn transformConnectAnnList(mut inArgs: Arc<metamodelica::List<Arc<Absyn::Element
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { info: mod_info, comment: com, modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::MATRIX { matrix: expMatrix }, info }, .. }), path: Deref @ Absyn::Path::IDENT { name: Deref @ "points" }, eachPrefix: e, finalPrefix: fi }, tail: rest }, context @ Deref @ metamodelica::List::Cons { head: Deref @ "Line", tail: _ }, res, p) => {
                     let mut expLst: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
                     let mut res = (*res).clone();
-                    expLst = List::map(expMatrix.clone(), (std::sync::Arc::new(fnptr!(matrixToArray, Arc<metamodelica::List<Arc<Absyn::Exp>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Result<Arc<Absyn::Exp>> + 'static>));
+                    expLst = List::map(expMatrix.clone(), (std::sync::Arc::new(fnptr!(matrixToArray, Arc<metamodelica::List<Arc<Absyn::Exp>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Result<Arc<Absyn::Exp>> + 'static>))?;
                     res = transformConnectAnnList(rest.clone(), context.clone(), res.clone(), p.clone())?;
                     Ok(metamodelica::cons(Arc::new(Absyn::ElementArg::MODIFICATION { finalPrefix: fi.clone(), eachPrefix: e.clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("points")).clone() }), modification: Some(Arc::new(Absyn::Modification { elementArgLst: metamodelica::nil(), eqMod: Arc::new(Absyn::EqMod::EQMOD { exp: Arc::new(Absyn::Exp::ARRAY { arrayExp: expLst.clone() }), info: info.clone() }) })), comment: com.clone(), info: mod_info.clone() }), res.clone()))
                 }
@@ -1417,7 +1417,7 @@ fn transAnnLstToCalls(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>
                     let mut c = (*c).clone();
                     c = addContext(context.clone(), (literal!("Line")).clone());
                     argRes = transAnnLstToNamedArgs(args.clone(), c.clone())?;
-                    ::match_deref::match_deref! { match &(List::select1(argRes.clone(), (std::sync::Arc::new(nameArgWithName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::NamedArg>, ArcStr) -> Result<bool> + 'static>), (literal!("color")).clone())) {
+                    ::match_deref::match_deref! { match &(List::select1(argRes.clone(), (std::sync::Arc::new(nameArgWithName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::NamedArg>, ArcStr) -> Result<bool> + 'static>), (literal!("color")).clone())?) {
                         Deref @ metamodelica::List::Nil => (),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1436,7 +1436,7 @@ fn transAnnLstToCalls(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>
                     c = addContext(context.clone(), (n.clone()).clone());
                     let true = (isLinebasedGraphic(c.clone())) else { bail!("pattern mismatch") };
                     argRes = transAnnLstToNamedArgs(args.clone(), c.clone())?;
-                    ::match_deref::match_deref! { match &(List::select1(argRes.clone(), (std::sync::Arc::new(nameArgWithName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::NamedArg>, ArcStr) -> Result<bool> + 'static>), (literal!("lineColor")).clone())) {
+                    ::match_deref::match_deref! { match &(List::select1(argRes.clone(), (std::sync::Arc::new(nameArgWithName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::NamedArg>, ArcStr) -> Result<bool> + 'static>), (literal!("lineColor")).clone())?) {
                         Deref @ metamodelica::List::Nil => (),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1718,7 +1718,7 @@ fn transAnnLstToNamedArgs(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementA
                 (Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::MATRIX { matrix: expMatrix }, .. }, .. }), path: Deref @ Absyn::Path::IDENT { name: Deref @ "points" }, .. }, tail: rest }, context) => {
                     let mut expLst: Arc<metamodelica::List<Arc<Absyn::Exp>>> = metamodelica::nil();
                     let mut restRes: Arc<metamodelica::List<Arc<Absyn::NamedArg>>> = metamodelica::nil();
-                    expLst = List::map(expMatrix.clone(), (std::sync::Arc::new(fnptr!(matrixToArray, Arc<metamodelica::List<Arc<Absyn::Exp>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Result<Arc<Absyn::Exp>> + 'static>));
+                    expLst = List::map(expMatrix.clone(), (std::sync::Arc::new(fnptr!(matrixToArray, Arc<metamodelica::List<Arc<Absyn::Exp>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Result<Arc<Absyn::Exp>> + 'static>))?;
                     restRes = transAnnLstToNamedArgs(rest.clone(), context.clone())?;
                     Ok(metamodelica::cons(Arc::new(Absyn::NamedArg { argName: (literal!("points")).clone(), argValue: Arc::new(Absyn::Exp::ARRAY { arrayExp: expLst.clone() }) }), restRes.clone()))
                 }
@@ -1749,7 +1749,7 @@ fn cleanStyleAttrs(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, 
                 context => {
                     let mut outArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = outArgs.clone();
                     let true = (isLinebasedGraphic(context.clone())) else { bail!("pattern mismatch") };
-                    ::match_deref::match_deref! { match &(List::select(inArgs.clone(), (std::sync::Arc::new(fnptr!(isLineColorModifier, Arc<Absyn::ElementArg>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ElementArg>) -> Result<bool> + 'static>))) {
+                    ::match_deref::match_deref! { match &(List::select(inArgs.clone(), (std::sync::Arc::new(fnptr!(isLineColorModifier, Arc<Absyn::ElementArg>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ElementArg>) -> Result<bool> + 'static>))?) {
                         Deref @ metamodelica::List::Nil => (),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1764,7 +1764,7 @@ fn cleanStyleAttrs(mut inArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>, 
                 context => {
                     let mut outArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>> = outArgs.clone();
                     let true = (isLineGraphic(context.clone())) else { bail!("pattern mismatch") };
-                    ::match_deref::match_deref! { match &(List::select(inArgs.clone(), (std::sync::Arc::new(fnptr!(isLineColorModifier, Arc<Absyn::ElementArg>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ElementArg>) -> Result<bool> + 'static>))) {
+                    ::match_deref::match_deref! { match &(List::select(inArgs.clone(), (std::sync::Arc::new(fnptr!(isLineColorModifier, Arc<Absyn::ElementArg>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ElementArg>) -> Result<bool> + 'static>))?) {
                         Deref @ metamodelica::List::Nil => (),
                         _ => bail!("pattern mismatch"),
                     } };

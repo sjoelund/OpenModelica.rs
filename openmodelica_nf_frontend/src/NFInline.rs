@@ -102,7 +102,7 @@ pub fn inlineCall(mut callExp: Arc<Expression::NFExpression>, mut forceInline: b
     exp = (::match_deref::match_deref! { match &(call.clone()) {
         Deref @ Call::TYPED_CALL { arguments: args, r#fn, .. } if (!(InstNode::isEmpty(r#fn.node.clone())) && InstNode::isNamed(InstNode::parentScope(r#fn.node.clone(), false)?, (literal!("'constructor'")).clone())) => {
             let mut args = (*args).clone();
-            body = Function::getBody(r#fn.clone());
+            body = Function::getBody(r#fn.clone())?;
             if !(body.clone().is_empty() && r#fn.locals.clone().is_empty()) {
                 exp = callExp.clone();
                 return Ok(exp.clone());
@@ -129,7 +129,7 @@ pub fn inlineCall(mut callExp: Arc<Expression::NFExpression>, mut forceInline: b
         },
         Deref @ Call::TYPED_CALL { arguments: args, r#fn: r#fn @ Deref @ Function::FUNCTION { locals, outputs, inputs, .. }, .. } if (Function::hasSingleOrEmptyBody(r#fn.clone())) => {
             let mut args = (*args).clone();
-            body = Function::getBody(r#fn.clone());
+            body = Function::getBody(r#fn.clone())?;
             body = removeDeadCode(body.clone())?;
             if (body.clone().len() as i32) > 1 || (outputs.clone().len() as i32) != 1 || !(locals.clone().is_empty()) {
                 exp = callExp.clone();
@@ -155,7 +155,7 @@ pub fn inlineCall(mut callExp: Arc<Expression::NFExpression>, mut forceInline: b
                     arg = __pa1.clone();
                     args = __pa2.clone();
                     arg = unwrap_break_err!(inlineCallExp(arg.clone(), forceInline.clone()), '__try0);
-                    stmt = Statement::mapExp(stmt.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new({ let __pe_b1 = i.clone(); let __pe_b2 = arg.clone(); move |__pe_a0| replaceCrefNode(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>));
+                    stmt = unwrap_break_err!(Statement::mapExp(stmt.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = (std::sync::Arc::new({ let __pe_b1 = i.clone(); let __pe_b2 = arg.clone(); move |__pe_a0| replaceCrefNode(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>); move |__pe_a0| Expression::map(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)), '__try0);
                 }
                 exp = getOutputExp(stmt.clone(), listHead(outputs.clone())?, call.clone());
                 exp = unwrap_break_err!(Expression::map(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = forceInline.clone(); move |__pe_a0| inlineCallExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)), '__try0);
@@ -181,12 +181,12 @@ fn replaceCrefNode(mut exp: Arc<Expression::NFExpression>, mut node: Arc<InstNod
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut repl_ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CREF { .. } if (InstNode::refEqual(ComponentRef::node(ComponentRef::firstNonScope(var_field!((*exp).cref, Expression::NFExpression::CREF).clone()))?, node.clone())) => replaceCrefNode2(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), node.clone(), value.clone())?,
+        Deref @ Expression::CREF { .. } if (InstNode::refEqual(ComponentRef::node(ComponentRef::firstNonScope(var_field!((*exp).cref, Expression::NFExpression::CREF).clone())?)?, node.clone())) => replaceCrefNode2(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), node.clone(), value.clone())?,
         _ => exp.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     ty = Expression::typeOf(exp.clone());
-    repl_ty = Type::mapDims(ty.clone(), (std::sync::Arc::new({ let __pe_b1 = node.clone(); let __pe_b2 = value.clone(); move |__pe_a0| replaceDimExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>));
+    repl_ty = Type::mapDims(ty.clone(), (std::sync::Arc::new({ let __pe_b1 = node.clone(); let __pe_b2 = value.clone(); move |__pe_a0| replaceDimExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>))?;
     if !(referenceEq(&ty.clone(),&repl_ty.clone())) {
         exp = Expression::setType(repl_ty.clone(), exp.clone())?;
     }
@@ -315,7 +315,7 @@ fn makeOutputStatement(mut outputNode: Arc<InstNode::InstNode>) -> Result<Arc<St
     let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
     let mut cref_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut binding_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    binding = Component::getImplicitBinding(InstNode::component(outputNode.clone())?, InstNode::instanceParent(outputNode.clone()));
+    binding = Component::getImplicitBinding(InstNode::component(outputNode.clone())?, InstNode::instanceParent(outputNode.clone())?);
     if Binding::isBound(binding.clone()) {
         cref_exp = Expression::fromCref(ComponentRef::fromNode(outputNode.clone(), Arc::new(crate::NFType::UNKNOWN), metamodelica::nil(), ComponentRef::Origin::CREF.clone()), false)?;
         binding_exp = Binding::getExp(binding.clone())?;

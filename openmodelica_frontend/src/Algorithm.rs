@@ -117,8 +117,8 @@ pub fn makeTupleAssignmentNoTypeCheck(mut ty: Arc<DAE::Type>, mut lhs: Arc<metam
     let mut outStatement: Arc<DAE::Statement> = Arc::new(<DAE::Statement as ::std::default::Default>::default());
     let mut b1: bool = false;
     let mut b2: bool = false;
-    b1 = List::all(lhs.clone(), (std::sync::Arc::new(fnptr!(Expression::isWild, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>));
-    b2 = List::all(List::restOrEmpty(lhs.clone())?, (std::sync::Arc::new(fnptr!(Expression::isWild, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>));
+    b1 = List::all(lhs.clone(), (std::sync::Arc::new(fnptr!(Expression::isWild, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>))?;
+    b2 = List::all(List::restOrEmpty(lhs.clone())?, (std::sync::Arc::new(fnptr!(Expression::isWild, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>))?;
     outStatement = makeTupleAssignmentNoTypeCheck2(b1.clone(), b2.clone(), ty.clone(), lhs.clone(), rhs.clone(), source.clone());
     Ok(outStatement)
 }
@@ -358,7 +358,7 @@ pub fn checkLHSWritable(mut lhs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut pro
         let () = (match p.clone() {
         DAE::Properties::PROP { constFlag: DAE::Const::C_VAR { .. }, .. } => (),
         DAE::Properties::PROP { type_: _, constFlag: DAE::Const::C_CONST { .. } } => {
-            l = stringAppendList(list![(literal!("(")).clone(), stringDelimitList(List::map(lhs.clone(), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)), (literal!(", ")).clone()), (literal!(")")).clone()]);
+            l = stringAppendList(list![(literal!("(")).clone(), stringDelimitList(List::map(lhs.clone(), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone()), (literal!(")")).clone()]);
             r = (ExpressionBasics::printExpStr(rhs.clone())?).clone();
             Error::addSourceMessage(Error::ASSIGN_CONSTANT_ERROR.clone(), list![(l.clone()).clone(), (r.clone()).clone()], ElementSource::getElementSourceFileInfo(source.clone()))?;
             bail!("fail");
@@ -366,7 +366,7 @@ pub fn checkLHSWritable(mut lhs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut pro
         },
         DAE::Properties::PROP { type_: ref ty, constFlag: DAE::Const::C_PARAM { .. } } => {
             if Types::getFixedVarAttributeParameterOrConstant(ty.clone()) {
-                l = stringAppendList(list![(literal!("(")).clone(), stringDelimitList(List::map(lhs.clone(), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>)), (literal!(", ")).clone()), (literal!(")")).clone()]);
+                l = stringAppendList(list![(literal!("(")).clone(), stringDelimitList(List::map(lhs.clone(), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone()), (literal!(")")).clone()]);
                 r = (ExpressionBasics::printExpStr(rhs.clone())?).clone();
                 c = (ExpressionBasics::printExpStr((lhs.clone()).get(i.clone())?)?).clone();
                 Error::addSourceMessage(Error::ASSIGN_PARAM_FIXED_ERROR.clone(), list![(c.clone()).clone(), (l.clone()).clone(), (r.clone()).clone()], ElementSource::getElementSourceFileInfo(source.clone()))?;
@@ -394,9 +394,9 @@ pub fn makeTupleAssignment(mut inExpExpLst: Arc<metamodelica::List<Arc<DAE::Exp>
                     let mut s: ArcStr = arcstr::literal!("");
                     let mut lhs_str: ArcStr = arcstr::literal!("");
                     let mut rhs_str: ArcStr = arcstr::literal!("");
-                    bvals = List::map(lprop.clone(), (std::sync::Arc::new(Types::propAnyConst) as std::sync::Arc<dyn ::std::ops::Fn(DAE::Properties) -> Result<DAE::Const> + 'static>));
+                    bvals = List::map(lprop.clone(), (std::sync::Arc::new(Types::propAnyConst) as std::sync::Arc<dyn ::std::ops::Fn(DAE::Properties) -> Result<DAE::Const> + 'static>))?;
                     let DAE::C_CONST { .. } = (List::reduce(bvals.clone(), (std::sync::Arc::new(fnptr!(Types::constOr, DAE::Const, DAE::Const)) as std::sync::Arc<dyn ::std::ops::Fn(DAE::Const, DAE::Const) -> Result<DAE::Const> + 'static>))?) else { bail!("pattern mismatch") };
-                    sl = List::map(lhs.clone(), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>));
+                    sl = List::map(lhs.clone(), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))?;
                     s = stringDelimitList(sl.clone(), (literal!(", ")).clone());
                     lhs_str = stringAppendList(list![(literal!("(")).clone(), (s.clone()).clone(), (literal!(")")).clone()]);
                     rhs_str = (ExpressionBasics::printExpStr(rhs.clone())?).clone();
@@ -414,9 +414,9 @@ pub fn makeTupleAssignment(mut inExpExpLst: Arc<metamodelica::List<Arc<DAE::Exp>
                     let mut s: ArcStr = arcstr::literal!("");
                     let mut lhs_str: ArcStr = arcstr::literal!("");
                     let mut rhs_str: ArcStr = arcstr::literal!("");
-                    bvals = List::map(lprop.clone(), (std::sync::Arc::new(Types::propAnyConst) as std::sync::Arc<dyn ::std::ops::Fn(DAE::Properties) -> Result<DAE::Const> + 'static>));
+                    bvals = List::map(lprop.clone(), (std::sync::Arc::new(Types::propAnyConst) as std::sync::Arc<dyn ::std::ops::Fn(DAE::Properties) -> Result<DAE::Const> + 'static>))?;
                     let DAE::C_PARAM { .. } = (List::reduce(bvals.clone(), (std::sync::Arc::new(fnptr!(Types::constOr, DAE::Const, DAE::Const)) as std::sync::Arc<dyn ::std::ops::Fn(DAE::Const, DAE::Const) -> Result<DAE::Const> + 'static>))?) else { bail!("pattern mismatch") };
-                    sl = List::map(lhs.clone(), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>));
+                    sl = List::map(lhs.clone(), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))?;
                     s = stringDelimitList(sl.clone(), (literal!(", ")).clone());
                     lhs_str = stringAppendList(list![(literal!("(")).clone(), (s.clone()).clone(), (literal!(")")).clone()]);
                     rhs_str = (ExpressionBasics::printExpStr(rhs.clone())?).clone();
@@ -431,7 +431,7 @@ pub fn makeTupleAssignment(mut inExpExpLst: Arc<metamodelica::List<Arc<DAE::Exp>
                 (expl, lhprops, rhs, DAE::Properties::PROP { type_: ty @ Deref @ DAE::Type::T_TUPLE { types: tpl, .. }, .. }, _) => {
                     let mut lhrtypes: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
                     checkLHSWritable(expl.clone(), lhprops.clone(), rhs.clone(), source.clone())?;
-                    lhrtypes = List::map(lhprops.clone(), (std::sync::Arc::new(Types::getPropType) as std::sync::Arc<dyn ::std::ops::Fn(DAE::Properties) -> Result<Arc<DAE::Type>> + 'static>));
+                    lhrtypes = List::map(lhprops.clone(), (std::sync::Arc::new(Types::getPropType) as std::sync::Arc<dyn ::std::ops::Fn(DAE::Properties) -> Result<Arc<DAE::Type>> + 'static>))?;
                     Types::matchTypeTupleCall(rhs.clone(), tpl.clone(), lhrtypes.clone())?;
                     Ok(makeTupleAssignmentNoTypeCheck(ty.clone(), expl.clone(), rhs.clone(), source.clone())?)
                 }
@@ -443,7 +443,7 @@ pub fn makeTupleAssignment(mut inExpExpLst: Arc<metamodelica::List<Arc<DAE::Exp>
                 (expl, lhprops, rhs, DAE::Properties::PROP_TUPLE { tupleConst: Deref @ DAE::TupleConst::TUPLE_CONST { .. }, type_: ty @ Deref @ DAE::Type::T_TUPLE { types: tpl, .. } }, _) => {
                     let mut lhrtypes: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
                     checkLHSWritable(expl.clone(), lhprops.clone(), rhs.clone(), source.clone())?;
-                    lhrtypes = List::map(lhprops.clone(), (std::sync::Arc::new(Types::getPropType) as std::sync::Arc<dyn ::std::ops::Fn(DAE::Properties) -> Result<Arc<DAE::Type>> + 'static>));
+                    lhrtypes = List::map(lhprops.clone(), (std::sync::Arc::new(Types::getPropType) as std::sync::Arc<dyn ::std::ops::Fn(DAE::Properties) -> Result<Arc<DAE::Type>> + 'static>))?;
                     Types::matchTypeTupleCall(rhs.clone(), tpl.clone(), lhrtypes.clone())?;
                     Ok(makeTupleAssignmentNoTypeCheck(ty.clone(), expl.clone(), rhs.clone(), source.clone())?)
                 }
@@ -461,11 +461,11 @@ pub fn makeTupleAssignment(mut inExpExpLst: Arc<metamodelica::List<Arc<DAE::Exp>
                     let mut str2: ArcStr = arcstr::literal!("");
                     let mut strInitial: ArcStr = arcstr::literal!("");
                     let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-                    sl = List::map(lhs.clone(), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>));
+                    sl = List::map(lhs.clone(), (std::sync::Arc::new(ExpressionBasics::printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>))?;
                     s = stringDelimitList(sl.clone(), (literal!(", ")).clone());
                     lhs_str = stringAppendList(list![(literal!("(")).clone(), (s.clone()).clone(), (literal!(")")).clone()]);
                     rhs_str = (ExpressionBasics::printExpStr(rhs.clone())?).clone();
-                    str1 = stringDelimitList(List::map(lprop.clone(), (std::sync::Arc::new(Types::printPropStr) as std::sync::Arc<dyn ::std::ops::Fn(DAE::Properties) -> Result<ArcStr> + 'static>)), (literal!(", ")).clone());
+                    str1 = stringDelimitList(List::map(lprop.clone(), (std::sync::Arc::new(Types::printPropStr) as std::sync::Arc<dyn ::std::ops::Fn(DAE::Properties) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone());
                     str2 = (Types::printPropStr(rprop.clone())?).clone();
                     strInitial = (SCodeDump::printInitialStr(initial_.clone())?).clone();
                     Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- Algorithm.makeTupleAssignment failed on: \n\t")); __mm_s.push_str(&*lhs_str.clone()); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*rhs_str.clone()); __mm_s.push_str(&*literal!("\n\tprops lhs: (")); __mm_s.push_str(&*str1.clone()); __mm_s.push_str(&*literal!(") =  props rhs: ")); __mm_s.push_str(&*str2.clone()); __mm_s.push_str(&*literal!("\n\tin ")); __mm_s.push_str(&*strInitial.clone()); __mm_s.push_str(&*literal!(" section")); ArcStr::from(__mm_s) }).clone())?;
@@ -934,7 +934,7 @@ pub fn makeTerminate(mut msg: Arc<DAE::Exp>, mut props: DAE::Properties, mut sou
 
 pub fn getCrefFromAlg(mut alg: Arc<DAE::Algorithm>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> {
     let mut crs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-    crs = List::unionOnTrueList(List::map(getAllExps(alg.clone())?, (std::sync::Arc::new(Expression::extractCrefsFromExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> + 'static>)), (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
+    crs = List::unionOnTrueList(List::map(getAllExps(alg.clone())?, (std::sync::Arc::new(Expression::extractCrefsFromExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> + 'static>))?, (std::sync::Arc::new(ComponentReferenceBasics::crefEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
     Ok(crs)
 }
 
@@ -943,7 +943,7 @@ pub fn getAllExps(mut inAlgorithm: Arc<DAE::Algorithm>) -> Result<Arc<metamodeli
     outExpExpLst = (::match_deref::match_deref! { match &(inAlgorithm.clone()) {
         Deref @ DAE::Algorithm { statementLst: stmts } => {
             let mut exps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-            exps = getAllExpsStmts(stmts.clone());
+            exps = getAllExpsStmts(stmts.clone())?;
             exps.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -951,11 +951,11 @@ pub fn getAllExps(mut inAlgorithm: Arc<DAE::Algorithm>) -> Result<Arc<metamodeli
     Ok(outExpExpLst)
 }
 
-pub fn getAllExpsStmts(mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Arc<metamodelica::List<Arc<DAE::Exp>>> {
+pub fn getAllExpsStmts(mut stmts: Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<Arc<metamodelica::List<Arc<DAE::Exp>>>> {
     let mut exps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-    let (_, (_, __pa0)) = DAEUtil::traverseDAEEquationsStmts(stmts.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(fnptr!(Expression::expressionCollector, Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>)> + 'static>), metamodelica::nil()));
+    let (_, (_, __pa0)) = DAEUtil::traverseDAEEquationsStmts(stmts.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(fnptr!(Expression::expressionCollector, Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Exp>>>)> + 'static>), metamodelica::nil()))?;
     exps = __pa0.clone();
-    exps
+    Ok(exps)
 }
 
 pub fn getStatementSource(mut stmt: Arc<DAE::Statement>) -> Result<Arc<DAE::ElementSource>> {

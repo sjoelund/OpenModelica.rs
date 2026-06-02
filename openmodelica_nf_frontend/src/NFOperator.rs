@@ -176,20 +176,20 @@ impl Ord for TypeRestriction {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
 }
 
-pub fn typeRestriction(mut ty: Arc<Type::NFType>) -> TypeRestriction {
+pub fn typeRestriction(mut ty: Arc<Type::NFType>) -> Result<TypeRestriction> {
     let mut restriction: TypeRestriction = TypeRestriction::SCALAR;
     if Type::isScalar(ty.clone()) {
         restriction = TypeRestriction::SCALAR.clone();
-    } else if Type::isVector(ty.clone()) {
+    } else if Type::isVector(ty.clone())? {
         restriction = TypeRestriction::VECTOR.clone();
-    } else if Type::isMatrix(ty.clone()) {
+    } else if Type::isMatrix(ty.clone())? {
         restriction = TypeRestriction::MATRIX.clone();
     } else if Type::isArray(ty.clone()) {
         restriction = TypeRestriction::ARRAY.clone();
     } else {
         restriction = TypeRestriction::OTHER.clone();
     }
-    restriction
+    Ok(restriction)
 }
 
 pub fn repairMultary(mut operator: Arc<NFOperator>, mut types: Arc<metamodelica::List<Arc<Type::NFType>>>) -> Result<Arc<NFOperator>> {
@@ -208,7 +208,7 @@ pub fn repairMultary(mut operator: Arc<NFOperator>, mut types: Arc<metamodelica:
     lst = ({
         let mut __acc: Arc<metamodelica::List<(TypeRestriction, Arc<Type::NFType>)>> = metamodelica::nil();
         for mut t in (types.clone()).into_iter().cloned() {
-            let __x = (typeRestriction(t.clone()), t.clone());
+            let __x = (typeRestriction(t.clone())?, t.clone());
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -237,7 +237,7 @@ pub fn repairBinary(mut operator: Arc<NFOperator>, mut ty1: Arc<Type::NFType>, m
     let mut mc: MathClassification = getMathClassification(operator.clone())?;
     let mut sc: SizeClassification = SizeClassification::SCALAR;
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    (sc, ty) = (match (typeRestriction(ty1.clone()), typeRestriction(ty2.clone())) {
+    (sc, ty) = (match (typeRestriction(ty1.clone())?, typeRestriction(ty2.clone())?) {
         (TypeRestriction::SCALAR, TypeRestriction::SCALAR) => {
             (SizeClassification::SCALAR.clone(), ty1.clone())
         },

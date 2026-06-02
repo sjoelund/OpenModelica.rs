@@ -76,7 +76,7 @@ pub fn new(mut ss: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>
     let mut dim: i32 = 0;
     if !(UnorderedSet::isEmpty(ss.clone())) {
         dim = SBAtomicSet::ndim(UnorderedSet::first(ss.clone())?);
-        if dim.clone() != 0 && UnorderedSet::all(ss.clone(), (std::sync::Arc::new({ let __pe_b1 = dim.clone(); move |__pe_a0| Ok(is_equal_dim(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<bool> + 'static>)) {
+        if dim.clone() != 0 && UnorderedSet::all(ss.clone(), (std::sync::Arc::new({ let __pe_b1 = dim.clone(); move |__pe_a0| Ok(is_equal_dim(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<bool> + 'static>))? {
             set = Arc::new(SBSet { asets: UnorderedSet::copy(ss.clone()), ndim: dim.clone() });
         } else {
             set = newEmpty();
@@ -89,7 +89,7 @@ pub fn new(mut ss: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>
 
 pub fn newEmpty() -> Arc<SBSet> {
     let mut set: Arc<SBSet> = Arc::new(<SBSet as ::std::default::Default>::default());
-    set = Arc::new(SBSet { asets: UnorderedSet::new((std::sync::Arc::new(fnptr!(SBAtomicSet::hash, Arc<SBAtomicSet::SBAtomicSet>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(SBAtomicSet::isEqual, Arc<SBAtomicSet::SBAtomicSet>, Arc<SBAtomicSet::SBAtomicSet>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>, Arc<SBAtomicSet::SBAtomicSet>) -> Result<bool> + 'static>), 13), ndim: 0 });
+    set = Arc::new(SBSet { asets: UnorderedSet::new((std::sync::Arc::new(fnptr!(SBAtomicSet::hash, Arc<SBAtomicSet::SBAtomicSet>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<i32> + 'static>), (std::sync::Arc::new(SBAtomicSet::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>, Arc<SBAtomicSet::SBAtomicSet>) -> Result<bool> + 'static>), 13), ndim: 0 });
     set
 }
 
@@ -119,10 +119,10 @@ pub fn asets(mut set: Arc<SBSet>) -> Arc<UnorderedSet::UnorderedSet<Arc<SBAtomic
     asets
 }
 
-pub fn contains(mut vals: metamodelica::Array<i32>, mut set: Arc<SBSet>) -> bool {
+pub fn contains(mut vals: metamodelica::Array<i32>, mut set: Arc<SBSet>) -> Result<bool> {
     let mut res: bool = false;
-    res = UnorderedSet::all(set.asets.clone(), (std::sync::Arc::new({ let __pe_b0 = vals.clone(); move |__pe_a1| Ok(SBAtomicSet::contains(__pe_b0.clone(), __pe_a1)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<bool> + 'static>));
-    res
+    res = UnorderedSet::all(set.asets.clone(), (std::sync::Arc::new({ let __pe_b0 = vals.clone(); move |__pe_a1| SBAtomicSet::contains(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<bool> + 'static>))?;
+    Ok(res)
 }
 
 pub fn addAtomicSet(mut aset: Arc<SBAtomicSet::SBAtomicSet>, mut set: Arc<SBSet>) -> Result<Arc<SBSet>> {
@@ -139,10 +139,10 @@ pub fn addAtomicSet(mut aset: Arc<SBAtomicSet::SBAtomicSet>, mut set: Arc<SBSet>
     Ok(set)
 }
 
-pub fn addAtomicSets(mut asets: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>>, mut set: Arc<SBSet>) -> Arc<SBSet> {
+pub fn addAtomicSets(mut asets: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet::SBAtomicSet>>>, mut set: Arc<SBSet>) -> Result<Arc<SBSet>> {
     let mut set: Arc<SBSet> = set;
-    set = UnorderedSet::fold(asets.clone(), (std::sync::Arc::new(addAtomicSet) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>, Arc<SBSet>) -> Result<Arc<SBSet>> + 'static>), set.clone());
-    set
+    set = UnorderedSet::fold(asets.clone(), (std::sync::Arc::new(addAtomicSet) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>, Arc<SBSet>) -> Result<Arc<SBSet>> + 'static>), set.clone())?;
+    Ok(set)
 }
 
 pub fn intersection(mut set1: Arc<SBSet>, mut set2: Arc<SBSet>) -> Result<Arc<SBSet>> {
@@ -153,7 +153,7 @@ pub fn intersection(mut set1: Arc<SBSet>, mut set2: Arc<SBSet>) -> Result<Arc<SB
         outSet = newEmpty();
         return Ok(outSet.clone());
     }
-    res = UnorderedSet::new((std::sync::Arc::new(fnptr!(SBAtomicSet::hash, Arc<SBAtomicSet::SBAtomicSet>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(SBAtomicSet::isEqual, Arc<SBAtomicSet::SBAtomicSet>, Arc<SBAtomicSet::SBAtomicSet>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>, Arc<SBAtomicSet::SBAtomicSet>) -> Result<bool> + 'static>), 13);
+    res = UnorderedSet::new((std::sync::Arc::new(fnptr!(SBAtomicSet::hash, Arc<SBAtomicSet::SBAtomicSet>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<i32> + 'static>), (std::sync::Arc::new(SBAtomicSet::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>, Arc<SBAtomicSet::SBAtomicSet>) -> Result<bool> + 'static>), 13);
     let __range0 = UnorderedSet::toArray(set1.asets.clone()).borrow().iter().cloned().collect::<Vec<_>>();
     for mut as1 in __range0 {
         let __range1 = UnorderedSet::toArray(set2.asets.clone()).borrow().iter().cloned().collect::<Vec<_>>();
@@ -183,7 +183,7 @@ pub fn complement(mut set1: Arc<SBSet>, mut set2: Arc<SBSet>) -> Result<Arc<SBSe
     if !(UnorderedSet::isEmpty(int_res.clone())) {
         let __range1 = UnorderedSet::toArray(set1.asets.clone()).borrow().iter().cloned().collect::<Vec<_>>();
         for mut as1 in __range1 {
-            aux = UnorderedSet::new((std::sync::Arc::new(fnptr!(SBAtomicSet::hash, Arc<SBAtomicSet::SBAtomicSet>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(SBAtomicSet::isEqual, Arc<SBAtomicSet::SBAtomicSet>, Arc<SBAtomicSet::SBAtomicSet>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>, Arc<SBAtomicSet::SBAtomicSet>) -> Result<bool> + 'static>), 13);
+            aux = UnorderedSet::new((std::sync::Arc::new(fnptr!(SBAtomicSet::hash, Arc<SBAtomicSet::SBAtomicSet>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<i32> + 'static>), (std::sync::Arc::new(SBAtomicSet::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>, Arc<SBAtomicSet::SBAtomicSet>) -> Result<bool> + 'static>), 13);
             UnorderedSet::add(as1.clone(), aux.clone())?;
             let __range2 = UnorderedSet::toArray(int_res.clone()).borrow().iter().cloned().collect::<Vec<_>>();
             for mut as2 in __range2 {
@@ -191,14 +191,14 @@ pub fn complement(mut set1: Arc<SBSet>, mut set2: Arc<SBSet>) -> Result<Arc<SBSe
                 let __range3 = UnorderedSet::toArray(aux.clone()).borrow().iter().cloned().collect::<Vec<_>>();
                 for mut as3 in __range3 {
                     comp_res = SBAtomicSet::complement(as3.clone(), as2.clone())?;
-                    new_sets = addAtomicSets(comp_res.clone(), new_sets.clone());
+                    new_sets = addAtomicSets(comp_res.clone(), new_sets.clone())?;
                 }
                 aux = new_sets.asets.clone();
             }
-            outSet = addAtomicSets(aux.clone(), outSet.clone());
+            outSet = addAtomicSets(aux.clone(), outSet.clone())?;
         }
     } else {
-        outSet = addAtomicSets(set1.asets.clone(), outSet.clone());
+        outSet = addAtomicSets(set1.asets.clone(), outSet.clone())?;
     }
     Ok(outSet)
 }
@@ -209,55 +209,46 @@ pub fn union(mut set1: Arc<SBSet>, mut set2: Arc<SBSet>) -> Result<Arc<SBSet>> {
     outSet = Arc::new(SBSet { asets: UnorderedSet::copy(set1.asets.clone()), ndim: set1.ndim.clone() });
     aux = complement(set2.clone(), outSet.clone())?;
     if !(isEmpty(aux.clone())) {
-        outSet = addAtomicSets(aux.asets.clone(), outSet.clone());
+        outSet = addAtomicSets(aux.asets.clone(), outSet.clone())?;
     }
     Ok(outSet)
 }
 
-pub fn card(mut set: Arc<SBSet>) -> i32 {
-    let mut cardinality: i32 = UnorderedSet::fold(set.asets.clone(), (std::sync::Arc::new(fnptr!(SBAtomicSet::cardinality, Arc<SBAtomicSet::SBAtomicSet>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>, i32) -> Result<i32> + 'static>), 0);
-    cardinality
+pub fn card(mut set: Arc<SBSet>) -> Result<i32> {
+    let mut cardinality: i32 = UnorderedSet::fold(set.asets.clone(), (std::sync::Arc::new(fnptr!(SBAtomicSet::cardinality, Arc<SBAtomicSet::SBAtomicSet>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>, i32) -> Result<i32> + 'static>), 0)?;
+    Ok(cardinality)
 }
 
 pub fn maxCardinality(mut sets: Arc<Vector::Vector<Arc<SBSet>>>) -> Result<(Arc<SBSet>, i32)> {
-    pub fn maxCardinality_traverse(mut set: Arc<SBSet>, mut maxCard: i32) -> (bool, i32) {
+    pub fn maxCardinality_traverse(mut set: Arc<SBSet>, mut maxCard: i32) -> Result<(bool, i32)> {
         let mut res: bool = false;
         let mut maxCard: i32 = maxCard;
-        let mut cardinality: i32 = card(set.clone());
+        let mut cardinality: i32 = card(set.clone())?;
         if cardinality.clone() > maxCard.clone() {
             res = true;
             maxCard = cardinality.clone();
         }
-        (res, maxCard)
+        Ok((res, maxCard))
     }
 
     let mut maxSet: Arc<SBSet> = Arc::new(<SBSet as ::std::default::Default>::default());
     let mut index: i32 = 0;
-    match '__try0: {
-        let (__pa1, __pa2) = ::match_deref::match_deref! { match &(Vector::findFold(sets.clone(), (std::sync::Arc::new(fnptr!(maxCardinality_traverse, Arc<SBSet>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBSet>, i32) -> Result<(bool, i32)> + 'static>), 0)) {
-            (Some(__pa1), __pa2, _) => (__pa1.clone(), __pa2.clone()),
-            _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
-        } };
-        maxSet = __pa1.clone();
-        index = __pa2.clone();
-        Ok::<_, anyhow::Error>((index.clone(), maxSet.clone()))
-    } {
-        Ok((__try0_o0, __try0_o1)) => {
-            index = __try0_o0;
-            maxSet = __try0_o1;
-        }
-        Err(__try0_err) => {
-            return Err(__try0_err);
-        }
-    }
+    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(Vector::findFold(sets.clone(), (std::sync::Arc::new(maxCardinality_traverse) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBSet>, i32) -> Result<(bool, i32)> + 'static>), 0)) {
+        Ok((Some(__pa0), __pa1, _)) => (__pa0.clone(), __pa1.clone()),
+        _ => {
+        bail!("fail");
+        },
+    } };
+    maxSet = __pa0.clone();
+    index = __pa1.clone();
     Ok((maxSet, index))
 }
 
 pub fn minElem(mut set: Arc<SBSet>) -> Result<metamodelica::Array<i32>> {
-    fn lessFn(mut set1: metamodelica::Array<i32>, mut set2: metamodelica::Array<i32>) -> bool {
+    fn lessFn(mut set1: metamodelica::Array<i32>, mut set2: metamodelica::Array<i32>) -> Result<bool> {
         let mut res: bool = false;
-        res = Array::isLess(set1.clone(), set2.clone(), (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>));
-        res
+        res = Array::isLess(set1.clone(), set2.clone(), (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
+        Ok(res)
     }
 
     let mut res: metamodelica::Array<i32> = Default::default();
@@ -268,19 +259,19 @@ pub fn minElem(mut set: Arc<SBSet>) -> Result<metamodelica::Array<i32>> {
         min_elems = ({
         let mut __acc: Arc<metamodelica::List<metamodelica::Array<i32>>> = metamodelica::nil();
         for mut e in (UnorderedSet::toArray(set.asets.clone())).borrow().iter() {
-            let __x = SBAtomicSet::minElem(e.clone());
+            let __x = SBAtomicSet::minElem(e.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-        res = List::minElement(min_elems.clone(), (std::sync::Arc::new(fnptr!(lessFn, metamodelica::Array<i32>, metamodelica::Array<i32>)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<i32>, metamodelica::Array<i32>) -> Result<bool> + 'static>))?;
+        res = List::minElement(min_elems.clone(), (std::sync::Arc::new(lessFn) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<i32>, metamodelica::Array<i32>) -> Result<bool> + 'static>))?;
     }
     Ok(res)
 }
 
-pub fn isEqual(mut set1: Arc<SBSet>, mut set2: Arc<SBSet>) -> bool {
-    let mut equal: bool = UnorderedSet::isEqual(set1.asets.clone(), set2.asets.clone()).unwrap();
-    equal
+pub fn isEqual(mut set1: Arc<SBSet>, mut set2: Arc<SBSet>) -> Result<bool> {
+    let mut equal: bool = UnorderedSet::isEqual(set1.asets.clone(), set2.asets.clone())?;
+    Ok(equal)
 }
 
 pub fn hash(mut set: Arc<SBSet>) -> i32 {
@@ -288,10 +279,10 @@ pub fn hash(mut set: Arc<SBSet>) -> i32 {
     hash
 }
 
-pub fn toString(mut set: Arc<SBSet>) -> ArcStr {
+pub fn toString(mut set: Arc<SBSet>) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
-    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*UnorderedSet::toString(set.asets.clone(), (std::sync::Arc::new(fnptr!(SBAtomicSet::toString, Arc<SBAtomicSet::SBAtomicSet>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<ArcStr> + 'static>), (literal!("U")).clone())); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }).clone();
-    r#str
+    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("{")); __mm_s.push_str(&*UnorderedSet::toString(set.asets.clone(), (std::sync::Arc::new(fnptr!(SBAtomicSet::toString, Arc<SBAtomicSet::SBAtomicSet>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet::SBAtomicSet>) -> Result<ArcStr> + 'static>), (literal!("U")).clone())?); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }).clone();
+    Ok(r#str)
 }
 
 

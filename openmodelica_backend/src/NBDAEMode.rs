@@ -129,8 +129,8 @@ fn daeModeDefault(mut partitions: Arc<metamodelica::List<Arc<Partition::Partitio
             let mut vars: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
             let mut new_eqns_set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Equation::Equation>>>> = <Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Equation::Equation>>>> as ::std::default::Default>::default();
             let mut new_vars_set: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>> = <Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>> as ::std::default::Default>::default();
-            new_eqns_set = UnorderedSet::new((std::sync::Arc::new(fnptr!(Equation::hash, Pointer::Pointer<Arc<Equation::Equation>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(Equation::equalName, Pointer::Pointer<Arc<Equation::Equation>>, Pointer::Pointer<Arc<Equation::Equation>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>, Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>), 13);
-            new_vars_set = UnorderedSet::new((std::sync::Arc::new(fnptr!(BVariable::hash, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(BVariable::equalName, Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 13);
+            new_eqns_set = UnorderedSet::new((std::sync::Arc::new(Equation::hash) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<i32> + 'static>), (std::sync::Arc::new(Equation::equalName) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>, Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>), 13);
+            new_vars_set = UnorderedSet::new((std::sync::Arc::new(BVariable::hash) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(BVariable::equalName) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 13);
             let __range0 = new_c.clone().borrow().iter().cloned().collect::<Vec<_>>();
             for mut comp in __range0 {
                 eqns = StrongComponent::getEquations(comp.clone())?;
@@ -144,7 +144,7 @@ fn daeModeDefault(mut partitions: Arc<metamodelica::List<Arc<Partition::Partitio
                     UnorderedSet::add(var.clone(), new_vars_set.clone())?;
                 }
             }
-            (EquationPointers::fromList(UnorderedSet::toList(new_eqns_set.clone())), BVariable::VariablePointers::fromList(UnorderedSet::toList(new_vars_set.clone()), false))
+            (EquationPointers::fromList(UnorderedSet::toList(new_eqns_set.clone()))?, BVariable::VariablePointers::fromList(UnorderedSet::toList(new_vars_set.clone()), false)?)
         },
         _ => {
             (part.equations.clone(), part.unknowns.clone())
@@ -155,7 +155,7 @@ fn daeModeDefault(mut partitions: Arc<metamodelica::List<Arc<Partition::Partitio
                 part.daeUnknowns = Some(part.unknowns.clone()),
                 part.unknowns = new_vars.clone()
             );
-            if (Partition::Partition::isEmpty(part.clone())) {new_partitions.clone()} else {metamodelica::cons(part.clone(), new_partitions.clone())}
+            if (Partition::Partition::isEmpty(part.clone())?) {new_partitions.clone()} else {metamodelica::cons(part.clone(), new_partitions.clone())}
         },
         _ => {
             new_partitions.clone()

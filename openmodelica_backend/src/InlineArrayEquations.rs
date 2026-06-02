@@ -80,7 +80,7 @@ fn inlineArrayEqn1(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc<
                 Deref @ BackendDAE::EqSystem { orderedEqs, .. } => {
                     let mut eqnLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
                     let mut orderedEqs = (*orderedEqs).clone();
-                    eqnLst = BackendEquation::equationList(orderedEqs.clone());
+                    eqnLst = BackendEquation::equationList(orderedEqs.clone())?;
                     let __pa0 = ::match_deref::match_deref! { match &(getScalarArrayEqns(eqnLst.clone())?) {
                         (__pa0, true) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
@@ -229,7 +229,7 @@ fn generateScalarArrayEqns2(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>
                     } else {
                         recordSize = None;
                     }
-                    ds = Expression::dimensionsSizes(dims.clone());
+                    ds = Expression::dimensionsSizes(dims.clone())?;
                     source = ElementSource::addSymbolicTransformation(inSource.clone(), Arc::new(DAE::SymbolicOperation::OP_SCALARIZE { before: eqExp.clone(), index: i.clone(), after: Arc::new(DAE::EquationExp::EQUALITY_EXPS { lhs: inExp1.clone(), rhs: inExp2.clone() }) }))?;
                     Ok((i.clone() + 1, metamodelica::cons(Arc::new(BackendDAE::Equation::ARRAY_EQUATION { dimSize: ds.clone(), left: inExp1.clone(), right: inExp2.clone(), source: source.clone(), attr: eqAttr.clone(), recordSize: recordSize.clone() }), eqns.clone())))
                 }

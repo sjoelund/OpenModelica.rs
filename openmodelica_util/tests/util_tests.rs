@@ -497,29 +497,29 @@ fn test_get_option_or_default() {
 fn test_option_equal_both_none() {
     let eq_fn: Arc<dyn Fn(i32, i32) -> Result<bool>> =
         Arc::new(|a, b| Ok(a == b));
-    assert!(U::optionEqual(None::<i32>, None::<i32>, eq_fn));
+    assert!(U::optionEqual(None::<i32>, None::<i32>, eq_fn).unwrap());
 }
 
 #[test]
 fn test_option_equal_both_some_equal() {
     let eq_fn: Arc<dyn Fn(i32, i32) -> Result<bool>> =
         Arc::new(|a, b| Ok(a == b));
-    assert!(U::optionEqual(Some(5i32), Some(5i32), eq_fn));
+    assert!(U::optionEqual(Some(5i32), Some(5i32), eq_fn).unwrap());
 }
 
 #[test]
 fn test_option_equal_both_some_not_equal() {
     let eq_fn: Arc<dyn Fn(i32, i32) -> Result<bool>> =
         Arc::new(|a, b| Ok(a == b));
-    assert!(!U::optionEqual(Some(5i32), Some(6i32), eq_fn));
+    assert!(!U::optionEqual(Some(5i32), Some(6i32), eq_fn).unwrap());
 }
 
 #[test]
 fn test_option_equal_one_none() {
     let eq_fn: Arc<dyn Fn(i32, i32) -> Result<bool>> =
         Arc::new(|a, b| Ok(a == b));
-    assert!(!U::optionEqual(Some(5i32), None, eq_fn.clone()));
-    assert!(!U::optionEqual(None, Some(5i32), eq_fn));
+    assert!(!U::optionEqual(Some(5i32), None, eq_fn.clone()).unwrap());
+    assert!(!U::optionEqual(None, Some(5i32), eq_fn).unwrap());
 }
 
 // ── applyOption ───────────────────────────────────────────────────────────────
@@ -527,13 +527,13 @@ fn test_option_equal_one_none() {
 #[test]
 fn test_apply_option_some() {
     let double: Arc<dyn Fn(i32) -> Result<i32>> = Arc::new(|x| Ok(x * 2));
-    assert_eq!(U::applyOption(Some(5i32), double), Some(10));
+    assert_eq!(U::applyOption(Some(5i32), double).unwrap(), Some(10));
 }
 
 #[test]
 fn test_apply_option_none() {
     let double: Arc<dyn Fn(i32) -> Result<i32>> = Arc::new(|x| Ok(x * 2));
-    assert_eq!(U::applyOption(None::<i32>, double), None);
+    assert_eq!(U::applyOption(None::<i32>, double).unwrap(), None);
 }
 
 // ── applyOptionOrDefault ──────────────────────────────────────────────────────
@@ -541,13 +541,13 @@ fn test_apply_option_none() {
 #[test]
 fn test_apply_option_or_default_some() {
     let double: Arc<dyn Fn(i32) -> Result<i32>> = Arc::new(|x| Ok(x * 2));
-    assert_eq!(U::applyOptionOrDefault(Some(5i32), double, -1), 10);
+    assert_eq!(U::applyOptionOrDefault(Some(5i32), double, -1).unwrap(), 10);
 }
 
 #[test]
 fn test_apply_option_or_default_none() {
     let double: Arc<dyn Fn(i32) -> Result<i32>> = Arc::new(|x| Ok(x * 2));
-    assert_eq!(U::applyOptionOrDefault(None::<i32>, double, -1i32), -1);
+    assert_eq!(U::applyOptionOrDefault(None::<i32>, double, -1i32).unwrap(), -1);
 }
 
 // ── stringNotEqual ────────────────────────────────────────────────────────────
@@ -645,18 +645,18 @@ fn test_flag_value_flag_is_last() -> Result<()> {
 #[test]
 fn test_int_product_basic() {
     let lst = list![2i32, 3i32, 4i32];
-    assert_eq!(U::intProduct(lst), 24);
+    assert_eq!(U::intProduct(lst).unwrap(), 24);
 }
 
 #[test]
 fn test_int_product_empty() {
     // fold over empty list with identity 1
-    assert_eq!(U::intProduct(nil()), 1);
+    assert_eq!(U::intProduct(nil()).unwrap(), 1);
 }
 
 #[test]
 fn test_int_product_single() {
-    assert_eq!(U::intProduct(list![7i32]), 7);
+    assert_eq!(U::intProduct(list![7i32]).unwrap(), 7);
 }
 
 // ── mulListIntegerOpt ─────────────────────────────────────────────────────────
@@ -751,19 +751,19 @@ fn test_make_tuple_r() {
 #[test]
 fn test_int_lst_string_basic() {
     let lst = list![1i32, 2i32, 3i32];
-    assert_eq!(U::intLstString(lst), literal!("1, 2, 3"));
+    assert_eq!(U::intLstString(lst).unwrap(), literal!("1, 2, 3"));
 }
 
 #[test]
 fn test_int_lst_string_single() {
     let lst = list![42i32];
-    assert_eq!(U::intLstString(lst), literal!("42"));
+    assert_eq!(U::intLstString(lst).unwrap(), literal!("42"));
 }
 
 #[test]
 fn test_int_lst_string_empty() {
     let lst: Arc<metamodelica::List<i32>> = nil();
-    assert_eq!(U::intLstString(lst), literal!(""));
+    assert_eq!(U::intLstString(lst).unwrap(), literal!(""));
 }
 
 // ── stringContainsChar ────────────────────────────────────────────────────────

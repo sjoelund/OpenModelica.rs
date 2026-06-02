@@ -231,7 +231,7 @@ pub fn handleInnerOuterEquations(mut io: Absyn::InnerOuter, mut inDae: DAE::DAEl
                     let mut dae2: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
                     let mut dae = (*dae).clone();
                     (dae1, dae2) = DAEUtil::splitDAEIntoVarsAndEquations(dae.clone())?;
-                    dae2 = DAEUtil::nameUniqueOuterVars(dae2.clone());
+                    dae2 = DAEUtil::nameUniqueOuterVars(dae2.clone())?;
                     dae = DAEUtil::joinDaes(dae1.clone(), dae2.clone())?;
                     Ok((dae.clone(), ih.clone(), graph.clone()))
                 }
@@ -268,10 +268,10 @@ pub fn handleInnerOuterEquations(mut io: Absyn::InnerOuter, mut inDae: DAE::DAEl
     Ok((odae, outIH, outGraph))
 }
 
-pub fn changeInnerOuterInOuterConnect(mut sets: DAE::Connect::Sets) -> DAE::Connect::Sets {
+pub fn changeInnerOuterInOuterConnect(mut sets: DAE::Connect::Sets) -> Result<DAE::Connect::Sets> {
     let mut sets: DAE::Connect::Sets = sets;
-    sets.outerConnects = List::map(sets.outerConnects.clone(), (std::sync::Arc::new(changeInnerOuterInOuterConnect2) as std::sync::Arc<dyn ::std::ops::Fn(DAE::Connect::OuterConnect) -> Result<DAE::Connect::OuterConnect> + 'static>));
-    sets
+    sets.outerConnects = List::map(sets.outerConnects.clone(), (std::sync::Arc::new(changeInnerOuterInOuterConnect2) as std::sync::Arc<dyn ::std::ops::Fn(DAE::Connect::OuterConnect) -> Result<DAE::Connect::OuterConnect> + 'static>))?;
+    Ok(sets)
 }
 
 fn changeInnerOuterInOuterConnect2(mut inOC: DAE::Connect::OuterConnect) -> Result<DAE::Connect::OuterConnect> {
@@ -731,7 +731,7 @@ pub fn switchInnerToOuterInGraph(mut inEnv: FCore::Graph, mut inCr: Arc<DAE::Com
             let mut n: FCore::Node = <FCore::Node as ::std::default::Default>::default();
             r = FGraph::lastScopeRef(inEnv.clone())?;
             n = FNode::fromRef(r.clone())?;
-            n = switchInnerToOuterInNode(n.clone(), cr.clone());
+            n = switchInnerToOuterInNode(n.clone(), cr.clone())?;
             r = FNode::updateRef(r.clone(), n.clone())?;
             inEnv.clone()
         },
@@ -740,16 +740,16 @@ pub fn switchInnerToOuterInGraph(mut inEnv: FCore::Graph, mut inCr: Arc<DAE::Com
     Ok(outEnv)
 }
 
-fn switchInnerToOuterInNode(mut inNode: FCore::Node, mut inCr: Arc<DAE::ComponentRef>) -> FCore::Node {
+fn switchInnerToOuterInNode(mut inNode: FCore::Node, mut inCr: Arc<DAE::ComponentRef>) -> Result<FCore::Node> {
     let mut outNode: FCore::Node = inNode.clone();
     let () = (match outNode.clone() {
         FCore::Node { .. } => {
-            outNode.children = FCore::RefTree::map(outNode.children.clone(), (std::sync::Arc::new({ let __pe_b1 = inCr.clone(); move |__pe_a0, __pe_a2| switchInnerToOuterInChild(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>) -> Result<metamodelica::Array<FCore::Node>> + 'static>));
+            outNode.children = FCore::RefTree::map(outNode.children.clone(), (std::sync::Arc::new({ let __pe_b1 = inCr.clone(); move |__pe_a0, __pe_a2| switchInnerToOuterInChild(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, metamodelica::Array<FCore::Node>) -> Result<metamodelica::Array<FCore::Node>> + 'static>))?;
             ()
         },
         _ => (),
     });
-    outNode
+    Ok(outNode)
 }
 
 fn switchInnerToOuterInChild(mut name: ArcStr, mut cr: Arc<DAE::ComponentRef>, mut inRef: metamodelica::Array<FCore::Node>) -> Result<metamodelica::Array<FCore::Node>> {
@@ -1111,8 +1111,8 @@ fn printInnerDefStr(mut inInstInner: InstInner) -> Result<ArcStr> {
             let mut r#str: ArcStr = arcstr::literal!("");
             let mut strOuters: ArcStr = arcstr::literal!("");
             let mut outers = outers.clone();
-            outers = List::uniqueOnTrue(outers.clone(), (std::sync::Arc::new(ComponentReferenceBasics::crefEqualNoStringCompare) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>));
-            strOuters = (if (outers.clone().is_empty()) {literal!("")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" Referenced by 'outer' components: {")); __mm_s.push_str(&*stringDelimitList(List::map(outers.clone(), (std::sync::Arc::new(ComponentReferenceBasics::printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>)), (literal!(", ")).clone())); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }}).clone();
+            outers = List::uniqueOnTrue(outers.clone(), (std::sync::Arc::new(ComponentReferenceBasics::crefEqualNoStringCompare) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
+            strOuters = (if (outers.clone().is_empty()) {literal!("")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" Referenced by 'outer' components: {")); __mm_s.push_str(&*stringDelimitList(List::map(outers.clone(), (std::sync::Arc::new(ComponentReferenceBasics::printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("}")); ArcStr::from(__mm_s) }}).clone();
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*AbsynUtil::pathString(typePath.clone(), (literal!(".")).clone(), true, false)?); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*fullName.clone()); __mm_s.push_str(&*literal!("; defined in scope: ")); __mm_s.push_str(&*scope.clone()); __mm_s.push_str(&*literal!(".")); __mm_s.push_str(&*strOuters.clone()); ArcStr::from(__mm_s) }).clone();
             r#str.clone()
         },
@@ -1130,7 +1130,7 @@ pub fn getExistingInnerDeclarations(mut inIH: InstHierarchy, mut inEnv: FCore::G
             let mut inners: Arc<metamodelica::List<InstInner>> = metamodelica::nil();
             let mut r#str: ArcStr = arcstr::literal!("");
             inners = getInnersFromInstHierarchyHashTable(ht.clone())?;
-            r#str = stringDelimitList(List::map(inners.clone(), (std::sync::Arc::new(printInnerDefStr) as std::sync::Arc<dyn ::std::ops::Fn(InstInner) -> Result<ArcStr> + 'static>)), (literal!("\n    ")).clone());
+            r#str = stringDelimitList(List::map(inners.clone(), (std::sync::Arc::new(printInnerDefStr) as std::sync::Arc<dyn ::std::ops::Fn(InstInner) -> Result<ArcStr> + 'static>))?, (literal!("\n    ")).clone());
             r#str.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -1140,7 +1140,7 @@ pub fn getExistingInnerDeclarations(mut inIH: InstHierarchy, mut inEnv: FCore::G
 
 fn getInnersFromInstHierarchyHashTable(mut t: InstHierarchyHashTable) -> Result<Arc<metamodelica::List<InstInner>>> {
     let mut inners: Arc<metamodelica::List<InstInner>> = metamodelica::nil();
-    inners = List::map(hashTableList(t.clone())?, (std::sync::Arc::new(fnptr!(getValue, (Arc<DAE::ComponentRef>, InstInner))) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, InstInner)) -> Result<InstInner> + 'static>));
+    inners = List::map(hashTableList(t.clone())?, (std::sync::Arc::new(fnptr!(getValue, (Arc<DAE::ComponentRef>, InstInner))) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, InstInner)) -> Result<InstInner> + 'static>))?;
     Ok(inners)
 }
 
@@ -1173,7 +1173,7 @@ fn keyEqual(mut key1: Key, mut key2: Key) -> Result<bool> {
 
 fn dumpInstHierarchyHashTable(mut t: InstHierarchyHashTable) -> Result<()> {
     println!("{}", (literal!("InstHierarchyHashTable:\n")).clone());
-    println!("{}", stringDelimitList(List::map(hashTableList(t.clone())?, (std::sync::Arc::new(dumpTuple) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, InstInner)) -> Result<ArcStr> + 'static>)), (literal!("\n")).clone()));
+    println!("{}", stringDelimitList(List::map(hashTableList(t.clone())?, (std::sync::Arc::new(dumpTuple) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, InstInner)) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone()));
     println!("{}", (literal!("\n")).clone());
     Ok(())
 }

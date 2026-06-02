@@ -198,7 +198,7 @@ pub fn evalExp(mut exp: Arc<Expression::NFExpression>, mut target: Arc<EvalTarge
             evalTypename(var_field!((*exp).ty, Expression::NFExpression::TYPENAME).clone(), exp.clone(), target.clone())?
         },
         Deref @ Expression::ARRAY { .. } => {
-            if (var_field!((*exp).literal, Expression::NFExpression::ARRAY).clone()) {exp.clone()} else {Expression::makeArrayCheckLiteral(var_field!((*exp).ty, Expression::NFExpression::ARRAY).clone(), Array::map(var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = target.clone(); move |__pe_a0| evalExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)))}
+            if (var_field!((*exp).literal, Expression::NFExpression::ARRAY).clone()) {exp.clone()} else {Expression::makeArrayCheckLiteral(var_field!((*exp).ty, Expression::NFExpression::ARRAY).clone(), Array::map(var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = target.clone(); move |__pe_a0| evalExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?)?}
         },
         Deref @ Expression::RANGE { .. } => {
             evalRange(exp.clone(), target.clone())?
@@ -343,7 +343,7 @@ pub fn evalExpPartial(mut exp: Arc<Expression::NFExpression>, mut target: Arc<Ev
                 outEvaluated = false;
             } else {
                 outExp = evalCref(var_field!((*e).cref, Expression::NFExpression::CREF).clone(), e.clone(), target.clone(), false, true)?;
-                outEvaluated = Expression::isLiteral(outExp.clone());
+                outEvaluated = Expression::isLiteral(outExp.clone())?;
             }
             outExp.clone()
         },
@@ -428,7 +428,7 @@ pub fn evalComponentBinding(mut node: Arc<InstNode::InstNode>, mut cref: Arc<Com
         },
         Binding::EvalState::EVALUATED => var_field!((*binding).bindingExp, Binding::NFBinding::TYPED_BINDING).clone(),
         _ => {
-            Error::addSourceMessage(Error::CIRCULAR_PARAM.clone(), list![(InstNode::name(node.clone())?).clone(), (Prefixes::variabilityString(Component::variability(comp.clone()))?).clone()], InstNode::info(node.clone())?)?;
+            Error::addSourceMessage(Error::CIRCULAR_PARAM.clone(), list![(InstNode::name(node.clone())?).clone(), (Prefixes::variabilityString(Component::variability(comp.clone())?)?).clone()], InstNode::info(node.clone())?)?;
             bail!("fail")
         },
     });
@@ -499,7 +499,7 @@ pub fn subscriptBinding2(mut exp: Arc<Expression::NFExpression>, mut cref: Arc<C
                 sub_map = __pa0.clone();
             } else {
                 cref_parts = ComponentRef::toListReverse(cref.clone(), isFlatCref(cref.clone()), metamodelica::nil());
-                sub_map = UnorderedMap::new((std::sync::Arc::new(fnptr!(InstNode::hash, Arc<InstNode::InstNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(InstNode::refEqual, Arc<InstNode::InstNode>, Arc<InstNode::InstNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<InstNode::InstNode>) -> Result<bool> + 'static>), Util::nextPrime((cref_parts.clone().len() as i32)));
+                sub_map = UnorderedMap::new((std::sync::Arc::new(InstNode::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(InstNode::refEqual, Arc<InstNode::InstNode>, Arc<InstNode::InstNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<InstNode::InstNode>) -> Result<bool> + 'static>), Util::nextPrime((cref_parts.clone().len() as i32)));
                 for mut cr in &*cref_parts.clone() {
                     let mut cr = cr.clone();
                     UnorderedMap::addUnique(ComponentRef::node(cr.clone())?, ComponentRef::getSubscripts(cr.clone()), sub_map.clone())?;
@@ -554,7 +554,7 @@ pub fn subscriptBinding3(mut subscript: Arc<Subscript::NFSubscript>, mut subMap:
     let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
     outSubscript = (::match_deref::match_deref! { match &(subscript.clone()) {
         Deref @ Subscript::SPLIT_INDEX { .. } => {
-            osubs = UnorderedMap::get(var_field!((*subscript).node, Subscript::NFSubscript::SPLIT_INDEX).clone(), subMap.clone());
+            osubs = UnorderedMap::get(var_field!((*subscript).node, Subscript::NFSubscript::SPLIT_INDEX).clone(), subMap.clone())?;
             if isSome(osubs.clone()) {
                 let __pa0 = ::match_deref::match_deref! { match &(osubs.clone()) {
                     Some(__pa0) => __pa0.clone(),
@@ -584,7 +584,7 @@ pub fn evalComponentStartBinding(mut node: Arc<InstNode::InstNode>, mut comp: Ar
     let mut start_comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);
     let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    var = Component::variability(comp.clone());
+    var = Component::variability(comp.clone())?;
     if var.clone() != Variability::PARAMETER.clone() && var.clone() != Variability::STRUCTURAL_PARAMETER.clone() || !(Component::isFixed(comp.clone())?) {
         return Ok(outExp.clone());
     }
@@ -638,7 +638,7 @@ pub fn makeComponentBinding(mut component: Arc<Component::NFComponent>, mut node
                     let mut exp: Arc<Expression::NFExpression> = exp.clone();
                     exp = makeRecordBindingExp(var_field!((*component).classInst, Component::NFComponent::COMPONENT).clone(), rec_node.clone(), var_field!((*component).ty, Component::NFComponent::COMPONENT).clone(), cref.clone(), target.clone())?;
                     binding = Arc::new(Binding::NFBinding::CEVAL_BINDING { bindingExp: exp.clone() });
-                    if !(ComponentRef::hasSubscripts(cref.clone())) {
+                    if !(ComponentRef::hasSubscripts(cref.clone())?) {
                         InstNode::updateComponent(Component::setBinding(binding.clone(), component.clone())?, node.clone())?;
                     }
                     Ok(binding.clone())
@@ -653,7 +653,7 @@ pub fn makeComponentBinding(mut component: Arc<Component::NFComponent>, mut node
                     let mut exp: Arc<Expression::NFExpression> = exp.clone();
                     exp = Expression::mapCrefScalars(Expression::fromCref(cref.clone(), false)?, (std::sync::Arc::new({ let __pe_b0 = var_field!((*component).classInst, Component::NFComponent::COMPONENT).clone(); let __pe_b1 = rec_node.clone(); let __pe_b2 = ty.clone(); let __pe_b4 = target.clone(); move |__pe_a3| makeRecordBindingExp(__pe_b0.clone(), __pe_b1.clone(), __pe_b2.clone(), __pe_a3, __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
                     binding = Arc::new(Binding::NFBinding::CEVAL_BINDING { bindingExp: exp.clone() });
-                    if !(ComponentRef::hasSubscripts(cref.clone())) {
+                    if !(ComponentRef::hasSubscripts(cref.clone())?) {
                         InstNode::updateComponent(Component::setBinding(binding.clone(), component.clone())?, node.clone())?;
                     }
                     Ok(binding.clone())
@@ -726,7 +726,7 @@ pub fn makeRecordBindingExp(mut typeNode: Arc<InstNode::InstNode>, mut recordNod
         ty = InstNode::getType(c.clone())?;
         cr = Arc::new(ComponentRef::NFComponentRef::CREF { node: c.clone(), subscripts: metamodelica::nil(), ty: ty.clone(), origin: ComponentRef::Origin::CREF.clone(), restCref: cref.clone() });
         arg = Arc::new(Expression::NFExpression::CREF { ty: ty.clone(), cref: cr.clone() });
-        if Component::variability(InstNode::component(c.clone())?) <= Variability::PARAMETER.clone() {
+        if Component::variability(InstNode::component(c.clone())?)? <= Variability::PARAMETER.clone() {
             if '__try1: {
                 arg = unwrap_break_err!(evalExp(arg.clone(), target.clone()), '__try1);
                 Ok::<(), anyhow::Error>(())
@@ -736,7 +736,7 @@ pub fn makeRecordBindingExp(mut typeNode: Arc<InstNode::InstNode>, mut recordNod
         args = metamodelica::cons(arg.clone(), args.clone());
     }
     ErrorExt::rollBack(literal!("NFCeval.makeRecordBindingExp"));
-    exp = Expression::makeRecord(InstNode::fullPath(recordNode.clone(), false), recordType.clone(), args.clone());
+    exp = Expression::makeRecord(InstNode::fullPath(recordNode.clone(), false)?, recordType.clone(), args.clone());
     Ok(exp)
 }
 
@@ -761,7 +761,7 @@ pub fn evalRange(mut rangeExp: Arc<Expression::NFExpression>, mut target: Arc<Ev
     start_exp = __pa2.clone();
     ty = __pa3.clone();
     start_exp = evalExp(start_exp.clone(), target.clone())?;
-    step_exp = Util::applyOption(step_exp.clone(), (std::sync::Arc::new({ let __pe_b1 = target.clone(); move |__pe_a0| evalExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>));
+    step_exp = Util::applyOption(step_exp.clone(), (std::sync::Arc::new({ let __pe_b1 = target.clone(); move |__pe_a0| evalExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     stop_exp = evalExp(stop_exp.clone(), target.clone())?;
     if InstContext::inIterationRange(target.context.clone()) {
         ty = TypeCheck::getRangeType(start_exp.clone(), step_exp.clone(), stop_exp.clone(), Type::arrayElementType(ty.clone()), EvalTarget::getInfo(target.clone()))?;
@@ -924,20 +924,20 @@ pub fn evalBinaryOp_dispatch(mut exp1: Arc<Expression::NFExpression>, mut op: Ar
         Operator::Op::ADD_EW => evalBinaryAdd(exp1.clone(), exp2.clone())?,
         Operator::Op::SUB_EW => evalBinarySub(exp1.clone(), exp2.clone())?,
         Operator::Op::MUL_EW => evalBinaryMul(exp1.clone(), exp2.clone())?,
-        Operator::Op::ADD_SCALAR_ARRAY => evalBinaryScalarArray(exp1.clone(), exp2.clone(), (std::sync::Arc::new(evalBinaryAdd) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
-        Operator::Op::ADD_ARRAY_SCALAR { .. } => evalBinaryArrayScalar(exp1.clone(), exp2.clone(), (std::sync::Arc::new(evalBinaryAdd) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
-        Operator::Op::SUB_SCALAR_ARRAY { .. } => evalBinaryScalarArray(exp1.clone(), exp2.clone(), (std::sync::Arc::new(evalBinarySub) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
-        Operator::Op::SUB_ARRAY_SCALAR => evalBinaryArrayScalar(exp1.clone(), exp2.clone(), (std::sync::Arc::new(evalBinarySub) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
-        Operator::Op::MUL_SCALAR_ARRAY => evalBinaryScalarArray(exp1.clone(), exp2.clone(), (std::sync::Arc::new(evalBinaryMul) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
-        Operator::Op::MUL_ARRAY_SCALAR { .. } => evalBinaryArrayScalar(exp1.clone(), exp2.clone(), (std::sync::Arc::new(evalBinaryMul) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+        Operator::Op::ADD_SCALAR_ARRAY => evalBinaryScalarArray(exp1.clone(), exp2.clone(), (std::sync::Arc::new(evalBinaryAdd) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
+        Operator::Op::ADD_ARRAY_SCALAR { .. } => evalBinaryArrayScalar(exp1.clone(), exp2.clone(), (std::sync::Arc::new(evalBinaryAdd) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
+        Operator::Op::SUB_SCALAR_ARRAY { .. } => evalBinaryScalarArray(exp1.clone(), exp2.clone(), (std::sync::Arc::new(evalBinarySub) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
+        Operator::Op::SUB_ARRAY_SCALAR => evalBinaryArrayScalar(exp1.clone(), exp2.clone(), (std::sync::Arc::new(evalBinarySub) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
+        Operator::Op::MUL_SCALAR_ARRAY => evalBinaryScalarArray(exp1.clone(), exp2.clone(), (std::sync::Arc::new(evalBinaryMul) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
+        Operator::Op::MUL_ARRAY_SCALAR { .. } => evalBinaryArrayScalar(exp1.clone(), exp2.clone(), (std::sync::Arc::new(evalBinaryMul) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
         Operator::Op::MUL_VECTOR_MATRIX => evalBinaryMulVectorMatrix(exp1.clone(), exp2.clone())?,
         Operator::Op::MUL_MATRIX_VECTOR => evalBinaryMulMatrixVector(exp1.clone(), exp2.clone())?,
         Operator::Op::SCALAR_PRODUCT => evalBinaryScalarProduct(exp1.clone(), exp2.clone())?,
         Operator::Op::MATRIX_PRODUCT => evalBinaryMatrixProduct(exp1.clone(), exp2.clone())?,
-        Operator::Op::DIV_SCALAR_ARRAY { .. } => evalBinaryScalarArray(exp1.clone(), exp2.clone(), (std::sync::Arc::new({ let __pe_b2 = target.clone(); move |__pe_a0, __pe_a1| evalBinaryDiv(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
-        Operator::Op::DIV_ARRAY_SCALAR { .. } => evalBinaryArrayScalar(exp1.clone(), exp2.clone(), (std::sync::Arc::new({ let __pe_b2 = target.clone(); move |__pe_a0, __pe_a1| evalBinaryDiv(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
-        Operator::Op::POW_SCALAR_ARRAY { .. } => evalBinaryScalarArray(exp1.clone(), exp2.clone(), (std::sync::Arc::new({ let __pe_b2 = target.clone(); move |__pe_a0, __pe_a1| evalBinaryPow(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
-        Operator::Op::POW_ARRAY_SCALAR { .. } => evalBinaryArrayScalar(exp1.clone(), exp2.clone(), (std::sync::Arc::new({ let __pe_b2 = target.clone(); move |__pe_a0, __pe_a1| evalBinaryPow(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+        Operator::Op::DIV_SCALAR_ARRAY { .. } => evalBinaryScalarArray(exp1.clone(), exp2.clone(), (std::sync::Arc::new({ let __pe_b2 = target.clone(); move |__pe_a0, __pe_a1| evalBinaryDiv(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
+        Operator::Op::DIV_ARRAY_SCALAR { .. } => evalBinaryArrayScalar(exp1.clone(), exp2.clone(), (std::sync::Arc::new({ let __pe_b2 = target.clone(); move |__pe_a0, __pe_a1| evalBinaryDiv(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
+        Operator::Op::POW_SCALAR_ARRAY { .. } => evalBinaryScalarArray(exp1.clone(), exp2.clone(), (std::sync::Arc::new({ let __pe_b2 = target.clone(); move |__pe_a0, __pe_a1| evalBinaryPow(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
+        Operator::Op::POW_ARRAY_SCALAR { .. } => evalBinaryArrayScalar(exp1.clone(), exp2.clone(), (std::sync::Arc::new({ let __pe_b2 = target.clone(); move |__pe_a0, __pe_a1| evalBinaryPow(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
         Operator::Op::POW_MATRIX => evalBinaryPowMatrix(exp1.clone(), exp2.clone())?,
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCeval.evalBinaryOp_dispatch")); __mm_s.push_str(&*literal!(": unimplemented case for ")); __mm_s.push_str(&*Expression::toString(Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: op.clone(), exp2: exp2.clone() }))?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
@@ -959,8 +959,8 @@ pub fn evalBinaryAdd(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<Expr
         (Deref @ Expression::FILENAME { .. }, Deref @ Expression::STRING { .. }) => Arc::new(Expression::NFExpression::STRING { value: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*var_field!((*exp1).filename, Expression::NFExpression::FILENAME).clone()); __mm_s.push_str(&*var_field!((*exp2).value, Expression::NFExpression::STRING).clone()); ArcStr::from(__mm_s) }).clone() }),
         (Deref @ Expression::FILENAME { .. }, Deref @ Expression::FILENAME { .. }) => Arc::new(Expression::NFExpression::STRING { value: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*var_field!((*exp1).filename, Expression::NFExpression::FILENAME).clone()); __mm_s.push_str(&*var_field!((*exp2).filename, Expression::NFExpression::FILENAME).clone()); ArcStr::from(__mm_s) }).clone() }),
         (Deref @ Expression::ARRAY { .. }, Deref @ Expression::ARRAY { .. }) if ((var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone().borrow().len() as i32) == (var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone().borrow().len() as i32)) => Expression::makeArray(var_field!((*exp1).ty, Expression::NFExpression::ARRAY).clone(), Array::threadMap(var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone(), var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new(evalBinaryAdd) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?, true),
-        (Deref @ Expression::ARRAY { .. }, _) => Expression::makeArray(var_field!((*exp1).ty, Expression::NFExpression::ARRAY).clone(), Array::map(var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = exp2.clone(); move |__pe_a0| evalBinaryAdd(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)), var_field!((*exp1).literal, Expression::NFExpression::ARRAY).clone()),
-        (_, Deref @ Expression::ARRAY { .. }) => Expression::makeArray(var_field!((*exp2).ty, Expression::NFExpression::ARRAY).clone(), Array::map(var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b0 = exp1.clone(); move |__pe_a1| evalBinaryAdd(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)), var_field!((*exp2).literal, Expression::NFExpression::ARRAY).clone()),
+        (Deref @ Expression::ARRAY { .. }, _) => Expression::makeArray(var_field!((*exp1).ty, Expression::NFExpression::ARRAY).clone(), Array::map(var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = exp2.clone(); move |__pe_a0| evalBinaryAdd(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?, var_field!((*exp1).literal, Expression::NFExpression::ARRAY).clone()),
+        (_, Deref @ Expression::ARRAY { .. }) => Expression::makeArray(var_field!((*exp2).ty, Expression::NFExpression::ARRAY).clone(), Array::map(var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b0 = exp1.clone(); move |__pe_a1| evalBinaryAdd(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?, var_field!((*exp2).literal, Expression::NFExpression::ARRAY).clone()),
         (Deref @ Expression::EMPTY { .. }, _) => exp2.clone(),
         (_, Deref @ Expression::EMPTY { .. }) => exp1.clone(),
         _ => {
@@ -981,8 +981,8 @@ pub fn evalBinarySub(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<Expr
         (Deref @ Expression::INTEGER { .. }, Deref @ Expression::INTEGER { .. }) => Arc::new(Expression::NFExpression::INTEGER { value: var_field!((*exp1).value, Expression::NFExpression::INTEGER).clone() - var_field!((*exp2).value, Expression::NFExpression::INTEGER).clone() }),
         (Deref @ Expression::REAL { .. }, Deref @ Expression::REAL { .. }) => Arc::new(Expression::NFExpression::REAL { value: var_field!((*exp1).value, Expression::NFExpression::REAL).clone() - var_field!((*exp2).value, Expression::NFExpression::REAL).clone() }),
         (Deref @ Expression::ARRAY { .. }, Deref @ Expression::ARRAY { .. }) if ((var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone().borrow().len() as i32) == (var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone().borrow().len() as i32)) => Expression::makeArray(var_field!((*exp1).ty, Expression::NFExpression::ARRAY).clone(), Array::threadMap(var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone(), var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new(evalBinarySub) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?, true),
-        (Deref @ Expression::ARRAY { .. }, _) => Expression::makeArray(var_field!((*exp1).ty, Expression::NFExpression::ARRAY).clone(), Array::map(var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = exp2.clone(); move |__pe_a0| evalBinarySub(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)), var_field!((*exp1).literal, Expression::NFExpression::ARRAY).clone()),
-        (_, Deref @ Expression::ARRAY { .. }) => Expression::makeArray(var_field!((*exp2).ty, Expression::NFExpression::ARRAY).clone(), Array::map(var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b0 = exp1.clone(); move |__pe_a1| evalBinarySub(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)), var_field!((*exp2).literal, Expression::NFExpression::ARRAY).clone()),
+        (Deref @ Expression::ARRAY { .. }, _) => Expression::makeArray(var_field!((*exp1).ty, Expression::NFExpression::ARRAY).clone(), Array::map(var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = exp2.clone(); move |__pe_a0| evalBinarySub(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?, var_field!((*exp1).literal, Expression::NFExpression::ARRAY).clone()),
+        (_, Deref @ Expression::ARRAY { .. }) => Expression::makeArray(var_field!((*exp2).ty, Expression::NFExpression::ARRAY).clone(), Array::map(var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b0 = exp1.clone(); move |__pe_a1| evalBinarySub(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?, var_field!((*exp2).literal, Expression::NFExpression::ARRAY).clone()),
         (Deref @ Expression::EMPTY { .. }, _) => evalBinarySub(Expression::makeZero(Expression::typeOf(exp2.clone()))?, exp2.clone())?,
         (_, Deref @ Expression::EMPTY { .. }) => exp1.clone(),
         _ => {
@@ -1006,7 +1006,7 @@ pub fn evalMultaryAddSub(mut arguments: Arc<metamodelica::List<Arc<Expression::N
         let mut arg = arg.clone();
         exp = evalBinarySub(exp.clone(), arg.clone())?;
     }
-    isNeutral = Expression::isEmpty(exp.clone()) || Expression::isZero(exp.clone());
+    isNeutral = Expression::isEmpty(exp.clone()) || Expression::isZero(exp.clone())?;
     Ok((exp, isNeutral))
 }
 
@@ -1018,8 +1018,8 @@ pub fn evalBinaryMul(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<Expr
         (Deref @ Expression::INTEGER { .. }, Deref @ Expression::INTEGER { .. }) => Arc::new(Expression::NFExpression::INTEGER { value: var_field!((*exp1).value, Expression::NFExpression::INTEGER).clone() * var_field!((*exp2).value, Expression::NFExpression::INTEGER).clone() }),
         (Deref @ Expression::REAL { .. }, Deref @ Expression::REAL { .. }) => Arc::new(Expression::NFExpression::REAL { value: var_field!((*exp1).value, Expression::NFExpression::REAL).clone() * var_field!((*exp2).value, Expression::NFExpression::REAL).clone() }),
         (Deref @ Expression::ARRAY { .. }, Deref @ Expression::ARRAY { .. }) if ((var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone().borrow().len() as i32) == (var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone().borrow().len() as i32)) => Expression::makeArray(var_field!((*exp1).ty, Expression::NFExpression::ARRAY).clone(), Array::threadMap(var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone(), var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new(evalBinaryMul) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?, true),
-        (Deref @ Expression::ARRAY { .. }, _) => Expression::makeArray(var_field!((*exp1).ty, Expression::NFExpression::ARRAY).clone(), Array::map(var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = exp2.clone(); move |__pe_a0| evalBinaryMul(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)), var_field!((*exp1).literal, Expression::NFExpression::ARRAY).clone()),
-        (_, Deref @ Expression::ARRAY { .. }) => Expression::makeArray(var_field!((*exp2).ty, Expression::NFExpression::ARRAY).clone(), Array::map(var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b0 = exp1.clone(); move |__pe_a1| evalBinaryMul(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)), var_field!((*exp2).literal, Expression::NFExpression::ARRAY).clone()),
+        (Deref @ Expression::ARRAY { .. }, _) => Expression::makeArray(var_field!((*exp1).ty, Expression::NFExpression::ARRAY).clone(), Array::map(var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = exp2.clone(); move |__pe_a0| evalBinaryMul(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?, var_field!((*exp1).literal, Expression::NFExpression::ARRAY).clone()),
+        (_, Deref @ Expression::ARRAY { .. }) => Expression::makeArray(var_field!((*exp2).ty, Expression::NFExpression::ARRAY).clone(), Array::map(var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b0 = exp1.clone(); move |__pe_a1| evalBinaryMul(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?, var_field!((*exp2).literal, Expression::NFExpression::ARRAY).clone()),
         (Deref @ Expression::EMPTY { .. }, _) => exp2.clone(),
         (_, Deref @ Expression::EMPTY { .. }) => exp1.clone(),
         _ => {
@@ -1035,7 +1035,7 @@ pub fn evalBinaryMul(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<Expr
 pub fn evalBinaryDiv(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<Expression::NFExpression>, mut target: Arc<EvalTarget::EvalTarget>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     exp = (::match_deref::match_deref! { match &((exp1.clone(), exp2.clone())) {
-        (_, _) if (Expression::isZero(exp2.clone())) => {
+        (_, _) if (Expression::isZero(exp2.clone())?) => {
             if EvalTarget::hasInfo(target.clone()) {
                 Error::addSourceMessage(Error::DIVISION_BY_ZERO.clone(), list![(Expression::toString(exp1.clone())?).clone(), (Expression::toString(exp2.clone())?).clone()], EvalTarget::getInfo(target.clone()))?;
                 bail!("fail");
@@ -1050,8 +1050,8 @@ pub fn evalBinaryDiv(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<Expr
         (Deref @ Expression::INTEGER { .. }, Deref @ Expression::INTEGER { .. }) => if (intMod(var_field!((*exp1).value, Expression::NFExpression::INTEGER).clone(), var_field!((*exp2).value, Expression::NFExpression::INTEGER).clone()) == 0) {Arc::new(Expression::NFExpression::INTEGER { value: intDiv(var_field!((*exp1).value, Expression::NFExpression::INTEGER).clone(), var_field!((*exp2).value, Expression::NFExpression::INTEGER).clone()) })} else {Arc::new(Expression::NFExpression::REAL { value: metamodelica::OrderedFloat((var_field!((*exp1).value, Expression::NFExpression::INTEGER).clone()) as f64) / metamodelica::OrderedFloat((var_field!((*exp2).value, Expression::NFExpression::INTEGER).clone()) as f64) })},
         (Deref @ Expression::REAL { .. }, Deref @ Expression::REAL { .. }) => Arc::new(Expression::NFExpression::REAL { value: var_field!((*exp1).value, Expression::NFExpression::REAL).clone() / var_field!((*exp2).value, Expression::NFExpression::REAL).clone() }),
         (Deref @ Expression::ARRAY { .. }, Deref @ Expression::ARRAY { .. }) if ((var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone().borrow().len() as i32) == (var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone().borrow().len() as i32)) => Expression::makeArray(var_field!((*exp1).ty, Expression::NFExpression::ARRAY).clone(), Array::threadMap(var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone(), var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b2 = target.clone(); move |__pe_a0, __pe_a1| evalBinaryDiv(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?, true),
-        (Deref @ Expression::ARRAY { .. }, _) => Expression::makeArray(var_field!((*exp1).ty, Expression::NFExpression::ARRAY).clone(), Array::map(var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = exp2.clone(); let __pe_b2 = target.clone(); move |__pe_a0| evalBinaryDiv(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)), var_field!((*exp1).literal, Expression::NFExpression::ARRAY).clone()),
-        (_, Deref @ Expression::ARRAY { .. }) => Expression::makeArray(var_field!((*exp2).ty, Expression::NFExpression::ARRAY).clone(), Array::map(var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b0 = exp1.clone(); let __pe_b2 = target.clone(); move |__pe_a1| evalBinaryDiv(__pe_b0.clone(), __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)), var_field!((*exp2).literal, Expression::NFExpression::ARRAY).clone()),
+        (Deref @ Expression::ARRAY { .. }, _) => Expression::makeArray(var_field!((*exp1).ty, Expression::NFExpression::ARRAY).clone(), Array::map(var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = exp2.clone(); let __pe_b2 = target.clone(); move |__pe_a0| evalBinaryDiv(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?, var_field!((*exp1).literal, Expression::NFExpression::ARRAY).clone()),
+        (_, Deref @ Expression::ARRAY { .. }) => Expression::makeArray(var_field!((*exp2).ty, Expression::NFExpression::ARRAY).clone(), Array::map(var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b0 = exp1.clone(); let __pe_b2 = target.clone(); move |__pe_a1| evalBinaryDiv(__pe_b0.clone(), __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?, var_field!((*exp2).literal, Expression::NFExpression::ARRAY).clone()),
         (Deref @ Expression::EMPTY { .. }, _) => evalBinaryDiv(Expression::makeOne(Expression::typeOf(exp2.clone()))?, exp2.clone(), target.clone())?,
         (_, Deref @ Expression::EMPTY { .. }) => exp1.clone(),
         _ => {
@@ -1075,7 +1075,7 @@ pub fn evalMultaryMulDiv(mut arguments: Arc<metamodelica::List<Arc<Expression::N
         let mut arg = arg.clone();
         exp = evalBinaryDiv(exp.clone(), arg.clone(), noTarget().clone())?;
     }
-    isNeutral = Expression::isEmpty(exp.clone()) || Expression::isOne(exp.clone());
+    isNeutral = Expression::isEmpty(exp.clone()) || Expression::isOne(exp.clone())?;
     Ok((exp, isNeutral))
 }
 
@@ -1101,28 +1101,28 @@ pub fn evalBinaryPow(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<Expr
     Ok(exp)
 }
 
-pub fn evalBinaryScalarArray(mut scalarExp: Arc<Expression::NFExpression>, mut arrayExp: Arc<Expression::NFExpression>, mut opFunc: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Arc<Expression::NFExpression> {
+pub fn evalBinaryScalarArray(mut scalarExp: Arc<Expression::NFExpression>, mut arrayExp: Arc<Expression::NFExpression>, mut opFunc: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> {
     pub type FuncT = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>;
 
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     exp = (::match_deref::match_deref! { match &(arrayExp.clone()) {
-        Deref @ Expression::ARRAY { .. } => Expression::makeArray(var_field!((*arrayExp).ty, Expression::NFExpression::ARRAY).clone(), Array::map(var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b0 = scalarExp.clone(); let __pe_b2: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = opFunc.clone(); move |__pe_a1| Ok(evalBinaryScalarArray(__pe_b0.clone(), __pe_a1, __pe_b2.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)), true),
-        _ => opFunc(scalarExp.clone(), arrayExp.clone()).unwrap(),
+        Deref @ Expression::ARRAY { .. } => Expression::makeArray(var_field!((*arrayExp).ty, Expression::NFExpression::ARRAY).clone(), Array::map(var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b0 = scalarExp.clone(); let __pe_b2: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = opFunc.clone(); move |__pe_a1| evalBinaryScalarArray(__pe_b0.clone(), __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?, true),
+        _ => opFunc(scalarExp.clone(), arrayExp.clone())?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    exp
+    Ok(exp)
 }
 
-pub fn evalBinaryArrayScalar(mut arrayExp: Arc<Expression::NFExpression>, mut scalarExp: Arc<Expression::NFExpression>, mut opFunc: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Arc<Expression::NFExpression> {
+pub fn evalBinaryArrayScalar(mut arrayExp: Arc<Expression::NFExpression>, mut scalarExp: Arc<Expression::NFExpression>, mut opFunc: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> {
     pub type FuncT = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>;
 
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     exp = (::match_deref::match_deref! { match &(arrayExp.clone()) {
-        Deref @ Expression::ARRAY { .. } => Expression::makeArray(var_field!((*arrayExp).ty, Expression::NFExpression::ARRAY).clone(), Array::map(var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = scalarExp.clone(); let __pe_b2: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = opFunc.clone(); move |__pe_a0| Ok(evalBinaryArrayScalar(__pe_a0, __pe_b1.clone(), __pe_b2.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)), true),
-        _ => opFunc(arrayExp.clone(), scalarExp.clone()).unwrap(),
+        Deref @ Expression::ARRAY { .. } => Expression::makeArray(var_field!((*arrayExp).ty, Expression::NFExpression::ARRAY).clone(), Array::map(var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = scalarExp.clone(); let __pe_b2: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = opFunc.clone(); move |__pe_a0| evalBinaryArrayScalar(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?, true),
+        _ => opFunc(arrayExp.clone(), scalarExp.clone())?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    exp
+    Ok(exp)
 }
 
 pub fn evalBinaryMulVectorMatrix(mut vectorExp: Arc<Expression::NFExpression>, mut matrixExp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
@@ -1133,7 +1133,7 @@ pub fn evalBinaryMulVectorMatrix(mut vectorExp: Arc<Expression::NFExpression>, m
     exp = (::match_deref::match_deref! { match &(Expression::transposeArray(matrixExp.clone())?) {
         Deref @ Expression::ARRAY { ty: Deref @ Type::ARRAY { elementType: ty, dimensions: Deref @ metamodelica::List::Cons { head: m, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } } }, elements: arr, .. } => {
             let mut arr = (*arr).clone();
-            arr = Array::map(arr.clone(), (std::sync::Arc::new({ let __pe_b0 = vectorExp.clone(); move |__pe_a1| evalBinaryScalarProduct(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>));
+            arr = Array::map(arr.clone(), (std::sync::Arc::new({ let __pe_b0 = vectorExp.clone(); move |__pe_a1| evalBinaryScalarProduct(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             Expression::makeArray(Arc::new(Type::NFType::ARRAY { elementType: ty.clone(), dimensions: list![m.clone()] }), arr.clone(), true)
         },
         _ => {
@@ -1154,7 +1154,7 @@ pub fn evalBinaryMulMatrixVector(mut matrixExp: Arc<Expression::NFExpression>, m
     exp = (::match_deref::match_deref! { match &(matrixExp.clone()) {
         Deref @ Expression::ARRAY { ty: Deref @ Type::ARRAY { elementType: ty, dimensions: Deref @ metamodelica::List::Cons { head: n, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil } } }, elements: arr, .. } => {
             let mut arr = (*arr).clone();
-            arr = Array::map(arr.clone(), (std::sync::Arc::new({ let __pe_b1 = vectorExp.clone(); move |__pe_a0| evalBinaryScalarProduct(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>));
+            arr = Array::map(arr.clone(), (std::sync::Arc::new({ let __pe_b1 = vectorExp.clone(); move |__pe_a0| evalBinaryScalarProduct(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             Expression::makeArray(Arc::new(Type::NFType::ARRAY { elementType: ty.clone(), dimensions: list![n.clone()] }), arr.clone(), true)
         },
         _ => {
@@ -1210,7 +1210,7 @@ pub fn evalBinaryMatrixProduct(mut exp1: Arc<Expression::NFExpression>, mut exp2
                 arr = metamodelica::arrayCreate((arr1.clone().borrow().len() as i32), exp1.clone());
                 let __range0 = 1..=(arr1.clone().borrow().len() as i32);
                 for mut i in __range0 {
-                    unsafe { metamodelica::Dangerous::arrayInitSlot(arr.clone(), i.clone(), Expression::makeArray(row_ty.clone(), Array::map(arr2.clone(), (std::sync::Arc::new({ let __pe_b0 = metamodelica::Dangerous::arrayGetNoBoundsChecking(arr1.clone(), i.clone()); move |__pe_a1| evalBinaryScalarProduct(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)), true)) };
+                    unsafe { metamodelica::Dangerous::arrayInitSlot(arr.clone(), i.clone(), Expression::makeArray(row_ty.clone(), Array::map(arr2.clone(), (std::sync::Arc::new({ let __pe_b0 = metamodelica::Dangerous::arrayGetNoBoundsChecking(arr1.clone(), i.clone()); move |__pe_a1| evalBinaryScalarProduct(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?, true)) };
                 }
                 exp = Expression::makeArray(mat_ty.clone(), arr.clone(), true);
             }
@@ -1265,7 +1265,7 @@ pub fn evalBinaryPowMatrix2(mut matrix: Arc<Expression::NFExpression>, mut n: i3
 pub fn evalUnaryOp(mut exp1: Arc<Expression::NFExpression>, mut op: Arc<Operator::NFOperator>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     exp = (match op.op.clone() {
-        Operator::Op::UMINUS if (Expression::isZero(exp1.clone())) => exp1.clone(),
+        Operator::Op::UMINUS if (Expression::isZero(exp1.clone())?) => exp1.clone(),
         Operator::Op::UMINUS => Expression::mapSplitExpressions(exp1.clone(), (std::sync::Arc::new(evalUnaryMinus) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
         _ => {
             Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCeval.evalUnaryOp")); __mm_s.push_str(&*literal!(": unimplemented case for ")); __mm_s.push_str(&*Expression::toString(Arc::new(Expression::NFExpression::UNARY { operator: op.clone(), exp: exp1.clone() }))?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
@@ -1281,7 +1281,7 @@ pub fn evalUnaryMinus(mut exp1: Arc<Expression::NFExpression>) -> Result<Arc<Exp
         Deref @ Expression::INTEGER { .. } => Arc::new(Expression::NFExpression::INTEGER { value: -(var_field!((*exp1).value, Expression::NFExpression::INTEGER).clone()) }),
         Deref @ Expression::REAL { .. } => Arc::new(Expression::NFExpression::REAL { value: -(var_field!((*exp1).value, Expression::NFExpression::REAL).clone()) }),
         Deref @ Expression::ARRAY { .. } => {
-            assign_variant_field!(exp1 => Expression::NFExpression::ARRAY; elements = Array::map(var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new(evalUnaryMinus) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)));
+            assign_variant_field!(exp1 => Expression::NFExpression::ARRAY; elements = Array::map(var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new(evalUnaryMinus) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?);
             exp1.clone()
         },
         _ => {
@@ -1414,7 +1414,7 @@ pub fn evalLogicUnaryNot(mut exp1: Arc<Expression::NFExpression>) -> Result<Arc<
     let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     exp = (::match_deref::match_deref! { match &(exp1.clone()) {
         Deref @ Expression::BOOLEAN { .. } => Arc::new(Expression::NFExpression::BOOLEAN { value: !(var_field!((*exp1).value, Expression::NFExpression::BOOLEAN).clone()) }),
-        Deref @ Expression::ARRAY { .. } => Expression::mapArrayElements(exp1.clone(), (std::sync::Arc::new(evalLogicUnaryNot) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+        Deref @ Expression::ARRAY { .. } => Expression::mapArrayElements(exp1.clone(), (std::sync::Arc::new(evalLogicUnaryNot) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
         _ => {
             exp = Arc::new(Expression::NFExpression::LUNARY { operator: Operator::makeNot(Arc::new(crate::NFType::UNKNOWN)), exp: exp1.clone() });
             printFailedEvalError(literal!("NFCeval.evalLogicUnaryNot"), exp.clone(), metamodelica::sourceInfo!())?;
@@ -1670,14 +1670,14 @@ pub fn evalCall(mut call: Arc<Call::NFCall>, mut target: Arc<EvalTarget::EvalTar
         Deref @ Call::TYPED_ARRAY_CONSTRUCTOR { .. } => {
             assign_variant_field!(c => Call::NFCall::TYPED_ARRAY_CONSTRUCTOR;
                 exp = evalExpPartial(var_field!((*c).exp, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), noTarget().clone(), true)?.0,
-                iters = Call::mapIteratorsExpShallow(var_field!((*c).iters, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), (std::sync::Arc::new(evalExpPartialDefault) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))
+                iters = Call::mapIteratorsExpShallow(var_field!((*c).iters, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), (std::sync::Arc::new(evalExpPartialDefault) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?
             );
             Expression::mapSplitExpressions(Arc::new(Expression::NFExpression::CALL { call: c.clone() }), (std::sync::Arc::new(evalArrayConstructor) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?
         },
         Deref @ Call::TYPED_REDUCTION { .. } => {
             assign_variant_field!(c => Call::NFCall::TYPED_REDUCTION;
                 exp = evalExpPartial(var_field!((*c).exp, Call::NFCall::TYPED_REDUCTION).clone(), noTarget().clone(), true)?.0,
-                iters = Call::mapIteratorsExpShallow(var_field!((*c).iters, Call::NFCall::TYPED_REDUCTION).clone(), (std::sync::Arc::new(evalExpPartialDefault) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))
+                iters = Call::mapIteratorsExpShallow(var_field!((*c).iters, Call::NFCall::TYPED_REDUCTION).clone(), (std::sync::Arc::new(evalExpPartialDefault) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?
             );
             Expression::mapSplitExpressions(Arc::new(Expression::NFExpression::CALL { call: c.clone() }), (std::sync::Arc::new(evalReduction) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?
         },
@@ -1787,13 +1787,13 @@ pub fn evalNormalCallExp(mut callExp: Arc<Expression::NFExpression>, mut target:
     } };
     args = __pa0.clone();
     r#fn = __pa1.clone();
-    result = evalNormalCall(r#fn.clone(), args.clone(), target.clone());
+    result = evalNormalCall(r#fn.clone(), args.clone(), target.clone())?;
     Ok(result)
 }
 
-pub fn evalNormalCall(mut r#fn: Arc<Function::Function>, mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut target: Arc<EvalTarget::EvalTarget>) -> Arc<Expression::NFExpression> {
-    let mut result: Arc<Expression::NFExpression> = EvalFunction::evaluate(r#fn.clone(), args.clone(), target.clone()).unwrap();
-    result
+pub fn evalNormalCall(mut r#fn: Arc<Function::Function>, mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>>, mut target: Arc<EvalTarget::EvalTarget>) -> Result<Arc<Expression::NFExpression>> {
+    let mut result: Arc<Expression::NFExpression> = EvalFunction::evaluate(r#fn.clone(), args.clone(), target.clone())?;
+    Ok(result)
 }
 
 pub fn evalBuiltinAbs(mut arg: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
@@ -2010,7 +2010,7 @@ pub fn evalBuiltinDiagonal(mut arg: Arc<Expression::NFExpression>) -> Result<Arc
             for mut i in 1..=n.clone() {
                 arr_row = metamodelica::arrayFromVec(arr_zero.clone().borrow().clone());
                 exp = metamodelica::Dangerous::arrayGetNoBoundsChecking(var_field!((*arg).elements, Expression::NFExpression::ARRAY).clone(), i.clone());
-                e_lit = Expression::isLiteral(exp.clone());
+                e_lit = Expression::isLiteral(exp.clone())?;
                 arg_lit = arg_lit.clone() && e_lit.clone();
                 metamodelica::Dangerous::arrayUpdateNoBoundsChecking(arr_row.clone(), i.clone(), exp.clone());
                 exp = Expression::makeArray(row_ty.clone(), arr_row.clone(), e_lit.clone());
@@ -2222,7 +2222,7 @@ fn evalBuiltinMatrix(mut arg: Arc<Expression::NFExpression>) -> Result<Arc<Expre
                 dim1 = __pa0.clone();
                 dim2 = __pa1.clone();
                 ty = Type::liftArrayLeft(Type::arrayElementType(ty.clone()), dim2.clone());
-                arr = Array::map(var_field!((*arg).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = ty.clone(); move |__pe_a0| evalBuiltinMatrix2(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>));
+                arr = Array::map(var_field!((*arg).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = ty.clone(); move |__pe_a0| evalBuiltinMatrix2(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
                 ty = Type::liftArrayLeft(ty.clone(), dim1.clone());
                 result = Expression::makeArray(ty.clone(), arr.clone(), false);
             }
@@ -2247,7 +2247,7 @@ fn evalBuiltinMatrix(mut arg: Arc<Expression::NFExpression>) -> Result<Arc<Expre
 fn evalBuiltinMatrix2(mut arg: Arc<Expression::NFExpression>, mut ty: Arc<Type::NFType>) -> Result<Arc<Expression::NFExpression>> {
     let mut result: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     result = (::match_deref::match_deref! { match &(arg.clone()) {
-        Deref @ Expression::ARRAY { .. } => Expression::makeArray(ty.clone(), Array::map(var_field!((*arg).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new(Expression::toScalar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)), var_field!((*arg).literal, Expression::NFExpression::ARRAY).clone()),
+        Deref @ Expression::ARRAY { .. } => Expression::makeArray(ty.clone(), Array::map(var_field!((*arg).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new(Expression::toScalar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?, var_field!((*arg).literal, Expression::NFExpression::ARRAY).clone()),
         _ => {
             printWrongArgsError(literal!("NFCeval.evalBuiltinMatrix2"), list![arg.clone()], metamodelica::sourceInfo!())?;
             bail!("fail")
@@ -2301,7 +2301,7 @@ pub fn evalBuiltinMax2(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<Ex
 
 fn evalPositiveMax(mut flow_exp: Arc<Expression::NFExpression>, mut eps: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
     let mut result: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    result = if (Expression::isNonPositive(flow_exp.clone())) {Expression::makeZero(Expression::typeOf(flow_exp.clone()))?} else {evalBuiltinMax2(flow_exp.clone(), eps.clone())?};
+    result = if (Expression::isNonPositive(flow_exp.clone())?) {Expression::makeZero(Expression::typeOf(flow_exp.clone()))?} else {evalBuiltinMax2(flow_exp.clone(), eps.clone())?};
     Ok(result)
 }
 
@@ -2679,7 +2679,7 @@ fn evalBuiltinSymmetric(mut arg: Arc<Expression::NFExpression>) -> Result<Arc<Ex
     let mut accum: metamodelica::Array<Arc<Expression::NFExpression>> = Default::default();
     ty = Expression::typeOf(arg.clone());
     if Expression::isArray(arg.clone()) && Type::isSquareMatrix(ty.clone())? {
-        mat = Array::map(Expression::arrayElements(arg.clone())?, (std::sync::Arc::new(Expression::arrayElements) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<metamodelica::Array<Arc<Expression::NFExpression>>> + 'static>));
+        mat = Array::map(Expression::arrayElements(arg.clone())?, (std::sync::Arc::new(Expression::arrayElements) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<metamodelica::Array<Arc<Expression::NFExpression>>> + 'static>))?;
         n = (mat.clone().borrow().len() as i32);
         row_ty = Type::unliftArray(Expression::typeOf(arg.clone()))?;
         accum = metamodelica::arrayCreate(n.clone(), arg.clone());
@@ -2915,7 +2915,7 @@ fn evalSolverClock(mut args: Arc<metamodelica::List<Arc<Expression::NFExpression
 
 pub fn evalGetInstanceName(mut scope: Arc<InstNode::InstNode>) -> Result<Arc<Expression::NFExpression>> {
     let mut result: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-    result = Arc::new(Expression::NFExpression::STRING { value: (AbsynUtil::pathString(InstNode::rootPath(scope.clone(), false), (literal!(".")).clone(), true, false)?).clone() });
+    result = Arc::new(Expression::NFExpression::STRING { value: (AbsynUtil::pathString(InstNode::rootPath(scope.clone(), false)?, (literal!(".")).clone(), true, false)?).clone() });
     Ok(result)
 }
 
@@ -2970,7 +2970,7 @@ fn evalArrayConstructor2(mut exp: Arc<Expression::NFExpression>, mut ranges: Arc
             expl = metamodelica::cons(evalArrayConstructor2(exp.clone(), ranges_rest.clone(), iters_rest.clone())?, expl.clone());
         }
         arr = metamodelica::arrayFromVec(metamodelica::Dangerous::listReverseInPlace(expl.clone()).into_iter().cloned().collect());
-        ty = if (arr.clone().borrow().is_empty()) {Type::liftArrayLeftList(Expression::typeOf(exp.clone()), List::mapFlat(ranges_rest.clone(), (std::sync::Arc::new(fnptr!(Expression::dimensions, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<metamodelica::List<Arc<Dimension::NFDimension>>>> + 'static>)))} else {Expression::typeOf(listHead(expl.clone())?)};
+        ty = if (arr.clone().borrow().is_empty()) {Type::liftArrayLeftList(Expression::typeOf(exp.clone()), List::mapFlat(ranges_rest.clone(), (std::sync::Arc::new(fnptr!(Expression::dimensions, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<metamodelica::List<Arc<Dimension::NFDimension>>>> + 'static>))?)} else {Expression::typeOf(listHead(expl.clone())?)};
         ty = Type::liftArrayLeft(ty.clone(), Dimension::fromInteger((arr.clone().borrow().len() as i32), Prefixes::Variability::CONSTANT.clone()));
         result = Expression::makeArray(ty.clone(), arr.clone(), true);
     }
@@ -2980,9 +2980,9 @@ fn evalArrayConstructor2(mut exp: Arc<Expression::NFExpression>, mut ranges: Arc
 type ReductionFn = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>;
 
 fn evalReduction(mut callExp: Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> {
-    fn reductionFn(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<Expression::NFExpression>, mut target: Arc<EvalTarget::EvalTarget>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Arc<Expression::NFExpression> {
-        let mut result: Arc<Expression::NFExpression> = r#fn(exp1.clone(), evalExp(exp2.clone(), target.clone()).unwrap()).unwrap();
-        result
+    fn reductionFn(mut exp1: Arc<Expression::NFExpression>, mut exp2: Arc<Expression::NFExpression>, mut target: Arc<EvalTarget::EvalTarget>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> {
+        let mut result: Arc<Expression::NFExpression> = r#fn(exp1.clone(), evalExp(exp2.clone(), target.clone())?)?;
+        Ok(result)
     }
 
     let mut result: Arc<Expression::NFExpression> = Arc::new(Expression::END);
@@ -3035,7 +3035,7 @@ fn evalSize(mut exp: Arc<Expression::NFExpression>, mut optIndex: Option<Arc<Exp
     } else {
         (outExp, ty, _, _) = Typing::typeExp(exp.clone(), InstContext::CLASS.clone(), info.clone(), false)?;
         arr = Array::mapList(Type::arrayDims(ty.clone()), (std::sync::Arc::new(Dimension::sizeExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
-        Array::mapNoCopy(arr.clone(), (std::sync::Arc::new({ let __pe_b1 = target.clone(); move |__pe_a0| evalExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>));
+        Array::mapNoCopy(arr.clone(), (std::sync::Arc::new({ let __pe_b1 = target.clone(); move |__pe_a0| evalExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
         dim = Dimension::fromInteger((arr.clone().borrow().len() as i32), Variability::PARAMETER.clone());
         outExp = Expression::makeArray(Arc::new(Type::NFType::ARRAY { elementType: Arc::new(crate::NFType::INTEGER), dimensions: list![dim.clone()] }), arr.clone(), false);
     }
@@ -3046,14 +3046,14 @@ fn evalSubscriptedExp(mut exp: Arc<Expression::NFExpression>, mut subscripts: Ar
     let mut result: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
     result = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::RANGE { .. } => Arc::new(Expression::NFExpression::RANGE { ty: var_field!((*exp).ty, Expression::NFExpression::RANGE).clone(), start: evalExp(var_field!((*exp).start, Expression::NFExpression::RANGE).clone(), target.clone())?, step: Util::applyOption(var_field!((*exp).step, Expression::NFExpression::RANGE).clone(), (std::sync::Arc::new({ let __pe_b1 = target.clone(); move |__pe_a0| evalExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)), stop: evalExp(var_field!((*exp).stop, Expression::NFExpression::RANGE).clone(), target.clone())? }),
+        Deref @ Expression::RANGE { .. } => Arc::new(Expression::NFExpression::RANGE { ty: var_field!((*exp).ty, Expression::NFExpression::RANGE).clone(), start: evalExp(var_field!((*exp).start, Expression::NFExpression::RANGE).clone(), target.clone())?, step: Util::applyOption(var_field!((*exp).step, Expression::NFExpression::RANGE).clone(), (std::sync::Arc::new({ let __pe_b1 = target.clone(); move |__pe_a0| evalExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?, stop: evalExp(var_field!((*exp).stop, Expression::NFExpression::RANGE).clone(), target.clone())? }),
         _ => evalExp(exp.clone(), target.clone())?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     subs = ({
         let mut __acc: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
         for mut s in (subscripts.clone()).into_iter().cloned() {
-            let __x = Subscript::mapShallowExp(s.clone(), (std::sync::Arc::new({ let __pe_b1 = target.clone(); move |__pe_a0| evalExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>));
+            let __x = Subscript::mapShallowExp(s.clone(), (std::sync::Arc::new({ let __pe_b1 = target.clone(); move |__pe_a0| evalExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -3112,7 +3112,7 @@ fn printUnboundError(mut component: Arc<Component::NFComponent>, mut target: Arc
             bail!("fail")
         },
         _ => {
-            if listMember(Component::variability(component.clone()), list![Variability::STRUCTURAL_PARAMETER.clone(), Variability::PARAMETER.clone()]) && Util::getOptionOrDefault(Component::getEvaluateAnnotation(component.clone())?, false) {
+            if listMember(Component::variability(component.clone())?, list![Variability::STRUCTURAL_PARAMETER.clone(), Variability::PARAMETER.clone()]) && Util::getOptionOrDefault(Component::getEvaluateAnnotation(component.clone())?, false) {
                 if Component::isFixed(component.clone())? {
                     Error::addMultiSourceMessage(Error::UNBOUND_PARAMETER_EVALUATE_TRUE.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*Expression::toString(exp.clone())?); __mm_s.push_str(&*literal!("(fixed = true)")); ArcStr::from(__mm_s) }).clone()], list![InstNode::info(ComponentRef::node(Expression::toCref(exp.clone())?)?)?, EvalTarget::getInfo(target.clone())])?;
                 }

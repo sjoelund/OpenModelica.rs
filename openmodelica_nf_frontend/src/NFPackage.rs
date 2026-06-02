@@ -509,7 +509,7 @@ pub fn collectConstants(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Ar
     let mut vars: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
     let mut constants: Constants = Arc::new(ConstantsSetImpl::Tree::EMPTY);
     constants = ConstantsSetImpl::new();
-    constants = List::fold(flatModel.variables.clone(), (std::sync::Arc::new(collectVariableConstants) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Variable::NFVariable>, Arc<ConstantsSetImpl::Tree>) -> Result<Arc<ConstantsSetImpl::Tree>> + 'static>), constants.clone());
+    constants = List::fold(flatModel.variables.clone(), (std::sync::Arc::new(collectVariableConstants) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Variable::NFVariable>, Arc<ConstantsSetImpl::Tree>) -> Result<Arc<ConstantsSetImpl::Tree>> + 'static>), constants.clone())?;
     constants = Equation::foldExpList(flatModel.equations.clone(), (std::sync::Arc::new(collectExpConstants) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<ConstantsSetImpl::Tree>) -> Result<Arc<ConstantsSetImpl::Tree>> + 'static>), constants.clone())?;
     constants = Equation::foldExpList(flatModel.initialEquations.clone(), (std::sync::Arc::new(collectExpConstants) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<ConstantsSetImpl::Tree>) -> Result<Arc<ConstantsSetImpl::Tree>> + 'static>), constants.clone())?;
     constants = Algorithm::foldExpList(flatModel.algorithms.clone(), (std::sync::Arc::new(collectExpConstants) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<ConstantsSetImpl::Tree>) -> Result<Arc<ConstantsSetImpl::Tree>> + 'static>), constants.clone())?;
@@ -547,12 +547,12 @@ pub fn replaceConstants(mut flatModel: Arc<FlatModel::NFFlatModel>, mut function
         }
         __acc.reverse()
     }),
-        flatModel.equations = Equation::mapExpList(flatModel.equations.clone(), (std::sync::Arc::new(replaceExpConstants) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
-        flatModel.initialEquations = Equation::mapExpList(flatModel.initialEquations.clone(), (std::sync::Arc::new(replaceExpConstants) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
-        flatModel.algorithms = Algorithm::mapExpList(flatModel.algorithms.clone(), (std::sync::Arc::new(replaceExpConstants) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
-        flatModel.initialAlgorithms = Algorithm::mapExpList(flatModel.initialAlgorithms.clone(), (std::sync::Arc::new(replaceExpConstants) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))
+        flatModel.equations = Equation::mapExpList(flatModel.equations.clone(), (std::sync::Arc::new(replaceExpConstants) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
+        flatModel.initialEquations = Equation::mapExpList(flatModel.initialEquations.clone(), (std::sync::Arc::new(replaceExpConstants) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
+        flatModel.algorithms = Algorithm::mapExpList(flatModel.algorithms.clone(), (std::sync::Arc::new(replaceExpConstants) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
+        flatModel.initialAlgorithms = Algorithm::mapExpList(flatModel.initialAlgorithms.clone(), (std::sync::Arc::new(replaceExpConstants) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?
     );
-    functions = Flatten::FunctionTreeImpl::map(functions.clone(), (std::sync::Arc::new(replaceFuncConstants) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Function::Function>) -> Result<Arc<Function::Function>> + 'static>));
+    functions = Flatten::FunctionTreeImpl::map(functions.clone(), (std::sync::Arc::new(replaceFuncConstants) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Function::Function>) -> Result<Arc<Function::Function>> + 'static>))?;
     execStat(literal!("NFPackage.replaceConstants"))?;
     Ok((flatModel, functions))
 }
@@ -600,7 +600,7 @@ pub fn getPackageConstantBinding(mut cref: Arc<ComponentRef::NFComponentRef>) ->
     let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
     let mut cr_node: Arc<InstNode::InstNode> = ComponentRef::node(cref.clone())?;
     Typing::typeComponentBinding(cr_node.clone(), InstContext::CLASS.clone(), true)?;
-    binding = Component::getImplicitBinding(InstNode::component(cr_node.clone())?, InstNode::instanceParent(cr_node.clone()));
+    binding = Component::getImplicitBinding(InstNode::component(cr_node.clone())?, InstNode::instanceParent(cr_node.clone())?);
     if Binding::isUnbound(binding.clone()) {
         binding = getPackageConstantBinding2(cr_node.clone(), ComponentRef::rest(cref.clone())?)?;
         InstNode::componentApply(cr_node.clone(), (std::sync::Arc::new(Component::setBinding) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Binding::NFBinding>, Arc<Component::NFComponent>) -> Result<Arc<Component::NFComponent>> + 'static>), binding.clone())?;
@@ -618,7 +618,7 @@ pub fn getPackageConstantBinding2(mut fieldNode: Arc<InstNode::InstNode>, mut cr
     }
     is_record = Type::isRecord(Type::arrayElementType(ComponentRef::nodeType(cref.clone())?));
     cr_node = ComponentRef::node(cref.clone())?;
-    if !(InstNode::isComponent(cr_node.clone()) && is_record.clone()) {
+    if !(InstNode::isComponent(cr_node.clone())? && is_record.clone()) {
         binding = Binding::EMPTY_BINDING().clone();
         return Ok(binding.clone());
     }
@@ -735,7 +735,7 @@ pub fn replaceFuncConstants(mut name: Arc<Absyn::Path>, mut func: Arc<Function::
             assign_variant_field!(sections => Sections::NFSections::SECTIONS; algorithms = ({
         let mut __acc: Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>> = metamodelica::nil();
         for mut a in (var_field!((*sections).algorithms, Sections::NFSections::SECTIONS).clone()).into_iter().cloned() {
-            let __x = Algorithm::mapExp(a.clone(), (std::sync::Arc::new(replaceExpConstants) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>));
+            let __x = Algorithm::mapExp(a.clone(), (std::sync::Arc::new(replaceExpConstants) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()

@@ -230,7 +230,7 @@ fn detectDiscreteStatesDefault(mut variables: Arc<VariablePointers::VariablePoin
 fn collectStatesAndDerivatives(mut exp: Arc<Expression::NFExpression>, mut acc_states: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>, mut acc_derivatives: Pointer::Pointer<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>>, mut scalarized: bool) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { arguments: Deref @ metamodelica::List::Cons { head: Deref @ Expression::CREF { cref: state_cref, .. }, tail: Deref @ metamodelica::List::Nil }, r#fn: Deref @ Function::Function::FUNCTION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, .. } } if (!(BVariable::checkCref(state_cref.clone(), (std::sync::Arc::new(fnptr!(BVariable::isStateDerivative, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!()))) => {
+        Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { arguments: Deref @ metamodelica::List::Cons { head: Deref @ Expression::CREF { cref: state_cref, .. }, tail: Deref @ metamodelica::List::Nil }, r#fn: Deref @ Function::Function::FUNCTION { path: Deref @ Absyn::Path::IDENT { name: Deref @ "der" }, .. }, .. } } if (!(BVariable::checkCref(state_cref.clone(), (std::sync::Arc::new(fnptr!(BVariable::isStateDerivative, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!())?)) => {
             let mut res: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut der_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
             let mut state_var: Pointer::Pointer<Arc<Variable::NFVariable>>;
@@ -319,12 +319,12 @@ fn updateStatesAndDerivatives(mut variables: Arc<VariablePointers::VariablePoint
     let mut states: Arc<VariablePointers::VariablePointers> = states;
     let mut derivatives: Arc<VariablePointers::VariablePointers> = derivatives;
     let mut algebraics: Arc<VariablePointers::VariablePointers> = algebraics;
-    variables = BVariable::VariablePointers::addList(acc_derivatives.clone(), variables.clone());
-    unknowns = BVariable::VariablePointers::addList(acc_derivatives.clone(), unknowns.clone());
-    initials = BVariable::VariablePointers::addList(acc_derivatives.clone(), initials.clone());
-    derivatives = BVariable::VariablePointers::addList(acc_derivatives.clone(), derivatives.clone());
-    variables = BVariable::VariablePointers::addList(acc_states.clone(), variables.clone());
-    states = BVariable::VariablePointers::addList(acc_states.clone(), states.clone());
+    variables = BVariable::VariablePointers::addList(acc_derivatives.clone(), variables.clone())?;
+    unknowns = BVariable::VariablePointers::addList(acc_derivatives.clone(), unknowns.clone())?;
+    initials = BVariable::VariablePointers::addList(acc_derivatives.clone(), initials.clone())?;
+    derivatives = BVariable::VariablePointers::addList(acc_derivatives.clone(), derivatives.clone())?;
+    variables = BVariable::VariablePointers::addList(acc_states.clone(), variables.clone())?;
+    states = BVariable::VariablePointers::addList(acc_states.clone(), states.clone())?;
     unknowns = BVariable::VariablePointers::removeList(acc_states.clone(), unknowns.clone())?;
     algebraics = BVariable::VariablePointers::removeList(acc_states.clone(), algebraics.clone())?;
     if Flags::isSet(Flags::DUMP_STATESELECTION_INFO.clone())? {
@@ -332,7 +332,7 @@ fn updateStatesAndDerivatives(mut variables: Arc<VariablePointers::VariablePoint
         if acc_states.clone().is_empty() {
             println!("{}", (literal!("\t<no states>\n\n")).clone());
         } else {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(acc_states.clone(), (std::sync::Arc::new(fnptr!(BVariable::pointerToString, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("\t")).clone(), (literal!("\n\t")).clone(), (literal!("\n")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(acc_states.clone(), (std::sync::Arc::new(BVariable::pointerToString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("\t")).clone(), (literal!("\n\t")).clone(), (literal!("\n")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
     }
     Ok((variables, unknowns, knowns, initials, states, derivatives, algebraics))
@@ -433,29 +433,29 @@ fn updateDiscreteStatesAndPrevious(mut variables: Arc<VariablePointers::Variable
     let mut discrete_states: Arc<VariablePointers::VariablePointers> = discrete_states;
     let mut clocked_states: Arc<VariablePointers::VariablePointers> = clocked_states;
     let mut previous: Arc<VariablePointers::VariablePointers> = previous;
-    variables = BVariable::VariablePointers::addList(acc_previous.clone(), variables.clone());
-    knowns = BVariable::VariablePointers::addList(acc_previous.clone(), knowns.clone());
-    initials = BVariable::VariablePointers::addList(acc_previous.clone(), initials.clone());
-    previous = BVariable::VariablePointers::addList(acc_previous.clone(), previous.clone());
-    discrete_states = BVariable::VariablePointers::addList(acc_discrete_states.clone(), discrete_states.clone());
-    clocked_states = BVariable::VariablePointers::addList(acc_clocked_states.clone(), clocked_states.clone());
+    variables = BVariable::VariablePointers::addList(acc_previous.clone(), variables.clone())?;
+    knowns = BVariable::VariablePointers::addList(acc_previous.clone(), knowns.clone())?;
+    initials = BVariable::VariablePointers::addList(acc_previous.clone(), initials.clone())?;
+    previous = BVariable::VariablePointers::addList(acc_previous.clone(), previous.clone())?;
+    discrete_states = BVariable::VariablePointers::addList(acc_discrete_states.clone(), discrete_states.clone())?;
+    clocked_states = BVariable::VariablePointers::addList(acc_clocked_states.clone(), clocked_states.clone())?;
     discretes = BVariable::VariablePointers::removeList(acc_discrete_states.clone(), discretes.clone())?;
     discretes = BVariable::VariablePointers::removeList(acc_clocked_states.clone(), discretes.clone())?;
     discrete_states = BVariable::VariablePointers::removeList(acc_clocked_states.clone(), discrete_states.clone())?;
     if Flags::isSet(Flags::DUMP_STATESELECTION_INFO.clone())? {
         if !(acc_discrete_states.clone().is_empty()) {
             println!("{}", (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[stateselection] Natural discrete states from ")); __mm_s.push_str(&*context.clone()); __mm_s.push_str(&*literal!(":")); ArcStr::from(__mm_s) }).clone())).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(acc_discrete_states.clone(), (std::sync::Arc::new(fnptr!(BVariable::pointerToString, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("\t")).clone(), (literal!("\n\t")).clone(), (literal!("\n")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(acc_discrete_states.clone(), (std::sync::Arc::new(BVariable::pointerToString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("\t")).clone(), (literal!("\n\t")).clone(), (literal!("\n")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         if !(acc_clocked_states.clone().is_empty()) {
             println!("{}", (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[stateselection] Natural clocked states from ")); __mm_s.push_str(&*context.clone()); __mm_s.push_str(&*literal!(":")); ArcStr::from(__mm_s) }).clone())).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(acc_clocked_states.clone(), (std::sync::Arc::new(fnptr!(BVariable::pointerToString, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("\t")).clone(), (literal!("\n\t")).clone(), (literal!("\n")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(acc_clocked_states.clone(), (std::sync::Arc::new(BVariable::pointerToString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("\t")).clone(), (literal!("\n\t")).clone(), (literal!("\n")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
     }
     if Flags::isSet(Flags::DUMP_DISCRETEVARS_INFO.clone())? {
         if !(acc_previous.clone().is_empty()) {
             println!("{}", (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[discreteinfo] pre() and previous() variables from ")); __mm_s.push_str(&*context.clone()); __mm_s.push_str(&*literal!(":")); ArcStr::from(__mm_s) }).clone())).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(acc_previous.clone(), (std::sync::Arc::new(fnptr!(BVariable::pointerToString, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("\t")).clone(), (literal!("\n\t")).clone(), (literal!("\n")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(acc_previous.clone(), (std::sync::Arc::new(BVariable::pointerToString) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("\t")).clone(), (literal!("\n\t")).clone(), (literal!("\n")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
     }
     Ok((variables, knowns, initials, discretes, discrete_states, clocked_states, previous))

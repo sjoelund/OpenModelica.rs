@@ -103,19 +103,19 @@ pub mod SetVertex {
 
     pub type SET_VERTEX = SetVertex;
 
-    pub fn isEqual(mut v1: Arc<SetVertex>, mut v2: Arc<SetVertex>) -> bool {
-        let mut equal: bool = Connector::isEqual(v1.name.clone(), v2.name.clone());
-        equal
+    pub fn isEqual(mut v1: Arc<SetVertex>, mut v2: Arc<SetVertex>) -> Result<bool> {
+        let mut equal: bool = Connector::isEqual(v1.name.clone(), v2.name.clone())?;
+        Ok(equal)
     }
 
-    pub fn isNamed(mut v: Arc<SetVertex>, mut name: Arc<Connector::NFConnector>) -> bool {
-        let mut equal: bool = Connector::isEqual(v.name.clone(), name.clone());
-        equal
+    pub fn isNamed(mut v: Arc<SetVertex>, mut name: Arc<Connector::NFConnector>) -> Result<bool> {
+        let mut equal: bool = Connector::isEqual(v.name.clone(), name.clone())?;
+        Ok(equal)
     }
 
-    pub fn toString(mut v: Arc<SetVertex>) -> ArcStr {
-        let mut r#str: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*Connector::toString(v.name.clone())); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*SBSet::toString(v.vs.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) };
-        r#str
+    pub fn toString(mut v: Arc<SetVertex>) -> Result<ArcStr> {
+        let mut r#str: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*Connector::toString(v.name.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*SBSet::toString(v.vs.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) };
+        Ok(r#str)
     }
 
 }
@@ -146,9 +146,9 @@ pub mod SetEdge {
         equal
     }
 
-    pub fn toString(mut e: Arc<SetEdge>) -> ArcStr {
-        let mut r#str: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*e.name.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("SetVertex 1:\t")); __mm_s.push_str(&*SBPWLinearMap::toString(e.es1.clone())); __mm_s.push_str(&*literal!("\nSetVertex 2:\t")); __mm_s.push_str(&*SBPWLinearMap::toString(e.es2.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) };
-        r#str
+    pub fn toString(mut e: Arc<SetEdge>) -> Result<ArcStr> {
+        let mut r#str: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*e.name.clone()); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("SetVertex 1:\t")); __mm_s.push_str(&*SBPWLinearMap::toString(e.es1.clone())?); __mm_s.push_str(&*literal!("\nSetVertex 2:\t")); __mm_s.push_str(&*SBPWLinearMap::toString(e.es2.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) };
+        Ok(r#str)
     }
 
 }
@@ -176,17 +176,17 @@ pub fn resolve(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<FlatMod
     }
     v_count = Vector::newFill(max_dim.clone(), 1);
     e_count = Vector::newFill(max_dim.clone(), 1);
-    (flatModel, conns) = collect(flatModel.clone());
-    graph = IncidenceList::new((std::sync::Arc::new(fnptr!(SetVertex::isEqual, Arc<SetVertex::SetVertex>, Arc<SetVertex::SetVertex>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetVertex::SetVertex>, Arc<SetVertex::SetVertex>) -> Result<bool> + 'static>), (std::sync::Arc::new(fnptr!(SetEdge::isEqual, Arc<SetEdge::SetEdge>, Arc<SetEdge::SetEdge>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetEdge::SetEdge>, Arc<SetEdge::SetEdge>) -> Result<bool> + 'static>), (std::sync::Arc::new(fnptr!(SetVertex::toString, Arc<SetVertex::SetVertex>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetVertex::SetVertex>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(fnptr!(SetEdge::toString, Arc<SetEdge::SetEdge>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetEdge::SetEdge>) -> Result<ArcStr> + 'static>));
+    (flatModel, conns) = collect(flatModel.clone())?;
+    graph = IncidenceList::new((std::sync::Arc::new(SetVertex::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetVertex::SetVertex>, Arc<SetVertex::SetVertex>) -> Result<bool> + 'static>), (std::sync::Arc::new(fnptr!(SetEdge::isEqual, Arc<SetEdge::SetEdge>, Arc<SetEdge::SetEdge>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetEdge::SetEdge>, Arc<SetEdge::SetEdge>) -> Result<bool> + 'static>), (std::sync::Arc::new(SetVertex::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetVertex::SetVertex>) -> Result<ArcStr> + 'static>), (std::sync::Arc::new(SetEdge::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetEdge::SetEdge>) -> Result<ArcStr> + 'static>));
     nmv_table = UnorderedMap::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), 1);
     createGraph(flatModel.variables.clone(), conns.clone(), graph.clone(), v_count.clone(), e_count.clone(), nmv_table.clone())?;
     if Flags::isSet(Flags::DUMP_SET_BASED_GRAPHS.clone())? {
-        println!("{}", (IncidenceList::toString(graph.clone())).clone());
+        println!("{}", (IncidenceList::toString(graph.clone())?).clone());
     }
     (vss, emap1, emap2) = createMaps(graph.clone())?;
     res = SBFunctions::connectedComponents(vss.clone(), emap1.clone(), emap2.clone())?;
     if Flags::isSet(Flags::DUMP_SET_BASED_GRAPHS.clone())? {
-        println!("{}", (IncidenceList::toString(graph.clone())).clone());
+        println!("{}", (IncidenceList::toString(graph.clone())?).clone());
     }
     conns = generateEquations(res.clone(), flatModel.clone(), graph.clone(), v_count.clone(), nmv_table.clone())?;
     eql = listAppend(flatModel.equations.clone(), conns.clone());
@@ -194,13 +194,13 @@ pub fn resolve(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<FlatMod
     Ok(flatModel)
 }
 
-fn collect(mut flatModel: Arc<FlatModel::NFFlatModel>) -> (Arc<FlatModel::NFFlatModel>, Arc<metamodelica::List<Arc<Equation::NFEquation>>>) {
+fn collect(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<(Arc<FlatModel::NFFlatModel>, Arc<metamodelica::List<Arc<Equation::NFEquation>>>)> {
     let mut flatModel: Arc<FlatModel::NFFlatModel> = flatModel;
     let mut conns: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
     let mut eql: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
-    (conns, eql) = List::splitOnTrue(flatModel.equations.clone(), (std::sync::Arc::new(fnptr!(isConnection, Arc<Equation::NFEquation>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<bool> + 'static>));
+    (conns, eql) = List::splitOnTrue(flatModel.equations.clone(), (std::sync::Arc::new(fnptr!(isConnection, Arc<Equation::NFEquation>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<bool> + 'static>))?;
     assign_field!(flatModel.equations = eql.clone());
-    (flatModel, conns)
+    Ok((flatModel, conns))
 }
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
@@ -254,8 +254,8 @@ fn addConnectionsToGraph(mut equations: Arc<metamodelica::List<Arc<Equation::NFE
         },
         Deref @ Equation::FOR { range: Some(range), .. } => {
             let mut range = (*range).clone();
-            range = Ceval::evalExp(range.clone(), Ceval::EvalTarget::new(Equation::info(eq.clone()), NFInstContext::ITERATION_RANGE.clone(), None))?;
-            body = Equation::replaceIteratorList(var_field!((*eq).body, Equation::NFEquation::FOR).clone(), var_field!((*eq).iterator, Equation::NFEquation::FOR).clone(), range.clone());
+            range = Ceval::evalExp(range.clone(), Ceval::EvalTarget::new(Equation::info(eq.clone())?, NFInstContext::ITERATION_RANGE.clone(), None))?;
+            body = Equation::replaceIteratorList(var_field!((*eq).body, Equation::NFEquation::FOR).clone(), var_field!((*eq).iterator, Equation::NFEquation::FOR).clone(), range.clone())?;
             addConnectionsToGraph(body.clone(), graph.clone(), vCount.clone(), eCount.clone(), nmvTable.clone())?;
             ()
         },
@@ -282,8 +282,8 @@ fn createConnection(mut lhs: Arc<Expression::NFExpression>, mut rhs: Arc<Express
     let mut rhs_conn: Arc<Connector::NFConnector> = Arc::new(<Connector::NFConnector as ::std::default::Default>::default());
     (lhs_cr, lhs_subs) = separate(Expression::toCref(lhs.clone())?)?;
     (rhs_cr, rhs_subs) = separate(Expression::toCref(rhs.clone())?)?;
-    lhs_conn = Connector::fromCref(lhs_cr.clone(), ComponentRef::nodeType(lhs_cr.clone())?, source.clone());
-    rhs_conn = Connector::fromCref(rhs_cr.clone(), ComponentRef::nodeType(rhs_cr.clone())?, source.clone());
+    lhs_conn = Connector::fromCref(lhs_cr.clone(), ComponentRef::nodeType(lhs_cr.clone())?, source.clone())?;
+    rhs_conn = Connector::fromCref(rhs_cr.clone(), ComponentRef::nodeType(rhs_cr.clone())?, source.clone())?;
     (mi1, d1) = getConnectIntervals(lhs_conn.clone(), lhs_subs.clone(), graph.clone(), vCount.clone(), nmvTable.clone())?;
     (mi2, d2) = getConnectIntervals(rhs_conn.clone(), rhs_subs.clone(), graph.clone(), vCount.clone(), nmvTable.clone())?;
     updateGraph(d1.clone(), d2.clone(), mi1.clone(), mi2.clone(), graph.clone(), eCount.clone())?;
@@ -295,7 +295,7 @@ fn separate(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<(Arc<Componen
     let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
     cref = ComponentRef::fillSubscripts(cref.clone());
     cref = ComponentRef::replaceWholeSubscripts(cref.clone())?;
-    subs = ComponentRef::subscriptsAllFlat(cref.clone());
+    subs = ComponentRef::subscriptsAllFlat(cref.clone())?;
     cref = ComponentRef::stripSubscriptsAll(cref.clone());
     Ok((cref, subs))
 }
@@ -316,7 +316,7 @@ fn createVertex(mut conn: Arc<Connector::NFConnector>, mut graph: SBGraph, mut v
     let mut dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
     let mut s: Arc<SBSet::SBSet> = Arc::new(<SBSet::SBSet as ::std::default::Default>::default());
     let mut name: ArcStr = arcstr::literal!("");
-    od = IncidenceList::findVertex(graph.clone(), (std::sync::Arc::new({ let __pe_b1 = conn.clone(); move |__pe_a0| Ok(SetVertex::isNamed(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetVertex::SetVertex>) -> Result<bool> + 'static>));
+    od = IncidenceList::findVertex(graph.clone(), (std::sync::Arc::new({ let __pe_b1 = conn.clone(); move |__pe_a0| SetVertex::isNamed(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SetVertex::SetVertex>) -> Result<bool> + 'static>))?;
     if isSome(od.clone()) {
         let __pa0 = ::match_deref::match_deref! { match &(od.clone()) {
             Some(__pa0) => __pa0.clone(),
@@ -333,7 +333,7 @@ fn createVertex(mut conn: Arc<Connector::NFConnector>, mut graph: SBGraph, mut v
     s = SBSet::addAtomicSet(SBAtomicSet::new(mi.clone()), s.clone())?;
     v = Arc::new(SetVertex::SetVertex { name: conn.clone(), vs: s.clone() });
     d = IncidenceList::addVertex(graph.clone(), v.clone());
-    name = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*Connector::toString(conn.clone())); __mm_s.push_str(&*literal!("$")); __mm_s.push_str(&*Connector::faceString(conn.clone())); ArcStr::from(__mm_s) }).clone();
+    name = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*Connector::toString(conn.clone())?); __mm_s.push_str(&*literal!("$")); __mm_s.push_str(&*Connector::faceString(conn.clone())); ArcStr::from(__mm_s) }).clone();
     UnorderedMap::addUnique((name.clone()).clone(), mi.clone(), nmvTable.clone())?;
     Ok((mi, d))
 }
@@ -418,7 +418,7 @@ fn generateEquations(mut pw: Arc<SBPWLinearMap::SBPWLinearMap>, mut flatModel: A
     iter_expl = ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
         for mut i in (iterators.clone()).borrow().iter() {
-            let __x = Expression::fromCref(ComponentRef::makeIterator(i.clone(), Arc::new(crate::NFType::INTEGER)), false)?;
+            let __x = Expression::fromCref(ComponentRef::makeIterator(i.clone(), Arc::new(crate::NFType::INTEGER))?, false)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -464,17 +464,17 @@ fn generatePotentialEquations(mut aset: Arc<SBAtomicSet::SBAtomicSet>, mut dom: 
     let __range0 = UnorderedSet::toArray(SBSet::asets(dom.clone())).borrow().iter().cloned().collect::<Vec<_>>();
     for mut auxi in __range0 {
         mi = SBAtomicSet::aset(auxi.clone());
-        mi_range = applyOffset(mi.clone(), getOffset(mi.clone(), nmvTable.clone())?);
+        mi_range = applyOffset(mi.clone(), getOffset(mi.clone(), nmvTable.clone())?)?;
         inters = SBMultiInterval::intervals(mi_range.clone());
-        ranges = Array::map(inters.clone(), (std::sync::Arc::new(intervalToRange) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBInterval::SBInterval>) -> Result<Arc<Expression::NFExpression>> + 'static>));
+        ranges = Array::map(inters.clone(), (std::sync::Arc::new(intervalToRange) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBInterval::SBInterval>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
         sauxi = SBSet::newEmpty();
         sauxi = SBSet::addAtomicSet(auxi.clone(), sauxi.clone())?;
         vars1 = getVars(potVars.clone(), sauxi.clone(), graph.clone())?;
         mi = SBAtomicSet::aset(aset.clone());
-        aux_mi = applyOffset(mi.clone(), getOffset(mi.clone(), nmvTable.clone())?);
+        aux_mi = applyOffset(mi.clone(), getOffset(mi.clone(), nmvTable.clone())?)?;
         (inds, _) = transMulti(mi_range.clone(), aux_mi.clone(), iterators.clone(), false)?;
         eql = generatePotentialEquations2(vars1.clone(), vars.clone(), iterExps.clone(), inds.clone())?;
-        equations = generateForLoop(eql.clone(), iterators.clone(), ranges.clone(), equations.clone());
+        equations = generateForLoop(eql.clone(), iterators.clone(), ranges.clone(), equations.clone())?;
     }
     Ok(equations)
 }
@@ -489,7 +489,7 @@ fn generatePotentialEquations2(mut vars1: Arc<metamodelica::List<Arc<ComponentRe
         let mut var1 = var1.clone();
         for mut var2 in &*vars2.clone() {
             let mut var2 = var2.clone();
-            if Type::isEqual(ComponentRef::nodeType(var1.clone())?, ComponentRef::nodeType(var2.clone())?) {
+            if Type::isEqual(ComponentRef::nodeType(var1.clone())?, ComponentRef::nodeType(var2.clone())?)? {
                 l = generateConnector(var1.clone(), inds1.clone())?;
                 r = generateConnector(var2.clone(), inds2.clone())?;
                 ty = Expression::typeOf(l.clone());
@@ -519,14 +519,14 @@ fn generateFlowEquation(mut aset: Arc<SBAtomicSet::SBAtomicSet>, mut dom: Arc<SB
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut eq: Arc<Equation::NFEquation> = Arc::new(<Equation::NFEquation as ::std::default::Default>::default());
     mi = SBAtomicSet::aset(aset.clone());
-    mi_range = applyOffset(mi.clone(), getOffset(mi.clone(), nmvTable.clone())?);
+    mi_range = applyOffset(mi.clone(), getOffset(mi.clone(), nmvTable.clone())?)?;
     inters = SBMultiInterval::intervals(mi_range.clone());
-    ranges = Array::map(inters.clone(), (std::sync::Arc::new(intervalToRange) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBInterval::SBInterval>) -> Result<Arc<Expression::NFExpression>> + 'static>));
+    ranges = Array::map(inters.clone(), (std::sync::Arc::new(intervalToRange) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBInterval::SBInterval>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     expl = metamodelica::nil();
     let __range0 = UnorderedSet::toArray(SBSet::asets(dom.clone())).borrow().iter().cloned().collect::<Vec<_>>();
     for mut auxi in __range0 {
         mi = SBAtomicSet::aset(auxi.clone());
-        mi_range2 = applyOffset(mi.clone(), getOffset(mi.clone(), nmvTable.clone())?);
+        mi_range2 = applyOffset(mi.clone(), getOffset(mi.clone(), nmvTable.clone())?)?;
         (inds, is_sum) = transMulti(mi_range.clone(), mi_range2.clone(), iterators.clone(), true)?;
         sauxi = SBSet::newEmpty();
         sauxi = SBSet::addAtomicSet(auxi.clone(), sauxi.clone())?;
@@ -558,7 +558,7 @@ fn generateFlowEquation(mut aset: Arc<SBAtomicSet::SBAtomicSet>, mut dom: Arc<SB
         }
         ty = Expression::typeOf(sum_exp.clone());
         eq = Equation::makeEquality(sum_exp.clone(), Expression::makeZero(ty.clone())?, ty.clone(), DAE::emptyElementSource().clone(), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), Equation::ScalarizeMode::NO_PREFERENCE.clone());
-        equations = generateForLoop(list![eq.clone()], iterators.clone(), ranges.clone(), equations.clone());
+        equations = generateForLoop(list![eq.clone()], iterators.clone(), ranges.clone(), equations.clone())?;
     }
     Ok(equations)
 }
@@ -582,19 +582,19 @@ fn generateConnector(mut cr: Arc<ComponentRef::NFComponentRef>, mut indices: Arc
     Ok(outExp)
 }
 
-fn generateForLoop(mut connects: Arc<metamodelica::List<Arc<Equation::NFEquation>>>, mut iterators: metamodelica::Array<Arc<InstNode::InstNode>>, mut ranges: metamodelica::Array<Arc<Expression::NFExpression>>, mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>) -> Arc<metamodelica::List<Arc<Equation::NFEquation>>> {
+fn generateForLoop(mut connects: Arc<metamodelica::List<Arc<Equation::NFEquation>>>, mut iterators: metamodelica::Array<Arc<InstNode::InstNode>>, mut ranges: metamodelica::Array<Arc<Expression::NFExpression>>, mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>) -> Result<Arc<metamodelica::List<Arc<Equation::NFEquation>>>> {
     let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = equations;
     let mut body: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = connects.clone();
     let __range0 = (1..=(iterators.clone().borrow().len() as i32)).rev();
     for mut i in __range0 {
         if Expression::isInteger(ranges.borrow()[(i.clone()-1) as usize].clone()) {
-            body = Equation::replaceIteratorList(body.clone(), iterators.borrow()[(i.clone()-1) as usize].clone(), ranges.borrow()[(i.clone()-1) as usize].clone());
+            body = Equation::replaceIteratorList(body.clone(), iterators.borrow()[(i.clone()-1) as usize].clone(), ranges.borrow()[(i.clone()-1) as usize].clone())?;
         } else {
             body = list![Arc::new(Equation::NFEquation::FOR { iterator: iterators.borrow()[(i.clone()-1) as usize].clone(), range: Some(ranges.borrow()[(i.clone()-1) as usize].clone()), body: body.clone(), scope: Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), source: DAE::emptyElementSource().clone() })];
         }
     }
     equations = List::append_reverse(body.clone(), equations.clone());
-    equations
+    Ok(equations)
 }
 
 fn getConnectors(mut flatModel: Arc<FlatModel::NFFlatModel>) -> (Arc<metamodelica::List<Arc<Variable::NFVariable>>>, Arc<metamodelica::List<Arc<Variable::NFVariable>>>) {
@@ -622,13 +622,13 @@ fn getOffset(mut mi: Arc<SBMultiInterval::SBMultiInterval>, mut nmvTable: NameVe
         let mut i = i.clone();
         aux = SBMultiInterval::intersection(mi.clone(), i.clone())?;
         if !(SBMultiInterval::isEmpty(aux.clone())) {
-            res = SBMultiInterval::minElem(i.clone());
+            res = SBMultiInterval::minElem(i.clone())?;
         }
     }
     Ok(res)
 }
 
-fn applyOffset(mut mi: Arc<SBMultiInterval::SBMultiInterval>, mut off: metamodelica::Array<i32>) -> Arc<SBMultiInterval::SBMultiInterval> {
+fn applyOffset(mut mi: Arc<SBMultiInterval::SBMultiInterval>, mut off: metamodelica::Array<i32>) -> Result<Arc<SBMultiInterval::SBMultiInterval>> {
     let mut outMI: Arc<SBMultiInterval::SBMultiInterval> = Arc::new(<SBMultiInterval::SBMultiInterval as ::std::default::Default>::default());
     let mut ints: metamodelica::Array<Arc<SBInterval::SBInterval>> = Default::default();
     let mut res: metamodelica::Array<Arc<SBInterval::SBInterval>> = Default::default();
@@ -648,9 +648,9 @@ fn applyOffset(mut mi: Arc<SBMultiInterval::SBMultiInterval>, mut off: metamodel
                 unsafe { metamodelica::Dangerous::arrayInitSlot(res.clone().clone(), j.clone(), __cell1); }
             }
         }
-        outMI = SBMultiInterval::fromArray(res.clone());
+        outMI = SBMultiInterval::fromArray(res.clone())?;
     }
-    outMI
+    Ok(outMI)
 }
 
 fn getVars(mut vars: Arc<metamodelica::List<Arc<Variable::NFVariable>>>, mut sauxi: Arc<SBSet::SBSet>, mut graph: SBGraph) -> Result<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> {
@@ -697,7 +697,7 @@ fn transMulti(mut mi1: Arc<SBMultiInterval::SBMultiInterval>, mut mi2: Arc<SBMul
         i2 = ints2.borrow()[(i.clone()-1) as usize].clone();
         i1_sz = SBInterval::size(i1.clone());
         i2_sz = SBInterval::size(i2.clone());
-        x = Expression::fromCref(ComponentRef::makeIterator(iterators.borrow()[(i.clone()-1) as usize].clone(), Arc::new(crate::NFType::INTEGER)), false)?;
+        x = Expression::fromCref(ComponentRef::makeIterator(iterators.borrow()[(i.clone()-1) as usize].clone(), Arc::new(crate::NFType::INTEGER))?, false)?;
         if i1_sz.clone() == i2_sz.clone() {
             m_int = intDiv(SBInterval::stepValue(i2.clone()), SBInterval::stepValue(i1.clone()));
             m = Arc::new(Expression::NFExpression::INTEGER { value: m_int.clone() });

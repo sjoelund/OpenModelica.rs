@@ -295,28 +295,28 @@ pub fn size(mut dim: Arc<NFDimension>, mut resize: bool) -> Result<i32> {
     Ok(size)
 }
 
-pub fn sizes(mut dims: Arc<metamodelica::List<Arc<NFDimension>>>, mut resize: bool) -> Arc<metamodelica::List<i32>> {
+pub fn sizes(mut dims: Arc<metamodelica::List<Arc<NFDimension>>>, mut resize: bool) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outSizes: Arc<metamodelica::List<i32>> = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut d in (dims.clone()).into_iter().cloned() {
-            let __x = size(d.clone(), resize.clone()).unwrap();
+            let __x = size(d.clone(), resize.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-    outSizes
+    Ok(outSizes)
 }
 
-pub fn sizesProduct(mut dims: Arc<metamodelica::List<Arc<NFDimension>>>, mut resize: bool) -> i32 {
+pub fn sizesProduct(mut dims: Arc<metamodelica::List<Arc<NFDimension>>>, mut resize: bool) -> Result<i32> {
     let mut outSize: i32 = ({
         let mut __acc: i32 = 1;
         for mut d in (dims.clone()).into_iter().cloned() {
-            let __x = size(d.clone(), resize.clone()).unwrap();
+            let __x = size(d.clone(), resize.clone())?;
             __acc *= __x;
         }
         __acc
     });
-    outSize
+    Ok(outSize)
 }
 
 pub fn isEqual(mut dim1: Arc<NFDimension>, mut dim2: Arc<NFDimension>) -> Result<bool> {
@@ -385,9 +385,9 @@ pub fn isResizable(mut dim: Arc<NFDimension>) -> bool {
     b
 }
 
-pub fn allEqualKnown(mut dims1: Arc<metamodelica::List<Arc<NFDimension>>>, mut dims2: Arc<metamodelica::List<Arc<NFDimension>>>) -> bool {
-    let mut allEqual: bool = List::isEqualOnTrue(dims1.clone(), dims2.clone(), (std::sync::Arc::new(isEqualKnown) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFDimension>, Arc<NFDimension>) -> Result<bool> + 'static>));
-    allEqual
+pub fn allEqualKnown(mut dims1: Arc<metamodelica::List<Arc<NFDimension>>>, mut dims2: Arc<metamodelica::List<Arc<NFDimension>>>) -> Result<bool> {
+    let mut allEqual: bool = List::isEqualOnTrue(dims1.clone(), dims2.clone(), (std::sync::Arc::new(isEqualKnown) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFDimension>, Arc<NFDimension>) -> Result<bool> + 'static>))?;
+    Ok(allEqual)
 }
 
 pub fn isKnown(mut dim: Arc<NFDimension>, mut allowExp: bool) -> bool {

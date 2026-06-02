@@ -148,10 +148,10 @@ pub fn append(mut inStream: IOStream, mut inString: ArcStr) -> Result<IOStream> 
     Ok(outStream)
 }
 
-pub fn appendList(mut inStream: IOStream, mut inStringList: Arc<metamodelica::List<ArcStr>>) -> IOStream {
+pub fn appendList(mut inStream: IOStream, mut inStringList: Arc<metamodelica::List<ArcStr>>) -> Result<IOStream> {
     let mut outStream: IOStream = <IOStream as ::std::default::Default>::default();
-    outStream = List::foldr(inStringList.clone(), (std::sync::Arc::new(append) as std::sync::Arc<dyn ::std::ops::Fn(IOStream, ArcStr) -> Result<IOStream> + 'static>), inStream.clone());
-    outStream
+    outStream = List::foldr(inStringList.clone(), (std::sync::Arc::new(append) as std::sync::Arc<dyn ::std::ops::Fn(IOStream, ArcStr) -> Result<IOStream> + 'static>), inStream.clone())?;
+    Ok(outStream)
 }
 
 pub fn appendListReverse(mut s: IOStream, mut data: Arc<metamodelica::List<ArcStr>>) -> Result<IOStream> {

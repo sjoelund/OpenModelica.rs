@@ -363,7 +363,7 @@ fn test_rehash_preserves_all_keys() -> Result<()> {
 fn test_all_true_when_all_match() -> Result<()> {
     // All keys start with "aa" – pred is always true.
     let s = set_of(&["aaa", "aab", "aac"])?;
-    let result = US::all(s, Arc::new(|k: ArcStr| Ok(k.starts_with("aa"))));
+    let result = US::all(s, Arc::new(|k: ArcStr| Ok(k.starts_with("aa")))).unwrap();
     assert!(result);
     Ok(())
 }
@@ -371,7 +371,7 @@ fn test_all_true_when_all_match() -> Result<()> {
 #[test]
 fn test_all_false_when_one_does_not_match() -> Result<()> {
     let s = set_of(&["aaa", "bbb"])?;
-    let result = US::all(s, Arc::new(|k: ArcStr| Ok(k.starts_with("aa"))));
+    let result = US::all(s, Arc::new(|k: ArcStr| Ok(k.starts_with("aa")))).unwrap();
     assert!(!result);
     Ok(())
 }
@@ -379,14 +379,14 @@ fn test_all_false_when_one_does_not_match() -> Result<()> {
 #[test]
 fn test_all_empty_set_returns_true() {
     let s = empty_set();
-    let result = US::all(s, Arc::new(|_: ArcStr| Ok(false)));
+    let result = US::all(s, Arc::new(|_: ArcStr| Ok(false))).unwrap();
     assert!(result);
 }
 
 #[test]
 fn test_any_true_when_one_matches() -> Result<()> {
     let s = set_of(&["no_match", "yes_match"])?;
-    let result = US::any(s, Arc::new(|k: ArcStr| Ok(k.starts_with("yes"))));
+    let result = US::any(s, Arc::new(|k: ArcStr| Ok(k.starts_with("yes")))).unwrap();
     assert!(result);
     Ok(())
 }
@@ -394,7 +394,7 @@ fn test_any_true_when_one_matches() -> Result<()> {
 #[test]
 fn test_any_false_when_none_match() -> Result<()> {
     let s = set_of(&["a", "b"])?;
-    let result = US::any(s, Arc::new(|k: ArcStr| Ok(k.starts_with("z"))));
+    let result = US::any(s, Arc::new(|k: ArcStr| Ok(k.starts_with("z")))).unwrap();
     assert!(!result);
     Ok(())
 }
@@ -402,14 +402,14 @@ fn test_any_false_when_none_match() -> Result<()> {
 #[test]
 fn test_any_empty_set_returns_false() {
     let s = empty_set();
-    let result = US::any(s, Arc::new(|_: ArcStr| Ok(true)));
+    let result = US::any(s, Arc::new(|_: ArcStr| Ok(true))).unwrap();
     assert!(!result);
 }
 
 #[test]
 fn test_none_when_no_element_matches() -> Result<()> {
     let s = set_of(&["a", "b"])?;
-    let result = US::none(s, Arc::new(|k: ArcStr| Ok(k.starts_with("z"))));
+    let result = US::none(s, Arc::new(|k: ArcStr| Ok(k.starts_with("z")))).unwrap();
     assert!(result);
     Ok(())
 }
@@ -417,7 +417,7 @@ fn test_none_when_no_element_matches() -> Result<()> {
 #[test]
 fn test_none_false_when_one_matches() -> Result<()> {
     let s = set_of(&["a", "z_key"])?;
-    let result = US::none(s, Arc::new(|k: ArcStr| Ok(k.starts_with("z"))));
+    let result = US::none(s, Arc::new(|k: ArcStr| Ok(k.starts_with("z")))).unwrap();
     assert!(!result);
     Ok(())
 }

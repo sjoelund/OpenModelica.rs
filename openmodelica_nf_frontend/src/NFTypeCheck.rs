@@ -221,7 +221,7 @@ pub fn checkOverloadedBinaryOperator(mut exp1: Arc<Expression::NFExpression>, mu
     ety1 = Type::arrayElementType(type1.clone());
     ety2 = Type::arrayElementType(type2.clone());
     candidates = OperatorOverloading::lookupOperatorFunctionsInType((op_str.clone()).clone(), ety1.clone())?;
-    if !(Type::isEqual(ety1.clone(), ety2.clone())) {
+    if !(Type::isEqual(ety1.clone(), ety2.clone())?) {
         candidates = listAppend(OperatorOverloading::lookupOperatorFunctionsInType((op_str.clone()).clone(), ety2.clone())?, candidates.clone());
     }
     if candidates.clone().is_empty() {
@@ -306,7 +306,7 @@ pub fn matchOverloadedBinaryOperator(mut exp1: Arc<Expression::NFExpression>, mu
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))).clone()], info.clone())?;
+    }))?).clone()], info.clone())?;
         }
         bail!("fail");
     }
@@ -744,7 +744,7 @@ fn implicitConstructAndMatch(mut candidates: Arc<metamodelica::List<Arc<Function
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))).clone()], info.clone())?;
+    }))?).clone()], info.clone())?;
         bail!("fail");
     }
     Ok((outExp, outType))
@@ -930,8 +930,8 @@ fn checkBinaryOperationPow(mut exp1: Arc<Expression::NFExpression>, mut type1: A
     valid = isCompatibleMatch(mk.clone());
     if Type::isArray(resultType.clone()) {
         valid = valid.clone() && Type::isSquareMatrix(resultType.clone())?;
-        valid = valid.clone() && Type::isInteger(type2.clone());
-        valid = valid.clone() && !(Expression::isNegative(exp2.clone()));
+        valid = valid.clone() && Type::isInteger(type2.clone())?;
+        valid = valid.clone() && !(Expression::isNegative(exp2.clone())?);
         op = Arc::new(Operator::NFOperator { ty: resultType.clone(), op: Op::POW_MATRIX.clone() });
         e2 = exp2.clone();
     } else {
@@ -1041,7 +1041,7 @@ pub fn checkUnaryOperation(mut exp1: Arc<Expression::NFExpression>, mut type1: A
         Operator::Op::ADD => exp1.clone(),
         _ => Arc::new(Expression::NFExpression::UNARY { operator: op.clone(), exp: exp1.clone() }),
     });
-    if !(Type::isNumeric(type1.clone())) {
+    if !(Type::isNumeric(type1.clone())?) {
         printUnresolvableTypeError(unaryExp.clone(), list![type1.clone()], info.clone(), true)?;
     }
     Ok((unaryExp, unaryType))
@@ -1088,7 +1088,7 @@ pub fn checkOverloadedUnaryOperator(mut inExp1: Arc<Expression::NFExpression>, m
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))).clone()], info.clone())?;
+    }))?).clone()], info.clone())?;
         bail!("fail");
     }
     outExp = Inline::inlineCallExp(outExp.clone(), false)?;
@@ -1538,7 +1538,7 @@ pub fn typeCastRecord(mut expressions: Arc<metamodelica::List<Arc<Expression::NF
             }
             iter = InstNode::newUniqueIterator(InstNode::info(node.clone())?, Arc::new(crate::NFType::INTEGER));
             iters = metamodelica::cons(iter.clone(), iters.clone());
-            sub = Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::CREF { ty: Arc::new(crate::NFType::INTEGER), cref: ComponentRef::makeIterator(iter.clone(), Arc::new(crate::NFType::INTEGER)) }) });
+            sub = Arc::new(Subscript::NFSubscript::INDEX { index: Arc::new(Expression::NFExpression::CREF { ty: Arc::new(crate::NFType::INTEGER), cref: ComponentRef::makeIterator(iter.clone(), Arc::new(crate::NFType::INTEGER))? }) });
             subs = metamodelica::cons(sub.clone(), subs.clone());
             i = i.clone() + 1;
         }
@@ -1707,7 +1707,7 @@ pub fn matchEnumerationTypes(mut type1: Arc<Type::NFType>, mut type2: Arc<Type::
         _ => bail!("pattern mismatch"),
     } };
     lits2 = __pa1.clone();
-    matchKind = if (List::isEqualOnTrue(lits1.clone(), lits2.clone(), (std::sync::Arc::new(fnptr!(stringEqual, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))) {MatchKind::EXACT.clone()} else {MatchKind::NOT_COMPATIBLE.clone()};
+    matchKind = if (List::isEqualOnTrue(lits1.clone(), lits2.clone(), (std::sync::Arc::new(fnptr!(stringEqual, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?) {MatchKind::EXACT.clone()} else {MatchKind::NOT_COMPATIBLE.clone()};
     Ok(matchKind)
 }
 
@@ -2393,7 +2393,7 @@ pub fn elaborateBindingType(mut bindingExp: Arc<Expression::NFExpression>, mut c
         Deref @ Expression::CREF { .. } => {
             bindingType = ComponentRef::getSubscriptedType(ComponentRef::expandSplitSubscripts(var_field!((*bindingExp).cref, Expression::NFExpression::CREF).clone())?, false)?;
             dims = metamodelica::nil();
-            for mut s in &*ComponentRef::subscriptsAllFlat(var_field!((*bindingExp).cref, Expression::NFExpression::CREF).clone()) {
+            for mut s in &*ComponentRef::subscriptsAllFlat(var_field!((*bindingExp).cref, Expression::NFExpression::CREF).clone())? {
                 let mut s = s.clone();
                 dims = (::match_deref::match_deref! { match &(s.clone()) {
         Deref @ Subscript::SPLIT_INDEX { .. } => {
@@ -2438,7 +2438,7 @@ pub fn printBindingTypeError(mut name: ArcStr, mut binding: Arc<Binding::NFBindi
 }
 
 pub fn checkDimensionType(mut exp: Arc<Expression::NFExpression>, mut ty: Arc<Type::NFType>, mut info: SourceInfo) -> Result<()> {
-    if !(Type::isInteger(ty.clone())) {
+    if !(Type::isInteger(ty.clone())?) {
         let () = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::TYPENAME { ty: Deref @ Type::ARRAY { elementType: Deref @ Type::BOOLEAN, .. } } => (),
         Deref @ Expression::TYPENAME { ty: Deref @ Type::ARRAY { elementType: Deref @ Type::ENUMERATION { .. }, .. } } => (),

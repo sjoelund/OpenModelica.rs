@@ -281,7 +281,7 @@ fn test_addupdate_update_existing() -> Result<()> {
 #[test]
 fn test_fold_sum_values() -> Result<()> {
     let t = tree_of(&[("a", 1), ("b", 2), ("c", 3)], conflict_fail())?;
-    let sum = T::fold(t, Arc::new(|_k, v, acc| Ok(acc + v)), 0i32);
+    let sum = T::fold(t, Arc::new(|_k, v, acc| Ok(acc + v)), 0i32)?;
     assert_eq!(sum, 6);
     Ok(())
 }
@@ -289,7 +289,7 @@ fn test_fold_sum_values() -> Result<()> {
 #[test]
 fn test_fold_empty_tree() -> Result<()> {
     let t = T::new();
-    let sum = T::fold(t, Arc::new(|_k, v, acc| Ok(acc + v)), 0i32);
+    let sum = T::fold(t, Arc::new(|_k, v, acc| Ok(acc + v)), 0i32)?;
     assert_eq!(sum, 0);
     Ok(())
 }
@@ -302,7 +302,7 @@ fn test_fold_collects_keys_in_order() -> Result<()> {
         t,
         Arc::new(|k, _v, mut acc: Vec<String>| { acc.push(k.to_string()); Ok(acc) }),
         vec![],
-    );
+    )?;
     assert_eq!(collected, vec!["a", "b", "c"]);
     Ok(())
 }
@@ -341,7 +341,7 @@ fn test_foreach_empty_tree() -> Result<()> {
 #[test]
 fn test_map_doubles_values() -> Result<()> {
     let t = tree_of(&[("a", 1), ("b", 2), ("c", 3)], conflict_fail())?;
-    let t2 = T::map(t, Arc::new(|_k, v| Ok(v * 2)));
+    let t2 = T::map(t, Arc::new(|_k, v| Ok(v * 2)))?;
     assert_eq!(vals_vec(t2), vec![2, 4, 6]);
     Ok(())
 }
@@ -349,14 +349,14 @@ fn test_map_doubles_values() -> Result<()> {
 #[test]
 fn test_map_preserves_keys() -> Result<()> {
     let t = tree_of(&[("x", 0), ("y", 0)], conflict_fail())?;
-    let t2 = T::map(t, Arc::new(|_k, v| Ok(v + 100)));
+    let t2 = T::map(t, Arc::new(|_k, v| Ok(v + 100)))?;
     assert_eq!(keys_vec(t2), vec!["x", "y"]);
     Ok(())
 }
 
 #[test]
 fn test_map_empty_tree() -> Result<()> {
-    let t = T::map(T::new(), Arc::new(|_k, v| Ok(v + 1)));
+    let t = T::map(T::new(), Arc::new(|_k, v| Ok(v + 1)))?;
     assert!(T::isEmpty(t));
     Ok(())
 }

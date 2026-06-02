@@ -343,6 +343,27 @@ struct GenCtx {
     /// time. We do the same in codegen rather than at runtime so the constant
     /// is folded directly into the call site.
     current_fn_qname: String,
+    /// True while emitting a global `const`/`static`/`thread_local!` initializer
+    /// — a context whose Rust type is the raw `T`, never `Result<T>`, so a
+    /// fallible call inside it *must* be lowered with `.unwrap()` (there is no
+    /// `?` target). This is the one legitimate reason for the
+    /// `QMode::Function if !current_fn_fallible` `.unwrap()` branch in [`q`];
+    /// the const-init sites set this so [`q`] does NOT record a diagnostic for
+    /// them. Inside a real function body this stays `false`, so an `.unwrap()`
+    /// there is reported as a probable fallibility-analysis gap.
+    in_infallible_const_init: bool,
+    /// Diagnostic sink: fully-qualified names of functions whose *body* forced
+    /// [`q`] down the `.unwrap()` branch — i.e. codegen had to wrap a fallible
+    /// call in a function the [`crate::fallibility`] analysis classified
+    /// infallible. With a sound analysis this should be empty for ordinary
+    /// functions; a non-empty entry means either an analysis gap (like the
+    /// historical output-default-binding miss that made `StringUtil.rest`
+    /// unwrap a fallible `substring`) or a known imprecision (a call through a
+    /// `Result`-typed function pointer the analysis cannot follow). Aggregated
+    /// across files and reported at the end of [`generate_all`]. `RefCell`
+    /// because [`q`] takes `&self`; a `GenCtx` is single-threaded (one per file
+    /// in the parallel driver), so no locking is needed here.
+    infallible_unwrap_sites: std::cell::RefCell<BTreeSet<String>>,
     /// The (already type-variable-instantiated) formal type of the call
     /// argument currently being emitted, when that formal is a function type
     /// (`Arc<dyn Fn(...)>`). Set by [`emit_call_arg_with_formal`] around the
@@ -508,6 +529,8 @@ impl GenCtx {
             types_needing_default,
             current_fn_fallible: true,
             current_fn_qname: String::new(),
+            in_infallible_const_init: false,
+            infallible_unwrap_sites: std::cell::RefCell::new(BTreeSet::new()),
             expected_arg_fn_formal: None,
             nested_partial_aliases: BTreeSet::new(),
             hoisted_nested_fns: HashMap::new(),
@@ -612,11 +635,26 @@ impl GenCtx {
             // `?` only works in a function body that returns `Result`. When the
             // surrounding function is infallible we still call into builtins
             // whose Rust signature returns `Result<T>` (the builtin layer has
-            // not yet been switched away from `Result`); the fallibility
-            // analysis only marks the enclosing function infallible when every
-            // such call is known to never produce `Err`, so `.unwrap()` is
-            // safe and surfaces as a panic if the analysis is ever wrong.
-            QMode::Function if !self.current_fn_fallible => format!("{expr}.unwrap()"),
+            // not yet been switched away from `Result`); `.unwrap()` bridges the
+            // gap and surfaces as a panic if the call ever does fail.
+            //
+            // Reaching this branch is only *expected* for a global
+            // const/static/thread_local initializer (`in_infallible_const_init`),
+            // whose Rust type is the raw `T` with no `?` target. Reaching it from
+            // inside an ordinary function body means codegen had to wrap a
+            // fallible call in a function the fallibility analysis called
+            // infallible — a contradiction that points at an analysis gap (the
+            // way an unscanned output-default binding once let `StringUtil.rest`
+            // unwrap a fallible `substring`). Record those so [`generate_all`]
+            // can report them instead of silently emitting a latent panic.
+            QMode::Function if !self.current_fn_fallible => {
+                if !self.in_infallible_const_init && !self.current_fn_qname.is_empty() {
+                    self.infallible_unwrap_sites
+                        .borrow_mut()
+                        .insert(self.current_fn_qname.clone());
+                }
+                format!("{expr}.unwrap()")
+            }
             QMode::Function => format!("{expr}?"),
             // `Iterator::filter` requires a plain `bool` predicate; we cannot
             // propagate via `?`. The reductions we generate this for invoke
@@ -1253,6 +1291,10 @@ pub fn generate_all(hier: &InstanceHierarchy<'_>, output_dir: &str) -> std::io::
     use std::sync::atomic::{AtomicU64, Ordering};
     let file_micros_total = AtomicU64::new(0);
     let per_file: std::sync::Mutex<Vec<(String, f64)>> = std::sync::Mutex::new(Vec::new());
+    // Aggregate the per-file infallible-unwrap diagnostics (see
+    // [`GenCtx::infallible_unwrap_sites`]). Locked once per file on a cold path
+    // — never inside the per-call `q()` hot path.
+    let infallible_unwraps: std::sync::Mutex<BTreeSet<String>> = std::sync::Mutex::new(BTreeSet::new());
     let file_phase_t0 = std::time::Instant::now();
     file_jobs.par_iter().try_for_each(|(dir, name, node)| -> std::io::Result<()> {
         let current_crate = if let NodeKind::Class(c) = &node.kind {
@@ -1265,7 +1307,10 @@ pub fn generate_all(hier: &InstanceHierarchy<'_>, output_dir: &str) -> std::io::
             eprintln!("[mmtorust] codegen start {file_path}");
         }
         let file_t0 = std::time::Instant::now();
-        let content = generate_file(name, node, &crate_map, current_crate, &nullable_global_roots, &top_level_uniontype_names, hier.recursive_types.clone(), hier.types_containing_mutable.clone(), hier.types_containing_array.clone(), hier.types_containing_dyn_fn.clone(), hier.types_directly_containing_dyn_fn.clone(), &no_mod_uniontypes, &hier.top_level, &fn_type_vars, &hier.fallible_functions, &hier.partial_eq_required, &hier.default_required, &defaultable_struct_qnames, &types_needing_default);
+        let (content, file_unwraps) = generate_file(name, node, &crate_map, current_crate, &nullable_global_roots, &top_level_uniontype_names, hier.recursive_types.clone(), hier.types_containing_mutable.clone(), hier.types_containing_array.clone(), hier.types_containing_dyn_fn.clone(), hier.types_directly_containing_dyn_fn.clone(), &no_mod_uniontypes, &hier.top_level, &fn_type_vars, &hier.fallible_functions, &hier.partial_eq_required, &hier.default_required, &defaultable_struct_qnames, &types_needing_default);
+        if !file_unwraps.is_empty() {
+            infallible_unwraps.lock().unwrap().extend(file_unwraps);
+        }
         let file_elapsed = file_t0.elapsed();
         file_micros_total.fetch_add(file_elapsed.as_micros() as u64, Ordering::Relaxed);
         per_file.lock().unwrap().push((file_path.clone(), file_elapsed.as_secs_f64()));
@@ -1296,6 +1341,26 @@ pub fn generate_all(hier: &InstanceHierarchy<'_>, output_dir: &str) -> std::io::
     let all_file_elapsed = all_file_t0.elapsed();
     if trace_codegen {
         eprintln!("[mmtorust] codegen done all files ({:.2}s)", all_file_elapsed.as_secs_f64());
+    }
+
+    // ── Infallible-unwrap diagnostic ───────────────────────────────────────
+    // Functions whose body forced a fallible call to be lowered with
+    // `.unwrap()` because the fallibility analysis classified them infallible.
+    // Each is either an analysis gap (the function is actually fallible and
+    // should return `Result`) or a known imprecision (a call through a
+    // `Result`-typed function pointer the analysis cannot follow). Either way
+    // it is a latent runtime panic, so report it rather than let it pass
+    // silently — this is the signal that caught `StringUtil.rest`.
+    let infallible_unwraps = infallible_unwraps.into_inner().unwrap();
+    if !infallible_unwraps.is_empty() {
+        eprintln!(
+            "[mmtorust] WARNING: {} function(s) emit `.unwrap()` on a fallible call despite \
+             being classified infallible (probable fallibility-analysis gap or fn-pointer imprecision):",
+            infallible_unwraps.len(),
+        );
+        for qname in &infallible_unwraps {
+            eprintln!("    {qname}");
+        }
     }
 
     // ── Phase-timing report + parallel-speedup guard ───────────────────────
@@ -1598,7 +1663,7 @@ fn collect_no_mod_uniontypes(nodes: &BTreeMap<String, NameNode<'_>>, prefix: &st
     }
 }
 
-fn generate_file<'a>(top_name: &str, node: &NameNode<'_>, crate_map: &BTreeMap<String, String>, current_crate: Option<String>, nullable_global_roots: &HashSet<String>, top_level_uniontype_names: &HashSet<String>, recursive_types: BTreeSet<String>, types_containing_mutable: BTreeSet<String>, types_containing_array: BTreeSet<String>, types_containing_dyn_fn: BTreeSet<String>, types_directly_containing_dyn_fn: BTreeSet<String>, no_mod_uniontypes: &HashSet<String>, top_level: &'a BTreeMap<String, NameNode<'a>>, fn_type_vars: &BTreeMap<String, Vec<String>>, fallible_functions: &BTreeSet<String>, partial_eq_required: &BTreeMap<String, HashSet<String>>, default_required: &BTreeMap<String, HashSet<String>>, defaultable_struct_qnames: &HashSet<String>, types_needing_default: &HashSet<String>) -> String {
+fn generate_file<'a>(top_name: &str, node: &NameNode<'_>, crate_map: &BTreeMap<String, String>, current_crate: Option<String>, nullable_global_roots: &HashSet<String>, top_level_uniontype_names: &HashSet<String>, recursive_types: BTreeSet<String>, types_containing_mutable: BTreeSet<String>, types_containing_array: BTreeSet<String>, types_containing_dyn_fn: BTreeSet<String>, types_directly_containing_dyn_fn: BTreeSet<String>, no_mod_uniontypes: &HashSet<String>, top_level: &'a BTreeMap<String, NameNode<'a>>, fn_type_vars: &BTreeMap<String, Vec<String>>, fallible_functions: &BTreeSet<String>, partial_eq_required: &BTreeMap<String, HashSet<String>>, default_required: &BTreeMap<String, HashSet<String>>, defaultable_struct_qnames: &HashSet<String>, types_needing_default: &HashSet<String>) -> (String, BTreeSet<String>) {
     let mut ctx = GenCtx::new(top_name, current_crate, crate_map.clone(), nullable_global_roots.clone(), top_level_uniontype_names.clone(), recursive_types, types_containing_mutable, types_containing_array, types_containing_dyn_fn, types_directly_containing_dyn_fn, fn_type_vars.clone(), fallible_functions.clone(), partial_eq_required.clone(), default_required.clone(), defaultable_struct_qnames.clone(), types_needing_default.clone());
     ctx.no_mod_uniontypes = no_mod_uniontypes.clone();
     // Build the set of all RustEnum qnames so `constructor_needs_arc` can
@@ -1722,7 +1787,7 @@ use arcstr::{{ArcStr, literal, format}};
         writeln!(out).unwrap();
     }
     out.push_str(&body);
-    out
+    (out, ctx.infallible_unwrap_sites.into_inner())
 }
 
 // ── Node emission ─────────────────────────────────────────────────────────────
@@ -1853,9 +1918,12 @@ fn emit_node<'a>(out: &mut String, name: &str, node: &NameNode<'_>, indent: &str
                         let inner_ty_s = match &node.ty { Ty::Array(t) => fmt_ty(t, ctx), _ => unreachable!() };
                         let r_ty = format!("metamodelica::StaticArray<{inner_ty_s}>");
                         let saved_fallible = ctx.current_fn_fallible;
+                        let saved_const_init = ctx.in_infallible_const_init;
                         ctx.current_fn_fallible = false;
+                        ctx.in_infallible_const_init = true;
                         let mut val = emit_exp(&typed, /*is_const=*/false, ctx, top_level);
                         ctx.current_fn_fallible = saved_fallible;
+                        ctx.in_infallible_const_init = saved_const_init;
                         val = rewrite_array_init_for_static(&val);
                         // `thread_local!` defines a `LocalKey<T>` keyed by the
                         // const's name. The public getter clones via `share()`
@@ -1887,9 +1955,12 @@ fn emit_node<'a>(out: &mut String, name: &str, node: &NameNode<'_>, indent: &str
                     if !is_array_const && !ty_is_sync(&node.ty, ctx) {
                         let r_ty = fmt_ty(&node.ty, ctx);
                         let saved_fallible = ctx.current_fn_fallible;
+                        let saved_const_init = ctx.in_infallible_const_init;
                         ctx.current_fn_fallible = false;
+                        ctx.in_infallible_const_init = true;
                         let val = emit_exp(&typed, /*is_const=*/false, ctx, top_level);
                         ctx.current_fn_fallible = saved_fallible;
+                        ctx.in_infallible_const_init = saved_const_init;
                         writeln!(out, "{indent}thread_local! {{ static __{ename}_TLS: {r_ty} = {val}; }}").unwrap();
                         writeln!(out, "{indent}pub fn {ename}() -> {r_ty} {{ __{ename}_TLS.with(|__t| __t.clone()) }}").unwrap();
                         writeln!(out).unwrap();
@@ -1908,9 +1979,12 @@ fn emit_node<'a>(out: &mut String, name: &str, node: &NameNode<'_>, indent: &str
                     // analysis these are the calls that won't actually fail
                     // at runtime — if they did, the program is broken anyway).
                     let saved_fallible = ctx.current_fn_fallible;
+                    let saved_const_init = ctx.in_infallible_const_init;
                     ctx.current_fn_fallible = false;
+                    ctx.in_infallible_const_init = true;
                     let mut val = emit_exp(&typed, /*is_const=*/false, ctx, top_level);
                     ctx.current_fn_fallible = saved_fallible;
+                    ctx.in_infallible_const_init = saved_const_init;
                     if is_array_const {
                         // Rewrite the array-constructor calls in the initializer
                         // so the resulting value is a `StaticArray<T>` rather
@@ -8657,13 +8731,15 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
             Ok(ctx.q(&format!("stringGet({},{})", arg1, arg2)))
         },
         // Real call into the runtime's unchecked variant (see the
-        // `arrayGetNoBoundsChecking` arm). `stringGetNoBoundsChecking` returns
-        // `Result<i32>` (it never actually errs, but is `Result`-typed), so it
-        // goes through `ctx.q` like `stringGet`.
+        // `arrayGetNoBoundsChecking` arm). As the *dangerous*, no-bounds-checking
+        // variant, `metamodelica::Dangerous::stringGetNoBoundsChecking` returns
+        // a raw `i32` (never `Result`), so the call is emitted directly without
+        // `ctx.q` — matching its [`crate::fallibility::builtin_fallibility`]
+        // `Infallible` classification.
         "stringGetNoBoundsChecking" | "Dangerous.stringGetNoBoundsChecking" | "MetaModelica.Dangerous.stringGetNoBoundsChecking" => {
             let arg1 = args.first().map(|a| emit_builtin_call_arg(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();
             let arg2 = args.get(1).map(|a| emit_builtin_call_arg_raw(func, 1, a, is_const, ctx, top_level)).unwrap_or_default();
-            Ok(ctx.q(&format!("metamodelica::Dangerous::stringGetNoBoundsChecking({arg1}, {arg2})")))
+            Ok(format!("metamodelica::Dangerous::stringGetNoBoundsChecking({arg1}, {arg2})"))
         },
         "realNeg" => {
             let arg1 = args.first().map(|a| emit_builtin_call_arg(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();

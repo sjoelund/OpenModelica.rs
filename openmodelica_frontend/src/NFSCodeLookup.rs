@@ -504,7 +504,7 @@ fn checkVisitedScopes(mut inVisitedScopes: Arc<metamodelica::List<ArcStr>>, mut 
                     let mut bc_path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     env_path = NFSCodeEnv::getEnvPath(inEnv.clone())?;
                     bc_path = AbsynUtil::removePrefix(env_path.clone(), inBaseClass.clone())?;
-                    visited_path = AbsynUtil::stringListPath(inVisitedScopes.clone());
+                    visited_path = AbsynUtil::stringListPath(inVisitedScopes.clone())?;
                     let true = (AbsynUtil::pathPrefixOf(visited_path.clone(), bc_path.clone())) else { bail!("pattern mismatch") };
                     Ok(false)
                 }
@@ -775,7 +775,7 @@ pub fn lookupNameInItem(mut inName: Arc<Absyn::Path>, mut inItem: Item, mut inEn
             let mut redeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>> = metamodelica::nil();
             let mut env = (*env).clone();
             (item, _, type_env) = lookupTypeSpec(type_spec.clone(), env.clone(), info.clone())?;
-            redeclares = NFSCodeFlattenRedeclare::extractRedeclaresFromModifier(mods.clone());
+            redeclares = NFSCodeFlattenRedeclare::extractRedeclaresFromModifier(mods.clone())?;
             (item, type_env, _) = NFSCodeFlattenRedeclare::replaceRedeclaredElementsInEnv(redeclares.clone(), item.clone(), type_env.clone(), inEnv.clone(), NFInstPrefix::emptyPrefix().clone())?;
             (item, path, env) = lookupNameInItem(inName.clone(), item.clone(), type_env.clone())?;
             (item.clone(), path.clone(), env.clone())
@@ -810,7 +810,7 @@ pub fn lookupCrefInItem(mut inCref: Arc<Absyn::ComponentRef>, mut inItem: Item, 
             let mut type_env: Env = metamodelica::nil();
             let mut redeclares: Arc<metamodelica::List<Arc<NFSCodeEnv::Redeclaration>>> = metamodelica::nil();
             (item, _, type_env) = lookupTypeSpec(type_spec.clone(), inEnv.clone(), info.clone())?;
-            redeclares = NFSCodeFlattenRedeclare::extractRedeclaresFromModifier(mods.clone());
+            redeclares = NFSCodeFlattenRedeclare::extractRedeclaresFromModifier(mods.clone())?;
             (item, type_env, _) = NFSCodeFlattenRedeclare::replaceRedeclaredElementsInEnv(redeclares.clone(), item.clone(), type_env.clone(), inEnv.clone(), NFInstPrefix::emptyPrefix().clone())?;
             (item, cref) = lookupCrefInItem(inCref.clone(), item.clone(), type_env.clone())?;
             (item.clone(), cref.clone())
@@ -842,7 +842,7 @@ pub fn lookupBaseClasses(mut inName: ArcStr, mut inEnv: Env) -> Result<Arc<metam
         _ => bail!("pattern mismatch"),
     } };
     bcl = __pa0.clone();
-    (_, outBaseClasses) = List::fold22(bcl.clone(), (std::sync::Arc::new(lookupBaseClasses2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSCodeEnv::Extends>, ArcStr, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Arc<NFSCodeEnv::Item>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Result<(Arc<metamodelica::List<Arc<NFSCodeEnv::Item>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>)> + 'static>), (inName.clone()).clone(), inEnv.clone(), metamodelica::nil(), metamodelica::nil());
+    (_, outBaseClasses) = List::fold22(bcl.clone(), (std::sync::Arc::new(lookupBaseClasses2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSCodeEnv::Extends>, ArcStr, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Arc<NFSCodeEnv::Item>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Result<(Arc<metamodelica::List<Arc<NFSCodeEnv::Item>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>)> + 'static>), (inName.clone()).clone(), inEnv.clone(), metamodelica::nil(), metamodelica::nil())?;
     let false = (outBaseClasses.clone().is_empty()) else { bail!("pattern mismatch") };
     outBaseClasses = outBaseClasses.clone().reverse();
     Ok(outBaseClasses)
@@ -900,7 +900,7 @@ pub fn lookupInheritedNameAndBC(mut inName: ArcStr, mut inEnv: Env) -> Result<(A
         _ => bail!("pattern mismatch"),
     } };
     bcl = __pa0.clone();
-    (outItems, outBaseClasses) = List::fold22(bcl.clone(), (std::sync::Arc::new(lookupBaseClasses2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSCodeEnv::Extends>, ArcStr, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Arc<NFSCodeEnv::Item>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Result<(Arc<metamodelica::List<Arc<NFSCodeEnv::Item>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>)> + 'static>), (inName.clone()).clone(), inEnv.clone(), metamodelica::nil(), metamodelica::nil());
+    (outItems, outBaseClasses) = List::fold22(bcl.clone(), (std::sync::Arc::new(lookupBaseClasses2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSCodeEnv::Extends>, ArcStr, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, Arc<metamodelica::List<Arc<NFSCodeEnv::Item>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Result<(Arc<metamodelica::List<Arc<NFSCodeEnv::Item>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>)> + 'static>), (inName.clone()).clone(), inEnv.clone(), metamodelica::nil(), metamodelica::nil())?;
     outBaseClasses = outBaseClasses.clone().reverse();
     outItems = outItems.clone().reverse();
     Ok((outItems, outBaseClasses))
@@ -1045,7 +1045,7 @@ pub fn lookupBuiltinType(mut inName: ArcStr) -> Result<Item> {
         Deref @ "StateSelect" => BUILTIN_STATESELECT.clone(),
         Deref @ "ExternalObject" => BUILTIN_EXTERNALOBJECT.clone(),
         Deref @ "Clock" => {
-            let true = (Config::synchronousFeaturesAllowed()) else { bail!("pattern mismatch") };
+            let true = (Config::synchronousFeaturesAllowed()?) else { bail!("pattern mismatch") };
             BUILTIN_CLOCK.clone()
         },
         Deref @ "$RealType" => BUILTIN_REALTYPE_ITEM.clone(),
@@ -1265,7 +1265,7 @@ fn crefStripEnvPrefix(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv: Env) -> R
                     env_path = NFSCodeEnv::getEnvPath(inEnv.clone())?;
                     cref1 = AbsynUtil::unqualifyCref(inCref.clone());
                     cref2 = crefStripEnvPrefix2(cref1.clone(), env_path.clone())?;
-                    let false = (AbsynUtil::crefEqual(cref1.clone(), cref2.clone())) else { bail!("pattern mismatch") };
+                    let false = (AbsynUtil::crefEqual(cref1.clone(), cref2.clone())?) else { bail!("pattern mismatch") };
                     Ok(cref2.clone())
                 }
                 _ => bail!("nomatch"),

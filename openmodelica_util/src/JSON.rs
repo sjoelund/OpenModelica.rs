@@ -303,9 +303,9 @@ pub fn toString_object(mut map: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<JSON>
             Print::printBuf((literal!(", ")).clone())?;
         }
         Print::printBuf((literal!("\"")).clone())?;
-        Print::printBuf((UnorderedMap::keyAt(map.clone(), i.clone())).clone())?;
+        Print::printBuf((UnorderedMap::keyAt(map.clone(), i.clone())?).clone())?;
         Print::printBuf((literal!("\":")).clone())?;
-        toString_work(UnorderedMap::valueAt(map.clone(), i.clone()))?;
+        toString_work(UnorderedMap::valueAt(map.clone(), i.clone())?)?;
     }
     Print::printBuf((literal!("}")).clone())?;
     Ok(())
@@ -426,9 +426,9 @@ pub fn toStringPP_object(mut map: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<JSO
         Print::printBuf((if (i.clone() == 1) {literal!("\n")} else {literal!(",\n")}).clone())?;
         Print::printBuf((next_indent.clone()).clone())?;
         Print::printBuf((literal!("\"")).clone())?;
-        Print::printBuf((UnorderedMap::keyAt(map.clone(), i.clone())).clone())?;
+        Print::printBuf((UnorderedMap::keyAt(map.clone(), i.clone())?).clone())?;
         Print::printBuf((literal!("\": ")).clone())?;
-        toStringPP_work(UnorderedMap::valueAt(map.clone(), i.clone()), (next_indent.clone()).clone())?;
+        toStringPP_work(UnorderedMap::valueAt(map.clone(), i.clone())?, (next_indent.clone()).clone())?;
     }
     Print::printBuf((literal!("\n")).clone())?;
     Print::printBuf((indent.clone()).clone())?;
@@ -477,7 +477,7 @@ pub fn parseFile(mut fileName: ArcStr) -> Result<Arc<JSON>> {
 pub fn hasKey(mut obj: Arc<JSON>, mut r#str: ArcStr) -> Result<bool> {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(obj.clone()) {
-        Deref @ OBJECT { .. } => UnorderedMap::contains((r#str.clone()).clone(), var_field!((*obj).values, JSON::OBJECT).clone()),
+        Deref @ OBJECT { .. } => UnorderedMap::contains((r#str.clone()).clone(), var_field!((*obj).values, JSON::OBJECT).clone())?,
         Deref @ LIST_OBJECT { .. } => {
             b = false;
             for mut entry in &*var_field!((*obj).values, JSON::LIST_OBJECT).clone() {
@@ -496,7 +496,7 @@ pub fn hasKey(mut obj: Arc<JSON>, mut r#str: ArcStr) -> Result<bool> {
 pub fn get(mut obj: Arc<JSON>, mut r#str: ArcStr) -> Result<Arc<JSON>> {
     let mut out: Arc<JSON> = Arc::new(JSON::FALSE);
     out = (::match_deref::match_deref! { match &(obj.clone()) {
-        Deref @ OBJECT { .. } => UnorderedMap::getOrFail((r#str.clone()).clone(), var_field!((*obj).values, JSON::OBJECT).clone()),
+        Deref @ OBJECT { .. } => UnorderedMap::getOrFail((r#str.clone()).clone(), var_field!((*obj).values, JSON::OBJECT).clone())?,
         Deref @ LIST_OBJECT { .. } => {
             for mut entry in &*var_field!((*obj).values, JSON::LIST_OBJECT).clone() {
                 let mut entry = entry.clone();
@@ -512,16 +512,16 @@ pub fn get(mut obj: Arc<JSON>, mut r#str: ArcStr) -> Result<Arc<JSON>> {
     Ok(out)
 }
 
-pub fn getOrDefault(mut obj: Arc<JSON>, mut r#str: ArcStr, mut default: Arc<JSON>) -> Arc<JSON> {
+pub fn getOrDefault(mut obj: Arc<JSON>, mut r#str: ArcStr, mut default: Arc<JSON>) -> Result<Arc<JSON>> {
     let mut out: Arc<JSON> = Arc::new(JSON::FALSE);
     out = (::match_deref::match_deref! { match &(obj.clone()) {
-        Deref @ OBJECT { .. } => UnorderedMap::getOrDefault((r#str.clone()).clone(), var_field!((*obj).values, JSON::OBJECT).clone(), default.clone()),
+        Deref @ OBJECT { .. } => UnorderedMap::getOrDefault((r#str.clone()).clone(), var_field!((*obj).values, JSON::OBJECT).clone(), default.clone())?,
         Deref @ LIST_OBJECT { .. } => {
             for mut entry in &*var_field!((*obj).values, JSON::LIST_OBJECT).clone() {
                 let mut entry = entry.clone();
                 if Util::tuple21(entry.clone()) == r#str.clone() {
                     out = Util::tuple22(entry.clone());
-                    return out.clone();
+                    return Ok(out.clone());
                 }
             }
             default.clone()
@@ -529,7 +529,7 @@ pub fn getOrDefault(mut obj: Arc<JSON>, mut r#str: ArcStr, mut default: Arc<JSON
         _ => default.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    out
+    Ok(out)
 }
 
 pub fn at(mut obj: Arc<JSON>, mut index: i32) -> Result<Arc<JSON>> {
@@ -570,7 +570,7 @@ pub fn getStringList(mut obj: Arc<JSON>) -> Result<Arc<metamodelica::List<ArcStr
         }
         __acc
     }),
-        Deref @ ARRAY { .. } => Vector::mapToList(var_field!((*obj).values, JSON::ARRAY).clone(), (std::sync::Arc::new(getString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<JSON>) -> Result<ArcStr> + 'static>)),
+        Deref @ ARRAY { .. } => Vector::mapToList(var_field!((*obj).values, JSON::ARRAY).clone(), (std::sync::Arc::new(getString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<JSON>) -> Result<ArcStr> + 'static>))?,
         Deref @ LIST { .. } => ({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut v in (var_field!((*obj).values, JSON::LIST).clone()).into_iter().cloned() {

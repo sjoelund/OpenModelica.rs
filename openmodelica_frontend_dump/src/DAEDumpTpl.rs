@@ -4625,7 +4625,7 @@ fn fun_226(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_ann__mod: Arc<SCod
             let mut ret_1: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
             let mut l_ann__str: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
-            ret_1 = DAEDumpTypes::filterStructuralMods(a_ann__mod.clone());
+            ret_1 = DAEDumpTypes::filterStructuralMods(a_ann__mod.clone())?;
             l_ann__str = SCodeDumpTpl::dumpModifier(Tpl::emptyTxt.clone(), ret_1.clone(), SCodeDump::defaultOptions.clone())?;
             txt = fun_225(txt.clone(), l_ann__str.clone())?;
             txt.clone()

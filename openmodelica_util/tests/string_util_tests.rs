@@ -92,27 +92,26 @@ fn test_quote_word() {
 // ── rest ─────────────────────────────────────────────────────────────────────
 
 #[test]
-fn test_rest_single_char() -> Result<()> {
-    // rest("a") = substring("a", 2, 1) which is an empty substring
-    // MetaModelica: substring(str, 2, stringLength(str)) when length is 1
-    // substring(s, 2, 1) is invalid (start > stop), should error
-    // The Rust implementation calls substring("a", 2, 1) → error
-    let result = std::panic::catch_unwind(|| S::rest(literal!("a")));
-    // Should produce an error (start > stop in substring)
-    assert!(result.is_err() || true, "rest on single char - see substring behaviour");
+fn test_rest_single_char() {
+    // rest("a") = substring("a", 2, stringLength("a")) = substring("a", 2, 1).
+    // start(2) > stop(1), so substring bails — and rest, being fallible,
+    // propagates that error.
+    let result = S::rest(literal!("a"));
+    assert!(result.is_err(), "rest on single char must error (start > stop in substring)");
+}
+
+#[test]
+fn test_rest_multi_char() -> Result<()> {
+    // rest("hello") = substring("hello", 2, 5) = "ello"
+    assert_eq!(S::rest(literal!("hello"))?, literal!("ello"));
     Ok(())
 }
 
 #[test]
-fn test_rest_multi_char() {
-    // rest("hello") = substring("hello", 2, 5) = "ello"
-    assert_eq!(S::rest(literal!("hello")), literal!("ello"));
-}
-
-#[test]
-fn test_rest_two_chars() {
+fn test_rest_two_chars() -> Result<()> {
     // rest("ab") = substring("ab", 2, 2) = "b"
-    assert_eq!(S::rest(literal!("ab")), literal!("b"));
+    assert_eq!(S::rest(literal!("ab"))?, literal!("b"));
+    Ok(())
 }
 
 // ── endsWithNewline ───────────────────────────────────────────────────────────

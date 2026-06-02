@@ -106,29 +106,29 @@ pub fn initializeBackendInterface(mut inFunctions: BackendInterfaceFunctions) ->
     ()
 }
 
-pub fn cevalInteractiveFunctions(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<DAE::Exp>, mut inMsg: Absyn::Msg, mut inNumIter: i32) -> (FCore::Cache, Arc<Values::Value>) {
+pub fn cevalInteractiveFunctions(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<DAE::Exp>, mut inMsg: Absyn::Msg, mut inNumIter: i32) -> Result<(FCore::Cache, Arc<Values::Value>)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
     let mut functions: BackendInterfaceFunctions = <BackendInterfaceFunctions as ::std::default::Default>::default();
     let mut func: partialCevalInteractiveFunctions;
     functions = crate::Globals::backendCevalInterface.with(|__root| __root.borrow().clone());
     func = functions.cevalInteractiveFunctions.clone();
-    (outCache, outValue) = func(inCache.clone(), inEnv.clone(), inExp.clone(), inMsg.clone(), inNumIter.clone()).unwrap();
-    (outCache, outValue)
+    (outCache, outValue) = func(inCache.clone(), inEnv.clone(), inExp.clone(), inMsg.clone(), inNumIter.clone())?;
+    Ok((outCache, outValue))
 }
 
-pub fn cevalCallFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<DAE::Exp>, mut inValues: Arc<metamodelica::List<Arc<Values::Value>>>, mut inImplInst: bool, mut inMsg: Absyn::Msg, mut inNumIter: i32) -> (FCore::Cache, Arc<Values::Value>) {
+pub fn cevalCallFunction(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc<DAE::Exp>, mut inValues: Arc<metamodelica::List<Arc<Values::Value>>>, mut inImplInst: bool, mut inMsg: Absyn::Msg, mut inNumIter: i32) -> Result<(FCore::Cache, Arc<Values::Value>)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outValue: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
     let mut functions: BackendInterfaceFunctions = <BackendInterfaceFunctions as ::std::default::Default>::default();
     let mut func: partialCevalCallFunction;
     functions = crate::Globals::backendCevalInterface.with(|__root| __root.borrow().clone());
     func = functions.cevalCallFunction.clone();
-    (outCache, outValue) = func(inCache.clone(), inEnv.clone(), inExp.clone(), inValues.clone(), inImplInst.clone(), inMsg.clone(), inNumIter.clone()).unwrap();
-    (outCache, outValue)
+    (outCache, outValue) = func(inCache.clone(), inEnv.clone(), inExp.clone(), inValues.clone(), inImplInst.clone(), inMsg.clone(), inNumIter.clone())?;
+    Ok((outCache, outValue))
 }
 
-pub fn elabCallInteractive(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inCref: Arc<Absyn::ComponentRef>, mut inExps: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplInst: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> (FCore::Cache, Arc<DAE::Exp>, DAE::Properties) {
+pub fn elabCallInteractive(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inCref: Arc<Absyn::ComponentRef>, mut inExps: Arc<metamodelica::List<Arc<Absyn::Exp>>>, mut inNamedArgs: Arc<metamodelica::List<Arc<Absyn::NamedArg>>>, mut inImplInst: bool, mut inPrefix: DAE::Prefix, mut inInfo: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
     let mut outCache: FCore::Cache = FCore::Cache::NO_CACHE;
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
@@ -136,8 +136,8 @@ pub fn elabCallInteractive(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
     let mut func: partialElabCallInteractive;
     functions = crate::Globals::backendCevalInterface.with(|__root| __root.borrow().clone());
     func = functions.elabCallInteractive.clone();
-    (outCache, outExp, outProperties) = func(inCache.clone(), inEnv.clone(), inCref.clone(), inExps.clone(), inNamedArgs.clone(), inImplInst.clone(), inPrefix.clone(), inInfo.clone()).unwrap();
-    (outCache, outExp, outProperties)
+    (outCache, outExp, outProperties) = func(inCache.clone(), inEnv.clone(), inCref.clone(), inExps.clone(), inNamedArgs.clone(), inImplInst.clone(), inPrefix.clone(), inInfo.clone())?;
+    Ok((outCache, outExp, outProperties))
 }
 
 pub type partialCevalInteractiveFunctions = std::sync::Arc<dyn ::std::ops::Fn(FCore::Cache, FCore::Graph, Arc<DAE::Exp>, Absyn::Msg, i32) -> Result<(FCore::Cache, Arc<Values::Value>)> + 'static>;

@@ -592,7 +592,7 @@ fn liftUserTypeEqMod(mut inEqMod: Option<DAE::EqMod>, mut inDims: Arc<metamodeli
     eq = (match eq.clone() {
         DAE::EqMod::TYPED { .. } => {
             let __owned_variant_modifierAsExp_0 = Expression::liftExpList(var_field!(eq.modifierAsExp, DAE::EqMod::TYPED).clone(), inDims.clone())?;
-            let __owned_variant_modifierAsValue_1 = Util::applyOption1(var_field!(eq.modifierAsValue, DAE::EqMod::TYPED).clone(), (std::sync::Arc::new(ValuesUtil::liftValueList) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>, Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> Result<Arc<Values::Value>> + 'static>), inDims.clone());
+            let __owned_variant_modifierAsValue_1 = Util::applyOption1(var_field!(eq.modifierAsValue, DAE::EqMod::TYPED).clone(), (std::sync::Arc::new(ValuesUtil::liftValueList) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>, Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> Result<Arc<Values::Value>> + 'static>), inDims.clone())?;
             if let DAE::EqMod::TYPED { modifierAsExp, modifierAsValue, .. } = &mut eq {
                 *modifierAsExp = __owned_variant_modifierAsExp_0;
                 *modifierAsValue = __owned_variant_modifierAsValue_1;
@@ -1137,7 +1137,7 @@ fn instScalar2(mut inCref: Arc<DAE::ComponentRef>, mut inType: Arc<DAE::Type>, m
             let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
             let mut cls_dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
             dae = if (Types::isComplexType(inType.clone())) {InstBinding::instModEquation(inCref.clone(), inType.clone(), inMod.clone(), inSource.clone(), inImpl.clone())?} else {DAE::emptyDae().clone()};
-            cls_dae = stripRecordDefaultBindingsFromDAE(inClassDae.clone(), inType.clone(), dae.clone());
+            cls_dae = stripRecordDefaultBindingsFromDAE(inClassDae.clone(), inType.clone(), dae.clone())?;
             dae = DAEUtil::joinDaes(dae.clone(), inDae.clone())?;
             dae = DAEUtil::joinDaes(cls_dae.clone(), dae.clone())?;
             dae.clone()
@@ -1147,12 +1147,12 @@ fn instScalar2(mut inCref: Arc<DAE::ComponentRef>, mut inType: Arc<DAE::Type>, m
     Ok(outDae)
 }
 
-fn stripRecordDefaultBindingsFromDAE(mut inClassDAE: DAE::DAElist, mut inType: Arc<DAE::Type>, mut inEqDAE: DAE::DAElist) -> DAE::DAElist {
+fn stripRecordDefaultBindingsFromDAE(mut inClassDAE: DAE::DAElist, mut inType: Arc<DAE::Type>, mut inEqDAE: DAE::DAElist) -> Result<DAE::DAElist> {
     let mut outClassDAE: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
     outClassDAE = (::match_deref::match_deref! { match &((inClassDAE.clone(), inType.clone(), inEqDAE.clone())) {
         (DAE::DAElist { elementLst: els }, Deref @ DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { .. }, .. }, DAE::DAElist { elementLst: eqs @ Deref @ metamodelica::List::Cons { head: _, tail: _ } }) => {
             let mut els = (*els).clone();
-            (els, _) = List::mapFold(els.clone(), (std::sync::Arc::new(stripRecordDefaultBindingsFromElement) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<(Arc<DAE::Element>, Arc<metamodelica::List<Arc<DAE::Element>>>)> + 'static>), eqs.clone());
+            (els, _) = List::mapFold(els.clone(), (std::sync::Arc::new(stripRecordDefaultBindingsFromElement) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<(Arc<DAE::Element>, Arc<metamodelica::List<Arc<DAE::Element>>>)> + 'static>), eqs.clone())?;
             DAE::DAElist { elementLst: els.clone() }
         },
         _ => {
@@ -1160,7 +1160,7 @@ fn stripRecordDefaultBindingsFromDAE(mut inClassDAE: DAE::DAElist, mut inType: A
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    outClassDAE
+    Ok(outClassDAE)
 }
 
 fn stripRecordDefaultBindingsFromElement(mut inVar: Arc<DAE::Element>, mut inEqs: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<(Arc<DAE::Element>, Arc<metamodelica::List<Arc<DAE::Element>>>)> {
@@ -1204,16 +1204,16 @@ fn checkDimensionGreaterThanZero(mut inDim: Arc<DAE::Dimension>, mut inPrefix: D
     Ok(())
 }
 
-fn checkArrayModDimSize(mut r#mod: Arc<DAE::Mod>, mut inDimension: Arc<DAE::Dimension>, mut inPrefix: DAE::Prefix, mut inIdent: ArcStr, mut inInfo: SourceInfo) -> () {
+fn checkArrayModDimSize(mut r#mod: Arc<DAE::Mod>, mut inDimension: Arc<DAE::Dimension>, mut inPrefix: DAE::Prefix, mut inIdent: ArcStr, mut inInfo: SourceInfo) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(r#mod.clone()) {
         Deref @ DAE::Mod::MOD { eachPrefix: SCode::Each::NOT_EACH { .. }, .. } => {
-            List::map4_0(var_field!((*r#mod).subModLst, DAE::Mod::MOD).clone(), (std::sync::Arc::new(checkArraySubModDimSize) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::SubMod>, Arc<DAE::Dimension>, DAE::Prefix, ArcStr, SourceInfo) -> Result<()> + 'static>), inDimension.clone(), inPrefix.clone(), (inIdent.clone()).clone(), inInfo.clone());
+            List::map4_0(var_field!((*r#mod).subModLst, DAE::Mod::MOD).clone(), (std::sync::Arc::new(checkArraySubModDimSize) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::SubMod>, Arc<DAE::Dimension>, DAE::Prefix, ArcStr, SourceInfo) -> Result<()> + 'static>), inDimension.clone(), inPrefix.clone(), (inIdent.clone()).clone(), inInfo.clone())?;
             ()
         },
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    ()
+    Ok(())
 }
 
 fn checkArraySubModDimSize(mut inSubMod: Arc<DAE::SubMod>, mut inDimension: Arc<DAE::Dimension>, mut inPrefix: DAE::Prefix, mut inIdent: ArcStr, mut inInfo: SourceInfo) -> Result<()> {
@@ -1259,7 +1259,7 @@ fn checkArrayModBindingDimSize(mut inBinding: Option<DAE::EqMod>, mut inDimensio
                 _ => bail!("pattern mismatch"),
             } };
             ty_dims = __pa0.clone();
-            dims_str = (ExpressionBasics::dimensionsString(metamodelica::cons(inDimension.clone(), ty_dims.clone()))).clone();
+            dims_str = (ExpressionBasics::dimensionsString(metamodelica::cons(inDimension.clone(), ty_dims.clone()))?).clone();
             Error::addMultiSourceMessage(Error::ARRAY_DIMENSION_MISMATCH.clone(), list![(exp_str.clone()).clone(), (exp_ty_str.clone()).clone(), (dims_str.clone()).clone()], metamodelica::cons(info.clone(), metamodelica::cons(inInfo.clone(), metamodelica::nil())))?;
             Ok(false)
         })() { break 'mc __v; }
@@ -1282,7 +1282,7 @@ fn instArray(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<m
     let mut outType: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut outGraph: ConnectionGraph::ConnectionGraph = <ConnectionGraph::ConnectionGraph as ::std::default::Default>::default();
     checkDimensionGreaterThanZero(inDimension.clone(), inPrefix.clone(), (inIdent.clone()).clone(), info.clone())?;
-    checkArrayModDimSize(inMod.clone(), inDimension.clone(), inPrefix.clone(), (inIdent.clone()).clone(), info.clone());
+    checkArrayModDimSize(inMod.clone(), inDimension.clone(), inPrefix.clone(), (inIdent.clone()).clone(), info.clone())?;
     (outCache, outEnv, outIH, outStore, outDae, outSets, outType, outGraph) = 'mc: {
         let __mc_input = (inCache.clone(), inEnv.clone(), inIH.clone(), inStore.clone(), inState.clone(), inMod.clone(), inPrefix.clone(), inIdent.clone(), inElement.clone(), inPrefixes.clone(), inInteger.clone(), inDimension.clone(), inDimensionLst.clone(), inIntegerLst.clone(), inInstDims.clone(), inBoolean.clone(), inComment.clone(), inGraph.clone(), inSets.clone());
         if let Ok(__v) = (|| -> Result<_> {
@@ -1441,7 +1441,7 @@ fn instArray(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<m
                         Ok::<(), anyhow::Error>(())
                     }.is_ok() { bail!("failure(): body succeeded") }
                     str1 = (PrefixUtil::printPrefixStrIgnoreNoPre(PrefixUtil::prefixAdd((n.clone()).clone(), metamodelica::nil(), metamodelica::nil(), pre.clone(), openmodelica_frontend_types::SCode::Variability::VAR, ci_state.clone(), info.clone())?)?).clone();
-                    str2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*stringDelimitList(List::map(idxs.clone(), (std::sync::Arc::new(ExpressionBasics::printSubscriptStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Subscript>) -> Result<ArcStr> + 'static>)), (literal!(", ")).clone())); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
+                    str2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*stringDelimitList(List::map(idxs.clone(), (std::sync::Arc::new(ExpressionBasics::printSubscriptStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Subscript>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
                     str3 = (Mod::prettyPrintMod(r#mod.clone(), 1)?).clone();
                     str4 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*PrefixUtil::printPrefixStrIgnoreNoPre(pre.clone())?); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*n.clone()); __mm_s.push_str(&*str2.clone()); __mm_s.push_str(&*literal!("=")); __mm_s.push_str(&*str3.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
                     str2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*str1.clone()); __mm_s.push_str(&*str2.clone()); ArcStr::from(__mm_s) }).clone();

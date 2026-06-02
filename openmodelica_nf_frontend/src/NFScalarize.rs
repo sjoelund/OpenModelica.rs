@@ -119,9 +119,9 @@ pub fn scalarize(mut flatModel: Arc<FlatModel::NFFlatModel>) -> Result<Arc<FlatM
     let mut flatModel: Arc<FlatModel::NFFlatModel> = flatModel;
     assign_field!(
         flatModel.variables = scalarizeVariables(flatModel.variables.clone(), false)?,
-        flatModel.equations = Equation::mapExpList(flatModel.equations.clone(), (std::sync::Arc::new(expandComplexCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+        flatModel.equations = Equation::mapExpList(flatModel.equations.clone(), (std::sync::Arc::new(expandComplexCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
         flatModel.equations = scalarizeEquations(flatModel.equations.clone(), false)?,
-        flatModel.initialEquations = Equation::mapExpList(flatModel.initialEquations.clone(), (std::sync::Arc::new(expandComplexCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)),
+        flatModel.initialEquations = Equation::mapExpList(flatModel.initialEquations.clone(), (std::sync::Arc::new(expandComplexCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
         flatModel.initialEquations = scalarizeEquations(flatModel.initialEquations.clone(), false)?,
         flatModel.algorithms = ({
         let mut __acc: Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>> = metamodelica::nil();
@@ -176,7 +176,7 @@ pub fn scalarizeVariable(mut var: Arc<Variable::NFVariable>, mut vars: Arc<metam
     let mut has_binding: bool = false;
     let mut confidence: i32 = 0;
     assign_field!(var.binding = Binding::mapExp(var.binding.clone(), (std::sync::Arc::new(expandComplexCref_traverser) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?);
-    if Type::isArray(var.ty.clone()) && Type::hasKnownSize(var.ty.clone()) {
+    if Type::isArray(var.ty.clone()) && Type::hasKnownSize(var.ty.clone())? {
         if '__try0: {
             let (__pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7, __pa8, __pa9) = ::match_deref::match_deref! { match &(var.clone()) {
                 Deref @ Variable::VARIABLE { name: __pa1, ty: __pa2, binding: __pa3, visibility: __pa4, attributes: __pa5, typeAttributes: __pa6, children: _, comment: __pa7, info: __pa8, backendinfo: __pa9 } => (__pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone()),

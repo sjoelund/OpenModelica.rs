@@ -106,45 +106,45 @@ pub fn initializeBackendInterface(mut inFunctions: BackendInterfaceFunctions) ->
     ()
 }
 
-pub fn noRewriteRulesFrontEnd() -> bool {
+pub fn noRewriteRulesFrontEnd() -> Result<bool> {
     let mut noRules: bool = false;
     let mut functions: BackendInterfaceFunctions = <BackendInterfaceFunctions as ::std::default::Default>::default();
     let mut func: partialNoRewriteRulesFrontEnd;
     functions = crate::Globals::backendInterface.with(|__root| __root.borrow().clone());
     func = functions.noRewriteRulesFrontEnd.clone();
-    noRules = func().unwrap();
-    noRules
+    noRules = func()?;
+    Ok(noRules)
 }
 
-pub fn rewriteFrontEnd(mut inExp: Arc<Absyn::Exp>) -> (Arc<Absyn::Exp>, bool) {
+pub fn rewriteFrontEnd(mut inExp: Arc<Absyn::Exp>) -> Result<(Arc<Absyn::Exp>, bool)> {
     let mut outExp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut isChanged: bool = false;
     let mut functions: BackendInterfaceFunctions = <BackendInterfaceFunctions as ::std::default::Default>::default();
     let mut func: partialRewriteFrontEnd;
     functions = crate::Globals::backendInterface.with(|__root| __root.borrow().clone());
     func = functions.rewriteFrontEnd.clone();
-    (outExp, isChanged) = func(inExp.clone()).unwrap();
-    (outExp, isChanged)
+    (outExp, isChanged) = func(inExp.clone())?;
+    Ok((outExp, isChanged))
 }
 
-pub fn appendLibrary(mut modelName: Arc<Absyn::Path>, mut modelicaPath: ArcStr) -> (Absyn::Program, bool) {
+pub fn appendLibrary(mut modelName: Arc<Absyn::Path>, mut modelicaPath: ArcStr) -> Result<(Absyn::Program, bool)> {
     let mut program: Absyn::Program = <Absyn::Program as ::std::default::Default>::default();
     let mut success: bool = false;
     let mut functions: BackendInterfaceFunctions = <BackendInterfaceFunctions as ::std::default::Default>::default();
     let mut func: partialAppendLibrary;
     functions = crate::Globals::backendInterface.with(|__root| __root.borrow().clone());
     func = functions.appendLibrary.clone();
-    (program, success) = func(modelName.clone(), (modelicaPath.clone()).clone()).unwrap();
-    (program, success)
+    (program, success) = func(modelName.clone(), (modelicaPath.clone()).clone())?;
+    Ok((program, success))
 }
 
-pub fn initInstHashTable() -> () {
+pub fn initInstHashTable() -> Result<()> {
     let mut functions: BackendInterfaceFunctions = <BackendInterfaceFunctions as ::std::default::Default>::default();
     let mut func: partialInitInstHashTable;
     functions = crate::Globals::backendInterface.with(|__root| __root.borrow().clone());
     func = functions.initInstHashTable.clone();
-    func().unwrap();
-    ()
+    func()?;
+    Ok(())
 }
 
 pub type partialNoRewriteRulesFrontEnd = std::sync::Arc<dyn ::std::ops::Fn() -> Result<bool> + 'static>;

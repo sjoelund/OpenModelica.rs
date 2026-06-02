@@ -134,7 +134,7 @@ pub fn instRecord(mut node: Arc<InstNode::InstNode>, mut context: i32) -> Result
     next_context = InstContext::set(next_context.clone(), InstContext::FUNCTION.clone());
     recordNode = InstNode::makeRootClass(recordNode.clone(), InstNode::parent(node.clone()), None);
     recordNode = Inst::instantiate(recordNode.clone(), Arc::new(crate::NFModifier::Modifier::NOMOD), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), next_context.clone(), false)?;
-    Inst::instExpressions(recordNode.clone(), recordNode.clone(), Arc::new(crate::NFSections::EMPTY), NFConnectBreakTree::new(), next_context.clone(), Inst::InstSettings::create())?;
+    Inst::instExpressions(recordNode.clone(), recordNode.clone(), Arc::new(crate::NFSections::EMPTY), NFConnectBreakTree::new(), next_context.clone(), Inst::InstSettings::create()?)?;
     Ok(recordNode)
 }
 
@@ -176,7 +176,7 @@ pub fn checkLocalFieldOrder(mut locals: Arc<metamodelica::List<Arc<InstNode::Ins
     } };
     loc = __pa0.clone();
     locs = __pa1.clone();
-    locals_set = UnorderedSet::fromList(list![loc.clone()], (std::sync::Arc::new(fnptr!(InstNode::hash, Arc<InstNode::InstNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(InstNode::refEqual, Arc<InstNode::InstNode>, Arc<InstNode::InstNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<InstNode::InstNode>) -> Result<bool> + 'static>))?;
+    locals_set = UnorderedSet::fromList(list![loc.clone()], (std::sync::Arc::new(InstNode::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(InstNode::refEqual, Arc<InstNode::InstNode>, Arc<InstNode::InstNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<InstNode::InstNode>) -> Result<bool> + 'static>))?;
     for mut l in &*locs.clone() {
         let mut l = l.clone();
         deps = Function::getLocalDependencies(l.clone(), locals_set.clone())?;
@@ -258,7 +258,7 @@ pub fn collectRecordFields(mut recNode: Arc<InstNode::InstNode>) -> Result<(meta
     let mut field_lst: Arc<metamodelica::List<Arc<Field::Field>>> = metamodelica::nil();
     let mut tree: Arc<ClassTree::ClassTree> = Arc::new(ClassTree::EMPTY_TREE);
     tree = Class::classTree(InstNode::getClass(recNode.clone())?)?;
-    field_lst = ClassTree::foldComponents(tree.clone(), (std::sync::Arc::new(collectRecordField) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<metamodelica::List<Arc<Field::Field>>>) -> Result<Arc<metamodelica::List<Arc<Field::Field>>>> + 'static>), metamodelica::nil());
+    field_lst = ClassTree::foldComponents(tree.clone(), (std::sync::Arc::new(collectRecordField) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<metamodelica::List<Arc<Field::Field>>>) -> Result<Arc<metamodelica::List<Arc<Field::Field>>>> + 'static>), metamodelica::nil())?;
     fields = metamodelica::arrayFromVec(metamodelica::Dangerous::listReverseInPlace(field_lst.clone()).into_iter().cloned().collect());
     indexMap = UnorderedMap::new((std::sync::Arc::new(fnptr!(stringHashDjb2, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>), (fields.clone().borrow().len() as i32));
     Type::updateRecordFieldsIndexMap(fields.clone(), indexMap.clone())?;

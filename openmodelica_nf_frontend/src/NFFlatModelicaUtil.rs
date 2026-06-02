@@ -139,8 +139,8 @@ pub fn appendCommentAnnotation(mut comment: Arc<SCode::Comment>, mut elementType
         Deref @ SCode::Comment { annotation_: Some(Deref @ SCode::Annotation { modification: r#mod }), .. } => {
             let mut r#mod = (*r#mod).clone();
             r#mod = (match elementType.clone() {
-        ElementType::ROOT_CLASS { .. } => filterRootClassAnnotations(r#mod.clone()),
-        _ => DAEDumpTypes::filterStructuralMods(r#mod.clone()),
+        ElementType::ROOT_CLASS { .. } => filterRootClassAnnotations(r#mod.clone())?,
+        _ => DAEDumpTypes::filterStructuralMods(r#mod.clone())?,
     });
             if !(SCodeUtil::isEmptyMod(r#mod.clone())) {
                 s = IOStream::append(s.clone(), (indent.clone()).clone())?;
@@ -156,7 +156,7 @@ pub fn appendCommentAnnotation(mut comment: Arc<SCode::Comment>, mut elementType
     Ok(s)
 }
 
-pub fn filterRootClassAnnotations(mut r#mod: Arc<SCode::Mod>) -> Arc<SCode::Mod> {
+pub fn filterRootClassAnnotations(mut r#mod: Arc<SCode::Mod>) -> Result<Arc<SCode::Mod>> {
     fn filter(mut smod: Arc<SCode::SubMod>) -> bool {
         let mut keep: bool = false;
         keep = (::match_deref::match_deref! { match &(smod.ident.clone()) {
@@ -168,8 +168,8 @@ pub fn filterRootClassAnnotations(mut r#mod: Arc<SCode::Mod>) -> Arc<SCode::Mod>
     }
 
     let mut r#mod: Arc<SCode::Mod> = r#mod;
-    r#mod = SCodeUtil::filterSubMods(r#mod.clone(), (std::sync::Arc::new(fnptr!(filter, Arc<SCode::SubMod>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>));
-    r#mod
+    r#mod = SCodeUtil::filterSubMods(r#mod.clone(), (std::sync::Arc::new(fnptr!(filter, Arc<SCode::SubMod>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>))?;
+    Ok(r#mod)
 }
 
 pub fn appendAnnotationMod(mut r#mod: Arc<SCode::Mod>, mut s: IOStream::IOStream) -> Result<IOStream::IOStream> {

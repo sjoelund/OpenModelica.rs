@@ -497,7 +497,7 @@ pub fn fmuModelCppFile(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode
             ret_3 = (System::stringReplace((Tpl::textString(l_modelName.clone())?).clone(), (literal!(".")).clone(), (literal!("_")).clone())?).clone();
             l_modelLongName = Tpl::writeStr(Tpl::emptyTxt.clone(), (ret_3.clone()).clone())?;
             ret_5 = listAppend(i_allEquations.clone(), i_initialEquations.clone());
-            ret_6 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone());
+            ret_6 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone())?;
             ret_7 = SimCodeUtil::getClockedEquations(ret_6.clone());
             ret_8 = listAppend(ret_5.clone(), ret_7.clone());
             l_algloopfiles = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;

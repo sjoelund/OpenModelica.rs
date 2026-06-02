@@ -232,10 +232,10 @@ fn dumpDocument(mut inDoc: Document, mut name: ArcStr) -> Result<()> {
     head = __pa1.clone();
     r#str = __pa2.clone();
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n<html>\n<head>")); ArcStr::from(__mm_s) }).clone();
-    r#str = (List::fold(head.clone().reverse(), (std::sync::Arc::new(dumpTag) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Tag>, ArcStr) -> Result<ArcStr> + 'static>), (r#str.clone()).clone())).clone();
+    r#str = (List::fold(head.clone().reverse(), (std::sync::Arc::new(dumpTag) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Tag>, ArcStr) -> Result<ArcStr> + 'static>), (r#str.clone()).clone())?).clone();
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n</head>")); ArcStr::from(__mm_s) }).clone();
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n<body>")); ArcStr::from(__mm_s) }).clone();
-    r#str = (List::fold(body.clone().reverse(), (std::sync::Arc::new(dumpTag) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Tag>, ArcStr) -> Result<ArcStr> + 'static>), (r#str.clone()).clone())).clone();
+    r#str = (List::fold(body.clone().reverse(), (std::sync::Arc::new(dumpTag) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Tag>, ArcStr) -> Result<ArcStr> + 'static>), (r#str.clone()).clone())?).clone();
     r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n</body>\n</html>")); ArcStr::from(__mm_s) }).clone();
     System::writeFile((name.clone()).clone(), (r#str.clone()).clone())?;
     Ok(())
@@ -294,8 +294,8 @@ fn dumpTag(mut tag: Arc<Tag>, mut iBuffer: ArcStr) -> Result<ArcStr> {
             let mut t1: ArcStr = arcstr::literal!("");
             let mut t2: ArcStr = arcstr::literal!("");
             let mut r#str: ArcStr = arcstr::literal!("");
-            t1 = stringDelimitList(List::map(style.clone(), (std::sync::Arc::new(dumpStyle) as std::sync::Arc<dyn ::std::ops::Fn(Style) -> Result<ArcStr> + 'static>)), (literal!("; ")).clone());
-            t2 = (List::fold(tags.clone(), (std::sync::Arc::new(dumpTag) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Tag>, ArcStr) -> Result<ArcStr> + 'static>), (literal!("")).clone())).clone();
+            t1 = stringDelimitList(List::map(style.clone(), (std::sync::Arc::new(dumpStyle) as std::sync::Arc<dyn ::std::ops::Fn(Style) -> Result<ArcStr> + 'static>))?, (literal!("; ")).clone());
+            t2 = (List::fold(tags.clone(), (std::sync::Arc::new(dumpTag) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Tag>, ArcStr) -> Result<ArcStr> + 'static>), (literal!("")).clone())?).clone();
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*iBuffer.clone()); __mm_s.push_str(&*literal!("\n<div id=\"")); __mm_s.push_str(&*t.clone()); __mm_s.push_str(&*literal!("\" style=\"")); __mm_s.push_str(&*t1.clone()); __mm_s.push_str(&*literal!("\">\n")); __mm_s.push_str(&*t2.clone()); __mm_s.push_str(&*literal!("\n</div>")); ArcStr::from(__mm_s) }).clone();
             r#str.clone()
         },
@@ -344,7 +344,7 @@ pub fn dumpDAE(mut inDAE: Arc<BackendDAE::BackendDAE>, mut inHeader: ArcStr, mut
     doc = emptyDocumentWithToggleFunktion()?;
     doc = addHeading(1, (inHeader.clone()).clone(), doc.clone())?;
     r#str = (intString(((System::time()).0 as i32))).clone();
-    (doc, _) = List::fold1(eqs.clone(), (std::sync::Arc::new(dumpEqSystem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, ArcStr, (Document, i32)) -> Result<(Document, i32)> + 'static>), (r#str.clone()).clone(), (doc.clone(), 1));
+    (doc, _) = List::fold1(eqs.clone(), (std::sync::Arc::new(dumpEqSystem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, ArcStr, (Document, i32)) -> Result<(Document, i32)> + 'static>), (r#str.clone()).clone(), (doc.clone(), 1))?;
     dumpDocument(doc.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*inFilename.clone()); ArcStr::from(__mm_s) }).clone())?;
     Ok(())
 }
@@ -378,11 +378,11 @@ fn dumpEqSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inPrefixIdstr: Ar
     vars = BackendVariable::varList(vars1.clone())?;
     varlen_str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Variables (")); __mm_s.push_str(&*intString((vars.clone().len() as i32))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
     tags = addHeadingTag(2, (varlen_str.clone()).clone(), metamodelica::nil());
-    tags = printVarList(vars.clone(), (prefixId.clone()).clone(), tags.clone());
-    eqnsl = BackendEquation::equationList(eqns.clone());
+    tags = printVarList(vars.clone(), (prefixId.clone()).clone(), tags.clone())?;
+    eqnsl = BackendEquation::equationList(eqns.clone())?;
     eqnlen_str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Equations (")); __mm_s.push_str(&*intString((eqnsl.clone().len() as i32))); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*intString(BackendEquation::equationArraySize(eqns.clone())?)); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
     tags = addHeadingTag(2, (eqnlen_str.clone()).clone(), tags.clone());
-    tags = dumpEqns(eqnsl.clone(), (prefixId.clone()).clone(), tags.clone());
+    tags = dumpEqns(eqnsl.clone(), (prefixId.clone()).clone(), tags.clone())?;
     tags = dumpFullMatching(matching.clone(), (prefixId.clone()).clone(), tags.clone())?;
     doc = addLine((literal!("<hr>")).clone(), doc.clone())?;
     doc = addHyperLink(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("javascript:toggle('")); __mm_s.push_str(&*prefixId.clone()); __mm_s.push_str(&*literal!("system')")); ArcStr::from(__mm_s) }).clone(), (literal!("show system")).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("show/hide system ")); __mm_s.push_str(&*intString(i.clone())); ArcStr::from(__mm_s) }).clone(), doc.clone())?;
@@ -391,13 +391,13 @@ fn dumpEqSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inPrefixIdstr: Ar
     Ok(outTpl)
 }
 
-fn printVarList(mut vars: Arc<metamodelica::List<BackendDAE::Var>>, mut prefixId: ArcStr, mut inTags: Arc<metamodelica::List<Arc<Tag>>>) -> Arc<metamodelica::List<Arc<Tag>>> {
+fn printVarList(mut vars: Arc<metamodelica::List<BackendDAE::Var>>, mut prefixId: ArcStr, mut inTags: Arc<metamodelica::List<Arc<Tag>>>) -> Result<Arc<metamodelica::List<Arc<Tag>>>> {
     let mut outTags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
     let mut tags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
-    (tags, _) = List::fold1(vars.clone(), (std::sync::Arc::new(dumpVar) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArcStr, (Arc<metamodelica::List<Arc<Tag>>>, i32)) -> Result<(Arc<metamodelica::List<Arc<Tag>>>, i32)> + 'static>), (prefixId.clone()).clone(), (metamodelica::nil(), 1));
+    (tags, _) = List::fold1(vars.clone(), (std::sync::Arc::new(dumpVar) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, ArcStr, (Arc<metamodelica::List<Arc<Tag>>>, i32)) -> Result<(Arc<metamodelica::List<Arc<Tag>>>, i32)> + 'static>), (prefixId.clone()).clone(), (metamodelica::nil(), 1))?;
     outTags = addHyperLinkTag(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("javascript:toggle('")); __mm_s.push_str(&*prefixId.clone()); __mm_s.push_str(&*literal!("variables')")); ArcStr::from(__mm_s) }).clone(), (literal!("show variables")).clone(), (literal!("show/hide variables")).clone(), inTags.clone());
     outTags = addDivisionTag(({ let mut __mm_s = String::new(); __mm_s.push_str(&*prefixId.clone()); __mm_s.push_str(&*literal!("variables")); ArcStr::from(__mm_s) }).clone(), list![Style { name: (literal!("background")).clone(), value: (literal!("#FFFFCC")).clone() }, Style { name: (literal!("display")).clone(), value: (literal!("none")).clone() }], tags.clone(), outTags.clone());
-    outTags
+    Ok(outTags)
 }
 
 fn dumpVar(mut inVar: BackendDAE::Var, mut prefixId: ArcStr, mut inTpl: (Arc<metamodelica::List<Arc<Tag>>>, i32)) -> Result<(Arc<metamodelica::List<Arc<Tag>>>, i32)> {
@@ -416,13 +416,13 @@ fn dumpVar(mut inVar: BackendDAE::Var, mut prefixId: ArcStr, mut inTpl: (Arc<met
     Ok(oTpl)
 }
 
-fn dumpEqns(mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut prefixId: ArcStr, mut inTags: Arc<metamodelica::List<Arc<Tag>>>) -> Arc<metamodelica::List<Arc<Tag>>> {
+fn dumpEqns(mut eqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, mut prefixId: ArcStr, mut inTags: Arc<metamodelica::List<Arc<Tag>>>) -> Result<Arc<metamodelica::List<Arc<Tag>>>> {
     let mut outTags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
     let mut tags: Arc<metamodelica::List<Arc<Tag>>> = metamodelica::nil();
-    (tags, _) = List::fold1(eqns.clone(), (std::sync::Arc::new(dumpEqn) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, ArcStr, (Arc<metamodelica::List<Arc<Tag>>>, i32)) -> Result<(Arc<metamodelica::List<Arc<Tag>>>, i32)> + 'static>), (prefixId.clone()).clone(), (metamodelica::nil(), 1));
+    (tags, _) = List::fold1(eqns.clone(), (std::sync::Arc::new(dumpEqn) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>, ArcStr, (Arc<metamodelica::List<Arc<Tag>>>, i32)) -> Result<(Arc<metamodelica::List<Arc<Tag>>>, i32)> + 'static>), (prefixId.clone()).clone(), (metamodelica::nil(), 1))?;
     outTags = addHyperLinkTag(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("javascript:toggle('")); __mm_s.push_str(&*prefixId.clone()); __mm_s.push_str(&*literal!("equations')")); ArcStr::from(__mm_s) }).clone(), (literal!("show equations")).clone(), (literal!("show/hide equations")).clone(), inTags.clone());
     outTags = addDivisionTag(({ let mut __mm_s = String::new(); __mm_s.push_str(&*prefixId.clone()); __mm_s.push_str(&*literal!("equations")); ArcStr::from(__mm_s) }).clone(), list![Style { name: (literal!("background")).clone(), value: (literal!("#C0C0C0")).clone() }, Style { name: (literal!("display")).clone(), value: (literal!("none")).clone() }], tags.clone(), outTags.clone());
-    outTags
+    Ok(outTags)
 }
 
 fn dumpEqn(mut inEquation: Arc<BackendDAE::Equation>, mut prefixId: ArcStr, mut inTpl: (Arc<metamodelica::List<Arc<Tag>>>, i32)) -> Result<(Arc<metamodelica::List<Arc<Tag>>>, i32)> {
@@ -543,7 +543,7 @@ pub fn dumpMatrixHTML(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, 
     scripts = listAppend(colLabelScripts.clone(), scripts.clone());
     doc = emptyDocumentWithToggleFunktion()?;
     canvas = Arc::new(Tag::CANVAS { attr: list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("width = \"")); __mm_s.push_str(&*intString(size.clone() * blockSize.clone() + matrixMargin.clone())); __mm_s.push_str(&*literal!("\"")); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" height = \"")); __mm_s.push_str(&*intString(size.clone() * blockSize.clone() + matrixMargin.clone())); __mm_s.push_str(&*literal!("\"")); ArcStr::from(__mm_s) }).clone()] });
-    doc = addScriptBody((literal!("LANGUAGE=\"JavaScript")).clone(), (List::fold(scripts.clone(), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (literal!("")).clone())).clone(), doc.clone())?;
+    doc = addScriptBody((literal!("LANGUAGE=\"JavaScript")).clone(), (List::fold(scripts.clone(), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (literal!("")).clone())?).clone(), doc.clone())?;
     doc = addHeadTag(canvas.clone(), doc.clone())?;
     dumpDocument(doc.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*fileName.clone()); __mm_s.push_str(&*literal!(".html")); ArcStr::from(__mm_s) }).clone())?;
     Ok(())

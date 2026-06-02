@@ -2957,7 +2957,7 @@ fn fun_151(mut in_txt: Tpl::Text, mut in_a_value: Option<Arc<DAE::Exp>>, mut in_
             let mut a_varDecls = (*a_varDecls).clone();
             l_preExpBind = Tpl::emptyTxt.clone();
             (l_rhs, a_auxFunction, a_varDecls, l_preExpBind) = fun_146(Tpl::emptyTxt.clone(), a_bind__outside.clone(), a_var__cref.clone(), a_auxFunction.clone(), a_varDecls.clone(), l_preExpBind.clone(), a_context.clone(), i_rhs__exp.clone())?;
-            ret_2 = Expression::hasUnknownDims(a_var__dims.clone());
+            ret_2 = Expression::hasUnknownDims(a_var__dims.clone())?;
             (txt, a_auxFunction, a_varDecls) = fun_148(txt.clone(), ret_2.clone(), l_rhs.clone(), l_preExpBind.clone(), a_var__name.clone(), a_type__name.clone(), a_auxFunction.clone(), a_varDecls.clone(), a_context.clone(), a_var__dims.clone())?;
             (txt.clone(), a_auxFunction.clone(), a_varDecls.clone())
         },
@@ -2966,7 +2966,7 @@ fn fun_151(mut in_txt: Tpl::Text, mut in_a_value: Option<Arc<DAE::Exp>>, mut in_
             let mut txt = (*txt).clone();
             let mut a_auxFunction = (*a_auxFunction).clone();
             let mut a_varDecls = (*a_varDecls).clone();
-            ret_3 = Expression::hasUnknownDims(a_var__dims.clone());
+            ret_3 = Expression::hasUnknownDims(a_var__dims.clone())?;
             (txt, a_auxFunction, a_varDecls) = fun_150(txt.clone(), ret_3.clone(), a_var__name.clone(), a_type__name.clone(), a_auxFunction.clone(), a_varDecls.clone(), a_context.clone(), a_var__dims.clone())?;
             (txt.clone(), a_auxFunction.clone(), a_varDecls.clone())
         },
@@ -12298,7 +12298,7 @@ pub fn algStmtAssign(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, 
             (l_varPart, l_preExp, a_varDecls, a_auxFunction) = daeExp(Tpl::emptyTxt.clone(), i_explhs.clone(), a_context.clone(), l_preExp.clone(), a_varDecls.clone(), a_auxFunction.clone())?;
             (l_expPart, l_preExp, a_varDecls, a_auxFunction) = daeExp(Tpl::emptyTxt.clone(), i_exp.clone(), a_context.clone(), l_preExp.clone(), a_varDecls.clone(), a_auxFunction.clone())?;
             ret_5 = Types::getMetaRecordFields(i_t1.clone())?;
-            ret_6 = Types::lookupIndexInMetaRecord(ret_5.clone(), (i_fieldName.clone()).clone());
+            ret_6 = Types::lookupIndexInMetaRecord(ret_5.clone(), (i_fieldName.clone()).clone())?;
             ret_7 = intAdd(1, ret_6.clone());
             l_indexInRecord = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_7.clone())).clone())?;
             ret_9 = Types::getMetaRecordFields(i_t1.clone())?;
@@ -12350,7 +12350,7 @@ pub fn algStmtAssign(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, 
             (l_varPart, l_preExp, a_varDecls, a_auxFunction) = daeExp(Tpl::emptyTxt.clone(), i_explhs.clone(), a_context.clone(), l_preExp.clone(), a_varDecls.clone(), a_auxFunction.clone())?;
             (l_expPart, l_preExp, a_varDecls, a_auxFunction) = daeExp(Tpl::emptyTxt.clone(), i_exp.clone(), a_context.clone(), l_preExp.clone(), a_varDecls.clone(), a_auxFunction.clone())?;
             ret_12 = Types::getMetaRecordFields(i_t1.clone())?;
-            ret_13 = Types::lookupIndexInMetaRecord(ret_12.clone(), (i_fieldName.clone()).clone());
+            ret_13 = Types::lookupIndexInMetaRecord(ret_12.clone(), (i_fieldName.clone()).clone())?;
             ret_14 = intAdd(1, ret_13.clone());
             l_indexInRecord = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_14.clone())).clone())?;
             ret_15 = Types::getMetaRecordFields(i_t1.clone())?;
@@ -12402,7 +12402,7 @@ pub fn algStmtAssign(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, 
             (l_varPart, l_preExp, a_varDecls, a_auxFunction) = daeExp(Tpl::emptyTxt.clone(), i_explhs.clone(), a_context.clone(), l_preExp.clone(), a_varDecls.clone(), a_auxFunction.clone())?;
             (l_expPart, l_preExp, a_varDecls, a_auxFunction) = daeExp(Tpl::emptyTxt.clone(), i_exp.clone(), a_context.clone(), l_preExp.clone(), a_varDecls.clone(), a_auxFunction.clone())?;
             ret_18 = Types::getMetaRecordFields(i_t1.clone())?;
-            ret_19 = Types::lookupIndexInMetaRecord(ret_18.clone(), (i_fieldName_1.clone()).clone());
+            ret_19 = Types::lookupIndexInMetaRecord(ret_18.clone(), (i_fieldName_1.clone()).clone())?;
             ret_20 = intAdd(1, ret_19.clone());
             l_indexInRecord = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_20.clone())).clone())?;
             ret_21 = Types::getMetaRecordFields(i_t1.clone())?;
@@ -12454,7 +12454,7 @@ pub fn algStmtAssign(mut in_txt: Tpl::Text, mut in_a_stmt: Arc<DAE::Statement>, 
             (l_varPart, l_preExp, a_varDecls, a_auxFunction) = daeExp(Tpl::emptyTxt.clone(), i_explhs.clone(), a_context.clone(), l_preExp.clone(), a_varDecls.clone(), a_auxFunction.clone())?;
             (l_expPart, l_preExp, a_varDecls, a_auxFunction) = daeExp(Tpl::emptyTxt.clone(), i_exp.clone(), a_context.clone(), l_preExp.clone(), a_varDecls.clone(), a_auxFunction.clone())?;
             ret_24 = Types::getMetaRecordFields(i_t1.clone())?;
-            ret_25 = Types::lookupIndexInMetaRecord(ret_24.clone(), (i_fieldName_1.clone()).clone());
+            ret_25 = Types::lookupIndexInMetaRecord(ret_24.clone(), (i_fieldName_1.clone()).clone())?;
             ret_26 = intAdd(1, ret_25.clone());
             l_indexInRecord = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_26.clone())).clone())?;
             ret_27 = Types::getMetaRecordFields(i_t1.clone())?;
@@ -22576,7 +22576,7 @@ pub fn daeExpCrefRhs(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_
             let mut l_offset: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             ret_1 = Types::getMetaRecordFields(i_ty.clone())?;
-            ret_2 = Types::findVarIndex((i_cri_ident.clone()).clone(), ret_1.clone());
+            ret_2 = Types::findVarIndex((i_cri_ident.clone()).clone(), ret_1.clone())?;
             ret_3 = intAdd(ret_2.clone(), 2);
             l_offset = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_3.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(MMC_FETCH(MMC_OFFSET(MMC_UNTAGPTR(_")).clone() }))?;
@@ -22593,7 +22593,7 @@ pub fn daeExpCrefRhs(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_
             let mut l_offset: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
             ret_4 = Types::getMetaRecordFields(i_ty.clone())?;
-            ret_5 = Types::findVarIndex((i_cri_ident.clone()).clone(), ret_4.clone());
+            ret_5 = Types::findVarIndex((i_cri_ident.clone()).clone(), ret_4.clone())?;
             ret_6 = intAdd(ret_5.clone(), 2);
             l_offset = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_6.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(MMC_FETCH(MMC_OFFSET(MMC_UNTAGPTR(_")).clone() }))?;
@@ -31448,7 +31448,7 @@ fn fun_1019(mut in_txt: Tpl::Text, mut in_a_e: Arc<DAE::Exp>, mut in_a_auxFuncti
             let mut a_varDecls = (*a_varDecls).clone();
             let mut a_postExp = (*a_postExp).clone();
             let mut a_preExp = (*a_preExp).clone();
-            ret_2 = Expression::anyExpHasCrefName(a_erest.clone(), (a_v.clone()).clone());
+            ret_2 = Expression::anyExpHasCrefName(a_erest.clone(), (a_v.clone()).clone())?;
             (txt, a_auxFunction, a_varDecls, a_postExp, a_preExp) = fun_1018(txt.clone(), ret_2.clone(), i_e.clone(), a_exp.clone(), (a_v.clone()).clone(), a_auxFunction.clone(), a_varDecls.clone(), a_postExp.clone(), a_preExp.clone(), a_context.clone(), a_vrest.clone(), a_erest.clone())?;
             (txt.clone(), a_auxFunction.clone(), a_varDecls.clone(), a_postExp.clone(), a_preExp.clone())
         },
@@ -37207,7 +37207,7 @@ pub fn daeExpMatch2(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a
             l_varDeclsInner = Tpl::emptyTxt.clone();
             l_varFrees = Tpl::emptyTxt.clone();
             l_ignore = Tpl::emptyTxt.clone();
-            ret_10 = SimCodeFunctionUtil::elementVars(i_localDecls.clone());
+            ret_10 = SimCodeFunctionUtil::elementVars(i_localDecls.clone())?;
             (l_ignore2, a_auxFunction, l_varFrees, l_preExpInner, l_varDeclsInner) = lm_1186(Tpl::emptyTxt.clone(), ret_10.clone(), a_auxFunction.clone(), l_varFrees.clone(), l_preExpInner.clone(), l_varDeclsInner.clone())?;
             l_prefix = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("tmp")).clone() }))?;
             ret_12 = System::tmpTick();
@@ -37719,7 +37719,7 @@ fn lm_1216(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::
             (l_guardCheck, a_auxFunction, l_varDeclsCaseInner, l_preGuardCheck) = fun_1205(Tpl::emptyTxt.clone(), i_c_patternGuard.clone(), l_onPatternFail.clone(), a_auxFunction.clone(), l_varDeclsCaseInner.clone(), l_preGuardCheck.clone(), a_context.clone())?;
             str_13 = (Tpl::textString(a_res.clone())?).clone();
             (l_caseRes, a_auxFunction, l_varDeclsCaseInner, l_preRes) = fun_1210(Tpl::emptyTxt.clone(), (str_13.clone()).clone(), a_tupleAssignExps.clone(), a_auxFunction.clone(), l_varDeclsCaseInner.clone(), l_preRes.clone(), a_context.clone(), a_startIndexOutputs.clone(), a_res.clone(), i_c_result.clone())?;
-            ret_15 = SimCodeFunctionUtil::elementVars(i_c_localDecls.clone());
+            ret_15 = SimCodeFunctionUtil::elementVars(i_c_localDecls.clone())?;
             (l_0__, a_auxFunction, l_varFrees, l_preExpCaseInner, l_varDeclsCaseInner) = lm_1211(Tpl::emptyTxt.clone(), ret_15.clone(), a_auxFunction.clone(), l_varFrees.clone(), l_preExpCaseInner.clone(), l_varDeclsCaseInner.clone())?;
             txt = fun_1213(txt.clone(), a_ty.clone(), x_i0.clone(), a_prefix.clone(), i_c_patterns.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;

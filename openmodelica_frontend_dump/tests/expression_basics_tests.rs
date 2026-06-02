@@ -266,18 +266,20 @@ fn priority_unary_is_four() -> Result<()> {
 // ---------------------------------------------------------------------------
 
 #[test]
-fn subscript_int_from_index() {
+fn subscript_int_from_index() -> Result<()> {
     let sub = index_sub(iconst(3));
-    assert_eq!(ExpressionBasics::subscriptInt(sub), 3);
+    assert_eq!(ExpressionBasics::subscriptInt(sub)?, 3);
+    Ok(())
 }
 
 #[test]
-fn subscripts_int_list() {
+fn subscripts_int_list() -> Result<()> {
     let subs: Arc<metamodelica::List<Arc<DAE::Subscript>>> =
         list![index_sub(iconst(2)), index_sub(iconst(7))];
-    let result = ExpressionBasics::subscriptsInt(subs);
+    let result = ExpressionBasics::subscriptsInt(subs)?;
     let v: Vec<i32> = result.into_iter().cloned().collect();
     assert_eq!(v, vec![2, 7]);
+    Ok(())
 }
 
 // ---------------------------------------------------------------------------
@@ -344,13 +346,14 @@ fn print_subscript_str_index_iconst() -> Result<()> {
 // ---------------------------------------------------------------------------
 
 #[test]
-fn print_list_str_empty() {
+fn print_list_str_empty() -> Result<()> {
     let result = ExpressionBasics::printListStr::<Arc<DAE::Subscript>>(
         metamodelica::nil(),
         Arc::new(|s| ExpressionBasics::printSubscriptStr(s)),
         literal!(","),
-    );
+    )?;
     assert_eq!(result, "");
+    Ok(())
 }
 
 #[test]
@@ -362,7 +365,7 @@ fn print_list_str_multiple() -> Result<()> {
         subs,
         Arc::new(|s| ExpressionBasics::printSubscriptStr(s)),
         literal!(","),
-    );
+    )?;
     assert_eq!(result, "3,5");
     Ok(())
 }

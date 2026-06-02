@@ -71,9 +71,9 @@ pub fn execStatReset() -> Result<()> {
 }
 
 pub fn execStat(mut name: ArcStr) -> Result<()> {
-    fn snprintff(mut val: metamodelica::Real) -> ArcStr {
-        let mut r#str: ArcStr = System::snprintff((arcstr::literal!(timeFormat)).clone(), timeMaxLength.clone(), val.clone()).unwrap();
-        r#str
+    fn snprintff(mut val: metamodelica::Real) -> Result<ArcStr> {
+        let mut r#str: ArcStr = System::snprintff((arcstr::literal!(timeFormat)).clone(), timeMaxLength.clone(), val.clone())?;
+        Ok(r#str)
     }
 
     fn bytesToReadableUnit(mut bytes: metamodelica::Real) -> ArcStr {
@@ -114,8 +114,8 @@ pub fn execStat(mut name: ArcStr) -> Result<()> {
             before = __pa5.clone();
             since = __pa6.clone();
             oldMemory = since.clone() + before.clone();
-            timeStr = (snprintff(t.clone())).clone();
-            totalTimeStr = (snprintff(total.clone())).clone();
+            timeStr = (snprintff(t.clone())?).clone();
+            totalTimeStr = (snprintff(total.clone())?).clone();
             if Flags::isSet(Flags::GC_PROF.clone())? {
                 gcStr = (GCExt::profStatsStr(stats.clone(), (literal!("")).clone(), (literal!(" / ")).clone())?).clone();
                 Error::addMessage(Error::EXEC_STAT_GC.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*if (i.clone() == 2) {literal!(" GC")} else {literal!("")}); ArcStr::from(__mm_s) }).clone(), (timeStr.clone()).clone(), (totalTimeStr.clone()).clone(), (gcStr.clone()).clone()])?;

@@ -97,7 +97,7 @@ pub fn check(mut tms: Arc<metamodelica::List<Arc<UnitAbsyn::UnitTerm>>>, mut ist
                     let (UnitAbsyn::INCONSISTENT { u1: __pa0, u2: __pa1 }, _, _) = (checkTerm(tm1.clone(), st1.clone())?) else { bail!("pattern mismatch") };
                     su1 = __pa0.clone();
                     su2 = __pa1.clone();
-                    s1 = (UnitAbsynBuilder::printTermsStr(list![tm1.clone()])).clone();
+                    s1 = (UnitAbsynBuilder::printTermsStr(list![tm1.clone()])?).clone();
                     s2 = (UnitAbsynBuilder::unit2str(UnitAbsyn::Unit::SPECIFIED { specified: su1.clone() })?).clone();
                     s3 = (UnitAbsynBuilder::unit2str(UnitAbsyn::Unit::SPECIFIED { specified: su2.clone() })?).clone();
                     Error::addMessage(Error::INCONSISTENT_UNITS.clone(), list![(s1.clone()).clone(), (s2.clone()).clone(), (s3.clone()).clone()])?;

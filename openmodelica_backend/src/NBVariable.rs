@@ -139,45 +139,45 @@ pub fn toString(mut var: Arc<Variable::NFVariable>, mut r#str: ArcStr) -> Result
     let mut r#str: ArcStr = r#str;
     let mut attr: ArcStr = arcstr::literal!("");
     attr = (BackendExtension::VariableAttributes::toString(var.backendinfo.attributes.clone())?).clone();
-    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*BackendExtension::VariableKind::toString(var.backendinfo.varKind.clone())); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString(Variable::size(var.clone(), true))); __mm_s.push_str(&*literal!(") ")); __mm_s.push_str(&*Variable::toString(var.clone(), (literal!("")).clone(), false)?); __mm_s.push_str(&*if (attr.clone() == literal!("")) {literal!("")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*attr.clone()); ArcStr::from(__mm_s) }}); ArcStr::from(__mm_s) }).clone();
+    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*BackendExtension::VariableKind::toString(var.backendinfo.varKind.clone())); __mm_s.push_str(&*literal!(" (")); __mm_s.push_str(&*intString(Variable::size(var.clone(), true)?)); __mm_s.push_str(&*literal!(") ")); __mm_s.push_str(&*Variable::toString(var.clone(), (literal!("")).clone(), false)?); __mm_s.push_str(&*if (attr.clone() == literal!("")) {literal!("")} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*attr.clone()); ArcStr::from(__mm_s) }}); ArcStr::from(__mm_s) }).clone();
     Ok(r#str)
 }
 
-pub fn pointerToString(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> ArcStr {
-    let mut r#str: ArcStr = toString(Pointer::access(var_ptr.clone()), (literal!("")).clone()).unwrap();
-    r#str
+pub fn pointerToString(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> {
+    let mut r#str: ArcStr = toString(Pointer::access(var_ptr.clone()), (literal!("")).clone())?;
+    Ok(r#str)
 }
 
-pub fn nameString(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> ArcStr {
-    let mut r#str: ArcStr = ComponentRef::toString(getVarName(var_ptr.clone())).unwrap();
-    r#str
+pub fn nameString(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<ArcStr> {
+    let mut r#str: ArcStr = ComponentRef::toString(getVarName(var_ptr.clone()))?;
+    Ok(r#str)
 }
 
-pub fn hash(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> i32 {
-    let mut i: i32 = Variable::hash(Pointer::access(var_ptr.clone()));
-    i
+pub fn hash(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> {
+    let mut i: i32 = Variable::hash(Pointer::access(var_ptr.clone()))?;
+    Ok(i)
 }
 
-pub fn equalName(mut var_ptr1: Pointer::Pointer<Arc<Variable::NFVariable>>, mut var_ptr2: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
-    let mut b: bool = Variable::equalName(Pointer::access(var_ptr1.clone()), Pointer::access(var_ptr2.clone()));
-    b
+pub fn equalName(mut var_ptr1: Pointer::Pointer<Arc<Variable::NFVariable>>, mut var_ptr2: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> {
+    let mut b: bool = Variable::equalName(Pointer::access(var_ptr1.clone()), Pointer::access(var_ptr2.clone()))?;
+    Ok(b)
 }
 
-pub fn size(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut resize: bool) -> i32 {
-    let mut s: i32 = Variable::size(Pointer::access(var_ptr.clone()), resize.clone());
-    s
+pub fn size(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut resize: bool) -> Result<i32> {
+    let mut s: i32 = Variable::size(Pointer::access(var_ptr.clone()), resize.clone())?;
+    Ok(s)
 }
 
-pub fn applyToType(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<Arc<Type::NFType>> + 'static>) -> () {
+pub fn applyToType(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<Arc<Type::NFType>> + 'static>) -> Result<()> {
     pub type typeFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<Arc<Type::NFType>> + 'static>;
 
     let mut new: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
-    new = Variable::applyToType(var.clone(), func.clone());
+    new = Variable::applyToType(var.clone(), func.clone())?;
     if !(referenceEq(&var.clone(),&new.clone())) {
         Pointer::update(var_ptr.clone(), new.clone());
     }
-    ()
+    Ok(())
 }
 
 pub fn fromCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut attr: Arc<Attributes::NFAttributes>, mut binding: Arc<Binding::NFBinding>) -> Result<Arc<Variable::NFVariable>> {
@@ -196,7 +196,7 @@ pub fn fromCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut attr: Arc<Attri
     if !(Type::isExternalObject(ty.clone())) {
         children = (::match_deref::match_deref! { match &(Type::arrayElementType(ty.clone())) {
         Deref @ Type::COMPLEX { cls: class_node, .. } => {
-            child_nodes = Class::getComponents(InstNode::getClass(class_node.clone())?);
+            child_nodes = Class::getComponents(InstNode::getClass(class_node.clone())?)?;
             children = ({
         let mut __acc: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
         for mut c in (child_nodes.clone()).borrow().iter() {
@@ -225,21 +225,21 @@ pub fn makeVarPtrCyclic(mut var: Arc<Variable::NFVariable>, mut name: Arc<Compon
     Ok((var_ptr, name))
 }
 
-pub fn connectPartners(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut par_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut func: Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>) -> () {
+pub fn connectPartners(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut par_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut func: Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>) -> Result<()> {
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     let mut par: Arc<Variable::NFVariable> = Pointer::access(par_ptr.clone());
-    assign_field!(var.backendinfo = func(var.backendinfo.clone(), Some(par_ptr.clone())).unwrap());
-    assign_field!(par.backendinfo = func(par.backendinfo.clone(), Some(var_ptr.clone())).unwrap());
+    assign_field!(var.backendinfo = func(var.backendinfo.clone(), Some(par_ptr.clone()))?);
+    assign_field!(par.backendinfo = func(par.backendinfo.clone(), Some(var_ptr.clone()))?);
     Pointer::update(var_ptr.clone(), var.clone());
     Pointer::update(par_ptr.clone(), par.clone());
-    ()
+    Ok(())
 }
 
-pub fn removePartner(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut func: Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>) -> () {
+pub fn removePartner(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut func: Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>) -> Result<()> {
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
-    assign_field!(var.backendinfo = func(var.backendinfo.clone(), None).unwrap());
+    assign_field!(var.backendinfo = func(var.backendinfo.clone(), None)?);
     Pointer::update(var_ptr.clone(), var.clone());
-    ()
+    Ok(())
 }
 
 pub fn getVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut info: SourceInfo) -> Result<Arc<Variable::NFVariable>> {
@@ -300,9 +300,9 @@ pub fn getVarKind(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> A
     kind
 }
 
-pub fn toExpression(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Arc<Expression::NFExpression> {
-    let mut exp: Arc<Expression::NFExpression> = Expression::fromCref(getVarName(var_ptr.clone()), false).unwrap();
-    exp
+pub fn toExpression(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<Arc<Expression::NFExpression>> {
+    let mut exp: Arc<Expression::NFExpression> = Expression::fromCref(getVarName(var_ptr.clone()), false)?;
+    Ok(exp)
 }
 
 pub type checkVar = std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>;
@@ -421,7 +421,7 @@ pub fn isContinuous(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mu
         Deref @ BackendExtension::VariableKind::ITERATOR => false,
         Deref @ BackendExtension::VariableKind::EXTOBJ { .. } => false,
         Deref @ BackendExtension::VariableKind::PARAMETER { .. } => staticAsContinuous.clone() && Type::isContinuous(var.ty.clone())?,
-        Deref @ BackendExtension::VariableKind::RECORD { .. } => List::all(getRecordChildren(var_ptr.clone()), (std::sync::Arc::new({ let __pe_b1 = staticAsContinuous.clone(); move |__pe_a0| isContinuous(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>)),
+        Deref @ BackendExtension::VariableKind::RECORD { .. } => List::all(getRecordChildren(var_ptr.clone()), (std::sync::Arc::new({ let __pe_b1 = staticAsContinuous.clone(); move |__pe_a0| isContinuous(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>))?,
         _ => true,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -580,11 +580,11 @@ pub fn isPDer(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool 
     b
 }
 
-pub fn hasTearingSelect(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>>, mut compareTS: TearingSelect, mut func: Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>) -> bool {
+pub fn hasTearingSelect(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>>, mut compareTS: TearingSelect, mut func: Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>) -> Result<bool> {
     pub type compare = std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>;
 
-    let mut b: bool = func(((getTearingSelect(varPointer.clone()).unwrap()) as i32), ((compareTS.clone()) as i32)).unwrap();
-    b
+    let mut b: bool = func(((getTearingSelect(varPointer.clone())?) as i32), ((compareTS.clone()) as i32))?;
+    Ok(b)
 }
 
 pub type getVarPartner = std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<(Option<Pointer::Pointer<Arc<Variable::NFVariable>>>, ArcStr)> + 'static>;
@@ -950,11 +950,11 @@ pub fn isR0Variable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) ->
     b
 }
 
-pub fn isResizable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub fn isResizable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> {
     let mut b: bool = false;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
-    b = List::any(Type::arrayDims(var.ty.clone()), (std::sync::Arc::new(fnptr!(Dimension::isResizable, Arc<Dimension::NFDimension>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<bool> + 'static>));
-    b
+    b = List::any(Type::arrayDims(var.ty.clone()), (std::sync::Arc::new(fnptr!(Dimension::isResizable, Arc<Dimension::NFDimension>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<bool> + 'static>))?;
+    Ok(b)
 }
 
 pub fn isResizableParameter(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
@@ -968,9 +968,9 @@ pub fn isResizableParameter(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariab
     b
 }
 
-pub fn updateResizableParameter(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut optimal_values: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>) -> () {
+pub fn updateResizableParameter(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut optimal_values: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>>) -> Result<()> {
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
-    let mut val: Option<Arc<Expression::NFExpression>> = UnorderedMap::get(var.name.clone(), optimal_values.clone());
+    let mut val: Option<Arc<Expression::NFExpression>> = UnorderedMap::get(var.name.clone(), optimal_values.clone())?;
     let () = (::match_deref::match_deref! { match &((val.clone(), var.backendinfo.clone())) {
         (Some(Deref @ Expression::INTEGER { value: i }), Deref @ BackendExtension::BackendInfo::BACKEND_INFO { annotations: Deref @ BackendExtension::Annotations::ANNOTATIONS { resizable: true, .. }, varKind: varKind @ Deref @ BackendExtension::VariableKind::PARAMETER { .. }, .. }) => {
             let mut varKind = (*varKind).clone();
@@ -983,7 +983,7 @@ pub fn updateResizableParameter(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVa
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    ()
+    Ok(())
 }
 
 pub fn getResizableValue(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> {
@@ -1039,45 +1039,45 @@ pub fn isOutput(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> boo
     b
 }
 
-pub fn isFixed(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub fn isFixed(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> {
     let mut b: bool = false;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.attributes.clone()) {
         Deref @ BackendExtension::VariableAttributes::VAR_ATTR_REAL { fixed: Some(fixed), .. } => {
-            Expression::isAllTrue(fixed.clone())
+            Expression::isAllTrue(fixed.clone())?
         },
         Deref @ BackendExtension::VariableAttributes::VAR_ATTR_INT { fixed: Some(fixed), .. } => {
-            Expression::isAllTrue(fixed.clone())
+            Expression::isAllTrue(fixed.clone())?
         },
         Deref @ BackendExtension::VariableAttributes::VAR_ATTR_BOOL { fixed: Some(fixed), .. } => {
-            Expression::isAllTrue(fixed.clone())
+            Expression::isAllTrue(fixed.clone())?
         },
         Deref @ BackendExtension::VariableAttributes::VAR_ATTR_STRING { fixed: Some(fixed), .. } => {
-            Expression::isAllTrue(fixed.clone())
+            Expression::isAllTrue(fixed.clone())?
         },
         Deref @ BackendExtension::VariableAttributes::VAR_ATTR_ENUMERATION { fixed: Some(fixed), .. } => {
-            Expression::isAllTrue(fixed.clone())
+            Expression::isAllTrue(fixed.clone())?
         },
         _ => {
             false
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    b
+    Ok(b)
 }
 
-pub fn isFixable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> bool {
+pub fn isFixable(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> {
     let mut b: bool = false;
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     b = (::match_deref::match_deref! { match &(var.backendinfo.varKind.clone()) {
-        Deref @ BackendExtension::VariableKind::STATE { .. } => !(isFixed(var_ptr.clone())),
-        Deref @ BackendExtension::VariableKind::DISCRETE_STATE => !(isFixed(var_ptr.clone())) || hasPre(var_ptr.clone()),
-        Deref @ BackendExtension::VariableKind::PARAMETER { .. } => !(isFixed(var_ptr.clone())),
+        Deref @ BackendExtension::VariableKind::STATE { .. } => !(isFixed(var_ptr.clone())?),
+        Deref @ BackendExtension::VariableKind::DISCRETE_STATE => !(isFixed(var_ptr.clone())?) || hasPre(var_ptr.clone()),
+        Deref @ BackendExtension::VariableKind::PARAMETER { .. } => !(isFixed(var_ptr.clone())?),
         Deref @ BackendExtension::VariableKind::PREVIOUS => true,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    b
+    Ok(b)
 }
 
 pub fn isStateSelect(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut stateSelect: StateSelect) -> bool {
@@ -1181,7 +1181,7 @@ pub fn getTearingSelect(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariabl
             BackendExtension::VariableAttributes::getTearingSelect(variableAttributes.clone())
         },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBVariable.getTearingSelect")); __mm_s.push_str(&*literal!(" failed for ")); __mm_s.push_str(&*pointerToString(varPointer.clone())); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBVariable.getTearingSelect")); __mm_s.push_str(&*literal!(" failed for ")); __mm_s.push_str(&*pointerToString(varPointer.clone())?); ArcStr::from(__mm_s) }).clone()])?;
             bail!("fail")
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1367,7 +1367,7 @@ pub fn getRecordChildrenCref(mut cref: Arc<ComponentRef::NFComponentRef>) -> Res
     let mut children: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
     let mut subscripts: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
     let mut arg_children: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
-    subscripts = ComponentRef::subscriptsAllFlat(cref.clone());
+    subscripts = ComponentRef::subscriptsAllFlat(cref.clone())?;
     arg_children = getRecordChildren(getVarPointer(cref.clone(), metamodelica::sourceInfo!())?);
     children = ({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
@@ -1380,10 +1380,10 @@ pub fn getRecordChildrenCref(mut cref: Arc<ComponentRef::NFComponentRef>) -> Res
     Ok(children)
 }
 
-pub fn getRecordChildrenCrefOrSelf(mut cref: Arc<ComponentRef::NFComponentRef>) -> Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> {
-    let mut children: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = getRecordChildrenCref(cref.clone()).unwrap();
+pub fn getRecordChildrenCrefOrSelf(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> {
+    let mut children: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = getRecordChildrenCref(cref.clone())?;
     children = if (children.clone().is_empty()) {list![cref.clone()]} else {children.clone()};
-    children
+    Ok(children)
 }
 
 pub fn makeDummyState(mut varPointer: Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<Pointer::Pointer<Arc<Variable::NFVariable>>> {
@@ -1437,7 +1437,7 @@ pub fn makePreVar(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<(Arc<Co
             pre = fromCref(pre_cref.clone(), Variable::attributes(Pointer::access(var_ptr.clone())), Binding::EMPTY_BINDING().clone())?;
             assign_field!(pre.backendinfo = BackendExtension::BackendInfo::setVarKind(pre.backendinfo.clone(), Arc::new(openmodelica_nf_frontend::NFBackendExtension::VariableKind::PREVIOUS)));
             (pre_ptr, pre_cref) = makeVarPtrCyclic(pre.clone(), pre_cref.clone())?;
-            connectPartners(var_ptr.clone(), pre_ptr.clone(), (std::sync::Arc::new(fnptr!(BackendExtension::BackendInfo::setVarPre, Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>));
+            connectPartners(var_ptr.clone(), pre_ptr.clone(), (std::sync::Arc::new(fnptr!(BackendExtension::BackendInfo::setVarPre, Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>))?;
             ()
         },
         _ => {
@@ -1479,7 +1479,7 @@ pub fn makeSeedVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut name: ArcStr
     } });
                 assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), varKind.clone()));
                 (var_ptr, cref) = makeVarPtrCyclic(var.clone(), cref.clone())?;
-                connectPartners(old_var_ptr.clone(), var_ptr.clone(), (std::sync::Arc::new(fnptr!(BackendExtension::BackendInfo::setVarSeed, Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>));
+                connectPartners(old_var_ptr.clone(), var_ptr.clone(), (std::sync::Arc::new(fnptr!(BackendExtension::BackendInfo::setVarSeed, Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>))?;
             }
             ()
         },
@@ -1522,7 +1522,7 @@ pub fn makePDerVar(mut cref: Arc<ComponentRef::NFComponentRef>, mut name: ArcStr
     } });
                 assign_field!(var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), varKind.clone()));
                 (var_ptr, cref) = makeVarPtrCyclic(var.clone(), cref.clone())?;
-                connectPartners(res_ptr.clone(), var_ptr.clone(), (std::sync::Arc::new({ let __pe_b2 = isTmp.clone(); move |__pe_a0, __pe_a1| Ok(BackendExtension::BackendInfo::setVarPDer(__pe_a0, __pe_a1, __pe_b2.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>));
+                connectPartners(res_ptr.clone(), var_ptr.clone(), (std::sync::Arc::new({ let __pe_b2 = isTmp.clone(); move |__pe_a0, __pe_a1| Ok(BackendExtension::BackendInfo::setVarPDer(__pe_a0, __pe_a1, __pe_b2.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendInfo::BackendInfo>, Option<Pointer::Pointer<Arc<Variable::NFVariable>>>) -> Result<Arc<BackendInfo::BackendInfo>> + 'static>))?;
             }
             ()
         },
@@ -1541,12 +1541,12 @@ pub fn makeFDerVar(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<Co
         Deref @ ComponentRef::CREF { restCref: Deref @ ComponentRef::EMPTY, .. } => (::match_deref::match_deref! { match &(ComponentRef::node(cref.clone())?) {
         qual @ Deref @ InstNode::COMPONENT_NODE { .. } => {
             let mut qual = (*qual).clone();
-            assign_variant_field!(qual => InstNode::InstNode::COMPONENT_NODE; name = BackendUtil::makeFDerString((ComponentRef::toString(cref.clone())?).clone(), None));
+            assign_variant_field!(qual => InstNode::InstNode::COMPONENT_NODE; name = BackendUtil::makeFDerString((ComponentRef::toString(cref.clone())?).clone(), None)?);
             ComponentRef::fromNode(qual.clone(), ComponentRef::nodeType(cref.clone())?, metamodelica::nil(), ComponentRef::Origin::CREF.clone())
         },
         qual @ Deref @ InstNode::CLASS_NODE { .. } => {
             let mut qual = (*qual).clone();
-            assign_variant_field!(qual => InstNode::InstNode::CLASS_NODE; name = BackendUtil::makeFDerString((ComponentRef::toString(cref.clone())?).clone(), None));
+            assign_variant_field!(qual => InstNode::InstNode::CLASS_NODE; name = BackendUtil::makeFDerString((ComponentRef::toString(cref.clone())?).clone(), None)?);
             ComponentRef::fromNode(qual.clone(), ComponentRef::nodeType(cref.clone())?, metamodelica::nil(), ComponentRef::Origin::CREF.clone())
         },
         _ => {
@@ -1630,11 +1630,11 @@ pub fn makeEventVar(mut name: ArcStr, mut uniqueIndex: i32, mut var_ty: Arc<Type
     let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
     let mut iter_subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
-    iter_subs = BEquation::Iterator::normalizedSubscripts(iterator.clone(), UnorderedMap::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1))?;
+    iter_subs = BEquation::Iterator::normalizedSubscripts(iterator.clone(), UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1))?;
     if iter_subs.clone().is_empty() {
         ty = var_ty.clone();
     } else {
-        ty = Type::liftArrayLeftList(var_ty.clone(), BEquation::Iterator::dimensions(iterator.clone()));
+        ty = Type::liftArrayLeftList(var_ty.clone(), BEquation::Iterator::dimensions(iterator.clone())?);
     }
     node = Arc::new(InstNode::InstNode::VAR_NODE { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(uniqueIndex.clone())); ArcStr::from(__mm_s) }).clone(), varPointer: Pointer::create(DUMMY_VARIABLE().clone()) });
     cref = Arc::new(ComponentRef::NFComponentRef::CREF { node: node.clone(), subscripts: iter_subs.clone(), ty: ty.clone(), origin: ComponentRef::Origin::CREF.clone(), restCref: Arc::new(openmodelica_nf_frontend::NFComponentRef::EMPTY) });
@@ -1649,13 +1649,13 @@ pub fn makeEventVar(mut name: ArcStr, mut uniqueIndex: i32, mut var_ty: Arc<Type
 }
 
 pub fn makeAuxVar(mut name: ArcStr, mut uniqueIndex: i32, mut ty: Arc<Type::NFType>, mut makeParam: bool) -> Result<(Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<ComponentRef::NFComponentRef>)> {
-    fn updateBackendInfo(mut var: Arc<Variable::NFVariable>, mut makeParam: bool) -> Arc<Variable::NFVariable> {
+    fn updateBackendInfo(mut var: Arc<Variable::NFVariable>, mut makeParam: bool) -> Result<Arc<Variable::NFVariable>> {
         let mut var: Arc<Variable::NFVariable> = var;
         assign_field!(
-            var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), BackendExtension::VariableKind::fromType(Variable::typeOf(var.clone()), makeParam.clone())),
+            var.backendinfo = BackendExtension::BackendInfo::setVarKind(var.backendinfo.clone(), BackendExtension::VariableKind::fromType(Variable::typeOf(var.clone()), makeParam.clone())?),
             var.backendinfo = BackendExtension::BackendInfo::setHideResult(var.backendinfo.clone(), true)
         );
-        var
+        Ok(var)
     }
 
     let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>;
@@ -1665,11 +1665,11 @@ pub fn makeAuxVar(mut name: ArcStr, mut uniqueIndex: i32, mut ty: Arc<Type::NFTy
     node = Arc::new(InstNode::InstNode::VAR_NODE { name: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(uniqueIndex.clone())); ArcStr::from(__mm_s) }).clone(), varPointer: Pointer::create(DUMMY_VARIABLE().clone()) });
     cref = Arc::new(ComponentRef::NFComponentRef::CREF { node: node.clone(), subscripts: metamodelica::nil(), ty: ty.clone(), origin: ComponentRef::Origin::CREF.clone(), restCref: Arc::new(openmodelica_nf_frontend::NFComponentRef::EMPTY) });
     var = fromCref(cref.clone(), Attributes::DEFAULT_ATTR().clone(), Binding::EMPTY_BINDING().clone())?;
-    var = updateBackendInfo(var.clone(), makeParam.clone());
+    var = updateBackendInfo(var.clone(), makeParam.clone())?;
     assign_field!(var.children = ({
         let mut __acc: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
         for mut child in (var.children.clone()).into_iter().cloned() {
-            let __x = updateBackendInfo(child.clone(), makeParam.clone());
+            let __x = updateBackendInfo(child.clone(), makeParam.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -1764,11 +1764,11 @@ pub fn hasEvaluableBinding(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariabl
     fn isEvaluable(mut exp: Arc<Expression::NFExpression>) -> Result<bool> {
         let mut b: bool = false;
         let mut new_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-        b = Expression::isLiteralXML(exp.clone());
+        b = Expression::isLiteralXML(exp.clone())?;
         if !(b.clone()) {
-            (_, new_exp) = BEquation::Iterator::extract(exp.clone(), UnorderedSet::new((std::sync::Arc::new(fnptr!(hash, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(equalName, Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 13), UnorderedMap::new((std::sync::Arc::new(Dimension::hashList) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Dimension::NFDimension>>>) -> Result<i32> + 'static>), (std::sync::Arc::new({ let __pe_b2: Arc<dyn ::std::ops::Fn(_, _) -> Result<bool> + 'static> = (std::sync::Arc::new(Dimension::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>, Arc<Dimension::NFDimension>) -> Result<bool> + 'static>); move |__pe_a0, __pe_a1| Ok(List::isEqualOnTrue(__pe_a0, __pe_a1, __pe_b2.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<bool> + 'static>), 1))?;
+            (_, new_exp) = BEquation::Iterator::extract(exp.clone(), UnorderedSet::new((std::sync::Arc::new(hash) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(equalName) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 13), UnorderedMap::new((std::sync::Arc::new(Dimension::hashList) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Dimension::NFDimension>>>) -> Result<i32> + 'static>), (std::sync::Arc::new({ let __pe_b2: Arc<dyn ::std::ops::Fn(_, _) -> Result<bool> + 'static> = (std::sync::Arc::new(Dimension::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>, Arc<Dimension::NFDimension>) -> Result<bool> + 'static>); move |__pe_a0, __pe_a1| List::isEqualOnTrue(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(_, _) -> Result<bool> + 'static>), 1))?;
             new_exp = SimplifyExp::simplifyDump(new_exp.clone(), true, literal!("NBVariable.hasEvaluableBinding.isEvaluable"), (literal!("")).clone())?;
-            b = Expression::isLiteralXML(Ceval::tryEvalExp(new_exp.clone(), Ceval::noTarget().clone()));
+            b = Expression::isLiteralXML(Ceval::tryEvalExp(new_exp.clone(), Ceval::noTarget().clone()))?;
         }
         Ok(b)
     }
@@ -1943,9 +1943,9 @@ pub fn checkExpMap(mut exp: Arc<Expression::NFExpression>, mut func: Arc<dyn ::s
     Ok(b)
 }
 
-pub fn checkCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>, mut info: SourceInfo) -> bool {
-    let mut b: bool = func(getVarPointer(cref.clone(), info.clone()).unwrap()).unwrap();
-    b
+pub fn checkCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut func: Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>, mut info: SourceInfo) -> Result<bool> {
+    let mut b: bool = func(getVarPointer(cref.clone(), info.clone())?)?;
+    Ok(b)
 }
 
 // ==========================================================================
@@ -1991,7 +1991,7 @@ pub mod VariablePointers {
             length = 10;
         }
         if printEmpty.clone() || numberOfElements.clone() > 0 {
-            r#str = (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(" Variables (")); __mm_s.push_str(&*intString(numberOfElements.clone())); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*intString(scalarSize(variables.clone(), true))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())).clone();
+            r#str = (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(" Variables (")); __mm_s.push_str(&*intString(numberOfElements.clone())); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*intString(scalarSize(variables.clone(), true)?)); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())).clone();
             for mut i in 1..=numberOfElements.clone() {
                 if useMapping.clone() {
                     (scal_start, _) = mapping.borrow()[(i.clone()-1) as usize].clone();
@@ -2068,9 +2068,9 @@ pub mod VariablePointers {
         arr_size = std::cmp::max(size.clone(), BaseHashTable::lowBucketSize.clone());
         bucketSize = Util::nextPrime(arr_size.clone());
         if scalarized.clone() {
-            map = UnorderedMap::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), bucketSize.clone());
+            map = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), bucketSize.clone());
         } else {
-            map = UnorderedMap::new((std::sync::Arc::new(fnptr!(ComponentRef::hashStrip, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqualStrip) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), bucketSize.clone());
+            map = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hashStrip) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqualStrip) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), bucketSize.clone());
         }
         variables = Arc::new(VariablePointers { map: map.clone(), varArr: ExpandableArray::new(arr_size.clone(), Pointer::create(DUMMY_VARIABLE().clone())), scalarized: scalarized.clone() });
         variables
@@ -2079,7 +2079,7 @@ pub mod VariablePointers {
     pub fn clone(mut variables: Arc<VariablePointers>, mut shallow: bool) -> Result<Arc<VariablePointers>> {
         let mut new: Arc<VariablePointers> = Arc::new(<VariablePointers as ::std::default::Default>::default());
         if shallow.clone() {
-            new = fromList(toList(variables.clone())?, false);
+            new = fromList(toList(variables.clone())?, false)?;
         } else {
             new = fromList(({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>> = metamodelica::nil();
@@ -2088,7 +2088,7 @@ pub mod VariablePointers {
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }), false);
+    }), false)?;
         }
         Ok(new)
     }
@@ -2098,13 +2098,13 @@ pub mod VariablePointers {
         sz
     }
 
-    pub fn scalarSize(mut variables: Arc<VariablePointers>, mut resize: bool) -> i32 {
+    pub fn scalarSize(mut variables: Arc<VariablePointers>, mut resize: bool) -> Result<i32> {
         let mut sz: i32 = 0;
-        for mut var_ptr in &*toList(variables.clone()).unwrap() {
+        for mut var_ptr in &*toList(variables.clone())? {
             let mut var_ptr = var_ptr.clone();
-            sz = sz.clone() + super::size(var_ptr.clone(), resize.clone());
+            sz = sz.clone() + super::size(var_ptr.clone(), resize.clone())?;
         }
-        sz
+        Ok(sz)
     }
 
     pub fn toList(mut variables: Arc<VariablePointers>) -> Result<Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>> {
@@ -2113,22 +2113,22 @@ pub mod VariablePointers {
         Ok(var_lst)
     }
 
-    pub fn fromList(mut var_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut scalarized: bool) -> Arc<VariablePointers> {
+    pub fn fromList(mut var_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut scalarized: bool) -> Result<Arc<VariablePointers>> {
         let mut variables: Arc<VariablePointers> = Arc::new(<VariablePointers as ::std::default::Default>::default());
         variables = empty((var_lst.clone().len() as i32), scalarized.clone());
-        variables = addList(var_lst.clone(), variables.clone());
-        variables
+        variables = addList(var_lst.clone(), variables.clone())?;
+        Ok(variables)
     }
 
-    pub fn addList(mut var_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut variables: Arc<VariablePointers>) -> Arc<VariablePointers> {
+    pub fn addList(mut var_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut variables: Arc<VariablePointers>) -> Result<Arc<VariablePointers>> {
         let mut variables: Arc<VariablePointers> = variables;
-        variables = List::fold(var_lst.clone(), (std::sync::Arc::new(move |__pe_a0, __pe_a1| add(__pe_a0, __pe_a1)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<VariablePointers>) -> Result<Arc<VariablePointers>> + 'static>), variables.clone());
-        variables
+        variables = List::fold(var_lst.clone(), (std::sync::Arc::new(move |__pe_a0, __pe_a1| add(__pe_a0, __pe_a1)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<VariablePointers>) -> Result<Arc<VariablePointers>> + 'static>), variables.clone())?;
+        Ok(variables)
     }
 
     pub fn removeList(mut var_lst: Arc<metamodelica::List<Pointer::Pointer<Arc<Variable::NFVariable>>>>, mut variables: Arc<VariablePointers>) -> Result<Arc<VariablePointers>> {
         let mut variables: Arc<VariablePointers> = variables;
-        variables = List::fold(var_lst.clone(), (std::sync::Arc::new(move |__pe_a0, __pe_a1| remove(__pe_a0, __pe_a1)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<VariablePointers>) -> Result<Arc<VariablePointers>> + 'static>), variables.clone());
+        variables = List::fold(var_lst.clone(), (std::sync::Arc::new(move |__pe_a0, __pe_a1| remove(__pe_a0, __pe_a1)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<VariablePointers>) -> Result<Arc<VariablePointers>> + 'static>), variables.clone())?;
         variables = compress(variables.clone())?;
         Ok(variables)
     }
@@ -2145,7 +2145,7 @@ pub mod VariablePointers {
         }
         __acc.reverse()
     });
-        variables = fromList(vars.clone(), false);
+        variables = fromList(vars.clone(), false)?;
         Ok(variables)
     }
 
@@ -2154,7 +2154,7 @@ pub mod VariablePointers {
         let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
         let mut index: i32 = 0;
         var = Pointer::access(varPointer.clone());
-        let () = (match UnorderedMap::get(var.name.clone(), variables.map.clone()) {
+        let () = (match UnorderedMap::get(var.name.clone(), variables.map.clone())? {
         Some(mut index) if (index.clone() > 0) => {
             ExpandableArray::update(index.clone(), varPointer.clone(), variables.varArr.clone())?;
             ()
@@ -2173,7 +2173,7 @@ pub mod VariablePointers {
         let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
         let mut index: i32 = 0;
         var = Pointer::access(var_ptr.clone());
-        let () = (match UnorderedMap::get(var.name.clone(), variables.map.clone()) {
+        let () = (match UnorderedMap::get(var.name.clone(), variables.map.clone())? {
         Some(mut index) if (index.clone() > 0) => {
             ExpandableArray::delete(index.clone(), variables.varArr.clone())?;
             UnorderedMap::add(var.name.clone(), -1, variables.map.clone())?;
@@ -2201,7 +2201,7 @@ pub mod VariablePointers {
     pub fn getVarSafe(mut variables: Arc<VariablePointers>, mut cref: Arc<ComponentRef::NFComponentRef>, mut info: Option<SourceInfo>) -> Result<Pointer::Pointer<Arc<Variable::NFVariable>>> {
         let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>;
         let mut index: i32 = 0;
-        var_ptr = (match UnorderedMap::get(cref.clone(), variables.map.clone()) {
+        var_ptr = (match UnorderedMap::get(cref.clone(), variables.map.clone())? {
         Some(mut index) if (index.clone() > 0) => ExpandableArray::get(index.clone(), variables.varArr.clone())?,
         _ => {
             if isSome(info.clone()) {
@@ -2213,19 +2213,19 @@ pub mod VariablePointers {
         Ok(var_ptr)
     }
 
-    pub fn getVarIndex(mut variables: Arc<VariablePointers>, mut cref: Arc<ComponentRef::NFComponentRef>) -> i32 {
-        let mut index: i32 = UnorderedMap::getOrDefault(cref.clone(), variables.map.clone(), -1);
-        index
+    pub fn getVarIndex(mut variables: Arc<VariablePointers>, mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<i32> {
+        let mut index: i32 = UnorderedMap::getOrDefault(cref.clone(), variables.map.clone(), -1)?;
+        Ok(index)
     }
 
-    pub fn contains(mut var: Pointer::Pointer<Arc<Variable::NFVariable>>, mut variables: Arc<VariablePointers>) -> bool {
-        let mut b: bool = containsCref(getVarName(var.clone()), variables.clone());
-        b
+    pub fn contains(mut var: Pointer::Pointer<Arc<Variable::NFVariable>>, mut variables: Arc<VariablePointers>) -> Result<bool> {
+        let mut b: bool = containsCref(getVarName(var.clone()), variables.clone())?;
+        Ok(b)
     }
 
-    pub fn containsCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut variables: Arc<VariablePointers>) -> bool {
-        let mut b: bool = getVarIndex(variables.clone(), cref.clone()) > 0;
-        b
+    pub fn containsCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut variables: Arc<VariablePointers>) -> Result<bool> {
+        let mut b: bool = getVarIndex(variables.clone(), cref.clone())? > 0;
+        Ok(b)
     }
 
     pub fn getVarNames(mut variables: Arc<VariablePointers>) -> Result<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>> {
@@ -2285,7 +2285,7 @@ pub mod VariablePointers {
                 vars = metamodelica::cons(ExpandableArray::get(i.clone(), variables.varArr.clone())?, vars.clone());
             }
         }
-        variables = fromList(vars.clone(), false);
+        variables = fromList(vars.clone(), false)?;
         Ok(variables)
     }
 
@@ -2313,7 +2313,7 @@ pub mod VariablePointers {
         let mut flattened: bool = false;
         (vars, flattened) = scalarizeList(toList(variables.clone())?)?;
         if flattened.clone() {
-            variables = fromList(vars.clone(), true);
+            variables = fromList(vars.clone(), true)?;
         }
         Ok(variables)
     }
@@ -2546,9 +2546,9 @@ pub mod VarData {
     pub fn scalarSize(mut varData: Arc<VarData>, mut resize: bool) -> Result<i32> {
         let mut s: i32 = 0;
         s = (::match_deref::match_deref! { match &(varData.clone()) {
-        Deref @ VAR_DATA_SIM { .. } => VariablePointers::scalarSize(var_field!((*varData).unknowns, VarData::VAR_DATA_SIM).clone(), resize.clone()),
-        Deref @ VAR_DATA_JAC { .. } => VariablePointers::scalarSize(var_field!((*varData).unknowns, VarData::VAR_DATA_JAC).clone(), resize.clone()),
-        Deref @ VAR_DATA_HES { .. } => VariablePointers::scalarSize(var_field!((*varData).unknowns, VarData::VAR_DATA_HES).clone(), resize.clone()),
+        Deref @ VAR_DATA_SIM { .. } => VariablePointers::scalarSize(var_field!((*varData).unknowns, VarData::VAR_DATA_SIM).clone(), resize.clone())?,
+        Deref @ VAR_DATA_JAC { .. } => VariablePointers::scalarSize(var_field!((*varData).unknowns, VarData::VAR_DATA_JAC).clone(), resize.clone())?,
+        Deref @ VAR_DATA_HES { .. } => VariablePointers::scalarSize(var_field!((*varData).unknowns, VarData::VAR_DATA_HES).clone(), resize.clone())?,
         _ => bail!("match: no arm matched"),
     } });
         Ok(s)
@@ -2573,7 +2573,7 @@ pub mod VarData {
         let mut tmp: ArcStr = literal!("");
         (::match_deref::match_deref! { match &(varData.clone()) {
         Deref @ VAR_DATA_SIM { .. } => {
-            tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Variable Data Simulation (scalar unknowns: ")); __mm_s.push_str(&*intString(VariablePointers::scalarSize(var_field!((*varData).unknowns, VarData::VAR_DATA_SIM).clone(), true))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
+            tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Variable Data Simulation (scalar unknowns: ")); __mm_s.push_str(&*intString(VariablePointers::scalarSize(var_field!((*varData).unknowns, VarData::VAR_DATA_SIM).clone(), true)?)); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
             tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*StringUtil::headline_2((tmp.clone()).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             if !(full.clone()) {
                 tmp = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).unknowns, VarData::VAR_DATA_SIM).clone(), (literal!("Unknown")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).states, VarData::VAR_DATA_SIM).clone(), (literal!("Local Known")).clone(), None, false)?); __mm_s.push_str(&*VariablePointers::toString(var_field!((*varData).knowns, VarData::VAR_DATA_SIM).clone(), (literal!("Global Known")).clone(), None, false)?); ArcStr::from(__mm_s) }).clone();
@@ -2701,10 +2701,10 @@ pub mod VarData {
         varData = (::match_deref::match_deref! { match &((varData.clone(), varType.clone())) {
         (Deref @ VAR_DATA_SIM { .. }, VarType::STATE { .. }) => {
             assign_variant_field!(varData => VarData::VAR_DATA_SIM;
-                variables = VariablePointers::addList(var_lst.clone(), var_field!((*varData).variables, VarData::VAR_DATA_SIM).clone()),
-                knowns = VariablePointers::addList(var_lst.clone(), var_field!((*varData).knowns, VarData::VAR_DATA_SIM).clone()),
-                states = VariablePointers::addList(var_lst.clone(), var_field!((*varData).states, VarData::VAR_DATA_SIM).clone()),
-                initials = VariablePointers::addList(var_lst.clone(), var_field!((*varData).initials, VarData::VAR_DATA_SIM).clone()),
+                variables = VariablePointers::addList(var_lst.clone(), var_field!((*varData).variables, VarData::VAR_DATA_SIM).clone())?,
+                knowns = VariablePointers::addList(var_lst.clone(), var_field!((*varData).knowns, VarData::VAR_DATA_SIM).clone())?,
+                states = VariablePointers::addList(var_lst.clone(), var_field!((*varData).states, VarData::VAR_DATA_SIM).clone())?,
+                initials = VariablePointers::addList(var_lst.clone(), var_field!((*varData).initials, VarData::VAR_DATA_SIM).clone())?,
                 unknowns = VariablePointers::removeList(var_lst.clone(), var_field!((*varData).unknowns, VarData::VAR_DATA_SIM).clone())?,
                 algebraics = VariablePointers::removeList(var_lst.clone(), var_field!((*varData).algebraics, VarData::VAR_DATA_SIM).clone())?
             );
@@ -2712,19 +2712,19 @@ pub mod VarData {
         },
         (Deref @ VAR_DATA_SIM { .. }, VarType::STATE_DER) => {
             assign_variant_field!(varData => VarData::VAR_DATA_SIM;
-                variables = VariablePointers::addList(var_lst.clone(), var_field!((*varData).variables, VarData::VAR_DATA_SIM).clone()),
-                unknowns = VariablePointers::addList(var_lst.clone(), var_field!((*varData).unknowns, VarData::VAR_DATA_SIM).clone()),
-                derivatives = VariablePointers::addList(var_lst.clone(), var_field!((*varData).derivatives, VarData::VAR_DATA_SIM).clone()),
-                initials = VariablePointers::addList(var_lst.clone(), var_field!((*varData).initials, VarData::VAR_DATA_SIM).clone())
+                variables = VariablePointers::addList(var_lst.clone(), var_field!((*varData).variables, VarData::VAR_DATA_SIM).clone())?,
+                unknowns = VariablePointers::addList(var_lst.clone(), var_field!((*varData).unknowns, VarData::VAR_DATA_SIM).clone())?,
+                derivatives = VariablePointers::addList(var_lst.clone(), var_field!((*varData).derivatives, VarData::VAR_DATA_SIM).clone())?,
+                initials = VariablePointers::addList(var_lst.clone(), var_field!((*varData).initials, VarData::VAR_DATA_SIM).clone())?
             );
             varData.clone()
         },
         (Deref @ VAR_DATA_SIM { .. }, VarType::ALGEBRAIC) => {
             assign_variant_field!(varData => VarData::VAR_DATA_SIM;
-                variables = VariablePointers::addList(var_lst.clone(), var_field!((*varData).variables, VarData::VAR_DATA_SIM).clone()),
-                unknowns = VariablePointers::addList(var_lst.clone(), var_field!((*varData).unknowns, VarData::VAR_DATA_SIM).clone()),
-                algebraics = VariablePointers::addList(var_lst.clone(), var_field!((*varData).algebraics, VarData::VAR_DATA_SIM).clone()),
-                initials = VariablePointers::addList(var_lst.clone(), var_field!((*varData).initials, VarData::VAR_DATA_SIM).clone()),
+                variables = VariablePointers::addList(var_lst.clone(), var_field!((*varData).variables, VarData::VAR_DATA_SIM).clone())?,
+                unknowns = VariablePointers::addList(var_lst.clone(), var_field!((*varData).unknowns, VarData::VAR_DATA_SIM).clone())?,
+                algebraics = VariablePointers::addList(var_lst.clone(), var_field!((*varData).algebraics, VarData::VAR_DATA_SIM).clone())?,
+                initials = VariablePointers::addList(var_lst.clone(), var_field!((*varData).initials, VarData::VAR_DATA_SIM).clone())?,
                 states = VariablePointers::removeList(var_lst.clone(), var_field!((*varData).states, VarData::VAR_DATA_SIM).clone())?,
                 derivatives = VariablePointers::removeList(var_lst.clone(), var_field!((*varData).derivatives, VarData::VAR_DATA_SIM).clone())?,
                 knowns = VariablePointers::removeList(var_lst.clone(), var_field!((*varData).knowns, VarData::VAR_DATA_SIM).clone())?
@@ -2733,45 +2733,45 @@ pub mod VarData {
         },
         (Deref @ VAR_DATA_SIM { .. }, VarType::DISCRETE) => {
             assign_variant_field!(varData => VarData::VAR_DATA_SIM;
-                variables = VariablePointers::addList(var_lst.clone(), var_field!((*varData).variables, VarData::VAR_DATA_SIM).clone()),
-                unknowns = VariablePointers::addList(var_lst.clone(), var_field!((*varData).unknowns, VarData::VAR_DATA_SIM).clone()),
-                discretes = VariablePointers::addList(var_lst.clone(), var_field!((*varData).discretes, VarData::VAR_DATA_SIM).clone()),
-                initials = VariablePointers::addList(var_lst.clone(), var_field!((*varData).initials, VarData::VAR_DATA_SIM).clone())
+                variables = VariablePointers::addList(var_lst.clone(), var_field!((*varData).variables, VarData::VAR_DATA_SIM).clone())?,
+                unknowns = VariablePointers::addList(var_lst.clone(), var_field!((*varData).unknowns, VarData::VAR_DATA_SIM).clone())?,
+                discretes = VariablePointers::addList(var_lst.clone(), var_field!((*varData).discretes, VarData::VAR_DATA_SIM).clone())?,
+                initials = VariablePointers::addList(var_lst.clone(), var_field!((*varData).initials, VarData::VAR_DATA_SIM).clone())?
             );
             varData.clone()
         },
         (Deref @ VAR_DATA_SIM { .. }, VarType::START { .. }) => {
             assign_variant_field!(varData => VarData::VAR_DATA_SIM;
-                variables = VariablePointers::addList(var_lst.clone(), var_field!((*varData).variables, VarData::VAR_DATA_SIM).clone()),
-                initials = VariablePointers::addList(var_lst.clone(), var_field!((*varData).initials, VarData::VAR_DATA_SIM).clone())
+                variables = VariablePointers::addList(var_lst.clone(), var_field!((*varData).variables, VarData::VAR_DATA_SIM).clone())?,
+                initials = VariablePointers::addList(var_lst.clone(), var_field!((*varData).initials, VarData::VAR_DATA_SIM).clone())?
             );
             varData.clone()
         },
         (Deref @ VAR_DATA_SIM { .. }, VarType::PARAMETER { .. }) => {
             assign_variant_field!(varData => VarData::VAR_DATA_SIM;
-                variables = VariablePointers::addList(var_lst.clone(), var_field!((*varData).variables, VarData::VAR_DATA_SIM).clone()),
-                parameters = VariablePointers::addList(var_lst.clone(), var_field!((*varData).parameters, VarData::VAR_DATA_SIM).clone()),
-                knowns = VariablePointers::addList(var_lst.clone(), var_field!((*varData).knowns, VarData::VAR_DATA_SIM).clone())
+                variables = VariablePointers::addList(var_lst.clone(), var_field!((*varData).variables, VarData::VAR_DATA_SIM).clone())?,
+                parameters = VariablePointers::addList(var_lst.clone(), var_field!((*varData).parameters, VarData::VAR_DATA_SIM).clone())?,
+                knowns = VariablePointers::addList(var_lst.clone(), var_field!((*varData).knowns, VarData::VAR_DATA_SIM).clone())?
             );
             varData.clone()
         },
         (Deref @ VAR_DATA_SIM { .. }, VarType::ITERATOR { .. }) => {
             assign_variant_field!(varData => VarData::VAR_DATA_SIM;
-                variables = VariablePointers::addList(var_lst.clone(), var_field!((*varData).variables, VarData::VAR_DATA_SIM).clone()),
-                knowns = VariablePointers::addList(var_lst.clone(), var_field!((*varData).knowns, VarData::VAR_DATA_SIM).clone()),
-                artificials = VariablePointers::addList(var_lst.clone(), var_field!((*varData).artificials, VarData::VAR_DATA_SIM).clone())
+                variables = VariablePointers::addList(var_lst.clone(), var_field!((*varData).variables, VarData::VAR_DATA_SIM).clone())?,
+                knowns = VariablePointers::addList(var_lst.clone(), var_field!((*varData).knowns, VarData::VAR_DATA_SIM).clone())?,
+                artificials = VariablePointers::addList(var_lst.clone(), var_field!((*varData).artificials, VarData::VAR_DATA_SIM).clone())?
             );
             varData.clone()
         },
         (Deref @ VAR_DATA_SIM { .. }, VarType::CLOCK) => {
-            assign_variant_field!(varData => VarData::VAR_DATA_SIM; clocks = VariablePointers::addList(var_lst.clone(), var_field!((*varData).clocks, VarData::VAR_DATA_SIM).clone()));
+            assign_variant_field!(varData => VarData::VAR_DATA_SIM; clocks = VariablePointers::addList(var_lst.clone(), var_field!((*varData).clocks, VarData::VAR_DATA_SIM).clone())?);
             varData.clone()
         },
         (Deref @ VAR_DATA_SIM { .. }, VarType::RECORD { .. }) => {
             assign_variant_field!(varData => VarData::VAR_DATA_SIM;
-                variables = VariablePointers::addList(var_lst.clone(), var_field!((*varData).variables, VarData::VAR_DATA_SIM).clone()),
-                records = VariablePointers::addList(var_lst.clone(), var_field!((*varData).records, VarData::VAR_DATA_SIM).clone()),
-                knowns = VariablePointers::addList(var_lst.clone(), var_field!((*varData).knowns, VarData::VAR_DATA_SIM).clone()),
+                variables = VariablePointers::addList(var_lst.clone(), var_field!((*varData).variables, VarData::VAR_DATA_SIM).clone())?,
+                records = VariablePointers::addList(var_lst.clone(), var_field!((*varData).records, VarData::VAR_DATA_SIM).clone())?,
+                knowns = VariablePointers::addList(var_lst.clone(), var_field!((*varData).knowns, VarData::VAR_DATA_SIM).clone())?,
                 records = VariablePointers::mapPtr(var_field!((*varData).records, VarData::VAR_DATA_SIM).clone(), (std::sync::Arc::new({ let __pe_b1 = var_field!((*varData).variables, VarData::VAR_DATA_SIM).clone(); move |__pe_a0| BackendDAE::lowerRecordChildren(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<()> + 'static>))?
             );
             varData.clone()

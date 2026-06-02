@@ -80,10 +80,10 @@ pub fn instConstructor(mut path: Arc<Absyn::Path>, mut recordNode: Arc<InstNode:
     }
     if ctor_overloaded.clone() {
         (_, ctor_node, _) = Function::instFunctionRef(ctor_ref.clone(), context.clone(), info.clone())?;
-        ctor_path = InstNode::fullPath(ctor_node.clone(), false);
+        ctor_path = InstNode::fullPath(ctor_node.clone(), false)?;
         for mut f in &*Function::getCachedFuncs(ctor_node.clone())? {
             let mut f = f.clone();
-            checkOperatorConstructorOutput(f.clone(), Class::lastBaseClass(recordNode.clone()), ctor_path.clone(), info.clone())?;
+            checkOperatorConstructorOutput(f.clone(), Class::lastBaseClass(recordNode.clone())?, ctor_path.clone(), info.clone())?;
             recordNode = InstNode::cacheAddFunc(recordNode.clone(), f.clone(), false)?;
         }
     }
@@ -124,7 +124,7 @@ pub fn instOperatorFunctions(mut node: Arc<InstNode::InstNode>, mut context: i32
 
 pub fn checkOperatorRestrictions(mut operatorNode: Arc<InstNode::InstNode>) -> Result<()> {
     if !(SCodeUtil::isElementEncapsulated(InstNode::definition(operatorNode.clone())?)) {
-        Error::addSourceMessage(Error::OPERATOR_NOT_ENCAPSULATED.clone(), list![(AbsynUtil::pathString(InstNode::fullPath(operatorNode.clone(), false), (literal!(".")).clone(), true, false)?).clone()], InstNode::info(operatorNode.clone())?)?;
+        Error::addSourceMessage(Error::OPERATOR_NOT_ENCAPSULATED.clone(), list![(AbsynUtil::pathString(InstNode::fullPath(operatorNode.clone(), false)?, (literal!(".")).clone(), true, false)?).clone()], InstNode::info(operatorNode.clone())?)?;
         bail!("fail");
     }
     Ok(())

@@ -481,7 +481,7 @@ fn parseElems(mut in_elems: Arc<metamodelica::List<Arc<Absyn::ElementItem>>>, mu
                 Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementItem::ELEMENTITEM { element: Deref @ Absyn::Element::ELEMENT { finalPrefix, redeclareKeywords, innerOuter, specification: Deref @ Absyn::ElementSpec::COMPONENTS { attributes, typeSpec: tSpec, components }, info, constrainClass } }, tail: rest } => {
                     let mut e_list: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
                     let mut newName: bool = false;
-                    if AbsynUtil::typeSpecPathString(rootType.clone()) == AbsynUtil::typeSpecPathString(tSpec.clone()) && !(exp2.clone().is_empty()) {
+                    if AbsynUtil::typeSpecPathString(rootType.clone())? == AbsynUtil::typeSpecPathString(tSpec.clone())? && !(exp2.clone().is_empty()) {
                         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("... found instance provider ")); __mm_s.push_str(&*Dump::unparseTypeSpec(tSpec.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                         if hasPreferred.clone() {
                             e_list = applyModifiersPreferred(components.clone(), exp2.clone(), instance_name.clone(), (pathInClass.clone()).clone(), finalPrefix.clone(), redeclareKeywords.clone(), innerOuter.clone(), info.clone(), constrainClass.clone(), attributes.clone(), tSpec.clone(), preferred.clone())?;
@@ -840,7 +840,7 @@ pub fn getProviders(mut providers: Arc<metamodelica::List<Provider>>, mut vmodel
             let mut new_es: Arc<metamodelica::List<(Arc<Absyn::Exp>, ArcStr)>> = metamodelica::nil();
             let mut mlist: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
             let mut exp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
-            mlist = AbsynUtil::getElementItemsInClass(vmodel.clone());
+            mlist = AbsynUtil::getElementItemsInClass(vmodel.clone())?;
             comps = getAllProviderInstances((className.clone()).clone(), (template.clone()).clone(), mlist.clone(), env.clone(), metamodelica::nil(), (literal!("")).clone())?;
             let __pa0 = ::match_deref::match_deref! { match &(Parser::parsestringexp((template.clone()).clone(), (literal!("<interactive>")).clone())?) {
                 GlobalScript::Statements { interactiveStmtLst: Deref @ metamodelica::List::Cons { head: GlobalScript::Statement::IEXP { exp: __pa0, info: _ }, tail: Deref @ metamodelica::List::Nil }, semicolon: _ } => __pa0.clone(),
@@ -1063,13 +1063,13 @@ fn getAllProviderInstances(mut className: ArcStr, mut template: ArcStr, mut e_it
                     let mut def: Arc<Absyn::Class> = Arc::new(<Absyn::Class as ::std::default::Default>::default());
                     path = AbsynUtil::typeSpecPath(typeSpec.clone())?;
                     def = ProgramUtil::getPathedClassInProgram(path.clone(), env.clone(), false, false)?;
-                    if AbsynUtil::typeSpecPathString(typeSpec.clone()) == className.clone() {
+                    if AbsynUtil::typeSpecPathString(typeSpec.clone())? == className.clone() {
                         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("... found provider ")); __mm_s.push_str(&*className.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                         cnew = metamodelica::cons((components.clone(), pathInClass.clone()), in_components.clone());
                     } else {
                         cnew = in_components.clone();
                     }
-                    re_items = AbsynUtil::getElementItemsInClass(def.clone());
+                    re_items = AbsynUtil::getElementItemsInClass(def.clone())?;
                     cnew2 = parseComponents((className.clone()).clone(), (template.clone()).clone(), re_items.clone(), env.clone(), components.clone(), cnew.clone(), (pathInClass.clone()).clone())?;
                     Ok(getAllProviderInstances((className.clone()).clone(), (template.clone()).clone(), rest.clone(), env.clone(), cnew2.clone(), (pathInClass.clone()).clone())?)
                 }
@@ -1131,7 +1131,7 @@ fn parseComponents(mut className: ArcStr, mut template: ArcStr, mut e_items: Arc
 fn buildInstList(mut clazz: Arc<Absyn::Class>, mut env: Absyn::Program, mut predecessors: Arc<Client_e>, mut mediators: Arc<metamodelica::List<Mediator>>, mut client_list_in: Arc<metamodelica::List<Arc<Client_e>>>, mut instance_list: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>) -> Result<Arc<metamodelica::List<Arc<Client_e>>>> {
     let mut client_list: Arc<metamodelica::List<Arc<Client_e>>> = metamodelica::nil();
     let mut e_items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
-    e_items = AbsynUtil::getElementItemsInClass(clazz.clone());
+    e_items = AbsynUtil::getElementItemsInClass(clazz.clone())?;
     client_list = parseElementInstList(e_items.clone(), env.clone(), Arc::new(crate::Binding::Client_e::NO_PRED), mediators.clone(), client_list_in.clone(), instance_list.clone())?;
     Ok(client_list)
 }
@@ -1139,7 +1139,7 @@ fn buildInstList(mut clazz: Arc<Absyn::Class>, mut env: Absyn::Program, mut pred
 fn buildInstList2(mut clazz: Arc<Absyn::Class>, mut env: Absyn::Program, mut predecessors: Arc<Client_e>, mut mediators: Arc<metamodelica::List<Mediator>>, mut client_list_in: Arc<metamodelica::List<Arc<Client_e>>>, mut instance_list: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut rootType: TypeSpec) -> Result<Arc<metamodelica::List<Arc<Client_e>>>> {
     let mut client_list: Arc<metamodelica::List<Arc<Client_e>>> = metamodelica::nil();
     let mut e_items: Arc<metamodelica::List<Arc<Absyn::ElementItem>>> = metamodelica::nil();
-    e_items = AbsynUtil::getElementItemsInClass(clazz.clone());
+    e_items = AbsynUtil::getElementItemsInClass(clazz.clone())?;
     client_list = parseElementInstList2(e_items.clone(), env.clone(), Arc::new(crate::Binding::Client_e::NO_PRED), mediators.clone(), client_list_in.clone(), instance_list.clone(), rootType.clone())?;
     Ok(client_list)
 }
@@ -1153,7 +1153,7 @@ fn isAlreadyInList(mut ts: Arc<Absyn::TypeSpec>, mut predecessors: Arc<metamodel
             false
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Client_e::CLIENT_E { components: _, typeSpec: _, rootType: ots, def: _, instance: _, predecessors: _, mediator: _ }, tail: rest } => {
-            if (AbsynUtil::typeSpecEqual(ts.clone(), ots.clone())) {true} else {isAlreadyInList(ts.clone(), rest.clone())?}
+            if (AbsynUtil::typeSpecEqual(ts.clone(), ots.clone())?) {true} else {isAlreadyInList(ts.clone(), rest.clone())?}
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1187,7 +1187,7 @@ fn parseElementInstList(mut e_items: Arc<metamodelica::List<Arc<Absyn::ElementIt
                     let mut m: Arc<metamodelica::List<Mediator>> = metamodelica::nil();
                     path = AbsynUtil::typeSpecPath(typeSpec.clone())?;
                     def = ProgramUtil::getPathedClassInProgram(path.clone(), env.clone(), false, false)?;
-                    (isCl, iname, m) = isClient((AbsynUtil::typeSpecPathString(typeSpec.clone())).clone(), mediators.clone(), metamodelica::nil())?;
+                    (isCl, iname, m) = isClient((AbsynUtil::typeSpecPathString(typeSpec.clone())?).clone(), mediators.clone(), metamodelica::nil())?;
                     if isCl.clone() && !(isAlreadyInList(typeSpec.clone(), in_client_list.clone())?) {
                         new_predecessors = Arc::new(Client_e::CLIENT_E { components: components.clone(), typeSpec: typeSpec.clone(), rootType: typeSpec.clone(), def: def.clone(), instance: metamodelica::cons(list![(iname.clone()).clone()], instance_list.clone()), predecessors: predecessors.clone(), mediator: m.clone() });
                         l2 = metamodelica::cons(new_predecessors.clone(), in_client_list.clone());
@@ -1255,7 +1255,7 @@ fn parseElementInstList2(mut e_items: Arc<metamodelica::List<Arc<Absyn::ElementI
                     let mut m: Arc<metamodelica::List<Mediator>> = metamodelica::nil();
                     path = AbsynUtil::typeSpecPath(typeSpec.clone())?;
                     def = ProgramUtil::getPathedClassInProgram(path.clone(), env.clone(), false, false)?;
-                    (isCl, iname, m) = isClient((AbsynUtil::typeSpecPathString(typeSpec.clone())).clone(), mediators.clone(), metamodelica::nil())?;
+                    (isCl, iname, m) = isClient((AbsynUtil::typeSpecPathString(typeSpec.clone())?).clone(), mediators.clone(), metamodelica::nil())?;
                     if isCl.clone() {
                         new_predecessors = Arc::new(Client_e::CLIENT_E { components: components.clone(), typeSpec: typeSpec.clone(), rootType: rootType.clone(), def: def.clone(), instance: metamodelica::cons(list![(iname.clone()).clone()], metamodelica::cons(getComponentNames(components.clone())?, instance_list.clone())), predecessors: predecessors.clone(), mediator: m.clone() });
                         l2 = metamodelica::cons(new_predecessors.clone(), in_client_list.clone());

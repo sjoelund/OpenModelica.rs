@@ -232,7 +232,7 @@ fn CrefToMidVar(mut cref: Arc<DAE::ComponentRef>, mut state: State) -> Result<Mi
     let mut var: MidCode::Var = <MidCode::Var as ::std::default::Default>::default();
     let mut ident: ArcStr = arcstr::literal!("");
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    if !(BaseHashTable::hasKey(cref.clone(), Mutable::access(state.vars.clone()))) {
+    if !(BaseHashTable::hasKey(cref.clone(), Mutable::access(state.vars.clone()))?) {
         (ident, ty) = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ DAE::ComponentRef::CREF_IDENT { ident: ident_, identType: ty_, subscriptLst: _ } => {
             (ident_.clone(), ty_.clone())

@@ -260,7 +260,7 @@ pub fn expandEnumerationMod(mut inMod: Arc<SCode::Mod>) -> Result<Arc<SCode::Mod
         },
         Deref @ SCode::Mod::MOD { finalPrefix: f, eachPrefix: e, subModLst: submod, binding, comment: cmt, info } => {
             let mut submod = (*submod).clone();
-            (submod, changed) = List::mapFold(submod.clone(), (std::sync::Arc::new(expandEnumerationSubMod) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>, bool) -> Result<(Arc<SCode::SubMod>, bool)> + 'static>), false);
+            (submod, changed) = List::mapFold(submod.clone(), (std::sync::Arc::new(expandEnumerationSubMod) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>, bool) -> Result<(Arc<SCode::SubMod>, bool)> + 'static>), false)?;
             if (changed.clone()) {Arc::new(SCode::Mod::MOD { finalPrefix: f.clone(), eachPrefix: e.clone(), subModLst: submod.clone(), binding: binding.clone(), comment: cmt.clone(), info: info.clone() })} else {inMod.clone()}
         },
         _ => inMod.clone(),

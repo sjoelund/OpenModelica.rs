@@ -97,7 +97,7 @@ pub fn mkProgramGraph(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>
     let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
     let mut topRef: Ref = Default::default();
     topRef = FGraph::top(inGraph.clone())?;
-    outGraph = List::fold2(inProgram.clone(), (std::sync::Arc::new(mkClassGraph) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>), topRef.clone(), inKind.clone(), inGraph.clone());
+    outGraph = List::fold2(inProgram.clone(), (std::sync::Arc::new(mkClassGraph) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>), topRef.clone(), inKind.clone(), inGraph.clone())?;
     Ok(outGraph)
 }
 
@@ -233,7 +233,7 @@ pub fn mkModNode(mut inName: Name, mut inMod: Arc<SCode::Mod>, mut inModScope: F
                     (g, n) = FGraph::node(g.clone(), (name.clone()).clone(), list![inParentRef.clone()], FCore::Data::MO { m: inMod.clone() });
                     nr = FNode::toRef(n.clone());
                     FNode::addChildRef(inParentRef.clone(), (name.clone()).clone(), nr.clone(), false)?;
-                    sm = FMod::compactSubMods(sm.clone(), inModScope.clone());
+                    sm = FMod::compactSubMods(sm.clone(), inModScope.clone())?;
                     g = mkSubMods(sm.clone(), inModScope.clone(), nr.clone(), inKind.clone(), g.clone())?;
                     g = mkBindingNode(b.clone(), nr.clone(), inKind.clone(), g.clone())?;
                     Ok(g.clone())
@@ -313,7 +313,7 @@ fn mkClassChildren(mut name: ArcStr, mut inClassDef: Arc<SCode::ClassDef>, mut i
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ SCode::ClassDef::PARTS { externalDecl, clsattrs, constraintLst, initialAlgorithmLst: ials, normalAlgorithmLst: als, initialEquationLst: ieqs, normalEquationLst: eqs, elementLst: el }, g) => {
                     let mut g = (*g).clone();
-                    g = List::fold2(el.clone(), (std::sync::Arc::new(mkElementNode) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>), inParentRef.clone(), inKind.clone(), g.clone());
+                    g = List::fold2(el.clone(), (std::sync::Arc::new(mkElementNode) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>), inParentRef.clone(), inKind.clone(), g.clone())?;
                     g = mkEqNode((arcstr::literal!(FNode::eqNodeName)).clone(), eqs.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
                     g = mkEqNode((arcstr::literal!(FNode::ieqNodeName)).clone(), ieqs.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
                     g = mkAlNode((arcstr::literal!(FNode::alNodeName)).clone(), als.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
@@ -717,7 +717,7 @@ pub fn mkEqNode(mut inName: Name, mut inEqs: Arc<metamodelica::List<Arc<SCode::E
             (g, n) = FGraph::node(g.clone(), (inName.clone()).clone(), list![inParentRef.clone()], FCore::Data::EQ { name: (inName.clone()).clone(), e: inEqs.clone() });
             nr = FNode::toRef(n.clone());
             FNode::addChildRef(inParentRef.clone(), (inName.clone()).clone(), nr.clone(), false)?;
-            g = List::fold2(inEqs.clone(), (std::sync::Arc::new(fnptr!(analyseEquation, Arc<SCode::Equation>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>), nr.clone(), inKind.clone(), g.clone());
+            g = List::fold2(inEqs.clone(), (std::sync::Arc::new(analyseEquation) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>), nr.clone(), inKind.clone(), g.clone())?;
             g.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -738,7 +738,7 @@ pub fn mkAlNode(mut inName: Name, mut inAlgs: Arc<metamodelica::List<Arc<SCode::
             (g, n) = FGraph::node(g.clone(), (inName.clone()).clone(), list![inParentRef.clone()], FCore::Data::AL { name: (inName.clone()).clone(), a: inAlgs.clone() });
             nr = FNode::toRef(n.clone());
             FNode::addChildRef(inParentRef.clone(), (inName.clone()).clone(), nr.clone(), false)?;
-            g = List::fold2(inAlgs.clone(), (std::sync::Arc::new(analyseAlgorithm) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::AlgorithmSection>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>), nr.clone(), inKind.clone(), g.clone());
+            g = List::fold2(inAlgs.clone(), (std::sync::Arc::new(analyseAlgorithm) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::AlgorithmSection>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>), nr.clone(), inKind.clone(), g.clone())?;
             g.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -780,7 +780,7 @@ pub fn mkExternalNode(mut inName: Name, mut inExternalDeclOpt: Option<Arc<SCode:
             (g, n) = FGraph::node(g.clone(), (inName.clone()).clone(), list![inParentRef.clone()], FCore::Data::ED { ed: ed.clone() });
             nr = FNode::toRef(n.clone());
             FNode::addChildRef(inParentRef.clone(), (inName.clone()).clone(), nr.clone(), false)?;
-            oae = Util::applyOption(ocr.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::crefExp, Arc<Absyn::ComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>) -> Result<Arc<Absyn::Exp>> + 'static>));
+            oae = Util::applyOption(ocr.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::crefExp, Arc<Absyn::ComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>) -> Result<Arc<Absyn::Exp>> + 'static>))?;
             g = mkCrefsFromExps(List::consOption(oae.clone(), exps.clone()), nr.clone(), inKind.clone(), g.clone())?;
             g.clone()
         },
@@ -892,10 +892,10 @@ fn analyseExpTraverserExit(mut exp: Arc<Absyn::Exp>, mut graph: Graph) -> (Arc<A
     (exp, graph)
 }
 
-fn analyseEquation(mut inEquation: Arc<SCode::Equation>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Graph {
+fn analyseEquation(mut inEquation: Arc<SCode::Equation>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
-    (_, outGraph) = SCodeUtil::mapFoldEquations(inEquation.clone(), (std::sync::Arc::new({ let __pe_b1 = inParentRef.clone(); let __pe_b2 = inKind.clone(); move |__pe_a0, __pe_a3| analyseEquationTraverser(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, FCore::Graph) -> Result<(Arc<SCode::Equation>, FCore::Graph)> + 'static>), inGraph.clone());
-    outGraph
+    (_, outGraph) = SCodeUtil::mapFoldEquations(inEquation.clone(), (std::sync::Arc::new({ let __pe_b1 = inParentRef.clone(); let __pe_b2 = inKind.clone(); move |__pe_a0, __pe_a3| analyseEquationTraverser(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, FCore::Graph) -> Result<(Arc<SCode::Equation>, FCore::Graph)> + 'static>), inGraph.clone())?;
+    Ok(outGraph)
 }
 
 fn analyseEquationTraverser(mut eq: Arc<SCode::Equation>, mut r#ref: Ref, mut kind: Kind, mut graph: Graph) -> Result<(Arc<SCode::Equation>, Graph)> {
@@ -934,14 +934,14 @@ fn analyseAlgorithm(mut inAlgorithm: Arc<SCode::AlgorithmSection>, mut inParentR
         _ => bail!("pattern mismatch"),
     } };
     stmts = __pa0.clone();
-    outGraph = List::fold2(stmts.clone(), (std::sync::Arc::new(fnptr!(analyseStatement, Arc<SCode::Statement>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>), inParentRef.clone(), inKind.clone(), inGraph.clone());
+    outGraph = List::fold2(stmts.clone(), (std::sync::Arc::new(analyseStatement) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>), inParentRef.clone(), inKind.clone(), inGraph.clone())?;
     Ok(outGraph)
 }
 
-fn analyseStatement(mut inStatement: Arc<SCode::Statement>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Graph {
+fn analyseStatement(mut inStatement: Arc<SCode::Statement>, mut inParentRef: Ref, mut inKind: Kind, mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
-    (_, outGraph) = SCodeUtil::mapFoldStatements(inStatement.clone(), (std::sync::Arc::new({ let __pe_b1 = inParentRef.clone(); let __pe_b2 = inKind.clone(); move |__pe_a0, __pe_a3| analyseStatementTraverser(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, FCore::Graph) -> Result<(Arc<SCode::Statement>, FCore::Graph)> + 'static>), inGraph.clone());
-    outGraph
+    (_, outGraph) = SCodeUtil::mapFoldStatements(inStatement.clone(), (std::sync::Arc::new({ let __pe_b1 = inParentRef.clone(); let __pe_b2 = inKind.clone(); move |__pe_a0, __pe_a3| analyseStatementTraverser(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, FCore::Graph) -> Result<(Arc<SCode::Statement>, FCore::Graph)> + 'static>), inGraph.clone())?;
+    Ok(outGraph)
 }
 
 fn analyseStatementTraverser(mut stmt: Arc<SCode::Statement>, mut r#ref: Ref, mut kind: Kind, mut graph: Graph) -> Result<(Arc<SCode::Statement>, Graph)> {
@@ -950,17 +950,17 @@ fn analyseStatementTraverser(mut stmt: Arc<SCode::Statement>, mut r#ref: Ref, mu
     (stmt, graph) = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ SCode::Statement::ALG_FOR { .. } => {
             graph = addIterators(list![Arc::new(Absyn::ForIterator { name: (var_field!((*stmt).index, SCode::Statement::ALG_FOR).clone()).clone(), guardExp: None, range: None })], r#ref.clone(), kind.clone(), graph.clone())?;
-            (_, graph) = SCodeUtil::mapFoldStatementExps(stmt.clone(), (std::sync::Arc::new({ let __pe_b2 = r#ref.clone(); let __pe_b3 = kind.clone(); move |__pe_a0, __pe_a1| traverseExp(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, FCore::Graph) -> Result<(Arc<Absyn::Exp>, FCore::Graph)> + 'static>), graph.clone());
+            (_, graph) = SCodeUtil::mapFoldStatementExps(stmt.clone(), (std::sync::Arc::new({ let __pe_b2 = r#ref.clone(); let __pe_b3 = kind.clone(); move |__pe_a0, __pe_a1| traverseExp(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, FCore::Graph) -> Result<(Arc<Absyn::Exp>, FCore::Graph)> + 'static>), graph.clone())?;
             (stmt.clone(), graph.clone())
         },
         Deref @ SCode::Statement::ALG_PARFOR { .. } => {
             graph = addIterators(list![Arc::new(Absyn::ForIterator { name: (var_field!((*stmt).index, SCode::Statement::ALG_PARFOR).clone()).clone(), guardExp: None, range: None })], r#ref.clone(), kind.clone(), graph.clone())?;
-            (_, graph) = SCodeUtil::mapFoldStatementExps(stmt.clone(), (std::sync::Arc::new({ let __pe_b2 = r#ref.clone(); let __pe_b3 = kind.clone(); move |__pe_a0, __pe_a1| traverseExp(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, FCore::Graph) -> Result<(Arc<Absyn::Exp>, FCore::Graph)> + 'static>), graph.clone());
+            (_, graph) = SCodeUtil::mapFoldStatementExps(stmt.clone(), (std::sync::Arc::new({ let __pe_b2 = r#ref.clone(); let __pe_b3 = kind.clone(); move |__pe_a0, __pe_a1| traverseExp(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, FCore::Graph) -> Result<(Arc<Absyn::Exp>, FCore::Graph)> + 'static>), graph.clone())?;
             (stmt.clone(), graph.clone())
         },
         _ => {
             SCodeUtil::getStatementInfo(stmt.clone())?;
-            (_, graph) = SCodeUtil::mapFoldStatementExps(stmt.clone(), (std::sync::Arc::new({ let __pe_b2 = r#ref.clone(); let __pe_b3 = kind.clone(); move |__pe_a0, __pe_a1| traverseExp(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, FCore::Graph) -> Result<(Arc<Absyn::Exp>, FCore::Graph)> + 'static>), graph.clone());
+            (_, graph) = SCodeUtil::mapFoldStatementExps(stmt.clone(), (std::sync::Arc::new({ let __pe_b2 = r#ref.clone(); let __pe_b3 = kind.clone(); move |__pe_a0, __pe_a1| traverseExp(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, FCore::Graph) -> Result<(Arc<Absyn::Exp>, FCore::Graph)> + 'static>), graph.clone())?;
             (stmt.clone(), graph.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1048,7 +1048,7 @@ pub fn addMatchScope_helper(mut inElements: Arc<metamodelica::List<Arc<Absyn::El
             let mut el: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
             let mut g = (*g).clone();
             el = AbsynToSCode::translateElement(element.clone(), openmodelica_frontend_types::SCode::Visibility::PROTECTED)?;
-            g = List::fold2(el.clone(), (std::sync::Arc::new(mkElementNode) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>), inParentRef.clone(), inKind.clone(), g.clone());
+            g = List::fold2(el.clone(), (std::sync::Arc::new(mkElementNode) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, metamodelica::Array<FCore::Node>, FCore::Kind, FCore::Graph) -> Result<FCore::Graph> + 'static>), inParentRef.clone(), inKind.clone(), g.clone())?;
             g = addMatchScope_helper(rest.clone(), inParentRef.clone(), inKind.clone(), g.clone())?;
             g.clone()
         },

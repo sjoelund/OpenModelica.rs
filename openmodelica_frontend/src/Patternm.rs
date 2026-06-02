@@ -293,7 +293,7 @@ fn elabPattern2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut inLhs: Arc
                     let mut lhs: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
                     let mut cache = (*cache).clone();
                     let mut pattern: Arc<DAE::Pattern> = pattern.clone();
-                    lhs = List::fold(exps.clone().reverse(), (std::sync::Arc::new(fnptr!(AbsynUtil::makeCons, Arc<Absyn::Exp>, Arc<Absyn::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arc<Absyn::Exp>) -> Result<Arc<Absyn::Exp>> + 'static>), Arc::new(Absyn::Exp::ARRAY { arrayExp: metamodelica::nil() }));
+                    lhs = List::fold(exps.clone().reverse(), (std::sync::Arc::new(fnptr!(AbsynUtil::makeCons, Arc<Absyn::Exp>, Arc<Absyn::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arc<Absyn::Exp>) -> Result<Arc<Absyn::Exp>> + 'static>), Arc::new(Absyn::Exp::ARRAY { arrayExp: metamodelica::nil() }))?;
                     (cache, pattern) = elabPattern(cache.clone(), env.clone(), lhs.clone(), ty.clone(), info.clone())?;
                     Ok((cache.clone(), pattern.clone()))
                 }
@@ -352,7 +352,7 @@ fn elabPattern2(mut inCache: FCore::Cache, mut env: FCore::Graph, mut inLhs: Arc
                     let mut patterns: Arc<metamodelica::List<Arc<DAE::Pattern>>> = metamodelica::nil();
                     let mut cache = (*cache).clone();
                     let mut tys = (*tys).clone();
-                    tys = List::map(tys.clone(), (std::sync::Arc::new(Types::boxIfUnboxedType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>));
+                    tys = List::map(tys.clone(), (std::sync::Arc::new(Types::boxIfUnboxedType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>))?;
                     (cache, patterns) = elabPatternTuple(cache.clone(), env.clone(), exps.clone(), tys.clone(), info.clone(), inLhs.clone())?;
                     Ok((cache.clone(), Arc::new(DAE::Pattern::PAT_META_TUPLE { patterns: patterns.clone() })))
                 }
@@ -643,8 +643,8 @@ fn elabPatternCall(mut inCache: FCore::Cache, mut env: FCore::Graph, mut callPat
                     index = __pa5.clone();
                     utPath1 = __pa6.clone();
                     validUniontype(utPath1.clone(), utPath2.clone(), info.clone(), lhs.clone())?;
-                    fieldTypeList = List::map(fieldVarList.clone(), (std::sync::Arc::new(Types::getVarType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<DAE::Type>> + 'static>));
-                    fieldNameList = List::map(fieldVarList.clone(), (std::sync::Arc::new(TypesDump::getVarName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>));
+                    fieldTypeList = List::map(fieldVarList.clone(), (std::sync::Arc::new(Types::getVarType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<DAE::Type>> + 'static>))?;
+                    fieldNameList = List::map(fieldVarList.clone(), (std::sync::Arc::new(TypesDump::getVarName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>))?;
                     if Flags::isSet(Flags::PATTERNM_ALL_INFO.clone())? {
                         for mut namedArg in &*namedArgList.clone() {
                             let mut namedArg = namedArg.clone();
@@ -713,8 +713,8 @@ fn elabPatternCall(mut inCache: FCore::Cache, mut env: FCore::Graph, mut callPat
                     fqPath = __pa1.clone();
                     fieldVarList = __pa2.clone();
                     let true = (AbsynUtil::pathEqual(fqPath.clone(), utPath2.clone())) else { bail!("pattern mismatch") };
-                    fieldTypeList = List::map(fieldVarList.clone(), (std::sync::Arc::new(Types::getVarType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<DAE::Type>> + 'static>));
-                    fieldNameList = List::map(fieldVarList.clone(), (std::sync::Arc::new(TypesDump::getVarName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>));
+                    fieldTypeList = List::map(fieldVarList.clone(), (std::sync::Arc::new(Types::getVarType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<DAE::Type>> + 'static>))?;
+                    fieldNameList = List::map(fieldVarList.clone(), (std::sync::Arc::new(TypesDump::getVarName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>))?;
                     (funcArgs, namedArgList) = checkForAllWildCall(funcArgs.clone(), namedArgList.clone(), (fieldNameList.clone().len() as i32));
                     numPosArgs = (funcArgs.clone().len() as i32);
                     (_, fieldNamesNamed) = List::split(fieldNameList.clone(), numPosArgs.clone())?;
@@ -723,8 +723,8 @@ fn elabPatternCall(mut inCache: FCore::Cache, mut env: FCore::Graph, mut callPat
                     funcArgs2 = listAppend(funcArgs.clone(), funcArgsNamedFixed.clone());
                     let Util::SUCCESS { .. } = (checkInvalidPatternNamedArgs(invalidArgs.clone(), fieldNameList.clone(), openmodelica_util::Util::Status::SUCCESS, info.clone())?) else { bail!("pattern mismatch") };
                     (cache, patterns) = elabPatternTuple(cache.clone(), env.clone(), funcArgs2.clone(), fieldTypeList.clone(), info.clone(), lhs.clone())?;
-                    namedPatterns = List::zip3(patterns.clone(), fieldNameList.clone(), List::map(fieldTypeList.clone(), (std::sync::Arc::new(Types::simplifyType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>)));
-                    namedPatterns = List::filterOnTrue(namedPatterns.clone(), (std::sync::Arc::new(fnptr!(filterEmptyPattern, (Arc<DAE::Pattern>, ArcStr, Arc<DAE::Type>))) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Pattern>, ArcStr, Arc<DAE::Type>)) -> Result<bool> + 'static>));
+                    namedPatterns = List::zip3(patterns.clone(), fieldNameList.clone(), List::map(fieldTypeList.clone(), (std::sync::Arc::new(Types::simplifyType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>))?);
+                    namedPatterns = List::filterOnTrue(namedPatterns.clone(), (std::sync::Arc::new(fnptr!(filterEmptyPattern, (Arc<DAE::Pattern>, ArcStr, Arc<DAE::Type>))) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Pattern>, ArcStr, Arc<DAE::Type>)) -> Result<bool> + 'static>))?;
                     Ok((cache.clone(), Arc::new(DAE::Pattern::PAT_CALL_NAMED { name: fqPath.clone(), patterns: namedPatterns.clone() })))
                 }
                 _ => bail!("nomatch"),
@@ -897,7 +897,7 @@ pub fn patternStr(mut pattern: Arc<DAE::Pattern>) -> Result<ArcStr> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Pattern::PAT_META_TUPLE { patterns: pats } => {
                     let mut r#str: ArcStr = r#str.clone();
-                    r#str = stringDelimitList(List::map(pats.clone(), (std::sync::Arc::new(patternStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>) -> Result<ArcStr> + 'static>)), (literal!(",")).clone());
+                    r#str = stringDelimitList(List::map(pats.clone(), (std::sync::Arc::new(patternStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone());
                     Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) })
                 }
                 _ => bail!("nomatch"),
@@ -907,7 +907,7 @@ pub fn patternStr(mut pattern: Arc<DAE::Pattern>) -> Result<ArcStr> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::Pattern::PAT_CALL_TUPLE { patterns: pats } => {
                     let mut r#str: ArcStr = r#str.clone();
-                    r#str = stringDelimitList(List::map(pats.clone(), (std::sync::Arc::new(patternStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>) -> Result<ArcStr> + 'static>)), (literal!(",")).clone());
+                    r#str = stringDelimitList(List::map(pats.clone(), (std::sync::Arc::new(patternStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone());
                     Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) })
                 }
                 _ => bail!("nomatch"),
@@ -919,7 +919,7 @@ pub fn patternStr(mut pattern: Arc<DAE::Pattern>) -> Result<ArcStr> {
                     let mut id: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = r#str.clone();
                     id = (AbsynUtil::pathString(name.clone(), (literal!(".")).clone(), true, false)?).clone();
-                    r#str = stringDelimitList(List::map(pats.clone(), (std::sync::Arc::new(patternStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>) -> Result<ArcStr> + 'static>)), (literal!(",")).clone());
+                    r#str = stringDelimitList(List::map(pats.clone(), (std::sync::Arc::new(patternStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone());
                     Ok(stringAppendList(list![(id.clone()).clone(), (literal!("(")).clone(), (r#str.clone()).clone(), (literal!(")")).clone()]))
                 }
                 _ => bail!("nomatch"),
@@ -933,9 +933,9 @@ pub fn patternStr(mut pattern: Arc<DAE::Pattern>) -> Result<ArcStr> {
                     let mut id: ArcStr = arcstr::literal!("");
                     let mut r#str: ArcStr = r#str.clone();
                     id = (AbsynUtil::pathString(name.clone(), (literal!(".")).clone(), true, false)?).clone();
-                    fields = List::map(namedpats.clone(), std::sync::Arc::new(fnptr!(Util::tuple32, _)));
-                    patsStr = List::map1r(List::mapMap(namedpats.clone(), std::sync::Arc::new(fnptr!(Util::tuple31, _)), (std::sync::Arc::new(patternStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>) -> Result<ArcStr> + 'static>)), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (literal!("=")).clone());
-                    r#str = stringDelimitList(List::threadMap(fields.clone(), patsStr.clone(), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>)), (literal!(",")).clone());
+                    fields = List::map(namedpats.clone(), std::sync::Arc::new(fnptr!(Util::tuple32, _)))?;
+                    patsStr = List::map1r(List::mapMap(namedpats.clone(), std::sync::Arc::new(fnptr!(Util::tuple31, _)), (std::sync::Arc::new(patternStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>) -> Result<ArcStr> + 'static>))?, (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (literal!("=")).clone())?;
+                    r#str = stringDelimitList(List::threadMap(fields.clone(), patsStr.clone(), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone());
                     Ok(stringAppendList(list![(id.clone()).clone(), (literal!("(")).clone(), (r#str.clone()).clone(), (literal!(")")).clone()]))
                 }
                 _ => bail!("nomatch"),
@@ -1017,7 +1017,7 @@ pub fn elabMatchExpression(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
                     let mut env = (*env).clone();
                     let mut matchTy = (*matchTy).clone();
                     inExps = convertExpToPatterns(inExp.clone());
-                    (inExps, inputAliases, inputAliasesAndCrefs) = List::map_3(inExps.clone(), (std::sync::Arc::new(fnptr!(getInputAsBinding, Arc<Absyn::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<(Arc<Absyn::Exp>, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> + 'static>));
+                    (inExps, inputAliases, inputAliasesAndCrefs) = List::map_3(inExps.clone(), (std::sync::Arc::new(fnptr!(getInputAsBinding, Arc<Absyn::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<(Arc<Absyn::Exp>, Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> + 'static>))?;
                     (cache, elabExps, elabProps) = Static::elabExpList(cache.clone(), env.clone(), inExps.clone(), r#impl.clone(), performVectorization.clone(), pre.clone(), info.clone(), DAE::T_UNKNOWN_DEFAULT().clone())?;
                     let (__pa0, __pa1, __pa2, __pa3) = ::match_deref::match_deref! { match &(addLocalDecls(cache.clone(), env.clone(), decls.clone(), (arcstr::literal!(FCore::matchScopeName)).clone(), r#impl.clone(), info.clone())?) {
                         (__pa0, Some((__pa1, DAE::DAElist { elementLst: __pa2 }, __pa3))) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone()),
@@ -1027,14 +1027,14 @@ pub fn elabMatchExpression(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
                     env = __pa1.clone();
                     matchDecls = __pa2.clone();
                     declsTree = __pa3.clone();
-                    tys = List::map(elabProps.clone(), (std::sync::Arc::new(Types::getPropType) as std::sync::Arc<dyn ::std::ops::Fn(DAE::Properties) -> Result<Arc<DAE::Type>> + 'static>));
+                    tys = List::map(elabProps.clone(), (std::sync::Arc::new(Types::getPropType) as std::sync::Arc<dyn ::std::ops::Fn(DAE::Properties) -> Result<Arc<DAE::Type>> + 'static>))?;
                     env = addAliasesToEnv(env.clone(), tys.clone(), inputAliases.clone(), info.clone())?;
                     (cache, elabCases, resType) = elabMatchCases(cache.clone(), env.clone(), cases.clone(), tys.clone(), inputAliasesAndCrefs.clone(), declsTree.clone(), r#impl.clone(), performVectorization.clone(), pre.clone(), info.clone())?;
                     prop = DAE::Properties::PROP { type_: resType.clone(), constFlag: openmodelica_frontend_types::DAE::Const::C_VAR };
                     et = Types::simplifyType(resType.clone())?;
                     checkMatchSingleInfallibleCase(matchTy.clone(), elabCases.clone(), info.clone())?;
                     checkInfallibleNoBindingPatterns(elabCases.clone(), matchTy.clone(), info.clone())?;
-                    (elabExps, inputAliases, elabCases) = filterUnusedPatterns(elabExps.clone(), inputAliases.clone(), elabCases.clone(), info.clone(), !(isSingleInfallibleMatch(matchTy.clone(), elabCases.clone())))?;
+                    (elabExps, inputAliases, elabCases) = filterUnusedPatterns(elabExps.clone(), inputAliases.clone(), elabCases.clone(), info.clone(), !(isSingleInfallibleMatch(matchTy.clone(), elabCases.clone())?))?;
                     elabCases = caseDeadCodeElimination(matchTy.clone(), elabCases.clone(), metamodelica::nil(), metamodelica::nil(), false)?;
                     matchTy = optimizeContinueToMatch(matchTy.clone(), elabCases.clone(), info.clone())?;
                     elabCases = optimizeContinueJumps(matchTy.clone(), elabCases.clone())?;
@@ -1105,7 +1105,7 @@ fn optimizeMatchToSwitch(mut matchTy: Absyn::MatchType, mut cases: Arc<metamodel
                     _ => bail!("pattern mismatch"),
                 } };
             }
-            patternMatrix = List::transposeList(List::map(cases.clone(), (std::sync::Arc::new(getCasePatterns) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::MatchCase>) -> Result<Arc<metamodelica::List<Arc<DAE::Pattern>>>> + 'static>)))?;
+            patternMatrix = List::transposeList(List::map(cases.clone(), (std::sync::Arc::new(getCasePatterns) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::MatchCase>) -> Result<Arc<metamodelica::List<Arc<DAE::Pattern>>>> + 'static>))?)?;
             (optPatternMatrix, numNonEmptyColumns) = removeWildPatternColumnsFromMatrix(patternMatrix.clone(), metamodelica::nil(), 0)?;
             tpl = findPatternToConvertToSwitch(optPatternMatrix.clone(), 1, numNonEmptyColumns.clone(), info.clone())?;
             (_, ty, _) = tpl.clone();
@@ -1271,7 +1271,7 @@ fn findMinMod(mut inIxs: Arc<metamodelica::List<i32>>, mut inMod: i32) -> Result
             ::match_deref::match_deref! { match &__mc_input {
                 (ixs, r#mod) => {
                     let mut ixs = (*ixs).clone();
-                    ixs = List::map1(ixs.clone(), (std::sync::Arc::new(fnptr!(intMod, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), r#mod.clone());
+                    ixs = List::map1(ixs.clone(), (std::sync::Arc::new(fnptr!(intMod, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), r#mod.clone())?;
                     ixs = List::sort(ixs.clone(), (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
                     ::match_deref::match_deref! { match &(List::sortedDuplicates(ixs.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?) {
                         Deref @ metamodelica::List::Nil => (),
@@ -1309,7 +1309,7 @@ fn filterUnusedPatterns(mut inputs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut 
                     let mut cases = (*cases).clone();
                     let mut outAliases: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = outAliases.clone();
                     let mut outInputs: Arc<metamodelica::List<Arc<DAE::Exp>>> = outInputs.clone();
-                    patternMatrix = List::transposeList(List::map(cases.clone(), (std::sync::Arc::new(getCasePatterns) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::MatchCase>) -> Result<Arc<metamodelica::List<Arc<DAE::Pattern>>>> + 'static>)))?;
+                    patternMatrix = List::transposeList(List::map(cases.clone(), (std::sync::Arc::new(getCasePatterns) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::MatchCase>) -> Result<Arc<metamodelica::List<Arc<DAE::Pattern>>>> + 'static>))?)?;
                     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(filterUnusedPatterns2(inputs.clone(), inAliases.clone(), patternMatrix.clone(), false, info.clone(), emitNotifications.clone(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil())?) {
                         (true, __pa0, __pa1, __pa2) => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
                         _ => bail!("pattern mismatch"),
@@ -1318,7 +1318,7 @@ fn filterUnusedPatterns(mut inputs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut 
                     outAliases = __pa1.clone();
                     patternMatrix = __pa2.clone();
                     patternMatrix = List::transposeList(patternMatrix.clone())?;
-                    cases = setCasePatternsCheckZero(cases.clone(), patternMatrix.clone());
+                    cases = setCasePatternsCheckZero(cases.clone(), patternMatrix.clone())?;
                     Ok((outInputs.clone(), outAliases.clone(), cases.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1337,15 +1337,15 @@ fn filterUnusedPatterns(mut inputs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut 
     Ok((outInputs, outAliases, outCases))
 }
 
-fn setCasePatternsCheckZero(mut inCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, mut patternMatrix: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Pattern>>>>>) -> Arc<metamodelica::List<Arc<DAE::MatchCase>>> {
+fn setCasePatternsCheckZero(mut inCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, mut patternMatrix: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Pattern>>>>>) -> Result<Arc<metamodelica::List<Arc<DAE::MatchCase>>>> {
     let mut outCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>> = metamodelica::nil();
     outCases = (::match_deref::match_deref! { match &((inCases.clone(), patternMatrix.clone())) {
         (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Nil) => inCases.clone(),
-        (_, Deref @ metamodelica::List::Nil) => List::map1(inCases.clone(), (std::sync::Arc::new(setCasePatterns) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::MatchCase>, Arc<metamodelica::List<Arc<DAE::Pattern>>>) -> Result<Arc<DAE::MatchCase>> + 'static>), metamodelica::nil()),
-        _ => List::threadMap(inCases.clone(), patternMatrix.clone(), (std::sync::Arc::new(setCasePatterns) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::MatchCase>, Arc<metamodelica::List<Arc<DAE::Pattern>>>) -> Result<Arc<DAE::MatchCase>> + 'static>)),
+        (_, Deref @ metamodelica::List::Nil) => List::map1(inCases.clone(), (std::sync::Arc::new(setCasePatterns) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::MatchCase>, Arc<metamodelica::List<Arc<DAE::Pattern>>>) -> Result<Arc<DAE::MatchCase>> + 'static>), metamodelica::nil())?,
+        _ => List::threadMap(inCases.clone(), patternMatrix.clone(), (std::sync::Arc::new(setCasePatterns) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::MatchCase>, Arc<metamodelica::List<Arc<DAE::Pattern>>>) -> Result<Arc<DAE::MatchCase>> + 'static>))?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    outCases
+    Ok(outCases)
 }
 
 fn filterUnusedPatterns2(mut inInputs: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inAliases: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut inPatternMatrix: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Pattern>>>>>, mut change: bool, mut info: SourceInfo, mut emitNotifications: bool, mut inputsAcc: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut aliasesAcc: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, mut patternMatrixAcc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Pattern>>>>>) -> Result<(bool, Arc<metamodelica::List<Arc<DAE::Exp>>>, Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>>, Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Pattern>>>>>)> {
@@ -1455,7 +1455,7 @@ fn removePatternAsBinding(mut inPat: Arc<DAE::Pattern>, mut inTpl: ((metamodelic
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Pattern::PAT_AS { pat, id, .. }, (ht, info)) => {
-                    let true = (BaseHashTable::hasKey((id.clone()).clone(), ht.clone())) else { bail!("pattern mismatch") };
+                    let true = (BaseHashTable::hasKey((id.clone()).clone(), ht.clone())?) else { bail!("pattern mismatch") };
                     Error::assertionOrAddSourceMessage(!(Flags::isSet(Flags::PATTERNM_ALL_INFO.clone())?), Error::META_UNUSED_AS_BINDING.clone(), list![(id.clone()).clone()], info.clone())?;
                     Ok(pat.clone())
                 }
@@ -1465,7 +1465,7 @@ fn removePatternAsBinding(mut inPat: Arc<DAE::Pattern>, mut inTpl: ((metamodelic
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Pattern::PAT_AS_FUNC_PTR { pat, id }, (ht, _)) => {
-                    let true = (BaseHashTable::hasKey((id.clone()).clone(), ht.clone())) else { bail!("pattern mismatch") };
+                    let true = (BaseHashTable::hasKey((id.clone()).clone(), ht.clone())?) else { bail!("pattern mismatch") };
                     Ok(pat.clone())
                 }
                 _ => bail!("nomatch"),
@@ -1475,7 +1475,7 @@ fn removePatternAsBinding(mut inPat: Arc<DAE::Pattern>, mut inTpl: ((metamodelic
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut pat: Arc<DAE::Pattern> = pat.clone();
-                    (pat, _) = simplifyPattern(inPat.clone(), 1);
+                    (pat, _) = simplifyPattern(inPat.clone(), 1)?;
                     Ok(pat.clone())
                 }
                 _ => bail!("nomatch"),
@@ -1639,7 +1639,7 @@ fn checkDefUsePattern(mut inPat: Arc<DAE::Pattern>, mut inTpl: (Arc<AvlSetString
         },
         _ => {
             let mut pat: Arc<DAE::Pattern> = Arc::new(DAE::Pattern::PAT_WILD);
-            (pat, _) = simplifyPattern(inPat.clone(), 1);
+            (pat, _) = simplifyPattern(inPat.clone(), 1)?;
             pat.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1792,13 +1792,13 @@ fn addCasesLocalCref(mut icases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, m
     Ok(outHt)
 }
 
-fn simplifyPattern<A: Clone + 'static>(mut inPat: Arc<DAE::Pattern>, mut extra: A) -> (Arc<DAE::Pattern>, A) {
+fn simplifyPattern<A: Clone + 'static>(mut inPat: Arc<DAE::Pattern>, mut extra: A) -> Result<(Arc<DAE::Pattern>, A)> {
     let mut outPat: Arc<DAE::Pattern> = Arc::new(DAE::Pattern::PAT_WILD);
     let mut outExtra: A = extra.clone();
     outPat = (::match_deref::match_deref! { match &(inPat.clone()) {
         Deref @ DAE::Pattern::PAT_CALL_NAMED { name, patterns: namedPatterns } => {
             let mut namedPatterns = (*namedPatterns).clone();
-            namedPatterns = List::filterOnTrue(namedPatterns.clone(), (std::sync::Arc::new(fnptr!(filterEmptyPattern, (Arc<DAE::Pattern>, ArcStr, Arc<DAE::Type>))) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Pattern>, ArcStr, Arc<DAE::Type>)) -> Result<bool> + 'static>));
+            namedPatterns = List::filterOnTrue(namedPatterns.clone(), (std::sync::Arc::new(fnptr!(filterEmptyPattern, (Arc<DAE::Pattern>, ArcStr, Arc<DAE::Type>))) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::Pattern>, ArcStr, Arc<DAE::Type>)) -> Result<bool> + 'static>))?;
             if (namedPatterns.clone().is_empty()) {Arc::new(openmodelica_frontend_types::DAE::Pattern::PAT_WILD)} else {Arc::new(DAE::Pattern::PAT_CALL_NAMED { name: name.clone(), patterns: namedPatterns.clone() })}
         },
         Deref @ DAE::Pattern::PAT_CALL_TUPLE { patterns } => {
@@ -1812,7 +1812,7 @@ fn simplifyPattern<A: Clone + 'static>(mut inPat: Arc<DAE::Pattern>, mut extra: 
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    (outPat, outExtra)
+    Ok((outPat, outExtra))
 }
 
 fn addPatternAsBindings(mut inPat: Arc<DAE::Pattern>, mut inHt: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>))) -> Result<(Arc<DAE::Pattern>, (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>)))> {
@@ -1980,7 +1980,7 @@ fn filterUnusedDecls(mut matchDecls: Arc<metamodelica::List<Arc<DAE::Element>>>,
                 (Deref @ metamodelica::List::Cons { head: Deref @ DAE::Element::VAR { source: Deref @ DAE::ElementSource { info, .. }, componentRef: Deref @ DAE::ComponentRef::CREF_IDENT { ident: name, .. }, .. }, tail: rest }, acc, unusedHt) => {
                     let mut acc = (*acc).clone();
                     let mut unusedHt = (*unusedHt).clone();
-                    let false = (BaseHashTable::hasKey((name.clone()).clone(), ht.clone())) else { bail!("pattern mismatch") };
+                    let false = (BaseHashTable::hasKey((name.clone()).clone(), ht.clone())?) else { bail!("pattern mismatch") };
                     unusedHt = BaseHashTable::add((name.clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() })), unusedHt.clone())?;
                     Error::assertionOrAddSourceMessage(!(Flags::isSet(Flags::PATTERNM_ALL_INFO.clone())?), Error::META_UNUSED_DECL.clone(), list![(name.clone()).clone()], info.clone())?;
                     (acc, unusedHt) = filterUnusedDecls(rest.clone(), ht.clone(), acc.clone(), unusedHt.clone())?;
@@ -2321,7 +2321,7 @@ fn elabMatchCases(mut cache: FCore::Cache, mut env: FCore::Graph, mut cases: Arc
     let mut resExps: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
     let mut resTypes: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
     let mut tysFixed: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
-    tysFixed = List::map(tys.clone(), (std::sync::Arc::new(Types::getUniontypeIfMetarecordReplaceAllSubtypes) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>));
+    tysFixed = List::map(tys.clone(), (std::sync::Arc::new(Types::getUniontypeIfMetarecordReplaceAllSubtypes) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>))?;
     (outCache, elabCases, resExps, resTypes) = elabMatchCases2(cache.clone(), env.clone(), cases.clone(), tysFixed.clone(), inputAliases.clone(), matchExpLocalTree.clone(), r#impl.clone(), performVectorization.clone(), pre.clone(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil())?;
     (elabCases, resType) = fixCaseReturnTypes(elabCases.clone(), resExps.clone(), resTypes.clone(), info.clone())?;
     Ok((outCache, elabCases, resType))
@@ -2397,12 +2397,12 @@ fn elabMatchCase(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut acase: 
             localsTree = AvlSetString::join(matchExpLocalTree.clone(), caseLocalTree.clone())?;
             useTree = AvlSetString::new();
             (_, useTree) = Expression::traverseExpBottomUp(Arc::new(DAE::Exp::META_OPTION { exp: elabResult.clone() }), (std::sync::Arc::new(useLocalCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<AvlSetString::Tree>) -> Result<(Arc<DAE::Exp>, Arc<AvlSetString::Tree>)> + 'static>), useTree.clone())?;
-            (body, useTree) = statementListFindDeadStoreRemoveEmptyStatements(body.clone(), localsTree.clone(), useTree.clone());
+            (body, useTree) = statementListFindDeadStoreRemoveEmptyStatements(body.clone(), localsTree.clone(), useTree.clone())?;
             (_, useTree) = Expression::traverseExpBottomUp(Arc::new(DAE::Exp::META_OPTION { exp: dPatternGuard.clone() }), (std::sync::Arc::new(useLocalCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<AvlSetString::Tree>) -> Result<(Arc<DAE::Exp>, Arc<AvlSetString::Tree>)> + 'static>), useTree.clone())?;
             (elabPatterns, _) = traversePatternList(elabPatterns.clone(), (std::sync::Arc::new(checkDefUsePattern) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>, (Arc<AvlSetString::Tree>, Arc<AvlSetString::Tree>, SourceInfo)) -> Result<(Arc<DAE::Pattern>, (Arc<AvlSetString::Tree>, Arc<AvlSetString::Tree>, SourceInfo))> + 'static>), (localsTree.clone(), useTree.clone(), patternInfo.clone()))?;
             useTree = AvlSetString::new();
             (_, useTree) = Expression::traverseExpBottomUp(Arc::new(DAE::Exp::META_OPTION { exp: elabResult.clone() }), (std::sync::Arc::new(useLocalCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<AvlSetString::Tree>) -> Result<(Arc<DAE::Exp>, Arc<AvlSetString::Tree>)> + 'static>), useTree.clone())?;
-            (body, useTree) = statementListFindDeadStoreRemoveEmptyStatements(body.clone(), localsTree.clone(), useTree.clone());
+            (body, useTree) = statementListFindDeadStoreRemoveEmptyStatements(body.clone(), localsTree.clone(), useTree.clone())?;
             (_, useTree) = Expression::traverseExpBottomUp(Arc::new(DAE::Exp::META_OPTION { exp: dPatternGuard.clone() }), (std::sync::Arc::new(useLocalCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<AvlSetString::Tree>) -> Result<(Arc<DAE::Exp>, Arc<AvlSetString::Tree>)> + 'static>), useTree.clone())?;
             (elabPatterns, _) = traversePatternList(elabPatterns.clone(), (std::sync::Arc::new(checkDefUsePattern) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>, (Arc<AvlSetString::Tree>, Arc<AvlSetString::Tree>, SourceInfo)) -> Result<(Arc<DAE::Pattern>, (Arc<AvlSetString::Tree>, Arc<AvlSetString::Tree>, SourceInfo))> + 'static>), (localsTree.clone(), useTree.clone(), patternInfo.clone()))?;
             elabCase = Arc::new(DAE::MatchCase { patterns: elabPatterns.clone(), patternGuard: dPatternGuard.clone(), localDecls: caseDecls.clone(), body: body.clone(), result: elabResult.clone(), resultInfo: resultInfo.clone(), jump: 0, info: info.clone() });
@@ -2559,7 +2559,7 @@ fn elabResultExp2(mut skipPhase: bool, mut body: Arc<metamodelica::List<Arc<DAE:
                     e = __pa1.clone();
                     elabCrs1 = __pa2.clone();
                     b = __pa3.clone();
-                    let true = (List::isEqualOnTrue(elabCrs1.clone(), elabCrs2.clone(), (std::sync::Arc::new(ExpressionBasics::expEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
+                    let true = (List::isEqualOnTrue(elabCrs1.clone(), elabCrs2.clone(), (std::sync::Arc::new(ExpressionBasics::expEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
                     (b, e, i) = elabResultExp2(false, b.clone(), e.clone(), i.clone())?;
                     Ok((b.clone(), e.clone(), i.clone()))
                 }
@@ -2598,7 +2598,7 @@ fn fixCaseReturnTypes(mut icases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, 
                     let mut cases = (*cases).clone();
                     let mut exps = (*exps).clone();
                     let mut ty: Arc<DAE::Type> = ty.clone();
-                    ty = List::reduce(List::map(tys.clone(), (std::sync::Arc::new(Types::boxIfUnboxedType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>)), (std::sync::Arc::new(Types::superType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>))?;
+                    ty = List::reduce(List::map(tys.clone(), (std::sync::Arc::new(Types::boxIfUnboxedType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>))?, (std::sync::Arc::new(Types::superType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>))?;
                     ty = Types::superType(ty.clone(), ty.clone())?;
                     ty = Types::unboxedType(ty.clone())?;
                     ty = Types::makeRegularTupleFromMetaTupleOnTrue(Types::allTuple(tys.clone()), ty.clone())?;
@@ -2633,8 +2633,8 @@ fn fixCaseReturnTypes(mut icases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, 
                 _ => {
                     let mut r#str: ArcStr = arcstr::literal!("");
                     let mut tys: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
-                    tys = List::unionOnTrue(itys.clone(), metamodelica::nil(), (std::sync::Arc::new(Types::equivtypes) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, Arc<DAE::Type>) -> Result<bool> + 'static>));
-                    r#str = stringAppendList(List::map1r(List::map(tys.clone(), (std::sync::Arc::new(TypesDump::unparseType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<ArcStr> + 'static>)), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (literal!("\n  ")).clone()));
+                    tys = List::unionOnTrue(itys.clone(), metamodelica::nil(), (std::sync::Arc::new(Types::equivtypes) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, Arc<DAE::Type>) -> Result<bool> + 'static>))?;
+                    r#str = stringAppendList(List::map1r(List::map(tys.clone(), (std::sync::Arc::new(TypesDump::unparseType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<ArcStr> + 'static>))?, (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (literal!("\n  ")).clone())?);
                     Error::addSourceMessage(Error::META_MATCHEXP_RESULT_TYPES.clone(), list![(r#str.clone()).clone()], info.clone())?;
                     Ok(bail!("fail"))
                 }
@@ -2709,7 +2709,7 @@ pub fn traverseConstantPatternsHelper<T: Clone + 'static>(mut inExp: Arc<DAE::Ex
                 case_ = c.clone();
                 case_ = (::match_deref::match_deref! { match &(case_.clone()) {
         Deref @ DAE::MatchCase { .. } => {
-            (patterns, outT) = traversePatternList(case_.patterns.clone(), (std::sync::Arc::new({ let __pe_b2: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static> = func.clone(); move |__pe_a0, __pe_a1| Ok(traverseConstantPatternsHelper2(__pe_a0, __pe_a1, __pe_b2.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>, _) -> Result<_> + 'static>), outT.clone())?;
+            (patterns, outT) = traversePatternList(case_.patterns.clone(), (std::sync::Arc::new({ let __pe_b2: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static> = func.clone(); move |__pe_a0, __pe_a1| traverseConstantPatternsHelper2(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>, _) -> Result<_> + 'static>), outT.clone())?;
             if !(case_.patterns.clone() == patterns.clone()) {
                 assign_field!(case_.patterns = patterns.clone());
             }
@@ -2735,7 +2735,7 @@ pub fn traverseConstantPatternsHelper<T: Clone + 'static>(mut inExp: Arc<DAE::Ex
     Ok((outExp, outT))
 }
 
-pub fn traverseConstantPatternsHelper2<T: Clone + 'static>(mut inPattern: Arc<DAE::Pattern>, mut inExtra: T, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, T)> + 'static>) -> (Arc<DAE::Pattern>, T) {
+pub fn traverseConstantPatternsHelper2<T: Clone + 'static>(mut inPattern: Arc<DAE::Pattern>, mut inExtra: T, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, T)> + 'static>) -> Result<(Arc<DAE::Pattern>, T)> {
     pub type FuncExpType<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, T) -> Result<(Arc<DAE::Exp>, T)> + 'static>;
 
     let mut outPattern: Arc<DAE::Pattern> = Arc::new(DAE::Pattern::PAT_WILD);
@@ -2744,7 +2744,7 @@ pub fn traverseConstantPatternsHelper2<T: Clone + 'static>(mut inPattern: Arc<DA
         __esc_outPattern @ Deref @ DAE::Pattern::PAT_CONSTANT { .. } => {
             outPattern = (*__esc_outPattern).clone();
             let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            (exp, extra) = func(var_field!((*outPattern).exp, DAE::Pattern::PAT_CONSTANT).clone(), extra.clone()).unwrap();
+            (exp, extra) = func(var_field!((*outPattern).exp, DAE::Pattern::PAT_CONSTANT).clone(), extra.clone())?;
             if !(referenceEq(&var_field!((*outPattern).exp, DAE::Pattern::PAT_CONSTANT).clone(),&exp.clone())) {
                 assign_variant_field!(outPattern => DAE::Pattern::PAT_CONSTANT; exp = exp.clone());
             }
@@ -2755,7 +2755,7 @@ pub fn traverseConstantPatternsHelper2<T: Clone + 'static>(mut inPattern: Arc<DA
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    (outPattern, extra)
+    Ok((outPattern, extra))
 }
 
 pub fn traverseCases<A: Clone + 'static>(mut inCases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, A) -> Result<(Arc<DAE::Exp>, A)> + 'static>, mut inA: A) -> Result<(Arc<metamodelica::List<Arc<DAE::MatchCase>>>, A)> {
@@ -2774,7 +2774,7 @@ pub fn traverseCases<A: Clone + 'static>(mut inCases: Arc<metamodelica::List<Arc
             let mut cases1: Arc<metamodelica::List<Arc<DAE::MatchCase>>> = metamodelica::nil();
             let mut cases = (*cases).clone();
             let mut a = (*a).clone();
-            let (__pa0, (_, __pa1)) = DAEUtil::traverseDAEEquationsStmts(body.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), (func.clone(), a.clone()));
+            let (__pa0, (_, __pa1)) = DAEUtil::traverseDAEEquationsStmts(body.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), (func.clone(), a.clone()))?;
             body1 = __pa0.clone();
             a = __pa1.clone();
             (patternGuard1, a) = Expression::traverseExpOpt(patternGuard.clone(), func.clone(), a.clone())?;
@@ -2820,7 +2820,7 @@ pub fn traverseCasesTopDown<A: Clone + 'static>(mut inCases: Arc<metamodelica::L
         jump = __pa6.clone();
         info = __pa7.clone();
         tpl = (func.clone(), a.clone());
-        let (__pa8, (_, __pa9)) = DAEUtil::traverseDAEEquationsStmts(body.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsTopDownHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), tpl.clone());
+        let (__pa8, (_, __pa9)) = DAEUtil::traverseDAEEquationsStmts(body.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsTopDownHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), tpl.clone())?;
         body1 = __pa8.clone();
         a = __pa9.clone();
         (patternGuard1, a) = Expression::traverseExpOptTopDown(patternGuard.clone(), func.clone(), a.clone())?;
@@ -2871,14 +2871,14 @@ fn addLocalDecls(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut els: Ar
                     let mut res: Option<(FCore::Graph, DAE::DAElist, Arc<AvlSetString::Tree>)> = res.clone();
                     env2 = FGraph::openScope(env.clone(), openmodelica_frontend_types::SCode::Encapsulated::NOT_ENCAPSULATED, (scopeName.clone()).clone(), None)?;
                     ld2 = AbsynToSCode::translateEitemlist(ld.clone(), openmodelica_frontend_types::SCode::Visibility::PROTECTED)?;
-                    let true = (List::applyAndFold1(ld2.clone(), (std::sync::Arc::new(fnptr!(boolAnd, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), (std::sync::Arc::new(fnptr!(SCodeUtil::isComponentWithDirection, Arc<SCode::Element>, Absyn::Direction)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Absyn::Direction) -> Result<bool> + 'static>), openmodelica_ast::Absyn::Direction::BIDIR, true)) else { bail!("pattern mismatch") };
-                    (cache, b) = List::fold1(ld2.clone(), (std::sync::Arc::new(checkLocalShadowing) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, FCore::Graph, (FCore::Cache, bool)) -> Result<(FCore::Cache, bool)> + 'static>), env.clone(), (cache.clone(), false));
+                    let true = (List::applyAndFold1(ld2.clone(), (std::sync::Arc::new(fnptr!(boolAnd, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), (std::sync::Arc::new(fnptr!(SCodeUtil::isComponentWithDirection, Arc<SCode::Element>, Absyn::Direction)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Absyn::Direction) -> Result<bool> + 'static>), openmodelica_ast::Absyn::Direction::BIDIR, true)?) else { bail!("pattern mismatch") };
+                    (cache, b) = List::fold1(ld2.clone(), (std::sync::Arc::new(checkLocalShadowing) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, FCore::Graph, (FCore::Cache, bool)) -> Result<(FCore::Cache, bool)> + 'static>), env.clone(), (cache.clone(), false))?;
                     ld2 = if (b.clone()) {metamodelica::nil()} else {ld2.clone()};
                     ld_mod = InstUtil::addNomod(ld2.clone());
                     dummyFunc = ClassInf::State::FUNCTION { path: Arc::new(Absyn::Path::IDENT { name: (literal!("dummieFunc")).clone() }), isImpure: false };
                     (cache, env2, _) = InstUtil::addComponentsToEnv(cache.clone(), env2.clone(), InnerOuter::emptyInstHierarchy().clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_types::DAE::Prefix::NOPRE, dummyFunc.clone(), ld_mod.clone(), r#impl.clone())?;
                     (cache, env2, _, _, dae1, _, _, _, _, _) = Inst::instElementList(cache.clone(), env2.clone(), InnerOuter::emptyInstHierarchy().clone(), UnitAbsyn::noStore().clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_types::DAE::Prefix::NOPRE, dummyFunc.clone(), ld_mod.clone(), metamodelica::nil(), r#impl.clone(), openmodelica_frontend_inst::InstTypes::CallingScope::INNER_CALL, ConnectionGraph::EMPTY().clone(), Connect::emptySet().clone(), true)?;
-                    names = List::map(ld2.clone(), (std::sync::Arc::new(SCodeUtil::elementName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<ArcStr> + 'static>));
+                    names = List::map(ld2.clone(), (std::sync::Arc::new(SCodeUtil::elementName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<ArcStr> + 'static>))?;
                     declsTree = AvlSetString::addList(AvlSetString::new(), names.clone())?;
                     res = if (b.clone()) {None} else {Some((env2.clone(), dae1.clone(), declsTree.clone()))};
                     Ok((cache.clone(), res.clone()))
@@ -2892,12 +2892,12 @@ fn addLocalDecls(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut els: Ar
                     let mut ld2: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
                     let mut r#str: ArcStr = arcstr::literal!("");
                     ld2 = AbsynToSCode::translateEitemlist(ld.clone(), openmodelica_frontend_types::SCode::Visibility::PROTECTED)?;
-                    let __pa0 = ::match_deref::match_deref! { match &(List::filterOnTrue(ld2.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::isNotComponent, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>))) {
+                    let __pa0 = ::match_deref::match_deref! { match &(List::filterOnTrue(ld2.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::isNotComponent, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>))?) {
                         __pa0 @ Deref @ metamodelica::List::Cons { head: _, tail: _ } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
                     ld2 = __pa0.clone();
-                    r#str = stringDelimitList(List::map1(ld2.clone(), (std::sync::Arc::new(SCodeDump::unparseElementStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, SCodeDump::SCodeDumpOptions) -> Result<ArcStr> + 'static>), SCodeDump::defaultOptions.clone()), (literal!(", ")).clone());
+                    r#str = stringDelimitList(List::map1(ld2.clone(), (std::sync::Arc::new(SCodeDump::unparseElementStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, SCodeDump::SCodeDumpOptions) -> Result<ArcStr> + 'static>), SCodeDump::defaultOptions.clone())?, (literal!(", ")).clone());
                     Error::addSourceMessage(Error::META_INVALID_LOCAL_ELEMENT.clone(), list![(r#str.clone()).clone()], info.clone())?;
                     Ok((cache.clone(), None))
                 }
@@ -2912,14 +2912,14 @@ fn addLocalDecls(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut els: Ar
                     let mut ld4: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
                     let mut r#str: ArcStr = arcstr::literal!("");
                     ld2 = AbsynToSCode::translateEitemlist(ld.clone(), openmodelica_frontend_types::SCode::Visibility::PROTECTED)?;
-                    ld3 = List::select1(ld2.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::isComponentWithDirection, Arc<SCode::Element>, Absyn::Direction)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Absyn::Direction) -> Result<bool> + 'static>), openmodelica_ast::Absyn::Direction::INPUT);
-                    ld4 = List::select1(ld2.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::isComponentWithDirection, Arc<SCode::Element>, Absyn::Direction)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Absyn::Direction) -> Result<bool> + 'static>), openmodelica_ast::Absyn::Direction::OUTPUT);
+                    ld3 = List::select1(ld2.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::isComponentWithDirection, Arc<SCode::Element>, Absyn::Direction)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Absyn::Direction) -> Result<bool> + 'static>), openmodelica_ast::Absyn::Direction::INPUT)?;
+                    ld4 = List::select1(ld2.clone(), (std::sync::Arc::new(fnptr!(SCodeUtil::isComponentWithDirection, Arc<SCode::Element>, Absyn::Direction)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Absyn::Direction) -> Result<bool> + 'static>), openmodelica_ast::Absyn::Direction::OUTPUT)?;
                     let __pa0 = ::match_deref::match_deref! { match &(listAppend(ld3.clone(), ld4.clone())) {
                         __pa0 @ Deref @ metamodelica::List::Cons { head: _, tail: _ } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
                     ld2 = __pa0.clone();
-                    r#str = stringDelimitList(List::map1(ld2.clone(), (std::sync::Arc::new(SCodeDump::unparseElementStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, SCodeDump::SCodeDumpOptions) -> Result<ArcStr> + 'static>), SCodeDump::defaultOptions.clone()), (literal!(", ")).clone());
+                    r#str = stringDelimitList(List::map1(ld2.clone(), (std::sync::Arc::new(SCodeDump::unparseElementStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, SCodeDump::SCodeDumpOptions) -> Result<ArcStr> + 'static>), SCodeDump::defaultOptions.clone())?, (literal!(", ")).clone());
                     Error::addSourceMessage(Error::META_INVALID_LOCAL_ELEMENT.clone(), list![(r#str.clone()).clone()], info.clone())?;
                     Ok((cache.clone(), None))
                 }
@@ -3043,17 +3043,17 @@ fn allPatternsAlwaysMatch(mut ipats: Arc<metamodelica::List<Arc<DAE::Pattern>>>)
     b
 }
 
-fn isInfallibleNoBinding(mut pat: Arc<DAE::Pattern>) -> bool {
+fn isInfallibleNoBinding(mut pat: Arc<DAE::Pattern>) -> Result<bool> {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(pat.clone()) {
         Deref @ DAE::Pattern::PAT_META_TUPLE { patterns: pats } => {
-            List::all(pats.clone(), (std::sync::Arc::new(fnptr!(isInfallibleNoBindingOrWild, Arc<DAE::Pattern>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>) -> Result<bool> + 'static>))
+            List::all(pats.clone(), (std::sync::Arc::new(isInfallibleNoBindingOrWild) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>) -> Result<bool> + 'static>))?
         },
         Deref @ DAE::Pattern::PAT_CALL_TUPLE { patterns: pats } => {
-            List::all(pats.clone(), (std::sync::Arc::new(fnptr!(isInfallibleNoBindingOrWild, Arc<DAE::Pattern>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>) -> Result<bool> + 'static>))
+            List::all(pats.clone(), (std::sync::Arc::new(isInfallibleNoBindingOrWild) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>) -> Result<bool> + 'static>))?
         },
         Deref @ DAE::Pattern::PAT_CALL { patterns: pats, knownSingleton: true, .. } => {
-            List::all(pats.clone(), (std::sync::Arc::new(fnptr!(isInfallibleNoBindingOrWild, Arc<DAE::Pattern>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>) -> Result<bool> + 'static>))
+            List::all(pats.clone(), (std::sync::Arc::new(isInfallibleNoBindingOrWild) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>) -> Result<bool> + 'static>))?
         },
         Deref @ DAE::Pattern::PAT_CALL_NAMED { patterns: namedPats, name: _ } => {
             namedPats.clone().is_empty()
@@ -3063,41 +3063,41 @@ fn isInfallibleNoBinding(mut pat: Arc<DAE::Pattern>) -> bool {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    b
+    Ok(b)
 }
 
-fn isInfallibleNoBindingOrWild(mut pat: Arc<DAE::Pattern>) -> bool {
+fn isInfallibleNoBindingOrWild(mut pat: Arc<DAE::Pattern>) -> Result<bool> {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(pat.clone()) {
         Deref @ DAE::Pattern::PAT_WILD { .. } => true,
-        _ => isInfallibleNoBinding(pat.clone()),
+        _ => isInfallibleNoBinding(pat.clone())?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    b
+    Ok(b)
 }
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn isInfalliblePattern(mut pat: Arc<DAE::Pattern>) -> bool {
+fn isInfalliblePattern(mut pat: Arc<DAE::Pattern>) -> Result<bool> {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &(pat.clone()) {
         Deref @ DAE::Pattern::PAT_WILD { .. } => {
             true
         },
         Deref @ DAE::Pattern::PAT_AS { pat: innerPat, .. } => {
-            isInfalliblePattern(innerPat.clone())
+            isInfalliblePattern(innerPat.clone())?
         },
         Deref @ DAE::Pattern::PAT_AS_FUNC_PTR { pat: innerPat, .. } => {
-            isInfalliblePattern(innerPat.clone())
+            isInfalliblePattern(innerPat.clone())?
         },
         Deref @ DAE::Pattern::PAT_META_TUPLE { patterns: pats } => {
-            List::all(pats.clone(), (std::sync::Arc::new(fnptr!(isInfalliblePattern, Arc<DAE::Pattern>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>) -> Result<bool> + 'static>))
+            List::all(pats.clone(), (std::sync::Arc::new(isInfalliblePattern) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>) -> Result<bool> + 'static>))?
         },
         Deref @ DAE::Pattern::PAT_CALL_TUPLE { patterns: pats } => {
-            List::all(pats.clone(), (std::sync::Arc::new(fnptr!(isInfalliblePattern, Arc<DAE::Pattern>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>) -> Result<bool> + 'static>))
+            List::all(pats.clone(), (std::sync::Arc::new(isInfalliblePattern) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>) -> Result<bool> + 'static>))?
         },
         Deref @ DAE::Pattern::PAT_CALL { patterns: pats, knownSingleton: true, .. } => {
-            List::all(pats.clone(), (std::sync::Arc::new(fnptr!(isInfalliblePattern, Arc<DAE::Pattern>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>) -> Result<bool> + 'static>))
+            List::all(pats.clone(), (std::sync::Arc::new(isInfalliblePattern) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>) -> Result<bool> + 'static>))?
         },
         Deref @ DAE::Pattern::PAT_CALL_NAMED { patterns: namedPats, .. } => {
             namedPats.clone().is_empty()
@@ -3107,25 +3107,25 @@ fn isInfalliblePattern(mut pat: Arc<DAE::Pattern>) -> bool {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    b
+    Ok(b)
 }
 
-fn isSingleInfallibleMatch(mut matchType: Absyn::MatchType, mut cases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>) -> bool {
+fn isSingleInfallibleMatch(mut matchType: Absyn::MatchType, mut cases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>) -> Result<bool> {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &((matchType.clone(), cases.clone())) {
         (Absyn::MatchType::MATCH { .. }, Deref @ metamodelica::List::Cons { head: Deref @ DAE::MatchCase { patterns: pats, .. }, tail: Deref @ metamodelica::List::Nil }) => {
-            List::all(pats.clone(), (std::sync::Arc::new(fnptr!(isInfalliblePattern, Arc<DAE::Pattern>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>) -> Result<bool> + 'static>))
+            List::all(pats.clone(), (std::sync::Arc::new(isInfalliblePattern) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>) -> Result<bool> + 'static>))?
         },
         _ => {
             false
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    b
+    Ok(b)
 }
 
 fn checkMatchSingleInfallibleCase(mut matchType: Absyn::MatchType, mut cases: Arc<metamodelica::List<Arc<DAE::MatchCase>>>, mut info: SourceInfo) -> Result<()> {
-    if Flags::isSet(Flags::PATTERNM_ALL_INFO.clone())? && isSingleInfallibleMatch(matchType.clone(), cases.clone()) {
+    if Flags::isSet(Flags::PATTERNM_ALL_INFO.clone())? && isSingleInfallibleMatch(matchType.clone(), cases.clone())? {
         Error::addSourceMessage(Error::MATCH_SINGLE_INFALLIBLE_CASE.clone(), metamodelica::nil(), info.clone())?;
     }
     Ok(())
@@ -3135,7 +3135,7 @@ fn checkInfallibleNoBindingPatterns(mut cases: Arc<metamodelica::List<Arc<DAE::M
     if !(Flags::isSet(Flags::PATTERNM_ALL_INFO.clone())?) {
         return Ok(());
     }
-    if isSingleInfallibleMatch(matchType.clone(), cases.clone()) {
+    if isSingleInfallibleMatch(matchType.clone(), cases.clone())? {
         return Ok(());
     }
     for mut c in &*cases.clone() {
@@ -3159,7 +3159,7 @@ fn checkPatternInfallibleNoBinding(mut pat: Arc<DAE::Pattern>, mut info: SourceI
         Deref @ DAE::Pattern::PAT_WILD { .. } => {
             ()
         },
-        _ if (isInfallibleNoBinding(pat.clone())) => {
+        _ if (isInfallibleNoBinding(pat.clone())?) => {
             Error::addSourceMessage(Error::META_PATTERN_INFALLIBLE_NO_BINDING.clone(), list![(patternStr(pat.clone())?).clone()], info.clone())?;
             ()
         },
@@ -3439,13 +3439,13 @@ fn addAliasesToEnv(mut inEnv: FCore::Graph, mut inTypes: Arc<metamodelica::List<
     Ok(outEnv)
 }
 
-fn statementListFindDeadStoreRemoveEmptyStatements(mut inBody: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut localsTree: Arc<AvlSetString::Tree>, mut inUseTree: Arc<AvlSetString::Tree>) -> (Arc<metamodelica::List<Arc<DAE::Statement>>>, Arc<AvlSetString::Tree>) {
+fn statementListFindDeadStoreRemoveEmptyStatements(mut inBody: Arc<metamodelica::List<Arc<DAE::Statement>>>, mut localsTree: Arc<AvlSetString::Tree>, mut inUseTree: Arc<AvlSetString::Tree>) -> Result<(Arc<metamodelica::List<Arc<DAE::Statement>>>, Arc<AvlSetString::Tree>)> {
     let mut body: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
     let mut useTree: Arc<AvlSetString::Tree> = Arc::new(AvlSetString::Tree::EMPTY);
-    (body, useTree) = List::map1Fold(inBody.clone().reverse(), (std::sync::Arc::new(statementFindDeadStore) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, Arc<AvlSetString::Tree>, Arc<AvlSetString::Tree>) -> Result<(Arc<DAE::Statement>, Arc<AvlSetString::Tree>)> + 'static>), localsTree.clone(), inUseTree.clone());
-    body = List::select(body.clone(), (std::sync::Arc::new(isNotDummyStatement) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>) -> Result<bool> + 'static>));
+    (body, useTree) = List::map1Fold(inBody.clone().reverse(), (std::sync::Arc::new(statementFindDeadStore) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, Arc<AvlSetString::Tree>, Arc<AvlSetString::Tree>) -> Result<(Arc<DAE::Statement>, Arc<AvlSetString::Tree>)> + 'static>), localsTree.clone(), inUseTree.clone())?;
+    body = List::select(body.clone(), (std::sync::Arc::new(isNotDummyStatement) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>) -> Result<bool> + 'static>))?;
     body = body.clone().reverse();
-    (body, useTree)
+    Ok((body, useTree))
 }
 
 fn statementFindDeadStore(mut inStatement: Arc<DAE::Statement>, mut localsTree: Arc<AvlSetString::Tree>, mut inUseTree: Arc<AvlSetString::Tree>) -> Result<(Arc<DAE::Statement>, Arc<AvlSetString::Tree>)> {
@@ -3482,7 +3482,7 @@ fn statementFindDeadStore(mut inStatement: Arc<DAE::Statement>, mut localsTree: 
             let mut else_ = (*else_).clone();
             let mut body = (*body).clone();
             (else_, elseTree) = elseFindDeadStore(else_.clone(), localsTree.clone(), inUseTree.clone())?;
-            (body, useTree) = statementListFindDeadStoreRemoveEmptyStatements(body.clone(), localsTree.clone(), inUseTree.clone());
+            (body, useTree) = statementListFindDeadStoreRemoveEmptyStatements(body.clone(), localsTree.clone(), inUseTree.clone())?;
             (_, useTree) = Expression::traverseExpBottomUp(exp.clone(), (std::sync::Arc::new(useLocalCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<AvlSetString::Tree>) -> Result<(Arc<DAE::Exp>, Arc<AvlSetString::Tree>)> + 'static>), useTree.clone())?;
             useTree = AvlSetString::join(useTree.clone(), elseTree.clone())?;
             (Arc::new(DAE::Statement::STMT_IF { exp: exp.clone(), statementLst: body.clone(), else_: else_.clone(), source: source.clone() }), useTree.clone())
@@ -3490,9 +3490,9 @@ fn statementFindDeadStore(mut inStatement: Arc<DAE::Statement>, mut localsTree: 
         Deref @ DAE::Statement::STMT_FOR { type_: ty, iterIsArray: b, iter: id, range: exp, statementLst: body, source } => {
             let mut body = (*body).clone();
             ErrorExt::setCheckpoint(literal!("Patternm.statementFindDeadStore"));
-            (_, useTree) = List::map1Fold(body.clone(), (std::sync::Arc::new(statementFindDeadStore) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, Arc<AvlSetString::Tree>, Arc<AvlSetString::Tree>) -> Result<(Arc<DAE::Statement>, Arc<AvlSetString::Tree>)> + 'static>), localsTree.clone(), inUseTree.clone());
+            (_, useTree) = List::map1Fold(body.clone(), (std::sync::Arc::new(statementFindDeadStore) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, Arc<AvlSetString::Tree>, Arc<AvlSetString::Tree>) -> Result<(Arc<DAE::Statement>, Arc<AvlSetString::Tree>)> + 'static>), localsTree.clone(), inUseTree.clone())?;
             ErrorExt::rollBack(literal!("Patternm.statementFindDeadStore"));
-            (body, useTree) = statementListFindDeadStoreRemoveEmptyStatements(body.clone(), localsTree.clone(), useTree.clone());
+            (body, useTree) = statementListFindDeadStoreRemoveEmptyStatements(body.clone(), localsTree.clone(), useTree.clone())?;
             (_, useTree) = Expression::traverseExpBottomUp(exp.clone(), (std::sync::Arc::new(useLocalCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<AvlSetString::Tree>) -> Result<(Arc<DAE::Exp>, Arc<AvlSetString::Tree>)> + 'static>), useTree.clone())?;
             useTree = AvlSetString::join(useTree.clone(), inUseTree.clone())?;
             (Arc::new(DAE::Statement::STMT_FOR { type_: ty.clone(), iterIsArray: b.clone(), iter: (id.clone()).clone(), range: exp.clone(), statementLst: body.clone(), source: source.clone() }), useTree.clone())
@@ -3500,9 +3500,9 @@ fn statementFindDeadStore(mut inStatement: Arc<DAE::Statement>, mut localsTree: 
         Deref @ DAE::Statement::STMT_WHILE { source, statementLst: body, exp } => {
             let mut body = (*body).clone();
             ErrorExt::setCheckpoint(literal!("Patternm.statementFindDeadStore"));
-            (_, useTree) = List::map1Fold(body.clone(), (std::sync::Arc::new(statementFindDeadStore) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, Arc<AvlSetString::Tree>, Arc<AvlSetString::Tree>) -> Result<(Arc<DAE::Statement>, Arc<AvlSetString::Tree>)> + 'static>), localsTree.clone(), inUseTree.clone());
+            (_, useTree) = List::map1Fold(body.clone(), (std::sync::Arc::new(statementFindDeadStore) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>, Arc<AvlSetString::Tree>, Arc<AvlSetString::Tree>) -> Result<(Arc<DAE::Statement>, Arc<AvlSetString::Tree>)> + 'static>), localsTree.clone(), inUseTree.clone())?;
             ErrorExt::rollBack(literal!("Patternm.statementFindDeadStore"));
-            (body, useTree) = statementListFindDeadStoreRemoveEmptyStatements(body.clone(), localsTree.clone(), useTree.clone());
+            (body, useTree) = statementListFindDeadStoreRemoveEmptyStatements(body.clone(), localsTree.clone(), useTree.clone())?;
             (_, useTree) = Expression::traverseExpBottomUp(exp.clone(), (std::sync::Arc::new(useLocalCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<AvlSetString::Tree>) -> Result<(Arc<DAE::Exp>, Arc<AvlSetString::Tree>)> + 'static>), useTree.clone())?;
             useTree = AvlSetString::join(useTree.clone(), inUseTree.clone())?;
             (Arc::new(DAE::Statement::STMT_WHILE { exp: exp.clone(), statementLst: body.clone(), source: source.clone() }), useTree.clone())
@@ -3547,7 +3547,7 @@ fn statementFindDeadStore(mut inStatement: Arc<DAE::Statement>, mut localsTree: 
         },
         Deref @ DAE::Statement::STMT_FAILURE { source, body } => {
             let mut body = (*body).clone();
-            (body, useTree) = statementListFindDeadStoreRemoveEmptyStatements(body.clone(), localsTree.clone(), inUseTree.clone());
+            (body, useTree) = statementListFindDeadStoreRemoveEmptyStatements(body.clone(), localsTree.clone(), inUseTree.clone())?;
             (Arc::new(DAE::Statement::STMT_FAILURE { body: body.clone(), source: source.clone() }), useTree.clone())
         },
         _ => bail!("match: no arm matched"),
@@ -3566,7 +3566,7 @@ fn elseFindDeadStore(mut inElse: Arc<DAE::Else>, mut localsTree: Arc<AvlSetStrin
             let mut elseTree: Arc<AvlSetString::Tree> = Arc::new(AvlSetString::Tree::EMPTY);
             let mut body = (*body).clone();
             let mut else_ = (*else_).clone();
-            (body, useTree) = statementListFindDeadStoreRemoveEmptyStatements(body.clone(), localsTree.clone(), inUseTree.clone());
+            (body, useTree) = statementListFindDeadStoreRemoveEmptyStatements(body.clone(), localsTree.clone(), inUseTree.clone())?;
             (_, useTree) = Expression::traverseExpBottomUp(exp.clone(), (std::sync::Arc::new(useLocalCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<AvlSetString::Tree>) -> Result<(Arc<DAE::Exp>, Arc<AvlSetString::Tree>)> + 'static>), useTree.clone())?;
             (else_, elseTree) = elseFindDeadStore(else_.clone(), localsTree.clone(), inUseTree.clone())?;
             useTree = AvlSetString::join(useTree.clone(), elseTree.clone())?;
@@ -3576,7 +3576,7 @@ fn elseFindDeadStore(mut inElse: Arc<DAE::Else>, mut localsTree: Arc<AvlSetStrin
         Deref @ DAE::Else::ELSE { statementLst: body } => {
             let mut else_: Arc<DAE::Else> = Arc::new(DAE::Else::NOELSE);
             let mut body = (*body).clone();
-            (body, useTree) = statementListFindDeadStoreRemoveEmptyStatements(body.clone(), localsTree.clone(), inUseTree.clone());
+            (body, useTree) = statementListFindDeadStoreRemoveEmptyStatements(body.clone(), localsTree.clone(), inUseTree.clone())?;
             else_ = Arc::new(DAE::Else::ELSE { statementLst: body.clone() });
             (else_.clone(), useTree.clone())
         },
@@ -3599,7 +3599,7 @@ fn makeTupleFromMetaTuple(mut inExp: Arc<DAE::Exp>, mut inType: Arc<DAE::Type>) 
         (Deref @ DAE::Exp::META_TUPLE { listExp: exps }, Deref @ DAE::Type::T_METATUPLE { types: tys }) => {
             let mut tys2: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
             let mut exps = (*exps).clone();
-            tys2 = List::map(tys.clone(), (std::sync::Arc::new(Types::unboxedType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>));
+            tys2 = List::map(tys.clone(), (std::sync::Arc::new(Types::unboxedType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>))?;
             (exps, tys2) = Types::matchTypeTuple(exps.clone(), tys.clone(), tys2.clone(), false)?;
             (Arc::new(DAE::Exp::TUPLE { PR: exps.clone() }), Arc::new(DAE::Type::T_TUPLE { types: tys2.clone(), names: None }))
         },

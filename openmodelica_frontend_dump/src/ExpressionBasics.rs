@@ -89,10 +89,10 @@ pub fn dimensionString(mut dim: Arc<DAE::Dimension>) -> Result<ArcStr> {
     Ok(r#str)
 }
 
-pub fn dimensionsString(mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> ArcStr {
+pub fn dimensionsString(mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>>) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
-    r#str = stringDelimitList(List::map(dims.clone(), (std::sync::Arc::new(dimensionString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>) -> Result<ArcStr> + 'static>)), (literal!(",")).clone());
-    r#str
+    r#str = stringDelimitList(List::map(dims.clone(), (std::sync::Arc::new(dimensionString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone());
+    Ok(r#str)
 }
 
 pub fn shouldParenthesize(mut inOperand: Arc<DAE::Exp>, mut inOperator: Arc<DAE::Exp>, mut inLhs: bool) -> Result<bool> {
@@ -980,15 +980,15 @@ fn compareSubscriptList(mut subs1: Arc<metamodelica::List<Arc<DAE::Subscript>>>,
     Ok(comp)
 }
 
-pub fn subscriptInt(mut inSubscript: Arc<DAE::Subscript>) -> i32 {
-    let mut outInteger: i32 = expArrayIndex(subscriptIndexExp(inSubscript.clone()).unwrap()).unwrap();
-    outInteger
+pub fn subscriptInt(mut inSubscript: Arc<DAE::Subscript>) -> Result<i32> {
+    let mut outInteger: i32 = expArrayIndex(subscriptIndexExp(inSubscript.clone())?)?;
+    Ok(outInteger)
 }
 
-pub fn subscriptsInt(mut inSubscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Arc<metamodelica::List<i32>> {
+pub fn subscriptsInt(mut inSubscripts: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outIntegers: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    outIntegers = List::map(inSubscripts.clone(), (std::sync::Arc::new(fnptr!(subscriptInt, Arc<DAE::Subscript>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Subscript>) -> Result<i32> + 'static>));
-    outIntegers
+    outIntegers = List::map(inSubscripts.clone(), (std::sync::Arc::new(subscriptInt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Subscript>) -> Result<i32> + 'static>))?;
+    Ok(outIntegers)
 }
 
 pub fn expArrayIndex(mut inExp: Arc<DAE::Exp>) -> Result<i32> {
@@ -1040,12 +1040,12 @@ pub fn subscriptEqual(mut inSubscriptLst1: Arc<metamodelica::List<Arc<DAE::Subsc
     Ok(outBoolean)
 }
 
-pub fn printListStr<Type_a: Clone + 'static>(mut inTypeALst: Arc<metamodelica::List<Type_a>>, mut inFuncTypeTypeAToString: Arc<dyn ::std::ops::Fn(Type_a) -> Result<ArcStr> + 'static>, mut inString: ArcStr) -> ArcStr {
+pub fn printListStr<Type_a: Clone + 'static>(mut inTypeALst: Arc<metamodelica::List<Type_a>>, mut inFuncTypeTypeAToString: Arc<dyn ::std::ops::Fn(Type_a) -> Result<ArcStr> + 'static>, mut inString: ArcStr) -> Result<ArcStr> {
     pub type FuncTypeType_aToString<Type_a: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Type_a) -> Result<ArcStr> + 'static>;
 
     let mut outString: ArcStr = arcstr::literal!("");
-    outString = stringDelimitList(List::map(inTypeALst.clone(), inFuncTypeTypeAToString.clone()), (inString.clone()).clone());
-    outString
+    outString = stringDelimitList(List::map(inTypeALst.clone(), inFuncTypeTypeAToString.clone())?, (inString.clone()).clone());
+    Ok(outString)
 }
 
 pub fn printSubscriptStr(mut sub: Arc<DAE::Subscript>) -> Result<ArcStr> {

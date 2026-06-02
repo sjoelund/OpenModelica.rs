@@ -532,17 +532,17 @@ pub fn variabilityString(mut var: Variability) -> Result<ArcStr> {
     Ok(r#str)
 }
 
-pub fn unparseVariability(mut var: Variability, mut ty: Arc<Type::NFType>) -> ArcStr {
+pub fn unparseVariability(mut var: Variability, mut ty: Arc<Type::NFType>) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
     r#str = ((match var.clone() {
         Variability::CONSTANT => literal!("constant "),
         Variability::STRUCTURAL_PARAMETER => literal!("parameter "),
         Variability::PARAMETER { .. } => literal!("parameter "),
         Variability::NON_STRUCTURAL_PARAMETER => literal!("parameter "),
-        Variability::DISCRETE => if (Type::isDiscrete(ty.clone())) {literal!("")} else {literal!("discrete ")},
+        Variability::DISCRETE => if (Type::isDiscrete(ty.clone())?) {literal!("")} else {literal!("discrete ")},
         _ => literal!(""),
     })).clone();
-    r#str
+    Ok(r#str)
 }
 
 pub fn variabilityMax(mut var1: Variability, mut var2: Variability) -> Variability {

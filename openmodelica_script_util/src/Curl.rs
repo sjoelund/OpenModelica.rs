@@ -45,9 +45,9 @@ use arcstr::{ArcStr, literal, format};
 
 use openmodelica_util::Config;
 
-pub fn multiDownload(mut urlFileList: Arc<metamodelica::List<(Arc<metamodelica::List<ArcStr>>, ArcStr)>>, mut maxParallel: i32) -> bool {
+pub fn multiDownload(mut urlFileList: Arc<metamodelica::List<(Arc<metamodelica::List<ArcStr>>, ArcStr)>>, mut maxParallel: i32) -> Result<bool> {
     let mut success: bool = false;
     todo!(); // ExternalSection { decl: ExternalDecl { funcName: Some("om_curl_multi_download"), lang: Some("C"), output_: Some(CREF_IDENT { name: "success", subscripts: Nil }), args: Cons { head: CREF { componentRef: CREF_IDENT { name: "urlFileList", subscripts: Nil } }, tail: Cons { head: CREF { componentRef: CREF_IDENT { name: "maxParallel", subscripts: Nil } }, tail: Nil } }, annotation_: None }, annotation: None }
-    success
+    Ok(success)
 }
 

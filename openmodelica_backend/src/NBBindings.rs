@@ -69,7 +69,7 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NB
         let mut binding_clck: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
         let mut binding_disc: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
         let mut binding_rec: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
-        let mut new_iters: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>> = UnorderedSet::new((std::sync::Arc::new(fnptr!(BVariable::hash, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(BVariable::equalName, Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 13);
+        let mut new_iters: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>> = UnorderedSet::new((std::sync::Arc::new(BVariable::hash) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(BVariable::equalName) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 13);
         (::match_deref::match_deref! { match &(bdae.clone()) {
         Deref @ BackendDAE::MAIN { eqData: eqData @ Deref @ EqData::EQ_DATA_SIM { .. }, varData: varData @ Deref @ BVariable::VarData::VAR_DATA_SIM { .. }, .. } => {
             let mut bind_eqn: Pointer::Pointer<Arc<Equation::Equation>>;
@@ -129,16 +129,16 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NB
                 binding_clck = metamodelica::cons(Equation::generateBindingEquation(var.clone(), var_field!((*eqData).uniqueIndex, EqData::EqData::EQ_DATA_SIM).clone(), false, new_iters.clone())?, binding_clck.clone());
             }
             assign_variant_field!(eqData => EqData::EqData::EQ_DATA_SIM;
-                equations = EquationPointers::addList(binding_cont.clone(), var_field!((*eqData).equations, EqData::EqData::EQ_DATA_SIM).clone()),
-                simulation = EquationPointers::addList(binding_cont.clone(), var_field!((*eqData).simulation, EqData::EqData::EQ_DATA_SIM).clone()),
-                continuous = EquationPointers::addList(binding_cont.clone(), var_field!((*eqData).continuous, EqData::EqData::EQ_DATA_SIM).clone()),
-                equations = EquationPointers::addList(binding_disc.clone(), var_field!((*eqData).equations, EqData::EqData::EQ_DATA_SIM).clone()),
-                simulation = EquationPointers::addList(binding_disc.clone(), var_field!((*eqData).simulation, EqData::EqData::EQ_DATA_SIM).clone()),
-                discretes = EquationPointers::addList(binding_disc.clone(), var_field!((*eqData).discretes, EqData::EqData::EQ_DATA_SIM).clone()),
-                equations = EquationPointers::addList(binding_rec.clone(), var_field!((*eqData).equations, EqData::EqData::EQ_DATA_SIM).clone()),
-                simulation = EquationPointers::addList(binding_rec.clone(), var_field!((*eqData).simulation, EqData::EqData::EQ_DATA_SIM).clone()),
-                continuous = EquationPointers::addList(binding_rec.clone(), var_field!((*eqData).continuous, EqData::EqData::EQ_DATA_SIM).clone()),
-                clocked = EquationPointers::addList(binding_clck.clone(), var_field!((*eqData).clocked, EqData::EqData::EQ_DATA_SIM).clone())
+                equations = EquationPointers::addList(binding_cont.clone(), var_field!((*eqData).equations, EqData::EqData::EQ_DATA_SIM).clone())?,
+                simulation = EquationPointers::addList(binding_cont.clone(), var_field!((*eqData).simulation, EqData::EqData::EQ_DATA_SIM).clone())?,
+                continuous = EquationPointers::addList(binding_cont.clone(), var_field!((*eqData).continuous, EqData::EqData::EQ_DATA_SIM).clone())?,
+                equations = EquationPointers::addList(binding_disc.clone(), var_field!((*eqData).equations, EqData::EqData::EQ_DATA_SIM).clone())?,
+                simulation = EquationPointers::addList(binding_disc.clone(), var_field!((*eqData).simulation, EqData::EqData::EQ_DATA_SIM).clone())?,
+                discretes = EquationPointers::addList(binding_disc.clone(), var_field!((*eqData).discretes, EqData::EqData::EQ_DATA_SIM).clone())?,
+                equations = EquationPointers::addList(binding_rec.clone(), var_field!((*eqData).equations, EqData::EqData::EQ_DATA_SIM).clone())?,
+                simulation = EquationPointers::addList(binding_rec.clone(), var_field!((*eqData).simulation, EqData::EqData::EQ_DATA_SIM).clone())?,
+                continuous = EquationPointers::addList(binding_rec.clone(), var_field!((*eqData).continuous, EqData::EqData::EQ_DATA_SIM).clone())?,
+                clocked = EquationPointers::addList(binding_clck.clone(), var_field!((*eqData).clocked, EqData::EqData::EQ_DATA_SIM).clone())?
             );
             assign_variant_field!(bdae => BackendDAE::NBackendDAE::MAIN;
                 eqData = eqData.clone(),

@@ -94,7 +94,7 @@ pub fn getEquations(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
         _ => bail!("pattern mismatch"),
     } };
     syst = __pa0.clone();
-    ls1 = List::map(BackendEquation::equationList(syst.orderedEqs.clone()), (std::sync::Arc::new(equationStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>) -> Result<ArcStr> + 'static>));
+    ls1 = List::map(BackendEquation::equationList(syst.orderedEqs.clone())?, (std::sync::Arc::new(equationStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>) -> Result<ArcStr> + 'static>))?;
     strEqs = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("EqStr = {")); __mm_s.push_str(&*stringDelimitList(ls1.clone(), (literal!(",")).clone())); __mm_s.push_str(&*literal!("};")); ArcStr::from(__mm_s) }).clone();
     Ok(strEqs)
 }
@@ -305,7 +305,7 @@ pub fn adjacencyMatrix(mut inBackendDAE: Arc<BackendDAE::BackendDAE>) -> Result<
                     let mut eqnsl: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
                     let mut lstlst: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
                     let mut arr: metamodelica::Array<Arc<metamodelica::List<ArcStr>>> = Default::default();
-                    eqnsl = BackendEquation::equationList(eqns.clone());
+                    eqnsl = BackendEquation::equationList(eqns.clone())?;
                     lstlst = adjacencyMatrix2(vars.clone(), eqnsl.clone())?;
                     arr = metamodelica::arrayFromVec(lstlst.clone().into_iter().cloned().collect());
                     Ok(arr.clone())
@@ -475,8 +475,8 @@ fn adjacencyRow(mut inVariables: BackendDAE::Variables, mut inEquation: Arc<Back
                     let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut lstres: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
                     expl = Algorithm::getAllExps(alg.clone())?;
-                    lstres = List::map1(expl.clone(), (std::sync::Arc::new(adjacencyRowExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), vars.clone());
-                    res_1 = List::flatten(lstres.clone());
+                    lstres = List::map1(expl.clone(), (std::sync::Arc::new(adjacencyRowExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), vars.clone())?;
+                    res_1 = List::flatten(lstres.clone())?;
                     Ok(res_1.clone())
                 }
                 _ => bail!("nomatch"),
@@ -599,8 +599,8 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
                         _ => bail!("pattern mismatch"),
                     } };
                     p = __pa0.clone();
-                    p_1 = List::map1r(p.clone(), (std::sync::Arc::new(fnptr!(intSub, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), 0);
-                    pStr = List::map(p_1.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>));
+                    p_1 = List::map1r(p.clone(), (std::sync::Arc::new(fnptr!(intSub, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), 0)?;
+                    pStr = List::map(p_1.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?;
                     Ok(pStr.clone())
                 }
                 _ => bail!("nomatch"),
@@ -616,7 +616,7 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
                         _ => bail!("pattern mismatch"),
                     } };
                     p = __pa0.clone();
-                    pStr = List::map(p.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>));
+                    pStr = List::map(p.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?;
                     Ok(pStr.clone())
                 }
                 _ => bail!("nomatch"),
@@ -632,7 +632,7 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
                         _ => bail!("pattern mismatch"),
                     } };
                     p = __pa0.clone();
-                    pStr = List::map(p.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>));
+                    pStr = List::map(p.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?;
                     Ok(pStr.clone())
                 }
                 _ => bail!("nomatch"),
@@ -648,7 +648,7 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
                         _ => bail!("pattern mismatch"),
                     } };
                     p = __pa0.clone();
-                    pStr = List::map(p.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>));
+                    pStr = List::map(p.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?;
                     Ok(pStr.clone())
                 }
                 _ => bail!("nomatch"),
@@ -664,7 +664,7 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
                         _ => bail!("pattern mismatch"),
                     } };
                     p = __pa0.clone();
-                    pStr = List::map(p.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>));
+                    pStr = List::map(p.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?;
                     Ok(pStr.clone())
                 }
                 _ => bail!("nomatch"),
@@ -849,7 +849,7 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
                         _ => bail!("pattern mismatch"),
                     } };
                     p = __pa0.clone();
-                    pStr = List::map(p.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>));
+                    pStr = List::map(p.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?;
                     Ok(pStr.clone())
                 }
                 _ => bail!("nomatch"),
@@ -871,7 +871,7 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
                     let mut p: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut pStr: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     (_, p) = BackendVariable::getVar(cr.clone(), vars.clone())?;
-                    pStr = List::map(p.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>));
+                    pStr = List::map(p.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?;
                     Ok(pStr.clone())
                 }
                 _ => bail!("nomatch"),
@@ -883,7 +883,7 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
                     let mut p: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut pStr: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     (_, p) = BackendVariable::getVar(cr.clone(), vars.clone())?;
-                    pStr = List::map(p.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>));
+                    pStr = List::map(p.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?;
                     Ok(pStr.clone())
                 }
                 _ => bail!("nomatch"),
@@ -894,8 +894,8 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
                 (Deref @ DAE::Exp::CALL { expLst: expl, .. }, vars) => {
                     let mut pStr: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut lst: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
-                    lst = List::map1(expl.clone(), (std::sync::Arc::new(adjacencyRowExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), vars.clone());
-                    pStr = List::flatten(lst.clone());
+                    lst = List::map1(expl.clone(), (std::sync::Arc::new(adjacencyRowExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), vars.clone())?;
+                    pStr = List::flatten(lst.clone())?;
                     Ok(pStr.clone())
                 }
                 _ => bail!("nomatch"),
@@ -906,8 +906,8 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
                 (Deref @ DAE::Exp::ARRAY { array: expl, .. }, vars) => {
                     let mut pStr: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut lst: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
-                    lst = List::map1(expl.clone(), (std::sync::Arc::new(adjacencyRowExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), vars.clone());
-                    pStr = List::flatten(lst.clone());
+                    lst = List::map1(expl.clone(), (std::sync::Arc::new(adjacencyRowExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), vars.clone())?;
+                    pStr = List::flatten(lst.clone())?;
                     Ok(pStr.clone())
                 }
                 _ => bail!("nomatch"),
@@ -959,8 +959,8 @@ fn adjacencyRowExp(mut inExp: Arc<DAE::Exp>, mut inVariables: BackendDAE::Variab
                     let mut s1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut lst: Arc<metamodelica::List<Arc<metamodelica::List<ArcStr>>>> = metamodelica::nil();
                     s1 = adjacencyRowExp(e1.clone(), vars.clone())?;
-                    lst = List::map1(iters.clone(), (std::sync::Arc::new(adjacencyRowIter) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ReductionIterator>, BackendDAE::Variables) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), vars.clone());
-                    pStr = List::flatten(metamodelica::cons(s1.clone(), lst.clone()));
+                    lst = List::map1(iters.clone(), (std::sync::Arc::new(adjacencyRowIter) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ReductionIterator>, BackendDAE::Variables) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), vars.clone())?;
+                    pStr = List::flatten(metamodelica::cons(s1.clone(), lst.clone()))?;
                     Ok(pStr.clone())
                 }
                 _ => bail!("nomatch"),
@@ -1008,9 +1008,9 @@ fn adjacencyRowMatrixExp(mut inTplExpExpBooleanLstLst: Arc<metamodelica::List<Ar
             let mut pStr: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let mut res1_1: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let mut res2: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            res1 = List::map1(expl_1.clone(), (std::sync::Arc::new(adjacencyRowExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), vars.clone());
+            res1 = List::map1(expl_1.clone(), (std::sync::Arc::new(adjacencyRowExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), vars.clone())?;
             res2 = adjacencyRowMatrixExp(es.clone(), vars.clone())?;
-            res1_1 = List::flatten(res1.clone());
+            res1_1 = List::flatten(res1.clone())?;
             pStr = listAppend(res1_1.clone(), res2.clone());
             pStr.clone()
         },

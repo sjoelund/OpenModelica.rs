@@ -158,18 +158,18 @@ pub mod Branch {
         }
     }
     pub use self::Branch::{BRANCH,INVALID_BRANCH};
-    pub fn mapExp(mut branch: Arc<Branch>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>, mut mapBody: bool) -> Arc<Branch> {
+    pub fn mapExp(mut branch: Arc<Branch>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>, mut mapBody: bool) -> Result<Arc<Branch>> {
         let mut branch: Arc<Branch> = branch;
         let mut cond: Arc<Expression::NFExpression> = Arc::new(Expression::END);
         let mut eql: Arc<metamodelica::List<Arc<NFEquation>>> = metamodelica::nil();
         branch = (::match_deref::match_deref! { match &(branch.clone()) {
         Deref @ BRANCH { .. } => {
-            cond = func(var_field!((*branch).condition, Branch::BRANCH).clone()).unwrap();
+            cond = func(var_field!((*branch).condition, Branch::BRANCH).clone())?;
             if mapBody.clone() {
                 eql = ({
         let mut __acc: Arc<metamodelica::List<Arc<NFEquation>>> = metamodelica::nil();
         for mut e in (var_field!((*branch).body, Branch::BRANCH).clone()).into_iter().cloned() {
-            let __x = super::mapExp(e.clone(), func.clone());
+            let __x = super::mapExp(e.clone(), func.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -180,13 +180,13 @@ pub mod Branch {
             Arc::new(Branch::BRANCH { condition: cond.clone(), conditionVar: var_field!((*branch).conditionVar, Branch::BRANCH).clone(), body: eql.clone() })
         },
         Deref @ INVALID_BRANCH { .. } => {
-            assign_variant_field!(branch => Branch::INVALID_BRANCH; branch = mapExp(var_field!((*branch).branch, Branch::INVALID_BRANCH).clone(), func.clone(), false));
+            assign_variant_field!(branch => Branch::INVALID_BRANCH; branch = mapExp(var_field!((*branch).branch, Branch::INVALID_BRANCH).clone(), func.clone(), false)?);
             branch.clone()
         },
         _ => branch.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        branch
+        Ok(branch)
     }
 
     // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
@@ -395,27 +395,27 @@ pub fn scope(mut eq: Arc<NFEquation>) -> Result<Arc<InstNode::InstNode>> {
     Ok(scope)
 }
 
-pub fn info(mut eq: Arc<NFEquation>) -> SourceInfo {
-    let mut info: SourceInfo = ElementSource::getInfo(source(eq.clone()).unwrap());
-    info
+pub fn info(mut eq: Arc<NFEquation>) -> Result<SourceInfo> {
+    let mut info: SourceInfo = ElementSource::getInfo(source(eq.clone())?);
+    Ok(info)
 }
 
 pub type ApplyFn = std::sync::Arc<dyn ::std::ops::Fn(Arc<NFEquation>) -> Result<()> + 'static>;
 
-pub fn applyList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFEquation>) -> Result<()> + 'static>) -> () {
+pub fn applyList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFEquation>) -> Result<()> + 'static>) -> Result<()> {
     for mut eq in &*eql.clone() {
         let mut eq = eq.clone();
-        apply(eq.clone(), func.clone());
+        apply(eq.clone(), func.clone())?;
     }
-    ()
+    Ok(())
 }
 
-pub fn apply(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFEquation>) -> Result<()> + 'static>) -> () {
+pub fn apply(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFEquation>) -> Result<()> + 'static>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ FOR { .. } => {
             for mut e in &*var_field!((*eq).body, NFEquation::FOR).clone() {
                 let mut e = e.clone();
-                apply(e.clone(), func.clone());
+                apply(e.clone(), func.clone())?;
             }
             ()
         },
@@ -426,7 +426,7 @@ pub fn apply(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFEqu
         Deref @ Branch::BRANCH { .. } => {
             for mut e in &*var_field!((*b).body, Branch::Branch::BRANCH).clone() {
                 let mut e = e.clone();
-                apply(e.clone(), func.clone());
+                apply(e.clone(), func.clone())?;
             }
             ()
         },
@@ -443,7 +443,7 @@ pub fn apply(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFEqu
         Deref @ Branch::BRANCH { .. } => {
             for mut e in &*var_field!((*b).body, Branch::Branch::BRANCH).clone() {
                 let mut e = e.clone();
-                apply(e.clone(), func.clone());
+                apply(e.clone(), func.clone())?;
             }
             ()
         },
@@ -456,20 +456,20 @@ pub fn apply(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFEqu
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    func(eq.clone()).unwrap();
-    ()
+    func(eq.clone())?;
+    Ok(())
 }
 
 pub type MapFn = std::sync::Arc<dyn ::std::ops::Fn(Arc<NFEquation>) -> Result<Arc<NFEquation>> + 'static>;
 
-pub fn map(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFEquation>) -> Result<Arc<NFEquation>> + 'static>) -> Arc<NFEquation> {
+pub fn map(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFEquation>) -> Result<Arc<NFEquation>> + 'static>) -> Result<Arc<NFEquation>> {
     let mut eq: Arc<NFEquation> = eq;
     let () = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ FOR { .. } => {
             assign_variant_field!(eq => NFEquation::FOR; body = ({
         let mut __acc: Arc<metamodelica::List<Arc<NFEquation>>> = metamodelica::nil();
         for mut e in (var_field!((*eq).body, NFEquation::FOR).clone()).into_iter().cloned() {
-            let __x = map(e.clone(), func.clone());
+            let __x = map(e.clone(), func.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -485,7 +485,7 @@ pub fn map(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFEquat
             assign_variant_field!(b => Branch::Branch::BRANCH; body = ({
         let mut __acc: Arc<metamodelica::List<Arc<NFEquation>>> = metamodelica::nil();
         for mut e in (var_field!((*b).body, Branch::Branch::BRANCH).clone()).into_iter().cloned() {
-            let __x = map(e.clone(), func.clone());
+            let __x = map(e.clone(), func.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -510,7 +510,7 @@ pub fn map(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFEquat
             assign_variant_field!(b => Branch::Branch::BRANCH; body = ({
         let mut __acc: Arc<metamodelica::List<Arc<NFEquation>>> = metamodelica::nil();
         for mut e in (var_field!((*b).body, Branch::Branch::BRANCH).clone()).into_iter().cloned() {
-            let __x = map(e.clone(), func.clone());
+            let __x = map(e.clone(), func.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -529,8 +529,8 @@ pub fn map(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFEquat
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    eq = func(eq.clone()).unwrap();
-    eq
+    eq = func(eq.clone())?;
+    Ok(eq)
 }
 
 pub fn applyExpList(mut eq: Arc<metamodelica::List<Arc<NFEquation>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>) -> Result<()> {
@@ -694,34 +694,34 @@ pub fn applyExpShallow(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn
 
 pub type MapExpFn = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>;
 
-pub fn mapExpList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Arc<metamodelica::List<Arc<NFEquation>>> {
+pub fn mapExpList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<metamodelica::List<Arc<NFEquation>>>> {
     let mut eql: Arc<metamodelica::List<Arc<NFEquation>>> = eql;
     eql = ({
         let mut __acc: Arc<metamodelica::List<Arc<NFEquation>>> = metamodelica::nil();
         for mut eq in (eql.clone()).into_iter().cloned() {
-            let __x = mapExp(eq.clone(), func.clone());
+            let __x = mapExp(eq.clone(), func.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-    eql
+    Ok(eql)
 }
 
-pub fn mapExp(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Arc<NFEquation> {
+pub fn mapExp(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<NFEquation>> {
     let mut eq: Arc<NFEquation> = eq;
     eq = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ EQUALITY { .. } => {
             let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            e1 = func(var_field!((*eq).lhs, NFEquation::EQUALITY).clone()).unwrap();
-            e2 = func(var_field!((*eq).rhs, NFEquation::EQUALITY).clone()).unwrap();
+            e1 = func(var_field!((*eq).lhs, NFEquation::EQUALITY).clone())?;
+            e2 = func(var_field!((*eq).rhs, NFEquation::EQUALITY).clone())?;
             if (referenceEq(&e1.clone(),&var_field!((*eq).lhs, NFEquation::EQUALITY).clone()) && referenceEq(&e2.clone(),&var_field!((*eq).rhs, NFEquation::EQUALITY).clone())) {eq.clone()} else {Arc::new(NFEquation::EQUALITY { lhs: e1.clone(), rhs: e2.clone(), ty: var_field!((*eq).ty, NFEquation::EQUALITY).clone(), scope: var_field!((*eq).scope, NFEquation::EQUALITY).clone(), source: var_field!((*eq).source, NFEquation::EQUALITY).clone(), scalarizeMode: var_field!((*eq).scalarizeMode, NFEquation::EQUALITY).clone() })}
         },
         Deref @ CONNECT { .. } => {
             let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            e1 = func(var_field!((*eq).lhs, NFEquation::CONNECT).clone()).unwrap();
-            e2 = func(var_field!((*eq).rhs, NFEquation::CONNECT).clone()).unwrap();
+            e1 = func(var_field!((*eq).lhs, NFEquation::CONNECT).clone())?;
+            e2 = func(var_field!((*eq).rhs, NFEquation::CONNECT).clone())?;
             if (referenceEq(&e1.clone(),&var_field!((*eq).lhs, NFEquation::CONNECT).clone()) && referenceEq(&e2.clone(),&var_field!((*eq).rhs, NFEquation::CONNECT).clone())) {eq.clone()} else {Arc::new(NFEquation::CONNECT { lhs: e1.clone(), rhs: e2.clone(), scope: var_field!((*eq).scope, NFEquation::CONNECT).clone(), source: var_field!((*eq).source, NFEquation::CONNECT).clone() })}
         },
         Deref @ FOR { .. } => {
@@ -729,12 +729,12 @@ pub fn mapExp(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expr
                 body = ({
         let mut __acc: Arc<metamodelica::List<Arc<NFEquation>>> = metamodelica::nil();
         for mut e in (var_field!((*eq).body, NFEquation::FOR).clone()).into_iter().cloned() {
-            let __x = mapExp(e.clone(), func.clone());
+            let __x = mapExp(e.clone(), func.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }),
-                range = Util::applyOption(var_field!((*eq).range, NFEquation::FOR).clone(), func.clone())
+                range = Util::applyOption(var_field!((*eq).range, NFEquation::FOR).clone(), func.clone())?
             );
             eq.clone()
         },
@@ -742,7 +742,7 @@ pub fn mapExp(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expr
             assign_variant_field!(eq => NFEquation::IF; branches = ({
         let mut __acc: Arc<metamodelica::List<Arc<Branch::Branch>>> = metamodelica::nil();
         for mut b in (var_field!((*eq).branches, NFEquation::IF).clone()).into_iter().cloned() {
-            let __x = Branch::mapExp(b.clone(), func.clone(), true);
+            let __x = Branch::mapExp(b.clone(), func.clone(), true)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -753,7 +753,7 @@ pub fn mapExp(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expr
             assign_variant_field!(eq => NFEquation::WHEN; branches = ({
         let mut __acc: Arc<metamodelica::List<Arc<Branch::Branch>>> = metamodelica::nil();
         for mut b in (var_field!((*eq).branches, NFEquation::WHEN).clone()).into_iter().cloned() {
-            let __x = Branch::mapExp(b.clone(), func.clone(), true);
+            let __x = Branch::mapExp(b.clone(), func.clone(), true)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -764,26 +764,26 @@ pub fn mapExp(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expr
             let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut e3: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            e1 = func(var_field!((*eq).condition, NFEquation::ASSERT).clone()).unwrap();
-            e2 = func(var_field!((*eq).message, NFEquation::ASSERT).clone()).unwrap();
-            e3 = func(var_field!((*eq).level, NFEquation::ASSERT).clone()).unwrap();
+            e1 = func(var_field!((*eq).condition, NFEquation::ASSERT).clone())?;
+            e2 = func(var_field!((*eq).message, NFEquation::ASSERT).clone())?;
+            e3 = func(var_field!((*eq).level, NFEquation::ASSERT).clone())?;
             if (referenceEq(&e1.clone(),&var_field!((*eq).condition, NFEquation::ASSERT).clone()) && referenceEq(&e2.clone(),&var_field!((*eq).message, NFEquation::ASSERT).clone()) && referenceEq(&e3.clone(),&var_field!((*eq).level, NFEquation::ASSERT).clone())) {eq.clone()} else {Arc::new(NFEquation::ASSERT { condition: e1.clone(), message: e2.clone(), level: e3.clone(), scope: var_field!((*eq).scope, NFEquation::ASSERT).clone(), source: var_field!((*eq).source, NFEquation::ASSERT).clone() })}
         },
         Deref @ TERMINATE { .. } => {
             let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            e1 = func(var_field!((*eq).message, NFEquation::TERMINATE).clone()).unwrap();
+            e1 = func(var_field!((*eq).message, NFEquation::TERMINATE).clone())?;
             if (referenceEq(&e1.clone(),&var_field!((*eq).message, NFEquation::TERMINATE).clone())) {eq.clone()} else {Arc::new(NFEquation::TERMINATE { message: e1.clone(), scope: var_field!((*eq).scope, NFEquation::TERMINATE).clone(), source: var_field!((*eq).source, NFEquation::TERMINATE).clone() })}
         },
         Deref @ REINIT { .. } => {
             let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            e1 = func(var_field!((*eq).cref, NFEquation::REINIT).clone()).unwrap();
-            e2 = func(var_field!((*eq).reinitExp, NFEquation::REINIT).clone()).unwrap();
+            e1 = func(var_field!((*eq).cref, NFEquation::REINIT).clone())?;
+            e2 = func(var_field!((*eq).reinitExp, NFEquation::REINIT).clone())?;
             if (referenceEq(&e1.clone(),&var_field!((*eq).cref, NFEquation::REINIT).clone()) && referenceEq(&e2.clone(),&var_field!((*eq).reinitExp, NFEquation::REINIT).clone())) {eq.clone()} else {Arc::new(NFEquation::REINIT { cref: e1.clone(), reinitExp: e2.clone(), scope: var_field!((*eq).scope, NFEquation::REINIT).clone(), source: var_field!((*eq).source, NFEquation::REINIT).clone() })}
         },
         Deref @ NORETCALL { .. } => {
             let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            e1 = func(var_field!((*eq).exp, NFEquation::NORETCALL).clone()).unwrap();
+            e1 = func(var_field!((*eq).exp, NFEquation::NORETCALL).clone())?;
             if (referenceEq(&e1.clone(),&var_field!((*eq).exp, NFEquation::NORETCALL).clone())) {eq.clone()} else {Arc::new(NFEquation::NORETCALL { exp: e1.clone(), scope: var_field!((*eq).scope, NFEquation::NORETCALL).clone(), source: var_field!((*eq).source, NFEquation::NORETCALL).clone() })}
         },
         _ => {
@@ -791,35 +791,35 @@ pub fn mapExp(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expr
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    eq
+    Ok(eq)
 }
 
-pub fn mapExpShallow(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Arc<NFEquation> {
+pub fn mapExpShallow(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<NFEquation>> {
     let mut eq: Arc<NFEquation> = eq;
     eq = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ EQUALITY { .. } => {
             let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            e1 = func(var_field!((*eq).lhs, NFEquation::EQUALITY).clone()).unwrap();
-            e2 = func(var_field!((*eq).rhs, NFEquation::EQUALITY).clone()).unwrap();
+            e1 = func(var_field!((*eq).lhs, NFEquation::EQUALITY).clone())?;
+            e2 = func(var_field!((*eq).rhs, NFEquation::EQUALITY).clone())?;
             if (referenceEq(&e1.clone(),&var_field!((*eq).lhs, NFEquation::EQUALITY).clone()) && referenceEq(&e2.clone(),&var_field!((*eq).rhs, NFEquation::EQUALITY).clone())) {eq.clone()} else {Arc::new(NFEquation::EQUALITY { lhs: e1.clone(), rhs: e2.clone(), ty: var_field!((*eq).ty, NFEquation::EQUALITY).clone(), scope: var_field!((*eq).scope, NFEquation::EQUALITY).clone(), source: var_field!((*eq).source, NFEquation::EQUALITY).clone(), scalarizeMode: var_field!((*eq).scalarizeMode, NFEquation::EQUALITY).clone() })}
         },
         Deref @ CONNECT { .. } => {
             let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            e1 = func(var_field!((*eq).lhs, NFEquation::CONNECT).clone()).unwrap();
-            e2 = func(var_field!((*eq).rhs, NFEquation::CONNECT).clone()).unwrap();
+            e1 = func(var_field!((*eq).lhs, NFEquation::CONNECT).clone())?;
+            e2 = func(var_field!((*eq).rhs, NFEquation::CONNECT).clone())?;
             if (referenceEq(&e1.clone(),&var_field!((*eq).lhs, NFEquation::CONNECT).clone()) && referenceEq(&e2.clone(),&var_field!((*eq).rhs, NFEquation::CONNECT).clone())) {eq.clone()} else {Arc::new(NFEquation::CONNECT { lhs: e1.clone(), rhs: e2.clone(), scope: var_field!((*eq).scope, NFEquation::CONNECT).clone(), source: var_field!((*eq).source, NFEquation::CONNECT).clone() })}
         },
         Deref @ FOR { .. } => {
-            assign_variant_field!(eq => NFEquation::FOR; range = Util::applyOption(var_field!((*eq).range, NFEquation::FOR).clone(), func.clone()));
+            assign_variant_field!(eq => NFEquation::FOR; range = Util::applyOption(var_field!((*eq).range, NFEquation::FOR).clone(), func.clone())?);
             eq.clone()
         },
         Deref @ IF { .. } => {
             assign_variant_field!(eq => NFEquation::IF; branches = ({
         let mut __acc: Arc<metamodelica::List<Arc<Branch::Branch>>> = metamodelica::nil();
         for mut b in (var_field!((*eq).branches, NFEquation::IF).clone()).into_iter().cloned() {
-            let __x = Branch::mapExp(b.clone(), func.clone(), false);
+            let __x = Branch::mapExp(b.clone(), func.clone(), false)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -830,7 +830,7 @@ pub fn mapExpShallow(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(A
             assign_variant_field!(eq => NFEquation::WHEN; branches = ({
         let mut __acc: Arc<metamodelica::List<Arc<Branch::Branch>>> = metamodelica::nil();
         for mut b in (var_field!((*eq).branches, NFEquation::WHEN).clone()).into_iter().cloned() {
-            let __x = Branch::mapExp(b.clone(), func.clone(), false);
+            let __x = Branch::mapExp(b.clone(), func.clone(), false)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -841,26 +841,26 @@ pub fn mapExpShallow(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(A
             let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut e3: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            e1 = func(var_field!((*eq).condition, NFEquation::ASSERT).clone()).unwrap();
-            e2 = func(var_field!((*eq).message, NFEquation::ASSERT).clone()).unwrap();
-            e3 = func(var_field!((*eq).level, NFEquation::ASSERT).clone()).unwrap();
+            e1 = func(var_field!((*eq).condition, NFEquation::ASSERT).clone())?;
+            e2 = func(var_field!((*eq).message, NFEquation::ASSERT).clone())?;
+            e3 = func(var_field!((*eq).level, NFEquation::ASSERT).clone())?;
             if (referenceEq(&e1.clone(),&var_field!((*eq).condition, NFEquation::ASSERT).clone()) && referenceEq(&e2.clone(),&var_field!((*eq).message, NFEquation::ASSERT).clone()) && referenceEq(&e3.clone(),&var_field!((*eq).level, NFEquation::ASSERT).clone())) {eq.clone()} else {Arc::new(NFEquation::ASSERT { condition: e1.clone(), message: e2.clone(), level: e3.clone(), scope: var_field!((*eq).scope, NFEquation::ASSERT).clone(), source: var_field!((*eq).source, NFEquation::ASSERT).clone() })}
         },
         Deref @ TERMINATE { .. } => {
             let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            e1 = func(var_field!((*eq).message, NFEquation::TERMINATE).clone()).unwrap();
+            e1 = func(var_field!((*eq).message, NFEquation::TERMINATE).clone())?;
             if (referenceEq(&e1.clone(),&var_field!((*eq).message, NFEquation::TERMINATE).clone())) {eq.clone()} else {Arc::new(NFEquation::TERMINATE { message: e1.clone(), scope: var_field!((*eq).scope, NFEquation::TERMINATE).clone(), source: var_field!((*eq).source, NFEquation::TERMINATE).clone() })}
         },
         Deref @ REINIT { .. } => {
             let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            e1 = func(var_field!((*eq).cref, NFEquation::REINIT).clone()).unwrap();
-            e2 = func(var_field!((*eq).reinitExp, NFEquation::REINIT).clone()).unwrap();
+            e1 = func(var_field!((*eq).cref, NFEquation::REINIT).clone())?;
+            e2 = func(var_field!((*eq).reinitExp, NFEquation::REINIT).clone())?;
             if (referenceEq(&e1.clone(),&var_field!((*eq).cref, NFEquation::REINIT).clone()) && referenceEq(&e2.clone(),&var_field!((*eq).reinitExp, NFEquation::REINIT).clone())) {eq.clone()} else {Arc::new(NFEquation::REINIT { cref: e1.clone(), reinitExp: e2.clone(), scope: var_field!((*eq).scope, NFEquation::REINIT).clone(), source: var_field!((*eq).source, NFEquation::REINIT).clone() })}
         },
         Deref @ NORETCALL { .. } => {
             let mut e1: Arc<Expression::NFExpression> = Arc::new(Expression::END);
-            e1 = func(var_field!((*eq).exp, NFEquation::NORETCALL).clone()).unwrap();
+            e1 = func(var_field!((*eq).exp, NFEquation::NORETCALL).clone())?;
             if (referenceEq(&e1.clone(),&var_field!((*eq).exp, NFEquation::NORETCALL).clone())) {eq.clone()} else {Arc::new(NFEquation::NORETCALL { exp: e1.clone(), scope: var_field!((*eq).scope, NFEquation::NORETCALL).clone(), source: var_field!((*eq).source, NFEquation::NORETCALL).clone() })}
         },
         _ => {
@@ -868,7 +868,7 @@ pub fn mapExpShallow(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(A
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    eq
+    Ok(eq)
 }
 
 pub fn foldExpList<ArgT: Clone + 'static>(mut eq: Arc<metamodelica::List<Arc<NFEquation>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
@@ -959,24 +959,24 @@ pub fn foldExp<ArgT: Clone + 'static>(mut eq: Arc<NFEquation>, mut func: Arc<dyn
     Ok(arg)
 }
 
-pub fn contains(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFEquation>) -> Result<bool> + 'static>) -> bool {
+pub fn contains(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFEquation>) -> Result<bool> + 'static>) -> Result<bool> {
     pub type PredFn = std::sync::Arc<dyn ::std::ops::Fn(Arc<NFEquation>) -> Result<bool> + 'static>;
 
     let mut res: bool = false;
-    if func(eq.clone()).unwrap() {
+    if func(eq.clone())? {
         res = true;
-        return res.clone();
+        return Ok(res.clone());
     }
     res = (::match_deref::match_deref! { match &(eq.clone()) {
-        Deref @ FOR { .. } => containsList(var_field!((*eq).body, NFEquation::FOR).clone(), func.clone()),
+        Deref @ FOR { .. } => containsList(var_field!((*eq).body, NFEquation::FOR).clone(), func.clone())?,
         Deref @ IF { .. } => {
             for mut b in &*var_field!((*eq).branches, NFEquation::IF).clone() {
                 let mut b = b.clone();
                 let () = (::match_deref::match_deref! { match &(b.clone()) {
         Deref @ Branch::BRANCH { .. } => {
-            if containsList(var_field!((*b).body, Branch::Branch::BRANCH).clone(), func.clone()) {
+            if containsList(var_field!((*b).body, Branch::Branch::BRANCH).clone(), func.clone())? {
                 res = true;
-                return res.clone();
+                return Ok(res.clone());
             }
             ()
         },
@@ -991,9 +991,9 @@ pub fn contains(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<NF
                 let mut b = b.clone();
                 let () = (::match_deref::match_deref! { match &(b.clone()) {
         Deref @ Branch::BRANCH { .. } => {
-            if containsList(var_field!((*b).body, Branch::Branch::BRANCH).clone(), func.clone()) {
+            if containsList(var_field!((*b).body, Branch::Branch::BRANCH).clone(), func.clone())? {
                 res = true;
-                return res.clone();
+                return Ok(res.clone());
             }
             ()
         },
@@ -1006,22 +1006,22 @@ pub fn contains(mut eq: Arc<NFEquation>, mut func: Arc<dyn ::std::ops::Fn(Arc<NF
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    res
+    Ok(res)
 }
 
-pub fn containsList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFEquation>) -> Result<bool> + 'static>) -> bool {
+pub fn containsList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<NFEquation>) -> Result<bool> + 'static>) -> Result<bool> {
     pub type PredFn = std::sync::Arc<dyn ::std::ops::Fn(Arc<NFEquation>) -> Result<bool> + 'static>;
 
     let mut res: bool = false;
     for mut eq in &*eql.clone() {
         let mut eq = eq.clone();
-        if contains(eq.clone(), func.clone()) {
+        if contains(eq.clone(), func.clone())? {
             res = true;
-            return res.clone();
+            return Ok(res.clone());
         }
     }
     res = false;
-    res
+    Ok(res)
 }
 
 pub fn containsExp(mut eq: Arc<NFEquation>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>) -> Result<bool> {
@@ -1107,10 +1107,10 @@ pub fn containsExpList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>, mut fu
     Ok(res)
 }
 
-pub fn replaceIteratorList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>, mut iterator: Arc<InstNode::InstNode>, mut value: Arc<Expression::NFExpression>) -> Arc<metamodelica::List<Arc<NFEquation>>> {
+pub fn replaceIteratorList(mut eql: Arc<metamodelica::List<Arc<NFEquation>>>, mut iterator: Arc<InstNode::InstNode>, mut value: Arc<Expression::NFExpression>) -> Result<Arc<metamodelica::List<Arc<NFEquation>>>> {
     let mut eql: Arc<metamodelica::List<Arc<NFEquation>>> = eql;
-    eql = mapExpList(eql.clone(), (std::sync::Arc::new({ let __pe_b1 = iterator.clone(); let __pe_b2 = value.clone(); move |__pe_a0| Expression::replaceIterator(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>));
-    eql
+    eql = mapExpList(eql.clone(), (std::sync::Arc::new({ let __pe_b1 = iterator.clone(); let __pe_b2 = value.clone(); move |__pe_a0| Expression::replaceIterator(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+    Ok(eql)
 }
 
 pub fn isArrayEquality(mut eq: Arc<NFEquation>) -> bool {

@@ -202,7 +202,7 @@ fn cevalWork2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc
                     let () = __mc_input.clone() else { bail!("nomatch") };
                     let mut dims: Arc<metamodelica::List<i32>>;
                     let mut v: Arc<Values::Value>;
-                    dims = List::map(arrayDims.clone(), (std::sync::Arc::new(Expression::dimensionSize) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>) -> Result<i32> + 'static>));
+                    dims = List::map(arrayDims.clone(), (std::sync::Arc::new(Expression::dimensionSize) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>) -> Result<i32> + 'static>))?;
                     v = Arc::new(Values::Value::ARRAY { valueLst: es_1.clone(), dimLst: dims.clone() });
                     Ok(v.clone())
         })() { break 'mc __v; }
@@ -257,7 +257,7 @@ fn cevalWork2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc
                     let mut elts: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
                     let mut dims: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut cache = (*cache).clone();
-                    dims = List::map(arrayDims.clone(), (std::sync::Arc::new(Expression::dimensionSize) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>) -> Result<i32> + 'static>));
+                    dims = List::map(arrayDims.clone(), (std::sync::Arc::new(Expression::dimensionSize) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>) -> Result<i32> + 'static>))?;
                     (cache, elts) = cevalMatrixElt(cache.clone(), env.clone(), expll.clone(), r#impl.clone(), msg.clone(), numIter.clone() + 1)?;
                     Ok((cache.clone(), Arc::new(Values::Value::ARRAY { valueLst: elts.clone(), dimLst: dims.clone() })))
                 }
@@ -437,7 +437,7 @@ fn cevalWork2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc
                     let mut cache = (*cache).clone();
                     let false = (AbsynUtil::pathEqual(Arc::new(Absyn::Path::QUALIFIED { name: (literal!("Connection")).clone(), path: Arc::new(Absyn::Path::IDENT { name: (literal!("isRoot")).clone() }) }), funcpath.clone())) else { bail!("pattern mismatch") };
                     (cache, vallst) = cevalList(cache.clone(), env.clone(), expl.clone(), r#impl.clone(), msg.clone(), numIter.clone())?;
-                    (cache, newval) = BackendCevalInterface::cevalCallFunction(cache.clone(), env.clone(), e.clone(), vallst.clone(), r#impl.clone(), msg.clone(), numIter.clone() + 1);
+                    (cache, newval) = BackendCevalInterface::cevalCallFunction(cache.clone(), env.clone(), e.clone(), vallst.clone(), r#impl.clone(), msg.clone(), numIter.clone() + 1)?;
                     Ok((cache.clone(), newval.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -460,7 +460,7 @@ fn cevalWork2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc
                 (cache, env, e @ Deref @ DAE::Exp::CALL { .. }, true, msg) => {
                     let mut value: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
                     let mut cache = (*cache).clone();
-                    (cache, value) = BackendCevalInterface::cevalInteractiveFunctions(cache.clone(), env.clone(), e.clone(), msg.clone(), numIter.clone() + 1);
+                    (cache, value) = BackendCevalInterface::cevalInteractiveFunctions(cache.clone(), env.clone(), e.clone(), msg.clone(), numIter.clone() + 1)?;
                     Ok((cache.clone(), value.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1052,7 +1052,7 @@ fn cevalWork2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: Arc
                     cache = __pa0.clone();
                     arr = __pa1.clone();
                     dims = __pa2.clone();
-                    arr_1 = List::map(arr.clone(), (std::sync::Arc::new(ValuesUtil::valueNeg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<Arc<Values::Value>> + 'static>));
+                    arr_1 = List::map(arr.clone(), (std::sync::Arc::new(ValuesUtil::valueNeg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<Arc<Values::Value>> + 'static>))?;
                     Ok((cache.clone(), Arc::new(Values::Value::ARRAY { valueLst: arr_1.clone(), dimLst: dims.clone() })))
                 }
                 _ => bail!("nomatch"),
@@ -1584,7 +1584,7 @@ fn cevalBuiltin(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inExp: A
                     let mut vallst: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
                     let mut cache = (*cache).clone();
                     (cache, vallst) = cevalList(cache.clone(), env.clone(), expl.clone(), r#impl.clone(), msg.clone(), numIter.clone())?;
-                    (cache, newval) = BackendCevalInterface::cevalCallFunction(cache.clone(), env.clone(), e.clone(), vallst.clone(), r#impl.clone(), msg.clone(), numIter.clone() + 1);
+                    (cache, newval) = BackendCevalInterface::cevalCallFunction(cache.clone(), env.clone(), e.clone(), vallst.clone(), r#impl.clone(), msg.clone(), numIter.clone() + 1)?;
                     Ok((cache.clone(), newval.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1958,7 +1958,7 @@ fn cevalKnownExternalFuncs2(mut id: ArcStr, mut inValuesValueLst: Arc<metamodeli
             let mut vals: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
             let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
             (n, strs) = System::regex((r#str.clone()).clone(), (re.clone()).clone(), i.clone(), extended.clone(), insensitive.clone());
-            vals = List::map(strs.clone(), (std::sync::Arc::new(fnptr!(ValuesMake::makeString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Values::Value>> + 'static>));
+            vals = List::map(strs.clone(), (std::sync::Arc::new(fnptr!(ValuesMake::makeString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Values::Value>> + 'static>))?;
             v = Arc::new(Values::Value::ARRAY { valueLst: vals.clone(), dimLst: list![i.clone()] });
             Arc::new(Values::Value::TUPLE { valueLst: list![Arc::new(Values::Value::INTEGER { integer: n.clone() }), v.clone()] })
         },
@@ -2316,7 +2316,7 @@ fn cevalBuiltinSign(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inEx
         Deref @ Values::Value::INTEGER { integer: iv } => (iv.clone() > 0, iv.clone() < 0, iv.clone() == 0),
         _ => bail!("match: no arm matched"),
     } });
-            let __pa0 = ::match_deref::match_deref! { match &(List::select(list![(b1.clone(), 1), (b2.clone(), -1), (b3.clone(), 0)], std::sync::Arc::new(fnptr!(Util::tuple21, _)))) {
+            let __pa0 = ::match_deref::match_deref! { match &(List::select(list![(b1.clone(), 1), (b2.clone(), -1), (b3.clone(), 0)], std::sync::Arc::new(fnptr!(Util::tuple21, _)))?) {
                 Deref @ metamodelica::List::Cons { head: (_, __pa0), tail: Deref @ metamodelica::List::Nil } => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
@@ -2480,7 +2480,7 @@ fn cevalBuiltinPromote2(mut inValue: Arc<Values::Value>, mut inInteger: i32) -> 
                         il = listRest(var_field!((*inValue).dimLst, Values::Value::ARRAY).clone())?;
                         il = listAppend(List::fill(0, n.clone() - (il.clone().len() as i32)), il.clone());
                     } else {
-                        let (__pa1, __pa0) = ::match_deref::match_deref! { match &(List::map1(vs.clone(), (std::sync::Arc::new(cevalBuiltinPromote2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>, i32) -> Result<Arc<Values::Value>> + 'static>), n_1.clone())) {
+                        let (__pa1, __pa0) = ::match_deref::match_deref! { match &(List::map1(vs.clone(), (std::sync::Arc::new(cevalBuiltinPromote2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>, i32) -> Result<Arc<Values::Value>> + 'static>), n_1.clone())?) {
                             __pa1 @ Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { dimLst: __pa0, .. }, tail: _ } => (__pa1.clone(), __pa0.clone()),
                             _ => bail!("pattern mismatch"),
                         } };
@@ -2826,7 +2826,7 @@ fn cevalStringListStringChar(mut inCache: FCore::Cache, mut inEnv: FCore::Graph,
             cache = __pa0.clone();
             r#str = __pa1.clone();
             chList = stringListStringChar((r#str.clone()).clone());
-            valList = List::map(chList.clone(), (std::sync::Arc::new(fnptr!(generateValueString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Values::Value>> + 'static>));
+            valList = List::map(chList.clone(), (std::sync::Arc::new(fnptr!(generateValueString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Values::Value>> + 'static>))?;
             (cache.clone(), Arc::new(Values::Value::LIST { valueLst: valList.clone() }))
         },
         _ => bail!("match: no arm matched"),
@@ -2855,7 +2855,7 @@ fn cevalListStringCharString(mut inCache: FCore::Cache, mut inEnv: FCore::Graph,
             } };
             cache = __pa0.clone();
             valList = __pa1.clone();
-            chList = List::map(valList.clone(), (std::sync::Arc::new(extractValueStringChar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>));
+            chList = List::map(valList.clone(), (std::sync::Arc::new(extractValueStringChar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>))?;
             r#str = stringAppendList(chList.clone());
             (cache.clone(), Arc::new(Values::Value::STRING { string: (r#str.clone()).clone() }))
         },
@@ -2879,7 +2879,7 @@ fn cevalStringAppendList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
             } };
             cache = __pa0.clone();
             valList = __pa1.clone();
-            chList = List::map(valList.clone(), (std::sync::Arc::new(ValuesUtil::extractValueString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>));
+            chList = List::map(valList.clone(), (std::sync::Arc::new(ValuesUtil::extractValueString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>))?;
             r#str = stringAppendList(chList.clone());
             (cache.clone(), Arc::new(Values::Value::STRING { string: (r#str.clone()).clone() }))
         },
@@ -2909,7 +2909,7 @@ fn cevalStringDelimitList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
             } };
             cache = __pa2.clone();
             r#str = __pa3.clone();
-            chList = List::map(valList.clone(), (std::sync::Arc::new(ValuesUtil::extractValueString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>));
+            chList = List::map(valList.clone(), (std::sync::Arc::new(ValuesUtil::extractValueString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<ArcStr> + 'static>))?;
             r#str = stringDelimitList(chList.clone(), (r#str.clone()).clone());
             (cache.clone(), Arc::new(Values::Value::STRING { string: (r#str.clone()).clone() }))
         },
@@ -3317,8 +3317,8 @@ fn catDimension(mut inValuesValueLst: Arc<metamodelica::List<Arc<Values::Value>>
                 (vlst, 1) => {
                     let mut vlst_lst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Values::Value>>>>> = metamodelica::nil();
                     let mut v_lst_1: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
-                    vlst_lst = List::map(vlst.clone(), (std::sync::Arc::new(ValuesUtil::arrayValues) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<Arc<metamodelica::List<Arc<Values::Value>>>> + 'static>));
-                    v_lst_1 = List::flatten(vlst_lst.clone());
+                    vlst_lst = List::map(vlst.clone(), (std::sync::Arc::new(ValuesUtil::arrayValues) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<Arc<metamodelica::List<Arc<Values::Value>>>> + 'static>))?;
+                    v_lst_1 = List::flatten(vlst_lst.clone())?;
                     Ok(v_lst_1.clone())
                 }
                 _ => bail!("nomatch"),
@@ -3334,10 +3334,10 @@ fn catDimension(mut inValuesValueLst: Arc<metamodelica::List<Arc<Values::Value>>
                     let mut i1: i32 = 0;
                     let mut i2: i32 = 0;
                     let mut il: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    v_lst_lst = List::map(vlst.clone(), (std::sync::Arc::new(ValuesUtil::arrayValues) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<Arc<metamodelica::List<Arc<Values::Value>>>> + 'static>));
+                    v_lst_lst = List::map(vlst.clone(), (std::sync::Arc::new(ValuesUtil::arrayValues) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<Arc<metamodelica::List<Arc<Values::Value>>>> + 'static>))?;
                     dim_1 = dim.clone() - 1;
                     v_lst_lst_1 = catDimension2(v_lst_lst.clone(), dim_1.clone())?;
-                    v_lst_1 = List::map(v_lst_lst_1.clone(), (std::sync::Arc::new(ValuesMake::makeArray) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<Values::Value>> + 'static>));
+                    v_lst_1 = List::map(v_lst_lst_1.clone(), (std::sync::Arc::new(ValuesMake::makeArray) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Values::Value>>>) -> Result<Arc<Values::Value>> + 'static>))?;
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(v_lst_1.clone()) {
                         Deref @ metamodelica::List::Cons { head: Deref @ Values::Value::ARRAY { dimLst: Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 }, .. }, tail: _ } => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
@@ -3369,9 +3369,9 @@ fn catDimension2(mut inValuesValueLstLst: Arc<metamodelica::List<Arc<metamodelic
                     let mut first_lst_2: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Values::Value>>>>> = metamodelica::nil();
                     l_lst = listHead(lst.clone())?;
                     let 1 = ((l_lst.clone().len() as i32)) else { bail!("pattern mismatch") };
-                    first_lst = List::map(lst.clone(), (std::sync::Arc::new(listHead) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>));
+                    first_lst = List::map(lst.clone(), (std::sync::Arc::new(listHead) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>))?;
                     first_lst_1 = catDimension(first_lst.clone(), dim.clone())?;
-                    first_lst_2 = List::map(first_lst_1.clone(), std::sync::Arc::new(fnptr!(List::create, _)));
+                    first_lst_2 = List::map(first_lst_1.clone(), std::sync::Arc::new(fnptr!(List::create, _)))?;
                     Ok(first_lst_2.clone())
                 }
                 _ => bail!("nomatch"),
@@ -3385,11 +3385,11 @@ fn catDimension2(mut inValuesValueLstLst: Arc<metamodelica::List<Arc<metamodelic
                     let mut rest: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Values::Value>>>>> = metamodelica::nil();
                     let mut rest_1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Values::Value>>>>> = metamodelica::nil();
                     let mut res: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Values::Value>>>>> = metamodelica::nil();
-                    first_lst = List::map(lst.clone(), (std::sync::Arc::new(listHead) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>));
-                    rest = List::map(lst.clone(), (std::sync::Arc::new(listRest) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>));
+                    first_lst = List::map(lst.clone(), (std::sync::Arc::new(listHead) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>))?;
+                    rest = List::map(lst.clone(), (std::sync::Arc::new(listRest) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>))?;
                     first_lst_1 = catDimension(first_lst.clone(), dim.clone())?;
                     rest_1 = catDimension2(rest.clone(), dim.clone())?;
-                    res = List::threadMap(rest_1.clone(), first_lst_1.clone(), std::sync::Arc::new(fnptr!(List::consr, _, _)));
+                    res = List::threadMap(rest_1.clone(), first_lst_1.clone(), std::sync::Arc::new(fnptr!(List::consr, _, _)))?;
                     Ok(res.clone())
                 }
                 _ => bail!("nomatch"),
@@ -4565,7 +4565,7 @@ fn cevalBuiltinTranspose2(mut inValuesValueLst1: Arc<metamodelica::List<Arc<Valu
                     let mut transposed_row: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
                     let mut rest: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
                     let mut indx_1: i32 = 0;
-                    transposed_row = List::map1(vlst.clone(), (std::sync::Arc::new(ValuesUtil::nthArrayelt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>, i32) -> Result<Arc<Values::Value>> + 'static>), indx.clone());
+                    transposed_row = List::map1(vlst.clone(), (std::sync::Arc::new(ValuesUtil::nthArrayelt) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>, i32) -> Result<Arc<Values::Value>> + 'static>), indx.clone())?;
                     indx_1 = indx.clone() + 1;
                     rest = cevalBuiltinTranspose2(vlst.clone(), indx_1.clone(), inDims.clone())?;
                     Ok(metamodelica::cons(Arc::new(Values::Value::ARRAY { valueLst: transposed_row.clone(), dimLst: inDims.clone() }), rest.clone()))
@@ -4611,7 +4611,7 @@ fn cevalBuiltinSizeMatrix(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
                 (cache, _, Deref @ DAE::Exp::MATRIX { ty: Deref @ DAE::Type::T_ARRAY { dims, .. }, .. }, _, _) => {
                     let mut sizelst: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut v: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
-                    sizelst = List::map(dims.clone(), (std::sync::Arc::new(Expression::dimensionSize) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>) -> Result<i32> + 'static>));
+                    sizelst = List::map(dims.clone(), (std::sync::Arc::new(Expression::dimensionSize) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>) -> Result<i32> + 'static>))?;
                     v = ValuesUtil::intlistToValue(sizelst.clone())?;
                     Ok((cache.clone(), v.clone()))
                 }
@@ -4907,9 +4907,9 @@ pub fn cevalRangeEnum(mut startIndex: i32, mut stopIndex: i32, mut enumType: Arc
             let mut enum_values: Arc<metamodelica::List<Arc<Values::Value>>> = metamodelica::nil();
             let mut enum_names = (*enum_names).clone();
             enum_names = List::sublist(enum_names.clone(), startIndex.clone(), stopIndex.clone() - startIndex.clone() + 1)?;
-            enum_paths = List::map(enum_names.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::makeIdentPathFromString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Absyn::Path>> + 'static>));
-            enum_paths = List::map1r(enum_paths.clone(), (std::sync::Arc::new(AbsynUtil::joinPaths) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> + 'static>), enum_type.clone());
-            (enum_values, _) = List::mapFold(enum_paths.clone(), (std::sync::Arc::new(fnptr!(makeEnumValue, Arc<Absyn::Path>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, i32) -> Result<(Arc<Values::Value>, i32)> + 'static>), startIndex.clone());
+            enum_paths = List::map(enum_names.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::makeIdentPathFromString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Absyn::Path>> + 'static>))?;
+            enum_paths = List::map1r(enum_paths.clone(), (std::sync::Arc::new(AbsynUtil::joinPaths) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> + 'static>), enum_type.clone())?;
+            (enum_values, _) = List::mapFold(enum_paths.clone(), (std::sync::Arc::new(fnptr!(makeEnumValue, Arc<Absyn::Path>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, i32) -> Result<(Arc<Values::Value>, i32)> + 'static>), startIndex.clone())?;
             enum_values.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -5191,7 +5191,7 @@ fn isRecursiveBinding(mut cr: Arc<DAE::ComponentRef>, mut exp: Arc<DAE::Exp>) ->
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut res: bool = res.clone();
-                    res = List::any(Expression::extractCrefsFromExp(exp.clone())?, (std::sync::Arc::new({ let __pe_b1 = cr.clone(); move |__pe_a0| ComponentReferenceBasics::crefEqual(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<bool> + 'static>));
+                    res = List::any(Expression::extractCrefsFromExp(exp.clone())?, (std::sync::Arc::new({ let __pe_b1 = cr.clone(); move |__pe_a0| ComponentReferenceBasics::crefEqual(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<bool> + 'static>))?;
                     Ok(res.clone())
                 }
                 _ => bail!("nomatch"),
@@ -5243,8 +5243,8 @@ pub fn cevalSubscriptValue(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
             } };
             cache = __pa0.clone();
             sliceLst = __pa1.clone();
-            slice = List::map(sliceLst.clone(), (std::sync::Arc::new(ValuesUtil::valueInteger) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<i32> + 'static>));
-            subvals = List::map1r(slice.clone(), (std::sync::Arc::new(listGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), lst.clone());
+            slice = List::map(sliceLst.clone(), (std::sync::Arc::new(ValuesUtil::valueInteger) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Values::Value>) -> Result<i32> + 'static>))?;
+            subvals = List::map1r(slice.clone(), (std::sync::Arc::new(listGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), lst.clone())?;
             (cache, lst) = cevalSubscriptValueList(cache.clone(), env.clone(), subs.clone(), subvals.clone(), r#impl.clone(), msg.clone(), numIter.clone())?;
             res = ValuesMake::makeArray(lst.clone())?;
             (cache.clone(), res.clone())
@@ -5690,7 +5690,7 @@ fn backpatchArrayReduction3(mut inVals: Arc<metamodelica::List<Arc<Values::Value
             let mut value: Arc<Values::Value> = Arc::new(Values::Value::META_FAIL);
             let mut vals = (*vals).clone();
             valMatrix = List::partition(vals.clone(), dim.clone())?;
-            vals = List::map(valMatrix.clone(), makeSequence.clone());
+            vals = List::map(valMatrix.clone(), makeSequence.clone())?;
             value = backpatchArrayReduction3(vals.clone(), dims.clone(), makeSequence.clone())?;
             value.clone()
         },

@@ -230,7 +230,7 @@ pub fn applyReplacementsDAEElts(mut inDae: Arc<metamodelica::List<Arc<DAE::Eleme
             let mut tbs_1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Element>>>>> = metamodelica::nil();
             let mut conds_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             (conds_1, _) = replaceExpList(conds.clone(), repl.clone(), condExpFunc.clone())?;
-            tbs_1 = List::map2(tbs.clone(), (std::sync::Arc::new(applyReplacementsDAEElts) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Element>>>, VariableReplacements, Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>) -> Result<Arc<metamodelica::List<Arc<DAE::Element>>>> + 'static>), repl.clone(), condExpFunc.clone());
+            tbs_1 = List::map2(tbs.clone(), (std::sync::Arc::new(applyReplacementsDAEElts) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Element>>>, VariableReplacements, Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>) -> Result<Arc<metamodelica::List<Arc<DAE::Element>>>> + 'static>), repl.clone(), condExpFunc.clone())?;
             elist22 = applyReplacementsDAEElts(elist2.clone(), repl.clone(), condExpFunc.clone())?;
             Arc::new(DAE::Element::IF_EQUATION { condition1: conds_1.clone(), equations2: tbs_1.clone(), equations3: elist22.clone(), source: source.clone() })
         },
@@ -239,7 +239,7 @@ pub fn applyReplacementsDAEElts(mut inDae: Arc<metamodelica::List<Arc<DAE::Eleme
             let mut tbs_1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::Element>>>>> = metamodelica::nil();
             let mut conds_1: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             (conds_1, _) = replaceExpList(conds.clone(), repl.clone(), condExpFunc.clone())?;
-            tbs_1 = List::map2(tbs.clone(), (std::sync::Arc::new(applyReplacementsDAEElts) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Element>>>, VariableReplacements, Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>) -> Result<Arc<metamodelica::List<Arc<DAE::Element>>>> + 'static>), repl.clone(), condExpFunc.clone());
+            tbs_1 = List::map2(tbs.clone(), (std::sync::Arc::new(applyReplacementsDAEElts) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::Element>>>, VariableReplacements, Option<Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>>) -> Result<Arc<metamodelica::List<Arc<DAE::Element>>>> + 'static>), repl.clone(), condExpFunc.clone())?;
             elist22 = applyReplacementsDAEElts(elist2.clone(), repl.clone(), condExpFunc.clone())?;
             Arc::new(DAE::Element::INITIAL_IF_EQUATION { condition1: conds_1.clone(), equations2: tbs_1.clone(), equations3: elist22.clone(), source: source.clone() })
         },
@@ -841,8 +841,8 @@ pub fn dumpReplacements(mut inVariableReplacements: VariableReplacements) -> Res
             let mut len_str: ArcStr = arcstr::literal!("");
             let mut len: i32 = 0;
             let mut tplLst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>> = metamodelica::nil();
-            tplLst = BaseHashTable::hashTableList(ht.clone());
-            r#str = stringDelimitList(List::map(tplLst.clone(), (std::sync::Arc::new(printReplacementTupleStr) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, Arc<DAE::Exp>)) -> Result<ArcStr> + 'static>)), (literal!("\n")).clone());
+            tplLst = BaseHashTable::hashTableList(ht.clone())?;
+            r#str = stringDelimitList(List::map(tplLst.clone(), (std::sync::Arc::new(printReplacementTupleStr) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, Arc<DAE::Exp>)) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone());
             println!("{}", (literal!("Replacements: (")).clone());
             len = (tplLst.clone().len() as i32);
             len_str = (intString(len.clone())).clone();
@@ -864,8 +864,8 @@ pub fn dumpReplacementsStr(mut inVariableReplacements: VariableReplacements) -> 
             let mut r#str: ArcStr = arcstr::literal!("");
             let mut s1: ArcStr = arcstr::literal!("");
             let mut tplLst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>> = metamodelica::nil();
-            tplLst = BaseHashTable::hashTableList(ht.clone());
-            r#str = stringDelimitList(List::map(tplLst.clone(), (std::sync::Arc::new(printReplacementTupleStr) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, Arc<DAE::Exp>)) -> Result<ArcStr> + 'static>)), (literal!("\n")).clone());
+            tplLst = BaseHashTable::hashTableList(ht.clone())?;
+            r#str = stringDelimitList(List::map(tplLst.clone(), (std::sync::Arc::new(printReplacementTupleStr) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, Arc<DAE::Exp>)) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone());
             s1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Replacements: (")); __mm_s.push_str(&*intString((tplLst.clone().len() as i32))); __mm_s.push_str(&*literal!(")\n=============\n")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             s1.clone()
         },
@@ -879,9 +879,9 @@ pub fn getAllReplacements(mut inVariableReplacements: VariableReplacements) -> R
     (crefs, dsts) = (match inVariableReplacements.clone() {
         VariableReplacements { hashTable: mut ht, .. } => {
             let mut tplLst: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)>> = metamodelica::nil();
-            tplLst = BaseHashTable::hashTableList(ht.clone());
-            crefs = List::map(tplLst.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)));
-            dsts = List::map(tplLst.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)));
+            tplLst = BaseHashTable::hashTableList(ht.clone())?;
+            crefs = List::map(tplLst.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)))?;
+            dsts = List::map(tplLst.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)))?;
             (crefs.clone(), dsts.clone())
         },
     });
@@ -898,7 +898,7 @@ pub fn replacementSources(mut repl: VariableReplacements) -> Result<Arc<metamode
     let mut sources: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
     sources = (match repl.clone() {
         VariableReplacements { hashTable: mut ht, invHashTable: _ } => {
-            sources = BaseHashTable::hashTableKeyList(ht.clone());
+            sources = BaseHashTable::hashTableKeyList(ht.clone())?;
             sources.clone()
         },
     });
@@ -911,8 +911,8 @@ pub fn replacementTargets(mut repl: VariableReplacements) -> Result<Arc<metamode
         VariableReplacements { hashTable: mut ht, invHashTable: _ } => {
             let mut targets: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
             let mut targets2: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-            targets = BaseHashTable::hashTableValueList(ht.clone());
-            targets2 = List::flatten(List::map(targets.clone(), (std::sync::Arc::new(Expression::extractCrefsFromExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> + 'static>)));
+            targets = BaseHashTable::hashTableValueList(ht.clone())?;
+            targets2 = List::flatten(List::map(targets.clone(), (std::sync::Arc::new(Expression::extractCrefsFromExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>> + 'static>))?)?;
             targets2.clone()
         },
     });
@@ -999,7 +999,7 @@ fn addReplacementInv(mut invHt: (metamodelica::Array<Arc<metamodelica::List<(Arc
             let mut invHt_1: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>), i32, (HashTable3::FuncHashCref, HashTable3::FuncCrefEqual, HashTable3::FuncCrefStr, HashTable3::FuncExpStr));
             let mut dests: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
             dests = Expression::extractCrefsFromExp(dst.clone())?;
-            invHt_1 = List::fold1r(dests.clone(), (std::sync::Arc::new(addReplacementInv2) as std::sync::Arc<dyn ::std::ops::Fn((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<ArcStr> + 'static>)), Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<ArcStr> + 'static>))> + 'static>), src.clone(), invHt.clone());
+            invHt_1 = List::fold1r(dests.clone(), (std::sync::Arc::new(addReplacementInv2) as std::sync::Arc<dyn ::std::ops::Fn((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<ArcStr> + 'static>)), Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<ArcStr> + 'static>))> + 'static>), src.clone(), invHt.clone())?;
             invHt_1.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1010,7 +1010,7 @@ fn addReplacementInv(mut invHt: (metamodelica::Array<Arc<metamodelica::List<(Arc
 fn addReplacementInv2(mut invHt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<ArcStr> + 'static>)), mut dst: Arc<DAE::ComponentRef>, mut src: Arc<DAE::ComponentRef>) -> Result<(metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<DAE::ComponentRef>>>) -> Result<ArcStr> + 'static>))> {
     let mut outInvHt: (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)>>), i32, (HashTable3::FuncHashCref, HashTable3::FuncCrefEqual, HashTable3::FuncCrefStr, HashTable3::FuncExpStr));
     let mut srcs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
-    if BaseHashTable::hasKey(dst.clone(), invHt.clone()) {
+    if BaseHashTable::hasKey(dst.clone(), invHt.clone())? {
         srcs = BaseHashTable::get(dst.clone(), invHt.clone())?;
         srcs = amortizeUnion(metamodelica::cons(src.clone(), srcs.clone()));
         outInvHt = BaseHashTable::add((dst.clone(), srcs.clone()), invHt.clone())?;

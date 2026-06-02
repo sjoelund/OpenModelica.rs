@@ -313,7 +313,7 @@ fn scalarVariableAttribute(mut file: File::File, mut simVar: SimVar, mut classTy
     File::write(file.clone(), (literal!("    isProtected = \"")).clone());
     File::write(file.clone(), ArcStr::from(::std::format!("{}", simVar.isProtected.clone())));
     File::write(file.clone(), (literal!("\" hideResult = \"")).clone());
-    File::write(file.clone(), (Util::applyOptionOrDefault(simVar.hideResult.clone(), (std::sync::Arc::new(fnptr!(boolString, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool) -> Result<ArcStr> + 'static>), (literal!("")).clone())).clone());
+    File::write(file.clone(), (Util::applyOptionOrDefault(simVar.hideResult.clone(), (std::sync::Arc::new(fnptr!(boolString, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool) -> Result<ArcStr> + 'static>), (literal!("")).clone())?).clone());
     File::write(file.clone(), (literal!("\" isEncrypted = \"")).clone());
     File::write(file.clone(), (boolString(simVar.isEncrypted.clone())).clone());
     File::write(file.clone(), (literal!("\" initNonlinear = \"")).clone());
@@ -522,7 +522,7 @@ fn expString(mut exp: Arc<Exp>) -> Result<ArcStr> {
         Deref @ Exp::SCONST { .. } => Util::escapeModelicaStringToXmlString((var_field!((*exp).string, Exp::SCONST).clone()).clone())?,
         Deref @ Exp::BCONST { .. } => boolString(var_field!((*exp).bool, Exp::BCONST).clone()),
         Deref @ Exp::ENUM_LITERAL { .. } => intString(var_field!((*exp).index, Exp::ENUM_LITERAL).clone()),
-        Deref @ Exp::ARRAY { .. } if (Expression::isSimpleLiteralValue(exp.clone(), true)) => stringDelimitList(({
+        Deref @ Exp::ARRAY { .. } if (Expression::isSimpleLiteralValue(exp.clone(), true)?) => stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
         for mut e in (var_field!((*exp).array, Exp::ARRAY).clone()).into_iter().cloned() {
             let __x = expString(e.clone())?;

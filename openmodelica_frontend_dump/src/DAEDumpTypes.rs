@@ -168,7 +168,7 @@ fn dumpAnnotationStr(mut inComment: Option<Arc<SCode::Comment>>, mut inPrefix: A
                     if Config::showAnnotations()? {
                         ann = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inPrefix.clone()); __mm_s.push_str(&*literal!("annotation")); __mm_s.push_str(&*SCodeDump::printModStr(ann_mod.clone(), SCodeDump::defaultOptions.clone())?); __mm_s.push_str(&*inSuffix.clone()); ArcStr::from(__mm_s) }).clone();
                     } else if Config::showStructuralAnnotations()? {
-                        ann_mod = filterStructuralMods(ann_mod.clone());
+                        ann_mod = filterStructuralMods(ann_mod.clone())?;
                         if !(SCodeUtil::isEmptyMod(ann_mod.clone())) {
                             ann = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inPrefix.clone()); __mm_s.push_str(&*literal!("annotation")); __mm_s.push_str(&*SCodeDump::printModStr(ann_mod.clone(), SCodeDump::defaultOptions.clone())?); __mm_s.push_str(&*inSuffix.clone()); ArcStr::from(__mm_s) }).clone();
                         } else {
@@ -195,10 +195,10 @@ fn dumpAnnotationStr(mut inComment: Option<Arc<SCode::Comment>>, mut inPrefix: A
     Ok(outString)
 }
 
-pub fn filterStructuralMods(mut r#mod: Arc<SCode::Mod>) -> Arc<SCode::Mod> {
+pub fn filterStructuralMods(mut r#mod: Arc<SCode::Mod>) -> Result<Arc<SCode::Mod>> {
     let mut r#mod: Arc<SCode::Mod> = r#mod;
-    r#mod = SCodeUtil::filterSubMods(r#mod.clone(), (std::sync::Arc::new(fnptr!(filterStructuralMod, Arc<SCode::SubMod>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>));
-    r#mod
+    r#mod = SCodeUtil::filterSubMods(r#mod.clone(), (std::sync::Arc::new(fnptr!(filterStructuralMod, Arc<SCode::SubMod>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>))?;
+    Ok(r#mod)
 }
 
 fn filterStructuralMod(mut r#mod: Arc<SCode::SubMod>) -> bool {

@@ -145,8 +145,8 @@ pub fn formatFromFlags() -> Result<OutputFormat> {
     Ok(format)
 }
 
-pub fn inlineFunctions() -> bool {
-    let mut enabled: bool = Flags::isConfigFlagSet(Flags::BASE_MODELICA_OPTIONS.clone(), (literal!("inlineFunctions")).clone()).unwrap();
-    enabled
+pub fn inlineFunctions() -> Result<bool> {
+    let mut enabled: bool = Flags::isConfigFlagSet(Flags::BASE_MODELICA_OPTIONS.clone(), (literal!("inlineFunctions")).clone())?;
+    Ok(enabled)
 }
 

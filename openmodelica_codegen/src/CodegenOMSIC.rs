@@ -1155,7 +1155,7 @@ fn fun_89(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_co
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/include/omc/c\" /I\"")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_makefileParams_omhome.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/include/omc/msvc/\" ")).clone() }))?;
-            ret_9 = FMI::isFMIVersion20((Tpl::textString(a_FMUVersion.clone())?).clone());
+            ret_9 = FMI::isFMIVersion20((Tpl::textString(a_FMUVersion.clone())?).clone())?;
             txt = fun_87(txt.clone(), ret_9.clone(), (i_makefileParams_omhome.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" /I. /DNOMINMAX /TP /DNO_INTERACTIVE_DEPENDENCY  ")).clone() }))?;
             ret_10 = Flags::isSet(Flags::FMU_EXPERIMENTAL.clone())?;
@@ -1498,7 +1498,7 @@ fn fun_99(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_co
             txt = Tpl::writeStr(txt.clone(), (intString(i_varInfo_numStringAlgVars.clone())).clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("override CPPFLAGS += -DFMI2_OVERRIDE_FUNCTION_PREFIX\n")).clone(), (literal!("override CPPFLAGS += -Iinclude/ -Iinclude/fmi")).clone()], lastHasNewLine: false }))?;
-            ret_8 = FMI::isFMIVersion20((Tpl::textString(a_FMUVersion.clone())?).clone());
+            ret_8 = FMI::isFMIVersion20((Tpl::textString(a_FMUVersion.clone())?).clone())?;
             txt = fun_96(txt.clone(), ret_8.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -I. ")).clone() }))?;
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;

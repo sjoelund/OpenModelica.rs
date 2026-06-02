@@ -173,7 +173,7 @@ pub mod CachedData {
 
     pub fn initFunc(mut caches: metamodelica::Array<Arc<CachedData>>) -> Result<()> {
         let mut func_cache: Arc<CachedData> = Arc::new(CachedData::NO_CACHE);
-        func_cache = getFuncCache(caches.clone());
+        func_cache = getFuncCache(caches.clone())?;
         func_cache = (::match_deref::match_deref! { match &(func_cache.clone()) {
         Deref @ NO_CACHE { .. } => Arc::new(CachedData::FUNCTION { funcs: metamodelica::nil(), typed: false, specialBuiltin: false }),
         Deref @ FUNCTION { .. } => func_cache.clone(),
@@ -185,7 +185,7 @@ pub mod CachedData {
 
     pub fn addFunc(mut r#fn: Arc<Function::Function>, mut specialBuiltin: bool, mut caches: metamodelica::Array<Arc<CachedData>>) -> Result<()> {
         let mut func_cache: Arc<CachedData> = Arc::new(CachedData::NO_CACHE);
-        func_cache = getFuncCache(caches.clone());
+        func_cache = getFuncCache(caches.clone())?;
         func_cache = (::match_deref::match_deref! { match &(func_cache.clone()) {
         Deref @ NO_CACHE { .. } => Arc::new(CachedData::FUNCTION { funcs: list![r#fn.clone()], typed: false, specialBuiltin: specialBuiltin.clone() }),
         Deref @ FUNCTION { .. } => Arc::new(CachedData::FUNCTION { funcs: listAppend(var_field!((*func_cache).funcs, CachedData::FUNCTION).clone(), list![r#fn.clone()]), typed: false, specialBuiltin: var_field!((*func_cache).specialBuiltin, CachedData::FUNCTION).clone() || specialBuiltin.clone() }),
@@ -199,9 +199,9 @@ pub mod CachedData {
         Ok(())
     }
 
-    pub fn getFuncCache(mut in_caches: metamodelica::Array<Arc<CachedData>>) -> Arc<CachedData> {
+    pub fn getFuncCache(mut in_caches: metamodelica::Array<Arc<CachedData>>) -> Result<Arc<CachedData>> {
         let mut out_cache: Arc<CachedData> = in_caches.clone().borrow()[(1-1) as usize].clone();
-        out_cache
+        Ok(out_cache)
     }
 
     pub fn setFuncCache(mut in_caches: metamodelica::Array<Arc<CachedData>>, mut in_cache: Arc<CachedData>) -> Result<()> {
@@ -209,19 +209,19 @@ pub mod CachedData {
         Ok(())
     }
 
-    pub fn getPackageCache(mut in_caches: metamodelica::Array<Arc<CachedData>>) -> Arc<CachedData> {
+    pub fn getPackageCache(mut in_caches: metamodelica::Array<Arc<CachedData>>) -> Result<Arc<CachedData>> {
         let mut out_cache: Arc<CachedData> = in_caches.clone().borrow()[(2-1) as usize].clone();
-        out_cache
+        Ok(out_cache)
     }
 
-    pub fn setPackageCache(mut in_caches: metamodelica::Array<Arc<CachedData>>, mut in_cache: Arc<CachedData>) -> metamodelica::Array<Arc<CachedData>> {
+    pub fn setPackageCache(mut in_caches: metamodelica::Array<Arc<CachedData>>, mut in_cache: Arc<CachedData>) -> Result<metamodelica::Array<Arc<CachedData>>> {
         let mut out_caches: metamodelica::Array<Arc<CachedData>> = {let _arr = in_caches.clone(); _arr.borrow_mut()[(2-1) as usize] = in_cache.clone(); _arr};
-        out_caches
+        Ok(out_caches)
     }
 
-    pub fn clearPackageCache(mut in_caches: metamodelica::Array<Arc<CachedData>>) -> metamodelica::Array<Arc<CachedData>> {
+    pub fn clearPackageCache(mut in_caches: metamodelica::Array<Arc<CachedData>>) -> Result<metamodelica::Array<Arc<CachedData>>> {
         let mut out_caches: metamodelica::Array<Arc<CachedData>> = {let _arr = in_caches.clone(); _arr.borrow_mut()[(2-1) as usize] = Arc::new(crate::NFInstNode::CachedData::NO_CACHE); _arr};
-        out_caches
+        Ok(out_caches)
     }
 
 }
@@ -359,15 +359,15 @@ pub mod InstNode {
 
     // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
     // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-    pub fn isClass(mut node: Arc<InstNode>) -> bool {
+    pub fn isClass(mut node: Arc<InstNode>) -> Result<bool> {
         let mut isClass: bool = false;
         isClass = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => true,
-        Deref @ INNER_OUTER_NODE { .. } => self::isClass(var_field!((*node).innerNode, InstNode::INNER_OUTER_NODE).clone()),
+        Deref @ INNER_OUTER_NODE { .. } => self::isClass(var_field!((*node).innerNode, InstNode::INNER_OUTER_NODE).clone())?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        isClass
+        Ok(isClass)
     }
 
     pub fn isBaseClass(mut node: Arc<InstNode>) -> bool {
@@ -452,15 +452,15 @@ pub mod InstNode {
 
     // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
     // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-    pub fn isComponent(mut node: Arc<InstNode>) -> bool {
+    pub fn isComponent(mut node: Arc<InstNode>) -> Result<bool> {
         let mut isComponent: bool = false;
         isComponent = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ COMPONENT_NODE { .. } => true,
-        Deref @ INNER_OUTER_NODE { .. } => self::isComponent(var_field!((*node).innerNode, InstNode::INNER_OUTER_NODE).clone()),
+        Deref @ INNER_OUTER_NODE { .. } => self::isComponent(var_field!((*node).innerNode, InstNode::INNER_OUTER_NODE).clone())?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        isComponent
+        Ok(isComponent)
     }
 
     pub fn isRef(mut node: Arc<InstNode>) -> bool {
@@ -596,9 +596,9 @@ pub mod InstNode {
         Ok(name)
     }
 
-    pub fn scopeName(mut node: Arc<InstNode>) -> ArcStr {
-        let mut outName: ArcStr = name(classScope(explicitScope(node.clone()))).unwrap();
-        outName
+    pub fn scopeName(mut node: Arc<InstNode>) -> Result<ArcStr> {
+        let mut outName: ArcStr = name(classScope(explicitScope(node.clone())))?;
+        Ok(outName)
     }
 
     // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
@@ -670,7 +670,7 @@ pub mod InstNode {
         Ok(parent)
     }
 
-    pub fn instanceParent(mut node: Arc<InstNode>) -> Arc<InstNode> {
+    pub fn instanceParent(mut node: Arc<InstNode>) -> Result<Arc<InstNode>> {
         let mut parent: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
         parent = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => getDerivedNode(self::parent(getDerivedNode(node.clone(), true)), true),
@@ -683,30 +683,30 @@ pub mod InstNode {
         _ => Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        parent
+        Ok(parent)
     }
 
-    pub fn rootParent(mut node: Arc<InstNode>) -> Arc<InstNode> {
+    pub fn rootParent(mut node: Arc<InstNode>) -> Result<Arc<InstNode>> {
         let mut parent: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
         parent = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ CLASS_NODE { .. } => rootTypeParent(var_field!((*node).nodeType, InstNode::CLASS_NODE).clone(), node.clone()),
+        Deref @ CLASS_NODE { .. } => rootTypeParent(var_field!((*node).nodeType, InstNode::CLASS_NODE).clone(), node.clone())?,
         _ => self::parent(node.clone()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        parent
+        Ok(parent)
     }
 
     // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
     // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-    pub fn rootTypeParent(mut nodeType: Arc<InstNodeType>, mut node: Arc<InstNode>) -> Arc<InstNode> {
+    pub fn rootTypeParent(mut nodeType: Arc<InstNodeType>, mut node: Arc<InstNode>) -> Result<Arc<InstNode>> {
         let mut parent: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
         parent = (::match_deref::match_deref! { match &(nodeType.clone()) {
         Deref @ InstNodeType::ROOT_CLASS { .. } if (!(isEmpty(var_field!((*nodeType).parent, InstNodeType::ROOT_CLASS).clone()))) => var_field!((*nodeType).parent, InstNodeType::ROOT_CLASS).clone(),
-        Deref @ InstNodeType::DERIVED_CLASS { .. } => rootTypeParent(var_field!((*nodeType).ty, InstNodeType::DERIVED_CLASS).clone(), node.clone()),
+        Deref @ InstNodeType::DERIVED_CLASS { .. } => rootTypeParent(var_field!((*nodeType).ty, InstNodeType::DERIVED_CLASS).clone(), node.clone())?,
         _ => self::parent(node.clone()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        parent
+        Ok(parent)
     }
 
     pub fn parentScope(mut node: Arc<InstNode>, mut ignoreRedeclare: bool) -> Result<Arc<InstNode>> {
@@ -714,8 +714,8 @@ pub mod InstNode {
         let mut orig_node: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
         scope = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::DERIVED_CLASS { .. }, .. } => {
-            scope = Class::lastBaseClass(node.clone());
-            if (isBuiltin(scope.clone())) {topScope(var_field!((*node).parentScope, InstNode::CLASS_NODE).clone())} else if (referenceEq(&node.clone(),&scope.clone())) {var_field!((*node).parentScope, InstNode::CLASS_NODE).clone()} else {parentScope(scope.clone(), false)?}
+            scope = Class::lastBaseClass(node.clone())?;
+            if (isBuiltin(scope.clone())) {topScope(var_field!((*node).parentScope, InstNode::CLASS_NODE).clone())?} else if (referenceEq(&node.clone(),&scope.clone())) {var_field!((*node).parentScope, InstNode::CLASS_NODE).clone()} else {parentScope(scope.clone(), false)?}
         },
         Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::REDECLARED_CLASS { originalNode: Some(orig_node), .. }, .. } if (ignoreRedeclare.clone()) => parentScope(orig_node.clone(), false)?,
         Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::REDECLARED_CLASS { parent: __esc_scope, .. }, .. } if (ignoreRedeclare.clone()) => {
@@ -739,7 +739,7 @@ pub mod InstNode {
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }));
+    }))?;
         Ok(path)
     }
 
@@ -798,14 +798,14 @@ pub mod InstNode {
 
     // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
     // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-    pub fn topScope(mut node: Arc<InstNode>) -> Arc<InstNode> {
+    pub fn topScope(mut node: Arc<InstNode>) -> Result<Arc<InstNode>> {
         let mut topScope: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
         topScope = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::TOP_SCOPE { .. }, .. } => node.clone(),
-        _ => self::topScope(parent(node.clone())),
+        _ => self::topScope(parent(node.clone()))?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        topScope
+        Ok(topScope)
     }
 
     pub fn annotationScope(mut node: Arc<InstNode>) -> Result<Arc<InstNode>> {
@@ -1250,16 +1250,16 @@ pub mod InstNode {
         let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
         let mut scope: Arc<InstNode> = node.clone();
         let mut ann: Option<Arc<SCode::Annotation>> = None;
-        while isComponent(scope.clone()) {
+        while isComponent(scope.clone())? {
             ann = SCodeUtil::commentAnnotation(Component::comment(component(scope.clone())?)?);
             if isSome(ann.clone()) {
                 r#mod = SCodeUtil::lookupAnnotation(Util::getOption(ann.clone())?, (name.clone()).clone())?;
                 if !(SCodeUtil::isEmptyMod(r#mod.clone())) {
-                    scope = instanceParent(scope.clone());
+                    scope = instanceParent(scope.clone())?;
                     return Ok((r#mod.clone(), scope.clone()));
                 }
             }
-            scope = instanceParent(scope.clone());
+            scope = instanceParent(scope.clone())?;
         }
         r#mod = Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD);
         Ok((r#mod, scope))
@@ -1282,14 +1282,14 @@ pub mod InstNode {
         fn cmp(&self, other: &Self) -> std::cmp::Ordering { (*self as i32).cmp(&(*other as i32)) }
     }
 
-    pub fn rootPath(mut node: Arc<InstNode>, mut ignoreBaseClass: bool) -> Arc<Absyn::Path> {
-        let mut path: Arc<Absyn::Path> = scopePath(node.clone(), ScopeType::INCLUDING_ROOT.clone(), ignoreBaseClass.clone()).unwrap();
-        path
+    pub fn rootPath(mut node: Arc<InstNode>, mut ignoreBaseClass: bool) -> Result<Arc<Absyn::Path>> {
+        let mut path: Arc<Absyn::Path> = scopePath(node.clone(), ScopeType::INCLUDING_ROOT.clone(), ignoreBaseClass.clone())?;
+        Ok(path)
     }
 
-    pub fn fullPath(mut node: Arc<InstNode>, mut ignoreBaseClass: bool) -> Arc<Absyn::Path> {
-        let mut path: Arc<Absyn::Path> = scopePath(node.clone(), ScopeType::FULL.clone(), ignoreBaseClass.clone()).unwrap();
-        path
+    pub fn fullPath(mut node: Arc<InstNode>, mut ignoreBaseClass: bool) -> Result<Arc<Absyn::Path>> {
+        let mut path: Arc<Absyn::Path> = scopePath(node.clone(), ScopeType::FULL.clone(), ignoreBaseClass.clone())?;
+        Ok(path)
     }
 
     // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
@@ -1378,7 +1378,7 @@ pub mod InstNode {
     pub fn isInner(mut node: Arc<InstNode>) -> Result<bool> {
         let mut isInner: bool = false;
         isInner = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ COMPONENT_NODE { .. } => Component::isInner(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone())),
+        Deref @ COMPONENT_NODE { .. } => Component::isInner(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()))?,
         Deref @ CLASS_NODE { .. } => AbsynUtil::isInner(SCodeUtil::prefixesInnerOuter(SCodeUtil::elementPrefixes(var_field!((*node).definition, InstNode::CLASS_NODE).clone())?)?),
         Deref @ INNER_OUTER_NODE { .. } => self::isInner(var_field!((*node).outerNode, InstNode::INNER_OUTER_NODE).clone())?,
         _ => false,
@@ -1392,7 +1392,7 @@ pub mod InstNode {
     pub fn isOuter(mut node: Arc<InstNode>) -> Result<bool> {
         let mut isOuter: bool = false;
         isOuter = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ COMPONENT_NODE { .. } => Component::isOuter(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone())),
+        Deref @ COMPONENT_NODE { .. } => Component::isOuter(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()))?,
         Deref @ CLASS_NODE { .. } => AbsynUtil::isOuter(SCodeUtil::prefixesInnerOuter(SCodeUtil::elementPrefixes(var_field!((*node).definition, InstNode::CLASS_NODE).clone())?)?),
         Deref @ INNER_OUTER_NODE { .. } => self::isOuter(var_field!((*node).outerNode, InstNode::INNER_OUTER_NODE).clone())?,
         _ => false,
@@ -1406,7 +1406,7 @@ pub mod InstNode {
     pub fn isOnlyOuter(mut node: Arc<InstNode>) -> Result<bool> {
         let mut isOuter: bool = false;
         isOuter = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ COMPONENT_NODE { .. } => Component::isOnlyOuter(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone())),
+        Deref @ COMPONENT_NODE { .. } => Component::isOnlyOuter(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()))?,
         Deref @ CLASS_NODE { .. } => AbsynUtil::isOnlyOuter(SCodeUtil::prefixesInnerOuter(SCodeUtil::elementPrefixes(var_field!((*node).definition, InstNode::CLASS_NODE).clone())?)?),
         Deref @ INNER_OUTER_NODE { .. } => isOnlyOuter(var_field!((*node).outerNode, InstNode::INNER_OUTER_NODE).clone())?,
         _ => false,
@@ -1507,7 +1507,7 @@ pub mod InstNode {
     pub fn getFuncCache(mut inNode: Arc<InstNode>) -> Result<Arc<CachedData::CachedData>> {
         let mut func_cache: Arc<CachedData::CachedData> = Arc::new(CachedData::NO_CACHE);
         func_cache = (::match_deref::match_deref! { match &(inNode.clone()) {
-        Deref @ CLASS_NODE { .. } => CachedData::getFuncCache(var_field!((*inNode).caches, InstNode::CLASS_NODE).clone()),
+        Deref @ CLASS_NODE { .. } => CachedData::getFuncCache(var_field!((*inNode).caches, InstNode::CLASS_NODE).clone())?,
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.getFuncCache")); __mm_s.push_str(&*literal!(" got node without cache")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
             bail!("fail")
@@ -1536,7 +1536,7 @@ pub mod InstNode {
     pub fn getPackageCache(mut inNode: Arc<InstNode>) -> Result<Arc<CachedData::CachedData>> {
         let mut pack_cache: Arc<CachedData::CachedData> = Arc::new(CachedData::NO_CACHE);
         pack_cache = (::match_deref::match_deref! { match &(inNode.clone()) {
-        Deref @ CLASS_NODE { .. } => CachedData::getPackageCache(var_field!((*inNode).caches, InstNode::CLASS_NODE).clone()),
+        Deref @ CLASS_NODE { .. } => CachedData::getPackageCache(var_field!((*inNode).caches, InstNode::CLASS_NODE).clone())?,
         _ => {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFInstNode.InstNode.getPackageCache")); __mm_s.push_str(&*literal!(" got node without cache")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
             bail!("fail")
@@ -1550,7 +1550,7 @@ pub mod InstNode {
         let mut node: Arc<InstNode> = node;
         let () = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => {
-            CachedData::setPackageCache(var_field!((*node).caches, InstNode::CLASS_NODE).clone(), Arc::new(CachedData::CachedData::PACKAGE { instance: packageNode.clone(), state: state.clone() }));
+            CachedData::setPackageCache(var_field!((*node).caches, InstNode::CLASS_NODE).clone(), Arc::new(CachedData::CachedData::PACKAGE { instance: packageNode.clone(), state: state.clone() }))?;
             ()
         },
         _ => {
@@ -1566,7 +1566,7 @@ pub mod InstNode {
         let mut node: Arc<InstNode> = node;
         let () = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => {
-            CachedData::clearPackageCache(var_field!((*node).caches, InstNode::CLASS_NODE).clone());
+            CachedData::clearPackageCache(var_field!((*node).caches, InstNode::CLASS_NODE).clone())?;
             ()
         },
         _ => {
@@ -1633,9 +1633,9 @@ pub mod InstNode {
         Ok(res)
     }
 
-    pub fn nameEqual(mut node1: Arc<InstNode>, mut node2: Arc<InstNode>) -> bool {
-        let mut equal: bool = name(node1.clone()).unwrap() == name(node2.clone()).unwrap();
-        equal
+    pub fn nameEqual(mut node1: Arc<InstNode>, mut node2: Arc<InstNode>) -> Result<bool> {
+        let mut equal: bool = name(node1.clone())? == name(node2.clone())?;
+        Ok(equal)
     }
 
     pub fn isSame(mut node1: Arc<InstNode>, mut node2: Arc<InstNode>) -> bool {
@@ -1671,7 +1671,7 @@ pub mod InstNode {
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ CLASS_NODE { .. }, Deref @ CLASS_NODE { .. }) => {
-                    if !((Class::isIdentical(getClass(n1.clone())?, getClass(n2.clone())?))) { bail!("guard") }
+                    if !((Class::isIdentical(getClass(n1.clone())?, getClass(n2.clone())?)?)) { bail!("guard") }
                     Ok(())
                 }
                 _ => bail!("nomatch"),
@@ -1863,8 +1863,8 @@ pub mod InstNode {
     pub fn isEncapsulated(mut node: Arc<InstNode>) -> Result<bool> {
         let mut enc: bool = false;
         enc = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ CLASS_NODE { .. } => Class::isEncapsulated(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone())),
-        Deref @ COMPONENT_NODE { .. } => Class::isEncapsulated(getClass(node.clone())?),
+        Deref @ CLASS_NODE { .. } => Class::isEncapsulated(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()))?,
+        Deref @ COMPONENT_NODE { .. } => Class::isEncapsulated(getClass(node.clone())?)?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1928,7 +1928,7 @@ pub mod InstNode {
         Deref @ Class::DAE_TYPE { .. } => stripDAETypeVars(var_field!((*cls).ty, Class::NFClass::DAE_TYPE).clone()),
         _ => {
             res = Class::restriction(cls.clone());
-            state = Restriction::toDAE(res.clone(), fullPath(clsNode.clone(), false));
+            state = Restriction::toDAE(res.clone(), fullPath(clsNode.clone(), false)?);
             Arc::new(DAE::Type::T_COMPLEX { complexClassType: state.clone(), varLst: metamodelica::nil(), equalityConstraint: None, usedExternally: Restriction::isExternalRecord(res.clone()) })
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1965,7 +1965,7 @@ pub mod InstNode {
         Deref @ Class::DAE_TYPE { .. } => var_field!((*cls).ty, Class::NFClass::DAE_TYPE).clone(),
         _ => {
             res = Class::restriction(cls.clone());
-            state = Restriction::toDAE(res.clone(), fullPath(clsNode.clone(), false));
+            state = Restriction::toDAE(res.clone(), fullPath(clsNode.clone(), false)?);
             vars = ConvertDAE::makeTypeVars(clsNode.clone())?;
             outType = Arc::new(DAE::Type::T_COMPLEX { complexClassType: state.clone(), varLst: vars.clone(), equalityConstraint: None, usedExternally: Restriction::isExternalRecord(res.clone()) });
             Pointer::update(var_field!((*clsNode).cls, InstNode::CLASS_NODE).clone(), Arc::new(Class::NFClass::DAE_TYPE { ty: outType.clone() }));
@@ -2002,14 +2002,14 @@ pub mod InstNode {
         isBuiltin
     }
 
-    pub fn isPartial(mut node: Arc<InstNode>) -> bool {
+    pub fn isPartial(mut node: Arc<InstNode>) -> Result<bool> {
         let mut isPartial: bool = false;
         isPartial = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ CLASS_NODE { .. } => Class::isPartial(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone())),
+        Deref @ CLASS_NODE { .. } => Class::isPartial(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()))?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        isPartial
+        Ok(isPartial)
     }
 
     pub fn clone(mut node: Arc<InstNode>) -> Result<Arc<InstNode>> {
@@ -2018,7 +2018,7 @@ pub mod InstNode {
         Deref @ CLASS_NODE { .. } => {
             let mut cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
             cls = Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone());
-            cls = Class::classTreeApply(cls.clone(), (std::sync::Arc::new(fnptr!(ClassTree::clone, Arc<ClassTree::ClassTree>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ClassTree::ClassTree>) -> Result<Arc<ClassTree::ClassTree>> + 'static>));
+            cls = Class::classTreeApply(cls.clone(), (std::sync::Arc::new(ClassTree::clone) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ClassTree::ClassTree>) -> Result<Arc<ClassTree::ClassTree>> + 'static>))?;
             assign_variant_field!(node => InstNode::CLASS_NODE;
                 cls = Pointer::create(cls.clone()),
                 caches = CachedData::empty()
@@ -2094,38 +2094,38 @@ pub mod InstNode {
 
     // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
     // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-    pub fn isModel(mut node: Arc<InstNode>) -> bool {
+    pub fn isModel(mut node: Arc<InstNode>) -> Result<bool> {
         let mut isModel: bool = false;
         isModel = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { .. } => Restriction::isModel(Class::restriction(Pointer::access(var_field!((*node).cls, InstNode::CLASS_NODE).clone()))),
-        Deref @ COMPONENT_NODE { .. } => self::isModel(Component::classInstance(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()))),
+        Deref @ COMPONENT_NODE { .. } => self::isModel(Component::classInstance(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone())))?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        isModel
+        Ok(isModel)
     }
 
-    pub fn isEnumerationType(mut node: Arc<InstNode>) -> bool {
-        let mut isEnum: bool = isClass(node.clone()) && Class::isEnumeration(getClass(resolveInner(node.clone())).unwrap()).unwrap();
-        isEnum
+    pub fn isEnumerationType(mut node: Arc<InstNode>) -> Result<bool> {
+        let mut isEnum: bool = isClass(node.clone())? && Class::isEnumeration(getClass(resolveInner(node.clone()))?)?;
+        Ok(isEnum)
     }
 
     pub fn hasBinding(mut node: Arc<InstNode>) -> Result<bool> {
         let mut hasBinding: bool = false;
         hasBinding = (::match_deref::match_deref! { match &(node.clone()) {
-        Deref @ COMPONENT_NODE { .. } => Component::hasBinding(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE))? || self::hasBinding(instanceParent(node.clone()))?,
+        Deref @ COMPONENT_NODE { .. } => Component::hasBinding(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE))? || self::hasBinding(instanceParent(node.clone())?)?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(hasBinding)
     }
 
-    pub fn getBindingExpOpt(mut node: Arc<InstNode>) -> Option<Arc<Expression::NFExpression>> {
+    pub fn getBindingExpOpt(mut node: Arc<InstNode>) -> Result<Option<Arc<Expression::NFExpression>>> {
         let mut binding_exp: Option<Arc<Expression::NFExpression>> = None;
         binding_exp = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ COMPONENT_NODE { .. } => {
             let mut scope: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
-            scope = instanceParent(node.clone());
+            scope = instanceParent(node.clone())?;
             match '__try0: {
                 binding_exp = Binding::getExpOpt(Component::getImplicitBinding(Pointer::access(var_field!((*node).component, InstNode::COMPONENT_NODE).clone()), scope.clone()));
                 Ok::<_, anyhow::Error>((binding_exp.clone(),))
@@ -2134,7 +2134,7 @@ pub mod InstNode {
                     binding_exp = __try0_o0;
                 }
                 Err(_) => {
-                    binding_exp = getBindingExpOpt(scope.clone());
+                    binding_exp = getBindingExpOpt(scope.clone())?;
                 }
             }
             binding_exp.clone()
@@ -2149,7 +2149,7 @@ pub mod InstNode {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        binding_exp
+        Ok(binding_exp)
     }
 
     // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
@@ -2169,9 +2169,9 @@ pub mod InstNode {
         Ok(sections)
     }
 
-    pub fn hash(mut node: Arc<InstNode>) -> i32 {
-        let mut hash: i32 = stringHashDjb2((name(node.clone()).unwrap()).clone());
-        hash
+    pub fn hash(mut node: Arc<InstNode>) -> Result<i32> {
+        let mut hash: i32 = stringHashDjb2((name(node.clone())?).clone());
+        Ok(hash)
     }
 
     pub fn hashContinue(mut node: Arc<InstNode>, mut hash: i32) -> Result<i32> {
@@ -2233,14 +2233,14 @@ pub mod InstNode {
         let mut base_node: Arc<InstNode> = Arc::new(InstNode::EMPTY_NODE);
         let mut cls: Arc<Class::NFClass> = Arc::new(Class::NOT_INSTANTIATED);
         let mut exts: metamodelica::Array<Arc<InstNode>> = Default::default();
-        base_node = Class::lastBaseClass(clsNode.clone());
+        base_node = Class::lastBaseClass(clsNode.clone())?;
         cls = getClass(base_node.clone())?;
         isDiscrete = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ Class::EXPANDED_CLASS { restriction: Deref @ Restriction::TYPE, .. } => {
             exts = ClassTree::getExtends(var_field!((*cls).elements, Class::NFClass::EXPANDED_CLASS).clone());
             if ((exts.clone().borrow().len() as i32) == 1) {isDiscreteClass(exts.borrow()[(1-1) as usize].clone())?} else {false}
         },
-        _ => Type::isDiscrete(Class::getType(cls.clone(), base_node.clone())?),
+        _ => Type::isDiscrete(Class::getType(cls.clone(), base_node.clone())?)?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         Ok(isDiscrete)
@@ -2248,7 +2248,7 @@ pub mod InstNode {
 
     pub fn clearGeneratedInners(mut node: Arc<InstNode>) -> Result<()> {
         let mut inners: Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<InstNode>>> = <Arc<UnorderedMap::UnorderedMap<ArcStr, Arc<InstNode>>> as ::std::default::Default>::default();
-        let __pa0 = ::match_deref::match_deref! { match &(nodeType(topScope(node.clone()))?) {
+        let __pa0 = ::match_deref::match_deref! { match &(nodeType(topScope(node.clone())?)?) {
             Deref @ InstNodeType::TOP_SCOPE { generatedInners: __pa0, .. } => __pa0.clone(),
             _ => bail!("pattern mismatch"),
         } };
@@ -2263,7 +2263,7 @@ pub mod InstNode {
         let mut access_mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
         let mut access_exp: Option<Arc<Absyn::Exp>> = None;
         scope = classScope(parent(resolveInner(node.clone())));
-        while isClass(scope.clone()) {
+        while isClass(scope.clone())? {
             access_mod = SCodeUtil::lookupElementAnnotation(definition(scope.clone())?, (literal!("Protection")).clone())?;
             access_mod = SCodeUtil::lookupModInMod((literal!("access")).clone(), access_mod.clone());
             access_exp = SCodeUtil::getModifierBinding(access_mod.clone());

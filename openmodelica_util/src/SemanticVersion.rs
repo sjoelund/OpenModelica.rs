@@ -232,7 +232,7 @@ fn splitPrereleaseAndMeta(mut s: ArcStr) -> Result<(Arc<metamodelica::List<ArcSt
         return Ok((prereleaseLst.clone(), metaLst.clone()));
     }
     if stringGetStringChar((s.clone()).clone(), 1)? == literal!("+") {
-        metaLst = if (((s.clone()).clone().len() as i32) > 1) {Util::stringSplitAtChar((StringUtil::rest((s.clone()).clone())).clone(), (literal!(".")).clone())?} else {metamodelica::nil()};
+        metaLst = if (((s.clone()).clone().len() as i32) > 1) {Util::stringSplitAtChar((StringUtil::rest((s.clone()).clone())?).clone(), (literal!(".")).clone())?} else {metamodelica::nil()};
         return Ok((prereleaseLst.clone(), metaLst.clone()));
     }
     split = Util::stringSplitAtChar((s.clone()).clone(), (literal!("+")).clone())?;
@@ -244,7 +244,7 @@ fn splitPrereleaseAndMeta(mut s: ArcStr) -> Result<(Arc<metamodelica::List<ArcSt
     split = __pa1.clone();
     meta = (if (split.clone().is_empty()) {literal!("")} else {(split.clone()).get(1)?}).clone();
     if stringGetStringChar((prerelease.clone()).clone(), 1)? == literal!("-") {
-        prerelease = (StringUtil::rest((prerelease.clone()).clone())).clone();
+        prerelease = (StringUtil::rest((prerelease.clone()).clone())?).clone();
     }
     prereleaseLst = if (((prerelease.clone()).clone().len() as i32) > 0) {Util::stringSplitAtChar((prerelease.clone()).clone(), (literal!(".")).clone())?} else {metamodelica::nil()};
     metaLst = if (((meta.clone()).clone().len() as i32) > 0) {Util::stringSplitAtChar((meta.clone()).clone(), (literal!(".")).clone())?} else {metamodelica::nil()};

@@ -510,15 +510,15 @@ pub fn toDAE(mut ina: Arc<NFAttributes>, mut vis: Prefixes::Visibility) -> Resul
     Ok(outa)
 }
 
-pub fn toString(mut attr: Arc<NFAttributes>, mut ty: Arc<NFType::NFType>) -> ArcStr {
+pub fn toString(mut attr: Arc<NFAttributes>, mut ty: Arc<NFType::NFType>) -> Result<ArcStr> {
     let mut r#str: ArcStr = arcstr::literal!("");
-    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*if (attr.isRedeclare.clone()) {literal!("redeclare ")} else {literal!("")}); __mm_s.push_str(&*if (attr.isFinal.clone()) {literal!("final ")} else {literal!("")}); __mm_s.push_str(&*Prefixes::unparseInnerOuter(attr.innerOuter.clone())); __mm_s.push_str(&*Prefixes::unparseReplaceable(attr.isReplaceable.clone())); __mm_s.push_str(&*Prefixes::unparseParallelism(attr.parallelism.clone())); __mm_s.push_str(&*Prefixes::ConnectorType::unparse(attr.connectorType.clone())); __mm_s.push_str(&*Prefixes::unparseVariability(attr.variability.clone(), ty.clone())); __mm_s.push_str(&*Prefixes::unparseDirection(attr.direction.clone())); ArcStr::from(__mm_s) }).clone();
-    r#str
+    r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*if (attr.isRedeclare.clone()) {literal!("redeclare ")} else {literal!("")}); __mm_s.push_str(&*if (attr.isFinal.clone()) {literal!("final ")} else {literal!("")}); __mm_s.push_str(&*Prefixes::unparseInnerOuter(attr.innerOuter.clone())); __mm_s.push_str(&*Prefixes::unparseReplaceable(attr.isReplaceable.clone())); __mm_s.push_str(&*Prefixes::unparseParallelism(attr.parallelism.clone())); __mm_s.push_str(&*Prefixes::ConnectorType::unparse(attr.connectorType.clone())); __mm_s.push_str(&*Prefixes::unparseVariability(attr.variability.clone(), ty.clone())?); __mm_s.push_str(&*Prefixes::unparseDirection(attr.direction.clone())); ArcStr::from(__mm_s) }).clone();
+    Ok(r#str)
 }
 
 pub fn toFlatStream(mut attr: Arc<NFAttributes>, mut ty: Arc<NFType::NFType>, mut s: IOStream::IOStream, mut isTopLevel: bool) -> Result<IOStream::IOStream> {
     let mut s: IOStream::IOStream = s;
-    s = IOStream::append(s.clone(), (Prefixes::unparseVariability(attr.variability.clone(), ty.clone())).clone())?;
+    s = IOStream::append(s.clone(), (Prefixes::unparseVariability(attr.variability.clone(), ty.clone())?).clone())?;
     if isTopLevel.clone() {
         s = IOStream::append(s.clone(), (Prefixes::unparseDirection(attr.direction.clone())).clone())?;
     }

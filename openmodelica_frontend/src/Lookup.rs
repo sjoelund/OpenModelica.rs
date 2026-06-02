@@ -404,7 +404,7 @@ fn lookupMetarecordsRecursive3(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
     let mut outHt: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (HashTableStringToPath::FuncHashCref, HashTableStringToPath::FuncCrefEqual, HashTableStringToPath::FuncCrefStr, HashTableStringToPath::FuncExpStr));
     let mut outMetarecordTypes: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
     (outCache, outHt, outMetarecordTypes) = (::match_deref::match_deref! { match &((inCache.clone(), inEnv.clone(), inHt.clone(), inAcc.clone())) {
-        (cache, _, ht, acc) if (BaseHashTable::hasKey((r#str.clone()).clone(), ht.clone())) => {
+        (cache, _, ht, acc) if (BaseHashTable::hasKey((r#str.clone()).clone(), ht.clone())?) => {
             (cache.clone(), ht.clone(), acc.clone())
         },
         (cache, env, ht, acc) => {
@@ -417,8 +417,8 @@ fn lookupMetarecordsRecursive3(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
             ht = BaseHashTable::add((r#str.clone(), path.clone()), ht.clone())?;
             (cache, ty, _) = lookupType(cache.clone(), env.clone(), path.clone(), Some(Absyn::dummyInfo.clone()))?;
             acc = metamodelica::cons(ty.clone(), acc.clone());
-            uniontypeTypes = Types::getAllInnerTypesOfType(ty.clone(), (std::sync::Arc::new(fnptr!(Types::uniontypeFilter, Arc<DAE::Type>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<bool> + 'static>));
-            uniontypePaths = List::flatten(List::map(uniontypeTypes.clone(), (std::sync::Arc::new(Types::getUniontypePaths) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> + 'static>)));
+            uniontypeTypes = Types::getAllInnerTypesOfType(ty.clone(), (std::sync::Arc::new(fnptr!(Types::uniontypeFilter, Arc<DAE::Type>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<bool> + 'static>))?;
+            uniontypePaths = List::flatten(List::map(uniontypeTypes.clone(), (std::sync::Arc::new(Types::getUniontypePaths) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> + 'static>))?)?;
             (cache, ht, acc) = lookupMetarecordsRecursive2(cache.clone(), env.clone(), uniontypePaths.clone(), ht.clone(), acc.clone())?;
             (cache.clone(), ht.clone(), acc.clone())
         },
@@ -3248,7 +3248,7 @@ fn checkSubscripts(mut inType: Arc<DAE::Type>, mut inExpSubscriptLst: Arc<metamo
                     Debug::trace((literal!("- Lookup.checkSubscripts failed (tp: ")).clone())?;
                     Debug::trace((TypesDump::printTypeStr(t.clone())?).clone())?;
                     Debug::trace((literal!(" subs:")).clone())?;
-                    Debug::trace(stringDelimitList(List::map(s.clone(), (std::sync::Arc::new(ExpressionBasics::printSubscriptStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Subscript>) -> Result<ArcStr> + 'static>)), (literal!(",")).clone()))?;
+                    Debug::trace(stringDelimitList(List::map(s.clone(), (std::sync::Arc::new(ExpressionBasics::printSubscriptStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Subscript>) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone()))?;
                     Debug::trace((literal!(")\n")).clone())?;
                     Ok(bail!("fail"))
                 }
@@ -3415,7 +3415,7 @@ fn lookupVarFMetaModelica(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
         Deref @ DAE::ComponentRef::CREF_IDENT { .. } => {
             let mut fields: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
             fields = Types::getMetaRecordFields(inType.clone())?;
-            let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &((fields.clone()).get(Types::findVarIndex((var_field!((*cr).ident, DAE::ComponentRef::CREF_IDENT).clone()).clone(), fields.clone()) + 1)?) {
+            let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &((fields.clone()).get(Types::findVarIndex((var_field!((*cr).ident, DAE::ComponentRef::CREF_IDENT).clone()).clone(), fields.clone())? + 1)?) {
                 Deref @ DAE::Var { name: __pa0, attributes: __pa1, ty: __pa2, binding: __pa3, bind_from_outside: _, constOfForIteratorRange: __pa4 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
                 _ => bail!("pattern mismatch"),
             } };
@@ -3437,7 +3437,7 @@ fn lookupVarFMetaModelica(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
         Deref @ DAE::ComponentRef::CREF_QUAL { .. } => {
             let mut fields: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
             fields = Types::getMetaRecordFields(inType.clone())?;
-            let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &((fields.clone()).get(Types::findVarIndex((var_field!((*cr).ident, DAE::ComponentRef::CREF_QUAL).clone()).clone(), fields.clone()) + 1)?) {
+            let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &((fields.clone()).get(Types::findVarIndex((var_field!((*cr).ident, DAE::ComponentRef::CREF_QUAL).clone()).clone(), fields.clone())? + 1)?) {
                 Deref @ DAE::Var { name: __pa0, attributes: __pa1, ty: __pa2, binding: __pa3, bind_from_outside: _, constOfForIteratorRange: __pa4 } => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
                 _ => bail!("pattern mismatch"),
             } };
@@ -3556,7 +3556,7 @@ fn addArrayDimensions(mut tySub: Arc<DAE::Type>, mut ss: Arc<metamodelica::List<
                     let mut dims: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
                     let true = (Types::isArray(tySub.clone())) else { bail!("pattern mismatch") };
                     dims = TypesDump::getDimensions(tySub.clone());
-                    subs = List::map(dims.clone(), (std::sync::Arc::new(makeDimensionSubscript) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>) -> Result<Arc<DAE::Subscript>> + 'static>));
+                    subs = List::map(dims.clone(), (std::sync::Arc::new(makeDimensionSubscript) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>) -> Result<Arc<DAE::Subscript>> + 'static>))?;
                     subs = expandWholeDimSubScript(ss.clone(), subs.clone())?;
                     Ok(subs.clone())
                 }
@@ -3683,9 +3683,9 @@ fn sliceDimensionType(mut inTypeD: Arc<DAE::Type>, mut inTypeL: Arc<DAE::Type>) 
             let mut dim2: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
             let mut t = (*t).clone();
             dimensions = Types::getDimensionSizes(t.clone())?;
-            dim2 = List::map(dimensions.clone(), (std::sync::Arc::new(fnptr!(Expression::intDimension, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<Arc<DAE::Dimension>> + 'static>));
+            dim2 = List::map(dimensions.clone(), (std::sync::Arc::new(fnptr!(Expression::intDimension, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<Arc<DAE::Dimension>> + 'static>))?;
             dim2 = dim2.clone().reverse();
-            t = List::foldr(dim2.clone(), (std::sync::Arc::new(fnptr!(Types::liftArray, Arc<DAE::Type>, Arc<DAE::Dimension>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, Arc<DAE::Dimension>) -> Result<Arc<DAE::Type>> + 'static>), tOrg.clone());
+            t = List::foldr(dim2.clone(), (std::sync::Arc::new(fnptr!(Types::liftArray, Arc<DAE::Type>, Arc<DAE::Dimension>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, Arc<DAE::Dimension>) -> Result<Arc<DAE::Type>> + 'static>), tOrg.clone())?;
             t.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -3721,7 +3721,7 @@ pub fn buildMetaRecordType(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
     env = FGraph::openScope(inEnv.clone(), openmodelica_frontend_types::SCode::Encapsulated::NOT_ENCAPSULATED, (id.clone()).clone(), Some(crate::FCore::ScopeType::CLASS_SCOPE))?;
     (cache, utPath) = Inst::makeFullyQualified(inCache.clone(), env.clone(), utPath.clone())?;
     path = AbsynUtil::joinPaths(utPath.clone(), Arc::new(Absyn::Path::IDENT { name: (id.clone()).clone() }))?;
-    (outCache, outEnv, _, _, _, _, _, varlst, _, _) = Inst::instElementList(cache.clone(), env.clone(), InnerOuter::emptyInstHierarchy().clone(), UnitAbsyn::noStore().clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_types::DAE::Prefix::NOPRE, ClassInf::State::META_RECORD { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }) }, List::map1(els.clone(), std::sync::Arc::new(fnptr!(Util::makeTuple, _, _)), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD)), metamodelica::nil(), false, openmodelica_frontend_inst::InstTypes::CallingScope::INNER_CALL, ConnectionGraph::EMPTY().clone(), Connect::emptySet().clone(), true)?;
+    (outCache, outEnv, _, _, _, _, _, varlst, _, _) = Inst::instElementList(cache.clone(), env.clone(), InnerOuter::emptyInstHierarchy().clone(), UnitAbsyn::noStore().clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_types::DAE::Prefix::NOPRE, ClassInf::State::META_RECORD { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }) }, List::map1(els.clone(), std::sync::Arc::new(fnptr!(Util::makeTuple, _, _)), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD))?, metamodelica::nil(), false, openmodelica_frontend_inst::InstTypes::CallingScope::INNER_CALL, ConnectionGraph::EMPTY().clone(), Connect::emptySet().clone(), true)?;
     varlst = Types::boxVarLst(varlst.clone())?;
     typeVarsType = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();

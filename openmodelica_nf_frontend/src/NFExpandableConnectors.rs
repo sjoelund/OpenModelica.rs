@@ -90,15 +90,15 @@ pub fn elaborate(mut flatModel: Arc<FlatModel::NFFlatModel>, mut connections: Ar
     }
     csets = ConnectionSets::emptySets((expandable_conns.clone().len() as i32) + (undeclared_conns.clone().len() as i32));
     csets = addExpandableConnectorsToSets(expandable_conns.clone(), csets.clone())?;
-    (undeclared_conns, csets) = List::mapFold(undeclared_conns.clone(), (std::sync::Arc::new(addUndeclaredConnectorToSets) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connection::NFConnection>, ConnectionSets::Sets) -> Result<(Arc<Connection::NFConnection>, ConnectionSets::Sets)> + 'static>), csets.clone());
+    (undeclared_conns, csets) = List::mapFold(undeclared_conns.clone(), (std::sync::Arc::new(addUndeclaredConnectorToSets) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connection::NFConnection>, ConnectionSets::Sets) -> Result<(Arc<Connection::NFConnection>, ConnectionSets::Sets)> + 'static>), csets.clone())?;
     (csets_array, _) = ConnectionSets::extractSets(csets.clone());
     vars = flatModel.variables.clone();
     let __range0 = csets_array.clone().borrow().iter().cloned().collect::<Vec<_>>();
     for mut set in __range0 {
         vars = elaborateExpandableSet(set.clone(), vars.clone())?;
     }
-    conns = List::fold(undeclared_conns.clone(), (std::sync::Arc::new(fnptr!(updateUndeclaredConnection, Arc<Connection::NFConnection>, Arc<metamodelica::List<Arc<Connection::NFConnection>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connection::NFConnection>, Arc<metamodelica::List<Arc<Connection::NFConnection>>>) -> Result<Arc<metamodelica::List<Arc<Connection::NFConnection>>>> + 'static>), conns.clone());
-    conns = List::fold(expandable_conns.clone(), (std::sync::Arc::new(updateExpandableConnection) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connection::NFConnection>, Arc<metamodelica::List<Arc<Connection::NFConnection>>>) -> Result<Arc<metamodelica::List<Arc<Connection::NFConnection>>>> + 'static>), conns.clone());
+    conns = List::fold(undeclared_conns.clone(), (std::sync::Arc::new(fnptr!(updateUndeclaredConnection, Arc<Connection::NFConnection>, Arc<metamodelica::List<Arc<Connection::NFConnection>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connection::NFConnection>, Arc<metamodelica::List<Arc<Connection::NFConnection>>>) -> Result<Arc<metamodelica::List<Arc<Connection::NFConnection>>>> + 'static>), conns.clone())?;
+    conns = List::fold(expandable_conns.clone(), (std::sync::Arc::new(updateExpandableConnection) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connection::NFConnection>, Arc<metamodelica::List<Arc<Connection::NFConnection>>>) -> Result<Arc<metamodelica::List<Arc<Connection::NFConnection>>>> + 'static>), conns.clone())?;
     assign_field!(connections.connections = conns.clone());
     vars = ({
         let mut __acc: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
@@ -138,12 +138,12 @@ fn sortConnections(mut conns: Arc<metamodelica::List<Arc<Connection::NFConnectio
             if is_expandable1.clone() && is_expandable2.clone() {
                 expandableConnections = metamodelica::cons(conn.clone(), expandableConnections.clone());
             } else {
-                Error::addSourceMessageAndFail(Error::EXPANDABLE_NON_EXPANDABLE_CONNECTION.clone(), list![(Connector::toString(if (is_expandable1.clone()) {c1.clone()} else {c2.clone()})).clone(), (Connector::toString(if (is_expandable1.clone()) {c2.clone()} else {c1.clone()})).clone()], Connector::getInfo(c1.clone()))?;
+                Error::addSourceMessageAndFail(Error::EXPANDABLE_NON_EXPANDABLE_CONNECTION.clone(), list![(Connector::toString(if (is_expandable1.clone()) {c1.clone()} else {c2.clone()})?).clone(), (Connector::toString(if (is_expandable1.clone()) {c2.clone()} else {c1.clone()})?).clone()], Connector::getInfo(c1.clone()))?;
                 unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
             }
         } else if is_undeclared1.clone() || is_undeclared2.clone() {
             if is_undeclared1.clone() && is_undeclared2.clone() {
-                Error::addSourceMessageAndFail(Error::UNDECLARED_CONNECTION.clone(), list![(Connector::toString(c1.clone())).clone(), (Connector::toString(c2.clone())).clone()], Connector::getInfo(c1.clone()))?;
+                Error::addSourceMessageAndFail(Error::UNDECLARED_CONNECTION.clone(), list![(Connector::toString(c1.clone())?).clone(), (Connector::toString(c2.clone())?).clone()], Connector::getInfo(c1.clone()))?;
                 unreachable!("Error.addSourceMessageAndFail always fails — caller-side flow-analysis hint");
             } else {
                 undeclaredConnections = metamodelica::cons(conn.clone(), undeclaredConnections.clone());
@@ -187,7 +187,7 @@ fn addNestedExpandableConnectorsToSets(mut c1: Arc<Connector::NFConnector>, mut 
     }
     for mut ec1 in &*ecl1.clone() {
         let mut ec1 = ec1.clone();
-        (ecl2, oec) = List::deleteMemberOnTrue(ec1.clone(), ecl2.clone(), (std::sync::Arc::new(fnptr!(Connector::isNodeNameEqual, Arc<Connector::NFConnector>, Arc<Connector::NFConnector>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>, Arc<Connector::NFConnector>) -> Result<bool> + 'static>))?;
+        (ecl2, oec) = List::deleteMemberOnTrue(ec1.clone(), ecl2.clone(), (std::sync::Arc::new(Connector::isNodeNameEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>, Arc<Connector::NFConnector>) -> Result<bool> + 'static>))?;
         if isSome(oec.clone()) {
             conns = metamodelica::cons(Arc::new(Connection::NFConnection { lhs: ec1.clone(), rhs: Util::getOption(oec.clone())? }), conns.clone());
         }
@@ -209,7 +209,7 @@ fn getExpandableConnectorsInConnector(mut c1: Arc<Connector::NFConnector>) -> Re
                 let mut n = n.clone();
                 ty = InstNode::getType(n.clone())?;
                 name = ComponentRef::prefixCref(n.clone(), ty.clone(), metamodelica::nil(), par_name.clone());
-                ecl = metamodelica::cons(Connector::fromCref(name.clone(), ty.clone(), ElementSource::createElementSource(InstNode::info(n.clone())?, None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?), ecl.clone());
+                ecl = metamodelica::cons(Connector::fromCref(name.clone(), ty.clone(), ElementSource::createElementSource(InstNode::info(n.clone())?, None, openmodelica_frontend_types::DAE::Prefix::NOPRE, (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?)?, ecl.clone());
             }
             ecl.clone()
         },
@@ -280,7 +280,7 @@ fn elaborateExpandableSet(mut set: Arc<metamodelica::List<Arc<Connector::NFConne
     let mut exp_set: Arc<UnorderedSet::UnorderedSet<Arc<Connector::NFConnector>>> = <Arc<UnorderedSet::UnorderedSet<Arc<Connector::NFConnector>>> as ::std::default::Default>::default();
     let mut exp_conns: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
     let mut exp_set_lst: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
-    exp_set = UnorderedSet::new((std::sync::Arc::new(hashConnector) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(Connector::isNodeNameEqual, Arc<Connector::NFConnector>, Arc<Connector::NFConnector>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>, Arc<Connector::NFConnector>) -> Result<bool> + 'static>), 13);
+    exp_set = UnorderedSet::new((std::sync::Arc::new(hashConnector) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<i32> + 'static>), (std::sync::Arc::new(Connector::isNodeNameEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>, Arc<Connector::NFConnector>) -> Result<bool> + 'static>), 13);
     for mut c in &*set.clone() {
         let mut c = c.clone();
         if Prefixes::ConnectorType::isExpandable(c.cty.clone()) {
@@ -310,7 +310,7 @@ fn markComponentPresent(mut node: Arc<InstNode::InstNode>) -> Result<()> {
         InstNode::updateComponent(comp.clone(), node.clone())?;
         if Type::isComplex(Component::getType(comp.clone())?) {
             cls = InstNode::getClass(Component::classInstance(comp.clone()))?;
-            ClassTree::applyComponents(Class::classTree(cls.clone())?, (std::sync::Arc::new(markComponentPresent) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<()> + 'static>));
+            ClassTree::applyComponents(Class::classTree(cls.clone())?, (std::sync::Arc::new(markComponentPresent) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>) -> Result<()> + 'static>))?;
         }
     }
     Ok(())
@@ -361,7 +361,7 @@ fn augmentExpandableConnector(mut conn: Arc<Connector::NFConnector>, mut expanda
             vars = createVirtualVariables(elem_name.clone(), ty.clone(), ElementSource::getInfo(c.source.clone()), vars.clone())?;
         } else {
             comp_node = InstNode::resolveInner(comp_node.clone());
-            if InstNode::isComponent(comp_node.clone()) {
+            if InstNode::isComponent(comp_node.clone())? {
                 markComponentPresent(comp_node.clone())?;
             } else {
                 Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFExpandableConnectors.augmentExpandableConnector")); __mm_s.push_str(&*literal!(" got non-component element")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;

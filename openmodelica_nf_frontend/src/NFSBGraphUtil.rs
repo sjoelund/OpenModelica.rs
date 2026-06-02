@@ -77,7 +77,7 @@ pub fn multiIntervalFromDimensions(mut dims: Arc<metamodelica::List<Arc<Dimensio
     if dims.clone().is_empty() {
         vc = Vector::get(vCount.clone(), 1)?;
         Vector::update(vCount.clone(), 1, vc.clone() + 1)?;
-        multiInt = SBMultiInterval::fromArray(arrayCreate(Vector::size(vCount.clone()), SBInterval::new(vc.clone(), 1, vc.clone())));
+        multiInt = SBMultiInterval::fromArray(arrayCreate(Vector::size(vCount.clone()), SBInterval::new(vc.clone(), 1, vc.clone())))?;
     } else {
         ints = arrayCreate(Vector::size(vCount.clone()), SBInterval::newEmpty());
         new_vCount = Vector::copy(vCount.clone());
@@ -109,7 +109,7 @@ pub fn multiIntervalFromDimensions(mut dims: Arc<metamodelica::List<Arc<Dimensio
                 ints.clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
             }
         }
-        multiInt = SBMultiInterval::fromArray(ints.clone());
+        multiInt = SBMultiInterval::fromArray(ints.clone())?;
         if !(SBMultiInterval::isEmpty(multiInt.clone())) {
             Vector::swap(new_vCount.clone(), vCount.clone());
         }
@@ -127,7 +127,7 @@ pub fn multiIntervalFromSubscripts(mut subs: Arc<metamodelica::List<Arc<Subscrip
     let mut sub_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     miv = SBMultiInterval::intervals(multiInt.clone());
     if subs.clone().is_empty() {
-        mi = Array::map(miv.clone(), (std::sync::Arc::new(fnptr!(make_lo_interval, Arc<SBInterval::SBInterval>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBInterval::SBInterval>) -> Result<Arc<SBInterval::SBInterval>> + 'static>));
+        mi = Array::map(miv.clone(), (std::sync::Arc::new(fnptr!(make_lo_interval, Arc<SBInterval::SBInterval>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBInterval::SBInterval>) -> Result<Arc<SBInterval::SBInterval>> + 'static>))?;
     } else {
         index = 1;
         mi = metamodelica::arrayFromVec(miv.clone().borrow().clone());
@@ -157,7 +157,7 @@ pub fn multiIntervalFromSubscripts(mut subs: Arc<metamodelica::List<Arc<Subscrip
             }
         }
     }
-    multiInt = SBMultiInterval::fromArray(mi.clone());
+    multiInt = SBMultiInterval::fromArray(mi.clone())?;
     Ok(multiInt)
 }
 
@@ -381,9 +381,9 @@ pub fn linearMapFromIntervals(mut d1: i32, mut d2: i32, mut mi1: Arc<SBMultiInte
     }
     Vector::swap(eCount.clone(), new_ec.clone());
     s = SBSet::newEmpty();
-    s = SBSet::addAtomicSet(SBAtomicSet::new(SBMultiInterval::fromArray(mi.clone())), s.clone())?;
-    lm1 = SBLinearMap::new(g1.clone(), o1.clone());
-    lm2 = SBLinearMap::new(g2.clone(), o2.clone());
+    s = SBSet::addAtomicSet(SBAtomicSet::new(SBMultiInterval::fromArray(mi.clone())?), s.clone())?;
+    lm1 = SBLinearMap::new(g1.clone(), o1.clone())?;
+    lm2 = SBLinearMap::new(g2.clone(), o2.clone())?;
     pw1 = SBPWLinearMap::newScalar(s.clone(), lm1.clone());
     pw2 = SBPWLinearMap::newScalar(s.clone(), lm2.clone());
     name = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("E")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", System::tmpTick()))); ArcStr::from(__mm_s) }).clone();

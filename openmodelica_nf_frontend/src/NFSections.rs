@@ -175,7 +175,7 @@ pub fn join(mut sections1: Arc<NFSections>, mut sections2: Arc<NFSections>) -> R
     Ok(sections)
 }
 
-pub fn map(mut sections: Arc<NFSections>, mut eqFn: Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<Arc<Equation::NFEquation>> + 'static>, mut algFn: Arc<dyn ::std::ops::Fn(Arc<Algorithm::NFAlgorithm>) -> Result<Arc<Algorithm::NFAlgorithm>> + 'static>, mut ieqFn: Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<Arc<Equation::NFEquation>> + 'static>, mut ialgFn: Arc<dyn ::std::ops::Fn(Arc<Algorithm::NFAlgorithm>) -> Result<Arc<Algorithm::NFAlgorithm>> + 'static>) -> Arc<NFSections> {
+pub fn map(mut sections: Arc<NFSections>, mut eqFn: Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<Arc<Equation::NFEquation>> + 'static>, mut algFn: Arc<dyn ::std::ops::Fn(Arc<Algorithm::NFAlgorithm>) -> Result<Arc<Algorithm::NFAlgorithm>> + 'static>, mut ieqFn: Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<Arc<Equation::NFEquation>> + 'static>, mut ialgFn: Arc<dyn ::std::ops::Fn(Arc<Algorithm::NFAlgorithm>) -> Result<Arc<Algorithm::NFAlgorithm>> + 'static>) -> Result<Arc<NFSections>> {
     pub type EquationFn = std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<Arc<Equation::NFEquation>> + 'static>;
 
     pub type AlgorithmFn = std::sync::Arc<dyn ::std::ops::Fn(Arc<Algorithm::NFAlgorithm>) -> Result<Arc<Algorithm::NFAlgorithm>> + 'static>;
@@ -190,7 +190,7 @@ pub fn map(mut sections: Arc<NFSections>, mut eqFn: Arc<dyn ::std::ops::Fn(Arc<E
             eq = ({
         let mut __acc: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
         for mut e in (var_field!((*sections).equations, NFSections::SECTIONS).clone()).into_iter().cloned() {
-            let __x = eqFn(e.clone()).unwrap();
+            let __x = eqFn(e.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -198,7 +198,7 @@ pub fn map(mut sections: Arc<NFSections>, mut eqFn: Arc<dyn ::std::ops::Fn(Arc<E
             ieq = ({
         let mut __acc: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
         for mut e in (var_field!((*sections).initialEquations, NFSections::SECTIONS).clone()).into_iter().cloned() {
-            let __x = ieqFn(e.clone()).unwrap();
+            let __x = ieqFn(e.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -206,7 +206,7 @@ pub fn map(mut sections: Arc<NFSections>, mut eqFn: Arc<dyn ::std::ops::Fn(Arc<E
             alg = ({
         let mut __acc: Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>> = metamodelica::nil();
         for mut a in (var_field!((*sections).algorithms, NFSections::SECTIONS).clone()).into_iter().cloned() {
-            let __x = algFn(a.clone()).unwrap();
+            let __x = algFn(a.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -214,7 +214,7 @@ pub fn map(mut sections: Arc<NFSections>, mut eqFn: Arc<dyn ::std::ops::Fn(Arc<E
             ialg = ({
         let mut __acc: Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>> = metamodelica::nil();
         for mut a in (var_field!((*sections).initialAlgorithms, NFSections::SECTIONS).clone()).into_iter().cloned() {
-            let __x = ialgFn(a.clone()).unwrap();
+            let __x = ialgFn(a.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -225,7 +225,7 @@ pub fn map(mut sections: Arc<NFSections>, mut eqFn: Arc<dyn ::std::ops::Fn(Arc<E
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    sections
+    Ok(sections)
 }
 
 pub fn eqId(mut eq: Arc<Equation::NFEquation>) -> Arc<Equation::NFEquation> {
@@ -238,7 +238,7 @@ pub fn algId(mut alg: Arc<Algorithm::NFAlgorithm>) -> Arc<Algorithm::NFAlgorithm
     alg
 }
 
-pub fn map1<ArgT: Clone + 'static>(mut sections: Arc<NFSections>, mut arg: ArgT, mut eqFn: Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>, ArgT) -> Result<Arc<Equation::NFEquation>> + 'static>, mut algFn: Arc<dyn ::std::ops::Fn(Arc<Algorithm::NFAlgorithm>, ArgT) -> Result<Arc<Algorithm::NFAlgorithm>> + 'static>, mut ieqFn: Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>, ArgT) -> Result<Arc<Equation::NFEquation>> + 'static>, mut ialgFn: Arc<dyn ::std::ops::Fn(Arc<Algorithm::NFAlgorithm>, ArgT) -> Result<Arc<Algorithm::NFAlgorithm>> + 'static>) -> Arc<NFSections> {
+pub fn map1<ArgT: Clone + 'static>(mut sections: Arc<NFSections>, mut arg: ArgT, mut eqFn: Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>, ArgT) -> Result<Arc<Equation::NFEquation>> + 'static>, mut algFn: Arc<dyn ::std::ops::Fn(Arc<Algorithm::NFAlgorithm>, ArgT) -> Result<Arc<Algorithm::NFAlgorithm>> + 'static>, mut ieqFn: Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>, ArgT) -> Result<Arc<Equation::NFEquation>> + 'static>, mut ialgFn: Arc<dyn ::std::ops::Fn(Arc<Algorithm::NFAlgorithm>, ArgT) -> Result<Arc<Algorithm::NFAlgorithm>> + 'static>) -> Result<Arc<NFSections>> {
     pub type EquationFn<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>, ArgT) -> Result<Arc<Equation::NFEquation>> + 'static>;
 
     pub type AlgorithmFn<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Algorithm::NFAlgorithm>, ArgT) -> Result<Arc<Algorithm::NFAlgorithm>> + 'static>;
@@ -253,7 +253,7 @@ pub fn map1<ArgT: Clone + 'static>(mut sections: Arc<NFSections>, mut arg: ArgT,
             eq = ({
         let mut __acc: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
         for mut e in (var_field!((*sections).equations, NFSections::SECTIONS).clone()).into_iter().cloned() {
-            let __x = eqFn(e.clone(), arg.clone()).unwrap();
+            let __x = eqFn(e.clone(), arg.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -261,7 +261,7 @@ pub fn map1<ArgT: Clone + 'static>(mut sections: Arc<NFSections>, mut arg: ArgT,
             ieq = ({
         let mut __acc: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
         for mut e in (var_field!((*sections).initialEquations, NFSections::SECTIONS).clone()).into_iter().cloned() {
-            let __x = ieqFn(e.clone(), arg.clone()).unwrap();
+            let __x = ieqFn(e.clone(), arg.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -269,7 +269,7 @@ pub fn map1<ArgT: Clone + 'static>(mut sections: Arc<NFSections>, mut arg: ArgT,
             alg = ({
         let mut __acc: Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>> = metamodelica::nil();
         for mut a in (var_field!((*sections).algorithms, NFSections::SECTIONS).clone()).into_iter().cloned() {
-            let __x = algFn(a.clone(), arg.clone()).unwrap();
+            let __x = algFn(a.clone(), arg.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -277,7 +277,7 @@ pub fn map1<ArgT: Clone + 'static>(mut sections: Arc<NFSections>, mut arg: ArgT,
             ialg = ({
         let mut __acc: Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>> = metamodelica::nil();
         for mut a in (var_field!((*sections).initialAlgorithms, NFSections::SECTIONS).clone()).into_iter().cloned() {
-            let __x = ialgFn(a.clone(), arg.clone()).unwrap();
+            let __x = ialgFn(a.clone(), arg.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -288,10 +288,10 @@ pub fn map1<ArgT: Clone + 'static>(mut sections: Arc<NFSections>, mut arg: ArgT,
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    sections
+    Ok(sections)
 }
 
-pub fn mapExp(mut sections: Arc<NFSections>, mut mapFn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Arc<NFSections> {
+pub fn mapExp(mut sections: Arc<NFSections>, mut mapFn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<NFSections>> {
     pub type MapFn = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>;
 
     let mut sections: Arc<NFSections> = sections;
@@ -301,17 +301,17 @@ pub fn mapExp(mut sections: Arc<NFSections>, mut mapFn: Arc<dyn ::std::ops::Fn(A
     let mut ialg: Arc<metamodelica::List<Arc<Algorithm::NFAlgorithm>>> = metamodelica::nil();
     sections = (::match_deref::match_deref! { match &(sections.clone()) {
         Deref @ SECTIONS { .. } => {
-            eq = Equation::mapExpList(var_field!((*sections).equations, NFSections::SECTIONS).clone(), mapFn.clone());
-            ieq = Equation::mapExpList(var_field!((*sections).initialEquations, NFSections::SECTIONS).clone(), mapFn.clone());
-            alg = Algorithm::mapExpList(var_field!((*sections).algorithms, NFSections::SECTIONS).clone(), mapFn.clone());
-            ialg = Algorithm::mapExpList(var_field!((*sections).initialAlgorithms, NFSections::SECTIONS).clone(), mapFn.clone());
+            eq = Equation::mapExpList(var_field!((*sections).equations, NFSections::SECTIONS).clone(), mapFn.clone())?;
+            ieq = Equation::mapExpList(var_field!((*sections).initialEquations, NFSections::SECTIONS).clone(), mapFn.clone())?;
+            alg = Algorithm::mapExpList(var_field!((*sections).algorithms, NFSections::SECTIONS).clone(), mapFn.clone())?;
+            ialg = Algorithm::mapExpList(var_field!((*sections).initialAlgorithms, NFSections::SECTIONS).clone(), mapFn.clone())?;
             Arc::new(NFSections::SECTIONS { equations: eq.clone(), initialEquations: ieq.clone(), algorithms: alg.clone(), initialAlgorithms: ialg.clone() })
         },
         Deref @ EXTERNAL { .. } => {
             assign_variant_field!(sections => NFSections::EXTERNAL; args = ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
         for mut e in (var_field!((*sections).args, NFSections::EXTERNAL).clone()).into_iter().cloned() {
-            let __x = mapFn(e.clone()).unwrap();
+            let __x = mapFn(e.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -321,7 +321,7 @@ pub fn mapExp(mut sections: Arc<NFSections>, mut mapFn: Arc<dyn ::std::ops::Fn(A
         _ => sections.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    sections
+    Ok(sections)
 }
 
 pub fn foldExp<ArgT: Clone + 'static>(mut sections: Arc<NFSections>, mut foldFn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
@@ -336,14 +336,14 @@ pub fn foldExp<ArgT: Clone + 'static>(mut sections: Arc<NFSections>, mut foldFn:
             arg = Algorithm::foldExpList(var_field!((*sections).initialAlgorithms, NFSections::SECTIONS).clone(), foldFn.clone(), arg.clone())?;
             arg.clone()
         },
-        Deref @ EXTERNAL { .. } => List::fold(var_field!((*sections).args, NFSections::EXTERNAL).clone(), foldFn.clone(), arg.clone()),
+        Deref @ EXTERNAL { .. } => List::fold(var_field!((*sections).args, NFSections::EXTERNAL).clone(), foldFn.clone(), arg.clone())?,
         _ => arg.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(arg)
 }
 
-pub fn apply(mut sections: Arc<NFSections>, mut eqFn: Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<()> + 'static>, mut algFn: Arc<dyn ::std::ops::Fn(Arc<Algorithm::NFAlgorithm>) -> Result<()> + 'static>, mut ieqFn: Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<()> + 'static>, mut ialgFn: Arc<dyn ::std::ops::Fn(Arc<Algorithm::NFAlgorithm>) -> Result<()> + 'static>) -> () {
+pub fn apply(mut sections: Arc<NFSections>, mut eqFn: Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<()> + 'static>, mut algFn: Arc<dyn ::std::ops::Fn(Arc<Algorithm::NFAlgorithm>) -> Result<()> + 'static>, mut ieqFn: Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<()> + 'static>, mut ialgFn: Arc<dyn ::std::ops::Fn(Arc<Algorithm::NFAlgorithm>) -> Result<()> + 'static>) -> Result<()> {
     pub type EquationFn = std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::NFEquation>) -> Result<()> + 'static>;
 
     pub type AlgorithmFn = std::sync::Arc<dyn ::std::ops::Fn(Arc<Algorithm::NFAlgorithm>) -> Result<()> + 'static>;
@@ -352,26 +352,26 @@ pub fn apply(mut sections: Arc<NFSections>, mut eqFn: Arc<dyn ::std::ops::Fn(Arc
         Deref @ SECTIONS { .. } => {
             for mut eq in &*var_field!((*sections).equations, NFSections::SECTIONS).clone() {
                 let mut eq = eq.clone();
-                eqFn(eq.clone()).unwrap();
+                eqFn(eq.clone())?;
             }
             for mut ieq in &*var_field!((*sections).initialEquations, NFSections::SECTIONS).clone() {
                 let mut ieq = ieq.clone();
-                ieqFn(ieq.clone()).unwrap();
+                ieqFn(ieq.clone())?;
             }
             for mut alg in &*var_field!((*sections).algorithms, NFSections::SECTIONS).clone() {
                 let mut alg = alg.clone();
-                algFn(alg.clone()).unwrap();
+                algFn(alg.clone())?;
             }
             for mut ialg in &*var_field!((*sections).initialAlgorithms, NFSections::SECTIONS).clone() {
                 let mut ialg = ialg.clone();
-                ialgFn(ialg.clone()).unwrap();
+                ialgFn(ialg.clone())?;
             }
             ()
         },
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    ()
+    Ok(())
 }
 
 pub fn isEmpty(mut sections: Arc<NFSections>) -> bool {
@@ -481,12 +481,12 @@ pub fn toFlatStream(mut sections: Arc<NFSections>, mut scopeName: Arc<Absyn::Pat
                 } };
                 ann = __pa0.clone();
                 r#mod = ann.modification.clone();
-                modLib = SCodeUtil::filterSubMods(r#mod.clone(), (std::sync::Arc::new({ let __pe_b1 = list![(literal!("Library")).clone()]; move |__pe_a0| Ok(SCodeUtil::filterGivenSubModNames(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>));
-                modInc = SCodeUtil::filterSubMods(r#mod.clone(), (std::sync::Arc::new({ let __pe_b1 = list![(literal!("Include")).clone()]; move |__pe_a0| Ok(SCodeUtil::filterGivenSubModNames(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>));
+                modLib = SCodeUtil::filterSubMods(r#mod.clone(), (std::sync::Arc::new({ let __pe_b1 = list![(literal!("Library")).clone()]; move |__pe_a0| Ok(SCodeUtil::filterGivenSubModNames(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>))?;
+                modInc = SCodeUtil::filterSubMods(r#mod.clone(), (std::sync::Arc::new({ let __pe_b1 = list![(literal!("Include")).clone()]; move |__pe_a0| Ok(SCodeUtil::filterGivenSubModNames(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>))?;
                 if SCodeUtil::isEmptyMod(modLib.clone()) {
                     modLibDir = Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD);
                 } else {
-                    modLibDir = SCodeUtil::filterSubMods(r#mod.clone(), (std::sync::Arc::new({ let __pe_b1 = list![(literal!("LibraryDirectory")).clone()]; move |__pe_a0| Ok(SCodeUtil::filterGivenSubModNames(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>));
+                    modLibDir = SCodeUtil::filterSubMods(r#mod.clone(), (std::sync::Arc::new({ let __pe_b1 = list![(literal!("LibraryDirectory")).clone()]; move |__pe_a0| Ok(SCodeUtil::filterGivenSubModNames(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>))?;
                     if SCodeUtil::isEmptyMod(modLibDir.clone()) {
                         modLibDir = Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: list![Arc::new(SCode::SubMod { ident: (literal!("LibraryDirectory")).clone(), r#mod: Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: metamodelica::nil(), binding: Some(Arc::new(Absyn::Exp::STRING { value: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("modelica://")); __mm_s.push_str(&*AbsynUtil::pathFirstIdent(scopeName.clone())?); __mm_s.push_str(&*literal!("/Resources/Library")); ArcStr::from(__mm_s) }).clone() })), comment: None, info: Error::dummyInfo.clone() }) })], binding: None, comment: None, info: Error::dummyInfo.clone() });
                     }
@@ -494,7 +494,7 @@ pub fn toFlatStream(mut sections: Arc<NFSections>, mut scopeName: Arc<Absyn::Pat
                 if SCodeUtil::isEmptyMod(modInc.clone()) {
                     modIncDir = Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD);
                 } else {
-                    modIncDir = SCodeUtil::filterSubMods(r#mod.clone(), (std::sync::Arc::new({ let __pe_b1 = list![(literal!("IncludeDirectory")).clone()]; move |__pe_a0| Ok(SCodeUtil::filterGivenSubModNames(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>));
+                    modIncDir = SCodeUtil::filterSubMods(r#mod.clone(), (std::sync::Arc::new({ let __pe_b1 = list![(literal!("IncludeDirectory")).clone()]; move |__pe_a0| Ok(SCodeUtil::filterGivenSubModNames(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>))?;
                     if SCodeUtil::isEmptyMod(modLibDir.clone()) {
                         modLibDir = Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: list![Arc::new(SCode::SubMod { ident: (literal!("IncludeDirectory")).clone(), r#mod: Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::NOT_FINAL, eachPrefix: openmodelica_frontend_types::SCode::Each::NOT_EACH, subModLst: metamodelica::nil(), binding: Some(Arc::new(Absyn::Exp::STRING { value: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("modelica://")); __mm_s.push_str(&*AbsynUtil::pathFirstIdent(scopeName.clone())?); __mm_s.push_str(&*literal!("/Resources/Include")); ArcStr::from(__mm_s) }).clone() })), comment: None, info: Error::dummyInfo.clone() }) })], binding: None, comment: None, info: Error::dummyInfo.clone() });
                     }

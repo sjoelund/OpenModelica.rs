@@ -65,7 +65,7 @@ pub fn stripSubmod(mut r#mod: Arc<SCode::Mod>) -> Arc<SCode::Mod> {
     r#mod
 }
 
-pub fn filterSubMods(mut r#mod: Arc<SCode::Mod>, mut filter: Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>) -> Arc<SCode::Mod> {
+pub fn filterSubMods(mut r#mod: Arc<SCode::Mod>, mut filter: Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>) -> Result<Arc<SCode::Mod>> {
     pub type FilterFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>;
 
     let mut r#mod: Arc<SCode::Mod> = r#mod;
@@ -74,7 +74,7 @@ pub fn filterSubMods(mut r#mod: Arc<SCode::Mod>, mut filter: Arc<dyn ::std::ops:
             assign_variant_field!(r#mod => SCode::Mod::MOD; subModLst = ({
         let mut __acc: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
         for mut m in (var_field!((*r#mod).subModLst, SCode::Mod::MOD).clone()).into_iter().cloned() {
-            if !(filter(m.clone()).unwrap()) { continue; }
+            if !(filter(m.clone())?) { continue; }
             let __x = m.clone();
             __acc = cons(__x, __acc);
         }
@@ -89,7 +89,7 @@ pub fn filterSubMods(mut r#mod: Arc<SCode::Mod>, mut filter: Arc<dyn ::std::ops:
         _ => r#mod.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    r#mod
+    Ok(r#mod)
 }
 
 pub fn filterGivenSubModNames(mut submod: Arc<SCode::SubMod>, mut namesToKeep: Arc<metamodelica::List<ArcStr>>) -> bool {
@@ -395,10 +395,10 @@ pub fn elementNameInfo(mut element: Arc<SCode::Element>) -> Result<(ArcStr, Sour
     Ok((name, info))
 }
 
-pub fn elementNames(mut elts: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Arc<metamodelica::List<ArcStr>> {
+pub fn elementNames(mut elts: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut names: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    names = List::fold(elts.clone(), (std::sync::Arc::new(fnptr!(elementNamesWork, Arc<SCode::Element>, Arc<metamodelica::List<ArcStr>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), metamodelica::nil());
-    names
+    names = List::fold(elts.clone(), (std::sync::Arc::new(fnptr!(elementNamesWork, Arc<SCode::Element>, Arc<metamodelica::List<ArcStr>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), metamodelica::nil())?;
+    Ok(names)
 }
 
 fn elementNamesWork(mut e: Arc<SCode::Element>, mut acc: Arc<metamodelica::List<ArcStr>>) -> Arc<metamodelica::List<ArcStr>> {
@@ -597,7 +597,7 @@ pub fn elementEqual(mut element1: Arc<SCode::Element>, mut element2: Arc<SCode::
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ SCode::Element::COMPONENT { .. }, Deref @ SCode::Element::COMPONENT { .. }) => {
-                    Ok(stringEq((var_field!((*element1).name, SCode::Element::COMPONENT).clone()).clone(), (var_field!((*element2).name, SCode::Element::COMPONENT).clone()).clone()) && prefixesEqual(var_field!((*element1).prefixes, SCode::Element::COMPONENT).clone(), var_field!((*element2).prefixes, SCode::Element::COMPONENT).clone())? && attributesEqual(var_field!((*element1).attributes, SCode::Element::COMPONENT).clone(), var_field!((*element2).attributes, SCode::Element::COMPONENT).clone())? && modEqual(var_field!((*element1).modifications, SCode::Element::COMPONENT).clone(), var_field!((*element2).modifications, SCode::Element::COMPONENT).clone())? && AbsynUtil::typeSpecEqual(var_field!((*element1).typeSpec, SCode::Element::COMPONENT).clone(), var_field!((*element2).typeSpec, SCode::Element::COMPONENT).clone()) && var_field!((*element1).condition, SCode::Element::COMPONENT).clone() == var_field!((*element2).condition, SCode::Element::COMPONENT).clone())
+                    Ok(stringEq((var_field!((*element1).name, SCode::Element::COMPONENT).clone()).clone(), (var_field!((*element2).name, SCode::Element::COMPONENT).clone()).clone()) && prefixesEqual(var_field!((*element1).prefixes, SCode::Element::COMPONENT).clone(), var_field!((*element2).prefixes, SCode::Element::COMPONENT).clone())? && attributesEqual(var_field!((*element1).attributes, SCode::Element::COMPONENT).clone(), var_field!((*element2).attributes, SCode::Element::COMPONENT).clone())? && modEqual(var_field!((*element1).modifications, SCode::Element::COMPONENT).clone(), var_field!((*element2).modifications, SCode::Element::COMPONENT).clone())? && AbsynUtil::typeSpecEqual(var_field!((*element1).typeSpec, SCode::Element::COMPONENT).clone(), var_field!((*element2).typeSpec, SCode::Element::COMPONENT).clone())? && var_field!((*element1).condition, SCode::Element::COMPONENT).clone() == var_field!((*element2).condition, SCode::Element::COMPONENT).clone())
                 }
                 _ => bail!("nomatch"),
             }}
@@ -640,9 +640,9 @@ pub fn elementEqual(mut element1: Arc<SCode::Element>, mut element2: Arc<SCode::
 }
 
 // stefan
-pub fn annotationEqual(mut annotation1: Arc<SCode::Annotation>, mut annotation2: Arc<SCode::Annotation>) -> bool {
-    let mut equal: bool = modEqual(annotation1.modification.clone(), annotation2.modification.clone()).unwrap();
-    equal
+pub fn annotationEqual(mut annotation1: Arc<SCode::Annotation>, mut annotation2: Arc<SCode::Annotation>) -> Result<bool> {
+    let mut equal: bool = modEqual(annotation1.modification.clone(), annotation2.modification.clone())?;
+    Ok(equal)
 }
 
 pub fn restrictionEqual(mut restr1: SCode::Restriction, mut restr2: SCode::Restriction) -> bool {
@@ -744,32 +744,32 @@ pub fn enumEqual(mut e1: Arc<SCode::Enum>, mut e2: Arc<SCode::Enum>) -> bool {
 fn classDefEqual(mut cdef1: Arc<SCode::ClassDef>, mut cdef2: Arc<SCode::ClassDef>) -> Result<bool> {
     let mut equal: bool = false;
     equal = (::match_deref::match_deref! { match &((cdef1.clone(), cdef2.clone())) {
-        (Deref @ SCode::ClassDef::PARTS { .. }, Deref @ SCode::ClassDef::PARTS { .. }) => List::isEqualOnTrue(var_field!((*cdef1).elementLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef2).elementLst, SCode::ClassDef::PARTS).clone(), (std::sync::Arc::new(elementEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Arc<SCode::Element>) -> Result<bool> + 'static>)) && List::isEqualOnTrue(var_field!((*cdef1).normalEquationLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef2).normalEquationLst, SCode::ClassDef::PARTS).clone(), (std::sync::Arc::new(equationEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, Arc<SCode::Equation>) -> Result<bool> + 'static>)) && List::isEqualOnTrue(var_field!((*cdef1).initialEquationLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef2).initialEquationLst, SCode::ClassDef::PARTS).clone(), (std::sync::Arc::new(equationEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, Arc<SCode::Equation>) -> Result<bool> + 'static>)) && List::isEqualOnTrue(var_field!((*cdef1).normalAlgorithmLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef2).normalAlgorithmLst, SCode::ClassDef::PARTS).clone(), (std::sync::Arc::new(fnptr!(algorithmEqual, Arc<SCode::AlgorithmSection>, Arc<SCode::AlgorithmSection>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::AlgorithmSection>, Arc<SCode::AlgorithmSection>) -> Result<bool> + 'static>)) && List::isEqualOnTrue(var_field!((*cdef1).initialAlgorithmLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef2).initialAlgorithmLst, SCode::ClassDef::PARTS).clone(), (std::sync::Arc::new(fnptr!(algorithmEqual, Arc<SCode::AlgorithmSection>, Arc<SCode::AlgorithmSection>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::AlgorithmSection>, Arc<SCode::AlgorithmSection>) -> Result<bool> + 'static>)),
-        (Deref @ SCode::ClassDef::DERIVED { .. }, Deref @ SCode::ClassDef::DERIVED { .. }) => AbsynUtil::typeSpecEqual(var_field!((*cdef1).typeSpec, SCode::ClassDef::DERIVED).clone(), var_field!((*cdef2).typeSpec, SCode::ClassDef::DERIVED).clone()) && modEqual(var_field!((*cdef1).modifications, SCode::ClassDef::DERIVED).clone(), var_field!((*cdef2).modifications, SCode::ClassDef::DERIVED).clone())? && attributesEqual(var_field!((*cdef1).attributes, SCode::ClassDef::DERIVED).clone(), var_field!((*cdef2).attributes, SCode::ClassDef::DERIVED).clone())?,
-        (Deref @ SCode::ClassDef::ENUMERATION { .. }, Deref @ SCode::ClassDef::ENUMERATION { .. }) => List::isEqualOnTrue(var_field!((*cdef1).enumLst, SCode::ClassDef::ENUMERATION).clone(), var_field!((*cdef2).enumLst, SCode::ClassDef::ENUMERATION).clone(), (std::sync::Arc::new(fnptr!(enumEqual, Arc<SCode::Enum>, Arc<SCode::Enum>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Enum>, Arc<SCode::Enum>) -> Result<bool> + 'static>)),
+        (Deref @ SCode::ClassDef::PARTS { .. }, Deref @ SCode::ClassDef::PARTS { .. }) => List::isEqualOnTrue(var_field!((*cdef1).elementLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef2).elementLst, SCode::ClassDef::PARTS).clone(), (std::sync::Arc::new(elementEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>, Arc<SCode::Element>) -> Result<bool> + 'static>))? && List::isEqualOnTrue(var_field!((*cdef1).normalEquationLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef2).normalEquationLst, SCode::ClassDef::PARTS).clone(), (std::sync::Arc::new(equationEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, Arc<SCode::Equation>) -> Result<bool> + 'static>))? && List::isEqualOnTrue(var_field!((*cdef1).initialEquationLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef2).initialEquationLst, SCode::ClassDef::PARTS).clone(), (std::sync::Arc::new(equationEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, Arc<SCode::Equation>) -> Result<bool> + 'static>))? && List::isEqualOnTrue(var_field!((*cdef1).normalAlgorithmLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef2).normalAlgorithmLst, SCode::ClassDef::PARTS).clone(), (std::sync::Arc::new(algorithmEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::AlgorithmSection>, Arc<SCode::AlgorithmSection>) -> Result<bool> + 'static>))? && List::isEqualOnTrue(var_field!((*cdef1).initialAlgorithmLst, SCode::ClassDef::PARTS).clone(), var_field!((*cdef2).initialAlgorithmLst, SCode::ClassDef::PARTS).clone(), (std::sync::Arc::new(algorithmEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::AlgorithmSection>, Arc<SCode::AlgorithmSection>) -> Result<bool> + 'static>))?,
+        (Deref @ SCode::ClassDef::DERIVED { .. }, Deref @ SCode::ClassDef::DERIVED { .. }) => AbsynUtil::typeSpecEqual(var_field!((*cdef1).typeSpec, SCode::ClassDef::DERIVED).clone(), var_field!((*cdef2).typeSpec, SCode::ClassDef::DERIVED).clone())? && modEqual(var_field!((*cdef1).modifications, SCode::ClassDef::DERIVED).clone(), var_field!((*cdef2).modifications, SCode::ClassDef::DERIVED).clone())? && attributesEqual(var_field!((*cdef1).attributes, SCode::ClassDef::DERIVED).clone(), var_field!((*cdef2).attributes, SCode::ClassDef::DERIVED).clone())?,
+        (Deref @ SCode::ClassDef::ENUMERATION { .. }, Deref @ SCode::ClassDef::ENUMERATION { .. }) => List::isEqualOnTrue(var_field!((*cdef1).enumLst, SCode::ClassDef::ENUMERATION).clone(), var_field!((*cdef2).enumLst, SCode::ClassDef::ENUMERATION).clone(), (std::sync::Arc::new(fnptr!(enumEqual, Arc<SCode::Enum>, Arc<SCode::Enum>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Enum>, Arc<SCode::Enum>) -> Result<bool> + 'static>))?,
         (Deref @ SCode::ClassDef::CLASS_EXTENDS { .. }, Deref @ SCode::ClassDef::CLASS_EXTENDS { .. }) => modEqual(var_field!((*cdef1).modifications, SCode::ClassDef::CLASS_EXTENDS).clone(), var_field!((*cdef2).modifications, SCode::ClassDef::CLASS_EXTENDS).clone())? && classDefEqual(var_field!((*cdef1).composition, SCode::ClassDef::CLASS_EXTENDS).clone(), var_field!((*cdef2).composition, SCode::ClassDef::CLASS_EXTENDS).clone())?,
-        (Deref @ SCode::ClassDef::PDER { .. }, Deref @ SCode::ClassDef::PDER { .. }) => List::isEqualOnTrue(var_field!((*cdef1).derivedVariables, SCode::ClassDef::PDER).clone(), var_field!((*cdef2).derivedVariables, SCode::ClassDef::PDER).clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>)),
+        (Deref @ SCode::ClassDef::PDER { .. }, Deref @ SCode::ClassDef::PDER { .. }) => List::isEqualOnTrue(var_field!((*cdef1).derivedVariables, SCode::ClassDef::PDER).clone(), var_field!((*cdef2).derivedVariables, SCode::ClassDef::PDER).clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(equal)
 }
 
-fn arraydimOptEqual(mut adopt1: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>, mut adopt2: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>) -> bool {
+fn arraydimOptEqual(mut adopt1: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>, mut adopt2: Option<Arc<metamodelica::List<Arc<Absyn::Subscript>>>>) -> Result<bool> {
     let mut equal: bool = false;
     equal = (::match_deref::match_deref! { match &((adopt1.clone(), adopt2.clone())) {
         (None, None) => {
             true
         },
         (Some(lst1), Some(lst2)) => {
-            List::isEqualOnTrue(lst1.clone(), lst2.clone(), (std::sync::Arc::new(subscriptEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Subscript>, Arc<Absyn::Subscript>) -> Result<bool> + 'static>))
+            List::isEqualOnTrue(lst1.clone(), lst2.clone(), (std::sync::Arc::new(subscriptEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Subscript>, Arc<Absyn::Subscript>) -> Result<bool> + 'static>))?
         },
         _ => {
             false
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    equal
+    Ok(equal)
 }
 
 fn subscriptEqual(mut sub1: Arc<Absyn::Subscript>, mut sub2: Arc<Absyn::Subscript>) -> Result<bool> {
@@ -786,10 +786,10 @@ fn subscriptEqual(mut sub1: Arc<Absyn::Subscript>, mut sub2: Arc<Absyn::Subscrip
     Ok(equal)
 }
 
-fn algorithmEqual(mut alg1: Arc<SCode::AlgorithmSection>, mut alg2: Arc<SCode::AlgorithmSection>) -> bool {
+fn algorithmEqual(mut alg1: Arc<SCode::AlgorithmSection>, mut alg2: Arc<SCode::AlgorithmSection>) -> Result<bool> {
     let mut equal: bool = false;
-    equal = List::isEqualOnTrue(alg1.statements.clone(), alg2.statements.clone(), (std::sync::Arc::new(statementEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, Arc<SCode::Statement>) -> Result<bool> + 'static>));
-    equal
+    equal = List::isEqualOnTrue(alg1.statements.clone(), alg2.statements.clone(), (std::sync::Arc::new(statementEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, Arc<SCode::Statement>) -> Result<bool> + 'static>))?;
+    Ok(equal)
 }
 
 fn statementEqual(mut ai1: Arc<SCode::Statement>, mut ai2: Arc<SCode::Statement>) -> Result<bool> {
@@ -802,7 +802,7 @@ fn statementEqual(mut ai1: Arc<SCode::Statement>, mut ai2: Arc<SCode::Statement>
                     let mut b1: bool = false;
                     let mut b2: bool = false;
                     let mut equal: bool = equal.clone();
-                    b1 = AbsynUtil::crefEqual(cr1.clone(), cr2.clone());
+                    b1 = AbsynUtil::crefEqual(cr1.clone(), cr2.clone())?;
                     b2 = AbsynUtil::expEqual(e1.clone(), e2.clone())?;
                     equal = boolAnd(b1.clone(), b2.clone());
                     Ok(equal.clone())
@@ -865,8 +865,8 @@ fn equationEqual(mut eq1: Arc<SCode::Equation>, mut eq2: Arc<SCode::Equation>) -
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ SCode::Equation::EQ_IF { elseBranch: fb1, thenBranch: tb1, condition: ifcond1, .. }, Deref @ SCode::Equation::EQ_IF { elseBranch: fb2, thenBranch: tb2, condition: ifcond2, .. }) => {
                     let true = (equationEqual2(tb1.clone(), tb2.clone())?) else { bail!("pattern mismatch") };
-                    let true = (List::isEqualOnTrue(fb1.clone(), fb2.clone(), (std::sync::Arc::new(equationEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, Arc<SCode::Equation>) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
-                    let true = (List::isEqualOnTrue(ifcond1.clone(), ifcond2.clone(), (std::sync::Arc::new(AbsynUtil::expEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arc<Absyn::Exp>) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
+                    let true = (List::isEqualOnTrue(fb1.clone(), fb2.clone(), (std::sync::Arc::new(equationEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, Arc<SCode::Equation>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
+                    let true = (List::isEqualOnTrue(ifcond1.clone(), ifcond2.clone(), (std::sync::Arc::new(AbsynUtil::expEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, Arc<Absyn::Exp>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
                     Ok(true)
                 }
                 _ => bail!("nomatch"),
@@ -887,7 +887,7 @@ fn equationEqual(mut eq1: Arc<SCode::Equation>, mut eq2: Arc<SCode::Equation>) -
                 (Deref @ SCode::Equation::EQ_PDE { domain: cr1, expRight: e12, expLeft: e11, .. }, Deref @ SCode::Equation::EQ_PDE { domain: cr2, expRight: e22, expLeft: e21, .. }) => {
                     let true = (AbsynUtil::expEqual(e11.clone(), e21.clone())?) else { bail!("pattern mismatch") };
                     let true = (AbsynUtil::expEqual(e12.clone(), e22.clone())?) else { bail!("pattern mismatch") };
-                    let true = (AbsynUtil::crefEqual(cr1.clone(), cr2.clone())) else { bail!("pattern mismatch") };
+                    let true = (AbsynUtil::crefEqual(cr1.clone(), cr2.clone())?) else { bail!("pattern mismatch") };
                     Ok(true)
                 }
                 _ => bail!("nomatch"),
@@ -896,8 +896,8 @@ fn equationEqual(mut eq1: Arc<SCode::Equation>, mut eq2: Arc<SCode::Equation>) -
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ SCode::Equation::EQ_CONNECT { crefRight: cr12, crefLeft: cr11, .. }, Deref @ SCode::Equation::EQ_CONNECT { crefRight: cr22, crefLeft: cr21, .. }) => {
-                    let true = (AbsynUtil::crefEqual(cr11.clone(), cr21.clone())) else { bail!("pattern mismatch") };
-                    let true = (AbsynUtil::crefEqual(cr12.clone(), cr22.clone())) else { bail!("pattern mismatch") };
+                    let true = (AbsynUtil::crefEqual(cr11.clone(), cr21.clone())?) else { bail!("pattern mismatch") };
+                    let true = (AbsynUtil::crefEqual(cr12.clone(), cr22.clone())?) else { bail!("pattern mismatch") };
                     Ok(true)
                 }
                 _ => bail!("nomatch"),
@@ -906,7 +906,7 @@ fn equationEqual(mut eq1: Arc<SCode::Equation>, mut eq2: Arc<SCode::Equation>) -
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ SCode::Equation::EQ_FOR { eEquationLst: eql1, range: Some(exp1), index: id1, .. }, Deref @ SCode::Equation::EQ_FOR { eEquationLst: eql2, range: Some(exp2), index: id2, .. }) => {
-                    let true = (List::isEqualOnTrue(eql1.clone(), eql2.clone(), (std::sync::Arc::new(equationEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, Arc<SCode::Equation>) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
+                    let true = (List::isEqualOnTrue(eql1.clone(), eql2.clone(), (std::sync::Arc::new(equationEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, Arc<SCode::Equation>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
                     let true = (AbsynUtil::expEqual(exp1.clone(), exp2.clone())?) else { bail!("pattern mismatch") };
                     let true = (stringEq((id1.clone()).clone(), (id2.clone()).clone())) else { bail!("pattern mismatch") };
                     Ok(true)
@@ -917,7 +917,7 @@ fn equationEqual(mut eq1: Arc<SCode::Equation>, mut eq2: Arc<SCode::Equation>) -
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ SCode::Equation::EQ_FOR { eEquationLst: eql1, range: None, index: id1, .. }, Deref @ SCode::Equation::EQ_FOR { eEquationLst: eql2, range: None, index: id2, .. }) => {
-                    let true = (List::isEqualOnTrue(eql1.clone(), eql2.clone(), (std::sync::Arc::new(equationEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, Arc<SCode::Equation>) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
+                    let true = (List::isEqualOnTrue(eql1.clone(), eql2.clone(), (std::sync::Arc::new(equationEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, Arc<SCode::Equation>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
                     let true = (stringEq((id1.clone()).clone(), (id2.clone()).clone())) else { bail!("pattern mismatch") };
                     Ok(true)
                 }
@@ -927,7 +927,7 @@ fn equationEqual(mut eq1: Arc<SCode::Equation>, mut eq2: Arc<SCode::Equation>) -
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ SCode::Equation::EQ_WHEN { eEquationLst: elst1, condition: cond1, .. }, Deref @ SCode::Equation::EQ_WHEN { eEquationLst: elst2, condition: cond2, .. }) => {
-                    let true = (List::isEqualOnTrue(elst1.clone(), elst2.clone(), (std::sync::Arc::new(equationEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, Arc<SCode::Equation>) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
+                    let true = (List::isEqualOnTrue(elst1.clone(), elst2.clone(), (std::sync::Arc::new(equationEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, Arc<SCode::Equation>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
                     let true = (AbsynUtil::expEqual(cond1.clone(), cond2.clone())?) else { bail!("pattern mismatch") };
                     Ok(true)
                 }
@@ -1007,7 +1007,7 @@ fn equationEqual2(mut inTb1: Arc<metamodelica::List<Arc<metamodelica::List<Arc<S
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: tb_1, tail: tb1 }, Deref @ metamodelica::List::Cons { head: tb_2, tail: tb2 }) => {
-                    let true = (List::isEqualOnTrue(tb_1.clone(), tb_2.clone(), (std::sync::Arc::new(equationEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, Arc<SCode::Equation>) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
+                    let true = (List::isEqualOnTrue(tb_1.clone(), tb_2.clone(), (std::sync::Arc::new(equationEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, Arc<SCode::Equation>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
                     let true = (equationEqual2(tb1.clone(), tb2.clone())?) else { bail!("pattern mismatch") };
                     Ok(true)
                 }
@@ -1084,7 +1084,7 @@ pub fn modEqual(mut mod1: Arc<SCode::Mod>, mut mod2: Arc<SCode::Mod>) -> Result<
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ SCode::Mod::BREAK_CONNECT { .. }, Deref @ SCode::Mod::BREAK_CONNECT { .. }) => {
-                    Ok(AbsynUtil::crefEqual(var_field!((*mod1).lhs, SCode::Mod::BREAK_CONNECT).clone(), var_field!((*mod2).lhs, SCode::Mod::BREAK_CONNECT).clone()) && AbsynUtil::crefEqual(var_field!((*mod1).rhs, SCode::Mod::BREAK_CONNECT).clone(), var_field!((*mod2).lhs, SCode::Mod::BREAK_CONNECT).clone()))
+                    Ok(AbsynUtil::crefEqual(var_field!((*mod1).lhs, SCode::Mod::BREAK_CONNECT).clone(), var_field!((*mod2).lhs, SCode::Mod::BREAK_CONNECT).clone())? && AbsynUtil::crefEqual(var_field!((*mod1).rhs, SCode::Mod::BREAK_CONNECT).clone(), var_field!((*mod2).lhs, SCode::Mod::BREAK_CONNECT).clone())?)
                 }
                 _ => bail!("nomatch"),
             }}
@@ -1309,10 +1309,10 @@ pub fn setClassPartialPrefix(mut partialPrefix: SCode::Partial, mut cl: Arc<SCod
     Ok(cl)
 }
 
-pub fn findIteratorIndexedCrefsInEquations(mut inEqs: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut inIterator: ArcStr, mut inCrefs: Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>>) -> Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>> {
+pub fn findIteratorIndexedCrefsInEquations(mut inEqs: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut inIterator: ArcStr, mut inCrefs: Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>>) -> Result<Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>>> {
     let mut outCrefs: Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>> = metamodelica::nil();
-    outCrefs = List::fold1(inEqs.clone(), (std::sync::Arc::new(findIteratorIndexedCrefsInEquation) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, ArcStr, Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>>) -> Result<Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>>> + 'static>), (inIterator.clone()).clone(), inCrefs.clone());
-    outCrefs
+    outCrefs = List::fold1(inEqs.clone(), (std::sync::Arc::new(findIteratorIndexedCrefsInEquation) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, ArcStr, Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>>) -> Result<Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>>> + 'static>), (inIterator.clone()).clone(), inCrefs.clone())?;
+    Ok(outCrefs)
 }
 
 pub fn findIteratorIndexedCrefsInEquation(mut inEq: Arc<SCode::Equation>, mut inIterator: ArcStr, mut inCrefs: Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>>) -> Result<Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>>> {
@@ -1321,10 +1321,10 @@ pub fn findIteratorIndexedCrefsInEquation(mut inEq: Arc<SCode::Equation>, mut in
     Ok(outCrefs)
 }
 
-pub fn findIteratorIndexedCrefsInStatements(mut inStatements: Arc<metamodelica::List<Arc<SCode::Statement>>>, mut inIterator: ArcStr, mut inCrefs: Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>>) -> Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>> {
+pub fn findIteratorIndexedCrefsInStatements(mut inStatements: Arc<metamodelica::List<Arc<SCode::Statement>>>, mut inIterator: ArcStr, mut inCrefs: Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>>) -> Result<Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>>> {
     let mut outCrefs: Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>> = metamodelica::nil();
-    outCrefs = List::fold1(inStatements.clone(), (std::sync::Arc::new(findIteratorIndexedCrefsInStatement) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, ArcStr, Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>>) -> Result<Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>>> + 'static>), (inIterator.clone()).clone(), inCrefs.clone());
-    outCrefs
+    outCrefs = List::fold1(inStatements.clone(), (std::sync::Arc::new(findIteratorIndexedCrefsInStatement) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, ArcStr, Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>>) -> Result<Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>>> + 'static>), (inIterator.clone()).clone(), inCrefs.clone())?;
+    Ok(outCrefs)
 }
 
 pub fn findIteratorIndexedCrefsInStatement(mut inStatement: Arc<SCode::Statement>, mut inIterator: ArcStr, mut inCrefs: Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>>) -> Result<Arc<metamodelica::List<(Arc<Absyn::ComponentRef>, i32)>>> {
@@ -1333,11 +1333,11 @@ pub fn findIteratorIndexedCrefsInStatement(mut inStatement: Arc<SCode::Statement
     Ok(outCrefs)
 }
 
-fn filterComponents(mut inElements: Arc<metamodelica::List<Arc<SCode::Element>>>) -> (Arc<metamodelica::List<Arc<SCode::Element>>>, Arc<metamodelica::List<ArcStr>>) {
+fn filterComponents(mut inElements: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<(Arc<metamodelica::List<Arc<SCode::Element>>>, Arc<metamodelica::List<ArcStr>>)> {
     let mut outComponents: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
     let mut outComponentNames: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-    (outComponents, outComponentNames) = List::map_2(inElements.clone(), (std::sync::Arc::new(filterComponents2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<(Arc<SCode::Element>, ArcStr)> + 'static>));
-    (outComponents, outComponentNames)
+    (outComponents, outComponentNames) = List::map_2(inElements.clone(), (std::sync::Arc::new(filterComponents2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<(Arc<SCode::Element>, ArcStr)> + 'static>))?;
+    Ok((outComponents, outComponentNames))
 }
 
 fn filterComponents2(mut inElement: Arc<SCode::Element>) -> Result<(Arc<SCode::Element>, ArcStr)> {
@@ -1359,13 +1359,13 @@ pub fn getClassComponents(mut cl: Arc<SCode::Element>) -> Result<(Arc<metamodeli
         Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::PARTS { elementLst: elts, .. }, .. } => {
             let mut comps: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
             let mut names: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            (comps, names) = filterComponents(elts.clone());
+            (comps, names) = filterComponents(elts.clone())?;
             (comps.clone(), names.clone())
         },
         Deref @ SCode::Element::CLASS { classDef: Deref @ SCode::ClassDef::CLASS_EXTENDS { composition: Deref @ SCode::ClassDef::PARTS { elementLst: elts, .. }, .. }, .. } => {
             let mut comps: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
             let mut names: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            (comps, names) = filterComponents(elts.clone());
+            (comps, names) = filterComponents(elts.clone())?;
             (comps.clone(), names.clone())
         },
         _ => bail!("match: no arm matched"),
@@ -1432,27 +1432,27 @@ pub fn statementToAlgorithmItem(mut stmt: Arc<SCode::Statement>) -> Result<Arc<A
             let mut algs2: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>> = metamodelica::nil();
             let mut algsLst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>>> = metamodelica::nil();
             let mut abranches: Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>)>> = metamodelica::nil();
-            algs1 = List::map(trueBranch.clone(), (std::sync::Arc::new(statementToAlgorithmItem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>) -> Result<Arc<Absyn::AlgorithmItem>> + 'static>));
-            conditions = List::map(branches.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)));
-            stmtsList = List::map(branches.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)));
-            algsLst = List::mapList(stmtsList.clone(), (std::sync::Arc::new(statementToAlgorithmItem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>) -> Result<Arc<Absyn::AlgorithmItem>> + 'static>));
+            algs1 = List::map(trueBranch.clone(), (std::sync::Arc::new(statementToAlgorithmItem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>) -> Result<Arc<Absyn::AlgorithmItem>> + 'static>))?;
+            conditions = List::map(branches.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)))?;
+            stmtsList = List::map(branches.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)))?;
+            algsLst = List::mapList(stmtsList.clone(), (std::sync::Arc::new(statementToAlgorithmItem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>) -> Result<Arc<Absyn::AlgorithmItem>> + 'static>))?;
             abranches = List::zip(conditions.clone(), algsLst.clone());
-            algs2 = List::map(elseBranch.clone(), (std::sync::Arc::new(statementToAlgorithmItem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>) -> Result<Arc<Absyn::AlgorithmItem>> + 'static>));
+            algs2 = List::map(elseBranch.clone(), (std::sync::Arc::new(statementToAlgorithmItem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>) -> Result<Arc<Absyn::AlgorithmItem>> + 'static>))?;
             Arc::new(Absyn::AlgorithmItem::ALGORITHMITEM { algorithm_: Arc::new(Absyn::Algorithm::ALG_IF { ifExp: boolExpr.clone(), trueBranch: algs1.clone(), elseIfAlgorithmBranch: abranches.clone(), elseBranch: algs2.clone() }), comment: None, info: info.clone() })
         },
         Deref @ SCode::Statement::ALG_FOR { index: iterator, range, forBody: body, comment: _, info } => {
             let mut algs1: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>> = metamodelica::nil();
-            algs1 = List::map(body.clone(), (std::sync::Arc::new(statementToAlgorithmItem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>) -> Result<Arc<Absyn::AlgorithmItem>> + 'static>));
+            algs1 = List::map(body.clone(), (std::sync::Arc::new(statementToAlgorithmItem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>) -> Result<Arc<Absyn::AlgorithmItem>> + 'static>))?;
             Arc::new(Absyn::AlgorithmItem::ALGORITHMITEM { algorithm_: Arc::new(Absyn::Algorithm::ALG_FOR { iterators: list![Arc::new(Absyn::ForIterator { name: (iterator.clone()).clone(), guardExp: None, range: range.clone() })], forBody: algs1.clone() }), comment: None, info: info.clone() })
         },
         Deref @ SCode::Statement::ALG_PARFOR { index: iterator, range, parforBody: body, comment: _, info } => {
             let mut algs1: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>> = metamodelica::nil();
-            algs1 = List::map(body.clone(), (std::sync::Arc::new(statementToAlgorithmItem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>) -> Result<Arc<Absyn::AlgorithmItem>> + 'static>));
+            algs1 = List::map(body.clone(), (std::sync::Arc::new(statementToAlgorithmItem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>) -> Result<Arc<Absyn::AlgorithmItem>> + 'static>))?;
             Arc::new(Absyn::AlgorithmItem::ALGORITHMITEM { algorithm_: Arc::new(Absyn::Algorithm::ALG_PARFOR { iterators: list![Arc::new(Absyn::ForIterator { name: (iterator.clone()).clone(), guardExp: None, range: range.clone() })], parforBody: algs1.clone() }), comment: None, info: info.clone() })
         },
         Deref @ SCode::Statement::ALG_WHILE { boolExpr, whileBody: body, comment: _, info } => {
             let mut algs1: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>> = metamodelica::nil();
-            algs1 = List::map(body.clone(), (std::sync::Arc::new(statementToAlgorithmItem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>) -> Result<Arc<Absyn::AlgorithmItem>> + 'static>));
+            algs1 = List::map(body.clone(), (std::sync::Arc::new(statementToAlgorithmItem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>) -> Result<Arc<Absyn::AlgorithmItem>> + 'static>))?;
             Arc::new(Absyn::AlgorithmItem::ALGORITHMITEM { algorithm_: Arc::new(Absyn::Algorithm::ALG_WHILE { boolExpr: boolExpr.clone(), whileBody: algs1.clone() }), comment: None, info: info.clone() })
         },
         Deref @ SCode::Statement::ALG_WHEN_A { branches, comment: _, info } => {
@@ -1462,14 +1462,14 @@ pub fn statementToAlgorithmItem(mut stmt: Arc<SCode::Statement>) -> Result<Arc<A
             let mut algs1: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>> = metamodelica::nil();
             let mut algsLst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>>> = metamodelica::nil();
             let mut abranches: Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>)>> = metamodelica::nil();
-            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(List::map(branches.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)))) {
+            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(List::map(branches.clone(), std::sync::Arc::new(fnptr!(Util::tuple21, _)))?) {
                 Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };
             boolExpr = __pa0.clone();
             conditions = __pa1.clone();
-            stmtsList = List::map(branches.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)));
-            let (__pa2, __pa3) = ::match_deref::match_deref! { match &(List::mapList(stmtsList.clone(), (std::sync::Arc::new(statementToAlgorithmItem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>) -> Result<Arc<Absyn::AlgorithmItem>> + 'static>))) {
+            stmtsList = List::map(branches.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)))?;
+            let (__pa2, __pa3) = ::match_deref::match_deref! { match &(List::mapList(stmtsList.clone(), (std::sync::Arc::new(statementToAlgorithmItem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>) -> Result<Arc<Absyn::AlgorithmItem>> + 'static>))?) {
                 Deref @ metamodelica::List::Cons { head: __pa2, tail: __pa3 } => (__pa2.clone(), __pa3.clone()),
                 _ => bail!("pattern mismatch"),
             } };
@@ -1501,7 +1501,7 @@ pub fn statementToAlgorithmItem(mut stmt: Arc<SCode::Statement>) -> Result<Arc<A
         },
         Deref @ SCode::Statement::ALG_FAILURE { stmts: body, comment: _, info } => {
             let mut algs1: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>> = metamodelica::nil();
-            algs1 = List::map(body.clone(), (std::sync::Arc::new(statementToAlgorithmItem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>) -> Result<Arc<Absyn::AlgorithmItem>> + 'static>));
+            algs1 = List::map(body.clone(), (std::sync::Arc::new(statementToAlgorithmItem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>) -> Result<Arc<Absyn::AlgorithmItem>> + 'static>))?;
             Arc::new(Absyn::AlgorithmItem::ALGORITHMITEM { algorithm_: Arc::new(Absyn::Algorithm::ALG_FAILURE { equ: algs1.clone() }), comment: None, info: info.clone() })
         },
         _ => bail!("match: no arm matched"),
@@ -1591,19 +1591,19 @@ pub fn foldEquations<ArgT: Clone + 'static>(mut inEquation: Arc<SCode::Equation>
     outArg = inFunc(inEquation.clone(), inArg.clone())?;
     outArg = (::match_deref::match_deref! { match &(inEquation.clone()) {
         Deref @ SCode::Equation::EQ_IF { .. } => {
-            outArg = List::foldList(var_field!((*inEquation).thenBranch, SCode::Equation::EQ_IF).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _) -> Result<_> + 'static> = inFunc.clone(); move |__pe_a0, __pe_a2| foldEquations(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _) -> Result<_> + 'static>), outArg.clone());
-            List::fold1(var_field!((*inEquation).elseBranch, SCode::Equation::EQ_IF).clone(), (std::sync::Arc::new(foldEquations) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone())
+            outArg = List::foldList(var_field!((*inEquation).thenBranch, SCode::Equation::EQ_IF).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _) -> Result<_> + 'static> = inFunc.clone(); move |__pe_a0, __pe_a2| foldEquations(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _) -> Result<_> + 'static>), outArg.clone())?;
+            List::fold1(var_field!((*inEquation).elseBranch, SCode::Equation::EQ_IF).clone(), (std::sync::Arc::new(foldEquations) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone())?
         },
         Deref @ SCode::Equation::EQ_FOR { .. } => {
-            List::fold1(var_field!((*inEquation).eEquationLst, SCode::Equation::EQ_FOR).clone(), (std::sync::Arc::new(foldEquations) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone())
+            List::fold1(var_field!((*inEquation).eEquationLst, SCode::Equation::EQ_FOR).clone(), (std::sync::Arc::new(foldEquations) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone())?
         },
         Deref @ SCode::Equation::EQ_WHEN { .. } => {
             let mut eql: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
-            outArg = List::fold1(var_field!((*inEquation).eEquationLst, SCode::Equation::EQ_WHEN).clone(), (std::sync::Arc::new(foldEquations) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone());
+            outArg = List::fold1(var_field!((*inEquation).eEquationLst, SCode::Equation::EQ_WHEN).clone(), (std::sync::Arc::new(foldEquations) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone())?;
             for mut branch in &*var_field!((*inEquation).elseBranches, SCode::Equation::EQ_WHEN).clone() {
                 let mut branch = branch.clone();
                 (_, eql) = branch.clone();
-                outArg = List::fold1(eql.clone(), (std::sync::Arc::new(foldEquations) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone());
+                outArg = List::fold1(eql.clone(), (std::sync::Arc::new(foldEquations) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone())?;
             }
             outArg.clone()
         },
@@ -1618,9 +1618,9 @@ pub fn foldEquationsExps<ArgT: Clone + 'static>(mut inEquation: Arc<SCode::Equat
     let mut outArg: ArgT = inArg.clone();
     outArg = (::match_deref::match_deref! { match &(inEquation.clone()) {
         Deref @ SCode::Equation::EQ_IF { .. } => {
-            outArg = List::fold(var_field!((*inEquation).condition, SCode::Equation::EQ_IF).clone(), inFunc.clone(), outArg.clone());
-            outArg = List::foldList(var_field!((*inEquation).thenBranch, SCode::Equation::EQ_IF).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, _) -> Result<_> + 'static> = inFunc.clone(); move |__pe_a0, __pe_a2| foldEquationsExps(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _) -> Result<_> + 'static>), outArg.clone());
-            List::fold1(var_field!((*inEquation).elseBranch, SCode::Equation::EQ_IF).clone(), (std::sync::Arc::new(foldEquationsExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone())
+            outArg = List::fold(var_field!((*inEquation).condition, SCode::Equation::EQ_IF).clone(), inFunc.clone(), outArg.clone())?;
+            outArg = List::foldList(var_field!((*inEquation).thenBranch, SCode::Equation::EQ_IF).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, _) -> Result<_> + 'static> = inFunc.clone(); move |__pe_a0, __pe_a2| foldEquationsExps(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _) -> Result<_> + 'static>), outArg.clone())?;
+            List::fold1(var_field!((*inEquation).elseBranch, SCode::Equation::EQ_IF).clone(), (std::sync::Arc::new(foldEquationsExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone())?
         },
         Deref @ SCode::Equation::EQ_EQUALS { .. } => {
             outArg = inFunc(var_field!((*inEquation).expLeft, SCode::Equation::EQ_EQUALS).clone(), outArg.clone())?;
@@ -1647,17 +1647,17 @@ pub fn foldEquationsExps<ArgT: Clone + 'static>(mut inEquation: Arc<SCode::Equat
                 exp = __pa0.clone();
                 outArg = inFunc(exp.clone(), outArg.clone())?;
             }
-            List::fold1(var_field!((*inEquation).eEquationLst, SCode::Equation::EQ_FOR).clone(), (std::sync::Arc::new(foldEquationsExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone())
+            List::fold1(var_field!((*inEquation).eEquationLst, SCode::Equation::EQ_FOR).clone(), (std::sync::Arc::new(foldEquationsExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone())?
         },
         Deref @ SCode::Equation::EQ_WHEN { .. } => {
             let mut exp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
             let mut eql: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
-            outArg = List::fold1(var_field!((*inEquation).eEquationLst, SCode::Equation::EQ_WHEN).clone(), (std::sync::Arc::new(foldEquationsExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone());
+            outArg = List::fold1(var_field!((*inEquation).eEquationLst, SCode::Equation::EQ_WHEN).clone(), (std::sync::Arc::new(foldEquationsExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone())?;
             for mut branch in &*var_field!((*inEquation).elseBranches, SCode::Equation::EQ_WHEN).clone() {
                 let mut branch = branch.clone();
                 (exp, eql) = branch.clone();
                 outArg = inFunc(exp.clone(), outArg.clone())?;
-                outArg = List::fold1(eql.clone(), (std::sync::Arc::new(foldEquationsExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone());
+                outArg = List::fold1(eql.clone(), (std::sync::Arc::new(foldEquationsExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone())?;
             }
             outArg.clone()
         },
@@ -1697,12 +1697,12 @@ pub fn foldStatementsExps<ArgT: Clone + 'static>(mut inStatement: Arc<SCode::Sta
             let mut exp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
             let mut stmts: Arc<metamodelica::List<Arc<SCode::Statement>>> = metamodelica::nil();
             outArg = inFunc(var_field!((*inStatement).boolExpr, SCode::Statement::ALG_IF).clone(), outArg.clone())?;
-            outArg = List::fold1(var_field!((*inStatement).trueBranch, SCode::Statement::ALG_IF).clone(), (std::sync::Arc::new(foldStatementsExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone());
+            outArg = List::fold1(var_field!((*inStatement).trueBranch, SCode::Statement::ALG_IF).clone(), (std::sync::Arc::new(foldStatementsExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone())?;
             for mut branch in &*var_field!((*inStatement).elseIfBranch, SCode::Statement::ALG_IF).clone() {
                 let mut branch = branch.clone();
                 (exp, stmts) = branch.clone();
                 outArg = inFunc(exp.clone(), outArg.clone())?;
-                outArg = List::fold1(stmts.clone(), (std::sync::Arc::new(foldStatementsExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone());
+                outArg = List::fold1(stmts.clone(), (std::sync::Arc::new(foldStatementsExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone())?;
             }
             outArg.clone()
         },
@@ -1716,7 +1716,7 @@ pub fn foldStatementsExps<ArgT: Clone + 'static>(mut inStatement: Arc<SCode::Sta
                 exp = __pa0.clone();
                 outArg = inFunc(exp.clone(), outArg.clone())?;
             }
-            List::fold1(var_field!((*inStatement).forBody, SCode::Statement::ALG_FOR).clone(), (std::sync::Arc::new(foldStatementsExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone())
+            List::fold1(var_field!((*inStatement).forBody, SCode::Statement::ALG_FOR).clone(), (std::sync::Arc::new(foldStatementsExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone())?
         },
         Deref @ SCode::Statement::ALG_PARFOR { .. } => {
             let mut exp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
@@ -1728,11 +1728,11 @@ pub fn foldStatementsExps<ArgT: Clone + 'static>(mut inStatement: Arc<SCode::Sta
                 exp = __pa0.clone();
                 outArg = inFunc(exp.clone(), outArg.clone())?;
             }
-            List::fold1(var_field!((*inStatement).parforBody, SCode::Statement::ALG_PARFOR).clone(), (std::sync::Arc::new(foldStatementsExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone())
+            List::fold1(var_field!((*inStatement).parforBody, SCode::Statement::ALG_PARFOR).clone(), (std::sync::Arc::new(foldStatementsExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone())?
         },
         Deref @ SCode::Statement::ALG_WHILE { .. } => {
             outArg = inFunc(var_field!((*inStatement).boolExpr, SCode::Statement::ALG_WHILE).clone(), outArg.clone())?;
-            List::fold1(var_field!((*inStatement).whileBody, SCode::Statement::ALG_WHILE).clone(), (std::sync::Arc::new(foldStatementsExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone())
+            List::fold1(var_field!((*inStatement).whileBody, SCode::Statement::ALG_WHILE).clone(), (std::sync::Arc::new(foldStatementsExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone())?
         },
         Deref @ SCode::Statement::ALG_WHEN_A { .. } => {
             let mut exp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
@@ -1741,7 +1741,7 @@ pub fn foldStatementsExps<ArgT: Clone + 'static>(mut inStatement: Arc<SCode::Sta
                 let mut branch = branch.clone();
                 (exp, stmts) = branch.clone();
                 outArg = inFunc(exp.clone(), outArg.clone())?;
-                outArg = List::fold1(stmts.clone(), (std::sync::Arc::new(foldStatementsExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone());
+                outArg = List::fold1(stmts.clone(), (std::sync::Arc::new(foldStatementsExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone())?;
             }
             outArg.clone()
         },
@@ -1762,11 +1762,11 @@ pub fn foldStatementsExps<ArgT: Clone + 'static>(mut inStatement: Arc<SCode::Sta
             inFunc(var_field!((*inStatement).exp, SCode::Statement::ALG_NORETCALL).clone(), outArg.clone())?
         },
         Deref @ SCode::Statement::ALG_FAILURE { .. } => {
-            List::fold1(var_field!((*inStatement).stmts, SCode::Statement::ALG_FAILURE).clone(), (std::sync::Arc::new(foldStatementsExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone())
+            List::fold1(var_field!((*inStatement).stmts, SCode::Statement::ALG_FAILURE).clone(), (std::sync::Arc::new(foldStatementsExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone())?
         },
         Deref @ SCode::Statement::ALG_TRY { .. } => {
-            outArg = List::fold1(var_field!((*inStatement).body, SCode::Statement::ALG_TRY).clone(), (std::sync::Arc::new(foldStatementsExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone());
-            List::fold1(var_field!((*inStatement).elseBody, SCode::Statement::ALG_TRY).clone(), (std::sync::Arc::new(foldStatementsExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone())
+            outArg = List::fold1(var_field!((*inStatement).body, SCode::Statement::ALG_TRY).clone(), (std::sync::Arc::new(foldStatementsExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone())?;
+            List::fold1(var_field!((*inStatement).elseBody, SCode::Statement::ALG_TRY).clone(), (std::sync::Arc::new(foldStatementsExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, _, _) -> Result<_> + 'static>), inFunc.clone(), outArg.clone())?
         },
         Deref @ SCode::Statement::ALG_RETURN { .. } => {
             outArg.clone()
@@ -1782,40 +1782,40 @@ pub fn foldStatementsExps<ArgT: Clone + 'static>(mut inStatement: Arc<SCode::Sta
     Ok(outArg)
 }
 
-pub fn mapFoldEquationsList<ArgT: Clone + 'static>(mut eql: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut traverser: Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, ArgT) -> Result<(Arc<SCode::Equation>, ArgT)> + 'static>, mut arg: ArgT) -> (Arc<metamodelica::List<Arc<SCode::Equation>>>, ArgT) {
+pub fn mapFoldEquationsList<ArgT: Clone + 'static>(mut eql: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut traverser: Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, ArgT) -> Result<(Arc<SCode::Equation>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<metamodelica::List<Arc<SCode::Equation>>>, ArgT)> {
     pub type TraverseFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, ArgT) -> Result<(Arc<SCode::Equation>, ArgT)> + 'static>;
 
     let mut eql: Arc<metamodelica::List<Arc<SCode::Equation>>> = eql;
     let mut arg: ArgT = arg;
-    (eql, arg) = List::mapFold(eql.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _) -> Result<_> + 'static> = traverser.clone(); move |__pe_a0, __pe_a2| Ok(mapFoldEquations(__pe_a0, __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _) -> Result<_> + 'static>), arg.clone());
-    (eql, arg)
+    (eql, arg) = List::mapFold(eql.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _) -> Result<_> + 'static> = traverser.clone(); move |__pe_a0, __pe_a2| mapFoldEquations(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _) -> Result<_> + 'static>), arg.clone())?;
+    Ok((eql, arg))
 }
 
-pub fn mapFoldEquations<ArgT: Clone + 'static>(mut eq: Arc<SCode::Equation>, mut traverser: Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, ArgT) -> Result<(Arc<SCode::Equation>, ArgT)> + 'static>, mut arg: ArgT) -> (Arc<SCode::Equation>, ArgT) {
+pub fn mapFoldEquations<ArgT: Clone + 'static>(mut eq: Arc<SCode::Equation>, mut traverser: Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, ArgT) -> Result<(Arc<SCode::Equation>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<SCode::Equation>, ArgT)> {
     pub type TraverseFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, ArgT) -> Result<(Arc<SCode::Equation>, ArgT)> + 'static>;
 
     let mut eq: Arc<SCode::Equation> = eq;
     let mut arg: ArgT = arg;
-    (eq, arg) = traverser(eq.clone(), arg.clone()).unwrap();
+    (eq, arg) = traverser(eq.clone(), arg.clone())?;
     (eq, arg) = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ SCode::Equation::EQ_IF { condition: expl1, thenBranch: then_branch, elseBranch: else_branch, comment, info } => {
             let mut then_branch = (*then_branch).clone();
             let mut else_branch = (*else_branch).clone();
-            (then_branch, arg) = List::mapFold(then_branch.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _) -> Result<_> + 'static> = traverser.clone(); move |__pe_a0, __pe_a2| Ok(mapFoldEquationsList(__pe_a0, __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<SCode::Equation>>>, _) -> Result<_> + 'static>), arg.clone());
-            (else_branch, arg) = mapFoldEquationsList(else_branch.clone(), traverser.clone(), arg.clone());
+            (then_branch, arg) = List::mapFold(then_branch.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _) -> Result<_> + 'static> = traverser.clone(); move |__pe_a0, __pe_a2| mapFoldEquationsList(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<SCode::Equation>>>, _) -> Result<_> + 'static>), arg.clone())?;
+            (else_branch, arg) = mapFoldEquationsList(else_branch.clone(), traverser.clone(), arg.clone())?;
             (Arc::new(SCode::Equation::EQ_IF { condition: expl1.clone(), thenBranch: then_branch.clone(), elseBranch: else_branch.clone(), comment: comment.clone(), info: info.clone() }), arg.clone())
         },
         Deref @ SCode::Equation::EQ_FOR { .. } => {
             let mut eql: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
-            (eql, arg) = mapFoldEquationsList(var_field!((*eq).eEquationLst, SCode::Equation::EQ_FOR).clone(), traverser.clone(), arg.clone());
+            (eql, arg) = mapFoldEquationsList(var_field!((*eq).eEquationLst, SCode::Equation::EQ_FOR).clone(), traverser.clone(), arg.clone())?;
             assign_variant_field!(eq => SCode::Equation::EQ_FOR; eEquationLst = eql.clone());
             (eq.clone(), arg.clone())
         },
         Deref @ SCode::Equation::EQ_WHEN { condition: e1, eEquationLst: eql, elseBranches: else_when, comment, info } => {
             let mut eql = (*eql).clone();
             let mut else_when = (*else_when).clone();
-            (eql, arg) = mapFoldEquationsList(eql.clone(), traverser.clone(), arg.clone());
-            (else_when, arg) = List::mapFold(else_when.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _) -> Result<_> + 'static> = traverser.clone(); move |__pe_a0, __pe_a2| Ok(mapFoldElseWhenEquations(__pe_a0, __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>), _) -> Result<_> + 'static>), arg.clone());
+            (eql, arg) = mapFoldEquationsList(eql.clone(), traverser.clone(), arg.clone())?;
+            (else_when, arg) = List::mapFold(else_when.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _) -> Result<_> + 'static> = traverser.clone(); move |__pe_a0, __pe_a2| mapFoldElseWhenEquations(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>), _) -> Result<_> + 'static>), arg.clone())?;
             (Arc::new(SCode::Equation::EQ_WHEN { condition: e1.clone(), eEquationLst: eql.clone(), elseBranches: else_when.clone(), comment: comment.clone(), info: info.clone() }), arg.clone())
         },
         _ => {
@@ -1823,10 +1823,10 @@ pub fn mapFoldEquations<ArgT: Clone + 'static>(mut eq: Arc<SCode::Equation>, mut
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    (eq, arg)
+    Ok((eq, arg))
 }
 
-fn mapFoldElseWhenEquations<ArgT: Clone + 'static>(mut elseWhen: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>), mut traverser: Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, ArgT) -> Result<(Arc<SCode::Equation>, ArgT)> + 'static>, mut arg: ArgT) -> ((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>), ArgT) {
+fn mapFoldElseWhenEquations<ArgT: Clone + 'static>(mut elseWhen: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>), mut traverser: Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, ArgT) -> Result<(Arc<SCode::Equation>, ArgT)> + 'static>, mut arg: ArgT) -> Result<((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>), ArgT)> {
     pub type TraverseFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, ArgT) -> Result<(Arc<SCode::Equation>, ArgT)> + 'static>;
 
     let mut elseWhen: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>) = elseWhen;
@@ -1834,18 +1834,18 @@ fn mapFoldElseWhenEquations<ArgT: Clone + 'static>(mut elseWhen: (Arc<Absyn::Exp
     let mut exp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut eql: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
     (exp, eql) = elseWhen.clone();
-    (eql, arg) = mapFoldEquationsList(eql.clone(), traverser.clone(), arg.clone());
+    (eql, arg) = mapFoldEquationsList(eql.clone(), traverser.clone(), arg.clone())?;
     elseWhen = (exp.clone(), eql.clone());
-    (elseWhen, arg)
+    Ok((elseWhen, arg))
 }
 
-pub fn mapFoldEquationListExps<ArgT: Clone + 'static>(mut inEquations: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut traverser: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> (Arc<metamodelica::List<Arc<SCode::Equation>>>, ArgT) {
+pub fn mapFoldEquationListExps<ArgT: Clone + 'static>(mut inEquations: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut traverser: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<metamodelica::List<Arc<SCode::Equation>>>, ArgT)> {
     pub type TraverseFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>;
 
     let mut outEquations: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
     let mut outArg: ArgT;
-    (outEquations, outArg) = List::map1Fold(inEquations.clone(), (std::sync::Arc::new(mapFoldEquationExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _, _) -> Result<_> + 'static>), traverser.clone(), inArg.clone());
-    (outEquations, outArg)
+    (outEquations, outArg) = List::map1Fold(inEquations.clone(), (std::sync::Arc::new(mapFoldEquationExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>, _, _) -> Result<_> + 'static>), traverser.clone(), inArg.clone())?;
+    Ok((outEquations, outArg))
 }
 
 pub fn mapFoldEquationExps<ArgT: Clone + 'static>(mut eq: Arc<SCode::Equation>, mut traverser: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<SCode::Equation>, ArgT)> {
@@ -1856,7 +1856,7 @@ pub fn mapFoldEquationExps<ArgT: Clone + 'static>(mut eq: Arc<SCode::Equation>, 
     (eq, arg) = (::match_deref::match_deref! { match &(eq.clone()) {
         Deref @ SCode::Equation::EQ_IF { condition: expl1, thenBranch: then_branch, elseBranch: else_branch, comment, info } => {
             let mut expl1 = (*expl1).clone();
-            (expl1, arg) = AbsynUtil::traverseExpList(expl1.clone(), traverser.clone(), arg.clone());
+            (expl1, arg) = AbsynUtil::traverseExpList(expl1.clone(), traverser.clone(), arg.clone())?;
             (Arc::new(SCode::Equation::EQ_IF { condition: expl1.clone(), thenBranch: then_branch.clone(), elseBranch: else_branch.clone(), comment: comment.clone(), info: info.clone() }), arg.clone())
         },
         Deref @ SCode::Equation::EQ_EQUALS { expLeft: e1, expRight: e2, comment, info } => {
@@ -1889,7 +1889,7 @@ pub fn mapFoldEquationExps<ArgT: Clone + 'static>(mut eq: Arc<SCode::Equation>, 
             let mut e1 = (*e1).clone();
             let mut else_when = (*else_when).clone();
             (e1, arg) = traverser(e1.clone(), arg.clone())?;
-            (else_when, arg) = List::map1Fold(else_when.clone(), std::sync::Arc::new(fnptr!(mapFoldElseWhenExps, (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>), _, _)), traverser.clone(), arg.clone());
+            (else_when, arg) = List::map1Fold(else_when.clone(), (std::sync::Arc::new(mapFoldElseWhenExps) as std::sync::Arc<dyn ::std::ops::Fn((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>), _, _) -> Result<_> + 'static>), traverser.clone(), arg.clone())?;
             (Arc::new(SCode::Equation::EQ_WHEN { condition: e1.clone(), eEquationLst: eql.clone(), elseBranches: else_when.clone(), comment: comment.clone(), info: info.clone() }), arg.clone())
         },
         Deref @ SCode::Equation::EQ_ASSERT { condition: e1, message: e2, level: e3, comment, info } => {
@@ -1943,13 +1943,13 @@ fn mapFoldComponentRefExps<ArgT: Clone + 'static>(mut inCref: Arc<Absyn::Compone
             let mut cr = (*cr).clone();
             let mut subs = (*subs).clone();
             (cr, arg) = mapFoldComponentRefExps(cr.clone(), inFunc.clone(), inArg.clone())?;
-            (subs, arg) = List::map1Fold(subs.clone(), (std::sync::Arc::new(mapFoldSubscriptExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Subscript>, _, _) -> Result<_> + 'static>), inFunc.clone(), arg.clone());
+            (subs, arg) = List::map1Fold(subs.clone(), (std::sync::Arc::new(mapFoldSubscriptExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Subscript>, _, _) -> Result<_> + 'static>), inFunc.clone(), arg.clone())?;
             (Arc::new(Absyn::ComponentRef::CREF_QUAL { name: (name.clone()).clone(), subscripts: subs.clone(), componentRef: cr.clone() }), arg.clone())
         },
         Deref @ Absyn::ComponentRef::CREF_IDENT { subscripts: subs, name } => {
             let mut arg: ArgT;
             let mut subs = (*subs).clone();
-            (subs, arg) = List::map1Fold(subs.clone(), (std::sync::Arc::new(mapFoldSubscriptExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Subscript>, _, _) -> Result<_> + 'static>), inFunc.clone(), inArg.clone());
+            (subs, arg) = List::map1Fold(subs.clone(), (std::sync::Arc::new(mapFoldSubscriptExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Subscript>, _, _) -> Result<_> + 'static>), inFunc.clone(), inArg.clone())?;
             (Arc::new(Absyn::ComponentRef::CREF_IDENT { name: (name.clone()).clone(), subscripts: subs.clone() }), arg.clone())
         },
         Deref @ Absyn::ComponentRef::WILD { .. } => {
@@ -1980,7 +1980,7 @@ fn mapFoldSubscriptExps<ArgT: Clone + 'static>(mut inSubscript: Arc<Absyn::Subsc
     Ok((outSubscript, outArg))
 }
 
-fn mapFoldElseWhenExps<ArgT: Clone + 'static>(mut inElseWhen: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>), mut traverser: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> ((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>), ArgT) {
+fn mapFoldElseWhenExps<ArgT: Clone + 'static>(mut inElseWhen: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>), mut traverser: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>), ArgT)> {
     pub type TraverseFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>;
 
     let mut outElseWhen: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>) = (Arc::new(Absyn::Exp::BREAK), metamodelica::nil());
@@ -1988,9 +1988,9 @@ fn mapFoldElseWhenExps<ArgT: Clone + 'static>(mut inElseWhen: (Arc<Absyn::Exp>, 
     let mut exp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut eql: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
     (exp, eql) = inElseWhen.clone();
-    (exp, outArg) = traverser(exp.clone(), inArg.clone()).unwrap();
+    (exp, outArg) = traverser(exp.clone(), inArg.clone())?;
     outElseWhen = (exp.clone(), eql.clone());
-    (outElseWhen, outArg)
+    Ok((outElseWhen, outArg))
 }
 
 fn mapFoldForIteratorExps<ArgT: Clone + 'static>(mut inIterator: Arc<Absyn::ForIterator>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<Absyn::ForIterator>, ArgT)> {
@@ -2027,54 +2027,54 @@ fn mapFoldForIteratorExps<ArgT: Clone + 'static>(mut inIterator: Arc<Absyn::ForI
     Ok((outIterator, outArg))
 }
 
-pub fn mapFoldStatementsList<ArgT: Clone + 'static>(mut statements: Arc<metamodelica::List<Arc<SCode::Statement>>>, mut traverser: Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, ArgT) -> Result<(Arc<SCode::Statement>, ArgT)> + 'static>, mut arg: ArgT) -> (Arc<metamodelica::List<Arc<SCode::Statement>>>, ArgT) {
+pub fn mapFoldStatementsList<ArgT: Clone + 'static>(mut statements: Arc<metamodelica::List<Arc<SCode::Statement>>>, mut traverser: Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, ArgT) -> Result<(Arc<SCode::Statement>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<metamodelica::List<Arc<SCode::Statement>>>, ArgT)> {
     pub type TraverseFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, ArgT) -> Result<(Arc<SCode::Statement>, ArgT)> + 'static>;
 
     let mut statements: Arc<metamodelica::List<Arc<SCode::Statement>>> = statements;
     let mut arg: ArgT = arg;
-    (statements, arg) = List::mapFold(statements.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, _) -> Result<_> + 'static> = traverser.clone(); move |__pe_a0, __pe_a2| Ok(mapFoldStatements(__pe_a0, __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, _) -> Result<_> + 'static>), arg.clone());
-    (statements, arg)
+    (statements, arg) = List::mapFold(statements.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, _) -> Result<_> + 'static> = traverser.clone(); move |__pe_a0, __pe_a2| mapFoldStatements(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, _) -> Result<_> + 'static>), arg.clone())?;
+    Ok((statements, arg))
 }
 
-pub fn mapFoldStatements<ArgT: Clone + 'static>(mut stmt: Arc<SCode::Statement>, mut traverser: Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, ArgT) -> Result<(Arc<SCode::Statement>, ArgT)> + 'static>, mut arg: ArgT) -> (Arc<SCode::Statement>, ArgT) {
+pub fn mapFoldStatements<ArgT: Clone + 'static>(mut stmt: Arc<SCode::Statement>, mut traverser: Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, ArgT) -> Result<(Arc<SCode::Statement>, ArgT)> + 'static>, mut arg: ArgT) -> Result<(Arc<SCode::Statement>, ArgT)> {
     pub type TraverseFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, ArgT) -> Result<(Arc<SCode::Statement>, ArgT)> + 'static>;
 
     let mut stmt: Arc<SCode::Statement> = stmt;
     let mut arg: ArgT = arg;
-    (stmt, arg) = traverser(stmt.clone(), arg.clone()).unwrap();
+    (stmt, arg) = traverser(stmt.clone(), arg.clone())?;
     (stmt, arg) = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ SCode::Statement::ALG_IF { boolExpr: e, trueBranch: stmts1, elseIfBranch: branches, elseBranch: stmts2, comment, info } => {
             let mut stmts1 = (*stmts1).clone();
             let mut branches = (*branches).clone();
             let mut stmts2 = (*stmts2).clone();
-            (stmts1, arg) = mapFoldStatementsList(stmts1.clone(), traverser.clone(), arg.clone());
-            (branches, arg) = List::mapFold(branches.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, _) -> Result<_> + 'static> = traverser.clone(); move |__pe_a0, __pe_a2| Ok(mapFoldBranchStatements(__pe_a0, __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>), _) -> Result<_> + 'static>), arg.clone());
-            (stmts2, arg) = mapFoldStatementsList(stmts2.clone(), traverser.clone(), arg.clone());
+            (stmts1, arg) = mapFoldStatementsList(stmts1.clone(), traverser.clone(), arg.clone())?;
+            (branches, arg) = List::mapFold(branches.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, _) -> Result<_> + 'static> = traverser.clone(); move |__pe_a0, __pe_a2| mapFoldBranchStatements(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>), _) -> Result<_> + 'static>), arg.clone())?;
+            (stmts2, arg) = mapFoldStatementsList(stmts2.clone(), traverser.clone(), arg.clone())?;
             (Arc::new(SCode::Statement::ALG_IF { boolExpr: e.clone(), trueBranch: stmts1.clone(), elseIfBranch: branches.clone(), elseBranch: stmts2.clone(), comment: comment.clone(), info: info.clone() }), arg.clone())
         },
         Deref @ SCode::Statement::ALG_FOR { index: iter, range, forBody: stmts1, comment, info } => {
             let mut stmts1 = (*stmts1).clone();
-            (stmts1, arg) = mapFoldStatementsList(stmts1.clone(), traverser.clone(), arg.clone());
+            (stmts1, arg) = mapFoldStatementsList(stmts1.clone(), traverser.clone(), arg.clone())?;
             (Arc::new(SCode::Statement::ALG_FOR { index: (iter.clone()).clone(), range: range.clone(), forBody: stmts1.clone(), comment: comment.clone(), info: info.clone() }), arg.clone())
         },
         Deref @ SCode::Statement::ALG_PARFOR { index: iter, range, parforBody: stmts1, comment, info } => {
             let mut stmts1 = (*stmts1).clone();
-            (stmts1, arg) = mapFoldStatementsList(stmts1.clone(), traverser.clone(), arg.clone());
+            (stmts1, arg) = mapFoldStatementsList(stmts1.clone(), traverser.clone(), arg.clone())?;
             (Arc::new(SCode::Statement::ALG_PARFOR { index: (iter.clone()).clone(), range: range.clone(), parforBody: stmts1.clone(), comment: comment.clone(), info: info.clone() }), arg.clone())
         },
         Deref @ SCode::Statement::ALG_WHILE { boolExpr: e, whileBody: stmts1, comment, info } => {
             let mut stmts1 = (*stmts1).clone();
-            (stmts1, arg) = mapFoldStatementsList(stmts1.clone(), traverser.clone(), arg.clone());
+            (stmts1, arg) = mapFoldStatementsList(stmts1.clone(), traverser.clone(), arg.clone())?;
             (Arc::new(SCode::Statement::ALG_WHILE { boolExpr: e.clone(), whileBody: stmts1.clone(), comment: comment.clone(), info: info.clone() }), arg.clone())
         },
         Deref @ SCode::Statement::ALG_WHEN_A { branches, comment, info } => {
             let mut branches = (*branches).clone();
-            (branches, arg) = List::mapFold(branches.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, _) -> Result<_> + 'static> = traverser.clone(); move |__pe_a0, __pe_a2| Ok(mapFoldBranchStatements(__pe_a0, __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>), _) -> Result<_> + 'static>), arg.clone());
+            (branches, arg) = List::mapFold(branches.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, _) -> Result<_> + 'static> = traverser.clone(); move |__pe_a0, __pe_a2| mapFoldBranchStatements(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>), _) -> Result<_> + 'static>), arg.clone())?;
             (Arc::new(SCode::Statement::ALG_WHEN_A { branches: branches.clone(), comment: comment.clone(), info: info.clone() }), arg.clone())
         },
         Deref @ SCode::Statement::ALG_FAILURE { stmts: stmts1, comment, info } => {
             let mut stmts1 = (*stmts1).clone();
-            (stmts1, arg) = mapFoldStatementsList(stmts1.clone(), traverser.clone(), arg.clone());
+            (stmts1, arg) = mapFoldStatementsList(stmts1.clone(), traverser.clone(), arg.clone())?;
             (Arc::new(SCode::Statement::ALG_FAILURE { stmts: stmts1.clone(), comment: comment.clone(), info: info.clone() }), arg.clone())
         },
         _ => {
@@ -2082,10 +2082,10 @@ pub fn mapFoldStatements<ArgT: Clone + 'static>(mut stmt: Arc<SCode::Statement>,
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    (stmt, arg)
+    Ok((stmt, arg))
 }
 
-fn mapFoldBranchStatements<ArgT: Clone + 'static>(mut branch: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>), mut traverser: Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, ArgT) -> Result<(Arc<SCode::Statement>, ArgT)> + 'static>, mut arg: ArgT) -> ((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>), ArgT) {
+fn mapFoldBranchStatements<ArgT: Clone + 'static>(mut branch: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>), mut traverser: Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, ArgT) -> Result<(Arc<SCode::Statement>, ArgT)> + 'static>, mut arg: ArgT) -> Result<((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>), ArgT)> {
     pub type TraverseFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, ArgT) -> Result<(Arc<SCode::Statement>, ArgT)> + 'static>;
 
     let mut branch: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>) = branch;
@@ -2093,21 +2093,21 @@ fn mapFoldBranchStatements<ArgT: Clone + 'static>(mut branch: (Arc<Absyn::Exp>, 
     let mut exp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut stmts: Arc<metamodelica::List<Arc<SCode::Statement>>> = metamodelica::nil();
     (exp, stmts) = branch.clone();
-    (stmts, arg) = mapFoldStatementsList(stmts.clone(), traverser.clone(), arg.clone());
+    (stmts, arg) = mapFoldStatementsList(stmts.clone(), traverser.clone(), arg.clone())?;
     branch = (exp.clone(), stmts.clone());
-    (branch, arg)
+    Ok((branch, arg))
 }
 
-pub fn mapFoldStatementListExps<ArgT: Clone + 'static>(mut inStatements: Arc<metamodelica::List<Arc<SCode::Statement>>>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> (Arc<metamodelica::List<Arc<SCode::Statement>>>, ArgT) {
+pub fn mapFoldStatementListExps<ArgT: Clone + 'static>(mut inStatements: Arc<metamodelica::List<Arc<SCode::Statement>>>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<metamodelica::List<Arc<SCode::Statement>>>, ArgT)> {
     pub type TraverseFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>;
 
     let mut outStatements: Arc<metamodelica::List<Arc<SCode::Statement>>> = metamodelica::nil();
     let mut outArg: ArgT;
-    (outStatements, outArg) = List::map1Fold(inStatements.clone(), std::sync::Arc::new(fnptr!(mapFoldStatementExps, Arc<SCode::Statement>, _, _)), inFunc.clone(), inArg.clone());
-    (outStatements, outArg)
+    (outStatements, outArg) = List::map1Fold(inStatements.clone(), (std::sync::Arc::new(mapFoldStatementExps) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>, _, _) -> Result<_> + 'static>), inFunc.clone(), inArg.clone())?;
+    Ok((outStatements, outArg))
 }
 
-pub fn mapFoldStatementExps<ArgT: Clone + 'static>(mut inStatement: Arc<SCode::Statement>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> (Arc<SCode::Statement>, ArgT) {
+pub fn mapFoldStatementExps<ArgT: Clone + 'static>(mut inStatement: Arc<SCode::Statement>, mut inFunc: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<(Arc<SCode::Statement>, ArgT)> {
     pub type TraverseFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>;
 
     let mut outStatement: Arc<SCode::Statement> = Arc::new(<SCode::Statement as ::std::default::Default>::default());
@@ -2117,40 +2117,40 @@ pub fn mapFoldStatementExps<ArgT: Clone + 'static>(mut inStatement: Arc<SCode::S
             let mut e1 = (*e1).clone();
             let mut e2 = (*e2).clone();
             let mut arg = (*arg).clone();
-            (e1, arg) = traverser(e1.clone(), arg.clone()).unwrap();
-            (e2, arg) = traverser(e2.clone(), arg.clone()).unwrap();
+            (e1, arg) = traverser(e1.clone(), arg.clone())?;
+            (e2, arg) = traverser(e2.clone(), arg.clone())?;
             (Arc::new(SCode::Statement::ALG_ASSIGN { assignComponent: e1.clone(), value: e2.clone(), comment: comment.clone(), info: info.clone() }), arg.clone())
         },
         (Deref @ SCode::Statement::ALG_IF { boolExpr: e1, trueBranch: stmts1, elseIfBranch: branches, elseBranch: stmts2, comment, info }, traverser, arg) => {
             let mut e1 = (*e1).clone();
             let mut branches = (*branches).clone();
             let mut arg = (*arg).clone();
-            (e1, arg) = traverser(e1.clone(), arg.clone()).unwrap();
-            (branches, arg) = List::map1Fold(branches.clone(), std::sync::Arc::new(fnptr!(mapFoldBranchExps, (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>), _, _)), traverser.clone(), arg.clone());
+            (e1, arg) = traverser(e1.clone(), arg.clone())?;
+            (branches, arg) = List::map1Fold(branches.clone(), (std::sync::Arc::new(mapFoldBranchExps) as std::sync::Arc<dyn ::std::ops::Fn((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>), _, _) -> Result<_> + 'static>), traverser.clone(), arg.clone())?;
             (Arc::new(SCode::Statement::ALG_IF { boolExpr: e1.clone(), trueBranch: stmts1.clone(), elseIfBranch: branches.clone(), elseBranch: stmts2.clone(), comment: comment.clone(), info: info.clone() }), arg.clone())
         },
         (Deref @ SCode::Statement::ALG_FOR { index: iterator, range: Some(e1), forBody: stmts1, comment, info }, traverser, arg) => {
             let mut e1 = (*e1).clone();
             let mut arg = (*arg).clone();
-            (e1, arg) = traverser(e1.clone(), arg.clone()).unwrap();
+            (e1, arg) = traverser(e1.clone(), arg.clone())?;
             (Arc::new(SCode::Statement::ALG_FOR { index: (iterator.clone()).clone(), range: Some(e1.clone()), forBody: stmts1.clone(), comment: comment.clone(), info: info.clone() }), arg.clone())
         },
         (Deref @ SCode::Statement::ALG_PARFOR { index: iterator, range: Some(e1), parforBody: stmts1, comment, info }, traverser, arg) => {
             let mut e1 = (*e1).clone();
             let mut arg = (*arg).clone();
-            (e1, arg) = traverser(e1.clone(), arg.clone()).unwrap();
+            (e1, arg) = traverser(e1.clone(), arg.clone())?;
             (Arc::new(SCode::Statement::ALG_PARFOR { index: (iterator.clone()).clone(), range: Some(e1.clone()), parforBody: stmts1.clone(), comment: comment.clone(), info: info.clone() }), arg.clone())
         },
         (Deref @ SCode::Statement::ALG_WHILE { boolExpr: e1, whileBody: stmts1, comment, info }, traverser, arg) => {
             let mut e1 = (*e1).clone();
             let mut arg = (*arg).clone();
-            (e1, arg) = traverser(e1.clone(), arg.clone()).unwrap();
+            (e1, arg) = traverser(e1.clone(), arg.clone())?;
             (Arc::new(SCode::Statement::ALG_WHILE { boolExpr: e1.clone(), whileBody: stmts1.clone(), comment: comment.clone(), info: info.clone() }), arg.clone())
         },
         (Deref @ SCode::Statement::ALG_WHEN_A { branches, comment, info }, traverser, arg) => {
             let mut branches = (*branches).clone();
             let mut arg = (*arg).clone();
-            (branches, arg) = List::map1Fold(branches.clone(), std::sync::Arc::new(fnptr!(mapFoldBranchExps, (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>), _, _)), traverser.clone(), arg.clone());
+            (branches, arg) = List::map1Fold(branches.clone(), (std::sync::Arc::new(mapFoldBranchExps) as std::sync::Arc<dyn ::std::ops::Fn((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>), _, _) -> Result<_> + 'static>), traverser.clone(), arg.clone())?;
             (Arc::new(SCode::Statement::ALG_WHEN_A { branches: branches.clone(), comment: comment.clone(), info: info.clone() }), arg.clone())
         },
         (Deref @ SCode::Statement::ALG_ASSERT { .. }, traverser, arg) => {
@@ -2158,29 +2158,29 @@ pub fn mapFoldStatementExps<ArgT: Clone + 'static>(mut inStatement: Arc<SCode::S
             let mut e2: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
             let mut e3: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
             let mut arg = (*arg).clone();
-            (e1, arg) = traverser(var_field!((*inStatement).condition, SCode::Statement::ALG_ASSERT).clone(), arg.clone()).unwrap();
-            (e2, arg) = traverser(var_field!((*inStatement).message, SCode::Statement::ALG_ASSERT).clone(), arg.clone()).unwrap();
-            (e3, arg) = traverser(var_field!((*inStatement).level, SCode::Statement::ALG_ASSERT).clone(), arg.clone()).unwrap();
+            (e1, arg) = traverser(var_field!((*inStatement).condition, SCode::Statement::ALG_ASSERT).clone(), arg.clone())?;
+            (e2, arg) = traverser(var_field!((*inStatement).message, SCode::Statement::ALG_ASSERT).clone(), arg.clone())?;
+            (e3, arg) = traverser(var_field!((*inStatement).level, SCode::Statement::ALG_ASSERT).clone(), arg.clone())?;
             (Arc::new(SCode::Statement::ALG_ASSERT { condition: e1.clone(), message: e2.clone(), level: e3.clone(), comment: var_field!((*inStatement).comment, SCode::Statement::ALG_ASSERT).clone(), info: var_field!((*inStatement).info, SCode::Statement::ALG_ASSERT).clone() }), arg.clone())
         },
         (Deref @ SCode::Statement::ALG_TERMINATE { .. }, traverser, arg) => {
             let mut e1: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
             let mut arg = (*arg).clone();
-            (e1, arg) = traverser(var_field!((*inStatement).message, SCode::Statement::ALG_TERMINATE).clone(), arg.clone()).unwrap();
+            (e1, arg) = traverser(var_field!((*inStatement).message, SCode::Statement::ALG_TERMINATE).clone(), arg.clone())?;
             (Arc::new(SCode::Statement::ALG_TERMINATE { message: e1.clone(), comment: var_field!((*inStatement).comment, SCode::Statement::ALG_TERMINATE).clone(), info: var_field!((*inStatement).info, SCode::Statement::ALG_TERMINATE).clone() }), arg.clone())
         },
         (Deref @ SCode::Statement::ALG_REINIT { .. }, traverser, arg) => {
             let mut e1: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
             let mut e2: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
             let mut arg = (*arg).clone();
-            (e1, arg) = traverser(var_field!((*inStatement).cref, SCode::Statement::ALG_REINIT).clone(), arg.clone()).unwrap();
-            (e2, arg) = traverser(var_field!((*inStatement).newValue, SCode::Statement::ALG_REINIT).clone(), arg.clone()).unwrap();
+            (e1, arg) = traverser(var_field!((*inStatement).cref, SCode::Statement::ALG_REINIT).clone(), arg.clone())?;
+            (e2, arg) = traverser(var_field!((*inStatement).newValue, SCode::Statement::ALG_REINIT).clone(), arg.clone())?;
             (Arc::new(SCode::Statement::ALG_REINIT { cref: e1.clone(), newValue: e2.clone(), comment: var_field!((*inStatement).comment, SCode::Statement::ALG_REINIT).clone(), info: var_field!((*inStatement).info, SCode::Statement::ALG_REINIT).clone() }), arg.clone())
         },
         (Deref @ SCode::Statement::ALG_NORETCALL { exp: e1, comment, info }, traverser, arg) => {
             let mut e1 = (*e1).clone();
             let mut arg = (*arg).clone();
-            (e1, arg) = traverser(e1.clone(), arg.clone()).unwrap();
+            (e1, arg) = traverser(e1.clone(), arg.clone())?;
             (Arc::new(SCode::Statement::ALG_NORETCALL { exp: e1.clone(), comment: comment.clone(), info: info.clone() }), arg.clone())
         },
         _ => {
@@ -2188,10 +2188,10 @@ pub fn mapFoldStatementExps<ArgT: Clone + 'static>(mut inStatement: Arc<SCode::S
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    (outStatement, outArg)
+    Ok((outStatement, outArg))
 }
 
-fn mapFoldBranchExps<ArgT: Clone + 'static>(mut inBranch: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>), mut traverser: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> ((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>), ArgT) {
+fn mapFoldBranchExps<ArgT: Clone + 'static>(mut inBranch: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>), mut traverser: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>, mut inArg: ArgT) -> Result<((Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>), ArgT)> {
     pub type TraverseFunc<ArgT: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>, ArgT) -> Result<(Arc<Absyn::Exp>, ArgT)> + 'static>;
 
     let mut outBranch: (Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>) = (Arc::new(Absyn::Exp::BREAK), metamodelica::nil());
@@ -2200,9 +2200,9 @@ fn mapFoldBranchExps<ArgT: Clone + 'static>(mut inBranch: (Arc<Absyn::Exp>, Arc<
     let mut exp: Arc<Absyn::Exp> = Arc::new(Absyn::Exp::BREAK);
     let mut stmts: Arc<metamodelica::List<Arc<SCode::Statement>>> = metamodelica::nil();
     (exp, stmts) = inBranch.clone();
-    (exp, outArg) = traverser(exp.clone(), inArg.clone()).unwrap();
+    (exp, outArg) = traverser(exp.clone(), inArg.clone())?;
     outBranch = (exp.clone(), stmts.clone());
-    (outBranch, outArg)
+    Ok((outBranch, outArg))
 }
 
 pub fn elementIsClass(mut el: Arc<SCode::Element>) -> bool {
@@ -2281,7 +2281,7 @@ pub fn isBuiltinFunction(mut cl: Arc<SCode::Element>, mut inVars: Arc<metamodeli
             let mut argsStr: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             let true = (listMember((name.clone()).clone(), knownExternalCFunctions.clone())) else { bail!("pattern mismatch") };
             let true = (outVar2.clone() == outVar1.clone()) else { bail!("pattern mismatch") };
-            argsStr = List::mapMap(args.clone(), (std::sync::Arc::new(AbsynUtil::expCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<Arc<Absyn::ComponentRef>> + 'static>), (std::sync::Arc::new(AbsynUtil::crefIdent) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>) -> Result<ArcStr> + 'static>));
+            argsStr = List::mapMap(args.clone(), (std::sync::Arc::new(AbsynUtil::expCref) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<Arc<Absyn::ComponentRef>> + 'static>), (std::sync::Arc::new(AbsynUtil::crefIdent) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::ComponentRef>) -> Result<ArcStr> + 'static>))?;
             let true = (argsStr.clone() == inVars.clone()) else { bail!("pattern mismatch") };
             name.clone()
         },
@@ -2865,10 +2865,10 @@ pub fn isConnector(mut inRestriction: SCode::Restriction) -> bool {
     isConnector
 }
 
-pub fn removeBuiltinsFromTopScope(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Arc<metamodelica::List<Arc<SCode::Element>>> {
+pub fn removeBuiltinsFromTopScope(mut inProgram: Arc<metamodelica::List<Arc<SCode::Element>>>) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
     let mut outProgram: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-    outProgram = List::filterOnTrue(inProgram.clone(), (std::sync::Arc::new(fnptr!(isNotBuiltinClass, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>));
-    outProgram
+    outProgram = List::filterOnTrue(inProgram.clone(), (std::sync::Arc::new(fnptr!(isNotBuiltinClass, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>))?;
+    Ok(outProgram)
 }
 
 fn isNotBuiltinClass(mut inClass: Arc<SCode::Element>) -> bool {
@@ -3152,7 +3152,7 @@ pub fn appendAnnotationToComment(mut inAnnotation: Arc<SCode::Annotation>, mut i
             if !(check_replace.clone()) {
                 assign_variant_field!(r#mod => SCode::Mod::MOD; subModLst = listAppend(mods1.clone(), var_field!((*r#mod).subModLst, SCode::Mod::MOD).clone()));
             } else {
-                assign_variant_field!(r#mod => SCode::Mod::MOD; subModLst = listAppend(mods1.clone(), List::filterOnTrue(var_field!((*r#mod).subModLst, SCode::Mod::MOD).clone(), (std::sync::Arc::new({ let __pe_b1 = mods1.clone(); move |__pe_a0| Ok(isNotElem(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>))));
+                assign_variant_field!(r#mod => SCode::Mod::MOD; subModLst = listAppend(mods1.clone(), List::filterOnTrue(var_field!((*r#mod).subModLst, SCode::Mod::MOD).clone(), (std::sync::Arc::new({ let __pe_b1 = mods1.clone(); move |__pe_a0| Ok(isNotElem(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<bool> + 'static>))?));
             }
             Arc::new(SCode::Comment { annotation_: Some(Arc::new(SCode::Annotation { modification: r#mod.clone() })), comment: cmt.clone() })
         },
@@ -3538,20 +3538,20 @@ pub fn getClassBody(mut inClass: Arc<SCode::Element>) -> Result<Arc<SCode::Class
     Ok(outCdef)
 }
 
-pub fn equationsContainReinit(mut inEqs: Arc<metamodelica::List<Arc<SCode::Equation>>>) -> bool {
+pub fn equationsContainReinit(mut inEqs: Arc<metamodelica::List<Arc<SCode::Equation>>>) -> Result<bool> {
     let mut hasReinit: bool = false;
     hasReinit = (::match_deref::match_deref! { match &(inEqs.clone()) {
         _ => {
             let mut b: bool = false;
-            b = List::applyAndFold(inEqs.clone(), (std::sync::Arc::new(fnptr!(boolOr, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), (std::sync::Arc::new(fnptr!(equationContainReinit, Arc<SCode::Equation>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>) -> Result<bool> + 'static>), false);
+            b = List::applyAndFold(inEqs.clone(), (std::sync::Arc::new(fnptr!(boolOr, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), (std::sync::Arc::new(equationContainReinit) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>) -> Result<bool> + 'static>), false)?;
             b.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    hasReinit
+    Ok(hasReinit)
 }
 
-pub fn equationContainReinit(mut inEq: Arc<SCode::Equation>) -> bool {
+pub fn equationContainReinit(mut inEq: Arc<SCode::Equation>) -> Result<bool> {
     let mut hasReinit: bool = false;
     hasReinit = (::match_deref::match_deref! { match &(inEq.clone()) {
         Deref @ SCode::Equation::EQ_REINIT { .. } => {
@@ -3560,20 +3560,20 @@ pub fn equationContainReinit(mut inEq: Arc<SCode::Equation>) -> bool {
         Deref @ SCode::Equation::EQ_WHEN { elseBranches: tpl_el, eEquationLst: eqs, .. } => {
             let mut b: bool = false;
             let mut eqs_lst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SCode::Equation>>>>> = metamodelica::nil();
-            b = equationsContainReinit(eqs.clone());
-            eqs_lst = List::map(tpl_el.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)));
-            b = List::applyAndFold(eqs_lst.clone(), (std::sync::Arc::new(fnptr!(boolOr, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), (std::sync::Arc::new(fnptr!(equationsContainReinit, Arc<metamodelica::List<Arc<SCode::Equation>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<SCode::Equation>>>) -> Result<bool> + 'static>), b.clone());
+            b = equationsContainReinit(eqs.clone())?;
+            eqs_lst = List::map(tpl_el.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)))?;
+            b = List::applyAndFold(eqs_lst.clone(), (std::sync::Arc::new(fnptr!(boolOr, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), (std::sync::Arc::new(equationsContainReinit) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<SCode::Equation>>>) -> Result<bool> + 'static>), b.clone())?;
             b.clone()
         },
         Deref @ SCode::Equation::EQ_IF { elseBranch: eqs, thenBranch: eqs_lst, .. } => {
             let mut b: bool = false;
-            b = equationsContainReinit(eqs.clone());
-            b = List::applyAndFold(eqs_lst.clone(), (std::sync::Arc::new(fnptr!(boolOr, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), (std::sync::Arc::new(fnptr!(equationsContainReinit, Arc<metamodelica::List<Arc<SCode::Equation>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<SCode::Equation>>>) -> Result<bool> + 'static>), b.clone());
+            b = equationsContainReinit(eqs.clone())?;
+            b = List::applyAndFold(eqs_lst.clone(), (std::sync::Arc::new(fnptr!(boolOr, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), (std::sync::Arc::new(equationsContainReinit) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<SCode::Equation>>>) -> Result<bool> + 'static>), b.clone())?;
             b.clone()
         },
         Deref @ SCode::Equation::EQ_FOR { eEquationLst: eqs, .. } => {
             let mut b: bool = false;
-            b = equationsContainReinit(eqs.clone());
+            b = equationsContainReinit(eqs.clone())?;
             b.clone()
         },
         _ => {
@@ -3581,23 +3581,23 @@ pub fn equationContainReinit(mut inEq: Arc<SCode::Equation>) -> bool {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    hasReinit
+    Ok(hasReinit)
 }
 
-pub fn algorithmsContainReinit(mut inAlgs: Arc<metamodelica::List<Arc<SCode::Statement>>>) -> bool {
+pub fn algorithmsContainReinit(mut inAlgs: Arc<metamodelica::List<Arc<SCode::Statement>>>) -> Result<bool> {
     let mut hasReinit: bool = false;
     hasReinit = (::match_deref::match_deref! { match &(inAlgs.clone()) {
         _ => {
             let mut b: bool = false;
-            b = List::applyAndFold(inAlgs.clone(), (std::sync::Arc::new(fnptr!(boolOr, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), (std::sync::Arc::new(fnptr!(algorithmContainReinit, Arc<SCode::Statement>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>) -> Result<bool> + 'static>), false);
+            b = List::applyAndFold(inAlgs.clone(), (std::sync::Arc::new(fnptr!(boolOr, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), (std::sync::Arc::new(algorithmContainReinit) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>) -> Result<bool> + 'static>), false)?;
             b.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    hasReinit
+    Ok(hasReinit)
 }
 
-pub fn algorithmContainReinit(mut inAlg: Arc<SCode::Statement>) -> bool {
+pub fn algorithmContainReinit(mut inAlg: Arc<SCode::Statement>) -> Result<bool> {
     let mut hasReinit: bool = false;
     hasReinit = (::match_deref::match_deref! { match &(inAlg.clone()) {
         Deref @ SCode::Statement::ALG_REINIT { .. } => {
@@ -3606,8 +3606,8 @@ pub fn algorithmContainReinit(mut inAlg: Arc<SCode::Statement>) -> bool {
         Deref @ SCode::Statement::ALG_WHEN_A { branches: tpl_alg, .. } => {
             let mut b: bool = false;
             let mut algs_lst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SCode::Statement>>>>> = metamodelica::nil();
-            algs_lst = List::map(tpl_alg.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)));
-            b = List::applyAndFold(algs_lst.clone(), (std::sync::Arc::new(fnptr!(boolOr, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), (std::sync::Arc::new(fnptr!(algorithmsContainReinit, Arc<metamodelica::List<Arc<SCode::Statement>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<SCode::Statement>>>) -> Result<bool> + 'static>), false);
+            algs_lst = List::map(tpl_alg.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)))?;
+            b = List::applyAndFold(algs_lst.clone(), (std::sync::Arc::new(fnptr!(boolOr, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), (std::sync::Arc::new(algorithmsContainReinit) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<SCode::Statement>>>) -> Result<bool> + 'static>), false)?;
             b.clone()
         },
         Deref @ SCode::Statement::ALG_IF { elseBranch: algs2, elseIfBranch: tpl_alg, trueBranch: algs1, .. } => {
@@ -3616,21 +3616,21 @@ pub fn algorithmContainReinit(mut inAlg: Arc<SCode::Statement>) -> bool {
             let mut b2: bool = false;
             let mut b3: bool = false;
             let mut algs_lst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SCode::Statement>>>>> = metamodelica::nil();
-            b1 = algorithmsContainReinit(algs1.clone());
-            algs_lst = List::map(tpl_alg.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)));
-            b2 = List::applyAndFold(algs_lst.clone(), (std::sync::Arc::new(fnptr!(boolOr, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), (std::sync::Arc::new(fnptr!(algorithmsContainReinit, Arc<metamodelica::List<Arc<SCode::Statement>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<SCode::Statement>>>) -> Result<bool> + 'static>), b1.clone());
-            b3 = algorithmsContainReinit(algs2.clone());
+            b1 = algorithmsContainReinit(algs1.clone())?;
+            algs_lst = List::map(tpl_alg.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)))?;
+            b2 = List::applyAndFold(algs_lst.clone(), (std::sync::Arc::new(fnptr!(boolOr, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>), (std::sync::Arc::new(algorithmsContainReinit) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<SCode::Statement>>>) -> Result<bool> + 'static>), b1.clone())?;
+            b3 = algorithmsContainReinit(algs2.clone())?;
             b = boolOr(b1.clone(), boolOr(b2.clone(), b3.clone()));
             b.clone()
         },
         Deref @ SCode::Statement::ALG_FOR { forBody: algs, .. } => {
             let mut b: bool = false;
-            b = algorithmsContainReinit(algs.clone());
+            b = algorithmsContainReinit(algs.clone())?;
             b.clone()
         },
         Deref @ SCode::Statement::ALG_WHILE { whileBody: algs, .. } => {
             let mut b: bool = false;
-            b = algorithmsContainReinit(algs.clone());
+            b = algorithmsContainReinit(algs.clone())?;
             b.clone()
         },
         _ => {
@@ -3638,7 +3638,7 @@ pub fn algorithmContainReinit(mut inAlg: Arc<SCode::Statement>) -> bool {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    hasReinit
+    Ok(hasReinit)
 }
 
 pub fn getClassPartialPrefix(mut inElement: Arc<SCode::Element>) -> Result<SCode::Partial> {
@@ -5120,29 +5120,29 @@ pub fn classDefHasSections(mut cdef: Arc<SCode::ClassDef>, mut checkExternal: bo
     res
 }
 
-pub fn mapElements(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<Arc<SCode::Element>> + 'static>) -> Arc<metamodelica::List<Arc<SCode::Element>>> {
+pub fn mapElements(mut elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<Arc<SCode::Element>> + 'static>) -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
     pub type Func = std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<Arc<SCode::Element>> + 'static>;
 
     let mut elements: Arc<metamodelica::List<Arc<SCode::Element>>> = elements;
     elements = ({
         let mut __acc: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
         for mut e in (elements.clone()).into_iter().cloned() {
-            let __x = mapElement(e.clone(), func.clone());
+            let __x = mapElement(e.clone(), func.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-    elements
+    Ok(elements)
 }
 
-pub fn mapElement(mut element: Arc<SCode::Element>, mut func: Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<Arc<SCode::Element>> + 'static>) -> Arc<SCode::Element> {
+pub fn mapElement(mut element: Arc<SCode::Element>, mut func: Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<Arc<SCode::Element>> + 'static>) -> Result<Arc<SCode::Element>> {
     pub type Func = std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<Arc<SCode::Element>> + 'static>;
 
     let mut element: Arc<SCode::Element> = element;
     let mut def: Arc<SCode::ClassDef> = Arc::new(<SCode::ClassDef as ::std::default::Default>::default());
     let () = (::match_deref::match_deref! { match &(element.clone()) {
         Deref @ SCode::Element::CLASS { .. } => {
-            def = mapElementsClassDef(var_field!((*element).classDef, SCode::Element::CLASS).clone(), func.clone());
+            def = mapElementsClassDef(var_field!((*element).classDef, SCode::Element::CLASS).clone(), func.clone())?;
             if !(referenceEq(&def.clone(),&var_field!((*element).classDef, SCode::Element::CLASS).clone())) {
                 assign_variant_field!(element => SCode::Element::CLASS; classDef = def.clone());
             }
@@ -5151,11 +5151,11 @@ pub fn mapElement(mut element: Arc<SCode::Element>, mut func: Arc<dyn ::std::ops
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    element = func(element.clone()).unwrap();
-    element
+    element = func(element.clone())?;
+    Ok(element)
 }
 
-pub fn mapElementsClassDef(mut classDef: Arc<SCode::ClassDef>, mut func: Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<Arc<SCode::Element>> + 'static>) -> Arc<SCode::ClassDef> {
+pub fn mapElementsClassDef(mut classDef: Arc<SCode::ClassDef>, mut func: Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<Arc<SCode::Element>> + 'static>) -> Result<Arc<SCode::ClassDef>> {
     pub type Func = std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<Arc<SCode::Element>> + 'static>;
 
     let mut classDef: Arc<SCode::ClassDef> = classDef;
@@ -5165,7 +5165,7 @@ pub fn mapElementsClassDef(mut classDef: Arc<SCode::ClassDef>, mut func: Arc<dyn
             assign_variant_field!(classDef => SCode::ClassDef::PARTS; elementLst = ({
         let mut __acc: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
         for mut e in (var_field!((*classDef).elementLst, SCode::ClassDef::PARTS).clone()).into_iter().cloned() {
-            let __x = mapElement(e.clone(), func.clone());
+            let __x = mapElement(e.clone(), func.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -5173,7 +5173,7 @@ pub fn mapElementsClassDef(mut classDef: Arc<SCode::ClassDef>, mut func: Arc<dyn
             ()
         },
         Deref @ SCode::ClassDef::CLASS_EXTENDS { .. } => {
-            def = mapElementsClassDef(var_field!((*classDef).composition, SCode::ClassDef::CLASS_EXTENDS).clone(), func.clone());
+            def = mapElementsClassDef(var_field!((*classDef).composition, SCode::ClassDef::CLASS_EXTENDS).clone(), func.clone())?;
             if !(referenceEq(&def.clone(),&var_field!((*classDef).composition, SCode::ClassDef::CLASS_EXTENDS).clone())) {
                 assign_variant_field!(classDef => SCode::ClassDef::CLASS_EXTENDS; composition = def.clone());
             }
@@ -5182,25 +5182,25 @@ pub fn mapElementsClassDef(mut classDef: Arc<SCode::ClassDef>, mut func: Arc<dyn
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    classDef
+    Ok(classDef)
 }
 
-pub fn mapEquationsList(mut eql: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>) -> Result<Arc<SCode::Equation>> + 'static>) -> Arc<metamodelica::List<Arc<SCode::Equation>>> {
+pub fn mapEquationsList(mut eql: Arc<metamodelica::List<Arc<SCode::Equation>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>) -> Result<Arc<SCode::Equation>> + 'static>) -> Result<Arc<metamodelica::List<Arc<SCode::Equation>>>> {
     pub type Func = std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>) -> Result<Arc<SCode::Equation>> + 'static>;
 
     let mut eql: Arc<metamodelica::List<Arc<SCode::Equation>>> = eql;
     eql = ({
         let mut __acc: Arc<metamodelica::List<Arc<SCode::Equation>>> = metamodelica::nil();
         for mut e in (eql.clone()).into_iter().cloned() {
-            let __x = mapEquations(e.clone(), func.clone());
+            let __x = mapEquations(e.clone(), func.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-    eql
+    Ok(eql)
 }
 
-pub fn mapEquations(mut eq: Arc<SCode::Equation>, mut func: Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>) -> Result<Arc<SCode::Equation>> + 'static>) -> Arc<SCode::Equation> {
+pub fn mapEquations(mut eq: Arc<SCode::Equation>, mut func: Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>) -> Result<Arc<SCode::Equation>> + 'static>) -> Result<Arc<SCode::Equation>> {
     pub type Func = std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>) -> Result<Arc<SCode::Equation>> + 'static>;
 
     let mut eq: Arc<SCode::Equation> = eq;
@@ -5210,26 +5210,26 @@ pub fn mapEquations(mut eq: Arc<SCode::Equation>, mut func: Arc<dyn ::std::ops::
                 thenBranch = ({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SCode::Equation>>>>> = metamodelica::nil();
         for mut b in (var_field!((*eq).thenBranch, SCode::Equation::EQ_IF).clone()).into_iter().cloned() {
-            let __x = mapEquationsList(b.clone(), func.clone());
+            let __x = mapEquationsList(b.clone(), func.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }),
-                elseBranch = mapEquationsList(var_field!((*eq).elseBranch, SCode::Equation::EQ_IF).clone(), func.clone())
+                elseBranch = mapEquationsList(var_field!((*eq).elseBranch, SCode::Equation::EQ_IF).clone(), func.clone())?
             );
             ()
         },
         Deref @ SCode::Equation::EQ_FOR { .. } => {
-            assign_variant_field!(eq => SCode::Equation::EQ_FOR; eEquationLst = mapEquationsList(var_field!((*eq).eEquationLst, SCode::Equation::EQ_FOR).clone(), func.clone()));
+            assign_variant_field!(eq => SCode::Equation::EQ_FOR; eEquationLst = mapEquationsList(var_field!((*eq).eEquationLst, SCode::Equation::EQ_FOR).clone(), func.clone())?);
             ()
         },
         Deref @ SCode::Equation::EQ_WHEN { .. } => {
             assign_variant_field!(eq => SCode::Equation::EQ_WHEN;
-                eEquationLst = mapEquationsList(var_field!((*eq).eEquationLst, SCode::Equation::EQ_WHEN).clone(), func.clone()),
+                eEquationLst = mapEquationsList(var_field!((*eq).eEquationLst, SCode::Equation::EQ_WHEN).clone(), func.clone())?,
                 elseBranches = ({
         let mut __acc: Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>)>> = metamodelica::nil();
         for mut b in (var_field!((*eq).elseBranches, SCode::Equation::EQ_WHEN).clone()).into_iter().cloned() {
-            let __x = (Util::tuple21(b.clone()), mapEquationsList(Util::tuple22(b.clone()), func.clone()));
+            let __x = (Util::tuple21(b.clone()), mapEquationsList(Util::tuple22(b.clone()), func.clone())?);
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -5240,8 +5240,8 @@ pub fn mapEquations(mut eq: Arc<SCode::Equation>, mut func: Arc<dyn ::std::ops::
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    eq = func(eq.clone()).unwrap();
-    eq
+    eq = func(eq.clone())?;
+    Ok(eq)
 }
 
 pub fn mapEquationExps(mut eq: Arc<SCode::Equation>, mut func: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<Arc<Absyn::Exp>> + 'static>) -> Result<Arc<SCode::Equation>> {
@@ -5271,14 +5271,14 @@ pub fn mapEquationExps(mut eq: Arc<SCode::Equation>, mut func: Arc<dyn ::std::op
             assign_variant_field!(eq => SCode::Equation::EQ_PDE;
                 expLeft = func(var_field!((*eq).expLeft, SCode::Equation::EQ_PDE).clone())?,
                 expRight = func(var_field!((*eq).expRight, SCode::Equation::EQ_PDE).clone())?,
-                domain = AbsynUtil::mapCrefExps(var_field!((*eq).domain, SCode::Equation::EQ_PDE).clone(), func.clone())
+                domain = AbsynUtil::mapCrefExps(var_field!((*eq).domain, SCode::Equation::EQ_PDE).clone(), func.clone())?
             );
             ()
         },
         Deref @ SCode::Equation::EQ_CONNECT { .. } => {
             assign_variant_field!(eq => SCode::Equation::EQ_CONNECT;
-                crefLeft = AbsynUtil::mapCrefExps(var_field!((*eq).crefLeft, SCode::Equation::EQ_CONNECT).clone(), func.clone()),
-                crefRight = AbsynUtil::mapCrefExps(var_field!((*eq).crefRight, SCode::Equation::EQ_CONNECT).clone(), func.clone())
+                crefLeft = AbsynUtil::mapCrefExps(var_field!((*eq).crefLeft, SCode::Equation::EQ_CONNECT).clone(), func.clone())?,
+                crefRight = AbsynUtil::mapCrefExps(var_field!((*eq).crefRight, SCode::Equation::EQ_CONNECT).clone(), func.clone())?
             );
             ()
         },
@@ -5294,7 +5294,7 @@ pub fn mapEquationExps(mut eq: Arc<SCode::Equation>, mut func: Arc<dyn ::std::op
                 elseBranches = ({
         let mut __acc: Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Equation>>>)>> = metamodelica::nil();
         for mut b in (var_field!((*eq).elseBranches, SCode::Equation::EQ_WHEN).clone()).into_iter().cloned() {
-            let __x = Util::applyTuple21(b.clone(), func.clone());
+            let __x = Util::applyTuple21(b.clone(), func.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -5330,66 +5330,66 @@ pub fn mapEquationExps(mut eq: Arc<SCode::Equation>, mut func: Arc<dyn ::std::op
     Ok(eq)
 }
 
-pub fn mapAlgorithmStatements(mut alg: Arc<SCode::AlgorithmSection>, mut func: Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>) -> Result<Arc<SCode::Statement>> + 'static>) -> Arc<SCode::AlgorithmSection> {
+pub fn mapAlgorithmStatements(mut alg: Arc<SCode::AlgorithmSection>, mut func: Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>) -> Result<Arc<SCode::Statement>> + 'static>) -> Result<Arc<SCode::AlgorithmSection>> {
     pub type Func = std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>) -> Result<Arc<SCode::Statement>> + 'static>;
 
     let mut alg: Arc<SCode::AlgorithmSection> = alg;
-    assign_field!(alg.statements = mapStatementsList(alg.statements.clone(), func.clone()));
-    alg
+    assign_field!(alg.statements = mapStatementsList(alg.statements.clone(), func.clone())?);
+    Ok(alg)
 }
 
-pub fn mapStatementsList(mut statements: Arc<metamodelica::List<Arc<SCode::Statement>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>) -> Result<Arc<SCode::Statement>> + 'static>) -> Arc<metamodelica::List<Arc<SCode::Statement>>> {
+pub fn mapStatementsList(mut statements: Arc<metamodelica::List<Arc<SCode::Statement>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>) -> Result<Arc<SCode::Statement>> + 'static>) -> Result<Arc<metamodelica::List<Arc<SCode::Statement>>>> {
     pub type Func = std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>) -> Result<Arc<SCode::Statement>> + 'static>;
 
     let mut statements: Arc<metamodelica::List<Arc<SCode::Statement>>> = statements;
     statements = ({
         let mut __acc: Arc<metamodelica::List<Arc<SCode::Statement>>> = metamodelica::nil();
         for mut s in (statements.clone()).into_iter().cloned() {
-            let __x = mapStatements(s.clone(), func.clone());
+            let __x = mapStatements(s.clone(), func.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-    statements
+    Ok(statements)
 }
 
-pub fn mapStatements(mut stmt: Arc<SCode::Statement>, mut func: Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>) -> Result<Arc<SCode::Statement>> + 'static>) -> Arc<SCode::Statement> {
+pub fn mapStatements(mut stmt: Arc<SCode::Statement>, mut func: Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>) -> Result<Arc<SCode::Statement>> + 'static>) -> Result<Arc<SCode::Statement>> {
     pub type Func = std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Statement>) -> Result<Arc<SCode::Statement>> + 'static>;
 
     let mut stmt: Arc<SCode::Statement> = stmt;
     let () = (::match_deref::match_deref! { match &(stmt.clone()) {
         Deref @ SCode::Statement::ALG_IF { .. } => {
             assign_variant_field!(stmt => SCode::Statement::ALG_IF;
-                trueBranch = mapStatementsList(var_field!((*stmt).trueBranch, SCode::Statement::ALG_IF).clone(), func.clone()),
+                trueBranch = mapStatementsList(var_field!((*stmt).trueBranch, SCode::Statement::ALG_IF).clone(), func.clone())?,
                 elseIfBranch = ({
         let mut __acc: Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>)>> = metamodelica::nil();
         for mut b in (var_field!((*stmt).elseIfBranch, SCode::Statement::ALG_IF).clone()).into_iter().cloned() {
-            let __x = (Util::tuple21(b.clone()), mapStatementsList(Util::tuple22(b.clone()), func.clone()));
+            let __x = (Util::tuple21(b.clone()), mapStatementsList(Util::tuple22(b.clone()), func.clone())?);
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }),
-                elseBranch = mapStatementsList(var_field!((*stmt).elseBranch, SCode::Statement::ALG_IF).clone(), func.clone())
+                elseBranch = mapStatementsList(var_field!((*stmt).elseBranch, SCode::Statement::ALG_IF).clone(), func.clone())?
             );
             ()
         },
         Deref @ SCode::Statement::ALG_FOR { .. } => {
-            assign_variant_field!(stmt => SCode::Statement::ALG_FOR; forBody = mapStatementsList(var_field!((*stmt).forBody, SCode::Statement::ALG_FOR).clone(), func.clone()));
+            assign_variant_field!(stmt => SCode::Statement::ALG_FOR; forBody = mapStatementsList(var_field!((*stmt).forBody, SCode::Statement::ALG_FOR).clone(), func.clone())?);
             ()
         },
         Deref @ SCode::Statement::ALG_PARFOR { .. } => {
-            assign_variant_field!(stmt => SCode::Statement::ALG_PARFOR; parforBody = mapStatementsList(var_field!((*stmt).parforBody, SCode::Statement::ALG_PARFOR).clone(), func.clone()));
+            assign_variant_field!(stmt => SCode::Statement::ALG_PARFOR; parforBody = mapStatementsList(var_field!((*stmt).parforBody, SCode::Statement::ALG_PARFOR).clone(), func.clone())?);
             ()
         },
         Deref @ SCode::Statement::ALG_WHILE { .. } => {
-            assign_variant_field!(stmt => SCode::Statement::ALG_WHILE; whileBody = mapStatementsList(var_field!((*stmt).whileBody, SCode::Statement::ALG_WHILE).clone(), func.clone()));
+            assign_variant_field!(stmt => SCode::Statement::ALG_WHILE; whileBody = mapStatementsList(var_field!((*stmt).whileBody, SCode::Statement::ALG_WHILE).clone(), func.clone())?);
             ()
         },
         Deref @ SCode::Statement::ALG_WHEN_A { .. } => {
             assign_variant_field!(stmt => SCode::Statement::ALG_WHEN_A; branches = ({
         let mut __acc: Arc<metamodelica::List<(Arc<Absyn::Exp>, Arc<metamodelica::List<Arc<SCode::Statement>>>)>> = metamodelica::nil();
         for mut b in (var_field!((*stmt).branches, SCode::Statement::ALG_WHEN_A).clone()).into_iter().cloned() {
-            let __x = (Util::tuple21(b.clone()), mapStatementsList(Util::tuple22(b.clone()), func.clone()));
+            let __x = (Util::tuple21(b.clone()), mapStatementsList(Util::tuple22(b.clone()), func.clone())?);
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -5397,21 +5397,21 @@ pub fn mapStatements(mut stmt: Arc<SCode::Statement>, mut func: Arc<dyn ::std::o
             ()
         },
         Deref @ SCode::Statement::ALG_FAILURE { .. } => {
-            assign_variant_field!(stmt => SCode::Statement::ALG_FAILURE; stmts = mapStatementsList(var_field!((*stmt).stmts, SCode::Statement::ALG_FAILURE).clone(), func.clone()));
+            assign_variant_field!(stmt => SCode::Statement::ALG_FAILURE; stmts = mapStatementsList(var_field!((*stmt).stmts, SCode::Statement::ALG_FAILURE).clone(), func.clone())?);
             ()
         },
         Deref @ SCode::Statement::ALG_TRY { .. } => {
             assign_variant_field!(stmt => SCode::Statement::ALG_TRY;
-                body = mapStatementsList(var_field!((*stmt).body, SCode::Statement::ALG_TRY).clone(), func.clone()),
-                elseBody = mapStatementsList(var_field!((*stmt).body, SCode::Statement::ALG_TRY).clone(), func.clone())
+                body = mapStatementsList(var_field!((*stmt).body, SCode::Statement::ALG_TRY).clone(), func.clone())?,
+                elseBody = mapStatementsList(var_field!((*stmt).body, SCode::Statement::ALG_TRY).clone(), func.clone())?
             );
             ()
         },
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    stmt = func(stmt.clone()).unwrap();
-    stmt
+    stmt = func(stmt.clone())?;
+    Ok(stmt)
 }
 
 pub fn mapStatementExps(mut stmt: Arc<SCode::Statement>, mut func: Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<Arc<Absyn::Exp>> + 'static>) -> Result<Arc<SCode::Statement>> {

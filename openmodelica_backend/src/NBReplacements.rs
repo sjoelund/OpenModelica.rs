@@ -212,13 +212,13 @@ pub fn applySimpleExp(mut exp: Arc<Expression::NFExpression>, mut replacements: 
             let mut res: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut stripped: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
             let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
-            if UnorderedMap::contains(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), replacements.clone()) {
-                res = UnorderedMap::getOrFail(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), replacements.clone());
+            if UnorderedMap::contains(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), replacements.clone())? {
+                res = UnorderedMap::getOrFail(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), replacements.clone())?;
             } else {
                 stripped = ComponentRef::stripSubscriptsAll(var_field!((*exp).cref, Expression::NFExpression::CREF).clone());
-                if UnorderedMap::contains(stripped.clone(), replacements.clone()) {
-                    subs = ComponentRef::subscriptsAllWithWholeFlat(var_field!((*exp).cref, Expression::NFExpression::CREF).clone());
-                    res = UnorderedMap::getOrFail(stripped.clone(), replacements.clone());
+                if UnorderedMap::contains(stripped.clone(), replacements.clone())? {
+                    subs = ComponentRef::subscriptsAllWithWholeFlat(var_field!((*exp).cref, Expression::NFExpression::CREF).clone())?;
+                    res = UnorderedMap::getOrFail(stripped.clone(), replacements.clone())?;
                     res = Expression::applySubscripts(subs.clone(), res.clone(), true)?;
                 } else {
                     res = exp.clone();
@@ -254,7 +254,7 @@ pub fn applySimpleVar(mut var: Arc<Variable::NFVariable>, mut replacements: Arc<
 pub fn replaceVarPtr(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>>) -> Result<Pointer::Pointer<Arc<Variable::NFVariable>>> {
     let mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>> = var_ptr;
     let mut cref: Option<Arc<ComponentRef::NFComponentRef>> = None;
-    cref = UnorderedMap::get(BVariable::getVarName(var_ptr.clone()), replacements.clone());
+    cref = UnorderedMap::get(BVariable::getVarName(var_ptr.clone()), replacements.clone())?;
     if isSome(cref.clone()) {
         var_ptr = BVariable::getVarPointer(Util::getOption(cref.clone())?, metamodelica::sourceInfo!())?;
     }
@@ -289,7 +289,7 @@ pub fn simpleToString(mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<Compo
 
 pub fn replaceFunctions(mut eqData: Arc<EqData::EqData>, mut variables: Arc<VariablePointers::VariablePointers>, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Function::Function>>>) -> Result<Arc<EqData::EqData>> {
     let mut eqData: Arc<EqData::EqData> = eqData;
-    let mut prev_replacements: Arc<UnorderedMap::UnorderedMap<Arc<Expression::NFExpression>, Arc<Expression::NFExpression>>> = UnorderedMap::new((std::sync::Arc::new(fnptr!(Expression::hash, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<i32> + 'static>), (std::sync::Arc::new(Expression::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<bool> + 'static>), 1);
+    let mut prev_replacements: Arc<UnorderedMap::UnorderedMap<Arc<Expression::NFExpression>, Arc<Expression::NFExpression>>> = UnorderedMap::new((std::sync::Arc::new(Expression::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<i32> + 'static>), (std::sync::Arc::new(Expression::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<bool> + 'static>), 1);
     if UnorderedMap::isEmpty(replacements.clone()) {
         return Ok(eqData.clone());
     }
@@ -300,7 +300,7 @@ pub fn replaceFunctions(mut eqData: Arc<EqData::EqData>, mut variables: Arc<Vari
 pub fn applyFuncExp(mut exp: Arc<Expression::NFExpression>, mut replacements: Arc<UnorderedMap::UnorderedMap<Arc<Absyn::Path>, Arc<Function::Function>>>, mut prev_replacements: Arc<UnorderedMap::UnorderedMap<Arc<Expression::NFExpression>, Arc<Expression::NFExpression>>>, mut variables: Arc<VariablePointers::VariablePointers>) -> Result<Arc<Expression::NFExpression>> {
     let mut exp: Arc<Expression::NFExpression> = exp;
     exp = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { r#fn, .. } } if (UnorderedMap::contains(r#fn.path.clone(), replacements.clone())) => {
+        Deref @ Expression::CALL { call: call @ Deref @ Call::TYPED_CALL { r#fn, .. } } if (UnorderedMap::contains(r#fn.path.clone(), replacements.clone())?) => {
             let mut local_replacements: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>>> as ::std::default::Default>::default();
             let mut input_crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
             let mut local_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
@@ -309,11 +309,11 @@ pub fn applyFuncExp(mut exp: Arc<Expression::NFExpression>, mut replacements: Ar
             let mut body_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut res_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut r#fn = (*r#fn).clone();
-            res_exp = (::match_deref::match_deref! { match &(UnorderedMap::get(exp.clone(), prev_replacements.clone())) {
+            res_exp = (::match_deref::match_deref! { match &(UnorderedMap::get(exp.clone(), prev_replacements.clone())?) {
         Some(res_exp) => res_exp.clone(),
         _ => {
-            r#fn = UnorderedMap::getOrFail(r#fn.path.clone(), replacements.clone());
-            local_replacements = UnorderedMap::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
+            r#fn = UnorderedMap::getOrFail(r#fn.path.clone(), replacements.clone())?;
+            local_replacements = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
             input_crefs = ({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
         for mut node in (r#fn.inputs.clone()).into_iter().cloned() {
@@ -329,7 +329,7 @@ pub fn applyFuncExp(mut exp: Arc<Expression::NFExpression>, mut replacements: Ar
             for mut local_node in &*r#fn.locals.clone() {
                 let mut local_node = local_node.clone();
                 local_cref = ComponentRef::fromNode(local_node.clone(), InstNode::getType(local_node.clone())?, metamodelica::nil(), ComponentRef::Origin::CREF.clone());
-                binding_exp_opt = InstNode::getBindingExpOpt(local_node.clone());
+                binding_exp_opt = InstNode::getBindingExpOpt(local_node.clone())?;
                 if isSome(binding_exp_opt.clone()) {
                     binding_exp = Expression::map(Util::getOption(binding_exp_opt.clone())?, (std::sync::Arc::new({ let __pe_b1 = local_replacements.clone(); move |__pe_a0| applySimpleExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
                 } else {
@@ -339,14 +339,14 @@ pub fn applyFuncExp(mut exp: Arc<Expression::NFExpression>, mut replacements: Ar
             }
             body_exp = Function::getSingleBodyExp(r#fn.clone())?;
             body_exp = Expression::map(body_exp.clone(), (std::sync::Arc::new({ let __pe_b1 = local_replacements.clone(); move |__pe_a0| applySimpleExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
-            if !(List::all(input_crefs.clone(), (std::sync::Arc::new(fnptr!(ComponentRef::sizeKnown, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))) {
+            if !(List::all(input_crefs.clone(), (std::sync::Arc::new(ComponentRef::sizeKnown) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?) {
                 (body_exp, _, _, _) = Typing::typeExp(body_exp.clone(), InstContext::RHS.clone(), metamodelica::sourceInfo!(), true)?;
             }
             body_exp = SimplifyExp::combineBinaries(body_exp.clone())?;
             body_exp = SimplifyExp::simplifyDump(body_exp.clone(), true, literal!("NBReplacements.applyFuncExp"), (literal!("")).clone())?;
             res_exp = Expression::map(body_exp.clone(), (std::sync::Arc::new({ let __pe_b1 = replacements.clone(); let __pe_b2 = prev_replacements.clone(); let __pe_b3 = variables.clone(); move |__pe_a0| applyFuncExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             if !(r#fn.attributes.generateEvents.clone()) {
-                res_exp = Expression::fakeMap(res_exp.clone(), (std::sync::Arc::new(wrapEvents) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>));
+                res_exp = Expression::fakeMap(res_exp.clone(), (std::sync::Arc::new(wrapEvents) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             }
             UnorderedMap::add(exp.clone(), res_exp.clone(), prev_replacements.clone())?;
             if Flags::isSet(Flags::DUMPBACKENDINLINE.clone())? {

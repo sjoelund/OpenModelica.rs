@@ -105,16 +105,16 @@ pub fn getEqSystemDAEmode(mut inDAE: Arc<BackendDAE::BackendDAE>, mut fileNamePr
         }
     }
     dae = BackendDAEUtil::preOptimizeDAE(inDAE.clone(), preOptModules.clone())?;
-    execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("pre-optimization done (n=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", BackendDAEUtil::daeSize(dae.clone())))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
+    execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("pre-optimization done (n=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", BackendDAEUtil::daeSize(dae.clone())?))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
     dae = BackendDAEUtil::causalizeDAE(dae.clone(), None, matchingAlgorithm.clone(), daeHandler.clone(), true)?;
-    execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("matching and sorting (n=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", BackendDAEUtil::daeSize(dae.clone())))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
+    execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("matching and sorting (n=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", BackendDAEUtil::daeSize(dae.clone())?))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
     if Flags::isSet(Flags::GRAPHML.clone())? {
         BackendDump::dumpBipartiteGraphDAE(dae.clone(), (fileNamePrefix.clone()).clone())?;
     }
     if Flags::isSet(Flags::EVAL_OUTPUT_ONLY.clone())? {
-        oldSize = BackendDAEUtil::daeSize(dae.clone());
+        oldSize = BackendDAEUtil::daeSize(dae.clone())?;
         dae = BackendDAEOptimize::evaluateOutputsOnly(dae.clone())?;
-        execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("evaluateOutputsOnly (n=")); __mm_s.push_str(&*intString(oldSize.clone())); __mm_s.push_str(&*literal!(" -> n=")); __mm_s.push_str(&*intString(BackendDAEUtil::daeSize(dae.clone()))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
+        execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("evaluateOutputsOnly (n=")); __mm_s.push_str(&*intString(oldSize.clone())); __mm_s.push_str(&*literal!(" -> n=")); __mm_s.push_str(&*intString(BackendDAEUtil::daeSize(dae.clone())?)); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())?;
     }
     if Flags::isSet(Flags::BLT_DUMP.clone())? {
         BackendDump::bltdump((literal!("bltdump")).clone(), dae.clone())?;
@@ -198,7 +198,7 @@ fn createDAEmodeEqSystem(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<Ba
     let mut debug: bool = Flags::isSet(Flags::DEBUG_DAEMODE.clone())?;
     let exec: bool = false;
     globalDAEData = shared.daeModeData.clone();
-    systemSize = BackendDAEUtil::systemSize(syst.clone());
+    systemSize = BackendDAEUtil::systemSize(syst.clone())?;
     newDAEVars = BackendVariable::emptyVars(BaseHashTable::bigBucketSize.clone());
     newDAEEquations = BackendEquation::emptyEqnsSized(systemSize.clone());
     travArgs = TraverseEqnAryFold { globalDAEData: globalDAEData.clone(), newDAEVars: newDAEVars.clone(), newDAEEquations: newDAEEquations.clone(), systemVars: syst.orderedVars.clone(), functionTree: shared.functionTree.clone(), recursiveStrongComponentRun: false, shared: shared.clone() };
@@ -207,7 +207,7 @@ fn createDAEmodeEqSystem(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<Ba
     }
     travArgs = BackendDAEUtil::traverseEqSystemStrongComponents(syst.clone(), (std::sync::Arc::new(traverserStrongComponents) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>, TraverseEqnAryFold) -> Result<TraverseEqnAryFold> + 'static>), travArgs.clone())?;
     if exec.clone() {
-        execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAEmode: created residual equations for system size :  ")); __mm_s.push_str(&*intString(BackendDAEUtil::systemSize(syst.clone()))); __mm_s.push_str(&*literal!(": ")); ArcStr::from(__mm_s) }).clone())?;
+        execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAEmode: created residual equations for system size :  ")); __mm_s.push_str(&*intString(BackendDAEUtil::systemSize(syst.clone())?)); __mm_s.push_str(&*literal!(": ")); ArcStr::from(__mm_s) }).clone())?;
     }
     globalDAEData = travArgs.globalDAEData.clone();
     if isSome(globalDAEData.modelVars.clone()) {
@@ -223,7 +223,7 @@ fn createDAEmodeEqSystem(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<Ba
     retSystem = BackendDAEUtil::setEqSystRemovedEqns(retSystem.clone(), syst.removedEqs.clone());
     retSystem = BackendEquation::requationsAddDAE(ExpandableArray::toList(shared.removedEqs.clone())?, retSystem.clone())?;
     if exec.clone() {
-        execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAEmode: created system:  ")); __mm_s.push_str(&*intString(BackendDAEUtil::systemSize(retSystem.clone()))); __mm_s.push_str(&*literal!(": ")); ArcStr::from(__mm_s) }).clone())?;
+        execStat(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAEmode: created system:  ")); __mm_s.push_str(&*intString(BackendDAEUtil::systemSize(retSystem.clone())?)); __mm_s.push_str(&*literal!(": ")); ArcStr::from(__mm_s) }).clone())?;
     }
     syst = retSystem.clone();
     assign_field!(shared.daeModeData = globalDAEData.clone());
@@ -251,8 +251,8 @@ fn traverserStrongComponents(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::
         }
         __acc.reverse()
     });
-    isStateVarInvolved = !(Flags::getConfigBool(Flags::CAUSALIZE_DAE_MODE.clone())?) || List::any(inVars.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isStateVar, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>));
-    isDiscrete = List::any(inVars.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isVarDiscrete, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>));
+    isStateVarInvolved = !(Flags::getConfigBool(Flags::CAUSALIZE_DAE_MODE.clone())?) || List::any(inVars.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isStateVar, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?;
+    isDiscrete = List::any(inVars.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isVarDiscrete, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?;
     traverserArgs = ({
         let mut debug: bool = false;
         'mc: {
@@ -260,7 +260,7 @@ fn traverserStrongComponents(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ metamodelica::List::Cons { head: eq, tail: Deref @ metamodelica::List::Nil }, false, false, _) => {
-                    if !((List::all(vars.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isCSEVar, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>)))) { bail!("guard") }
+                    if !((List::all(vars.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isCSEVar, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?)) { bail!("guard") }
                     let mut newResVars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
                     let mut new_eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
                     let mut traverserArgs: TraverseEqnAryFold = traverserArgs.clone();
@@ -273,11 +273,11 @@ fn traverserStrongComponents(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::
         __acc.reverse()
     });
                     new_eq = BackendEquation::setEquationAttributes(eq.clone(), BackendDAE::EQ_ATTR_DEFAULT_AUX.clone())?;
-                    traverserArgs.newDAEVars = BackendVariable::addNewVars(newResVars.clone(), traverserArgs.newDAEVars.clone());
+                    traverserArgs.newDAEVars = BackendVariable::addNewVars(newResVars.clone(), traverserArgs.newDAEVars.clone())?;
                     traverserArgs.newDAEEquations = BackendEquation::addList(list![new_eq.clone()], traverserArgs.newDAEEquations.clone())?;
-                    traverserArgs.systemVars = BackendVariable::removeCrefs(varCrefLst.clone(), traverserArgs.systemVars.clone());
+                    traverserArgs.systemVars = BackendVariable::removeCrefs(varCrefLst.clone(), traverserArgs.systemVars.clone())?;
                     if debug.clone() {
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[DAEmode] Added solved aux vars. vars:\n")); __mm_s.push_str(&*BackendDump::varListString(vars.clone(), (literal!("")).clone())); __mm_s.push_str(&*literal!("eq:\n")); __mm_s.push_str(&*BackendDump::equationListString(list![eq.clone()], (literal!("")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[DAEmode] Added solved aux vars. vars:\n")); __mm_s.push_str(&*BackendDump::varListString(vars.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("eq:\n")); __mm_s.push_str(&*BackendDump::equationListString(list![eq.clone()], (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     }
                     Ok(traverserArgs.clone())
                 }
@@ -290,10 +290,10 @@ fn traverserStrongComponents(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::
                     let mut new_eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
                     let mut traverserArgs: TraverseEqnAryFold = traverserArgs.clone();
                     new_eq = BackendEquation::setEquationAttributes(eq.clone(), BackendDAE::EQ_ATTR_DEFAULT_DISCRETE.clone())?;
-                    traverserArgs.newDAEVars = BackendVariable::addNewVars(vars.clone(), traverserArgs.newDAEVars.clone());
+                    traverserArgs.newDAEVars = BackendVariable::addNewVars(vars.clone(), traverserArgs.newDAEVars.clone())?;
                     traverserArgs.newDAEEquations = BackendEquation::addList(list![new_eq.clone()], traverserArgs.newDAEEquations.clone())?;
                     if debug.clone() {
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[DAEmode] Create solved discrete equation. vars:\n")); __mm_s.push_str(&*BackendDump::varListString(vars.clone(), (literal!("")).clone())); __mm_s.push_str(&*literal!("eq:\n")); __mm_s.push_str(&*BackendDump::equationListString(list![new_eq.clone()], (literal!("")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[DAEmode] Create solved discrete equation. vars:\n")); __mm_s.push_str(&*BackendDump::varListString(vars.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("eq:\n")); __mm_s.push_str(&*BackendDump::equationListString(list![new_eq.clone()], (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     }
                     Ok(traverserArgs.clone())
                 }
@@ -306,10 +306,10 @@ fn traverserStrongComponents(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::
                     let mut new_eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
                     let mut traverserArgs: TraverseEqnAryFold = traverserArgs.clone();
                     new_eq = BackendEquation::setEquationAttributes(eq.clone(), BackendDAE::EQ_ATTR_DEFAULT_DISCRETE.clone())?;
-                    traverserArgs.newDAEVars = BackendVariable::addNewVars(vars.clone(), traverserArgs.newDAEVars.clone());
+                    traverserArgs.newDAEVars = BackendVariable::addNewVars(vars.clone(), traverserArgs.newDAEVars.clone())?;
                     traverserArgs.newDAEEquations = BackendEquation::addList(list![new_eq.clone()], traverserArgs.newDAEEquations.clone())?;
                     if debug.clone() {
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[DAEmode] Create solved when equation. vars:\n")); __mm_s.push_str(&*BackendDump::varListString(vars.clone(), (literal!("")).clone())); __mm_s.push_str(&*literal!("eq:\n")); __mm_s.push_str(&*BackendDump::equationListString(list![new_eq.clone()], (literal!("")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[DAEmode] Create solved when equation. vars:\n")); __mm_s.push_str(&*BackendDump::varListString(vars.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("eq:\n")); __mm_s.push_str(&*BackendDump::equationListString(list![new_eq.clone()], (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     }
                     Ok(traverserArgs.clone())
                 }
@@ -331,10 +331,10 @@ fn traverserStrongComponents(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::
                     assign_variant_field!(eq => BackendDAE::Equation::EQUATION; exp = ExpressionSolve::solve(var_field!((*eq).exp, BackendDAE::Equation::EQUATION).clone(), var_field!((*eq).scalar, BackendDAE::Equation::EQUATION).clone(), Expression::crefExp(var.varName.clone())?, None)?.0);
                     new_eq = Arc::new(BackendDAE::Equation::SOLVED_EQUATION { componentRef: var.varName.clone(), exp: var_field!((*eq).exp, BackendDAE::Equation::EQUATION).clone(), source: var_field!((*eq).source, BackendDAE::Equation::EQUATION).clone(), attr: var_field!((*eq).attr, BackendDAE::Equation::EQUATION).clone() });
                     new_eq = BackendEquation::setEquationAttributes(new_eq.clone(), BackendDAE::EQ_ATTR_DEFAULT_AUX.clone())?;
-                    traverserArgs.newDAEVars = BackendVariable::addNewVars(vars.clone(), traverserArgs.newDAEVars.clone());
+                    traverserArgs.newDAEVars = BackendVariable::addNewVars(vars.clone(), traverserArgs.newDAEVars.clone())?;
                     traverserArgs.newDAEEquations = BackendEquation::addList(list![new_eq.clone()], traverserArgs.newDAEEquations.clone())?;
                     if debug.clone() {
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[DAEmode] Create solved equation. vars:\n")); __mm_s.push_str(&*BackendDump::varListString(vars.clone(), (literal!("")).clone())); __mm_s.push_str(&*literal!("eq:\n")); __mm_s.push_str(&*BackendDump::equationListString(list![new_eq.clone()], (literal!("")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[DAEmode] Create solved equation. vars:\n")); __mm_s.push_str(&*BackendDump::varListString(vars.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("eq:\n")); __mm_s.push_str(&*BackendDump::equationListString(list![new_eq.clone()], (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     }
                     Ok(traverserArgs.clone())
                 }
@@ -347,10 +347,10 @@ fn traverserStrongComponents(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::
                     let mut new_eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
                     let mut traverserArgs: TraverseEqnAryFold = traverserArgs.clone();
                     new_eq = BackendEquation::setEquationAttributes(eq.clone(), BackendDAE::EQ_ATTR_DEFAULT_AUX.clone())?;
-                    traverserArgs.newDAEVars = BackendVariable::addNewVars(vars.clone(), traverserArgs.newDAEVars.clone());
+                    traverserArgs.newDAEVars = BackendVariable::addNewVars(vars.clone(), traverserArgs.newDAEVars.clone())?;
                     traverserArgs.newDAEEquations = BackendEquation::addList(list![new_eq.clone()], traverserArgs.newDAEEquations.clone())?;
                     if debug.clone() {
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[DAEmode] Create solved complex equation. vars:\n")); __mm_s.push_str(&*BackendDump::varListString(vars.clone(), (literal!("")).clone())); __mm_s.push_str(&*literal!("eq:\n")); __mm_s.push_str(&*BackendDump::equationListString(list![new_eq.clone()], (literal!("")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[DAEmode] Create solved complex equation. vars:\n")); __mm_s.push_str(&*BackendDump::varListString(vars.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("eq:\n")); __mm_s.push_str(&*BackendDump::equationListString(list![new_eq.clone()], (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     }
                     Ok(traverserArgs.clone())
                 }
@@ -363,10 +363,10 @@ fn traverserStrongComponents(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::
                     let mut new_eq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
                     let mut traverserArgs: TraverseEqnAryFold = traverserArgs.clone();
                     new_eq = BackendEquation::setEquationAttributes(eq.clone(), BackendDAE::EQ_ATTR_DEFAULT_AUX.clone())?;
-                    traverserArgs.newDAEVars = BackendVariable::addNewVars(vars.clone(), traverserArgs.newDAEVars.clone());
+                    traverserArgs.newDAEVars = BackendVariable::addNewVars(vars.clone(), traverserArgs.newDAEVars.clone())?;
                     traverserArgs.newDAEEquations = BackendEquation::addList(list![new_eq.clone()], traverserArgs.newDAEEquations.clone())?;
                     if debug.clone() {
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[DAEmode] Create solved array equations. vars:\n")); __mm_s.push_str(&*BackendDump::varListString(vars.clone(), (literal!("")).clone())); __mm_s.push_str(&*literal!("eq:\n")); __mm_s.push_str(&*BackendDump::equationListString(list![new_eq.clone()], (literal!("")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[DAEmode] Create solved array equations. vars:\n")); __mm_s.push_str(&*BackendDump::varListString(vars.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("eq:\n")); __mm_s.push_str(&*BackendDump::equationListString(list![new_eq.clone()], (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     }
                     Ok(traverserArgs.clone())
                 }
@@ -380,10 +380,10 @@ fn traverserStrongComponents(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::
                     let mut traverserArgs: TraverseEqnAryFold = traverserArgs.clone();
                     let true = (CheckModel::isCrefListAlgorithmOutput(varCrefLst.clone(), alg.clone(), source.clone(), crefExpand.clone())?) else { bail!("pattern mismatch") };
                     new_eq = BackendEquation::setEquationAttributes(eq.clone(), BackendDAE::EQ_ATTR_DEFAULT_AUX.clone())?;
-                    traverserArgs.newDAEVars = BackendVariable::addNewVars(vars.clone(), traverserArgs.newDAEVars.clone());
+                    traverserArgs.newDAEVars = BackendVariable::addNewVars(vars.clone(), traverserArgs.newDAEVars.clone())?;
                     traverserArgs.newDAEEquations = BackendEquation::addList(list![new_eq.clone()], traverserArgs.newDAEEquations.clone())?;
                     if debug.clone() {
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[DAEmode] Create solved algorithms. vars:\n")); __mm_s.push_str(&*BackendDump::varListString(vars.clone(), (literal!("")).clone())); __mm_s.push_str(&*literal!("eq:\n")); __mm_s.push_str(&*BackendDump::equationListString(list![new_eq.clone()], (literal!("")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[DAEmode] Create solved algorithms. vars:\n")); __mm_s.push_str(&*BackendDump::varListString(vars.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("eq:\n")); __mm_s.push_str(&*BackendDump::equationListString(list![new_eq.clone()], (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     }
                     Ok(traverserArgs.clone())
                 }
@@ -425,7 +425,7 @@ fn traverserStrongComponents(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::
         }
         __acc.reverse()
     });
-                    traverserArgs.newDAEVars = BackendVariable::addNewVars(newAuxVars.clone(), traverserArgs.newDAEVars.clone());
+                    traverserArgs.newDAEVars = BackendVariable::addNewVars(newAuxVars.clone(), traverserArgs.newDAEVars.clone())?;
                     newCref = ComponentReference::crefPrefixAux(cref.clone());
                     assign_variant_field!(eq => BackendDAE::Equation::ARRAY_EQUATION; left = Expression::crefExp(newCref.clone())?);
                     aux_eq = eq.clone();
@@ -444,12 +444,12 @@ fn traverserStrongComponents(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::
         }
         __acc.reverse()
     });
-                    traverserArgs.newDAEVars = BackendVariable::addNewVars(newResVars.clone(), traverserArgs.newDAEVars.clone());
+                    traverserArgs.newDAEVars = BackendVariable::addNewVars(newResVars.clone(), traverserArgs.newDAEVars.clone())?;
                     traverserArgs.newDAEEquations = BackendEquation::addList(newResEqns.clone(), traverserArgs.newDAEEquations.clone())?;
                     globalDAEData = addVarsGlobalData(globalDAEData.clone(), vars.clone())?;
                     traverserArgs.globalDAEData = globalDAEData.clone();
                     if debug.clone() {
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[DAEmode] Added residual array equation\n")); __mm_s.push_str(&*BackendDump::varListString(newResVars.clone(), (literal!("")).clone())); __mm_s.push_str(&*literal!("states:\n")); __mm_s.push_str(&*BackendDump::varListString(vars.clone(), (literal!("")).clone())); __mm_s.push_str(&*literal!("eqs:\n")); __mm_s.push_str(&*BackendDump::equationListString(newResEqns.clone(), (literal!("")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[DAEmode] Added residual array equation\n")); __mm_s.push_str(&*BackendDump::varListString(newResVars.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("states:\n")); __mm_s.push_str(&*BackendDump::varListString(vars.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("eqs:\n")); __mm_s.push_str(&*BackendDump::equationListString(newResEqns.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     }
                     Ok(traverserArgs.clone())
                 }
@@ -477,12 +477,12 @@ fn traverserStrongComponents(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::
         }
         __acc.reverse()
     });
-                    traverserArgs.newDAEVars = BackendVariable::addNewVars(newResVars.clone(), traverserArgs.newDAEVars.clone());
+                    traverserArgs.newDAEVars = BackendVariable::addNewVars(newResVars.clone(), traverserArgs.newDAEVars.clone())?;
                     traverserArgs.newDAEEquations = BackendEquation::addList(newResEqns.clone(), traverserArgs.newDAEEquations.clone())?;
                     globalDAEData = addVarsGlobalData(globalDAEData.clone(), vars.clone())?;
                     traverserArgs.globalDAEData = globalDAEData.clone();
                     if debug.clone() {
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[DAEmode] Added strong component or state eqns\n")); __mm_s.push_str(&*BackendDump::varListString(newResVars.clone(), (literal!("")).clone())); __mm_s.push_str(&*literal!("states:\n")); __mm_s.push_str(&*BackendDump::varListString(vars.clone(), (literal!("")).clone())); __mm_s.push_str(&*literal!("eqs:\n")); __mm_s.push_str(&*BackendDump::equationListString(newResEqns.clone(), (literal!("")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[DAEmode] Added strong component or state eqns\n")); __mm_s.push_str(&*BackendDump::varListString(newResVars.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("states:\n")); __mm_s.push_str(&*BackendDump::varListString(vars.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("eqs:\n")); __mm_s.push_str(&*BackendDump::equationListString(newResEqns.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     }
                     Ok(traverserArgs.clone())
                 }
@@ -504,7 +504,7 @@ fn traverserStrongComponents(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::
                     let mut eq = (*eq).clone();
                     let mut traverserArgs: TraverseEqnAryFold = traverserArgs.clone();
                     if debug.clone() {
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("case: Complex: ")); __mm_s.push_str(&*BackendDump::equationListString(inEqns.clone(), (literal!("")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("case: Complex: ")); __mm_s.push_str(&*BackendDump::equationListString(inEqns.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     }
                     cref = Expression::expCref(exp.clone())?;
                     newAuxVars = ({
@@ -523,7 +523,7 @@ fn traverserStrongComponents(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::
         }
         __acc.reverse()
     });
-                    traverserArgs.newDAEVars = BackendVariable::addNewVars(newAuxVars.clone(), traverserArgs.newDAEVars.clone());
+                    traverserArgs.newDAEVars = BackendVariable::addNewVars(newAuxVars.clone(), traverserArgs.newDAEVars.clone())?;
                     newCref = ComponentReference::crefPrefixAux(cref.clone());
                     assign_variant_field!(eq => BackendDAE::Equation::COMPLEX_EQUATION; left = Expression::crefToExp(newCref.clone())?);
                     aux_eq = eq.clone();
@@ -542,12 +542,12 @@ fn traverserStrongComponents(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::
         }
         __acc.reverse()
     });
-                    traverserArgs.newDAEVars = BackendVariable::addNewVars(newResVars.clone(), traverserArgs.newDAEVars.clone());
+                    traverserArgs.newDAEVars = BackendVariable::addNewVars(newResVars.clone(), traverserArgs.newDAEVars.clone())?;
                     traverserArgs.newDAEEquations = BackendEquation::addList(newResEqns.clone(), traverserArgs.newDAEEquations.clone())?;
                     globalDAEData = addVarsGlobalData(globalDAEData.clone(), vars.clone())?;
                     traverserArgs.globalDAEData = globalDAEData.clone();
                     if debug.clone() {
-                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[DAEmode] Added complex residual equation with aux variables. Res-vars:\n")); __mm_s.push_str(&*BackendDump::varListString(newResVars.clone(), (literal!("")).clone())); __mm_s.push_str(&*literal!("eqs:\n")); __mm_s.push_str(&*BackendDump::equationListString(newResEqns.clone(), (literal!("")).clone())); __mm_s.push_str(&*literal!("aux vars:\n")); __mm_s.push_str(&*BackendDump::varListString(newAuxVars.clone(), (literal!("")).clone())); __mm_s.push_str(&*literal!("aux eq:\n")); __mm_s.push_str(&*BackendDump::equationListString(list![aux_eq.clone()], (literal!("")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                        println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[DAEmode] Added complex residual equation with aux variables. Res-vars:\n")); __mm_s.push_str(&*BackendDump::varListString(newResVars.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("eqs:\n")); __mm_s.push_str(&*BackendDump::equationListString(newResEqns.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("aux vars:\n")); __mm_s.push_str(&*BackendDump::varListString(newAuxVars.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("aux eq:\n")); __mm_s.push_str(&*BackendDump::equationListString(list![aux_eq.clone()], (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     }
                     Ok(traverserArgs.clone())
                 }
@@ -564,7 +564,7 @@ fn traverserStrongComponents(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::
                     let mut discEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
                     let mut contEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
                     let mut traverserArgs: TraverseEqnAryFold = traverserArgs.clone();
-                    (discVars, contVars) = List::splitOnTrue(inVars.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isVarDiscrete, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>));
+                    (discVars, contVars) = List::splitOnTrue(inVars.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isVarDiscrete, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?;
                     (discEqns, contEqns) = getDiscAndContEqns(inVars.clone(), inEqns.clone(), discVars.clone(), contVars.clone(), traverserArgs.shared.functionTree.clone(), BackendDAEUtil::isInitializationDAE(traverserArgs.shared.clone()))?;
                     for mut e in &*discEqns.clone() {
                         let mut e = e.clone();
@@ -590,7 +590,7 @@ fn traverserStrongComponents(mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
-                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAEMode.traverserStrongComponents failed on equation:\n")); __mm_s.push_str(&*BackendDump::equationListString(inEqns.clone(), (literal!("")).clone())); __mm_s.push_str(&*literal!("\nVariables:\n")); __mm_s.push_str(&*BackendDump::varListString(inVars.clone(), (literal!("")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+                    Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("DAEMode.traverserStrongComponents failed on equation:\n")); __mm_s.push_str(&*BackendDump::equationListString(inEqns.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\nVariables:\n")); __mm_s.push_str(&*BackendDump::varListString(inVars.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
                     Ok(bail!("fail"))
                 }
                 _ => bail!("nomatch"),
@@ -614,7 +614,7 @@ fn getDiscAndContEqns(mut inAllVars: Arc<metamodelica::List<BackendDAE::Var>>, m
     let mut mapEqnScalarArray: metamodelica::Array<i32> = Default::default();
     let debug: bool = false;
     match '__try0: {
-        syst = BackendDAEUtil::createEqSystem(BackendVariable::listVar1(inAllVars.clone()), BackendEquation::listEquation(inAllEqns.clone())?, metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+        syst = BackendDAEUtil::createEqSystem(BackendVariable::listVar1(inAllVars.clone())?, BackendEquation::listEquation(inAllEqns.clone())?, metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
         if debug.clone() {
             unwrap_break_err!(BackendDump::printEqSystem(syst.clone()), '__try0);
         }
@@ -622,7 +622,7 @@ fn getDiscAndContEqns(mut inAllVars: Arc<metamodelica::List<BackendDAE::Var>>, m
         if debug.clone() {
             unwrap_break_err!(BackendDump::dumpAdjacencyMatrix(adjMatrix.clone()), '__try0);
         }
-        let (__pa1, __pa2, true, _, _) = (unwrap_break_err!(Matching::RegularMatching(adjMatrix.clone(), BackendDAEUtil::systemSize(syst.clone()), BackendDAEUtil::systemSize(syst.clone())), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
+        let (__pa1, __pa2, true, _, _) = (unwrap_break_err!(Matching::RegularMatching(adjMatrix.clone(), BackendDAEUtil::systemSize(syst.clone())?, BackendDAEUtil::systemSize(syst.clone())?), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
         assignVarEqn = __pa1.clone();
         assignEqnVar = __pa2.clone();
         if debug.clone() {
@@ -633,7 +633,7 @@ fn getDiscAndContEqns(mut inAllVars: Arc<metamodelica::List<BackendDAE::Var>>, m
             println!("{}", (literal!("discVarsIndex: ")).clone());
             unwrap_break_err!(BackendDump::dumpAdjacencyRow(varsIndex.clone()), '__try0);
         }
-        eqnIndex = List::map1(varsIndex.clone(), std::sync::Arc::new(fnptr!(Array::getIndexFirst, i32, _)), assignVarEqn.clone());
+        eqnIndex = unwrap_break_err!(List::map1(varsIndex.clone(), (std::sync::Arc::new(Array::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), assignVarEqn.clone()), '__try0);
         if debug.clone() {
             println!("{}", (literal!("discEqnIndex: ")).clone());
             unwrap_break_err!(BackendDump::dumpAdjacencyRow(eqnIndex.clone()), '__try0);
@@ -646,12 +646,12 @@ fn getDiscAndContEqns(mut inAllVars: Arc<metamodelica::List<BackendDAE::Var>>, m
         }
         __acc.reverse()
     }));
-        discEqns = BackendEquation::getList(eqnIndex.clone(), syst.orderedEqs.clone());
+        discEqns = unwrap_break_err!(BackendEquation::getList(eqnIndex.clone(), syst.orderedEqs.clone()), '__try0);
         if debug.clone() {
-            BackendDump::equationListString(discEqns.clone(), (literal!("Discrete Equations")).clone());
+            unwrap_break_err!(BackendDump::equationListString(discEqns.clone(), (literal!("Discrete Equations")).clone()), '__try0);
         }
         varsIndex = BackendVariable::getVarIndexFromVars(inContVars.clone(), syst.orderedVars.clone());
-        eqnIndex = List::map1(varsIndex.clone(), std::sync::Arc::new(fnptr!(Array::getIndexFirst, i32, _)), assignVarEqn.clone());
+        eqnIndex = unwrap_break_err!(List::map1(varsIndex.clone(), (std::sync::Arc::new(Array::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), assignVarEqn.clone()), '__try0);
         eqnIndex = List::unique(({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in (eqnIndex.clone()).into_iter().cloned() {
@@ -664,9 +664,9 @@ fn getDiscAndContEqns(mut inAllVars: Arc<metamodelica::List<BackendDAE::Var>>, m
             println!("{}", (literal!("contEqnIndex: ")).clone());
             unwrap_break_err!(BackendDump::dumpAdjacencyRow(eqnIndex.clone()), '__try0);
         }
-        contEqns = BackendEquation::getList(eqnIndex.clone(), syst.orderedEqs.clone());
+        contEqns = unwrap_break_err!(BackendEquation::getList(eqnIndex.clone(), syst.orderedEqs.clone()), '__try0);
         if debug.clone() {
-            BackendDump::equationListString(contEqns.clone(), (literal!("Continuous Equations")).clone());
+            unwrap_break_err!(BackendDump::equationListString(contEqns.clone(), (literal!("Continuous Equations")).clone()), '__try0);
         }
         Ok::<_, anyhow::Error>((adjMatrix.clone(), assignEqnVar.clone(), assignVarEqn.clone(), contEqns.clone(), discEqns.clone(), eqnIndex.clone(), mapEqnScalarArray.clone(), syst.clone(), varsIndex.clone()))
     } {
@@ -691,7 +691,7 @@ fn getDiscAndContEqns(mut inAllVars: Arc<metamodelica::List<BackendDAE::Var>>, m
 fn addVarsGlobalData(mut globalDAEData: BackendDAE::BackendDAEModeData, mut inVars: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<BackendDAE::BackendDAEModeData> {
     let mut globalDAEData: BackendDAE::BackendDAEModeData = globalDAEData;
     let mut vars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-    vars = List::filterOnTrue(inVars.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isNonStateVar, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>));
+    vars = List::filterOnTrue(inVars.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isNonStateVar, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?;
     vars = ({
         let mut __acc: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
         for mut v in (vars.clone()).into_iter().cloned() {
@@ -701,7 +701,7 @@ fn addVarsGlobalData(mut globalDAEData: BackendDAE::BackendDAEModeData, mut inVa
         __acc.reverse()
     });
     globalDAEData.algStateVars = listAppend(vars.clone(), globalDAEData.algStateVars.clone());
-    globalDAEData.stateVars = listAppend(List::filterOnTrue(inVars.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isStateVar, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>)), globalDAEData.stateVars.clone());
+    globalDAEData.stateVars = listAppend(List::filterOnTrue(inVars.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isStateVar, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?, globalDAEData.stateVars.clone());
     Ok(globalDAEData)
 }
 

@@ -124,15 +124,15 @@ fn addOptimizationVarsEqns(mut vars: BackendDAE::Variables, mut eqns: Arc<Expand
     varlst = BackendVariable::varList(globalKnownVars.clone())?;
     addTimeGrid(varlst.clone(), globalKnownVars.clone())?;
     varlst = listAppend(varlst.clone(), BackendVariable::varList(vars.clone())?);
-    (vars, eqnsLst, mayer) = joinObjectFun(makeObject((arcstr::literal!(BackendDAE::optimizationMayerTermName)).clone(), (std::sync::Arc::new(fnptr!(findMayerTerm, Arc<metamodelica::List<BackendDAE::Var>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<BackendDAE::Var>>) -> Result<Option<Arc<DAE::Exp>>> + 'static>), varlst.clone(), mayer.clone())?, vars.clone(), eqnsLst.clone())?;
-    (vars, eqnsLst, lagrange) = joinObjectFun(makeObject((arcstr::literal!(BackendDAE::optimizationLagrangeTermName)).clone(), (std::sync::Arc::new(fnptr!(findLagrangeTerm, Arc<metamodelica::List<BackendDAE::Var>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<BackendDAE::Var>>) -> Result<Option<Arc<DAE::Exp>>> + 'static>), varlst.clone(), lagrange.clone())?, vars.clone(), eqnsLst.clone())?;
+    (vars, eqnsLst, mayer) = joinObjectFun(makeObject((arcstr::literal!(BackendDAE::optimizationMayerTermName)).clone(), (std::sync::Arc::new(findMayerTerm) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<BackendDAE::Var>>) -> Result<Option<Arc<DAE::Exp>>> + 'static>), varlst.clone(), mayer.clone())?, vars.clone(), eqnsLst.clone())?;
+    (vars, eqnsLst, lagrange) = joinObjectFun(makeObject((arcstr::literal!(BackendDAE::optimizationLagrangeTermName)).clone(), (std::sync::Arc::new(findLagrangeTerm) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<BackendDAE::Var>>) -> Result<Option<Arc<DAE::Exp>>> + 'static>), varlst.clone(), lagrange.clone())?, vars.clone(), eqnsLst.clone())?;
     (vars, eqnsLst) = joinConstraints(constraints.clone(), (literal!("$con$")).clone(), crate::BackendDAE::VarKind::OPT_CONSTR, globalKnownVars.clone(), varlst.clone(), vars.clone(), eqnsLst.clone(), (std::sync::Arc::new(BackendVariable::hasConTermAnno) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?;
     (vars, eqnsLst) = joinConstraints(metamodelica::nil(), (literal!("$finalCon$")).clone(), crate::BackendDAE::VarKind::OPT_FCONSTR, globalKnownVars.clone(), varlst.clone(), vars.clone(), eqnsLst.clone(), (std::sync::Arc::new(BackendVariable::hasFinalConTermAnno) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?;
     FlagsUtil::setConfigBool(Flags::GENERATE_SYMBOLIC_LINEARIZATION.clone(), true)?;
     assign_field!(shared.classAttrs = list![Arc::new(DAE::ClassAttributes { objetiveE: mayer.clone(), objectiveIntegrandE: lagrange.clone(), startTimeE: startTimeE.clone(), finalTimeE: finalTimeE.clone() })]);
     if debug.clone() {
         println!("{}", (literal!("\neqs")).clone());
-        BackendDump::printEquationList(eqnsLst.clone());
+        BackendDump::printEquationList(eqnsLst.clone())?;
     }
     eqns = BackendEquation::addList(eqnsLst.clone(), eqns.clone())?;
     Ok((vars, eqns, shared))
@@ -157,7 +157,7 @@ fn getOptimicaArgs(mut inClassAttr: Arc<metamodelica::List<Arc<DAE::ClassAttribu
 
 fn addTimeGrid(mut varlst: Arc<metamodelica::List<BackendDAE::Var>>, mut iv: BackendDAE::Variables) -> Result<BackendDAE::Variables> {
     let mut ov: BackendDAE::Variables = iv.clone();
-    let mut tG: Arc<metamodelica::List<BackendDAE::Var>> = findTimeGrid(varlst.clone());
+    let mut tG: Arc<metamodelica::List<BackendDAE::Var>> = findTimeGrid(varlst.clone())?;
     let mut ind: Arc<metamodelica::List<i32>> = metamodelica::nil();
     if !(tG.clone().is_empty()) {
         ind = BackendVariable::getVarIndexFromVars(tG.clone(), ov.clone());
@@ -266,19 +266,19 @@ fn addOptimizationVarsEqns2(mut inConstraint: Arc<metamodelica::List<Arc<DAE::Co
     Ok((outVars, outEqns))
 }
 
-fn findMayerTerm(mut varlst: Arc<metamodelica::List<BackendDAE::Var>>) -> Option<Arc<DAE::Exp>> {
-    let mut mayer: Option<Arc<DAE::Exp>> = findObjTerm(varlst.clone(), (std::sync::Arc::new(BackendVariable::hasMayerTermAnno) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>)).unwrap();
-    mayer
+fn findMayerTerm(mut varlst: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<Option<Arc<DAE::Exp>>> {
+    let mut mayer: Option<Arc<DAE::Exp>> = findObjTerm(varlst.clone(), (std::sync::Arc::new(BackendVariable::hasMayerTermAnno) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?;
+    Ok(mayer)
 }
 
-fn findLagrangeTerm(mut varlst: Arc<metamodelica::List<BackendDAE::Var>>) -> Option<Arc<DAE::Exp>> {
-    let mut lagrange: Option<Arc<DAE::Exp>> = findObjTerm(varlst.clone(), (std::sync::Arc::new(BackendVariable::hasLagrangeTermAnno) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>)).unwrap();
-    lagrange
+fn findLagrangeTerm(mut varlst: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<Option<Arc<DAE::Exp>>> {
+    let mut lagrange: Option<Arc<DAE::Exp>> = findObjTerm(varlst.clone(), (std::sync::Arc::new(BackendVariable::hasLagrangeTermAnno) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?;
+    Ok(lagrange)
 }
 
-fn findTimeGrid(mut varlst: Arc<metamodelica::List<BackendDAE::Var>>) -> Arc<metamodelica::List<BackendDAE::Var>> {
-    let mut timeGrids: Arc<metamodelica::List<BackendDAE::Var>> = List::select(varlst.clone(), (std::sync::Arc::new(BackendVariable::hasTimeGridAnno) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>));
-    timeGrids
+fn findTimeGrid(mut varlst: Arc<metamodelica::List<BackendDAE::Var>>) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> {
+    let mut timeGrids: Arc<metamodelica::List<BackendDAE::Var>> = List::select(varlst.clone(), (std::sync::Arc::new(BackendVariable::hasTimeGridAnno) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?;
+    Ok(timeGrids)
 }
 
 fn findObjTerm(mut InVarlst: Arc<metamodelica::List<BackendDAE::Var>>, mut findObjTermFun: Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>) -> Result<Option<Arc<DAE::Exp>>> {
@@ -288,7 +288,7 @@ fn findObjTerm(mut InVarlst: Arc<metamodelica::List<BackendDAE::Var>>, mut findO
     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut nom: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-    let mut varlst: Arc<metamodelica::List<BackendDAE::Var>> = List::select(InVarlst.clone(), findObjTermFun.clone());
+    let mut varlst: Arc<metamodelica::List<BackendDAE::Var>> = List::select(InVarlst.clone(), findObjTermFun.clone())?;
     for mut v in &*varlst.clone() {
         let mut v = v.clone();
         nom = BackendVariable::getVarNominalValue(v.clone());
@@ -337,7 +337,7 @@ fn addConstraints(mut InVarlst: Arc<metamodelica::List<BackendDAE::Var>>, mut in
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    varlst = List::select(InVarlst.clone(), findCon.clone());
+    varlst = List::select(InVarlst.clone(), findCon.clone())?;
     constraintLst = addConstraints2(constraintLst.clone(), varlst.clone())?;
     outConstraint = list![Arc::new(DAE::Constraint::CONSTRAINT_EXPS { constraintLst: constraintLst.clone() })];
     Ok(outConstraint)
@@ -391,13 +391,13 @@ fn inputDerivativesForDynOptWork(mut isyst: Arc<BackendDAE::EqSystem>, mut inSha
                     if idercr.clone().is_empty() {
                         bail!("fail");
                     }
-                    varLst = BackendVariable::setVarsKind(varLst.clone(), crate::BackendDAE::VarKind::OPT_INPUT_WITH_DER);
+                    varLst = BackendVariable::setVarsKind(varLst.clone(), crate::BackendDAE::VarKind::OPT_INPUT_WITH_DER)?;
                     for mut v in &*varLst.clone() {
                         let mut v = v.clone();
                         outShared = BackendVariable::addGlobalKnownVarDAE(v.clone(), outShared.clone())?;
                     }
-                    varLst = List::map(idercr.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::makeVar, Arc<DAE::ComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<BackendDAE::Var> + 'static>));
-                    varLst = List::map1(varLst.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::setVarDirection, BackendDAE::Var, DAE::VarDirection)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, DAE::VarDirection) -> Result<BackendDAE::Var> + 'static>), openmodelica_frontend_types::DAE::VarDirection::INPUT);
+                    varLst = List::map(idercr.clone(), (std::sync::Arc::new(BackendVariable::makeVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<BackendDAE::Var> + 'static>))?;
+                    varLst = List::map1(varLst.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::setVarDirection, BackendDAE::Var, DAE::VarDirection)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, DAE::VarDirection) -> Result<BackendDAE::Var> + 'static>), openmodelica_frontend_types::DAE::VarDirection::INPUT)?;
                     for mut v in &*varLst.clone() {
                         let mut v = v.clone();
                         v = BackendVariable::setVarKind(v.clone(), crate::BackendDAE::VarKind::OPT_INPUT_DER)?;
@@ -570,7 +570,7 @@ fn removeLoopsWork(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<Backen
                     let mut eqns = (*eqns).clone();
                     let mut vars = (*vars).clone();
                     let mut shared = (*shared).clone();
-                    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(BackendEquation::get(eqns.clone(), eindex_.clone())) {
+                    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(BackendEquation::get(eqns.clone(), eindex_.clone())?) {
                         Deref @ BackendDAE::Equation::EQUATION { scalar: __pa0, exp: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -622,19 +622,19 @@ fn res2Con(mut ieqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equat
     let mut oeqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = ieqns.clone();
     let mut ovars: BackendDAE::Variables = ivars.clone();
     let mut oshared: Arc<BackendDAE::Shared> = ishared.clone();
-    let mut eqn_lst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = BackendEquation::getList(eindex.clone(), ieqns.clone());
+    let mut eqn_lst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = BackendEquation::getList(eindex.clone(), ieqns.clone())?;
     let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
-    let mut var_lst: Arc<metamodelica::List<BackendDAE::Var>> = List::map1r(vindx.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), ivars.clone());
+    let mut var_lst: Arc<metamodelica::List<BackendDAE::Var>> = List::map1r(vindx.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), ivars.clone())?;
     let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
     let mut var_: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
-    let mut cr_lst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = List::map(var_lst.clone(), (std::sync::Arc::new(BackendVariable::varCref) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<Arc<DAE::ComponentRef>> + 'static>));
+    let mut cr_lst: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = List::map(var_lst.clone(), (std::sync::Arc::new(BackendVariable::varCref) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<Arc<DAE::ComponentRef>> + 'static>))?;
     let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut cr_var: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut res: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut ind_e: i32 = 0;
     let mut ind_v: i32 = 0;
-    let mut ind_lst_v: Arc<metamodelica::List<i32>> = List::map(vindx.clone(), Arc::new(fnptr!(intAbs, i32)));
+    let mut ind_lst_v: Arc<metamodelica::List<i32>> = List::map(vindx.clone(), Arc::new(fnptr!(intAbs, i32)))?;
     let mut ind_lst_e: Arc<metamodelica::List<i32>> = eindex.clone();
     let mut globalKnownVars: BackendDAE::Variables = <BackendDAE::Variables as ::std::default::Default>::default();
     let __pa0 = ::match_deref::match_deref! { match &(oshared.clone()) {
@@ -670,13 +670,13 @@ fn res2Con(mut ieqns: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equat
         ind_lst_v = __pa8.clone();
         cr = ComponentReferenceBasics::makeCrefIdent(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$EqCon$")); __mm_s.push_str(&*ComponentReference::crefModelicaStr(cr_var.clone())); ArcStr::from(__mm_s) }).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil());
         e = Expression::crefExp(cr.clone())?;
-        var = BackendVariable::makeVar(cr.clone());
+        var = BackendVariable::makeVar(cr.clone())?;
         var = BackendVariable::setVarMinMax(var.clone(), Some(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) })), Some(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) })))?;
         var = BackendVariable::setVarKind(var.clone(), crate::BackendDAE::VarKind::OPT_CONSTR)?;
         var = BackendVariable::setVarDirection(var.clone(), openmodelica_frontend_types::DAE::VarDirection::OUTPUT);
         ovars = BackendVariable::addNewVar(var.clone(), ovars.clone())?;
         res = BackendDAEOptimize::makeEquationToResidualExp(eqn.clone())?;
-        res = Expression::createResidualExp(res.clone(), Expression::makeConstZeroE(res.clone()))?;
+        res = Expression::createResidualExp(res.clone(), Expression::makeConstZeroE(res.clone())?)?;
         oeqns = BackendEquation::setAtIndex(oeqns.clone(), ind_e.clone(), Arc::new(BackendDAE::Equation::EQUATION { exp: e.clone(), scalar: res.clone(), source: DAE::emptyElementSource().clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_UNKNOWN.clone() }))?;
         (cr, var) = makeVar(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$")); __mm_s.push_str(&*ComponentReference::crefModelicaStr(cr_var.clone())); ArcStr::from(__mm_s) }).clone());
         var = BackendVariable::setVarDirection(var.clone(), openmodelica_frontend_types::DAE::VarDirection::INPUT);
@@ -776,7 +776,7 @@ pub fn simplifyConstraints(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
                     b3 = BackendVariable::isRealOptimizeConstraintsVars(var_con.clone());
                     if b3.clone() {
                         if '__try11: {
-                            let (__pa14, __pa12, __pa13) = ::match_deref::match_deref! { match &(BackendEquation::get(eqns.clone(), eindex.clone())) {
+                            let (__pa14, __pa12, __pa13) = ::match_deref::match_deref! { match &(unwrap_break_err!(BackendEquation::get(eqns.clone(), eindex.clone()), '__try11)) {
                                 __pa14 @ Deref @ BackendDAE::Equation::EQUATION { scalar: __pa12, exp: __pa13, .. } => (__pa14.clone(), __pa12.clone(), __pa13.clone()),
                                 _ => break '__try11 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
                             } };
@@ -825,7 +825,7 @@ pub fn simplifyConstraints(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc
                             if '__try18: {
                                 der_e = unwrap_break_err!(Differentiate::differentiateExpSolve(e2.clone(), cr.clone(), Some(funcs.clone())), '__try18);
                                 (der_e, _) = unwrap_break_err!(ExpressionSimplify::simplify(der_e.clone()), '__try18);
-                                if Expression::isZero(e.clone()) {
+                                if unwrap_break_err!(Expression::isZero(e.clone()), '__try18) {
                                     continue '__loop8;
                                 }
                                 (z, _) = unwrap_break_err!(Expression::makeZeroExpression(Expression::arrayDimension(tp.clone())), '__try18);
@@ -961,8 +961,8 @@ pub fn reduceDynamicOptimization(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Resu
         } };
         v = __pa2.clone();
         varlst = BackendVariable::varList(v.clone())?;
-        conVarsList = List::select(varlst.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isRealOptimizeConstraintsVars, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>));
-        fconVarsList = List::select(varlst.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isRealOptimizeFinalConstraintsVars, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>));
+        conVarsList = List::select(varlst.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isRealOptimizeConstraintsVars, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?;
+        fconVarsList = List::select(varlst.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isRealOptimizeFinalConstraintsVars, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?;
         objMayer = checkObjectIsSet(v.clone(), (arcstr::literal!(BackendDAE::optimizationMayerTermName)).clone());
         objLagrange = checkObjectIsSet(v.clone(), (arcstr::literal!(BackendDAE::optimizationLagrangeTermName)).clone());
         opt_varlst = listAppend(conVarsList.clone(), listAppend(fconVarsList.clone(), listAppend(objMayer.clone(), objLagrange.clone())));

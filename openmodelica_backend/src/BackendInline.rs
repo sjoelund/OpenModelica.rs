@@ -107,7 +107,7 @@ fn inlineCalls(mut inITLst: Arc<metamodelica::List<DAE::InlineType>>, mut inBack
         shared = inBackendDAE.shared.clone();
         eqs = inBackendDAE.eqs.clone();
         tpl = (Some(shared.functionTree.clone()), inITLst.clone());
-        eqs = List::map1(eqs.clone(), (std::sync::Arc::new(inlineEquationSystem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>)) -> Result<Arc<BackendDAE::EqSystem>> + 'static>), tpl.clone());
+        eqs = unwrap_break_err!(List::map1(eqs.clone(), (std::sync::Arc::new(inlineEquationSystem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>)) -> Result<Arc<BackendDAE::EqSystem>> + 'static>), tpl.clone()), '__try0);
         assign_field!(
             shared.globalKnownVars = unwrap_break_err!(inlineVariables(shared.globalKnownVars.clone(), tpl.clone()), '__try0).0,
             shared.externalObjects = unwrap_break_err!(inlineVariables(shared.externalObjects.clone(), tpl.clone()), '__try0).0,
@@ -619,9 +619,9 @@ fn inlineCallsBDAE(mut inITLst: Arc<metamodelica::List<DAE::InlineType>>, mut in
         eqs = inBackendDAE.eqs.clone();
         tpl = (Some(shared.functionTree.clone()), inITLst.clone());
         if unwrap_break_err!(Flags::getConfigEnum(Flags::INLINE_METHOD.clone()), '__try0) == 1 {
-            eqs = List::map1(eqs.clone(), (std::sync::Arc::new(inlineEquationSystem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>)) -> Result<Arc<BackendDAE::EqSystem>> + 'static>), tpl.clone());
+            eqs = unwrap_break_err!(List::map1(eqs.clone(), (std::sync::Arc::new(inlineEquationSystem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>)) -> Result<Arc<BackendDAE::EqSystem>> + 'static>), tpl.clone()), '__try0);
         } else if unwrap_break_err!(Flags::getConfigEnum(Flags::INLINE_METHOD.clone()), '__try0) == 2 {
-            eqs = List::map2(eqs.clone(), (std::sync::Arc::new(inlineEquationSystemAppend) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>), Arc<BackendDAE::Shared>) -> Result<Arc<BackendDAE::EqSystem>> + 'static>), tpl.clone(), shared.clone());
+            eqs = unwrap_break_err!(List::map2(eqs.clone(), (std::sync::Arc::new(inlineEquationSystemAppend) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, (Option<Arc<AvlTreePathFunction::Tree>>, Arc<metamodelica::List<DAE::InlineType>>), Arc<BackendDAE::Shared>) -> Result<Arc<BackendDAE::EqSystem>> + 'static>), tpl.clone(), shared.clone()), '__try0);
         }
         if unwrap_break_err!(Flags::isSet(Flags::DUMPBACKENDINLINE.clone()), '__try0) {
             unwrap_break_err!(BackendDump::dumpEqSystems(eqs.clone(), (literal!("Result DAE after Inline.")).clone()), '__try0);
@@ -682,7 +682,7 @@ fn inlineEquationArrayAppend(mut inEquationArray: Arc<ExpandableArray::Expandabl
         }
         Err(_) => {
             oInlined = false;
-            outEqs = BackendDAEUtil::createEqSystem(BackendVariable::listVar(metamodelica::nil()), BackendEquation::listEquation(metamodelica::nil())?, metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+            outEqs = BackendDAEUtil::createEqSystem(BackendVariable::listVar(metamodelica::nil())?, BackendEquation::listEquation(metamodelica::nil())?, metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
             if Flags::isSet(Flags::FAILTRACE.clone())? {
                 Debug::trace((literal!("BackendInline.inlineEquationArrayAppend failed\n")).clone())?;
             }
@@ -698,7 +698,7 @@ fn inlineEquationOptArrayAppend(mut inEqnArray: Arc<ExpandableArray::ExpandableA
     let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
     let mut inlined: bool = false;
     let mut tmpEqs: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
-    outEqs = BackendDAEUtil::createEqSystem(BackendVariable::listVar(metamodelica::nil()), BackendEquation::listEquation(metamodelica::nil())?, metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+    outEqs = BackendDAEUtil::createEqSystem(BackendVariable::listVar(metamodelica::nil())?, BackendEquation::listEquation(metamodelica::nil())?, metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
     for mut i in 1..=ExpandableArray::getLastUsedIndex(inEqnArray.clone()) {
         if ExpandableArray::occupied(i.clone(), inEqnArray.clone()) {
             (eqn, tmpEqs, inlined, shared) = inlineEqAppend_debug(ExpandableArray::get(i.clone(), inEqnArray.clone())?, fns.clone(), shared.clone())?;
@@ -717,7 +717,7 @@ pub fn inlineEqAppend_debug(mut inEquationOption: Arc<BackendDAE::Equation>, mut
     let mut outEqs: Arc<BackendDAE::EqSystem> = Arc::new(<BackendDAE::EqSystem as ::std::default::Default>::default());
     let mut inlined: bool = false;
     let mut shared: Arc<BackendDAE::Shared> = iShared.clone();
-    outEqs = BackendDAEUtil::createEqSystem(BackendVariable::listVar(metamodelica::nil()), BackendEquation::listEquation(metamodelica::nil())?, metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+    outEqs = BackendDAEUtil::createEqSystem(BackendVariable::listVar(metamodelica::nil())?, BackendEquation::listEquation(metamodelica::nil())?, metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
     (outEquationOption, outEqs, inlined, shared) = inlineEqAppend(inEquationOption.clone(), inElementList.clone(), outEqs.clone(), shared.clone())?;
     if Flags::isSet(Flags::DUMPBACKENDINLINE_VERBOSE.clone())? && inlined.clone() {
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Equation before inline: ")); __mm_s.push_str(&*BackendDump::equationString(inEquationOption.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
@@ -1098,7 +1098,7 @@ fn createEqnSysfromFunction(mut fns: Arc<metamodelica::List<Arc<DAE::Element>>>,
     if Flags::isSet(Flags::DUMPBACKENDINLINE_VERBOSE.clone())? {
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\ncreate EqnSys from function: ")); __mm_s.push_str(&*funcname.clone()); ArcStr::from(__mm_s) }).clone());
     }
-    outEqs = BackendDAEUtil::createEqSystem(BackendVariable::listVar(metamodelica::nil()), BackendEquation::listEquation(metamodelica::nil())?, metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
+    outEqs = BackendDAEUtil::createEqSystem(BackendVariable::listVar(metamodelica::nil())?, BackendEquation::listEquation(metamodelica::nil())?, metamodelica::nil(), crate::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
     repl = BackendVarTransform::emptyReplacements();
     for mut r#fn in &*fns.clone() {
         let mut r#fn = r#fn.clone();
@@ -1111,7 +1111,7 @@ fn createEqnSysfromFunction(mut fns: Arc<metamodelica::List<Arc<DAE::Element>>>,
             let mut crVar: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             let mut varLst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
             (crVar, varLst, repl) = createReplacementVariables(cr.clone(), (funcname.clone()).clone(), repl.clone())?;
-            outEqs = BackendVariable::addVarsDAE(varLst.clone(), outEqs.clone());
+            outEqs = BackendVariable::addVarsDAE(varLst.clone(), outEqs.clone())?;
             oOutput = metamodelica::cons(crVar.clone(), oOutput.clone());
             ()
         },
@@ -1126,7 +1126,7 @@ fn createEqnSysfromFunction(mut fns: Arc<metamodelica::List<Arc<DAE::Element>>>,
         }
         __acc.reverse()
     });
-            outEqs = BackendVariable::addVarsDAE(varLst.clone(), outEqs.clone());
+            outEqs = BackendVariable::addVarsDAE(varLst.clone(), outEqs.clone())?;
             ()
         },
         Deref @ DAE::Element::VAR { binding: Some(eBind), protection: DAE::VarVisibility::PROTECTED { .. }, componentRef: cr, .. } if (!(Expression::isRecordType(ComponentReference::crefTypeFull(cr.clone())?))) => {
@@ -1144,13 +1144,13 @@ fn createEqnSysfromFunction(mut fns: Arc<metamodelica::List<Arc<DAE::Element>>>,
         }
         __acc.reverse()
     });
-            outEqs = BackendVariable::addVarsDAE(varLst.clone(), outEqs.clone());
+            outEqs = BackendVariable::addVarsDAE(varLst.clone(), outEqs.clone())?;
             eq = BackendEquation::generateEquation(eVar.clone(), eBind.clone(), DAE::emptyElementSource().clone(), BackendDAE::EQ_ATTR_DEFAULT_UNKNOWN.clone())?;
             outEqs = BackendEquation::equationAddDAE(eq.clone(), outEqs.clone())?;
             ()
         },
         Deref @ DAE::Element::ALGORITHM { algorithm_: Deref @ DAE::Algorithm { statementLst: st }, .. } => {
-            eqlst = List::map(st.clone(), (std::sync::Arc::new(BackendEquation::statementEq) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>) -> Result<Arc<BackendDAE::Equation>> + 'static>));
+            eqlst = List::map(st.clone(), (std::sync::Arc::new(BackendEquation::statementEq) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Statement>) -> Result<Arc<BackendDAE::Equation>> + 'static>))?;
             outEqs = BackendEquation::equationsAddDAE(eqlst.clone(), outEqs.clone())?;
             ()
         },
@@ -1158,10 +1158,10 @@ fn createEqnSysfromFunction(mut fns: Arc<metamodelica::List<Arc<DAE::Element>>>,
     } });
     }
     oOutput = oOutput.clone().reverse();
-    if BackendDAEUtil::systemSize(outEqs.clone()) != BackendVariable::daenumVariables(outEqs.clone()) {
+    if BackendDAEUtil::systemSize(outEqs.clone())? != BackendVariable::daenumVariables(outEqs.clone()) {
         if Flags::isSet(Flags::FAILTRACE.clone())? {
             Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("newBackendInline.createEqnSysfromFunction failed for function ")); __mm_s.push_str(&*funcname.clone()); __mm_s.push_str(&*literal!("with different sizes\n")); ArcStr::from(__mm_s) }).clone())?;
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(BackendDAEUtil::systemSize(outEqs.clone()))); __mm_s.push_str(&*literal!(" <> ")); __mm_s.push_str(&*intString(BackendVariable::daenumVariables(outEqs.clone()))); ArcStr::from(__mm_s) }).clone());
+            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(BackendDAEUtil::systemSize(outEqs.clone())?)); __mm_s.push_str(&*literal!(" <> ")); __mm_s.push_str(&*intString(BackendVariable::daenumVariables(outEqs.clone()))); ArcStr::from(__mm_s) }).clone());
         }
         bail!("fail");
     }
@@ -1171,7 +1171,7 @@ fn createEqnSysfromFunction(mut fns: Arc<metamodelica::List<Arc<DAE::Element>>>,
         println!("{}", (literal!("\nDump replacements: ")).clone());
         BackendVarTransform::dumpReplacements(repl.clone())?;
     }
-    assign_field!(outEqs.orderedEqs = BackendEquation::listEquation((InlineArrayEquations::getScalarArrayEqns(BackendEquation::equationList(outEqs.orderedEqs.clone()))?).0)?);
+    assign_field!(outEqs.orderedEqs = BackendEquation::listEquation((InlineArrayEquations::getScalarArrayEqns(BackendEquation::equationList(outEqs.orderedEqs.clone())?)?).0)?);
     outEqs = BackendVarTransform::performReplacementsEqSystem(outEqs.clone(), repl.clone())?;
     if Flags::isSet(Flags::DUMPBACKENDINLINE_VERBOSE.clone())? {
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n replaced protected and output for: ")); __mm_s.push_str(&*funcname.clone()); ArcStr::from(__mm_s) }).clone());

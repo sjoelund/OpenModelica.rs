@@ -82,7 +82,7 @@ pub fn fixUniontype(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inSt
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }));
+    }))?;
             paths = ({
         let mut __acc: Arc<metamodelica::List<Arc<Absyn::Path>>> = metamodelica::nil();
         for mut n in (names.clone()).into_iter().cloned() {

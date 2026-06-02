@@ -398,16 +398,16 @@ pub fn unparseEquationItemStr(mut inEquation: Arc<Absyn::EquationItem>) -> Resul
     Ok(outString)
 }
 
-pub fn unparseEquationItemStrLst(mut inEquationItems: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut inSeparator: ArcStr) -> ArcStr {
+pub fn unparseEquationItemStrLst(mut inEquationItems: Arc<metamodelica::List<Arc<Absyn::EquationItem>>>, mut inSeparator: ArcStr) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
-    outString = stringDelimitList(List::map(inEquationItems.clone(), (std::sync::Arc::new(unparseEquationItemStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::EquationItem>) -> Result<ArcStr> + 'static>)), (inSeparator.clone()).clone());
-    outString
+    outString = stringDelimitList(List::map(inEquationItems.clone(), (std::sync::Arc::new(unparseEquationItemStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::EquationItem>) -> Result<ArcStr> + 'static>))?, (inSeparator.clone()).clone());
+    Ok(outString)
 }
 
-pub fn unparseAlgorithmStrLst(mut inAlgorithmItems: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>, mut inSeparator: ArcStr) -> ArcStr {
+pub fn unparseAlgorithmStrLst(mut inAlgorithmItems: Arc<metamodelica::List<Arc<Absyn::AlgorithmItem>>>, mut inSeparator: ArcStr) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
-    outString = stringDelimitList(List::map(inAlgorithmItems.clone(), (std::sync::Arc::new(unparseAlgorithmStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::AlgorithmItem>) -> Result<ArcStr> + 'static>)), (inSeparator.clone()).clone());
-    outString
+    outString = stringDelimitList(List::map(inAlgorithmItems.clone(), (std::sync::Arc::new(unparseAlgorithmStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::AlgorithmItem>) -> Result<ArcStr> + 'static>))?, (inSeparator.clone()).clone());
+    Ok(outString)
 }
 
 pub fn unparseAlgorithmStr(mut inAlgorithmItem: Arc<Absyn::AlgorithmItem>) -> Result<ArcStr> {
@@ -822,10 +822,10 @@ fn printOperandStr(mut inOperand: Arc<Absyn::Exp>, mut inOperation: Arc<Absyn::E
     Ok(outString)
 }
 
-pub fn printExpLstStr(mut expl: Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> ArcStr {
+pub fn printExpLstStr(mut expl: Arc<metamodelica::List<Arc<Absyn::Exp>>>) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
-    outString = stringDelimitList(List::map(expl.clone(), (std::sync::Arc::new(printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<ArcStr> + 'static>)), (literal!(", ")).clone());
-    outString
+    outString = stringDelimitList(List::map(expl.clone(), (std::sync::Arc::new(printExpStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone());
+    Ok(outString)
 }
 
 pub fn printExpStr(mut inExp: Arc<Absyn::Exp>) -> Result<ArcStr> {

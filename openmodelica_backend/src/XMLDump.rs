@@ -917,19 +917,19 @@ pub fn dumpBackendDAE(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut addOrig
                     reqns = BackendDAEUtil::collapseRemovedEqs(inBackendDAE.clone())?;
                     Print::printBuf((arcstr::literal!(HEADER)).clone())?;
                     dumpStrOpenTag((arcstr::literal!(DAE_OPEN)).clone())?;
-                    dumpStrOpenTagAttr((arcstr::literal!(VARIABLES)).clone(), (arcstr::literal!(DIMENSION)).clone(), (intString(List::fold(List::map(systs.clone(), (std::sync::Arc::new(fnptr!(BackendDAEUtil::systemSize, Arc<BackendDAE::EqSystem>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>) -> Result<i32> + 'static>)), (std::sync::Arc::new(fnptr!(intAdd, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), 0) + (knvars.clone().len() as i32) + (extvars.clone().len() as i32) + (aliasvars.clone().len() as i32))).clone())?;
-                    vars = List::fold(systs.clone(), (std::sync::Arc::new(getOrderedVars) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<metamodelica::List<BackendDAE::Var>>) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> + 'static>), metamodelica::nil());
+                    dumpStrOpenTagAttr((arcstr::literal!(VARIABLES)).clone(), (arcstr::literal!(DIMENSION)).clone(), (intString(List::fold(List::map(systs.clone(), (std::sync::Arc::new(BackendDAEUtil::systemSize) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>) -> Result<i32> + 'static>))?, (std::sync::Arc::new(fnptr!(intAdd, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), 0)? + (knvars.clone().len() as i32) + (extvars.clone().len() as i32) + (aliasvars.clone().len() as i32))).clone())?;
+                    vars = List::fold(systs.clone(), (std::sync::Arc::new(getOrderedVars) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<metamodelica::List<BackendDAE::Var>>) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> + 'static>), metamodelica::nil())?;
                     dumpVars(vars.clone(), arrayCreate(1, metamodelica::nil()), (stringAppend((arcstr::literal!(ORDERED)).clone(), (arcstr::literal!(VARIABLES_)).clone())).clone(), addMML.clone())?;
                     dumpVars(knvars.clone(), crefIdxLstArr_knownVars.clone(), (stringAppend((arcstr::literal!(KNOWN)).clone(), (arcstr::literal!(VARIABLES_)).clone())).clone(), addMML.clone())?;
                     dumpVars(extvars.clone(), crefIdxLstArr_externalObject.clone(), (stringAppend((arcstr::literal!(EXTERNAL)).clone(), (arcstr::literal!(VARIABLES_)).clone())).clone(), addMML.clone())?;
                     dumpVars(aliasvars.clone(), crefIdxLstArr_aliasVars.clone(), (stringAppend((arcstr::literal!(ALIAS)).clone(), (arcstr::literal!(VARIABLES_)).clone())).clone(), addMML.clone())?;
                     dumpExtObjCls(extObjCls.clone(), (stringAppend((arcstr::literal!(EXTERNAL)).clone(), (arcstr::literal!(CLASSES_)).clone())).clone())?;
                     dumpStrCloseTag((arcstr::literal!(VARIABLES)).clone())?;
-                    eqnsl = List::fold(systs.clone(), (std::sync::Arc::new(fnptr!(getEqsList, Arc<BackendDAE::EqSystem>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>> + 'static>), metamodelica::nil());
+                    eqnsl = List::fold(systs.clone(), (std::sync::Arc::new(getEqsList) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>> + 'static>), metamodelica::nil())?;
                     dumpEqns(eqnsl.clone(), (arcstr::literal!(EQUATIONS)).clone(), addMML.clone(), dumpRes.clone(), false)?;
-                    reqnsl = BackendEquation::equationList(reqns.clone());
+                    reqnsl = BackendEquation::equationList(reqns.clone())?;
                     dumpEqns(reqnsl.clone(), (stringAppend((arcstr::literal!(SIMPLE)).clone(), (arcstr::literal!(EQUATIONS_)).clone())).clone(), addMML.clone(), dumpRes.clone(), false)?;
-                    ieqnsl = BackendEquation::equationList(ieqns.clone());
+                    ieqnsl = BackendEquation::equationList(ieqns.clone())?;
                     dumpEqns(ieqnsl.clone(), (stringAppend((arcstr::literal!(INITIAL)).clone(), (arcstr::literal!(EQUATIONS_)).clone())).clone(), addMML.clone(), dumpRes.clone(), false)?;
                     dumpEventInfo(eventInfo.clone(), addMML.clone())?;
                     dumpConstraints(constrs.clone())?;
@@ -960,21 +960,21 @@ pub fn dumpBackendDAE(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut addOrig
                     reqns = BackendDAEUtil::collapseRemovedEqs(inBackendDAE.clone())?;
                     Print::printBuf((arcstr::literal!(HEADER)).clone())?;
                     dumpStrOpenTag((arcstr::literal!(DAE_OPEN)).clone())?;
-                    dumpStrOpenTagAttr((arcstr::literal!(VARIABLES)).clone(), (arcstr::literal!(DIMENSION)).clone(), (intString(List::fold(List::map(systs.clone(), (std::sync::Arc::new(fnptr!(BackendDAEUtil::systemSize, Arc<BackendDAE::EqSystem>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>) -> Result<i32> + 'static>)), (std::sync::Arc::new(fnptr!(intAdd, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), 0) + (knvars.clone().len() as i32) + (extvars.clone().len() as i32) + (aliasvars.clone().len() as i32))).clone())?;
-                    vars = List::fold(systs.clone(), (std::sync::Arc::new(getOrderedVars) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<metamodelica::List<BackendDAE::Var>>) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> + 'static>), metamodelica::nil());
+                    dumpStrOpenTagAttr((arcstr::literal!(VARIABLES)).clone(), (arcstr::literal!(DIMENSION)).clone(), (intString(List::fold(List::map(systs.clone(), (std::sync::Arc::new(BackendDAEUtil::systemSize) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>) -> Result<i32> + 'static>))?, (std::sync::Arc::new(fnptr!(intAdd, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), 0)? + (knvars.clone().len() as i32) + (extvars.clone().len() as i32) + (aliasvars.clone().len() as i32))).clone())?;
+                    vars = List::fold(systs.clone(), (std::sync::Arc::new(getOrderedVars) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<metamodelica::List<BackendDAE::Var>>) -> Result<Arc<metamodelica::List<BackendDAE::Var>>> + 'static>), metamodelica::nil())?;
                     dumpVars(vars.clone(), arrayCreate(1, metamodelica::nil()), (stringAppend((arcstr::literal!(ORDERED)).clone(), (arcstr::literal!(VARIABLES_)).clone())).clone(), addMML.clone())?;
                     dumpVars(knvars.clone(), crefIdxLstArr_knownVars.clone(), (stringAppend((arcstr::literal!(KNOWN)).clone(), (arcstr::literal!(VARIABLES_)).clone())).clone(), addMML.clone())?;
                     dumpVars(extvars.clone(), crefIdxLstArr_externalObject.clone(), (stringAppend((arcstr::literal!(EXTERNAL)).clone(), (arcstr::literal!(VARIABLES_)).clone())).clone(), addMML.clone())?;
                     dumpVars(aliasvars.clone(), crefIdxLstArr_aliasVars.clone(), (stringAppend((arcstr::literal!(ALIAS)).clone(), (arcstr::literal!(VARIABLES_)).clone())).clone(), addMML.clone())?;
                     dumpExtObjCls(extObjCls.clone(), (stringAppend((arcstr::literal!(EXTERNAL)).clone(), (arcstr::literal!(CLASSES_)).clone())).clone())?;
                     dumpStrCloseTag((arcstr::literal!(VARIABLES)).clone())?;
-                    eqnsVarsinOrderLst = List::fold(systs.clone(), (std::sync::Arc::new(getOrderedEqsandVars) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<metamodelica::List<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)>>) -> Result<Arc<metamodelica::List<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)>>> + 'static>), metamodelica::nil());
+                    eqnsVarsinOrderLst = List::fold(systs.clone(), (std::sync::Arc::new(getOrderedEqsandVars) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, Arc<metamodelica::List<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)>>) -> Result<Arc<metamodelica::List<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)>>> + 'static>), metamodelica::nil())?;
                     dumpStrOpenTagAttr((arcstr::literal!(EQUATIONS)).clone(), (arcstr::literal!(DIMENSION)).clone(), (intString((eqnsVarsinOrderLst.clone().len() as i32))).clone())?;
                     dumpSolvedEqns(eqnsVarsinOrderLst.clone(), 1, (arcstr::literal!(EQUATIONS)).clone(), addMML.clone(), dumpRes.clone(), true)?;
                     dumpStrCloseTag((arcstr::literal!(EQUATIONS)).clone())?;
-                    reqnsl = BackendEquation::equationList(reqns.clone());
+                    reqnsl = BackendEquation::equationList(reqns.clone())?;
                     dumpEqns(reqnsl.clone(), (stringAppend((arcstr::literal!(SIMPLE)).clone(), (arcstr::literal!(EQUATIONS_)).clone())).clone(), addMML.clone(), dumpRes.clone(), false)?;
-                    ieqnsl = BackendEquation::equationList(ieqns.clone());
+                    ieqnsl = BackendEquation::equationList(ieqns.clone())?;
                     dumpEqns(ieqnsl.clone(), (stringAppend((arcstr::literal!(INITIAL)).clone(), (arcstr::literal!(EQUATIONS_)).clone())).clone(), addMML.clone(), dumpRes.clone(), false)?;
                     dumpEventInfo(eventInfo.clone(), addMML.clone())?;
                     dumpConstraints(constrs.clone())?;
@@ -1020,12 +1020,12 @@ fn getOrderedVars(mut syst: Arc<BackendDAE::EqSystem>, mut inVars: Arc<metamodel
     Ok(outVars)
 }
 
-fn getEqsList(mut syst: Arc<BackendDAE::EqSystem>, mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Arc<metamodelica::List<Arc<BackendDAE::Equation>>> {
+fn getEqsList(mut syst: Arc<BackendDAE::EqSystem>, mut inEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>>) -> Result<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>> {
     let mut outEqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut eqnsl: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
-    eqnsl = BackendEquation::equationList(BackendEquation::getEqnsFromEqSystem(syst.clone()));
+    eqnsl = BackendEquation::equationList(BackendEquation::getEqnsFromEqSystem(syst.clone()))?;
     outEqns = listAppend(inEqns.clone(), eqnsl.clone());
-    outEqns
+    Ok(outEqns)
 }
 
 fn getOrderedEqsandVars(mut syst: Arc<BackendDAE::EqSystem>, mut inEqnsVars: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)>>) -> Result<Arc<metamodelica::List<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)>>> {
@@ -1057,7 +1057,7 @@ fn getOrderedEqs2(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComp
             let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
             let mut result: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)>> = metamodelica::nil();
             var = BackendVariable::getVarAt(vars.clone(), v.clone())?;
-            eqn = BackendEquation::get(eqns.clone(), e.clone());
+            eqn = BackendEquation::get(eqns.clone(), e.clone())?;
             result = listAppend(inAccum.clone(), list![(list![eqn.clone()], list![var.clone()])]);
             result = getOrderedEqs2(rest.clone(), eqns.clone(), vars.clone(), result.clone())?;
             result.clone()
@@ -1066,8 +1066,8 @@ fn getOrderedEqs2(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComp
             let mut varlst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
             let mut eqnlst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
             let mut result: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)>> = metamodelica::nil();
-            varlst = List::map1r(vlst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), vars.clone());
-            eqnlst = BackendEquation::getList(elst.clone(), eqns.clone());
+            varlst = List::map1r(vlst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), vars.clone())?;
+            eqnlst = BackendEquation::getList(elst.clone(), eqns.clone())?;
             result = listAppend(inAccum.clone(), list![(eqnlst.clone(), varlst.clone())]);
             result = getOrderedEqs2(rest.clone(), eqns.clone(), vars.clone(), result.clone())?;
             result.clone()
@@ -1076,8 +1076,8 @@ fn getOrderedEqs2(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComp
             let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
             let mut varlst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
             let mut result: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)>> = metamodelica::nil();
-            varlst = List::map1r(vlst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), vars.clone());
-            eqn = BackendEquation::get(eqns.clone(), e.clone());
+            varlst = List::map1r(vlst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), vars.clone())?;
+            eqn = BackendEquation::get(eqns.clone(), e.clone())?;
             result = listAppend(inAccum.clone(), list![(list![eqn.clone()], varlst.clone())]);
             result = getOrderedEqs2(rest.clone(), eqns.clone(), vars.clone(), result.clone())?;
             result.clone()
@@ -1086,8 +1086,8 @@ fn getOrderedEqs2(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComp
             let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
             let mut varlst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
             let mut result: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)>> = metamodelica::nil();
-            varlst = List::map1r(vlst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), vars.clone());
-            eqn = BackendEquation::get(eqns.clone(), e.clone());
+            varlst = List::map1r(vlst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), vars.clone())?;
+            eqn = BackendEquation::get(eqns.clone(), e.clone())?;
             result = listAppend(inAccum.clone(), list![(list![eqn.clone()], varlst.clone())]);
             result = getOrderedEqs2(rest.clone(), eqns.clone(), vars.clone(), result.clone())?;
             result.clone()
@@ -1096,8 +1096,8 @@ fn getOrderedEqs2(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComp
             let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
             let mut varlst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
             let mut result: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)>> = metamodelica::nil();
-            varlst = List::map1r(vlst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), vars.clone());
-            eqn = BackendEquation::get(eqns.clone(), e.clone());
+            varlst = List::map1r(vlst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), vars.clone())?;
+            eqn = BackendEquation::get(eqns.clone(), e.clone())?;
             result = listAppend(inAccum.clone(), list![(list![eqn.clone()], varlst.clone())]);
             result = getOrderedEqs2(rest.clone(), eqns.clone(), vars.clone(), result.clone())?;
             result.clone()
@@ -1106,8 +1106,8 @@ fn getOrderedEqs2(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComp
             let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
             let mut varlst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
             let mut result: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)>> = metamodelica::nil();
-            varlst = List::map1r(vlst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), vars.clone());
-            eqn = BackendEquation::get(eqns.clone(), e.clone());
+            varlst = List::map1r(vlst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), vars.clone())?;
+            eqn = BackendEquation::get(eqns.clone(), e.clone())?;
             result = listAppend(inAccum.clone(), list![(list![eqn.clone()], varlst.clone())]);
             result = getOrderedEqs2(rest.clone(), eqns.clone(), vars.clone(), result.clone())?;
             result.clone()
@@ -1116,8 +1116,8 @@ fn getOrderedEqs2(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComp
             let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
             let mut varlst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
             let mut result: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)>> = metamodelica::nil();
-            varlst = List::map1r(vlst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), vars.clone());
-            eqn = BackendEquation::get(eqns.clone(), e.clone());
+            varlst = List::map1r(vlst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), vars.clone())?;
+            eqn = BackendEquation::get(eqns.clone(), e.clone())?;
             result = listAppend(inAccum.clone(), list![(list![eqn.clone()], varlst.clone())]);
             result = getOrderedEqs2(rest.clone(), eqns.clone(), vars.clone(), result.clone())?;
             result.clone()
@@ -1131,13 +1131,13 @@ fn getOrderedEqs2(mut inComps: Arc<metamodelica::List<Arc<BackendDAE::StrongComp
             let mut eqnlst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
             let mut eqnlst1: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
             let mut result: Arc<metamodelica::List<(Arc<metamodelica::List<Arc<BackendDAE::Equation>>>, Arc<metamodelica::List<BackendDAE::Var>>)>> = metamodelica::nil();
-            (elst1, vlst1Lst, _) = List::map_3(innerEquations.clone(), (std::sync::Arc::new(BackendDAEUtil::getEqnAndVarsFromInnerEquation) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::InnerEquation) -> Result<(i32, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<Arc<DAE::Constraint>>>)> + 'static>));
-            vlst1 = List::flatten(vlst1Lst.clone());
-            varlst1 = List::map1r(vlst1.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), vars.clone());
-            varlst = List::map1r(vlst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), vars.clone());
+            (elst1, vlst1Lst, _) = List::map_3(innerEquations.clone(), (std::sync::Arc::new(BackendDAEUtil::getEqnAndVarsFromInnerEquation) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::InnerEquation) -> Result<(i32, Arc<metamodelica::List<i32>>, Arc<metamodelica::List<Arc<DAE::Constraint>>>)> + 'static>))?;
+            vlst1 = List::flatten(vlst1Lst.clone())?;
+            varlst1 = List::map1r(vlst1.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), vars.clone())?;
+            varlst = List::map1r(vlst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), vars.clone())?;
             varlst = listAppend(varlst1.clone(), varlst.clone());
-            eqnlst1 = BackendEquation::getList(elst1.clone(), eqns.clone());
-            eqnlst = BackendEquation::getList(elst.clone(), eqns.clone());
+            eqnlst1 = BackendEquation::getList(elst1.clone(), eqns.clone())?;
+            eqnlst = BackendEquation::getList(elst.clone(), eqns.clone())?;
             eqnlst = listAppend(eqnlst1.clone(), eqnlst.clone());
             result = listAppend(inAccum.clone(), list![(eqnlst.clone(), varlst.clone())]);
             result = getOrderedEqs2(rest.clone(), eqns.clone(), vars.clone(), result.clone())?;
@@ -2304,7 +2304,7 @@ fn dumpAdjacencyMatrixWork(mut syst: Arc<BackendDAE::EqSystem>, mut shared: Arc<
     let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
     funcs = BackendDAEUtil::getFunctions(shared.clone())?;
     (_, m, _) = BackendDAEUtil::getAdjacencyMatrixfromOption(syst.clone(), crate::BackendDAE::IndexType::NORMAL, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(shared.clone()))?;
-    Array::fold(m.clone(), (std::sync::Arc::new(dumpAdjacencyMatrix2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, (i32, i32)) -> Result<(i32, i32)> + 'static>), (inOffset.clone(), 1));
+    Array::fold(m.clone(), (std::sync::Arc::new(dumpAdjacencyMatrix2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<i32>>, (i32, i32)) -> Result<(i32, i32)> + 'static>), (inOffset.clone(), 1))?;
     outOffset = inOffset.clone() + (m.clone().borrow().len() as i32);
     Ok(outOffset)
 }
@@ -2315,7 +2315,7 @@ fn dumpAdjacencyMatrix2(mut row: Arc<metamodelica::List<i32>>, mut inTpl: (i32, 
     let mut c: i32 = 0;
     (offset, c) = inTpl.clone();
     dumpStrOpenTagAttr((arcstr::literal!(MathMLMatrixrow)).clone(), (literal!("id")).clone(), (intString(c.clone())).clone())?;
-    List::map1_0(row.clone(), (std::sync::Arc::new(dumpMatrixIntegerRow) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<()> + 'static>), offset.clone());
+    List::map1_0(row.clone(), (std::sync::Arc::new(dumpMatrixIntegerRow) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<()> + 'static>), offset.clone())?;
     dumpStrCloseTag((arcstr::literal!(MathMLMatrixrow)).clone())?;
     outTpl = (offset.clone(), c.clone() + 1);
     Ok(outTpl)
@@ -2556,7 +2556,7 @@ fn dumpMatching1(mut v: metamodelica::Array<i32>, mut voffset: i32, mut eoffset:
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let true = (intGt((v.clone().borrow().len() as i32), 0)) else { bail!("pattern mismatch") };
-            Array::fold(v.clone(), (std::sync::Arc::new(dumpMatching2) as std::sync::Arc<dyn ::std::ops::Fn(i32, (i32, i32, i32)) -> Result<(i32, i32, i32)> + 'static>), (1, voffset.clone(), eoffset.clone()));
+            Array::fold(v.clone(), (std::sync::Arc::new(dumpMatching2) as std::sync::Arc<dyn ::std::ops::Fn(i32, (i32, i32, i32)) -> Result<(i32, i32, i32)> + 'static>), (1, voffset.clone(), eoffset.clone()))?;
             Ok(())
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")

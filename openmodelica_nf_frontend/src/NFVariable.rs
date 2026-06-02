@@ -139,12 +139,12 @@ pub fn fromCref(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<NFVar
         binding = Binding::EMPTY_BINDING().clone();
         assign_field!(binfo.varKind = Arc::new(crate::NFBackendExtension::VariableKind::ITERATOR));
     } else {
-        binding = Component::getImplicitBinding(comp.clone(), InstNode::instanceParent(node.clone()));
+        binding = Component::getImplicitBinding(comp.clone(), InstNode::instanceParent(node.clone())?);
     }
     if !(Type::isExternalObject(ty.clone())) {
         children = (::match_deref::match_deref! { match &(Type::arrayElementType(ty.clone())) {
         Deref @ Type::COMPLEX { cls: class_node, .. } => {
-            child_nodes = Class::getComponents(InstNode::getClass(class_node.clone())?);
+            child_nodes = Class::getComponents(InstNode::getClass(class_node.clone())?)?;
             children = ({
         let mut __acc: Arc<metamodelica::List<Arc<NFVariable>>> = metamodelica::nil();
         for mut c in (child_nodes.clone()).borrow().iter() {
@@ -168,19 +168,19 @@ pub fn name(mut var: Arc<NFVariable>) -> Arc<ComponentRef::NFComponentRef> {
     name
 }
 
-pub fn size(mut var: Arc<NFVariable>, mut resize: bool) -> i32 {
-    let mut s: i32 = Type::sizeOf(var.ty.clone(), resize.clone()).unwrap();
-    s
+pub fn size(mut var: Arc<NFVariable>, mut resize: bool) -> Result<i32> {
+    let mut s: i32 = Type::sizeOf(var.ty.clone(), resize.clone())?;
+    Ok(s)
 }
 
-pub fn hash(mut var: Arc<NFVariable>) -> i32 {
-    let mut i: i32 = ComponentRef::hash(var.name.clone());
-    i
+pub fn hash(mut var: Arc<NFVariable>) -> Result<i32> {
+    let mut i: i32 = ComponentRef::hash(var.name.clone())?;
+    Ok(i)
 }
 
-pub fn equalName(mut var1: Arc<NFVariable>, mut var2: Arc<NFVariable>) -> bool {
-    let mut b: bool = ComponentRef::isEqual(var1.name.clone(), var2.name.clone()).unwrap();
-    b
+pub fn equalName(mut var1: Arc<NFVariable>, mut var2: Arc<NFVariable>) -> Result<bool> {
+    let mut b: bool = ComponentRef::isEqual(var1.name.clone(), var2.name.clone())?;
+    Ok(b)
 }
 
 pub fn expand(mut var: Arc<NFVariable>, mut backend: bool) -> Result<Arc<metamodelica::List<Arc<NFVariable>>>> {
@@ -220,7 +220,7 @@ pub fn expand(mut var: Arc<NFVariable>, mut backend: bool) -> Result<Arc<metamod
                 if intMod(crefs_len.clone(), expl_len.clone()) != 0 {
                     Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFVariable.expand")); __mm_s.push_str(&*literal!(" failed to expand ")); __mm_s.push_str(&*ComponentRef::toString(var.name.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
                 }
-                expl = List::flatten(List::fill(expl.clone(), intDiv(crefs_len.clone(), expl_len.clone())));
+                expl = List::flatten(List::fill(expl.clone(), intDiv(crefs_len.clone(), expl_len.clone())))?;
             }
             bind_var = Binding::variability(binding.clone())?;
             bind_src = Binding::source(binding.clone());
@@ -250,7 +250,7 @@ pub fn expand(mut var: Arc<NFVariable>, mut backend: bool) -> Result<Arc<metamod
     Ok(vars)
 }
 
-pub fn expandChildren(mut var: Arc<NFVariable>, mut arrayDims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>, mut addDimensions: bool) -> Arc<metamodelica::List<Arc<NFVariable>>> {
+pub fn expandChildren(mut var: Arc<NFVariable>, mut arrayDims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>, mut addDimensions: bool) -> Result<Arc<metamodelica::List<Arc<NFVariable>>>> {
     let mut children: Arc<metamodelica::List<Arc<NFVariable>>> = metamodelica::nil();
     let mut newArrayDims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>> = metamodelica::nil();
     if addDimensions.clone() && !(arrayDims.clone().is_empty()) {
@@ -260,12 +260,12 @@ pub fn expandChildren(mut var: Arc<NFVariable>, mut arrayDims: Arc<metamodelica:
     children = metamodelica::cons(var.clone(), List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<NFVariable>>>>> = metamodelica::nil();
         for mut v in (var.children.clone()).into_iter().cloned() {
-            let __x = expandChildren(v.clone(), newArrayDims.clone(), addDimensions.clone());
+            let __x = expandChildren(v.clone(), newArrayDims.clone(), addDimensions.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    })));
-    children
+    }))?);
+    Ok(children)
 }
 
 pub fn typeOf(mut var: Arc<NFVariable>) -> Arc<Type::NFType> {
@@ -302,9 +302,9 @@ pub fn isComplex(mut var: Arc<NFVariable>) -> bool {
     b
 }
 
-pub fn isComplexArray(mut var: Arc<NFVariable>) -> bool {
-    let mut b: bool = Type::isComplexArray(var.ty.clone());
-    b
+pub fn isComplexArray(mut var: Arc<NFVariable>) -> Result<bool> {
+    let mut b: bool = Type::isComplexArray(var.ty.clone())?;
+    Ok(b)
 }
 
 pub fn isStructural(mut variable: Arc<NFVariable>) -> bool {
@@ -312,16 +312,16 @@ pub fn isStructural(mut variable: Arc<NFVariable>) -> bool {
     structural
 }
 
-pub fn isEmptyArray(mut variable: Arc<NFVariable>) -> bool {
-    let mut isEmpty: bool = Type::isEmptyArray(variable.ty.clone());
-    isEmpty
+pub fn isEmptyArray(mut variable: Arc<NFVariable>) -> Result<bool> {
+    let mut isEmpty: bool = Type::isEmptyArray(variable.ty.clone())?;
+    Ok(isEmpty)
 }
 
 pub fn isDeleted(mut variable: Arc<NFVariable>) -> Result<bool> {
     let mut deleted: bool = false;
     let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     node = ComponentRef::node(variable.name.clone())?;
-    deleted = InstNode::isComponent(node.clone()) && Component::isDeleted(InstNode::component(node.clone())?)?;
+    deleted = InstNode::isComponent(node.clone())? && Component::isDeleted(InstNode::component(node.clone())?)?;
     Ok(deleted)
 }
 
@@ -419,15 +419,15 @@ pub fn lookupTypeAttribute(mut name: ArcStr, mut var: Arc<NFVariable>) -> Arc<Bi
     binding
 }
 
-pub fn applyToType(mut var: Arc<NFVariable>, mut func: Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<Arc<Type::NFType>> + 'static>) -> Arc<NFVariable> {
+pub fn applyToType(mut var: Arc<NFVariable>, mut func: Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<Arc<Type::NFType>> + 'static>) -> Result<Arc<NFVariable>> {
     pub type typeFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<Arc<Type::NFType>> + 'static>;
 
     let mut var: Arc<NFVariable> = var;
     assign_field!(
-        var.ty = func(var.ty.clone()).unwrap(),
-        var.name = ComponentRef::applyToType(var.name.clone(), func.clone())
+        var.ty = func(var.ty.clone())?,
+        var.name = ComponentRef::applyToType(var.name.clone(), func.clone())?
     );
-    var
+    Ok(var)
 }
 
 pub fn propagateAnnotation(mut name: ArcStr, mut overwrite: bool, mut evaluate: bool, mut var: Arc<NFVariable>) -> Result<Arc<NFVariable>> {
@@ -440,7 +440,7 @@ pub fn propagateAnnotation(mut name: ArcStr, mut overwrite: bool, mut evaluate: 
     let mut scope: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
     if ComponentRef::isCref(var.name.clone()) {
         node = ComponentRef::node(var.name.clone())?;
-        if overwrite.clone() && InstNode::isComponent(node.clone()) {
+        if overwrite.clone() && InstNode::isComponent(node.clone())? {
             node = InstNode::parent(node.clone());
         }
         (r#mod, scope) = InstNode::getAnnotation((name.clone()).clone(), node.clone())?;
@@ -517,17 +517,17 @@ pub fn applyExp(mut var: Arc<NFVariable>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<E
     Ok(())
 }
 
-pub fn applyExpShallow(mut var: Arc<NFVariable>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>) -> () {
-    Binding::applyExpShallow(var.binding.clone(), r#fn.clone());
+pub fn applyExpShallow(mut var: Arc<NFVariable>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>) -> Result<()> {
+    Binding::applyExpShallow(var.binding.clone(), r#fn.clone())?;
     for mut ty_attr in &*var.typeAttributes.clone() {
         let mut ty_attr = ty_attr.clone();
-        Binding::applyExpShallow(Util::tuple22(ty_attr.clone()), r#fn.clone());
+        Binding::applyExpShallow(Util::tuple22(ty_attr.clone()), r#fn.clone())?;
     }
     for mut c in &*var.children.clone() {
         let mut c = c.clone();
-        applyExpShallow(c.clone(), r#fn.clone());
+        applyExpShallow(c.clone(), r#fn.clone())?;
     }
-    ()
+    Ok(())
 }
 
 pub type MapFn = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>;
@@ -552,21 +552,21 @@ pub fn mapExp(mut var: Arc<NFVariable>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<Exp
         }
         __acc.reverse()
     }),
-        var.backendinfo = BackendInfo::map(var.backendinfo.clone(), r#fn.clone()),
+        var.backendinfo = BackendInfo::map(var.backendinfo.clone(), r#fn.clone())?,
         var.ty = Type::applyToDims(var.ty.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = r#fn.clone(); move |__pe_a0| Dimension::mapExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>))?,
-        var.name = ComponentRef::mapTypes(var.name.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static> = (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = r#fn.clone(); move |__pe_a0| Dimension::mapExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>); move |__pe_a0| Type::applyToDims(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<Arc<Type::NFType>> + 'static>))
+        var.name = ComponentRef::mapTypes(var.name.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static> = (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = r#fn.clone(); move |__pe_a0| Dimension::mapExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>); move |__pe_a0| Type::applyToDims(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Type::NFType>) -> Result<Arc<Type::NFType>> + 'static>))?
     );
     Ok(var)
 }
 
-pub fn mapExpShallow(mut var: Arc<NFVariable>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Arc<NFVariable> {
+pub fn mapExpShallow(mut var: Arc<NFVariable>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<NFVariable>> {
     let mut var: Arc<NFVariable> = var;
     assign_field!(
-        var.binding = Binding::mapExpShallow(var.binding.clone(), r#fn.clone()),
+        var.binding = Binding::mapExpShallow(var.binding.clone(), r#fn.clone())?,
         var.typeAttributes = ({
         let mut __acc: Arc<metamodelica::List<(ArcStr, Arc<Binding::NFBinding>)>> = metamodelica::nil();
         for mut a in (var.typeAttributes.clone()).into_iter().cloned() {
-            let __x = (Util::tuple21(a.clone()), Binding::mapExpShallow(Util::tuple22(a.clone()), r#fn.clone()));
+            let __x = (Util::tuple21(a.clone()), Binding::mapExpShallow(Util::tuple22(a.clone()), r#fn.clone())?);
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -574,13 +574,13 @@ pub fn mapExpShallow(mut var: Arc<NFVariable>, mut r#fn: Arc<dyn ::std::ops::Fn(
         var.children = ({
         let mut __acc: Arc<metamodelica::List<Arc<NFVariable>>> = metamodelica::nil();
         for mut v in (var.children.clone()).into_iter().cloned() {
-            let __x = mapExpShallow(v.clone(), r#fn.clone());
+            let __x = mapExpShallow(v.clone(), r#fn.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     })
     );
-    var
+    Ok(var)
 }
 
 pub fn toString(mut var: Arc<NFVariable>, mut indent: ArcStr, mut printBindingType: bool) -> Result<ArcStr> {
@@ -601,7 +601,7 @@ pub fn toStream(mut var: Arc<NFVariable>, mut indent: ArcStr, mut printBindingTy
     if var.visibility.clone() == Visibility::PROTECTED.clone() {
         s = IOStream::append(s.clone(), (literal!("protected ")).clone())?;
     }
-    s = IOStream::append(s.clone(), (Attributes::toString(var.attributes.clone(), var.ty.clone())).clone())?;
+    s = IOStream::append(s.clone(), (Attributes::toString(var.attributes.clone(), var.ty.clone())?).clone())?;
     s = IOStream::append(s.clone(), (Type::toString(var.ty.clone())?).clone())?;
     s = IOStream::append(s.clone(), (literal!(" ")).clone())?;
     s = IOStream::append(s.clone(), (ComponentRef::toString(var.name.clone())?).clone())?;

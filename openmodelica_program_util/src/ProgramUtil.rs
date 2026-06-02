@@ -250,7 +250,7 @@ pub fn replaceClassInProgram(mut inClass: Arc<Absyn::Class>, mut inProgram: Absy
     w = __pa1.clone();
     clst = __pa2.clone();
     if mergeAST.clone() {
-        clsFilter = List::filterOnTrue(clst.clone(), (std::sync::Arc::new({ let __pe_b1 = (cls_name1.clone()).clone(); move |__pe_a0| replaceClassInProgram2(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Class>) -> Result<bool> + 'static>));
+        clsFilter = List::filterOnTrue(clst.clone(), (std::sync::Arc::new({ let __pe_b1 = (cls_name1.clone()).clone(); move |__pe_a0| replaceClassInProgram2(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Class>) -> Result<bool> + 'static>))?;
         if clsFilter.clone().is_empty() {
             cls = inClass.clone();
         } else {
@@ -327,7 +327,7 @@ pub fn insertClassInProgram(mut inClass: Arc<Absyn::Class>, mut inWithin: Absyn:
                     __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (literal!("\n  ")).clone()));
+    }), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (literal!("\n  ")).clone())?);
                     Error::addMessage(Error::INSERT_CLASS.clone(), list![(name.clone()).clone(), (s1.clone()).clone(), (s2.clone()).clone()])?;
                     Ok(bail!("fail"))
                 }
@@ -915,8 +915,8 @@ pub fn getClassNamesRecursive(mut inPath: Option<Arc<Absyn::Path>>, mut inProgra
                     acc = metamodelica::cons(pp.clone(), acc.clone());
                     cdef = getPathedClassInProgram(pp.clone(), p.clone(), false, false)?;
                     strlst = getClassnamesInClassList(pp.clone(), p.clone(), cdef.clone(), b.clone(), c.clone())?;
-                    result_path_lst = List::map(List::map1(strlst.clone(), (std::sync::Arc::new(joinPaths) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> + 'static>), pp.clone()), std::sync::Arc::new(fnptr!(Util::makeOption, _)));
-                    (_, acc) = List::map3Fold(result_path_lst.clone(), (std::sync::Arc::new(getClassNamesRecursive) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Path>>, Absyn::Program, bool, bool, Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Result<(Option<Arc<Absyn::Path>>, Arc<metamodelica::List<Arc<Absyn::Path>>>)> + 'static>), p.clone(), b.clone(), c.clone(), acc.clone());
+                    result_path_lst = List::map(List::map1(strlst.clone(), (std::sync::Arc::new(joinPaths) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<Absyn::Path>) -> Result<Arc<Absyn::Path>> + 'static>), pp.clone())?, std::sync::Arc::new(fnptr!(Util::makeOption, _)))?;
+                    (_, acc) = List::map3Fold(result_path_lst.clone(), (std::sync::Arc::new(getClassNamesRecursive) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Path>>, Absyn::Program, bool, bool, Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Result<(Option<Arc<Absyn::Path>>, Arc<metamodelica::List<Arc<Absyn::Path>>>)> + 'static>), p.clone(), b.clone(), c.clone(), acc.clone())?;
                     Ok((inPath.clone(), acc.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -928,9 +928,9 @@ pub fn getClassNamesRecursive(mut inPath: Option<Arc<Absyn::Path>>, mut inProgra
                     let mut strlst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
                     let mut result_path_lst: Arc<metamodelica::List<Option<Arc<Absyn::Path>>>> = metamodelica::nil();
                     let mut acc = (*acc).clone();
-                    strlst = List::map(classes.clone(), (std::sync::Arc::new(AbsynUtil::getClassName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Class>) -> Result<ArcStr> + 'static>));
-                    result_path_lst = List::mapMap(strlst.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::makeIdentPathFromString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Absyn::Path>> + 'static>), std::sync::Arc::new(fnptr!(Util::makeOption, _)));
-                    (_, acc) = List::map3Fold(result_path_lst.clone(), (std::sync::Arc::new(getClassNamesRecursive) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Path>>, Absyn::Program, bool, bool, Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Result<(Option<Arc<Absyn::Path>>, Arc<metamodelica::List<Arc<Absyn::Path>>>)> + 'static>), p.clone(), b.clone(), c.clone(), acc.clone());
+                    strlst = List::map(classes.clone(), (std::sync::Arc::new(AbsynUtil::getClassName) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Class>) -> Result<ArcStr> + 'static>))?;
+                    result_path_lst = List::mapMap(strlst.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::makeIdentPathFromString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Absyn::Path>> + 'static>), std::sync::Arc::new(fnptr!(Util::makeOption, _)))?;
+                    (_, acc) = List::map3Fold(result_path_lst.clone(), (std::sync::Arc::new(getClassNamesRecursive) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Absyn::Path>>, Absyn::Program, bool, bool, Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Result<(Option<Arc<Absyn::Path>>, Arc<metamodelica::List<Arc<Absyn::Path>>>)> + 'static>), p.clone(), b.clone(), c.clone(), acc.clone())?;
                     Ok((inPath.clone(), acc.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1112,12 +1112,12 @@ pub fn getClassnamesInClass(mut inPath: Arc<Absyn::Path>, mut inProgram: Absyn::
         (Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::PARTS { classParts: parts, .. }, .. }, b, c) => {
             let mut strlist: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             strlist = getClassnamesInParts(parts.clone(), b.clone(), c.clone())?;
-            List::map(strlist.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::makeIdentPathFromString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Absyn::Path>> + 'static>))
+            List::map(strlist.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::makeIdentPathFromString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Absyn::Path>> + 'static>))?
         },
         (Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::CLASS_EXTENDS { parts, .. }, .. }, b, c) => {
             let mut strlist: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             strlist = getClassnamesInParts(parts.clone(), b.clone(), c.clone())?;
-            List::map(strlist.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::makeIdentPathFromString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Absyn::Path>> + 'static>))
+            List::map(strlist.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::makeIdentPathFromString, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<Arc<Absyn::Path>> + 'static>))?
         },
         (Deref @ Absyn::Class { body: Deref @ Absyn::ClassDef::DERIVED { typeSpec: Deref @ Absyn::TypeSpec::TPATH { path: _, arrayDim: _ }, .. }, .. }, _, _) => {
             metamodelica::nil()

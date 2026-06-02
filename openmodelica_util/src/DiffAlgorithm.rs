@@ -183,8 +183,8 @@ fn diffSeq<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut arr2: metam
     }))];
         return Ok(out.clone());
     }
-    (prefixes, start1, start2) = trimCommonPrefix(arr1.clone(), start1.clone(), end1.clone(), arr2.clone(), start2.clone(), end2.clone(), equals.clone(), prefixes.clone(), isWhitespaceNotComment.clone(), toString.clone());
-    (suffixes, end1, end2) = trimCommonSuffix(arr1.clone(), start1.clone(), end1.clone(), arr2.clone(), start2.clone(), end2.clone(), equals.clone(), suffixes.clone(), isWhitespaceNotComment.clone());
+    (prefixes, start1, start2) = trimCommonPrefix(arr1.clone(), start1.clone(), end1.clone(), arr2.clone(), start2.clone(), end2.clone(), equals.clone(), prefixes.clone(), isWhitespaceNotComment.clone(), toString.clone())?;
+    (suffixes, end1, end2) = trimCommonSuffix(arr1.clone(), start1.clone(), end1.clone(), arr2.clone(), start2.clone(), end2.clone(), equals.clone(), suffixes.clone(), isWhitespaceNotComment.clone())?;
     if start1.clone() != inStart1.clone() || start2.clone() != inStart2.clone() || end1.clone() != inEnd1.clone() || end2.clone() != inEnd2.clone() {
         out = diffSeq(arr1.clone(), arr2.clone(), equals.clone(), isWhitespace.clone(), isWhitespaceNotComment.clone(), toString.clone(), start1.clone(), end1.clone(), start2.clone(), end2.clone(), prefixes.clone(), suffixes.clone())?;
         return Ok(out.clone());
@@ -437,7 +437,7 @@ fn myersGreedyPathToDiff<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, m
     Ok(out)
 }
 
-fn trimCommonPrefix<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut inStart1: i32, mut end1: i32, mut arr2: metamodelica::Array<T>, mut inStart2: i32, mut end2: i32, mut equals: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>, mut acc: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut isWhitespaceNotComment: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> (Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, i32, i32) {
+fn trimCommonPrefix<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut inStart1: i32, mut end1: i32, mut arr2: metamodelica::Array<T>, mut inStart2: i32, mut end2: i32, mut equals: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>, mut acc: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut isWhitespaceNotComment: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> Result<(Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, i32, i32)> {
     pub type ToString<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>;
 
     pub type FunEquals<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>;
@@ -449,12 +449,12 @@ fn trimCommonPrefix<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut in
     let mut start2: i32 = inStart2.clone();
     let mut lst: Arc<metamodelica::List<T>> = metamodelica::nil();
     while start1.clone() <= end1.clone() && start2.clone() <= end2.clone() {
-        if equals(arr1.borrow()[(start1.clone()-1) as usize].clone(), arr2.borrow()[(start2.clone()-1) as usize].clone()).unwrap() {
+        if equals(arr1.borrow()[(start1.clone()-1) as usize].clone(), arr2.borrow()[(start2.clone()-1) as usize].clone())? {
             lst = metamodelica::cons(arr1.borrow()[(start1.clone()-1) as usize].clone(), lst.clone());
             start1 = start1.clone() + 1;
             start2 = start2.clone() + 1;
-        } else if start2.clone() + 1 <= end2.clone() && isWhitespaceNotComment(arr2.borrow()[(start2.clone()-1) as usize].clone()).unwrap() {
-            if !(equals(arr1.borrow()[(start1.clone()-1) as usize].clone(), arr2.borrow()[(start2.clone() + 1-1) as usize].clone()).unwrap()) {
+        } else if start2.clone() + 1 <= end2.clone() && isWhitespaceNotComment(arr2.borrow()[(start2.clone()-1) as usize].clone())? {
+            if !(equals(arr1.borrow()[(start1.clone()-1) as usize].clone(), arr2.borrow()[(start2.clone() + 1-1) as usize].clone())?) {
                 break;
             }
             start2 = start2.clone() + 1;
@@ -465,10 +465,10 @@ fn trimCommonPrefix<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut in
     if !(lst.clone().is_empty()) {
         prefixes = metamodelica::cons((Diff::Equal.clone(), lst.clone().reverse()), prefixes.clone());
     }
-    (prefixes, start1, start2)
+    Ok((prefixes, start1, start2))
 }
 
-fn trimCommonSuffix<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut start1: i32, mut inEnd1: i32, mut arr2: metamodelica::Array<T>, mut start2: i32, mut inEnd2: i32, mut equals: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>, mut acc: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut isWhitespaceNotComment: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>) -> (Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, i32, i32) {
+fn trimCommonSuffix<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut start1: i32, mut inEnd1: i32, mut arr2: metamodelica::Array<T>, mut start2: i32, mut inEnd2: i32, mut equals: Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>, mut acc: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, mut isWhitespaceNotComment: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>) -> Result<(Arc<metamodelica::List<(Diff, Arc<metamodelica::List<T>>)>>, i32, i32)> {
     pub type FunEquals<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T, T) -> Result<bool> + 'static>;
 
     pub type FunWhitespace<T: Clone + 'static> = std::sync::Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>;
@@ -478,12 +478,12 @@ fn trimCommonSuffix<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut st
     let mut end2: i32 = inEnd2.clone();
     let mut lst: Arc<metamodelica::List<T>> = metamodelica::nil();
     while start1.clone() <= end1.clone() && start2.clone() <= end2.clone() {
-        if equals(arr1.borrow()[(end1.clone()-1) as usize].clone(), arr2.borrow()[(end2.clone()-1) as usize].clone()).unwrap() {
+        if equals(arr1.borrow()[(end1.clone()-1) as usize].clone(), arr2.borrow()[(end2.clone()-1) as usize].clone())? {
             lst = metamodelica::cons(arr1.borrow()[(end1.clone()-1) as usize].clone(), lst.clone());
             end1 = end1.clone() - 1;
             end2 = end2.clone() - 1;
-        } else if start2.clone() <= end2.clone() - 1 && isWhitespaceNotComment(arr2.borrow()[(end2.clone()-1) as usize].clone()).unwrap() {
-            if !(equals(arr1.borrow()[(end1.clone()-1) as usize].clone(), arr2.borrow()[(end2.clone() - 1-1) as usize].clone()).unwrap()) {
+        } else if start2.clone() <= end2.clone() - 1 && isWhitespaceNotComment(arr2.borrow()[(end2.clone()-1) as usize].clone())? {
+            if !(equals(arr1.borrow()[(end1.clone()-1) as usize].clone(), arr2.borrow()[(end2.clone() - 1-1) as usize].clone())?) {
                 break;
             }
             end2 = end2.clone() - 1;
@@ -494,7 +494,7 @@ fn trimCommonSuffix<T: Clone + 'static>(mut arr1: metamodelica::Array<T>, mut st
     if !(lst.clone().is_empty()) {
         suffixes = metamodelica::cons((Diff::Equal.clone(), lst.clone()), suffixes.clone());
     }
-    (suffixes, end1, end2)
+    Ok((suffixes, end1, end2))
 }
 
 fn printStartToEnd<T: Clone + 'static>(mut arr: metamodelica::Array<T>, mut startIndex: i32, mut endIndex: i32, mut toString: Arc<dyn ::std::ops::Fn(T) -> Result<ArcStr> + 'static>) -> Result<ArcStr> {

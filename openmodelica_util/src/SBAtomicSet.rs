@@ -92,9 +92,9 @@ pub fn isEmpty(mut set: Arc<SBAtomicSet>) -> bool {
     empty
 }
 
-pub fn contains(mut vals: metamodelica::Array<i32>, mut set: Arc<SBAtomicSet>) -> bool {
-    let mut res: bool = SBMultiInterval::contains(vals.clone(), set.aset.clone());
-    res
+pub fn contains(mut vals: metamodelica::Array<i32>, mut set: Arc<SBAtomicSet>) -> Result<bool> {
+    let mut res: bool = SBMultiInterval::contains(vals.clone(), set.aset.clone())?;
+    Ok(res)
 }
 
 pub fn intersection(mut set1: Arc<SBAtomicSet>, mut set2: Arc<SBAtomicSet>) -> Result<Arc<SBAtomicSet>> {
@@ -107,7 +107,7 @@ pub fn complement(mut set1: Arc<SBAtomicSet>, mut set2: Arc<SBAtomicSet>) -> Res
     let mut res: Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet>>> = <Arc<UnorderedSet::UnorderedSet<Arc<SBAtomicSet>>> as ::std::default::Default>::default();
     let mut diff: Arc<UnorderedSet::UnorderedSet<Arc<SBMultiInterval::SBMultiInterval>>> = <Arc<UnorderedSet::UnorderedSet<Arc<SBMultiInterval::SBMultiInterval>>> as ::std::default::Default>::default();
     diff = SBMultiInterval::complement(set1.aset.clone(), set2.aset.clone())?;
-    res = UnorderedSet::new((std::sync::Arc::new(fnptr!(hash, Arc<SBAtomicSet>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(isEqual, Arc<SBAtomicSet>, Arc<SBAtomicSet>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet>, Arc<SBAtomicSet>) -> Result<bool> + 'static>), UnorderedSet::bucketCount(diff.clone()));
+    res = UnorderedSet::new((std::sync::Arc::new(fnptr!(hash, Arc<SBAtomicSet>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet>) -> Result<i32> + 'static>), (std::sync::Arc::new(isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SBAtomicSet>, Arc<SBAtomicSet>) -> Result<bool> + 'static>), UnorderedSet::bucketCount(diff.clone()));
     if !(UnorderedSet::isEmpty(diff.clone())) {
         let __range0 = UnorderedSet::toArray(diff.clone()).borrow().iter().cloned().collect::<Vec<_>>();
         for mut s in __range0 {
@@ -134,20 +134,20 @@ pub fn aset(mut set: Arc<SBAtomicSet>) -> Arc<SBMultiInterval::SBMultiInterval> 
     res
 }
 
-pub fn minElem(mut set: Arc<SBAtomicSet>) -> metamodelica::Array<i32> {
-    let mut res: metamodelica::Array<i32> = SBMultiInterval::minElem(set.aset.clone());
-    res
+pub fn minElem(mut set: Arc<SBAtomicSet>) -> Result<metamodelica::Array<i32>> {
+    let mut res: metamodelica::Array<i32> = SBMultiInterval::minElem(set.aset.clone())?;
+    Ok(res)
 }
 
-pub fn replace(mut i: Arc<SBInterval::SBInterval>, mut dim: i32, mut set: Arc<SBAtomicSet>) -> Arc<SBAtomicSet> {
+pub fn replace(mut i: Arc<SBInterval::SBInterval>, mut dim: i32, mut set: Arc<SBAtomicSet>) -> Result<Arc<SBAtomicSet>> {
     let mut res: Arc<SBAtomicSet> = Arc::new(<SBAtomicSet as ::std::default::Default>::default());
-    res = new(SBMultiInterval::replace(i.clone(), dim.clone(), set.aset.clone()));
-    res
+    res = new(SBMultiInterval::replace(i.clone(), dim.clone(), set.aset.clone())?);
+    Ok(res)
 }
 
-pub fn isEqual(mut set1: Arc<SBAtomicSet>, mut set2: Arc<SBAtomicSet>) -> bool {
-    let mut equal: bool = SBMultiInterval::isEqual(set1.aset.clone(), set2.aset.clone());
-    equal
+pub fn isEqual(mut set1: Arc<SBAtomicSet>, mut set2: Arc<SBAtomicSet>) -> Result<bool> {
+    let mut equal: bool = SBMultiInterval::isEqual(set1.aset.clone(), set2.aset.clone())?;
+    Ok(equal)
 }
 
 pub fn hash(mut set1: Arc<SBAtomicSet>) -> i32 {

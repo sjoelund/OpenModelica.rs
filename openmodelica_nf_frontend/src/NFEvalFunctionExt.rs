@@ -97,15 +97,15 @@ pub fn Lapack_dgeev(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressio
     work = __pa11.clone();
     lwork = __pa12.clone();
     info = __pa13.clone();
-    JOBVL = (evaluateExtStringArg(jobvl.clone())).clone();
-    JOBVR = (evaluateExtStringArg(jobvr.clone())).clone();
-    N = evaluateExtIntArg(n.clone());
+    JOBVL = (evaluateExtStringArg(jobvl.clone())?).clone();
+    JOBVR = (evaluateExtStringArg(jobvr.clone())?).clone();
+    N = evaluateExtIntArg(n.clone())?;
     A = evaluateExtRealMatrixArg(a.clone())?;
-    LDA = evaluateExtIntArg(lda.clone());
-    LDVL = evaluateExtIntArg(ldvl.clone());
-    LDVR = evaluateExtIntArg(ldvr.clone());
+    LDA = evaluateExtIntArg(lda.clone())?;
+    LDVL = evaluateExtIntArg(ldvl.clone())?;
+    LDVR = evaluateExtIntArg(ldvr.clone())?;
     WORK = evaluateExtRealArrayArg(work.clone())?;
-    LWORK = evaluateExtIntArg(lwork.clone());
+    LWORK = evaluateExtIntArg(lwork.clone())?;
     (A, WR, WI, VL, VR, WORK, INFO) = Lapack::dgeev((JOBVL.clone()).clone(), (JOBVR.clone()).clone(), N.clone(), A.clone(), LDA.clone(), LDVL.clone(), LDVR.clone(), WORK.clone(), LWORK.clone());
     assignVariableExt(a.clone(), Expression::makeRealMatrix(A.clone())?)?;
     assignVariable(wr.clone(), Expression::makeRealArray(WR.clone())?)?;
@@ -173,17 +173,17 @@ pub fn Lapack_dgegv(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressio
     work = __pa14.clone();
     lwork = __pa15.clone();
     info = __pa16.clone();
-    JOBVL = (evaluateExtStringArg(jobvl.clone())).clone();
-    JOBVR = (evaluateExtStringArg(jobvr.clone())).clone();
-    N = evaluateExtIntArg(n.clone());
+    JOBVL = (evaluateExtStringArg(jobvl.clone())?).clone();
+    JOBVR = (evaluateExtStringArg(jobvr.clone())?).clone();
+    N = evaluateExtIntArg(n.clone())?;
     A = evaluateExtRealMatrixArg(a.clone())?;
-    LDA = evaluateExtIntArg(lda.clone());
+    LDA = evaluateExtIntArg(lda.clone())?;
     B = evaluateExtRealMatrixArg(b.clone())?;
-    LDB = evaluateExtIntArg(ldb.clone());
-    LDVL = evaluateExtIntArg(ldvl.clone());
-    LDVR = evaluateExtIntArg(ldvr.clone());
+    LDB = evaluateExtIntArg(ldb.clone())?;
+    LDVL = evaluateExtIntArg(ldvl.clone())?;
+    LDVR = evaluateExtIntArg(ldvr.clone())?;
     WORK = evaluateExtRealArrayArg(work.clone())?;
-    LWORK = evaluateExtIntArg(lwork.clone());
+    LWORK = evaluateExtIntArg(lwork.clone())?;
     (ALPHAR, ALPHAI, BETA, VL, VR, WORK, INFO) = Lapack::dgegv((JOBVL.clone()).clone(), (JOBVR.clone()).clone(), N.clone(), A.clone(), LDA.clone(), B.clone(), LDB.clone(), LDVL.clone(), LDVR.clone(), WORK.clone(), LWORK.clone());
     assignVariable(alphar.clone(), Expression::makeRealArray(ALPHAR.clone())?)?;
     assignVariable(alphai.clone(), Expression::makeRealArray(ALPHAI.clone())?)?;
@@ -233,16 +233,16 @@ pub fn Lapack_dgels(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressio
     work = __pa8.clone();
     lwork = __pa9.clone();
     info = __pa10.clone();
-    TRANS = (evaluateExtStringArg(trans.clone())).clone();
-    M = evaluateExtIntArg(m.clone());
-    N = evaluateExtIntArg(n.clone());
-    NRHS = evaluateExtIntArg(nrhs.clone());
+    TRANS = (evaluateExtStringArg(trans.clone())?).clone();
+    M = evaluateExtIntArg(m.clone())?;
+    N = evaluateExtIntArg(n.clone())?;
+    NRHS = evaluateExtIntArg(nrhs.clone())?;
     A = evaluateExtRealMatrixArg(a.clone())?;
-    LDA = evaluateExtIntArg(lda.clone());
+    LDA = evaluateExtIntArg(lda.clone())?;
     B = evaluateExtRealMatrixArg(b.clone())?;
-    LDB = evaluateExtIntArg(ldb.clone());
+    LDB = evaluateExtIntArg(ldb.clone())?;
     WORK = evaluateExtRealArrayArg(work.clone())?;
-    LWORK = evaluateExtIntArg(lwork.clone());
+    LWORK = evaluateExtIntArg(lwork.clone())?;
     (A, B, WORK, INFO) = Lapack::dgels((TRANS.clone()).clone(), M.clone(), N.clone(), NRHS.clone(), A.clone(), LDA.clone(), B.clone(), LDB.clone(), WORK.clone(), LWORK.clone());
     assignVariableExt(a.clone(), Expression::makeRealMatrix(A.clone())?)?;
     assignVariableExt(b.clone(), Expression::makeRealMatrix(B.clone())?)?;
@@ -311,15 +311,15 @@ pub fn Lapack_dgelsx(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
         work = __pa23.clone();
         info = __pa24.clone();
     }
-    M = evaluateExtIntArg(m.clone());
-    N = evaluateExtIntArg(n.clone());
-    NRHS = evaluateExtIntArg(nrhs.clone());
+    M = evaluateExtIntArg(m.clone())?;
+    N = evaluateExtIntArg(n.clone())?;
+    NRHS = evaluateExtIntArg(nrhs.clone())?;
     A = evaluateExtRealMatrixArg(a.clone())?;
-    LDA = evaluateExtIntArg(lda.clone());
+    LDA = evaluateExtIntArg(lda.clone())?;
     B = evaluateExtRealMatrixArg(b.clone())?;
-    LDB = evaluateExtIntArg(ldb.clone());
+    LDB = evaluateExtIntArg(ldb.clone())?;
     JPVT = evaluateExtIntArrayArg(jpvt.clone())?;
-    RCOND = evaluateExtRealArg(rcond.clone());
+    RCOND = evaluateExtRealArg(rcond.clone())?;
     WORK = evaluateExtRealArrayArg(work.clone())?;
     (A, B, JPVT, RANK, INFO) = Lapack::dgelsx(M.clone(), N.clone(), NRHS.clone(), A.clone(), LDA.clone(), B.clone(), LDB.clone(), JPVT.clone(), RCOND.clone(), WORK.clone());
     assignVariableExt(a.clone(), Expression::makeRealMatrix(A.clone())?)?;
@@ -374,17 +374,17 @@ pub fn Lapack_dgelsy(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
     work = __pa10.clone();
     lwork = __pa11.clone();
     info = __pa12.clone();
-    M = evaluateExtIntArg(m.clone());
-    N = evaluateExtIntArg(n.clone());
-    NRHS = evaluateExtIntArg(nrhs.clone());
+    M = evaluateExtIntArg(m.clone())?;
+    N = evaluateExtIntArg(n.clone())?;
+    NRHS = evaluateExtIntArg(nrhs.clone())?;
     A = evaluateExtRealMatrixArg(a.clone())?;
-    LDA = evaluateExtIntArg(lda.clone());
+    LDA = evaluateExtIntArg(lda.clone())?;
     B = evaluateExtRealMatrixArg(b.clone())?;
-    LDB = evaluateExtIntArg(ldb.clone());
+    LDB = evaluateExtIntArg(ldb.clone())?;
     JPVT = evaluateExtIntArrayArg(jpvt.clone())?;
-    RCOND = evaluateExtRealArg(rcond.clone());
+    RCOND = evaluateExtRealArg(rcond.clone())?;
     WORK = evaluateExtRealArrayArg(work.clone())?;
-    LWORK = evaluateExtIntArg(lwork.clone());
+    LWORK = evaluateExtIntArg(lwork.clone())?;
     (A, B, JPVT, RANK, WORK, INFO) = Lapack::dgelsy(M.clone(), N.clone(), NRHS.clone(), A.clone(), LDA.clone(), B.clone(), LDB.clone(), JPVT.clone(), RCOND.clone(), WORK.clone(), LWORK.clone());
     assignVariableExt(a.clone(), Expression::makeRealMatrix(A.clone())?)?;
     assignVariableExt(b.clone(), Expression::makeRealMatrix(B.clone())?)?;
@@ -424,12 +424,12 @@ pub fn Lapack_dgesv(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressio
     b = __pa5.clone();
     ldb = __pa6.clone();
     info = __pa7.clone();
-    N = evaluateExtIntArg(n.clone());
-    NRHS = evaluateExtIntArg(nrhs.clone());
+    N = evaluateExtIntArg(n.clone())?;
+    NRHS = evaluateExtIntArg(nrhs.clone())?;
     A = evaluateExtRealMatrixArg(a.clone())?;
-    LDA = evaluateExtIntArg(lda.clone());
+    LDA = evaluateExtIntArg(lda.clone())?;
     B = evaluateExtRealMatrixArg(b.clone())?;
-    LDB = evaluateExtIntArg(ldb.clone());
+    LDB = evaluateExtIntArg(ldb.clone())?;
     (A, IPIV, B, INFO) = Lapack::dgesv(N.clone(), NRHS.clone(), A.clone(), LDA.clone(), B.clone(), LDB.clone());
     assignVariableExt(a.clone(), Expression::makeRealMatrix(A.clone())?)?;
     assignVariable(ipiv.clone(), Expression::makeIntegerArray(IPIV.clone())?)?;
@@ -482,17 +482,17 @@ pub fn Lapack_dgglse(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
     work = __pa10.clone();
     lwork = __pa11.clone();
     info = __pa12.clone();
-    M = evaluateExtIntArg(m.clone());
-    N = evaluateExtIntArg(n.clone());
-    P = evaluateExtIntArg(p.clone());
+    M = evaluateExtIntArg(m.clone())?;
+    N = evaluateExtIntArg(n.clone())?;
+    P = evaluateExtIntArg(p.clone())?;
     A = evaluateExtRealMatrixArg(a.clone())?;
-    LDA = evaluateExtIntArg(lda.clone());
+    LDA = evaluateExtIntArg(lda.clone())?;
     B = evaluateExtRealMatrixArg(b.clone())?;
-    LDB = evaluateExtIntArg(ldb.clone());
+    LDB = evaluateExtIntArg(ldb.clone())?;
     C = evaluateExtRealArrayArg(c.clone())?;
     D = evaluateExtRealArrayArg(d.clone())?;
     WORK = evaluateExtRealArrayArg(work.clone())?;
-    LWORK = evaluateExtIntArg(lwork.clone());
+    LWORK = evaluateExtIntArg(lwork.clone())?;
     (A, B, C, D, X, WORK, INFO) = Lapack::dgglse(M.clone(), N.clone(), P.clone(), A.clone(), LDA.clone(), B.clone(), LDB.clone(), C.clone(), D.clone(), WORK.clone(), LWORK.clone());
     assignVariableExt(a.clone(), Expression::makeRealMatrix(A.clone())?)?;
     assignVariableExt(b.clone(), Expression::makeRealMatrix(B.clone())?)?;
@@ -533,13 +533,13 @@ pub fn Lapack_dgtsv(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressio
     b = __pa5.clone();
     ldb = __pa6.clone();
     info = __pa7.clone();
-    N = evaluateExtIntArg(n.clone());
-    NRHS = evaluateExtIntArg(nrhs.clone());
+    N = evaluateExtIntArg(n.clone())?;
+    NRHS = evaluateExtIntArg(nrhs.clone())?;
     DL = evaluateExtRealArrayArg(dl.clone())?;
     D = evaluateExtRealArrayArg(d.clone())?;
     DU = evaluateExtRealArrayArg(du.clone())?;
     B = evaluateExtRealMatrixArg(b.clone())?;
-    LDB = evaluateExtIntArg(ldb.clone());
+    LDB = evaluateExtIntArg(ldb.clone())?;
     (DL, D, DU, B, INFO) = Lapack::dgtsv(N.clone(), NRHS.clone(), DL.clone(), D.clone(), DU.clone(), B.clone(), LDB.clone());
     assignVariable(dl.clone(), Expression::makeRealArray(DL.clone())?)?;
     assignVariable(d.clone(), Expression::makeRealArray(D.clone())?)?;
@@ -584,14 +584,14 @@ pub fn Lapack_dgbsv(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressio
     b = __pa7.clone();
     ldb = __pa8.clone();
     info = __pa9.clone();
-    N = evaluateExtIntArg(n.clone());
-    KL = evaluateExtIntArg(kl.clone());
-    KU = evaluateExtIntArg(ku.clone());
-    NRHS = evaluateExtIntArg(nrhs.clone());
+    N = evaluateExtIntArg(n.clone())?;
+    KL = evaluateExtIntArg(kl.clone())?;
+    KU = evaluateExtIntArg(ku.clone())?;
+    NRHS = evaluateExtIntArg(nrhs.clone())?;
     AB = evaluateExtRealMatrixArg(ab.clone())?;
-    LDAB = evaluateExtIntArg(ldab.clone());
+    LDAB = evaluateExtIntArg(ldab.clone())?;
     B = evaluateExtRealMatrixArg(b.clone())?;
-    LDB = evaluateExtIntArg(ldb.clone());
+    LDB = evaluateExtIntArg(ldb.clone())?;
     (AB, IPIV, B, INFO) = Lapack::dgbsv(N.clone(), KL.clone(), KU.clone(), NRHS.clone(), AB.clone(), LDAB.clone(), B.clone(), LDB.clone());
     assignVariableExt(ab.clone(), Expression::makeRealMatrix(AB.clone())?)?;
     assignVariable(ipiv.clone(), Expression::makeIntegerArray(IPIV.clone())?)?;
@@ -647,16 +647,16 @@ pub fn Lapack_dgesvd(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
     work = __pa11.clone();
     lwork = __pa12.clone();
     info = __pa13.clone();
-    JOBU = (evaluateExtStringArg(jobu.clone())).clone();
-    JOBVT = (evaluateExtStringArg(jobvt.clone())).clone();
-    M = evaluateExtIntArg(m.clone());
-    N = evaluateExtIntArg(n.clone());
+    JOBU = (evaluateExtStringArg(jobu.clone())?).clone();
+    JOBVT = (evaluateExtStringArg(jobvt.clone())?).clone();
+    M = evaluateExtIntArg(m.clone())?;
+    N = evaluateExtIntArg(n.clone())?;
     A = evaluateExtRealMatrixArg(a.clone())?;
-    LDA = evaluateExtIntArg(lda.clone());
-    LDU = evaluateExtIntArg(ldu.clone());
-    LDVT = evaluateExtIntArg(ldvt.clone());
+    LDA = evaluateExtIntArg(lda.clone())?;
+    LDU = evaluateExtIntArg(ldu.clone())?;
+    LDVT = evaluateExtIntArg(ldvt.clone())?;
     WORK = evaluateExtRealArrayArg(work.clone())?;
-    LWORK = evaluateExtIntArg(lwork.clone());
+    LWORK = evaluateExtIntArg(lwork.clone())?;
     (A, S, U, VT, WORK, INFO) = Lapack::dgesvd((JOBU.clone()).clone(), (JOBVT.clone()).clone(), M.clone(), N.clone(), A.clone(), LDA.clone(), LDU.clone(), LDVT.clone(), WORK.clone(), LWORK.clone());
     assignVariableExt(a.clone(), Expression::makeRealMatrix(A.clone())?)?;
     assignVariable(s.clone(), Expression::makeRealArray(S.clone())?)?;
@@ -690,10 +690,10 @@ pub fn Lapack_dgetrf(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
     lda = __pa3.clone();
     ipiv = __pa4.clone();
     info = __pa5.clone();
-    M = evaluateExtIntArg(m.clone());
-    N = evaluateExtIntArg(n.clone());
+    M = evaluateExtIntArg(m.clone())?;
+    N = evaluateExtIntArg(n.clone())?;
     A = evaluateExtRealMatrixArg(a.clone())?;
-    LDA = evaluateExtIntArg(lda.clone());
+    LDA = evaluateExtIntArg(lda.clone())?;
     (A, IPIV, INFO) = Lapack::dgetrf(M.clone(), N.clone(), A.clone(), LDA.clone());
     assignVariableExt(a.clone(), Expression::makeRealMatrix(A.clone())?)?;
     assignVariable(ipiv.clone(), Expression::makeIntegerArray(IPIV.clone())?)?;
@@ -733,14 +733,14 @@ pub fn Lapack_dgetrs(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
     b = __pa6.clone();
     ldb = __pa7.clone();
     info = __pa8.clone();
-    TRANS = (evaluateExtStringArg(trans.clone())).clone();
-    N = evaluateExtIntArg(n.clone());
-    NRHS = evaluateExtIntArg(nrhs.clone());
+    TRANS = (evaluateExtStringArg(trans.clone())?).clone();
+    N = evaluateExtIntArg(n.clone())?;
+    NRHS = evaluateExtIntArg(nrhs.clone())?;
     A = evaluateExtRealMatrixArg(a.clone())?;
-    LDA = evaluateExtIntArg(lda.clone());
+    LDA = evaluateExtIntArg(lda.clone())?;
     IPIV = evaluateExtIntArrayArg(ipiv.clone())?;
     B = evaluateExtRealMatrixArg(b.clone())?;
-    LDB = evaluateExtIntArg(ldb.clone());
+    LDB = evaluateExtIntArg(ldb.clone())?;
     (B, INFO) = Lapack::dgetrs((TRANS.clone()).clone(), N.clone(), NRHS.clone(), A.clone(), LDA.clone(), IPIV.clone(), B.clone(), LDB.clone());
     assignVariableExt(b.clone(), Expression::makeRealMatrix(B.clone())?)?;
     assignVariable(info.clone(), Expression::makeInteger(INFO.clone()))?;
@@ -773,12 +773,12 @@ pub fn Lapack_dgetri(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
     work = __pa4.clone();
     lwork = __pa5.clone();
     info = __pa6.clone();
-    N = evaluateExtIntArg(n.clone());
+    N = evaluateExtIntArg(n.clone())?;
     A = evaluateExtRealMatrixArg(a.clone())?;
-    LDA = evaluateExtIntArg(lda.clone());
+    LDA = evaluateExtIntArg(lda.clone())?;
     IPIV = evaluateExtIntArrayArg(ipiv.clone())?;
     WORK = evaluateExtRealArrayArg(work.clone())?;
-    LWORK = evaluateExtIntArg(lwork.clone());
+    LWORK = evaluateExtIntArg(lwork.clone())?;
     (A, WORK, INFO) = Lapack::dgetri(N.clone(), A.clone(), LDA.clone(), IPIV.clone(), WORK.clone(), LWORK.clone());
     assignVariableExt(a.clone(), Expression::makeRealMatrix(A.clone())?)?;
     assignVariable(work.clone(), Expression::makeRealArray(WORK.clone())?)?;
@@ -815,10 +815,10 @@ pub fn Lapack_dgeqpf(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
     tau = __pa5.clone();
     work = __pa6.clone();
     info = __pa7.clone();
-    M = evaluateExtIntArg(m.clone());
-    N = evaluateExtIntArg(n.clone());
+    M = evaluateExtIntArg(m.clone())?;
+    N = evaluateExtIntArg(n.clone())?;
     A = evaluateExtRealMatrixArg(a.clone())?;
-    LDA = evaluateExtIntArg(lda.clone());
+    LDA = evaluateExtIntArg(lda.clone())?;
     JPVT = evaluateExtIntArrayArg(jpvt.clone())?;
     WORK = evaluateExtRealArrayArg(work.clone())?;
     (A, JPVT, TAU, INFO) = Lapack::dgeqpf(M.clone(), N.clone(), A.clone(), LDA.clone(), JPVT.clone(), WORK.clone());
@@ -861,14 +861,14 @@ pub fn Lapack_dorgqr(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
     work = __pa6.clone();
     lwork = __pa7.clone();
     info = __pa8.clone();
-    M = evaluateExtIntArg(m.clone());
-    N = evaluateExtIntArg(n.clone());
-    K = evaluateExtIntArg(k.clone());
+    M = evaluateExtIntArg(m.clone())?;
+    N = evaluateExtIntArg(n.clone())?;
+    K = evaluateExtIntArg(k.clone())?;
     A = evaluateExtRealMatrixArg(a.clone())?;
-    LDA = evaluateExtIntArg(lda.clone());
+    LDA = evaluateExtIntArg(lda.clone())?;
     TAU = evaluateExtRealArrayArg(tau.clone())?;
     WORK = evaluateExtRealArrayArg(work.clone())?;
-    LWORK = evaluateExtIntArg(lwork.clone());
+    LWORK = evaluateExtIntArg(lwork.clone())?;
     (A, WORK, INFO) = Lapack::dorgqr(M.clone(), N.clone(), K.clone(), A.clone(), LDA.clone(), TAU.clone(), WORK.clone(), LWORK.clone());
     assignVariableExt(a.clone(), Expression::makeRealMatrix(A.clone())?)?;
     assignVariable(work.clone(), Expression::makeRealArray(WORK.clone())?)?;
@@ -923,17 +923,17 @@ pub fn Lapack_dhseqr(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
     work = __pa11.clone();
     lwork = __pa12.clone();
     info = __pa13.clone();
-    JOB = (evaluateExtStringArg(job.clone())).clone();
-    COMPZ = (evaluateExtStringArg(compz.clone())).clone();
-    N = evaluateExtIntArg(n.clone());
-    ILO = evaluateExtIntArg(ilo.clone());
-    IHI = evaluateExtIntArg(ihi.clone());
+    JOB = (evaluateExtStringArg(job.clone())?).clone();
+    COMPZ = (evaluateExtStringArg(compz.clone())?).clone();
+    N = evaluateExtIntArg(n.clone())?;
+    ILO = evaluateExtIntArg(ilo.clone())?;
+    IHI = evaluateExtIntArg(ihi.clone())?;
     H = evaluateExtRealMatrixArg(h.clone())?;
-    LDH = evaluateExtIntArg(ldh.clone());
+    LDH = evaluateExtIntArg(ldh.clone())?;
     Z = evaluateExtRealMatrixArg(z.clone())?;
-    LDZ = evaluateExtIntArg(ldz.clone());
+    LDZ = evaluateExtIntArg(ldz.clone())?;
     WORK = evaluateExtRealArrayArg(work.clone())?;
-    LWORK = evaluateExtIntArg(lwork.clone());
+    LWORK = evaluateExtIntArg(lwork.clone())?;
     (H, WR, WI, Z, WORK, INFO) = Lapack::dhseqr((JOB.clone()).clone(), (COMPZ.clone()).clone(), N.clone(), ILO.clone(), IHI.clone(), H.clone(), LDH.clone(), Z.clone(), LDZ.clone(), WORK.clone(), LWORK.clone());
     assignVariableExt(h.clone(), Expression::makeRealMatrix(H.clone())?)?;
     assignVariable(wr.clone(), Expression::makeRealArray(WR.clone())?)?;
@@ -944,9 +944,9 @@ pub fn Lapack_dhseqr(mut args: Arc<metamodelica::List<Arc<Expression::NFExpressi
     Ok(())
 }
 
-fn evaluateExtIntArg(mut arg: Arc<Expression::NFExpression>) -> i32 {
-    let mut value: i32 = getExtIntValue(Ceval::evalExp(arg.clone(), Ceval::noTarget().clone()).unwrap()).unwrap();
-    value
+fn evaluateExtIntArg(mut arg: Arc<Expression::NFExpression>) -> Result<i32> {
+    let mut value: i32 = getExtIntValue(Ceval::evalExp(arg.clone(), Ceval::noTarget().clone())?)?;
+    Ok(value)
 }
 
 fn getExtIntValue(mut exp: Arc<Expression::NFExpression>) -> Result<i32> {
@@ -959,9 +959,9 @@ fn getExtIntValue(mut exp: Arc<Expression::NFExpression>) -> Result<i32> {
     Ok(value)
 }
 
-fn evaluateExtRealArg(mut arg: Arc<Expression::NFExpression>) -> metamodelica::Real {
-    let mut value: metamodelica::Real = getExtRealValue(Ceval::evalExp(arg.clone(), Ceval::noTarget().clone()).unwrap()).unwrap();
-    value
+fn evaluateExtRealArg(mut arg: Arc<Expression::NFExpression>) -> Result<metamodelica::Real> {
+    let mut value: metamodelica::Real = getExtRealValue(Ceval::evalExp(arg.clone(), Ceval::noTarget().clone())?)?;
+    Ok(value)
 }
 
 fn getExtRealValue(mut exp: Arc<Expression::NFExpression>) -> Result<metamodelica::Real> {
@@ -974,9 +974,9 @@ fn getExtRealValue(mut exp: Arc<Expression::NFExpression>) -> Result<metamodelic
     Ok(value)
 }
 
-fn evaluateExtStringArg(mut arg: Arc<Expression::NFExpression>) -> ArcStr {
-    let mut value: ArcStr = getExtStringValue(Ceval::evalExp(arg.clone(), Ceval::noTarget().clone()).unwrap()).unwrap();
-    value
+fn evaluateExtStringArg(mut arg: Arc<Expression::NFExpression>) -> Result<ArcStr> {
+    let mut value: ArcStr = getExtStringValue(Ceval::evalExp(arg.clone(), Ceval::noTarget().clone())?)?;
+    Ok(value)
 }
 
 fn getExtStringValue(mut exp: Arc<Expression::NFExpression>) -> Result<ArcStr> {

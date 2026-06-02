@@ -151,7 +151,7 @@ fn qualify2(mut inEnv: Env, mut inClassType: ClassType, mut inExtendsTable: Exte
         _ => bail!("pattern mismatch"),
     } };
     tree = __pa0.clone();
-    tree = NFSCodeEnv::EnvTree::map(tree.clone(), (std::sync::Arc::new({ let __pe_b2 = env.clone(); let __pe_b3 = inExtendsTable.clone(); move |__pe_a0, __pe_a1| qualify3(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<NFSCodeEnv::Item>) -> Result<Arc<NFSCodeEnv::Item>> + 'static>));
+    tree = NFSCodeEnv::EnvTree::map(tree.clone(), (std::sync::Arc::new({ let __pe_b2 = env.clone(); let __pe_b3 = inExtendsTable.clone(); move |__pe_a0, __pe_a1| qualify3(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<NFSCodeEnv::Item>) -> Result<Arc<NFSCodeEnv::Item>> + 'static>))?;
     outEnv = NFSCodeEnv::setEnvClsAndVars(tree.clone(), env.clone())?;
     Ok(outEnv)
 }
@@ -190,27 +190,27 @@ fn qualifyLocalScope(mut inEnv: Env, mut inClassType: ClassType, mut inExtendsTa
     exts = __pa0.clone();
     re = __pa1.clone();
     cei = __pa2.clone();
-    exts = qualifyExtendsList(exts.clone(), inClassType.clone(), inEnv.clone(), inExtendsTable.clone());
+    exts = qualifyExtendsList(exts.clone(), inClassType.clone(), inEnv.clone(), inExtendsTable.clone())?;
     outEnv = NFSCodeEnv::setEnvExtendsTable(Arc::new(NFSCodeEnv::ExtendsTable { baseClasses: exts.clone(), redeclaredElements: re.clone(), classExtendsInfo: cei.clone() }), inEnv.clone())?;
     Ok(outEnv)
 }
 
-fn qualifyExtendsList(mut inExtends: Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>>, mut inClassType: ClassType, mut inEnv: Env, mut inExtendsTable: ExtendsTableArray) -> Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>> {
+fn qualifyExtendsList(mut inExtends: Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>>, mut inClassType: ClassType, mut inEnv: Env, mut inExtendsTable: ExtendsTableArray) -> Result<Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>>> {
     let mut outExtends: Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>> = metamodelica::nil();
     outExtends = (::match_deref::match_deref! { match &((inExtends.clone(), inClassType.clone())) {
         (Deref @ metamodelica::List::Cons { head: ext, tail: extl }, NFSCodeEnv::ClassType::CLASS_EXTENDS { .. }) => {
             let mut extl = (*extl).clone();
-            extl = List::map2Reverse(extl.clone(), (std::sync::Arc::new(qualifyExtends) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSCodeEnv::Extends>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, metamodelica::Array<ExtendsWrapper>) -> Result<Arc<NFSCodeEnv::Extends>> + 'static>), inEnv.clone(), inExtendsTable.clone());
+            extl = List::map2Reverse(extl.clone(), (std::sync::Arc::new(qualifyExtends) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSCodeEnv::Extends>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, metamodelica::Array<ExtendsWrapper>) -> Result<Arc<NFSCodeEnv::Extends>> + 'static>), inEnv.clone(), inExtendsTable.clone())?;
             metamodelica::cons(ext.clone(), extl.clone())
         },
         _ => {
             let mut extl: Arc<metamodelica::List<Arc<NFSCodeEnv::Extends>>> = metamodelica::nil();
-            extl = List::map2Reverse(inExtends.clone(), (std::sync::Arc::new(qualifyExtends) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSCodeEnv::Extends>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, metamodelica::Array<ExtendsWrapper>) -> Result<Arc<NFSCodeEnv::Extends>> + 'static>), inEnv.clone(), inExtendsTable.clone());
+            extl = List::map2Reverse(inExtends.clone(), (std::sync::Arc::new(qualifyExtends) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSCodeEnv::Extends>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>, metamodelica::Array<ExtendsWrapper>) -> Result<Arc<NFSCodeEnv::Extends>> + 'static>), inEnv.clone(), inExtendsTable.clone())?;
             extl.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    outExtends
+    Ok(outExtends)
 }
 
 fn qualifyExtends(mut inExtends: Extends, mut inEnv: Env, mut inExtendsTable: ExtendsTableArray) -> Result<Extends> {
@@ -276,7 +276,7 @@ fn qualifyExtends2(mut inExtends: Extends, mut inEnv: Env, mut inExtendsTable: E
                     addUnqualifiedToTable(inExtends.clone(), index.clone(), inExtendsTable.clone())?;
                     env = NFSCodeEnv::removeExtendFromLocalScope(bc.clone(), inEnv.clone())?;
                     bc = qualifyExtends3(bc.clone(), env.clone(), inExtendsTable.clone(), true, bc.clone(), info.clone(), None)?;
-                    List::map2_0(rl.clone(), (std::sync::Arc::new(NFSCodeCheck::checkRedeclareModifier) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSCodeEnv::Redeclaration>, Arc<Absyn::Path>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>) -> Result<()> + 'static>), bc.clone(), inEnv.clone());
+                    List::map2_0(rl.clone(), (std::sync::Arc::new(NFSCodeCheck::checkRedeclareModifier) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFSCodeEnv::Redeclaration>, Arc<Absyn::Path>, Arc<metamodelica::List<Arc<NFSCodeEnv::Frame>>>) -> Result<()> + 'static>), bc.clone(), inEnv.clone())?;
                     ext = Arc::new(NFSCodeEnv::Extends { baseClass: bc.clone(), redeclareModifiers: rl.clone(), index: index.clone(), info: info.clone() });
                     updateQualifiedInTable(ext.clone(), index.clone(), inExtendsTable.clone())?;
                     Ok(Some(ext.clone()))
@@ -971,9 +971,9 @@ fn update2(mut inEnv: Env) -> Result<Env> {
     imps = __pa5.clone();
     iu = __pa6.clone();
     rest_env = __pa7.clone();
-    tree = NFSCodeEnv::EnvTree::map(tree.clone(), (std::sync::Arc::new({ let __pe_b2 = inEnv.clone(); move |__pe_a0, __pe_a1| update3(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<NFSCodeEnv::Item>) -> Result<Arc<NFSCodeEnv::Item>> + 'static>));
+    tree = NFSCodeEnv::EnvTree::map(tree.clone(), (std::sync::Arc::new({ let __pe_b2 = inEnv.clone(); move |__pe_a0, __pe_a1| update3(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, Arc<NFSCodeEnv::Item>) -> Result<Arc<NFSCodeEnv::Item>> + 'static>))?;
     env = metamodelica::cons(Arc::new(NFSCodeEnv::Frame { name: name.clone(), frameType: ty.clone(), clsAndVars: tree.clone(), extendsTable: Arc::new(NFSCodeEnv::ExtendsTable { baseClasses: bcl.clone(), redeclaredElements: metamodelica::nil(), classExtendsInfo: None }), importTable: imps.clone(), isUsed: iu.clone() }), rest_env.clone());
-    outEnv = NFSCodeFlattenRedeclare::addElementRedeclarationsToEnv(re.clone(), env.clone());
+    outEnv = NFSCodeFlattenRedeclare::addElementRedeclarationsToEnv(re.clone(), env.clone())?;
     Ok(outEnv)
 }
 

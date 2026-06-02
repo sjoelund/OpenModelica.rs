@@ -237,9 +237,9 @@ pub fn hasNext(mut iterator: Arc<NFRangeIterator>) -> Result<bool> {
     Ok(hasNext)
 }
 
-pub fn toList(mut iterator: Arc<NFRangeIterator>) -> Arc<metamodelica::List<Arc<Expression::NFExpression>>> {
-    let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = toListReverse(iterator.clone()).unwrap().reverse();
-    expl
+pub fn toList(mut iterator: Arc<NFRangeIterator>) -> Result<Arc<metamodelica::List<Arc<Expression::NFExpression>>>> {
+    let mut expl: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = toListReverse(iterator.clone())?.reverse();
+    Ok(expl)
 }
 
 pub fn toListReverse(mut iterator: Arc<NFRangeIterator>) -> Result<Arc<metamodelica::List<Arc<Expression::NFExpression>>>> {

@@ -108,7 +108,7 @@ pub fn isComponentBindingNotFixed(mut component: Arc<Component::NFComponent>, mu
             isNotFixed = false;
         } else {
             parent = InstNode::parent(node.clone());
-            if InstNode::isComponent(parent.clone()) && InstNode::isRecord(parent.clone()) {
+            if InstNode::isComponent(parent.clone())? && InstNode::isRecord(parent.clone()) {
                 isNotFixed = isComponentBindingNotFixed(InstNode::component(parent.clone())?, parent.clone(), requireFinal.clone(), maxDepth.clone(), true)?;
             } else {
                 binding = Component::getTypeAttributeBinding(component.clone(), (literal!("start")).clone());
@@ -129,9 +129,9 @@ pub fn isExpressionNotFixed(mut exp: Arc<Expression::NFExpression>, mut requireF
             let mut c: Arc<Component::NFComponent> = Arc::new(Component::WILD);
             let mut var: Variability = Variability::CONSTANT;
             node = ComponentRef::node(var_field!((*exp).cref, Expression::NFExpression::CREF).clone())?;
-            if InstNode::isComponent(node.clone()) {
+            if InstNode::isComponent(node.clone())? {
                 c = InstNode::component(node.clone())?;
-                var = Component::variability(c.clone());
+                var = Component::variability(c.clone())?;
                 if var.clone() <= Variability::STRUCTURAL_PARAMETER.clone() {
                     isNotFixed = false;
                 } else if var.clone() == Variability::PARAMETER.clone() && (!(requireFinal.clone()) || Component::isFinal(c.clone())?) && !(Component::isExternalObject(c.clone())?) && Component::isFixed(c.clone())? {
@@ -189,9 +189,9 @@ pub fn markExp(mut exp: Arc<Expression::NFExpression>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { cref: Deref @ ComponentRef::CREF { origin: ComponentRef::Origin::CREF { .. }, node, .. }, .. } => {
             let mut comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);
-            if InstNode::isComponent(node.clone()) {
+            if InstNode::isComponent(node.clone())? {
                 comp = InstNode::component(node.clone())?;
-                if Component::variability(comp.clone()) == Variability::PARAMETER.clone() {
+                if Component::variability(comp.clone())? == Variability::PARAMETER.clone() {
                     markComponent(comp.clone(), node.clone())?;
                 }
             }
@@ -223,7 +223,7 @@ pub fn markExp(mut exp: Arc<Expression::NFExpression>) -> Result<()> {
 pub fn markSubscriptsInExp(mut exp: Arc<Expression::NFExpression>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } => {
-            ComponentRef::applySubscripts(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), (std::sync::Arc::new(markSubscript) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>) -> Result<()> + 'static>), false);
+            ComponentRef::applySubscripts(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), (std::sync::Arc::new(markSubscript) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>) -> Result<()> + 'static>), false)?;
             ()
         },
         _ => {
@@ -270,16 +270,16 @@ pub fn markExpSize_traverser(mut exp: Arc<Expression::NFExpression>) -> Result<(
     Ok(())
 }
 
-pub fn markSubscripts(mut exp: Arc<Expression::NFExpression>) -> () {
+pub fn markSubscripts(mut exp: Arc<Expression::NFExpression>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ Expression::CREF { .. } => {
-            ComponentRef::applySubscripts(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), (std::sync::Arc::new(markSubscript) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>) -> Result<()> + 'static>), false);
+            ComponentRef::applySubscripts(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), (std::sync::Arc::new(markSubscript) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>) -> Result<()> + 'static>), false)?;
             ()
         },
         _ => (),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    ()
+    Ok(())
 }
 
 pub fn markSubscript(mut sub: Arc<Subscript::NFSubscript>) -> Result<()> {

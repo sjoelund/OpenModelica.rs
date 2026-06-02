@@ -171,10 +171,10 @@ pub type CrefRootsTable = Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFCom
 
 pub mod CrefSets {
     use super::*;
-    pub fn EntryHash(mut entry: Entry) -> i32 {
+    pub fn EntryHash(mut entry: Entry) -> Result<i32> {
         let mut hash: i32 = 0;
-        hash = ComponentRef::hash(entry.clone());
-        hash
+        hash = ComponentRef::hash(entry.clone())?;
+        Ok(hash)
     }
 
     pub fn EntryEqual(mut entry1: Entry, mut entry2: Entry) -> Result<bool> {
@@ -266,10 +266,10 @@ pub mod CrefSets {
         Ok(sets)
     }
 
-    pub fn contains(mut entry: Entry, mut sets: Sets) -> bool {
+    pub fn contains(mut entry: Entry, mut sets: Sets) -> Result<bool> {
         let mut found: bool = false;
-        found = isSome(UnorderedMap::get(entry.clone(), sets.elements.clone()));
-        found
+        found = isSome(UnorderedMap::get(entry.clone(), sets.elements.clone())?);
+        Ok(found)
     }
 
     pub fn emptySets(mut setCount: i32) -> Sets {
@@ -279,7 +279,7 @@ pub mod CrefSets {
         let mut sz: i32 = 0;
         sz = std::cmp::max(setCount.clone(), 3);
         nodes = arrayCreate(sz.clone(), -1);
-        elements = UnorderedMap::new((std::sync::Arc::new(fnptr!(EntryHash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(EntryEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
+        elements = UnorderedMap::new((std::sync::Arc::new(EntryHash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(EntryEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
         sets = Sets { nodes: nodes.clone(), elements: elements.clone(), nodeCount: 0 };
         sets
     }
@@ -325,7 +325,7 @@ pub mod CrefSets {
         let mut sets: Sets = sets;
         let mut index: i32 = 0;
         let mut oindex: Option<i32> = None;
-        oindex = UnorderedMap::get(entry.clone(), sets.elements.clone());
+        oindex = UnorderedMap::get(entry.clone(), sets.elements.clone())?;
         if isSome(oindex.clone()) {
             let __pa0 = ::match_deref::match_deref! { match &(oindex.clone()) {
                 Some(__pa0) => __pa0.clone(),
@@ -364,20 +364,20 @@ pub mod CrefSets {
         Ok((set, updatedSets))
     }
 
-    pub fn findSetArrayIndex(mut entry: Entry, mut sets: Sets) -> i32 {
+    pub fn findSetArrayIndex(mut entry: Entry, mut sets: Sets) -> Result<i32> {
         let mut set: i32 = 0;
-        set = UnorderedMap::getOrFail(entry.clone(), sets.elements.clone());
+        set = UnorderedMap::getOrFail(entry.clone(), sets.elements.clone())?;
         while set.clone() > 0 {
             set = sets.nodes.borrow()[(set.clone()-1) as usize].clone();
         }
         set = -(set.clone());
-        set
+        Ok(set)
     }
 
-    pub fn getEntry(mut entry: Entry, mut sets: Sets) -> Option<Arc<ComponentRef::NFComponentRef>> {
+    pub fn getEntry(mut entry: Entry, mut sets: Sets) -> Result<Option<Arc<ComponentRef::NFComponentRef>>> {
         let mut outEntry: Option<Arc<ComponentRef::NFComponentRef>> = None;
-        outEntry = UnorderedMap::getKey(entry.clone(), sets.elements.clone());
-        outEntry
+        outEntry = UnorderedMap::getKey(entry.clone(), sets.elements.clone())?;
+        Ok(outEntry)
     }
 
     pub fn getNodeCount(mut sets: Sets) -> i32 {
@@ -585,7 +585,7 @@ fn generateEqualityConstraintEquation(mut lhs: Arc<ComponentRef::NFComponentRef>
     (fcref_rhs, fn_node_rhs, _) = Function::instFunctionRef(fcref_rhs.clone(), context.clone(), Absyn::dummyInfo.clone())?;
     exp_rhs = Arc::new(Expression::NFExpression::CALL { call: Arc::new(Call::NFCall::UNTYPED_CALL { r#ref: fcref_rhs.clone(), arguments: list![Expression::fromCref(lhs.clone(), false)?, Expression::fromCref(rhs.clone(), false)?], named_args: metamodelica::nil(), call_scope: fn_node_rhs.clone() }) });
     (exp_rhs, ty, _, _) = Typing::typeExp(exp_rhs.clone(), context.clone(), info.clone(), false)?;
-    fcref_lhs = Function::lookupFunctionSimple((literal!("fill")).clone(), InstNode::topScope(ComponentRef::node(lhs.clone())?), context.clone())?;
+    fcref_lhs = Function::lookupFunctionSimple((literal!("fill")).clone(), InstNode::topScope(ComponentRef::node(lhs.clone())?)?, context.clone())?;
     (fcref_lhs, fn_node_lhs, _) = Function::instFunctionRef(fcref_lhs.clone(), context.clone(), Absyn::dummyInfo.clone())?;
     exp_lhs = Arc::new(Expression::NFExpression::CALL { call: Arc::new(Call::NFCall::UNTYPED_CALL { r#ref: fcref_lhs.clone(), arguments: metamodelica::cons(Arc::new(Expression::NFExpression::REAL { value: metamodelica::OrderedFloat(0.0_f64) }), ({
         let mut __acc: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
@@ -604,7 +604,7 @@ fn getOverconstrainedCrefs(mut conn: Arc<Connector::NFConnector>, mut isDeleted:
     let mut crefs: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
     let mut conns: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
     conns = Connector::split(conn.clone())?;
-    conns = List::mapFlat(conns.clone(), (std::sync::Arc::new(Connector::scalarizePrefix) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<Arc<metamodelica::List<Arc<Connector::NFConnector>>>> + 'static>));
+    conns = List::mapFlat(conns.clone(), (std::sync::Arc::new(Connector::scalarizePrefix) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<Arc<metamodelica::List<Arc<Connector::NFConnector>>>> + 'static>))?;
     crefs = ({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
         for mut c in (conns.clone()).into_iter().cloned() {
@@ -614,7 +614,7 @@ fn getOverconstrainedCrefs(mut conn: Arc<Connector::NFConnector>, mut isDeleted:
         }
         __acc.reverse()
     });
-    crefs = List::uniqueOnTrue(crefs.clone(), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>));
+    crefs = List::uniqueOnTrue(crefs.clone(), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
     Ok(crefs)
 }
 
@@ -653,24 +653,24 @@ fn handleOverconstrainedConnections_dispatch(mut graph: NFOCConnectionGraph, mut
         if unwrap_break_err!(Flags::isSet(Flags::CGRAPH.clone()), '__try0) {
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Summary:\n\t")); __mm_s.push_str(&*literal!("Nr Roots:           ")); __mm_s.push_str(&*intString((getDefiniteRoots(graph.clone())?.len() as i32))); __mm_s.push_str(&*literal!("\n\t")); __mm_s.push_str(&*literal!("Nr Potential Roots: ")); __mm_s.push_str(&*intString((getPotentialRoots(graph.clone())?.len() as i32))); __mm_s.push_str(&*literal!("\n\t")); __mm_s.push_str(&*literal!("Nr Unique Roots:    ")); __mm_s.push_str(&*intString((getUniqueRoots(graph.clone())?.len() as i32))); __mm_s.push_str(&*literal!("\n\t")); __mm_s.push_str(&*literal!("Nr Branches:        ")); __mm_s.push_str(&*intString((getBranches(graph.clone())?.len() as i32))); __mm_s.push_str(&*literal!("\n\t")); __mm_s.push_str(&*literal!("Nr Connections:     ")); __mm_s.push_str(&*intString((getConnections(graph.clone())?.len() as i32))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
-        (roots, connected, broken) = unwrap_break_err!(findResultGraph(graph.clone(), (FlatModel::fullName(flatModel.clone())).clone()), '__try0);
+        (roots, connected, broken) = unwrap_break_err!(findResultGraph(graph.clone(), (FlatModel::fullName(flatModel.clone())?).clone()), '__try0);
         if unwrap_break_err!(Flags::isSet(Flags::CGRAPH.clone()), '__try0) {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Roots: ")); __mm_s.push_str(&*stringDelimitList(List::map(roots.clone(), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>)), (literal!(", ")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Broken connections: ")); __mm_s.push_str(&*stringDelimitList(List::map1(broken.clone(), (std::sync::Arc::new(printConnectionStr) as std::sync::Arc<dyn ::std::ops::Fn(NFConnections::BrokenEdge, ArcStr) -> Result<ArcStr> + 'static>), (literal!("broken")).clone()), (literal!(", ")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Allowed connections: ")); __mm_s.push_str(&*stringDelimitList(List::map1(connected.clone(), (std::sync::Arc::new(printConnectionStr) as std::sync::Arc<dyn ::std::ops::Fn(NFConnections::BrokenEdge, ArcStr) -> Result<ArcStr> + 'static>), (literal!("allowed")).clone()), (literal!(", ")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Roots: ")); __mm_s.push_str(&*stringDelimitList(List::map(roots.clone(), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Broken connections: ")); __mm_s.push_str(&*stringDelimitList(List::map1(broken.clone(), (std::sync::Arc::new(printConnectionStr) as std::sync::Arc<dyn ::std::ops::Fn(NFConnections::BrokenEdge, ArcStr) -> Result<ArcStr> + 'static>), (literal!("broken")).clone())?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Allowed connections: ")); __mm_s.push_str(&*stringDelimitList(List::map1(connected.clone(), (std::sync::Arc::new(printConnectionStr) as std::sync::Arc<dyn ::std::ops::Fn(NFConnections::BrokenEdge, ArcStr) -> Result<ArcStr> + 'static>), (literal!("allowed")).clone())?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         rooted = unwrap_break_err!(buildRootedTable(roots.clone(), graph.clone()), '__try0);
         assign_field!(
             flatModel.variables = ({
         let mut __acc: Arc<metamodelica::List<Arc<Variable::NFVariable>>> = metamodelica::nil();
         for mut v in (flatModel.variables.clone()).into_iter().cloned() {
-            let __x = evalConnectionsOperatorsVar(roots.clone(), rooted.clone(), graph.clone(), v.clone());
+            let __x = unwrap_break_err!(evalConnectionsOperatorsVar(roots.clone(), rooted.clone(), graph.clone(), v.clone()), '__try0);
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }),
-            flatModel.equations = evalConnectionsOperatorsEqs(roots.clone(), rooted.clone(), graph.clone(), flatModel.equations.clone()),
-            flatModel.initialEquations = evalConnectionsOperatorsEqs(roots.clone(), rooted.clone(), graph.clone(), flatModel.initialEquations.clone())
+            flatModel.equations = unwrap_break_err!(evalConnectionsOperatorsEqs(roots.clone(), rooted.clone(), graph.clone(), flatModel.equations.clone()), '__try0),
+            flatModel.initialEquations = unwrap_break_err!(evalConnectionsOperatorsEqs(roots.clone(), rooted.clone(), graph.clone(), flatModel.initialEquations.clone()), '__try0)
         );
         Ok::<_, anyhow::Error>((broken.clone(), connected.clone(), flatModel.clone(), rooted.clone(), roots.clone()))
     } {
@@ -683,7 +683,7 @@ fn handleOverconstrainedConnections_dispatch(mut graph: NFOCConnectionGraph, mut
         }
         Err(__try0_err) => {
             let true = (Flags::isSet(Flags::CGRAPH.clone())?) else { bail!("pattern mismatch") };
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- NFOCConnectionGraph.handleOverconstrainedConnections failed for model: ")); __mm_s.push_str(&*FlatModel::fullName(flatModel.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- NFOCConnectionGraph.handleOverconstrainedConnections failed for model: ")); __mm_s.push_str(&*FlatModel::fullName(flatModel.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             return Err(__try0_err);
         }
     }
@@ -748,29 +748,29 @@ fn addConnection(mut ref1: Arc<ComponentRef::NFComponentRef>, mut ref2: Arc<Comp
 // ************************************* //
 // ********* protected section ********* //
 // ************************************* //
-fn canonical(mut inPartition: CrefCrefTable, mut inRef: Arc<ComponentRef::NFComponentRef>) -> Arc<ComponentRef::NFComponentRef> {
+fn canonical(mut inPartition: CrefCrefTable, mut inRef: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> {
     let mut outCanonical: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut cref_opt: Option<Arc<ComponentRef::NFComponentRef>> = None;
-    cref_opt = UnorderedMap::get(inRef.clone(), inPartition.clone());
+    cref_opt = UnorderedMap::get(inRef.clone(), inPartition.clone())?;
     outCanonical = (::match_deref::match_deref! { match &(cref_opt.clone()) {
         Some(__esc_outCanonical) => {
             outCanonical = (*__esc_outCanonical).clone();
-            canonical(inPartition.clone(), outCanonical.clone())
+            canonical(inPartition.clone(), outCanonical.clone())?
         },
         _ => inRef.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    outCanonical
+    Ok(outCanonical)
 }
 
 fn areInSameComponent(mut partition: CrefCrefTable, mut ref1: Arc<ComponentRef::NFComponentRef>, mut ref2: Arc<ComponentRef::NFComponentRef>) -> Result<bool> {
     let mut outResult: bool = false;
-    outResult = ComponentRef::isEqual(canonical(partition.clone(), ref1.clone()), canonical(partition.clone(), ref2.clone()))?;
+    outResult = ComponentRef::isEqual(canonical(partition.clone(), ref1.clone())?, canonical(partition.clone(), ref2.clone())?)?;
     Ok(outResult)
 }
 
 fn connectBranchComponents(mut partition: CrefCrefTable, mut ref1: Arc<ComponentRef::NFComponentRef>, mut ref2: Arc<ComponentRef::NFComponentRef>) -> Result<()> {
-    connectCanonicalComponents(partition.clone(), canonical(partition.clone(), ref1.clone()), canonical(partition.clone(), ref2.clone()))?;
+    connectCanonicalComponents(partition.clone(), canonical(partition.clone(), ref1.clone())?, canonical(partition.clone(), ref2.clone())?)?;
     Ok(())
 }
 
@@ -781,8 +781,8 @@ fn connectComponents(mut partition: CrefCrefTable, mut edge: FlatEdge) -> (FlatE
     let mut canon2: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
     let mut eq: Arc<Equation::NFEquation> = Arc::new(<Equation::NFEquation as ::std::default::Default>::default());
     match '__try0: {
-        canon1 = canonical(partition.clone(), edge.lhs.clone());
-        canon2 = canonical(partition.clone(), edge.rhs.clone());
+        canon1 = unwrap_break_err!(canonical(partition.clone(), edge.lhs.clone()), '__try0);
+        canon2 = unwrap_break_err!(canonical(partition.clone(), edge.rhs.clone()), '__try0);
         let false = (unwrap_break_err!(connectCanonicalComponents(partition.clone(), canon1.clone(), canon2.clone()), '__try0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
         if unwrap_break_err!(Flags::isSet(Flags::CGRAPH.clone()), '__try0) {
             unwrap_break_err!(Debug::trace(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- NFOCConnectionGraph.connectComponents: should remove equations generated from: connect(")); __mm_s.push_str(&*ComponentRef::toString(edge.lhs.clone()).unwrap()); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*ComponentRef::toString(edge.rhs.clone()).unwrap()); __mm_s.push_str(&*literal!(") and add {0, ..., 0} = equalityConstraint(cr1, cr2) instead.\n")); ArcStr::from(__mm_s) }).clone()), '__try0);
@@ -893,8 +893,8 @@ fn addPotentialRootsToTable(mut table: CrefCrefTable, mut potentialRoots: Potent
                     let mut canon1: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
                     let mut canon2: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
                     let mut finalRoots: DefiniteRoots = metamodelica::nil();
-                    canon1 = canonical(table.clone(), potentialRoot.clone());
-                    canon2 = canonical(table.clone(), firstRoot.clone());
+                    canon1 = canonical(table.clone(), potentialRoot.clone())?;
+                    canon2 = canonical(table.clone(), firstRoot.clone())?;
                     let true = (connectCanonicalComponents(table.clone(), canon1.clone(), canon2.clone())?) else { bail!("pattern mismatch") };
                     finalRoots = addPotentialRootsToTable(table.clone(), tail.clone(), metamodelica::cons(potentialRoot.clone(), roots.clone()), firstRoot.clone())?;
                     Ok(finalRoots.clone())
@@ -956,7 +956,7 @@ fn findResultGraph(mut inGraph: NFOCConnectionGraph, mut modelNameQualified: Arc
             addBranchesToTable(table.clone(), branches.clone())?;
             orderedPotentialRoots = List::sort(potentialRoots.clone(), (std::sync::Arc::new(ord) as std::sync::Arc<dyn ::std::ops::Fn((Arc<ComponentRef::NFComponentRef>, metamodelica::Real), (Arc<ComponentRef::NFComponentRef>, metamodelica::Real)) -> Result<bool> + 'static>))?;
             if Flags::isSet(Flags::CGRAPH.clone())? {
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Ordered Potential Roots: ")); __mm_s.push_str(&*stringDelimitList(List::map(orderedPotentialRoots.clone(), (std::sync::Arc::new(printPotentialRootTuple) as std::sync::Arc<dyn ::std::ops::Fn((Arc<ComponentRef::NFComponentRef>, metamodelica::Real)) -> Result<ArcStr> + 'static>)), (literal!(", ")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Ordered Potential Roots: ")); __mm_s.push_str(&*stringDelimitList(List::map(orderedPotentialRoots.clone(), (std::sync::Arc::new(printPotentialRootTuple) as std::sync::Arc<dyn ::std::ops::Fn((Arc<ComponentRef::NFComponentRef>, metamodelica::Real)) -> Result<ArcStr> + 'static>))?, (literal!(", ")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
             (connected, broken) = addConnections(table.clone(), connections.clone());
             dummyRoot = NFBuiltin::TIME_CREF().clone();
@@ -965,9 +965,9 @@ fn findResultGraph(mut inGraph: NFOCConnectionGraph, mut modelNameQualified: Arc
             if stringEq((brokenConnectsViaGraphViz.clone()).clone(), (literal!("")).clone()) {
             } else {
                 userBrokenLst = Util::stringSplitAtChar((brokenConnectsViaGraphViz.clone()).clone(), (literal!("#")).clone())?;
-                userBrokenLstLst = List::map1(userBrokenLst.clone(), (std::sync::Arc::new(Util::stringSplitAtChar) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), (literal!("|")).clone());
+                userBrokenLstLst = List::map1(userBrokenLst.clone(), (std::sync::Arc::new(Util::stringSplitAtChar) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), (literal!("|")).clone())?;
                 userBrokenTplLst = makeTuple(userBrokenLstLst.clone())?;
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("User selected the following connect edges for breaking:\n\t")); __mm_s.push_str(&*stringDelimitList(List::map(userBrokenTplLst.clone(), (std::sync::Arc::new(fnptr!(printTupleStr, (ArcStr, ArcStr))) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, ArcStr)) -> Result<ArcStr> + 'static>)), (literal!("\n\t")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("User selected the following connect edges for breaking:\n\t")); __mm_s.push_str(&*stringDelimitList(List::map(userBrokenTplLst.clone(), (std::sync::Arc::new(fnptr!(printTupleStr, (ArcStr, ArcStr))) as std::sync::Arc<dyn ::std::ops::Fn((ArcStr, ArcStr)) -> Result<ArcStr> + 'static>))?, (literal!("\n\t")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                 printFlatEdges(connections.clone())?;
                 connections = orderConnectsGuidedByUser(connections.clone(), userBrokenTplLst.clone())?;
                 connections = connections.clone().reverse();
@@ -1087,10 +1087,10 @@ fn printPotentialRootTuple(mut potentialRoot: PotentialRoot) -> Result<ArcStr> {
 fn buildRootedTable(mut roots: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut graph: NFOCConnectionGraph) -> Result<CrefIndexTable> {
     let mut rooted: CrefIndexTable = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>> as ::std::default::Default>::default();
     let mut table: CrefRootsTable = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>> as ::std::default::Default>::default();
-    table = UnorderedMap::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
-    List::map1_0(getBranches(graph.clone())?, (std::sync::Arc::new(addBranches) as std::sync::Arc<dyn ::std::ops::Fn((Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>), Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>) -> Result<()> + 'static>), table.clone());
-    List::map1_0(getConnections(graph.clone())?, (std::sync::Arc::new(addConnectionsRooted) as std::sync::Arc<dyn ::std::ops::Fn(NFConnections::BrokenEdge, Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>) -> Result<()> + 'static>), table.clone());
-    rooted = UnorderedMap::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
+    table = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
+    List::map1_0(getBranches(graph.clone())?, (std::sync::Arc::new(addBranches) as std::sync::Arc<dyn ::std::ops::Fn((Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>), Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>) -> Result<()> + 'static>), table.clone())?;
+    List::map1_0(getConnections(graph.clone())?, (std::sync::Arc::new(addConnectionsRooted) as std::sync::Arc<dyn ::std::ops::Fn(NFConnections::BrokenEdge, Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>>) -> Result<()> + 'static>), table.clone())?;
+    rooted = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
     setRootDistance(roots.clone(), table.clone(), 0, metamodelica::nil(), rooted.clone())?;
     Ok(rooted)
 }
@@ -1104,10 +1104,10 @@ fn setRootDistance(mut finalRoots: Arc<metamodelica::List<Arc<ComponentRef::NFCo
             setRootDistance(nextLevel.clone(), table.clone(), distance.clone() + 1, metamodelica::nil(), rooted.clone())?;
             ()
         },
-        (Deref @ metamodelica::List::Cons { head: cr, tail: rest }, _) if (!(UnorderedMap::contains(cr.clone(), rooted.clone()))) => {
+        (Deref @ metamodelica::List::Cons { head: cr, tail: rest }, _) if (!(UnorderedMap::contains(cr.clone(), rooted.clone())?)) => {
             let mut next: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
             UnorderedMap::addNew(cr.clone(), distance.clone(), rooted.clone())?;
-            next = (::match_deref::match_deref! { match &(UnorderedMap::get(cr.clone(), table.clone())) {
+            next = (::match_deref::match_deref! { match &(UnorderedMap::get(cr.clone(), table.clone())?) {
         Some(next) => listAppend(nextLevel.clone(), next.clone()),
         _ => nextLevel.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -1157,23 +1157,23 @@ fn addConnectionRooted(mut cref1: Arc<ComponentRef::NFComponentRef>, mut cref2: 
     Ok(())
 }
 
-fn evalConnectionsOperatorsEqs(mut inRoots: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut rooted: CrefIndexTable, mut graph: NFOCConnectionGraph, mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>) -> Arc<metamodelica::List<Arc<Equation::NFEquation>>> {
+fn evalConnectionsOperatorsEqs(mut inRoots: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut rooted: CrefIndexTable, mut graph: NFOCConnectionGraph, mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>>) -> Result<Arc<metamodelica::List<Arc<Equation::NFEquation>>>> {
     let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = equations;
     equations = ({
         let mut __acc: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
         for mut eq in (equations.clone()).into_iter().cloned() {
-            let __x = Equation::mapExpShallow(eq.clone(), (std::sync::Arc::new({ let __pe_b1 = rooted.clone(); let __pe_b2 = inRoots.clone(); let __pe_b3 = graph.clone(); let __pe_b4 = Equation::info(eq.clone()); move |__pe_a0| evaluateOperators(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>));
+            let __x = Equation::mapExpShallow(eq.clone(), (std::sync::Arc::new({ let __pe_b1 = rooted.clone(); let __pe_b2 = inRoots.clone(); let __pe_b3 = graph.clone(); let __pe_b4 = Equation::info(eq.clone())?; move |__pe_a0| evaluateOperators(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-    equations
+    Ok(equations)
 }
 
-fn evalConnectionsOperatorsVar(mut roots: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut rooted: CrefIndexTable, mut graph: NFOCConnectionGraph, mut var: Arc<Variable::NFVariable>) -> Arc<Variable::NFVariable> {
+fn evalConnectionsOperatorsVar(mut roots: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut rooted: CrefIndexTable, mut graph: NFOCConnectionGraph, mut var: Arc<Variable::NFVariable>) -> Result<Arc<Variable::NFVariable>> {
     let mut var: Arc<Variable::NFVariable> = var;
-    assign_field!(var.binding = Binding::mapExpShallow(var.binding.clone(), (std::sync::Arc::new({ let __pe_b1 = rooted.clone(); let __pe_b2 = roots.clone(); let __pe_b3 = graph.clone(); let __pe_b4 = var.info.clone(); move |__pe_a0| evaluateOperators(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)));
-    var
+    assign_field!(var.binding = Binding::mapExpShallow(var.binding.clone(), (std::sync::Arc::new({ let __pe_b1 = rooted.clone(); let __pe_b2 = roots.clone(); let __pe_b3 = graph.clone(); let __pe_b4 = var.info.clone(); move |__pe_a0| evaluateOperators(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?);
+    Ok(var)
 }
 
 fn evaluateOperators(mut exp: Arc<Expression::NFExpression>, mut rooted: CrefIndexTable, mut roots: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, mut graph: NFOCConnectionGraph, mut info: SourceInfo) -> Result<Arc<Expression::NFExpression>> {
@@ -1246,7 +1246,7 @@ fn evalConnectionsOperatorsHelper(mut exp: Arc<Expression::NFExpression>, mut ro
         Deref @ metamodelica::List::Cons { head: Deref @ Expression::CREF { cref, .. }, tail: Deref @ metamodelica::List::Nil } => {
             let mut cref = (*cref).clone();
             cref = ComponentRef::stripIteratorSubscripts(cref.clone())?;
-            result = List::isMemberOnTrue(cref.clone(), roots.clone(), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>));
+            result = List::isMemberOnTrue(cref.clone(), roots.clone(), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
             if Flags::isSet(Flags::CGRAPH.clone())? {
                 println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- NFOCConnectionGraph.evalConnectionsOperatorsHelper: ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*boolString(result.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
@@ -1267,7 +1267,7 @@ fn evalConnectionsOperatorsHelper(mut exp: Arc<Expression::NFExpression>, mut ro
                 Error::addSourceMessage(Error::DIMENSION_NOT_KNOWN.clone(), list![(Expression::toString(exp.clone())?).clone()], info.clone())?;
                 bail!("fail");
             }
-            Expression::fillArray(Dimension::size(dim.clone(), false)?, Arc::new(Expression::NFExpression::INTEGER { value: 1 }))
+            Expression::fillArray(Dimension::size(dim.clone(), false)?, Arc::new(Expression::NFExpression::INTEGER { value: 1 }))?
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1293,8 +1293,8 @@ fn getRooted(mut cref1: Arc<ComponentRef::NFComponentRef>, mut cref2: Arc<Compon
                 _ => {
                     let mut i1: i32 = 0;
                     let mut i2: i32 = 0;
-                    i1 = UnorderedMap::getOrFail(cref1.clone(), rooted.clone());
-                    i2 = UnorderedMap::getOrFail(cref2.clone(), rooted.clone());
+                    i1 = UnorderedMap::getOrFail(cref1.clone(), rooted.clone())?;
+                    i2 = UnorderedMap::getOrFail(cref2.clone(), rooted.clone())?;
                     Ok(intLt(i1.clone(), i2.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -1516,7 +1516,7 @@ fn graphVizFlatEdge(mut edge: FlatEdge, mut inBrokenFlatEdges: FlatEdges) -> Res
     let mut style: ArcStr = arcstr::literal!("");
     let mut fontColor: ArcStr = arcstr::literal!("");
     let mut isBroken: bool = false;
-    isBroken = List::isMemberOnTrue(edge.clone(), inBrokenFlatEdges.clone(), (std::sync::Arc::new(FlatEdgeIsEqual) as std::sync::Arc<dyn ::std::ops::Fn(NFConnections::BrokenEdge, NFConnections::BrokenEdge) -> Result<bool> + 'static>));
+    isBroken = List::isMemberOnTrue(edge.clone(), inBrokenFlatEdges.clone(), (std::sync::Arc::new(FlatEdgeIsEqual) as std::sync::Arc<dyn ::std::ops::Fn(NFConnections::BrokenEdge, NFConnections::BrokenEdge) -> Result<bool> + 'static>))?;
     label = (if (isBroken.clone()) {literal!("[[broken connect]]")} else {literal!("connect")}).clone();
     color = (if (isBroken.clone()) {literal!("red")} else {literal!("green")}).clone();
     style = (if (isBroken.clone()) {literal!("\"bold, dashed\"")} else {literal!("solid")}).clone();
@@ -1541,7 +1541,7 @@ fn graphVizDefiniteRoot(mut inDefiniteRoot: DefiniteRoot, mut inFinalRoots: Defi
         c => {
             let mut strDefiniteRoot: ArcStr = arcstr::literal!("");
             let mut isSelectedRoot: bool = false;
-            isSelectedRoot = List::isMemberOnTrue(c.clone(), inFinalRoots.clone(), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>));
+            isSelectedRoot = List::isMemberOnTrue(c.clone(), inFinalRoots.clone(), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
             strDefiniteRoot = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\"")); __mm_s.push_str(&*ComponentRef::toString(c.clone())?); __mm_s.push_str(&*literal!("\"")); __mm_s.push_str(&*literal!(" [fillcolor = red, rank = \"source\", label = ")); __mm_s.push_str(&*literal!("\"")); __mm_s.push_str(&*ComponentRef::toString(c.clone())?); __mm_s.push_str(&*literal!("\", ")); __mm_s.push_str(&*if (isSelectedRoot.clone()) {literal!("shape=polygon, sides=8, distortion=\"0.265084\", orientation=26, skew=\"0.403659\"")} else {literal!("shape=box")}); __mm_s.push_str(&*literal!("];\n\t")); ArcStr::from(__mm_s) }).clone();
             strDefiniteRoot.clone()
         },
@@ -1556,7 +1556,7 @@ fn graphVizPotentialRoot(mut inPotentialRoot: PotentialRoot, mut inFinalRoots: D
         (c, priority) => {
             let mut strPotentialRoot: ArcStr = arcstr::literal!("");
             let mut isSelectedRoot: bool = false;
-            isSelectedRoot = List::isMemberOnTrue(c.clone(), inFinalRoots.clone(), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>));
+            isSelectedRoot = List::isMemberOnTrue(c.clone(), inFinalRoots.clone(), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
             strPotentialRoot = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\"")); __mm_s.push_str(&*ComponentRef::toString(c.clone())?); __mm_s.push_str(&*literal!("\"")); __mm_s.push_str(&*literal!(" [fillcolor = orangered, rank = \"min\" label = ")); __mm_s.push_str(&*literal!("\"")); __mm_s.push_str(&*ComponentRef::toString(c.clone())?); __mm_s.push_str(&*literal!("\\n")); __mm_s.push_str(&*realString(priority.clone())); __mm_s.push_str(&*literal!("\", ")); __mm_s.push_str(&*if (isSelectedRoot.clone()) {literal!("shape=ploygon, sides=7, distortion=\"0.265084\", orientation=26, skew=\"0.403659\"")} else {literal!("shape=box")}); __mm_s.push_str(&*literal!("];\n\t")); ArcStr::from(__mm_s) }).clone();
             strPotentialRoot.clone()
         },
@@ -1614,27 +1614,27 @@ fn generateGraphViz(mut modelNameQualified: ArcStr, mut definiteRoots: DefiniteR
                     infoNodeStr = (System::stringReplace((infoNodeStr.clone()).clone(), (literal!("\n")).clone(), (literal!("\\l")).clone())?).clone();
                     infoNodeStr = (System::stringReplace((infoNodeStr.clone()).clone(), (literal!("\t")).clone(), (literal!(" ")).clone())?).clone();
                     infoNodeStr = (System::stringReplace((infoNodeStr.clone()).clone(), (literal!("/")).clone(), (literal!("")).clone())?).clone();
-                    graphVizStream = IOStream::appendList(graphVizStream.clone(), infoNode.clone());
-                    graphVizStream = IOStream::appendList(graphVizStream.clone(), list![(literal!("\n\n")).clone()]);
-                    graphVizStream = IOStream::appendList(graphVizStream.clone(), list![(literal!("graph \"")).clone(), (modelNameQualified.clone()).clone(), (literal!("\"\n{\n\n")).clone()]);
-                    graphVizStream = IOStream::appendList(graphVizStream.clone(), list![(i.clone()).clone(), (literal!("overlap=false;\n")).clone()]);
-                    graphVizStream = IOStream::appendList(graphVizStream.clone(), list![(i.clone()).clone(), (literal!("layout=dot;\n\n")).clone()]);
-                    graphVizStream = IOStream::appendList(graphVizStream.clone(), list![(i.clone()).clone(), (literal!("node [")).clone(), (literal!("fillcolor = \"lightsteelblue1\", ")).clone(), (literal!("shape = box, ")).clone(), (literal!("style = \"bold, filled\", ")).clone(), (literal!("rank = \"max\"")).clone(), (literal!("]\n\n")).clone()]);
-                    graphVizStream = IOStream::appendList(graphVizStream.clone(), list![(i.clone()).clone(), (literal!("edge [")).clone(), (literal!("color = \"black\", ")).clone(), (literal!("style = bold")).clone(), (literal!("]\n\n")).clone()]);
-                    graphVizStream = IOStream::appendList(graphVizStream.clone(), list![(i.clone()).clone(), (literal!("graph [fontsize=20, fontname = \"Courier Bold\" label= \"\\n\\n")).clone(), (infoNodeStr.clone()).clone(), (literal!("\", size=\"6,6\"];\n")).clone(), (i.clone()).clone()]);
-                    graphVizStream = IOStream::appendList(graphVizStream.clone(), list![(literal!("\n")).clone(), (i.clone()).clone(), (literal!("// Definite Roots (Connections.root)")).clone(), (literal!("\n")).clone(), (i.clone()).clone()]);
-                    graphVizStream = IOStream::appendList(graphVizStream.clone(), List::map1(definiteRoots.clone(), (std::sync::Arc::new(graphVizDefiniteRoot) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>) -> Result<ArcStr> + 'static>), finalRoots.clone()));
-                    graphVizStream = IOStream::appendList(graphVizStream.clone(), list![(literal!("\n")).clone(), (i.clone()).clone(), (literal!("// Potential Roots (Connections.potentialRoot)")).clone(), (literal!("\n")).clone(), (i.clone()).clone()]);
-                    graphVizStream = IOStream::appendList(graphVizStream.clone(), List::map1(potentialRoots.clone(), (std::sync::Arc::new(graphVizPotentialRoot) as std::sync::Arc<dyn ::std::ops::Fn((Arc<ComponentRef::NFComponentRef>, metamodelica::Real), Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>) -> Result<ArcStr> + 'static>), finalRoots.clone()));
-                    graphVizStream = IOStream::appendList(graphVizStream.clone(), list![(literal!("\n")).clone(), (i.clone()).clone(), (literal!("// Branches (Connections.branch)")).clone(), (literal!("\n")).clone(), (i.clone()).clone()]);
-                    graphVizStream = IOStream::appendList(graphVizStream.clone(), List::map(branches.clone(), (std::sync::Arc::new(graphVizEdge) as std::sync::Arc<dyn ::std::ops::Fn((Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>)) -> Result<ArcStr> + 'static>)));
-                    graphVizStream = IOStream::appendList(graphVizStream.clone(), list![(literal!("\n")).clone(), (i.clone()).clone(), (literal!("// Connections (connect)")).clone(), (literal!("\n")).clone(), (i.clone()).clone()]);
-                    graphVizStream = IOStream::appendList(graphVizStream.clone(), List::map1(connections.clone(), (std::sync::Arc::new(graphVizFlatEdge) as std::sync::Arc<dyn ::std::ops::Fn(NFConnections::BrokenEdge, Arc<metamodelica::List<NFConnections::BrokenEdge>>) -> Result<ArcStr> + 'static>), broken.clone()));
-                    graphVizStream = IOStream::appendList(graphVizStream.clone(), list![(literal!("\n}\n")).clone()]);
+                    graphVizStream = IOStream::appendList(graphVizStream.clone(), infoNode.clone())?;
+                    graphVizStream = IOStream::appendList(graphVizStream.clone(), list![(literal!("\n\n")).clone()])?;
+                    graphVizStream = IOStream::appendList(graphVizStream.clone(), list![(literal!("graph \"")).clone(), (modelNameQualified.clone()).clone(), (literal!("\"\n{\n\n")).clone()])?;
+                    graphVizStream = IOStream::appendList(graphVizStream.clone(), list![(i.clone()).clone(), (literal!("overlap=false;\n")).clone()])?;
+                    graphVizStream = IOStream::appendList(graphVizStream.clone(), list![(i.clone()).clone(), (literal!("layout=dot;\n\n")).clone()])?;
+                    graphVizStream = IOStream::appendList(graphVizStream.clone(), list![(i.clone()).clone(), (literal!("node [")).clone(), (literal!("fillcolor = \"lightsteelblue1\", ")).clone(), (literal!("shape = box, ")).clone(), (literal!("style = \"bold, filled\", ")).clone(), (literal!("rank = \"max\"")).clone(), (literal!("]\n\n")).clone()])?;
+                    graphVizStream = IOStream::appendList(graphVizStream.clone(), list![(i.clone()).clone(), (literal!("edge [")).clone(), (literal!("color = \"black\", ")).clone(), (literal!("style = bold")).clone(), (literal!("]\n\n")).clone()])?;
+                    graphVizStream = IOStream::appendList(graphVizStream.clone(), list![(i.clone()).clone(), (literal!("graph [fontsize=20, fontname = \"Courier Bold\" label= \"\\n\\n")).clone(), (infoNodeStr.clone()).clone(), (literal!("\", size=\"6,6\"];\n")).clone(), (i.clone()).clone()])?;
+                    graphVizStream = IOStream::appendList(graphVizStream.clone(), list![(literal!("\n")).clone(), (i.clone()).clone(), (literal!("// Definite Roots (Connections.root)")).clone(), (literal!("\n")).clone(), (i.clone()).clone()])?;
+                    graphVizStream = IOStream::appendList(graphVizStream.clone(), List::map1(definiteRoots.clone(), (std::sync::Arc::new(graphVizDefiniteRoot) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>) -> Result<ArcStr> + 'static>), finalRoots.clone())?)?;
+                    graphVizStream = IOStream::appendList(graphVizStream.clone(), list![(literal!("\n")).clone(), (i.clone()).clone(), (literal!("// Potential Roots (Connections.potentialRoot)")).clone(), (literal!("\n")).clone(), (i.clone()).clone()])?;
+                    graphVizStream = IOStream::appendList(graphVizStream.clone(), List::map1(potentialRoots.clone(), (std::sync::Arc::new(graphVizPotentialRoot) as std::sync::Arc<dyn ::std::ops::Fn((Arc<ComponentRef::NFComponentRef>, metamodelica::Real), Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>) -> Result<ArcStr> + 'static>), finalRoots.clone())?)?;
+                    graphVizStream = IOStream::appendList(graphVizStream.clone(), list![(literal!("\n")).clone(), (i.clone()).clone(), (literal!("// Branches (Connections.branch)")).clone(), (literal!("\n")).clone(), (i.clone()).clone()])?;
+                    graphVizStream = IOStream::appendList(graphVizStream.clone(), List::map(branches.clone(), (std::sync::Arc::new(graphVizEdge) as std::sync::Arc<dyn ::std::ops::Fn((Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>)) -> Result<ArcStr> + 'static>))?)?;
+                    graphVizStream = IOStream::appendList(graphVizStream.clone(), list![(literal!("\n")).clone(), (i.clone()).clone(), (literal!("// Connections (connect)")).clone(), (literal!("\n")).clone(), (i.clone()).clone()])?;
+                    graphVizStream = IOStream::appendList(graphVizStream.clone(), List::map1(connections.clone(), (std::sync::Arc::new(graphVizFlatEdge) as std::sync::Arc<dyn ::std::ops::Fn(NFConnections::BrokenEdge, Arc<metamodelica::List<NFConnections::BrokenEdge>>) -> Result<ArcStr> + 'static>), broken.clone())?)?;
+                    graphVizStream = IOStream::appendList(graphVizStream.clone(), list![(literal!("\n}\n")).clone()])?;
                     tEnd = clock();
                     t = tEnd.clone() - tStart.clone();
                     timeStr = (realString(t.clone())).clone();
-                    graphVizStream = IOStream::appendList(graphVizStream.clone(), list![(literal!("\n\n\n// graph generation took: ")).clone(), (timeStr.clone()).clone(), (literal!(" seconds\n")).clone()]);
+                    graphVizStream = IOStream::appendList(graphVizStream.clone(), list![(literal!("\n\n\n// graph generation took: ")).clone(), (timeStr.clone()).clone(), (literal!(" seconds\n")).clone()])?;
                     System::writeFile((fileName.clone()).clone(), (IOStream::string(graphVizStream.clone())?).clone())?;
                     println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("GraphViz with connection graph for model: ")); __mm_s.push_str(&*modelNameQualified.clone()); __mm_s.push_str(&*literal!(" was writen to file: ")); __mm_s.push_str(&*fileName.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     brokenConnects = (showGraphViz((fileName.clone()).clone(), (modelNameQualified.clone()).clone())?).clone();
@@ -1765,7 +1765,7 @@ fn identifyConnectionsOperator(mut functionName: Arc<Absyn::Path>) -> Connection
 
 fn newCrefCrefTable() -> CrefCrefTable {
     let mut table: CrefCrefTable = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
-    table = UnorderedMap::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
+    table = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
     table
 }
 

@@ -172,7 +172,7 @@ fn fun_58(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_simCode: SimCode::S
 pub fn fmiDescriptionAttributes(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCode, mut a_FMUVersion: ArcStr, mut a_FMUType: ArcStr, mut a_FMUGuid: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_0: bool = false;
-    ret_0 = FMI::isFMIVersion20((a_FMUVersion.clone()).clone());
+    ret_0 = FMI::isFMIVersion20((a_FMUVersion.clone()).clone())?;
     out_txt = fun_58(txt.clone(), ret_0.clone(), a_simCode.clone(), (a_FMUGuid.clone()).clone())?;
     Ok(out_txt)
 }
@@ -1207,14 +1207,14 @@ pub fn attributeString(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut i
         (txt, i_exp @ Deref @ DAE::Exp::ARRAY { array: i_array, .. }, a_attr__name) => {
             let mut ret_0: bool = false;
             let mut txt = (*txt).clone();
-            ret_0 = Expression::isSimpleLiteralValue(i_exp.clone(), true);
+            ret_0 = Expression::isSimpleLiteralValue(i_exp.clone(), true)?;
             txt = fun_92(txt.clone(), ret_0.clone(), i_array.clone(), (a_attr__name.clone()).clone())?;
             txt.clone()
         },
         (txt, Deref @ DAE::Exp::REDUCTION { expr: i_expr, .. }, a_attr__name) => {
             let mut ret_1: bool = false;
             let mut txt = (*txt).clone();
-            ret_1 = Expression::isSimpleLiteralValue(i_expr.clone(), true);
+            ret_1 = Expression::isSimpleLiteralValue(i_expr.clone(), true)?;
             txt = fun_93(txt.clone(), ret_1.clone(), (a_attr__name.clone()).clone(), i_expr.clone())?;
             txt.clone()
         },

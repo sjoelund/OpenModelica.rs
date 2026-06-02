@@ -176,7 +176,7 @@ fn lm_14(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Backend
             l_varDeclaration = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
             l_varDeclaration = lm_12(l_varDeclaration.clone(), ret_1.clone(), x_clusterID.clone())?;
             l_varDeclaration = Tpl::popIter(l_varDeclaration.clone())?;
-            ret_3 = BackendEquation::equationList(i_eqSystem_orderedEqs.clone());
+            ret_3 = BackendEquation::equationList(i_eqSystem_orderedEqs.clone())?;
             l_eqDeclaration = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
             l_eqDeclaration = lm_13(l_eqDeclaration.clone(), ret_3.clone(), x_clusterID.clone())?;
             l_eqDeclaration = Tpl::popIter(l_eqDeclaration.clone())?;
@@ -447,7 +447,7 @@ fn lm_24(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Backend
             l_varDeclaration = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
             l_varDeclaration = lm_22(l_varDeclaration.clone(), ret_1.clone(), x_clusterID.clone())?;
             l_varDeclaration = Tpl::popIter(l_varDeclaration.clone())?;
-            ret_3 = BackendEquation::equationList(i_eqSystem_orderedEqs.clone());
+            ret_3 = BackendEquation::equationList(i_eqSystem_orderedEqs.clone())?;
             l_eqDeclaration = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
             l_eqDeclaration = lm_23(l_eqDeclaration.clone(), ret_3.clone(), x_clusterID.clone())?;
             l_eqDeclaration = Tpl::popIter(l_eqDeclaration.clone())?;
@@ -890,7 +890,7 @@ fn lm_41(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<Backend
             l_varDeclaration = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
             l_varDeclaration = lm_39(l_varDeclaration.clone(), ret_1.clone(), x_clusterID.clone())?;
             l_varDeclaration = Tpl::popIter(l_varDeclaration.clone())?;
-            ret_3 = BackendEquation::equationList(i_eqSystem_orderedEqs.clone());
+            ret_3 = BackendEquation::equationList(i_eqSystem_orderedEqs.clone())?;
             l_eqDeclaration = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
             l_eqDeclaration = lm_40(l_eqDeclaration.clone(), ret_3.clone(), x_clusterID.clone())?;
             l_eqDeclaration = Tpl::popIter(l_eqDeclaration.clone())?;

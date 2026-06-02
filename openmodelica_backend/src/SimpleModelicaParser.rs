@@ -1733,7 +1733,7 @@ fn moveCommentsAfterDiff(mut res: Arc<metamodelica::List<(Diff, Arc<metamodelica
 fn findAddedComments(mut tree: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>>) -> Result<Arc<AvlSetString::Tree>> {
     let mut comments: Arc<AvlSetString::Tree> = Arc::new(openmodelica_util::AvlSetString::Tree::EMPTY);
     let mut addedTrees: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
-    (addedTrees, _) = extractAdditionsDeletions(tree.clone());
+    (addedTrees, _) = extractAdditionsDeletions(tree.clone())?;
     for mut t in &*addedTrees.clone() {
         let mut t = t.clone();
         comments = findAddedComments2(t.clone(), comments.clone())?;
@@ -2195,7 +2195,7 @@ fn treeDiffWork(mut t1: Arc<metamodelica::List<Arc<ParseTree>>>, mut t2: Arc<met
     res = diff(t1.clone(), t2.clone(), compare.clone(), (std::sync::Arc::new(fnptr!(parseTreeIsWhitespace, Arc<ParseTree>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ParseTree>) -> Result<bool> + 'static>), (std::sync::Arc::new(fnptr!(parseTreeIsWhitespaceNotComment, Arc<ParseTree>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ParseTree>) -> Result<bool> + 'static>), (std::sync::Arc::new(parseTreeNodeStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ParseTree>) -> Result<ArcStr> + 'static>))?;
     (nadd, ndel) = countDiffAddDelete(res.clone());
     if nadd.clone() > 1 {
-        res = fixMoveOperations(res.clone(), compare.clone());
+        res = fixMoveOperations(res.clone(), compare.clone())?;
         (nadd, ndel) = countDiffAddDelete(res.clone());
     }
     res = filterDiffWhitespace(res.clone())?;
@@ -2292,7 +2292,7 @@ fn treeDiffWork(mut t1: Arc<metamodelica::List<Arc<ParseTree>>>, mut t2: Arc<met
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("deleted top=")); __mm_s.push_str(&*firstTokenDebugStr(metamodelica::cons(deletedTree.clone(), metamodelica::nil()))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
     } else if nadd.clone() > 1 && ndel.clone() > 1 {
-        (addedTrees, deletedTrees) = extractAdditionsDeletions(res.clone());
+        (addedTrees, deletedTrees) = extractAdditionsDeletions(res.clone())?;
         addedTrees = ({
         let mut __acc: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
         for mut t in (addedTrees.clone()).into_iter().cloned() {
@@ -2340,7 +2340,7 @@ fn treeDiffWork(mut t1: Arc<metamodelica::List<Arc<ParseTree>>>, mut t2: Arc<met
             let mut added = added.clone();
             tryFind = false;
             if '__try0: {
-                (deleted, deletedTrees) = unwrap_break_err!(List::findAndRemove1(deletedTrees.clone(), (std::sync::Arc::new({ let __pe_b2 = compare.clone(); move |__pe_a0, __pe_a1| Ok(compareNodeLabels(__pe_a0, __pe_a1, __pe_b2.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ParseTree>, Arc<ParseTree>) -> Result<bool> + 'static>), added.clone()), '__try0);
+                (deleted, deletedTrees) = unwrap_break_err!(List::findAndRemove1(deletedTrees.clone(), (std::sync::Arc::new({ let __pe_b2 = compare.clone(); move |__pe_a0, __pe_a1| compareNodeLabels(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ParseTree>, Arc<ParseTree>) -> Result<bool> + 'static>), added.clone()), '__try0);
                 Ok::<(), anyhow::Error>(())
             }.is_err() {
                 if '__try1: {
@@ -2380,10 +2380,10 @@ fn treeDiffWork(mut t1: Arc<metamodelica::List<Arc<ParseTree>>>, mut t2: Arc<met
     Ok((res, resLocal))
 }
 
-fn compareNodeLabels(mut t1: Arc<ParseTree>, mut t2: Arc<ParseTree>, mut compare: Arc<dyn ::std::ops::Fn(Arc<ParseTree>, Arc<ParseTree>) -> Result<bool> + 'static>) -> bool {
+fn compareNodeLabels(mut t1: Arc<ParseTree>, mut t2: Arc<ParseTree>, mut compare: Arc<dyn ::std::ops::Fn(Arc<ParseTree>, Arc<ParseTree>) -> Result<bool> + 'static>) -> Result<bool> {
     let mut b: bool = false;
-    b = compare(nodeLabel(t1.clone()), nodeLabel(t2.clone())).unwrap();
-    b
+    b = compare(nodeLabel(t1.clone()), nodeLabel(t2.clone()))?;
+    Ok(b)
 }
 
 fn compareNodeLabelsSpecial(mut t1: Arc<ParseTree>, mut t2: Arc<ParseTree>, mut compare: Arc<dyn ::std::ops::Fn(Arc<ParseTree>, Arc<ParseTree>) -> Result<bool> + 'static>, mut delList: Arc<metamodelica::List<ArcStr>>) -> Result<bool> {
@@ -3120,7 +3120,7 @@ fn lastToken(mut t: Arc<ParseTree>) -> Result<Token> {
     Ok(token)
 }
 
-fn fixMoveOperations(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>>, mut compare: Arc<dyn ::std::ops::Fn(Arc<ParseTree>, Arc<ParseTree>) -> Result<bool> + 'static>) -> Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>> {
+fn fixMoveOperations(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>>, mut compare: Arc<dyn ::std::ops::Fn(Arc<ParseTree>, Arc<ParseTree>) -> Result<bool> + 'static>) -> Result<Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>>> {
     let mut diff: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>> = metamodelica::nil();
     let mut lst: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     let mut deleted: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
@@ -3140,7 +3140,7 @@ fn fixMoveOperations(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodelica:
     }
     if deleted.clone().is_empty() {
         diff = inDiff.clone();
-        return diff.clone();
+        return Ok(diff.clone());
     }
     for mut d in &*inDiff.clone() {
         let mut d = d.clone();
@@ -3149,7 +3149,7 @@ fn fixMoveOperations(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodelica:
             d1 = d.clone();
             for mut l1 in &*lst.clone() {
                 let mut l1 = l1.clone();
-                if List::isMemberOnTrue(l1.clone(), deleted.clone(), compare.clone()) {
+                if List::isMemberOnTrue(l1.clone(), deleted.clone(), compare.clone())? {
                     changeFound = true;
                     lst2 = metamodelica::nil();
                     for mut l2 in &*lst.clone() {
@@ -3178,7 +3178,7 @@ fn fixMoveOperations(mut inDiff: Arc<metamodelica::List<(Diff, Arc<metamodelica:
         diff = metamodelica::cons(d1.clone(), diff.clone());
     }
     diff = if (changeFound.clone()) {metamodelica::Dangerous::listReverseInPlace(diff.clone())} else {inDiff.clone()};
-    diff
+    Ok(diff)
 }
 
 fn makeNode(mut nodes: Arc<metamodelica::List<Arc<ParseTree>>>, mut label: Arc<ParseTree>) -> Arc<ParseTree> {
@@ -3289,10 +3289,10 @@ fn extractSingleAddDiffBeforeAndAfter(mut diffs: Arc<metamodelica::List<(Diff, A
                     addedTree = tree.clone();
                     foundAdded = true;
                     if foundDeleted.clone() {
-                        middle = List::flattenReverse(acc.clone());
+                        middle = List::flattenReverse(acc.clone())?;
                     } else {
                         addedBeforeDeleted = true;
-                        before = List::flattenReverse(acc.clone());
+                        before = List::flattenReverse(acc.clone())?;
                     }
                     acc = metamodelica::nil();
                 }
@@ -3312,10 +3312,10 @@ fn extractSingleAddDiffBeforeAndAfter(mut diffs: Arc<metamodelica::List<(Diff, A
                     deletedTree = tree.clone();
                     foundDeleted = true;
                     if foundAdded.clone() {
-                        middle = List::flattenReverse(acc.clone());
+                        middle = List::flattenReverse(acc.clone())?;
                     } else {
                         addedBeforeDeleted = false;
-                        before = List::flattenReverse(acc.clone());
+                        before = List::flattenReverse(acc.clone())?;
                     }
                     acc = metamodelica::nil();
                 }
@@ -3335,11 +3335,11 @@ fn extractSingleAddDiffBeforeAndAfter(mut diffs: Arc<metamodelica::List<(Diff, A
     }
     let true = (foundAdded.clone()) else { bail!("pattern mismatch") };
     let true = (foundDeleted.clone()) else { bail!("pattern mismatch") };
-    after = List::flattenReverse(acc.clone());
+    after = List::flattenReverse(acc.clone())?;
     Ok((addedTree, deletedTree, before, middle, after, addedBeforeDeleted))
 }
 
-fn extractAdditionsDeletions(mut diffs: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>>) -> (Arc<metamodelica::List<Arc<ParseTree>>>, Arc<metamodelica::List<Arc<ParseTree>>>) {
+fn extractAdditionsDeletions(mut diffs: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>>) -> Result<(Arc<metamodelica::List<Arc<ParseTree>>>, Arc<metamodelica::List<Arc<ParseTree>>>)> {
     let mut addedTrees: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     let mut deletedTrees: Arc<metamodelica::List<Arc<ParseTree>>> = metamodelica::nil();
     let mut addedTreesAcc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<ParseTree>>>>> = metamodelica::nil();
@@ -3360,9 +3360,9 @@ fn extractAdditionsDeletions(mut diffs: Arc<metamodelica::List<(Diff, Arc<metamo
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     }
-    addedTrees = List::flattenReverse(addedTreesAcc.clone());
-    deletedTrees = List::flattenReverse(deletedTreesAcc.clone());
-    (addedTrees, deletedTrees)
+    addedTrees = List::flattenReverse(addedTreesAcc.clone())?;
+    deletedTrees = List::flattenReverse(deletedTreesAcc.clone())?;
+    Ok((addedTrees, deletedTrees))
 }
 
 fn countDiffAddDelete(mut diffs: Arc<metamodelica::List<(Diff, Arc<metamodelica::List<Arc<ParseTree>>>)>>) -> (i32, i32) {

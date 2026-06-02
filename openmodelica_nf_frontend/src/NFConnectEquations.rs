@@ -102,7 +102,7 @@ pub fn generateEquations(mut sets: metamodelica::Array<Arc<metamodelica::List<Ar
     let mut cty: i32 = 0;
     let mut flow_alias_elim: bool = Flags::isSet(Flags::FLOW_ALIAS_ELIMINATION.clone())?;
     { let __v = None; openmodelica_util::Globals::isInStream.with(|__root| *__root.borrow_mut() = __v) };
-    connectedLocalIOs = UnorderedSet::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
+    connectedLocalIOs = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
     potfunc = (std::sync::Arc::new(generatePotentialEquations) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<Connector::NFConnector>>>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<(Arc<metamodelica::List<Arc<Equation::NFEquation>>>, Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>)> + 'static>);
     flowThreshold = Arc::new(Expression::NFExpression::REAL { value: Flags::getConfigReal(Flags::FLOW_THRESHOLD.clone())? });
     let __range0 = sets.clone().borrow().iter().cloned().collect::<Vec<_>>();
@@ -120,7 +120,7 @@ pub fn generateEquations(mut sets: metamodelica::Array<Arc<metamodelica::List<Ar
                 set_eql = generateStreamEquations(set.clone(), flowThreshold.clone(), variables.clone())?;
             }
         } else {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConnectEquations.generateEquations")); __mm_s.push_str(&*literal!(" got connection set with invalid type '")); __mm_s.push_str(&*Prefixes::ConnectorType::toDebugString(cty.clone())); __mm_s.push_str(&*literal!("': ")); __mm_s.push_str(&*List::toString(set.clone(), (std::sync::Arc::new(fnptr!(Connector::toString, Arc<Connector::NFConnector>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
+            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConnectEquations.generateEquations")); __mm_s.push_str(&*literal!(" got connection set with invalid type '")); __mm_s.push_str(&*Prefixes::ConnectorType::toDebugString(cty.clone())); __mm_s.push_str(&*literal!("': ")); __mm_s.push_str(&*List::toString(set.clone(), (std::sync::Arc::new(Connector::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
             bail!("fail");
         }
         equations = listAppend(set_eql.clone(), equations.clone());
@@ -180,7 +180,7 @@ fn generatePotentialEquations(mut elements: Arc<metamodelica::List<Arc<Connector
     let mut connectedLocalIOs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = connectedLocalIOs;
     let mut c1: Arc<Connector::NFConnector> = Arc::new(<Connector::NFConnector as ::std::default::Default>::default());
     c1 = listHead(elements.clone())?;
-    if Connector::variability(c1.clone()) > Variability::PARAMETER.clone() {
+    if Connector::variability(c1.clone())? > Variability::PARAMETER.clone() {
         equations = ({
         let mut __acc: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
         for mut c2 in (listRest(elements.clone())?).into_iter().cloned() {
@@ -198,7 +198,7 @@ fn generatePotentialEquations(mut elements: Arc<metamodelica::List<Arc<Connector
             }
         }
     } else {
-        if Type::isEmptyArray(c1.ty.clone()) {
+        if Type::isEmptyArray(c1.ty.clone())? {
             equations = metamodelica::nil();
         } else {
             equations = ({
@@ -282,7 +282,7 @@ fn makeEqualityAssert(mut lhsCref: Arc<ComponentRef::NFComponentRef>, mut lhsSou
         rhs_exp = Expression::fromCref(rhsCref.clone(), false)?;
     }
     elem_ty = Type::arrayElementType(ty.clone());
-    if Type::isReal(elem_ty.clone()) {
+    if Type::isReal(elem_ty.clone())? {
         exp = Arc::new(Expression::NFExpression::BINARY { exp1: lhs_exp.clone(), operator: Operator::makeSub(elem_ty.clone()), exp2: rhs_exp.clone() });
         exp = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::ABS_REAL().clone(), list![exp.clone()], Expression::variability(exp.clone())?, Purity::PURE.clone(), NFBuiltinFuncs::ABS_REAL().returnType.clone()) });
         exp = Arc::new(Expression::NFExpression::RELATION { exp1: exp.clone(), operator: Operator::makeLessEq(elem_ty.clone()), exp2: Arc::new(Expression::NFExpression::REAL { value: metamodelica::OrderedFloat(0.0_f64) }), index: -1 });
@@ -394,7 +394,7 @@ fn generateStreamEquations(mut elements: Arc<metamodelica::List<Arc<Connector::N
     let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     let mut inside: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
     let mut outside: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
-    (outside, inside) = List::splitOnTrue(elements.clone(), (std::sync::Arc::new(fnptr!(Connector::isOutside, Arc<Connector::NFConnector>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<bool> + 'static>));
+    (outside, inside) = List::splitOnTrue(elements.clone(), (std::sync::Arc::new(fnptr!(Connector::isOutside, Arc<Connector::NFConnector>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<bool> + 'static>))?;
     inside = ({
         let mut __acc: Arc<metamodelica::List<Arc<Connector::NFConnector>>> = metamodelica::nil();
         for mut s in (inside.clone()).into_iter().cloned() {
@@ -580,16 +580,16 @@ fn makePositiveMaxCall(mut flowExp: Arc<Expression::NFExpression>, mut streamExp
         flow_threshold = flowThreshold.clone();
     }
     if Flags::getConfigBool(Flags::BASE_MODELICA.clone())? {
-        (fn_node, _) = Class::lookupElement((literal!("$OMC$PositiveMax")).clone(), InstNode::getClass(InstNode::topScope(ComponentRef::node(flow_name.clone())?))?)?;
+        (fn_node, _) = Class::lookupElement((literal!("$OMC$PositiveMax")).clone(), InstNode::getClass(InstNode::topScope(ComponentRef::node(flow_name.clone())?)?)?)?;
         fn_node = Function::instFunctionNode(fn_node.clone(), NFInstContext::NO_CONTEXT.clone(), Absyn::dummyInfo.clone())?;
         let __pa1 = ::match_deref::match_deref! { match &(Function::typeNodeCache(fn_node.clone(), NFInstContext::FUNCTION.clone())?) {
             Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil } => __pa1.clone(),
             _ => bail!("pattern mismatch"),
         } };
         r#fn = __pa1.clone();
-        positiveMaxCall = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(r#fn.clone(), list![flowExp.clone(), flow_threshold.clone()], Connector::variability(element.clone()), Purity::PURE.clone(), r#fn.returnType.clone()) });
+        positiveMaxCall = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(r#fn.clone(), list![flowExp.clone(), flow_threshold.clone()], Connector::variability(element.clone())?, Purity::PURE.clone(), r#fn.returnType.clone()) });
     } else {
-        positiveMaxCall = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::POSITIVE_MAX_REAL().clone(), list![flowExp.clone(), flow_threshold.clone()], Connector::variability(element.clone()), Purity::PURE.clone(), NFBuiltinFuncs::POSITIVE_MAX_REAL().returnType.clone()) });
+        positiveMaxCall = Arc::new(Expression::NFExpression::CALL { call: Call::makeTypedCall(NFBuiltinFuncs::POSITIVE_MAX_REAL().clone(), list![flowExp.clone(), flow_threshold.clone()], Connector::variability(element.clone())?, Purity::PURE.clone(), NFBuiltinFuncs::POSITIVE_MAX_REAL().returnType.clone()) });
     }
     { let __v = Some(true); openmodelica_util::Globals::isInStream.with(|__root| *__root.borrow_mut() = __v) };
     Ok(positiveMaxCall)
@@ -639,7 +639,7 @@ fn evaluateOperatorReductionExp(mut exp: Arc<Expression::NFExpression>, mut sets
             for mut iter in &*var_field!((**call).iters, Call::NFCall::TYPED_REDUCTION).clone() {
                 let mut iter = iter.clone();
                 (iter_node, iter_exp) = iter.clone();
-                if Component::variability(InstNode::component(iter_node.clone())?) > Variability::PARAMETER.clone() {
+                if Component::variability(InstNode::component(iter_node.clone())?)? > Variability::PARAMETER.clone() {
                     println!("{}", (literal!("Iteration range in reduction containing connector operator calls must be a parameter expression.")).clone());
                     bail!("fail");
                 }
@@ -677,7 +677,7 @@ fn evaluateInStream(mut cref: Arc<ComponentRef::NFComponentRef>, mut sets: Conne
     cr = ComponentRef::evaluateSubscripts(cref.clone())?;
     c = Arc::new(Connector::NFConnector { name: cr.clone(), ty: Arc::new(crate::NFType::UNKNOWN), face: Face::INSIDE.clone(), cty: ConnectorType::STREAM.clone(), source: DAE::emptyElementSource().clone() });
     match '__try0: {
-        set = ConnectionSets::findSetArrayIndex(c.clone(), sets.clone());
+        set = unwrap_break_err!(ConnectionSets::findSetArrayIndex(c.clone(), sets.clone()), '__try0);
         sl = setsArray.clone().borrow()[(set.clone()-1) as usize].clone();
         Ok::<_, anyhow::Error>((sl.clone(),))
     } {
@@ -728,7 +728,7 @@ fn generateInStreamExp(mut streamCref: Arc<ComponentRef::NFComponentRef>, mut st
             evaluateInStream(cr.clone(), sets.clone(), setsArray.clone(), variables.clone(), ctable.clone())?
         },
         _ => {
-            (outside, inside) = List::splitOnTrue(reducedStreams.clone(), (std::sync::Arc::new(fnptr!(Connector::isOutside, Arc<Connector::NFConnector>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<bool> + 'static>));
+            (outside, inside) = List::splitOnTrue(reducedStreams.clone(), (std::sync::Arc::new(fnptr!(Connector::isOutside, Arc<Connector::NFConnector>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<bool> + 'static>))?;
             inside = removeStreamSetElement(streamCref.clone(), inside.clone())?;
             exp = streamSumEquationExp(outside.clone(), inside.clone(), Arc::new(Expression::NFExpression::REAL { value: flowThreshold.clone() }), Expression::fromCref(streamCref.clone(), false)?, variables.clone())?;
             exp = evaluateOperators(exp.clone(), sets.clone(), setsArray.clone(), variables.clone(), ctable.clone())?;
@@ -753,13 +753,13 @@ fn isNoFlowMinMax(mut conn: Arc<Connector::NFConnector>, mut streamCref: Arc<Com
 
 fn isNoFlowOutside(mut conn: Arc<Connector::NFConnector>, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<bool> {
     let mut noFlow: bool = false;
-    noFlow = isNoFlow(conn.clone(), (literal!("max")).clone(), (std::sync::Arc::new(fnptr!(Expression::isNonPositive, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>), variables.clone())?;
+    noFlow = isNoFlow(conn.clone(), (literal!("max")).clone(), (std::sync::Arc::new(Expression::isNonPositive) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>), variables.clone())?;
     Ok(noFlow)
 }
 
 fn isNoFlowInside(mut conn: Arc<Connector::NFConnector>, mut variables: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Variable::NFVariable>>>) -> Result<bool> {
     let mut noFlow: bool = false;
-    noFlow = isNoFlow(conn.clone(), (literal!("min")).clone(), (std::sync::Arc::new(fnptr!(Expression::isNonNegative, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>), variables.clone())?;
+    noFlow = isNoFlow(conn.clone(), (literal!("min")).clone(), (std::sync::Arc::new(Expression::isNonNegative) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>), variables.clone())?;
     Ok(noFlow)
 }
 
@@ -849,9 +849,9 @@ fn evaluateFlowDirection(mut flowCref: Arc<ComponentRef::NFComponentRef>, mut va
     let mut min_val: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     let mut max_val: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
     omin = lookupVarAttr(flowCref.clone(), (literal!("min")).clone(), variables.clone())?;
-    omin = Util::applyOption(omin.clone(), (std::sync::Arc::new({ let __pe_b1 = false; move |__pe_a0| SimplifyExp::simplify(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>));
+    omin = Util::applyOption(omin.clone(), (std::sync::Arc::new({ let __pe_b1 = false; move |__pe_a0| SimplifyExp::simplify(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     omax = lookupVarAttr(flowCref.clone(), (literal!("max")).clone(), variables.clone())?;
-    omax = Util::applyOption(omax.clone(), (std::sync::Arc::new({ let __pe_b1 = false; move |__pe_a0| SimplifyExp::simplify(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>));
+    omax = Util::applyOption(omax.clone(), (std::sync::Arc::new({ let __pe_b1 = false; move |__pe_a0| SimplifyExp::simplify(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     direction = (::match_deref::match_deref! { match &((omin.clone(), omax.clone())) {
         (None, None) => 0,
         (Some(Deref @ Expression::REAL { value: min_val }), None) => if (min_val.clone() >= metamodelica::OrderedFloat((0) as f64)) {1} else {0},
@@ -907,9 +907,9 @@ fn lookupVarAttr(mut varName: Arc<ComponentRef::NFComponentRef>, mut attrName: A
     let mut ovar: Option<Arc<Variable::NFVariable>> = None;
     let mut var: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
     let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
-    ovar = UnorderedMap::get(varName.clone(), variables.clone());
+    ovar = UnorderedMap::get(varName.clone(), variables.clone())?;
     if isNone(ovar.clone()) {
-        ovar = UnorderedMap::get(ComponentRef::stripSubscriptsAll(varName.clone()), variables.clone());
+        ovar = UnorderedMap::get(ComponentRef::stripSubscriptsAll(varName.clone()), variables.clone())?;
     }
     if isNone(ovar.clone()) {
         Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFConnectEquations.lookupVarAttr")); __mm_s.push_str(&*literal!(" could not find the variable ")); __mm_s.push_str(&*ComponentRef::toString(varName.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;

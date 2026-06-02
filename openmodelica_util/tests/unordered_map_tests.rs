@@ -74,30 +74,30 @@ fn test_new_is_empty() {
 #[test]
 fn test_add_and_get() -> Result<()> {
     let m = map_of(&[("alpha", 10), ("beta", 20), ("gamma", 30)])?;
-    assert_eq!(UM::get(literal!("alpha"), m.clone()), Some(10));
-    assert_eq!(UM::get(literal!("beta"),  m.clone()), Some(20));
-    assert_eq!(UM::get(literal!("gamma"), m.clone()), Some(30));
+    assert_eq!(UM::get(literal!("alpha"), m.clone())?, Some(10));
+    assert_eq!(UM::get(literal!("beta"),  m.clone())?, Some(20));
+    assert_eq!(UM::get(literal!("gamma"), m.clone())?, Some(30));
     Ok(())
 }
 
 #[test]
 fn test_get_absent_key_returns_none() -> Result<()> {
     let m = map_of(&[("a", 1)])?;
-    assert_eq!(UM::get(literal!("missing"), m), None);
+    assert_eq!(UM::get(literal!("missing"), m)?, None);
     Ok(())
 }
 
 #[test]
 fn test_contains_present_key() -> Result<()> {
     let m = map_of(&[("key", 42)])?;
-    assert!(UM::contains(literal!("key"), m));
+    assert!(UM::contains(literal!("key"), m)?);
     Ok(())
 }
 
 #[test]
 fn test_contains_absent_key_returns_false() -> Result<()> {
     let m = map_of(&[("key", 42)])?;
-    assert!(!UM::contains(literal!("no_such_key"), m));
+    assert!(!UM::contains(literal!("no_such_key"), m)?);
     Ok(())
 }
 
@@ -107,7 +107,7 @@ fn test_contains_absent_key_returns_false() -> Result<()> {
 fn test_add_updates_existing_value() -> Result<()> {
     let m = map_of(&[("key", 1)])?;
     UM::add(literal!("key"), 99, m.clone())?;
-    assert_eq!(UM::get(literal!("key"), m), Some(99));
+    assert_eq!(UM::get(literal!("key"), m)?, Some(99));
     Ok(())
 }
 
@@ -134,7 +134,7 @@ fn test_size_grows_with_unique_keys() -> Result<()> {
 fn test_add_unique_new_key_succeeds() -> Result<()> {
     let m = empty_map();
     UM::addUnique(literal!("new"), 7, m.clone())?;
-    assert_eq!(UM::get(literal!("new"), m), Some(7));
+    assert_eq!(UM::get(literal!("new"), m)?, Some(7));
     Ok(())
 }
 
@@ -151,14 +151,14 @@ fn test_add_unique_duplicate_fails() -> Result<()> {
 #[test]
 fn test_get_or_default_present_key() -> Result<()> {
     let m = map_of(&[("k", 5)])?;
-    assert_eq!(UM::getOrDefault(literal!("k"), m, -1), 5);
+    assert_eq!(UM::getOrDefault(literal!("k"), m, -1)?, 5);
     Ok(())
 }
 
 #[test]
 fn test_get_or_default_absent_key_returns_default() -> Result<()> {
     let m = empty_map();
-    assert_eq!(UM::getOrDefault(literal!("missing"), m, -99), -99);
+    assert_eq!(UM::getOrDefault(literal!("missing"), m, -99)?, -99);
     Ok(())
 }
 
@@ -169,7 +169,7 @@ fn test_try_add_new_key_returns_inserted_value() -> Result<()> {
     let m = empty_map();
     let v = UM::tryAdd(literal!("new"), 42, m.clone())?;
     assert_eq!(v, 42);
-    assert_eq!(UM::get(literal!("new"), m), Some(42));
+    assert_eq!(UM::get(literal!("new"), m)?, Some(42));
     Ok(())
 }
 
@@ -180,7 +180,7 @@ fn test_try_add_existing_key_returns_existing_value() -> Result<()> {
     // Should return the existing value, not the new one.
     assert_eq!(v, 10);
     // Map value should remain unchanged.
-    assert_eq!(UM::get(literal!("key"), m), Some(10));
+    assert_eq!(UM::get(literal!("key"), m)?, Some(10));
     Ok(())
 }
 
@@ -191,7 +191,7 @@ fn test_try_update_existing_key_returns_true() -> Result<()> {
     let m = map_of(&[("key", 1)])?;
     let updated = UM::tryUpdate(literal!("key"), 2, m.clone())?;
     assert!(updated);
-    assert_eq!(UM::get(literal!("key"), m), Some(2));
+    assert_eq!(UM::get(literal!("key"), m)?, Some(2));
     Ok(())
 }
 
@@ -201,7 +201,7 @@ fn test_try_update_absent_key_returns_false() -> Result<()> {
     let updated = UM::tryUpdate(literal!("absent"), 1, m.clone())?;
     assert!(!updated);
     // Key was NOT inserted.
-    assert!(!UM::contains(literal!("absent"), m));
+    assert!(!UM::contains(literal!("absent"), m)?);
     Ok(())
 }
 
@@ -235,7 +235,7 @@ fn test_remove_decrements_size() -> Result<()> {
 fn test_remove_key_no_longer_present() -> Result<()> {
     let m = map_of(&[("x", 10)])?;
     UM::remove(literal!("x"), m.clone())?;
-    assert!(!UM::contains(literal!("x"), m));
+    assert!(!UM::contains(literal!("x"), m)?);
     Ok(())
 }
 
@@ -243,8 +243,8 @@ fn test_remove_key_no_longer_present() -> Result<()> {
 fn test_remove_does_not_affect_other_keys() -> Result<()> {
     let m = map_of(&[("a", 1), ("b", 2), ("c", 3)])?;
     UM::remove(literal!("b"), m.clone())?;
-    assert_eq!(UM::get(literal!("a"), m.clone()), Some(1));
-    assert_eq!(UM::get(literal!("c"), m.clone()), Some(3));
+    assert_eq!(UM::get(literal!("a"), m.clone())?, Some(1));
+    assert_eq!(UM::get(literal!("c"), m.clone())?, Some(3));
     Ok(())
 }
 
@@ -260,7 +260,7 @@ fn test_remove_then_lookup_remaining_keys_after_reindex() -> Result<()> {
     UM::remove(literal!("k0"), m.clone())?;
     for i in 1..10_i32 {
         assert_eq!(
-            UM::get(arcstr::format!("k{}", i), m.clone()),
+            UM::get(arcstr::format!("k{}", i), m.clone())?,
             Some(i),
             "k{} missing after removing k0",
             i
@@ -285,7 +285,7 @@ fn test_clear_then_add_works() -> Result<()> {
     let m = map_of(&[("old", 1)])?;
     UM::clear(m.clone());
     UM::add(literal!("new"), 42, m.clone())?;
-    assert_eq!(UM::get(literal!("new"), m.clone()), Some(42));
+    assert_eq!(UM::get(literal!("new"), m.clone())?, Some(42));
     assert_eq!(UM::size(m), 1);
     Ok(())
 }
@@ -328,9 +328,9 @@ fn test_from_lists_basic() -> Result<()> {
     let keys = list![literal!("a"), literal!("b"), literal!("c")];
     let vals = list![1_i32, 2_i32, 3_i32];
     let m = UM::fromLists(keys, vals, Arc::new(hash_str), Arc::new(eq_str))?;
-    assert_eq!(UM::get(literal!("a"), m.clone()), Some(1));
-    assert_eq!(UM::get(literal!("b"), m.clone()), Some(2));
-    assert_eq!(UM::get(literal!("c"), m.clone()), Some(3));
+    assert_eq!(UM::get(literal!("a"), m.clone())?, Some(1));
+    assert_eq!(UM::get(literal!("b"), m.clone())?, Some(2));
+    assert_eq!(UM::get(literal!("c"), m.clone())?, Some(3));
     Ok(())
 }
 
@@ -361,7 +361,7 @@ fn test_copy_is_independent() -> Result<()> {
     let m2 = UM::copy(m1.clone());
     // Mutate m1; m2 should be unaffected.
     UM::add(literal!("c"), 3, m1.clone())?;
-    assert!(!UM::contains(literal!("c"), m2));
+    assert!(!UM::contains(literal!("c"), m2)?);
     Ok(())
 }
 
@@ -385,7 +385,7 @@ fn test_large_map_all_entries_present() -> Result<()> {
     assert_eq!(UM::size(m.clone()), n);
     for i in 0..n {
         assert_eq!(
-            UM::get(arcstr::format!("key_{}", i), m.clone()),
+            UM::get(arcstr::format!("key_{}", i), m.clone())?,
             Some(i),
             "key_{} has wrong value",
             i
@@ -399,7 +399,7 @@ fn test_large_map_all_entries_present() -> Result<()> {
 #[test]
 fn test_first_on_non_empty_map() -> Result<()> {
     let m = map_of(&[("only", 99)])?;
-    let v = UM::first(m.clone());
+    let v = UM::first(m.clone())?;
     assert_eq!(v, 99);
     Ok(())
 }
@@ -407,7 +407,7 @@ fn test_first_on_non_empty_map() -> Result<()> {
 #[test]
 fn test_first_key_on_non_empty_map() -> Result<()> {
     let m = map_of(&[("solo", 1)])?;
-    let k = UM::firstKey(m.clone());
+    let k = UM::firstKey(m.clone())?;
     assert_eq!(k, literal!("solo"));
     Ok(())
 }

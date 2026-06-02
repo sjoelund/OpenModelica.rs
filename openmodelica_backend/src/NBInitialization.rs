@@ -111,9 +111,9 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NB
     let mut eq_filter_opt: Option<Arc<UnorderedSet::UnorderedSet<ArcStr>>> = None;
     match '__try0: {
         bdae = ({
-        let mut algorithm_outputs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
-        let mut new_iters: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>> = UnorderedSet::new((std::sync::Arc::new(fnptr!(BVariable::hash, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(BVariable::equalName, Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 13);
-        let mut cref_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Iterator::Iterator>>> = UnorderedMap::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
+        let mut algorithm_outputs: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
+        let mut new_iters: Arc<UnorderedSet::UnorderedSet<Pointer::Pointer<Arc<Variable::NFVariable>>>> = UnorderedSet::new((std::sync::Arc::new(BVariable::hash) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(BVariable::equalName) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 13);
+        let mut cref_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Iterator::Iterator>>> = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
         (::match_deref::match_deref! { match &(bdae.clone()) {
         Deref @ BackendDAE::MAIN { eqData: eqData @ Deref @ BEquation::EqData::EQ_DATA_SIM { initials: initialEqs, equations, .. }, varData: varData @ Deref @ BVariable::VarData::VAR_DATA_SIM { initials: initialVars, variables, .. }, .. } => {
             let mut clonedEqns: Arc<EquationPointers::EquationPointers> = Arc::new(<EquationPointers::EquationPointers as ::std::default::Default>::default());
@@ -125,7 +125,7 @@ pub fn main(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NB
             let mut initialVars = (*initialVars).clone();
             let mut variables = (*variables).clone();
             clonedEqns = unwrap_break_err!(BEquation::EquationPointers::clone(equations.clone(), false), '__try0);
-            initialEqs = BEquation::EquationPointers::addList(BEquation::EquationPointers::toList(initialEqs.clone())?, clonedEqns.clone());
+            initialEqs = unwrap_break_err!(BEquation::EquationPointers::addList(BEquation::EquationPointers::toList(initialEqs.clone())?, clonedEqns.clone()), '__try0);
             unwrap_break_err!(BEquation::EquationPointers::mapRemovePtr(initialEqs.clone(), (std::sync::Arc::new(fnptr!(BEquation::Equation::isClocked, Pointer::Pointer<Arc<Equation::Equation>>)) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>)), '__try0);
             unwrap_break_err!(BEquation::EquationPointers::mapPtr(initialEqs.clone(), (std::sync::Arc::new(replaceClockedFunctionsEqn) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<Pointer::Pointer<Arc<Equation::Equation>>> + 'static>)), '__try0);
             initialEqs = unwrap_break_err!(BEquation::EquationPointers::map(initialEqs.clone(), (std::sync::Arc::new({ let __pe_b1 = Arc::new(crate::NBEquation::Iterator::EMPTY); let __pe_b2 = cref_map.clone(); move |__pe_a0| removeWhenEquation(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>)), '__try0);
@@ -206,10 +206,10 @@ pub fn createStartEquations(mut states: Arc<VariablePointers::VariablePointers>,
     let mut start_eqs: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
     BVariable::VariablePointers::mapPtr(states.clone(), (std::sync::Arc::new({ let __pe_b1 = ptr_start_vars.clone(); let __pe_b2 = ptr_start_vars_init.clone(); let __pe_b3 = ptr_start_eqs.clone(); let __pe_b4 = idx.clone(); let __pe_b5 = algorithm_outputs.clone(); move |__pe_a0| createStartEquation(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone(), __pe_b5.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<()> + 'static>))?;
     start_eqs = Pointer::access(ptr_start_eqs.clone());
-    variables = BVariable::VariablePointers::addList(Pointer::access(ptr_start_vars.clone()), variables.clone());
-    initialVars = BVariable::VariablePointers::addList(Pointer::access(ptr_start_vars_init.clone()), initialVars.clone());
-    equations = BEquation::EquationPointers::addList(start_eqs.clone(), equations.clone());
-    initialEqs = BEquation::EquationPointers::addList(start_eqs.clone(), initialEqs.clone());
+    variables = BVariable::VariablePointers::addList(Pointer::access(ptr_start_vars.clone()), variables.clone())?;
+    initialVars = BVariable::VariablePointers::addList(Pointer::access(ptr_start_vars_init.clone()), initialVars.clone())?;
+    equations = BEquation::EquationPointers::addList(start_eqs.clone(), equations.clone())?;
+    initialEqs = BEquation::EquationPointers::addList(start_eqs.clone(), initialEqs.clone())?;
     if Flags::isSet(Flags::INITIALIZATION.clone())? && !(start_eqs.clone().is_empty()) {
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(start_eqs.clone(), (std::sync::Arc::new({ let __pe_b1 = (literal!("\t")).clone(); move |__pe_a0| BEquation::Equation::pointerToString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<ArcStr> + 'static>), (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Created ")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(" Start Equations (")); __mm_s.push_str(&*intString((start_eqs.clone().len() as i32))); __mm_s.push_str(&*literal!("):")); ArcStr::from(__mm_s) }).clone())).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), false, 0)?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
     }
@@ -220,14 +220,14 @@ pub fn createStartEquation(mut var: Pointer::Pointer<Arc<Variable::NFVariable>>,
     if !(UnorderedSet::contains(BVariable::getVarName(var.clone()), algorithm_outputs.clone())?) {
         let () = (::match_deref::match_deref! { match &(Pointer::access(var.clone())) {
         Deref @ Variable::VARIABLE { .. } if (BVariable::isArray(var.clone())) => {
-            if BVariable::isFixed(var.clone()) {
-                createStartEquationSlice(Arc::new(Slice::NBSlice { t: var.clone(), indices: metamodelica::nil() }), ptr_start_vars.clone(), ptr_start_eqs.clone(), idx.clone(), BVariable::isFixed(var.clone()))?;
+            if BVariable::isFixed(var.clone())? {
+                createStartEquationSlice(Arc::new(Slice::NBSlice { t: var.clone(), indices: metamodelica::nil() }), ptr_start_vars.clone(), ptr_start_eqs.clone(), idx.clone(), BVariable::isFixed(var.clone())?)?;
             } else {
-                createStartEquationSlice(Arc::new(Slice::NBSlice { t: var.clone(), indices: metamodelica::nil() }), ptr_start_vars_init.clone(), ptr_start_eqs.clone(), idx.clone(), BVariable::isFixed(var.clone()))?;
+                createStartEquationSlice(Arc::new(Slice::NBSlice { t: var.clone(), indices: metamodelica::nil() }), ptr_start_vars_init.clone(), ptr_start_eqs.clone(), idx.clone(), BVariable::isFixed(var.clone())?)?;
             }
             ()
         },
-        Deref @ Variable::VARIABLE { .. } if (BVariable::isFixed(var.clone())) => {
+        Deref @ Variable::VARIABLE { .. } if (BVariable::isFixed(var.clone())?) => {
             let mut name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
             let mut start_name: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
             let mut start_var: Pointer::Pointer<Arc<Variable::NFVariable>>;
@@ -236,7 +236,7 @@ pub fn createStartEquation(mut var: Pointer::Pointer<Arc<Variable::NFVariable>>,
             let mut start_exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             name = BVariable::getVarName(var.clone());
             start_exp = (::match_deref::match_deref! { match &(BVariable::getStartAttribute(var.clone())) {
-        Some(e) if (!(Expression::isLiteralXML(e.clone()))) => {
+        Some(e) if (!(Expression::isLiteralXML(e.clone())?)) => {
             e.clone()
         },
         _ => {
@@ -257,7 +257,7 @@ pub fn createStartEquation(mut var: Pointer::Pointer<Arc<Variable::NFVariable>>,
             let mut start_eq: Pointer::Pointer<Arc<Equation::Equation>>;
             let mut kind: EquationKind = EquationKind::CONTINUOUS;
             let () = (::match_deref::match_deref! { match &(BVariable::getStartAttribute(var.clone())) {
-        Some(e) if (!(Expression::isLiteralXML(e.clone()))) => {
+        Some(e) if (!(Expression::isLiteralXML(e.clone())?)) => {
             (_, _, start_var, start_name) = createStartVar(var.clone(), BVariable::getVarName(var.clone()), metamodelica::nil())?;
             kind = if (BVariable::isContinuous(var.clone(), true)?) {EquationKind::CONTINUOUS.clone()} else {EquationKind::DISCRETE.clone()};
             start_eq = BEquation::Equation::makeAssignment(Expression::fromCref(start_name.clone(), false)?, e.clone(), idx.clone(), (arcstr::literal!(BEquation::START_STR)).clone(), Arc::new(crate::NBEquation::Iterator::EMPTY), BEquation::default(kind.clone(), true, None, None))?;
@@ -291,8 +291,8 @@ pub fn createWhenReplacementEquations(mut cref_map: Arc<UnorderedMap::UnorderedM
         createWhenReplacementEquation(tpl.clone(), ptr_start_eqs.clone(), idx.clone())?;
     }
     start_eqs = Pointer::access(ptr_start_eqs.clone());
-    equations = BEquation::EquationPointers::addList(start_eqs.clone(), equations.clone());
-    initialEqs = BEquation::EquationPointers::addList(start_eqs.clone(), initialEqs.clone());
+    equations = BEquation::EquationPointers::addList(start_eqs.clone(), equations.clone())?;
+    initialEqs = BEquation::EquationPointers::addList(start_eqs.clone(), initialEqs.clone())?;
     if Flags::isSet(Flags::INITIALIZATION.clone())? && !(start_eqs.clone().is_empty()) {
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(start_eqs.clone(), (std::sync::Arc::new({ let __pe_b1 = (literal!("\t")).clone(); move |__pe_a0| BEquation::Equation::pointerToString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<ArcStr> + 'static>), (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Created When Replacement Equations (")); __mm_s.push_str(&*intString((start_eqs.clone().len() as i32))); __mm_s.push_str(&*literal!("):")); ArcStr::from(__mm_s) }).clone())).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), false, 0)?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
     }
@@ -374,9 +374,9 @@ pub fn createParameterEquations(mut parameters: Arc<VariablePointers::VariablePo
         let mut var = var.clone();
         (parameter_eqs, initial_param_vars) = createParameterEquation(var.clone(), new_iters.clone(), idx.clone(), parameter_eqs.clone(), initial_param_vars.clone())?;
     }
-    equations = BEquation::EquationPointers::addList(parameter_eqs.clone(), equations.clone());
-    initialEqs = BEquation::EquationPointers::addList(parameter_eqs.clone(), initialEqs.clone());
-    initialVars = BVariable::VariablePointers::addList(initial_param_vars.clone(), initialVars.clone());
+    equations = BEquation::EquationPointers::addList(parameter_eqs.clone(), equations.clone())?;
+    initialEqs = BEquation::EquationPointers::addList(parameter_eqs.clone(), initialEqs.clone())?;
+    initialVars = BVariable::VariablePointers::addList(initial_param_vars.clone(), initialVars.clone())?;
     if Flags::isSet(Flags::INITIALIZATION.clone())? && !(parameter_eqs.clone().is_empty()) || Flags::isSet(Flags::DUMP_BINDINGS.clone())? {
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*List::toString(parameter_eqs.clone(), (std::sync::Arc::new({ let __pe_b1 = (literal!("\t")).clone(); move |__pe_a0| BEquation::Equation::pointerToString(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<ArcStr> + 'static>), (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Created")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("Parameter Binding Equations (")); __mm_s.push_str(&*intString((parameter_eqs.clone().len() as i32))); __mm_s.push_str(&*literal!("):")); ArcStr::from(__mm_s) }).clone())).clone(), (literal!("")).clone(), (literal!("\n")).clone(), (literal!("")).clone(), false, 0)?); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
     }
@@ -415,7 +415,7 @@ pub fn createParameterEquation(mut var: Pointer::Pointer<Arc<Variable::NFVariabl
     } else if !(BVariable::isRecord(var.clone())) {
         if !(BVariable::hasEvaluableBinding(var.clone())?) {
             initial_param_vars = metamodelica::cons(var.clone(), initial_param_vars.clone());
-            if BVariable::isFixed(var.clone()) {
+            if BVariable::isFixed(var.clone())? {
                 parameter_eqs = metamodelica::cons(BEquation::Equation::generateBindingEquation(var.clone(), idx.clone(), true, new_iters.clone())?, parameter_eqs.clone());
             }
         } else if BVariable::isBound(var.clone()) {
@@ -441,7 +441,7 @@ pub fn createStartEquationSlice(mut var_slice: Arc<Slice::NBSlice<Pointer::Point
     kind = if (BVariable::isContinuous(var_ptr.clone(), true)?) {EquationKind::CONTINUOUS.clone()} else {EquationKind::DISCRETE.clone()};
     if fixed.clone() {
         start_exp = (::match_deref::match_deref! { match &(BVariable::getStartAttribute(var_ptr.clone())) {
-        Some(e) if (!(Expression::isLiteralXML(e.clone()))) => {
+        Some(e) if (!(Expression::isLiteralXML(e.clone())?)) => {
             (start_exp, var_ptr, name, _, _, iterator) = createStartExpressionSlice(e.clone(), var_slice.clone(), var_ptr.clone(), name.clone())?;
             start_exp.clone()
         },
@@ -454,7 +454,7 @@ pub fn createStartEquationSlice(mut var_slice: Arc<Slice::NBSlice<Pointer::Point
         start_eq = Some(BEquation::Equation::makeAssignment(Expression::fromCref(name.clone(), true)?, start_exp.clone(), idx.clone(), (arcstr::literal!(BEquation::START_STR)).clone(), iterator.clone(), BEquation::default(kind.clone(), true, None, None))?);
     } else {
         start_eq = (::match_deref::match_deref! { match &(BVariable::getStartAttribute(var_ptr.clone())) {
-        Some(e) if (!(Expression::isLiteralXML(e.clone()))) => {
+        Some(e) if (!(Expression::isLiteralXML(e.clone())?)) => {
             (start_exp, var_ptr, _, start_var, name, iterator) = createStartExpressionSlice(e.clone(), var_slice.clone(), var_ptr.clone(), name.clone())?;
             start_eq = Some(BEquation::Equation::makeAssignment(Expression::fromCref(name.clone(), true)?, start_exp.clone(), idx.clone(), (arcstr::literal!(BEquation::START_STR)).clone(), iterator.clone(), BEquation::default(kind.clone(), true, None, None))?);
             Pointer::update(ptr_start_vars.clone(), metamodelica::cons(start_var.clone(), Pointer::access(ptr_start_vars.clone())));
@@ -489,7 +489,7 @@ pub fn createStartExpressionSlice(mut exp: Arc<Expression::NFExpression>, mut va
             let mut old_iter: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
             let mut new_iter: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
             (var_ptr, name, start_var, start_cref, _, frames, iterator) = createIteratedStartCref(var_ptr.clone(), name.clone(), (var_field!((**array_constructor).iters, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone().len() as i32))?;
-            replacements = UnorderedMap::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
+            replacements = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 1);
             for mut tpl in &*List::zip(var_field!((**array_constructor).iters, Call::NFCall::TYPED_ARRAY_CONSTRUCTOR).clone(), frames.clone()) {
                 let mut tpl = tpl.clone();
                 let ((__pa0, _), (__pa1, _, _)) = tpl.clone();
@@ -553,7 +553,7 @@ fn createIteratedStartCref(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariabl
     iter_crefs = ({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
         for mut iter in (iterators.clone()).into_iter().cloned() {
-            let __x = ComponentRef::makeIterator(iter.clone(), Arc::new(openmodelica_nf_frontend::NFType::INTEGER));
+            let __x = ComponentRef::makeIterator(iter.clone(), Arc::new(openmodelica_nf_frontend::NFType::INTEGER))?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -561,7 +561,7 @@ fn createIteratedStartCref(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariabl
     iter_crefs = ({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
         for mut iter in (iter_crefs.clone()).into_iter().cloned() {
-            let __x = BackendDAE::lowerIteratorCref(iter.clone());
+            let __x = BackendDAE::lowerIteratorCref(iter.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -569,7 +569,7 @@ fn createIteratedStartCref(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariabl
     subscripts = ({
         let mut __acc: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
         for mut sub in (subscripts.clone()).into_iter().cloned() {
-            let __x = Subscript::mapExp(sub.clone(), (std::sync::Arc::new(fnptr!(BackendDAE::lowerIteratorExp, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+            let __x = Subscript::mapExp(sub.clone(), (std::sync::Arc::new(BackendDAE::lowerIteratorExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -618,7 +618,7 @@ pub fn createPreEquationSlice(mut var_slice: Arc<Slice::NBSlice<Pointer::Pointer
             frames = List::zip3(({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
         for mut iter in (iterators.clone()).into_iter().cloned() {
-            let __x = ComponentRef::makeIterator(iter.clone(), Arc::new(openmodelica_nf_frontend::NFType::INTEGER));
+            let __x = ComponentRef::makeIterator(iter.clone(), Arc::new(openmodelica_nf_frontend::NFType::INTEGER))?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -870,7 +870,7 @@ pub fn removeWhenEquation(mut eqn: Arc<Equation::Equation>, mut iter: Arc<Iterat
         }
         __acc.reverse()
     }));
-            if (List::all(var_field!((*eqn).body, Equation::Equation::FOR_EQUATION).clone(), (std::sync::Arc::new(fnptr!(BEquation::Equation::isDummy, Arc<Equation::Equation>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<bool> + 'static>))) {Arc::new(crate::NBEquation::Equation::DUMMY_EQUATION)} else {eqn.clone()}
+            if (List::all(var_field!((*eqn).body, Equation::Equation::FOR_EQUATION).clone(), (std::sync::Arc::new(fnptr!(BEquation::Equation::isDummy, Arc<Equation::Equation>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<bool> + 'static>))?) {Arc::new(crate::NBEquation::Equation::DUMMY_EQUATION)} else {eqn.clone()}
         },
         Deref @ BEquation::Equation::WHEN_EQUATION { .. } => {
             let mut new_eqn: Arc<Equation::Equation> = Arc::new(Equation::DUMMY_EQUATION);
@@ -892,8 +892,8 @@ pub fn removeWhenEquation(mut eqn: Arc<Equation::Equation>, mut iter: Arc<Iterat
         },
         Deref @ BEquation::Equation::IF_EQUATION { .. } => {
             assign_variant_field!(eqn => Equation::Equation::IF_EQUATION;
-                body = removeWhenEquationIfBody(var_field!((*eqn).body, Equation::Equation::IF_EQUATION).clone(), iter.clone(), cref_map.clone()),
-                size = BEquation::IfEquationBody::size(var_field!((*eqn).body, Equation::Equation::IF_EQUATION).clone(), false)
+                body = removeWhenEquationIfBody(var_field!((*eqn).body, Equation::Equation::IF_EQUATION).clone(), iter.clone(), cref_map.clone())?,
+                size = BEquation::IfEquationBody::size(var_field!((*eqn).body, Equation::Equation::IF_EQUATION).clone(), false)?
             );
             if (var_field!((*eqn).size, Equation::Equation::IF_EQUATION).clone() > 0) {eqn.clone()} else {Arc::new(crate::NBEquation::Equation::DUMMY_EQUATION)}
         },
@@ -943,25 +943,25 @@ pub fn removeWhenEquationBody(mut body_opt: Option<Arc<WhenEquationBody::WhenEqu
     Ok(stmts)
 }
 
-pub fn removeWhenEquationIfBody(mut body: Arc<IfEquationBody::IfEquationBody>, mut iter: Arc<Iterator::Iterator>, mut cref_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Iterator::Iterator>>>) -> Arc<IfEquationBody::IfEquationBody> {
+pub fn removeWhenEquationIfBody(mut body: Arc<IfEquationBody::IfEquationBody>, mut iter: Arc<Iterator::Iterator>, mut cref_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Iterator::Iterator>>>) -> Result<Arc<IfEquationBody::IfEquationBody>> {
     let mut body: Arc<IfEquationBody::IfEquationBody> = body;
     assign_field!(
         body.then_eqns = ({
         let mut __acc: Arc<metamodelica::List<Pointer::Pointer<Arc<Equation::Equation>>>> = metamodelica::nil();
         for mut e in (body.then_eqns.clone()).into_iter().cloned() {
-            let __x = Pointer::apply(e.clone(), (std::sync::Arc::new({ let __pe_b1 = iter.clone(); let __pe_b2 = cref_map.clone(); move |__pe_a0| removeWhenEquation(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>));
+            let __x = Pointer::apply(e.clone(), (std::sync::Arc::new({ let __pe_b1 = iter.clone(); let __pe_b2 = cref_map.clone(); move |__pe_a0| removeWhenEquation(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Equation::Equation>) -> Result<Arc<Equation::Equation>> + 'static>))?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }),
-        body.else_if = Util::applyOption(body.else_if.clone(), (std::sync::Arc::new({ let __pe_b1 = iter.clone(); let __pe_b2 = cref_map.clone(); move |__pe_a0| Ok(removeWhenEquationIfBody(__pe_a0, __pe_b1.clone(), __pe_b2.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<IfEquationBody::IfEquationBody>) -> Result<Arc<IfEquationBody::IfEquationBody>> + 'static>))
+        body.else_if = Util::applyOption(body.else_if.clone(), (std::sync::Arc::new({ let __pe_b1 = iter.clone(); let __pe_b2 = cref_map.clone(); move |__pe_a0| removeWhenEquationIfBody(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<IfEquationBody::IfEquationBody>) -> Result<Arc<IfEquationBody::IfEquationBody>> + 'static>))?
     );
-    body
+    Ok(body)
 }
 
 pub fn removeWhenEquationAlgorithmBody(mut in_stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>>) -> Result<Arc<metamodelica::List<Arc<Statement::NFStatement>>>> {
     let mut out_stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
-    let mut condition_set: Arc<UnorderedSet::UnorderedSet<Arc<Expression::NFExpression>>> = UnorderedSet::new((std::sync::Arc::new(fnptr!(Expression::hash, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<i32> + 'static>), (std::sync::Arc::new(Expression::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<bool> + 'static>), 13);
+    let mut condition_set: Arc<UnorderedSet::UnorderedSet<Arc<Expression::NFExpression>>> = UnorderedSet::new((std::sync::Arc::new(Expression::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<i32> + 'static>), (std::sync::Arc::new(Expression::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<bool> + 'static>), 13);
     let mut tail_stmts_ptr: Pointer::Pointer<Arc<metamodelica::List<Arc<Statement::NFStatement>>>> = Pointer::create(metamodelica::nil());
     out_stmts = List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Statement::NFStatement>>>>> = metamodelica::nil();
@@ -970,7 +970,7 @@ pub fn removeWhenEquationAlgorithmBody(mut in_stmts: Arc<metamodelica::List<Arc<
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }));
+    }))?;
     out_stmts = List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<Statement::NFStatement>>>>> = metamodelica::nil();
         for mut stmt in (out_stmts.clone()).into_iter().cloned() {
@@ -978,7 +978,7 @@ pub fn removeWhenEquationAlgorithmBody(mut in_stmts: Arc<metamodelica::List<Arc<
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }));
+    }))?;
     out_stmts = listAppend(out_stmts.clone(), Pointer::access(tail_stmts_ptr.clone()));
     Ok(out_stmts)
 }
@@ -1007,7 +1007,7 @@ pub fn removeWhenEquationStatement(mut stmt: Arc<Statement::NFStatement>, mut co
                 let mut body_stmt = body_stmt.clone();
                 stmts_acc = metamodelica::cons(removeWhenEquationStatement(body_stmt.clone(), condition_set.clone())?, stmts_acc.clone());
             }
-            stmts = List::flatten(stmts_acc.clone());
+            stmts = List::flatten(stmts_acc.clone())?;
             if !(stmts.clone().is_empty()) {
                 assign_variant_field!(stmt => Statement::NFStatement::FOR; body = stmts.clone());
                 out_stmts = list![stmt.clone()];
@@ -1032,7 +1032,7 @@ pub fn removeConditionEquation(mut stmt: Arc<Statement::NFStatement>, mut condit
             let mut pre_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
             let mut post_cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
             let mut tail_stmts: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
-            pre_set = UnorderedSet::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
+            pre_set = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
             Expression::map(var_field!((*stmt).rhs, Statement::NFStatement::ASSIGNMENT).clone(), (std::sync::Arc::new({ let __pe_b1 = pre_set.clone(); move |__pe_a0| findPreVars(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             if UnorderedSet::isEmpty(pre_set.clone()) {
                 out_stmts = list![stmt.clone()];
@@ -1093,7 +1093,7 @@ pub fn isInitialCall(mut condition: Arc<Expression::NFExpression>) -> Result<boo
     b = (::match_deref::match_deref! { match &(condition.clone()) {
         Deref @ Expression::CALL { .. } => Call::isNamed(var_field!((*condition).call, Expression::NFExpression::CALL).clone(), (literal!("initial")).clone())?,
         Deref @ Expression::LBINARY { operator: Deref @ Operator::OPERATOR { op: Operator::Op::OR, .. }, .. } => isInitialCall(var_field!((*condition).exp1, Expression::NFExpression::LBINARY).clone())? || isInitialCall(var_field!((*condition).exp2, Expression::NFExpression::LBINARY).clone())?,
-        Deref @ Expression::ARRAY { .. } => Array::any(var_field!((*condition).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new(isInitialCall) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>)),
+        Deref @ Expression::ARRAY { .. } => Array::any(var_field!((*condition).elements, Expression::NFExpression::ARRAY).clone(), (std::sync::Arc::new(isInitialCall) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<bool> + 'static>))?,
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1127,11 +1127,11 @@ pub fn collectAlgorithmOutputs(mut eqn: Arc<Equation::Equation>, mut outputs: Ar
             out_crefs = List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>>> = metamodelica::nil();
         for mut o in (alg.outputs.clone()).into_iter().cloned() {
-            let __x = BVariable::getRecordChildrenCrefOrSelf(o.clone());
+            let __x = BVariable::getRecordChildrenCrefOrSelf(o.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }));
+    }))?;
             for mut cr in &*out_crefs.clone() {
                 let mut cr = cr.clone();
                 UnorderedSet::add(cr.clone(), outputs.clone())?;

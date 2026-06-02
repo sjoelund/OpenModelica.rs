@@ -85,7 +85,7 @@ pub mod Stages {
 
 pub static DEFAULT_STAGES: std::sync::LazyLock<Arc<Stages::Stages>> = std::sync::LazyLock::new(|| { Arc::new(Stages::Stages { dynamicEval: true, algebraicEval: true, zerocrossEval: false, discreteEval: true }) });
 
-pub fn removeDummies(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Arc<BackendDAE::NBackendDAE> {
+pub fn removeDummies(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Result<Arc<BackendDAE::NBackendDAE>> {
     let mut bdae: Arc<BackendDAE::NBackendDAE> = bdae;
     bdae = (::match_deref::match_deref! { match &(bdae.clone()) {
         Deref @ BackendDAE::MAIN { .. } => {
@@ -93,7 +93,7 @@ pub fn removeDummies(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Arc<BackendDAE::
                 ode = ({
         let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
         for mut p in (var_field!((*bdae).ode, BackendDAE::NBackendDAE::MAIN).clone()).into_iter().cloned() {
-            let __x = removeDummyComponents(p.clone());
+            let __x = removeDummyComponents(p.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -101,7 +101,7 @@ pub fn removeDummies(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Arc<BackendDAE::
                 algebraic = ({
         let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
         for mut p in (var_field!((*bdae).algebraic, BackendDAE::NBackendDAE::MAIN).clone()).into_iter().cloned() {
-            let __x = removeDummyComponents(p.clone());
+            let __x = removeDummyComponents(p.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -109,7 +109,7 @@ pub fn removeDummies(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Arc<BackendDAE::
                 ode_event = ({
         let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
         for mut p in (var_field!((*bdae).ode_event, BackendDAE::NBackendDAE::MAIN).clone()).into_iter().cloned() {
-            let __x = removeDummyComponents(p.clone());
+            let __x = removeDummyComponents(p.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -117,7 +117,7 @@ pub fn removeDummies(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Arc<BackendDAE::
                 alg_event = ({
         let mut __acc: Arc<metamodelica::List<Arc<Partition::Partition>>> = metamodelica::nil();
         for mut p in (var_field!((*bdae).alg_event, BackendDAE::NBackendDAE::MAIN).clone()).into_iter().cloned() {
-            let __x = removeDummyComponents(p.clone());
+            let __x = removeDummyComponents(p.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -128,12 +128,12 @@ pub fn removeDummies(mut bdae: Arc<BackendDAE::NBackendDAE>) -> Arc<BackendDAE::
         _ => bdae.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    bdae
+    Ok(bdae)
 }
 
-pub fn removeDummyComponents(mut part: Arc<Partition::Partition>) -> Arc<Partition::Partition> {
+pub fn removeDummyComponents(mut part: Arc<Partition::Partition>) -> Result<Arc<Partition::Partition>> {
     let mut part: Arc<Partition::Partition> = part;
-    assign_field!(part.strongComponents = Util::applyOption(part.strongComponents.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(_) -> Result<bool> + 'static> = (std::sync::Arc::new(fnptr!(StrongComponent::isDummy, Arc<StrongComponent::NBStrongComponent>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>) -> Result<bool> + 'static>); move |__pe_a0| Ok(Array::filter(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>)));
-    part
+    assign_field!(part.strongComponents = Util::applyOption(part.strongComponents.clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(_) -> Result<bool> + 'static> = (std::sync::Arc::new(fnptr!(StrongComponent::isDummy, Arc<StrongComponent::NBStrongComponent>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<StrongComponent::NBStrongComponent>) -> Result<bool> + 'static>); move |__pe_a0| Array::filter(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>))?);
+    Ok(part)
 }
 

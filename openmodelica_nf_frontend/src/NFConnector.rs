@@ -100,9 +100,9 @@ impl Default for Face {
     fn default() -> Self { Self::INSIDE }
 }
 
-pub fn fromCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut ty: Arc<Type::NFType>, mut source: Arc<DAE::ElementSource>) -> Arc<NFConnector> {
-    let mut conn: Arc<NFConnector> = fromFacedCref(cref.clone(), ty.clone(), crefFace(cref.clone()).unwrap(), source.clone()).unwrap();
-    conn
+pub fn fromCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut ty: Arc<Type::NFType>, mut source: Arc<DAE::ElementSource>) -> Result<Arc<NFConnector>> {
+    let mut conn: Arc<NFConnector> = fromFacedCref(cref.clone(), ty.clone(), crefFace(cref.clone())?, source.clone())?;
+    Ok(conn)
 }
 
 pub fn fromFacedCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut ty: Arc<Type::NFType>, mut face: Face, mut source: Arc<DAE::ElementSource>) -> Result<Arc<NFConnector>> {
@@ -111,7 +111,7 @@ pub fn fromFacedCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut ty: Arc<Ty
     let mut comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);
     let mut cty: i32 = 0;
     let mut res: Arc<Restriction::NFRestriction> = Arc::new(Restriction::BLOCK);
-    if InstNode::isComponent(node.clone()) {
+    if InstNode::isComponent(node.clone())? {
         comp = InstNode::component(node.clone())?;
         res = Class::restriction(InstNode::getClass(Component::classInstance(comp.clone()))?);
         cty = Component::connectorType(comp.clone());
@@ -125,7 +125,7 @@ pub fn fromFacedCref(mut cref: Arc<ComponentRef::NFComponentRef>, mut ty: Arc<Ty
 pub fn fromExp(mut exp: Arc<Expression::NFExpression>, mut source: Arc<DAE::ElementSource>, mut conns: Arc<metamodelica::List<Arc<NFConnector>>>) -> Result<Arc<metamodelica::List<Arc<NFConnector>>>> {
     let mut conns: Arc<metamodelica::List<Arc<NFConnector>>> = conns;
     conns = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CREF { .. } => metamodelica::cons(fromCref(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), var_field!((*exp).ty, Expression::NFExpression::CREF).clone(), source.clone()), conns.clone()),
+        Deref @ Expression::CREF { .. } => metamodelica::cons(fromCref(var_field!((*exp).cref, Expression::NFExpression::CREF).clone(), var_field!((*exp).ty, Expression::NFExpression::CREF).clone(), source.clone())?, conns.clone()),
         Deref @ Expression::ARRAY { .. } => {
             let __range0 = (1..=(var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone().borrow().len() as i32)).rev();
             for mut i in __range0 {
@@ -152,29 +152,29 @@ pub fn getInfo(mut conn: Arc<NFConnector>) -> SourceInfo {
     info
 }
 
-pub fn variability(mut conn: Arc<NFConnector>) -> Variability {
-    let mut var: Variability = Component::variability(InstNode::component(ComponentRef::node(conn.name.clone()).unwrap()).unwrap());
-    var
+pub fn variability(mut conn: Arc<NFConnector>) -> Result<Variability> {
+    let mut var: Variability = Component::variability(InstNode::component(ComponentRef::node(conn.name.clone())?)?)?;
+    Ok(var)
 }
 
-pub fn isEqual(mut conn1: Arc<NFConnector>, mut conn2: Arc<NFConnector>) -> bool {
-    let mut isEqual: bool = ComponentRef::isEqual(conn1.name.clone(), conn2.name.clone()).unwrap() && conn1.face.clone() == conn2.face.clone();
-    isEqual
+pub fn isEqual(mut conn1: Arc<NFConnector>, mut conn2: Arc<NFConnector>) -> Result<bool> {
+    let mut isEqual: bool = ComponentRef::isEqual(conn1.name.clone(), conn2.name.clone())? && conn1.face.clone() == conn2.face.clone();
+    Ok(isEqual)
 }
 
-pub fn isEqualNoSubs(mut conn1: Arc<NFConnector>, mut conn2: Arc<NFConnector>) -> bool {
-    let mut isEqual: bool = ComponentRef::isEqualStrip(conn1.name.clone(), conn2.name.clone()).unwrap() && conn1.face.clone() == conn2.face.clone();
-    isEqual
+pub fn isEqualNoSubs(mut conn1: Arc<NFConnector>, mut conn2: Arc<NFConnector>) -> Result<bool> {
+    let mut isEqual: bool = ComponentRef::isEqualStrip(conn1.name.clone(), conn2.name.clone())? && conn1.face.clone() == conn2.face.clone();
+    Ok(isEqual)
 }
 
-pub fn isPrefix(mut conn1: Arc<NFConnector>, mut conn2: Arc<NFConnector>) -> bool {
-    let mut isPrefix: bool = ComponentRef::isPrefix(conn1.name.clone(), conn2.name.clone()).unwrap();
-    isPrefix
+pub fn isPrefix(mut conn1: Arc<NFConnector>, mut conn2: Arc<NFConnector>) -> Result<bool> {
+    let mut isPrefix: bool = ComponentRef::isPrefix(conn1.name.clone(), conn2.name.clone())?;
+    Ok(isPrefix)
 }
 
-pub fn isNodeNameEqual(mut conn1: Arc<NFConnector>, mut conn2: Arc<NFConnector>) -> bool {
-    let mut isEqual: bool = InstNode::name(ComponentRef::node(conn1.name.clone()).unwrap()).unwrap() == InstNode::name(ComponentRef::node(conn2.name.clone()).unwrap()).unwrap();
-    isEqual
+pub fn isNodeNameEqual(mut conn1: Arc<NFConnector>, mut conn2: Arc<NFConnector>) -> Result<bool> {
+    let mut isEqual: bool = InstNode::name(ComponentRef::node(conn1.name.clone())?)? == InstNode::name(ComponentRef::node(conn2.name.clone())?)?;
+    Ok(isEqual)
 }
 
 pub fn isOutside(mut conn: Arc<NFConnector>) -> bool {
@@ -199,9 +199,9 @@ pub fn setOutside(mut conn: Arc<NFConnector>) -> Arc<NFConnector> {
     conn
 }
 
-pub fn isDeleted(mut conn: Arc<NFConnector>) -> bool {
-    let mut isDeleted: bool = ComponentRef::isDeleted(conn.name.clone()).unwrap();
-    isDeleted
+pub fn isDeleted(mut conn: Arc<NFConnector>) -> Result<bool> {
+    let mut isDeleted: bool = ComponentRef::isDeleted(conn.name.clone())?;
+    Ok(isDeleted)
 }
 
 pub fn isExpandable(mut conn: Arc<NFConnector>) -> bool {
@@ -219,9 +219,9 @@ pub fn name(mut conn: Arc<NFConnector>) -> Arc<ComponentRef::NFComponentRef> {
     name
 }
 
-pub fn toString(mut conn: Arc<NFConnector>) -> ArcStr {
-    let mut r#str: ArcStr = ComponentRef::toString(conn.name.clone()).unwrap();
-    r#str
+pub fn toString(mut conn: Arc<NFConnector>) -> Result<ArcStr> {
+    let mut r#str: ArcStr = ComponentRef::toString(conn.name.clone())?;
+    Ok(r#str)
 }
 
 pub fn faceString(mut conn: Arc<NFConnector>) -> ArcStr {
@@ -229,15 +229,15 @@ pub fn faceString(mut conn: Arc<NFConnector>) -> ArcStr {
     r#str
 }
 
-pub fn hash(mut conn: Arc<NFConnector>) -> i32 {
-    let mut hash: i32 = ComponentRef::hash(conn.name.clone());
-    hash
+pub fn hash(mut conn: Arc<NFConnector>) -> Result<i32> {
+    let mut hash: i32 = ComponentRef::hash(conn.name.clone())?;
+    Ok(hash)
 }
 
-pub fn hashNoSubs(mut conn: Arc<NFConnector>) -> i32 {
+pub fn hashNoSubs(mut conn: Arc<NFConnector>) -> Result<i32> {
     let mut hash: i32 = 0;
-    hash = ComponentRef::hashStrip(conn.name.clone());
-    hash
+    hash = ComponentRef::hashStrip(conn.name.clone())?;
+    Ok(hash)
 }
 
 pub fn split(mut conn: Arc<NFConnector>) -> Result<Arc<metamodelica::List<Arc<NFConnector>>>> {
@@ -320,7 +320,7 @@ fn crefFace(mut cref: Arc<ComponentRef::NFComponentRef>) -> Result<Face> {
     let mut face: Face = Face::INSIDE;
     face = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ ComponentRef::CREF { restCref: Deref @ ComponentRef::EMPTY, .. } => Face::OUTSIDE.clone(),
-        _ => if (InstNode::isConnector(ComponentRef::node(ComponentRef::firstNonScope(cref.clone()))?)?) {Face::OUTSIDE.clone()} else {Face::INSIDE.clone()},
+        _ => if (InstNode::isConnector(ComponentRef::node(ComponentRef::firstNonScope(cref.clone())?)?)?) {Face::OUTSIDE.clone()} else {Face::INSIDE.clone()},
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     Ok(face)

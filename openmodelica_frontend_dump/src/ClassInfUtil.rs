@@ -394,7 +394,7 @@ fn start_dispatch(mut inRestriction: SCode::Restriction, mut inPath: Arc<Absyn::
             ClassInf::State::TYPE_BOOL { path: p.clone() }
         },
         (SCode::Restriction::R_PREDEFINED_CLOCK { .. }, p) => {
-            let true = (Config::synchronousFeaturesAllowed()) else { bail!("pattern mismatch") };
+            let true = (Config::synchronousFeaturesAllowed()?) else { bail!("pattern mismatch") };
             ClassInf::State::TYPE_CLOCK { path: p.clone() }
         },
         (SCode::Restriction::R_PREDEFINED_ENUMERATION { .. }, p) => {

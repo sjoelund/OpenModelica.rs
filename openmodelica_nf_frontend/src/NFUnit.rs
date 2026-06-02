@@ -143,7 +143,7 @@ pub fn getKnownUnitsInverse() -> Result<UnitToStringTable> {
     let mut outKnownUnitsInverse: UnitToStringTable = <Arc<UnorderedMap::UnorderedMap<Unit, ArcStr>> as ::std::default::Default>::default();
     let mut s: ArcStr = arcstr::literal!("");
     let mut ut: Unit = <Unit as ::std::default::Default>::default();
-    outKnownUnitsInverse = UnorderedMap::new((std::sync::Arc::new(fnptr!(hash, Unit)) as std::sync::Arc<dyn ::std::ops::Fn(Unit) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(isEqual, Unit, Unit)) as std::sync::Arc<dyn ::std::ops::Fn(Unit, Unit) -> Result<bool> + 'static>), Util::nextPrime((LU_COMPLEXUNITS().clone().len() as i32)));
+    outKnownUnitsInverse = UnorderedMap::new((std::sync::Arc::new(hash) as std::sync::Arc<dyn ::std::ops::Fn(Unit) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(isEqual, Unit, Unit)) as std::sync::Arc<dyn ::std::ops::Fn(Unit, Unit) -> Result<bool> + 'static>), Util::nextPrime((LU_COMPLEXUNITS().clone().len() as i32)));
     for mut unit in &*LU_COMPLEXUNITS().clone() {
         let mut unit = unit.clone();
         (s, ut) = unit.clone();
@@ -154,7 +154,7 @@ pub fn getKnownUnitsInverse() -> Result<UnitToStringTable> {
 
 pub fn newCrefUnitTable(mut size: i32) -> CrefToUnitTable {
     let mut table: CrefToUnitTable = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Unit>> as ::std::default::Default>::default();
-    table = UnorderedMap::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), size.clone());
+    table = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), size.clone());
     table
 }
 
@@ -176,9 +176,9 @@ pub fn isMaster(mut unit: Unit) -> bool {
     res
 }
 
-pub fn hash(mut inKey: Unit) -> i32 {
-    let mut outHash: i32 = stringHashDjb2((unit2string(inKey.clone()).unwrap()).clone());
-    outHash
+pub fn hash(mut inKey: Unit) -> Result<i32> {
+    let mut outHash: i32 = stringHashDjb2((unit2string(inKey.clone())?).clone());
+    Ok(outHash)
 }
 
 pub fn realAlmostEqRel(mut a: metamodelica::Real, mut b: metamodelica::Real, mut relTol: metamodelica::Real) -> bool {
@@ -361,7 +361,7 @@ pub fn unitString(mut inUnit: Unit, mut inHtU2S: UnitToStringTable) -> Result<Ar
     let mut sExponent: ArcStr = arcstr::literal!("");
     let mut b: bool = false;
     let mut unit: Unit = <Unit as ::std::default::Default>::default();
-    opt_s = UnorderedMap::get(inUnit.clone(), inHtU2S.clone());
+    opt_s = UnorderedMap::get(inUnit.clone(), inHtU2S.clone())?;
     if isSome(opt_s.clone()) {
         let __pa0 = ::match_deref::match_deref! { match &(opt_s.clone()) {
             Some(__pa0) => __pa0.clone(),
@@ -597,7 +597,7 @@ fn unitToken2unit(mut inS: ArcStr, mut inHtS2U: StringToUnitTable) -> Result<Uni
     let mut opt_unit: Option<Unit> = None;
     let mut s: ArcStr = arcstr::literal!("");
     let mut r: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    opt_unit = UnorderedMap::get((inS.clone()).clone(), inHtS2U.clone());
+    opt_unit = UnorderedMap::get((inS.clone()).clone(), inHtS2U.clone())?;
     if isSome(opt_unit.clone()) {
         let __pa0 = ::match_deref::match_deref! { match &(opt_unit.clone()) {
             Some(__pa0) => __pa0.clone(),

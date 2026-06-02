@@ -60,7 +60,7 @@ fn fun_52(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_modelInfo_functions
             txt_1 = Tpl::writeTok(txt_1.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_kernels.cl")).clone() }))?;
             l_cl = Tpl::redirectToFile(l_cl.clone(), (Tpl::textString(txt_1.clone())?).clone())?;
             l_cl = simulationParModelicaKernelsFile(l_cl.clone(), (a_fileNamePrefix.clone()).clone(), a_modelInfo_functions.clone())?;
-            l_cl = Tpl::closeFile(l_cl.clone());
+            l_cl = Tpl::closeFile(l_cl.clone())?;
             txt.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -88,25 +88,25 @@ pub fn translateModel(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode)
             txt_1 = Tpl::writeTok(txt_1.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_literals.h")).clone() }))?;
             l_literalsFile = Tpl::redirectToFile(l_literalsFile.clone(), (Tpl::textString(txt_1.clone())?).clone())?;
             l_literalsFile = simulationLiteralsFile(l_literalsFile.clone(), (i_fileNamePrefix.clone()).clone(), i_literals.clone())?;
-            l_literalsFile = Tpl::closeFile(l_literalsFile.clone());
+            l_literalsFile = Tpl::closeFile(l_literalsFile.clone())?;
             l_functionsHeader = Tpl::emptyTxt.clone();
             txt_3 = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_fileNamePrefix.clone()).clone())?;
             txt_3 = Tpl::writeTok(txt_3.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_functions.h")).clone() }))?;
             l_functionsHeader = Tpl::redirectToFile(l_functionsHeader.clone(), (Tpl::textString(txt_3.clone())?).clone())?;
             l_functionsHeader = simulationFunctionsHeaderFile(l_functionsHeader.clone(), (i_fileNamePrefix.clone()).clone(), i_modelInfo_functions.clone(), i_recordDecls.clone(), i_sc_generic__loop__calls.clone())?;
-            l_functionsHeader = Tpl::closeFile(l_functionsHeader.clone());
+            l_functionsHeader = Tpl::closeFile(l_functionsHeader.clone())?;
             l_includes = Tpl::emptyTxt.clone();
             txt_5 = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_fileNamePrefix.clone()).clone())?;
             txt_5 = Tpl::writeTok(txt_5.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_includes.h")).clone() }))?;
             l_includes = Tpl::redirectToFile(l_includes.clone(), (Tpl::textString(txt_5.clone())?).clone())?;
             l_includes = CodegenCFunctions::externalFunctionIncludes(l_includes.clone(), i_sc_externalFunctionIncludes.clone())?;
-            l_includes = Tpl::closeFile(l_includes.clone());
+            l_includes = Tpl::closeFile(l_includes.clone())?;
             l_records = Tpl::emptyTxt.clone();
             txt_7 = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_fileNamePrefix.clone()).clone())?;
             txt_7 = Tpl::writeTok(txt_7.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_records.c")).clone() }))?;
             l_records = Tpl::redirectToFile(l_records.clone(), (Tpl::textString(txt_7.clone())?).clone())?;
             l_records = CodegenCFunctions::recordsFile(l_records.clone(), (i_fileNamePrefix.clone()).clone(), i_recordDecls.clone(), true)?;
-            l_records = Tpl::closeFile(l_records.clone());
+            l_records = Tpl::closeFile(l_records.clone())?;
             ret_8 = Config::acceptParModelicaGrammar()?;
             txt = fun_52(txt.clone(), ret_8.clone(), i_modelInfo_functions.clone(), (i_fileNamePrefix.clone()).clone())?;
             txt.clone()
@@ -486,7 +486,7 @@ pub fn simulationFile_syn(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimC
             txt = functionSystemsSynchronous(txt.clone(), i_clockedPartitions.clone(), (Tpl::textString(txt_2.clone())?).clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE))?;
-            ret_3 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone());
+            ret_3 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone())?;
             txt_4 = CodegenUtilSimulation::modelNamePrefix(Tpl::emptyTxt.clone(), i_simCode.clone())?;
             txt = functionSavePreSynchronous(txt.clone(), ret_3.clone(), (Tpl::textString(txt_4.clone())?).clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
@@ -1867,8 +1867,8 @@ pub fn simulationFile_bnd(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimC
             txt = functionUpdateBoundVariableAttributes(txt.clone(), i_simCode.clone(), i_startValueEquations.clone(), i_nominalValueEquations.clone(), i_minValueEquations.clone(), i_maxValueEquations.clone(), (Tpl::textString(txt_0.clone())?).clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE))?;
-            ret_1 = SimCodeUtil::selectScalarLiteralAssignments(i_parameterEquations.clone());
-            ret_2 = SimCodeUtil::filterScalarLiteralAssignments(i_parameterEquations.clone());
+            ret_1 = SimCodeUtil::selectScalarLiteralAssignments(i_parameterEquations.clone())?;
+            ret_2 = SimCodeUtil::filterScalarLiteralAssignments(i_parameterEquations.clone())?;
             txt_3 = CodegenUtilSimulation::modelNamePrefix(Tpl::emptyTxt.clone(), i_simCode.clone())?;
             txt = functionUpdateBoundParameters(txt.clone(), ret_1.clone(), ret_2.clone(), (i_simCode_fileNamePrefix.clone()).clone(), (i_simCode_fullPathPrefix.clone()).clone(), (Tpl::textString(txt_3.clone())?).clone(), i_simCode.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
@@ -3224,7 +3224,7 @@ pub fn simulationFile(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode,
             (txt, txt_11) = functionODE(txt.clone(), i_odeEquations.clone(), txt_11.clone(), i_hpcomData_schedules.clone(), (Tpl::textString(l_modelNamePrefixStr.clone())?).clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE))?;
-            ret_12 = List::flatten(i_odeEquations.clone());
+            ret_12 = List::flatten(i_odeEquations.clone())?;
             txt = functionXXX_DAG(txt.clone(), ret_12.clone(), (literal!("ODE")).clone(), (Tpl::textString(l_modelNamePrefixStr.clone())?).clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("/* forward the main in the simulation runtime */\n")).clone(), (literal!("extern int _main_SimulationRuntime(int argc, char **argv, DATA *data, threadData_t *threadData);\n")).clone(), (literal!("extern int _main_OptimizationRuntime(int argc, char **argv, DATA *data, threadData_t *threadData);\n")).clone(), (literal!("\n")).clone(), (literal!("#include \"")).clone()], lastHasNewLine: false }))?;
@@ -8738,7 +8738,7 @@ fn lm_362(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("#if defined(__cplusplus)\n")).clone(), (literal!("}\n")).clone(), (literal!("#endif\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE))?;
-            txt = Tpl::closeFile(txt.clone());
+            txt = Tpl::closeFile(txt.clone())?;
             (txt, a_prototypes) = lm_362(txt.clone(), rest.clone(), a_prototypes.clone(), (a_modelNamePrefix.clone()).clone(), (a_fullPathPrefix.clone()).clone(), (a_partName.clone()).clone(), (a_fileNamePrefix.clone()).clone())?;
             (txt.clone(), a_prototypes.clone())
         },
@@ -11618,7 +11618,7 @@ fn fun_446(mut in_txt: Tpl::Text, mut in_a_multiFile: Tpl::Text) -> Result<Tpl::
         (txt, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("#if defined(__cplusplus)\n")).clone(), (literal!("}\n")).clone(), (literal!("#endif")).clone()], lastHasNewLine: false }))?;
-            txt = Tpl::closeFile(txt.clone());
+            txt = Tpl::closeFile(txt.clone())?;
             txt.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -14340,7 +14340,7 @@ fn fun_553(mut in_txt: Tpl::Text, mut in_a_multiFile: Tpl::Text) -> Result<Tpl::
         (txt, _) => {
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("#if defined(__cplusplus)\n")).clone(), (literal!("}\n")).clone(), (literal!("#endif")).clone()], lastHasNewLine: false }))?;
-            txt = Tpl::closeFile(txt.clone());
+            txt = Tpl::closeFile(txt.clone())?;
             txt.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

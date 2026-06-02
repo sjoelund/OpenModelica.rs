@@ -381,7 +381,7 @@ fn getFeaturesAnnotationList(mut r#mod: Option<Arc<Absyn::Modification>>) -> Res
     let mut features: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     features = (::match_deref::match_deref! { match &(r#mod.clone()) {
         Some(Deref @ Absyn::Modification { elementArgLst: arglst, .. }) => {
-            getFeaturesAnnotationList2(arglst.clone())
+            getFeaturesAnnotationList2(arglst.clone())?
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -390,7 +390,7 @@ fn getFeaturesAnnotationList(mut r#mod: Option<Arc<Absyn::Modification>>) -> Res
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn getFeaturesAnnotationList2(mut eltArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Arc<metamodelica::List<ArcStr>> {
+fn getFeaturesAnnotationList2(mut eltArgs: Arc<metamodelica::List<Arc<Absyn::ElementArg>>>) -> Result<Arc<metamodelica::List<ArcStr>>> {
     let mut features: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     features = (::match_deref::match_deref! { match &(eltArgs.clone()) {
         Deref @ metamodelica::List::Nil => {
@@ -398,17 +398,17 @@ fn getFeaturesAnnotationList2(mut eltArgs: Arc<metamodelica::List<Arc<Absyn::Ele
         },
         Deref @ metamodelica::List::Cons { head: Deref @ Absyn::ElementArg::MODIFICATION { modification: Some(Deref @ Absyn::Modification { eqMod: Deref @ Absyn::EqMod::EQMOD { exp: Deref @ Absyn::Exp::ARRAY { arrayExp: expList }, .. }, .. }), path: Deref @ Absyn::Path::IDENT { name: Deref @ "features" }, .. }, tail: _ } => {
             let mut featuresList: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            featuresList = List::map(expList.clone(), (std::sync::Arc::new(fnptr!(expToString, Arc<Absyn::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<ArcStr> + 'static>));
+            featuresList = List::map(expList.clone(), (std::sync::Arc::new(fnptr!(expToString, Arc<Absyn::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<ArcStr> + 'static>))?;
             featuresList.clone()
         },
         Deref @ metamodelica::List::Cons { head: _, tail: xs } => {
             let mut featuresList: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            featuresList = getFeaturesAnnotationList2(xs.clone());
+            featuresList = getFeaturesAnnotationList2(xs.clone())?;
             featuresList.clone()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    features
+    Ok(features)
 }
 
 fn expToString(mut inExp: Arc<Absyn::Exp>) -> ArcStr {

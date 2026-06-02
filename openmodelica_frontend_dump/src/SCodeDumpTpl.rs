@@ -29,7 +29,7 @@ pub fn dumpProgram(mut txt: Tpl::Text, mut a_program: Arc<metamodelica::List<Arc
 pub fn dumpElements(mut txt: Tpl::Text, mut a_elements: Arc<metamodelica::List<Arc<SCode::Element>>>, mut a_indent: bool, mut a_options: SCodeDump::SCodeDumpOptions) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut ret_0: Arc<metamodelica::List<Arc<SCode::Element>>> = metamodelica::nil();
-    ret_0 = SCodeDump::filterElements(a_elements.clone(), a_options.clone());
+    ret_0 = SCodeDump::filterElements(a_elements.clone(), a_options.clone())?;
     out_txt = dumpElements2(txt.clone(), ret_0.clone(), a_indent.clone(), a_options.clone())?;
     Ok(out_txt)
 }

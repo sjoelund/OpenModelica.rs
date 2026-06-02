@@ -159,7 +159,7 @@ pub fn evaluateParameters(mut DAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<Ba
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nSTART evaluating parameters:\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Number of parameters: ")); __mm_s.push_str(&*intString(size.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Number of parameters selected for evaluation: ")); __mm_s.push_str(&*intString(nselect.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Selected parameters for evaluation:\n")); __mm_s.push_str(&*stringDelimitList(List::map(selectedParameters.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Selected parameters for evaluation:\n")); __mm_s.push_str(&*stringDelimitList(List::map(selectedParameters.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             BackendDump::dumpAdjacencyMatrix(m.clone())?;
             BackendDump::dumpAdjacencyMatrixT(mt.clone())?;
         }
@@ -177,14 +177,14 @@ pub fn evaluateParameters(mut DAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<Ba
             BackendVarTransform::dumpReplacements(oRepl.clone())?;
             BackendDump::dumpVariables(globalKnownVars.clone(), (literal!("globalKnownVars")).clone())?;
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nmark: ")); __mm_s.push_str(&*intString(mark.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("markarr: ")); __mm_s.push_str(&*stringDelimitList(List::mapArray(markarr.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("markarr: ")); __mm_s.push_str(&*stringDelimitList(List::mapArray(markarr.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         comps = Sorting::TarjanTransposed(mt.clone(), ass2.clone())?;
         if Flags::isSet(Flags::EVAL_PARAM_DUMP.clone())? {
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n\nAfter sorting parameters:\n")); __mm_s.push_str(&*arcstr::literal!(UNDERLINE)); __mm_s.push_str(&*literal!("\nOrder:\n")); ArcStr::from(__mm_s) }).clone());
             for mut comp in &*comps.clone() {
                 let mut comp = comp.clone();
-                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(List::map(comp.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+                println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(List::map(comp.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
         }
         (globalKnownVars, repl, oRepl, cache, mark) = traverseParameterSorted(comps.clone(), globalKnownVars.clone(), m.clone(), initialEqs.clone(), cache.clone(), graph.clone(), mark.clone(), markarr.clone(), repl.clone(), oRepl.clone(), isInitial.clone())?;
@@ -196,9 +196,9 @@ pub fn evaluateParameters(mut DAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<Ba
             BackendVarTransform::dumpReplacements(oRepl.clone())?;
             BackendDump::dumpVariables(globalKnownVars.clone(), (literal!("globalKnownVars")).clone())?;
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nmark: ")); __mm_s.push_str(&*intString(mark.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("markarr: ")); __mm_s.push_str(&*stringDelimitList(List::mapArray(markarr.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
+            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("markarr: ")); __mm_s.push_str(&*stringDelimitList(List::mapArray(markarr.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
-        let (__pa8, (__pa9, __pa10, __pa11, __pa12, __pa13, __pa14, __pa15, _, __pa16, __pa17)) = List::mapFold(systs.clone(), (std::sync::Arc::new(replaceEvaluatedParametersSystem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, (BackendDAE::Variables, metamodelica::Array<Arc<metamodelica::List<i32>>>, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, FCore::Cache, FCore::Graph, i32, metamodelica::Array<i32>, bool, BackendVarTransform::VariableReplacements, BackendVarTransform::VariableReplacements)) -> Result<(Arc<BackendDAE::EqSystem>, (BackendDAE::Variables, metamodelica::Array<Arc<metamodelica::List<i32>>>, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, FCore::Cache, FCore::Graph, i32, metamodelica::Array<i32>, bool, BackendVarTransform::VariableReplacements, BackendVarTransform::VariableReplacements))> + 'static>), (globalKnownVars.clone(), m.clone(), initialEqs.clone(), cache.clone(), graph.clone(), mark.clone(), markarr.clone(), isInitial.clone(), repl.clone(), oRepl.clone()));
+        let (__pa8, (__pa9, __pa10, __pa11, __pa12, __pa13, __pa14, __pa15, _, __pa16, __pa17)) = List::mapFold(systs.clone(), (std::sync::Arc::new(replaceEvaluatedParametersSystem) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, (BackendDAE::Variables, metamodelica::Array<Arc<metamodelica::List<i32>>>, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, FCore::Cache, FCore::Graph, i32, metamodelica::Array<i32>, bool, BackendVarTransform::VariableReplacements, BackendVarTransform::VariableReplacements)) -> Result<(Arc<BackendDAE::EqSystem>, (BackendDAE::Variables, metamodelica::Array<Arc<metamodelica::List<i32>>>, Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, FCore::Cache, FCore::Graph, i32, metamodelica::Array<i32>, bool, BackendVarTransform::VariableReplacements, BackendVarTransform::VariableReplacements))> + 'static>), (globalKnownVars.clone(), m.clone(), initialEqs.clone(), cache.clone(), graph.clone(), mark.clone(), markarr.clone(), isInitial.clone(), repl.clone(), oRepl.clone()))?;
         systs = __pa8.clone();
         globalKnownVars = __pa9.clone();
         m = __pa10.clone();
@@ -218,10 +218,10 @@ pub fn evaluateParameters(mut DAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<Ba
             BackendVarTransform::dumpReplacements(oRepl.clone())?;
             BackendDump::dumpVariables(globalKnownVars.clone(), (literal!("globalKnownVars")).clone())?;
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nmark: ")); __mm_s.push_str(&*intString(mark.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("markarr: ")); __mm_s.push_str(&*stringDelimitList(List::mapArray(markarr.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
+            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("markarr: ")); __mm_s.push_str(&*stringDelimitList(List::mapArray(markarr.clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone())); __mm_s.push_str(&*literal!("\n\n")); ArcStr::from(__mm_s) }).clone());
         }
         if Flags::getConfigBool(Flags::REPLACE_EVALUATED_PARAMS.clone())? {
-            assign_field!(shared.externalObjects = BackendVariable::listVar1(List::map1(BackendVariable::varList(shared.externalObjects.clone())?, (std::sync::Arc::new(BackendVarTransform::replaceBindingExp) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendVarTransform::VariableReplacements) -> Result<BackendDAE::Var> + 'static>), oRepl.clone())));
+            assign_field!(shared.externalObjects = BackendVariable::listVar1(List::map1(BackendVariable::varList(shared.externalObjects.clone())?, (std::sync::Arc::new(BackendVarTransform::replaceBindingExp) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var, BackendVarTransform::VariableReplacements) -> Result<BackendDAE::Var> + 'static>), oRepl.clone())?)?);
         }
         assign_field!(
             shared.globalKnownVars = globalKnownVars.clone(),
@@ -232,7 +232,7 @@ pub fn evaluateParameters(mut DAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<Ba
         );
         DAE = Arc::new(BackendDAE::BackendDAE { eqs: systs.clone(), shared: shared.clone() });
         if Flags::getConfigBool(Flags::REPLACE_EVALUATED_PARAMS.clone())? {
-            if !(BackendVarTransform::isReplacementEmpty(oRepl.clone())) {
+            if !(BackendVarTransform::isReplacementEmpty(oRepl.clone())?) {
                 DAE = replaceEvaluatedParametersEqns(DAE.clone(), oRepl.clone())?;
                 if Flags::isSet(Flags::EVAL_PARAM_DUMP.clone())? {
                     BackendDump::dumpBackendDAE(DAE.clone(), (literal!("DAE after replacing the evaluated parameters")).clone())?;
@@ -280,7 +280,7 @@ fn getParameterAdjacencyMatrix(mut inVar: BackendDAE::Var, mut inTpl: (BackendDA
                     select = selectParameter(v.clone())? || AvlSetCR::hasKey(ht.clone(), cref.clone())?;
                     selectedParameters = List::consOnTrue(select.clone(), index.clone(), selectedParameters.clone());
                     m = {let _arr = m.clone(); _arr.borrow_mut()[(index.clone()-1) as usize] = ilst.clone(); _arr};
-                    mt = List::fold1(metamodelica::cons(index.clone(), ilst.clone()), (std::sync::Arc::new(Array::consToElement) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<_> + 'static>), index.clone(), mt.clone());
+                    mt = List::fold1(metamodelica::cons(index.clone(), ilst.clone()), (std::sync::Arc::new(Array::consToElement) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<_> + 'static>), index.clone(), mt.clone())?;
                     Ok((v.clone(), (globalKnownVars.clone(), index.clone() + 1, selectParameter.clone(), selectedParameters.clone(), m.clone(), mt.clone(), ht.clone(), isInitial.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -305,7 +305,7 @@ fn getParameterAdjacencyMatrix(mut inVar: BackendDAE::Var, mut inTpl: (BackendDA
                     select = selectParameter(v.clone())? || AvlSetCR::hasKey(ht.clone(), cref.clone())?;
                     selectedParameters = List::consOnTrue(select.clone(), index.clone(), selectedParameters.clone());
                     m = {let _arr = m.clone(); _arr.borrow_mut()[(index.clone()-1) as usize] = ilst.clone(); _arr};
-                    mt = List::fold1(metamodelica::cons(index.clone(), ilst.clone()), (std::sync::Arc::new(Array::consToElement) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<_> + 'static>), index.clone(), mt.clone());
+                    mt = List::fold1(metamodelica::cons(index.clone(), ilst.clone()), (std::sync::Arc::new(Array::consToElement) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<_> + 'static>), index.clone(), mt.clone())?;
                     Ok((v.clone(), (globalKnownVars.clone(), index.clone() + 1, selectParameter.clone(), selectedParameters.clone(), m.clone(), mt.clone(), ht.clone(), isInitial.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -765,7 +765,7 @@ fn traverseParameterSorted(mut inComps: Arc<metamodelica::List<Arc<metamodelica:
             let mut evrepl: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
             let mut mark: i32 = 0;
             let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
-            (globalKnownVars, repl1, evrepl, cache, mark) = traverseParameterSorted(List::map(ilst.clone(), std::sync::Arc::new(fnptr!(List::create, _))), inGlobalKnownVars.clone(), m.clone(), inIEqns.clone(), iCache.clone(), graph.clone(), iMark.clone(), markarr.clone(), repl.clone(), replEvaluate.clone(), isInitial.clone())?;
+            (globalKnownVars, repl1, evrepl, cache, mark) = traverseParameterSorted(List::map(ilst.clone(), std::sync::Arc::new(fnptr!(List::create, _)))?, inGlobalKnownVars.clone(), m.clone(), inIEqns.clone(), iCache.clone(), graph.clone(), iMark.clone(), markarr.clone(), repl.clone(), replEvaluate.clone(), isInitial.clone())?;
             (globalKnownVars, repl1, evrepl, cache, mark) = traverseParameterSorted(rest.clone(), globalKnownVars.clone(), m.clone(), inIEqns.clone(), cache.clone(), graph.clone(), mark.clone(), markarr.clone(), repl1.clone(), evrepl.clone(), isInitial.clone())?;
             (globalKnownVars.clone(), repl1.clone(), evrepl.clone(), cache.clone(), mark.clone())
         },
@@ -1143,17 +1143,17 @@ fn replaceEvaluatedParametersEqns(mut inDAE: Arc<BackendDAE::BackendDAE>, mut in
     } };
     systs = __pa0.clone();
     shared = __pa1.clone();
-    lsteqns = BackendEquation::equationList(shared.initialEqs.clone());
+    lsteqns = BackendEquation::equationList(shared.initialEqs.clone())?;
     (lsteqns, b) = BackendVarTransform::replaceEquations(lsteqns.clone(), inRepl.clone(), None)?;
     if b.clone() {
         assign_field!(shared.initialEqs = BackendEquation::listEquation(lsteqns.clone())?);
     }
-    lsteqns = BackendEquation::equationList(shared.removedEqs.clone());
+    lsteqns = BackendEquation::equationList(shared.removedEqs.clone())?;
     (lsteqns, b) = BackendVarTransform::replaceEquations(lsteqns.clone(), inRepl.clone(), None)?;
     if b.clone() {
         assign_field!(shared.removedEqs = BackendEquation::listEquation(lsteqns.clone())?);
     }
-    systs = List::map1(systs.clone(), (std::sync::Arc::new(replaceEvaluatedParametersSystemEqns) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, BackendVarTransform::VariableReplacements) -> Result<Arc<BackendDAE::EqSystem>> + 'static>), inRepl.clone());
+    systs = List::map1(systs.clone(), (std::sync::Arc::new(replaceEvaluatedParametersSystemEqns) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, BackendVarTransform::VariableReplacements) -> Result<Arc<BackendDAE::EqSystem>> + 'static>), inRepl.clone())?;
     outDAE = Arc::new(BackendDAE::BackendDAE { eqs: systs.clone(), shared: shared.clone() });
     Ok(outDAE)
 }
@@ -1162,13 +1162,13 @@ fn replaceEvaluatedParametersSystemEqns(mut isyst: Arc<BackendDAE::EqSystem>, mu
     let mut osyst: Arc<BackendDAE::EqSystem> = isyst.clone();
     let mut lsteqns: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     let mut b: bool = false;
-    lsteqns = BackendEquation::equationList(osyst.orderedEqs.clone());
+    lsteqns = BackendEquation::equationList(osyst.orderedEqs.clone())?;
     (lsteqns, b) = BackendVarTransform::replaceEquations(lsteqns.clone(), inRepl.clone(), None)?;
     if b.clone() {
         assign_field!(osyst.orderedEqs = BackendEquation::listEquation(lsteqns.clone())?);
         osyst = BackendDAEUtil::clearEqSyst(osyst.clone())?;
     }
-    lsteqns = BackendEquation::equationList(osyst.removedEqs.clone());
+    lsteqns = BackendEquation::equationList(osyst.removedEqs.clone())?;
     (lsteqns, b) = BackendVarTransform::replaceEquations(lsteqns.clone(), inRepl.clone(), None)?;
     if b.clone() {
         assign_field!(osyst.removedEqs = BackendEquation::listEquation(lsteqns.clone())?);

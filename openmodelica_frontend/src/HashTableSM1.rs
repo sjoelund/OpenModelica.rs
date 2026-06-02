@@ -92,7 +92,7 @@ pub fn modeStr(mut mode: InstStateMachineUtil::SMNode) -> Result<ArcStr> {
     isInitial = __pa1.clone();
     componentRef = __pa2.clone();
     crefs = BaseHashSet::hashSetList(edges.clone())?;
-    paths = List::map(crefs.clone(), (std::sync::Arc::new(ComponentReferenceBasics::printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>));
+    paths = List::map(crefs.clone(), (std::sync::Arc::new(ComponentReferenceBasics::printComponentRefStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>))?;
     s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SMNODE(")); __mm_s.push_str(&*ComponentReferenceBasics::printComponentRefStr(componentRef.clone())?); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*boolString(isInitial.clone())); __mm_s.push_str(&*literal!(",")); __mm_s.push_str(&*literal!("EDGES(")); __mm_s.push_str(&*stringDelimitList(paths.clone(), (literal!(", ")).clone())); __mm_s.push_str(&*literal!("))\n")); ArcStr::from(__mm_s) }).clone();
     Ok(s)
 }

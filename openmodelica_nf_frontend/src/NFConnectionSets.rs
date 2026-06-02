@@ -56,31 +56,31 @@ use openmodelica_util_datatypes_basic::List;
 
 pub mod ConnectionSets {
     use super::*;
-    pub fn EntryHash(mut entry: Entry) -> i32 {
+    pub fn EntryHash(mut entry: Entry) -> Result<i32> {
         let mut hash: i32 = 0;
-        hash = Connector::hash(entry.clone());
-        hash
+        hash = Connector::hash(entry.clone())?;
+        Ok(hash)
     }
 
-    pub fn EntryEqual(mut entry1: Entry, mut entry2: Entry) -> bool {
+    pub fn EntryEqual(mut entry1: Entry, mut entry2: Entry) -> Result<bool> {
         let mut isEqual: bool = false;
-        isEqual = Connector::isEqual(entry1.clone(), entry2.clone());
-        isEqual
+        isEqual = Connector::isEqual(entry1.clone(), entry2.clone())?;
+        Ok(isEqual)
     }
 
-    pub fn EntryString(mut entry: Entry) -> ArcStr {
+    pub fn EntryString(mut entry: Entry) -> Result<ArcStr> {
         let mut r#str: ArcStr = arcstr::literal!("");
-        r#str = (Connector::toString(entry.clone())).clone();
-        r#str
+        r#str = (Connector::toString(entry.clone())?).clone();
+        Ok(r#str)
     }
 
     pub fn fromConnections(mut connections: Arc<Connections::NFConnections>) -> Result<Sets> {
         let mut sets: Sets = <Sets as ::std::default::Default>::default();
         sets = emptySets((connections.connections.clone().len() as i32) + (connections.flows.clone().len() as i32));
         if !(Flags::isSet(Flags::DISABLE_SINGLE_FLOW_EQ.clone())?) {
-            sets = List::fold(connections.flows.clone(), (std::sync::Arc::new(addSingleConnector) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>, Sets) -> Result<Sets> + 'static>), sets.clone());
+            sets = List::fold(connections.flows.clone(), (std::sync::Arc::new(addSingleConnector) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>, Sets) -> Result<Sets> + 'static>), sets.clone())?;
         }
-        sets = List::fold1(connections.connections.clone(), (std::sync::Arc::new(addConnection) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connection::NFConnection>, Arc<metamodelica::List<Connections::BrokenEdge>>, Sets) -> Result<Sets> + 'static>), connections.broken.clone(), sets.clone());
+        sets = List::fold1(connections.connections.clone(), (std::sync::Arc::new(addConnection) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connection::NFConnection>, Arc<metamodelica::List<Connections::BrokenEdge>>, Sets) -> Result<Sets> + 'static>), connections.broken.clone(), sets.clone())?;
         Ok(sets)
     }
 
@@ -204,10 +204,10 @@ pub mod ConnectionSets {
         Ok(sets)
     }
 
-    pub fn contains(mut entry: Entry, mut sets: Sets) -> bool {
+    pub fn contains(mut entry: Entry, mut sets: Sets) -> Result<bool> {
         let mut found: bool = false;
-        found = isSome(UnorderedMap::get(entry.clone(), sets.elements.clone()));
-        found
+        found = isSome(UnorderedMap::get(entry.clone(), sets.elements.clone())?);
+        Ok(found)
     }
 
     pub fn emptySets(mut setCount: i32) -> Sets {
@@ -217,7 +217,7 @@ pub mod ConnectionSets {
         let mut sz: i32 = 0;
         sz = std::cmp::max(setCount.clone(), 3);
         nodes = arrayCreate(sz.clone(), -1);
-        elements = UnorderedMap::new((std::sync::Arc::new(fnptr!(EntryHash, Arc<Connector::NFConnector>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<i32> + 'static>), (std::sync::Arc::new(fnptr!(EntryEqual, Arc<Connector::NFConnector>, Arc<Connector::NFConnector>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>, Arc<Connector::NFConnector>) -> Result<bool> + 'static>), 1);
+        elements = UnorderedMap::new((std::sync::Arc::new(EntryHash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>) -> Result<i32> + 'static>), (std::sync::Arc::new(EntryEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Connector::NFConnector>, Arc<Connector::NFConnector>) -> Result<bool> + 'static>), 1);
         sets = Sets { nodes: nodes.clone(), elements: elements.clone(), nodeCount: 0 };
         sets
     }
@@ -263,7 +263,7 @@ pub mod ConnectionSets {
         let mut sets: Sets = sets;
         let mut index: i32 = 0;
         let mut oindex: Option<i32> = None;
-        oindex = UnorderedMap::get(entry.clone(), sets.elements.clone());
+        oindex = UnorderedMap::get(entry.clone(), sets.elements.clone())?;
         if isSome(oindex.clone()) {
             let __pa0 = ::match_deref::match_deref! { match &(oindex.clone()) {
                 Some(__pa0) => __pa0.clone(),
@@ -302,20 +302,20 @@ pub mod ConnectionSets {
         Ok((set, updatedSets))
     }
 
-    pub fn findSetArrayIndex(mut entry: Entry, mut sets: Sets) -> i32 {
+    pub fn findSetArrayIndex(mut entry: Entry, mut sets: Sets) -> Result<i32> {
         let mut set: i32 = 0;
-        set = UnorderedMap::getOrFail(entry.clone(), sets.elements.clone());
+        set = UnorderedMap::getOrFail(entry.clone(), sets.elements.clone())?;
         while set.clone() > 0 {
             set = sets.nodes.borrow()[(set.clone()-1) as usize].clone();
         }
         set = -(set.clone());
-        set
+        Ok(set)
     }
 
-    pub fn getEntry(mut entry: Entry, mut sets: Sets) -> Option<Arc<Connector::NFConnector>> {
+    pub fn getEntry(mut entry: Entry, mut sets: Sets) -> Result<Option<Arc<Connector::NFConnector>>> {
         let mut outEntry: Option<Arc<Connector::NFConnector>> = None;
-        outEntry = UnorderedMap::getKey(entry.clone(), sets.elements.clone());
-        outEntry
+        outEntry = UnorderedMap::getKey(entry.clone(), sets.elements.clone())?;
+        Ok(outEntry)
     }
 
     pub fn getNodeCount(mut sets: Sets) -> i32 {
@@ -333,7 +333,7 @@ pub mod ConnectionSets {
         Ok(sets)
     }
 
-    pub fn printSets(mut sets: Sets) -> () {
+    pub fn printSets(mut sets: Sets) -> Result<()> {
         let mut nodes: metamodelica::Array<i32> = Default::default();
         let mut entries: Arc<metamodelica::List<(Arc<Connector::NFConnector>, i32)>> = metamodelica::nil();
         let mut e: Entry = Arc::new(<Connector::NFConnector as ::std::default::Default>::default());
@@ -347,12 +347,12 @@ pub mod ConnectionSets {
             println!("{}", (literal!("[")).clone());
             println!("{}", ArcStr::from(::std::format!("{}", i.clone())));
             println!("{}", (literal!("]")).clone());
-            println!("{}", (EntryString(e.clone())).clone());
+            println!("{}", (EntryString(e.clone())?).clone());
             println!("{}", (literal!(" -> ")).clone());
             println!("{}", ArcStr::from(::std::format!("{}", nodes.borrow()[(i.clone()-1) as usize].clone())));
             println!("{}", (literal!("\n")).clone());
         }
-        ()
+        Ok(())
     }
 
     pub fn union(mut set1: i32, mut set2: i32, mut sets: Sets) -> Result<Sets> {

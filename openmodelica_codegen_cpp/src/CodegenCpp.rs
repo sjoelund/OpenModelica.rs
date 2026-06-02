@@ -432,7 +432,7 @@ fn fun_54(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_st
             l_jac = Tpl::popIter(l_jac.clone())?;
             ret_64 = listAppend(i_allEquations.clone(), i_initialEquations.clone());
             (l_alg, l_extraFuncs, l_extraFuncsDecl, _, a_stateDerVectorName) = algloopfiles(Tpl::emptyTxt.clone(), ret_64.clone(), i_simCode.clone(), l_extraFuncs.clone(), l_extraFuncsDecl.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), SimCodeFunction::contextAlgloop().clone(), 0, a_stateDerVectorName.clone(), false)?;
-            ret_66 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone());
+            ret_66 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone())?;
             l_clk = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 1, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
             (l_clk, a_stateDerVectorName, l_extraFuncsDecl, l_extraFuncs) = lm_52(l_clk.clone(), ret_66.clone(), a_stateDerVectorName.clone(), l_extraFuncsDecl.clone(), l_extraFuncs.clone(), i_simCode.clone())?;
             l_clk = Tpl::popIter(l_clk.clone())?;
@@ -1448,7 +1448,7 @@ fn fun_88(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_ex
             let mut ret_1: Arc<metamodelica::List<SimCode::SubPartition>> = metamodelica::nil();
             let mut ret_0: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
             ret_0 = listAppend(i_allEquations.clone(), i_initialEquations.clone());
-            ret_1 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone());
+            ret_1 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone())?;
             ret_2 = SimCodeUtil::getClockedEquations(ret_1.clone());
             ret_3 = listAppend(ret_0.clone(), ret_2.clone());
             (txt, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace) = algloopfilesInclude(txt.clone(), ret_3.clone(), i_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())?;
@@ -2468,7 +2468,7 @@ fn fun_119(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in
             txt = Tpl::writeText(txt.clone(), l_className.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("WriteOutput::writeAlgVarsResultNames(vector<string>& names)\n")).clone(), (literal!("{\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
-            ret_17 = SimCodeFunctionUtil::protectedVars(i_vars_algVars.clone());
+            ret_17 = SimCodeFunctionUtil::protectedVars(i_vars_algVars.clone())?;
             txt = fun_104(txt.clone(), ret_17.clone(), i_vars_algVars.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE))?;
@@ -2477,7 +2477,7 @@ fn fun_119(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in
             txt = Tpl::writeText(txt.clone(), l_className.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("WriteOutput::writeDiscreteAlgVarsResultNames(vector<string>& names)\n")).clone(), (literal!("{\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
-            ret_18 = SimCodeFunctionUtil::protectedVars(i_vars_discreteAlgVars.clone());
+            ret_18 = SimCodeFunctionUtil::protectedVars(i_vars_discreteAlgVars.clone())?;
             txt = fun_106(txt.clone(), ret_18.clone(), i_vars_discreteAlgVars.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE))?;
@@ -2486,7 +2486,7 @@ fn fun_119(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in
             txt = Tpl::writeText(txt.clone(), l_className.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("WriteOutput::writeIntAlgVarsResultNames(vector<string>& names)\n")).clone(), (literal!(" {\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-            ret_19 = SimCodeFunctionUtil::protectedVars(i_vars_intAlgVars.clone());
+            ret_19 = SimCodeFunctionUtil::protectedVars(i_vars_intAlgVars.clone())?;
             txt = fun_108(txt.clone(), ret_19.clone(), i_vars_intAlgVars.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
@@ -2495,7 +2495,7 @@ fn fun_119(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("void ")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), l_className.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("WriteOutput::writeBoolAlgVarsResultNames(vector<string>& names)\n")).clone(), (literal!("{\n")).clone()], lastHasNewLine: true }))?;
-            ret_20 = SimCodeFunctionUtil::protectedVars(i_vars_boolAlgVars.clone());
+            ret_20 = SimCodeFunctionUtil::protectedVars(i_vars_boolAlgVars.clone())?;
             txt = fun_110(txt.clone(), ret_20.clone(), i_vars_boolAlgVars.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("}\n")).clone() }))?;
@@ -2504,7 +2504,7 @@ fn fun_119(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in
             txt = Tpl::writeText(txt.clone(), l_className.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("WriteOutput::writeAlgVarsResultDescription(vector<string>& description)\n")).clone(), (literal!("{\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
-            ret_21 = SimCodeFunctionUtil::protectedVars(i_vars_algVars.clone());
+            ret_21 = SimCodeFunctionUtil::protectedVars(i_vars_algVars.clone())?;
             txt = fun_112(txt.clone(), ret_21.clone(), i_vars_algVars.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE))?;
@@ -2513,7 +2513,7 @@ fn fun_119(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in
             txt = Tpl::writeText(txt.clone(), l_className.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("WriteOutput::writeDiscreteAlgVarsResultDescription(vector<string>& description)\n")).clone(), (literal!("{\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
-            ret_22 = SimCodeFunctionUtil::protectedVars(i_vars_discreteAlgVars.clone());
+            ret_22 = SimCodeFunctionUtil::protectedVars(i_vars_discreteAlgVars.clone())?;
             txt = fun_114(txt.clone(), ret_22.clone(), i_vars_discreteAlgVars.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE))?;
@@ -2522,7 +2522,7 @@ fn fun_119(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in
             txt = Tpl::writeText(txt.clone(), l_className.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("WriteOutput::writeIntAlgVarsResultDescription(vector<string>& description)\n")).clone(), (literal!(" {\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-            ret_23 = SimCodeFunctionUtil::protectedVars(i_vars_intAlgVars.clone());
+            ret_23 = SimCodeFunctionUtil::protectedVars(i_vars_intAlgVars.clone())?;
             txt = fun_116(txt.clone(), ret_23.clone(), i_vars_intAlgVars.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
@@ -2531,29 +2531,29 @@ fn fun_119(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("void ")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), l_className.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("WriteOutput::writeBoolAlgVarsResultDescription(vector<string>& description)\n")).clone(), (literal!("{\n")).clone()], lastHasNewLine: true }))?;
-            ret_24 = SimCodeFunctionUtil::protectedVars(i_vars_boolAlgVars.clone());
+            ret_24 = SimCodeFunctionUtil::protectedVars(i_vars_boolAlgVars.clone())?;
             txt = fun_118(txt.clone(), ret_24.clone(), i_vars_boolAlgVars.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("}\n")).clone() }))?;
-            ret_25 = SimCodeFunctionUtil::protectedVars(i_vars_algVars.clone());
+            ret_25 = SimCodeFunctionUtil::protectedVars(i_vars_algVars.clone())?;
             ret_26 = stringInt((Tpl::textString(l_algVarsStart.clone())?).clone())?;
             txt_27 = Tpl::writeText(Tpl::emptyTxt.clone(), l_className.clone())?;
             txt_27 = Tpl::writeTok(txt_27.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("WriteOutput")).clone() }))?;
             (txt, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = writeOutputVarsWithSplit(txt.clone(), (literal!("writeAlgVarsValues")).clone(), ret_25.clone(), ret_26.clone(), (Tpl::textString(txt_27.clone())?).clone(), false, a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
-            ret_28 = SimCodeFunctionUtil::protectedVars(i_vars_discreteAlgVars.clone());
+            ret_28 = SimCodeFunctionUtil::protectedVars(i_vars_discreteAlgVars.clone())?;
             ret_29 = stringInt((Tpl::textString(l_discrAlgVarsStart.clone())?).clone())?;
             txt_30 = Tpl::writeText(Tpl::emptyTxt.clone(), l_className.clone())?;
             txt_30 = Tpl::writeTok(txt_30.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("WriteOutput")).clone() }))?;
             (txt, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = writeOutputVarsWithSplit(txt.clone(), (literal!("writeDiscreteAlgVarsValues")).clone(), ret_28.clone(), ret_29.clone(), (Tpl::textString(txt_30.clone())?).clone(), false, a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
-            ret_31 = SimCodeFunctionUtil::protectedVars(i_vars_intAlgVars.clone());
+            ret_31 = SimCodeFunctionUtil::protectedVars(i_vars_intAlgVars.clone())?;
             ret_32 = stringInt((Tpl::textString(l_intAlgVarsStart.clone())?).clone())?;
             txt_33 = Tpl::writeText(Tpl::emptyTxt.clone(), l_className.clone())?;
             txt_33 = Tpl::writeTok(txt_33.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("WriteOutput")).clone() }))?;
             (txt, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = writeOutputVarsWithSplit(txt.clone(), (literal!("writeIntAlgVarsValues")).clone(), ret_31.clone(), ret_32.clone(), (Tpl::textString(txt_33.clone())?).clone(), false, a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
-            ret_34 = SimCodeFunctionUtil::protectedVars(i_vars_boolAlgVars.clone());
+            ret_34 = SimCodeFunctionUtil::protectedVars(i_vars_boolAlgVars.clone())?;
             ret_35 = stringInt((Tpl::textString(l_boolAlgVarsStart.clone())?).clone())?;
             txt_36 = Tpl::writeText(Tpl::emptyTxt.clone(), l_className.clone())?;
             txt_36 = Tpl::writeTok(txt_36.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("WriteOutput")).clone() }))?;
@@ -2895,7 +2895,7 @@ fn fun_133(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in
             txt = lastIdentOfPath(txt.clone(), i_modelInfo_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("WriteOutput::writeParametertNames(vector<string>& names)\n")).clone(), (literal!("{\n")).clone(), (literal!(" /*workarround ced*/\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
-            ret_0 = SimCodeFunctionUtil::protectedVars(i_vars_paramVars.clone());
+            ret_0 = SimCodeFunctionUtil::protectedVars(i_vars_paramVars.clone())?;
             txt = fun_122(txt.clone(), ret_0.clone(), i_vars_paramVars.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE))?;
@@ -2908,7 +2908,7 @@ fn fun_133(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("{\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
-            ret_1 = SimCodeFunctionUtil::protectedVars(i_vars_intParamVars.clone());
+            ret_1 = SimCodeFunctionUtil::protectedVars(i_vars_intParamVars.clone())?;
             txt = fun_124(txt.clone(), ret_1.clone(), i_vars_intParamVars.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
@@ -2920,7 +2920,7 @@ fn fun_133(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("{\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
-            ret_2 = SimCodeFunctionUtil::protectedVars(i_vars_boolParamVars.clone());
+            ret_2 = SimCodeFunctionUtil::protectedVars(i_vars_boolParamVars.clone())?;
             txt = fun_126(txt.clone(), ret_2.clone(), i_vars_boolParamVars.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
@@ -2928,7 +2928,7 @@ fn fun_133(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in
             txt = lastIdentOfPath(txt.clone(), i_modelInfo_name.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("WriteOutput::writeParameterDescription(vector<string>& names)\n")).clone(), (literal!("{\n")).clone(), (literal!(" /*workarround ced*/\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
-            ret_3 = SimCodeFunctionUtil::protectedVars(i_vars_paramVars.clone());
+            ret_3 = SimCodeFunctionUtil::protectedVars(i_vars_paramVars.clone())?;
             txt = fun_128(txt.clone(), ret_3.clone(), i_vars_paramVars.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE))?;
@@ -2941,7 +2941,7 @@ fn fun_133(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("{\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
-            ret_4 = SimCodeFunctionUtil::protectedVars(i_vars_intParamVars.clone());
+            ret_4 = SimCodeFunctionUtil::protectedVars(i_vars_intParamVars.clone())?;
             txt = fun_130(txt.clone(), ret_4.clone(), i_vars_intParamVars.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
@@ -2953,7 +2953,7 @@ fn fun_133(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("{\n")).clone() }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
-            ret_5 = SimCodeFunctionUtil::protectedVars(i_vars_boolParamVars.clone());
+            ret_5 = SimCodeFunctionUtil::protectedVars(i_vars_boolParamVars.clone())?;
             txt = fun_132(txt.clone(), ret_5.clone(), i_vars_boolParamVars.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
@@ -3376,7 +3376,7 @@ fn fun_147(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in
             txt = Tpl::writeText(txt.clone(), l_className.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("WriteOutput::writeBoolAliasVarsResultNames(vector<string>& names)\n")).clone(), (literal!("{\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-            ret_37 = SimCodeFunctionUtil::protectedVars(i_vars_boolAliasVars.clone());
+            ret_37 = SimCodeFunctionUtil::protectedVars(i_vars_boolAliasVars.clone())?;
             txt = fun_136(txt.clone(), ret_37.clone(), i_vars_boolAliasVars.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
@@ -3384,21 +3384,21 @@ fn fun_147(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in
             txt = Tpl::writeText(txt.clone(), l_className.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("WriteOutput::writeAliasVarsResultNames(vector<string>& names)\n")).clone(), (literal!("{\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
-            ret_38 = SimCodeFunctionUtil::protectedVars(i_vars_aliasVars.clone());
+            ret_38 = SimCodeFunctionUtil::protectedVars(i_vars_aliasVars.clone())?;
             txt = fun_138(txt.clone(), ret_38.clone(), i_vars_aliasVars.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("}\n")).clone(), (literal!("\n")).clone(), (literal!("void   ")).clone()], lastHasNewLine: false }))?;
             txt = Tpl::writeText(txt.clone(), l_className.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("WriteOutput::writeIntAliasVarsResultNames(vector<string>& names)\n")).clone(), (literal!("{\n")).clone()], lastHasNewLine: true }))?;
-            ret_39 = SimCodeFunctionUtil::protectedVars(i_vars_intAliasVars.clone());
+            ret_39 = SimCodeFunctionUtil::protectedVars(i_vars_intAliasVars.clone())?;
             txt = fun_140(txt.clone(), ret_39.clone(), i_vars_intAliasVars.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("}\n")).clone(), (literal!("\n")).clone(), (literal!("\n")).clone(), (literal!("\n")).clone(), (literal!("\n")).clone(), (literal!("\n")).clone(), (literal!("void  ")).clone()], lastHasNewLine: false }))?;
             txt = Tpl::writeText(txt.clone(), l_className.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("WriteOutput::writeAliasVarsResultDescription(vector<string>& description)\n")).clone(), (literal!("{\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
-            ret_40 = SimCodeFunctionUtil::protectedVars(i_vars_aliasVars.clone());
+            ret_40 = SimCodeFunctionUtil::protectedVars(i_vars_aliasVars.clone())?;
             txt = fun_142(txt.clone(), ret_40.clone(), i_vars_aliasVars.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
@@ -3409,31 +3409,31 @@ fn fun_147(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::ModelInfo, mut in
             txt = Tpl::writeText(txt.clone(), l_className.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("WriteOutput::writeIntAliasVarsResultDescription(vector<string>& description)\n")).clone(), (literal!(" {\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 1 }))?;
-            ret_41 = SimCodeFunctionUtil::protectedVars(i_vars_intAliasVars.clone());
+            ret_41 = SimCodeFunctionUtil::protectedVars(i_vars_intAliasVars.clone())?;
             txt = fun_144(txt.clone(), ret_41.clone(), i_vars_intAliasVars.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("}\n")).clone(), (literal!("\n")).clone(), (literal!("void ")).clone()], lastHasNewLine: false }))?;
             txt = Tpl::writeText(txt.clone(), l_className.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("WriteOutput::writeBoolAliasVarsResultDescription(vector<string>& description)\n")).clone(), (literal!("{\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 2 }))?;
-            ret_42 = SimCodeFunctionUtil::protectedVars(i_vars_boolAliasVars.clone());
+            ret_42 = SimCodeFunctionUtil::protectedVars(i_vars_boolAliasVars.clone())?;
             txt = fun_146(txt.clone(), ret_42.clone(), i_vars_boolAliasVars.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("}\n")).clone() }))?;
-            ret_43 = SimCodeFunctionUtil::protectedVars(i_vars_aliasVars.clone());
+            ret_43 = SimCodeFunctionUtil::protectedVars(i_vars_aliasVars.clone())?;
             ret_44 = stringInt((Tpl::textString(l_aliasVarsStart.clone())?).clone())?;
             txt_45 = Tpl::writeText(Tpl::emptyTxt.clone(), l_className.clone())?;
             txt_45 = Tpl::writeTok(txt_45.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("WriteOutput")).clone() }))?;
             (txt, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = writeOutputVarsWithSplit(txt.clone(), (literal!("writeAliasVarsValues")).clone(), ret_43.clone(), ret_44.clone(), (Tpl::textString(txt_45.clone())?).clone(), true, a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
-            ret_46 = SimCodeFunctionUtil::protectedVars(i_vars_intAliasVars.clone());
+            ret_46 = SimCodeFunctionUtil::protectedVars(i_vars_intAliasVars.clone())?;
             ret_47 = stringInt((Tpl::textString(l_intAliasVarsStart.clone())?).clone())?;
             txt_48 = Tpl::writeText(Tpl::emptyTxt.clone(), l_className.clone())?;
             txt_48 = Tpl::writeTok(txt_48.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("WriteOutput")).clone() }))?;
             (txt, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = writeOutputVarsWithSplit(txt.clone(), (literal!("writeIntAliasVarsValues")).clone(), ret_46.clone(), ret_47.clone(), (Tpl::textString(txt_48.clone())?).clone(), true, a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
-            ret_49 = SimCodeFunctionUtil::protectedVars(i_vars_boolAliasVars.clone());
+            ret_49 = SimCodeFunctionUtil::protectedVars(i_vars_boolAliasVars.clone())?;
             ret_50 = stringInt((Tpl::textString(l_boolAliasVarsStart.clone())?).clone())?;
             txt_51 = Tpl::writeText(Tpl::emptyTxt.clone(), l_className.clone())?;
             txt_51 = Tpl::writeTok(txt_51.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("WriteOutput")).clone() }))?;
@@ -9792,7 +9792,7 @@ fn fun_388(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_e
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_dimZeroFunc = ")).clone() }))?;
             txt = CodegenCppCommon::zeroCrossLength(txt.clone(), i_simCode.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(";\n")).clone(), (literal!("_dimClock = ")).clone()], lastHasNewLine: false }))?;
-            ret_3 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone());
+            ret_3 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone())?;
             ret_4 = (ret_3.clone().len() as i32);
             txt = Tpl::writeStr(txt.clone(), (intString(ret_4.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(";\n")).clone(), (literal!("// simplified treatment of clocks in model as time events\n")).clone(), (literal!("_dimTimeEvent = ")).clone()], lastHasNewLine: false }))?;
@@ -19673,7 +19673,7 @@ fn fun_713(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_e
             (l_initEventHandling, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace) = eventHandlingInit(Tpl::emptyTxt.clone(), i_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())?;
             (l_initClockIntervals, l_varDecls, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = clockIntervalsInit(Tpl::emptyTxt.clone(), i_simCode.clone(), l_varDecls.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone())?;
             ret_7 = listAppend(i_allEquations.clone(), i_initialEquations.clone());
-            ret_8 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone());
+            ret_8 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone())?;
             ret_9 = SimCodeUtil::getClockedEquations(ret_8.clone());
             ret_10 = listAppend(ret_7.clone(), ret_9.clone());
             (l_initAlgloopSolvers, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace) = initAlgloopsolvers(Tpl::emptyTxt.clone(), ret_10.clone(), i_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())?;
@@ -19684,13 +19684,13 @@ fn fun_713(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_e
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("Initialize::initializeMemory()\n")).clone(), (literal!("{\n")).clone(), (literal!("   _discrete_events = _event_handling->initialize(this,getSimVars());\n")).clone(), (literal!("\n")).clone(), (literal!("   //create and initialize Algloopsolvers\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::pushBlock(txt.clone(), Arc::new(Tpl::BlockType::BT_INDENT { width: 3 }))?;
             ret_11 = listAppend(i_allEquations.clone(), i_initialEquations.clone());
-            ret_12 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone());
+            ret_12 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone())?;
             ret_13 = SimCodeUtil::getClockedEquations(ret_12.clone());
             ret_14 = listAppend(ret_11.clone(), ret_13.clone());
             (txt, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace) = generateAlgloopSystems(txt.clone(), ret_14.clone(), i_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             ret_15 = listAppend(i_allEquations.clone(), i_initialEquations.clone());
-            ret_16 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone());
+            ret_16 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone())?;
             ret_17 = SimCodeUtil::getClockedEquations(ret_16.clone());
             ret_18 = listAppend(ret_15.clone(), ret_17.clone());
             (txt, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace) = generateAlgloopSolvers(txt.clone(), i_modelInfo.clone(), ret_18.clone(), i_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())?;
@@ -22160,7 +22160,7 @@ pub fn update(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_
             (txt, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace, a_stateDerVectorName) = equationFunctions(txt.clone(), i_allEquations.clone(), i_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), SimCodeFunction::contextSimulationDiscrete().clone(), a_stateDerVectorName.clone(), a_useFlatArrayNotation.clone(), ret_2.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE))?;
-            ret_3 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone());
+            ret_3 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone())?;
             ret_4 = (Flags::getConfigString(Flags::PROFILING_LEVEL.clone())?).clone();
             ret_5 = stringEq((ret_4.clone()).clone(), (literal!("none")).clone());
             ret_6 = boolNot(ret_5.clone());
@@ -22658,7 +22658,7 @@ pub fn generateHeaderIncludeString(mut in_txt: Tpl::Text, mut in_a_simCode: SimC
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("#include <Core/System/SystemDefaultImplementation.h>\n")).clone(), (literal!("\n")).clone(), (literal!("//Forward declaration to speed-up the compilation process\n")).clone(), (literal!("class EventHandling;\n")).clone(), (literal!("class DiscreteEvents;\n")).clone()], lastHasNewLine: true }))?;
             ret_1 = listAppend(i_allEquations.clone(), i_initialEquations.clone());
-            ret_2 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone());
+            ret_2 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone())?;
             ret_3 = SimCodeUtil::getClockedEquations(ret_2.clone());
             ret_4 = listAppend(ret_1.clone(), ret_3.clone());
             (txt, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace) = algloopForwardDeclaration(txt.clone(), ret_4.clone(), i_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())?;
@@ -23023,13 +23023,13 @@ fn fun_825(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_e
             let mut ret_1: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
             let mut l_friendclasses: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             ret_1 = listAppend(i_allEquations.clone(), i_initialEquations.clone());
-            ret_2 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone());
+            ret_2 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone())?;
             ret_3 = SimCodeUtil::getClockedEquations(ret_2.clone());
             ret_4 = listAppend(ret_1.clone(), ret_3.clone());
             (l_friendclasses, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace) = generatefriendAlgloops(Tpl::emptyTxt.clone(), ret_4.clone(), i_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())?;
             (l_algloopsolvers, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace) = generateAlgloopsolverVariables(Tpl::emptyTxt.clone(), i_modelInfo.clone(), i_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())?;
             ret_7 = listAppend(i_allEquations.clone(), i_initialEquations.clone());
-            ret_8 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone());
+            ret_8 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone())?;
             ret_9 = SimCodeUtil::getClockedEquations(ret_8.clone());
             ret_10 = listAppend(ret_7.clone(), ret_9.clone());
             (l_algloopsystems, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace) = generateAlgloopsSystemVariables(Tpl::emptyTxt.clone(), ret_10.clone(), i_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())?;
@@ -23037,7 +23037,7 @@ fn fun_825(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_e
             (l_jacalgloopsystems, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs) = lm_817(l_jacalgloopsystems.clone(), i_jacobianMatrices.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), i_simCode.clone())?;
             l_jacalgloopsystems = Tpl::popIter(l_jacalgloopsystems.clone())?;
             (l_memberfuncs, _) = generateEquationMemberFuncDecls(Tpl::emptyTxt.clone(), i_allEquations.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("evaluate")).clone() })))?;
-            ret_14 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone());
+            ret_14 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone())?;
             (l_clockedfuncs, _) = generateClockedFuncDecls(Tpl::emptyTxt.clone(), ret_14.clone(), Tpl::strTokText(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("evaluate")).clone() })))?;
             (l_conditionvariables, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace) = conditionvariable(Tpl::emptyTxt.clone(), i_zeroCrossings.clone(), i_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())?;
             (txt, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs) = fun_824(txt.clone(), i_modelInfo.clone(), (a_additionalProtectedMembers.clone()).clone(), l_clockedfuncs.clone(), l_memberfuncs.clone(), l_jacalgloopsystems.clone(), l_algloopsystems.clone(), l_algloopsolvers.clone(), l_conditionvariables.clone(), (a_memberVariableDefinitions.clone()).clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), (a_additionalPublicMembers.clone()).clone(), l_friendclasses.clone(), i_modelInfo_name.clone(), i_simCode.clone())?;
@@ -29530,19 +29530,19 @@ pub fn numProtectedAlgvars(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode::M
             let mut ret_2: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
             let mut ret_1: i32 = 0;
             let mut ret_0: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
-            ret_0 = SimCodeFunctionUtil::protectedVars(i_vars_algVars.clone());
+            ret_0 = SimCodeFunctionUtil::protectedVars(i_vars_algVars.clone())?;
             ret_1 = (ret_0.clone().len() as i32);
             txt = Tpl::writeStr(txt.clone(), (intString(ret_1.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("+")).clone() }))?;
-            ret_2 = SimCodeFunctionUtil::protectedVars(i_vars_discreteAlgVars.clone());
+            ret_2 = SimCodeFunctionUtil::protectedVars(i_vars_discreteAlgVars.clone())?;
             ret_3 = (ret_2.clone().len() as i32);
             txt = Tpl::writeStr(txt.clone(), (intString(ret_3.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("+")).clone() }))?;
-            ret_4 = SimCodeFunctionUtil::protectedVars(i_vars_intAlgVars.clone());
+            ret_4 = SimCodeFunctionUtil::protectedVars(i_vars_intAlgVars.clone())?;
             ret_5 = (ret_4.clone().len() as i32);
             txt = Tpl::writeStr(txt.clone(), (intString(ret_5.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("+")).clone() }))?;
-            ret_6 = SimCodeFunctionUtil::protectedVars(i_vars_boolAlgVars.clone());
+            ret_6 = SimCodeFunctionUtil::protectedVars(i_vars_boolAlgVars.clone())?;
             ret_7 = (ret_6.clone().len() as i32);
             txt = Tpl::writeStr(txt.clone(), (intString(ret_7.clone())).clone())?;
             txt.clone()
@@ -29587,11 +29587,11 @@ pub fn numProtectedParamVars(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode:
             let mut ret_2: i32 = 0;
             let mut ret_1: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
             let mut l_n__vars: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            ret_1 = SimCodeFunctionUtil::protectedVars(i_vars_paramVars.clone());
+            ret_1 = SimCodeFunctionUtil::protectedVars(i_vars_paramVars.clone())?;
             ret_2 = (ret_1.clone().len() as i32);
-            ret_3 = SimCodeFunctionUtil::protectedVars(i_vars_intParamVars.clone());
+            ret_3 = SimCodeFunctionUtil::protectedVars(i_vars_intParamVars.clone())?;
             ret_4 = (ret_3.clone().len() as i32);
-            ret_5 = SimCodeFunctionUtil::protectedVars(i_vars_boolParamVars.clone());
+            ret_5 = SimCodeFunctionUtil::protectedVars(i_vars_boolParamVars.clone())?;
             ret_6 = (ret_5.clone().len() as i32);
             ret_7 = intAdd(ret_4.clone(), ret_6.clone());
             ret_8 = intAdd(ret_2.clone(), ret_7.clone());
@@ -29613,7 +29613,7 @@ pub fn numProtectedRealParamVars(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimC
             let mut ret_2: i32 = 0;
             let mut ret_1: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
             let mut l_n__vars: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            ret_1 = SimCodeFunctionUtil::protectedVars(i_vars_paramVars.clone());
+            ret_1 = SimCodeFunctionUtil::protectedVars(i_vars_paramVars.clone())?;
             ret_2 = (ret_1.clone().len() as i32);
             l_n__vars = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_2.clone())).clone())?;
             txt = Tpl::writeText(txt.clone(), l_n__vars.clone())?;
@@ -29633,7 +29633,7 @@ pub fn numProtectedIntParamVars(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCo
             let mut ret_2: i32 = 0;
             let mut ret_1: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
             let mut l_n__vars: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            ret_1 = SimCodeFunctionUtil::protectedVars(i_vars_intParamVars.clone());
+            ret_1 = SimCodeFunctionUtil::protectedVars(i_vars_intParamVars.clone())?;
             ret_2 = (ret_1.clone().len() as i32);
             l_n__vars = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(ret_2.clone())).clone())?;
             txt = Tpl::writeText(txt.clone(), l_n__vars.clone())?;
@@ -29690,15 +29690,15 @@ pub fn numProtectedAliasvars(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode:
             let mut ret_2: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
             let mut ret_1: i32 = 0;
             let mut ret_0: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
-            ret_0 = SimCodeFunctionUtil::protectedVars(i_vars_aliasVars.clone());
+            ret_0 = SimCodeFunctionUtil::protectedVars(i_vars_aliasVars.clone())?;
             ret_1 = (ret_0.clone().len() as i32);
             txt = Tpl::writeStr(txt.clone(), (intString(ret_1.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("+")).clone() }))?;
-            ret_2 = SimCodeFunctionUtil::protectedVars(i_vars_intAliasVars.clone());
+            ret_2 = SimCodeFunctionUtil::protectedVars(i_vars_intAliasVars.clone())?;
             ret_3 = (ret_2.clone().len() as i32);
             txt = Tpl::writeStr(txt.clone(), (intString(ret_3.clone())).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("+")).clone() }))?;
-            ret_4 = SimCodeFunctionUtil::protectedVars(i_vars_boolAliasVars.clone());
+            ret_4 = SimCodeFunctionUtil::protectedVars(i_vars_boolAliasVars.clone())?;
             ret_5 = (ret_4.clone().len() as i32);
             txt = Tpl::writeStr(txt.clone(), (intString(ret_5.clone())).clone())?;
             txt.clone()
@@ -29730,7 +29730,7 @@ pub fn numProtectedRealAlgvars(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCod
         (mut txt, SimCode::ModelInfo { vars: SimCodeVar::SimVars { algVars: ref i_vars_algVars, .. }, .. }) => {
             let mut ret_1: i32 = 0;
             let mut ret_0: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
-            ret_0 = SimCodeFunctionUtil::protectedVars(i_vars_algVars.clone());
+            ret_0 = SimCodeFunctionUtil::protectedVars(i_vars_algVars.clone())?;
             ret_1 = (ret_0.clone().len() as i32);
             txt = Tpl::writeStr(txt.clone(), (intString(ret_1.clone())).clone())?;
             txt.clone()
@@ -29762,7 +29762,7 @@ pub fn numProtectedDiscreteAlgVars(mut in_txt: Tpl::Text, mut in_a_modelInfo: Si
         (mut txt, SimCode::ModelInfo { vars: SimCodeVar::SimVars { discreteAlgVars: ref i_vars_discreteAlgVars, .. }, .. }) => {
             let mut ret_1: i32 = 0;
             let mut ret_0: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
-            ret_0 = SimCodeFunctionUtil::protectedVars(i_vars_discreteAlgVars.clone());
+            ret_0 = SimCodeFunctionUtil::protectedVars(i_vars_discreteAlgVars.clone())?;
             ret_1 = (ret_0.clone().len() as i32);
             txt = Tpl::writeStr(txt.clone(), (intString(ret_1.clone())).clone())?;
             txt.clone()
@@ -29794,7 +29794,7 @@ pub fn numProtectedIntAlgvars(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCode
         (mut txt, SimCode::ModelInfo { vars: SimCodeVar::SimVars { intAlgVars: ref i_vars_intAlgVars, .. }, .. }) => {
             let mut ret_1: i32 = 0;
             let mut ret_0: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
-            ret_0 = SimCodeFunctionUtil::protectedVars(i_vars_intAlgVars.clone());
+            ret_0 = SimCodeFunctionUtil::protectedVars(i_vars_intAlgVars.clone())?;
             ret_1 = (ret_0.clone().len() as i32);
             txt = Tpl::writeStr(txt.clone(), (intString(ret_1.clone())).clone())?;
             txt.clone()
@@ -29826,7 +29826,7 @@ pub fn numProtectedBoolAlgvars(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCod
         (mut txt, SimCode::ModelInfo { vars: SimCodeVar::SimVars { boolAlgVars: ref i_vars_boolAlgVars, .. }, .. }) => {
             let mut ret_1: i32 = 0;
             let mut ret_0: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
-            ret_0 = SimCodeFunctionUtil::protectedVars(i_vars_boolAlgVars.clone());
+            ret_0 = SimCodeFunctionUtil::protectedVars(i_vars_boolAlgVars.clone())?;
             ret_1 = (ret_0.clone().len() as i32);
             txt = Tpl::writeStr(txt.clone(), (intString(ret_1.clone())).clone())?;
             txt.clone()
@@ -29886,7 +29886,7 @@ pub fn numProtectedRealAliasvars(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimC
         (mut txt, SimCode::ModelInfo { vars: SimCodeVar::SimVars { aliasVars: ref i_vars_aliasVars, .. }, .. }) => {
             let mut ret_1: i32 = 0;
             let mut ret_0: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
-            ret_0 = SimCodeFunctionUtil::protectedVars(i_vars_aliasVars.clone());
+            ret_0 = SimCodeFunctionUtil::protectedVars(i_vars_aliasVars.clone())?;
             ret_1 = (ret_0.clone().len() as i32);
             txt = Tpl::writeStr(txt.clone(), (intString(ret_1.clone())).clone())?;
             txt.clone()
@@ -29918,7 +29918,7 @@ pub fn numProtectedIntAliasvars(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimCo
         (mut txt, SimCode::ModelInfo { vars: SimCodeVar::SimVars { intAliasVars: ref i_vars_intAliasVars, .. }, .. }) => {
             let mut ret_1: i32 = 0;
             let mut ret_0: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
-            ret_0 = SimCodeFunctionUtil::protectedVars(i_vars_intAliasVars.clone());
+            ret_0 = SimCodeFunctionUtil::protectedVars(i_vars_intAliasVars.clone())?;
             ret_1 = (ret_0.clone().len() as i32);
             txt = Tpl::writeStr(txt.clone(), (intString(ret_1.clone())).clone())?;
             txt.clone()
@@ -29950,7 +29950,7 @@ pub fn numProtectedBoolAliasvars(mut in_txt: Tpl::Text, mut in_a_modelInfo: SimC
         (mut txt, SimCode::ModelInfo { vars: SimCodeVar::SimVars { boolAliasVars: ref i_vars_boolAliasVars, .. }, .. }) => {
             let mut ret_1: i32 = 0;
             let mut ret_0: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
-            ret_0 = SimCodeFunctionUtil::protectedVars(i_vars_boolAliasVars.clone());
+            ret_0 = SimCodeFunctionUtil::protectedVars(i_vars_boolAliasVars.clone())?;
             ret_1 = (ret_0.clone().len() as i32);
             txt = Tpl::writeStr(txt.clone(), (intString(ret_1.clone())).clone())?;
             txt.clone()
@@ -30718,7 +30718,7 @@ pub fn writeoutputparamsWithSplit(mut txt: Tpl::Text, mut a_funcNamePrefix: Tpl:
     let mut l_funcs: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut l_funcCalls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     l_funcCalls = Tpl::emptyTxt.clone();
-    ret_2 = SimCodeFunctionUtil::protectedVars(a_varsLst.clone());
+    ret_2 = SimCodeFunctionUtil::protectedVars(a_varsLst.clone())?;
     ret_3 = List::partition(ret_2.clone(), 100)?;
     l_funcs = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
     (l_funcs, out_a_extraFuncsNamespace, out_a_extraFuncsDecl, out_a_extraFuncs, l_funcCalls) = lm_1119(l_funcs.clone(), ret_3.clone(), a_useFlatArrayNotation.clone(), a_context.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), a_startindex.clone(), a_type.clone(), a_funcNamePrefix.clone(), l_funcCalls.clone())?;
@@ -34639,7 +34639,7 @@ pub fn generateAlgloopsolverVariables2(mut in_txt: Tpl::Text, mut in_a_simCode: 
             let mut ret_1: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>> = metamodelica::nil();
             let mut l_algloopsolvers: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             ret_1 = listAppend(i_allEquations.clone(), i_initialEquations.clone());
-            ret_2 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone());
+            ret_2 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone())?;
             ret_3 = SimCodeUtil::getClockedEquations(ret_2.clone());
             ret_4 = listAppend(ret_1.clone(), ret_3.clone());
             (l_algloopsolvers, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace) = generateAlgloopsolverVariables3(Tpl::emptyTxt.clone(), i_modelInfo.clone(), ret_4.clone(), i_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())?;
@@ -35853,7 +35853,7 @@ pub fn algloopMainfile(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode
             (l_jacfiles, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs) = lm_1310(l_jacfiles.clone(), i_jacobianMatrices.clone(), l_filename.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), i_simCode.clone())?;
             l_jacfiles = Tpl::popIter(l_jacfiles.clone())?;
             ret_5 = listAppend(i_allEquations.clone(), i_initialEquations.clone());
-            ret_6 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone());
+            ret_6 = SimCodeUtil::getSubPartitions(i_clockedPartitions.clone())?;
             ret_7 = SimCodeUtil::getClockedEquations(ret_6.clone());
             ret_8 = listAppend(ret_5.clone(), ret_7.clone());
             l_algloopfiles = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
@@ -41196,7 +41196,7 @@ fn lm_1510(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mu
             let mut a_extraFuncsNamespace = (*a_extraFuncsNamespace).clone();
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
             let mut a_extraFuncs = (*a_extraFuncs).clone();
-            ret_0 = List::flatten(a_odeEquations.clone());
+            ret_0 = List::flatten(a_odeEquations.clone())?;
             ret_1 = (a_partitions.clone()).get(i_partIdx.clone())?;
             ret_2 = (a_activatorsForPartitions.clone()).get(i_partIdx.clone())?;
             (txt, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace) = createEvaluatePartitions(txt.clone(), i_partIdx.clone(), a_context.clone(), ret_0.clone(), ret_1.clone(), ret_2.clone(), (Tpl::textString(a_className.clone())?).clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())?;
@@ -41222,7 +41222,7 @@ fn fun_1511(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_activatorsForPart
             let mut a_extraFuncsNamespace = (*a_extraFuncsNamespace).clone();
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
             let mut a_extraFuncs = (*a_extraFuncs).clone();
-            ret_0 = List::flatten(a_odeEquations.clone());
+            ret_0 = List::flatten(a_odeEquations.clone())?;
             ret_1 = List::partition(ret_0.clone(), 100)?;
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
             (txt, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs) = lm_1509(txt.clone(), ret_1.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), a_className.clone(), a_context.clone())?;
@@ -41351,7 +41351,7 @@ pub fn createEvaluatePartitions(mut txt: Tpl::Text, mut a_partIdx: i32, mut a_co
     let mut l_equation__func__calls: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut l_condition: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     l_condition = partitionCondition(Tpl::emptyTxt.clone(), a_activators.clone())?;
-    ret_2 = SimCodeUtil::getSimEqSystemsByIndexLst(a_partition.clone(), a_odeEquations.clone());
+    ret_2 = SimCodeUtil::getSimEqSystemsByIndexLst(a_partition.clone(), a_odeEquations.clone())?;
     l_equation__func__calls = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
     l_equation__func__calls = lm_1516(l_equation__func__calls.clone(), ret_2.clone(), a_simCode.clone(), a_context.clone())?;
     l_equation__func__calls = Tpl::popIter(l_equation__func__calls.clone())?;
@@ -46624,7 +46624,7 @@ fn lm_1708(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mu
             let mut a_extraFuncsNamespace = (*a_extraFuncsNamespace).clone();
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
             let mut a_extraFuncs = (*a_extraFuncs).clone();
-            ret_0 = List::flatten(a_resEquations.clone());
+            ret_0 = List::flatten(a_resEquations.clone())?;
             ret_1 = (a_partitions.clone()).get(i_partIdx.clone())?;
             ret_2 = (a_activatorsForPartitions.clone()).get(i_partIdx.clone())?;
             (txt, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace) = createEvaluatePartitions(txt.clone(), i_partIdx.clone(), a_context.clone(), ret_0.clone(), ret_1.clone(), ret_2.clone(), (Tpl::textString(a_className.clone())?).clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())?;
@@ -46650,7 +46650,7 @@ fn fun_1709(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_activatorsForPart
             let mut a_extraFuncsNamespace = (*a_extraFuncsNamespace).clone();
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
             let mut a_extraFuncs = (*a_extraFuncs).clone();
-            ret_0 = List::flatten(a_resEquations.clone());
+            ret_0 = List::flatten(a_resEquations.clone())?;
             ret_1 = List::partition(ret_0.clone(), 100)?;
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
             (txt, a_extraFuncsNamespace, a_extraFuncsDecl, a_extraFuncs) = lm_1707(txt.clone(), ret_1.clone(), a_extraFuncsNamespace.clone(), a_extraFuncsDecl.clone(), a_extraFuncs.clone(), a_simCode.clone(), a_className.clone(), a_context.clone())?;

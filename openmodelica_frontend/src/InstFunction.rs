@@ -337,7 +337,7 @@ fn implicitFunctionInstantiation2(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     ih = __pa2.clone();
                     daeElts = __pa3.clone();
                     ty = __pa4.clone();
-                    List::map2_0(daeElts.clone(), (std::sync::Arc::new(InstUtil::checkFunctionElement) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, bool, SourceInfo) -> Result<()> + 'static>), false, info.clone());
+                    List::map2_0(daeElts.clone(), (std::sync::Arc::new(InstUtil::checkFunctionElement) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, bool, SourceInfo) -> Result<()> + 'static>), false, info.clone())?;
                     env_1 = env.clone();
                     (cache, fpath) = Inst::makeFullyQualifiedIdent(cache.clone(), env_1.clone(), (n.clone()).clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }))?;
                     cmt = InstUtil::extractComment(daeElts.clone())?;
@@ -395,7 +395,7 @@ fn implicitFunctionInstantiation2(mut inCache: FCore::Cache, mut inEnv: FCore::G
                     ih = __pa2.clone();
                     daeElts = __pa3.clone();
                     ty = __pa4.clone();
-                    List::map2_0(daeElts.clone(), (std::sync::Arc::new(InstUtil::checkFunctionElement) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, bool, SourceInfo) -> Result<()> + 'static>), true, info.clone());
+                    List::map2_0(daeElts.clone(), (std::sync::Arc::new(InstUtil::checkFunctionElement) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, bool, SourceInfo) -> Result<()> + 'static>), true, info.clone())?;
                     (cache, fpath) = Inst::makeFullyQualifiedIdent(cache.clone(), env.clone(), (n.clone()).clone(), Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }))?;
                     cmt = InstUtil::extractComment(daeElts.clone())?;
                     derFuncs = InstUtil::getDeriveAnnotation(cd.clone(), cmt.clone(), fpath.clone(), cache.clone(), env.clone(), ih.clone(), pre.clone(), info.clone())?;
@@ -555,7 +555,7 @@ pub fn implicitFunctionTypeInstantiation(mut inCache: FCore::Cache, mut inEnv: F
                     let mut cache = (*cache).clone();
                     let mut ih = (*ih).clone();
                     let mut elts = (*elts).clone();
-                    elts = List::select(elts.clone(), (std::sync::Arc::new(fnptr!(isElementImportantForFunction, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>));
+                    elts = List::select(elts.clone(), (std::sync::Arc::new(fnptr!(isElementImportantForFunction, Arc<SCode::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Element>) -> Result<bool> + 'static>))?;
                     stripped_class = Arc::new(SCode::Element::CLASS { name: (id.clone()).clone(), prefixes: prefixes.clone(), encapsulatedPrefix: e.clone(), partialPrefix: p.clone(), restriction: r.clone(), classDef: Arc::new(SCode::ClassDef::PARTS { elementLst: elts.clone(), normalEquationLst: metamodelica::nil(), initialEquationLst: metamodelica::nil(), normalAlgorithmLst: metamodelica::nil(), initialAlgorithmLst: metamodelica::nil(), constraintLst: metamodelica::nil(), clsattrs: metamodelica::nil(), externalDecl: extDecl.clone() }), cmt: cmt.clone(), info: info.clone() });
                     (cache, env_1, ih, _) = implicitFunctionInstantiation2(cache.clone(), env.clone(), ih.clone(), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), openmodelica_frontend_types::DAE::Prefix::NOPRE, stripped_class.clone(), metamodelica::nil(), true)?;
                     Ok((cache.clone(), env_1.clone(), ih.clone()))
@@ -800,19 +800,19 @@ pub fn getRecordConstructorFunction(mut inCache: FCore::Cache, mut inEnv: FCore:
                     eqCo = __pa2.clone();
                     extConvert = __pa3.clone();
                     vars = Types::filterRecordComponents(vars.clone(), SCodeUtil::elementInfo(recordCl.clone()))?;
-                    (inputs, locals) = List::extractOnTrue(vars.clone(), (std::sync::Arc::new(Types::isModifiableTypesVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<bool> + 'static>));
-                    inputs = List::map(inputs.clone(), (std::sync::Arc::new(fnptr!(Types::setVarDefaultInput, Arc<DAE::Var>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<DAE::Var>> + 'static>));
-                    locals = List::map(locals.clone(), (std::sync::Arc::new(fnptr!(Types::setVarProtected, Arc<DAE::Var>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<DAE::Var>> + 'static>));
+                    (inputs, locals) = List::extractOnTrue(vars.clone(), (std::sync::Arc::new(Types::isModifiableTypesVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<bool> + 'static>))?;
+                    inputs = List::map(inputs.clone(), (std::sync::Arc::new(fnptr!(Types::setVarDefaultInput, Arc<DAE::Var>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<DAE::Var>> + 'static>))?;
+                    locals = List::map(locals.clone(), (std::sync::Arc::new(fnptr!(Types::setVarProtected, Arc<DAE::Var>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<DAE::Var>> + 'static>))?;
                     vars = listAppend(inputs.clone(), locals.clone());
                     path = AbsynUtil::makeFullyQualified(path.clone());
                     fixedTy = Arc::new(DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: path.clone() }, varLst: vars.clone(), equalityConstraint: eqCo.clone(), usedExternally: extConvert.clone() });
-                    fargs = Types::makeFargsList(inputs.clone());
+                    fargs = Types::makeFargsList(inputs.clone())?;
                     funcTy = Arc::new(DAE::Type::T_FUNCTION { funcArg: fargs.clone(), funcResultType: fixedTy.clone(), functionAttributes: DAE::FUNCTION_ATTRIBUTES_DEFAULT.clone(), path: path.clone() });
                     func = DAE::Function::RECORD_CONSTRUCTOR { path: path.clone(), type_: funcTy.clone(), source: DAE::emptyElementSource().clone() };
                     cache = InstUtil::addFunctionsToDAE(cache.clone(), list![func.clone()], openmodelica_frontend_types::SCode::Partial::NOT_PARTIAL)?;
                     path = AbsynUtil::pathSetLastIdent(path.clone(), (name.clone()).clone())?;
                     fixedTy = Arc::new(DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: path.clone() }, varLst: vars.clone(), equalityConstraint: eqCo.clone(), usedExternally: extConvert.clone() });
-                    fargs = Types::makeFargsList(inputs.clone());
+                    fargs = Types::makeFargsList(inputs.clone())?;
                     funcTy = Arc::new(DAE::Type::T_FUNCTION { funcArg: fargs.clone(), funcResultType: fixedTy.clone(), functionAttributes: DAE::FUNCTION_ATTRIBUTES_DEFAULT.clone(), path: path.clone() });
                     func = DAE::Function::RECORD_CONSTRUCTOR { path: path.clone(), type_: funcTy.clone(), source: DAE::emptyElementSource().clone() };
                     cache = InstUtil::addFunctionsToDAE(cache.clone(), list![func.clone()], openmodelica_frontend_types::SCode::Partial::NOT_PARTIAL)?;
@@ -866,12 +866,12 @@ pub fn addRecordConstructorFunction(mut inCache: FCore::Cache, mut inEnv: FCore:
                     let mut vars = (*vars).clone();
                     path = AbsynUtil::makeFullyQualified(path.clone());
                     vars = Types::filterRecordComponents(vars.clone(), inInfo.clone())?;
-                    (inputs, locals) = List::extractOnTrue(vars.clone(), (std::sync::Arc::new(Types::isModifiableTypesVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<bool> + 'static>));
-                    inputs = List::map(inputs.clone(), (std::sync::Arc::new(fnptr!(Types::setVarDefaultInput, Arc<DAE::Var>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<DAE::Var>> + 'static>));
-                    locals = List::map(locals.clone(), (std::sync::Arc::new(fnptr!(Types::setVarProtected, Arc<DAE::Var>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<DAE::Var>> + 'static>));
+                    (inputs, locals) = List::extractOnTrue(vars.clone(), (std::sync::Arc::new(Types::isModifiableTypesVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<bool> + 'static>))?;
+                    inputs = List::map(inputs.clone(), (std::sync::Arc::new(fnptr!(Types::setVarDefaultInput, Arc<DAE::Var>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<DAE::Var>> + 'static>))?;
+                    locals = List::map(locals.clone(), (std::sync::Arc::new(fnptr!(Types::setVarProtected, Arc<DAE::Var>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<DAE::Var>> + 'static>))?;
                     vars = listAppend(inputs.clone(), locals.clone());
                     fixedTy = Arc::new(DAE::Type::T_COMPLEX { complexClassType: ClassInf::State::RECORD { path: path.clone() }, varLst: vars.clone(), equalityConstraint: eqCo.clone(), usedExternally: extConvert.clone() });
-                    fargs = Types::makeFargsList(inputs.clone());
+                    fargs = Types::makeFargsList(inputs.clone())?;
                     funcTy = Arc::new(DAE::Type::T_FUNCTION { funcArg: fargs.clone(), funcResultType: fixedTy.clone(), functionAttributes: DAE::FUNCTION_ATTRIBUTES_DEFAULT.clone(), path: path.clone() });
                     func = DAE::Function::RECORD_CONSTRUCTOR { path: path.clone(), type_: funcTy.clone(), source: DAE::emptyElementSource().clone() };
                     cache = InstUtil::addFunctionsToDAE(cache.clone(), list![func.clone()], openmodelica_frontend_types::SCode::Partial::NOT_PARTIAL)?;

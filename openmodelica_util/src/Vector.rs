@@ -236,128 +236,129 @@ pub fn map<OT: Clone + 'static, T: Clone + 'static>(
     v: Arc<Vector<T>>,
     r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<OT> + 'static>,
     shrink: bool,
-) -> Arc<Vector<OT>> {
+) -> Result<Arc<Vector<OT>>> {
     let data = v.borrow();
     let mut new_vec: Vec<OT> = Vec::with_capacity(if shrink { data.len() } else { data.capacity() });
     for e in data.iter() {
-        new_vec.push(r#fn(e.clone()).unwrap());
+        new_vec.push(r#fn(e.clone())?);
     }
-    Arc::new(metamodelica::arrayFromVec(new_vec))
+    Ok(Arc::new(metamodelica::arrayFromVec(new_vec)))
 }
 
 pub fn mapToList<OT: Clone + 'static, T: Clone + 'static>(
     v: Arc<Vector<T>>,
     r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<OT> + 'static>,
-) -> Arc<List<OT>> {
+) -> Result<Arc<List<OT>>> {
     let data = v.borrow();
     let mut l: Arc<List<OT>> = nil();
     for e in data.iter().rev() {
-        l = cons(r#fn(e.clone()).unwrap(), l);
+        l = cons(r#fn(e.clone())?, l);
     }
-    l
+    Ok(l)
 }
 
 pub fn apply<T: Clone + 'static>(
     v: Arc<Vector<T>>,
     r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<T> + 'static>,
-) {
+) -> Result<()> {
     let mut data = v.borrow_mut();
     for i in 0..data.len() {
         let cur = data[i].clone();
-        data[i] = r#fn(cur).unwrap();
+        data[i] = r#fn(cur)?;
     }
+    Ok(())
 }
 
 pub fn fold<FT: Clone + 'static, T: Clone + 'static>(
     v: Arc<Vector<T>>,
     r#fn: Arc<dyn ::std::ops::Fn(T, FT) -> Result<FT> + 'static>,
     arg: FT,
-) -> FT {
+) -> Result<FT> {
     let data = v.borrow();
     let mut acc = arg;
     for e in data.iter() {
-        acc = r#fn(e.clone(), acc).unwrap();
+        acc = r#fn(e.clone(), acc)?;
     }
-    acc
+    Ok(acc)
 }
 
 pub fn find<T: Clone + 'static>(
     v: Arc<Vector<T>>,
     r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>,
-) -> (Option<T>, i32) {
+) -> Result<(Option<T>, i32)> {
     let data = v.borrow();
     for (i, e) in data.iter().enumerate() {
-        if r#fn(e.clone()).unwrap() {
-            return (Some(e.clone()), (i + 1) as i32);
+        if r#fn(e.clone())? {
+            return Ok((Some(e.clone()), (i + 1) as i32));
         }
     }
-    (None, -1)
+    Ok((None, -1))
 }
 
 pub fn findLast<T: Clone + 'static>(
     v: Arc<Vector<T>>,
     r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>,
-) -> (Option<T>, i32) {
+) -> Result<(Option<T>, i32)> {
     let data = v.borrow();
     for (i, e) in data.iter().enumerate().rev() {
-        if r#fn(e.clone()).unwrap() {
-            return (Some(e.clone()), (i + 1) as i32);
+        if r#fn(e.clone())? {
+            return Ok((Some(e.clone()), (i + 1) as i32));
         }
     }
-    (None, -1)
+    Ok((None, -1))
 }
 
 pub fn findFold<FT: Clone + 'static, T: Clone + 'static>(
     v: Arc<Vector<T>>,
     r#fn: Arc<dyn ::std::ops::Fn(T, FT) -> Result<(bool, FT)> + 'static>,
     arg: FT,
-) -> (Option<T>, i32, FT) {
+) -> Result<(Option<T>, i32, FT)> {
     let data = v.borrow();
     let mut oe: Option<T> = None;
     let mut index: i32 = -1;
     let mut acc = arg;
     for (i, e) in data.iter().enumerate() {
-        let (res, new_acc) = r#fn(e.clone(), acc).unwrap();
+        let (res, new_acc) = r#fn(e.clone(), acc)?;
         acc = new_acc;
         if res {
             oe = Some(e.clone());
             index = (i + 1) as i32;
         }
     }
-    (oe, index, acc)
+    Ok((oe, index, acc))
 }
 
 pub fn all<T: Clone + 'static>(
     v: Arc<Vector<T>>,
     r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>,
-) -> bool {
+) -> Result<bool> {
     let data = v.borrow();
     for e in data.iter() {
-        if !r#fn(e.clone()).unwrap() {
-            return false;
+        if !r#fn(e.clone())? {
+            return Ok(false);
         }
     }
-    true
+    Ok(true)
 }
 
 pub fn any<T: Clone + 'static>(
     v: Arc<Vector<T>>,
     r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>,
-) -> bool {
+) -> Result<bool> {
     let data = v.borrow();
     for e in data.iter() {
-        if r#fn(e.clone()).unwrap() {
-            return true;
+        if r#fn(e.clone())? {
+            return Ok(true);
         }
     }
-    false
+    Ok(false)
 }
 
 pub fn none<T: Clone + 'static>(
     v: Arc<Vector<T>>,
     r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<bool> + 'static>,
-) -> bool {
-    !any(v, r#fn)
+) -> Result<bool> {
+    Ok(!any(v, r#fn)?)
 }
 
 pub fn copy<T: Clone + 'static>(v: Arc<Vector<T>>) -> Arc<Vector<T>> {
@@ -367,13 +368,13 @@ pub fn copy<T: Clone + 'static>(v: Arc<Vector<T>>) -> Arc<Vector<T>> {
 pub fn deepCopy<T: Clone + 'static>(
     v: Arc<Vector<T>>,
     r#fn: Arc<dyn ::std::ops::Fn(T) -> Result<T> + 'static>,
-) -> Arc<Vector<T>> {
+) -> Result<Arc<Vector<T>>> {
     let data = v.borrow();
     let mut new_vec: Vec<T> = Vec::with_capacity(data.len());
     for e in data.iter() {
-        new_vec.push(r#fn(e.clone()).unwrap());
+        new_vec.push(r#fn(e.clone())?);
     }
-    Arc::new(metamodelica::arrayFromVec(new_vec))
+    Ok(Arc::new(metamodelica::arrayFromVec(new_vec)))
 }
 
 pub fn swap<T: Clone + 'static>(v1: Arc<Vector<T>>, v2: Arc<Vector<T>>) {
@@ -393,16 +394,16 @@ pub fn toString<T: Clone + 'static>(
     strBegin: ArcStr,
     delim: ArcStr,
     strEnd: ArcStr,
-) -> ArcStr {
+) -> Result<ArcStr> {
     let data = v.borrow();
     let mut acc: Arc<List<ArcStr>> = nil();
     for e in data.iter().rev() {
-        acc = cons(stringFn(e.clone()).unwrap(), acc);
+        acc = cons(stringFn(e.clone())?, acc);
     }
     let middle = stringDelimitList(acc, delim);
     let mut s = String::with_capacity(strBegin.len() + middle.len() + strEnd.len());
     s.push_str(&strBegin);
     s.push_str(&middle);
     s.push_str(&strEnd);
-    ArcStr::from(s)
+    Ok(ArcStr::from(s))
 }

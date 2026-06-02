@@ -81,12 +81,12 @@ fn symSolverWork(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<BackendDAE::I
     let mut inlineBDAE: Arc<BackendDAE::BackendDAE> = Arc::new(<BackendDAE::BackendDAE as ::std::default::Default>::default());
     let mut execbool: bool = false;
     localInline = BackendDAEUtil::copyEqSystems(inDAE.eqs.clone())?;
-    knownVariables = BackendVariable::emptyVars(BackendDAEUtil::daeSize(inDAE.clone()));
+    knownVariables = BackendVariable::emptyVars(BackendDAEUtil::daeSize(inDAE.clone())?);
     inlineData = BackendDAE::InlineData { inlineSystems: localInline.clone(), knownVariables: knownVariables.clone() };
     cref = ComponentReferenceBasics::makeCrefIdent((arcstr::literal!(BackendDAE::symSolverDT)).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil());
-    tmpv = BackendVariable::makeVar(cref.clone());
+    tmpv = BackendVariable::makeVar(cref.clone())?;
     tmpv = BackendVariable::setBindExp(tmpv.clone(), Some(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) })));
-    inlineData.knownVariables = BackendVariable::addVars(list![tmpv.clone()], inlineData.knownVariables.clone());
+    inlineData.knownVariables = BackendVariable::addVars(list![tmpv.clone()], inlineData.knownVariables.clone())?;
     knownVariables = inlineData.knownVariables.clone();
     for mut syst in &*inlineData.inlineSystems.clone() {
         let mut syst = syst.clone();
@@ -171,7 +171,7 @@ fn symSolverState(mut vars: BackendDAE::Variables, mut knvars: BackendDAE::Varia
         oldCref = ComponentReference::appendStringLastIdent((literal!("$Old")).clone(), cref.clone())?;
         var = BackendVariable::copyVarNewName(oldCref.clone(), var.clone());
         var = BackendVariable::setVarKind(var.clone(), crate::BackendDAE::VarKind::ALG_STATE_OLD)?;
-        oknvars = BackendVariable::addVars(list![var.clone()], oknvars.clone());
+        oknvars = BackendVariable::addVars(list![var.clone()], oknvars.clone())?;
     }
     Ok((ovars, oknvars))
 }

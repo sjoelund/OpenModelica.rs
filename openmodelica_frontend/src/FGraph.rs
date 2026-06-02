@@ -232,7 +232,7 @@ pub fn clone(mut inGraph: Graph) -> Result<Graph> {
             let mut s = s.clone();
             nt = FNode::toRef(FNode::fromRef(t.node.clone())?);
             (g, nt) = FNode::copyRef(nt.clone(), inGraph.clone())?;
-            s = List::map1r(s.clone(), (std::sync::Arc::new(FNode::lookupRefFromRef) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>, metamodelica::Array<FCore::Node>) -> Result<metamodelica::Array<FCore::Node>> + 'static>), nt.clone());
+            s = List::map1r(s.clone(), (std::sync::Arc::new(FNode::lookupRefFromRef) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>, metamodelica::Array<FCore::Node>) -> Result<metamodelica::Array<FCore::Node>> + 'static>), nt.clone())?;
             ag = arrayCreate(1, emptyGraph().clone());
             t = FCore::Top { graph: ag.clone(), name: (t.name.clone()).clone(), node: nt.clone(), extra: t.extra.clone() };
             g = FCore::Graph::G { top: t.clone(), scope: s.clone() };
@@ -319,7 +319,7 @@ pub fn updateSourceTargetScope(mut inRef: Ref, mut inTargetScope: Scope) -> Resu
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let mut r = __mc_input.clone() else { bail!("nomatch") };
-            Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FNode.updateSourceTargetScope: node does not yet have a reference child: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(r.clone())?)?); __mm_s.push_str(&*literal!(" target scope: ")); __mm_s.push_str(&*FNode::scopeStr(inTargetScope.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
+            Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FNode.updateSourceTargetScope: node does not yet have a reference child: ")); __mm_s.push_str(&*FNode::toPathStr(FNode::fromRef(r.clone())?)?); __mm_s.push_str(&*literal!(" target scope: ")); __mm_s.push_str(&*FNode::scopeStr(inTargetScope.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
             Ok(inRef.clone())
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
@@ -511,7 +511,7 @@ pub fn printGraphPathStr(mut inGraph: Graph) -> Result<ArcStr> {
                         _ => bail!("pattern mismatch"),
                     } };
                     s = __pa0.clone();
-                    r#str = stringDelimitList(List::map(s.clone(), (std::sync::Arc::new(FNode::refName) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<ArcStr> + 'static>)), (literal!(".")).clone());
+                    r#str = stringDelimitList(List::map(s.clone(), (std::sync::Arc::new(FNode::refName) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<ArcStr> + 'static>))?, (literal!(".")).clone());
                     Ok(r#str.clone())
                 }
                 _ => bail!("nomatch"),
@@ -574,7 +574,7 @@ pub fn openScope(mut inGraph: Graph, mut encapsulatedPrefix: SCode::Encapsulated
             let (mut g, mut n) = __mc_input.clone() else { bail!("nomatch") };
             let mut r: Ref = Default::default();
             r = FNode::child(p.clone(), (n.clone()).clone())?;
-            r = FNode::copyRefNoUpdate(r.clone());
+            r = FNode::copyRefNoUpdate(r.clone())?;
             g = pushScopeRef(g.clone(), r.clone())?;
             Ok(g.clone())
         })() { break 'mc __v; }
@@ -727,7 +727,7 @@ pub fn getGraphNameNoImplicitScopes(mut inGraph: Graph) -> Result<Arc<Absyn::Pat
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }));
+    }))?;
     Ok(outPath)
 }
 
@@ -837,7 +837,7 @@ pub fn crefStripGraphScopePrefix(mut inCref: Arc<Absyn::ComponentRef>, mut inEnv
             cref1 = AbsynUtil::unqualifyCref(inCref.clone());
             env_path = AbsynUtil::makeNotFullyQualified(env_path.clone());
             cref2 = crefStripGraphScopePrefix2(cref1.clone(), env_path.clone(), stripPartial.clone())?;
-            let false = (AbsynUtil::crefEqual(cref1.clone(), cref2.clone())) else { bail!("pattern mismatch") };
+            let false = (AbsynUtil::crefEqual(cref1.clone(), cref2.clone())?) else { bail!("pattern mismatch") };
             Ok(cref2.clone())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -1340,7 +1340,7 @@ pub fn getVariablesFromGraphScope(mut inGraph: Graph) -> Result<Arc<metamodelica
         },
         FCore::Graph::G { scope: Deref @ metamodelica::List::Cons { head: r, tail: _ }, .. } => {
             let mut lst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-            lst = List::map(FNode::filter(r.clone(), (std::sync::Arc::new(FNode::isRefComponent) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<bool> + 'static>))?, (std::sync::Arc::new(FNode::refName) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<ArcStr> + 'static>));
+            lst = List::map(FNode::filter(r.clone(), (std::sync::Arc::new(FNode::isRefComponent) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<bool> + 'static>))?, (std::sync::Arc::new(FNode::refName) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<FCore::Node>) -> Result<ArcStr> + 'static>))?;
             lst.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -1353,7 +1353,7 @@ pub fn removeComponentsFromScope(mut inGraph: Graph) -> Result<Graph> {
     let mut r: Ref = Default::default();
     let mut n: Node = <FCore::Node as ::std::default::Default>::default();
     r = lastScopeRef(inGraph.clone())?;
-    r = FNode::copyRefNoUpdate(r.clone());
+    r = FNode::copyRefNoUpdate(r.clone())?;
     n = FNode::fromRef(r.clone())?;
     n = FNode::setChildren(n.clone(), FCore::RefTree::new())?;
     r = FNode::updateRef(r.clone(), n.clone())?;
@@ -1366,7 +1366,7 @@ pub fn cloneLastScopeRef(mut inGraph: Graph) -> Result<Graph> {
     let mut outGraph: Graph = <FCore::Graph as ::std::default::Default>::default();
     let mut r: Ref = Default::default();
     (outGraph, r) = stripLastScopeRef(inGraph.clone())?;
-    r = FNode::copyRefNoUpdate(r.clone());
+    r = FNode::copyRefNoUpdate(r.clone())?;
     outGraph = pushScopeRef(outGraph.clone(), r.clone())?;
     Ok(outGraph)
 }
@@ -1404,7 +1404,7 @@ pub fn mkVersionNode(mut inSourceEnv: Graph, mut inSourceName: Name, mut inPrefi
                     sourceRef = FNode::child(lastScopeRef(inSourceEnv.clone())?, (inSourceName.clone()).clone())?;
                     targetClassParentRef = lastScopeRef(inTargetClassEnv.clone())?;
                     classRef = FNode::child(targetClassParentRef.clone(), (targetClassName.clone()).clone())?;
-                    classRef = FNode::copyRefNoUpdate(classRef.clone());
+                    classRef = FNode::copyRefNoUpdate(classRef.clone())?;
                     let FCore::CL { e: __pa0, .. } = (FNode::refData(classRef.clone())?) else { bail!("pattern mismatch") };
                     c = __pa0.clone();
                     c = SCodeUtil::setClassName((newTargetClassName.clone()).clone(), c.clone())?;
@@ -1531,7 +1531,7 @@ pub fn mkVersionName(mut inSourceEnv: Graph, mut inSourceName: Name, mut inPrefi
             let mut crefPrefix: DAE::Prefix = DAE::Prefix::NOPRE;
             let mut name: Name = arcstr::literal!("");
             crefPrefix = PrefixUtil::prefixAdd((inSourceName.clone()).clone(), metamodelica::nil(), metamodelica::nil(), inPrefix.clone(), openmodelica_frontend_types::SCode::Variability::CONST, ClassInf::State::UNKNOWN { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }) }, Absyn::dummyInfo.clone())?;
-            name = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inTargetClassName.clone()); __mm_s.push_str(&*literal!("$")); __mm_s.push_str(&*AbsynUtil::pathString(AbsynUtil::stringListPath(AbsynUtil::pathToStringList(PrefixUtil::prefixToPath(crefPrefix.clone())?)?.reverse()), (literal!("$")).clone(), false, false)?); ArcStr::from(__mm_s) }).clone();
+            name = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*inTargetClassName.clone()); __mm_s.push_str(&*literal!("$")); __mm_s.push_str(&*AbsynUtil::pathString(AbsynUtil::stringListPath(AbsynUtil::pathToStringList(PrefixUtil::prefixToPath(crefPrefix.clone())?)?.reverse())?, (literal!("$")).clone(), false, false)?); ArcStr::from(__mm_s) }).clone();
             (name.clone(), crefPrefix.clone())
         },
     });

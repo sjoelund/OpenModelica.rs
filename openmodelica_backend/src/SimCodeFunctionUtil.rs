@@ -82,12 +82,12 @@ use openmodelica_util::Util;
 use openmodelica_util_datatypes_basic::Array;
 use openmodelica_util_datatypes_basic::List;
 
-pub fn elementVars(mut ild: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>> {
+pub fn elementVars(mut ild: Arc<metamodelica::List<Arc<DAE::Element>>>) -> Result<Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>> {
     let mut vars: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>> = metamodelica::nil();
     let mut ld: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-    ld = List::filterOnTrue(ild.clone(), (std::sync::Arc::new(fnptr!(isVarQ, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<bool> + 'static>));
-    vars = List::map(ld.clone(), (std::sync::Arc::new(daeInOutSimVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>));
-    vars
+    ld = List::filterOnTrue(ild.clone(), (std::sync::Arc::new(fnptr!(isVarQ, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<bool> + 'static>))?;
+    vars = List::map(ld.clone(), (std::sync::Arc::new(daeInOutSimVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>))?;
+    Ok(vars)
 }
 
 pub fn crefSubIsScalar(mut cref: Arc<DAE::ComponentRef>) -> Result<bool> {
@@ -167,7 +167,7 @@ pub fn buildCrefExpFromAsub(mut cref: Arc<DAE::Exp>, mut subs: Arc<metamodelica:
                     let mut crefExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut indexes: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
                     let mut crNew = (*crNew).clone();
-                    indexes = List::map(subs.clone(), (std::sync::Arc::new(fnptr!(Expression::makeIndexSubscript, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Subscript>> + 'static>));
+                    indexes = List::map(subs.clone(), (std::sync::Arc::new(fnptr!(Expression::makeIndexSubscript, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Subscript>> + 'static>))?;
                     crNew = ComponentReference::subscriptCref(crNew.clone(), indexes.clone())?;
                     crefExp = Expression::makeCrefExp(crNew.clone(), ty.clone())?;
                     Ok(crefExp.clone())
@@ -221,10 +221,10 @@ pub fn decrementInt(mut inInt: i32, mut decrement: i32) -> i32 {
     outInt
 }
 
-pub fn protectedVars(mut InSimVars: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Arc<metamodelica::List<SimCodeVar::SimVar>> {
+pub fn protectedVars(mut InSimVars: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Arc<metamodelica::List<SimCodeVar::SimVar>>> {
     let mut OutSimVars: Arc<metamodelica::List<SimCodeVar::SimVar>> = metamodelica::nil();
-    OutSimVars = List::filterOnTrue(InSimVars.clone(), (std::sync::Arc::new(isNotProtected) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar) -> Result<bool> + 'static>));
-    OutSimVars
+    OutSimVars = List::filterOnTrue(InSimVars.clone(), (std::sync::Arc::new(isNotProtected) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar) -> Result<bool> + 'static>))?;
+    Ok(OutSimVars)
 }
 
 fn isNotProtected(mut simVar: SimCodeVar::SimVar) -> Result<bool> {
@@ -543,8 +543,8 @@ pub fn elaborateFunctions(mut program: Absyn::Program, mut daeElements: Arc<meta
     recordDecls = UnorderedMap::valueList(recDeclsMap.clone());
     recordDecls = List::sort(recordDecls.clone(), (std::sync::Arc::new(orderRecordDecls) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeFunction::RecordDeclaration, SimCodeFunction::RecordDeclaration) -> Result<bool> + 'static>))?;
     ht = HashTableStringToPath::emptyHashTableSized(BaseHashTable::lowBucketSize.clone());
-    (recordDecls, _) = List::mapFold(recordDecls.clone(), (std::sync::Arc::new(aliasRecordDeclarations) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeFunction::RecordDeclaration, (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>))) -> Result<(SimCodeFunction::RecordDeclaration, (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>)))> + 'static>), ht.clone());
-    g = Graph::buildGraph(recordDecls.clone(), (std::sync::Arc::new(fnptr!(getRecordDependencies, SimCodeFunction::RecordDeclaration, Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>>)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeFunction::RecordDeclaration, Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>>) -> Result<Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>>> + 'static>), recordDecls.clone());
+    (recordDecls, _) = List::mapFold(recordDecls.clone(), (std::sync::Arc::new(aliasRecordDeclarations) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeFunction::RecordDeclaration, (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>))) -> Result<(SimCodeFunction::RecordDeclaration, (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>)))> + 'static>), ht.clone())?;
+    g = Graph::buildGraph(recordDecls.clone(), (std::sync::Arc::new(getRecordDependencies) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeFunction::RecordDeclaration, Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>>) -> Result<Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>>> + 'static>), recordDecls.clone())?;
     let __pa0 = ::match_deref::match_deref! { match &(Graph::topologicalSort(g.clone(), (std::sync::Arc::new(fnptr!(isRecordDeclEqual, SimCodeFunction::RecordDeclaration, SimCodeFunction::RecordDeclaration)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeFunction::RecordDeclaration, SimCodeFunction::RecordDeclaration) -> Result<bool> + 'static>))?) {
         (__pa0, Deref @ metamodelica::List::Nil) => __pa0.clone(),
         _ => bail!("pattern mismatch"),
@@ -553,14 +553,14 @@ pub fn elaborateFunctions(mut program: Absyn::Program, mut daeElements: Arc<meta
     Ok((functions, recordDecls, outIncludes, includeDirs, libs, libpaths))
 }
 
-fn getRecordDependencies(mut decl: SimCodeFunction::RecordDeclaration, mut allDecls: Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>>) -> Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>> {
+fn getRecordDependencies(mut decl: SimCodeFunction::RecordDeclaration, mut allDecls: Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>>) -> Result<Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>>> {
     let mut dependencies: Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>> = metamodelica::nil();
     dependencies = (match decl.clone() {
         SimCodeFunction::RecordDeclaration::RECORD_DECL_FULL { aliasName: Some(mut name), .. } => {
-            List::select1(allDecls.clone(), (std::sync::Arc::new(fnptr!(recordDeclHasName, SimCodeFunction::RecordDeclaration, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeFunction::RecordDeclaration, ArcStr) -> Result<bool> + 'static>), (name.clone()).clone())
+            List::select1(allDecls.clone(), (std::sync::Arc::new(fnptr!(recordDeclHasName, SimCodeFunction::RecordDeclaration, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeFunction::RecordDeclaration, ArcStr) -> Result<bool> + 'static>), (name.clone()).clone())?
         },
         SimCodeFunction::RecordDeclaration::RECORD_DECL_ADD_CONSTRCTOR { name: mut name, .. } => {
-            List::select1(allDecls.clone(), (std::sync::Arc::new(fnptr!(recordDeclHasName, SimCodeFunction::RecordDeclaration, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeFunction::RecordDeclaration, ArcStr) -> Result<bool> + 'static>), (name.clone()).clone())
+            List::select1(allDecls.clone(), (std::sync::Arc::new(fnptr!(recordDeclHasName, SimCodeFunction::RecordDeclaration, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeFunction::RecordDeclaration, ArcStr) -> Result<bool> + 'static>), (name.clone()).clone())?
         },
         SimCodeFunction::RecordDeclaration::RECORD_DECL_FULL { variables: ref vars, .. } => {
             let mut tys: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
@@ -573,8 +573,8 @@ fn getRecordDependencies(mut decl: SimCodeFunction::RecordDeclaration, mut allDe
         }
         __acc.reverse()
     });
-            tyss = List::map1(tys.clone(), (std::sync::Arc::new(fnptr!(Types::getAllInnerTypesOfType, Arc<DAE::Type>, Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<bool> + 'static>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<bool> + 'static>) -> Result<Arc<metamodelica::List<Arc<DAE::Type>>>> + 'static>), std::sync::Arc::new(fnptr!(Util::anyReturnTrue, _)));
-            tys = List::flatten(tyss.clone());
+            tyss = List::map1(tys.clone(), (std::sync::Arc::new(Types::getAllInnerTypesOfType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<bool> + 'static>) -> Result<Arc<metamodelica::List<Arc<DAE::Type>>>> + 'static>), std::sync::Arc::new(fnptr!(Util::anyReturnTrue, _)))?;
+            tys = List::flatten(tyss.clone())?;
             dependencies = List::filterMap1(tys.clone(), (std::sync::Arc::new(getRecordDependenciesFromType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>, Arc<metamodelica::List<SimCodeFunction::RecordDeclaration>>) -> Result<SimCodeFunction::RecordDeclaration> + 'static>), allDecls.clone());
             List::unique(dependencies.clone())
         },
@@ -582,7 +582,7 @@ fn getRecordDependencies(mut decl: SimCodeFunction::RecordDeclaration, mut allDe
             metamodelica::nil()
         },
     });
-    dependencies
+    Ok(dependencies)
 }
 
 fn getVarType(mut var: Arc<SimCodeFunction::Variable::Variable>) -> Arc<DAE::Type> {
@@ -730,11 +730,11 @@ fn elaborateFunction(mut program: Absyn::Program, mut inElement: DAE::Function, 
                     let mut daeElts = (*daeElts).clone();
                     let DAE::FUNCTION_ATTRIBUTES { functionParallelism: DAE::FP_NON_PARALLEL { .. }, .. } = (funAttrs.clone()) else { bail!("pattern mismatch") };
                     daeElts = optMRFAElems(daeElts.clone())?;
-                    outVars = List::map(DAEUtil::getOutputElements(daeElts.clone()), (std::sync::Arc::new(daeInOutSimVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>));
-                    funArgs = List::map1(args.clone(), (std::sync::Arc::new(typesSimFunctionArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>, Option<Arc<DAE::Exp>>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>), None);
+                    outVars = List::map(DAEUtil::getOutputElements(daeElts.clone())?, (std::sync::Arc::new(daeInOutSimVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>))?;
+                    funArgs = List::map1(args.clone(), (std::sync::Arc::new(typesSimFunctionArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>, Option<Arc<DAE::Exp>>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>), None)?;
                     collectRecDeclsFromElems(daeElts.clone(), recDeclsMap.clone())?;
-                    vars = List::filterOnTrue(daeElts.clone(), (std::sync::Arc::new(fnptr!(isVarQ, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<bool> + 'static>));
-                    varDecls = List::map(vars.clone(), (std::sync::Arc::new(daeInOutSimVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>));
+                    vars = List::filterOnTrue(daeElts.clone(), (std::sync::Arc::new(fnptr!(isVarQ, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<bool> + 'static>))?;
+                    varDecls = List::map(vars.clone(), (std::sync::Arc::new(daeInOutSimVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>))?;
                     bodyStmts = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
         for mut e in (daeElts.clone()).into_iter().cloned() {
@@ -762,11 +762,11 @@ fn elaborateFunction(mut program: Absyn::Program, mut inElement: DAE::Function, 
                     let mut daeElts = (*daeElts).clone();
                     let DAE::FUNCTION_ATTRIBUTES { functionParallelism: DAE::FP_KERNEL_FUNCTION { .. }, .. } = (funAttrs.clone()) else { bail!("pattern mismatch") };
                     daeElts = optMRFAElems(daeElts.clone())?;
-                    outVars = List::map(DAEUtil::getOutputElements(daeElts.clone()), (std::sync::Arc::new(daeInOutSimVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>));
-                    funArgs = List::map1(args.clone(), (std::sync::Arc::new(typesSimFunctionArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>, Option<Arc<DAE::Exp>>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>), None);
+                    outVars = List::map(DAEUtil::getOutputElements(daeElts.clone())?, (std::sync::Arc::new(daeInOutSimVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>))?;
+                    funArgs = List::map1(args.clone(), (std::sync::Arc::new(typesSimFunctionArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>, Option<Arc<DAE::Exp>>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>), None)?;
                     collectRecDeclsFromElems(daeElts.clone(), recDeclsMap.clone())?;
-                    vars = List::filterOnTrue(daeElts.clone(), (std::sync::Arc::new(fnptr!(isVarNotInputNotOutput, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<bool> + 'static>));
-                    varDecls = List::map(vars.clone(), (std::sync::Arc::new(daeInOutSimVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>));
+                    vars = List::filterOnTrue(daeElts.clone(), (std::sync::Arc::new(fnptr!(isVarNotInputNotOutput, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<bool> + 'static>))?;
+                    varDecls = List::map(vars.clone(), (std::sync::Arc::new(daeInOutSimVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>))?;
                     bodyStmts = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
         for mut e in (daeElts.clone()).into_iter().cloned() {
@@ -794,11 +794,11 @@ fn elaborateFunction(mut program: Absyn::Program, mut inElement: DAE::Function, 
                     let mut daeElts = (*daeElts).clone();
                     let DAE::FUNCTION_ATTRIBUTES { functionParallelism: DAE::FP_PARALLEL_FUNCTION { .. }, .. } = (funAttrs.clone()) else { bail!("pattern mismatch") };
                     daeElts = optMRFAElems(daeElts.clone())?;
-                    outVars = List::map(DAEUtil::getOutputElements(daeElts.clone()), (std::sync::Arc::new(daeInOutSimVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>));
-                    funArgs = List::map1(args.clone(), (std::sync::Arc::new(typesSimFunctionArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>, Option<Arc<DAE::Exp>>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>), None);
+                    outVars = List::map(DAEUtil::getOutputElements(daeElts.clone())?, (std::sync::Arc::new(daeInOutSimVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>))?;
+                    funArgs = List::map1(args.clone(), (std::sync::Arc::new(typesSimFunctionArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>, Option<Arc<DAE::Exp>>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>), None)?;
                     collectRecDeclsFromElems(daeElts.clone(), recDeclsMap.clone())?;
-                    vars = List::filterOnTrue(daeElts.clone(), (std::sync::Arc::new(fnptr!(isVarQ, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<bool> + 'static>));
-                    varDecls = List::map(vars.clone(), (std::sync::Arc::new(daeInOutSimVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>));
+                    vars = List::filterOnTrue(daeElts.clone(), (std::sync::Arc::new(fnptr!(isVarQ, Arc<DAE::Element>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<bool> + 'static>))?;
+                    varDecls = List::map(vars.clone(), (std::sync::Arc::new(daeInOutSimVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>))?;
                     bodyStmts = ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
         for mut e in (daeElts.clone()).into_iter().cloned() {
@@ -844,10 +844,10 @@ fn elaborateFunction(mut program: Absyn::Program, mut inElement: DAE::Function, 
                     extretarg = __pa2.clone();
                     extargs = __pa3.clone();
                     extfnname = __pa4.clone();
-                    funArgs = List::map1(args.clone(), (std::sync::Arc::new(typesSimFunctionArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>, Option<Arc<DAE::Exp>>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>), None);
-                    outVars = List::map(DAEUtil::getOutputElements(daeElts.clone()), (std::sync::Arc::new(daeInOutSimVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>));
-                    inVars = List::map(DAEUtil::getInputVars(daeElts.clone()), (std::sync::Arc::new(daeInOutSimVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>));
-                    biVars = List::map(DAEUtil::getBidirElements(daeElts.clone()), (std::sync::Arc::new(daeInOutSimVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>));
+                    funArgs = List::map1(args.clone(), (std::sync::Arc::new(typesSimFunctionArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>, Option<Arc<DAE::Exp>>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>), None)?;
+                    outVars = List::map(DAEUtil::getOutputElements(daeElts.clone())?, (std::sync::Arc::new(daeInOutSimVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>))?;
+                    inVars = List::map(DAEUtil::getInputVars(daeElts.clone())?, (std::sync::Arc::new(daeInOutSimVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>))?;
+                    biVars = List::map(DAEUtil::getBidirElements(daeElts.clone())?, (std::sync::Arc::new(daeInOutSimVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>))?;
                     collectRecDeclsFromElems(daeElts.clone(), recDeclsMap.clone())?;
                     info = ElementSource::getElementSourceFileInfo(source.clone());
                     (fn_includes, fn_includeDirs, fn_libs, fn_paths, dynamicLoad) = generateExtFunctionIncludes(program.clone(), fpath.clone(), ann.clone(), info.clone())?;
@@ -855,7 +855,7 @@ fn elaborateFunction(mut program: Absyn::Program, mut inElement: DAE::Function, 
                     includeDirs = List::union(fn_includeDirs.clone(), includeDirs.clone());
                     libs = List::union(fn_libs.clone(), libs.clone());
                     libPaths = List::union(fn_paths.clone(), libPaths.clone());
-                    simextargs = List::map(extargs.clone(), (std::sync::Arc::new(extArgsToSimExtArgs) as std::sync::Arc<dyn ::std::ops::Fn(DAE::ExtArg) -> Result<Arc<SimCodeFunction::SimExtArg::SimExtArg>> + 'static>));
+                    simextargs = List::map(extargs.clone(), (std::sync::Arc::new(extArgsToSimExtArgs) as std::sync::Arc<dyn ::std::ops::Fn(DAE::ExtArg) -> Result<Arc<SimCodeFunction::SimExtArg::SimExtArg>> + 'static>))?;
                     extReturn = extArgsToSimExtArgs(extretarg.clone())?;
                     (simextargs, extReturn) = fixOutputIndex(outVars.clone(), simextargs.clone(), extReturn.clone())?;
                     lang = (System::toupper((lang.clone()).clone())).clone();
@@ -871,15 +871,15 @@ fn elaborateFunction(mut program: Absyn::Program, mut inElement: DAE::Function, 
                     let mut varDecls: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>> = metamodelica::nil();
                     let mut info: SourceInfo = <SourceInfo as ::std::default::Default>::default();
                     let mut varlst: Arc<metamodelica::List<Arc<DAE::Var>>> = metamodelica::nil();
-                    funArgs = List::map1(args.clone(), (std::sync::Arc::new(typesSimFunctionArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>, Option<Arc<DAE::Exp>>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>), None);
+                    funArgs = List::map1(args.clone(), (std::sync::Arc::new(typesSimFunctionArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>, Option<Arc<DAE::Exp>>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>), None)?;
                     collectRecDeclsFromType(restype.clone(), recDeclsMap.clone())?;
                     let __pa0 = ::match_deref::match_deref! { match &(restype.clone()) {
                         Deref @ DAE::Type::T_COMPLEX { varLst: __pa0, .. } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
                     varlst = __pa0.clone();
-                    varlst = List::filterOnFalse(varlst.clone(), (std::sync::Arc::new(Types::isModifiableTypesVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<bool> + 'static>));
-                    varDecls = List::map(varlst.clone(), (std::sync::Arc::new(typesVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>));
+                    varlst = List::filterOnFalse(varlst.clone(), (std::sync::Arc::new(Types::isModifiableTypesVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<bool> + 'static>))?;
+                    varDecls = List::map(varlst.clone(), (std::sync::Arc::new(typesVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>))?;
                     info = ElementSource::getElementSourceFileInfo(source.clone());
                     Ok((Arc::new(SimCodeFunction::Function::Function::RECORD_CONSTRUCTOR { name: name.clone(), funArgs: funArgs.clone(), locals: varDecls.clone(), visibility: openmodelica_frontend_types::SCode::Visibility::PUBLIC, info: info.clone() }), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone()))
                 }
@@ -909,8 +909,8 @@ fn typesSimFunctionArg(mut inFuncArg: Arc<DAE::FuncArg>, mut binding: Option<Arc
                 Deref @ DAE::FuncArg { ty: Deref @ DAE::Type::T_FUNCTION { funcResultType: Deref @ DAE::Type::T_TUPLE { types: tys, .. }, funcArg: args, .. }, name, .. } => {
                     let mut var_args: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>> = metamodelica::nil();
                     let mut tys = (*tys).clone();
-                    var_args = List::map1(args.clone(), (std::sync::Arc::new(typesSimFunctionArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>, Option<Arc<DAE::Exp>>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>), None);
-                    tys = List::map(tys.clone(), (std::sync::Arc::new(Types::simplifyType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>));
+                    var_args = List::map1(args.clone(), (std::sync::Arc::new(typesSimFunctionArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>, Option<Arc<DAE::Exp>>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>), None)?;
+                    tys = List::map(tys.clone(), (std::sync::Arc::new(Types::simplifyType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Type>) -> Result<Arc<DAE::Type>> + 'static>))?;
                     Ok(Arc::new(SimCodeFunction::Variable::Variable::FUNCTION_PTR { name: (name.clone()).clone(), tys: tys.clone(), args: var_args.clone(), defaultValue: binding.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -920,7 +920,7 @@ fn typesSimFunctionArg(mut inFuncArg: Arc<DAE::FuncArg>, mut binding: Option<Arc
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ DAE::FuncArg { ty: Deref @ DAE::Type::T_FUNCTION { funcResultType: Deref @ DAE::Type::T_NORETCALL { .. }, funcArg: args, .. }, name, .. } => {
                     let mut var_args: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>> = metamodelica::nil();
-                    var_args = List::map1(args.clone(), (std::sync::Arc::new(typesSimFunctionArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>, Option<Arc<DAE::Exp>>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>), None);
+                    var_args = List::map1(args.clone(), (std::sync::Arc::new(typesSimFunctionArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>, Option<Arc<DAE::Exp>>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>), None)?;
                     Ok(Arc::new(SimCodeFunction::Variable::Variable::FUNCTION_PTR { name: (name.clone()).clone(), tys: metamodelica::nil(), args: var_args.clone(), defaultValue: binding.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -932,7 +932,7 @@ fn typesSimFunctionArg(mut inFuncArg: Arc<DAE::FuncArg>, mut binding: Option<Arc
                     let mut var_args: Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>> = metamodelica::nil();
                     let mut res_ty = (*res_ty).clone();
                     res_ty = Types::simplifyType(res_ty.clone())?;
-                    var_args = List::map1(args.clone(), (std::sync::Arc::new(typesSimFunctionArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>, Option<Arc<DAE::Exp>>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>), None);
+                    var_args = List::map1(args.clone(), (std::sync::Arc::new(typesSimFunctionArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::FuncArg>, Option<Arc<DAE::Exp>>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>), None)?;
                     Ok(Arc::new(SimCodeFunction::Variable::Variable::FUNCTION_PTR { name: (name.clone()).clone(), tys: list![res_ty.clone()], args: var_args.clone(), defaultValue: binding.clone() }))
                 }
                 _ => bail!("nomatch"),
@@ -1033,7 +1033,7 @@ fn fixOutputIndex(mut outVars: Arc<metamodelica::List<Arc<SimCodeFunction::Varia
     let mut extReturnOut: Arc<SimCodeFunction::SimExtArg::SimExtArg> = Arc::new(SimCodeFunction::SimExtArg::SIMNOEXTARG);
     (simExtArgsOut, extReturnOut) = (::match_deref::match_deref! { match &(extReturnIn.clone()) {
         _ => {
-            simExtArgsOut = List::map1(simExtArgsIn.clone(), (std::sync::Arc::new(assignOutputIndex) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimCodeFunction::SimExtArg::SimExtArg>, Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Arc<SimCodeFunction::SimExtArg::SimExtArg>> + 'static>), outVars.clone());
+            simExtArgsOut = List::map1(simExtArgsIn.clone(), (std::sync::Arc::new(assignOutputIndex) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimCodeFunction::SimExtArg::SimExtArg>, Arc<metamodelica::List<Arc<SimCodeFunction::Variable::Variable>>>) -> Result<Arc<SimCodeFunction::SimExtArg::SimExtArg>> + 'static>), outVars.clone())?;
             extReturnOut = assignOutputIndex(extReturnIn.clone(), outVars.clone())?;
             (simExtArgsOut.clone(), extReturnOut.clone())
         },
@@ -1213,8 +1213,8 @@ pub fn isBoxedFunction(mut r#fn: Arc<SimCodeFunction::Function::Function>) -> Re
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SimCodeFunction::Function::FUNCTION { outVars, functionArguments: inVars, .. } => {
-                    List::map_0(inVars.clone(), (std::sync::Arc::new(isBoxedArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimCodeFunction::Variable::Variable>) -> Result<()> + 'static>));
-                    List::map_0(outVars.clone(), (std::sync::Arc::new(isBoxedArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimCodeFunction::Variable::Variable>) -> Result<()> + 'static>));
+                    List::map_0(inVars.clone(), (std::sync::Arc::new(isBoxedArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimCodeFunction::Variable::Variable>) -> Result<()> + 'static>))?;
+                    List::map_0(outVars.clone(), (std::sync::Arc::new(isBoxedArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimCodeFunction::Variable::Variable>) -> Result<()> + 'static>))?;
                     Ok(true)
                 }
                 _ => bail!("nomatch"),
@@ -1223,8 +1223,8 @@ pub fn isBoxedFunction(mut r#fn: Arc<SimCodeFunction::Function::Function>) -> Re
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SimCodeFunction::Function::EXTERNAL_FUNCTION { outVars, inVars, .. } => {
-                    List::map_0(inVars.clone(), (std::sync::Arc::new(isBoxedArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimCodeFunction::Variable::Variable>) -> Result<()> + 'static>));
-                    List::map_0(outVars.clone(), (std::sync::Arc::new(isBoxedArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimCodeFunction::Variable::Variable>) -> Result<()> + 'static>));
+                    List::map_0(inVars.clone(), (std::sync::Arc::new(isBoxedArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimCodeFunction::Variable::Variable>) -> Result<()> + 'static>))?;
+                    List::map_0(outVars.clone(), (std::sync::Arc::new(isBoxedArg) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimCodeFunction::Variable::Variable>) -> Result<()> + 'static>))?;
                     Ok(true)
                 }
                 _ => bail!("nomatch"),
@@ -1303,14 +1303,14 @@ fn isParallelArrayVar(mut var: Arc<SimCodeFunction::Variable::Variable>) -> bool
     b
 }
 
-pub fn findLiterals(mut fns: Arc<metamodelica::List<DAE::Function>>) -> (Arc<metamodelica::List<DAE::Function>>, Arc<metamodelica::List<Arc<DAE::Exp>>>) {
+pub fn findLiterals(mut fns: Arc<metamodelica::List<DAE::Function>>) -> Result<(Arc<metamodelica::List<DAE::Function>>, Arc<metamodelica::List<Arc<DAE::Exp>>>)> {
     let mut ofns: Arc<metamodelica::List<DAE::Function>> = metamodelica::nil();
     let mut literals: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-    let (__pa0, (_, _, __pa1)) = DAEUtil::traverseDAEFunctions(fns.clone(), (std::sync::Arc::new(findLiteralsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::Exp>>>)) -> Result<(Arc<DAE::Exp>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::Exp>>>))> + 'static>), (0, HashTableExpToIndex::emptyHashTableSized(BaseHashTable::bigBucketSize.clone()), metamodelica::nil()));
+    let (__pa0, (_, _, __pa1)) = DAEUtil::traverseDAEFunctions(fns.clone(), (std::sync::Arc::new(findLiteralsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::Exp>>>)) -> Result<(Arc<DAE::Exp>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::Exp>>>))> + 'static>), (0, HashTableExpToIndex::emptyHashTableSized(BaseHashTable::bigBucketSize.clone()), metamodelica::nil()))?;
     ofns = __pa0.clone();
     literals = __pa1.clone();
     literals = literals.clone().reverse();
-    (ofns, literals)
+    Ok((ofns, literals))
 }
 
 pub fn findLiteralsHelper(mut inExp: Arc<DAE::Exp>, mut inTpl: (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::Exp>>>)) -> Result<(Arc<DAE::Exp>, (i32, (metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::Exp>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::Exp>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), Arc<metamodelica::List<Arc<DAE::Exp>>>))> {
@@ -1547,11 +1547,11 @@ fn isLiteralArrayExp(mut iexp: Arc<DAE::Exp>) -> Result<()> {
             ()
         },
         Deref @ DAE::Exp::ARRAY { array: expl, .. } => {
-            List::map_0(expl.clone(), (std::sync::Arc::new(isLiteralArrayExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<()> + 'static>));
+            List::map_0(expl.clone(), (std::sync::Arc::new(isLiteralArrayExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<()> + 'static>))?;
             ()
         },
         Deref @ DAE::Exp::MATRIX { matrix: expll, .. } => {
-            List::map_0(List::flatten(expll.clone()), (std::sync::Arc::new(isLiteralArrayExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<()> + 'static>));
+            List::map_0(List::flatten(expll.clone())?, (std::sync::Arc::new(isLiteralArrayExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<()> + 'static>))?;
             ()
         },
         Deref @ DAE::Exp::ENUM_LITERAL { .. } => {
@@ -1574,15 +1574,15 @@ fn isLiteralArrayExp(mut iexp: Arc<DAE::Exp>) -> Result<()> {
             ()
         },
         Deref @ DAE::Exp::LIST { valList: expl } => {
-            List::map_0(expl.clone(), (std::sync::Arc::new(isLiteralArrayExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<()> + 'static>));
+            List::map_0(expl.clone(), (std::sync::Arc::new(isLiteralArrayExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<()> + 'static>))?;
             ()
         },
         Deref @ DAE::Exp::META_TUPLE { listExp: expl } => {
-            List::map_0(expl.clone(), (std::sync::Arc::new(isLiteralArrayExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<()> + 'static>));
+            List::map_0(expl.clone(), (std::sync::Arc::new(isLiteralArrayExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<()> + 'static>))?;
             ()
         },
         Deref @ DAE::Exp::METARECORDCALL { args: expl, .. } => {
-            List::map_0(expl.clone(), (std::sync::Arc::new(isLiteralArrayExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<()> + 'static>));
+            List::map_0(expl.clone(), (std::sync::Arc::new(isLiteralArrayExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<()> + 'static>))?;
             ()
         },
         Deref @ DAE::Exp::SHARED_LITERAL { .. } => {
@@ -1630,22 +1630,22 @@ fn isLiteralExp(mut iexp: Arc<DAE::Exp>) -> Result<()> {
             ()
         },
         Deref @ DAE::Exp::LIST { valList: expl } => {
-            List::map_0(expl.clone(), (std::sync::Arc::new(isLiteralExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<()> + 'static>));
+            List::map_0(expl.clone(), (std::sync::Arc::new(isLiteralExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<()> + 'static>))?;
             ()
         },
         Deref @ DAE::Exp::META_TUPLE { listExp: expl } => {
-            List::map_0(expl.clone(), (std::sync::Arc::new(isLiteralExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<()> + 'static>));
+            List::map_0(expl.clone(), (std::sync::Arc::new(isLiteralExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<()> + 'static>))?;
             ()
         },
         Deref @ DAE::Exp::METARECORDCALL { args: expl, .. } => {
-            List::map_0(expl.clone(), (std::sync::Arc::new(isLiteralExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<()> + 'static>));
+            List::map_0(expl.clone(), (std::sync::Arc::new(isLiteralExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<()> + 'static>))?;
             ()
         },
         Deref @ DAE::Exp::SHARED_LITERAL { .. } => {
             ()
         },
         Deref @ DAE::Exp::CALL { expLst: expl, path: Deref @ Absyn::Path::IDENT { name: Deref @ "listArrayLiteral" }, .. } => {
-            List::map_0(expl.clone(), (std::sync::Arc::new(isLiteralExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<()> + 'static>));
+            List::map_0(expl.clone(), (std::sync::Arc::new(isLiteralExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<()> + 'static>))?;
             ()
         },
         _ => {
@@ -1787,7 +1787,7 @@ fn collectRecDeclsFromType(mut inRecordType: Arc<DAE::Type>, mut recDeclsMap: Ar
             let mut bool1: bool = false;
             name = (AbsynUtil::pathStringUnquoteReplaceDot(path.clone(), (literal!("_")).clone())?).clone();
             (sname, is_default) = checkBindingsandGetConstructorName((name.clone()).clone(), varlst.clone());
-            optRecDecl = UnorderedMap::get((sname.clone()).clone(), recDeclsMap.clone());
+            optRecDecl = UnorderedMap::get((sname.clone()).clone(), recDeclsMap.clone())?;
             if is_default.clone() {
                 if isSome(optRecDecl.clone()) {
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(optRecDecl.clone()) {
@@ -1801,14 +1801,14 @@ fn collectRecDeclsFromType(mut inRecordType: Arc<DAE::Type>, mut recDeclsMap: Ar
                         UnorderedMap::add((sname.clone()).clone(), recDecl.clone(), recDeclsMap.clone())?;
                     }
                 } else {
-                    vars = List::map(varlst.clone(), (std::sync::Arc::new(typesVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>));
+                    vars = List::map(varlst.clone(), (std::sync::Arc::new(typesVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>))?;
                     recDecl = SimCodeFunction::RecordDeclaration::RECORD_DECL_FULL { name: (sname.clone()).clone(), aliasName: None, defPath: path.clone(), variables: vars.clone(), usedExternally: usedExternally.clone() };
                     UnorderedMap::add((sname.clone()).clone(), recDecl.clone(), recDeclsMap.clone())?;
                     collectRecDeclsFromTypesVars(varlst.clone(), recDeclsMap.clone())?;
                 }
             } else {
                 if isNone(optRecDecl.clone()) {
-                    vars = List::map(varlst.clone(), (std::sync::Arc::new(typesVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>));
+                    vars = List::map(varlst.clone(), (std::sync::Arc::new(typesVar) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<SimCodeFunction::Variable::Variable>> + 'static>))?;
                     recDecl = SimCodeFunction::RecordDeclaration::RECORD_DECL_ADD_CONSTRCTOR { ctor_name: (sname.clone()).clone(), name: (name.clone()).clone(), variables: vars.clone() };
                     UnorderedMap::add((sname.clone()).clone(), recDecl.clone(), recDeclsMap.clone())?;
                 }
@@ -1825,7 +1825,7 @@ fn collectRecDeclsFromType(mut inRecordType: Arc<DAE::Type>, mut recDeclsMap: Ar
             let mut sname: ArcStr = arcstr::literal!("");
             let mut fieldNames: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
             sname = (AbsynUtil::pathStringUnquoteReplaceDot(path.clone(), (literal!("_")).clone())?).clone();
-            fieldNames = List::map(varlst.clone(), (std::sync::Arc::new(fnptr!(generateVarName, Arc<DAE::Var>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>));
+            fieldNames = List::map(varlst.clone(), (std::sync::Arc::new(fnptr!(generateVarName, Arc<DAE::Var>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<ArcStr> + 'static>))?;
             UnorderedMap::tryAdd((sname.clone()).clone(), SimCodeFunction::RecordDeclaration::RECORD_DECL_DEF { path: path.clone(), fieldNames: fieldNames.clone() }, recDeclsMap.clone())?;
             collectRecDeclsFromTypesVars(varlst.clone(), recDeclsMap.clone())?;
             ()
@@ -2099,7 +2099,7 @@ fn lookForExtFunctionLibrary(mut names: Arc<metamodelica::List<ArcStr>>, mut dir
                     pwd = (System::pwd()).clone();
                     if 0 == System::cd(({ let mut __mm_s = String::new(); __mm_s.push_str(&*tmpdir.clone()); __mm_s.push_str(&*literal!("/BuildProjects/")); __mm_s.push_str(&*dir.clone()); ArcStr::from(__mm_s) }).clone()) {
                         Error::addSourceMessage(Error::COMPILER_NOTIFICATION.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Changed directory to ")); __mm_s.push_str(&*System::pwd()); ArcStr::from(__mm_s) }).clone()], info.clone())?;
-                        cmd = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("sh ./autogen.sh && ./configure --libdir='")); __mm_s.push_str(&*userCompiledBinariesDirectory(path.clone())); __mm_s.push_str(&*literal!("' && make && make install")); ArcStr::from(__mm_s) }).clone();
+                        cmd = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("sh ./autogen.sh && ./configure --libdir='")); __mm_s.push_str(&*userCompiledBinariesDirectory(path.clone())?); __mm_s.push_str(&*literal!("' && make && make install")); ArcStr::from(__mm_s) }).clone();
                         status = System::systemCall((cmd.clone()).clone(), (literal!("log")).clone());
                         contents = (System::readFile((literal!("log")).clone())?).clone();
                         if status.clone() != 0 {
@@ -2134,7 +2134,7 @@ fn lookForExtFunctionLibrary(mut names: Arc<metamodelica::List<ArcStr>>, mut dir
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
-    }))).into_iter().cloned() {
+    }))?).into_iter().cloned() {
             if !(System::regularFileExists((x.clone()).clone())) { continue; }
             let __x = x.clone();
             __acc = cons(__x, __acc);
@@ -2342,7 +2342,7 @@ fn generateExtFunctionLibraryDirectoryFlags(mut program: Absyn::Program, mut pat
                     isLinux = stringEq((literal!("linux")).clone(), (arcstr::literal!(Autoconf::os)).clone());
                     target = (Flags::getConfigString(Flags::TARGET.clone())?).clone();
                     libs2 = getLinkerLibraryPaths((r#str.clone()).clone(), path.clone(), inLibs.clone())?;
-                    libs = List::fold2(libs2.clone(), (std::sync::Arc::new(generateExtFunctionLibraryDirectoryFlags2) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, bool, ArcStr, Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), isLinux.clone(), (target.clone()).clone(), libs.clone());
+                    libs = List::fold2(libs2.clone(), (std::sync::Arc::new(generateExtFunctionLibraryDirectoryFlags2) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, bool, ArcStr, Arc<metamodelica::List<ArcStr>>) -> Result<Arc<metamodelica::List<ArcStr>>> + 'static>), isLinux.clone(), (target.clone()).clone(), libs.clone())?;
                     Ok((libs.clone(), libs2.clone().reverse(), Some((resourcesStr.clone()).clone())))
                 }
                 _ => bail!("nomatch"),
@@ -2374,9 +2374,9 @@ fn getGerneralTarget(mut target: ArcStr) -> Result<ArcStr> {
     Ok(generalTarget)
 }
 
-fn userCompiledBinariesDirectory(mut path: Arc<Absyn::Path>) -> ArcStr {
-    let mut r#str: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*Settings::getHomeDir(false)); __mm_s.push_str(&*literal!("/.openmodelica/binaries/")); __mm_s.push_str(&*AbsynUtil::pathFirstIdent(path.clone()).unwrap()); ArcStr::from(__mm_s) };
-    r#str
+fn userCompiledBinariesDirectory(mut path: Arc<Absyn::Path>) -> Result<ArcStr> {
+    let mut r#str: ArcStr = { let mut __mm_s = String::new(); __mm_s.push_str(&*Settings::getHomeDir(false)); __mm_s.push_str(&*literal!("/.openmodelica/binaries/")); __mm_s.push_str(&*AbsynUtil::pathFirstIdent(path.clone())?); ArcStr::from(__mm_s) };
+    Ok(r#str)
 }
 
 fn generateExtFunctionLibraryDirectoryPaths(mut program: Absyn::Program, mut path: Arc<Absyn::Path>, mut inMod: Arc<SCode::Mod>) -> Result<Arc<metamodelica::List<ArcStr>>> {
@@ -2721,8 +2721,8 @@ fn generateExtFunctionIncludesLibstr(mut target: ArcStr, mut inMod: Arc<SCode::M
                         _ => bail!("pattern mismatch"),
                     } };
                     arr = __pa0.clone();
-                    (libsList, namesList) = List::map_2(arr.clone(), (std::sync::Arc::new(getLibraryStringInMSVCFormat) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> + 'static>));
-                    Ok((List::flatten(libsList.clone()), List::flatten(namesList.clone())))
+                    (libsList, namesList) = List::map_2(arr.clone(), (std::sync::Arc::new(getLibraryStringInMSVCFormat) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> + 'static>))?;
+                    Ok((List::flatten(libsList.clone())?, List::flatten(namesList.clone())?))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2755,8 +2755,8 @@ fn generateExtFunctionIncludesLibstr(mut target: ArcStr, mut inMod: Arc<SCode::M
                         _ => bail!("pattern mismatch"),
                     } };
                     arr = __pa0.clone();
-                    (libsList, namesList) = List::map_2(arr.clone(), (std::sync::Arc::new(getLibraryStringInGccFormat) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> + 'static>));
-                    Ok((List::flatten(libsList.clone()), List::flatten(namesList.clone())))
+                    (libsList, namesList) = List::map_2(arr.clone(), (std::sync::Arc::new(getLibraryStringInGccFormat) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<(Arc<metamodelica::List<ArcStr>>, Arc<metamodelica::List<ArcStr>>)> + 'static>))?;
+                    Ok((List::flatten(libsList.clone())?, List::flatten(namesList.clone())?))
                 }
                 _ => bail!("nomatch"),
             }}
@@ -2936,7 +2936,7 @@ pub fn getCalledFunctionsInFunction2(mut inPath: Arc<Absyn::Path>, mut pathstr: 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, ht) => {
-                    if !((BaseHashTable::hasKey((pathstr.clone()).clone(), ht.clone()))) { bail!("guard") }
+                    if !((BaseHashTable::hasKey((pathstr.clone()).clone(), ht.clone())?)) { bail!("guard") }
                     Ok(ht.clone())
                 }
                 _ => bail!("nomatch"),
@@ -2952,10 +2952,10 @@ pub fn getCalledFunctionsInFunction2(mut inPath: Arc<Absyn::Path>, mut pathstr: 
                     let mut ht = (*ht).clone();
                     funcelem = DAEUtil::getNamedFunction(path.clone(), funcs.clone())?;
                     els = DAEUtil::getFunctionElements(funcelem.clone())?;
-                    varfuncs = List::fold(els.clone(), (std::sync::Arc::new(fnptr!(DAEUtil::collectFunctionRefVarPaths, Arc<DAE::Element>, Arc<metamodelica::List<Arc<Absyn::Path>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> + 'static>), metamodelica::nil());
-                    let (_, (_, __pa0)) = DAEUtil::traverseDAEElementList(els.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(fnptr!(DAEUtil::collectValueblockFunctionRefVars, Arc<DAE::Exp>, Arc<metamodelica::List<Arc<Absyn::Path>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<Absyn::Path>>>)> + 'static>), varfuncs.clone()));
+                    varfuncs = List::fold(els.clone(), (std::sync::Arc::new(fnptr!(DAEUtil::collectFunctionRefVarPaths, Arc<DAE::Element>, Arc<metamodelica::List<Arc<Absyn::Path>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Result<Arc<metamodelica::List<Arc<Absyn::Path>>>> + 'static>), metamodelica::nil())?;
+                    let (_, (_, __pa0)) = DAEUtil::traverseDAEElementList(els.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(DAEUtil::collectValueblockFunctionRefVars) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<Absyn::Path>>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<Absyn::Path>>>)> + 'static>), varfuncs.clone()))?;
                     varfuncs = __pa0.clone();
-                    let (_, (_, (__pa1, _))) = DAEUtil::traverseDAEElementList(els.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(matchNonBuiltinCallsAndFnRefPaths) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<Absyn::Path>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<Absyn::Path>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>))> + 'static>), (metamodelica::nil(), varfuncs.clone())));
+                    let (_, (_, (__pa1, _))) = DAEUtil::traverseDAEElementList(els.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(matchNonBuiltinCallsAndFnRefPaths) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<Absyn::Path>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>)) -> Result<(Arc<DAE::Exp>, (Arc<metamodelica::List<Arc<Absyn::Path>>>, Arc<metamodelica::List<Arc<Absyn::Path>>>))> + 'static>), (metamodelica::nil(), varfuncs.clone())))?;
                     calledfuncs = __pa1.clone();
                     ht = BaseHashTable::add((pathstr.clone(), path.clone()), ht.clone())?;
                     ht = addDestructor(funcelem.clone(), ht.clone())?;
@@ -3003,7 +3003,7 @@ fn addDestructor(mut func: DAE::Function, mut inHt: (metamodelica::Array<Arc<met
 
 fn addDestructor2(mut path: Arc<Absyn::Path>, mut pathstr: ArcStr, mut inHt: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>))) -> Result<(metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(ArcStr) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>) -> Result<ArcStr> + 'static>))> {
     let mut ht: (metamodelica::Array<Arc<metamodelica::List<(ArcStr, i32)>>>, (i32, i32, metamodelica::Array<Option<(ArcStr, Arc<Absyn::Path>)>>), i32, (HashTableStringToPath::FuncHashCref, HashTableStringToPath::FuncCrefEqual, HashTableStringToPath::FuncCrefStr, HashTableStringToPath::FuncExpStr)) = inHt.clone();
-    if !(BaseHashTable::hasKey((pathstr.clone()).clone(), ht.clone())) {
+    if !(BaseHashTable::hasKey((pathstr.clone()).clone(), ht.clone())?) {
         ht = BaseHashTable::add((pathstr.clone(), path.clone()), ht.clone())?;
     }
     Ok(ht)
@@ -3019,7 +3019,7 @@ fn matchNonBuiltinCallsAndFnRefPaths(mut inExp: Arc<DAE::Exp>, mut itpl: (Arc<me
                 (Deref @ DAE::Exp::CALL { attr: Deref @ DAE::CallAttributes { builtin: false, .. }, path, .. }, (acc, filter)) => {
                     let mut path = (*path).clone();
                     path = AbsynUtil::makeNotFullyQualified(path.clone());
-                    let false = (List::isMemberOnTrue(path.clone(), filter.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::pathEqual, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
+                    let false = (List::isMemberOnTrue(path.clone(), filter.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::pathEqual, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
                     Ok((inExp.clone(), (metamodelica::cons(path.clone(), acc.clone()), filter.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -3028,8 +3028,8 @@ fn matchNonBuiltinCallsAndFnRefPaths(mut inExp: Arc<DAE::Exp>, mut itpl: (Arc<me
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (Deref @ DAE::Exp::REDUCTION { reductionInfo: Deref @ DAE::ReductionInfo { path, .. }, .. }, (acc, filter)) => {
-                    let false = (List::isMemberOnTrue(path.clone(), list![Arc::new(Absyn::Path::IDENT { name: (literal!("list")).clone() }), Arc::new(Absyn::Path::IDENT { name: (literal!("listReverse")).clone() }), Arc::new(Absyn::Path::IDENT { name: (literal!("array")).clone() }), Arc::new(Absyn::Path::IDENT { name: (literal!("min")).clone() }), Arc::new(Absyn::Path::IDENT { name: (literal!("max")).clone() }), Arc::new(Absyn::Path::IDENT { name: (literal!("sum")).clone() }), Arc::new(Absyn::Path::IDENT { name: (literal!("product")).clone() })], (std::sync::Arc::new(fnptr!(AbsynUtil::pathEqual, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
-                    let false = (List::isMemberOnTrue(path.clone(), filter.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::pathEqual, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
+                    let false = (List::isMemberOnTrue(path.clone(), list![Arc::new(Absyn::Path::IDENT { name: (literal!("list")).clone() }), Arc::new(Absyn::Path::IDENT { name: (literal!("listReverse")).clone() }), Arc::new(Absyn::Path::IDENT { name: (literal!("array")).clone() }), Arc::new(Absyn::Path::IDENT { name: (literal!("min")).clone() }), Arc::new(Absyn::Path::IDENT { name: (literal!("max")).clone() }), Arc::new(Absyn::Path::IDENT { name: (literal!("sum")).clone() }), Arc::new(Absyn::Path::IDENT { name: (literal!("product")).clone() })], (std::sync::Arc::new(fnptr!(AbsynUtil::pathEqual, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
+                    let false = (List::isMemberOnTrue(path.clone(), filter.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::pathEqual, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
                     Ok((inExp.clone(), (metamodelica::cons(path.clone(), acc.clone()), filter.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -3040,7 +3040,7 @@ fn matchNonBuiltinCallsAndFnRefPaths(mut inExp: Arc<DAE::Exp>, mut itpl: (Arc<me
                 (Deref @ DAE::Exp::PARTEVALFUNCTION { path, .. }, (acc, filter)) => {
                     let mut path = (*path).clone();
                     path = AbsynUtil::makeNotFullyQualified(path.clone());
-                    let false = (List::isMemberOnTrue(path.clone(), filter.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::pathEqual, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
+                    let false = (List::isMemberOnTrue(path.clone(), filter.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::pathEqual, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
                     Ok((inExp.clone(), (metamodelica::cons(path.clone(), acc.clone()), filter.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -3051,7 +3051,7 @@ fn matchNonBuiltinCallsAndFnRefPaths(mut inExp: Arc<DAE::Exp>, mut itpl: (Arc<me
                 (Deref @ DAE::Exp::CREF { ty: Deref @ DAE::Type::T_FUNCTION_REFERENCE_FUNC { builtin: false, .. }, .. }, (acc, filter)) => {
                     let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     path = AbsynUtil::crefToPath(getCrefFromExp(inExp.clone())?)?;
-                    let false = (List::isMemberOnTrue(path.clone(), filter.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::pathEqual, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
+                    let false = (List::isMemberOnTrue(path.clone(), filter.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::pathEqual, Arc<Absyn::Path>, Arc<Absyn::Path>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Path>, Arc<Absyn::Path>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
                     Ok((inExp.clone(), (metamodelica::cons(path.clone(), acc.clone()), filter.clone())))
                 }
                 _ => bail!("nomatch"),
@@ -3077,7 +3077,7 @@ fn aliasRecordDeclarations(mut inDecl: SimCodeFunction::RecordDeclaration, mut i
         SimCodeFunction::RecordDeclaration::RECORD_DECL_FULL { name: mut sname, aliasName: _, defPath: ref name, variables: ref vars, usedExternally: mut extConvert } => {
             let mut r#str: ArcStr = arcstr::literal!("");
             let mut alias: Option<ArcStr> = None;
-            r#str = stringDelimitList(List::map(vars.clone(), (std::sync::Arc::new(variableString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimCodeFunction::Variable::Variable>) -> Result<ArcStr> + 'static>)), (literal!("\n")).clone());
+            r#str = stringDelimitList(List::map(vars.clone(), (std::sync::Arc::new(variableString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SimCodeFunction::Variable::Variable>) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone());
             (alias, ht) = aliasRecordDeclarations2((r#str.clone()).clone(), name.clone(), inHt.clone())?;
             (SimCodeFunction::RecordDeclaration::RECORD_DECL_FULL { name: (sname.clone()).clone(), aliasName: alias.clone(), defPath: name.clone(), variables: vars.clone(), usedExternally: extConvert.clone() }, ht.clone())
         },
@@ -3241,8 +3241,8 @@ pub fn generateSubPalceholders(mut cr: Arc<DAE::ComponentRef>) -> Result<ArcStr>
     let mut idxstrlst: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
     dims = ComponentReferenceBasics::crefDims(cr.clone())?;
     nrdims = (dims.clone().len() as i32);
-    idxstrlst = List::map(List::intRange(nrdims.clone()), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>));
-    outdef = stringDelimitList(List::threadMap(List::fill((literal!("i_")).clone(), nrdims.clone()), idxstrlst.clone(), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>)), (literal!(",")).clone());
+    idxstrlst = List::map(List::intRange(nrdims.clone()), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?;
+    outdef = stringDelimitList(List::threadMap(List::fill((literal!("i_")).clone(), nrdims.clone()), idxstrlst.clone(), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone());
     Ok(outdef)
 }
 

@@ -168,7 +168,7 @@ pub mod LookupState {
     pub fn isCallableType(mut node: Arc<InstNode::InstNode>) -> Result<bool> {
         let mut callable: bool = false;
         let mut n: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
-        if !(InstNode::isClass(node.clone())) {
+        if !(InstNode::isClass(node.clone())?) {
             callable = false;
             return Ok(callable.clone());
         }
@@ -178,7 +178,7 @@ pub mod LookupState {
         Deref @ Restriction::RECORD { .. } => true,
         Deref @ Restriction::OPERATOR => true,
         Deref @ Restriction::ENUMERATION => true,
-        Deref @ Restriction::TYPE if (InstNode::isEnumerationType(n.clone())) => true,
+        Deref @ Restriction::TYPE if (InstNode::isEnumerationType(n.clone())?) => true,
         _ => InstNode::isClockType(n.clone()),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -313,7 +313,7 @@ pub mod LookupState {
             let mut node2: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
             if !(InstContext::inRelaxed(context.clone()) || InstContext::inRedeclared(context.clone())) {
                 node2 = listHead(InstNode::scopeList(node.clone(), false, metamodelica::nil())?)?;
-                if InstNode::isComponent(node2.clone()) {
+                if InstNode::isComponent(node2.clone())? {
                     Error::addMultiSourceMessage(Error::USE_OF_PARTIAL_CLASS.clone(), list![(InstNode::name(node2.clone())?).clone(), (InstNode::name(node.clone())?).clone(), (AbsynUtil::pathString(Class::constrainingClassPath(node.clone())?, (literal!(".")).clone(), true, false)?).clone()], list![InstNode::info(node.clone())?, InstNode::info(node2.clone())?])?;
                 } else {
                     Error::addSourceMessage(Error::LOOKUP_IN_PARTIAL_CLASS.clone(), list![(InstNode::name(node.clone())?).clone()], info.clone())?;
@@ -409,7 +409,7 @@ pub mod LookupState {
 
     pub fn nodeState(mut node: Arc<InstNode::InstNode>) -> Result<Arc<LookupState>> {
         let mut state: Arc<LookupState> = Arc::new(LookupState::BEGIN);
-        if InstNode::isComponent(node.clone()) || InstNode::isName(node.clone()) || InstNode::isEmpty(node.clone()) {
+        if InstNode::isComponent(node.clone())? || InstNode::isName(node.clone()) || InstNode::isEmpty(node.clone()) {
             state = Arc::new(crate::NFLookupState::LookupState::COMP);
         } else {
             state = elementState(InstNode::definition(node.clone())?)?;
@@ -477,7 +477,7 @@ pub mod LookupState {
 
     pub fn isNonConstantComponent(mut node: Arc<InstNode::InstNode>) -> Result<bool> {
         let mut res: bool = false;
-        res = InstNode::isComponent(node.clone()) && !(Component::isConst(InstNode::component(node.clone())?));
+        res = InstNode::isComponent(node.clone())? && !(Component::isConst(InstNode::component(node.clone())?)?);
         Ok(res)
     }
 

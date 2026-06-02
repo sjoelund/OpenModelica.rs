@@ -81,23 +81,23 @@ pub type ALGORITHM = NFAlgorithm;
 
 pub type ApplyFn = std::sync::Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>) -> Result<()> + 'static>;
 
-pub fn applyList(mut algs: Arc<metamodelica::List<Arc<NFAlgorithm>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>) -> Result<()> + 'static>) -> () {
+pub fn applyList(mut algs: Arc<metamodelica::List<Arc<NFAlgorithm>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>) -> Result<()> + 'static>) -> Result<()> {
     for mut alg in &*algs.clone() {
         let mut alg = alg.clone();
         for mut s in &*alg.statements.clone() {
             let mut s = s.clone();
-            Statement::apply(s.clone(), func.clone());
+            Statement::apply(s.clone(), func.clone())?;
         }
     }
-    ()
+    Ok(())
 }
 
-pub fn apply(mut alg: Arc<NFAlgorithm>, mut func: Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>) -> Result<()> + 'static>) -> () {
+pub fn apply(mut alg: Arc<NFAlgorithm>, mut func: Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>) -> Result<()> + 'static>) -> Result<()> {
     for mut s in &*alg.statements.clone() {
         let mut s = s.clone();
-        Statement::apply(s.clone(), func.clone());
+        Statement::apply(s.clone(), func.clone())?;
     }
-    ()
+    Ok(())
 }
 
 pub fn applyExp(mut alg: Arc<NFAlgorithm>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>) -> Result<()> {
@@ -120,42 +120,42 @@ pub fn applyExpList(mut algs: Arc<metamodelica::List<Arc<NFAlgorithm>>>, mut fun
     Ok(())
 }
 
-pub fn map(mut alg: Arc<NFAlgorithm>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>) -> Result<Arc<Statement::NFStatement>> + 'static>) -> Arc<NFAlgorithm> {
+pub fn map(mut alg: Arc<NFAlgorithm>, mut r#fn: Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>) -> Result<Arc<Statement::NFStatement>> + 'static>) -> Result<Arc<NFAlgorithm>> {
     pub type MapFn = std::sync::Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>) -> Result<Arc<Statement::NFStatement>> + 'static>;
 
     let mut alg: Arc<NFAlgorithm> = alg;
     assign_field!(alg.statements = ({
         let mut __acc: Arc<metamodelica::List<Arc<Statement::NFStatement>>> = metamodelica::nil();
         for mut s in (alg.statements.clone()).into_iter().cloned() {
-            let __x = Statement::map(s.clone(), r#fn.clone());
+            let __x = Statement::map(s.clone(), r#fn.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }));
-    alg
+    Ok(alg)
 }
 
-pub fn mapExp(mut alg: Arc<NFAlgorithm>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Arc<NFAlgorithm> {
+pub fn mapExp(mut alg: Arc<NFAlgorithm>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<NFAlgorithm>> {
     pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>;
 
     let mut alg: Arc<NFAlgorithm> = alg;
-    assign_field!(alg.statements = Statement::mapExpList(alg.statements.clone(), func.clone()));
-    alg
+    assign_field!(alg.statements = Statement::mapExpList(alg.statements.clone(), func.clone())?);
+    Ok(alg)
 }
 
-pub fn mapExpList(mut algs: Arc<metamodelica::List<Arc<NFAlgorithm>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Arc<metamodelica::List<Arc<NFAlgorithm>>> {
+pub fn mapExpList(mut algs: Arc<metamodelica::List<Arc<NFAlgorithm>>>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<metamodelica::List<Arc<NFAlgorithm>>>> {
     pub type MapFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>;
 
     let mut algs: Arc<metamodelica::List<Arc<NFAlgorithm>>> = algs;
     algs = ({
         let mut __acc: Arc<metamodelica::List<Arc<NFAlgorithm>>> = metamodelica::nil();
         for mut alg in (algs.clone()).into_iter().cloned() {
-            let __x = mapExp(alg.clone(), func.clone());
+            let __x = mapExp(alg.clone(), func.clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     });
-    algs
+    Ok(algs)
 }
 
 pub fn foldExp<ArgT: Clone + 'static>(mut alg: Arc<NFAlgorithm>, mut func: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, ArgT) -> Result<ArgT> + 'static>, mut arg: ArgT) -> Result<ArgT> {
@@ -201,8 +201,8 @@ pub fn setInputsOutputs(mut alg: Arc<NFAlgorithm>) -> Result<Arc<NFAlgorithm>> {
 pub fn getInputsOutputs(mut statements: Arc<metamodelica::List<Arc<Statement::NFStatement>>>) -> Result<(Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>, Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>>)> {
     let mut inputs_lst: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
     let mut outputs_lst: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-    let mut inputs_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
-    let mut outputs_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(fnptr!(ComponentRef::hash, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
+    let mut inputs_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
+    let mut outputs_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
     match '__try0: {
         for mut statement in &*statements.clone() {
             let mut statement = statement.clone();
@@ -224,10 +224,10 @@ pub fn getInputsOutputs(mut statements: Arc<metamodelica::List<Arc<Statement::NF
     Ok((inputs_lst, outputs_lst))
 }
 
-pub fn isEqual(mut alg1: Arc<NFAlgorithm>, mut alg2: Arc<NFAlgorithm>) -> bool {
+pub fn isEqual(mut alg1: Arc<NFAlgorithm>, mut alg2: Arc<NFAlgorithm>) -> Result<bool> {
     let mut b: bool = false;
-    b = List::isEqualOnTrue(alg1.inputs.clone(), alg2.inputs.clone(), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>)) && List::isEqualOnTrue(alg1.outputs.clone(), alg2.outputs.clone(), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>)) && List::isEqualOnTrue(alg1.statements.clone(), alg2.statements.clone(), (std::sync::Arc::new(Statement::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>, Arc<Statement::NFStatement>) -> Result<bool> + 'static>));
-    b
+    b = List::isEqualOnTrue(alg1.inputs.clone(), alg2.inputs.clone(), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))? && List::isEqualOnTrue(alg1.outputs.clone(), alg2.outputs.clone(), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))? && List::isEqualOnTrue(alg1.statements.clone(), alg2.statements.clone(), (std::sync::Arc::new(Statement::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>, Arc<Statement::NFStatement>) -> Result<bool> + 'static>))?;
+    Ok(b)
 }
 
 pub fn isEmpty(mut alg: Arc<NFAlgorithm>) -> bool {
@@ -235,11 +235,11 @@ pub fn isEmpty(mut alg: Arc<NFAlgorithm>) -> bool {
     b
 }
 
-pub fn isDiscrete(mut alg: Arc<NFAlgorithm>) -> bool {
+pub fn isDiscrete(mut alg: Arc<NFAlgorithm>) -> Result<bool> {
     let mut b: bool = false;
-    b = List::any(alg.outputs.clone(), (std::sync::Arc::new(fnptr!(ComponentRef::isDiscrete, Arc<ComponentRef::NFComponentRef>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>));
-    b = if (b.clone()) {b.clone()} else {List::any(alg.statements.clone(), (std::sync::Arc::new(fnptr!(Statement::isDiscrete, Arc<Statement::NFStatement>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>) -> Result<bool> + 'static>))};
-    b
+    b = List::any(alg.outputs.clone(), (std::sync::Arc::new(ComponentRef::isDiscrete) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
+    b = if (b.clone()) {b.clone()} else {List::any(alg.statements.clone(), (std::sync::Arc::new(Statement::isDiscrete) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Statement::NFStatement>) -> Result<bool> + 'static>))?};
+    Ok(b)
 }
 
 fn statementInputsOutputs(mut statement: Arc<Statement::NFStatement>, mut inputs_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut outputs_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<()> {
@@ -333,7 +333,7 @@ fn statementInputsOutputs(mut statement: Arc<Statement::NFStatement>, mut inputs
 
 fn expressionInputs(mut exp: Arc<Expression::NFExpression>, mut inputs_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut outputs_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>) -> Result<()> {
     let () = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CREF { cref: cr, .. } if (ComponentRef::isTime(cr.clone())) => {
+        Deref @ Expression::CREF { cref: cr, .. } if (ComponentRef::isTime(cr.clone())?) => {
             ()
         },
         Deref @ Expression::CREF { cref: cr, .. } if (ComponentRef::isIterator(cr.clone())) => {
@@ -363,7 +363,7 @@ fn expressionOutput(mut exp: Arc<Expression::NFExpression>, mut inputs_set: Arc<
         Deref @ Expression::CREF { cref: Deref @ ComponentRef::WILD, .. } => {
             ()
         },
-        Deref @ Expression::CREF { cref: cr, .. } if (ComponentRef::isTime(cr.clone())) => {
+        Deref @ Expression::CREF { cref: cr, .. } if (ComponentRef::isTime(cr.clone())?) => {
             Error::addMessage(Error::COMPILER_ERROR.clone(), list![(literal!("Trying to assign to time.")).clone()])?;
             bail!("fail")
         },

@@ -137,7 +137,7 @@ fn instEquationCommon(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
     match '__try0: {
         state = unwrap_break_err!(ClassInfUtil::trans(inState.clone(), openmodelica_frontend_types::ClassInf::Event::FOUND_EQUATION), '__try0);
         (outCache, outEnv, outIH, outDae, outSets, outState, outGraph) = unwrap_break_err!(instEquationCommonWork(inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), inSets.clone(), state.clone(), inEquation.clone(), inInitial.clone(), inImpl.clone(), inGraph.clone(), Arc::new(DAE::SymbolicOperation::FLATTEN { scode: inEquation.clone(), dae: None })), '__try0);
-        (outDae, _, _) = DAEUtil::traverseDAE(outDae.clone(), Arc::new(openmodelica_frontend_dump::AvlTreePathFunction::Tree::EMPTY), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(ExpressionSimplify::simplifyWork) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ExpressionSimplifyTypes::Evaluate) -> Result<(Arc<DAE::Exp>, ExpressionSimplifyTypes::Evaluate)> + 'static>), ExpressionSimplifyTypes::optionSimplifyOnly.clone()));
+        (outDae, _, _) = unwrap_break_err!(DAEUtil::traverseDAE(outDae.clone(), Arc::new(openmodelica_frontend_dump::AvlTreePathFunction::Tree::EMPTY), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(ExpressionSimplify::simplifyWork) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ExpressionSimplifyTypes::Evaluate) -> Result<(Arc<DAE::Exp>, ExpressionSimplifyTypes::Evaluate)> + 'static>), ExpressionSimplifyTypes::optionSimplifyOnly.clone())), '__try0);
         Ok::<_, anyhow::Error>((outCache.clone(), outDae.clone(), outEnv.clone(), outGraph.clone(), outIH.clone(), outSets.clone(), outState.clone(), state.clone()))
     } {
         Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3, __try0_o4, __try0_o5, __try0_o6, __try0_o7)) => {
@@ -369,7 +369,7 @@ fn instEquationCommonWork(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mu
                         c = __pa3.clone();
                         ty = __pa4.clone();
                     } else {
-                        iter_crefs = SCodeUtil::findIteratorIndexedCrefsInEquations(var_field!((*inEquation).eEquationLst, SCode::Equation::EQ_FOR).clone(), (var_field!((*inEquation).index, SCode::Equation::EQ_FOR).clone()).clone(), metamodelica::nil());
+                        iter_crefs = SCodeUtil::findIteratorIndexedCrefsInEquations(var_field!((*inEquation).eEquationLst, SCode::Equation::EQ_FOR).clone(), (var_field!((*inEquation).index, SCode::Equation::EQ_FOR).clone()).clone(), metamodelica::nil())?;
                         let (__pa6, __pa7, __pa8, __pa9) = ::match_deref::match_deref! { match &(Static::deduceIterationRange((var_field!((*inEquation).index, SCode::Equation::EQ_FOR).clone()).clone(), iter_crefs.clone(), inEnv.clone(), outCache.clone(), info.clone())?) {
                             (__pa6, DAE::Properties::PROP { constFlag: __pa7, type_: Deref @ DAE::Type::T_ARRAY { ty: __pa8, .. } }, __pa9) => (__pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone()),
                             _ => bail!("pattern mismatch"),
@@ -776,8 +776,8 @@ fn handleConnectionsOperators(mut inCache: FCore::Cache, mut inEnv: FCore::Graph
                     } };
                     cache = __pa2.clone();
                     e_2 = __pa3.clone();
-                    b1 = Types::isZeroLengthArray(Expression::r#typeof(e_1.clone())?);
-                    b2 = Types::isZeroLengthArray(Expression::r#typeof(e_2.clone())?);
+                    b1 = Types::isZeroLengthArray(Expression::r#typeof(e_1.clone())?)?;
+                    b2 = Types::isZeroLengthArray(Expression::r#typeof(e_2.clone())?)?;
                     if boolOr(b1.clone(), b2.clone()) {
                         s = (SCodeDump::equationStr(inEquation.clone(), SCodeDump::defaultOptions.clone())?).clone();
                         Error::addSourceMessage(Error::OVERCONSTRAINED_OPERATOR_SIZE_ZERO.clone(), list![(s.clone()).clone()], info.clone())?;
@@ -956,7 +956,7 @@ fn checkTupleCallEquationMessage(mut left: Arc<Absyn::Exp>, mut right: Arc<Absyn
         (Deref @ Absyn::Exp::TUPLE { expressions: crefs }, Deref @ Absyn::Exp::CALL { .. }) => {
             let mut left_str: ArcStr = arcstr::literal!("");
             let mut right_str: ArcStr = arcstr::literal!("");
-            if !(List::all(crefs.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::isCref, Arc<Absyn::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<bool> + 'static>))) {
+            if !(List::all(crefs.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::isCref, Arc<Absyn::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<bool> + 'static>))?) {
                 left_str = (Dump::printExpStr(left.clone())?).clone();
                 right_str = (Dump::printExpStr(right.clone())?).clone();
                 Error::addSourceMessageAndFail(Error::TUPLE_ASSIGN_CREFS_ONLY.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*left_str.clone()); __mm_s.push_str(&*literal!(" = ")); __mm_s.push_str(&*right_str.clone()); __mm_s.push_str(&*literal!(";")); ArcStr::from(__mm_s) }).clone()], info.clone())?;
@@ -1041,7 +1041,7 @@ fn condenseArrayEquation(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
                     b3 = Types::isPropTupleArray(prop.clone())?;
                     b4 = Types::isPropTupleArray(prop2.clone())?;
                     let true = (boolOr(b3.clone(), b4.clone())) else { bail!("pattern mismatch") };
-                    let true = (Expression::containFunctioncall(elabedE2.clone())) else { bail!("pattern mismatch") };
+                    let true = (Expression::containFunctioncall(elabedE2.clone())?) else { bail!("pattern mismatch") };
                     (e1, prop) = expandTupleEquationWithWild(e1.clone(), prop2.clone(), prop.clone())?;
                     (cache, elabedE1_2, prop1) = Static::elabExpLHS(cache.clone(), env.clone(), e1.clone(), r#impl.clone(), false, pre.clone(), info.clone())?;
                     (cache, elabedE1_2, prop1) = Ceval::cevalIfConstant(cache.clone(), env.clone(), elabedE1_2.clone(), prop1.clone(), r#impl.clone(), info.clone())?;
@@ -1167,7 +1167,7 @@ fn unroll(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc<meta
             (outCache, _, _, dae, outSets, ci_state, outGraph) = unwrap_break_err!(Inst::instList(outCache.clone(), env.clone(), inIH.clone(), inPrefix.clone(), outSets.clone(), ci_state.clone(), (if (SCodeUtil::isInitial(inInitial.clone())) { ((std::sync::Arc::new(instInitialEquation) as std::sync::Arc<dyn ::std::ops::Fn(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Prefix, DAE::Connect::Sets, ClassInf::State, Arc<SCode::Equation>, bool, bool, ConnectionGraph::ConnectionGraph) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::DAElist, DAE::Connect::Sets, ClassInf::State, ConnectionGraph::ConnectionGraph)> + 'static>) as _) } else { ((std::sync::Arc::new(instEquation) as std::sync::Arc<dyn ::std::ops::Fn(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Prefix, DAE::Connect::Sets, ClassInf::State, Arc<SCode::Equation>, bool, bool, ConnectionGraph::ConnectionGraph) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::DAElist, DAE::Connect::Sets, ClassInf::State, ConnectionGraph::ConnectionGraph)> + 'static>) as _) }), inEquations.clone(), inImplicit.clone(), alwaysUnroll.clone(), outGraph.clone()), '__try0);
             daes = metamodelica::cons(dae.clone(), daes.clone());
         }
-        outDae = List::fold(daes.clone(), (std::sync::Arc::new(DAEUtil::joinDaes) as std::sync::Arc<dyn ::std::ops::Fn(DAE::DAElist, DAE::DAElist) -> Result<DAE::DAElist> + 'static>), DAE::emptyDae().clone());
+        outDae = unwrap_break_err!(List::fold(daes.clone(), (std::sync::Arc::new(DAEUtil::joinDaes) as std::sync::Arc<dyn ::std::ops::Fn(DAE::DAElist, DAE::DAElist) -> Result<DAE::DAElist> + 'static>), DAE::emptyDae().clone()), '__try0);
         Ok::<_, anyhow::Error>((outDae.clone(), values.clone()))
     } {
         Ok((__try0_o0, __try0_o1)) => {
@@ -1478,7 +1478,7 @@ fn instEqEquation2(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut inT
                     let mut dae: DAE::DAElist = <DAE::DAElist as ::std::default::Default>::default();
                     let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut exps1 = (*exps1).clone();
-                    exps1 = List::map(exps1.clone(), (std::sync::Arc::new(Expression::emptyToWild) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>));
+                    exps1 = List::map(exps1.clone(), (std::sync::Arc::new(Expression::emptyToWild) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>))?;
                     checkNoDuplicateAssignments(exps1.clone(), ElementSource::getElementSourceFileInfo(source.clone()))?;
                     e1 = Arc::new(DAE::Exp::TUPLE { PR: exps1.clone() });
                     dae = makeDaeEquation(e1.clone(), e2.clone(), source.clone(), initial_.clone())?;
@@ -1561,7 +1561,7 @@ fn instEqEquation2(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>, mut inT
                     let mut tys: Arc<metamodelica::List<Arc<DAE::Type>>> = metamodelica::nil();
                     exps1 = Expression::splitRecord(e1.clone(), inType3.clone())?;
                     exps2 = Expression::splitRecord(e2.clone(), inType3.clone())?;
-                    tys = List::map(vs.clone(), (std::sync::Arc::new(Types::getVarType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<DAE::Type>> + 'static>));
+                    tys = List::map(vs.clone(), (std::sync::Arc::new(Types::getVarType) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Var>) -> Result<Arc<DAE::Type>> + 'static>))?;
                     dae = instEqEquation2List(exps1.clone(), exps2.clone(), tys.clone(), inConst.clone(), source.clone(), initial_.clone(), metamodelica::nil())?;
                     Ok(dae.clone())
                 }
@@ -1659,8 +1659,8 @@ fn instArrayEquation(mut lhs: Arc<DAE::Exp>, mut rhs: Arc<DAE::Exp>, mut tp: Arc
                     let mut ds: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
                     let mut elt: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
                     let mut source = (*source).clone();
-                    b1 = Expression::containVectorFunctioncall(lhs.clone());
-                    b2 = Expression::containVectorFunctioncall(rhs.clone());
+                    b1 = Expression::containVectorFunctioncall(lhs.clone())?;
+                    b2 = Expression::containVectorFunctioncall(rhs.clone())?;
                     let true = (boolOr(b1.clone(), b2.clone())) else { bail!("pattern mismatch") };
                     ds = TypesDump::getDimensions(tp.clone());
                     elt = Arc::new(DAE::Element::INITIAL_ARRAY_EQUATION { dimension: ds.clone(), exp: lhs.clone(), array: rhs.clone(), source: source.clone() });
@@ -1678,8 +1678,8 @@ fn instArrayEquation(mut lhs: Arc<DAE::Exp>, mut rhs: Arc<DAE::Exp>, mut tp: Arc
                     let mut ds: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
                     let mut elt: Arc<DAE::Element> = Arc::new(<DAE::Element as ::std::default::Default>::default());
                     let mut source = (*source).clone();
-                    b1 = Expression::containVectorFunctioncall(lhs.clone());
-                    b2 = Expression::containVectorFunctioncall(rhs.clone());
+                    b1 = Expression::containVectorFunctioncall(lhs.clone())?;
+                    b2 = Expression::containVectorFunctioncall(rhs.clone())?;
                     let true = (boolOr(b1.clone(), b2.clone())) else { bail!("pattern mismatch") };
                     ds = TypesDump::getDimensions(tp.clone());
                     elt = Arc::new(DAE::Element::ARRAY_EQUATION { dimension: ds.clone(), exp: lhs.clone(), array: rhs.clone(), source: source.clone() });
@@ -1935,7 +1935,7 @@ fn instForStatement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH
         arange = __pa4.clone();
         (outCache, range, prop) = Static::elabExp(inCache.clone(), inEnv.clone(), arange.clone(), inImpl.clone(), true, inPrefix.clone(), info.clone())?;
     } else {
-        iter_crefs = SCodeUtil::findIteratorIndexedCrefsInStatements(body.clone(), (iterator.clone()).clone(), metamodelica::nil());
+        iter_crefs = SCodeUtil::findIteratorIndexedCrefsInStatements(body.clone(), (iterator.clone()).clone(), metamodelica::nil())?;
         (range, prop, outCache) = Static::deduceIterationRange((iterator.clone()).clone(), iter_crefs.clone(), inEnv.clone(), inCache.clone(), info.clone())?;
     }
     if containsWhenStatements(body.clone())? {
@@ -2048,7 +2048,7 @@ pub fn instAlgorithm(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inI
                     ci_state = ClassInfUtil::trans(ci_state.clone(), openmodelica_frontend_types::ClassInf::Event::FOUND_ALGORITHM)?;
                     source = ElementSource::createElementSource(Absyn::dummyInfo.clone(), FGraph::getScopePath(env.clone())?, pre.clone(), (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?;
                     (cache, statements_1) = instStatements(cache.clone(), env.clone(), ih.clone(), pre.clone(), ci_state.clone(), statements.clone(), source.clone(), openmodelica_frontend_types::SCode::Initial::NON_INITIAL, r#impl.clone(), unrollForLoops.clone())?;
-                    (statements_1, _) = DAEUtil::traverseDAEEquationsStmts(statements_1.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(ExpressionSimplify::simplifyWork) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ExpressionSimplifyTypes::Evaluate) -> Result<(Arc<DAE::Exp>, ExpressionSimplifyTypes::Evaluate)> + 'static>), ExpressionSimplifyTypes::optionSimplifyOnly.clone()));
+                    (statements_1, _) = DAEUtil::traverseDAEEquationsStmts(statements_1.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(ExpressionSimplify::simplifyWork) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ExpressionSimplifyTypes::Evaluate) -> Result<(Arc<DAE::Exp>, ExpressionSimplifyTypes::Evaluate)> + 'static>), ExpressionSimplifyTypes::optionSimplifyOnly.clone()))?;
                     dae = DAE::DAElist { elementLst: list![Arc::new(DAE::Element::ALGORITHM { algorithm_: Arc::new(DAE::Algorithm { statementLst: statements_1.clone() }), source: source.clone() })] };
                     Ok((cache.clone(), env.clone(), ih.clone(), dae.clone(), csets.clone(), ci_state.clone(), graph.clone()))
                 }
@@ -2106,7 +2106,7 @@ pub fn instInitialAlgorithm(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, 
                     let mut cache = (*cache).clone();
                     source = ElementSource::createElementSource(Absyn::dummyInfo.clone(), FGraph::getScopePath(env.clone())?, pre.clone(), (DAE::emptyCref().clone(), DAE::emptyCref().clone()))?;
                     (cache, statements_1) = instStatements(cache.clone(), env.clone(), ih.clone(), pre.clone(), ci_state.clone(), statements.clone(), source.clone(), openmodelica_frontend_types::SCode::Initial::INITIAL, r#impl.clone(), unrollForLoops.clone())?;
-                    (statements_1, _) = DAEUtil::traverseDAEEquationsStmts(statements_1.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(ExpressionSimplify::simplifyWork) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ExpressionSimplifyTypes::Evaluate) -> Result<(Arc<DAE::Exp>, ExpressionSimplifyTypes::Evaluate)> + 'static>), ExpressionSimplifyTypes::optionSimplifyOnly.clone()));
+                    (statements_1, _) = DAEUtil::traverseDAEEquationsStmts(statements_1.clone(), (std::sync::Arc::new(Expression::traverseSubexpressionsHelper) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, _) -> Result<_> + 'static>), ((std::sync::Arc::new(ExpressionSimplify::simplifyWork) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ExpressionSimplifyTypes::Evaluate) -> Result<(Arc<DAE::Exp>, ExpressionSimplifyTypes::Evaluate)> + 'static>), ExpressionSimplifyTypes::optionSimplifyOnly.clone()))?;
                     dae = DAE::DAElist { elementLst: list![Arc::new(DAE::Element::INITIALALGORITHM { algorithm_: Arc::new(DAE::Algorithm { statementLst: statements_1.clone() }), source: source.clone() })] };
                     Ok((cache.clone(), env.clone(), ih.clone(), dae.clone(), csets.clone(), ci_state.clone(), graph.clone()))
                 }
@@ -2167,7 +2167,7 @@ pub fn instStatements(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut in
         (outCache, stmts) = instStatement(inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), inState.clone(), stmt.clone(), inSource.clone(), inInitial.clone(), inImpl.clone(), unrollForLoops.clone())?;
         stmtsl = metamodelica::cons(stmts.clone(), stmtsl.clone());
     }
-    outStatements = List::flattenReverse(stmtsl.clone());
+    outStatements = List::flattenReverse(stmtsl.clone())?;
     Ok((outCache, outStatements))
 }
 
@@ -2426,8 +2426,8 @@ fn containsWhenStatements(mut statementList: Arc<metamodelica::List<Arc<SCode::S
                     let mut slst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SCode::Statement>>>>> = metamodelica::nil();
                     b1 = containsWhenStatements(tb.clone())?;
                     b2 = containsWhenStatements(eb.clone())?;
-                    slst = List::map(eib.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)));
-                    blst = List::map(slst.clone(), (std::sync::Arc::new(containsWhenStatements) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<SCode::Statement>>>) -> Result<bool> + 'static>));
+                    slst = List::map(eib.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)))?;
+                    blst = List::map(slst.clone(), (std::sync::Arc::new(containsWhenStatements) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<SCode::Statement>>>) -> Result<bool> + 'static>))?;
                     b3 = List::reduce(metamodelica::cons(false, blst.clone()), (std::sync::Arc::new(fnptr!(boolOr, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>))?;
                     b4 = containsWhenStatements(rest.clone())?;
                     b = List::reduce(list![b1.clone(), b2.clone(), b3.clone(), b4.clone()], (std::sync::Arc::new(fnptr!(boolOr, bool, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool, bool) -> Result<bool> + 'static>))?;
@@ -2561,7 +2561,7 @@ fn instIfEqBranch(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: 
     let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
     let mut outState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
     let mut outEquations: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-    checkForConnectInIfBranch(inEquations.clone());
+    checkForConnectInIfBranch(inEquations.clone())?;
     let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(Inst::instList(inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), Connect::emptySet().clone(), inState.clone(), (std::sync::Arc::new(instEquation) as std::sync::Arc<dyn ::std::ops::Fn(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Prefix, DAE::Connect::Sets, ClassInf::State, Arc<SCode::Equation>, bool, bool, ConnectionGraph::ConnectionGraph) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::DAElist, DAE::Connect::Sets, ClassInf::State, ConnectionGraph::ConnectionGraph)> + 'static>), inEquations.clone(), inImpl.clone(), alwaysUnroll.clone(), ConnectionGraph::EMPTY().clone())?) {
         (__pa0, __pa1, __pa2, DAE::DAElist { elementLst: __pa3 }, _, __pa4, _) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
         _ => bail!("pattern mismatch"),
@@ -2606,7 +2606,7 @@ fn instInitialIfEqBranch(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
     let mut outIH: Arc<metamodelica::List<InnerOuter::TopInstance>> = metamodelica::nil();
     let mut outState: ClassInf::State = <ClassInf::State as ::std::default::Default>::default();
     let mut outEquations: Arc<metamodelica::List<Arc<DAE::Element>>> = metamodelica::nil();
-    checkForConnectInIfBranch(inEquations.clone());
+    checkForConnectInIfBranch(inEquations.clone())?;
     let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(Inst::instList(inCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), Connect::emptySet().clone(), inState.clone(), (std::sync::Arc::new(instInitialEquation) as std::sync::Arc<dyn ::std::ops::Fn(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Prefix, DAE::Connect::Sets, ClassInf::State, Arc<SCode::Equation>, bool, bool, ConnectionGraph::ConnectionGraph) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::DAElist, DAE::Connect::Sets, ClassInf::State, ConnectionGraph::ConnectionGraph)> + 'static>), inEquations.clone(), inImpl.clone(), alwaysUnroll.clone(), ConnectionGraph::EMPTY().clone())?) {
         (__pa0, __pa1, __pa2, DAE::DAElist { elementLst: __pa3 }, _, __pa4, _) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
         _ => bail!("pattern mismatch"),
@@ -2645,9 +2645,9 @@ fn instInitialIfEqBranches(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, m
     Ok((outCache, outEnv, outIH, outState, outEquations))
 }
 
-fn checkForConnectInIfBranch(mut inEquations: Arc<metamodelica::List<Arc<SCode::Equation>>>) -> () {
-    List::map_0(inEquations.clone(), (std::sync::Arc::new(checkForConnectInIfBranch2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>) -> Result<()> + 'static>));
-    ()
+fn checkForConnectInIfBranch(mut inEquations: Arc<metamodelica::List<Arc<SCode::Equation>>>) -> Result<()> {
+    List::map_0(inEquations.clone(), (std::sync::Arc::new(checkForConnectInIfBranch2) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>) -> Result<()> + 'static>))?;
+    Ok(())
 }
 
 fn checkForConnectInIfBranch2(mut inEquation: Arc<SCode::Equation>) -> Result<()> {
@@ -2661,7 +2661,7 @@ fn checkForConnectInIfBranch2(mut inEquation: Arc<SCode::Equation>) -> Result<()
             bail!("fail")
         },
         Deref @ SCode::Equation::EQ_FOR { eEquationLst: eqs, .. } => {
-            checkForConnectInIfBranch(eqs.clone());
+            checkForConnectInIfBranch(eqs.clone())?;
             ()
         },
         _ => {
@@ -2761,7 +2761,7 @@ fn instWhenEqBranch(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     if !(isClock.clone()) {
-        List::map_0(body.clone(), (std::sync::Arc::new(checkForNestedWhenInEq) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>) -> Result<()> + 'static>));
+        List::map_0(body.clone(), (std::sync::Arc::new(checkForNestedWhenInEq) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>) -> Result<()> + 'static>))?;
     }
     let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(Inst::instList(outCache.clone(), inEnv.clone(), inIH.clone(), inPrefix.clone(), inSets.clone(), inState.clone(), (std::sync::Arc::new(instEquation) as std::sync::Arc<dyn ::std::ops::Fn(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::Prefix, DAE::Connect::Sets, ClassInf::State, Arc<SCode::Equation>, bool, bool, ConnectionGraph::ConnectionGraph) -> Result<(FCore::Cache, FCore::Graph, Arc<metamodelica::List<InnerOuter::TopInstance>>, DAE::DAElist, DAE::Connect::Sets, ClassInf::State, ConnectionGraph::ConnectionGraph)> + 'static>), body.clone(), inImpl.clone(), alwaysUnroll.clone(), inGraph.clone())?) {
         (__pa0, __pa1, __pa2, DAE::DAElist { elementLst: __pa3 }, _, _, __pa4) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone()),
@@ -2826,7 +2826,7 @@ fn instConnect(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH: Arc
                 (cache, env, ih, sets, _, c1, c2, _, graph) => {
                     let mut s1: ArcStr = arcstr::literal!("");
                     let mut s2: ArcStr = arcstr::literal!("");
-                    let true = (AbsynUtil::crefEqual(c1.clone(), c2.clone())) else { bail!("pattern mismatch") };
+                    let true = (AbsynUtil::crefEqual(c1.clone(), c2.clone())?) else { bail!("pattern mismatch") };
                     s1 = (Dump::printComponentRefStr(c1.clone())?).clone();
                     s2 = (Dump::printComponentRefStr(c1.clone())?).clone();
                     Error::addSourceMessage(Error::SAME_CONNECT_INSTANCE.clone(), list![(s1.clone()).clone(), (s2.clone()).clone()], info.clone())?;
@@ -3262,7 +3262,7 @@ fn connectExpandableConnectors(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
                     componentName = (AbsynUtil::crefGetLastIdent(c1.clone())?).clone();
                     envComponentEmpty = FGraph::removeComponentsFromScope(envComponent.clone())?;
                     daeDims = TypesDump::getDimensions(ty2.clone());
-                    arrDims = List::map(daeDims.clone(), (std::sync::Arc::new(Expression::unelabDimension) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>) -> Result<Arc<Absyn::Subscript>> + 'static>));
+                    arrDims = List::map(daeDims.clone(), (std::sync::Arc::new(Expression::unelabDimension) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>) -> Result<Arc<Absyn::Subscript>> + 'static>))?;
                     envExpandable = FGraph::cloneLastScopeRef(envExpandable.clone())?;
                     envExpandable = FGraph::mkComponentNode(envExpandable.clone(), Arc::new(DAE::Var { name: (componentName.clone()).clone(), attributes: Arc::new(DAE::Attributes { connectorType: ct2.clone(), parallelism: prl2.clone(), variability: vt2.clone(), direction: openmodelica_ast::Absyn::Direction::BIDIR, innerOuter: io2.clone(), visibility: vis2.clone() }), ty: ty2.clone(), binding: Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(SCode::Element::COMPONENT { name: (componentName.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::Attributes { arrayDims: arrDims.clone(), connectorType: openmodelica_frontend_types::SCode::ConnectorType::POTENTIAL, parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: openmodelica_frontend_types::SCode::Variability::VAR, direction: openmodelica_ast::Absyn::Direction::BIDIR, isField: openmodelica_ast::Absyn::IsField::NONFIELD }, typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), arrayDim: None }), modifications: Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() }), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), crate::FCore::Status::VAR_TYPED, envComponentEmpty.clone())?;
                     env = updateEnvComponentsOnQualPath(cache.clone(), env.clone(), c1_2.clone(), attr.clone(), ty.clone(), binding.clone(), cnstForRange.clone(), envExpandable.clone())?;
@@ -3357,7 +3357,7 @@ fn connectExpandableConnectors(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
                     componentName = (AbsynUtil::crefGetLastIdent(c1.clone())?).clone();
                     envComponentEmpty = FGraph::removeComponentsFromScope(envComponent.clone())?;
                     daeDims = TypesDump::getDimensions(ty2.clone());
-                    arrDims = List::map(daeDims.clone(), (std::sync::Arc::new(Expression::unelabDimension) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>) -> Result<Arc<Absyn::Subscript>> + 'static>));
+                    arrDims = List::map(daeDims.clone(), (std::sync::Arc::new(Expression::unelabDimension) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>) -> Result<Arc<Absyn::Subscript>> + 'static>))?;
                     envExpandable = FGraph::mkComponentNode(envExpandable.clone(), Arc::new(DAE::Var { name: (componentName.clone()).clone(), attributes: Arc::new(DAE::Attributes { connectorType: ct2.clone(), parallelism: prl2.clone(), variability: vt2.clone(), direction: openmodelica_ast::Absyn::Direction::BIDIR, innerOuter: io2.clone(), visibility: vis2.clone() }), ty: ty2.clone(), binding: Arc::new(openmodelica_frontend_types::DAE::Binding::UNBOUND), bind_from_outside: false, constOfForIteratorRange: None }), Arc::new(SCode::Element::COMPONENT { name: (componentName.clone()).clone(), prefixes: SCode::defaultPrefixes.clone(), attributes: SCode::Attributes { arrayDims: arrDims.clone(), connectorType: openmodelica_frontend_types::SCode::ConnectorType::POTENTIAL, parallelism: openmodelica_frontend_types::SCode::Parallelism::NON_PARALLEL, variability: openmodelica_frontend_types::SCode::Variability::VAR, direction: openmodelica_ast::Absyn::Direction::BIDIR, isField: openmodelica_ast::Absyn::IsField::NONFIELD }, typeSpec: Arc::new(Absyn::TypeSpec::TPATH { path: Arc::new(Absyn::Path::IDENT { name: (literal!("")).clone() }), arrayDim: None }), modifications: Arc::new(openmodelica_frontend_types::SCode::Mod::NOMOD), comment: SCode::noComment.clone(), condition: None, info: Absyn::dummyInfo.clone() }), Arc::new(openmodelica_frontend_types::DAE::Mod::NOMOD), crate::FCore::Status::VAR_TYPED, envComponentEmpty.clone())?;
                     env = updateEnvComponentsOnQualPath(cache.clone(), env.clone(), c1_2.clone(), attr.clone(), ty.clone(), binding.clone(), cnstForRange.clone(), envExpandable.clone())?;
                     let (__pa11, __pa12) = ::match_deref::match_deref! { match &(Static::elabCref(cache.clone(), env.clone(), c1.clone(), r#impl.clone(), false, pre.clone(), info.clone())?) {
@@ -3384,7 +3384,7 @@ fn connectExpandableConnectors(mut inCache: FCore::Cache, mut inEnv: FCore::Grap
                     source = ElementSource::createElementSource(info.clone(), FGraph::getScopePath(env.clone())?, pre.clone(), (c1p.clone(), c2p.clone()))?;
                     (cache, c1_2) = PrefixUtil::prefixCref(cache.clone(), env.clone(), ih.clone(), pre.clone(), c1_2.clone())?;
                     daeDims = TypesDump::getDimensions(ty1.clone());
-                    arrDims = List::map(daeDims.clone(), (std::sync::Arc::new(Expression::unelabDimension) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>) -> Result<Arc<Absyn::Subscript>> + 'static>));
+                    arrDims = List::map(daeDims.clone(), (std::sync::Arc::new(Expression::unelabDimension) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>) -> Result<Arc<Absyn::Subscript>> + 'static>))?;
                     daeExpandable = generateExpandableDAE(cache.clone(), env.clone(), envExpandable.clone(), c1_2.clone(), state.clone(), ty1.clone(), SCode::Attributes { arrayDims: arrDims.clone(), connectorType: DAEUtil::toSCodeConnectorType(ct1.clone())?, parallelism: prl1.clone(), variability: vt1.clone(), direction: openmodelica_ast::Absyn::Direction::BIDIR, isField: openmodelica_ast::Absyn::IsField::NONFIELD }, vis1.clone(), io1.clone(), source.clone())?;
                     dae = DAEUtil::joinDaes(dae.clone(), daeExpandable.clone())?;
                     Ok((cache.clone(), env.clone(), ih.clone(), sets.clone(), dae.clone(), graph.clone()))
@@ -3775,12 +3775,12 @@ fn checkConnectTypesType(mut inLhsType: Arc<DAE::Type>, mut inRhsType: Arc<DAE::
             let mut dims2: Arc<metamodelica::List<Arc<DAE::Dimension>>> = metamodelica::nil();
             dims1 = TypesDump::getDimensions(inLhsType.clone());
             dims2 = TypesDump::getDimensions(inRhsType.clone());
-            let false = (List::isEqualOnTrue(dims1.clone(), dims2.clone(), (std::sync::Arc::new(Expression::dimensionsEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>, Arc<DAE::Dimension>) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
+            let false = (List::isEqualOnTrue(dims1.clone(), dims2.clone(), (std::sync::Arc::new(Expression::dimensionsEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>, Arc<DAE::Dimension>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
             let false = (dims1.clone().is_empty() && dims2.clone().is_empty()) else { bail!("pattern mismatch") };
             cref_str1 = (ComponentReferenceBasics::printComponentRefStr(inLhsCref.clone())?).clone();
             cref_str2 = (ComponentReferenceBasics::printComponentRefStr(inRhsCref.clone())?).clone();
-            str1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*ExpressionBasics::dimensionsString(dims1.clone())); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
-            str2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*ExpressionBasics::dimensionsString(dims2.clone())); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
+            str1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*ExpressionBasics::dimensionsString(dims1.clone())?); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
+            str2 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*ExpressionBasics::dimensionsString(dims2.clone())?); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone();
             Error::addSourceMessage(Error::CONNECTOR_ARRAY_DIFFERENT.clone(), list![(cref_str1.clone()).clone(), (cref_str2.clone()).clone(), (str1.clone()).clone(), (str2.clone()).clone()], inInfo.clone())?;
             Ok(bail!("fail"))
         })() { break 'mc __v; }
@@ -3898,7 +3898,7 @@ pub fn connectComponents(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
                     cache = __pa2.clone();
                     c2_1 = __pa3.clone();
                     source = ElementSource::createElementSource(info.clone(), FGraph::getScopePath(env.clone())?, pre.clone(), (c1_1.clone(), c2_1.clone()))?;
-                    sets = ConnectUtil::addOuterConnection(pre.clone(), sets.clone(), c1_1.clone(), c2_1.clone(), io1.clone(), io2.clone(), f1.clone(), f2.clone(), source.clone());
+                    sets = ConnectUtil::addOuterConnection(pre.clone(), sets.clone(), c1_1.clone(), c2_1.clone(), io1.clone(), io2.clone(), f1.clone(), f2.clone(), source.clone())?;
                     Ok((cache.clone(), env.clone(), ih.clone(), sets.clone(), DAE::emptyDae().clone(), graph.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -3932,7 +3932,7 @@ pub fn connectComponents(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
                     (cache, crefExp2, _) = Ceval::cevalIfConstant(cache.clone(), env.clone(), crefExp2.clone(), DAE::Properties::PROP { type_: t2.clone(), constFlag: const2.clone() }, true, info.clone())?;
                     lhsl = Expression::arrayElements(crefExp1.clone())?;
                     rhsl = Expression::arrayElements(crefExp2.clone())?;
-                    elts = List::threadMap1(lhsl.clone(), rhsl.clone(), (std::sync::Arc::new(generateConnectAssert) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>, Arc<DAE::ElementSource>) -> Result<Arc<DAE::Element>> + 'static>), source.clone());
+                    elts = List::threadMap1(lhsl.clone(), rhsl.clone(), (std::sync::Arc::new(generateConnectAssert) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>, Arc<DAE::ElementSource>) -> Result<Arc<DAE::Element>> + 'static>), source.clone())?;
                     Ok((cache.clone(), env.clone(), ih.clone(), sets.clone(), DAE::DAElist { elementLst: elts.clone() }, graph.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -4025,7 +4025,7 @@ pub fn connectComponents(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
                     let mut cache = (*cache).clone();
                     dims = TypesDump::getDimensions(t1.clone());
                     dims2 = TypesDump::getDimensions(t2.clone());
-                    let true = (List::isEqualOnTrue(dims.clone(), dims2.clone(), (std::sync::Arc::new(Expression::dimensionsKnownAndEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>, Arc<DAE::Dimension>) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
+                    let true = (List::isEqualOnTrue(dims.clone(), dims2.clone(), (std::sync::Arc::new(Expression::dimensionsKnownAndEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Dimension>, Arc<DAE::Dimension>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
                     (cache, c1p) = PrefixUtil::prefixCref(cache.clone(), env.clone(), ih.clone(), pre.clone(), c1.clone())?;
                     (cache, c2p) = PrefixUtil::prefixCref(cache.clone(), env.clone(), ih.clone(), pre.clone(), c2.clone())?;
                     source = ElementSource::createElementSource(info.clone(), FGraph::getScopePath(env.clone())?, pre.clone(), (c1p.clone(), c2p.clone()))?;
@@ -4322,7 +4322,7 @@ fn expandArrayDimension(mut inDim: Arc<DAE::Dimension>, mut inArray: Arc<DAE::Ex
                     let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     let mut ints: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     ints = List::intRange(sz.clone());
-                    expl = List::map1(ints.clone(), (std::sync::Arc::new(makeAsubIndex) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>), inArray.clone());
+                    expl = List::map1(ints.clone(), (std::sync::Arc::new(makeAsubIndex) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>), inArray.clone())?;
                     Ok(expl.clone())
                 }
                 _ => bail!("nomatch"),
@@ -4355,7 +4355,7 @@ fn expandArrayDimension(mut inDim: Arc<DAE::Dimension>, mut inArray: Arc<DAE::Ex
                     let mut ints: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let true = (Flags::getConfigBool(Flags::CHECK_MODEL.clone())?) else { bail!("pattern mismatch") };
                     ints = List::intRange(1);
-                    expl = List::map1(ints.clone(), (std::sync::Arc::new(makeAsubIndex) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>), inArray.clone());
+                    expl = List::map1(ints.clone(), (std::sync::Arc::new(makeAsubIndex) as std::sync::Arc<dyn ::std::ops::Fn(i32, Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>), inArray.clone())?;
                     Ok(expl.clone())
                 }
                 _ => bail!("nomatch"),
@@ -4429,7 +4429,7 @@ fn checkForReinitInWhenInitialAlg(mut inWhenAlgorithm: Arc<SCode::Statement>) ->
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Statement::ALG_WHEN_A { info, branches: Deref @ metamodelica::List::Cons { head: (exp, algs), tail: _ }, .. } => {
                     let true = (AbsynUtil::expContainsInitial(exp.clone())?) else { bail!("pattern mismatch") };
-                    let true = (SCodeUtil::algorithmsContainReinit(algs.clone())) else { bail!("pattern mismatch") };
+                    let true = (SCodeUtil::algorithmsContainReinit(algs.clone())?) else { bail!("pattern mismatch") };
                     Error::addSourceMessage(Error::REINIT_IN_WHEN_INITIAL.clone(), metamodelica::nil(), info.clone())?;
                     Ok(false)
                 }
@@ -4484,7 +4484,7 @@ fn checkForReinitInWhenInitialEq(mut inWhenEq: Arc<SCode::Equation>) -> Result<b
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ SCode::Equation::EQ_WHEN { info, eEquationLst: el, condition: exp, .. } => {
                     let true = (AbsynUtil::expContainsInitial(exp.clone())?) else { bail!("pattern mismatch") };
-                    let true = (SCodeUtil::equationsContainReinit(el.clone())) else { bail!("pattern mismatch") };
+                    let true = (SCodeUtil::equationsContainReinit(el.clone())?) else { bail!("pattern mismatch") };
                     Error::addSourceMessage(Error::REINIT_IN_WHEN_INITIAL.clone(), metamodelica::nil(), info.clone())?;
                     Ok(false)
                 }
@@ -4508,9 +4508,9 @@ fn checkForNestedWhenInEquation(mut inWhenEq: Arc<SCode::Equation>) -> Result<()
     let () = (::match_deref::match_deref! { match &(inWhenEq.clone()) {
         Deref @ SCode::Equation::EQ_WHEN { elseBranches: tpl_el, eEquationLst: eqs, .. } => {
             let mut eqs_lst: Arc<metamodelica::List<Arc<metamodelica::List<Arc<SCode::Equation>>>>> = metamodelica::nil();
-            checkForNestedWhenInEqList(eqs.clone());
-            eqs_lst = List::map(tpl_el.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)));
-            List::map_0(eqs_lst.clone(), (std::sync::Arc::new(fnptr!(checkForNestedWhenInEqList, Arc<metamodelica::List<Arc<SCode::Equation>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<SCode::Equation>>>) -> Result<()> + 'static>));
+            checkForNestedWhenInEqList(eqs.clone())?;
+            eqs_lst = List::map(tpl_el.clone(), std::sync::Arc::new(fnptr!(Util::tuple22, _)))?;
+            List::map_0(eqs_lst.clone(), (std::sync::Arc::new(checkForNestedWhenInEqList) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<SCode::Equation>>>) -> Result<()> + 'static>))?;
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -4518,9 +4518,9 @@ fn checkForNestedWhenInEquation(mut inWhenEq: Arc<SCode::Equation>) -> Result<()
     Ok(())
 }
 
-fn checkForNestedWhenInEqList(mut inEqs: Arc<metamodelica::List<Arc<SCode::Equation>>>) -> () {
-    List::map_0(inEqs.clone(), (std::sync::Arc::new(checkForNestedWhenInEq) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>) -> Result<()> + 'static>));
-    ()
+fn checkForNestedWhenInEqList(mut inEqs: Arc<metamodelica::List<Arc<SCode::Equation>>>) -> Result<()> {
+    List::map_0(inEqs.clone(), (std::sync::Arc::new(checkForNestedWhenInEq) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::Equation>) -> Result<()> + 'static>))?;
+    Ok(())
 }
 
 fn checkForNestedWhenInEq(mut inEq: Arc<SCode::Equation>) -> Result<()> {
@@ -4530,12 +4530,12 @@ fn checkForNestedWhenInEq(mut inEq: Arc<SCode::Equation>) -> Result<()> {
             bail!("fail")
         },
         Deref @ SCode::Equation::EQ_IF { elseBranch: eqs, thenBranch: eqs_lst, .. } => {
-            List::map_0(eqs_lst.clone(), (std::sync::Arc::new(fnptr!(checkForNestedWhenInEqList, Arc<metamodelica::List<Arc<SCode::Equation>>>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<SCode::Equation>>>) -> Result<()> + 'static>));
-            checkForNestedWhenInEqList(eqs.clone());
+            List::map_0(eqs_lst.clone(), (std::sync::Arc::new(checkForNestedWhenInEqList) as std::sync::Arc<dyn ::std::ops::Fn(Arc<metamodelica::List<Arc<SCode::Equation>>>) -> Result<()> + 'static>))?;
+            checkForNestedWhenInEqList(eqs.clone())?;
             ()
         },
         Deref @ SCode::Equation::EQ_FOR { eEquationLst: eqs, .. } => {
-            checkForNestedWhenInEqList(eqs.clone());
+            checkForNestedWhenInEqList(eqs.clone())?;
             ()
         },
         Deref @ SCode::Equation::EQ_EQUALS { .. } => {
@@ -4793,7 +4793,7 @@ fn instAssignment2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
                     let mut cache = (*cache).clone();
                     let mut e_1 = (*e_1).clone();
                     let mut eprop = (*eprop).clone();
-                    let true = (List::all(expl.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::isCref, Arc<Absyn::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
+                    let true = (List::all(expl.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::isCref, Arc<Absyn::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
                     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(Ceval::cevalIfConstant(cache.clone(), inEnv.clone(), e_1.clone(), eprop.clone(), inImpl.clone(), info.clone())?) {
                         (__pa0, __pa1 @ Deref @ DAE::Exp::CALL { .. }, __pa2) => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
                         _ => bail!("pattern mismatch"),
@@ -4827,7 +4827,7 @@ fn instAssignment2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
                     let mut e_1 = (*e_1).clone();
                     let mut eprop = (*eprop).clone();
                     let true = (Config::acceptMetaModelicaGrammar()?) else { bail!("pattern mismatch") };
-                    let true = (List::all(expl.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::isCref, Arc<Absyn::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
+                    let true = (List::all(expl.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::isCref, Arc<Absyn::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
                     let true = (Types::isTuple(Types::getPropType(eprop.clone())?)) else { bail!("pattern mismatch") };
                     let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(Ceval::cevalIfConstant(cache.clone(), inEnv.clone(), e_1.clone(), eprop.clone(), inImpl.clone(), info.clone())?) {
                         (__pa0, __pa1 @ Deref @ DAE::Exp::MATCHEXPRESSION { .. }, __pa2) => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
@@ -4905,7 +4905,7 @@ fn instAssignment2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
             ::match_deref::match_deref! { match &__mc_input {
                 (_, e @ Deref @ Absyn::Exp::TUPLE { expressions: expl }, _, _) => {
                     let mut s: ArcStr = arcstr::literal!("");
-                    let false = (List::all(expl.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::isCref, Arc<Absyn::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
+                    let false = (List::all(expl.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::isCref, Arc<Absyn::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
                     s = (Dump::printExpStr(e.clone())?).clone();
                     Error::addSourceMessage(Error::TUPLE_ASSIGN_CREFS_ONLY.clone(), list![(s.clone()).clone()], info.clone())?;
                     Ok(bail!("fail"))
@@ -4929,7 +4929,7 @@ fn instAssignment2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
                         Deref @ Absyn::Exp::CALL { .. } => (),
                         _ => bail!("pattern mismatch"),
                     } };
-                    let true = (List::all(expl.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::isCref, Arc<Absyn::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
+                    let true = (List::all(expl.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::isCref, Arc<Absyn::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
                     (cache, e_1, prop1) = Static::elabExpLHS(cache.clone(), inEnv.clone(), e1.clone(), inImpl.clone(), false, inPre.clone(), info.clone())?;
                     lt = Types::getPropType(prop1.clone())?;
                     rt = Types::getPropType(prop2.clone())?;
@@ -4949,7 +4949,7 @@ fn instAssignment2(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ Absyn::Exp::TUPLE { expressions: expl }, e_1, _) => {
                     let mut s: ArcStr = arcstr::literal!("");
-                    let true = (List::all(expl.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::isCref, Arc<Absyn::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<bool> + 'static>))) else { bail!("pattern mismatch") };
+                    let true = (List::all(expl.clone(), (std::sync::Arc::new(fnptr!(AbsynUtil::isCref, Arc<Absyn::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Absyn::Exp>) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
                     if '__try0: {
                         ::match_deref::match_deref! { match &(inRhsNoComment.clone()) {
                             Deref @ Absyn::Exp::CALL { .. } => (),
@@ -5066,7 +5066,7 @@ fn instParForStatement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
         arange = __pa4.clone();
         (outCache, range, prop) = Static::elabExp(inCache.clone(), inEnv.clone(), arange.clone(), inImpl.clone(), true, inPrefix.clone(), info.clone())?;
     } else {
-        iter_crefs = SCodeUtil::findIteratorIndexedCrefsInStatements(body.clone(), (iterator.clone()).clone(), metamodelica::nil());
+        iter_crefs = SCodeUtil::findIteratorIndexedCrefsInStatements(body.clone(), (iterator.clone()).clone(), metamodelica::nil())?;
         (range, prop, outCache) = Static::deduceIterationRange((iterator.clone()).clone(), iter_crefs.clone(), inEnv.clone(), inCache.clone(), info.clone())?;
     }
     if containsWhenStatements(body.clone())? {
@@ -5110,7 +5110,7 @@ fn instParForStatement_dispatch(mut inCache: FCore::Cache, mut inEnv: FCore::Gra
     loop_prl_vars = collectParallelVariables(metamodelica::nil(), outStatements.clone())?;
     parfor_iter = Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (inIterator.clone()).clone(), identType: ty.clone(), subscriptLst: metamodelica::nil() });
     (loop_prl_vars, _) = List::deleteMemberOnTrue(parfor_iter.clone(), loop_prl_vars.clone(), (std::sync::Arc::new(fnptr!(crefInfoListCrefsEqual, Arc<DAE::ComponentRef>, (Arc<DAE::ComponentRef>, SourceInfo))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, (Arc<DAE::ComponentRef>, SourceInfo)) -> Result<bool> + 'static>))?;
-    List::map2_0(loop_prl_vars.clone(), (std::sync::Arc::new(isCrefParGlobalOrForIterator) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, SourceInfo), FCore::Cache, FCore::Graph) -> Result<()> + 'static>), outCache.clone(), env.clone());
+    List::map2_0(loop_prl_vars.clone(), (std::sync::Arc::new(isCrefParGlobalOrForIterator) as std::sync::Arc<dyn ::std::ops::Fn((Arc<DAE::ComponentRef>, SourceInfo), FCore::Cache, FCore::Graph) -> Result<()> + 'static>), outCache.clone(), env.clone())?;
     source = ElementSource::addElementSourceFileInfo(inSource.clone(), inInfo.clone());
     outStatements = list![Algorithm::makeParFor((inIterator.clone()).clone(), range.clone(), inRangeProps.clone(), outStatements.clone(), loop_prl_vars.clone(), source.clone())?];
     Ok((outCache, outStatements))
@@ -5260,7 +5260,7 @@ fn collectParallelVariablesinExps(mut inCrefInfos: Arc<metamodelica::List<(Arc<D
                     let mut subscriptLst: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
                     let mut alreadyInList: bool = false;
                     let mut crefInfoList = (*crefInfoList).clone();
-                    alreadyInList = List::isMemberOnTrue(foundCref.clone(), crefInfoList.clone(), (std::sync::Arc::new(fnptr!(crefInfoListCrefsEqual, Arc<DAE::ComponentRef>, (Arc<DAE::ComponentRef>, SourceInfo))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, (Arc<DAE::ComponentRef>, SourceInfo)) -> Result<bool> + 'static>));
+                    alreadyInList = List::isMemberOnTrue(foundCref.clone(), crefInfoList.clone(), (std::sync::Arc::new(fnptr!(crefInfoListCrefsEqual, Arc<DAE::ComponentRef>, (Arc<DAE::ComponentRef>, SourceInfo))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, (Arc<DAE::ComponentRef>, SourceInfo)) -> Result<bool> + 'static>))?;
                     crefInfoList = if (alreadyInList.clone()) {crefInfoList.clone()} else {metamodelica::cons((foundCref.clone(), inInfo.clone()), crefInfoList.clone())};
                     let __pa0 = ::match_deref::match_deref! { match &(foundCref.clone()) {
                         Deref @ DAE::ComponentRef::CREF_IDENT { ident: _, identType: _, subscriptLst: __pa0 } => __pa0.clone(),
