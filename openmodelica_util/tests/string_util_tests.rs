@@ -92,12 +92,13 @@ fn test_quote_word() {
 // ── rest ─────────────────────────────────────────────────────────────────────
 
 #[test]
-fn test_rest_single_char() {
-    // rest("a") = substring("a", 2, stringLength("a")) = substring("a", 2, 1).
-    // start(2) > stop(1), so substring bails — and rest, being fallible,
-    // propagates that error.
-    let result = S::rest(literal!("a"));
-    assert!(result.is_err(), "rest on single char must error (start > stop in substring)");
+fn test_rest_single_char() -> Result<()> {
+    // StringUtil.mo guards the single-char case explicitly:
+    //   rest := if stringLength(str) == 1 then "" else substring(str, 2, stringLength(str));
+    // so rest("a") returns "" rather than erroring on the would-be
+    // out-of-range substring(str, 2, 1).
+    assert_eq!(S::rest(literal!("a"))?, literal!(""));
+    Ok(())
 }
 
 #[test]

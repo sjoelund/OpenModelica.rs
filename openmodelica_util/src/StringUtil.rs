@@ -334,7 +334,8 @@ pub fn stripFileExtension(mut filename: ArcStr) -> Result<ArcStr> {
 }
 
 pub fn rest(mut r#str: ArcStr) -> Result<ArcStr> {
-    let mut rest: ArcStr = substring((r#str.clone()).clone(), 2, ((r#str.clone()).clone().len() as i32))?;
+    let mut rest: ArcStr = arcstr::literal!("");
+    rest = (if (((r#str.clone()).clone().len() as i32) == 1) {literal!("")} else {substring((r#str.clone()).clone(), 2, ((r#str.clone()).clone().len() as i32))?}).clone();
     Ok(rest)
 }
 
