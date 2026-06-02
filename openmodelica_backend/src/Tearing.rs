@@ -44,7 +44,6 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::AdjacencyMatrix;
-use crate::BackendDAEEXT;
 use crate::BackendDAEOptimize;
 use crate::BackendDAEUtil;
 use crate::BackendDump;
@@ -55,6 +54,7 @@ use crate::ExpressionSolve;
 use crate::Matching;
 use crate::Sorting;
 use openmodelica_backend_types::BackendDAE;
+use openmodelica_backend_util::BackendDAEEXT;
 use openmodelica_frontend::Expression;
 use openmodelica_frontend::ExpressionSimplify;
 use openmodelica_frontend_dump::AvlTreePathFunction;

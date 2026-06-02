@@ -5,7 +5,6 @@ pub mod AdjacencyMatrix;
 pub mod AvlSetInt;
 pub mod AvlTree;
 pub mod BackendDAECreate;
-pub mod BackendDAEEXT;
 pub mod BackendDAEFunc;
 pub mod BackendDAEOptimize;
 pub mod BackendDAETransform;

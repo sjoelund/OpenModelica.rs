@@ -43,7 +43,6 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAEEXT;
 use crate::BackendDAEFunc;
 use crate::BackendDAEUtil;
 use crate::BackendDump;
@@ -54,6 +53,7 @@ use crate::DumpGraphML;
 use crate::IndexReduction;
 use crate::Sorting;
 use openmodelica_backend_types::BackendDAE;
+use openmodelica_backend_util::BackendDAEEXT;
 use openmodelica_frontend::Expression;
 use openmodelica_frontend::Inline;
 use openmodelica_frontend_dump::AvlTreePathFunction;

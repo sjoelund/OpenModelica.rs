@@ -43,7 +43,6 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAEEXT;
 use crate::BackendDAETransform;
 use crate::BackendDAEUtil;
 use crate::BackendDump;
@@ -58,6 +57,7 @@ use crate::IndexReduction;
 use crate::Matching;
 use crate::Tearing;
 use openmodelica_backend_types::BackendDAE;
+use openmodelica_backend_util::BackendDAEEXT;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::Expression;
 use openmodelica_frontend::ExpressionDump;

@@ -45,7 +45,6 @@ use arcstr::{ArcStr, literal, format};
 
 use crate::AdjacencyMatrix;
 use crate::AvlSetInt;
-use crate::BackendDAEEXT;
 use crate::BackendDAEFunc;
 use crate::BackendDAEOptimize;
 use crate::BackendDAETransform;
@@ -84,6 +83,7 @@ use openmodelica_ast::Absyn;
 use openmodelica_ast_collections::AvlSetPath;
 use openmodelica_backend_types::BackendDAE;
 use openmodelica_backend_types::ZeroCrossings;
+use openmodelica_backend_util::BackendDAEEXT;
 use openmodelica_frontend::Algorithm;
 use openmodelica_frontend::CheckModel;
 use openmodelica_frontend::ComponentReference;

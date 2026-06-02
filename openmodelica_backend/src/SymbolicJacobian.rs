@@ -55,6 +55,7 @@ use crate::DynamicOptimization;
 use crate::IndexReduction;
 use openmodelica_ast::Absyn;
 use openmodelica_backend_types::BackendDAE;
+use openmodelica_backend_util::Coloring;
 use openmodelica_frontend::Ceval;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::DAEUtil;
@@ -1376,7 +1377,7 @@ pub fn generateSparsePattern(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut 
         __acc.reverse()
     });
                     } else {
-                        coloredArray = createColoring(sparseArray.clone(), sparseArrayT.clone(), sizeN.clone(), sizeM.clone())?;
+                        coloredArray = Coloring::createColoring(sparseArray.clone(), sparseArrayT.clone(), sizeN.clone(), sizeM.clone())?;
                         coloring = ({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<Arc<DAE::ComponentRef>>>>> = metamodelica::nil();
         for mut lst in (coloredArray.clone()).borrow().iter() {
@@ -1424,72 +1425,6 @@ pub fn generateSparsePattern(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut 
         bail!("matchcontinue: no arm matched")
     };
     Ok((outSparsePattern, outColoredCols))
-}
-
-pub fn createColoring(mut sparseArray: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut sparseArrayT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut sizeVars: i32, mut sizeVarswithDep: i32) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
-    let mut coloredArray: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-    let debug: bool = false;
-    let mut nodesList: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    let mut colored: metamodelica::Array<i32> = Default::default();
-    let mut forbiddenColor: metamodelica::Array<i32> = Default::default();
-    let mut sparseGraph: Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>> = metamodelica::nil();
-    let mut sparseGraphT: Arc<metamodelica::List<(i32, Arc<metamodelica::List<i32>>)>> = metamodelica::nil();
-    let mut arraysparseGraph: metamodelica::Array<(i32, Arc<metamodelica::List<i32>>)> = Default::default();
-    let mut maxColor: i32 = 0;
-    match '__try0: {
-        if unwrap_break_err!(Flags::isSet(Flags::DUMP_SPARSE_VERBOSE.clone()), '__try0) {
-            println!("{}", (literal!("analytical Jacobians[SPARSE] -> build sparse graph.\n")).clone());
-        }
-        nodesList = List::intRange2(1, sizeVarswithDep.clone());
-        sparseGraph = unwrap_break_err!(Graph::buildGraph(nodesList.clone(), (std::sync::Arc::new(createBipartiteGraph) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), sparseArray.clone()), '__try0);
-        sparseGraphT = unwrap_break_err!(Graph::buildGraph(List::intRange2(1, sizeVars.clone()), (std::sync::Arc::new(createBipartiteGraph) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), sparseArrayT.clone()), '__try0);
-        if unwrap_break_err!(Flags::isSet(Flags::DUMP_SPARSE_VERBOSE.clone()), '__try0) {
-            println!("{}", (literal!("sparse graph: \n")).clone());
-            unwrap_break_err!(Graph::printGraphInt(sparseGraph.clone()), '__try0);
-            println!("{}", (literal!("transposed sparse graph: \n")).clone());
-            unwrap_break_err!(Graph::printGraphInt(sparseGraphT.clone()), '__try0);
-            println!("{}", (literal!("analytical Jacobians[SPARSE] -> builded graph for coloring.\n")).clone());
-        }
-        forbiddenColor = arrayCreate(sizeVars.clone(), 0);
-        colored = arrayCreate(sizeVars.clone(), 0);
-        arraysparseGraph = metamodelica::arrayFromVec(sparseGraph.clone().into_iter().cloned().collect());
-        if debug.clone() {
-            unwrap_break_err!(execStat((literal!("generateSparsePattern -> coloring start ")).clone()), '__try0);
-        }
-        if sizeVars.clone() > 0 {
-            unwrap_break_err!(Graph::partialDistance2colorInt(sparseGraphT.clone(), forbiddenColor.clone(), nodesList.clone(), arraysparseGraph.clone(), colored.clone()), '__try0);
-        }
-        if debug.clone() {
-            unwrap_break_err!(execStat((literal!("generateSparsePattern -> coloring end ")).clone()), '__try0);
-        }
-        GCExt::free(forbiddenColor.clone());
-        GCExt::free(arraysparseGraph.clone());
-        maxColor = unwrap_break_err!(Array::fold(colored.clone(), (std::sync::Arc::new(fnptr!(intMax, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), 0), '__try0);
-        coloredArray = arrayCreate(maxColor.clone(), metamodelica::nil());
-        unwrap_break_err!(mapIndexColors(colored.clone(), sizeVars.clone(), coloredArray.clone()), '__try0);
-        GCExt::free(colored.clone());
-        if unwrap_break_err!(Flags::isSet(Flags::DUMP_SPARSE_VERBOSE.clone()), '__try0) {
-            println!("{}", (literal!("Print Coloring Cols: \n")).clone());
-            unwrap_break_err!(BackendDump::dumpSparsePattern(Arc::new(coloredArray.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>())), '__try0);
-        }
-        Ok::<_, anyhow::Error>((arraysparseGraph.clone(), colored.clone(), coloredArray.clone(), forbiddenColor.clone(), maxColor.clone(), nodesList.clone(), sparseGraph.clone(), sparseGraphT.clone()))
-    } {
-        Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3, __try0_o4, __try0_o5, __try0_o6, __try0_o7)) => {
-            arraysparseGraph = __try0_o0;
-            colored = __try0_o1;
-            coloredArray = __try0_o2;
-            forbiddenColor = __try0_o3;
-            maxColor = __try0_o4;
-            nodesList = __try0_o5;
-            sparseGraph = __try0_o6;
-            sparseGraphT = __try0_o7;
-        }
-        Err(__try0_err) => {
-            Error::addInternalError((literal!("function createColoring failed")).clone(), metamodelica::sourceInfo!())?;
-            return Err(__try0_err);
-        }
-    }
-    Ok(coloredArray)
 }
 
 fn dumpSparsePatternStatistics(mut nonZeroElements: i32, mut sparsepatternT: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>>) -> Result<()> {
@@ -1765,34 +1700,6 @@ pub fn transposeSparsePatternTuple(mut inSparsePattern: Arc<metamodelica::List<(
         metamodelica::Dangerous::arrayUpdateNoBoundsChecking(outSparsePattern.clone(), i.clone(), tmpTuple.clone());
     }
     Ok(outSparsePattern)
-}
-
-fn mapIndexColors(mut inColors: metamodelica::Array<i32>, mut inMaxIndex: i32, mut inArray: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<()> {
-    let mut index: i32 = 0;
-    match '__try0: {
-        for mut i in 1..=inMaxIndex.clone() {
-            index = inColors.clone().borrow()[(i.clone()-1) as usize].clone();
-            {let _arr = inArray.clone(); let _val = metamodelica::cons(i.clone(), inArray.clone().borrow()[(index.clone()-1) as usize].clone()); _arr.borrow_mut()[(index.clone()-1) as usize] = _val; _arr};
-        }
-        Ok::<(), anyhow::Error>(())
-    } {
-        Ok(()) => {}
-        Err(__try0_err) => {
-            Error::addInternalError((literal!("function mapIndexColors failed")).clone(), metamodelica::sourceInfo!())?;
-            return Err(__try0_err);
-        }
-    }
-    Ok(())
-}
-
-fn createBipartiteGraph(mut inNode: i32, mut inSparsePattern: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<metamodelica::List<i32>>> {
-    let mut outEdges: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    if inNode.clone() >= 1 && inNode.clone() <= (inSparsePattern.clone().borrow().len() as i32) {
-        outEdges = inSparsePattern.clone().borrow()[(inNode.clone()-1) as usize].clone();
-    } else {
-        outEdges = metamodelica::nil();
-    }
-    Ok(outEdges)
 }
 
 fn createInDepVars(mut independentVars: Arc<metamodelica::List<BackendDAE::Var>>, mut createpDerStates: bool) -> Result<(Arc<metamodelica::List<BackendDAE::Var>>, Arc<metamodelica::List<Arc<DAE::ComponentRef>>>)> {

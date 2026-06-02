@@ -69,8 +69,8 @@ use crate::NBVariable::VariablePointers;
 use crate::NBVariable;
 use crate::NBackendDAE as BackendDAE;
 use crate::NBackendDAE as Jacobian;
-use crate::SymbolicJacobian;
 use openmodelica_ast::Absyn::Path;
+use openmodelica_backend_util::Coloring;
 use openmodelica_nf_frontend::NFComponentRef as ComponentRef;
 use openmodelica_nf_frontend::NFExpression as Expression;
 use openmodelica_nf_frontend::NFFunction::Function;
@@ -94,7 +94,7 @@ use openmodelica_util_datatypes_basic::Pointer;
 // OF imports
 // NF imports
 // Backend imports
-// Old Backend Import (remove once coloring ins ported)
+// Sparsity-pattern graph coloring, shared with the old backend.
 // Util imports
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
 #[repr(i32)]
@@ -673,7 +673,7 @@ pub mod SparsityColoring {
                 rows.clone().borrow_mut()[(UnorderedMap::getSafe(idx_cref.clone(), partial_indices.clone(), metamodelica::sourceInfo!())?-1) as usize] = __cell1;
             }
         }
-        colored_cols = SymbolicJacobian::createColoring(rows.clone(), cols.clone(), sizeCols.clone(), sizeRows.clone())?;
+        colored_cols = Coloring::createColoring(rows.clone(), cols.clone(), sizeCols.clone(), sizeRows.clone())?;
         cref_colored_cols = arrayCreate((colored_cols.clone().borrow().len() as i32), metamodelica::nil());
         let __range2 = 1..=(colored_cols.clone().borrow().len() as i32);
         for mut i in __range2 {
@@ -689,7 +689,7 @@ pub mod SparsityColoring {
                 cref_colored_cols.clone().borrow_mut()[(i.clone()-1) as usize] = __cell3;
             }
         }
-        colored_rows = SymbolicJacobian::createColoring(cols.clone(), rows.clone(), sizeRows.clone(), sizeCols.clone())?;
+        colored_rows = Coloring::createColoring(cols.clone(), rows.clone(), sizeRows.clone(), sizeCols.clone())?;
         cref_colored_rows = arrayCreate((colored_rows.clone().borrow().len() as i32), metamodelica::nil());
         let __range4 = 1..=(colored_rows.clone().borrow().len() as i32);
         for mut i in __range4 {

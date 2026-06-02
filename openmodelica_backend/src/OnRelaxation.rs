@@ -44,7 +44,6 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::AdjacencyMatrix;
-use crate::BackendDAEEXT;
 use crate::BackendDAETransform;
 use crate::BackendDAEUtil;
 use crate::BackendDump;
@@ -56,6 +55,7 @@ use crate::Matching;
 use crate::Sorting;
 use crate::SymbolicJacobian;
 use openmodelica_backend_types::BackendDAE;
+use openmodelica_backend_util::BackendDAEEXT;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::Expression;
 use openmodelica_frontend::ExpressionSimplify;

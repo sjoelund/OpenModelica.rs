@@ -300,6 +300,7 @@ dependencies = [
  "openmodelica_ast",
  "openmodelica_ast_collections",
  "openmodelica_backend_types",
+ "openmodelica_backend_util",
  "openmodelica_dump_extra",
  "openmodelica_frontend",
  "openmodelica_frontend_dump",
@@ -360,6 +361,21 @@ dependencies = [
  "openmodelica_frontend",
  "openmodelica_frontend_dump",
  "openmodelica_frontend_types",
+ "openmodelica_util",
+ "openmodelica_util_datatypes_basic",
+ "tailcall",
+]
+
+[[package]]
+name = "openmodelica_backend_util"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "arcstr",
+ "const-str",
+ "loop_unwrap",
+ "match_deref",
+ "metamodelica",
  "openmodelica_util",
  "openmodelica_util_datatypes_basic",
  "tailcall",

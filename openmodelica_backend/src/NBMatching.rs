@@ -43,7 +43,6 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::BackendDAEEXT;
 use crate::NBAdjacency as Adjacency;
 use crate::NBBackendUtil as BackendUtil;
 use crate::NBEquation::EqData;
@@ -60,6 +59,7 @@ use crate::NBVariable::VarData;
 use crate::NBVariable::VariablePointer;
 use crate::NBVariable::VariablePointers;
 use openmodelica_ast::Absyn::Path;
+use openmodelica_backend_util::BackendDAEEXT;
 use openmodelica_nf_frontend::NFFunction::Function;
 use openmodelica_nf_frontend::NFVariable as Variable;
 use openmodelica_util::Error;

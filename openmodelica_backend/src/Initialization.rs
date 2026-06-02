@@ -44,7 +44,6 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::BackendDAECreate;
-use crate::BackendDAEEXT;
 use crate::BackendDAEFunc;
 use crate::BackendDAEOptimize;
 use crate::BackendDAEUtil;
@@ -59,6 +58,7 @@ use crate::SymbolicJacobian;
 use crate::SynchronousFeatures;
 use openmodelica_ast::Absyn;
 use openmodelica_backend_types::BackendDAE;
+use openmodelica_backend_util::BackendDAEEXT;
 use openmodelica_frontend::AvlSetCR;
 use openmodelica_frontend::CheckModel;
 use openmodelica_frontend::ComponentReference;
