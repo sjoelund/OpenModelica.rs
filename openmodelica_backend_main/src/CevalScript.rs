@@ -80,6 +80,7 @@ use openmodelica_frontend::ValuesUtil;
 use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_dump::AvlTreePathFunction;
 use openmodelica_frontend_dump::Dump;
+use openmodelica_frontend_dump::ExpressionBasics;
 use openmodelica_frontend_dump::FCore;
 use openmodelica_frontend_dump::SCodeDump;
 use openmodelica_frontend_dump::SCodeUtil;
