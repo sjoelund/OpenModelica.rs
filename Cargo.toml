@@ -6,7 +6,7 @@ debug = false
 
 [workspace]
 resolver = "3"
-members = ["mmtorust", "openmodelica", "openmodelica_util", "metamodelica", "openmodelica_frontend", "openmodelica_backend", "openmodelica_backend_types", "openmodelica_simcode_types", "openmodelica_backend_util", "openmodelica_nbackend", "openmodelica_susan", "openmodelica_nf_frontend", "openmodelica_util_datatypes_basic", "openmodelica_ast", "openmodelica_frontend_types", "openmodelica_frontend_dump", "openmodelica_ast_collections", "openmodelica_dump_extra", "openmodelica_frontend_inst", "openmodelica_script_util", "openmodelica_program_util", "openmodelica_simcode_util", "openmodelica_codegen", "openmodelica_codegen_cpp", "openmodelica_backend_main"]
+members = ["mmtorust", "openmodelica", "openmodelica_util", "metamodelica", "openmodelica_frontend", "openmodelica_backend", "openmodelica_backend_types", "openmodelica_simcode_types", "openmodelica_backend_util", "openmodelica_nbackend", "openmodelica_susan", "openmodelica_nf_frontend", "openmodelica_util_datatypes_basic", "openmodelica_ast", "openmodelica_frontend_types", "openmodelica_frontend_dump", "openmodelica_ast_collections", "openmodelica_dump_extra", "openmodelica_frontend_inst", "openmodelica_script_util", "openmodelica_program_util", "openmodelica_simcode_util", "openmodelica_codegen", "openmodelica_codegen_cpp_common", "openmodelica_codegen_cpp_omsi", "openmodelica_codegen_cpp_ext", "openmodelica_codegen_cpp_omsi_ext", "openmodelica_codegen_cpp", "openmodelica_backend_main"]
 [workspace.dependencies]
 anyhow = "1.0.102"
 arcstr = "1.2.0"
@@ -43,6 +43,10 @@ openmodelica_script_util = {path = "openmodelica_script_util"}
 openmodelica_program_util = {path = "openmodelica_program_util"}
 openmodelica_codegen = {path = "openmodelica_codegen"}
 openmodelica_codegen_cpp = {path = "openmodelica_codegen_cpp"}
+openmodelica_codegen_cpp_common = {path = "openmodelica_codegen_cpp_common"}
+openmodelica_codegen_cpp_omsi = {path = "openmodelica_codegen_cpp_omsi"}
+openmodelica_codegen_cpp_ext = {path = "openmodelica_codegen_cpp_ext"}
+openmodelica_codegen_cpp_omsi_ext = {path = "openmodelica_codegen_cpp_omsi_ext"}
 openmodelica_backend_main = {path = "openmodelica_backend_main"}
 
 #[profile.release]

@@ -9,12 +9,12 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::CodegenCpp;
 use crate::CodegenCppHpcom;
-use crate::CodegenCppInit;
 use crate::CodegenFMUCpp;
 use openmodelica_ast::Absyn;
 use openmodelica_backend::CodegenUtil;
+use openmodelica_codegen_cpp::CodegenCpp;
+use openmodelica_codegen_cpp_common::CodegenCppInit;
 use openmodelica_frontend::Expression;
 use openmodelica_frontend_dump::HashTableCrIListArray;
 use openmodelica_simcode_types::HpcOmSimCode;

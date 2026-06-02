@@ -9,9 +9,9 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::CodegenCppOMSI;
 use openmodelica_ast::Absyn;
 use openmodelica_backend::CodegenUtil;
+use openmodelica_codegen_cpp_omsi::CodegenCppOMSI;
 use openmodelica_simcode_types::SimCode;
 use openmodelica_simcode_types::SimCodeFunction;
 use openmodelica_susan::Tpl;

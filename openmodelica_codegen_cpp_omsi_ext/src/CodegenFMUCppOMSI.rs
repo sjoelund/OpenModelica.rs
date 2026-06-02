@@ -9,15 +9,15 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::CodegenCppCommon;
-use crate::CodegenCppInit;
-use crate::CodegenCppOMSI;
 use openmodelica_ast::Absyn;
 use openmodelica_backend::CodegenUtil;
 use openmodelica_backend::SimCodeUtil;
 use openmodelica_backend_types::BackendDAE;
 use openmodelica_codegen::CodegenFMU;
 use openmodelica_codegen::CodegenFMUCommon;
+use openmodelica_codegen_cpp_common::CodegenCppCommon;
+use openmodelica_codegen_cpp_common::CodegenCppInit;
+use openmodelica_codegen_cpp_omsi::CodegenCppOMSI;
 use openmodelica_frontend::Expression;
 use openmodelica_frontend::Types;
 use openmodelica_frontend_types::DAE;
