@@ -11,9 +11,9 @@ use arcstr::{ArcStr, literal, format};
 
 use openmodelica_ast::Absyn;
 use openmodelica_backend_types::BackendDAE;
-use openmodelica_frontend::Expression;
-use openmodelica_frontend::ExpressionDump;
-use openmodelica_frontend::Types;
+use openmodelica_frontend_base::Expression;
+use openmodelica_frontend_base::ExpressionDump;
+use openmodelica_frontend_base::Types;
 use openmodelica_frontend_dump::ExpressionBasics;
 use openmodelica_frontend_dump::ExpressionDumpTpl;
 use openmodelica_frontend_dump::TypesDump;

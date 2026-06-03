@@ -43,11 +43,8 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::ComponentReference;
 use crate::ConnectUtil;
 use crate::ConnectionGraph;
-use crate::DAEUtil;
-use crate::Expression;
 use crate::FGraph;
 use crate::HashSet;
 use crate::InnerOuter;
@@ -60,11 +57,14 @@ use crate::InstUtil;
 use crate::Lookup;
 use crate::Mod;
 use crate::PrefixUtil;
-use crate::Types;
 use crate::UnitAbsyn;
 use crate::UnitAbsynBuilder;
-use crate::ValuesUtil;
 use openmodelica_ast::Absyn;
+use openmodelica_frontend_base::ComponentReference;
+use openmodelica_frontend_base::DAEUtil;
+use openmodelica_frontend_base::Expression;
+use openmodelica_frontend_base::Types;
+use openmodelica_frontend_base::ValuesUtil;
 use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_dump::ClassInfUtil;
 use openmodelica_frontend_dump::ComponentReferenceBasics;

@@ -43,14 +43,14 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::ComponentReference;
-use crate::Expression;
-use crate::ExpressionDump;
 use crate::FGraph;
 use crate::InnerOuter;
 use crate::Lookup;
-use crate::Types;
 use openmodelica_ast::Absyn;
+use openmodelica_frontend_base::ComponentReference;
+use openmodelica_frontend_base::Expression;
+use openmodelica_frontend_base::ExpressionDump;
+use openmodelica_frontend_base::Types;
 use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_dump::ComponentReferenceBasics;
 use openmodelica_frontend_dump::ExpressionBasics;

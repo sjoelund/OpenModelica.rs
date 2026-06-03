@@ -43,15 +43,15 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::ComponentReference;
-use crate::DAEDump;
-use crate::DAEUtil;
-use crate::Expression;
 use crate::HashSet;
 use crate::HashTableSM1;
 use crate::InnerOuter;
 use crate::PrefixUtil;
 use openmodelica_ast::Absyn;
+use openmodelica_frontend_base::ComponentReference;
+use openmodelica_frontend_base::DAEDump;
+use openmodelica_frontend_base::DAEUtil;
+use openmodelica_frontend_base::Expression;
 use openmodelica_frontend_dump::AvlTreePathFunction;
 use openmodelica_frontend_dump::ComponentReferenceBasics;
 use openmodelica_frontend_dump::HashTable3;

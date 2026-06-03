@@ -13,7 +13,7 @@ use crate::CevalScript;
 use openmodelica_ast::Absyn;
 use openmodelica_frontend::FGraph;
 use openmodelica_frontend::Parser;
-use openmodelica_frontend::ValuesUtil;
+use openmodelica_frontend_base::ValuesUtil;
 use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_dump::FCore;
 use openmodelica_frontend_dump::ValuesDump;

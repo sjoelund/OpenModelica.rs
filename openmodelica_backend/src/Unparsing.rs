@@ -10,7 +10,7 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use openmodelica_ast::Absyn;
-use openmodelica_frontend::Types;
+use openmodelica_frontend_base::Types;
 use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_types::DAE;
 use openmodelica_frontend_types::SCode;

@@ -69,14 +69,8 @@ thread_local! {
     pub static builtinGraphIndex: RefCell<Arc<metamodelica::List<(i32, openmodelica_frontend_dump::FCore::Graph)>>> =
         RefCell::new(metamodelica::nil());
 
-    // Index 22 — inlineHashTable
-    //
-    // Hash table used during inlining. Set to Some(...) when inlining starts,
-    // None when done. Source: Inline.mo.
-    pub static inlineHashTable: RefCell<Option<(
-        openmodelica_frontend_dump::HashTableCG::HashTable,
-        crate::VarTransform::VariableReplacements,
-    )>> = const { RefCell::new(None) };
+    // Index 22 — inlineHashTable: moved to openmodelica_frontend_base::Globals
+    // (its value type VarTransform.VariableReplacements lives in that crate now).
 
     // Index 24 — operatorOverloadingCache
     //

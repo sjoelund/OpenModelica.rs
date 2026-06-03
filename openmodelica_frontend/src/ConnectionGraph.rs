@@ -43,10 +43,10 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::ComponentReference;
 use crate::ConnectUtil;
-use crate::DAEUtil;
 use openmodelica_ast::Absyn;
+use openmodelica_frontend_base::ComponentReference;
+use openmodelica_frontend_base::DAEUtil;
 use openmodelica_frontend_dump::ComponentReferenceBasics;
 use openmodelica_frontend_dump::ExpressionBasics;
 use openmodelica_frontend_dump::HashTable3;

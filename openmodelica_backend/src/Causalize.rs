@@ -52,7 +52,7 @@ use crate::BackendVariable;
 use crate::DumpGraphML;
 use crate::Matching;
 use openmodelica_backend_types::BackendDAE;
-use openmodelica_frontend::DAEUtil;
+use openmodelica_frontend_base::DAEUtil;
 use openmodelica_frontend_dump::ElementSource;
 use openmodelica_frontend_types::DAE;
 use openmodelica_util::Debug;

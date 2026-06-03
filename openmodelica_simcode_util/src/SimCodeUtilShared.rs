@@ -45,10 +45,10 @@ use arcstr::{ArcStr, literal, format};
 
 use crate::SimCodeFunctionUtil;
 use openmodelica_ast::Absyn;
-use openmodelica_frontend::ComponentReference;
-use openmodelica_frontend::DAEUtil;
 use openmodelica_frontend::HashTableExpToIndex;
-use openmodelica_frontend::Inline;
+use openmodelica_frontend_base::ComponentReference;
+use openmodelica_frontend_base::DAEUtil;
+use openmodelica_frontend_base::Inline;
 use openmodelica_frontend_dump::AvlTreePathFunction;
 use openmodelica_frontend_dump::ComponentReferenceBasics;
 use openmodelica_frontend_dump::HashTableCrIListArray;

@@ -44,8 +44,8 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use crate::Lookup;
-use crate::Types;
 use openmodelica_ast::Absyn;
+use openmodelica_frontend_base::Types;
 use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_dump::FCore;
 use openmodelica_frontend_dump::SCodeUtil;

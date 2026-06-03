@@ -43,15 +43,15 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::ComponentReference;
-use crate::DAEDump;
-use crate::DAEUtil;
 use crate::FGraph;
 use crate::InnerOuter;
 use crate::InstBinding;
 use crate::InstUtil;
-use crate::Types;
 use openmodelica_ast::Absyn;
+use openmodelica_frontend_base::ComponentReference;
+use openmodelica_frontend_base::DAEDump;
+use openmodelica_frontend_base::DAEUtil;
+use openmodelica_frontend_base::Types;
 use openmodelica_frontend_dump::ClassInfUtil;
 use openmodelica_frontend_dump::ComponentReferenceBasics;
 use openmodelica_frontend_dump::ElementSource;

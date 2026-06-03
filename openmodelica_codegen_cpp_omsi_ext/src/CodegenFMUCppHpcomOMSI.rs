@@ -15,7 +15,7 @@ use openmodelica_ast::Absyn;
 use openmodelica_backend::CodegenUtil;
 use openmodelica_codegen_cpp_common::CodegenCppInit;
 use openmodelica_codegen_cpp_omsi::CodegenCppOMSI;
-use openmodelica_frontend::Expression;
+use openmodelica_frontend_base::Expression;
 use openmodelica_frontend_dump::HashTableCrIListArray;
 use openmodelica_simcode_types::HpcOmSimCode;
 use openmodelica_simcode_types::SimCode;

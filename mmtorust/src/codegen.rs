@@ -9689,9 +9689,12 @@ fn global_root_var_path(grc: &GlobalRootConst, ctx: &GenCtx) -> String {
         "instHashIndex"
         | "builtinIndex"
         | "builtinGraphIndex"
-        | "inlineHashTable"
         | "operatorOverloadingCache"
         | "backendCevalInterface" => Some("openmodelica_frontend"),
+        // openmodelica_frontend_base — inlineHashTable holds a
+        // VarTransform.VariableReplacements value; VarTransform/Inline live in
+        // the frontend base crate, so the thread_local is declared there.
+        "inlineHashTable" => Some("openmodelica_frontend_base"),
         // openmodelica_backend_main — the NF instantiation/node/lookup caches
         // store `NFInstNode.InstNode` (openmodelica_nf_frontend) and are only
         // accessed by Script/NFApi.mo. Declared in backend_main's Globals so the

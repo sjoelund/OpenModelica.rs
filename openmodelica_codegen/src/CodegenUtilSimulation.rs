@@ -11,9 +11,9 @@ use arcstr::{ArcStr, literal, format};
 
 use openmodelica_backend::CodegenUtil;
 use openmodelica_backend_types::BackendDAE;
-use openmodelica_frontend::DAEDump;
-use openmodelica_frontend::Expression;
-use openmodelica_frontend::ExpressionDump;
+use openmodelica_frontend_base::DAEDump;
+use openmodelica_frontend_base::Expression;
+use openmodelica_frontend_base::ExpressionDump;
 use openmodelica_frontend_dump::ExpressionDumpTpl;
 use openmodelica_frontend_types::DAE;
 use openmodelica_simcode_types::SimCode;

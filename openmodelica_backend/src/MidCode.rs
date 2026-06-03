@@ -44,7 +44,7 @@ use const_str;
 use arcstr::{ArcStr, literal, format};
 
 use openmodelica_ast::Absyn;
-use openmodelica_frontend::DAEDump;
+use openmodelica_frontend_base::DAEDump;
 use openmodelica_frontend_types::DAE;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]

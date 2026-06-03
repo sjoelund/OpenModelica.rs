@@ -205,6 +205,7 @@ fn interface_to_crate(interface: &str) -> Option<String> {
         "nbackend" => Some("openmodelica_nbackend".to_owned()),
         "nf_frontend" => Some("openmodelica_nf_frontend".to_owned()),
         "frontend" => Some("openmodelica_frontend".to_owned()),
+        "frontend_base" => Some("openmodelica_frontend_base".to_owned()),
         "parser" => Some("openmodelica_ast".to_owned()),
         "susan" => Some("openmodelica_susan".to_owned()),
         "util" => Some("openmodelica_util".to_owned()),

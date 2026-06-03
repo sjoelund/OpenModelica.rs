@@ -20,7 +20,7 @@ use openmodelica_util::FMI;
 use openmodelica_util::Settings;
 use openmodelica_util::Util;
 
-fn fun_51(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
+fn fun_50(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
@@ -50,7 +50,7 @@ pub fn fmiModelDescription(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::Sim
             txt = CodegenFMUCommon::fmiModelVariables(txt.clone(), i_simCode.clone(), (literal!("1.0")).clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             ret_0 = FMI::isFMICSType((a_FMUType.clone()).clone());
-            txt = fun_51(txt.clone(), ret_0.clone())?;
+            txt = fun_50(txt.clone(), ret_0.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::popBlock(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("</fmiModelDescription>")).clone() }))?;
@@ -63,7 +63,7 @@ pub fn fmiModelDescription(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::Sim
     Ok(out_txt)
 }
 
-fn fun_53(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_listStates: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_vi_numStateVars: i32) -> Result<Tpl::Text> {
+fn fun_52(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_listStates: Arc<metamodelica::List<SimCodeVar::SimVar>>, mut in_a_vi_numStateVars: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_listStates.clone(), in_a_vi_numStateVars.clone())) {
         (txt, false, _, a_vi_numStateVars) => {
@@ -112,7 +112,7 @@ pub fn fmiModelDescriptionAttributes(mut in_txt: Tpl::Text, mut in_a_simCode: Si
             l_generationDateAndTime = CodegenFMUCommon::xsdateTime(Tpl::emptyTxt.clone(), ret_7.clone())?;
             l_variableNamingConvention = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("structured")).clone() }))?;
             ret_10 = intEq(i_vi_numStateVars.clone(), 1);
-            l_numberOfContinuousStates = fun_53(Tpl::emptyTxt.clone(), ret_10.clone(), i_listStates.clone(), i_vi_numStateVars.clone())?;
+            l_numberOfContinuousStates = fun_52(Tpl::emptyTxt.clone(), ret_10.clone(), i_listStates.clone(), i_vi_numStateVars.clone())?;
             l_numberOfEventIndicators = CodegenFMUCommon::getNumberOfEventIndicators(Tpl::emptyTxt.clone(), i_simCode.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("fmiVersion=\"")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), l_fmiVersion.clone())?;

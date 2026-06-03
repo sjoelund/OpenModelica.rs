@@ -21,6 +21,7 @@ openmodelica_codegen_cpp_ext.workspace=true
 openmodelica_codegen_cpp_omsi_ext.workspace=true
 openmodelica_dump_extra.workspace=true
 openmodelica_frontend.workspace=true
+openmodelica_frontend_base.workspace = true
 openmodelica_frontend_dump.workspace=true
 openmodelica_frontend_inst.workspace=true
 openmodelica_frontend_types.workspace=true

@@ -13,6 +13,7 @@ openmodelica_simcode_types.workspace=true
 openmodelica_codegen.workspace=true
 openmodelica_codegen_cpp_common.workspace=true
 openmodelica_frontend.workspace=true
+openmodelica_frontend_base.workspace = true
 openmodelica_frontend_dump.workspace=true
 openmodelica_frontend_types.workspace=true
 openmodelica_susan.workspace=true

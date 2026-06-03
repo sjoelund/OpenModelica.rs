@@ -14,7 +14,7 @@ use openmodelica_backend_types::BackendDAE;
 use openmodelica_codegen::CodegenUtilSimulation;
 use openmodelica_codegen_c::CodegenC;
 use openmodelica_codegen_cfunctions::CodegenCFunctions;
-use openmodelica_frontend::ComponentReference;
+use openmodelica_frontend_base::ComponentReference;
 use openmodelica_frontend_types::DAE;
 use openmodelica_simcode_types::SimCode;
 use openmodelica_simcode_types::SimCodeFunction;

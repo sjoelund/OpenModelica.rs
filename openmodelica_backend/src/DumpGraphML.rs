@@ -49,7 +49,7 @@ use crate::BackendDump;
 use crate::BackendEquation;
 use crate::BackendVariable;
 use openmodelica_backend_types::BackendDAE;
-use openmodelica_frontend::ComponentReference;
+use openmodelica_frontend_base::ComponentReference;
 use openmodelica_frontend_dump::AvlTreePathFunction;
 use openmodelica_frontend_dump::ComponentReferenceBasics;
 use openmodelica_frontend_types::DAE;

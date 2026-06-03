@@ -9,10 +9,10 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::Expression;
 use crate::NFInstDump;
 use crate::NFInstTypes;
 use openmodelica_ast::Absyn;
+use openmodelica_frontend_base::Expression;
 use openmodelica_frontend_dump::AbsynDumpTpl;
 use openmodelica_frontend_dump::ExpressionDumpTpl;
 use openmodelica_frontend_inst::NFInstPrefix;

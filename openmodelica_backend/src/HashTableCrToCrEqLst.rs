@@ -45,7 +45,7 @@ use arcstr::{ArcStr, literal, format};
 
 use crate::BackendDump;
 use openmodelica_backend_types::BackendDAE;
-use openmodelica_frontend::ComponentReference;
+use openmodelica_frontend_base::ComponentReference;
 use openmodelica_frontend_dump::ComponentReferenceBasics;
 use openmodelica_frontend_types::DAE;
 use openmodelica_util::BaseHashTable;

@@ -11,8 +11,8 @@ use arcstr::{ArcStr, literal, format};
 
 use crate::CodegenUtil;
 use openmodelica_ast::Absyn;
-use openmodelica_frontend::Types;
-use openmodelica_frontend::ValuesUtil;
+use openmodelica_frontend_base::Types;
+use openmodelica_frontend_base::ValuesUtil;
 use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_dump::TypesDump;
 use openmodelica_frontend_types::DAE;
