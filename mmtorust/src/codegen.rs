@@ -62,7 +62,7 @@ const EXTERNAL_DEFAULTABLE_QNAMES: &[&str] = &[
 const HANDWRITTEN_TOP_PACKAGES: &[&str] = &[
     "Mutable", "GCExt", "Pointer", "File", "Global", "Vector",
     "ErrorExt", "Print", "ParserExt", "System", "Settings",
-    "StackOverflow",
+    "StackOverflow", "BackendDAEEXT",
 ];
 
 /// How to propagate a Result error from a fallible sub-expression.
@@ -1308,6 +1308,14 @@ pub fn generate_all(hier: &InstanceHierarchy<'_>, output_dir: &str) -> std::io::
                 // no-ops there: Rust has no equivalent of the C runtime's
                 // longjmp-based stack-overflow recovery, so there is never a
                 // captured stacktrace to fetch/clear).
+                //
+                // `BackendDAEEXT` wraps `OMCompiler/Compiler/runtime/
+                // BackendDAEEXT.cpp` (mark bit-vectors + Tarjan low-link state)
+                // and the Kaya/Langguth/Ucar matchmaker bipartite-matching
+                // library (`matching.c`, `matching_cheap.c`, tinymt64). All
+                // bodies are `external "C"`, so codegen only yields `todo!()` —
+                // hand-written in
+                // `openmodelica_backend_util/src/BackendDAEEXT.rs`.
                 n if HANDWRITTEN_TOP_PACKAGES.contains(&n) => continue,
                 _ => {}
             };
