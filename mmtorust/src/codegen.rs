@@ -63,6 +63,10 @@ const HANDWRITTEN_TOP_PACKAGES: &[&str] = &[
     "Mutable", "GCExt", "Pointer", "File", "Global", "Vector",
     "ErrorExt", "Print", "ParserExt", "System", "Settings",
     "StackOverflow", "BackendDAEEXT",
+    // Its `external "C"` bodies (`serializeJ`/`serializeC`) exist only as
+    // inline C snippets in the .mo's Include annotation; hand-written in
+    // `openmodelica_backend/src/SerializeSparsityPattern.rs`.
+    "SerializeSparsityPattern",
 ];
 
 /// How to propagate a Result error from a fallible sub-expression.
