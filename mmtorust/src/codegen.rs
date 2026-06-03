@@ -62,6 +62,7 @@ const EXTERNAL_DEFAULTABLE_QNAMES: &[&str] = &[
 const HANDWRITTEN_TOP_PACKAGES: &[&str] = &[
     "Mutable", "GCExt", "Pointer", "File", "Global", "Vector",
     "ErrorExt", "Print", "ParserExt", "System", "Settings",
+    "StackOverflow",
 ];
 
 /// How to propagate a Result error from a fallible sub-expression.
@@ -1282,6 +1283,15 @@ pub fn generate_all(hier: &InstanceHierarchy<'_>, output_dir: &str) -> std::io::
                 // config (version string, temp dir, installation/Modelica
                 // paths, home dir, echo flag). Hand-write in
                 // `openmodelica_util/src/Settings.rs`.
+                //
+                // `StackOverflow` wraps the `mmc_*StacktraceMessages*`
+                // externals from the MMC runtime (stack-overflow recovery via
+                // sigaltstack + backtrace capture), which have no Rust
+                // counterpart. Hand-maintained in
+                // `openmodelica_util/src/StackOverflow.rs` (the externals are
+                // no-ops there: Rust has no equivalent of the C runtime's
+                // longjmp-based stack-overflow recovery, so there is never a
+                // captured stacktrace to fetch/clear).
                 n if HANDWRITTEN_TOP_PACKAGES.contains(&n) => continue,
                 _ => {}
             };
