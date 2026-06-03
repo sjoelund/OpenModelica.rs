@@ -1689,18 +1689,12 @@ pub fn getPackageIndex(mut printError: bool) -> Result<Arc<JSON::JSON>> {
             return Ok(obj.clone());
         }
     }
-    match '__try1: {
+    if '__try1: {
         obj = unwrap_break_err!(JSON::parseFile((packageIndex.clone()).clone()), '__try1);
         { let __v = Some(obj.clone()); openmodelica_util::Globals::packageIndexCacheIndex.with(|__root| *__root.borrow_mut() = __v) };
-        Ok::<_, anyhow::Error>((obj.clone(),))
-    } {
-        Ok((__try1_o0,)) => {
-            obj = __try1_o0;
-        }
-        Err(__try1_err) => {
-            Error::addSourceMessage(Error::ERROR_PKG_INDEX_NOT_PARSED.clone(), list![(packageIndex.clone()).clone()], makeSourceInfo((getIndexPath()?).clone()))?;
-            return Err(__try1_err);
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
+        Error::addSourceMessage(Error::ERROR_PKG_INDEX_NOT_PARSED.clone(), list![(packageIndex.clone()).clone()], makeSourceInfo((getIndexPath()?).clone()))?;
     }
     Ok(obj)
 }

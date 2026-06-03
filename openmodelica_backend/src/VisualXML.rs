@@ -220,7 +220,7 @@ fn getConstCrefBinding(mut cr: Arc<DAE::ComponentRef>, mut vars: BackendDAE::Var
     let mut eOut: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
-    match '__try0: {
+    if '__try0: {
         let __pa1 = ::match_deref::match_deref! { match &(unwrap_break_err!(BackendVariable::getVar(cr.clone(), vars.clone()), '__try0)) {
             (Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil }, _) => __pa1.clone(),
             _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
@@ -257,17 +257,9 @@ fn getConstCrefBinding(mut cr: Arc<DAE::ComponentRef>, mut vars: BackendDAE::Var
         })() { break 'mc __v; }
         bail!("matchcontinue: no arm matched")
     };
-        Ok::<_, anyhow::Error>((e.clone(), eOut.clone(), var.clone()))
-    } {
-        Ok((__try0_o0, __try0_o1, __try0_o2)) => {
-            e = __try0_o0;
-            eOut = __try0_o1;
-            var = __try0_o2;
-        }
-        Err(__try0_err) => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("VisualXMl.getConstCrefBinding failed for ")); __mm_s.push_str(&*ComponentReference::crefStr(cr.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
-            return Err(__try0_err);
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
+        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("VisualXMl.getConstCrefBinding failed for ")); __mm_s.push_str(&*ComponentReference::crefStr(cr.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
     }
     Ok(eOut)
 }

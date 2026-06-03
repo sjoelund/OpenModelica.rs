@@ -1264,19 +1264,12 @@ fn replaceExpCref(mut inExp: Arc<DAE::Exp>, mut inVarReplacements: VariableRepla
     outExp = inExp.clone();
     let () = (::match_deref::match_deref! { match &(inExp.clone()) {
         Deref @ DAE::Exp::CREF { componentRef: cr, .. } => {
-            match '__try0: {
+            if '__try0: {
                 outExp = unwrap_break_err!(getReplacement(inVarReplacements.clone(), cr.clone()), '__try0);
                 outExp = unwrap_break_err!(avoidDoubleHashLookup(outExp.clone(), var_field!((*inExp).ty, DAE::Exp::CREF).clone()), '__try0);
                 replacementPerformed = true;
-                Ok::<_, anyhow::Error>((outExp.clone(), replacementPerformed.clone()))
-            } {
-                Ok((__try0_o0, __try0_o1)) => {
-                    outExp = __try0_o0;
-                    replacementPerformed = __try0_o1;
-                }
-                Err(__try0_err) => {
-                    return Err(__try0_err);
-                }
+                Ok::<(), anyhow::Error>(())
+            }.is_err() {
             }
             ()
         },

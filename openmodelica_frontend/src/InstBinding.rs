@@ -424,17 +424,11 @@ pub fn instDaeVariableAttributes(mut inCache: FCore::Cache, mut inEnv: FCore::Gr
 
 fn instEnumerationBinding(mut inMod: Arc<DAE::Mod>, mut varLst: Arc<metamodelica::List<Arc<DAE::Var>>>, mut inIndices: Arc<metamodelica::List<i32>>, mut inName: ArcStr, mut expected_type: Arc<DAE::Type>, mut useConstValue: bool) -> Result<Option<Arc<DAE::Exp>>> {
     let mut outBinding: Option<Arc<DAE::Exp>> = None;
-    match '__try0: {
+    if '__try0: {
         outBinding = unwrap_break_err!(instBinding(inMod.clone(), varLst.clone(), expected_type.clone(), inIndices.clone(), (inName.clone()).clone(), useConstValue.clone()), '__try0);
-        Ok::<_, anyhow::Error>((outBinding.clone(),))
-    } {
-        Ok((__try0_o0,)) => {
-            outBinding = __try0_o0;
-        }
-        Err(__try0_err) => {
-            Error::addMessage(Error::TYPE_ERROR.clone(), list![(inName.clone()).clone(), (literal!("enumeration type")).clone()])?;
-            return Err(__try0_err);
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
+        Error::addMessage(Error::TYPE_ERROR.clone(), list![(inName.clone()).clone(), (literal!("enumeration type")).clone()])?;
     }
     Ok(outBinding)
 }

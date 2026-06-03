@@ -203,23 +203,16 @@ pub fn getInputsOutputs(mut statements: Arc<metamodelica::List<Arc<Statement::NF
     let mut outputs_lst: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
     let mut inputs_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
     let mut outputs_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = UnorderedSet::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), 13);
-    match '__try0: {
+    if '__try0: {
         for mut statement in &*statements.clone() {
             let mut statement = statement.clone();
             unwrap_break_err!(statementInputsOutputs(statement.clone(), inputs_set.clone(), outputs_set.clone()), '__try0);
         }
         inputs_lst = UnorderedSet::toList(inputs_set.clone());
         outputs_lst = UnorderedSet::toList(outputs_set.clone());
-        Ok::<_, anyhow::Error>((inputs_lst.clone(), outputs_lst.clone()))
-    } {
-        Ok((__try0_o0, __try0_o1)) => {
-            inputs_lst = __try0_o0;
-            outputs_lst = __try0_o1;
-        }
-        Err(__try0_err) => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFAlgorithm.getInputsOutputs")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
-            return Err(__try0_err);
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
+        Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFAlgorithm.getInputsOutputs")); __mm_s.push_str(&*literal!(" failed.")); ArcStr::from(__mm_s) }).clone()])?;
     }
     Ok((inputs_lst, outputs_lst))
 }

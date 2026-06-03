@@ -1804,18 +1804,11 @@ fn buildEnvForGraphicProgramFull(mut inProgram: Absyn::Program, mut inModelPath:
     FlagsUtil::setConfigBool(Flags::CHECK_MODEL.clone(), true)?;
     Config::setEvaluateParametersInAnnotations(true)?;
     Config::setGraphicsExpMode(true)?;
-    match '__try0: {
+    if '__try0: {
         (outCache, outEnv, _, _) = unwrap_break_err!(Inst::instantiateClass(FCore::emptyCache(), InnerOuter::emptyInstHierarchy().clone(), scode_program.clone(), inModelPath.clone(), true, true, true), '__try0);
-        Ok::<_, anyhow::Error>((outCache.clone(), outEnv.clone()))
-    } {
-        Ok((__try0_o0, __try0_o1)) => {
-            outCache = __try0_o0;
-            outEnv = __try0_o1;
-        }
-        Err(__try0_err) => {
-            failed = true;
-            return Err(__try0_err);
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
+        failed = true;
     }
     Config::setEvaluateParametersInAnnotations(eval_param.clone())?;
     FlagsUtil::setConfigBool(Flags::CHECK_MODEL.clone(), check_model.clone())?;

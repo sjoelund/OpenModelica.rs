@@ -349,7 +349,7 @@ fn runTplWriteFile(mut func: Arc<dyn ::std::ops::Fn(Tpl::Text) -> Result<Tpl::Te
     let mut res: (bool, Arc<metamodelica::List<ArcStr>>) = (false, metamodelica::nil());
     let mut nErr: i32 = 0;
     res = (false, metamodelica::nil());
-    match '__try0: {
+    if '__try0: {
         unwrap_break_err!(SimCodeUtil::resetFunctionIndex(), '__try0);
         SimCodeFunctionUtil::codegenResetTryThrowIndex();
         if unwrap_break_err!(Flags::isSet(Flags::GEN_DEBUG_SYMBOLS.clone()), '__try0) {
@@ -360,14 +360,8 @@ fn runTplWriteFile(mut func: Arc<dyn ::std::ops::Fn(Tpl::Text) -> Result<Tpl::Te
             unwrap_break_err!(Tpl::failIfTrue(Error::getNumErrorMessages() > nErr.clone()), '__try0);
         }
         res = (true, SimCodeUtil::getFunctionIndex());
-        Ok::<_, anyhow::Error>((res.clone(),))
-    } {
-        Ok((__try0_o0,)) => {
-            res = __try0_o0;
-        }
-        Err(_) => {
-            panic!("try/else: outputs not set in else branch");
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
     }
     res
 }
@@ -375,19 +369,13 @@ fn runTplWriteFile(mut func: Arc<dyn ::std::ops::Fn(Tpl::Text) -> Result<Tpl::Te
 fn runTpl(mut func: Arc<dyn ::std::ops::Fn(Tpl::Text) -> Result<Tpl::Text> + 'static>) -> (bool, Arc<metamodelica::List<ArcStr>>) {
     let mut res: (bool, Arc<metamodelica::List<ArcStr>>) = (false, metamodelica::nil());
     res = (false, metamodelica::nil());
-    match '__try0: {
+    if '__try0: {
         unwrap_break_err!(SimCodeUtil::resetFunctionIndex(), '__try0);
         SimCodeFunctionUtil::codegenResetTryThrowIndex();
         unwrap_break_err!(Tpl::tplCallWithFailErrorNoArg(func.clone(), Tpl::emptyTxt.clone()), '__try0);
         res = (true, SimCodeUtil::getFunctionIndex());
-        Ok::<_, anyhow::Error>((res.clone(),))
-    } {
-        Ok((__try0_o0,)) => {
-            res = __try0_o0;
-        }
-        Err(_) => {
-            panic!("try/else: outputs not set in else branch");
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
     }
     res
 }
@@ -405,19 +393,13 @@ fn callTargetTemplates(mut simCode: SimCode::SimCode, mut target: ArcStr) -> Res
 
         let mut res: (bool, Arc<metamodelica::List<ArcStr>>) = (false, metamodelica::nil());
         res = (false, metamodelica::nil());
-        match '__try0: {
+        if '__try0: {
             unwrap_break_err!(SimCodeUtil::resetFunctionIndex(), '__try0);
             SimCodeFunctionUtil::codegenResetTryThrowIndex();
             unwrap_break_err!(func(), '__try0);
             res = (true, SimCodeUtil::getFunctionIndex());
-            Ok::<_, anyhow::Error>((res.clone(),))
-        } {
-            Ok((__try0_o0,)) => {
-                res = __try0_o0;
-            }
-            Err(_) => {
-                panic!("try/else: outputs not set in else branch");
-            }
+            Ok::<(), anyhow::Error>(())
+        }.is_err() {
         }
         res
     }

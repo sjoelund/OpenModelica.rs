@@ -360,7 +360,7 @@ pub fn getImplicitBinding(mut component: Arc<NFComponent>, mut scope: Arc<InstNo
     if Binding::isUnbound(binding.clone()) {
         cls_node = classInstance(component.clone());
         if InstNode::isRecord(cls_node.clone()) {
-            match '__try0: {
+            if '__try0: {
                 if isTyped(component.clone()) {
                     record_exp = unwrap_break_err!(Class::makeRecordExp(cls_node.clone(), scope.clone(), true), '__try0);
                     binding = unwrap_break_err!(Binding::makeTyped(record_exp.clone(), Binding::EachType::NOT_EACH.clone(), Binding::Source::GENERATED.clone(), unwrap_break_err!(info(component.clone()), '__try0), Binding::EvalState::NOT_EVALUATED.clone(), Binding::NO_CONFIDENCE.clone()), '__try0);
@@ -368,15 +368,8 @@ pub fn getImplicitBinding(mut component: Arc<NFComponent>, mut scope: Arc<InstNo
                     record_exp = unwrap_break_err!(Class::makeRecordExp(cls_node.clone(), scope.clone(), false), '__try0);
                     binding = Binding::makeUntyped(record_exp.clone(), scope.clone(), Binding::EachType::NOT_EACH.clone(), Binding::Source::GENERATED.clone(), unwrap_break_err!(info(component.clone()), '__try0), Binding::NO_CONFIDENCE.clone());
                 }
-                Ok::<_, anyhow::Error>((binding.clone(), record_exp.clone()))
-            } {
-                Ok((__try0_o0, __try0_o1)) => {
-                    binding = __try0_o0;
-                    record_exp = __try0_o1;
-                }
-                Err(_) => {
-                    panic!("try/else: outputs not set in else branch");
-                }
+                Ok::<(), anyhow::Error>(())
+            }.is_err() {
             }
         }
     }

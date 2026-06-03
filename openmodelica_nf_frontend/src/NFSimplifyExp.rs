@@ -1527,17 +1527,11 @@ pub fn combineConstantNumbers(mut r#const: Arc<metamodelica::List<Arc<Expression
 
 fn getConstantValue(mut exp: Arc<Expression::NFExpression>) -> Result<metamodelica::Real> {
     let mut value: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-    match '__try0: {
+    if '__try0: {
         value = unwrap_break_err!(Expression::realValue(unwrap_break_err!(Ceval::evalExp(exp.clone(), Ceval::noTarget().clone()), '__try0)), '__try0);
-        Ok::<_, anyhow::Error>((value.clone(),))
-    } {
-        Ok((__try0_o0,)) => {
-            value = __try0_o0;
-        }
-        Err(__try0_err) => {
-            Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSimplifyExp.getConstantValue")); __mm_s.push_str(&*literal!(" expression is not known to be a constant number: ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
-            return Err(__try0_err);
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
+        Error::addInternalError(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSimplifyExp.getConstantValue")); __mm_s.push_str(&*literal!(" expression is not known to be a constant number: ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
     }
     Ok(value)
 }

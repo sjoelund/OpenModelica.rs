@@ -3058,17 +3058,11 @@ fn evalRecordElement(mut exp: Arc<Expression::NFExpression>, mut target: Arc<Eva
     index = __pa0.clone();
     e = __pa1.clone();
     e = evalExp(e.clone(), target.clone())?;
-    match '__try2: {
+    if '__try2: {
         result = unwrap_break_err!(Expression::mapSplitExpressions(e.clone(), (std::sync::Arc::new({ let __pe_b0 = index.clone(); move |__pe_a1| Expression::nthRecordElement(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>)), '__try2);
-        Ok::<_, anyhow::Error>((result.clone(),))
-    } {
-        Ok((__try2_o0,)) => {
-            result = __try2_o0;
-        }
-        Err(__try2_err) => {
-            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCeval.evalRecordElement")); __mm_s.push_str(&*literal!(" could not evaluate ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
-            return Err(__try2_err);
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
+        Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFCeval.evalRecordElement")); __mm_s.push_str(&*literal!(" could not evaluate ")); __mm_s.push_str(&*Expression::toString(exp.clone())?); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
     }
     Ok(result)
 }

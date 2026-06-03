@@ -92,18 +92,14 @@ fn serializeParModWork(mut code: SimCode::SimCode, mut withOperations: bool) -> 
         }
         File::write(file.clone(), (literal!("\n]\n}")).clone());
         success = true;
-        Ok::<_, anyhow::Error>((fileName.clone(), mi.clone(), success.clone(), vars.clone()))
+        Ok::<_, anyhow::Error>((success.clone(),))
     } {
-        Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3)) => {
-            fileName = __try0_o0;
-            mi = __try0_o1;
-            success = __try0_o2;
-            vars = __try0_o3;
+        Ok((__try0_o0,)) => {
+            success = __try0_o0;
         }
-        Err(__try0_err) => {
+        Err(_) => {
             Error::addInternalError((literal!("SerializeTaskSystemInfo.serializeParModWork failed")).clone(), metamodelica::sourceInfo!())?;
             success = false;
-            return Err(__try0_err);
         }
     }
     Ok((success, fileName))

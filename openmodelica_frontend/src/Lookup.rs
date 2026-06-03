@@ -1206,22 +1206,19 @@ pub fn lookupConnectorVar(mut env: FCore::Graph, mut cr: Arc<DAE::ComponentRef>,
             } else {
                 match '__try4: {
                     (attr, ty, status, isExpandable) = unwrap_break_err!(lookupConnectorVar(comp_env.clone(), var_field!((*cr).componentRef, DAE::ComponentRef::CREF_QUAL).clone(), false), '__try4);
-                    Ok::<_, anyhow::Error>((attr.clone(), isExpandable.clone(), status.clone(), ty.clone()))
+                    Ok::<_, anyhow::Error>((attr.clone(), isExpandable.clone()))
                 } {
-                    Ok((__try4_o0, __try4_o1, __try4_o2, __try4_o3)) => {
+                    Ok((__try4_o0, __try4_o1)) => {
                         attr = __try4_o0;
                         isExpandable = __try4_o1;
-                        status = __try4_o2;
-                        ty = __try4_o3;
                     }
-                    Err(__try4_err) => {
+                    Err(_) => {
                         if Types::isExpandableConnector(ty.clone()) {
                             attr = parent_attr.clone();
                             isExpandable = true;
                         } else {
                             bail!("fail");
                         }
-                        return Err(__try4_err);
                     }
                 }
                 attr = DAEUtil::setAttrVariability(attr.clone(), SCodeUtil::variabilityOr(DAEUtil::getAttrVariability(attr.clone()), DAEUtil::getAttrVariability(parent_attr.clone())));
@@ -3858,17 +3855,13 @@ pub fn isArrayType(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPat
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        Ok::<_, anyhow::Error>((el.clone(), env.clone(), outCache.clone(), outIsArray.clone()))
+        Ok::<_, anyhow::Error>((outIsArray.clone(),))
     } {
-        Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3)) => {
-            el = __try0_o0;
-            env = __try0_o1;
-            outCache = __try0_o2;
-            outIsArray = __try0_o3;
+        Ok((__try0_o0,)) => {
+            outIsArray = __try0_o0;
         }
         Err(_) => {
             outIsArray = false;
-            panic!("try/else: outputs not set in else branch");
         }
     }
     (outCache, outIsArray)

@@ -215,21 +215,13 @@ pub fn evaluateExpTraverser(mut exp: Arc<Expression::NFExpression>, mut info: So
             if var.clone() <= Variability::STRUCTURAL_PARAMETER.clone() && !(Type::isExternalObject(ty.clone())) {
                 if var.clone() > Variability::CONSTANT.clone() {
                     ErrorExt::setCheckpoint(literal!("NFEvalConstants.evaluateExpTraverser"));
-                    match '__try4: {
+                    if '__try4: {
                         e = unwrap_break_err!(Ceval::evalCref(cref.clone(), outExp.clone(), Ceval::noTarget().clone(), false, true), '__try4);
                         e = unwrap_break_err!(Flatten::flattenExp(e.clone(), Arc::new(Flatten::Prefix::Prefix::PREFIX { root: Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), prefix: cref.clone() }), info.clone()), '__try4);
                         outExp = e.clone();
                         outChanged = true;
-                        Ok::<_, anyhow::Error>((e.clone(), outChanged.clone(), outExp.clone()))
-                    } {
-                        Ok((__try4_o0, __try4_o1, __try4_o2)) => {
-                            e = __try4_o0;
-                            outChanged = __try4_o1;
-                            outExp = __try4_o2;
-                        }
-                        Err(__try4_err) => {
-                            return Err(__try4_err);
-                        }
+                        Ok::<(), anyhow::Error>(())
+                    }.is_err() {
                     }
                     ErrorExt::rollBack(literal!("NFEvalConstants.evaluateExpTraverser"));
                 } else {

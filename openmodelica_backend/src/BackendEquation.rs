@@ -279,23 +279,16 @@ pub fn getForEquationIterIdent(mut inEquation: Arc<BackendDAE::Equation>) -> Opt
 pub fn getWhenEquationExpr(mut inWhenEquation: Arc<BackendDAE::WhenEquation>) -> Result<(Arc<DAE::ComponentRef>, Arc<DAE::Exp>)> {
     let mut outComponentRef: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-    match '__try0: {
+    if '__try0: {
         let (__pa1, __pa2) = ::match_deref::match_deref! { match &(inWhenEquation.clone()) {
             Deref @ BackendDAE::WhenEquation { whenStmtLst: Deref @ metamodelica::List::Cons { head: BackendDAE::WhenOperator::ASSIGN { right: __pa1, left: Deref @ DAE::Exp::CREF { componentRef: __pa2, .. }, .. }, tail: Deref @ metamodelica::List::Nil }, .. } => (__pa1.clone(), __pa2.clone()),
             _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
         } };
         outExp = __pa1.clone();
         outComponentRef = __pa2.clone();
-        Ok::<_, anyhow::Error>((outComponentRef.clone(), outExp.clone()))
-    } {
-        Ok((__try0_o0, __try0_o1)) => {
-            outComponentRef = __try0_o0;
-            outExp = __try0_o1;
-        }
-        Err(__try0_err) => {
-            Error::addInternalError((literal!("BackendEquation.getWhenEquationExpr failed\n")).clone(), metamodelica::sourceInfo!())?;
-            return Err(__try0_err);
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
+        Error::addInternalError((literal!("BackendEquation.getWhenEquationExpr failed\n")).clone(), metamodelica::sourceInfo!())?;
     }
     Ok((outComponentRef, outExp))
 }

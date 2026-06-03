@@ -3511,24 +3511,13 @@ fn lowerVarsElementVars(mut inElementLstVars: Arc<metamodelica::List<Arc<DAE::El
     let mut vars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
     let mut knvars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
     let mut exvars: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
-    match '__try0: {
+    if '__try0: {
         (vars, knvars, exvars, eqnsLst, reqnsLst) = unwrap_break_err!(BackendDAECreate::lowerVars(inElementLstVars.clone(), functions.clone(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil(), metamodelica::nil()), '__try0);
         varsLst = listAppend(exvars.clone(), listAppend(vars.clone(), knvars.clone()));
-        Ok::<_, anyhow::Error>((eqnsLst.clone(), exvars.clone(), knvars.clone(), reqnsLst.clone(), vars.clone(), varsLst.clone()))
-    } {
-        Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3, __try0_o4, __try0_o5)) => {
-            eqnsLst = __try0_o0;
-            exvars = __try0_o1;
-            knvars = __try0_o2;
-            reqnsLst = __try0_o3;
-            vars = __try0_o4;
-            varsLst = __try0_o5;
-        }
-        Err(__try0_err) => {
-            let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-            Debug::traceln((literal!("- Differentiate.lowerVarsElementVars failed.")).clone())?;
-            return Err(__try0_err);
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
+        let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
+        Debug::traceln((literal!("- Differentiate.lowerVarsElementVars failed.")).clone())?;
     }
     Ok((varsLst, eqnsLst, reqnsLst))
 }

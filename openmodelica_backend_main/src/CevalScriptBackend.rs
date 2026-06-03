@@ -5489,22 +5489,16 @@ fn loadProgram(mut className: Arc<Absyn::Path>) -> Result<bool> {
     let mut b: bool = false;
     p = SymbolTable::getAbsyn();
     lib_name = (AbsynUtil::pathFirstIdent(className.clone())?).clone();
-    match '__try0: {
+    if '__try0: {
         unwrap_break_err!(ProgramUtil::getClassInProgram((lib_name.clone()).clone(), p.clone()), '__try0);
         success = true;
-        Ok::<_, anyhow::Error>((success.clone(),))
-    } {
-        Ok((__try0_o0,)) => {
-            success = __try0_o0;
-        }
-        Err(__try0_err) => {
-            (p, b) = CevalScript::loadModel(list![(Arc::new(Absyn::Path::IDENT { name: (lib_name.clone()).clone() }), literal!("the given model name to instantiate"), list![(literal!("default")).clone()], false)], (Settings::getModelicaPath(Testsuite::isRunning()?)?).clone(), p.clone(), true, true, true, false, false, (literal!("")).clone())?;
-            Error::assertionOrAddSourceMessage(!(b.clone()), Error::NOTIFY_IMPLICIT_LOAD.clone(), list![(lib_name.clone()).clone(), (literal!("default")).clone()], Absyn::dummyInfo.clone())?;
-            System::loadModelCallBack((lib_name.clone()).clone());
-            SymbolTable::setAbsyn(p.clone())?;
-            SymbolTable::clearSCode();
-            return Err(__try0_err);
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
+        (p, b) = CevalScript::loadModel(list![(Arc::new(Absyn::Path::IDENT { name: (lib_name.clone()).clone() }), literal!("the given model name to instantiate"), list![(literal!("default")).clone()], false)], (Settings::getModelicaPath(Testsuite::isRunning()?)?).clone(), p.clone(), true, true, true, false, false, (literal!("")).clone())?;
+        Error::assertionOrAddSourceMessage(!(b.clone()), Error::NOTIFY_IMPLICIT_LOAD.clone(), list![(lib_name.clone()).clone(), (literal!("default")).clone()], Absyn::dummyInfo.clone())?;
+        System::loadModelCallBack((lib_name.clone()).clone());
+        SymbolTable::setAbsyn(p.clone())?;
+        SymbolTable::clearSCode();
     }
     Ok(success)
 }
@@ -5607,20 +5601,12 @@ pub fn runFrontEndWorkNF(mut className: Arc<Absyn::Path>, mut relaxedFrontend: b
     annotation_p = AbsynToSCode::translateAbsyn2SCode(InteractiveUtil::modelicaAnnotationProgram((Config::getAnnotationVersion()?).clone())?)?;
     nf_api = FlagsUtil::set(Flags::NF_API.clone(), false)?;
     inst_failed = false;
-    match '__try0: {
+    if '__try0: {
         (flatModel, functions, flatString) = unwrap_break_err!(NFInst::instClassInProgram(cls_name.clone(), scode_p.clone(), annotation_p.clone(), relaxedFrontend.clone(), dumpFlat.clone()), '__try0);
-        Ok::<_, anyhow::Error>((flatModel.clone(), flatString.clone(), functions.clone()))
-    } {
-        Ok((__try0_o0, __try0_o1, __try0_o2)) => {
-            flatModel = __try0_o0;
-            flatString = __try0_o1;
-            functions = __try0_o2;
-        }
-        Err(__try0_err) => {
-            inst_failed = true;
-            NFInst::clearCaches()?;
-            return Err(__try0_err);
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
+        inst_failed = true;
+        NFInst::clearCaches()?;
     }
     FlagsUtil::set(Flags::NF_API.clone(), nf_api.clone())?;
     if inst_failed.clone() {
@@ -6099,18 +6085,15 @@ fn callTranslateModelFMU(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut
     match '__try1: {
         (success, cache, libs, _, _) = unwrap_break_err!(SimCodeMain::translateModel(SimCodeMain::TranslateModelKind::FMU { kind: (FMUType.clone()).clone(), targetName: (fmuTargetName.clone()).clone() }, cache.clone(), inEnv.clone(), className.clone(), (filenameprefix.clone()).clone(), true, false, true, Some(simSettings.clone()), Absyn::emptyFunctionArgs.clone()), '__try1);
         outValue = Arc::new(Values::Value::STRING { string: ({ let mut __mm_s = String::new(); __mm_s.push_str(&*if (!(unwrap_break_err!(Testsuite::isRunning(), '__try1))) {{ let mut __mm_s = String::new(); __mm_s.push_str(&*System::pwd()); __mm_s.push_str(&*arcstr::literal!(Autoconf::pathDelimiter)); ArcStr::from(__mm_s) }} else {literal!("")}); __mm_s.push_str(&*fmuTargetName.clone()); __mm_s.push_str(&*literal!(".fmu")); ArcStr::from(__mm_s) }).clone() });
-        Ok::<_, anyhow::Error>((cache.clone(), libs.clone(), outValue.clone(), success.clone()))
+        Ok::<_, anyhow::Error>((outValue.clone(), success.clone()))
     } {
-        Ok((__try1_o0, __try1_o1, __try1_o2, __try1_o3)) => {
-            cache = __try1_o0;
-            libs = __try1_o1;
-            outValue = __try1_o2;
-            success = __try1_o3;
+        Ok((__try1_o0, __try1_o1)) => {
+            outValue = __try1_o0;
+            success = __try1_o1;
         }
-        Err(__try1_err) => {
+        Err(_) => {
             success = false;
             outValue = Arc::new(Values::Value::STRING { string: (literal!("")).clone() });
-            return Err(__try1_err);
         }
     }
     FlagsUtil::setConfigBool(Flags::BUILDING_FMU.clone(), false)?;
@@ -10137,18 +10120,13 @@ fn addInitialStateWithAnnotation(mut inPath: Arc<Absyn::Path>, mut state: ArcStr
             outProgram = unwrap_break_err!(ProgramUtil::updateProgram(Absyn::Program { classes: list![newcdef.clone()], within_: Absyn::Within::WITHIN { path: package_.clone() } }, inProgram.clone(), false), '__try0);
         }
         b = true;
-        Ok::<_, anyhow::Error>((b.clone(), cdef.clone(), cmt.clone(), newcdef.clone(), outProgram.clone()))
+        Ok::<_, anyhow::Error>((b.clone(),))
     } {
-        Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3, __try0_o4)) => {
+        Ok((__try0_o0,)) => {
             b = __try0_o0;
-            cdef = __try0_o1;
-            cmt = __try0_o2;
-            newcdef = __try0_o3;
-            outProgram = __try0_o4;
         }
         Err(_) => {
             b = false;
-            panic!("try/else: outputs not set in else branch");
         }
     }
     (b, outProgram)

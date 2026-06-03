@@ -3776,17 +3776,11 @@ fn recursiveTearingMain(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<(Arc<B
     }
     if update.clone() {
         outDAE = Arc::new(BackendDAE::BackendDAE { eqs: systlst_new.clone(), shared: shared.clone() });
-        match '__try24: {
+        if '__try24: {
             outDAE = unwrap_break_err!(BackendDAEUtil::transformBackendDAE(outDAE.clone(), Some((openmodelica_backend_types::BackendDAE::IndexReduction::NO_INDEX_REDUCTION, openmodelica_backend_types::BackendDAE::EquationConstraints::EXACT)), None, None), '__try24);
-            Ok::<_, anyhow::Error>((outDAE.clone(),))
-        } {
-            Ok((__try24_o0,)) => {
-                outDAE = __try24_o0;
-            }
-            Err(__try24_err) => {
-                update = false;
-                return Err(__try24_err);
-            }
+            Ok::<(), anyhow::Error>(())
+        }.is_err() {
+            update = false;
         }
     } else {
         outDAE = inDAE.clone();

@@ -17466,7 +17466,23 @@ fn emit_stmt<'a>(
                     // on idioms like `List.filter` where `output list<T> outList = {};`
                     // is appended to in the try body and the else branch deliberately
                     // skips failed elements.
-                    ctx.fn_outputs_no_default.iter().any(|o| body_init.contains(o) && !else_init.contains(o))
+                    //
+                    // Likewise, an output that is already definitely initialised in
+                    // the emitted Rust at this point — assigned by an earlier
+                    // statement, or given the implicit type default at its
+                    // declaration (`ty_default_init_with_hier`) — is NOT left unset
+                    // by an empty else fall-through: it keeps its pre-try value,
+                    // exactly like the C runtime's variable slot. E.g.
+                    // SimCodeMain.runTpl does `res := (false,{}); try … res := (true,…);
+                    // else end try;` and relies on the pre-try value surviving a
+                    // template failure. Only a genuinely uninitialised output (a bare
+                    // `let mut x;`) forces the failure path, because Rust would
+                    // otherwise read uninitialised memory after the join point.
+                    ctx.fn_outputs_no_default.iter().any(|o| {
+                        body_init.contains(o)
+                            && !else_init.contains(o)
+                            && !ctx.fn_initialized_vars.contains(o)
+                    })
                 }
                 _ => false,
             };

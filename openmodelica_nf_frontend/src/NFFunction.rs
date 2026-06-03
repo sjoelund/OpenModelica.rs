@@ -2212,7 +2212,7 @@ pub mod Function {
         let mut comp: Arc<Component::NFComponent> = Arc::new(Component::WILD);
         let mut default: Option<Arc<Expression::NFExpression>> = None;
         let mut name: ArcStr = arcstr::literal!("");
-        match '__try0: {
+        if '__try0: {
             comp = unwrap_break_err!(InstNode::component(component.clone()), '__try0);
             default = Binding::getExpOpt(Component::getImplicitBinding(comp.clone(), unwrap_break_err!(InstNode::instanceParent(component.clone()), '__try0)));
             name = (unwrap_break_err!(InstNode::name(component.clone()), '__try0)).clone();
@@ -2220,18 +2220,9 @@ pub mod Function {
                 name = unwrap_break_err!(substring((name.clone()).clone(), 5, ((name.clone()).clone().len() as i32)), '__try0);
             }
             slot = Arc::new(Slot::Slot { node: component.clone(), ty: SlotType::GENERIC.clone(), default: default.clone(), arg: None, index: index.clone(), evalStatus: SlotEvalStatus::NOT_EVALUATED.clone() });
-            Ok::<_, anyhow::Error>((comp.clone(), default.clone(), name.clone(), slot.clone()))
-        } {
-            Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3)) => {
-                comp = __try0_o0;
-                default = __try0_o1;
-                name = __try0_o2;
-                slot = __try0_o3;
-            }
-            Err(__try0_err) => {
-                Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.makeSlot")); __mm_s.push_str(&*literal!(" got invalid component")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
-                return Err(__try0_err);
-            }
+            Ok::<(), anyhow::Error>(())
+        }.is_err() {
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFFunction.Function.makeSlot")); __mm_s.push_str(&*literal!(" got invalid component")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
         }
         Ok(slot)
     }

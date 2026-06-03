@@ -6240,7 +6240,7 @@ pub fn getInheritedClasses(mut inPath: Arc<Absyn::Path>) -> Result<Arc<metamodel
         outPaths = NFApi::getInheritedClasses(inPath.clone(), SymbolTable::getAbsyn())?;
         return Ok(outPaths.clone());
     }
-    match '__try0: {
+    if '__try0: {
         if !(unwrap_break_err!(Flags::isSet(Flags::NF_API_NOISE.clone()), '__try0)) {
             ErrorExt::setCheckpoint((literal!("getInheritedClasses")).clone());
         }
@@ -6305,16 +6305,10 @@ pub fn getInheritedClasses(mut inPath: Arc<Absyn::Path>) -> Result<Arc<metamodel
         if !(unwrap_break_err!(Flags::isSet(Flags::NF_API_NOISE.clone()), '__try0)) {
             ErrorExt::rollBack((literal!("getInheritedClasses")).clone());
         }
-        Ok::<_, anyhow::Error>((outPaths.clone(),))
-    } {
-        Ok((__try0_o0,)) => {
-            outPaths = __try0_o0;
-        }
-        Err(__try0_err) => {
-            if !(Flags::isSet(Flags::NF_API_NOISE.clone())?) {
-                ErrorExt::rollBack((literal!("getInheritedClasses")).clone());
-            }
-            return Err(__try0_err);
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
+        if !(Flags::isSet(Flags::NF_API_NOISE.clone())?) {
+            ErrorExt::rollBack((literal!("getInheritedClasses")).clone());
         }
     }
     Ok(outPaths)

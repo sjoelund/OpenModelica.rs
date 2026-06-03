@@ -1150,7 +1150,7 @@ pub mod ClassTree {
     pub fn getRedeclaredNode(mut name: ArcStr, mut tree: Arc<ClassTree>) -> Result<Arc<InstNode::InstNode>> {
         let mut node: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
         let mut entry: Arc<DuplicateTree::Entry> = Arc::new(<DuplicateTree::Entry as ::std::default::Default>::default());
-        match '__try0: {
+        if '__try0: {
             entry = unwrap_break_err!(DuplicateTree::get(unwrap_break_err!(getDuplicates(tree.clone()), '__try0), (name.clone()).clone()), '__try0);
             entry = unwrap_break_err!(listHead(entry.children.clone()), '__try0);
             if isSome(entry.node.clone()) {
@@ -1162,16 +1162,9 @@ pub mod ClassTree {
             } else {
                 (node, _) = unwrap_break_err!(resolveEntry(entry.entry.clone(), tree.clone()), '__try0);
             }
-            Ok::<_, anyhow::Error>((entry.clone(), node.clone()))
-        } {
-            Ok((__try0_o0, __try0_o1)) => {
-                entry = __try0_o0;
-                node = __try0_o1;
-            }
-            Err(__try0_err) => {
-                Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClassTree.ClassTree.getRedeclaredNode")); __mm_s.push_str(&*literal!(" failed on ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
-                return Err(__try0_err);
-            }
+            Ok::<(), anyhow::Error>(())
+        }.is_err() {
+            Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFClassTree.ClassTree.getRedeclaredNode")); __mm_s.push_str(&*literal!(" failed on ")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
         }
         Ok(node)
     }

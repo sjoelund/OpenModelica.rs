@@ -1064,17 +1064,11 @@ fn setTrieGet(mut cref: Arc<DAE::ComponentRef>, mut trie: Arc<SetTrieNode>, mut 
         }
     }
     if !(ComponentReference::crefIsIdent(cref.clone())) {
-        match '__try2: {
+        if '__try2: {
             leaf = unwrap_break_err!(setTrieGet(unwrap_break_err!(ComponentReference::crefRest(cref.clone()), '__try2), leaf.clone(), matchPrefix.clone()), '__try2);
-            Ok::<_, anyhow::Error>((leaf.clone(),))
-        } {
-            Ok((__try2_o0,)) => {
-                leaf = __try2_o0;
-            }
-            Err(__try2_err) => {
-                let true = (matchPrefix.clone() && !(setTrieIsNode(leaf.clone()))) else { bail!("pattern mismatch") };
-                return Err(__try2_err);
-            }
+            Ok::<(), anyhow::Error>(())
+        }.is_err() {
+            let true = (matchPrefix.clone() && !(setTrieIsNode(leaf.clone()))) else { bail!("pattern mismatch") };
         }
     }
     Ok(leaf)
@@ -1891,7 +1885,7 @@ fn evaluateInStream(mut streamCref: Arc<DAE::ComponentRef>, mut sets: Sets, mut 
     let mut e: ConnectorElement = <ConnectorElement as ::std::default::Default>::default();
     let mut sl: Arc<metamodelica::List<ConnectorElement>> = metamodelica::nil();
     let mut set: i32 = 0;
-    match '__try0: {
+    if '__try0: {
         e = findElement(streamCref.clone(), openmodelica_frontend_types::DAE::Connect::Face::INSIDE, ConnectorType::STREAM { associatedFlow: None }, DAE::emptyElementSource().clone(), sets.clone());
         if unwrap_break_err!(isNewElement(e.clone()), '__try0) {
             sl = list![e.clone()];
@@ -1902,18 +1896,10 @@ fn evaluateInStream(mut streamCref: Arc<DAE::ComponentRef>, mut sets: Sets, mut 
             sl = __pa2.clone();
         }
         exp = unwrap_break_err!(generateInStreamExp(streamCref.clone(), sl.clone(), sets.clone(), setArray.clone(), flowThreshold.clone()), '__try0);
-        Ok::<_, anyhow::Error>((e.clone(), exp.clone(), sl.clone()))
-    } {
-        Ok((__try0_o0, __try0_o1, __try0_o2)) => {
-            e = __try0_o0;
-            exp = __try0_o1;
-            sl = __try0_o2;
-        }
-        Err(__try0_err) => {
-            let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-            Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- ConnectUtil.evaluateInStream failed for ")); __mm_s.push_str(&*ComponentReference::crefStr(streamCref.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
-            return Err(__try0_err);
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
+        let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
+        Debug::traceln(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("- ConnectUtil.evaluateInStream failed for ")); __mm_s.push_str(&*ComponentReference::crefStr(streamCref.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
     }
     Ok(exp)
 }

@@ -3178,7 +3178,7 @@ fn elabMatrixComma(mut inExpl: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut inPro
 fn elabMatrixCatTwoExp(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut expl: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-    match '__try0: {
+    if '__try0: {
         let __pa1 = ::match_deref::match_deref! { match &(inExp.clone()) {
             Deref @ DAE::Exp::ARRAY { array: __pa1, .. } => __pa1.clone(),
             _ => break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
@@ -3194,17 +3194,10 @@ fn elabMatrixCatTwoExp(mut inExp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         __acc.reverse()
     });
         outExp = unwrap_break_err!(elabMatrixCatTwo(expl.clone()), '__try0);
-        Ok::<_, anyhow::Error>((expl.clone(), outExp.clone()))
-    } {
-        Ok((__try0_o0, __try0_o1)) => {
-            expl = __try0_o0;
-            outExp = __try0_o1;
-        }
-        Err(__try0_err) => {
-            let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-            Debug::traceln((literal!("- Static.elabMatrixCatTwoExp failed")).clone())?;
-            return Err(__try0_err);
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
+        let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
+        Debug::traceln((literal!("- Static.elabMatrixCatTwoExp failed")).clone())?;
     }
     Ok(outExp)
 }
@@ -3339,25 +3332,16 @@ fn promoteExp(mut inExp: Arc<DAE::Exp>, mut inProperties: DAE::Properties, mut i
     let mut outProperties: DAE::Properties = <DAE::Properties as ::std::default::Default>::default();
     let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut c: DAE::Const = DAE::Const::C_CONST;
-    match '__try0: {
+    if '__try0: {
         let DAE::PROP { type_: __pa1, constFlag: __pa2 } = (inProperties.clone()) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
         ty = __pa1.clone();
         c = __pa2.clone();
         (outExp, ty) = unwrap_break_err!(Expression::promoteExp(inExp.clone(), ty.clone(), inDims.clone()), '__try0);
         outProperties = DAE::Properties::PROP { type_: ty.clone(), constFlag: c.clone() };
-        Ok::<_, anyhow::Error>((c.clone(), outExp.clone(), outProperties.clone(), ty.clone()))
-    } {
-        Ok((__try0_o0, __try0_o1, __try0_o2, __try0_o3)) => {
-            c = __try0_o0;
-            outExp = __try0_o1;
-            outProperties = __try0_o2;
-            ty = __try0_o3;
-        }
-        Err(__try0_err) => {
-            let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
-            Debug::traceln((literal!("- Static.promoteExp failed")).clone())?;
-            return Err(__try0_err);
-        }
+        Ok::<(), anyhow::Error>(())
+    }.is_err() {
+        let true = (Flags::isSet(Flags::FAILTRACE.clone())?) else { bail!("pattern mismatch") };
+        Debug::traceln((literal!("- Static.promoteExp failed")).clone())?;
     }
     Ok((outExp, outProperties))
 }
@@ -5895,21 +5879,17 @@ fn elabBuiltinIdentity(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
             sz = __pa4.clone();
             dim_size = Arc::new(DAE::Dimension::DIM_INTEGER { integer: sz.clone() });
             dim_exp = Arc::new(DAE::Exp::ICONST { integer: sz.clone() });
-            Ok::<_, anyhow::Error>((dim_exp.clone(), dim_size.clone(), outCache.clone(), sz.clone()))
+            Ok::<_, anyhow::Error>((dim_size.clone(),))
         } {
-            Ok((__try2_o0, __try2_o1, __try2_o2, __try2_o3)) => {
-                dim_exp = __try2_o0;
-                dim_size = __try2_o1;
-                outCache = __try2_o2;
-                sz = __try2_o3;
+            Ok((__try2_o0,)) => {
+                dim_size = __try2_o0;
             }
-            Err(__try2_err) => {
+            Err(_) => {
                 if check_model.clone() {
                     dim_size = Arc::new(openmodelica_frontend_types::DAE::Dimension::DIM_UNKNOWN);
                 } else {
                     bail!("fail");
                 }
-                return Err(__try2_err);
             }
         }
     } else {
@@ -8599,7 +8579,7 @@ fn elabTypes(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: 
         if debug.clone() {
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("elabTypes, try: ")); __mm_s.push_str(&*TypesDump::unparseType(func_ty.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
-        match '__try6: {
+        if '__try6: {
             slots = unwrap_break_err!(makeEmptySlots(params.clone()), '__try6);
             (outCache, outArgs, outSlots, outConsts, pb) = unwrap_break_err!(elabInputArgs(inCache.clone(), inEnv.clone(), inPosArgs.clone(), inNamedArgs.clone(), slots.clone(), inOnlyOneFunction.clone(), inCheckTypes.clone(), inImplicit.clone(), inPrefix.clone(), inInfo.clone(), func_ty.clone(), path.clone(), false), '__try6);
             (outCache, pb) = unwrap_break_err!(addPolymorphicTypeVars(outCache.clone(), inEnv.clone(), typeVars.clone(), func_ty.clone(), pb.clone(), path.clone(), inInfo.clone()), '__try6);
@@ -8647,25 +8627,8 @@ fn elabTypes(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inPosArgs: 
             if debug.clone() {
                 println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("elabTypes success for ")); __mm_s.push_str(&*unwrap_break_err!(TypesDump::unparseType(func_ty.clone()), '__try6)); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*unwrap_break_err!(TypesDump::unparseType(outFunctionType.clone()), '__try6)); __mm_s.push_str(&*literal!("=>")); __mm_s.push_str(&*unwrap_break_err!(TypesDump::unparseType(outResultType.clone()), '__try6)); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             }
-            Ok::<_, anyhow::Error>((outArgs.clone(), outCache.clone(), outConsts.clone(), outDimensions.clone(), outFunctionType.clone(), outResultType.clone(), outSlots.clone(), params.clone(), pb.clone(), res_ty.clone(), slots.clone(), success.clone()))
-        } {
-            Ok((__try6_o0, __try6_o1, __try6_o2, __try6_o3, __try6_o4, __try6_o5, __try6_o6, __try6_o7, __try6_o8, __try6_o9, __try6_o10, __try6_o11)) => {
-                outArgs = __try6_o0;
-                outCache = __try6_o1;
-                outConsts = __try6_o2;
-                outDimensions = __try6_o3;
-                outFunctionType = __try6_o4;
-                outResultType = __try6_o5;
-                outSlots = __try6_o6;
-                params = __try6_o7;
-                pb = __try6_o8;
-                res_ty = __try6_o9;
-                slots = __try6_o10;
-                success = __try6_o11;
-            }
-            Err(__try6_err) => {
-                return Err(__try6_err);
-            }
+            Ok::<(), anyhow::Error>(())
+        }.is_err() {
         }
     }
     Ok((outCache, outArgs, outConsts, outResultType, outFunctionType, outDimensions, outSlots))

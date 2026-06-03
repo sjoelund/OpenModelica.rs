@@ -1218,7 +1218,7 @@ fn loadLibraryFunction(mut libName: ArcStr, mut fnName: ArcStr, mut extAnnotatio
     ErrorExt::setCheckpoint(literal!("NFEvalFunction.loadLibraryFunction"));
     for mut path in &*paths.clone() {
         let mut path = path.clone();
-        match '__try1: {
+        if '__try1: {
             if !(stringEmpty((path.clone()).clone())) {
                 path = uriToFilename((path.clone()).clone());
             }
@@ -1229,16 +1229,8 @@ fn loadLibraryFunction(mut libName: ArcStr, mut fnName: ArcStr, mut extAnnotatio
             }
             fnHandle = unwrap_break_err!(System::lookupFunction(lib_handle.clone(), (fnName.clone()).clone()), '__try1);
             found = true;
-            Ok::<_, anyhow::Error>((fnHandle.clone(), found.clone(), lib_handle.clone()))
-        } {
-            Ok((__try1_o0, __try1_o1, __try1_o2)) => {
-                fnHandle = __try1_o0;
-                found = __try1_o1;
-                lib_handle = __try1_o2;
-            }
-            Err(__try1_err) => {
-                return Err(__try1_err);
-            }
+            Ok::<(), anyhow::Error>(())
+        }.is_err() {
         }
         if found.clone() {
             break;

@@ -249,23 +249,18 @@ pub fn matchOverloadedBinaryOperator(mut exp1: Arc<Expression::NFExpression>, mu
     exactMatches = MatchedFunction::getExactMatches(matchedFunctions.clone());
     if exactMatches.clone().is_empty() {
         ErrorExt::setCheckpoint((literal!("NFTypeCheck:implicitConstruction")).clone());
-        match '__try0: {
+        if '__try0: {
             (outExp, outType) = unwrap_break_err!(implicitConstructAndMatch(candidates.clone(), exp1.clone(), type1.clone(), op.clone(), exp2.clone(), type2.clone(), info.clone()), '__try0);
             if showErrors.clone() {
                 ErrorExt::delCheckpoint((literal!("NFTypeCheck:implicitConstruction")).clone());
             } else {
                 ErrorExt::rollBack((literal!("NFTypeCheck:implicitConstruction")).clone());
             }
-            Ok::<_, anyhow::Error>((outExp.clone(), outType.clone()))
-        } {
-            Ok((__try0_o0, __try0_o1)) => {
-                outExp = __try0_o0;
-                outType = __try0_o1;
-            }
-            Err(__try0_err) => {
-                ErrorExt::rollBack((literal!("NFTypeCheck:implicitConstruction")).clone());
-                if Type::isArray(type1.clone()) || Type::isArray(type2.clone()) {
-                    (outExp, outType) = (match op.op.clone() {
+            Ok::<(), anyhow::Error>(())
+        }.is_err() {
+            ErrorExt::rollBack((literal!("NFTypeCheck:implicitConstruction")).clone());
+            if Type::isArray(type1.clone()) || Type::isArray(type2.clone()) {
+                (outExp, outType) = (match op.op.clone() {
         Operator::Op::ADD => checkOverloadedBinaryArrayAddSub(exp1.clone(), type1.clone(), var1.clone(), op.clone(), exp2.clone(), type2.clone(), var2.clone(), candidates.clone(), context.clone(), info.clone())?,
         Operator::Op::SUB => checkOverloadedBinaryArrayAddSub(exp1.clone(), type1.clone(), var1.clone(), op.clone(), exp2.clone(), type2.clone(), var2.clone(), candidates.clone(), context.clone(), info.clone())?,
         Operator::Op::MUL => checkOverloadedBinaryArrayMul(exp1.clone(), type1.clone(), var1.clone(), op.clone(), exp2.clone(), type2.clone(), var2.clone(), candidates.clone(), context.clone(), info.clone())?,
@@ -275,10 +270,8 @@ pub fn matchOverloadedBinaryOperator(mut exp1: Arc<Expression::NFExpression>, mu
             bail!("fail")
         },
     });
-                } else {
-                    printUnresolvableTypeError(Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: op.clone(), exp2: exp2.clone() }), list![type1.clone(), type2.clone()], info.clone(), showErrors.clone())?;
-                }
-                return Err(__try0_err);
+            } else {
+                printUnresolvableTypeError(Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: op.clone(), exp2: exp2.clone() }), list![type1.clone(), type2.clone()], info.clone(), showErrors.clone())?;
             }
         }
     } else if (exactMatches.clone().len() as i32) == 1 {
@@ -505,19 +498,12 @@ fn checkOverloadedBinaryScalarArray2(mut exp1: Arc<Expression::NFExpression>, mu
     let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
     (outExp, outType) = (::match_deref::match_deref! { match &(exp2.clone()) {
         Deref @ Expression::ARRAY { .. } if (var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone().borrow().is_empty()) => {
-            match '__try0: {
+            if '__try0: {
                 ty = unwrap_break_err!(Type::unliftArray(type2.clone()), '__try0);
                 (_, outType) = unwrap_break_err!(matchOverloadedBinaryOperator(exp1.clone(), type1.clone(), var1.clone(), op.clone(), Arc::new(Expression::NFExpression::EMPTY { ty: type2.clone() }), ty.clone(), var2.clone(), candidates.clone(), context.clone(), info.clone(), false), '__try0);
-                Ok::<_, anyhow::Error>((outType.clone(), ty.clone()))
-            } {
-                Ok((__try0_o0, __try0_o1)) => {
-                    outType = __try0_o0;
-                    ty = __try0_o1;
-                }
-                Err(__try0_err) => {
-                    printUnresolvableTypeError(Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: op.clone(), exp2: exp2.clone() }), list![type1.clone(), var_field!((*exp2).ty, Expression::NFExpression::ARRAY).clone()], info.clone(), true)?;
-                    return Err(__try0_err);
-                }
+                Ok::<(), anyhow::Error>(())
+            }.is_err() {
+                printUnresolvableTypeError(Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: op.clone(), exp2: exp2.clone() }), list![type1.clone(), var_field!((*exp2).ty, Expression::NFExpression::ARRAY).clone()], info.clone(), true)?;
             }
             outType = Type::setArrayElementType(var_field!((*exp2).ty, Expression::NFExpression::ARRAY).clone(), outType.clone());
             (Expression::makeEmptyArray(outType.clone()), outType.clone())
@@ -553,19 +539,12 @@ fn checkOverloadedBinaryArrayScalar2(mut exp1: Arc<Expression::NFExpression>, mu
     let mut arr: metamodelica::Array<Arc<Expression::NFExpression>> = Default::default();
     (outExp, outType) = (::match_deref::match_deref! { match &(exp1.clone()) {
         Deref @ Expression::ARRAY { .. } if (var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone().borrow().is_empty()) => {
-            match '__try0: {
+            if '__try0: {
                 ty = unwrap_break_err!(Type::unliftArray(type1.clone()), '__try0);
                 (_, outType) = unwrap_break_err!(matchOverloadedBinaryOperator(Arc::new(Expression::NFExpression::EMPTY { ty: type1.clone() }), ty.clone(), var1.clone(), op.clone(), exp2.clone(), type2.clone(), var2.clone(), candidates.clone(), context.clone(), info.clone(), false), '__try0);
-                Ok::<_, anyhow::Error>((outType.clone(), ty.clone()))
-            } {
-                Ok((__try0_o0, __try0_o1)) => {
-                    outType = __try0_o0;
-                    ty = __try0_o1;
-                }
-                Err(__try0_err) => {
-                    printUnresolvableTypeError(Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: op.clone(), exp2: exp2.clone() }), list![type1.clone(), var_field!((*exp1).ty, Expression::NFExpression::ARRAY).clone()], info.clone(), true)?;
-                    return Err(__try0_err);
-                }
+                Ok::<(), anyhow::Error>(())
+            }.is_err() {
+                printUnresolvableTypeError(Arc::new(Expression::NFExpression::BINARY { exp1: exp1.clone(), operator: op.clone(), exp2: exp2.clone() }), list![type1.clone(), var_field!((*exp1).ty, Expression::NFExpression::ARRAY).clone()], info.clone(), true)?;
             }
             outType = Type::setArrayElementType(var_field!((*exp1).ty, Expression::NFExpression::ARRAY).clone(), outType.clone());
             (Expression::makeEmptyArray(outType.clone()), outType.clone())
