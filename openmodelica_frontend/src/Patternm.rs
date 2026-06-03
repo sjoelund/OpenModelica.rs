@@ -48,6 +48,7 @@ use crate::Ceval;
 use crate::ComponentReference;
 use crate::ConnectionGraph;
 use crate::Expression;
+use crate::ExpressionDump;
 use crate::FGraph;
 use crate::InnerOuter;
 use crate::Inst;
@@ -852,138 +853,6 @@ fn validUniontype(mut path1: Arc<Absyn::Path>, mut path2: Arc<Absyn::Path>, mut 
         bail!("matchcontinue: no arm matched")
     };
     Ok(())
-}
-
-pub fn patternStr(mut pattern: Arc<DAE::Pattern>) -> Result<ArcStr> {
-    let mut r#str: ArcStr = arcstr::literal!("");
-    r#str = ('mc: {
-        let __mc_input = pattern.clone();
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Pattern::PAT_WILD { .. } => {
-                    Ok(literal!("_"))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Pattern::PAT_AS { pat: Deref @ DAE::Pattern::PAT_WILD { .. }, id, .. } => {
-                    Ok(id.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Pattern::PAT_AS_FUNC_PTR { id, pat: Deref @ DAE::Pattern::PAT_WILD { .. } } => {
-                    Ok(id.clone())
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Pattern::PAT_SOME { pat } => {
-                    let mut r#str: ArcStr = r#str.clone();
-                    r#str = (patternStr(pat.clone())?).clone();
-                    Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("SOME(")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) })
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Pattern::PAT_META_TUPLE { patterns: pats } => {
-                    let mut r#str: ArcStr = r#str.clone();
-                    r#str = stringDelimitList(List::map(pats.clone(), (std::sync::Arc::new(patternStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone());
-                    Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) })
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Pattern::PAT_CALL_TUPLE { patterns: pats } => {
-                    let mut r#str: ArcStr = r#str.clone();
-                    r#str = stringDelimitList(List::map(pats.clone(), (std::sync::Arc::new(patternStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone());
-                    Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) })
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Pattern::PAT_CALL { patterns: pats, name, .. } => {
-                    let mut id: ArcStr = arcstr::literal!("");
-                    let mut r#str: ArcStr = r#str.clone();
-                    id = (AbsynUtil::pathString(name.clone(), (literal!(".")).clone(), true, false)?).clone();
-                    r#str = stringDelimitList(List::map(pats.clone(), (std::sync::Arc::new(patternStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone());
-                    Ok(stringAppendList(list![(id.clone()).clone(), (literal!("(")).clone(), (r#str.clone()).clone(), (literal!(")")).clone()]))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Pattern::PAT_CALL_NAMED { patterns: namedpats, name } => {
-                    let mut fields: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut patsStr: Arc<metamodelica::List<ArcStr>> = metamodelica::nil();
-                    let mut id: ArcStr = arcstr::literal!("");
-                    let mut r#str: ArcStr = r#str.clone();
-                    id = (AbsynUtil::pathString(name.clone(), (literal!(".")).clone(), true, false)?).clone();
-                    fields = List::map(namedpats.clone(), std::sync::Arc::new(fnptr!(Util::tuple32, _)))?;
-                    patsStr = List::map1r(List::mapMap(namedpats.clone(), std::sync::Arc::new(fnptr!(Util::tuple31, _)), (std::sync::Arc::new(patternStr) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Pattern>) -> Result<ArcStr> + 'static>))?, (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>), (literal!("=")).clone())?;
-                    r#str = stringDelimitList(List::threadMap(fields.clone(), patsStr.clone(), (std::sync::Arc::new(fnptr!(stringAppend, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone());
-                    Ok(stringAppendList(list![(id.clone()).clone(), (literal!("(")).clone(), (r#str.clone()).clone(), (literal!(")")).clone()]))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Pattern::PAT_CONS { head, tail } => {
-                    Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*patternStr(head.clone())?); __mm_s.push_str(&*literal!("::")); __mm_s.push_str(&*patternStr(tail.clone())?); ArcStr::from(__mm_s) })
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Pattern::PAT_CONSTANT { exp, .. } => {
-                    Ok(ExpressionBasics::printExpStr(exp.clone())?)
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Pattern::PAT_AS { pat, id, .. } => {
-                    Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*id.clone()); __mm_s.push_str(&*literal!(" as ")); __mm_s.push_str(&*patternStr(pat.clone())?); ArcStr::from(__mm_s) })
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                Deref @ DAE::Pattern::PAT_AS_FUNC_PTR { id, pat } => {
-                    Ok({ let mut __mm_s = String::new(); __mm_s.push_str(&*id.clone()); __mm_s.push_str(&*literal!(" as ")); __mm_s.push_str(&*patternStr(pat.clone())?); ArcStr::from(__mm_s) })
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        if let Ok(__v) = (|| -> Result<_> {
-            ::match_deref::match_deref! { match &__mc_input {
-                _ => {
-                    Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(literal!("Patternm.patternStr not implemented correctly")).clone()])?;
-                    Ok(literal!("*PATTERN*"))
-                }
-                _ => bail!("nomatch"),
-            }}
-        })() { break 'mc __v; }
-        bail!("matchcontinue: no arm matched")
-    }).clone();
-    Ok(r#str)
 }
 
 pub fn elabMatchExpression(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut matchExp: Arc<Absyn::Exp>, mut r#impl: bool, mut performVectorization: bool, mut inPrefix: DAE::Prefix, mut info: SourceInfo) -> Result<(FCore::Cache, Arc<DAE::Exp>, DAE::Properties)> {
@@ -1952,7 +1821,7 @@ pub fn traversePattern<TypeA: Clone + 'static>(mut inPattern: Arc<DAE::Pattern>,
         },
         pat => {
             let mut r#str: ArcStr = arcstr::literal!("");
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Patternm.traversePattern failed: ")); __mm_s.push_str(&*patternStr(pat.clone())?); ArcStr::from(__mm_s) }).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Patternm.traversePattern failed: ")); __mm_s.push_str(&*ExpressionDump::patternStr(pat.clone())?); ArcStr::from(__mm_s) }).clone();
             Error::addMessage(Error::INTERNAL_ERROR.clone(), list![(r#str.clone()).clone()])?;
             bail!("fail")
         },
@@ -3022,7 +2891,7 @@ fn checkPatternInfallibleNoBinding(mut pat: Arc<DAE::Pattern>, mut info: SourceI
             ()
         },
         _ if (isInfallibleNoBinding(pat.clone())?) => {
-            Error::addSourceMessage(Error::META_PATTERN_INFALLIBLE_NO_BINDING.clone(), list![(patternStr(pat.clone())?).clone()], info.clone())?;
+            Error::addSourceMessage(Error::META_PATTERN_INFALLIBLE_NO_BINDING.clone(), list![(ExpressionDump::patternStr(pat.clone())?).clone()], info.clone())?;
             ()
         },
         Deref @ DAE::Pattern::PAT_META_TUPLE { patterns: pats } => {
