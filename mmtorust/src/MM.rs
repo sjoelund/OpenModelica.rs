@@ -221,6 +221,8 @@ fn interface_to_crate(interface: &str) -> Option<String> {
         "codegen_cfunctions" => Some("openmodelica_codegen_cfunctions".to_owned()),
         "codegen_c" => Some("openmodelica_codegen_c".to_owned()),
         "codegen_fmu" => Some("openmodelica_codegen_fmu".to_owned()),
+        "codegen_fmu_c" => Some("openmodelica_codegen_fmu_c".to_owned()),
+        "codegen_fmu_omsi" => Some("openmodelica_codegen_fmu_omsi".to_owned()),
         "codegen_xml" => Some("openmodelica_codegen_xml".to_owned()),
         "codegen_cpp" => Some("openmodelica_codegen_cpp".to_owned()),
         "codegen_cpp_common" => Some("openmodelica_codegen_cpp_common".to_owned()),

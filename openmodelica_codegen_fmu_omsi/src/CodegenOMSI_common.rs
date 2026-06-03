@@ -9,7 +9,6 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::CodegenFMU;
 use crate::CodegenOMSIC_Equations;
 use openmodelica_ast::Absyn;
 use openmodelica_backend::CodegenUtil;
@@ -17,6 +16,7 @@ use openmodelica_backend::SimCodeUtil;
 use openmodelica_backend_types::BackendDAE;
 use openmodelica_codegen::CodegenUtilSimulation;
 use openmodelica_codegen_cfunctions::CodegenCFunctions;
+use openmodelica_codegen_fmu_c::CodegenFMU;
 use openmodelica_frontend_types::DAE;
 use openmodelica_simcode_types::SimCode;
 use openmodelica_simcode_types::SimCodeFunction;

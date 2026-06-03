@@ -933,3 +933,41 @@ pub fn errorMsg(mut txt: Tpl::Text, mut a_errMessage: ArcStr) -> Result<Tpl::Tex
     Ok(out_txt)
 }
 
+fn fun_73(mut in_txt: Tpl::Text, mut in_a_language: ArcStr, mut in_a_name: ArcStr) -> Result<Tpl::Text> {
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_language.clone(), in_a_name.clone())) {
+        (txt, Deref @ "BUILTIN", a_name) => {
+            let mut txt = (*txt).clone();
+            txt = Tpl::writeStr(txt.clone(), (a_name.clone()).clone())?;
+            txt.clone()
+        },
+        (txt, Deref @ "C", a_name) => {
+            let mut txt = (*txt).clone();
+            txt = Tpl::writeStr(txt.clone(), (a_name.clone()).clone())?;
+            txt.clone()
+        },
+        (txt, Deref @ "FORTRAN 77", a_name) => {
+            let mut txt = (*txt).clone();
+            txt = Tpl::writeStr(txt.clone(), (a_name.clone()).clone())?;
+            txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_")).clone() }))?;
+            txt.clone()
+        },
+        (txt, i_language, _) => {
+            let mut txt_0: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+            let mut txt = (*txt).clone();
+            txt_0 = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("Unsupported external language: ")).clone() }))?;
+            txt_0 = Tpl::writeStr(txt_0.clone(), (i_language.clone()).clone())?;
+            txt = error(txt.clone(), Tpl::sourceInfo((literal!("CodegenUtil.tpl")).clone(), 375, 14), (Tpl::textString(txt_0.clone())?).clone())?;
+            txt.clone()
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    Ok(out_txt)
+}
+
+pub fn extFunctionName(mut txt: Tpl::Text, mut a_name: ArcStr, mut a_language: ArcStr) -> Result<Tpl::Text> {
+    let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
+    out_txt = fun_73(txt.clone(), (a_language.clone()).clone(), (a_name.clone()).clone())?;
+    Ok(out_txt)
+}
+

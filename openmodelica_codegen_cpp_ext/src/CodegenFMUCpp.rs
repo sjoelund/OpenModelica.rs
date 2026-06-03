@@ -16,8 +16,8 @@ use openmodelica_backend_types::BackendDAE;
 use openmodelica_codegen_cpp::CodegenCpp;
 use openmodelica_codegen_cpp_common::CodegenCppCommon;
 use openmodelica_codegen_cpp_common::CodegenCppInit;
-use openmodelica_codegen_fmu::CodegenFMU;
 use openmodelica_codegen_fmu::CodegenFMUCommon;
+use openmodelica_codegen_fmu_c::CodegenFMU;
 use openmodelica_frontend_base::Expression;
 use openmodelica_frontend_base::Types;
 use openmodelica_frontend_types::DAE;
@@ -766,7 +766,7 @@ pub fn defineExternalFunction(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCodeFun
             let mut ret_1: i32 = 0;
             let mut l_fname: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
-            l_fname = CodegenCpp::extFunctionName(Tpl::emptyTxt.clone(), (i_extName.clone()).clone(), (i_language.clone()).clone())?;
+            l_fname = CodegenUtil::extFunctionName(Tpl::emptyTxt.clone(), (i_extName.clone()).clone(), (i_language.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("#define $P")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), l_fname.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
@@ -1689,7 +1689,7 @@ pub fn setExternalFunctionSwitch(mut in_txt: Tpl::Text, mut in_a_fn: Arc<SimCode
         (txt, Deref @ SimCodeFunction::Function::EXTERNAL_FUNCTION { language: i_language, extName: i_extName, dynamicLoad: true, .. }) => {
             let mut l_fname: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut txt = (*txt).clone();
-            l_fname = CodegenCpp::extFunctionName(Tpl::emptyTxt.clone(), (i_extName.clone()).clone(), (i_language.clone()).clone())?;
+            l_fname = CodegenUtil::extFunctionName(Tpl::emptyTxt.clone(), (i_extName.clone()).clone(), (i_language.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("case $P")).clone() }))?;
             txt = Tpl::writeText(txt.clone(), l_fname.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" : ptr_")).clone() }))?;
