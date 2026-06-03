@@ -373,21 +373,36 @@ pub fn splitOnNewline(r#str: ArcStr, includeDelimiter: bool) -> Result<Arc<List<
 // ───────────────────────────────── compiler/linker config ─────────────────────
 
 // Defaults for the simulation-code compiler toolchain, mirroring the
-// `DEFAULT_*` macros from `OMCompiler/omc_config.unix.h` (substituted by
-// configure when the C omc is built; see `omc_config.unix.h.in`). The
-// installed omc this port runs against (`OPENMODELICAHOME`) was configured
-// with clang, and the generated simulation code links against its runtime
-// libraries, so we mirror that configuration. All of these can be
-// overridden at runtime through the `set*` functions below (the omc
+// `DEFAULT_*` macros from `OMCompiler/omc_config.h`: the MinGW section on
+// Windows, the configure-substituted `omc_config.unix.h` elsewhere (the
+// installed omc this port runs against was configured with clang, and the
+// generated simulation code links against its runtime libraries, so the
+// Unix values mirror that configuration). All of these can be overridden
+// at runtime through the `set*` functions below (the omc
 // `setCompiler`/`setCFlags`/… scripting API).
 const DEFAULT_CC: &str = "clang";
-const DEFAULT_CXX: &str = "clang++ -std=c++17";
+const DEFAULT_CXX: &str = if cfg!(windows) { "clang++" } else { "clang++ -std=c++17" };
 const DEFAULT_OMPCC: &str = "clang -fopenmp";
-// DEFAULT_LINKER on Linux is "<RUNTIMECC> -shared".
-const DEFAULT_LINKER: &str = "clang -shared";
-// DEFAULT_CFLAGS = "-DOM_HAVE_PTHREADS @RUNTIMECFLAGS@ ${MODELICAUSERCFLAGS}".
-const DEFAULT_CFLAGS: &str = "-DOM_HAVE_PTHREADS -fPIC -falign-functions -mfpmath=sse -fno-dollars-in-identifiers -Wno-parentheses-equality ${MODELICAUSERCFLAGS}";
-const DEFAULT_LDFLAGS: &str = "";
+// Unix: "<RUNTIMECC> -shared". Windows (omc_config.h):
+// DEFAULT_LD" -shared -Xlinker --export-all-symbols" with DEFAULT_LD=clang++.
+const DEFAULT_LINKER: &str = if cfg!(windows) {
+    "clang++ -shared -Xlinker --export-all-symbols"
+} else {
+    "clang -shared"
+};
+// DEFAULT_CFLAGS = "-DOM_HAVE_PTHREADS @RUNTIMECFLAGS@ ${MODELICAUSERCFLAGS}"
+// on Unix; the MinGW section adds -mstackrealign and drops -fPIC (meaningless
+// on Windows, gcc ignores it / clang warns).
+const DEFAULT_CFLAGS: &str = if cfg!(windows) {
+    "-DOM_HAVE_PTHREADS -Wno-parentheses-equality -falign-functions -mstackrealign -msse2 -mfpmath=sse ${MODELICAUSERCFLAGS}"
+} else {
+    "-DOM_HAVE_PTHREADS -fPIC -falign-functions -mfpmath=sse -fno-dollars-in-identifiers -Wno-parentheses-equality ${MODELICAUSERCFLAGS}"
+};
+const DEFAULT_LDFLAGS: &str = if cfg!(windows) {
+    "-fopenmp -Wl,-Bstatic -lregex -ltre -lintl -liconv -lexpat -lpthread -loleaut32 -limagehlp -lhdf5 -lz -lsz -Wl,-Bdynamic"
+} else {
+    ""
+};
 
 pub fn setCCompiler(inString: ArcStr) {
     with(|s| s.cc = inString.to_string());

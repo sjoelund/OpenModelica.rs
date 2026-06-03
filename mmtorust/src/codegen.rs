@@ -71,6 +71,11 @@ const HANDWRITTEN_TOP_PACKAGES: &[&str] = &[
     // comparison runtime (`runtime/SimulationResults*.c`); hand-written in
     // `openmodelica_script_util/src/SimulationResults.rs`.
     "SimulationResults",
+    // Upstream Autoconf.mo is produced by configure-time substitution
+    // (Autoconf.mo.in / Autoconf.mo.omdev.mingw); the Rust port detects the
+    // platform with compile-time `cfg!` instead. Hand-written in
+    // `openmodelica_util/src/Autoconf.rs`.
+    "Autoconf",
 ];
 
 /// How to propagate a Result error from a fallible sub-expression.
