@@ -133,7 +133,7 @@ pub fn simplify(mut exp: Arc<Expression::NFExpression>, mut includeScope: bool) 
     } });
     old = Expression::typeOf(exp.clone());
     new = Type::simplify(old.clone())?;
-    if !(referenceEq(&old.clone(),&new.clone())) {
+    if !(referenceEq(&*(old.clone()),&*(new.clone()))) {
         exp = Expression::setType(new.clone(), exp.clone())?;
     }
     Ok(exp)
@@ -161,7 +161,7 @@ pub fn simplifyRange(mut range: Arc<Expression::NFExpression>) -> Result<Arc<Exp
     step_exp2 = Util::applyOption(step_exp1.clone(), (std::sync::Arc::new({ let __pe_b1 = false; move |__pe_a0| simplify(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
     stop_exp2 = simplify(stop_exp1.clone(), false)?;
     ty2 = Type::simplify(ty.clone())?;
-    if referenceEq(&start_exp1.clone(),&start_exp2.clone()) && referenceEq(&step_exp1.clone(),&step_exp2.clone()) && referenceEq(&stop_exp1.clone(),&stop_exp2.clone()) && referenceEq(&ty.clone(),&ty2.clone()) {
+    if referenceEq(&*(start_exp1.clone()),&*(start_exp2.clone())) && (match (&(step_exp1.clone()), &(step_exp2.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && referenceEq(&*(stop_exp1.clone()),&*(stop_exp2.clone())) && referenceEq(&*(ty.clone()),&*(ty2.clone())) {
         exp = range.clone();
     } else {
         if !(Type::isResizable(ty.clone())?) {
@@ -1289,7 +1289,7 @@ pub fn simplifyLogicUnary(mut unaryExp: Arc<Expression::NFExpression>) -> Result
             se = simplify(e.clone(), false)?;
             if Expression::isLiteral(se.clone())? {
                 newExp = Ceval::evalLogicUnaryOp(se.clone(), op.clone())?;
-            } else if !(referenceEq(&e.clone(),&se.clone())) {
+            } else if !(referenceEq(&*(e.clone()),&*(se.clone()))) {
                 newExp = Arc::new(Expression::NFExpression::LUNARY { operator: op.clone(), exp: se.clone() });
             } else {
                 newExp = unaryExp.clone();
@@ -1321,7 +1321,7 @@ pub fn simplifyRelation(mut relationExp: Arc<Expression::NFExpression>) -> Resul
     se2 = simplify(e2.clone(), false)?;
     if Expression::isLiteral(se1.clone())? && Expression::isLiteral(se2.clone())? {
         relationExp = Ceval::evalRelationOp(se1.clone(), op.clone(), se2.clone())?;
-    } else if !(referenceEq(&e1.clone(),&se1.clone()) && referenceEq(&e2.clone(),&se2.clone())) {
+    } else if !(referenceEq(&*(e1.clone()),&*(se1.clone())) && referenceEq(&*(e2.clone()),&*(se2.clone()))) {
         relationExp = Arc::new(Expression::NFExpression::RELATION { exp1: se1.clone(), operator: op.clone(), exp2: se2.clone(), index: index.clone() });
     }
     Ok(relationExp)
@@ -1454,7 +1454,7 @@ pub fn simplifyRecordElement(mut exp: Arc<Expression::NFExpression>) -> Result<A
     idx = __pa1.clone();
     ty = __pa2.clone();
     e2 = simplify(e.clone(), false)?;
-    if !(referenceEq(&e.clone(),&e2.clone())) {
+    if !(referenceEq(&*(e.clone()),&*(e2.clone()))) {
         exp = Expression::nthRecordElement(idx.clone(), e2.clone())?;
     }
     Ok(exp)

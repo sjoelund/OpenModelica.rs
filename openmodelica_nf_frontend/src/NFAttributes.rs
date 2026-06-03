@@ -163,9 +163,9 @@ pub fn mergeComponentAttributes(mut outerAttr: Arc<NFAttributes>, mut innerAttr:
     let mut redecl: bool = false;
     let mut resize: bool = false;
     let mut repl: Prefixes::Replaceable = Prefixes::Replaceable::NOT_REPLACEABLE;
-    if referenceEq(&outerAttr.clone(),&DEFAULT_ATTR().clone()) && innerAttr.connectorType.clone() == 0 {
+    if referenceEq(&*(outerAttr.clone()),&*(DEFAULT_ATTR().clone())) && innerAttr.connectorType.clone() == 0 {
         attr = innerAttr.clone();
-    } else if referenceEq(&innerAttr.clone(),&DEFAULT_ATTR().clone()) {
+    } else if referenceEq(&*(innerAttr.clone()),&*(DEFAULT_ATTR().clone())) {
         cty = Prefixes::ConnectorType::merge(outerAttr.connectorType.clone(), innerAttr.connectorType.clone(), node.clone(), false)?;
         attr = Arc::new(NFAttributes { connectorType: cty.clone(), parallelism: outerAttr.parallelism.clone(), variability: outerAttr.variability.clone(), direction: outerAttr.direction.clone(), innerOuter: innerAttr.innerOuter.clone(), isFinal: outerAttr.isFinal.clone(), isRedeclare: innerAttr.isRedeclare.clone(), isReplaceable: innerAttr.isReplaceable.clone(), isResizable: innerAttr.isResizable.clone() });
     } else {
@@ -197,9 +197,9 @@ pub fn mergeDerivedAttributes(mut outerAttr: Arc<NFAttributes>, mut innerAttr: A
     let mut redecl: bool = false;
     let mut resize: bool = false;
     let mut repl: Prefixes::Replaceable = Prefixes::Replaceable::NOT_REPLACEABLE;
-    if referenceEq(&innerAttr.clone(),&DEFAULT_ATTR().clone()) && outerAttr.connectorType.clone() == 0 {
+    if referenceEq(&*(innerAttr.clone()),&*(DEFAULT_ATTR().clone())) && outerAttr.connectorType.clone() == 0 {
         attr = outerAttr.clone();
-    } else if referenceEq(&outerAttr.clone(),&DEFAULT_ATTR().clone()) && innerAttr.connectorType.clone() == 0 {
+    } else if referenceEq(&*(outerAttr.clone()),&*(DEFAULT_ATTR().clone())) && innerAttr.connectorType.clone() == 0 {
         attr = innerAttr.clone();
     } else {
         let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7, __pa8) = ::match_deref::match_deref! { match &(outerAttr.clone()) {
@@ -241,9 +241,9 @@ pub fn mergeRedeclaredComponentAttributes(mut origAttr: Arc<NFAttributes>, mut r
     let mut redecl: bool = false;
     let mut resize: bool = false;
     let mut repl: Prefixes::Replaceable = Prefixes::Replaceable::NOT_REPLACEABLE;
-    if referenceEq(&origAttr.clone(),&DEFAULT_ATTR().clone()) {
+    if referenceEq(&*(origAttr.clone()),&*(DEFAULT_ATTR().clone())) {
         attr = redeclAttr.clone();
-    } else if referenceEq(&redeclAttr.clone(),&DEFAULT_ATTR().clone()) {
+    } else if referenceEq(&*(redeclAttr.clone()),&*(DEFAULT_ATTR().clone())) {
         attr = origAttr.clone();
     } else {
         let (__pa0, __pa1, __pa2, __pa3, __pa4) = ::match_deref::match_deref! { match &(origAttr.clone()) {
@@ -313,7 +313,7 @@ pub fn mergeRedeclaredClassPrefixes(mut origPrefs: Arc<Class::Prefixes::Prefixes
     let mut io: Absyn::InnerOuter = Absyn::InnerOuter::INNER;
     let mut rio: Absyn::InnerOuter = Absyn::InnerOuter::INNER;
     let mut repl: Arc<SCode::Replaceable> = Arc::new(SCode::Replaceable::NOT_REPLACEABLE);
-    if referenceEq(&origPrefs.clone(),&Class::DEFAULT_PREFIXES.clone()) {
+    if referenceEq(&*(origPrefs.clone()),&*(Class::DEFAULT_PREFIXES.clone())) {
         prefs = redeclPrefs.clone();
     } else {
         let __pa0 = ::match_deref::match_deref! { match &(origPrefs.clone()) {
@@ -447,7 +447,7 @@ pub fn updateClassConnectorType(mut res: Arc<Restriction::NFRestriction>, mut at
 pub fn updateVariability(mut attr: Arc<NFAttributes>, mut cls: Arc<Class::NFClass>, mut clsNode: Arc<InstNode::InstNode>, mut compNode: Arc<InstNode::InstNode>, mut context: i32) -> Result<Arc<NFAttributes>> {
     let mut attr: Arc<NFAttributes> = attr;
     let mut var: Prefixes::Variability = attr.variability.clone();
-    if referenceEq(&attr.clone(),&DEFAULT_ATTR().clone()) && InstNode::isDiscreteClass(clsNode.clone())? {
+    if referenceEq(&*(attr.clone()),&*(DEFAULT_ATTR().clone())) && InstNode::isDiscreteClass(clsNode.clone())? {
         attr = IMPL_DISCRETE_ATTR().clone();
     } else if var.clone() == Variability::CONTINUOUS.clone() && InstNode::isDiscreteClass(clsNode.clone())? {
         assign_field!(attr.variability = Variability::IMPLICITLY_DISCRETE.clone());

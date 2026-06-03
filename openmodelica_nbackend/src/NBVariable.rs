@@ -174,7 +174,7 @@ pub fn applyToType(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut
     let mut new: Arc<Variable::NFVariable> = Arc::new(<Variable::NFVariable as ::std::default::Default>::default());
     let mut var: Arc<Variable::NFVariable> = Pointer::access(var_ptr.clone());
     new = Variable::applyToType(var.clone(), func.clone())?;
-    if !(referenceEq(&var.clone(),&new.clone())) {
+    if !(referenceEq(&*(var.clone()),&*(new.clone()))) {
         Pointer::update(var_ptr.clone(), new.clone());
     }
     Ok(())
@@ -1796,7 +1796,7 @@ pub fn mapExp(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut func
     if isBound(var_ptr.clone()) {
         binding = Binding::getExp(var.binding.clone())?;
         new_binding = mapFunc(binding.clone(), funcExp.clone())?;
-        if !(referenceEq(&binding.clone(),&new_binding.clone())) {
+        if !(referenceEq(&*(binding.clone()),&*(new_binding.clone()))) {
             assign_field!(var.binding = Binding::setExp(new_binding.clone(), var.binding.clone())?);
             changed = true;
         }
@@ -1809,7 +1809,7 @@ pub fn mapExp(mut var_ptr: Pointer::Pointer<Arc<Variable::NFVariable>>, mut func
         } };
         start = __pa0.clone();
         new_start = mapFunc(start.clone(), funcExp.clone())?;
-        if !(referenceEq(&start.clone(),&new_start.clone())) {
+        if !(referenceEq(&*(start.clone()),&*(new_start.clone()))) {
             var = setStartAttribute(var.clone(), new_start.clone(), true)?;
             changed = true;
         }
@@ -2021,7 +2021,7 @@ pub mod VariablePointers {
                 var_ptr = ExpandableArray::get(i.clone(), variables.varArr.clone())?;
                 var = Pointer::access(var_ptr.clone());
                 new_var = func(var.clone())?;
-                if !(referenceEq(&var.clone(),&new_var.clone())) {
+                if !(referenceEq(&*(var.clone()),&*(new_var.clone()))) {
                     Pointer::update(var_ptr.clone(), new_var.clone());
                 }
             }

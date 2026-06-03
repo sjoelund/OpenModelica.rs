@@ -358,7 +358,7 @@ pub fn isEqualList(mut subscripts1: Arc<metamodelica::List<Arc<NFSubscript>>>, m
 
 pub fn compare(mut subscript1: Arc<NFSubscript>, mut subscript2: Arc<NFSubscript>) -> Result<i32> {
     let mut comp: i32 = 0;
-    if referenceEq(&subscript1.clone(),&subscript2.clone()) {
+    if referenceEq(&*(subscript1.clone()),&*(subscript2.clone())) {
         comp = 0;
         return Ok(comp.clone());
     }
@@ -549,17 +549,17 @@ pub fn mapExp(mut subscript: Arc<NFSubscript>, mut func: Arc<dyn ::std::ops::Fn(
         Deref @ UNTYPED { exp: e1 } => {
             let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             e2 = Expression::map(e1.clone(), func.clone())?;
-            if (referenceEq(&e1.clone(),&e2.clone())) {subscript.clone()} else {Arc::new(NFSubscript::UNTYPED { exp: e2.clone() })}
+            if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {subscript.clone()} else {Arc::new(NFSubscript::UNTYPED { exp: e2.clone() })}
         },
         Deref @ INDEX { index: e1 } => {
             let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             e2 = Expression::map(e1.clone(), func.clone())?;
-            if (referenceEq(&e1.clone(),&e2.clone())) {subscript.clone()} else {fromTypedExp(e2.clone())}
+            if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {subscript.clone()} else {fromTypedExp(e2.clone())}
         },
         Deref @ SLICE { slice: e1 } => {
             let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             e2 = Expression::map(e1.clone(), func.clone())?;
-            if (referenceEq(&e1.clone(),&e2.clone())) {subscript.clone()} else {fromTypedExp(e2.clone())}
+            if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {subscript.clone()} else {fromTypedExp(e2.clone())}
         },
         _ => {
             subscript.clone()
@@ -577,17 +577,17 @@ pub fn mapShallowExp(mut subscript: Arc<NFSubscript>, mut func: Arc<dyn ::std::o
         Deref @ UNTYPED { exp: e1 } => {
             let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             e2 = func(e1.clone())?;
-            if (referenceEq(&e1.clone(),&e2.clone())) {subscript.clone()} else {Arc::new(NFSubscript::UNTYPED { exp: e2.clone() })}
+            if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {subscript.clone()} else {Arc::new(NFSubscript::UNTYPED { exp: e2.clone() })}
         },
         Deref @ INDEX { index: e1 } => {
             let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             e2 = func(e1.clone())?;
-            if (referenceEq(&e1.clone(),&e2.clone())) {subscript.clone()} else {fromTypedExp(e2.clone())}
+            if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {subscript.clone()} else {fromTypedExp(e2.clone())}
         },
         Deref @ SLICE { slice: e1 } => {
             let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             e2 = func(e1.clone())?;
-            if (referenceEq(&e1.clone(),&e2.clone())) {subscript.clone()} else {fromTypedExp(e2.clone())}
+            if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {subscript.clone()} else {fromTypedExp(e2.clone())}
         },
         _ => {
             subscript.clone()
@@ -620,17 +620,17 @@ pub fn mapFoldExp<ArgT: Clone + 'static>(mut subscript: Arc<NFSubscript>, mut fu
         Deref @ UNTYPED { .. } => {
             let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             (exp, arg) = Expression::mapFold(var_field!((*subscript).exp, NFSubscript::UNTYPED).clone(), func.clone(), arg.clone())?;
-            if (referenceEq(&var_field!((*subscript).exp, NFSubscript::UNTYPED).clone(),&exp.clone())) {subscript.clone()} else {Arc::new(NFSubscript::UNTYPED { exp: exp.clone() })}
+            if (referenceEq(&*(var_field!((*subscript).exp, NFSubscript::UNTYPED).clone()),&*(exp.clone()))) {subscript.clone()} else {Arc::new(NFSubscript::UNTYPED { exp: exp.clone() })}
         },
         Deref @ INDEX { .. } => {
             let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             (exp, arg) = Expression::mapFold(var_field!((*subscript).index, NFSubscript::INDEX).clone(), func.clone(), arg.clone())?;
-            if (referenceEq(&var_field!((*subscript).index, NFSubscript::INDEX).clone(),&exp.clone())) {subscript.clone()} else {fromTypedExp(exp.clone())}
+            if (referenceEq(&*(var_field!((*subscript).index, NFSubscript::INDEX).clone()),&*(exp.clone()))) {subscript.clone()} else {fromTypedExp(exp.clone())}
         },
         Deref @ SLICE { .. } => {
             let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             (exp, arg) = Expression::mapFold(var_field!((*subscript).slice, NFSubscript::SLICE).clone(), func.clone(), arg.clone())?;
-            if (referenceEq(&var_field!((*subscript).slice, NFSubscript::SLICE).clone(),&exp.clone())) {subscript.clone()} else {fromTypedExp(exp.clone())}
+            if (referenceEq(&*(var_field!((*subscript).slice, NFSubscript::SLICE).clone()),&*(exp.clone()))) {subscript.clone()} else {fromTypedExp(exp.clone())}
         },
         _ => {
             subscript.clone()
@@ -649,17 +649,17 @@ pub fn mapFoldExpShallow<ArgT: Clone + 'static>(mut subscript: Arc<NFSubscript>,
         Deref @ UNTYPED { .. } => {
             let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             (exp, arg) = func(var_field!((*subscript).exp, NFSubscript::UNTYPED).clone(), arg.clone())?;
-            if (referenceEq(&var_field!((*subscript).exp, NFSubscript::UNTYPED).clone(),&exp.clone())) {subscript.clone()} else {Arc::new(NFSubscript::UNTYPED { exp: exp.clone() })}
+            if (referenceEq(&*(var_field!((*subscript).exp, NFSubscript::UNTYPED).clone()),&*(exp.clone()))) {subscript.clone()} else {Arc::new(NFSubscript::UNTYPED { exp: exp.clone() })}
         },
         Deref @ INDEX { .. } => {
             let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             (exp, arg) = func(var_field!((*subscript).index, NFSubscript::INDEX).clone(), arg.clone())?;
-            if (referenceEq(&var_field!((*subscript).index, NFSubscript::INDEX).clone(),&exp.clone())) {subscript.clone()} else {fromTypedExp(exp.clone())}
+            if (referenceEq(&*(var_field!((*subscript).index, NFSubscript::INDEX).clone()),&*(exp.clone()))) {subscript.clone()} else {fromTypedExp(exp.clone())}
         },
         Deref @ SLICE { .. } => {
             let mut exp: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             (exp, arg) = func(var_field!((*subscript).slice, NFSubscript::SLICE).clone(), arg.clone())?;
-            if (referenceEq(&var_field!((*subscript).slice, NFSubscript::SLICE).clone(),&exp.clone())) {subscript.clone()} else {fromTypedExp(exp.clone())}
+            if (referenceEq(&*(var_field!((*subscript).slice, NFSubscript::SLICE).clone()),&*(exp.clone()))) {subscript.clone()} else {fromTypedExp(exp.clone())}
         },
         _ => {
             subscript.clone()

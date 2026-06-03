@@ -716,7 +716,7 @@ pub fn isExternalObject(mut component: Arc<NFComponent>) -> Result<bool> {
 
 pub fn isIdentical(mut comp1: Arc<NFComponent>, mut comp2: Arc<NFComponent>) -> Result<bool> {
     let mut identical: bool = false;
-    if referenceEq(&comp1.clone(),&comp2.clone()) {
+    if referenceEq(&*(comp1.clone()),&*(comp2.clone())) {
         identical = true;
     } else {
         identical = (::match_deref::match_deref! { match &((comp1.clone(), comp2.clone())) {

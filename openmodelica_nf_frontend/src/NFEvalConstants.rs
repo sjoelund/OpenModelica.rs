@@ -119,7 +119,7 @@ pub fn evaluateVariable(mut var: Arc<Variable::NFVariable>, mut context: i32, mu
     variability = Variable::variability(var.clone());
     structural = variability.clone() <= Variability::STRUCTURAL_PARAMETER.clone() && !(Type::isExternalObject(var.ty.clone()));
     binding = evaluateBinding(var.binding.clone(), var.name.clone(), structural.clone(), variability.clone(), context.clone())?;
-    if !(referenceEq(&binding.clone(),&var.binding.clone())) {
+    if !(referenceEq(&*(binding.clone()),&*(var.binding.clone()))) {
         assign_field!(var.binding = binding.clone());
     }
     assign_field!(
@@ -165,7 +165,7 @@ pub fn evaluateBinding(mut binding: Arc<Binding::NFBinding>, mut prefix: Arc<Com
         } else {
             eexp = evaluateExp(exp.clone(), Binding::getInfo(binding.clone()))?;
         }
-        if !(referenceEq(&exp.clone(),&eexp.clone())) {
+        if !(referenceEq(&*(exp.clone()),&*(eexp.clone()))) {
             binding = Binding::setTypedExp(eexp.clone(), binding.clone())?;
         }
     }
@@ -181,7 +181,7 @@ pub fn evaluateTypeAttribute(mut attribute: (ArcStr, Arc<Binding::NFBinding>), m
     (name, binding) = attribute.clone();
     structural = name.clone() == literal!("fixed") || name.clone() == literal!("stateSelect");
     sbinding = evaluateBinding(binding.clone(), prefix.clone(), structural.clone(), Variability::PARAMETER.clone(), context.clone())?;
-    if !(referenceEq(&binding.clone(),&sbinding.clone())) {
+    if !(referenceEq(&*(binding.clone()),&*(sbinding.clone()))) {
         attribute = (name.clone(), sbinding.clone());
     }
     Ok(attribute)
@@ -241,7 +241,7 @@ pub fn evaluateExpTraverser(mut exp: Arc<Expression::NFExpression>, mut info: So
                 ty = ComponentRef::getSubscriptedType(cref.clone(), false)?;
             }
             ty2 = evaluateType(ty.clone(), info.clone())?;
-            if !(referenceEq(&ty.clone(),&ty2.clone())) {
+            if !(referenceEq(&*(ty.clone()),&*(ty2.clone()))) {
                 outExp = Expression::setType(ty2.clone(), outExp.clone())?;
             }
             (outExp.clone(), outChanged.clone())
@@ -273,7 +273,7 @@ pub fn evaluateExpTraverser(mut exp: Arc<Expression::NFExpression>, mut info: So
             (outExp, outChanged) = Expression::mapFoldShallow(exp.clone(), (std::sync::Arc::new({ let __pe_b1 = info.clone(); move |__pe_a0, __pe_a2| evaluateExpTraverser(__pe_a0, __pe_b1.clone(), __pe_a2) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, bool) -> Result<(Arc<Expression::NFExpression>, bool)> + 'static>), false)?;
             ty = Expression::typeOf(outExp.clone());
             ty2 = evaluateType(ty.clone(), info.clone())?;
-            (if (referenceEq(&ty.clone(),&ty2.clone())) {outExp.clone()} else {Expression::setType(ty2.clone(), outExp.clone())?}, outChanged.clone())
+            (if (referenceEq(&*(ty.clone()),&*(ty2.clone()))) {outExp.clone()} else {Expression::setType(ty2.clone(), outExp.clone())?}, outChanged.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -308,7 +308,7 @@ pub fn evaluateDimension(mut dim: Arc<Dimension::NFDimension>, mut info: SourceI
         Deref @ Dimension::EXP { .. } => {
             let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             e = evaluateExp(var_field!((*dim).exp, Dimension::NFDimension::EXP).clone(), info.clone())?;
-            if (referenceEq(&e.clone(),&var_field!((*dim).exp, Dimension::NFDimension::EXP).clone())) {dim.clone()} else {Dimension::fromExp(e.clone(), var_field!((*dim).var, Dimension::NFDimension::EXP).clone())?}
+            if (referenceEq(&*(e.clone()),&*(var_field!((*dim).exp, Dimension::NFDimension::EXP).clone()))) {dim.clone()} else {Dimension::fromExp(e.clone(), var_field!((*dim).var, Dimension::NFDimension::EXP).clone())?}
         },
         _ => {
             dim.clone()

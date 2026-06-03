@@ -7703,14 +7703,14 @@ fn evaluateStartValues(mut inVar: BackendDAE::Var, mut inShared: Arc<BackendDAE:
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-                        if !(referenceEq(&startValue.clone(),&startValue_.clone())) {
+                        if !(referenceEq(&*(startValue.clone()),&*(startValue_.clone()))) {
                             inVar.bindExp = Some(startValue_.clone());
                         }
                     }
                     if isSome(o2.clone()) {
                         attr = Util::getOption(o2.clone())?;
                         attr_ = evaluateVariableAttributes(attr.clone(), inShared.clone())?;
-                        if !(referenceEq(&attr.clone(),&attr_.clone())) {
+                        if !(referenceEq(&*(attr.clone()),&*(attr_.clone()))) {
                             inVar.values = Some(attr_.clone());
                         }
                     }
@@ -7761,7 +7761,7 @@ fn evaluateVariableAttributes(mut attrIn: Arc<DAE::VariableAttributes>, mut shar
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-                    if !(referenceEq(&exp.clone(),&exp_.clone())) {
+                    if !(referenceEq(&*(exp.clone()),&*(exp_.clone()))) {
                         assign_variant_field!(attrIn => DAE::VariableAttributes::VAR_ATTR_REAL; start = Some(exp.clone()));
                     }
                     Ok(attrIn.clone())
@@ -7966,7 +7966,7 @@ fn replaceCrefWithStartValue(mut expIn: Arc<DAE::Exp>, mut varsIn: BackendDAE::V
                     let mut exp2_: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     (exp1_, _) = replaceCrefWithStartValue(exp1.clone(), varsIn.clone())?;
                     (exp2_, _) = replaceCrefWithStartValue(exp2.clone(), varsIn.clone())?;
-                    if referenceEq(&exp1.clone(),&exp1_.clone()) && referenceEq(&exp2.clone(),&exp2_.clone()) {
+                    if referenceEq(&*(exp1.clone()),&*(exp1_.clone())) && referenceEq(&*(exp2.clone()),&*(exp2_.clone())) {
                         exp = expIn.clone();
                     } else {
                         exp = Arc::new(DAE::Exp::BINARY { exp1: exp1_.clone(), operator: op.clone(), exp2: exp2_.clone() });
@@ -7984,7 +7984,7 @@ fn replaceCrefWithStartValue(mut expIn: Arc<DAE::Exp>, mut varsIn: BackendDAE::V
                     let mut exp2_: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     (exp1_, _) = replaceCrefWithStartValue(exp1.clone(), varsIn.clone())?;
                     (exp2_, _) = replaceCrefWithStartValue(exp2.clone(), varsIn.clone())?;
-                    if referenceEq(&exp1.clone(),&exp1_.clone()) && referenceEq(&exp2.clone(),&exp2_.clone()) {
+                    if referenceEq(&*(exp1.clone()),&*(exp1_.clone())) && referenceEq(&*(exp2.clone()),&*(exp2_.clone())) {
                         exp = expIn.clone();
                     } else {
                         exp = Arc::new(DAE::Exp::LBINARY { exp1: exp1_.clone(), operator: op.clone(), exp2: exp2_.clone() });
@@ -8038,7 +8038,7 @@ fn replaceCrefWithStartValue(mut expIn: Arc<DAE::Exp>, mut varsIn: BackendDAE::V
                     let mut exp2_: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     (exp1_, _) = replaceCrefWithStartValue(exp1.clone(), varsIn.clone())?;
                     (exp2_, _) = replaceCrefWithStartValue(exp2.clone(), varsIn.clone())?;
-                    if referenceEq(&exp1.clone(),&exp1_.clone()) && referenceEq(&exp2.clone(),&exp2_.clone()) {
+                    if referenceEq(&*(exp1.clone()),&*(exp1_.clone())) && referenceEq(&*(exp2.clone()),&*(exp2_.clone())) {
                         exp = expIn.clone();
                     } else {
                         exp = Arc::new(DAE::Exp::RELATION { exp1: exp1_.clone(), operator: op.clone(), exp2: exp2_.clone(), index: idx.clone(), optionExpisASUB: optionExpisASUB.clone() });
@@ -8058,7 +8058,7 @@ fn replaceCrefWithStartValue(mut expIn: Arc<DAE::Exp>, mut varsIn: BackendDAE::V
                     (exp1_, _) = replaceCrefWithStartValue(exp1.clone(), varsIn.clone())?;
                     (exp2_, _) = replaceCrefWithStartValue(exp2.clone(), varsIn.clone())?;
                     (exp3_, _) = replaceCrefWithStartValue(exp3.clone(), varsIn.clone())?;
-                    if referenceEq(&exp1.clone(),&exp1_.clone()) && referenceEq(&exp2.clone(),&exp2_.clone()) && referenceEq(&exp3.clone(),&exp3_.clone()) {
+                    if referenceEq(&*(exp1.clone()),&*(exp1_.clone())) && referenceEq(&*(exp2.clone()),&*(exp2_.clone())) && referenceEq(&*(exp3.clone()),&*(exp3_.clone())) {
                         exp = expIn.clone();
                     } else {
                         exp = Arc::new(DAE::Exp::IFEXP { expCond: exp1_.clone(), expThen: exp2_.clone(), expElse: exp3_.clone() });
@@ -12173,7 +12173,7 @@ fn traverseExpsEqSystem<A: Clone + 'static>(mut eq: Arc<SimCode::SimEqSystem>, m
             let mut eq_: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
             let mut a = (*a).clone();
             (exp_, a) = func(exp.clone(), a.clone())?;
-            if referenceEq(&exp.clone(),&exp_.clone()) {
+            if referenceEq(&*(exp.clone()),&*(exp_.clone())) {
                 eq_ = eq.clone();
             } else {
                 eq_ = Arc::new(SimCode::SimEqSystem::SES_RESIDUAL { index: index.clone(), res_index: res_index.clone(), exp: exp_.clone(), source: source.clone(), eqAttr: eqAttr.clone() });
@@ -12185,7 +12185,7 @@ fn traverseExpsEqSystem<A: Clone + 'static>(mut eq: Arc<SimCode::SimEqSystem>, m
             let mut eq_: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
             let mut a = (*a).clone();
             (exp_, a) = func(exp.clone(), a.clone())?;
-            if referenceEq(&exp.clone(),&exp_.clone()) {
+            if referenceEq(&*(exp.clone()),&*(exp_.clone())) {
                 eq_ = eq.clone();
             } else {
                 eq_ = Arc::new(SimCode::SimEqSystem::SES_FOR_RESIDUAL { index: index.clone(), res_index: res_index.clone(), iterators: var_field!((*eq).iterators, SimCode::SimEqSystem::SES_FOR_RESIDUAL).clone(), exp: exp_.clone(), source: source.clone(), eqAttr: eqAttr.clone() });
@@ -12197,7 +12197,7 @@ fn traverseExpsEqSystem<A: Clone + 'static>(mut eq: Arc<SimCode::SimEqSystem>, m
             let mut eq_: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
             let mut a = (*a).clone();
             (exp_, a) = func(exp.clone(), a.clone())?;
-            if referenceEq(&exp.clone(),&exp_.clone()) {
+            if referenceEq(&*(exp.clone()),&*(exp_.clone())) {
                 eq_ = eq.clone();
             } else {
                 eq_ = Arc::new(SimCode::SimEqSystem::SES_GENERIC_RESIDUAL { index: index.clone(), res_index: res_index.clone(), scal_indices: var_field!((*eq).scal_indices, SimCode::SimEqSystem::SES_GENERIC_RESIDUAL).clone(), iterators: var_field!((*eq).iterators, SimCode::SimEqSystem::SES_GENERIC_RESIDUAL).clone(), exp: exp_.clone(), source: source.clone(), eqAttr: eqAttr.clone() });
@@ -12209,7 +12209,7 @@ fn traverseExpsEqSystem<A: Clone + 'static>(mut eq: Arc<SimCode::SimEqSystem>, m
             let mut eq_: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
             let mut a = (*a).clone();
             (exp_, a) = func(exp.clone(), a.clone())?;
-            if referenceEq(&exp.clone(),&exp_.clone()) {
+            if referenceEq(&*(exp.clone()),&*(exp_.clone())) {
                 eq_ = eq.clone();
             } else {
                 eq_ = Arc::new(SimCode::SimEqSystem::SES_SIMPLE_ASSIGN { index: index.clone(), cref: cr.clone(), exp: exp_.clone(), source: source.clone(), eqAttr: eqAttr.clone() });
@@ -12221,7 +12221,7 @@ fn traverseExpsEqSystem<A: Clone + 'static>(mut eq: Arc<SimCode::SimEqSystem>, m
             let mut eq_: Arc<SimCode::SimEqSystem> = Arc::new(<SimCode::SimEqSystem as ::std::default::Default>::default());
             let mut a = (*a).clone();
             (exp_, a) = func(exp.clone(), a.clone())?;
-            if referenceEq(&exp.clone(),&exp_.clone()) {
+            if referenceEq(&*(exp.clone()),&*(exp_.clone())) {
                 eq_ = eq.clone();
             } else {
                 eq_ = Arc::new(SimCode::SimEqSystem::SES_SIMPLE_ASSIGN_CONSTRAINTS { index: index.clone(), cref: cr.clone(), exp: exp_.clone(), source: source.clone(), cons: cons.clone(), eqAttr: eqAttr.clone() });

@@ -8983,8 +8983,21 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
         "referenceEq" => {
             let arg1 = args.first().map(|a| emit_builtin_call_arg_raw(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();
             let arg2 = args.get(1).map(|a| emit_builtin_call_arg_raw(func, 1, a, is_const, ctx, top_level)).unwrap_or_default();
+            // The lowering is type-directed; see [`try_emit_reference_eq`].
+            // Both sides carry the same MM type, but one may have decayed to
+            // Unknown during typing — try the first side's type, then the
+            // second's, before giving up on representation info entirely.
             // referenceEq is infallible: returns bool directly, no ctx.q() needed
-            Ok(format!("referenceEq(&{arg1},&{arg2})"))
+            let ty1 = args.first().map(|a| a.ty()).unwrap_or_default();
+            let ty2 = args.get(1).map(|a| a.ty()).unwrap_or_default();
+            Ok(try_emit_reference_eq(&arg1, &arg2, &ty1, ctx)
+                .or_else(|| try_emit_reference_eq(&arg1, &arg2, &ty2, ctx))
+                // Fallback: compare the operands' own addresses. The operands
+                // are usually freshly cloned temporaries, so this is in
+                // practice always false — a false negative only, which is
+                // safe: MM uses referenceEq for sharing/short-circuit
+                // optimizations, so behaviour stays correct but reuse is lost.
+                .unwrap_or_else(|| format!("referenceEq(&{arg1},&{arg2})")))
         },
         "isPresent" => {
             Ok("true /* isPresent not implemented in Rust */".to_string())
@@ -14516,6 +14529,86 @@ fn ty_is_sync(ty: &Ty, ctx: &GenCtx) -> bool {
         }
         // Primitives, type variables, Unknown — all Sync (see fn doc).
         _ => true,
+    }
+}
+
+/// Whether a value of this type is represented at the Rust level as a
+/// shared-pointer *handle* (`Arc<Enum>` for recursive uniontypes,
+/// `Arc<List<T>>` for lists, `ArcStr` for strings, `Rc<RefCell<Vec<T>>>` for
+/// arrays) whose clones all designate the same MetaModelica heap object.
+///
+/// `referenceEq` lowers to a pointer comparison; for handle-represented
+/// values it must compare the *pointee* (`&*v`), not the handle. Comparing
+/// the handle's own address distinguishes clones — and since argument
+/// emission clones into a fresh temporary, comparing handles makes the
+/// result always-false. See [`try_emit_reference_eq`].
+fn referenceeq_derefs_to_pointee(ty: &Ty, ctx: &GenCtx) -> bool {
+    match ty {
+        // list<T> → Arc<List<T>>; String → ArcStr; array<T> → Rc<RefCell<Vec<T>>>.
+        Ty::List(_) | Ty::Str | Ty::Array(_) => true,
+        // Recursive uniontypes / variant-narrowed values / recursive generics
+        // → Arc<Enum>.
+        _ => is_arc_wrapped(ty, ctx),
+    }
+}
+
+/// Lower MetaModelica `referenceEq(a, b)` to a Rust expression, given the
+/// operands' already-emitted text (`lhs`/`rhs` must be valid Rust *value*
+/// expressions) and their MM type.
+///
+/// The MMC runtime compares the raw machine words of the two values. What
+/// that means depends on the value's representation, so the lowering is
+/// type-directed:
+///   * Integer/Boolean are tagged immediates in MMC, so its referenceEq
+///     degenerates to *value* equality for them — mirror that with `==`.
+///     (Comparing the addresses of two cloned stack scalars would be
+///     always-false instead.)
+///   * Heap handles ([`referenceeq_derefs_to_pointee`]) — compare the pointee
+///     address via `&*(v)`; the handle itself is a stack value whose address
+///     distinguishes clones.
+///   * `Mutable<T>`/`Pointer<T>` cells — identity of the underlying
+///     allocation, via the hand-written `referenceEq` in their runtime
+///     modules (`openmodelica_util_datatypes_basic`); their `Arc` payload is
+///     not reachable through a `Deref`.
+///   * `Option<T>` — structural match: `NONE()` is a singleton in the MMC
+///     runtime so two NONEs are reference-equal; SOME payloads compare
+///     recursively; mixed is false. (A freshly built `SOME(x)` box is
+///     unequal to another `SOME(x)` in C; we report equal when the payloads
+///     are identical, which is indistinguishable to MM code.)
+///
+/// Returns `None` when the type gives no usable representation info; the
+/// caller falls back to comparing the operands' own addresses, which yields
+/// false negatives only. In this bucket:
+///   * `TypeVar`/`Unknown` — the representation is opaque at this call site.
+///     A real fix needs instantiation-time information, e.g. a codegen-
+///     implemented `ReferenceEq` trait bound on generic functions.
+///   * Non-recursive records/enums and tuples — value-represented; copies
+///     are genuinely distinct objects, there is no identity to observe.
+///   * `Real` — heap-boxed in MMC (distinct boxes with equal values compare
+///     unequal there too), so an (always-false) address compare on the Copy
+///     `f64` is the closer approximation, unlike Integer/Boolean.
+fn try_emit_reference_eq(lhs: &str, rhs: &str, ty: &Ty, ctx: &GenCtx) -> Option<String> {
+    match ty {
+        Ty::I32 | Ty::Bool => Some(format!("(({lhs}) == ({rhs}))")),
+        _ if referenceeq_derefs_to_pointee(ty, ctx) => {
+            Some(format!("referenceEq(&*({lhs}),&*({rhs}))"))
+        }
+        Ty::Generic(name, _) if matches!(name.as_str(), "Mutable" | "Pointer") => {
+            Some(format!("{name}::referenceEq(&({lhs}), &({rhs}))"))
+        }
+        Ty::Option(inner) => {
+            // The match borrows the operands, so `__refeq_l`/`__refeq_r` are
+            // `&T` payload references; recurse with `*__refeq_l` as the value
+            // expression. Nested Options shadow the binding names, which is
+            // sound: each scrutinee is evaluated before its own arm bindings
+            // come into scope.
+            let inner_cmp = try_emit_reference_eq("*__refeq_l", "*__refeq_r", inner, ctx)
+                .unwrap_or_else(|| "referenceEq(__refeq_l, __refeq_r)".to_owned());
+            Some(format!(
+                "(match (&({lhs}), &({rhs})) {{ (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => {inner_cmp}, _ => false }})"
+            ))
+        }
+        _ => None,
     }
 }
 

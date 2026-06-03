@@ -239,7 +239,7 @@ pub fn getSCode() -> Result<Arc<metamodelica::List<Arc<SCode::Element>>>> {
 pub fn setSCode(mut ast: Option<Arc<metamodelica::List<Arc<SCode::Element>>>>) -> () {
     let mut table: Arc<SymbolTable> = Arc::new(<SymbolTable as ::std::default::Default>::default());
     table = get();
-    if referenceEq(&table.explodedAst.clone(),&ast.clone()) {
+    if (match (&(table.explodedAst.clone()), &(ast.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) {
         return ();
     }
     assign_field!(table.explodedAst = ast.clone());

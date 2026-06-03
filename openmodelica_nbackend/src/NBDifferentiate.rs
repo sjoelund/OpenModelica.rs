@@ -421,7 +421,7 @@ pub fn differentiateEquationPointer(mut eq_ptr: Pointer::Pointer<Arc<Equation::E
             if new_diffArguments.diffType.clone() == DifferentiationType::TIME.clone() {
                 Pointer::update(eq_ptr.clone(), Equation::setDerivative(eq.clone(), derivative_ptr.clone())?);
             }
-            if !(referenceEq(&new_diffArguments.clone(),&old_diffArguments.clone())) {
+            if !(referenceEq(&*(new_diffArguments.clone()),&*(old_diffArguments.clone()))) {
                 Pointer::update(diffArguments_ptr.clone(), new_diffArguments.clone());
             }
             derivative_ptr.clone()

@@ -1042,7 +1042,7 @@ pub fn expandCast(mut castExp: Arc<Expression::NFExpression>) -> Result<(Arc<Exp
     ty = __pa0.clone();
     exp = __pa1.clone();
     (outExp, expanded) = expand(exp.clone(), false, false)?;
-    if expanded.clone() && !(referenceEq(&exp.clone(),&outExp.clone())) {
+    if expanded.clone() && !(referenceEq(&*(exp.clone()),&*(outExp.clone()))) {
         outExp = Expression::typeCast(outExp.clone(), ty.clone())?;
     } else {
         outExp = castExp.clone();

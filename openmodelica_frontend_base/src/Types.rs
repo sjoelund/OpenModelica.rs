@@ -8864,7 +8864,7 @@ pub fn checkTypeCompat(mut inExp1: Arc<DAE::Exp>, mut inType1: Arc<DAE::Type>, m
     let mut outCompatible: bool = true;
     let mut ty1: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let mut ty2: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
-    if referenceEq(&inType1.clone(),&inType2.clone()) {
+    if referenceEq(&*(inType1.clone()),&*(inType2.clone())) {
         outCompatType = inType1.clone();
         return Ok((outExp1.clone(), outExp2.clone(), outCompatType.clone(), outCompatible.clone()));
     }

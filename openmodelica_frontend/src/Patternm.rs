@@ -2567,7 +2567,7 @@ pub fn traverseConstantPatternsHelper2<T: Clone + 'static>(mut inPattern: Arc<DA
             outPattern = (*__esc_outPattern).clone();
             let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             (exp, extra) = func(var_field!((*outPattern).exp, DAE::Pattern::PAT_CONSTANT).clone(), extra.clone())?;
-            if !(referenceEq(&var_field!((*outPattern).exp, DAE::Pattern::PAT_CONSTANT).clone(),&exp.clone())) {
+            if !(referenceEq(&*(var_field!((*outPattern).exp, DAE::Pattern::PAT_CONSTANT).clone()),&*(exp.clone()))) {
                 assign_variant_field!(outPattern => DAE::Pattern::PAT_CONSTANT; exp = exp.clone());
             }
             outPattern.clone()

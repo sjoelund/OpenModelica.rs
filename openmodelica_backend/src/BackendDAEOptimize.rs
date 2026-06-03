@@ -431,7 +431,7 @@ fn traverseZeroCrossingExps<T: Clone + 'static>(mut zc: BackendDAE::ZeroCrossing
     let mut arg: T = arg;
     let mut relation: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     (relation, arg) = Expression::traverseExpBottomUp(zc.relation_.clone(), func.clone(), arg.clone())?;
-    if !(referenceEq(&relation.clone(),&zc.relation_.clone())) {
+    if !(referenceEq(&*(relation.clone()),&*(zc.relation_.clone()))) {
         zc.relation_ = relation.clone();
     }
     Ok((zc, arg))
@@ -4494,7 +4494,7 @@ fn traverserexpandDerExp(mut exp: Arc<DAE::Exp>, mut tpl: (BackendDAE::Variables
     let mut ops: Arc<metamodelica::List<Arc<DAE::SymbolicOperation>>> = metamodelica::nil();
     (vars1, ops) = tpl.clone();
     (exp_1, vars2) = Expression::traverseExpBottomUp(exp.clone(), (std::sync::Arc::new({ let __pe_b2 = shared.clone(); move |__pe_a0, __pe_a1| expandDerExp(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, BackendDAE::Variables) -> Result<(Arc<DAE::Exp>, BackendDAE::Variables)> + 'static>), vars1.clone())?;
-    if !(referenceEq(&vars1.clone(),&vars2.clone()) && referenceEq(&exp.clone(),&exp_1.clone())) {
+    if !(referenceEq(&vars1.clone(),&vars2.clone()) && referenceEq(&*(exp.clone()),&*(exp_1.clone()))) {
         ops = metamodelica::cons(Arc::new(DAE::SymbolicOperation::OP_DIFFERENTIATE { cr: DAE::crefTime().clone(), before: exp.clone(), after: exp_1.clone() }), ops.clone());
         exp = exp_1.clone();
         tpl = (vars2.clone(), ops.clone());

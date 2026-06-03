@@ -2694,7 +2694,7 @@ pub mod ClassEntry {
     }
 
     pub fn equal(mut entry1: Arc<ClassEntry>, mut entry2: Arc<ClassEntry>) -> bool {
-        let mut res: bool = referenceEq(&entry1.cls.clone(),&entry2.cls.clone());
+        let mut res: bool = referenceEq(&*(entry1.cls.clone()),&*(entry2.cls.clone()));
         res
     }
 

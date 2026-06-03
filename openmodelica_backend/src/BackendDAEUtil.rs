@@ -1284,7 +1284,7 @@ fn simplifySubscript(mut sub: Arc<DAE::Subscript>) -> Result<Arc<DAE::Subscript>
                 Deref @ DAE::Subscript::INDEX { exp: e } => {
                     let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     (e1, _) = ExpressionSimplify::simplify(e.clone())?;
-                    Ok(if (referenceEq(&e1.clone(),&e.clone())) {sub.clone()} else {Arc::new(DAE::Subscript::INDEX { exp: e.clone() })})
+                    Ok(if (referenceEq(&*(e1.clone()),&*(e.clone()))) {sub.clone()} else {Arc::new(DAE::Subscript::INDEX { exp: e.clone() })})
                 }
                 _ => bail!("nomatch"),
             }}
@@ -3412,7 +3412,7 @@ pub fn traversingadjacencyRowExpSolvableFinder(mut inExp: Arc<DAE::Exp>, mut inT
                     let mut e1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut tpl: (BackendDAE::Variables, Arc<AvlSetInt::Tree>, Arc<AvlSetPath::Tree>, bool, Option<Arc<AvlTreePathFunction::Tree>>) = (<BackendDAE::Variables as ::std::default::Default>::default(), Arc::new(AvlSetInt::Tree::EMPTY), Arc::new(AvlSetPath::Tree::EMPTY), false, None);
                     (e1, _) = Inline::forceInlineCall(inExp.clone(), metamodelica::nil(), (Some(functionTree.clone()), list![openmodelica_frontend_types::DAE::InlineType::NORM_INLINE, openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE]), Arc::new(openmodelica_ast_collections::AvlSetPath::Tree::EMPTY))?;
-                    let false = (referenceEq(&inExp.clone(),&e1.clone())) else { bail!("pattern mismatch") };
+                    let false = (referenceEq(&*(inExp.clone()),&*(e1.clone()))) else { bail!("pattern mismatch") };
                     (_, tpl) = Expression::traverseExpTopDown(e1.clone(), (std::sync::Arc::new(traversingadjacencyRowExpSolvableFinder) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, Arc<AvlSetPath::Tree>, bool, Option<Arc<AvlTreePathFunction::Tree>>)) -> Result<(Arc<DAE::Exp>, bool, (BackendDAE::Variables, Arc<AvlSetInt::Tree>, Arc<AvlSetPath::Tree>, bool, Option<Arc<AvlTreePathFunction::Tree>>))> + 'static>), (vars.clone(), pa.clone(), AvlSetPath::add(visitedPaths.clone(), var_field!((*inExp).path, DAE::Exp::CALL).clone())?, isInitial.clone(), ofunctionTree.clone()))?;
                     Ok((inExp.clone(), false, tpl.clone()))
                 }
@@ -8129,7 +8129,7 @@ fn traverseBackendDAEExpsVarWithUpdate<Type_a: Clone + 'static>(mut inVar: Optio
                     let mut v: Option<BackendDAE::Var> = None;
                     (e1_, ext_arg_1) = func(e1.clone(), inTypeA.clone())?;
                     (attr_, ext_arg_2) = traverseBackendDAEVarAttr(attr.clone(), func.clone(), ext_arg_1.clone())?;
-                    if referenceEq(&e1.clone(),&e1_.clone()) && referenceEq(&attr.clone(),&attr_.clone()) {
+                    if referenceEq(&*(e1.clone()),&*(e1_.clone())) && (match (&(attr.clone()), &(attr_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) {
                         v = inVar.clone();
                     } else {
                         v = Some(BackendDAE::Var { varName: cref.clone(), varKind: varKind.clone(), varDirection: varDirection.clone(), varParallelism: varParallelism.clone(), varType: varType.clone(), bindExp: Some(e1_.clone()), tplExp: tplExp.clone(), arryDim: instdims.clone(), source: source.clone(), values: attr_.clone(), tearingSelectOption: ts.clone(), hideResult: hideResult.clone(), comment: comment.clone(), connectorType: ct.clone(), innerOuter: io.clone(), unreplaceable: unreplaceable.clone(), initNonlinear: initNonlinear.clone(), encrypted: encrypted.clone() });
@@ -8146,7 +8146,7 @@ fn traverseBackendDAEExpsVarWithUpdate<Type_a: Clone + 'static>(mut inVar: Optio
                     let mut ext_arg_2: Type_a;
                     let mut v: Option<BackendDAE::Var> = None;
                     (attr_, ext_arg_2) = traverseBackendDAEVarAttr(attr.clone(), func.clone(), inTypeA.clone())?;
-                    if referenceEq(&attr.clone(),&attr_.clone()) {
+                    if (match (&(attr.clone()), &(attr_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) {
                         v = inVar.clone();
                     } else {
                         v = Some(BackendDAE::Var { varName: cref.clone(), varKind: varKind.clone(), varDirection: varDirection.clone(), varParallelism: varParallelism.clone(), varType: varType.clone(), bindExp: None, tplExp: tplExp.clone(), arryDim: instdims.clone(), source: source.clone(), values: attr_.clone(), tearingSelectOption: ts.clone(), hideResult: hideResult.clone(), comment: comment.clone(), connectorType: ct.clone(), innerOuter: io.clone(), unreplaceable: unreplaceable.clone(), initNonlinear: initNonlinear.clone(), encrypted: encrypted.clone() });
@@ -8204,7 +8204,7 @@ pub fn traverseBackendDAEVarAttr<ExtraArgType: Clone + 'static>(mut attr: Option
             (n_, outExtraArg) = Expression::traverseExpOpt(n.clone(), func.clone(), outExtraArg.clone())?;
             (eqbound_, outExtraArg) = Expression::traverseExpOpt(eqbound.clone(), func.clone(), outExtraArg.clone())?;
             (dist_, outExtraArg) = traverseBackendDAEAttrDistribution(dist.clone(), func.clone(), outExtraArg.clone())?;
-            if referenceEq(&q.clone(),&q_.clone()) && referenceEq(&u.clone(),&u_.clone()) && referenceEq(&du.clone(),&du_.clone()) && referenceEq(&min.clone(),&min_.clone()) && referenceEq(&max.clone(),&max_.clone()) && referenceEq(&i.clone(),&i_.clone()) && referenceEq(&f.clone(),&f_.clone()) && referenceEq(&n.clone(),&n_.clone()) && referenceEq(&eqbound.clone(),&eqbound_.clone()) && referenceEq(&dist.clone(),&dist_.clone()) {
+            if (match (&(q.clone()), &(q_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(u.clone()), &(u_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(du.clone()), &(du_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(min.clone()), &(min_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(max.clone()), &(max_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(i.clone()), &(i_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(f.clone()), &(f_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(n.clone()), &(n_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(eqbound.clone()), &(eqbound_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(dist.clone()), &(dist_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) {
                 a = attr.clone();
             } else {
                 a = Some(Arc::new(DAE::VariableAttributes::VAR_ATTR_REAL { quantity: q_.clone(), unit: u_.clone(), displayUnit: du_.clone(), min: min_.clone(), max: max_.clone(), start: i_.clone(), fixed: f_.clone(), nominal: n_.clone(), stateSelectOption: ss.clone(), uncertainOption: unc.clone(), distributionOption: dist_.clone(), equationBound: eqbound_.clone(), isProtected: p.clone(), finalPrefix: fin.clone(), startOrigin: startOrigin.clone() }));
@@ -8227,7 +8227,7 @@ pub fn traverseBackendDAEVarAttr<ExtraArgType: Clone + 'static>(mut attr: Option
             (f_, outExtraArg) = Expression::traverseExpOpt(f.clone(), func.clone(), outExtraArg.clone())?;
             (eqbound_, outExtraArg) = Expression::traverseExpOpt(eqbound.clone(), func.clone(), outExtraArg.clone())?;
             (dist_, outExtraArg) = traverseBackendDAEAttrDistribution(dist.clone(), func.clone(), outExtraArg.clone())?;
-            if referenceEq(&q.clone(),&q_.clone()) && referenceEq(&min.clone(),&min_.clone()) && referenceEq(&max.clone(),&max_.clone()) && referenceEq(&i.clone(),&i_.clone()) && referenceEq(&f.clone(),&f_.clone()) && referenceEq(&eqbound.clone(),&eqbound_.clone()) && referenceEq(&dist.clone(),&dist_.clone()) {
+            if (match (&(q.clone()), &(q_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(min.clone()), &(min_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(max.clone()), &(max_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(i.clone()), &(i_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(f.clone()), &(f_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(eqbound.clone()), &(eqbound_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(dist.clone()), &(dist_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) {
                 a = attr.clone();
             } else {
                 a = Some(Arc::new(DAE::VariableAttributes::VAR_ATTR_INT { quantity: q_.clone(), min: min_.clone(), max: max_.clone(), start: i_.clone(), fixed: f_.clone(), uncertainOption: unc.clone(), distributionOption: dist_.clone(), equationBound: eqbound_.clone(), isProtected: p.clone(), finalPrefix: fin.clone(), startOrigin: startOrigin.clone() }));
@@ -8244,7 +8244,7 @@ pub fn traverseBackendDAEVarAttr<ExtraArgType: Clone + 'static>(mut attr: Option
             (i_, outExtraArg) = Expression::traverseExpOpt(i.clone(), func.clone(), outExtraArg.clone())?;
             (f_, outExtraArg) = Expression::traverseExpOpt(f.clone(), func.clone(), outExtraArg.clone())?;
             (eqbound_, outExtraArg) = Expression::traverseExpOpt(eqbound.clone(), func.clone(), outExtraArg.clone())?;
-            if referenceEq(&q.clone(),&q_.clone()) && referenceEq(&i.clone(),&i_.clone()) && referenceEq(&f.clone(),&f_.clone()) && referenceEq(&eqbound.clone(),&eqbound_.clone()) {
+            if (match (&(q.clone()), &(q_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(i.clone()), &(i_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(f.clone()), &(f_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(eqbound.clone()), &(eqbound_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) {
                 a = attr.clone();
             } else {
                 a = Some(Arc::new(DAE::VariableAttributes::VAR_ATTR_BOOL { quantity: q_.clone(), start: i_.clone(), fixed: f_.clone(), equationBound: eqbound_.clone(), isProtected: p.clone(), finalPrefix: fin.clone(), startOrigin: startOrigin.clone() }));
@@ -8261,7 +8261,7 @@ pub fn traverseBackendDAEVarAttr<ExtraArgType: Clone + 'static>(mut attr: Option
             (i_, outExtraArg) = Expression::traverseExpOpt(i.clone(), func.clone(), outExtraArg.clone())?;
             (f_, outExtraArg) = Expression::traverseExpOpt(f.clone(), func.clone(), outExtraArg.clone())?;
             (eqbound_, outExtraArg) = Expression::traverseExpOpt(eqbound.clone(), func.clone(), outExtraArg.clone())?;
-            if referenceEq(&q.clone(),&q_.clone()) && referenceEq(&i.clone(),&i_.clone()) && referenceEq(&f.clone(),&f_.clone()) && referenceEq(&eqbound.clone(),&eqbound_.clone()) {
+            if (match (&(q.clone()), &(q_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(i.clone()), &(i_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(f.clone()), &(f_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(eqbound.clone()), &(eqbound_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) {
                 a = attr.clone();
             } else {
                 a = Some(Arc::new(DAE::VariableAttributes::VAR_ATTR_STRING { quantity: q_.clone(), start: i_.clone(), fixed: f_.clone(), equationBound: eqbound_.clone(), isProtected: p.clone(), finalPrefix: fin.clone(), startOrigin: startOrigin.clone() }));
@@ -8282,7 +8282,7 @@ pub fn traverseBackendDAEVarAttr<ExtraArgType: Clone + 'static>(mut attr: Option
             (i_, outExtraArg) = Expression::traverseExpOpt(i.clone(), func.clone(), outExtraArg.clone())?;
             (f_, outExtraArg) = Expression::traverseExpOpt(f.clone(), func.clone(), outExtraArg.clone())?;
             (eqbound_, outExtraArg) = Expression::traverseExpOpt(eqbound.clone(), func.clone(), outExtraArg.clone())?;
-            if referenceEq(&q.clone(),&q_.clone()) && referenceEq(&min.clone(),&min_.clone()) && referenceEq(&max.clone(),&max_.clone()) && referenceEq(&i.clone(),&i_.clone()) && referenceEq(&f.clone(),&f_.clone()) && referenceEq(&eqbound.clone(),&eqbound_.clone()) {
+            if (match (&(q.clone()), &(q_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(min.clone()), &(min_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(max.clone()), &(max_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(i.clone()), &(i_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(f.clone()), &(f_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(eqbound.clone()), &(eqbound_.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) {
                 a = attr.clone();
             } else {
                 a = Some(Arc::new(DAE::VariableAttributes::VAR_ATTR_ENUMERATION { quantity: q_.clone(), min: min_.clone(), max: max_.clone(), start: i_.clone(), fixed: f_.clone(), equationBound: eqbound_.clone(), isProtected: p.clone(), finalPrefix: fin.clone(), startOrigin: startOrigin.clone() }));
@@ -8317,7 +8317,7 @@ fn traverseBackendDAEAttrDistribution<Type_a: Clone + 'static>(mut distOpt: Opti
             (name_, outExtraArg) = Expression::traverseExpBottomUp(name.clone(), func.clone(), extraArg.clone())?;
             (arr_, outExtraArg) = Expression::traverseExpBottomUp(arr_.clone(), func.clone(), outExtraArg.clone())?;
             (sarr_, outExtraArg) = Expression::traverseExpBottomUp(sarr_.clone(), func.clone(), outExtraArg.clone())?;
-            if referenceEq(&name.clone(),&name_.clone()) && referenceEq(&arr.clone(),&arr_.clone()) && referenceEq(&sarr.clone(),&sarr_.clone()) {
+            if referenceEq(&*(name.clone()),&*(name_.clone())) && referenceEq(&*(arr.clone()),&*(arr_.clone())) && referenceEq(&*(sarr.clone()),&*(sarr_.clone())) {
                 d = distOpt.clone();
             } else {
                 d = Some(Arc::new(DAE::Distribution { name: name_.clone(), params: arr_.clone(), paramNames: sarr_.clone() }));
@@ -8341,7 +8341,7 @@ pub fn traverseBackendDAEExpsEqns<T: Clone + 'static>(mut equationArray: Arc<Exp
             if ExpandableArray::occupied(i.clone(), equationArray.clone()) {
                 eqn = unwrap_break_err!(ExpandableArray::get(i.clone(), equationArray.clone()), '__try0);
                 (eqn_new, extraArg) = unwrap_break_err!(BackendEquation::traverseExpsOfEquation(eqn.clone(), func.clone(), extraArg.clone()), '__try0);
-                if !(referenceEq(&eqn.clone(),&eqn_new.clone())) {
+                if !(referenceEq(&*(eqn.clone()),&*(eqn_new.clone()))) {
                     unwrap_break_err!(ExpandableArray::update(i.clone(), eqn_new.clone(), equationArray.clone()), '__try0);
                 }
             }
@@ -8409,7 +8409,7 @@ fn traverseBackendDAEExpsOptEqnWithUpdate<Type_a: Clone + 'static>(mut inEquatio
             let mut eqn2: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
             let mut ext_arg_1: Type_a;
             (eqn2, ext_arg_1) = BackendEquation::traverseExpsOfEquation(eqn1.clone(), func.clone(), inTypeA.clone())?;
-            (if (referenceEq(&eqn1.clone(),&eqn2.clone())) {inEquation.clone()} else {Some(eqn2.clone())}, ext_arg_1.clone())
+            (if (referenceEq(&*(eqn1.clone()),&*(eqn2.clone()))) {inEquation.clone()} else {Some(eqn2.clone())}, ext_arg_1.clone())
         },
         _ => {
             (None, inTypeA.clone())
@@ -8430,7 +8430,7 @@ pub fn traverseAlgorithmExpsWithUpdate<Type_a: Clone + 'static>(mut inAlgorithm:
             let mut ext_arg_1: Type_a;
             let mut alg: Arc<DAE::Algorithm> = Arc::new(<DAE::Algorithm as ::std::default::Default>::default());
             (stmts1, ext_arg_1) = DAEUtil::traverseDAEEquationsStmts(stmts.clone(), func.clone(), inTypeA.clone())?;
-            alg = if (referenceEq(&stmts.clone(),&stmts1.clone())) {inAlgorithm.clone()} else {Arc::new(DAE::Algorithm { statementLst: stmts1.clone() })};
+            alg = if (referenceEq(&*(stmts.clone()),&*(stmts1.clone()))) {inAlgorithm.clone()} else {Arc::new(DAE::Algorithm { statementLst: stmts1.clone() })};
             (alg.clone(), ext_arg_1.clone())
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -8452,7 +8452,7 @@ fn traverseZeroCrossingExps<Type_a: Clone + 'static>(mut iZeroCrossing: Arc<meta
             let mut arg: Type_a;
             let mut zeroCrossing = (*zeroCrossing).clone();
             (relation1, arg) = Expression::traverseExpBottomUp(zc.relation_.clone(), func.clone(), inTypeA.clone())?;
-            (zeroCrossing, arg) = traverseZeroCrossingExps(zeroCrossing.clone(), func.clone(), arg.clone(), metamodelica::cons(if (referenceEq(&relation1.clone(),&zc.relation_.clone())) {zc.clone()} else {BackendDAE::ZeroCrossing { index: zc.index.clone(), relation_: relation1.clone(), occurEquLst: zc.occurEquLst.clone(), iter: zc.iter.clone() }}, iAcc.clone()))?;
+            (zeroCrossing, arg) = traverseZeroCrossingExps(zeroCrossing.clone(), func.clone(), arg.clone(), metamodelica::cons(if (referenceEq(&*(relation1.clone()),&*(zc.relation_.clone()))) {zc.clone()} else {BackendDAE::ZeroCrossing { index: zc.index.clone(), relation_: relation1.clone(), occurEquLst: zc.occurEquLst.clone(), iter: zc.iter.clone() }}, iAcc.clone()))?;
             (zeroCrossing.clone(), arg.clone())
         },
         _ => bail!("match: no arm matched"),

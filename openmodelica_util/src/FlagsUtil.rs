@@ -1578,7 +1578,7 @@ pub fn flagDataEq(mut data1: Flags::FlagData, mut data2: Flags::FlagData) -> Res
         (Flags::FlagData::REAL_FLAG { .. }, Flags::FlagData::REAL_FLAG { .. }) => var_field!(data1.data, Flags::FlagData::REAL_FLAG).clone() == var_field!(data2.data, Flags::FlagData::REAL_FLAG).clone(),
         (Flags::FlagData::STRING_FLAG { .. }, Flags::FlagData::STRING_FLAG { .. }) => var_field!(data1.data, Flags::FlagData::STRING_FLAG).clone() == var_field!(data2.data, Flags::FlagData::STRING_FLAG).clone(),
         (Flags::FlagData::STRING_LIST_FLAG { .. }, Flags::FlagData::STRING_LIST_FLAG { .. }) => List::isEqualOnTrue(var_field!(data1.data, Flags::FlagData::STRING_LIST_FLAG).clone(), var_field!(data2.data, Flags::FlagData::STRING_LIST_FLAG).clone(), (std::sync::Arc::new(fnptr!(stringEq, ArcStr, ArcStr)) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr, ArcStr) -> Result<bool> + 'static>))?,
-        (Flags::FlagData::ENUM_FLAG { .. }, Flags::FlagData::ENUM_FLAG { .. }) => referenceEq(&var_field!(data1.validValues, Flags::FlagData::ENUM_FLAG).clone(),&var_field!(data2.validValues, Flags::FlagData::ENUM_FLAG).clone()) && var_field!(data1.data, Flags::FlagData::ENUM_FLAG).clone() == var_field!(data2.data, Flags::FlagData::ENUM_FLAG).clone(),
+        (Flags::FlagData::ENUM_FLAG { .. }, Flags::FlagData::ENUM_FLAG { .. }) => referenceEq(&*(var_field!(data1.validValues, Flags::FlagData::ENUM_FLAG).clone()),&*(var_field!(data2.validValues, Flags::FlagData::ENUM_FLAG).clone())) && var_field!(data1.data, Flags::FlagData::ENUM_FLAG).clone() == var_field!(data2.data, Flags::FlagData::ENUM_FLAG).clone(),
         _ => false,
     });
     Ok(eq)

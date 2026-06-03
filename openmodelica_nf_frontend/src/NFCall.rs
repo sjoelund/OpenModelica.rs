@@ -1837,7 +1837,7 @@ pub fn mapIteratorsExp(mut iters: Arc<metamodelica::List<(Arc<InstNode::InstNode
         let mut i = i.clone();
         (node, exp) = i.clone();
         new_exp = Expression::map(exp.clone(), func.clone())?;
-        outIters = metamodelica::cons(if (referenceEq(&new_exp.clone(),&exp.clone())) {i.clone()} else {(node.clone(), new_exp.clone())}, outIters.clone());
+        outIters = metamodelica::cons(if (referenceEq(&*(new_exp.clone()),&*(exp.clone()))) {i.clone()} else {(node.clone(), new_exp.clone())}, outIters.clone());
     }
     outIters = metamodelica::Dangerous::listReverseInPlace(outIters.clone());
     Ok(outIters)
@@ -1947,7 +1947,7 @@ pub fn mapIteratorsExpShallow(mut iters: Arc<metamodelica::List<(Arc<InstNode::I
         let mut i = i.clone();
         (node, exp) = i.clone();
         new_exp = func(exp.clone())?;
-        outIters = metamodelica::cons(if (referenceEq(&new_exp.clone(),&exp.clone())) {i.clone()} else {(node.clone(), new_exp.clone())}, outIters.clone());
+        outIters = metamodelica::cons(if (referenceEq(&*(new_exp.clone()),&*(exp.clone()))) {i.clone()} else {(node.clone(), new_exp.clone())}, outIters.clone());
     }
     outIters = metamodelica::Dangerous::listReverseInPlace(outIters.clone());
     Ok(outIters)
@@ -2055,7 +2055,7 @@ pub fn mapFoldIteratorsExp<ArgT: Clone + 'static>(mut iters: Arc<metamodelica::L
         let mut i = i.clone();
         (node, exp) = i.clone();
         (new_exp, arg) = Expression::mapFold(exp.clone(), func.clone(), arg.clone())?;
-        outIters = metamodelica::cons(if (referenceEq(&new_exp.clone(),&exp.clone())) {i.clone()} else {(node.clone(), new_exp.clone())}, outIters.clone());
+        outIters = metamodelica::cons(if (referenceEq(&*(new_exp.clone()),&*(exp.clone()))) {i.clone()} else {(node.clone(), new_exp.clone())}, outIters.clone());
     }
     outIters = metamodelica::Dangerous::listReverseInPlace(outIters.clone());
     Ok((outIters, arg))
@@ -2163,7 +2163,7 @@ pub fn mapFoldIteratorsExpShallow<ArgT: Clone + 'static>(mut iters: Arc<metamode
         let mut i = i.clone();
         (node, exp) = i.clone();
         (new_exp, arg) = func(exp.clone(), arg.clone())?;
-        outIters = metamodelica::cons(if (referenceEq(&new_exp.clone(),&exp.clone())) {i.clone()} else {(node.clone(), new_exp.clone())}, outIters.clone());
+        outIters = metamodelica::cons(if (referenceEq(&*(new_exp.clone()),&*(exp.clone()))) {i.clone()} else {(node.clone(), new_exp.clone())}, outIters.clone());
     }
     outIters = metamodelica::Dangerous::listReverseInPlace(outIters.clone());
     Ok((outIters, arg))

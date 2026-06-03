@@ -1143,7 +1143,7 @@ pub fn compare(mut cref1: Arc<NFComponentRef>, mut cref2: Arc<NFComponentRef>) -
 
 pub fn isEqual(mut cref1: Arc<NFComponentRef>, mut cref2: Arc<NFComponentRef>) -> Result<bool> {
     let mut b: bool = false;
-    if referenceEq(&cref1.clone(),&cref2.clone()) {
+    if referenceEq(&*(cref1.clone()),&*(cref2.clone())) {
         b = true;
         return Ok(b.clone());
     }
@@ -1159,7 +1159,7 @@ pub fn isEqual(mut cref1: Arc<NFComponentRef>, mut cref2: Arc<NFComponentRef>) -
 
 pub fn isEqualStrip(mut cref1: Arc<NFComponentRef>, mut cref2: Arc<NFComponentRef>) -> Result<bool> {
     let mut b: bool = false;
-    if referenceEq(&cref1.clone(),&cref2.clone()) {
+    if referenceEq(&*(cref1.clone()),&*(cref2.clone())) {
         b = true;
         return Ok(b.clone());
     }
@@ -1185,7 +1185,7 @@ pub fn isGreater(mut cref1: Arc<NFComponentRef>, mut cref2: Arc<NFComponentRef>)
 
 pub fn isPrefix(mut cref1: Arc<NFComponentRef>, mut cref2: Arc<NFComponentRef>) -> Result<bool> {
     let mut isPrefix: bool = false;
-    if referenceEq(&cref1.clone(),&cref2.clone()) {
+    if referenceEq(&*(cref1.clone()),&*(cref2.clone())) {
         isPrefix = true;
         return Ok(isPrefix.clone());
     }
@@ -1679,7 +1679,7 @@ pub fn simplifySubscripts(mut cref: Arc<NFComponentRef>, mut trim: bool) -> Resu
                 dirty = true;
             }
             rest_cref = simplifySubscripts(var_field!((*cref).restCref, NFComponentRef::CREF).clone(), trim.clone())?;
-            dirty = dirty.clone() || !(referenceEq(&rest_cref.clone(),&var_field!((*cref).restCref, NFComponentRef::CREF).clone()));
+            dirty = dirty.clone() || !(referenceEq(&*(rest_cref.clone()),&*(var_field!((*cref).restCref, NFComponentRef::CREF).clone())));
             if (dirty.clone()) {Arc::new(NFComponentRef::CREF { node: var_field!((*cref).node, NFComponentRef::CREF).clone(), subscripts: subs.clone(), ty: var_field!((*cref).ty, NFComponentRef::CREF).clone(), origin: var_field!((*cref).origin, NFComponentRef::CREF).clone(), restCref: rest_cref.clone() })} else {cref.clone()}
         },
         _ => cref.clone(),

@@ -429,7 +429,7 @@ pub mod ConstantsSetImpl {
         let mut b: bool = false;
         b = (::match_deref::match_deref! { match &((t1.clone(), t2.clone())) {
         (Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => true,
-        _ => referenceEq(&t1.clone(),&t2.clone()),
+        _ => referenceEq(&*(t1.clone()),&*(t2.clone())),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
         b
@@ -672,7 +672,7 @@ pub fn replaceVariableConstants(mut var: Arc<Variable::NFVariable>) -> Result<Ar
     let mut var: Arc<Variable::NFVariable> = var;
     let mut binding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
     binding = replaceBindingConstants(var.binding.clone())?;
-    if !(referenceEq(&binding.clone(),&var.binding.clone())) {
+    if !(referenceEq(&*(binding.clone()),&*(var.binding.clone()))) {
         assign_field!(var.binding = binding.clone());
     }
     Ok(var)
@@ -725,7 +725,7 @@ pub fn replaceFuncConstants(mut name: Arc<Absyn::Path>, mut func: Arc<Function::
                 comp = InstNode::component(c.clone())?;
                 binding = Component::getBinding(comp.clone());
                 eval_binding = replaceBindingConstants(binding.clone())?;
-                if !(referenceEq(&binding.clone(),&eval_binding.clone())) {
+                if !(referenceEq(&*(binding.clone()),&*(eval_binding.clone()))) {
                     comp = Component::setBinding(eval_binding.clone(), comp.clone())?;
                     InstNode::updateComponent(comp.clone(), c.clone())?;
                 }

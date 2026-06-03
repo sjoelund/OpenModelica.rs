@@ -769,7 +769,7 @@ pub fn crefEqualVerySlowStringCompareDoNotUse(mut inComponentRef1: Arc<DAE::Comp
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _) => {
-                    let true = (referenceEq(&inComponentRef1.clone(),&inComponentRef2.clone())) else { bail!("pattern mismatch") };
+                    let true = (referenceEq(&*(inComponentRef1.clone()),&*(inComponentRef2.clone()))) else { bail!("pattern mismatch") };
                     Ok(true)
                 }
                 _ => bail!("nomatch"),
@@ -872,7 +872,7 @@ pub fn crefEqualVerySlowStringCompareDoNotUse(mut inComponentRef1: Arc<DAE::Comp
 
 pub fn crefEqualNoStringCompare(mut inCref1: Arc<DAE::ComponentRef>, mut inCref2: Arc<DAE::ComponentRef>) -> Result<bool> {
     let mut outEqual: bool = false;
-    if referenceEq(&inCref1.clone(),&inCref2.clone()) {
+    if referenceEq(&*(inCref1.clone()),&*(inCref2.clone())) {
         outEqual = true;
         return Ok(outEqual.clone());
     }
@@ -900,7 +900,7 @@ pub fn crefEqualWithoutLastSubs(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DA
 
 pub fn crefEqualWithoutSubs(mut cr1: Arc<DAE::ComponentRef>, mut cr2: Arc<DAE::ComponentRef>) -> bool {
     let mut res: bool = false;
-    res = crefEqualWithoutSubs2(referenceEq(&cr1.clone(),&cr2.clone()), cr1.clone(), cr2.clone());
+    res = crefEqualWithoutSubs2(referenceEq(&*(cr1.clone()),&*(cr2.clone())), cr1.clone(), cr2.clone());
     res
 }
 
@@ -918,7 +918,7 @@ fn crefEqualWithoutSubs2(mut refEq: bool, mut icr1: Arc<DAE::ComponentRef>, mut 
         (_, Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: cr1, ident: n1, .. }, Deref @ DAE::ComponentRef::CREF_QUAL { componentRef: cr2, ident: n2, .. }) => {
             let mut r: bool = false;
             r = stringEq((n1.clone()).clone(), (n2.clone()).clone());
-            r = if (r.clone()) {crefEqualWithoutSubs2(referenceEq(&cr1.clone(),&cr2.clone()), cr1.clone(), cr2.clone())} else {false};
+            r = if (r.clone()) {crefEqualWithoutSubs2(referenceEq(&*(cr1.clone()),&*(cr2.clone())), cr1.clone(), cr2.clone())} else {false};
             r.clone()
         },
         _ => {

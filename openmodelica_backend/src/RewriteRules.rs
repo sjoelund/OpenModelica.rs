@@ -138,7 +138,7 @@ pub fn matchAndRewriteExpFrontEnd(mut inExp: Arc<Absyn::Exp>, mut inRules: Rules
                     } };
                     binds = __pa0.clone();
                     outExp = rewriteExpFrontEnd(to.clone(), binds.clone())?;
-                    b = boolNot(referenceEq(&inExp.clone(),&outExp.clone()));
+                    b = boolNot(referenceEq(&*(inExp.clone()),&*(outExp.clone())));
                     println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("FrontEnd Exp:     ")); __mm_s.push_str(&*Dump::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("FrontEnd From:    ")); __mm_s.push_str(&*Dump::printExpStr(from.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("FrontEnd To:      ")); __mm_s.push_str(&*Dump::printExpStr(to.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("FrontEnd Rewrite: ")); __mm_s.push_str(&*Dump::printExpStr(outExp.clone())?); __mm_s.push_str(&*literal!("\n---------\n")); ArcStr::from(__mm_s) }).clone());
                     Ok((outExp.clone(), b.clone()))
                 }
@@ -627,7 +627,7 @@ pub fn matchAndRewriteExpBackEnd(mut inExp: Arc<DAE::Exp>, mut inRules: Rules) -
                     } };
                     binds = __pa0.clone();
                     outExp = rewriteExpBackEnd(to.clone(), binds.clone())?;
-                    b = boolNot(referenceEq(&inExp.clone(),&outExp.clone()));
+                    b = boolNot(referenceEq(&*(inExp.clone()),&*(outExp.clone())));
                     println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("BackEnd Exp:     ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(inExp.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("BackEnd From:    ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(from.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("BackEnd To:      ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(to.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("BackEnd Rewrite: ")); __mm_s.push_str(&*ExpressionBasics::printExpStr(outExp.clone())?); __mm_s.push_str(&*literal!("\n---------\n")); ArcStr::from(__mm_s) }).clone());
                     Ok((outExp.clone(), b.clone()))
                 }

@@ -1484,7 +1484,7 @@ pub fn valueCompare<A: Ord>(a1: A, a2: A) -> i32 {
 /// This is a very fast comparison to speed up comparisons.
 /// If you know that all occurrences of a value are the same pointer,
 /// you can use reference_eq instead of structural equality.
-pub fn referenceEq<A>(a1: &A, a2: &A) -> bool {
+pub fn referenceEq<A: ?Sized>(a1: &A, a2: &A) -> bool {
     // No `A: PartialEq` bound. The body only does pointer comparison, and
     // some MM types — e.g. anything transitively embedding an
     // `Arc<dyn Fn(...) + 'static>` callback (NF Type's
@@ -1492,6 +1492,16 @@ pub fn referenceEq<A>(a1: &A, a2: &A) -> bool {
     // ComponentRef) — can no longer auto-derive `PartialEq`. Requiring
     // the bound here would lock those types out of every
     // `referenceEq(&a, &b)` site even though the bodies don't need it.
+    //
+    // `A: ?Sized` so the caller can deref through a shared-pointer handle
+    // and compare the *pointee* — `referenceEq(&*s1, &*s2)` for `ArcStr`
+    // arguments compares the `str` pointees. Two clones of the same handle
+    // live at different stack addresses, so comparing the handles would
+    // distinguish them even though they designate the same MM object; the
+    // code generator therefore passes `&*v` for handle-represented values
+    // (see mmtorust's `referenceEq` lowering). For unsized pointees
+    // `std::ptr::eq` also compares the metadata (length / vtable), which is
+    // identical for clones of the same handle.
     std::ptr::eq(a1 as *const A, a2 as *const A)
 }
 
@@ -2743,6 +2753,34 @@ mod tests {
             // Different references with same value
             // reference_eq checks pointer equality, so different vars may not be equal
             assert!(referenceEq(&a, &b) || !referenceEq(&a, &b)); // either is valid
+        }
+
+        #[test]
+        fn test_reference_arc() {
+            let a = Arc::new(42);
+            let b = a.clone();
+            // Comparing the Arc *handles* distinguishes clones — they are two
+            // distinct stack objects even though they share the pointee. This
+            // is why generated code must not compare handles directly.
+            assert!(!referenceEq(&a, &b));
+            // Comparing the *pointees* (`&*v`, as the code generator emits for
+            // handle-represented values) identifies clones of the same Arc.
+            assert!(referenceEq(&*a, &*b));
+            // A separate allocation with an equal value is NOT reference-equal.
+            let c = Arc::new(42);
+            assert!(!referenceEq(&*a, &*c));
+        }
+
+        #[test]
+        fn test_reference_eq_str_pointee() {
+            // `A: ?Sized` lets callers compare unsized pointees: clones of the
+            // same ArcStr share storage (address + length both match)…
+            let s1 = ArcStr::from("hello");
+            let s2 = s1.clone();
+            assert!(referenceEq(&*s1, &*s2));
+            // …while an equal-valued but separately allocated string differs.
+            let s3 = ArcStr::from("hello");
+            assert!(!referenceEq(&*s1, &*s3));
         }
 
         #[test]

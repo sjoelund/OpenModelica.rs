@@ -205,7 +205,7 @@ fn patchOperatorRecordConstructorBinding_traverser(mut exp: Arc<Expression::NFEx
     let mut args: Arc<metamodelica::List<Arc<Expression::NFExpression>>> = metamodelica::nil();
     let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
     outExp = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { arguments: args, ty, r#fn, .. } } if (referenceEq(&constructorFn.node.clone(),&r#fn.node.clone())) => Expression::makeRecord(Function::name(constructorFn.clone()), ty.clone(), args.clone()),
+        Deref @ Expression::CALL { call: Deref @ Call::TYPED_CALL { arguments: args, ty, r#fn, .. } } if (referenceEq(&*(constructorFn.node.clone()),&*(r#fn.node.clone()))) => Expression::makeRecord(Function::name(constructorFn.clone()), ty.clone(), args.clone()),
         _ => exp.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });

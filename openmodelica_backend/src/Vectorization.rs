@@ -350,7 +350,7 @@ pub fn equationEqualNoCrefSubs(mut e1: Arc<BackendDAE::Equation>, mut e2: Arc<Ba
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, _) => {
-                    let true = (referenceEq(&e1.clone(),&e2.clone())) else { bail!("pattern mismatch") };
+                    let true = (referenceEq(&*(e1.clone()),&*(e2.clone()))) else { bail!("pattern mismatch") };
                     Ok(true)
                 }
                 _ => bail!("nomatch"),
@@ -456,7 +456,7 @@ pub fn equationEqualNoCrefSubs(mut e1: Arc<BackendDAE::Equation>, mut e2: Arc<Ba
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
 pub fn expEqualNoCrefSubs(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<bool> {
     let mut outEqual: bool = false;
-    if referenceEq(&inExp1.clone(),&inExp2.clone()) {
+    if referenceEq(&*(inExp1.clone()),&*(inExp2.clone())) {
         outEqual = true;
         return Ok(outEqual.clone());
     }

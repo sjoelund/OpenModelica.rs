@@ -1437,7 +1437,7 @@ fn merge_isEqual(mut inMod1: Arc<DAE::Mod>, mut inMod2: Arc<DAE::Mod>) -> bool {
     let mut outIsEqual: bool = false;
     let mut info1: SourceInfo = <SourceInfo as ::std::default::Default>::default();
     let mut info2: SourceInfo = <SourceInfo as ::std::default::Default>::default();
-    if referenceEq(&inMod1.clone(),&inMod2.clone()) {
+    if referenceEq(&*(inMod1.clone()),&*(inMod2.clone())) {
         outIsEqual = true;
     } else {
         info1 = getModInfo(inMod1.clone());

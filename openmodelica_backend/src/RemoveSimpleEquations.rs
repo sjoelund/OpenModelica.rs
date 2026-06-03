@@ -3140,9 +3140,9 @@ fn mergeMinMax1(mut ominmax: (Option<Arc<DAE::Exp>>, Option<Arc<DAE::Exp>>), mut
     (omin1, omax1) = ominmax1.clone();
     omin2 = Expression::expOptMaxScalar(omin.clone(), omin1.clone())?;
     omax2 = Expression::expOptMinScalar(omax.clone(), omax1.clone())?;
-    if referenceEq(&omin2.clone(),&omin.clone()) && referenceEq(&omax2.clone(),&omax.clone()) {
+    if (match (&(omin2.clone()), &(omin.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(omax2.clone()), &(omax.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) {
         minMax = ominmax.clone();
-    } else if referenceEq(&omin2.clone(),&omin1.clone()) && referenceEq(&omax2.clone(),&omax1.clone()) {
+    } else if (match (&(omin2.clone()), &(omin1.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && (match (&(omax2.clone()), &(omax1.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) {
         minMax = ominmax1.clone();
     } else {
         minMax = (omin2.clone(), omax2.clone());
@@ -4150,7 +4150,7 @@ fn replaceOptExprTraverser(mut inTpl: (Option<Arc<DAE::Exp>>, (BackendVarTransfo
             let mut b1: bool = false;
             let mut exps = (*exps).clone();
             (exp1, b1) = BackendVarTransform::replaceExp(exp.clone(), repl.clone(), Some((std::sync::Arc::new(fnptr!(BackendVarTransform::skipPreChangeEdgeOperator, Arc<DAE::Exp>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>) -> Result<bool> + 'static>)))?;
-            if referenceEq(&exp1.clone(),&exp.clone()) {
+            if referenceEq(&*(exp1.clone()),&*(exp.clone())) {
                 exps = metamodelica::cons(expOpt.clone(), exps.clone());
             } else {
                 exps = metamodelica::cons(Some(exp1.clone()), exps.clone());

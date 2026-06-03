@@ -486,7 +486,7 @@ pub fn obfuscatePath(mut path: Arc<Absyn::Path>, mut env: Env, mut etype: Elemen
     let () = (::match_deref::match_deref! { match &(path.clone()) {
         Deref @ Absyn::Path::IDENT { .. } => {
             (name, _) = obfuscateIdentifier((var_field!((*path).name, Absyn::Path::IDENT).clone()).clone(), env.clone(), etype.clone())?;
-            if referenceEq(&name.clone(),&var_field!((*path).name, Absyn::Path::IDENT).clone()) {
+            if referenceEq(&*(name.clone()),&*(var_field!((*path).name, Absyn::Path::IDENT).clone())) {
                 return Ok(path.clone());
             }
             assign_variant_field!(path => Absyn::Path::IDENT; name = name.clone());
@@ -494,7 +494,7 @@ pub fn obfuscatePath(mut path: Arc<Absyn::Path>, mut env: Env, mut etype: Elemen
         },
         Deref @ Absyn::Path::QUALIFIED { .. } => {
             (name, _) = obfuscateIdentifier((var_field!((*path).name, Absyn::Path::QUALIFIED).clone()).clone(), env.clone(), etype.clone())?;
-            if referenceEq(&name.clone(),&var_field!((*path).name, Absyn::Path::QUALIFIED).clone()) {
+            if referenceEq(&*(name.clone()),&*(var_field!((*path).name, Absyn::Path::QUALIFIED).clone())) {
                 return Ok(path.clone());
             }
             assign_variant_field!(path => Absyn::Path::QUALIFIED;
@@ -704,7 +704,7 @@ pub fn obfuscateCref(mut cref: Arc<Absyn::ComponentRef>, mut env: Env, mut etype
     let () = (::match_deref::match_deref! { match &(cref.clone()) {
         Deref @ Absyn::ComponentRef::CREF_IDENT { .. } => {
             (name, _) = obfuscateIdentifier((var_field!((*cref).name, Absyn::ComponentRef::CREF_IDENT).clone()).clone(), env.clone(), etype.clone())?;
-            if referenceEq(&name.clone(),&var_field!((*cref).name, Absyn::ComponentRef::CREF_IDENT).clone()) {
+            if referenceEq(&*(name.clone()),&*(var_field!((*cref).name, Absyn::ComponentRef::CREF_IDENT).clone())) {
                 return Ok(cref.clone());
             }
             assign_variant_field!(cref => Absyn::ComponentRef::CREF_IDENT; name = name.clone());
@@ -715,7 +715,7 @@ pub fn obfuscateCref(mut cref: Arc<Absyn::ComponentRef>, mut env: Env, mut etype
         },
         Deref @ Absyn::ComponentRef::CREF_QUAL { .. } => {
             (name, ety) = obfuscateIdentifier((var_field!((*cref).name, Absyn::ComponentRef::CREF_QUAL).clone()).clone(), env.clone(), etype.clone())?;
-            if !(referenceEq(&name.clone(),&var_field!((*cref).name, Absyn::ComponentRef::CREF_QUAL).clone())) {
+            if !(referenceEq(&*(name.clone()),&*(var_field!((*cref).name, Absyn::ComponentRef::CREF_QUAL).clone()))) {
                 assign_variant_field!(cref => Absyn::ComponentRef::CREF_QUAL; name = name.clone());
             }
             if ety.clone() == ElementType::OTHER.clone() {

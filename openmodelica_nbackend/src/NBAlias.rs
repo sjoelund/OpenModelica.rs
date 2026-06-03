@@ -570,7 +570,7 @@ fn findSimpleEquation(mut eq_ptr: Pointer::Pointer<Arc<Equation::Equation>>, mut
                 set1 = Pointer::access(set1_ptr.clone());
                 set2 = Pointer::access(set2_ptr.clone());
                 set = EMPTY_ALIAS_SET().clone();
-                if referenceEq(&set1_ptr.clone(),&set2_ptr.clone()) {
+                if Pointer::referenceEq(&(set1_ptr.clone()), &(set2_ptr.clone())) {
                     Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBAlias.findSimpleEquation")); __mm_s.push_str(&*literal!(" failed to merge following sets ")); __mm_s.push_str(&*literal!("because they would create a loop. This would create an underdetermined Set!:\n\n")); __mm_s.push_str(&*literal!("Trying to merge: ")); __mm_s.push_str(&*BEquation::Equation::toString(eq.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n\n")); __mm_s.push_str(&*AliasSet::toString(set1.clone())?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*AliasSet::toString(set2.clone())?); ArcStr::from(__mm_s) }).clone()])?;
                     bail!("fail");
                 } else if isSome(set1.const_opt.clone()) && isSome(set2.const_opt.clone()) {

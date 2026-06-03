@@ -715,7 +715,7 @@ pub mod InstNode {
         scope = (::match_deref::match_deref! { match &(node.clone()) {
         Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::DERIVED_CLASS { .. }, .. } => {
             scope = Class::lastBaseClass(node.clone())?;
-            if (isBuiltin(scope.clone())) {topScope(var_field!((*node).parentScope, InstNode::CLASS_NODE).clone())?} else if (referenceEq(&node.clone(),&scope.clone())) {var_field!((*node).parentScope, InstNode::CLASS_NODE).clone()} else {parentScope(scope.clone(), false)?}
+            if (isBuiltin(scope.clone())) {topScope(var_field!((*node).parentScope, InstNode::CLASS_NODE).clone())?} else if (referenceEq(&*(node.clone()),&*(scope.clone()))) {var_field!((*node).parentScope, InstNode::CLASS_NODE).clone()} else {parentScope(scope.clone(), false)?}
         },
         Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::REDECLARED_CLASS { originalNode: Some(orig_node), .. }, .. } if (ignoreRedeclare.clone()) => parentScope(orig_node.clone(), false)?,
         Deref @ CLASS_NODE { nodeType: Deref @ InstNodeType::REDECLARED_CLASS { parent: __esc_scope, .. }, .. } if (ignoreRedeclare.clone()) => {
@@ -1612,9 +1612,9 @@ pub mod InstNode {
     pub fn refEqual(mut node1: Arc<InstNode>, mut node2: Arc<InstNode>) -> bool {
         let mut refEqual: bool = false;
         refEqual = (::match_deref::match_deref! { match &((node1.clone(), node2.clone())) {
-        (Deref @ CLASS_NODE { .. }, Deref @ CLASS_NODE { .. }) => referenceEq(&Pointer::access(var_field!((*node1).cls, InstNode::CLASS_NODE).clone()),&Pointer::access(var_field!((*node2).cls, InstNode::CLASS_NODE).clone())),
-        (Deref @ COMPONENT_NODE { .. }, Deref @ COMPONENT_NODE { .. }) => referenceEq(&Pointer::access(var_field!((*node1).component, InstNode::COMPONENT_NODE).clone()),&Pointer::access(var_field!((*node2).component, InstNode::COMPONENT_NODE).clone())),
-        (Deref @ VAR_NODE { .. }, Deref @ VAR_NODE { .. }) => referenceEq(&Pointer::access(var_field!((*node1).varPointer, InstNode::VAR_NODE).clone()),&Pointer::access(var_field!((*node2).varPointer, InstNode::VAR_NODE).clone())),
+        (Deref @ CLASS_NODE { .. }, Deref @ CLASS_NODE { .. }) => referenceEq(&*(Pointer::access(var_field!((*node1).cls, InstNode::CLASS_NODE).clone())),&*(Pointer::access(var_field!((*node2).cls, InstNode::CLASS_NODE).clone()))),
+        (Deref @ COMPONENT_NODE { .. }, Deref @ COMPONENT_NODE { .. }) => referenceEq(&*(Pointer::access(var_field!((*node1).component, InstNode::COMPONENT_NODE).clone())),&*(Pointer::access(var_field!((*node2).component, InstNode::COMPONENT_NODE).clone()))),
+        (Deref @ VAR_NODE { .. }, Deref @ VAR_NODE { .. }) => referenceEq(&*(Pointer::access(var_field!((*node1).varPointer, InstNode::VAR_NODE).clone())),&*(Pointer::access(var_field!((*node2).varPointer, InstNode::VAR_NODE).clone()))),
         _ => false,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -1642,12 +1642,12 @@ pub mod InstNode {
         let mut same: bool = false;
         let mut n1: Arc<InstNode> = resolveOuter(node1.clone());
         let mut n2: Arc<InstNode> = resolveOuter(node2.clone());
-        if referenceEq(&n1.clone(),&n2.clone()) {
+        if referenceEq(&*(n1.clone()),&*(n2.clone())) {
             same = true;
             return same.clone();
         }
         match '__try0: {
-            same = referenceEq(&unwrap_break_err!(definition(node1.clone()), '__try0),&unwrap_break_err!(definition(node2.clone()), '__try0));
+            same = referenceEq(&*(unwrap_break_err!(definition(node1.clone()), '__try0)),&*(unwrap_break_err!(definition(node2.clone()), '__try0)));
             Ok::<_, anyhow::Error>((same.clone(),))
         } {
             Ok((__try0_o0,)) => {
@@ -1663,7 +1663,7 @@ pub mod InstNode {
     pub fn checkIdentical(mut node1: Arc<InstNode>, mut node2: Arc<InstNode>) -> Result<()> {
         let mut n1: Arc<InstNode> = resolveOuter(node1.clone());
         let mut n2: Arc<InstNode> = resolveOuter(node2.clone());
-        if referenceEq(&n1.clone(),&n2.clone()) {
+        if referenceEq(&*(n1.clone()),&*(n2.clone())) {
             return Ok(());
         }
         let () = 'mc: {

@@ -444,7 +444,7 @@ pub fn expEqual(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<
 
 pub fn compare(mut inExp1: Arc<DAE::Exp>, mut inExp2: Arc<DAE::Exp>) -> Result<i32> {
     let mut comp: i32 = 0;
-    if referenceEq(&inExp1.clone(),&inExp2.clone()) {
+    if referenceEq(&*(inExp1.clone()),&*(inExp2.clone())) {
         comp = 0;
         return Ok(comp.clone());
     }
@@ -936,7 +936,7 @@ pub fn operatorCompare(mut inOperator1: DAE::Operator, mut inOperator2: DAE::Ope
 
 pub fn compareSubscripts(mut sub1: Arc<DAE::Subscript>, mut sub2: Arc<DAE::Subscript>) -> Result<i32> {
     let mut res: i32 = 0;
-    if referenceEq(&sub1.clone(),&sub2.clone()) {
+    if referenceEq(&*(sub1.clone()),&*(sub2.clone())) {
         res = 0;
     } else {
         res = (::match_deref::match_deref! { match &((sub1.clone(), sub2.clone())) {

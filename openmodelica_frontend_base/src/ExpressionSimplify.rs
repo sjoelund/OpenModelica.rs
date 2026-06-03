@@ -987,7 +987,7 @@ fn simplify1FixP(mut inExp: Arc<DAE::Exp>, mut inOptions: ExpressionSimplifyType
             let mut options = (*options).clone();
             ErrorExt::setCheckpoint((literal!("ExpressionSimplify")).clone());
             (expAfterSimplify, options) = Expression::traverseExpBottomUp(exp.clone(), (std::sync::Arc::new(simplifyWork) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, ExpressionSimplifyTypes::Evaluate) -> Result<(Arc<DAE::Exp>, ExpressionSimplifyTypes::Evaluate)> + 'static>), options.clone())?;
-            b = !(referenceEq(&expAfterSimplify.clone(),&exp.clone()));
+            b = !(referenceEq(&*(expAfterSimplify.clone()),&*(exp.clone())));
             if b.clone() {
                 ErrorExt::rollBack((literal!("ExpressionSimplify")).clone());
             } else {

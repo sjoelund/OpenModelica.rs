@@ -734,7 +734,7 @@ pub fn getRecordElementBinding(mut component: Arc<InstNode::InstNode>, mut conte
             (binding, parentDims) = getRecordElementBinding(parent.clone(), context.clone())?;
         } else {
             binding = typeBinding(parent_binding.clone(), InstContext::set(context.clone(), InstContext::DIMENSION.clone()))?;
-            if !(referenceEq(&parent_binding.clone(),&binding.clone())) {
+            if !(referenceEq(&*(parent_binding.clone()),&*(binding.clone()))) {
                 InstNode::componentApply(parent.clone(), (std::sync::Arc::new(Component::setBinding) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Binding::NFBinding>, Arc<Component::NFComponent>) -> Result<Arc<Component::NFComponent>> + 'static>), binding.clone())?;
             }
         }
@@ -3005,7 +3005,7 @@ pub fn typeWhenEquation(mut branches: Arc<metamodelica::List<Arc<Equation::Branc
         (cond, ty, var) = typeWhenCondition(cond.clone(), context.clone(), source.clone(), true)?;
         if Type::isClock(ty.clone())? {
             if (branches.clone().len() as i32) != 1 {
-                if referenceEq(&branch.clone(),&listHead(branches.clone())?) {
+                if referenceEq(&*(branch.clone()),&*(listHead(branches.clone())?)) {
                     Error::addSourceMessage(Error::ELSE_WHEN_CLOCK.clone(), metamodelica::nil(), ElementSource::getInfo(source.clone()))?;
                 } else {
                     Error::addSourceMessage(Error::CLOCKED_WHEN_BRANCH.clone(), metamodelica::nil(), ElementSource::getInfo(source.clone()))?;

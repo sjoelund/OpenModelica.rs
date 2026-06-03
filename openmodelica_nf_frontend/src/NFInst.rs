@@ -825,7 +825,7 @@ pub fn expandClassDerived(mut element: Arc<SCode::Element>, mut definition: Arc<
         _ => bail!("pattern mismatch"),
     } };
     ext_node = __pa2.clone();
-    if referenceEq(&ext_node.clone(),&node.clone()) {
+    if referenceEq(&*(ext_node.clone()),&*(node.clone())) {
         Error::addSourceMessage(Error::RECURSIVE_SHORT_CLASS_DEFINITION.clone(), list![(InstNode::name(node.clone())?).clone(), (Dump::unparseTypeSpec(ty.clone())?).clone()], info.clone())?;
         bail!("fail");
     }
@@ -1092,7 +1092,7 @@ pub fn modifyExtends(mut extendsNode: Arc<InstNode::InstNode>, mut scope: Arc<In
                 _ => bail!("pattern mismatch"),
             } };
             ext_node = __pa0.clone();
-            if !(referenceEq(&InstNode::definition(extendsNode.clone())?,&InstNode::definition(ext_node.clone())?)) && !(Flags::isSet(Flags::MERGE_COMPONENTS.clone())?) {
+            if !(referenceEq(&*(InstNode::definition(extendsNode.clone())?),&*(InstNode::definition(ext_node.clone())?))) && !(Flags::isSet(Flags::MERGE_COMPONENTS.clone())?) {
                 Error::addMultiSourceMessage(Error::FOUND_OTHER_BASECLASS.clone(), list![(AbsynUtil::pathString(var_field!((*elem).baseClassPath, SCode::Element::EXTENDS).clone(), (literal!(".")).clone(), true, false)?).clone()], list![InstNode::info(extendsNode.clone())?, InstNode::info(ext_node.clone())?])?;
                 bail!("fail");
             }
@@ -1562,7 +1562,7 @@ pub fn instComponentDef(mut component: Arc<SCode::Element>, mut outerMod: Arc<Mo
                 checkBindingRestriction(res.clone(), binding.clone(), node.clone(), info.clone())?;
                 ty_attr = Attributes::updateVariability(ty_attr.clone(), ty.clone(), ty_node.clone(), node.clone(), context.clone())?;
                 ty_attr = Attributes::updateComponentConnectorType(ty_attr.clone(), res.clone(), context.clone(), node.clone())?;
-                if !(referenceEq(&attr.clone(),&ty_attr.clone())) {
+                if !(referenceEq(&*(attr.clone()),&*(ty_attr.clone()))) {
                     InstNode::componentApply(node.clone(), (std::sync::Arc::new(Component::setAttributes) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Attributes::NFAttributes>, Arc<Component::NFComponent>) -> Result<Arc<Component::NFComponent>> + 'static>), ty_attr.clone())?;
                 }
                 if useBinding.clone() && Binding::isUnbound(binding.clone()) && !(InstContext::inFunction(context.clone())) && ty_attr.variability.clone() <= Variability::PARAMETER.clone() && Restriction::isType(res.clone()) {
@@ -1797,7 +1797,7 @@ pub fn checkRecursiveDefinition(mut componentType: Arc<InstNode::InstNode>, mut 
     if !(Class::isFunction(InstNode::getClass(parent.clone())?)) {
         while !(InstNode::isEmpty(parent.clone())) {
             parent_type = InstNode::classScope(parent.clone());
-            if referenceEq(&InstNode::definition(componentType.clone())?,&InstNode::definition(parent_type.clone())?) {
+            if referenceEq(&*(InstNode::definition(componentType.clone())?),&*(InstNode::definition(parent_type.clone())?)) {
                 Error::addSourceMessage(Error::RECURSIVE_DEFINITION.clone(), list![(InstNode::name(component.clone())?).clone(), (InstNode::name(InstNode::classScope(InstNode::parent(component.clone())))?).clone()], InstNode::info(component.clone())?)?;
                 InstNode::componentApply(component.clone(), (std::sync::Arc::new(Component::setClassInstance) as std::sync::Arc<dyn ::std::ops::Fn(Arc<InstNode::InstNode>, Arc<Component::NFComponent>) -> Result<Arc<Component::NFComponent>> + 'static>), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE))?;
                 bail!("fail");
@@ -2441,7 +2441,7 @@ pub fn instCrefSubscripts(mut cref: Arc<ComponentRef::NFComponentRef>, mut scope
     }));
             }
             rest_cr = instCrefSubscripts(var_field!((*cref).restCref, ComponentRef::NFComponentRef::CREF).clone(), scope.clone(), context.clone(), info.clone())?;
-            if !(referenceEq(&rest_cr.clone(),&var_field!((*cref).restCref, ComponentRef::NFComponentRef::CREF).clone())) {
+            if !(referenceEq(&*(rest_cr.clone()),&*(var_field!((*cref).restCref, ComponentRef::NFComponentRef::CREF).clone()))) {
                 assign_variant_field!(cref => ComponentRef::NFComponentRef::CREF; restCref = rest_cr.clone());
             }
             ()

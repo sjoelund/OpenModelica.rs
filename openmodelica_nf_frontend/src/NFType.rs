@@ -1260,7 +1260,7 @@ pub fn subscript(mut ty: Arc<NFType>, mut subs: Arc<metamodelica::List<Arc<Subsc
 
 pub fn isEqual(mut ty1: Arc<NFType>, mut ty2: Arc<NFType>) -> Result<bool> {
     let mut equal: bool = false;
-    if referenceEq(&ty1.clone(),&ty2.clone()) {
+    if referenceEq(&*(ty1.clone()),&*(ty2.clone())) {
         equal = true;
         return Ok(equal.clone());
     }

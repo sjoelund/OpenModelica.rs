@@ -404,7 +404,7 @@ fn referenceEqOrEmpty(mut t1: Arc<Tree>, mut t2: Arc<Tree>) -> bool {
     let mut b: bool = false;
     b = (::match_deref::match_deref! { match &((t1.clone(), t2.clone())) {
         (Deref @ Tree::EMPTY { .. }, Deref @ Tree::EMPTY { .. }) => true,
-        _ => referenceEq(&t1.clone(),&t2.clone()),
+        _ => referenceEq(&*(t1.clone()),&*(t2.clone())),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
     b

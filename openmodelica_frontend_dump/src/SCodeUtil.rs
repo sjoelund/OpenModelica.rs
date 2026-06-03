@@ -4045,9 +4045,9 @@ pub fn mergeModifiers(mut inNewMod: Arc<SCode::Mod>, mut inOldMod: Arc<SCode::Mo
                     let mut m: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
                     b = if (isSome(b1.clone())) {b1.clone()} else {b2.clone()};
                     sl = mergeSubMods(sl1.clone(), sl2.clone())?;
-                    if referenceEq(&b.clone(),&b1.clone()) && referenceEq(&sl.clone(),&sl1.clone()) {
+                    if (match (&(b.clone()), &(b1.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && referenceEq(&*(sl.clone()),&*(sl1.clone())) {
                         m = inNewMod.clone();
-                    } else if referenceEq(&b.clone(),&b2.clone()) && referenceEq(&sl.clone(),&sl2.clone()) && f1.clone() == f2.clone() && e1.clone() == e2.clone() {
+                    } else if (match (&(b.clone()), &(b2.clone())) { (None, None) => true, (Some(__refeq_l), Some(__refeq_r)) => referenceEq(&*(*__refeq_l),&*(*__refeq_r)), _ => false }) && referenceEq(&*(sl.clone()),&*(sl2.clone())) && f1.clone() == f2.clone() && e1.clone() == e2.clone() {
                         m = inOldMod.clone();
                     } else {
                         m = Arc::new(SCode::Mod::MOD { finalPrefix: f1.clone(), eachPrefix: e1.clone(), subModLst: sl.clone(), binding: b.clone(), comment: cmt.clone(), info: i1.clone() });
@@ -5143,7 +5143,7 @@ pub fn mapElement(mut element: Arc<SCode::Element>, mut func: Arc<dyn ::std::ops
     let () = (::match_deref::match_deref! { match &(element.clone()) {
         Deref @ SCode::Element::CLASS { .. } => {
             def = mapElementsClassDef(var_field!((*element).classDef, SCode::Element::CLASS).clone(), func.clone())?;
-            if !(referenceEq(&def.clone(),&var_field!((*element).classDef, SCode::Element::CLASS).clone())) {
+            if !(referenceEq(&*(def.clone()),&*(var_field!((*element).classDef, SCode::Element::CLASS).clone()))) {
                 assign_variant_field!(element => SCode::Element::CLASS; classDef = def.clone());
             }
             ()
@@ -5174,7 +5174,7 @@ pub fn mapElementsClassDef(mut classDef: Arc<SCode::ClassDef>, mut func: Arc<dyn
         },
         Deref @ SCode::ClassDef::CLASS_EXTENDS { .. } => {
             def = mapElementsClassDef(var_field!((*classDef).composition, SCode::ClassDef::CLASS_EXTENDS).clone(), func.clone())?;
-            if !(referenceEq(&def.clone(),&var_field!((*classDef).composition, SCode::ClassDef::CLASS_EXTENDS).clone())) {
+            if !(referenceEq(&*(def.clone()),&*(var_field!((*classDef).composition, SCode::ClassDef::CLASS_EXTENDS).clone()))) {
                 assign_variant_field!(classDef => SCode::ClassDef::CLASS_EXTENDS; composition = def.clone());
             }
             ()

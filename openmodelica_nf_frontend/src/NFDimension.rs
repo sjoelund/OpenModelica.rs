@@ -669,17 +669,17 @@ pub fn mapExp(mut dim: Arc<NFDimension>, mut func: Arc<dyn ::std::ops::Fn(Arc<Ex
         Deref @ UNTYPED { dimension: e1, .. } => {
             let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             e2 = Expression::map(e1.clone(), func.clone())?;
-            if (referenceEq(&e1.clone(),&e2.clone())) {dim.clone()} else {Arc::new(NFDimension::UNTYPED { dimension: e2.clone(), isProcessing: var_field!((*dim).isProcessing, NFDimension::UNTYPED).clone() })}
+            if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {dim.clone()} else {Arc::new(NFDimension::UNTYPED { dimension: e2.clone(), isProcessing: var_field!((*dim).isProcessing, NFDimension::UNTYPED).clone() })}
         },
         Deref @ EXP { exp: e1, .. } => {
             let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             e2 = Expression::map(e1.clone(), func.clone())?;
-            if (referenceEq(&e1.clone(),&e2.clone())) {dim.clone()} else {fromExp(e2.clone(), var_field!((*dim).var, NFDimension::EXP).clone())?}
+            if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {dim.clone()} else {fromExp(e2.clone(), var_field!((*dim).var, NFDimension::EXP).clone())?}
         },
         Deref @ RESIZABLE { exp: e1, .. } => {
             let mut e2: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             e2 = Expression::map(e1.clone(), func.clone())?;
-            if (referenceEq(&e1.clone(),&e2.clone())) {dim.clone()} else {fromExp(e2.clone(), var_field!((*dim).var, NFDimension::RESIZABLE).clone())?}
+            if (referenceEq(&*(e1.clone()),&*(e2.clone()))) {dim.clone()} else {fromExp(e2.clone(), var_field!((*dim).var, NFDimension::RESIZABLE).clone())?}
         },
         _ => {
             dim.clone()

@@ -2020,14 +2020,14 @@ pub mod Function {
         comp = InstNode::component(node.clone())?;
         binding = Component::getBinding(comp.clone());
         binding2 = Binding::mapExpShallow(binding.clone(), mapFn.clone())?;
-        if !(referenceEq(&binding.clone(),&binding2.clone())) {
+        if !(referenceEq(&*(binding.clone()),&*(binding2.clone()))) {
             comp = Component::setBinding(binding2.clone(), comp.clone())?;
             dirty = true;
         }
         let () = (::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ Component::COMPONENT { .. } => {
             ty = Type::mapDims(var_field!((*comp).ty, Component::NFComponent::COMPONENT).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static> = mapFn.clone(); move |__pe_a0| Dimension::mapExp(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>))?;
-            if !(referenceEq(&ty.clone(),&var_field!((*comp).ty, Component::NFComponent::COMPONENT).clone())) {
+            if !(referenceEq(&*(ty.clone()),&*(var_field!((*comp).ty, Component::NFComponent::COMPONENT).clone()))) {
                 assign_variant_field!(comp => Component::NFComponent::COMPONENT; ty = ty.clone());
                 dirty = true;
             }

@@ -242,7 +242,7 @@ pub fn traverseEquationArray_WithUpdate<T: Clone + 'static>(mut equationArray: A
         if ExpandableArray::occupied(i.clone(), equationArray.clone()) {
             e = ExpandableArray::get(i.clone(), equationArray.clone())?;
             (new_e, extraArg) = inFuncWithUpdate(e.clone(), extraArg.clone())?;
-            if !(referenceEq(&e.clone(),&new_e.clone())) {
+            if !(referenceEq(&*(e.clone()),&*(new_e.clone()))) {
                 ExpandableArray::update(i.clone(), new_e.clone(), equationArray.clone())?;
             }
         }
@@ -1165,7 +1165,7 @@ fn traverseExpsOfExpList_WithStop<T: Clone + 'static>(mut inExpl: Arc<metamodeli
 
 pub fn equationEqual(mut e1: Arc<BackendDAE::Equation>, mut e2: Arc<BackendDAE::Equation>) -> Result<bool> {
     let mut res: bool = true;
-    if referenceEq(&e1.clone(),&e2.clone()) {
+    if referenceEq(&*(e1.clone()),&*(e2.clone())) {
         return Ok(res.clone());
     }
     res = (::match_deref::match_deref! { match &((e1.clone(), e2.clone())) {

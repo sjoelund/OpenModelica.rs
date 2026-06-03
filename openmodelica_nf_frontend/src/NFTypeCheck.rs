@@ -1182,7 +1182,7 @@ pub fn matchExpressions(mut exp1: Arc<Expression::NFExpression>, mut type1: Arc<
     let mut exp2: Arc<Expression::NFExpression> = exp2;
     let mut compatibleType: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut matchKind: MatchKind = MatchKind::EXACT;
-    if referenceEq(&type1.clone(),&type2.clone()) {
+    if referenceEq(&*(type1.clone()),&*(type2.clone())) {
         compatibleType = type1.clone();
         matchKind = MatchKind::EXACT.clone();
         return Ok((exp1.clone(), exp2.clone(), compatibleType.clone(), matchKind.clone()));
@@ -1235,7 +1235,7 @@ pub fn matchTypes(mut actualType: Arc<Type::NFType>, mut expectedType: Arc<Type:
     let mut expression: Arc<Expression::NFExpression> = expression;
     let mut compatibleType: Arc<Type::NFType> = Arc::new(Type::ANY);
     let mut matchKind: MatchKind = MatchKind::EXACT;
-    if referenceEq(&actualType.clone(),&expectedType.clone()) {
+    if referenceEq(&*(actualType.clone()),&*(expectedType.clone())) {
         compatibleType = actualType.clone();
         matchKind = MatchKind::EXACT.clone();
         return Ok((expression.clone(), compatibleType.clone(), matchKind.clone()));

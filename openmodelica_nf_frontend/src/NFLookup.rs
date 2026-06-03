@@ -827,7 +827,7 @@ pub fn resolveInnerCref(mut node: Arc<InstNode::InstNode>, mut cref: Arc<Compone
         node = InstNode::resolveInner(node.clone());
         scope = InstNode::parent(node.clone());
         while !(ComponentRef::isEmpty(cref.clone())) {
-            if referenceEq(&ComponentRef::node(cref.clone())?,&scope.clone()) {
+            if referenceEq(&*(ComponentRef::node(cref.clone())?),&*(scope.clone())) {
                 break;
             } else {
                 cref = ComponentRef::rest(cref.clone())?;

@@ -809,7 +809,7 @@ pub mod CompositeEvent {
             if !(failed.clone()) {
                 assign_variant_field!(exp1 => Expression::NFExpression::CALL; call = call.clone());
                 assign_variant_field!(exp => Expression::NFExpression::LBINARY; exp1 = exp1.clone());
-                if !(referenceEq(&exp2.clone(),&var_field!((*exp).exp2, Expression::NFExpression::LBINARY).clone())) {
+                if !(referenceEq(&*(exp2.clone()),&*(var_field!((*exp).exp2, Expression::NFExpression::LBINARY).clone()))) {
                     assign_variant_field!(exp => Expression::NFExpression::LBINARY; exp2 = exp2.clone());
                 }
             }
@@ -823,7 +823,7 @@ pub mod CompositeEvent {
             if !(failed.clone()) {
                 assign_variant_field!(exp2 => Expression::NFExpression::CALL; call = call.clone());
                 assign_variant_field!(exp => Expression::NFExpression::LBINARY; exp2 = exp2.clone());
-                if !(referenceEq(&exp1.clone(),&var_field!((*exp).exp1, Expression::NFExpression::LBINARY).clone())) {
+                if !(referenceEq(&*(exp1.clone()),&*(var_field!((*exp).exp1, Expression::NFExpression::LBINARY).clone()))) {
                     assign_variant_field!(exp => Expression::NFExpression::LBINARY; exp1 = exp1.clone());
                 }
             }
@@ -1113,7 +1113,7 @@ fn collectEvents(mut eqn_ptr: Pointer::Pointer<Arc<Equation::Equation>>, mut buc
         _ => BEquation::Equation::map(eqn.clone(), collector.clone(), None, (std::sync::Arc::new(Expression::fakeMap) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>) -> Result<Arc<Expression::NFExpression>> + 'static>))?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-    if !(referenceEq(&eqn.clone(),&Pointer::access(eqn_ptr.clone()))) {
+    if !(referenceEq(&*(eqn.clone()),&*(Pointer::access(eqn_ptr.clone())))) {
         Pointer::update(eqn_ptr.clone(), eqn.clone());
     }
     Ok(eqn_ptr)

@@ -1426,7 +1426,7 @@ pub mod Equation {
         _ => eqn.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        if !(referenceEq(&eqn.clone(),&new.clone())) {
+        if !(referenceEq(&*(eqn.clone()),&*(new.clone()))) {
             Pointer::update(eqn_ptr.clone(), new.clone());
         }
         Ok(eqn_ptr)
@@ -1767,10 +1767,10 @@ pub mod Equation {
             let mut rhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             lhs = mapFunc(var_field!((*eq).lhs, Equation::SCALAR_EQUATION).clone(), funcExp.clone())?;
             rhs = mapFunc(var_field!((*eq).rhs, Equation::SCALAR_EQUATION).clone(), funcExp.clone())?;
-            if !(referenceEq(&lhs.clone(),&var_field!((*eq).lhs, Equation::SCALAR_EQUATION).clone())) {
+            if !(referenceEq(&*(lhs.clone()),&*(var_field!((*eq).lhs, Equation::SCALAR_EQUATION).clone()))) {
                 assign_variant_field!(eq => Equation::SCALAR_EQUATION; lhs = lhs.clone());
             }
-            if !(referenceEq(&rhs.clone(),&var_field!((*eq).rhs, Equation::SCALAR_EQUATION).clone())) {
+            if !(referenceEq(&*(rhs.clone()),&*(var_field!((*eq).rhs, Equation::SCALAR_EQUATION).clone()))) {
                 assign_variant_field!(eq => Equation::SCALAR_EQUATION; rhs = rhs.clone());
             }
             eq.clone()
@@ -1780,10 +1780,10 @@ pub mod Equation {
             let mut rhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             lhs = mapFunc(var_field!((*eq).lhs, Equation::ARRAY_EQUATION).clone(), funcExp.clone())?;
             rhs = mapFunc(var_field!((*eq).rhs, Equation::ARRAY_EQUATION).clone(), funcExp.clone())?;
-            if !(referenceEq(&lhs.clone(),&var_field!((*eq).lhs, Equation::ARRAY_EQUATION).clone())) {
+            if !(referenceEq(&*(lhs.clone()),&*(var_field!((*eq).lhs, Equation::ARRAY_EQUATION).clone()))) {
                 assign_variant_field!(eq => Equation::ARRAY_EQUATION; lhs = lhs.clone());
             }
-            if !(referenceEq(&rhs.clone(),&var_field!((*eq).rhs, Equation::ARRAY_EQUATION).clone())) {
+            if !(referenceEq(&*(rhs.clone()),&*(var_field!((*eq).rhs, Equation::ARRAY_EQUATION).clone()))) {
                 assign_variant_field!(eq => Equation::ARRAY_EQUATION; rhs = rhs.clone());
             }
             eq.clone()
@@ -1793,10 +1793,10 @@ pub mod Equation {
             let mut rhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             lhs = mapFunc(var_field!((*eq).lhs, Equation::RECORD_EQUATION).clone(), funcExp.clone())?;
             rhs = mapFunc(var_field!((*eq).rhs, Equation::RECORD_EQUATION).clone(), funcExp.clone())?;
-            if !(referenceEq(&lhs.clone(),&var_field!((*eq).lhs, Equation::RECORD_EQUATION).clone())) {
+            if !(referenceEq(&*(lhs.clone()),&*(var_field!((*eq).lhs, Equation::RECORD_EQUATION).clone()))) {
                 assign_variant_field!(eq => Equation::RECORD_EQUATION; lhs = lhs.clone());
             }
-            if !(referenceEq(&rhs.clone(),&var_field!((*eq).rhs, Equation::RECORD_EQUATION).clone())) {
+            if !(referenceEq(&*(rhs.clone()),&*(var_field!((*eq).rhs, Equation::RECORD_EQUATION).clone()))) {
                 assign_variant_field!(eq => Equation::RECORD_EQUATION; rhs = rhs.clone());
             }
             eq.clone()
@@ -1804,7 +1804,7 @@ pub mod Equation {
         Deref @ ALGORITHM { .. } => {
             let mut alg: Arc<Algorithm::NFAlgorithm> = Arc::new(<Algorithm::NFAlgorithm as ::std::default::Default>::default());
             alg = Algorithm::mapExp(var_field!((*eq).alg, Equation::ALGORITHM).clone(), (std::sync::Arc::new({ let __pe_b1 = funcExp.clone(); move |__pe_a0| mapFunc(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
-            if !(referenceEq(&alg.clone(),&var_field!((*eq).alg, Equation::ALGORITHM).clone())) {
+            if !(referenceEq(&*(alg.clone()),&*(var_field!((*eq).alg, Equation::ALGORITHM).clone()))) {
                 assign_variant_field!(eq => Equation::ALGORITHM; alg = Algorithm::setInputsOutputs(alg.clone())?);
             }
             eq.clone()
@@ -1812,7 +1812,7 @@ pub mod Equation {
         Deref @ IF_EQUATION { .. } => {
             let mut ifEqBody: Arc<IfEquationBody::IfEquationBody> = Arc::new(<IfEquationBody::IfEquationBody as ::std::default::Default>::default());
             ifEqBody = IfEquationBody::map(var_field!((*eq).body, Equation::IF_EQUATION).clone(), funcExp.clone(), funcCrefOpt.clone(), mapFunc.clone())?;
-            if !(referenceEq(&ifEqBody.clone(),&var_field!((*eq).body, Equation::IF_EQUATION).clone())) {
+            if !(referenceEq(&*(ifEqBody.clone()),&*(var_field!((*eq).body, Equation::IF_EQUATION).clone()))) {
                 assign_variant_field!(eq => Equation::IF_EQUATION; body = ifEqBody.clone());
             }
             eq.clone()
@@ -1820,7 +1820,7 @@ pub mod Equation {
         Deref @ FOR_EQUATION { .. } => {
             let mut iter: Arc<Iterator::Iterator> = Arc::new(Iterator::EMPTY);
             iter = Iterator::map(var_field!((*eq).iter, Equation::FOR_EQUATION).clone(), funcExp.clone(), funcCrefOpt.clone(), mapFunc.clone())?;
-            if !(referenceEq(&iter.clone(),&var_field!((*eq).iter, Equation::FOR_EQUATION).clone())) {
+            if !(referenceEq(&*(iter.clone()),&*(var_field!((*eq).iter, Equation::FOR_EQUATION).clone()))) {
                 assign_variant_field!(eq => Equation::FOR_EQUATION; iter = iter.clone());
             }
             assign_variant_field!(eq => Equation::FOR_EQUATION; body = ({
@@ -1836,7 +1836,7 @@ pub mod Equation {
         Deref @ WHEN_EQUATION { .. } => {
             let mut whenEqBody: Arc<WhenEquationBody::WhenEquationBody> = Arc::new(<WhenEquationBody::WhenEquationBody as ::std::default::Default>::default());
             whenEqBody = WhenEquationBody::map(var_field!((*eq).body, Equation::WHEN_EQUATION).clone(), funcExp.clone(), funcCrefOpt.clone(), mapFunc.clone())?;
-            if !(referenceEq(&whenEqBody.clone(),&var_field!((*eq).body, Equation::WHEN_EQUATION).clone())) {
+            if !(referenceEq(&*(whenEqBody.clone()),&*(var_field!((*eq).body, Equation::WHEN_EQUATION).clone()))) {
                 assign_variant_field!(eq => Equation::WHEN_EQUATION; body = whenEqBody.clone());
             }
             eq.clone()
@@ -1844,7 +1844,7 @@ pub mod Equation {
         Deref @ AUX_EQUATION { body: Some(body), .. } => {
             let mut new_body: Arc<Equation> = Arc::new(Equation::DUMMY_EQUATION);
             new_body = map(body.clone(), funcExp.clone(), funcCrefOpt.clone(), mapFunc.clone())?;
-            if !(referenceEq(&new_body.clone(),&body.clone())) {
+            if !(referenceEq(&*(new_body.clone()),&*(body.clone()))) {
                 assign_variant_field!(eq => Equation::AUX_EQUATION; body = Some(new_body.clone()));
             }
             eq.clone()
@@ -1867,7 +1867,7 @@ pub mod Equation {
         Deref @ IF_EQUATION { .. } => {
             let mut ifEqBody: Arc<IfEquationBody::IfEquationBody> = Arc::new(<IfEquationBody::IfEquationBody as ::std::default::Default>::default());
             ifEqBody = IfEquationBody::mapCondition(var_field!((*eq).body, Equation::IF_EQUATION).clone(), funcExp.clone(), funcCrefOpt.clone(), mapFunc.clone())?;
-            if !(referenceEq(&ifEqBody.clone(),&var_field!((*eq).body, Equation::IF_EQUATION).clone())) {
+            if !(referenceEq(&*(ifEqBody.clone()),&*(var_field!((*eq).body, Equation::IF_EQUATION).clone()))) {
                 assign_variant_field!(eq => Equation::IF_EQUATION; body = ifEqBody.clone());
             }
             eq.clone()
@@ -1886,7 +1886,7 @@ pub mod Equation {
         Deref @ WHEN_EQUATION { .. } => {
             let mut whenEqBody: Arc<WhenEquationBody::WhenEquationBody> = Arc::new(<WhenEquationBody::WhenEquationBody as ::std::default::Default>::default());
             whenEqBody = WhenEquationBody::mapCondition(var_field!((*eq).body, Equation::WHEN_EQUATION).clone(), funcExp.clone(), funcCrefOpt.clone(), mapFunc.clone())?;
-            if !(referenceEq(&whenEqBody.clone(),&var_field!((*eq).body, Equation::WHEN_EQUATION).clone())) {
+            if !(referenceEq(&*(whenEqBody.clone()),&*(var_field!((*eq).body, Equation::WHEN_EQUATION).clone()))) {
                 assign_variant_field!(eq => Equation::WHEN_EQUATION; body = whenEqBody.clone());
             }
             eq.clone()
@@ -1894,7 +1894,7 @@ pub mod Equation {
         Deref @ AUX_EQUATION { body: Some(body), .. } => {
             let mut new_body: Arc<Equation> = Arc::new(Equation::DUMMY_EQUATION);
             new_body = mapCondition(body.clone(), funcExp.clone(), funcCrefOpt.clone(), mapFunc.clone())?;
-            if !(referenceEq(&new_body.clone(),&body.clone())) {
+            if !(referenceEq(&*(new_body.clone()),&*(body.clone()))) {
                 assign_variant_field!(eq => Equation::AUX_EQUATION; body = Some(new_body.clone()));
             }
             eq.clone()
@@ -3369,7 +3369,7 @@ pub mod IfEquationBody {
         let mut ifBody: Arc<IfEquationBody> = ifBody;
         let mut condition: Arc<Expression::NFExpression> = Arc::new(Expression::END);
         condition = mapFunc(ifBody.condition.clone(), funcExp.clone())?;
-        if !(referenceEq(&condition.clone(),&ifBody.condition.clone())) {
+        if !(referenceEq(&*(condition.clone()),&*(ifBody.condition.clone()))) {
             assign_field!(ifBody.condition = condition.clone());
         }
         assign_field!(ifBody.else_if = Util::applyOption(ifBody.else_if.clone(), (std::sync::Arc::new({ let __pe_b1 = funcExp.clone(); let __pe_b2 = funcCrefOpt.clone(); let __pe_b3 = mapFunc.clone(); move |__pe_a0| mapCondition(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<IfEquationBody>) -> Result<Arc<IfEquationBody>> + 'static>))?);
@@ -3382,14 +3382,14 @@ pub mod IfEquationBody {
         let mut else_if: Arc<IfEquationBody> = Arc::new(<IfEquationBody as ::std::default::Default>::default());
         let mut old_else_if: Arc<IfEquationBody> = Arc::new(<IfEquationBody as ::std::default::Default>::default());
         condition = mapFunc(ifBody.condition.clone(), funcExp.clone())?;
-        if !(referenceEq(&condition.clone(),&ifBody.condition.clone())) {
+        if !(referenceEq(&*(condition.clone()),&*(ifBody.condition.clone()))) {
             assign_field!(ifBody.condition = condition.clone());
         }
         assign_field!(ifBody.then_eqns = List::map(ifBody.then_eqns.clone(), func.clone())?);
         if isSome(ifBody.else_if.clone()) {
             old_else_if = Util::getOption(ifBody.else_if.clone())?;
             else_if = mapEqnExpCref(old_else_if.clone(), func.clone(), funcExp.clone(), funcCrefOpt.clone(), mapFunc.clone())?;
-            if !(referenceEq(&else_if.clone(),&old_else_if.clone())) {
+            if !(referenceEq(&*(else_if.clone()),&*(old_else_if.clone()))) {
                 assign_field!(ifBody.else_if = Some(else_if.clone()));
             }
         }
@@ -3831,7 +3831,7 @@ pub mod WhenEquationBody {
         let mut whenBody: Arc<WhenEquationBody> = whenBody;
         let mut condition: Arc<Expression::NFExpression> = Arc::new(Expression::END);
         condition = mapFunc(whenBody.condition.clone(), funcExp.clone())?;
-        if !(referenceEq(&condition.clone(),&whenBody.condition.clone())) {
+        if !(referenceEq(&*(condition.clone()),&*(whenBody.condition.clone()))) {
             assign_field!(whenBody.condition = condition.clone());
         }
         assign_field!(
@@ -3845,7 +3845,7 @@ pub mod WhenEquationBody {
         let mut whenBody: Arc<WhenEquationBody> = whenBody;
         let mut condition: Arc<Expression::NFExpression> = Arc::new(Expression::END);
         condition = mapFunc(whenBody.condition.clone(), funcExp.clone())?;
-        if !(referenceEq(&condition.clone(),&whenBody.condition.clone())) {
+        if !(referenceEq(&*(condition.clone()),&*(whenBody.condition.clone()))) {
             assign_field!(whenBody.condition = condition.clone());
         }
         assign_field!(whenBody.else_when = Util::applyOption(whenBody.else_when.clone(), (std::sync::Arc::new({ let __pe_b1 = funcExp.clone(); let __pe_b2 = funcCrefOpt.clone(); let __pe_b3 = mapFunc.clone(); move |__pe_a0| mapCondition(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<WhenEquationBody>) -> Result<Arc<WhenEquationBody>> + 'static>))?);
@@ -4082,7 +4082,7 @@ pub mod WhenEquationBody {
             let mut c = c.clone();
             if UnorderedMap::contains(c.clone(), discr_map.clone())? {
                 set_new = UnorderedMap::getSafe(c.clone(), discr_map.clone(), metamodelica::sourceInfo!())?;
-                if !(referenceEq(&set.clone(),&set_new.clone())) {
+                if !(referenceEq(&*(set.clone()),&*(set_new.clone()))) {
                     set = UnorderedSet::union(set.clone(), set_new.clone())?;
                 }
             } else {
@@ -4333,10 +4333,10 @@ pub mod WhenStatement {
             let mut rhs: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             lhs = mapFunc(var_field!((*stmt).lhs, WhenStatement::ASSIGN).clone(), funcExp.clone())?;
             rhs = mapFunc(var_field!((*stmt).rhs, WhenStatement::ASSIGN).clone(), funcExp.clone())?;
-            if !(referenceEq(&lhs.clone(),&var_field!((*stmt).lhs, WhenStatement::ASSIGN).clone())) {
+            if !(referenceEq(&*(lhs.clone()),&*(var_field!((*stmt).lhs, WhenStatement::ASSIGN).clone()))) {
                 assign_variant_field!(stmt => WhenStatement::ASSIGN; lhs = lhs.clone());
             }
-            if !(referenceEq(&rhs.clone(),&var_field!((*stmt).rhs, WhenStatement::ASSIGN).clone())) {
+            if !(referenceEq(&*(rhs.clone()),&*(var_field!((*stmt).rhs, WhenStatement::ASSIGN).clone()))) {
                 assign_variant_field!(stmt => WhenStatement::ASSIGN; rhs = rhs.clone());
             }
             stmt.clone()
@@ -4352,12 +4352,12 @@ pub mod WhenStatement {
                 } };
                 funcCref = __pa0.clone();
                 stateVar = funcCref(var_field!((*stmt).stateVar, WhenStatement::REINIT).clone())?;
-                if !(referenceEq(&stateVar.clone(),&var_field!((*stmt).stateVar, WhenStatement::REINIT).clone())) {
+                if !(referenceEq(&*(stateVar.clone()),&*(var_field!((*stmt).stateVar, WhenStatement::REINIT).clone()))) {
                     assign_variant_field!(stmt => WhenStatement::REINIT; stateVar = stateVar.clone());
                 }
             }
             value = mapFunc(var_field!((*stmt).value, WhenStatement::REINIT).clone(), funcExp.clone())?;
-            if !(referenceEq(&value.clone(),&var_field!((*stmt).value, WhenStatement::REINIT).clone())) {
+            if !(referenceEq(&*(value.clone()),&*(var_field!((*stmt).value, WhenStatement::REINIT).clone()))) {
                 assign_variant_field!(stmt => WhenStatement::REINIT; value = value.clone());
             }
             stmt.clone()
@@ -4366,11 +4366,11 @@ pub mod WhenStatement {
             let mut condition: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             let mut message: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             condition = mapFunc(var_field!((*stmt).condition, WhenStatement::ASSERT).clone(), funcExp.clone())?;
-            if !(referenceEq(&condition.clone(),&var_field!((*stmt).condition, WhenStatement::ASSERT).clone())) {
+            if !(referenceEq(&*(condition.clone()),&*(var_field!((*stmt).condition, WhenStatement::ASSERT).clone()))) {
                 assign_variant_field!(stmt => WhenStatement::ASSERT; condition = condition.clone());
             }
             message = mapFunc(var_field!((*stmt).message, WhenStatement::ASSERT).clone(), funcExp.clone())?;
-            if !(referenceEq(&message.clone(),&var_field!((*stmt).message, WhenStatement::ASSERT).clone())) {
+            if !(referenceEq(&*(message.clone()),&*(var_field!((*stmt).message, WhenStatement::ASSERT).clone()))) {
                 assign_variant_field!(stmt => WhenStatement::ASSERT; message = message.clone());
             }
             stmt.clone()
@@ -4381,7 +4381,7 @@ pub mod WhenStatement {
         Deref @ NORETCALL { .. } => {
             let mut value: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             value = mapFunc(var_field!((*stmt).exp, WhenStatement::NORETCALL).clone(), funcExp.clone())?;
-            if !(referenceEq(&value.clone(),&var_field!((*stmt).exp, WhenStatement::NORETCALL).clone())) {
+            if !(referenceEq(&*(value.clone()),&*(var_field!((*stmt).exp, WhenStatement::NORETCALL).clone()))) {
                 assign_variant_field!(stmt => WhenStatement::NORETCALL; exp = value.clone());
             }
             stmt.clone()
@@ -4796,7 +4796,7 @@ pub mod EquationPointers {
                 eq_ptr = ExpandableArray::get(i.clone(), equations.eqArr.clone())?;
                 eq = Pointer::access(eq_ptr.clone());
                 new_eq = func(eq.clone())?;
-                if !(referenceEq(&eq.clone(),&new_eq.clone())) {
+                if !(referenceEq(&*(eq.clone()),&*(new_eq.clone()))) {
                     if debug.clone() && (UnorderedSet::contains((ComponentRef::toString(Equation::getEqnName(eq_ptr.clone())?)?).clone(), debug_eqns.clone())? || UnorderedSet::contains((ComponentRef::toString(Equation::getEqnName(Pointer::create(new_eq.clone()))?)?).clone(), debug_eqns.clone())?) && !(Equation::equalName(Pointer::create(eq.clone()), Pointer::create(new_eq.clone()))?) {
                         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("[debugFollowEquations] The equation:\n")); __mm_s.push_str(&*Equation::toString(eq.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\nGets replaced by:\n")); __mm_s.push_str(&*Equation::toString(new_eq.clone(), (literal!("")).clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
                     }
@@ -4826,7 +4826,7 @@ pub mod EquationPointers {
                 eq_ptr = ExpandableArray::get(i.clone(), equations.eqArr.clone())?;
                 eq = Pointer::access(eq_ptr.clone());
                 new_eq = Equation::map(eq.clone(), funcExp.clone(), funcCrefOpt.clone(), mapFunc.clone())?;
-                if !(referenceEq(&eq.clone(),&new_eq.clone())) {
+                if !(referenceEq(&*(eq.clone()),&*(new_eq.clone()))) {
                     Pointer::update(eq_ptr.clone(), new_eq.clone());
                 }
             }

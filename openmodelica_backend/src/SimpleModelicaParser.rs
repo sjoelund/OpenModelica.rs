@@ -3504,7 +3504,7 @@ fn parseTreeFilterWhitespace(mut t: Arc<ParseTree>) -> Arc<ParseTree> {
             for mut n in &*var_field!((*t).nodes, ParseTree::NODE).clone() {
                 let mut n = n.clone();
                 n2 = parseTreeFilterWhitespace(n.clone());
-                if !(referenceEq(&n.clone(),&n2.clone())) {
+                if !(referenceEq(&*(n.clone()),&*(n2.clone()))) {
                     changed = true;
                 }
                 if !(isEmpty(n2.clone())) {

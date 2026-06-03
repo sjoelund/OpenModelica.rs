@@ -187,7 +187,7 @@ fn replaceCrefNode(mut exp: Arc<Expression::NFExpression>, mut node: Arc<InstNod
     } });
     ty = Expression::typeOf(exp.clone());
     repl_ty = Type::mapDims(ty.clone(), (std::sync::Arc::new({ let __pe_b1 = node.clone(); let __pe_b2 = value.clone(); move |__pe_a0| replaceDimExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<Arc<Dimension::NFDimension>> + 'static>))?;
-    if !(referenceEq(&ty.clone(),&repl_ty.clone())) {
+    if !(referenceEq(&*(ty.clone()),&*(repl_ty.clone()))) {
         exp = Expression::setType(repl_ty.clone(), exp.clone())?;
     }
     Ok(exp)

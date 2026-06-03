@@ -601,7 +601,7 @@ pub fn evalComponentStartBinding(mut node: Arc<InstNode::InstNode>, mut comp: Ar
     outExp = (::match_deref::match_deref! { match &(binding.clone()) {
         Deref @ Binding::TYPED_BINDING { .. } => {
             exp = evalExp(var_field!((*binding).bindingExp, Binding::NFBinding::TYPED_BINDING).clone(), target.clone())?;
-            if !(referenceEq(&exp.clone(),&var_field!((*binding).bindingExp, Binding::NFBinding::TYPED_BINDING).clone())) {
+            if !(referenceEq(&*(exp.clone()),&*(var_field!((*binding).bindingExp, Binding::NFBinding::TYPED_BINDING).clone()))) {
                 assign_variant_field!(binding => Binding::NFBinding::TYPED_BINDING; bindingExp = exp.clone());
                 start_comp = Component::setBinding(binding.clone(), start_comp.clone())?;
                 InstNode::updateComponent(start_comp.clone(), start_node.clone())?;

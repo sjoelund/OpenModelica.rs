@@ -1,7 +1,6 @@
 // Manually written
 #![allow(non_snake_case)]
 use std::sync::{Arc, Mutex};
-use metamodelica::*; // Built-in types and functions
 
 // Mirrors the MetaModelica/C representation: `Mutable` corresponds to
 // `mmc_mk_box1(0, data)` (ctor 0, in-place updatable) and `Immutable`
@@ -143,8 +142,26 @@ pub fn clone<T: Clone + PartialEq>(mutable: Pointer<T>) -> Pointer<T> {
 // fails. Surface a misuse as a panic, consistent with the C runtime.
 pub fn apply<T: Clone + PartialEq + 'static>(mutable: Pointer<T>, func: std::sync::Arc<dyn ::std::ops::Fn(T) -> anyhow::Result<T> + 'static>) -> anyhow::Result<Pointer<T>> {
     let new = func(access(mutable.clone()))?;
-    if !referenceEq(&new, &access(mutable.clone())) {
-        update(mutable.clone(), new);
-    }
+    // The MM source skips the write when `func` returned its argument
+    // unchanged (`if not referenceEq(newData, data)`). With `T` passed by
+    // value there is no identity to observe — a pointer comparison of two
+    // locals is always false — so write unconditionally; when the data is
+    // unchanged the write is semantically a no-op.
+    update(mutable.clone(), new);
     Ok(mutable)
+}
+
+/// MetaModelica `referenceEq` on pointer cells: true iff both handles
+/// designate the same allocation. A `Mutable` and an `Immutable` cell are
+/// never the same allocation (they are distinct boxes in the C runtime too).
+/// Contents are irrelevant. Called from generated code (the builtin
+/// `referenceEq` lowering dispatches here because the `Arc` payload is not
+/// reachable through a `Deref`). Takes references: the call site only needs
+/// identity, never ownership.
+pub fn referenceEq<T>(a: &Pointer<T>, b: &Pointer<T>) -> bool {
+    match (a, b) {
+        (Pointer::Mutable(x), Pointer::Mutable(y)) => Arc::ptr_eq(x, y),
+        (Pointer::Immutable(x), Pointer::Immutable(y)) => Arc::ptr_eq(x, y),
+        _ => false,
+    }
 }

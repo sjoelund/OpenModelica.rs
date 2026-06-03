@@ -1070,7 +1070,7 @@ pub fn inlineExp(mut inExp: Arc<DAE::Exp>, mut inElementList: Functiontuple, mut
                     let mut assrtLst: Arc<metamodelica::List<Arc<DAE::Statement>>> = metamodelica::nil();
                     let mut source = (*source).clone();
                     (e_1, assrtLst) = Expression::traverseExpBottomUp(e.clone(), (std::sync::Arc::new({ let __pe_b2 = fns.clone(); move |__pe_a0, __pe_a1| inlineCall(__pe_a0, __pe_a1, __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Statement>>>)> + 'static>), metamodelica::nil())?;
-                    let false = (referenceEq(&e.clone(),&e_1.clone())) else { bail!("pattern mismatch") };
+                    let false = (referenceEq(&*(e.clone()),&*(e_1.clone()))) else { bail!("pattern mismatch") };
                     if Flags::isSet(Flags::INFO_XML_OPERATIONS.clone())? {
                         source = ElementSource::addSymbolicTransformation(source.clone(), Arc::new(DAE::SymbolicOperation::OP_INLINE { before: Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e.clone() }), after: Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e_1.clone() }) }))?;
                         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(ExpressionSimplify::simplifyAddSymbolicOperation(Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e_1.clone() }), source.clone())?) {
@@ -1135,7 +1135,7 @@ pub fn forceInlineExp(mut inExp: Arc<DAE::Exp>, mut inElementList: Functiontuple
             let mut b: bool = false;
             let mut source = (*source).clone();
             (e_1, _) = Expression::traverseExpBottomUp(e.clone(), (std::sync::Arc::new({ let __pe_b2 = fns.clone(); let __pe_b3 = Arc::new(openmodelica_ast_collections::AvlSetPath::Tree::EMPTY); move |__pe_a0, __pe_a1| forceInlineCall(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Statement>>>) -> Result<(Arc<DAE::Exp>, Arc<metamodelica::List<Arc<DAE::Statement>>>)> + 'static>), metamodelica::nil())?;
-            b = !(referenceEq(&e.clone(),&e_1.clone()));
+            b = !(referenceEq(&*(e.clone()),&*(e_1.clone())));
             if b.clone() {
                 source = ElementSource::addSymbolicTransformation(source.clone(), Arc::new(DAE::SymbolicOperation::OP_INLINE { before: Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e.clone() }), after: Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e_1.clone() }) }))?;
                 let (__pa0, __pa1) = ::match_deref::match_deref! { match &(ExpressionSimplify::simplifyAddSymbolicOperation(Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e_1.clone() }), source.clone())?) {
@@ -2332,7 +2332,7 @@ pub fn inlineEquationExp(mut inExp: Arc<DAE::EquationExp>, mut r#fn: Arc<dyn ::s
             let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut eq2: Arc<DAE::EquationExp> = Arc::new(<DAE::EquationExp as ::std::default::Default>::default());
             (e_1, _) = Expression::traverseExpBottomUp(e.clone(), r#fn.clone(), metamodelica::nil())?;
-            changed = !(referenceEq(&e.clone(),&e_1.clone()));
+            changed = !(referenceEq(&*(e.clone()),&*(e_1.clone())));
             eq2 = Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e_1.clone() });
             source = ElementSource::condAddSymbolicTransformation(changed.clone(), inSource.clone(), Arc::new(DAE::SymbolicOperation::OP_INLINE { before: inExp.clone(), after: eq2.clone() }))?;
             (eq2, source) = ExpressionSimplify::condSimplifyAddSymbolicOperation(changed.clone(), eq2.clone(), source.clone())?;
@@ -2343,7 +2343,7 @@ pub fn inlineEquationExp(mut inExp: Arc<DAE::EquationExp>, mut r#fn: Arc<dyn ::s
             let mut e_1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut eq2: Arc<DAE::EquationExp> = Arc::new(<DAE::EquationExp as ::std::default::Default>::default());
             (e_1, _) = Expression::traverseExpBottomUp(e.clone(), r#fn.clone(), metamodelica::nil())?;
-            changed = !(referenceEq(&e.clone(),&e_1.clone()));
+            changed = !(referenceEq(&*(e.clone()),&*(e_1.clone())));
             eq2 = Arc::new(DAE::EquationExp::RESIDUAL_EXP { exp: e_1.clone() });
             source = ElementSource::condAddSymbolicTransformation(changed.clone(), inSource.clone(), Arc::new(DAE::SymbolicOperation::OP_INLINE { before: inExp.clone(), after: eq2.clone() }))?;
             (eq2, source) = ExpressionSimplify::condSimplifyAddSymbolicOperation(changed.clone(), eq2.clone(), source.clone())?;
@@ -2356,7 +2356,7 @@ pub fn inlineEquationExp(mut inExp: Arc<DAE::EquationExp>, mut r#fn: Arc<dyn ::s
             let mut eq2: Arc<DAE::EquationExp> = Arc::new(<DAE::EquationExp as ::std::default::Default>::default());
             (e1_1, _) = Expression::traverseExpBottomUp(e1.clone(), r#fn.clone(), metamodelica::nil())?;
             (e2_1, _) = Expression::traverseExpBottomUp(e2.clone(), r#fn.clone(), metamodelica::nil())?;
-            changed = !(referenceEq(&e1.clone(),&e1_1.clone()) && referenceEq(&e2.clone(),&e2_1.clone()));
+            changed = !(referenceEq(&*(e1.clone()),&*(e1_1.clone())) && referenceEq(&*(e2.clone()),&*(e2_1.clone())));
             eq2 = Arc::new(DAE::EquationExp::EQUALITY_EXPS { lhs: e1_1.clone(), rhs: e2_1.clone() });
             source = ElementSource::condAddSymbolicTransformation(changed.clone(), inSource.clone(), Arc::new(DAE::SymbolicOperation::OP_INLINE { before: inExp.clone(), after: eq2.clone() }))?;
             (eq2, source) = ExpressionSimplify::condSimplifyAddSymbolicOperation(changed.clone(), eq2.clone(), source.clone())?;

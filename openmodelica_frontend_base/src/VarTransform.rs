@@ -1248,7 +1248,7 @@ pub fn replaceExp(mut inExp: Arc<DAE::Exp>, mut inVarReplacements: VariableRepla
     if replaceExpCond(inCondition.clone(), inExp.clone()) {
         (outExp, _) = Expression::traverseExpBottomUp(inExp.clone(), (std::sync::Arc::new({ let __pe_b1 = inVarReplacements.clone(); let __pe_b2 = inCondition.clone(); move |__pe_a0, __pe_a3| replaceExpCref(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_a3) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, bool) -> Result<(Arc<DAE::Exp>, bool)> + 'static>), true)?;
     }
-    replacementPerformed = !(referenceEq(&outExp.clone(),&inExp.clone()));
+    replacementPerformed = !(referenceEq(&*(outExp.clone()),&*(inExp.clone())));
     Ok((outExp, replacementPerformed))
 }
 

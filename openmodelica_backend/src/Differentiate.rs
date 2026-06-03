@@ -696,7 +696,7 @@ fn differentiateExp(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Compon
             let mut res1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut functionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
             (res1, functionTree) = differentiateExp(e1.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), inFunctionTree.clone(), maxIter.clone() - 1)?;
-            if !(referenceEq(&e1.clone(),&res1.clone())) {
+            if !(referenceEq(&*(e1.clone()),&*(res1.clone()))) {
                 res = Arc::new(DAE::Exp::TSUB { exp: res1.clone(), ix: i.clone(), ty: tp.clone() });
                 (res, _) = ExpressionSimplify::simplify1(res.clone())?;
             } else {
@@ -720,7 +720,7 @@ fn differentiateExp(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Compon
                 (res, functionTree) = differentiateExp(res.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), inFunctionTree.clone(), maxIter.clone() - 1)?;
             } else {
                 (res1, functionTree) = differentiateExp(var_field!((*e1).exp, DAE::Exp::RSUB).clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), inFunctionTree.clone(), maxIter.clone() - 1)?;
-                if !(referenceEq(&var_field!((*e1).exp, DAE::Exp::RSUB).clone(),&res1.clone())) {
+                if !(referenceEq(&*(var_field!((*e1).exp, DAE::Exp::RSUB).clone()),&*(res1.clone()))) {
                     match '__try0: {
                         (expl, strLst) = (::match_deref::match_deref! { match &(res1.clone()) {
         Deref @ DAE::Exp::RECORD { comp: strLst, exps: expl, .. } => (expl.clone(), strLst.clone()),
@@ -757,7 +757,7 @@ fn differentiateExp(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DAE::Compon
             let mut res1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut functionTree: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
             (res1, functionTree) = differentiateExp(var_field!((*inExp).expr, DAE::Exp::REDUCTION).clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), inFunctionTree.clone(), maxIter.clone() - 1)?;
-            if !(referenceEq(&var_field!((*inExp).expr, DAE::Exp::REDUCTION).clone(),&res1.clone())) {
+            if !(referenceEq(&*(var_field!((*inExp).expr, DAE::Exp::REDUCTION).clone()),&*(res1.clone()))) {
                 res = Arc::new(DAE::Exp::REDUCTION { reductionInfo: var_field!((*inExp).reductionInfo, DAE::Exp::REDUCTION).clone(), expr: res1.clone(), iterators: var_field!((*inExp).iterators, DAE::Exp::REDUCTION).clone() });
                 (res, _) = ExpressionSimplify::simplify1(res.clone())?;
             } else {

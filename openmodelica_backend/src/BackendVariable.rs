@@ -3043,13 +3043,13 @@ fn replaceVarWithWholeDim(mut inCref: Arc<DAE::ComponentRef>, mut iPerformed: bo
             let mut b: bool = false;
             (subs_1, b) = replaceVarWithWholeDimSubs(subs.clone(), iPerformed.clone())?;
             (cr_1, b) = replaceVarWithWholeDim(cr.clone(), b.clone())?;
-            (if (referenceEq(&subs_1.clone(),&subs.clone()) && referenceEq(&cr_1.clone(),&cr.clone())) {inCref.clone()} else {Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (name.clone()).clone(), identType: ty.clone(), subscriptLst: subs_1.clone(), componentRef: cr_1.clone() })}, b.clone())
+            (if (referenceEq(&*(subs_1.clone()),&*(subs.clone())) && referenceEq(&*(cr_1.clone()),&*(cr.clone()))) {inCref.clone()} else {Arc::new(DAE::ComponentRef::CREF_QUAL { ident: (name.clone()).clone(), identType: ty.clone(), subscriptLst: subs_1.clone(), componentRef: cr_1.clone() })}, b.clone())
         },
         Deref @ DAE::ComponentRef::CREF_IDENT { subscriptLst: subs, identType: ty, ident: name } => {
             let mut subs_1: Arc<metamodelica::List<Arc<DAE::Subscript>>> = metamodelica::nil();
             let mut b: bool = false;
             (subs_1, b) = replaceVarWithWholeDimSubs(subs.clone(), iPerformed.clone())?;
-            (if (referenceEq(&subs_1.clone(),&subs.clone())) {inCref.clone()} else {Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name.clone()).clone(), identType: ty.clone(), subscriptLst: subs_1.clone() })}, b.clone())
+            (if (referenceEq(&*(subs_1.clone()),&*(subs.clone()))) {inCref.clone()} else {Arc::new(DAE::ComponentRef::CREF_IDENT { ident: (name.clone()).clone(), identType: ty.clone(), subscriptLst: subs_1.clone() })}, b.clone())
         },
         Deref @ DAE::ComponentRef::OPTIMICA_ATTR_INST_CREF { .. } => {
             (inCref.clone(), iPerformed.clone())
@@ -3096,7 +3096,7 @@ fn replaceVarWithWholeDimSubs(mut inSubscript: Arc<metamodelica::List<Arc<DAE::S
             (sub_exp_, calcRange) = computeRangeExps(sub_exp.clone());
             (res, b) = replaceVarWithWholeDimSubs(rest.clone(), iPerformed.clone())?;
             r#const = Expression::isConst(sub_exp_.clone())?;
-            res = metamodelica::cons(if (r#const.clone()) {if (referenceEq(&sub_exp.clone(),&sub_exp_.clone())) {sub.clone()} else {Arc::new(DAE::Subscript::INDEX { exp: sub_exp_.clone() })}} else {Arc::new(openmodelica_frontend_types::DAE::Subscript::WHOLEDIM)}, rest.clone());
+            res = metamodelica::cons(if (r#const.clone()) {if (referenceEq(&*(sub_exp.clone()),&*(sub_exp_.clone()))) {sub.clone()} else {Arc::new(DAE::Subscript::INDEX { exp: sub_exp_.clone() })}} else {Arc::new(openmodelica_frontend_types::DAE::Subscript::WHOLEDIM)}, rest.clone());
             (res.clone(), b.clone() || !(r#const.clone()) || calcRange.clone())
         },
         Deref @ metamodelica::List::Cons { head: sub @ Deref @ DAE::Subscript::WHOLE_NONEXP { exp: sub_exp }, tail: rest } => {
@@ -4084,7 +4084,7 @@ fn mergeMin(mut inMin1: Option<Arc<DAE::Exp>>, mut inMin2: Option<Arc<DAE::Exp>>
             let mut min: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             min = Expression::expMaxScalar(min1.clone(), min2.clone())?;
             (min, _) = ExpressionSimplify::simplify(min.clone())?;
-            if (referenceEq(&min.clone(),&min1.clone())) {inMin1.clone()} else if (referenceEq(&min.clone(),&min2.clone())) {inMin2.clone()} else {Some(min.clone())}
+            if (referenceEq(&*(min.clone()),&*(min1.clone()))) {inMin1.clone()} else if (referenceEq(&*(min.clone()),&*(min2.clone()))) {inMin2.clone()} else {Some(min.clone())}
         },
         (None, _) => {
             inMin2.clone()
@@ -4107,7 +4107,7 @@ fn mergeMax(mut inMax1: Option<Arc<DAE::Exp>>, mut inMax2: Option<Arc<DAE::Exp>>
             let mut max: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             max = Expression::expMinScalar(max1.clone(), max2.clone())?;
             (max, _) = ExpressionSimplify::simplify(max.clone())?;
-            if (referenceEq(&max.clone(),&max1.clone())) {inMax1.clone()} else if (referenceEq(&max.clone(),&max2.clone())) {inMax2.clone()} else {Some(max.clone())}
+            if (referenceEq(&*(max.clone()),&*(max1.clone()))) {inMax1.clone()} else if (referenceEq(&*(max.clone()),&*(max2.clone()))) {inMax2.clone()} else {Some(max.clone())}
         },
         (None, _) => {
             inMax2.clone()

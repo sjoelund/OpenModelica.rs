@@ -395,7 +395,7 @@ pub fn inlineFunctions_traverser(mut exp: Arc<Expression::NFExpression>, mut fun
                 outExp = exp.clone();
             } else {
                 outExp = Inline::inlineCallExp(exp.clone(), true)?;
-                if referenceEq(&exp.clone(),&outExp.clone()) {
+                if referenceEq(&*(exp.clone()),&*(outExp.clone())) {
                     collectFunction(r#fn.clone(), funcs.clone())?;
                 } else {
                     Expression::apply(outExp.clone(), (std::sync::Arc::new({ let __pe_b1 = funcs.clone(); move |__pe_a0| collectFunctions(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<()> + 'static>))?;

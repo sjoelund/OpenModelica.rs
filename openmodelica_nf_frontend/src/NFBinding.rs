@@ -647,28 +647,28 @@ pub fn mapExp(mut binding: Arc<NFBinding>, mut mapFn: Arc<dyn ::std::ops::Fn(Arc
     let () = (::match_deref::match_deref! { match &(binding.clone()) {
         Deref @ UNTYPED_BINDING { bindingExp: e1, .. } => {
             e2 = Expression::map(e1.clone(), mapFn.clone())?;
-            if !(referenceEq(&e1.clone(),&e2.clone())) {
+            if !(referenceEq(&*(e1.clone()),&*(e2.clone()))) {
                 assign_variant_field!(binding => NFBinding::UNTYPED_BINDING; bindingExp = e2.clone());
             }
             ()
         },
         Deref @ TYPED_BINDING { bindingExp: e1, .. } => {
             e2 = Expression::map(e1.clone(), mapFn.clone())?;
-            if !(referenceEq(&e1.clone(),&e2.clone())) {
+            if !(referenceEq(&*(e1.clone()),&*(e2.clone()))) {
                 assign_variant_field!(binding => NFBinding::TYPED_BINDING; bindingExp = e2.clone());
             }
             ()
         },
         Deref @ FLAT_BINDING { bindingExp: e1, .. } => {
             e2 = Expression::map(e1.clone(), mapFn.clone())?;
-            if !(referenceEq(&e1.clone(),&e2.clone())) {
+            if !(referenceEq(&*(e1.clone()),&*(e2.clone()))) {
                 assign_variant_field!(binding => NFBinding::FLAT_BINDING; bindingExp = e2.clone());
             }
             ()
         },
         Deref @ CEVAL_BINDING { bindingExp: e1 } => {
             e2 = Expression::map(e1.clone(), mapFn.clone())?;
-            if !(referenceEq(&e1.clone(),&e2.clone())) {
+            if !(referenceEq(&*(e1.clone()),&*(e2.clone()))) {
                 assign_variant_field!(binding => NFBinding::CEVAL_BINDING; bindingExp = e2.clone());
             }
             ()
@@ -688,28 +688,28 @@ pub fn mapExpShallow(mut binding: Arc<NFBinding>, mut mapFn: Arc<dyn ::std::ops:
     let () = (::match_deref::match_deref! { match &(binding.clone()) {
         Deref @ UNTYPED_BINDING { bindingExp: e1, .. } => {
             e2 = mapFn(e1.clone())?;
-            if !(referenceEq(&e1.clone(),&e2.clone())) {
+            if !(referenceEq(&*(e1.clone()),&*(e2.clone()))) {
                 assign_variant_field!(binding => NFBinding::UNTYPED_BINDING; bindingExp = e2.clone());
             }
             ()
         },
         Deref @ TYPED_BINDING { bindingExp: e1, .. } => {
             e2 = mapFn(e1.clone())?;
-            if !(referenceEq(&e1.clone(),&e2.clone())) {
+            if !(referenceEq(&*(e1.clone()),&*(e2.clone()))) {
                 assign_variant_field!(binding => NFBinding::TYPED_BINDING; bindingExp = e2.clone());
             }
             ()
         },
         Deref @ FLAT_BINDING { bindingExp: e1, .. } => {
             e2 = mapFn(e1.clone())?;
-            if !(referenceEq(&e1.clone(),&e2.clone())) {
+            if !(referenceEq(&*(e1.clone()),&*(e2.clone()))) {
                 assign_variant_field!(binding => NFBinding::FLAT_BINDING; bindingExp = e2.clone());
             }
             ()
         },
         Deref @ CEVAL_BINDING { bindingExp: e1 } => {
             e2 = mapFn(e1.clone())?;
-            if !(referenceEq(&e1.clone(),&e2.clone())) {
+            if !(referenceEq(&*(e1.clone()),&*(e2.clone()))) {
                 assign_variant_field!(binding => NFBinding::CEVAL_BINDING; bindingExp = e2.clone());
             }
             ()

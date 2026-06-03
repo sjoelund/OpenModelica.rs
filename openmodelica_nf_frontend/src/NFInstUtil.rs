@@ -268,7 +268,7 @@ pub fn expandSlicedCrefsEq(mut eq: Arc<Equation::NFEquation>) -> Result<Arc<Equa
             let mut e1 = (*e1).clone();
             e1 = Expression::map(e1.clone(), (std::sync::Arc::new(fnptr!(addTrailingWholeIndices, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             e2 = Expression::map(e1.clone(), (std::sync::Arc::new(expandSlicedCrefsExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
-            if !(referenceEq(&e1.clone(),&e2.clone())) {
+            if !(referenceEq(&*(e1.clone()),&*(e2.clone()))) {
                 assign_variant_field!(eq => Equation::NFEquation::EQUALITY; rhs = e2.clone());
             }
             eq.clone()
@@ -305,7 +305,7 @@ pub fn expandSlicedCrefsStmt(mut stmt: Arc<Statement::NFStatement>) -> Result<Ar
             assign_variant_field!(stmt => Statement::NFStatement::ASSIGNMENT; lhs = Expression::map(var_field!((*stmt).lhs, Statement::NFStatement::ASSIGNMENT).clone(), (std::sync::Arc::new(fnptr!(addTrailingWholeIndices, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?);
             e1 = Expression::map(e1.clone(), (std::sync::Arc::new(fnptr!(addTrailingWholeIndices, Arc<Expression::NFExpression>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
             e2 = Expression::map(e1.clone(), (std::sync::Arc::new(expandSlicedCrefsExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
-            if !(referenceEq(&e1.clone(),&e2.clone())) {
+            if !(referenceEq(&*(e1.clone()),&*(e2.clone()))) {
                 assign_variant_field!(stmt => Statement::NFStatement::ASSIGNMENT; rhs = e2.clone());
             }
             stmt.clone()

@@ -3143,13 +3143,13 @@ pub fn instElement(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
                     if SCodeUtil::finalBool(final_prefix.clone())? {
                         m = InstUtil::traverseModAddFinal(m.clone())?;
                     }
-                    comp = if (referenceEq(&var_field!((**el).modifications, SCode::Element::COMPONENT).clone(),&m.clone())) {el.clone()} else {Arc::new(SCode::Element::COMPONENT { name: (name.clone()).clone(), prefixes: prefixes.clone(), attributes: attr.clone(), typeSpec: ts.clone(), modifications: m.clone(), comment: comment.clone(), condition: cond.clone(), info: info.clone() })};
+                    comp = if (referenceEq(&*(var_field!((**el).modifications, SCode::Element::COMPONENT).clone()),&*(m.clone()))) {el.clone()} else {Arc::new(SCode::Element::COMPONENT { name: (name.clone()).clone(), prefixes: prefixes.clone(), attributes: attr.clone(), typeSpec: ts.clone(), modifications: m.clone(), comment: comment.clone(), condition: cond.clone(), info: info.clone() })};
                     oldmod = m.clone();
                     already_declared = InstUtil::checkMultiplyDeclared(cache.clone(), env.clone(), mods.clone(), pre.clone(), ci_state.clone(), (comp.clone(), cmod.clone()), inst_dims.clone(), r#impl.clone())?;
                     m = InstUtil::chainRedeclares(mods.clone(), m.clone())?;
                     m = SCodeInstUtil::expandEnumerationMod(m.clone())?;
                     m = InstUtil::traverseModAddDims(cache.clone(), env.clone(), pre.clone(), m.clone(), inst_dims.clone())?;
-                    comp = if (referenceEq(&oldmod.clone(),&m.clone())) {comp.clone()} else {Arc::new(SCode::Element::COMPONENT { name: (name.clone()).clone(), prefixes: prefixes.clone(), attributes: attr.clone(), typeSpec: ts.clone(), modifications: m.clone(), comment: comment.clone(), condition: cond.clone(), info: info.clone() })};
+                    comp = if (referenceEq(&*(oldmod.clone()),&*(m.clone()))) {comp.clone()} else {Arc::new(SCode::Element::COMPONENT { name: (name.clone()).clone(), prefixes: prefixes.clone(), attributes: attr.clone(), typeSpec: ts.clone(), modifications: m.clone(), comment: comment.clone(), condition: cond.clone(), info: info.clone() })};
                     ci_state = ClassInfUtil::trans(ci_state.clone(), ClassInf::Event::FOUND_COMPONENT { name: (name.clone()).clone() })?;
                     cref = ComponentReferenceBasics::makeCrefIdent((name.clone()).clone(), DAE::T_UNKNOWN_DEFAULT().clone(), metamodelica::nil());
                     (cache, _) = PrefixUtil::prefixCref(cache.clone(), env.clone(), ih.clone(), pre.clone(), cref.clone())?;

@@ -498,7 +498,7 @@ pub fn mergeModifier(mut modifier: Arc<Modifier::Modifier>, mut cls: Arc<NFClass
 
 pub fn isIdentical(mut cls1: Arc<NFClass>, mut cls2: Arc<NFClass>) -> Result<bool> {
     let mut identical: bool = false;
-    if referenceEq(&cls1.clone(),&cls2.clone()) {
+    if referenceEq(&*(cls1.clone()),&*(cls2.clone())) {
         identical = true;
     } else {
         identical = (::match_deref::match_deref! { match &((cls1.clone(), cls2.clone())) {

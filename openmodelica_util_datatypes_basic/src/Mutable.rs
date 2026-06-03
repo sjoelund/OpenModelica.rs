@@ -74,3 +74,13 @@ pub fn update<T: Clone>(mutable: Mutable<T>, data: T) {
 pub fn access<T: Clone>(mutable: Mutable<T>) -> T {
     mutable.0.lock().unwrap().clone()
 }
+
+/// MetaModelica `referenceEq` on mutable cells: true iff both handles
+/// designate the same cell (same `Arc` allocation). Contents are irrelevant —
+/// two distinct cells holding equal values are not reference-equal. Called
+/// from generated code (the builtin `referenceEq` lowering dispatches here
+/// because the `Arc` field is private). Takes references: the call site only
+/// needs identity, never ownership.
+pub fn referenceEq<T: Clone>(a: &Mutable<T>, b: &Mutable<T>) -> bool {
+    Arc::ptr_eq(&a.0, &b.0)
+}

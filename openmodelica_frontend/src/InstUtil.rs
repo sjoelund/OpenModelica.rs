@@ -6125,7 +6125,7 @@ pub fn traverseModAddFinal(mut r#mod: Arc<SCode::Mod>) -> Result<Arc<SCode::Mod>
                 Deref @ SCode::Mod::REDECL { element: element1, eachPrefix: each_, .. } => {
                     let mut element2: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
                     element2 = traverseModAddFinal3(element1.clone())?;
-                    Ok(if (referenceEq(&element1.clone(),&element2.clone())) {r#mod.clone()} else {Arc::new(SCode::Mod::REDECL { finalPrefix: openmodelica_frontend_types::SCode::Final::FINAL, eachPrefix: each_.clone(), element: element2.clone() })})
+                    Ok(if (referenceEq(&*(element1.clone()),&*(element2.clone()))) {r#mod.clone()} else {Arc::new(SCode::Mod::REDECL { finalPrefix: openmodelica_frontend_types::SCode::Final::FINAL, eachPrefix: each_.clone(), element: element2.clone() })})
                 }
                 _ => bail!("nomatch"),
             }}
@@ -6135,7 +6135,7 @@ pub fn traverseModAddFinal(mut r#mod: Arc<SCode::Mod>) -> Result<Arc<SCode::Mod>
                 Deref @ SCode::Mod::MOD { finalPrefix: f, eachPrefix: each_, subModLst: subs1, binding: eq, comment: cmt, info } => {
                     let mut subs2: Arc<metamodelica::List<Arc<SCode::SubMod>>> = metamodelica::nil();
                     subs2 = List::mapCheckReferenceEq(subs1.clone(), (std::sync::Arc::new(traverseModAddFinal4) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SCode::SubMod>) -> Result<Arc<SCode::SubMod>> + 'static>))?;
-                    Ok(if (openmodelica_frontend_types::SCode::Final::FINAL == f.clone() && referenceEq(&subs1.clone(),&subs2.clone())) {r#mod.clone()} else {Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::FINAL, eachPrefix: each_.clone(), subModLst: subs2.clone(), binding: eq.clone(), comment: cmt.clone(), info: info.clone() })})
+                    Ok(if (openmodelica_frontend_types::SCode::Final::FINAL == f.clone() && referenceEq(&*(subs1.clone()),&*(subs2.clone()))) {r#mod.clone()} else {Arc::new(SCode::Mod::MOD { finalPrefix: openmodelica_frontend_types::SCode::Final::FINAL, eachPrefix: each_.clone(), subModLst: subs2.clone(), binding: eq.clone(), comment: cmt.clone(), info: info.clone() })})
                 }
                 _ => bail!("nomatch"),
             }}
@@ -6163,7 +6163,7 @@ fn traverseModAddFinal3(mut inElement: Arc<SCode::Element>) -> Result<Arc<SCode:
                 Deref @ SCode::Element::COMPONENT { name, prefixes, attributes: attr, typeSpec: tySpec, modifications: oldmod, comment: cmt, condition: cond, info } => {
                     let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
                     r#mod = traverseModAddFinal(oldmod.clone())?;
-                    Ok(if (referenceEq(&oldmod.clone(),&r#mod.clone())) {inElement.clone()} else {Arc::new(SCode::Element::COMPONENT { name: (name.clone()).clone(), prefixes: prefixes.clone(), attributes: attr.clone(), typeSpec: tySpec.clone(), modifications: r#mod.clone(), comment: cmt.clone(), condition: cond.clone(), info: info.clone() })})
+                    Ok(if (referenceEq(&*(oldmod.clone()),&*(r#mod.clone()))) {inElement.clone()} else {Arc::new(SCode::Element::COMPONENT { name: (name.clone()).clone(), prefixes: prefixes.clone(), attributes: attr.clone(), typeSpec: tySpec.clone(), modifications: r#mod.clone(), comment: cmt.clone(), condition: cond.clone(), info: info.clone() })})
                 }
                 _ => bail!("nomatch"),
             }}
@@ -6189,7 +6189,7 @@ fn traverseModAddFinal3(mut inElement: Arc<SCode::Element>) -> Result<Arc<SCode:
                 Deref @ SCode::Element::EXTENDS { baseClassPath: p, visibility: vis, modifications: oldmod, ann, info } => {
                     let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
                     r#mod = traverseModAddFinal(oldmod.clone())?;
-                    Ok(if (referenceEq(&oldmod.clone(),&r#mod.clone())) {inElement.clone()} else {Arc::new(SCode::Element::EXTENDS { baseClassPath: p.clone(), visibility: vis.clone(), modifications: r#mod.clone(), ann: ann.clone(), info: info.clone() })})
+                    Ok(if (referenceEq(&*(oldmod.clone()),&*(r#mod.clone()))) {inElement.clone()} else {Arc::new(SCode::Element::EXTENDS { baseClassPath: p.clone(), visibility: vis.clone(), modifications: r#mod.clone(), ann: ann.clone(), info: info.clone() })})
                 }
                 _ => bail!("nomatch"),
             }}
@@ -6212,7 +6212,7 @@ fn traverseModAddFinal4(mut sub: Arc<SCode::SubMod>) -> Result<Arc<SCode::SubMod
     let mut sub: Arc<SCode::SubMod> = sub;
     let mut r#mod: Arc<SCode::Mod> = Arc::new(SCode::Mod::NOMOD);
     r#mod = traverseModAddFinal(sub.r#mod.clone())?;
-    if !(referenceEq(&sub.r#mod.clone(),&r#mod.clone())) {
+    if !(referenceEq(&*(sub.r#mod.clone()),&*(r#mod.clone()))) {
         assign_field!(sub.r#mod = r#mod.clone());
     }
     Ok(sub)

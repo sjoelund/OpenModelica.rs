@@ -119,7 +119,7 @@ pub fn simplifyBinding(mut binding: Arc<Binding::NFBinding>) -> Result<Arc<Bindi
         exp = Binding::getTypedExp(binding.clone())?;
         sexp = SimplifyExp::simplify(exp.clone(), false)?;
         sexp = removeEmptyFunctionArguments(sexp.clone(), false)?;
-        if !(referenceEq(&exp.clone(),&sexp.clone())) {
+        if !(referenceEq(&*(exp.clone()),&*(sexp.clone()))) {
             binding = Binding::setTypedExp(sexp.clone(), binding.clone())?;
         }
     }
@@ -133,7 +133,7 @@ pub fn simplifyTypeAttribute(mut attribute: (ArcStr, Arc<Binding::NFBinding>)) -
     let mut sbinding: Arc<Binding::NFBinding> = Arc::new(Binding::UNBOUND);
     (name, binding) = attribute.clone();
     sbinding = simplifyBinding(binding.clone())?;
-    if !(referenceEq(&binding.clone(),&sbinding.clone())) {
+    if !(referenceEq(&*(binding.clone()),&*(sbinding.clone()))) {
         attribute = (name.clone(), sbinding.clone());
     }
     Ok(attribute)
@@ -145,7 +145,7 @@ pub fn simplifyDimension(mut dim: Arc<Dimension::NFDimension>) -> Result<Arc<Dim
         Deref @ Dimension::EXP { .. } => {
             let mut e: Arc<Expression::NFExpression> = Arc::new(Expression::END);
             e = SimplifyExp::simplify(var_field!((*dim).exp, Dimension::NFDimension::EXP).clone(), false)?;
-            if (referenceEq(&e.clone(),&var_field!((*dim).exp, Dimension::NFDimension::EXP).clone())) {dim.clone()} else {Dimension::fromExp(e.clone(), var_field!((*dim).var, Dimension::NFDimension::EXP).clone())?}
+            if (referenceEq(&*(e.clone()),&*(var_field!((*dim).exp, Dimension::NFDimension::EXP).clone()))) {dim.clone()} else {Dimension::fromExp(e.clone(), var_field!((*dim).var, Dimension::NFDimension::EXP).clone())?}
         },
         _ => {
             dim.clone()
