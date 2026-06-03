@@ -125,13 +125,23 @@ pub fn setInstallationDirectoryPath(inString: ArcStr) {
 /// drop the trailing path component until a `bin` or `lib` component has been
 /// removed, yielding the installation prefix (e.g. `/opt/openmodelica/bin/omc`
 /// → `/opt/openmodelica`). Errors out if the path contains neither `bin` nor
-/// `lib`, matching the C runtime's hard failure.
+/// `lib`, matching the C runtime's hard failure. The C runtime prints the
+/// diagnostic to stderr before exiting; we do the same before returning the
+/// error, because the MetaModelica caller (`Main.main2`) catches the failure
+/// and replaces it with a generic message that never mentions
+/// `OPENMODELICAHOME` — without the stderr line the actual cause is invisible.
 fn strip_bin_path(path: &str) -> Result<ArcStr> {
-    if !path.contains("bin") && !path.contains("lib") {
-        bail!(
+    fn cannot_deduce(path: &str) -> anyhow::Error {
+        let msg = format!(
             "could not deduce the OpenModelica installation directory from \
              executable path: [{path}], please set OPENMODELICAHOME"
         );
+        eprintln!("{msg}");
+        anyhow::anyhow!(msg)
+    }
+
+    if !path.contains("bin") && !path.contains("lib") {
+        return Err(cannot_deduce(path));
     }
     let mut s = path.to_string();
     loop {
@@ -144,10 +154,7 @@ fn strip_bin_path(path: &str) -> Result<ArcStr> {
             }
             // C asserts the slash exists; reaching the start without finding a
             // bin/lib component is the same unrecoverable situation.
-            None => bail!(
-                "could not deduce the OpenModelica installation directory from \
-                 executable path: [{path}], please set OPENMODELICAHOME"
-            ),
+            None => return Err(cannot_deduce(path)),
         }
     }
     Ok(ArcStr::from(s))
