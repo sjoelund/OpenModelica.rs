@@ -1481,25 +1481,34 @@ pub fn dladdr<T: Clone + 'static>(_symbol: T) -> (ArcStr, ArcStr, ArcStr) {
     todo!("System.dladdr: function-pointer→symbol lookup not yet ported")
 }
 
-// ───────────────────────────────── StringAllocator (opaque) ──────────────────
+// ───────────────────────────────── StringAllocator ───────────────────────────
 
-/// Opaque external object `StringAllocator`. The C runtime owns the
-/// representation; this struct exists only to give the type a nominal
-/// identity in Rust so call sites type-check.
+/// External object `StringAllocator` from `System.mo`: a fixed-size string
+/// buffer that callers fill piecewise with [`stringAllocatorStringCopy`] and
+/// finally reinterpret as a `String` with [`stringAllocatorResult`] (see
+/// `StringUtil.repeat`, `AbsynUtil.pathStringWork`,
+/// `Initialization.warnAboutVars2Work`).
 ///
-/// All operations that would actually touch the underlying buffer
-/// (`stringAllocatorStringCopy`, `stringAllocatorResult`) are still
-/// `todo!()` — once a caller needs them, the right move is probably to
-/// back this with a `Vec<u8>` inside the Arc<Mutex<...>> and have
-/// `stringAllocatorResult` hand out an `ArcStr` view.
+/// The C runtime backs it with an unboxed `mmc_alloc_scon(sz)` string that is
+/// mutated in place; we use a shared zero-initialised byte buffer, which is
+/// deterministic where the C version would expose uninitialised bytes if a
+/// caller left gaps. The handle is `Clone` and shared, matching external-
+/// object reference semantics, and the `Mutex` keeps it thread-safe — these
+/// are cold-path string builders, never a hot loop.
 #[derive(Clone, Debug)]
 pub struct StringAllocator {
-    _opaque: std::sync::Arc<std::sync::Mutex<()>>,
+    buf: Arc<std::sync::Mutex<Vec<u8>>>,
 }
 
 impl StringAllocator {
-    pub fn new(_sz: i32) -> Result<StringAllocator> {
-        todo!("external object `StringAllocator`: constructor not implemented")
+    pub fn new(sz: i32) -> Result<StringAllocator> {
+        // `StringAllocator_constructor` throws (MMC_THROW) on a negative size.
+        if sz < 0 {
+            bail!("StringAllocator: negative size {sz}");
+        }
+        Ok(StringAllocator {
+            buf: Arc::new(std::sync::Mutex::new(vec![0u8; sz as usize])),
+        })
     }
 }
 pub fn StringAllocator(sz: i32) -> Result<StringAllocator> {
@@ -1508,12 +1517,61 @@ pub fn StringAllocator(sz: i32) -> Result<StringAllocator> {
 
 pub fn destructor(_str: StringAllocator) {}
 
-pub fn stringAllocatorStringCopy(_dest: StringAllocator, _source: ArcStr, _destOffset: i32) {
-    todo!("System.stringAllocatorStringCopy: requires StringAllocator buffer impl")
+pub fn stringAllocatorStringCopy(dest: StringAllocator, source: ArcStr, destOffset: i32) {
+    // `om_stringAllocatorStringCopy` is a raw `strcpy` into the buffer at the
+    // given byte offset. Two deliberate differences from the C helper:
+    //
+    //  - C's `strcpy` also writes the trailing NUL. In forward fills the next
+    //    segment (or the allocation's extra terminator byte) overwrites it,
+    //    but in the reverse-order fills of `AbsynUtil.pathStringWork`
+    //    (reverse=true) that NUL lands on the first byte of the segment
+    //    written in the previous iteration and corrupts it. We copy exactly
+    //    the source bytes instead of reproducing that.
+    //
+    //  - The C side documents that bad offsets simply write out of bounds.
+    //    We panic with the offending values: every call site computes exact
+    //    offsets from `stringLength`, so a violation is a compiler bug.
+    let bytes = source.as_bytes();
+    if bytes.is_empty() {
+        return; // C: `if (*source)` guard.
+    }
+    let mut buf = dest.buf.lock().unwrap();
+    let len = buf.len();
+    usize::try_from(destOffset)
+        .ok()
+        .and_then(|off| buf.get_mut(off..off + bytes.len()))
+        .unwrap_or_else(|| {
+            panic!(
+                "System.stringAllocatorStringCopy: copy of {} bytes at offset {destOffset} \
+                 does not fit in a StringAllocator of size {len}",
+                bytes.len()
+            )
+        })
+        .copy_from_slice(bytes);
 }
 
-pub fn stringAllocatorResult<T: Clone + 'static>(_sa: StringAllocator, _dummy: T) -> T {
-    todo!("System.stringAllocatorResult: requires StringAllocator buffer impl")
+pub fn stringAllocatorResult<T: Clone + 'static>(sa: StringAllocator, _dummy: T) -> T {
+    // `om_stringAllocatorResult` returns the buffer reinterpreted as the
+    // result type. The MetaModelica declaration is generic only so the caller
+    // can pass its `output String` as a dummy and avoid an extra allocation;
+    // the result *is* the string buffer, so `T = String` is the only
+    // instantiation that makes sense and the only one supported here.
+    let buf = sa.buf.lock().unwrap();
+    let s = std::str::from_utf8(&buf).unwrap_or_else(|e| {
+        // Every copy writes a whole `String` (valid UTF-8) and the zero fill
+        // is valid UTF-8 too, so this only fires if a caller overwrote part
+        // of a multi-byte sequence — a compiler bug, as is C's out-of-bounds.
+        panic!("System.stringAllocatorResult: buffer is not valid UTF-8: {e}")
+    });
+    let res: ArcStr = ArcStr::from(s);
+    let any: &dyn std::any::Any = &res;
+    match any.downcast_ref::<T>() {
+        Some(r) => r.clone(),
+        None => panic!(
+            "System.stringAllocatorResult: only String results are supported, got {}",
+            std::any::type_name::<T>()
+        ),
+    }
 }
 
 pub fn relocateFunctions(_fileName: ArcStr, _names: Arc<List<(ArcStr, ArcStr)>>) -> bool {

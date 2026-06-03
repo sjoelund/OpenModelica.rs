@@ -998,8 +998,8 @@ fn pathStringWork(mut inPath: Arc<Absyn::Path>, mut len: i32, mut delimiter: Arc
             (p.clone(), count.clone() + ((var_field!((*p).name, Absyn::Path::IDENT).clone()).clone().len() as i32), false)
         },
         Deref @ Absyn::Path::QUALIFIED { .. } => {
-            System::stringAllocatorStringCopy(sb.clone(), (var_field!((*p).name, Absyn::Path::QUALIFIED).clone()).clone(), if (reverse.clone()) {len.clone() - count.clone() - dlen.clone() - ((var_field!((*p).name, Absyn::Path::QUALIFIED).clone()).clone().len() as i32)} else {count.clone()});
-            System::stringAllocatorStringCopy(sb.clone(), (delimiter.clone()).clone(), if (reverse.clone()) {len.clone() - count.clone() - dlen.clone()} else {count.clone() + ((var_field!((*p).name, Absyn::Path::QUALIFIED).clone()).clone().len() as i32)});
+            System::stringAllocatorStringCopy(sb.clone(), (var_field!((*p).name, Absyn::Path::QUALIFIED).clone()).clone(), if (reverse.clone()) {len.clone() - count.clone() - ((var_field!((*p).name, Absyn::Path::QUALIFIED).clone()).clone().len() as i32)} else {count.clone()});
+            System::stringAllocatorStringCopy(sb.clone(), (delimiter.clone()).clone(), if (reverse.clone()) {len.clone() - count.clone() - ((var_field!((*p).name, Absyn::Path::QUALIFIED).clone()).clone().len() as i32) - dlen.clone()} else {count.clone() + ((var_field!((*p).name, Absyn::Path::QUALIFIED).clone()).clone().len() as i32)});
             (var_field!((*p).path, Absyn::Path::QUALIFIED).clone(), count.clone() + ((var_field!((*p).name, Absyn::Path::QUALIFIED).clone()).clone().len() as i32) + dlen.clone(), true)
         },
         Deref @ Absyn::Path::FULLYQUALIFIED { .. } => {
