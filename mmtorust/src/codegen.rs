@@ -1446,22 +1446,33 @@ pub fn generate_all(hier: &InstanceHierarchy<'_>, output_dir: &str) -> std::io::
         "    {:<28} {:>8.2}s wall  ({:.2}s CPU across {} files → {:.1}x parallel speedup)",
         "file codegen (parallel)", wall, sum_file, file_jobs.len(), speedup,
     );
-    {
+    let slowest_file = {
         let mut v = per_file.into_inner().unwrap();
         v.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
         for (p, s) in v.iter().take(5) {
             eprintln!("    slowest file: {:>8.2}s  {p}", s);
         }
-    }
+        v.first().map(|(_, s)| *s).unwrap_or(0.0)
+    };
     // Only meaningful once there is enough work to parallelise; tiny job sets
     // (e.g. a single-crate regen) can't reach 4x and shouldn't fail the guard.
+    //
+    // The wall clock is lower-bounded by the single slowest file (the critical
+    // path — currently CevalScriptBackend at ~50s of a ~58s phase), so the raw
+    // `sum / wall` ratio cannot distinguish "one pathological file dominates"
+    // from "the phase regressed to serial". Model the achievable wall instead:
+    // the slowest file runs through, and everything else should overlap at
+    // ≥MIN_SPEEDUP; fail only when the observed wall exceeds that bound (with
+    // 10% slack for scheduling noise).
     const MIN_SPEEDUP: f64 = 4.0;
-    if file_jobs.len() >= 24 && speedup < MIN_SPEEDUP {
+    let achievable_wall = slowest_file + (sum_file - slowest_file) / MIN_SPEEDUP;
+    if file_jobs.len() >= 24 && wall > achievable_wall * 1.10 {
         eprintln!(
-            "warning: file codegen parallel speedup {:.1}x is below the {:.0}x threshold — \
-             the parallel file phase has regressed to (near-)serial execution. Likely causes: \
-             a global lock / env read on the hot path, or one pathological file (see slowest above).",
-            speedup, MIN_SPEEDUP,
+            "warning: file codegen wall time {:.1}s exceeds the achievable bound {:.1}s \
+             (slowest file {:.1}s + remaining {:.1}s CPU / {:.0}x) — the parallel file phase \
+             has regressed to (near-)serial execution. Likely cause: a global lock / env read \
+             on the hot path.",
+            wall, achievable_wall, slowest_file, sum_file - slowest_file, MIN_SPEEDUP,
         );
         std::process::exit(1);
     }
