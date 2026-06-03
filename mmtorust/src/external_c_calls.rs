@@ -630,9 +630,13 @@ fn registry() -> &'static BTreeMap<&'static str, Fallibility> {
         m.insert("omc_is_string", Infallible);
         m.insert("omc_is_tuple", Infallible);
 
-        // ── Serializer C/J backends (referenced from BackEnd flat code) ────
-        m.insert("serializeC", Infallible); // TODO: not found in runtime/
-        m.insert("serializeJ", Infallible); // TODO: not found in runtime/
+        // ── SerializeSparsityPattern.mo writers ────────────────────────────
+        // Inline C snippets in the .mo's Include annotation (not in runtime/);
+        // they throwStreamPrint on open/write failure. Hand-written as
+        // Result-returning functions in
+        // `openmodelica_backend/src/SerializeSparsityPattern.rs`.
+        m.insert("serializeC", Fallible);
+        m.insert("serializeJ", Fallible);
 
         m.insert("intMaxLit", Infallible);
         m.insert("realMaxLit", Infallible);
