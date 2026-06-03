@@ -372,42 +372,60 @@ pub fn splitOnNewline(r#str: ArcStr, includeDelimiter: bool) -> Result<Arc<List<
 
 // ───────────────────────────────── compiler/linker config ─────────────────────
 
+// Defaults for the simulation-code compiler toolchain, mirroring the
+// `DEFAULT_*` macros from `OMCompiler/omc_config.unix.h` (substituted by
+// configure when the C omc is built; see `omc_config.unix.h.in`). The
+// installed omc this port runs against (`OPENMODELICAHOME`) was configured
+// with clang, and the generated simulation code links against its runtime
+// libraries, so we mirror that configuration. All of these can be
+// overridden at runtime through the `set*` functions below (the omc
+// `setCompiler`/`setCFlags`/… scripting API).
+const DEFAULT_CC: &str = "clang";
+const DEFAULT_CXX: &str = "clang++ -std=c++17";
+const DEFAULT_OMPCC: &str = "clang -fopenmp";
+// DEFAULT_LINKER on Linux is "<RUNTIMECC> -shared".
+const DEFAULT_LINKER: &str = "clang -shared";
+// DEFAULT_CFLAGS = "-DOM_HAVE_PTHREADS @RUNTIMECFLAGS@ ${MODELICAUSERCFLAGS}".
+const DEFAULT_CFLAGS: &str = "-DOM_HAVE_PTHREADS -fPIC -falign-functions -mfpmath=sse -fno-dollars-in-identifiers -Wno-parentheses-equality ${MODELICAUSERCFLAGS}";
+const DEFAULT_LDFLAGS: &str = "";
+
 pub fn setCCompiler(inString: ArcStr) {
     with(|s| s.cc = inString.to_string());
 }
 pub fn getCCompiler() -> ArcStr {
     let v = with(|s| s.cc.clone());
-    if v.is_empty() { ArcStr::from(Autoconf::os) } else { ArcStr::from(v) }
+    if v.is_empty() { ArcStr::from(DEFAULT_CC) } else { ArcStr::from(v) }
 }
 pub fn setCFlags(inString: ArcStr) {
     with(|s| s.cflags = inString.to_string());
 }
 pub fn getCFlags() -> ArcStr {
-    ArcStr::from(with(|s| s.cflags.clone()))
+    let v = with(|s| s.cflags.clone());
+    if v.is_empty() { ArcStr::from(DEFAULT_CFLAGS) } else { ArcStr::from(v) }
 }
 pub fn setCXXCompiler(inString: ArcStr) {
     with(|s| s.cxx = inString.to_string());
 }
 pub fn getCXXCompiler() -> ArcStr {
-    ArcStr::from(with(|s| s.cxx.clone()))
+    let v = with(|s| s.cxx.clone());
+    if v.is_empty() { ArcStr::from(DEFAULT_CXX) } else { ArcStr::from(v) }
 }
 pub fn getOMPCCompiler() -> ArcStr {
-    // The OpenMP-enabled C compiler. The C runtime returns the configured
-    // `OMPCC` autoconf variable; we don't have that wired through yet, so
-    // fall back to the regular CC.
-    getCCompiler()
+    ArcStr::from(DEFAULT_OMPCC)
 }
 pub fn setLinker(inString: ArcStr) {
     with(|s| s.linker = inString.to_string());
 }
 pub fn getLinker() -> ArcStr {
-    ArcStr::from(with(|s| s.linker.clone()))
+    let v = with(|s| s.linker.clone());
+    if v.is_empty() { ArcStr::from(DEFAULT_LINKER) } else { ArcStr::from(v) }
 }
 pub fn setLDFlags(inString: ArcStr) {
     with(|s| s.ldflags = inString.to_string());
 }
 pub fn getLDFlags() -> ArcStr {
-    ArcStr::from(with(|s| s.ldflags.clone()))
+    let v = with(|s| s.ldflags.clone());
+    if v.is_empty() { ArcStr::from(DEFAULT_LDFLAGS) } else { ArcStr::from(v) }
 }
 
 // ───────────────────────────────── dynamic library loading ────────────────────
@@ -454,11 +472,14 @@ pub fn readFile(inString: ArcStr) -> Result<ArcStr> {
     Ok(ArcStr::from(s))
 }
 
-pub fn systemCallRestrictedEnv(_command: ArcStr, _outFile: ArcStr) -> Result<i32> {
-    // The C side scrubs the environment to a known-safe whitelist before
-    // exec'ing. Not yet ported; spawnCall / Command crate work would be
-    // needed here.
-    todo!("System.systemCallRestrictedEnv: subprocess with scrubbed env not yet ported")
+pub fn systemCallRestrictedEnv(command: ArcStr, outFile: ArcStr) -> Result<i32> {
+    // `System.mo`'s systemCallRestrictedEnv is plain MetaModelica: only on
+    // Windows does it temporarily restrict PATH (to the Windows / OM / OMDev
+    // directories) around the call; on every other OS it is exactly
+    // `systemCall(command, outFile)`. This port targets Linux
+    // (`Autoconf::os == "linux"`), so forward directly; the Windows PATH
+    // dance needs porting only if the port ever targets Windows.
+    Ok(systemCall(command, outFile))
 }
 
 pub fn winGetSystemDirectory() -> ArcStr {
@@ -877,21 +898,26 @@ pub fn realtimeTick(clockIndex: i32) -> Result<()> {
 }
 
 pub fn realtimeTock(clockIndex: i32) -> Result<metamodelica::Real> {
-    let nanos = with(|s| -> Option<u128> {
+    // The C runtime's `rt_tock(ix)` never fails: a clock that was never
+    // started has a zeroed `tick_tp[ix]` and the call returns "now minus
+    // zero" — a large, meaningless duration. Callers do tock without tick
+    // (e.g. `Tpl.textFileConvertLines` reads RT_CLOCK_BUILD_MODEL purely
+    // for optional perf logging), so failing here is wrong. Return the
+    // slot's accumulated time instead (0.0 for a never-started clock),
+    // which is harmless for the logging-only consumers and avoids the C
+    // version's garbage value.
+    let nanos = with(|s| -> u128 {
         let slot = rt_slot_mut(s, clockIndex);
         match slot {
             RtSlot::Running { start, ntick, .. } => {
                 let elapsed = start.elapsed().as_nanos();
                 *ntick += 1;
-                Some(elapsed)
+                elapsed
             }
-            RtSlot::Stopped { .. } => None,
+            RtSlot::Stopped { accumulated_ns, .. } => *accumulated_ns,
         }
     });
-    match nanos {
-        Some(n) => Ok(metamodelica::OrderedFloat(n as f64 / 1.0e9)),
-        None => bail!("System.realtimeTock: clock {clockIndex} not running"),
-    }
+    Ok(metamodelica::OrderedFloat(nanos as f64 / 1.0e9))
 }
 
 pub fn realtimeClear(clockIndex: i32) -> Result<()> {
@@ -1564,9 +1590,17 @@ pub fn covertTextFileToCLiteral(_textFile: ArcStr, _outFile: ArcStr, _target: Ar
 }
 
 pub fn dladdr<T: Clone + 'static>(_symbol: T) -> (ArcStr, ArcStr, ArcStr) {
-    // Looks up the shared-object file and symbol name for a runtime
-    // function pointer. Needs platform-specific ABI plumbing; defer.
-    todo!("System.dladdr: function-pointer→symbol lookup not yet ported")
+    // C: dladdr(3) on the MM closure's entry pointer, used purely as
+    // best-effort diagnostics for Error.TEMPLATE_ERROR_FUNC ("Template
+    // error: <file>: <symbol>"); platforms without dladdr return dummy
+    // strings ("dladdr failed"). A Rust `Arc<dyn Fn>` value carries no
+    // resolvable exported symbol, so this port always takes the
+    // dummy-string path. The callback's static type name is the best
+    // information available without symbolication machinery.
+    let file: ArcStr = literal!("dladdr failed");
+    let name: ArcStr = ArcStr::from(std::any::type_name::<T>());
+    let info: ArcStr = arcstr::format!("{file}: {name}");
+    (info, file, name)
 }
 
 // ───────────────────────────────── StringAllocator ───────────────────────────
