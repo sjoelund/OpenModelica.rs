@@ -1068,18 +1068,21 @@ pub fn escapedString(unescapedString: ArcStr, unescapeNewline: bool) -> ArcStr {
     // their backslash form. When `unescapeNewline` is true (sic — the
     // parameter name in the .mo is misleading), newlines are *also*
     // escaped; when false, newlines pass through verbatim.
+    // Escape exactly the characters `omc__escapedString` does: the double
+    // quote, the backslash, and the \a \b \f \v control characters always;
+    // \r and \n only when `unescapeNewline` is set. Notably single quotes and
+    // tabs are NOT escaped — escaping them (as an earlier port did) corrupts
+    // round-tripped strings such as simulate()'s `method = 'dassl'`.
     let mut out = String::with_capacity(unescapedString.len());
     for c in unescapedString.chars() {
         match c {
-            '\\' => out.push_str("\\\\"),
             '"'  => out.push_str("\\\""),
-            '\'' => out.push_str("\\'"),
+            '\\' => out.push_str("\\\\"),
             '\x07' => out.push_str("\\a"),
             '\x08' => out.push_str("\\b"),
             '\x0c' => out.push_str("\\f"),
-            '\r' => out.push_str("\\r"),
-            '\t' => out.push_str("\\t"),
             '\x0b' => out.push_str("\\v"),
+            '\r' if unescapeNewline => out.push_str("\\r"),
             '\n' if unescapeNewline => out.push_str("\\n"),
             c => out.push(c),
         }
