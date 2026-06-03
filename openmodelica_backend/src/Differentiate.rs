@@ -54,6 +54,7 @@ use openmodelica_ast::Absyn;
 use openmodelica_ast_collections::AvlSetPath;
 use openmodelica_backend_types::BackendDAE;
 use openmodelica_frontend::Algorithm;
+use openmodelica_frontend::Ceval;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::DAEDump;
 use openmodelica_frontend::DAEUtil;
@@ -2378,7 +2379,7 @@ fn differentiateFunctionCall(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DA
                         let BackendDAE::DIFF_FULL_JACOBIAN { .. } = (inDiffType.clone()) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
                         Ok::<(), anyhow::Error>(())
                     }.is_ok() { bail!("failure(): body succeeded") }
-                    let __pa1 = ::match_deref::match_deref! { match &(Inline::forceInlineExp(inExp.clone(), (Some(inFunctionTree.clone()), list![openmodelica_frontend_types::DAE::InlineType::NORM_INLINE, openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE]), DAE::emptyElementSource().clone())?) {
+                    let __pa1 = ::match_deref::match_deref! { match &(Inline::forceInlineExp(inExp.clone(), (Some(inFunctionTree.clone()), list![openmodelica_frontend_types::DAE::InlineType::NORM_INLINE, openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE]), DAE::emptyElementSource().clone(), (std::sync::Arc::new(Ceval::cevalSimpleWithFunctionTreeReturnExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<AvlTreePathFunction::Tree>) -> Result<Arc<DAE::Exp>> + 'static>))?) {
                         (__pa1, _, true) => __pa1.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -2412,7 +2413,7 @@ fn differentiateFunctionCall(mut inExp: Arc<DAE::Exp>, mut inDiffwrtCref: Arc<DA
                         BackendDump::debugStrExpStr((literal!("### Differentiate call\n ")).clone(), e.clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" w.r.t. ")); __mm_s.push_str(&*ComponentReference::crefStr(inDiffwrtCref.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone())?;
                     }
                     (de, functions) = differentiateFunctionCallPartial(e.clone(), inDiffwrtCref.clone(), inInputData.clone(), inDiffType.clone(), inFunctionTree.clone(), maxIter.clone())?;
-                    (e, _, b) = Inline::forceInlineExp(de.clone(), (Some(functions.clone()), list![openmodelica_frontend_types::DAE::InlineType::NORM_INLINE, openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE]), DAE::emptyElementSource().clone())?;
+                    (e, _, b) = Inline::forceInlineExp(de.clone(), (Some(functions.clone()), list![openmodelica_frontend_types::DAE::InlineType::NORM_INLINE, openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE]), DAE::emptyElementSource().clone(), (std::sync::Arc::new(Ceval::cevalSimpleWithFunctionTreeReturnExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<AvlTreePathFunction::Tree>) -> Result<Arc<DAE::Exp>> + 'static>))?;
                     if b.clone() {
                         de = e.clone();
                     }

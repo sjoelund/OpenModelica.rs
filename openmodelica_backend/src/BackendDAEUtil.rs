@@ -85,6 +85,7 @@ use openmodelica_backend_types::BackendDAE;
 use openmodelica_backend_types::ZeroCrossings;
 use openmodelica_backend_util::BackendDAEEXT;
 use openmodelica_frontend::Algorithm;
+use openmodelica_frontend::Ceval;
 use openmodelica_frontend::CheckModel;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::DAEDump;
@@ -7693,7 +7694,7 @@ fn getEqnsysRhsExp3(mut b: bool, mut inExp: Arc<DAE::Exp>, mut iTpl: (BackendVar
                 (false, (_, _, funcs, _)) => {
                     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut notfound: bool = notfound.clone();
-                    let __pa0 = ::match_deref::match_deref! { match &(Inline::forceInlineExp(inExp.clone(), (funcs.clone(), list![openmodelica_frontend_types::DAE::InlineType::NORM_INLINE, openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE]), DAE::emptyElementSource().clone())?) {
+                    let __pa0 = ::match_deref::match_deref! { match &(Inline::forceInlineExp(inExp.clone(), (funcs.clone(), list![openmodelica_frontend_types::DAE::InlineType::NORM_INLINE, openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE]), DAE::emptyElementSource().clone(), (std::sync::Arc::new(Ceval::cevalSimpleWithFunctionTreeReturnExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<AvlTreePathFunction::Tree>) -> Result<Arc<DAE::Exp>> + 'static>))?) {
                         (__pa0, _, true) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };

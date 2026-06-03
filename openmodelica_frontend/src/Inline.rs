@@ -43,7 +43,6 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-use crate::Ceval;
 use crate::ComponentReference;
 use crate::DAEDump;
 use crate::DAEUtil;
@@ -1101,7 +1100,9 @@ pub fn inlineExp(mut inExp: Arc<DAE::Exp>, mut inElementList: Functiontuple, mut
     Ok((outExp, outSource, inlined, assrtLstOut))
 }
 
-pub fn forceInlineExp(mut inExp: Arc<DAE::Exp>, mut inElementList: Functiontuple, mut inSource: Arc<DAE::ElementSource>) -> Result<(Arc<DAE::Exp>, Arc<DAE::ElementSource>, bool)> {
+pub fn forceInlineExp(mut inExp: Arc<DAE::Exp>, mut inElementList: Functiontuple, mut inSource: Arc<DAE::ElementSource>, mut cevalConst: Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<AvlTreePathFunction::Tree>) -> Result<Arc<DAE::Exp>> + 'static>) -> Result<(Arc<DAE::Exp>, Arc<DAE::ElementSource>, bool)> {
+    pub type CevalConstFunc = std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<AvlTreePathFunction::Tree>) -> Result<Arc<DAE::Exp>> + 'static>;
+
     let mut outExp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut outSource: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
     let mut inlineperformed: bool = false;
@@ -1111,7 +1112,7 @@ pub fn forceInlineExp(mut inExp: Arc<DAE::Exp>, mut inElementList: Functiontuple
             let mut b: bool = false;
             let mut source = (*source).clone();
             match '__try0: {
-                e_1 = unwrap_break_err!(Ceval::cevalSimpleWithFunctionTreeReturnExp(inExp.clone(), functionTree.clone()), '__try0);
+                e_1 = unwrap_break_err!(cevalConst(inExp.clone(), functionTree.clone()), '__try0);
                 source = unwrap_break_err!(ElementSource::addSymbolicTransformation(source.clone(), Arc::new(DAE::SymbolicOperation::OP_INLINE { before: Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e.clone() }), after: Arc::new(DAE::EquationExp::PARTIAL_EQUATION { exp: e_1.clone() }) })), '__try0);
                 b = true;
                 Ok::<_, anyhow::Error>((b.clone(), e_1.clone(), source.clone()))

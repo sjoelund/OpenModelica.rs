@@ -54,6 +54,7 @@ use crate::IndexReduction;
 use crate::Sorting;
 use openmodelica_backend_types::BackendDAE;
 use openmodelica_backend_util::BackendDAEEXT;
+use openmodelica_frontend::Ceval;
 use openmodelica_frontend::Expression;
 use openmodelica_frontend::Inline;
 use openmodelica_frontend_dump::AvlTreePathFunction;
@@ -5266,7 +5267,7 @@ fn sanityCheckArtificialStates(mut syst: Arc<BackendDAE::EqSystem>, mut shared: 
                     residualExp = __pa5.clone();
                     cr = unwrap_break_err!(BackendVariable::varCref(var.clone()), '__try4);
                     if unwrap_break_err!(Expression::expHasCref(residualExp.clone(), cr.clone()), '__try4) {
-                        (residualExp, _, _) = unwrap_break_err!(Inline::forceInlineExp(residualExp.clone(), (Some(shared.functionTree.clone()), list![openmodelica_frontend_types::DAE::InlineType::NORM_INLINE, openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE]), DAE::emptyElementSource().clone()), '__try4);
+                        (residualExp, _, _) = unwrap_break_err!(Inline::forceInlineExp(residualExp.clone(), (Some(shared.functionTree.clone()), list![openmodelica_frontend_types::DAE::InlineType::NORM_INLINE, openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE]), DAE::emptyElementSource().clone(), (std::sync::Arc::new(Ceval::cevalSimpleWithFunctionTreeReturnExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<AvlTreePathFunction::Tree>) -> Result<Arc<DAE::Exp>> + 'static>)), '__try4);
                         residualExp = unwrap_break_err!(Expression::replaceDerOpInExp(residualExp.clone()), '__try4);
                         unwrap_break_err!(Differentiate::differentiateExpSolve(residualExp.clone(), cr.clone(), Some(shared.functionTree.clone())), '__try4);
                         let false = (unwrap_break_err!(Expression::expHasCrefInSmoothZero(residualExp.clone(), cr.clone()), '__try4)) else { break '__try4 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };

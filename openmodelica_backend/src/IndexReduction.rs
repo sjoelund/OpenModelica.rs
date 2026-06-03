@@ -58,6 +58,7 @@ use crate::Sorting;
 use openmodelica_ast::Absyn;
 use openmodelica_backend_types::BackendDAE;
 use openmodelica_backend_util::BackendDAEEXT;
+use openmodelica_frontend::Ceval;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::DAEUtil;
 use openmodelica_frontend::Expression;
@@ -2465,7 +2466,7 @@ fn forceInlinEqn(mut inExp: Arc<DAE::Exp>, mut inFuncs: Arc<AvlTreePathFunction:
     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
     let mut funcs: Arc<AvlTreePathFunction::Tree> = Arc::new(AvlTreePathFunction::Tree::EMPTY);
     funcs = inFuncs.clone();
-    (e, _, _) = Inline::forceInlineExp(inExp.clone(), (Some(funcs.clone()), list![openmodelica_frontend_types::DAE::InlineType::NORM_INLINE, openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE]), DAE::emptyElementSource().clone())?;
+    (e, _, _) = Inline::forceInlineExp(inExp.clone(), (Some(funcs.clone()), list![openmodelica_frontend_types::DAE::InlineType::NORM_INLINE, openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE]), DAE::emptyElementSource().clone(), (std::sync::Arc::new(Ceval::cevalSimpleWithFunctionTreeReturnExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<AvlTreePathFunction::Tree>) -> Result<Arc<DAE::Exp>> + 'static>))?;
     Ok((e, funcs))
 }
 

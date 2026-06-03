@@ -49,6 +49,7 @@ use crate::BackendVariable;
 use crate::Differentiate;
 use openmodelica_ast::Absyn;
 use openmodelica_backend_types::BackendDAE;
+use openmodelica_frontend::Ceval;
 use openmodelica_frontend::ComponentReference;
 use openmodelica_frontend::Expression;
 use openmodelica_frontend::ExpressionDump;
@@ -1046,7 +1047,7 @@ fn inlineCallX(mut inExp: Arc<DAE::Exp>, mut iT: (Arc<DAE::Exp>, Option<Arc<AvlT
                     if !((expHasCref(inExp.clone(), X.clone())?)) { bail!("guard") }
                     let mut e: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut b: bool = false;
-                    (e, _, b) = Inline::forceInlineExp(inExp.clone(), (functions.clone(), list![openmodelica_frontend_types::DAE::InlineType::NORM_INLINE, openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE]), DAE::emptyElementSource().clone())?;
+                    (e, _, b) = Inline::forceInlineExp(inExp.clone(), (functions.clone(), list![openmodelica_frontend_types::DAE::InlineType::NORM_INLINE, openmodelica_frontend_types::DAE::InlineType::DEFAULT_INLINE]), DAE::emptyElementSource().clone(), (std::sync::Arc::new(Ceval::cevalSimpleWithFunctionTreeReturnExp) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<AvlTreePathFunction::Tree>) -> Result<Arc<DAE::Exp>> + 'static>))?;
                     Ok((e.clone(), !(b.clone()), iT.clone()))
                 }
                 _ => bail!("nomatch"),
