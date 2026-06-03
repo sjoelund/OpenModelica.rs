@@ -163,7 +163,7 @@ pub fn translateModel(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode,
     Ok(out_txt)
 }
 
-fn fun_54(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
+fn fun_53(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
@@ -200,7 +200,7 @@ pub fn fmuMakefile(mut txt: Tpl::Text, mut a_target: ArcStr, mut a_simCode: SimC
     ret_6 = stringEq((Tpl::textString(l_type.clone())?).clone(), (literal!("pthreads")).clone());
     ret_7 = stringEq((Tpl::textString(l_type.clone())?).clone(), (literal!("pthreads_spin")).clone());
     ret_8 = boolOr(ret_6.clone(), ret_7.clone());
-    l_additionalLinkerFlags__GCC = fun_54(l_additionalLinkerFlags__GCC.clone(), ret_8.clone())?;
+    l_additionalLinkerFlags__GCC = fun_53(l_additionalLinkerFlags__GCC.clone(), ret_8.clone())?;
     (out_txt, l_additionalCFlags__GCC, l_additionalCFlags__MSVC, l_additionalLinkerFlags__GCC, l_additionalLinkerFlags__MSVC) = CodegenCppHpcomOMSI::getAdditionalMakefileFlags(txt.clone(), l_additionalCFlags__GCC.clone(), l_additionalCFlags__MSVC.clone(), l_additionalLinkerFlags__GCC.clone(), l_additionalLinkerFlags__MSVC.clone())?;
     out_txt = Tpl::softNewLine(out_txt.clone())?;
     (out_txt, out_a_extraFuncs, out_a_extraFuncsDecl, out_a_extraFuncsNamespace) = CodegenFMUCppOMSI::fmuMakefile(out_txt.clone(), (a_target.clone()).clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone(), (a_FMUVersion.clone()).clone(), (Tpl::textString(l_additionalLinkerFlags__GCC.clone())?).clone(), (Tpl::textString(l_additionalLinkerFlags__MSVC.clone())?).clone(), (Tpl::textString(l_additionalCFlags__GCC.clone())?).clone(), (Tpl::textString(l_additionalCFlags__MSVC.clone())?).clone())?;

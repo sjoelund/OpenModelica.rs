@@ -26,7 +26,7 @@ use openmodelica_util::Settings;
 use openmodelica_util::System;
 use openmodelica_util::Util;
 
-fn fun_52(mut in_txt: Tpl::Text, mut in_a_varInfo_numZeroCrossings: i32) -> Result<Tpl::Text> {
+fn fun_51(mut in_txt: Tpl::Text, mut in_a_varInfo_numZeroCrossings: i32) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_varInfo_numZeroCrossings.clone()) {
         (mut txt, 0) => {
@@ -41,7 +41,7 @@ fn fun_52(mut in_txt: Tpl::Text, mut in_a_varInfo_numZeroCrossings: i32) -> Resu
     Ok(out_txt)
 }
 
-fn fun_53(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_includes: Tpl::Text, mut in_a_functionPrototypes: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+fn fun_52(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_includes: Tpl::Text, mut in_a_functionPrototypes: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_includes: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_functionPrototypes: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -68,7 +68,7 @@ fn fun_53(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_in
             a_includes = Tpl::writeStr(a_includes.clone(), (i_fileNamePrefix.clone()).clone())?;
             a_includes = Tpl::writeTok(a_includes.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_init_eqns.h\"")).clone() }))?;
             a_includes = Tpl::writeTok(a_includes.clone(), Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE))?;
-            a_includes = fun_52(a_includes.clone(), i_varInfo_numZeroCrossings.clone())?;
+            a_includes = fun_51(a_includes.clone(), i_varInfo_numZeroCrossings.clone())?;
             l_headerFileName = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_fileNamePrefix.clone()).clone())?;
             l_headerFileName = Tpl::writeTok(l_headerFileName.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("_omsic")).clone() }))?;
             (l_headerFileContent, a_includes, a_functionPrototypes) = CodegenOMSI_common::generateCodeHeader(Tpl::emptyTxt.clone(), (Tpl::textString(l_modelNamePrefixStr.clone())?).clone(), a_includes.clone(), (Tpl::textString(l_headerFileName.clone())?).clone(), a_functionPrototypes.clone())?;
@@ -118,11 +118,11 @@ pub fn generateOMSIC(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCode) -> Res
     let mut l_functionPrototypes: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     l_functionPrototypes = Tpl::emptyTxt.clone();
     l_includes = Tpl::emptyTxt.clone();
-    (out_txt, l_includes, l_functionPrototypes) = fun_53(txt.clone(), a_simCode.clone(), l_includes.clone(), l_functionPrototypes.clone())?;
+    (out_txt, l_includes, l_functionPrototypes) = fun_52(txt.clone(), a_simCode.clone(), l_includes.clone(), l_functionPrototypes.clone())?;
     Ok(out_txt)
 }
 
-fn fun_55(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>, mut in_a_InitDerMatFiles: Tpl::Text, mut in_a_fileNamePrefix: ArcStr, mut in_a_InitAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+fn fun_54(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>, mut in_a_InitDerMatFiles: Tpl::Text, mut in_a_fileNamePrefix: ArcStr, mut in_a_InitAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_InitDerMatFiles: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_InitAlgSystemFiles: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -159,7 +159,7 @@ fn fun_55(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>, mut in_
     Ok((out_txt, out_a_InitDerMatFiles, out_a_InitAlgSystemFiles))
 }
 
-fn lm_56(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut in_a_InitDerMatFiles: Tpl::Text, mut in_a_fileNamePrefix: ArcStr, mut in_a_InitAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+fn lm_55(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut in_a_InitDerMatFiles: Tpl::Text, mut in_a_fileNamePrefix: ArcStr, mut in_a_InitAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_InitDerMatFiles: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_InitAlgSystemFiles: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -171,8 +171,8 @@ fn lm_56(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode
             let mut txt = (*txt).clone();
             let mut a_InitDerMatFiles = (*a_InitDerMatFiles).clone();
             let mut a_InitAlgSystemFiles = (*a_InitAlgSystemFiles).clone();
-            (txt, a_InitDerMatFiles, a_InitAlgSystemFiles) = fun_55(txt.clone(), i_eq.clone(), a_InitDerMatFiles.clone(), (a_fileNamePrefix.clone()).clone(), a_InitAlgSystemFiles.clone())?;
-            (txt, a_InitDerMatFiles, a_InitAlgSystemFiles) = lm_56(txt.clone(), rest.clone(), a_InitDerMatFiles.clone(), (a_fileNamePrefix.clone()).clone(), a_InitAlgSystemFiles.clone())?;
+            (txt, a_InitDerMatFiles, a_InitAlgSystemFiles) = fun_54(txt.clone(), i_eq.clone(), a_InitDerMatFiles.clone(), (a_fileNamePrefix.clone()).clone(), a_InitAlgSystemFiles.clone())?;
+            (txt, a_InitDerMatFiles, a_InitAlgSystemFiles) = lm_55(txt.clone(), rest.clone(), a_InitDerMatFiles.clone(), (a_fileNamePrefix.clone()).clone(), a_InitAlgSystemFiles.clone())?;
             (txt.clone(), a_InitDerMatFiles.clone(), a_InitAlgSystemFiles.clone())
         },
         _ => bail!("match: no arm matched"),
@@ -180,7 +180,7 @@ fn lm_56(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode
     Ok((out_txt, out_a_InitDerMatFiles, out_a_InitAlgSystemFiles))
 }
 
-fn fun_57(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>, mut in_a_SimDerMatFiles: Tpl::Text, mut in_a_fileNamePrefix: ArcStr, mut in_a_SimAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+fn fun_56(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>, mut in_a_SimDerMatFiles: Tpl::Text, mut in_a_fileNamePrefix: ArcStr, mut in_a_SimAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_SimDerMatFiles: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_SimAlgSystemFiles: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -223,7 +223,7 @@ fn fun_57(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>, mut in_
     Ok((out_txt, out_a_SimDerMatFiles, out_a_SimAlgSystemFiles))
 }
 
-fn lm_58(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut in_a_SimDerMatFiles: Tpl::Text, mut in_a_fileNamePrefix: ArcStr, mut in_a_SimAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+fn lm_57(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut in_a_SimDerMatFiles: Tpl::Text, mut in_a_fileNamePrefix: ArcStr, mut in_a_SimAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_SimDerMatFiles: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_SimAlgSystemFiles: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -235,8 +235,8 @@ fn lm_58(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode
             let mut txt = (*txt).clone();
             let mut a_SimDerMatFiles = (*a_SimDerMatFiles).clone();
             let mut a_SimAlgSystemFiles = (*a_SimAlgSystemFiles).clone();
-            (txt, a_SimDerMatFiles, a_SimAlgSystemFiles) = fun_57(txt.clone(), i_eq.clone(), a_SimDerMatFiles.clone(), (a_fileNamePrefix.clone()).clone(), a_SimAlgSystemFiles.clone())?;
-            (txt, a_SimDerMatFiles, a_SimAlgSystemFiles) = lm_58(txt.clone(), rest.clone(), a_SimDerMatFiles.clone(), (a_fileNamePrefix.clone()).clone(), a_SimAlgSystemFiles.clone())?;
+            (txt, a_SimDerMatFiles, a_SimAlgSystemFiles) = fun_56(txt.clone(), i_eq.clone(), a_SimDerMatFiles.clone(), (a_fileNamePrefix.clone()).clone(), a_SimAlgSystemFiles.clone())?;
+            (txt, a_SimDerMatFiles, a_SimAlgSystemFiles) = lm_57(txt.clone(), rest.clone(), a_SimDerMatFiles.clone(), (a_fileNamePrefix.clone()).clone(), a_SimAlgSystemFiles.clone())?;
             (txt.clone(), a_SimDerMatFiles.clone(), a_SimAlgSystemFiles.clone())
         },
         _ => bail!("match: no arm matched"),
@@ -244,7 +244,7 @@ fn lm_58(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode
     Ok((out_txt, out_a_SimDerMatFiles, out_a_SimAlgSystemFiles))
 }
 
-fn fun_59(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_SimDerMatFiles: Tpl::Text, mut in_a_SimAlgSystemFiles: Tpl::Text, mut in_a_InitDerMatFiles: Tpl::Text, mut in_a_InitAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+fn fun_58(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_SimDerMatFiles: Tpl::Text, mut in_a_SimAlgSystemFiles: Tpl::Text, mut in_a_InitDerMatFiles: Tpl::Text, mut in_a_InitAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_SimDerMatFiles: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_SimAlgSystemFiles: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -258,8 +258,8 @@ fn fun_59(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_Si
             let mut a_SimAlgSystemFiles = (*a_SimAlgSystemFiles).clone();
             let mut a_InitDerMatFiles = (*a_InitDerMatFiles).clone();
             let mut a_InitAlgSystemFiles = (*a_InitAlgSystemFiles).clone();
-            (l_0__, a_InitDerMatFiles, a_InitAlgSystemFiles) = lm_56(Tpl::emptyTxt.clone(), i_initialization_equations.clone(), a_InitDerMatFiles.clone(), (i_fileNamePrefix.clone()).clone(), a_InitAlgSystemFiles.clone())?;
-            (l_0___1, a_SimDerMatFiles, a_SimAlgSystemFiles) = lm_58(Tpl::emptyTxt.clone(), i_simulation_equations.clone(), a_SimDerMatFiles.clone(), (i_fileNamePrefix.clone()).clone(), a_SimAlgSystemFiles.clone())?;
+            (l_0__, a_InitDerMatFiles, a_InitAlgSystemFiles) = lm_55(Tpl::emptyTxt.clone(), i_initialization_equations.clone(), a_InitDerMatFiles.clone(), (i_fileNamePrefix.clone()).clone(), a_InitAlgSystemFiles.clone())?;
+            (l_0___1, a_SimDerMatFiles, a_SimAlgSystemFiles) = lm_57(Tpl::emptyTxt.clone(), i_simulation_equations.clone(), a_SimDerMatFiles.clone(), (i_fileNamePrefix.clone()).clone(), a_SimAlgSystemFiles.clone())?;
             (txt.clone(), a_SimDerMatFiles.clone(), a_SimAlgSystemFiles.clone(), a_InitDerMatFiles.clone(), a_InitAlgSystemFiles.clone())
         },
         (txt, _, a_SimDerMatFiles, a_SimAlgSystemFiles, a_InitDerMatFiles, a_InitAlgSystemFiles) => {
@@ -270,7 +270,7 @@ fn fun_59(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_Si
     Ok((out_txt, out_a_SimDerMatFiles, out_a_SimAlgSystemFiles, out_a_InitDerMatFiles, out_a_InitAlgSystemFiles))
 }
 
-fn fun_60(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Result<Tpl::Text> {
+fn fun_59(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_makefileParams_platform.clone())) {
         (txt, Deref @ "win32") => {
@@ -293,7 +293,7 @@ fn fun_60(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Re
     Ok(out_txt)
 }
 
-fn fun_61(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Result<Tpl::Text> {
+fn fun_60(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_makefileParams_platform.clone())) {
         (txt, Deref @ "win32") => {
@@ -321,7 +321,7 @@ fn fun_61(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Re
     Ok(out_txt)
 }
 
-fn fun_62(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Result<Tpl::Text> {
+fn fun_61(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_makefileParams_platform.clone())) {
         (txt, Deref @ "win64") => {
@@ -337,7 +337,7 @@ fn fun_62(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Re
     Ok(out_txt)
 }
 
-fn fun_63(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Result<Tpl::Text> {
+fn fun_62(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_makefileParams_platform.clone())) {
         (txt, Deref @ "win32") => {
@@ -360,7 +360,7 @@ fn fun_63(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Re
     Ok(out_txt)
 }
 
-fn fun_64(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Result<Tpl::Text> {
+fn fun_63(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_makefileParams_platform.clone())) {
         (txt, Deref @ "win32") => {
@@ -379,7 +379,7 @@ fn fun_64(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Re
     Ok(out_txt)
 }
 
-fn fun_65(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Result<Tpl::Text> {
+fn fun_64(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_makefileParams_platform.clone())) {
         (txt, Deref @ "win32") => {
@@ -398,7 +398,7 @@ fn fun_65(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Re
     Ok(out_txt)
 }
 
-fn fun_66(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Result<Tpl::Text> {
+fn fun_65(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_makefileParams_platform.clone())) {
         (txt, Deref @ "win32") => {
@@ -421,7 +421,7 @@ fn fun_66(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Re
     Ok(out_txt)
 }
 
-fn fun_67(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Result<Tpl::Text> {
+fn fun_66(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_makefileParams_platform.clone())) {
         (txt, Deref @ "win32") => {
@@ -440,7 +440,7 @@ fn fun_67(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Re
     Ok(out_txt)
 }
 
-fn fun_68(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Result<Tpl::Text> {
+fn fun_67(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_makefileParams_platform.clone())) {
         (txt, Deref @ "win32") => {
@@ -459,7 +459,7 @@ fn fun_68(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Re
     Ok(out_txt)
 }
 
-fn fun_69(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr, mut in_a_libEnding: Tpl::Text) -> Result<Tpl::Text> {
+fn fun_68(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr, mut in_a_libEnding: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_makefileParams_platform.clone(), in_a_libEnding.clone())) {
         (txt, Deref @ "win32", a_libEnding) => {
@@ -482,7 +482,7 @@ fn fun_69(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr, mut i
     Ok(out_txt)
 }
 
-fn fun_70(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_fileNamePrefix: ArcStr) -> Result<Tpl::Text> {
+fn fun_69(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_fileNamePrefix: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_fileNamePrefix.clone())) {
         (txt, Deref @ "omsicpp", a_fileNamePrefix) => {
@@ -503,7 +503,7 @@ fn fun_70(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_fileNamePrefix: A
     Ok(out_txt)
 }
 
-fn fun_71(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fileNamePrefix: ArcStr) -> Result<Tpl::Text> {
+fn fun_70(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fileNamePrefix: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_fileNamePrefix.clone()) {
         (mut txt, false, _) => {
@@ -512,14 +512,14 @@ fn fun_71(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_fileNamePrefix: Arc
         (mut txt, _, mut a_fileNamePrefix) => {
             let mut ret_0: ArcStr = arcstr::literal!("");
             ret_0 = (Config::simCodeTarget()?).clone();
-            txt = fun_70(txt.clone(), (ret_0.clone()).clone(), (a_fileNamePrefix.clone()).clone())?;
+            txt = fun_69(txt.clone(), (ret_0.clone()).clone(), (a_fileNamePrefix.clone()).clone())?;
             txt.clone()
         },
     });
     Ok(out_txt)
 }
 
-fn fun_72(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_SimDerMatFiles: Tpl::Text, mut in_a_SimAlgSystemFiles: Tpl::Text, mut in_a_InitDerMatFiles: Tpl::Text, mut in_a_InitAlgSystemFiles: Tpl::Text) -> Result<Tpl::Text> {
+fn fun_71(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_SimDerMatFiles: Tpl::Text, mut in_a_SimAlgSystemFiles: Tpl::Text, mut in_a_InitDerMatFiles: Tpl::Text, mut in_a_InitAlgSystemFiles: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_SimDerMatFiles.clone(), in_a_SimAlgSystemFiles.clone(), in_a_InitDerMatFiles.clone(), in_a_InitAlgSystemFiles.clone()) {
         (mut txt, SimCode::SimCode { fmuTargetName: mut i_fmuTargetName, fileNamePrefix: mut i_fileNamePrefix, simulationSettingsOpt: _, makefileParams: SimCodeFunction::MakefileParams { dllext: mut i_makefileParams_dllext, exeext: mut i_makefileParams_exeext, cxxcompiler: mut i_makefileParams_cxxcompiler, ccompiler: mut i_makefileParams_ccompiler, omhome: mut i_makefileParams_omhome, platform: mut i_makefileParams_platform, .. }, modelInfo: SimCode::ModelInfo { name: _, .. }, .. }, mut a_SimDerMatFiles, mut a_SimAlgSystemFiles, mut a_InitDerMatFiles, mut a_InitAlgSystemFiles) => {
@@ -536,12 +536,12 @@ fn fun_72(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_Si
             let mut l_includedir: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             l_includedir = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_fileNamePrefix.clone()).clone())?;
             l_includedir = Tpl::writeTok(l_includedir.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".fmutmp/sources/include/")).clone() }))?;
-            l_mkdir = fun_60(Tpl::emptyTxt.clone(), (i_makefileParams_platform.clone()).clone())?;
-            l_OMLibs = fun_61(Tpl::emptyTxt.clone(), (i_makefileParams_platform.clone()).clone())?;
-            l_lapackDirWin = fun_62(Tpl::emptyTxt.clone(), (i_makefileParams_platform.clone()).clone())?;
-            l_libEnding = fun_63(Tpl::emptyTxt.clone(), (i_makefileParams_platform.clone()).clone())?;
-            l_rpath = fun_64(Tpl::emptyTxt.clone(), (i_makefileParams_platform.clone()).clone())?;
-            l_fPIC = fun_65(Tpl::emptyTxt.clone(), (i_makefileParams_platform.clone()).clone())?;
+            l_mkdir = fun_59(Tpl::emptyTxt.clone(), (i_makefileParams_platform.clone()).clone())?;
+            l_OMLibs = fun_60(Tpl::emptyTxt.clone(), (i_makefileParams_platform.clone()).clone())?;
+            l_lapackDirWin = fun_61(Tpl::emptyTxt.clone(), (i_makefileParams_platform.clone()).clone())?;
+            l_libEnding = fun_62(Tpl::emptyTxt.clone(), (i_makefileParams_platform.clone()).clone())?;
+            l_rpath = fun_63(Tpl::emptyTxt.clone(), (i_makefileParams_platform.clone()).clone())?;
+            l_fPIC = fun_64(Tpl::emptyTxt.clone(), (i_makefileParams_platform.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("# Makefile generated by OpenModelica\n")).clone(), (literal!("OMHOME='")).clone()], lastHasNewLine: false }))?;
             txt = Tpl::writeStr(txt.clone(), (i_makefileParams_omhome.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("'\n")).clone(), (literal!("OMLIB='")).clone()], lastHasNewLine: false }))?;
@@ -586,15 +586,15 @@ fn fun_72(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_Si
             txt = Tpl::writeText(txt.clone(), l_lapackDirWin.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("LAPACK_LIB=")).clone() }))?;
-            txt = fun_66(txt.clone(), (i_makefileParams_platform.clone()).clone())?;
+            txt = fun_65(txt.clone(), (i_makefileParams_platform.clone()).clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("BLAS_LIB=")).clone() }))?;
-            txt = fun_67(txt.clone(), (i_makefileParams_platform.clone()).clone())?;
+            txt = fun_66(txt.clone(), (i_makefileParams_platform.clone()).clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("KINSOL_LIBDIR=$(OMLIB)/omc\n")).clone(), (literal!("KINSOL_LIB=sundials_kinsol\n")).clone(), (literal!("SUNDIALS_NVECSERIAL=sundials_nvecserial\n")).clone(), (literal!("\n")).clone(), (literal!("OMSU_STATIC_LIB=-Wl,--whole-archive -lOMSISolver_static -lOMSIBase_static -lOMSIC_static -Wl,--no-whole-archive\n")).clone(), (literal!("OMSU_STATIC_LIBDIR=-L$(OMLIB)/omc/omsi\n")).clone(), (literal!("LIBS = $(OMSU_STATIC_LIB) -Wl,-Bdynamic -l$(EXPAT_LIB) -l$(LAPACK_LIB) ")).clone()], lastHasNewLine: false }))?;
-            txt = fun_68(txt.clone(), (i_makefileParams_platform.clone()).clone())?;
+            txt = fun_67(txt.clone(), (i_makefileParams_platform.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(" -l$(KINSOL_LIB) -l$(SUNDIALS_NVECSERIAL)\n")).clone(), (literal!("LIBSDIR= $(OMSU_STATIC_LIBDIR) -L$(EXPAT_LIBDIR) -L$(LAPACK_LIBDIR) -L$(KINSOL_LIBDIR)\n")).clone(), (literal!("\n")).clone(), (literal!("THIRD_PARTY_DYNAMIC_LIBS =")).clone()], lastHasNewLine: false }))?;
-            txt = fun_69(txt.clone(), (i_makefileParams_platform.clone()).clone(), l_libEnding.clone())?;
+            txt = fun_68(txt.clone(), (i_makefileParams_platform.clone()).clone(), l_libEnding.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("       \\\n")).clone(), (literal!(" $(KINSOL_LIBDIR)/lib$(KINSOL_LIB).*                                \\\n")).clone(), (literal!(" $(KINSOL_LIBDIR)/lib$(SUNDIALS_NVECSERIAL).*                       \\\n")).clone(), (literal!("\n")).clone(), (literal!(".PHONY: copyFiles makeStructure compile fmiImport OMSimulation clean\n")).clone(), (literal!("\n")).clone(), (literal!("all: ")).clone()], lastHasNewLine: false }))?;
             txt = Tpl::writeStr(txt.clone(), (i_fmuTargetName.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!(".fmu\n")).clone(), (literal!("\n")).clone()], lastHasNewLine: true }))?;
@@ -616,7 +616,7 @@ fn fun_72(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_Si
             ret_8 = stringEq((i_makefileParams_platform.clone()).clone(), (literal!("win64")).clone());
             ret_9 = boolOr(ret_7.clone(), ret_8.clone());
             ret_10 = boolNot(ret_9.clone());
-            txt = fun_71(txt.clone(), ret_10.clone(), (i_fileNamePrefix.clone()).clone())?;
+            txt = fun_70(txt.clone(), ret_10.clone(), (i_fileNamePrefix.clone()).clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("copyFiles: makeStructure\n")).clone()], lastHasNewLine: true }))?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("\t")).clone() }))?;
@@ -791,12 +791,12 @@ pub fn createMakefile(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCode, mut a
     l_InitDerMatFiles = Tpl::emptyTxt.clone();
     l_SimAlgSystemFiles = Tpl::emptyTxt.clone();
     l_SimDerMatFiles = Tpl::emptyTxt.clone();
-    (l_0__, l_SimDerMatFiles, l_SimAlgSystemFiles, l_InitDerMatFiles, l_InitAlgSystemFiles) = fun_59(Tpl::emptyTxt.clone(), a_simCode.clone(), l_SimDerMatFiles.clone(), l_SimAlgSystemFiles.clone(), l_InitDerMatFiles.clone(), l_InitAlgSystemFiles.clone())?;
-    out_txt = fun_72(txt.clone(), a_simCode.clone(), l_SimDerMatFiles.clone(), l_SimAlgSystemFiles.clone(), l_InitDerMatFiles.clone(), l_InitAlgSystemFiles.clone())?;
+    (l_0__, l_SimDerMatFiles, l_SimAlgSystemFiles, l_InitDerMatFiles, l_InitAlgSystemFiles) = fun_58(Tpl::emptyTxt.clone(), a_simCode.clone(), l_SimDerMatFiles.clone(), l_SimAlgSystemFiles.clone(), l_InitDerMatFiles.clone(), l_InitAlgSystemFiles.clone())?;
+    out_txt = fun_71(txt.clone(), a_simCode.clone(), l_SimDerMatFiles.clone(), l_SimAlgSystemFiles.clone(), l_InitDerMatFiles.clone(), l_InitAlgSystemFiles.clone())?;
     Ok(out_txt)
 }
 
-fn fun_74(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>, mut in_a_InitDerMatFiles: Tpl::Text, mut in_a_FileNamePrefix: ArcStr, mut in_a_InitAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+fn fun_73(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>, mut in_a_InitDerMatFiles: Tpl::Text, mut in_a_FileNamePrefix: ArcStr, mut in_a_InitAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_InitDerMatFiles: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_InitAlgSystemFiles: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -824,7 +824,7 @@ fn fun_74(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>, mut in_
     Ok((out_txt, out_a_InitDerMatFiles, out_a_InitAlgSystemFiles))
 }
 
-fn lm_75(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut in_a_InitDerMatFiles: Tpl::Text, mut in_a_FileNamePrefix: ArcStr, mut in_a_InitAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+fn lm_74(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut in_a_InitDerMatFiles: Tpl::Text, mut in_a_FileNamePrefix: ArcStr, mut in_a_InitAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_InitDerMatFiles: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_InitAlgSystemFiles: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -836,8 +836,8 @@ fn lm_75(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode
             let mut txt = (*txt).clone();
             let mut a_InitDerMatFiles = (*a_InitDerMatFiles).clone();
             let mut a_InitAlgSystemFiles = (*a_InitAlgSystemFiles).clone();
-            (txt, a_InitDerMatFiles, a_InitAlgSystemFiles) = fun_74(txt.clone(), i_eq.clone(), a_InitDerMatFiles.clone(), (a_FileNamePrefix.clone()).clone(), a_InitAlgSystemFiles.clone())?;
-            (txt, a_InitDerMatFiles, a_InitAlgSystemFiles) = lm_75(txt.clone(), rest.clone(), a_InitDerMatFiles.clone(), (a_FileNamePrefix.clone()).clone(), a_InitAlgSystemFiles.clone())?;
+            (txt, a_InitDerMatFiles, a_InitAlgSystemFiles) = fun_73(txt.clone(), i_eq.clone(), a_InitDerMatFiles.clone(), (a_FileNamePrefix.clone()).clone(), a_InitAlgSystemFiles.clone())?;
+            (txt, a_InitDerMatFiles, a_InitAlgSystemFiles) = lm_74(txt.clone(), rest.clone(), a_InitDerMatFiles.clone(), (a_FileNamePrefix.clone()).clone(), a_InitAlgSystemFiles.clone())?;
             (txt.clone(), a_InitDerMatFiles.clone(), a_InitAlgSystemFiles.clone())
         },
         _ => bail!("match: no arm matched"),
@@ -845,7 +845,7 @@ fn lm_75(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode
     Ok((out_txt, out_a_InitDerMatFiles, out_a_InitAlgSystemFiles))
 }
 
-fn fun_76(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>, mut in_a_SimDerMatFiles: Tpl::Text, mut in_a_FileNamePrefix: ArcStr, mut in_a_SimAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+fn fun_75(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>, mut in_a_SimDerMatFiles: Tpl::Text, mut in_a_FileNamePrefix: ArcStr, mut in_a_SimAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_SimDerMatFiles: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_SimAlgSystemFiles: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -873,7 +873,7 @@ fn fun_76(mut in_txt: Tpl::Text, mut in_a_eq: Arc<SimCode::SimEqSystem>, mut in_
     Ok((out_txt, out_a_SimDerMatFiles, out_a_SimAlgSystemFiles))
 }
 
-fn lm_77(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut in_a_SimDerMatFiles: Tpl::Text, mut in_a_FileNamePrefix: ArcStr, mut in_a_SimAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
+fn lm_76(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode::SimEqSystem>>>, mut in_a_SimDerMatFiles: Tpl::Text, mut in_a_FileNamePrefix: ArcStr, mut in_a_SimAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_SimDerMatFiles: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_SimAlgSystemFiles: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -885,8 +885,8 @@ fn lm_77(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode
             let mut txt = (*txt).clone();
             let mut a_SimDerMatFiles = (*a_SimDerMatFiles).clone();
             let mut a_SimAlgSystemFiles = (*a_SimAlgSystemFiles).clone();
-            (txt, a_SimDerMatFiles, a_SimAlgSystemFiles) = fun_76(txt.clone(), i_eq.clone(), a_SimDerMatFiles.clone(), (a_FileNamePrefix.clone()).clone(), a_SimAlgSystemFiles.clone())?;
-            (txt, a_SimDerMatFiles, a_SimAlgSystemFiles) = lm_77(txt.clone(), rest.clone(), a_SimDerMatFiles.clone(), (a_FileNamePrefix.clone()).clone(), a_SimAlgSystemFiles.clone())?;
+            (txt, a_SimDerMatFiles, a_SimAlgSystemFiles) = fun_75(txt.clone(), i_eq.clone(), a_SimDerMatFiles.clone(), (a_FileNamePrefix.clone()).clone(), a_SimAlgSystemFiles.clone())?;
+            (txt, a_SimDerMatFiles, a_SimAlgSystemFiles) = lm_76(txt.clone(), rest.clone(), a_SimDerMatFiles.clone(), (a_FileNamePrefix.clone()).clone(), a_SimAlgSystemFiles.clone())?;
             (txt.clone(), a_SimDerMatFiles.clone(), a_SimAlgSystemFiles.clone())
         },
         _ => bail!("match: no arm matched"),
@@ -894,7 +894,7 @@ fn lm_77(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<SimCode
     Ok((out_txt, out_a_SimDerMatFiles, out_a_SimAlgSystemFiles))
 }
 
-fn fun_78(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_SimDerMatFiles: Tpl::Text, mut in_a_SimAlgSystemFiles: Tpl::Text, mut in_a_InitDerMatFiles: Tpl::Text, mut in_a_FileNamePrefix: ArcStr, mut in_a_InitAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
+fn fun_77(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_SimDerMatFiles: Tpl::Text, mut in_a_SimAlgSystemFiles: Tpl::Text, mut in_a_InitDerMatFiles: Tpl::Text, mut in_a_FileNamePrefix: ArcStr, mut in_a_InitAlgSystemFiles: Tpl::Text) -> Result<(Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text, Tpl::Text)> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_SimDerMatFiles: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut out_a_SimAlgSystemFiles: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
@@ -908,8 +908,8 @@ fn fun_78(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_Si
             let mut a_SimAlgSystemFiles = (*a_SimAlgSystemFiles).clone();
             let mut a_InitDerMatFiles = (*a_InitDerMatFiles).clone();
             let mut a_InitAlgSystemFiles = (*a_InitAlgSystemFiles).clone();
-            (l_0__, a_InitDerMatFiles, a_InitAlgSystemFiles) = lm_75(Tpl::emptyTxt.clone(), i_initialization_equations.clone(), a_InitDerMatFiles.clone(), (a_FileNamePrefix.clone()).clone(), a_InitAlgSystemFiles.clone())?;
-            (l_0___1, a_SimDerMatFiles, a_SimAlgSystemFiles) = lm_77(Tpl::emptyTxt.clone(), i_simulation_equations.clone(), a_SimDerMatFiles.clone(), (a_FileNamePrefix.clone()).clone(), a_SimAlgSystemFiles.clone())?;
+            (l_0__, a_InitDerMatFiles, a_InitAlgSystemFiles) = lm_74(Tpl::emptyTxt.clone(), i_initialization_equations.clone(), a_InitDerMatFiles.clone(), (a_FileNamePrefix.clone()).clone(), a_InitAlgSystemFiles.clone())?;
+            (l_0___1, a_SimDerMatFiles, a_SimAlgSystemFiles) = lm_76(Tpl::emptyTxt.clone(), i_simulation_equations.clone(), a_SimDerMatFiles.clone(), (a_FileNamePrefix.clone()).clone(), a_SimAlgSystemFiles.clone())?;
             (txt.clone(), a_SimDerMatFiles.clone(), a_SimAlgSystemFiles.clone(), a_InitDerMatFiles.clone(), a_InitAlgSystemFiles.clone())
         },
         (txt, _, a_SimDerMatFiles, a_SimAlgSystemFiles, a_InitDerMatFiles, _, a_InitAlgSystemFiles) => {
@@ -920,7 +920,7 @@ fn fun_78(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_Si
     Ok((out_txt, out_a_SimDerMatFiles, out_a_SimAlgSystemFiles, out_a_InitDerMatFiles, out_a_InitAlgSystemFiles))
 }
 
-fn fun_79(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_SimDerMatFiles: Tpl::Text, mut in_a_SimAlgSystemFiles: Tpl::Text, mut in_a_InitDerMatFiles: Tpl::Text, mut in_a_InitAlgSystemFiles: Tpl::Text) -> Result<Tpl::Text> {
+fn fun_78(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_SimDerMatFiles: Tpl::Text, mut in_a_SimAlgSystemFiles: Tpl::Text, mut in_a_InitDerMatFiles: Tpl::Text, mut in_a_InitAlgSystemFiles: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_SimDerMatFiles.clone(), in_a_SimAlgSystemFiles.clone(), in_a_InitDerMatFiles.clone(), in_a_InitAlgSystemFiles.clone()) {
         (mut txt, SimCode::SimCode { fileNamePrefix: mut i_fileNamePrefix, simulationSettingsOpt: _, makefileParams: SimCodeFunction::MakefileParams { omhome: mut i_makefileParams_omhome, .. }, modelInfo: SimCode::ModelInfo { name: _, .. }, .. }, mut a_SimDerMatFiles, mut a_SimAlgSystemFiles, mut a_InitDerMatFiles, mut a_InitAlgSystemFiles) => {
@@ -958,7 +958,7 @@ fn fun_79(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_Si
     Ok(out_txt)
 }
 
-fn fun_80(mut in_txt: Tpl::Text, mut in_a_modelInfo_directory: ArcStr) -> Result<Tpl::Text> {
+fn fun_79(mut in_txt: Tpl::Text, mut in_a_modelInfo_directory: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_modelInfo_directory.clone())) {
         (txt, Deref @ "") => {
@@ -978,7 +978,7 @@ fn fun_80(mut in_txt: Tpl::Text, mut in_a_modelInfo_directory: ArcStr) -> Result
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_81(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
+fn lm_80(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
@@ -988,7 +988,7 @@ fn lm_81(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (i_lib.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_81(txt.clone(), rest.clone())?;
+            txt = lm_80(txt.clone(), rest.clone())?;
             txt.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -996,7 +996,7 @@ fn lm_81(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -
     Ok(out_txt)
 }
 
-fn fun_82(mut in_txt: Tpl::Text, mut in_a_dirExtra: Tpl::Text, mut in_a_libsStr: Tpl::Text) -> Result<Tpl::Text> {
+fn fun_81(mut in_txt: Tpl::Text, mut in_a_dirExtra: Tpl::Text, mut in_a_libsStr: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_dirExtra.clone(), in_a_libsStr.clone())) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, a_libsStr) => {
@@ -1012,7 +1012,7 @@ fn fun_82(mut in_txt: Tpl::Text, mut in_a_dirExtra: Tpl::Text, mut in_a_libsStr:
     Ok(out_txt)
 }
 
-fn fun_83(mut in_txt: Tpl::Text, mut in_a_dirExtra: Tpl::Text, mut in_a_libsStr: Tpl::Text) -> Result<Tpl::Text> {
+fn fun_82(mut in_txt: Tpl::Text, mut in_a_dirExtra: Tpl::Text, mut in_a_libsStr: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_dirExtra.clone(), in_a_libsStr.clone())) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, _) => {
@@ -1028,7 +1028,7 @@ fn fun_83(mut in_txt: Tpl::Text, mut in_a_dirExtra: Tpl::Text, mut in_a_libsStr:
     Ok(out_txt)
 }
 
-fn fun_84(mut in_txt: Tpl::Text, mut in_a_s_method: ArcStr) -> Result<Tpl::Text> {
+fn fun_83(mut in_txt: Tpl::Text, mut in_a_s_method: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_s_method.clone())) {
         (txt, Deref @ "inline-euler") => {
@@ -1049,11 +1049,11 @@ fn fun_84(mut in_txt: Tpl::Text, mut in_a_s_method: ArcStr) -> Result<Tpl::Text>
     Ok(out_txt)
 }
 
-fn fun_85(mut in_txt: Tpl::Text, mut in_a_sopt: Option<SimCode::SimulationSettings>) -> Result<Tpl::Text> {
+fn fun_84(mut in_txt: Tpl::Text, mut in_a_sopt: Option<SimCode::SimulationSettings>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_sopt.clone()) {
         (mut txt, Some(SimCode::SimulationSettings { method: mut i_s_method, .. })) => {
-            txt = fun_84(txt.clone(), (i_s_method.clone()).clone())?;
+            txt = fun_83(txt.clone(), (i_s_method.clone()).clone())?;
             txt.clone()
         },
         (mut txt, _) => {
@@ -1063,7 +1063,7 @@ fn fun_85(mut in_txt: Tpl::Text, mut in_a_sopt: Option<SimCode::SimulationSettin
     Ok(out_txt)
 }
 
-fn fun_86(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Result<Tpl::Text> {
+fn fun_85(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_makefileParams_platform.clone())) {
         (txt, Deref @ "win32") => {
@@ -1086,7 +1086,7 @@ fn fun_86(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Re
     Ok(out_txt)
 }
 
-fn fun_87(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_makefileParams_omhome: ArcStr) -> Result<Tpl::Text> {
+fn fun_86(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_makefileParams_omhome: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_makefileParams_omhome.clone()) {
         (mut txt, false, mut a_makefileParams_omhome) => {
@@ -1105,7 +1105,7 @@ fn fun_87(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_makefileParams_omho
     Ok(out_txt)
 }
 
-fn fun_88(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
+fn fun_87(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
@@ -1119,7 +1119,7 @@ fn fun_88(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     Ok(out_txt)
 }
 
-fn fun_89(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_common: Tpl::Text, mut in_a_FMUVersion: Tpl::Text) -> Result<Tpl::Text> {
+fn fun_88(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_common: Tpl::Text, mut in_a_FMUVersion: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_common.clone(), in_a_FMUVersion.clone()) {
         (mut txt, ref i_simCode @ SimCode::SimCode { fmuTargetName: ref i_fmuTargetName, fileNamePrefix: ref i_fileNamePrefix, simulationSettingsOpt: ref i_sopt, makefileParams: SimCodeFunction::MakefileParams { omhome: ref i_makefileParams_omhome, platform: ref i_makefileParams_platform, libs: ref i_makefileParams_libs, .. }, modelInfo: SimCode::ModelInfo { directory: ref i_modelInfo_directory, .. }, .. }, mut a_common, mut a_FMUVersion) => {
@@ -1138,28 +1138,28 @@ fn fun_89(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_co
             let mut l_libsPos1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_libsStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_dirExtra: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            l_dirExtra = fun_80(Tpl::emptyTxt.clone(), (i_modelInfo_directory.clone()).clone())?;
+            l_dirExtra = fun_79(Tpl::emptyTxt.clone(), (i_modelInfo_directory.clone()).clone())?;
             l_libsStr = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
-            l_libsStr = lm_81(l_libsStr.clone(), i_makefileParams_libs.clone())?;
+            l_libsStr = lm_80(l_libsStr.clone(), i_makefileParams_libs.clone())?;
             l_libsStr = Tpl::popIter(l_libsStr.clone())?;
-            l_libsPos1 = fun_82(Tpl::emptyTxt.clone(), l_dirExtra.clone(), l_libsStr.clone())?;
-            l_libsPos2 = fun_83(Tpl::emptyTxt.clone(), l_dirExtra.clone(), l_libsStr.clone())?;
+            l_libsPos1 = fun_81(Tpl::emptyTxt.clone(), l_dirExtra.clone(), l_libsStr.clone())?;
+            l_libsPos2 = fun_82(Tpl::emptyTxt.clone(), l_dirExtra.clone(), l_libsStr.clone())?;
             l_fmudirname = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_fileNamePrefix.clone()).clone())?;
             l_fmudirname = Tpl::writeTok(l_fmudirname.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".fmutmp")).clone() }))?;
-            l_extraCflags = fun_85(Tpl::emptyTxt.clone(), i_sopt.clone())?;
+            l_extraCflags = fun_84(Tpl::emptyTxt.clone(), i_sopt.clone())?;
             txt_7 = CodegenUtilSimulation::modelNamePrefix(Tpl::emptyTxt.clone(), i_simCode.clone())?;
             l_compilecmds = CodegenFMU::getPlatformString2(Tpl::emptyTxt.clone(), (Tpl::textString(txt_7.clone())?).clone(), (i_makefileParams_platform.clone()).clone(), (i_fileNamePrefix.clone()).clone(), (i_fmuTargetName.clone()).clone(), (Tpl::textString(l_dirExtra.clone())?).clone(), (Tpl::textString(l_libsPos1.clone())?).clone(), (Tpl::textString(l_libsPos2.clone())?).clone(), (i_makefileParams_omhome.clone()).clone(), (Tpl::textString(a_FMUVersion.clone())?).clone())?;
-            l_mkdir = fun_86(Tpl::emptyTxt.clone(), (i_makefileParams_platform.clone()).clone())?;
+            l_mkdir = fun_85(Tpl::emptyTxt.clone(), (i_makefileParams_platform.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("# Makefile generated by OpenModelica\n")).clone(), (literal!("\n")).clone(), (literal!("# Simulations use -O3 by default\n")).clone(), (literal!("SIM_OR_DYNLOAD_OPT_LEVEL=\n")).clone(), (literal!("MODELICAUSERCFLAGS=\n")).clone(), (literal!("CXX=cl\n")).clone(), (literal!("EXEEXT=.exe\n")).clone(), (literal!("DLLEXT=.dll\n")).clone(), (literal!("FMUEXT=.fmu\n")).clone(), (literal!("PLATWIN32 = win32\n")).clone(), (literal!("\n")).clone(), (literal!("# /Od - Optimization disabled\n")).clone(), (literal!("# /EHa enable C++ EH (w/ SEH exceptions)\n")).clone(), (literal!("# /fp:except - consider floating-point exceptions when generating code\n")).clone(), (literal!("# /arch:SSE2 - enable use of instructions available with SSE2 enabled CPUs\n")).clone(), (literal!("# /I - Include Directories\n")).clone(), (literal!("# /DNOMINMAX - Define NOMINMAX (does what it says)\n")).clone(), (literal!("# /TP - Use C++ Compiler\n")).clone(), (literal!("CFLAGS=/MP /Od /ZI /EHa /fp:except /I\"")).clone()], lastHasNewLine: false }))?;
             txt = Tpl::writeStr(txt.clone(), (i_makefileParams_omhome.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/include/omc/c\" /I\"")).clone() }))?;
             txt = Tpl::writeStr(txt.clone(), (i_makefileParams_omhome.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("/include/omc/msvc/\" ")).clone() }))?;
             ret_9 = FMI::isFMIVersion20((Tpl::textString(a_FMUVersion.clone())?).clone())?;
-            txt = fun_87(txt.clone(), ret_9.clone(), (i_makefileParams_omhome.clone()).clone())?;
+            txt = fun_86(txt.clone(), ret_9.clone(), (i_makefileParams_omhome.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" /I. /DNOMINMAX /TP /DNO_INTERACTIVE_DEPENDENCY  ")).clone() }))?;
             ret_10 = Flags::isSet(Flags::FMU_EXPERIMENTAL.clone())?;
-            txt = fun_88(txt.clone(), ret_10.clone())?;
+            txt = fun_87(txt.clone(), ret_10.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("# /ZI enable Edit and Continue debug info\n")).clone(), (literal!("CDFLAGS=/ZI\n")).clone(), (literal!("\n")).clone(), (literal!("# /MD - link with MSVCRT.LIB\n")).clone(), (literal!("# /link - [linker options and libraries]\n")).clone(), (literal!("# /LIBPATH: - Directories where libs can be found\n")).clone(), (literal!("LDFLAGS=/MD /link /dll /debug /pdb:\"")).clone()], lastHasNewLine: false }))?;
             txt = Tpl::writeStr(txt.clone(), (i_fileNamePrefix.clone()).clone())?;
@@ -1304,7 +1304,7 @@ fn fun_89(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_co
     Ok(out_txt)
 }
 
-fn fun_90(mut in_txt: Tpl::Text, mut in_a_modelInfo_directory: ArcStr) -> Result<Tpl::Text> {
+fn fun_89(mut in_txt: Tpl::Text, mut in_a_modelInfo_directory: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_modelInfo_directory.clone())) {
         (txt, Deref @ "") => {
@@ -1324,7 +1324,7 @@ fn fun_90(mut in_txt: Tpl::Text, mut in_a_modelInfo_directory: ArcStr) -> Result
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_91(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
+fn lm_90(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
@@ -1334,7 +1334,7 @@ fn lm_91(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (i_lib.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_91(txt.clone(), rest.clone())?;
+            txt = lm_90(txt.clone(), rest.clone())?;
             txt.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -1342,7 +1342,7 @@ fn lm_91(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -
     Ok(out_txt)
 }
 
-fn fun_92(mut in_txt: Tpl::Text, mut in_a_dirExtra: Tpl::Text, mut in_a_libsStr: Tpl::Text) -> Result<Tpl::Text> {
+fn fun_91(mut in_txt: Tpl::Text, mut in_a_dirExtra: Tpl::Text, mut in_a_libsStr: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_dirExtra.clone(), in_a_libsStr.clone())) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, a_libsStr) => {
@@ -1358,7 +1358,7 @@ fn fun_92(mut in_txt: Tpl::Text, mut in_a_dirExtra: Tpl::Text, mut in_a_libsStr:
     Ok(out_txt)
 }
 
-fn fun_93(mut in_txt: Tpl::Text, mut in_a_dirExtra: Tpl::Text, mut in_a_libsStr: Tpl::Text) -> Result<Tpl::Text> {
+fn fun_92(mut in_txt: Tpl::Text, mut in_a_dirExtra: Tpl::Text, mut in_a_libsStr: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_dirExtra.clone(), in_a_libsStr.clone())) {
         (txt, Tpl::Text::MEM_TEXT { tokens: Deref @ metamodelica::List::Nil, .. }, _) => {
@@ -1374,7 +1374,7 @@ fn fun_93(mut in_txt: Tpl::Text, mut in_a_dirExtra: Tpl::Text, mut in_a_libsStr:
     Ok(out_txt)
 }
 
-fn fun_94(mut in_txt: Tpl::Text, mut in_a_s_method: ArcStr) -> Result<Tpl::Text> {
+fn fun_93(mut in_txt: Tpl::Text, mut in_a_s_method: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_s_method.clone())) {
         (txt, Deref @ "inline-euler") => {
@@ -1395,11 +1395,11 @@ fn fun_94(mut in_txt: Tpl::Text, mut in_a_s_method: ArcStr) -> Result<Tpl::Text>
     Ok(out_txt)
 }
 
-fn fun_95(mut in_txt: Tpl::Text, mut in_a_sopt: Option<SimCode::SimulationSettings>) -> Result<Tpl::Text> {
+fn fun_94(mut in_txt: Tpl::Text, mut in_a_sopt: Option<SimCode::SimulationSettings>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_sopt.clone()) {
         (mut txt, Some(SimCode::SimulationSettings { method: mut i_s_method, .. })) => {
-            txt = fun_94(txt.clone(), (i_s_method.clone()).clone())?;
+            txt = fun_93(txt.clone(), (i_s_method.clone()).clone())?;
             txt.clone()
         },
         (mut txt, _) => {
@@ -1409,7 +1409,7 @@ fn fun_95(mut in_txt: Tpl::Text, mut in_a_sopt: Option<SimCode::SimulationSettin
     Ok(out_txt)
 }
 
-fn fun_96(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
+fn fun_95(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
@@ -1426,7 +1426,7 @@ fn fun_96(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_97(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
+fn lm_96(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
@@ -1436,7 +1436,7 @@ fn lm_97(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (i_it.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_97(txt.clone(), rest.clone())?;
+            txt = lm_96(txt.clone(), rest.clone())?;
             txt.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -1444,7 +1444,7 @@ fn lm_97(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -
     Ok(out_txt)
 }
 
-fn fun_98(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
+fn fun_97(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
@@ -1458,7 +1458,7 @@ fn fun_98(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     Ok(out_txt)
 }
 
-fn fun_99(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_common: Tpl::Text, mut in_a_FMUVersion: Tpl::Text) -> Result<Tpl::Text> {
+fn fun_98(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_common: Tpl::Text, mut in_a_FMUVersion: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_common.clone(), in_a_FMUVersion.clone()) {
         (mut txt, ref i_simCode @ SimCode::SimCode { fmuTargetName: ref i_fmuTargetName, fileNamePrefix: ref i_fileNamePrefix, simulationSettingsOpt: ref i_sopt, makefileParams: SimCodeFunction::MakefileParams { includes: ref i_makefileParams_includes, omhome: ref i_makefileParams_omhome, platform: ref i_makefileParams_platform, libs: ref i_makefileParams_libs, .. }, delayedExps: SimCode::DelayedExpression { maxDelayedIndex: ref i_maxDelayedIndex, .. }, modelInfo: SimCode::ModelInfo { directory: ref i_modelInfo_directory, varInfo: SimCode::VarInfo { numStringAlgVars: ref i_varInfo_numStringAlgVars, numMixedSystems: ref i_varInfo_numMixedSystems, numNonLinearSystems: ref i_varInfo_numNonLinearSystems, numLinearSystems: ref i_varInfo_numLinearSystems, .. }, .. }, .. }, mut a_common, mut a_FMUVersion) => {
@@ -1472,13 +1472,13 @@ fn fun_99(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_co
             let mut l_libsPos1: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_libsStr: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
             let mut l_dirExtra: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-            l_dirExtra = fun_90(Tpl::emptyTxt.clone(), (i_modelInfo_directory.clone()).clone())?;
+            l_dirExtra = fun_89(Tpl::emptyTxt.clone(), (i_modelInfo_directory.clone()).clone())?;
             l_libsStr = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
-            l_libsStr = lm_91(l_libsStr.clone(), i_makefileParams_libs.clone())?;
+            l_libsStr = lm_90(l_libsStr.clone(), i_makefileParams_libs.clone())?;
             l_libsStr = Tpl::popIter(l_libsStr.clone())?;
-            l_libsPos1 = fun_92(Tpl::emptyTxt.clone(), l_dirExtra.clone(), l_libsStr.clone())?;
-            l_libsPos2 = fun_93(Tpl::emptyTxt.clone(), l_dirExtra.clone(), l_libsStr.clone())?;
-            l_extraCflags = fun_95(Tpl::emptyTxt.clone(), i_sopt.clone())?;
+            l_libsPos1 = fun_91(Tpl::emptyTxt.clone(), l_dirExtra.clone(), l_libsStr.clone())?;
+            l_libsPos2 = fun_92(Tpl::emptyTxt.clone(), l_dirExtra.clone(), l_libsStr.clone())?;
+            l_extraCflags = fun_94(Tpl::emptyTxt.clone(), i_sopt.clone())?;
             txt_6 = CodegenUtilSimulation::modelNamePrefix(Tpl::emptyTxt.clone(), i_simCode.clone())?;
             l_compilecmds = CodegenFMU::getPlatformString2(Tpl::emptyTxt.clone(), (Tpl::textString(txt_6.clone())?).clone(), (i_makefileParams_platform.clone()).clone(), (i_fileNamePrefix.clone()).clone(), (i_fmuTargetName.clone()).clone(), (Tpl::textString(l_dirExtra.clone())?).clone(), (Tpl::textString(l_libsPos1.clone())?).clone(), (Tpl::textString(l_libsPos2.clone())?).clone(), (i_makefileParams_omhome.clone()).clone(), (Tpl::textString(a_FMUVersion.clone())?).clone())?;
             l_platformstr = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_makefileParams_platform.clone()).clone())?;
@@ -1499,14 +1499,14 @@ fn fun_99(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_co
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\n")).clone(), (literal!("override CPPFLAGS += -DFMI2_OVERRIDE_FUNCTION_PREFIX\n")).clone(), (literal!("override CPPFLAGS += -Iinclude/ -Iinclude/fmi")).clone()], lastHasNewLine: false }))?;
             ret_8 = FMI::isFMIVersion20((Tpl::textString(a_FMUVersion.clone())?).clone())?;
-            txt = fun_96(txt.clone(), ret_8.clone())?;
+            txt = fun_95(txt.clone(), ret_8.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -I. ")).clone() }))?;
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
-            txt = lm_97(txt.clone(), i_makefileParams_includes.clone())?;
+            txt = lm_96(txt.clone(), i_makefileParams_includes.clone())?;
             txt = Tpl::popIter(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() }))?;
             ret_9 = Flags::isSet(Flags::FMU_EXPERIMENTAL.clone())?;
-            txt = fun_98(txt.clone(), ret_9.clone())?;
+            txt = fun_97(txt.clone(), ret_9.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("  -DOMC_MODEL_PREFIX=")).clone() }))?;
             txt = CodegenUtilSimulation::modelNamePrefix(txt.clone(), i_simCode.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -DOMC_NUM_MIXED_SYSTEMS=")).clone() }))?;
@@ -1536,17 +1536,17 @@ fn fun_99(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_co
     Ok(out_txt)
 }
 
-fn fun_100(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_target: ArcStr, mut in_a_common: Tpl::Text, mut in_a_FMUVersion: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+fn fun_99(mut in_txt: Tpl::Text, mut in_mArg: ArcStr, mut in_a_target: ArcStr, mut in_a_common: Tpl::Text, mut in_a_FMUVersion: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_target.clone(), in_a_common.clone(), in_a_FMUVersion.clone(), in_a_simCode.clone())) {
         (txt, Deref @ "msvc", _, a_common, a_FMUVersion, a_simCode) => {
             let mut txt = (*txt).clone();
-            txt = fun_89(txt.clone(), a_simCode.clone(), a_common.clone(), a_FMUVersion.clone())?;
+            txt = fun_88(txt.clone(), a_simCode.clone(), a_common.clone(), a_FMUVersion.clone())?;
             txt.clone()
         },
         (txt, Deref @ "gcc", _, a_common, a_FMUVersion, a_simCode) => {
             let mut txt = (*txt).clone();
-            txt = fun_99(txt.clone(), a_simCode.clone(), a_common.clone(), a_FMUVersion.clone())?;
+            txt = fun_98(txt.clone(), a_simCode.clone(), a_common.clone(), a_FMUVersion.clone())?;
             txt.clone()
         },
         (txt, _, a_target, _, _, _) => {
@@ -1579,11 +1579,11 @@ pub fn createMakefileIn(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCode, mut
     l_InitDerMatFiles = Tpl::emptyTxt.clone();
     l_SimAlgSystemFiles = Tpl::emptyTxt.clone();
     l_SimDerMatFiles = Tpl::emptyTxt.clone();
-    (l_0__, l_SimDerMatFiles, l_SimAlgSystemFiles, l_InitDerMatFiles, l_InitAlgSystemFiles) = fun_78(Tpl::emptyTxt.clone(), a_simCode.clone(), l_SimDerMatFiles.clone(), l_SimAlgSystemFiles.clone(), l_InitDerMatFiles.clone(), (a_FileNamePrefix.clone()).clone(), l_InitAlgSystemFiles.clone())?;
-    l_common = fun_79(Tpl::emptyTxt.clone(), a_simCode.clone(), l_SimDerMatFiles.clone(), l_SimAlgSystemFiles.clone(), l_InitDerMatFiles.clone(), l_InitAlgSystemFiles.clone())?;
+    (l_0__, l_SimDerMatFiles, l_SimAlgSystemFiles, l_InitDerMatFiles, l_InitAlgSystemFiles) = fun_77(Tpl::emptyTxt.clone(), a_simCode.clone(), l_SimDerMatFiles.clone(), l_SimAlgSystemFiles.clone(), l_InitDerMatFiles.clone(), (a_FileNamePrefix.clone()).clone(), l_InitAlgSystemFiles.clone())?;
+    l_common = fun_78(Tpl::emptyTxt.clone(), a_simCode.clone(), l_SimDerMatFiles.clone(), l_SimAlgSystemFiles.clone(), l_InitDerMatFiles.clone(), l_InitAlgSystemFiles.clone())?;
     txt_7 = CodegenUtil::getGeneralTarget(Tpl::emptyTxt.clone(), (a_target.clone()).clone())?;
     str_8 = (Tpl::textString(txt_7.clone())?).clone();
-    out_txt = fun_100(txt.clone(), (str_8.clone()).clone(), (a_target.clone()).clone(), l_common.clone(), l_FMUVersion.clone(), a_simCode.clone())?;
+    out_txt = fun_99(txt.clone(), (str_8.clone()).clone(), (a_target.clone()).clone(), l_common.clone(), l_FMUVersion.clone(), a_simCode.clone())?;
     Ok(out_txt)
 }
 

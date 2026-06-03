@@ -211,7 +211,7 @@ pub fn crefStrNoUnderscore(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::Componen
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_50(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Tpl::Text> {
+fn lm_49(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
@@ -221,7 +221,7 @@ fn lm_50(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Su
             let mut txt = (*txt).clone();
             txt = subscriptStr(txt.clone(), i_s.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_50(txt.clone(), rest.clone())?;
+            txt = lm_49(txt.clone(), rest.clone())?;
             txt.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -239,7 +239,7 @@ pub fn subscriptsStr(mut in_txt: Tpl::Text, mut in_a_subscripts: Arc<metamodelic
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("[")).clone() }))?;
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(",")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
-            txt = lm_50(txt.clone(), i_subscripts.clone())?;
+            txt = lm_49(txt.clone(), i_subscripts.clone())?;
             txt = Tpl::popIter(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("]")).clone() }))?;
             txt.clone()
@@ -292,7 +292,7 @@ pub fn crefStrMatlabSafe(mut in_txt: Tpl::Text, mut in_a_cr: Arc<DAE::ComponentR
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_53(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Tpl::Text> {
+fn lm_52(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Subscript>>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
@@ -302,7 +302,7 @@ fn lm_53(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Su
             let mut txt = (*txt).clone();
             txt = subscriptStr(txt.clone(), i_s.clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_53(txt.clone(), rest.clone())?;
+            txt = lm_52(txt.clone(), rest.clone())?;
             txt.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -320,7 +320,7 @@ pub fn subscriptsStrMatlabSafe(mut in_txt: Tpl::Text, mut in_a_subscripts: Arc<m
             let mut txt = (*txt).clone();
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("(")).clone() }))?;
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(",")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
-            txt = lm_53(txt.clone(), i_subscripts.clone())?;
+            txt = lm_52(txt.clone(), i_subscripts.clone())?;
             txt = Tpl::popIter(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(")")).clone() }))?;
             txt.clone()
@@ -408,7 +408,7 @@ pub fn escapeCComments(mut txt: Tpl::Text, mut a_stringWithCComments: ArcStr) ->
     Ok(out_txt)
 }
 
-fn fun_57(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_vName: ArcStr) -> Result<Tpl::Text> {
+fn fun_56(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_vName: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_vName.clone()) {
         (mut txt, false, _) => {
@@ -423,7 +423,7 @@ fn fun_57(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_vName: ArcStr) -> R
     Ok(out_txt)
 }
 
-fn fun_58(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_vName: ArcStr) -> Result<Tpl::Text> {
+fn fun_57(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_vName: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_vName.clone()) {
         (mut txt, false, mut a_vName) => {
@@ -446,7 +446,7 @@ pub fn crefCComment(mut in_txt: Tpl::Text, mut in_a_v: SimCodeVar::SimVar, mut i
             let mut ret_0: ArcStr = arcstr::literal!("");
             ret_0 = (Flags::getConfigString(Flags::OBFUSCATE.clone())?).clone();
             ret_1 = stringEq((ret_0.clone()).clone(), (literal!("none")).clone());
-            txt = fun_57(txt.clone(), ret_1.clone(), (a_vName.clone()).clone())?;
+            txt = fun_56(txt.clone(), ret_1.clone(), (a_vName.clone()).clone())?;
             txt.clone()
         },
         (mut txt, SimCodeVar::SimVar { name: _, .. }, mut a_vName) => {
@@ -454,7 +454,7 @@ pub fn crefCComment(mut in_txt: Tpl::Text, mut in_a_v: SimCodeVar::SimVar, mut i
             let mut ret_2: ArcStr = arcstr::literal!("");
             ret_2 = (Flags::getConfigString(Flags::OBFUSCATE.clone())?).clone();
             ret_3 = stringEq((ret_2.clone()).clone(), (literal!("full")).clone());
-            txt = fun_58(txt.clone(), ret_3.clone(), (a_vName.clone()).clone())?;
+            txt = fun_57(txt.clone(), ret_3.clone(), (a_vName.clone()).clone())?;
             txt.clone()
         },
         (mut txt, _, _) => {
@@ -464,7 +464,7 @@ pub fn crefCComment(mut in_txt: Tpl::Text, mut in_a_v: SimCodeVar::SimVar, mut i
     Ok(out_txt)
 }
 
-fn fun_60(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_varKind: BackendDAE::VarKind, mut in_a_name: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
+fn fun_59(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_varKind: BackendDAE::VarKind, mut in_a_name: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_varKind.clone(), in_a_name.clone())) {
         (txt, false, _, _) => {
@@ -488,7 +488,7 @@ fn fun_60(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_varKind: BackendDAE
     Ok(out_txt)
 }
 
-fn fun_61(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_varKind: BackendDAE::VarKind, mut in_a_name: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
+fn fun_60(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_varKind: BackendDAE::VarKind, mut in_a_name: Arc<DAE::ComponentRef>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_varKind.clone(), in_a_name.clone())) {
         (txt, false, a_varKind, a_name) => {
@@ -520,7 +520,7 @@ pub fn crefCCommentWithVariability(mut in_txt: Tpl::Text, mut in_a_v: SimCodeVar
             let mut ret_0: ArcStr = arcstr::literal!("");
             ret_0 = (Flags::getConfigString(Flags::OBFUSCATE.clone())?).clone();
             ret_1 = stringEq((ret_0.clone()).clone(), (literal!("none")).clone());
-            txt = fun_60(txt.clone(), ret_1.clone(), i_varKind.clone(), i_name.clone())?;
+            txt = fun_59(txt.clone(), ret_1.clone(), i_varKind.clone(), i_name.clone())?;
             txt.clone()
         },
         (mut txt, SimCodeVar::SimVar { varKind: mut i_varKind, name: ref i_name, .. }) => {
@@ -528,7 +528,7 @@ pub fn crefCCommentWithVariability(mut in_txt: Tpl::Text, mut in_a_v: SimCodeVar
             let mut ret_2: ArcStr = arcstr::literal!("");
             ret_2 = (Flags::getConfigString(Flags::OBFUSCATE.clone())?).clone();
             ret_3 = stringEq((ret_2.clone()).clone(), (literal!("full")).clone());
-            txt = fun_61(txt.clone(), ret_3.clone(), i_varKind.clone(), i_name.clone())?;
+            txt = fun_60(txt.clone(), ret_3.clone(), i_varKind.clone(), i_name.clone())?;
             txt.clone()
         },
         (mut txt, _) => {
@@ -591,7 +591,7 @@ pub fn initDefaultValXml(mut in_txt: Tpl::Text, mut in_a_type__: Arc<DAE::Type>)
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_65(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut in_a_stringQuotes: ArcStr) -> Result<Tpl::Text> {
+fn lm_64(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut in_a_stringQuotes: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone(), in_a_stringQuotes.clone())) {
         (txt, Deref @ metamodelica::List::Nil, _) => {
@@ -601,7 +601,7 @@ fn lm_65(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Ex
             let mut txt = (*txt).clone();
             txt = initValXml(txt.clone(), i_elem.clone(), (a_stringQuotes.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_65(txt.clone(), rest.clone(), (a_stringQuotes.clone()).clone())?;
+            txt = lm_64(txt.clone(), rest.clone(), (a_stringQuotes.clone()).clone())?;
             txt.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -609,7 +609,7 @@ fn lm_65(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<DAE::Ex
     Ok(out_txt)
 }
 
-fn fun_66(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_stringQuotes: ArcStr, mut in_a_expr: Arc<DAE::Exp>) -> Result<Tpl::Text> {
+fn fun_65(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_stringQuotes: ArcStr, mut in_a_expr: Arc<DAE::Exp>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_stringQuotes.clone(), in_a_expr.clone())) {
         (txt, false, _, _) => {
@@ -655,7 +655,7 @@ pub fn initValXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_s
         (txt, Deref @ DAE::Exp::ARRAY { array: i_array, .. }, a_stringQuotes) => {
             let mut txt = (*txt).clone();
             txt = Tpl::pushIter(txt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" ")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
-            txt = lm_65(txt.clone(), i_array.clone(), (a_stringQuotes.clone()).clone())?;
+            txt = lm_64(txt.clone(), i_array.clone(), (a_stringQuotes.clone()).clone())?;
             txt = Tpl::popIter(txt.clone())?;
             txt.clone()
         },
@@ -663,7 +663,7 @@ pub fn initValXml(mut in_txt: Tpl::Text, mut in_a_exp: Arc<DAE::Exp>, mut in_a_s
             let mut ret_1: bool = false;
             let mut txt = (*txt).clone();
             ret_1 = Expression::isSimpleLiteralValue(i_expr.clone(), true)?;
-            txt = fun_66(txt.clone(), ret_1.clone(), (a_stringQuotes.clone()).clone(), i_expr.clone())?;
+            txt = fun_65(txt.clone(), ret_1.clone(), (a_stringQuotes.clone()).clone(), i_expr.clone())?;
             txt.clone()
         },
         (txt, Deref @ DAE::Exp::ENUM_LITERAL { index: i_index, .. }, _) => {

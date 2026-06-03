@@ -21,7 +21,7 @@ use openmodelica_util::Util;
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_47(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
+fn lm_46(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
@@ -39,12 +39,12 @@ fn lm_47(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<SimCodeVar:
             ret_1 = (Util::escapeModelicaStringToXmlString((Tpl::textString(txt_0.clone())?).clone())?).clone();
             txt = Tpl::writeStr(txt.clone(), (ret_1.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_47(txt.clone(), rest.clone())?;
+            txt = lm_46(txt.clone(), rest.clone())?;
             txt.clone()
         },
         (txt, Deref @ metamodelica::List::Cons { head: _, tail: rest }) => {
             let mut txt = (*txt).clone();
-            txt = lm_47(txt.clone(), rest.clone())?;
+            txt = lm_46(txt.clone(), rest.clone())?;
             txt.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -56,7 +56,7 @@ pub fn dumpVarsShort(mut txt: Tpl::Text, mut a_vars: Arc<metamodelica::List<SimC
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     let mut l_varsString: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     l_varsString = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("")).clone() })), separator: Some(Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE)), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
-    l_varsString = lm_47(l_varsString.clone(), a_vars.clone())?;
+    l_varsString = lm_46(l_varsString.clone(), a_vars.clone())?;
     l_varsString = Tpl::popIter(l_varsString.clone())?;
     out_txt = Tpl::writeText(txt.clone(), l_varsString.clone())?;
     out_txt = Tpl::softNewLine(out_txt.clone())?;

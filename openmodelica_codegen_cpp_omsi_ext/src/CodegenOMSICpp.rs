@@ -21,7 +21,7 @@ use openmodelica_util::Settings;
 use openmodelica_util::Testsuite;
 use openmodelica_util::Util;
 
-fn fun_50(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+fn fun_49(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simCode.clone()) {
         (mut txt, ref i_simCode @ SimCode::SimCode { modelInfo: SimCode::ModelInfo { name: ref i_modelInfo_name, .. }, .. }) => {
@@ -46,11 +46,11 @@ fn fun_50(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode) -> Result<T
 
 pub fn translateModel(mut txt: Tpl::Text, mut a_simCode: SimCode::SimCode, mut a_FMUVersion: ArcStr, mut a_FMUType: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
-    out_txt = fun_50(txt.clone(), a_simCode.clone())?;
+    out_txt = fun_49(txt.clone(), a_simCode.clone())?;
     Ok(out_txt)
 }
 
-fn fun_52(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_settings_method: ArcStr) -> Result<Tpl::Text> {
+fn fun_51(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_settings_method: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_a_simCode.clone(), in_a_settings_method.clone()) {
         (mut txt, SimCode::SimCode { daeModeData: None, .. }, mut a_settings_method) => {
@@ -65,7 +65,7 @@ fn fun_52(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, mut in_a_se
     Ok(out_txt)
 }
 
-fn fun_53(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Result<Tpl::Text> {
+fn fun_52(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_makefileParams_platform.clone())) {
         (txt, Deref @ "i386-pc-linux") => {
@@ -88,7 +88,7 @@ fn fun_53(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr) -> Re
     Ok(out_txt)
 }
 
-fn fun_54(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
+fn fun_53(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
@@ -104,7 +104,7 @@ fn fun_54(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
 // and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
-fn lm_55(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
+fn lm_54(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_items.clone())) {
         (txt, Deref @ metamodelica::List::Nil) => {
@@ -114,7 +114,7 @@ fn lm_55(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -
             let mut txt = (*txt).clone();
             txt = Tpl::writeStr(txt.clone(), (i_path.clone()).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
-            txt = lm_55(txt.clone(), rest.clone())?;
+            txt = lm_54(txt.clone(), rest.clone())?;
             txt.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -122,7 +122,7 @@ fn lm_55(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<ArcStr>>) -
     Ok(out_txt)
 }
 
-fn fun_56(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
+fn fun_55(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
@@ -155,7 +155,7 @@ fn fun_56(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     Ok(out_txt)
 }
 
-fn fun_57(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr, mut in_a_preRunCommandWindows: ArcStr, mut in_a_libPaths: Tpl::Text, mut in_a_libFolder: Tpl::Text, mut in_a_outputParameter: Tpl::Text, mut in_a_zermMQParams: Tpl::Text, mut in_a_execParameters: Tpl::Text, mut in_a_binFolder: Tpl::Text, mut in_a_execCommandLinux: ArcStr, mut in_a_preRunCommandLinux: ArcStr) -> Result<Tpl::Text> {
+fn fun_56(mut in_txt: Tpl::Text, mut in_a_makefileParams_platform: ArcStr, mut in_a_preRunCommandWindows: ArcStr, mut in_a_libPaths: Tpl::Text, mut in_a_libFolder: Tpl::Text, mut in_a_outputParameter: Tpl::Text, mut in_a_zermMQParams: Tpl::Text, mut in_a_execParameters: Tpl::Text, mut in_a_binFolder: Tpl::Text, mut in_a_execCommandLinux: ArcStr, mut in_a_preRunCommandLinux: ArcStr) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_a_makefileParams_platform.clone(), in_a_preRunCommandWindows.clone(), in_a_libPaths.clone(), in_a_libFolder.clone(), in_a_outputParameter.clone(), in_a_zermMQParams.clone(), in_a_execParameters.clone(), in_a_binFolder.clone(), in_a_execCommandLinux.clone(), in_a_preRunCommandLinux.clone())) {
         (txt, Deref @ "linux32", _, _, _, a_outputParameter, a_zermMQParams, a_execParameters, a_binFolder, a_execCommandLinux, a_preRunCommandLinux) => {
@@ -278,13 +278,13 @@ pub fn simulationOMSUCPPMainRunScript(mut in_txt: Tpl::Text, mut in_a_simCode: S
             l_stepsize = Tpl::writeStr(Tpl::emptyTxt.clone(), (realString(i_settings_stepSize.clone())).clone())?;
             l_intervals = Tpl::writeStr(Tpl::emptyTxt.clone(), (intString(i_settings_numberOfIntervals.clone())).clone())?;
             l_tol = Tpl::writeStr(Tpl::emptyTxt.clone(), (realString(i_settings_tolerance.clone())).clone())?;
-            l_solver = fun_52(Tpl::emptyTxt.clone(), i_simCode.clone(), (i_settings_method.clone()).clone())?;
+            l_solver = fun_51(Tpl::emptyTxt.clone(), i_simCode.clone(), (i_settings_method.clone()).clone())?;
             l_moLib = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_makefileParams_compileDir.clone()).clone())?;
             l_home = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_makefileParams_omhome.clone()).clone())?;
             l_outputformat = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_settings_outputFormat.clone()).clone())?;
             l_modelName = CodegenUtil::dotPath(Tpl::emptyTxt.clone(), i_modelInfo_name.clone())?;
             l_fileNamePrefixx = Tpl::writeStr(Tpl::emptyTxt.clone(), (i_fileNamePrefix.clone()).clone())?;
-            l_platformstr = fun_53(Tpl::emptyTxt.clone(), (i_makefileParams_platform.clone()).clone())?;
+            l_platformstr = fun_52(Tpl::emptyTxt.clone(), (i_makefileParams_platform.clone()).clone())?;
             l_execParameters = Tpl::writeTok(Tpl::emptyTxt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("-S ")).clone() }))?;
             l_execParameters = Tpl::writeText(l_execParameters.clone(), l_start.clone())?;
             l_execParameters = Tpl::writeTok(l_execParameters.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(" -E ")).clone() }))?;
@@ -313,17 +313,17 @@ pub fn simulationOMSUCPPMainRunScript(mut in_txt: Tpl::Text, mut in_a_simCode: S
             l_execParameters = Tpl::writeText(l_execParameters.clone(), l_fileNamePrefixx.clone())?;
             l_execParameters = Tpl::writeTok(l_execParameters.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(".fmu")).clone() }))?;
             ret_16 = stringEq((i_settings_outputFormat.clone()).clone(), (literal!("empty")).clone());
-            l_outputParameter = fun_54(Tpl::emptyTxt.clone(), ret_16.clone())?;
+            l_outputParameter = fun_53(Tpl::emptyTxt.clone(), ret_16.clone())?;
             ret_18 = (Config::simulationCodeTarget()?).clone();
             (l_libFolder, a_extraFuncs, a_extraFuncsDecl, a_extraFuncsNamespace) = CodegenCppOMSI::simulationLibDir(Tpl::emptyTxt.clone(), (ret_18.clone()).clone(), i_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())?;
             ret_20 = (Config::simulationCodeTarget()?).clone();
             l_binFolder = CodegenCppOMSI::simulationBinDir(Tpl::emptyTxt.clone(), (ret_20.clone()).clone(), i_simCode.clone())?;
             l_libPaths = Tpl::pushIter(Tpl::emptyTxt.clone(), Arc::new(Tpl::IterOptions { startIndex0: 0, empty: None, separator: Some(Arc::new(Tpl::StringToken::ST_STRING { value: (literal!(";")).clone() })), alignNum: 0, alignOfset: 0, alignSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE), wrapWidth: 0, wrapSeparator: Arc::new(openmodelica_susan::Tpl::StringToken::ST_NEW_LINE) }))?;
-            l_libPaths = lm_55(l_libPaths.clone(), i_makefileParams_libPaths.clone())?;
+            l_libPaths = lm_54(l_libPaths.clone(), i_makefileParams_libPaths.clone())?;
             l_libPaths = Tpl::popIter(l_libPaths.clone())?;
             ret_23 = Flags::getConfigBool(Flags::USE_ZEROMQ_IN_SIM.clone())?;
-            l_zermMQParams = fun_56(Tpl::emptyTxt.clone(), ret_23.clone())?;
-            txt = fun_57(txt.clone(), (i_makefileParams_platform.clone()).clone(), (a_preRunCommandWindows.clone()).clone(), l_libPaths.clone(), l_libFolder.clone(), l_outputParameter.clone(), l_zermMQParams.clone(), l_execParameters.clone(), l_binFolder.clone(), (a_execCommandLinux.clone()).clone(), (a_preRunCommandLinux.clone()).clone())?;
+            l_zermMQParams = fun_55(Tpl::emptyTxt.clone(), ret_23.clone())?;
+            txt = fun_56(txt.clone(), (i_makefileParams_platform.clone()).clone(), (a_preRunCommandWindows.clone()).clone(), l_libPaths.clone(), l_libFolder.clone(), l_outputParameter.clone(), l_zermMQParams.clone(), l_execParameters.clone(), l_binFolder.clone(), (a_execCommandLinux.clone()).clone(), (a_preRunCommandLinux.clone()).clone())?;
             (txt.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), a_extraFuncsNamespace.clone())
         },
         (mut txt, _, mut a_extraFuncs, mut a_extraFuncsDecl, mut a_extraFuncsNamespace, _, _, _) => {

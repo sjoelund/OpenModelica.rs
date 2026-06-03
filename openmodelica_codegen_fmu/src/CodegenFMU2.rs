@@ -23,7 +23,7 @@ use openmodelica_util::Settings;
 use openmodelica_util::System;
 use openmodelica_util::Util;
 
-fn fun_52(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_sourceFiles: Arc<metamodelica::List<ArcStr>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+fn fun_51(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_sourceFiles: Arc<metamodelica::List<ArcStr>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_sourceFiles.clone(), in_a_simCode.clone())) {
         (txt, false, _, _) => {
@@ -39,7 +39,7 @@ fn fun_52(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_sourceFiles: Arc<me
     Ok(out_txt)
 }
 
-fn fun_53(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_sourceFiles: Arc<metamodelica::List<ArcStr>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
+fn fun_52(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_sourceFiles: Arc<metamodelica::List<ArcStr>>, mut in_a_simCode: SimCode::SimCode) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (::match_deref::match_deref! { match &((in_txt.clone(), in_mArg.clone(), in_a_sourceFiles.clone(), in_a_simCode.clone())) {
         (txt, false, _, _) => {
@@ -55,7 +55,7 @@ fn fun_53(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_sourceFiles: Arc<me
     Ok(out_txt)
 }
 
-fn fun_54(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
+fn fun_53(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
@@ -83,17 +83,17 @@ pub fn fmiModelDescription(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::Sim
             txt = fmiModelDescriptionAttributes(txt.clone(), i_simCode.clone(), (a_guid.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(">\n")).clone() }))?;
             ret_0 = FMI::isFMIMEType((a_FMUType.clone()).clone());
-            txt = fun_52(txt.clone(), ret_0.clone(), a_sourceFiles.clone(), i_simCode.clone())?;
+            txt = fun_51(txt.clone(), ret_0.clone(), a_sourceFiles.clone(), i_simCode.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             ret_1 = FMI::isFMICSType((a_FMUType.clone()).clone());
-            txt = fun_53(txt.clone(), ret_1.clone(), a_sourceFiles.clone(), i_simCode.clone())?;
+            txt = fun_52(txt.clone(), ret_1.clone(), a_sourceFiles.clone(), i_simCode.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = CodegenFMUCommon::UnitDefinitions(txt.clone(), i_simCode.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = CodegenFMUCommon::fmiTypeDefinitions(txt.clone(), i_simCode.clone(), (literal!("2.0")).clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             ret_2 = Flags::isSet(Flags::FMU_EXPERIMENTAL.clone())?;
-            txt = fun_54(txt.clone(), ret_2.clone())?;
+            txt = fun_53(txt.clone(), ret_2.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = CodegenFMUCommon::DefaultExperiment(txt.clone(), i_simulationSettingsOpt.clone(), (literal!("2.0")).clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
@@ -113,7 +113,7 @@ pub fn fmiModelDescription(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::Sim
     Ok(out_txt)
 }
 
-fn fun_56(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_author: Tpl::Text) -> Result<Tpl::Text> {
+fn fun_55(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_author: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_author.clone()) {
         (mut txt, false, mut a_author) => {
@@ -131,7 +131,7 @@ fn fun_56(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_author: Tpl::Text) 
     Ok(out_txt)
 }
 
-fn fun_57(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_copyright: Tpl::Text) -> Result<Tpl::Text> {
+fn fun_56(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_copyright: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_copyright.clone()) {
         (mut txt, false, mut a_copyright) => {
@@ -149,7 +149,7 @@ fn fun_57(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_copyright: Tpl::Tex
     Ok(out_txt)
 }
 
-fn fun_58(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_license: Tpl::Text) -> Result<Tpl::Text> {
+fn fun_57(mut in_txt: Tpl::Text, mut in_mArg: bool, mut in_a_license: Tpl::Text) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone(), in_a_license.clone()) {
         (mut txt, false, mut a_license) => {
@@ -221,13 +221,13 @@ pub fn fmiModelDescriptionAttributes(mut in_txt: Tpl::Text, mut in_a_simCode: Si
             txt = Tpl::writeStr(txt.clone(), (ret_15.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!("\"\n")).clone() }))?;
             ret_16 = stringEq((Tpl::textString(l_author.clone())?).clone(), (literal!("")).clone());
-            txt = fun_56(txt.clone(), ret_16.clone(), l_author.clone())?;
+            txt = fun_55(txt.clone(), ret_16.clone(), l_author.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             ret_17 = stringEq((Tpl::textString(l_copyright.clone())?).clone(), (literal!("")).clone());
-            txt = fun_57(txt.clone(), ret_17.clone(), l_copyright.clone())?;
+            txt = fun_56(txt.clone(), ret_17.clone(), l_copyright.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             ret_18 = stringEq((Tpl::textString(l_license.clone())?).clone(), (literal!("")).clone());
-            txt = fun_58(txt.clone(), ret_18.clone(), l_license.clone())?;
+            txt = fun_57(txt.clone(), ret_18.clone(), l_license.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING { value: (literal!("generationTool=\"")).clone() }))?;
             ret_19 = (Util::escapeModelicaStringToXmlString((Tpl::textString(l_generationTool.clone())?).clone())?).clone();
@@ -249,7 +249,7 @@ pub fn fmiModelDescriptionAttributes(mut in_txt: Tpl::Text, mut in_a_simCode: Si
     Ok(out_txt)
 }
 
-fn fun_60(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
+fn fun_59(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
@@ -264,7 +264,7 @@ fn fun_60(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     Ok(out_txt)
 }
 
-fn fun_61(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
+fn fun_60(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
@@ -279,7 +279,7 @@ fn fun_61(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     Ok(out_txt)
 }
 
-fn fun_62(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
+fn fun_61(mut in_txt: Tpl::Text, mut in_mArg: bool) -> Result<Tpl::Text> {
     let mut out_txt: Tpl::Text = <Tpl::Text as ::std::default::Default>::default();
     out_txt = (match (in_txt.clone(), in_mArg.clone()) {
         (mut txt, false) => {
@@ -312,13 +312,13 @@ pub fn CoSimulation(mut in_txt: Tpl::Text, mut in_a_simCode: SimCode::SimCode, m
             txt = Tpl::writeStr(txt.clone(), (ret_1.clone()).clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_STRING_LIST { strList: list![(literal!("\"\n")).clone(), (literal!("needsExecutionTool=\"false\"\n")).clone(), (literal!("canHandleVariableCommunicationStepSize=\"true\"\n")).clone(), (literal!("canInterpolateInputs=\"true\"\n")).clone(), (literal!("maxOutputDerivativeOrder=\"1\"\n")).clone(), (literal!("canRunAsynchronuously = \"false\"\n")).clone(), (literal!("canBeInstantiatedOnlyOncePerProcess=\"false\"\n")).clone(), (literal!("canNotUseMemoryManagementFunctions=\"false\"\n")).clone()], lastHasNewLine: true }))?;
             ret_2 = Flags::isSet(Flags::FMU_EXPERIMENTAL.clone())?;
-            txt = fun_60(txt.clone(), ret_2.clone())?;
+            txt = fun_59(txt.clone(), ret_2.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             ret_3 = Flags::isSet(Flags::FMU_EXPERIMENTAL.clone())?;
-            txt = fun_61(txt.clone(), ret_3.clone())?;
+            txt = fun_60(txt.clone(), ret_3.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;
             ret_4 = Flags::isSet(Flags::FMU_EXPERIMENTAL.clone())?;
-            txt = fun_62(txt.clone(), ret_4.clone())?;
+            txt = fun_61(txt.clone(), ret_4.clone())?;
             txt = Tpl::writeTok(txt.clone(), Arc::new(Tpl::StringToken::ST_LINE { line: (literal!(">\n")).clone() }))?;
             txt = CodegenFMUCommon::SourceFiles(txt.clone(), a_sourceFiles.clone())?;
             txt = Tpl::softNewLine(txt.clone())?;

@@ -9,7 +9,7 @@ use metamodelica::*; // Built-in types and functions
 use const_str;
 use arcstr::{ArcStr, literal, format};
 
-pub const configureCommandLine: &'static str = "Configured  using arguments: ";
+pub const configureCommandLine: &'static str = "Configured 2026-06-03 07:05:24 using arguments:  '--disable-option-checking' '--prefix=/projects/OpenModelica/build' '--with-qt6' 'CC=clang' 'CXX=clang++' '--with-omc=/usr/bin/omc' '--with-ombuilddir=/projects/OpenModelica/build' '--cache-file=/dev/null' '--srcdir=.'";
 
 pub const os: &'static str = "linux";
 
@@ -37,13 +37,13 @@ pub const groupDelimiter: &'static str = if isWindows { ";" } else { ":" };
 
 pub const pathDelimiter: &'static str = "/";
 
-pub const ldflags_runtime: &'static str = " -lOpenModelicaRuntimeC -lomcgc -llapack -lblas -lm -lpthread -rdynamic";
+pub const ldflags_runtime: &'static str = " -Wl,--no-as-needed -Wl,--disable-new-dtags -lOpenModelicaRuntimeC -lopenblas -lm -lomcgc -lryu -lpthread -rdynamic";
 
-pub const ldflags_runtime_sim: &'static str = " -lSimulationRuntimeC -lOpenModelicaRuntimeC -lomcgc -lzlib -llapack -lblas -lm -ldl -lpthread -lgfortran -lstdc++ -rdynamic ";
+pub const ldflags_runtime_sim: &'static str = " -Wl,--no-as-needed -Wl,--disable-new-dtags -lSimulationRuntimeC -lopenblas -lm -lomcgc -lryu -lpthread -rdynamic -Wl,--no-undefined";
 
-pub const ldflags_runtime_fmu: &'static str = " -llapack -lblas -lm -lpthread -rdynamic ";
+pub const ldflags_runtime_fmu: &'static str = " -Wl,--no-as-needed -Wl,--disable-new-dtags -lopenblas -lm -lpthread -lryu -rdynamic  -Wl,--no-undefined";
 
-pub const ldflags_runtime_fmu_static: &'static str = "-Wl,-Bstatic -lSimulationRuntimeFMI -Wl,-Bdynamic -llapack -lblas -lm -ldl -lpthread -lgfortran -lstdc++ -rdynamic ";
+pub const ldflags_runtime_fmu_static: &'static str = " -Wl,-Bstatic -lSimulationRuntimeFMI  -Wl,--no-as-needed -Wl,--disable-new-dtags -lopenblas -Wl,-Bdynamic -lryu -lm -lpthread -rdynamic  -Wl,--no-undefined";
 
 pub const corbaLibs: &'static str = "";
 
