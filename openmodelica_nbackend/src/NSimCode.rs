@@ -94,6 +94,7 @@ use openmodelica_simcode_types::SimCodeFunction as OldSimCodeFunction;
 use openmodelica_simcode_types::SimCodeFunction;
 use openmodelica_simcode_types::SimCodeVar;
 use openmodelica_simcode_util::SimCodeFunctionUtil as OldSimCodeFunctionUtil;
+use openmodelica_simcode_util::SimCodeUtilShared;
 use openmodelica_util::Error;
 use openmodelica_util::Flags;
 use openmodelica_util::StringUtil;
@@ -487,7 +488,7 @@ pub mod SimCode {
             inlineEquations = metamodelica::nil();
             directory = (ProgramUtil::getFileDir(AbsynUtil::pathToCref(name.clone())?, program.clone())?).clone();
             oldFunctionTree = ConvertDAE::convertFunctionTree(NFFlatten::FunctionTreeImpl::fromList(UnorderedMap::toList(funcMap.clone()), (std::sync::Arc::new(fnptr!(NFFlatten::FunctionTreeImpl::addConflictDefault, _, _, _)) as std::sync::Arc<dyn ::std::ops::Fn(_, _, _) -> Result<_> + 'static>))?)?;
-            (libs, libPaths, externalFunctionIncludes, includeDirs, recordDecls, functions, _) = OldSimCodeFunctionUtil::createFunctions(program.clone(), oldFunctionTree.clone())?;
+            (libs, libPaths, externalFunctionIncludes, includeDirs, recordDecls, functions, _) = SimCodeUtilShared::createFunctions(program.clone(), oldFunctionTree.clone())?;
             makefileParams = OldSimCodeFunctionUtil::createMakefileParams(includeDirs.clone(), libs.clone(), libPaths.clone(), false, false)?;
             fileName = (System::basename((AbsynUtil::classFilename(ProgramUtil::getPathedClassInProgram(name.clone(), program.clone(), false, false)?)?).clone())).clone();
             (linearLoops, nonlinearLoops, jacobians, simCodeIndices) = collectAlgebraicLoops(init.clone(), init_0.clone(), ode.clone(), algebraic.clone(), daeModeData.clone(), simCodeIndices.clone(), simcode_map.clone())?;
@@ -557,7 +558,7 @@ pub mod SimCode {
         let mut residualVars: Arc<metamodelica::List<Arc<SimVar::SimVar>>> = metamodelica::nil();
         modelInfo = ModelInfo::convert(simCode.modelInfo.clone())?;
         (zeroCrossings, relations, timeEvents) = EventInfo::convert(simCode.eventInfo.clone(), simCode.equation_map.clone())?;
-        (varToArrayIndexMapping, varToIndexMapping) = OldSimCodeFunctionUtil::createVarToArrayIndexMapping(modelInfo.clone())?;
+        (varToArrayIndexMapping, varToIndexMapping) = SimCodeUtilShared::createVarToArrayIndexMapping(modelInfo.clone())?;
         crefToSimVarHT = SimCodeUtil::convertSimCodeMap(simCode.simcode_map.clone())?;
         if isSome(simCode.daeModeData.clone()) {
             let __pa0 = ::match_deref::match_deref! { match &(simCode.daeModeData.clone()) {

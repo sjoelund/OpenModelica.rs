@@ -62,6 +62,7 @@ use openmodelica_simcode_types::HpcOmSimCode;
 use openmodelica_simcode_types::SimCode;
 use openmodelica_simcode_types::SimCodeVar;
 use openmodelica_simcode_util::SimCodeFunctionUtil;
+use openmodelica_simcode_util::SimCodeUtilShared;
 use openmodelica_susan::GraphML;
 use openmodelica_util::BaseHashTable;
 use openmodelica_util::Config;
@@ -1904,8 +1905,8 @@ fn convertCacheToVarArrayMapping(mut iCacheMap: CacheMap, mut iCacheLineSize: i3
             varArrayIndexMappingHashTable = HashTableCrIListArray::emptyHashTable();
             varIndexMappingHashTable = HashTableCrILst::emptyHashTable();
             currentVarIndices = arrayCreate(4, 1);
-            (currentVarIndices, varArrayIndexMappingHashTable, varIndexMappingHashTable) = SimCodeFunctionUtil::addVarToArrayIndexMappings(iStateVars.clone(), VARDATATYPE_FLOAT.clone(), currentVarIndices.clone(), varArrayIndexMappingHashTable.clone(), varIndexMappingHashTable.clone())?;
-            (currentVarIndices, varArrayIndexMappingHashTable, varIndexMappingHashTable) = SimCodeFunctionUtil::addVarToArrayIndexMappings(iDerivativeVars.clone(), VARDATATYPE_FLOAT.clone(), currentVarIndices.clone(), varArrayIndexMappingHashTable.clone(), varIndexMappingHashTable.clone())?;
+            (currentVarIndices, varArrayIndexMappingHashTable, varIndexMappingHashTable) = SimCodeUtilShared::addVarToArrayIndexMappings(iStateVars.clone(), VARDATATYPE_FLOAT.clone(), currentVarIndices.clone(), varArrayIndexMappingHashTable.clone(), varIndexMappingHashTable.clone())?;
+            (currentVarIndices, varArrayIndexMappingHashTable, varIndexMappingHashTable) = SimCodeUtilShared::addVarToArrayIndexMappings(iDerivativeVars.clone(), VARDATATYPE_FLOAT.clone(), currentVarIndices.clone(), varArrayIndexMappingHashTable.clone(), varIndexMappingHashTable.clone())?;
             stateAndStateDerSize = intAdd((iStateVars.clone().len() as i32), (iDerivativeVars.clone().len() as i32));
             if intEq(intMod(stateAndStateDerSize.clone(), maxNumElemsFloat.clone()), 0) {
                 {let _arr = currentVarIndices.clone(); _arr.borrow_mut()[(1-1) as usize] = stateAndStateDerSize.clone() + 1; _arr};
@@ -1927,14 +1928,14 @@ fn convertCacheToVarArrayMapping(mut iCacheMap: CacheMap, mut iCacheLineSize: i3
             {let _arr = currentVarIndices.clone(); _arr.borrow_mut()[(2-1) as usize] = intMul((cacheLinesInt.clone().len() as i32), maxNumElemsInt.clone()) + 1; _arr};
             {let _arr = currentVarIndices.clone(); _arr.borrow_mut()[(3-1) as usize] = intMul((cacheLinesBool.clone().len() as i32), maxNumElemsBool.clone()) + 1; _arr};
             {let _arr = currentVarIndices.clone(); _arr.borrow_mut()[(4-1) as usize] = 1; _arr};
-            (currentVarIndices, varArrayIndexMappingHashTable, varIndexMappingHashTable) = SimCodeFunctionUtil::addVarToArrayIndexMappings(notOptimizedVarsFloat.clone().reverse(), VARDATATYPE_FLOAT.clone(), currentVarIndices.clone(), varArrayIndexMappingHashTable.clone(), varIndexMappingHashTable.clone())?;
-            (currentVarIndices, varArrayIndexMappingHashTable, varIndexMappingHashTable) = SimCodeFunctionUtil::addVarToArrayIndexMappings(notOptimizedVarsInt.clone().reverse(), VARDATATYPE_INTEGER.clone(), currentVarIndices.clone(), varArrayIndexMappingHashTable.clone(), varIndexMappingHashTable.clone())?;
-            (currentVarIndices, varArrayIndexMappingHashTable, varIndexMappingHashTable) = SimCodeFunctionUtil::addVarToArrayIndexMappings(notOptimizedVarsBool.clone().reverse(), VARDATATYPE_BOOLEAN.clone(), currentVarIndices.clone(), varArrayIndexMappingHashTable.clone(), varIndexMappingHashTable.clone())?;
-            (currentVarIndices, varArrayIndexMappingHashTable, varIndexMappingHashTable) = SimCodeFunctionUtil::addVarToArrayIndexMappings(notOptimizedVarsString.clone().reverse(), VARDATATYPE_STRING.clone(), currentVarIndices.clone(), varArrayIndexMappingHashTable.clone(), varIndexMappingHashTable.clone())?;
-            (currentVarIndices, varArrayIndexMappingHashTable, varIndexMappingHashTable) = SimCodeFunctionUtil::addVarToArrayIndexMappings(iAliasVars.clone(), VARDATATYPE_FLOAT.clone(), currentVarIndices.clone(), varArrayIndexMappingHashTable.clone(), varIndexMappingHashTable.clone())?;
-            (currentVarIndices, varArrayIndexMappingHashTable, varIndexMappingHashTable) = SimCodeFunctionUtil::addVarToArrayIndexMappings(iIntAliasVars.clone(), VARDATATYPE_INTEGER.clone(), currentVarIndices.clone(), varArrayIndexMappingHashTable.clone(), varIndexMappingHashTable.clone())?;
-            (currentVarIndices, varArrayIndexMappingHashTable, varIndexMappingHashTable) = SimCodeFunctionUtil::addVarToArrayIndexMappings(iBoolAliasVars.clone(), VARDATATYPE_BOOLEAN.clone(), currentVarIndices.clone(), varArrayIndexMappingHashTable.clone(), varIndexMappingHashTable.clone())?;
-            (currentVarIndices, varArrayIndexMappingHashTable, varIndexMappingHashTable) = SimCodeFunctionUtil::addVarToArrayIndexMappings(iStringAliasVars.clone(), VARDATATYPE_STRING.clone(), currentVarIndices.clone(), varArrayIndexMappingHashTable.clone(), varIndexMappingHashTable.clone())?;
+            (currentVarIndices, varArrayIndexMappingHashTable, varIndexMappingHashTable) = SimCodeUtilShared::addVarToArrayIndexMappings(notOptimizedVarsFloat.clone().reverse(), VARDATATYPE_FLOAT.clone(), currentVarIndices.clone(), varArrayIndexMappingHashTable.clone(), varIndexMappingHashTable.clone())?;
+            (currentVarIndices, varArrayIndexMappingHashTable, varIndexMappingHashTable) = SimCodeUtilShared::addVarToArrayIndexMappings(notOptimizedVarsInt.clone().reverse(), VARDATATYPE_INTEGER.clone(), currentVarIndices.clone(), varArrayIndexMappingHashTable.clone(), varIndexMappingHashTable.clone())?;
+            (currentVarIndices, varArrayIndexMappingHashTable, varIndexMappingHashTable) = SimCodeUtilShared::addVarToArrayIndexMappings(notOptimizedVarsBool.clone().reverse(), VARDATATYPE_BOOLEAN.clone(), currentVarIndices.clone(), varArrayIndexMappingHashTable.clone(), varIndexMappingHashTable.clone())?;
+            (currentVarIndices, varArrayIndexMappingHashTable, varIndexMappingHashTable) = SimCodeUtilShared::addVarToArrayIndexMappings(notOptimizedVarsString.clone().reverse(), VARDATATYPE_STRING.clone(), currentVarIndices.clone(), varArrayIndexMappingHashTable.clone(), varIndexMappingHashTable.clone())?;
+            (currentVarIndices, varArrayIndexMappingHashTable, varIndexMappingHashTable) = SimCodeUtilShared::addVarToArrayIndexMappings(iAliasVars.clone(), VARDATATYPE_FLOAT.clone(), currentVarIndices.clone(), varArrayIndexMappingHashTable.clone(), varIndexMappingHashTable.clone())?;
+            (currentVarIndices, varArrayIndexMappingHashTable, varIndexMappingHashTable) = SimCodeUtilShared::addVarToArrayIndexMappings(iIntAliasVars.clone(), VARDATATYPE_INTEGER.clone(), currentVarIndices.clone(), varArrayIndexMappingHashTable.clone(), varIndexMappingHashTable.clone())?;
+            (currentVarIndices, varArrayIndexMappingHashTable, varIndexMappingHashTable) = SimCodeUtilShared::addVarToArrayIndexMappings(iBoolAliasVars.clone(), VARDATATYPE_BOOLEAN.clone(), currentVarIndices.clone(), varArrayIndexMappingHashTable.clone(), varIndexMappingHashTable.clone())?;
+            (currentVarIndices, varArrayIndexMappingHashTable, varIndexMappingHashTable) = SimCodeUtilShared::addVarToArrayIndexMappings(iStringAliasVars.clone(), VARDATATYPE_STRING.clone(), currentVarIndices.clone(), varArrayIndexMappingHashTable.clone(), varIndexMappingHashTable.clone())?;
             varSizeFloat = varSizeFloat.clone() + intMul((cacheLinesFloat.clone().len() as i32), maxNumElemsFloat.clone()) + (notOptimizedVarsFloat.clone().len() as i32);
             varSizeInt = intMul((cacheLinesInt.clone().len() as i32), maxNumElemsInt.clone()) + (notOptimizedVarsInt.clone().len() as i32);
             varSizeBool = intMul((cacheLinesBool.clone().len() as i32), maxNumElemsBool.clone()) + (notOptimizedVarsBool.clone().len() as i32);
@@ -1997,7 +1998,7 @@ fn addCacheLineEntryToVarArrayMapping(mut iCacheLineEntry: CacheLineEntry, mut i
             offset = iVarIdxOffsets.clone().borrow()[(iArrayIdx.clone()-1) as usize].clone();
             arrayPosition = intDiv(start.clone(), size.clone()) + offset.clone();
             currentVarIndices = arrayCreate(4, arrayPosition.clone());
-            (_, varArrayIndexMappingHashTable, varIndexMappingHashTable) = SimCodeFunctionUtil::addVarToArrayIndexMapping(iCacheVariables.clone().borrow()[((iCacheVariables.clone().borrow().len() as i32) - scVarIdx.clone() + 1-1) as usize].clone(), iArrayIdx.clone(), currentVarIndices.clone(), varArrayIndexMappingHashTable.clone(), varIndexMappingHashTable.clone())?;
+            (_, varArrayIndexMappingHashTable, varIndexMappingHashTable) = SimCodeUtilShared::addVarToArrayIndexMapping(iCacheVariables.clone().borrow()[((iCacheVariables.clone().borrow().len() as i32) - scVarIdx.clone() + 1-1) as usize].clone(), iArrayIdx.clone(), currentVarIndices.clone(), varArrayIndexMappingHashTable.clone(), varIndexMappingHashTable.clone())?;
             (varArrayIndexMappingHashTable.clone(), varIndexMappingHashTable.clone())
         },
         _ => {

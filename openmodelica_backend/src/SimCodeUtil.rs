@@ -104,6 +104,7 @@ use openmodelica_simcode_types::SimCode;
 use openmodelica_simcode_types::SimCodeFunction;
 use openmodelica_simcode_types::SimCodeVar;
 use openmodelica_simcode_util::SimCodeFunctionUtil;
+use openmodelica_simcode_util::SimCodeUtilShared;
 use openmodelica_susan::Tpl;
 use openmodelica_util::Autoconf;
 use openmodelica_util::AvlSetString;
@@ -695,7 +696,7 @@ pub fn createSimCode(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inInitDA
             modelInfo.varInfo = varInfo.clone();
         }
         backendMapping = unwrap_break_err!(setBackendVarMapping(inBackendDAE.clone(), crefToSimVarHT.clone(), modelInfo.clone(), backendMapping.clone()), '__try0);
-        (varToArrayIndexMapping, varToIndexMapping) = unwrap_break_err!(SimCodeFunctionUtil::createVarToArrayIndexMapping(modelInfo.clone()), '__try0);
+        (varToArrayIndexMapping, varToIndexMapping) = unwrap_break_err!(SimCodeUtilShared::createVarToArrayIndexMapping(modelInfo.clone()), '__try0);
         (crefToClockIndexHT, _) = unwrap_break_err!(List::fold(inBackendDAE.eqs.clone().reverse(), (std::sync::Arc::new(collectClockedVars) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), i32)) -> Result<((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), i32)> + 'static>), (HashTable::emptyHashTable(), 1)), '__try0);
         unwrap_break_err!(execStat((literal!("simCode: some other stuff during SimCode phase")).clone()), '__try0);
         if unwrap_break_err!(Config::simCodeTarget(), '__try0) != literal!("Cpp") {
@@ -9644,7 +9645,7 @@ fn rewriteIndexColumnMajor(mut inVars: Arc<metamodelica::List<SimCodeVar::SimVar
         subs = ComponentReference::crefLastSubs(var.name.clone())?;
         if (subs.clone().len() as i32) > 1 {
             arrayDimensions = List::map(var.numArrayElement.clone(), (std::sync::Arc::new(stringInt) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>))?;
-            elementIndex = SimCodeFunctionUtil::getScalarElementIndex(subs.clone(), arrayDimensions.clone());
+            elementIndex = SimCodeUtilShared::getScalarElementIndex(subs.clone(), arrayDimensions.clone());
             var.index = index.clone() - elementIndex.clone() + convertIndexToColumnMajor(elementIndex.clone(), arrayDimensions.clone())?;
         } else {
             var.index = index.clone();
@@ -9686,10 +9687,10 @@ fn setVariableIndexHelper2(mut var: SimCodeVar::SimVar, mut tpl: (i32, i32)) -> 
     let mut fmi_index: i32 = 0;
     (index, fmi_index) = tpl.clone();
     var.variable_index = Some(index.clone());
-    index = index.clone() + SimCodeFunctionUtil::getNumElems(var.clone())?;
+    index = index.clone() + SimCodeUtilShared::getNumElems(var.clone())?;
     if isSome(var.exportVar.clone()) {
         var.fmi_index = Some(fmi_index.clone());
-        fmi_index = fmi_index.clone() + SimCodeFunctionUtil::getNumElems(var.clone())?;
+        fmi_index = fmi_index.clone() + SimCodeUtilShared::getNumElems(var.clone())?;
     } else {
         var.fmi_index = None;
     }
@@ -12350,7 +12351,7 @@ fn getVarIndexInfosByMapping(mut iVarToArrayIndexMapping: (metamodelica::Array<A
         } else {
             arraySize = (varIndices.clone().borrow().len() as i32);
         }
-        concreteVarIndex = SimCodeFunctionUtil::getScalarElementIndex(arraySubscripts.clone(), arrayDimensions.clone());
+        concreteVarIndex = SimCodeUtilShared::getScalarElementIndex(arraySubscripts.clone(), arrayDimensions.clone());
         toColumnMajor = iColumnMajor.clone() && (arrayDimensions.clone().len() as i32) > 1;
         if toColumnMajor.clone() {
             concreteVarIndex = convertIndexToColumnMajor(concreteVarIndex.clone(), arrayDimensions.clone())?;
@@ -14447,7 +14448,7 @@ pub fn getStateSimVarIndexFromIndex(mut inStateVars: Arc<metamodelica::List<SimC
 
 fn getNumScalars(mut vars: Arc<metamodelica::List<SimCodeVar::SimVar>>) -> Result<i32> {
     let mut numScalars: i32 = 0;
-    numScalars = List::applyAndFold(vars.clone(), (std::sync::Arc::new(fnptr!(intAdd, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), (std::sync::Arc::new(SimCodeFunctionUtil::getNumElems) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar) -> Result<i32> + 'static>), 0)?;
+    numScalars = List::applyAndFold(vars.clone(), (std::sync::Arc::new(fnptr!(intAdd, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), (std::sync::Arc::new(SimCodeUtilShared::getNumElems) as std::sync::Arc<dyn ::std::ops::Fn(SimCodeVar::SimVar) -> Result<i32> + 'static>), 0)?;
     Ok(numScalars)
 }
 
@@ -15058,7 +15059,7 @@ pub fn simVarFromHT(mut inCref: Arc<DAE::ComponentRef>, mut crefToSimVarHT: (met
             }
             sv.variable_index = (match sv.variable_index.clone() {
         Some(mut index) => {
-            Some(index.clone() + SimCodeFunctionUtil::getScalarElementIndex(subs.clone(), unwrap_break_err!(List::map(sv.numArrayElement.clone(), (std::sync::Arc::new(stringInt) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>)), '__try0)) - 1)
+            Some(index.clone() + SimCodeUtilShared::getScalarElementIndex(subs.clone(), unwrap_break_err!(List::map(sv.numArrayElement.clone(), (std::sync::Arc::new(stringInt) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>)), '__try0)) - 1)
         },
         _ => {
             sv.variable_index.clone()
@@ -15066,7 +15067,7 @@ pub fn simVarFromHT(mut inCref: Arc<DAE::ComponentRef>, mut crefToSimVarHT: (met
     });
             sv.fmi_index = (match sv.fmi_index.clone() {
         Some(mut fmiIndex) => {
-            Some(fmiIndex.clone() + SimCodeFunctionUtil::getScalarElementIndex(subs.clone(), unwrap_break_err!(List::map(sv.numArrayElement.clone(), (std::sync::Arc::new(stringInt) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>)), '__try0)) - 1)
+            Some(fmiIndex.clone() + SimCodeUtilShared::getScalarElementIndex(subs.clone(), unwrap_break_err!(List::map(sv.numArrayElement.clone(), (std::sync::Arc::new(stringInt) as std::sync::Arc<dyn ::std::ops::Fn(ArcStr) -> Result<i32> + 'static>)), '__try0)) - 1)
         },
         _ => {
             sv.fmi_index.clone()

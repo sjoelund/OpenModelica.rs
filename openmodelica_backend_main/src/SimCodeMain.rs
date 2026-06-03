@@ -104,6 +104,7 @@ use openmodelica_simcode_types::SimCode;
 use openmodelica_simcode_types::SimCodeFunction;
 use openmodelica_simcode_types::SimCodeVar;
 use openmodelica_simcode_util::SimCodeFunctionUtil;
+use openmodelica_simcode_util::SimCodeUtilShared;
 use openmodelica_susan::Tpl;
 use openmodelica_util::Autoconf;
 use openmodelica_util::AvlSetString;
@@ -172,7 +173,7 @@ fn generateModelCodeFMU(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inIni
     } else {
         fileDir = (ProgramUtil::getFileDir(a_cref.clone(), p.clone())?).clone();
     }
-    (libs, libPaths, includes, includeDirs, recordDecls, functions, literals) = SimCodeFunctionUtil::createFunctions(p.clone(), inBackendDAE.shared.functionTree.clone())?;
+    (libs, libPaths, includes, includeDirs, recordDecls, functions, literals) = SimCodeUtilShared::createFunctions(p.clone(), inBackendDAE.shared.functionTree.clone())?;
     simCode = createSimCode(inBackendDAE.clone(), inInitDAE.clone(), inInitDAE_lambda0.clone(), None, inRemovedInitialEquationLst.clone(), className.clone(), (filenamePrefix.clone()).clone(), (fileDir.clone()).clone(), functions.clone(), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), p.clone(), simSettings.clone(), recordDecls.clone(), literals.clone(), Arc::new(Absyn::FunctionArgs::FUNCTIONARGS { args: metamodelica::nil(), argNames: metamodelica::nil() }), true, (FMUVersion.clone()).clone(), (fmuTargetName.clone()).clone(), inFMIDer.clone())?;
     timeSimCode = System::realtimeTock(ClockIndexes::RT_CLOCK_SIMCODE.clone())?;
     ExecStat::execStat((literal!("SimCode")).clone())?;
@@ -202,7 +203,7 @@ fn generateModelCodeXML(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inIni
     System::realtimeTick(ClockIndexes::RT_CLOCK_SIMCODE.clone())?;
     a_cref = AbsynUtil::pathToCref(className.clone())?;
     fileDir = (ProgramUtil::getFileDir(a_cref.clone(), p.clone())?).clone();
-    (libs, libPaths, includes, includeDirs, recordDecls, functions, literals) = SimCodeFunctionUtil::createFunctions(p.clone(), inBackendDAE.shared.functionTree.clone())?;
+    (libs, libPaths, includes, includeDirs, recordDecls, functions, literals) = SimCodeUtilShared::createFunctions(p.clone(), inBackendDAE.shared.functionTree.clone())?;
     (simCode, _) = SimCodeUtil::createSimCode(inBackendDAE.clone(), inInitDAE.clone(), inInitDAE_lambda0.clone(), None, inRemovedInitialEquationLst.clone(), className.clone(), (filenamePrefix.clone()).clone(), (fileDir.clone()).clone(), functions.clone(), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), p.clone(), simSettingsOpt.clone(), recordDecls.clone(), literals.clone(), Arc::new(Absyn::FunctionArgs::FUNCTIONARGS { args: metamodelica::nil(), argNames: metamodelica::nil() }), false, (literal!("")).clone(), (literal!("")).clone(), metamodelica::nil())?;
     timeSimCode = System::realtimeTock(ClockIndexes::RT_CLOCK_SIMCODE.clone())?;
     ExecStat::execStat((literal!("SimCode")).clone())?;
@@ -235,7 +236,7 @@ pub fn generateModelCode(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inIn
     System::realtimeTick(ClockIndexes::RT_CLOCK_SIMCODE.clone())?;
     a_cref = AbsynUtil::pathToCref(className.clone())?;
     fileDir = (ProgramUtil::getFileDir(a_cref.clone(), p.clone())?).clone();
-    (libs, libPaths, includes, includeDirs, recordDecls, functions, literals) = SimCodeFunctionUtil::createFunctions(p.clone(), inBackendDAE.shared.functionTree.clone())?;
+    (libs, libPaths, includes, includeDirs, recordDecls, functions, literals) = SimCodeUtilShared::createFunctions(p.clone(), inBackendDAE.shared.functionTree.clone())?;
     simCode = createSimCode(inBackendDAE.clone(), inInitDAE.clone(), inInitDAE_lambda0.clone(), inInlineData.clone(), inRemovedInitialEquationLst.clone(), className.clone(), (filenamePrefix.clone()).clone(), (fileDir.clone()).clone(), functions.clone(), includes.clone(), includeDirs.clone(), libs.clone(), libPaths.clone(), p.clone(), simSettingsOpt.clone(), recordDecls.clone(), literals.clone(), args.clone(), false, (literal!("")).clone(), (literal!("")).clone(), inFMIDer.clone())?;
     timeSimCode = System::realtimeTock(ClockIndexes::RT_CLOCK_SIMCODE.clone())?;
     ExecStat::execStat((literal!("SimCode")).clone())?;
@@ -1379,7 +1380,7 @@ fn generateModelCodeDAE(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inIni
     System::realtimeTick(ClockIndexes::RT_CLOCK_SIMCODE.clone())?;
     a_cref = AbsynUtil::pathToCref(className.clone())?;
     fileDir = (ProgramUtil::getFileDir(a_cref.clone(), p.clone())?).clone();
-    (libs, libPaths, includes, includeDirs, recordDecls, functions, literals) = SimCodeFunctionUtil::createFunctions(p.clone(), inBackendDAE.shared.functionTree.clone())?;
+    (libs, libPaths, includes, includeDirs, recordDecls, functions, literals) = SimCodeUtilShared::createFunctions(p.clone(), inBackendDAE.shared.functionTree.clone())?;
     extObjInfo = SimCodeUtil::createExtObjInfo(inBackendDAE.shared.clone())?;
     makefileParams = SimCodeFunctionUtil::createMakefileParams(includeDirs.clone(), libs.clone(), libPaths.clone(), false, false)?;
     (delayedExps, maxDelayedExpIndex) = SimCodeUtil::extractDelayedExpressions(inBackendDAE.clone())?;
@@ -1534,7 +1535,7 @@ fn generateModelCodeDAE(mut inBackendDAE: Arc<BackendDAE::BackendDAE>, mut inIni
     daeModeData = Some(SimCode::DaeModeData { daeEquations: daeEquations.clone(), sparsityPattern: daeModeSP.clone(), residualVars: residualVars.clone(), algebraicVars: algebraicStateVars.clone(), auxiliaryVars: auxiliaryVars.clone(), modeCreated: daeModeConf.clone() });
     modelInfo = SimCodeUtil::addNumEqns(modelInfo.clone(), uniqueEqIndex.clone() - (jacobianEquations.clone().len() as i32));
     if stringEqual((Config::simCodeTarget()?).clone(), (literal!("Cpp")).clone()) {
-        (varToArrayIndexMapping, varToIndexMapping) = SimCodeFunctionUtil::createVarToArrayIndexMapping(modelInfo.clone())?;
+        (varToArrayIndexMapping, varToIndexMapping) = SimCodeUtilShared::createVarToArrayIndexMapping(modelInfo.clone())?;
         (crefToClockIndexHT, _) = List::fold(inBackendDAE.eqs.clone().reverse(), (std::sync::Arc::new(SimCodeUtil::collectClockedVars) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::EqSystem>, ((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), i32)) -> Result<((metamodelica::Array<Arc<metamodelica::List<(Arc<DAE::ComponentRef>, i32)>>>, (i32, i32, metamodelica::Array<Option<(Arc<DAE::ComponentRef>, i32)>>), i32, (Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<i32> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>, Arc<DAE::ComponentRef>) -> Result<bool> + 'static>, Arc<dyn ::std::ops::Fn(Arc<DAE::ComponentRef>) -> Result<ArcStr> + 'static>, Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>)), i32)> + 'static>), (HashTable::emptyHashTable(), 1))?;
     } else {
         varToArrayIndexMapping = HashTableCrIListArray::emptyHashTable();
