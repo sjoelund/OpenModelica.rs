@@ -641,7 +641,7 @@ fn getDiscAndContEqns(mut inAllVars: Arc<metamodelica::List<BackendDAE::Var>>, m
         eqnIndex = List::unique(({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in (eqnIndex.clone()).into_iter().cloned() {
-            let __x = mapEqnScalarArray.borrow()[(i.clone()-1) as usize].clone();
+            let __x = ({let __elt = mapEqnScalarArray.borrow()[(i.clone()-1) as usize].clone(); __elt});
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -655,7 +655,7 @@ fn getDiscAndContEqns(mut inAllVars: Arc<metamodelica::List<BackendDAE::Var>>, m
         eqnIndex = List::unique(({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in (eqnIndex.clone()).into_iter().cloned() {
-            let __x = mapEqnScalarArray.borrow()[(i.clone()-1) as usize].clone();
+            let __x = ({let __elt = mapEqnScalarArray.borrow()[(i.clone()-1) as usize].clone(); __elt});
             __acc = cons(__x, __acc);
         }
         __acc.reverse()

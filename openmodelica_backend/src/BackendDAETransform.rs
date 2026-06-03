@@ -117,12 +117,12 @@ pub fn eqnAssignmentNonScalar(mut mapEqnIncRow: metamodelica::Array<Arc<metamode
     let mut vlst: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut acc: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     for mut i in 1..=metamodelica::arrayLength(mapEqnIncRow.clone()) {
-        elst = mapEqnIncRow.borrow()[(i.clone()-1) as usize].clone();
+        elst = ({let __elt = mapEqnIncRow.borrow()[(i.clone()-1) as usize].clone(); __elt});
         vlst = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut e in (elst.clone()).into_iter().cloned() {
-            if !(ass2.clone().borrow()[(e.clone()-1) as usize].clone() > 0) { continue; }
-            let __x = ass2.clone().borrow()[(e.clone()-1) as usize].clone();
+            if !(({let __elt = ass2.clone().borrow()[(e.clone()-1) as usize].clone(); __elt}) > 0) { continue; }
+            let __x = ({let __elt = ass2.clone().borrow()[(e.clone()-1) as usize].clone(); __elt});
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -137,7 +137,7 @@ pub fn varAssignmentNonScalar(mut ass1: metamodelica::Array<i32>, mut mapIncRowE
     let mut outAcc: metamodelica::Array<i32> = Default::default();
     outAcc = metamodelica::arrayCreate(metamodelica::arrayLength(ass1.clone()), -1);
     for mut i in 1..=metamodelica::arrayLength(ass1.clone()) {
-        unsafe { metamodelica::Dangerous::arrayInitSlot(outAcc.clone(), i.clone(), if (metamodelica::Dangerous::arrayGetNoBoundsChecking(ass1.clone(), i.clone()) > 0) {mapIncRowEqn.borrow()[(metamodelica::Dangerous::arrayGetNoBoundsChecking(ass1.clone(), i.clone())-1) as usize].clone()} else {-1}) };
+        unsafe { metamodelica::Dangerous::arrayInitSlot(outAcc.clone(), i.clone(), if (metamodelica::Dangerous::arrayGetNoBoundsChecking(ass1.clone(), i.clone()) > 0) {({let __elt = mapIncRowEqn.borrow()[(metamodelica::Dangerous::arrayGetNoBoundsChecking(ass1.clone(), i.clone())-1) as usize].clone(); __elt})} else {-1}) };
     }
     outAcc
 }
@@ -199,7 +199,7 @@ fn analyseStrongComponentScalar(mut inComp: Arc<metamodelica::List<i32>>, mut sy
 
 fn uniqueComp(mut c: i32, mut mark: i32, mut markarray: metamodelica::Array<i32>, mut iAcc: Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut oAcc: Arc<metamodelica::List<i32>> = iAcc.clone();
-    if mark.clone() != markarray.borrow()[(c.clone()-1) as usize].clone() {
+    if mark.clone() != ({let __elt = markarray.borrow()[(c.clone()-1) as usize].clone(); __elt}) {
         {let _arr = markarray.clone(); _arr.borrow_mut()[(c.clone()-1) as usize] = mark.clone(); _arr};
         oAcc = metamodelica::cons(c.clone(), iAcc.clone());
     }
@@ -323,10 +323,10 @@ fn analyseStrongComponentBlock(mut inComp: Arc<metamodelica::List<i32>>, mut inE
                     for mut c in &*comp.clone() {
                         let mut c = c.clone();
                         indxdisc_var = metamodelica::nil();
-                        let __range1 = &*mapEqnIncRow.borrow()[(c.clone()-1) as usize].clone();
+                        let __range1 = &*({let __elt = mapEqnIncRow.borrow()[(c.clone()-1) as usize].clone(); __elt});
                         for mut j in __range1 {
                             let mut j = j.clone();
-                            indxdisc_var = metamodelica::cons(ass2.borrow()[(j.clone()-1) as usize].clone(), indxdisc_var.clone());
+                            indxdisc_var = metamodelica::cons(({let __elt = ass2.borrow()[(j.clone()-1) as usize].clone(); __elt}), indxdisc_var.clone());
                         }
                         algorithmComp = metamodelica::cons(Arc::new(BackendDAE::StrongComponent::SINGLEALGORITHM { eqn: c.clone(), vars: indxdisc_var.clone() }), algorithmComp.clone());
                     }

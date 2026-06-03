@@ -968,7 +968,7 @@ fn addPropagationEquations(mut inSem: FlatSmSemantics, mut enclosingStateCrefOpt
         } };
         enclosingSem = __pa1.clone();
         enclosingComps = enclosingSem.smComps.clone();
-        enclosingInitStateRef = enclosingComps.clone().borrow()[(1-1) as usize].clone();
+        enclosingInitStateRef = ({let __elt = enclosingComps.clone().borrow()[(1-1) as usize].clone(); __elt});
         enclosingPreRef = makeSMSPrefix(enclosingInitStateRef.clone())?;
         posOfEnclosing = 1;
         let __range2 = &*Arc::new(enclosingComps.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());
@@ -986,7 +986,7 @@ fn addPropagationEquations(mut inSem: FlatSmSemantics, mut enclosingStateCrefOpt
         peqs = metamodelica::cons(makeEq(makeCrefExp(activeRef.clone(), Arc::new(crate::NFType::BOOLEAN)), makeRelationEq(makeCrefExp(enclosingActiveStateRef.clone(), Arc::new(crate::NFType::INTEGER)), Arc::new(Expression::NFExpression::INTEGER { value: posOfEnclosing.clone() }), Arc::new(crate::NFType::INTEGER)), Arc::new(crate::NFType::BOOLEAN)), peqs.clone());
     }
     for mut j in 1..=nStates.clone() {
-        stateRef = inSem.smComps.clone().borrow()[(j.clone()-1) as usize].clone();
+        stateRef = ({let __elt = inSem.smComps.clone().borrow()[(j.clone()-1) as usize].clone(); __elt});
         (activePlotVar, activePlotEq) = createActiveIndicator(stateRef.clone(), preRef.clone(), j.clone())?;
         pvars = metamodelica::cons(activePlotVar.clone(), pvars.clone());
         peqs = metamodelica::cons(activePlotEq.clone(), peqs.clone());
@@ -1039,7 +1039,7 @@ fn elabXInStateOps(mut sem: FlatSmSemantics, mut enclosingStateCrefOpt: Option<A
         curImmediate = __pa3.clone();
         curTo = __pa4.clone();
         curFrom = __pa5.clone();
-        stateRef = sem.smComps.clone().borrow()[(curFrom.clone()-1) as usize].clone();
+        stateRef = ({let __elt = sem.smComps.clone().borrow()[(curFrom.clone()-1) as usize].clone(); __elt});
         substTickExp = makeCrefExp(qCref((literal!("$ticksInState")).clone(), Arc::new(crate::NFType::INTEGER), metamodelica::nil(), stateRef.clone())?, Arc::new(crate::NFType::INTEGER));
         (c4, found) = subsXInState(c3.clone(), (literal!("ticksInState")).clone(), substTickExp.clone())?;
         if found.clone() && isSome(enclosingStateCrefOpt.clone()) {
@@ -1050,7 +1050,7 @@ fn elabXInStateOps(mut sem: FlatSmSemantics, mut enclosingStateCrefOpt: Option<A
             sem.eqs = ({
         let mut __acc: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
         for mut eq in (sem.eqs.clone()).into_iter().cloned() {
-            let __x = smeqsSubsXInState(eq.clone(), sem.smComps.clone().borrow()[(1-1) as usize].clone(), i.clone(), (sem.t.clone().len() as i32), substTickExp.clone(), (literal!("ticksInState")).clone())?;
+            let __x = smeqsSubsXInState(eq.clone(), ({let __elt = sem.smComps.clone().borrow()[(1-1) as usize].clone(); __elt}), i.clone(), (sem.t.clone().len() as i32), substTickExp.clone(), (literal!("ticksInState")).clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -1066,7 +1066,7 @@ fn elabXInStateOps(mut sem: FlatSmSemantics, mut enclosingStateCrefOpt: Option<A
             sem.eqs = ({
         let mut __acc: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = metamodelica::nil();
         for mut eq in (sem.eqs.clone()).into_iter().cloned() {
-            let __x = smeqsSubsXInState(eq.clone(), sem.smComps.clone().borrow()[(1-1) as usize].clone(), i.clone(), (sem.t.clone().len() as i32), substTimeExp.clone(), (literal!("timeInState")).clone())?;
+            let __x = smeqsSubsXInState(eq.clone(), ({let __elt = sem.smComps.clone().borrow()[(1-1) as usize].clone(); __elt}), i.clone(), (sem.t.clone().len() as i32), substTimeExp.clone(), (literal!("timeInState")).clone())?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -1275,7 +1275,7 @@ fn createResetEquation(mut lhsCref: Arc<ComponentRef::NFComponentRef>, mut lhsTy
     let mut i: i32 = 0;
     let mut nStates: i32 = 0;
     let mut tArrayBool: Arc<Type::NFType> = Arc::new(Type::ANY);
-    initStateRef = sem.smComps.clone().borrow()[(1-1) as usize].clone();
+    initStateRef = ({let __elt = sem.smComps.clone().borrow()[(1-1) as usize].clone(); __elt});
     preRef = makeSMSPrefix(initStateRef.clone())?;
     i = 1;
     let __range0 = &*Arc::new(sem.smComps.clone().borrow().iter().cloned().collect::<metamodelica::List<_>>());

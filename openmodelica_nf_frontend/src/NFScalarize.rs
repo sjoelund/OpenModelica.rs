@@ -336,8 +336,8 @@ pub fn scalarizeComplexVariable(mut var: Arc<Variable::NFVariable>, mut vars: Ar
                 elem_var = var.clone();
                 assign_field!(
                     elem_var.name = ComponentRef::prepend(elem_var.name.clone(), ComponentRef::rename((name.clone()).clone(), elem_var.name.clone())?)?,
-                    elem_var.backendinfo = BackendInfo::setAttributes(elem_var.backendinfo.clone(), var_field!((**attr).childrenAttr, VariableAttributes::VariableAttributes::VAR_ATTR_RECORD).borrow()[(index.clone()-1) as usize].clone(), var.backendinfo.annotations.clone()),
-                    elem_var.ty = VariableAttributes::elemType(var_field!((**attr).childrenAttr, VariableAttributes::VariableAttributes::VAR_ATTR_RECORD).borrow()[(index.clone()-1) as usize].clone())?,
+                    elem_var.backendinfo = BackendInfo::setAttributes(elem_var.backendinfo.clone(), ({let __elt = var_field!((**attr).childrenAttr, VariableAttributes::VariableAttributes::VAR_ATTR_RECORD).borrow()[(index.clone()-1) as usize].clone(); __elt}), var.backendinfo.annotations.clone()),
+                    elem_var.ty = VariableAttributes::elemType(({let __elt = var_field!((**attr).childrenAttr, VariableAttributes::VariableAttributes::VAR_ATTR_RECORD).borrow()[(index.clone()-1) as usize].clone(); __elt}))?,
                     elem_var.name = ComponentRef::setNodeType(elem_var.ty.clone(), elem_var.name.clone())
                 );
                 vars = metamodelica::cons(elem_var.clone(), vars.clone());

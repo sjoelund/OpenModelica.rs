@@ -135,7 +135,7 @@ pub fn multiIntervalFromSubscripts(mut subs: Arc<metamodelica::List<Arc<Subscrip
             let mut s = s.clone();
             sub_exp = evalCrefs(Subscript::toExp(s.clone())?)?;
             int = intervalFromExp(sub_exp.clone())?;
-            aux_lo = SBInterval::lowerBound(miv.borrow()[(index.clone()-1) as usize].clone()) - 1;
+            aux_lo = SBInterval::lowerBound(({let __elt = miv.borrow()[(index.clone()-1) as usize].clone(); __elt})) - 1;
             int = SBInterval::new(aux_lo.clone() + SBInterval::lowerBound(int.clone()), SBInterval::stepValue(int.clone()), aux_lo.clone() + SBInterval::upperBound(int.clone()));
             if !(SBInterval::isEmpty(int.clone())) {
                 {
@@ -149,7 +149,7 @@ pub fn multiIntervalFromSubscripts(mut subs: Arc<metamodelica::List<Arc<Subscrip
             index = index.clone() + 1;
         }
         for mut i in (subs.clone().len() as i32) + 1..=metamodelica::arrayLength(mi.clone()) {
-            aux_lo = SBInterval::lowerBound(miv.borrow()[(i.clone()-1) as usize].clone());
+            aux_lo = SBInterval::lowerBound(({let __elt = miv.borrow()[(i.clone()-1) as usize].clone(); __elt}));
             {
                 let __cell1 = SBInterval::new(aux_lo.clone(), 1, aux_lo.clone());
                 mi.clone().borrow_mut()[(index.clone()-1) as usize] = __cell1;
@@ -318,11 +318,11 @@ pub fn linearMapFromIntervals(mut d1: i32, mut d2: i32, mut mi1: Arc<SBMultiInte
     g2 = metamodelica::arrayCreate(sz.clone(), metamodelica::OrderedFloat(0.0_f64));
     o1 = metamodelica::arrayCreate(sz.clone(), metamodelica::OrderedFloat(0.0_f64));
     o2 = metamodelica::arrayCreate(sz.clone(), metamodelica::OrderedFloat(0.0_f64));
-    mi = metamodelica::arrayCreate(sz.clone(), ints1.borrow()[(1-1) as usize].clone());
+    mi = metamodelica::arrayCreate(sz.clone(), ({let __elt = ints1.borrow()[(1-1) as usize].clone(); __elt}));
     new_ec = Vector::new(0);
     for mut i in 1..=sz.clone() {
-        sz1 = SBInterval::size(ints1.borrow()[(i.clone()-1) as usize].clone());
-        sz2 = SBInterval::size(ints2.borrow()[(i.clone()-1) as usize].clone());
+        sz1 = SBInterval::size(({let __elt = ints1.borrow()[(i.clone()-1) as usize].clone(); __elt}));
+        sz2 = SBInterval::size(({let __elt = ints2.borrow()[(i.clone()-1) as usize].clone(); __elt}));
         if sz1.clone() != sz2.clone() && sz1.clone() != 1 && sz2.clone() != 1 {
             Error::assertion(false, ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NFSBGraphUtil.linearMapFromIntervals")); __mm_s.push_str(&*literal!(" got incompatible connect")); ArcStr::from(__mm_s) }).clone(), metamodelica::sourceInfo!())?;
         }
@@ -332,8 +332,8 @@ pub fn linearMapFromIntervals(mut d1: i32, mut d2: i32, mut mi1: Arc<SBMultiInte
             let __cell0 = SBInterval::new(aux_ec.clone(), 1, aux_ec.clone() + count.clone() - 1);
             unsafe { metamodelica::Dangerous::arrayInitSlot(mi.clone().clone(), i.clone(), __cell0); }
         }
-        i1 = ints1.borrow()[(i.clone()-1) as usize].clone();
-        i2 = ints2.borrow()[(i.clone()-1) as usize].clone();
+        i1 = ({let __elt = ints1.borrow()[(i.clone()-1) as usize].clone(); __elt});
+        i2 = ({let __elt = ints2.borrow()[(i.clone()-1) as usize].clone(); __elt});
         if sz1.clone() == 1 {
             {
                 let __cell1 = metamodelica::OrderedFloat(0.0_f64);

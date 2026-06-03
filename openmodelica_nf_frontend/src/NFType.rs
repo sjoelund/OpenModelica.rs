@@ -399,7 +399,7 @@ pub fn removeSizeOneArraysAndRecords(mut ty: Arc<NFType>) -> Result<Arc<NFType>>
             if (var_field!((*ty).dimensions, NFType::ARRAY).clone().is_empty()) {removeSizeOneArraysAndRecords(var_field!((*ty).elementType, NFType::ARRAY).clone())?} else {ty.clone()}
         },
         Deref @ COMPLEX { complexTy: Deref @ ComplexType::RECORD { fields, .. }, .. } if (metamodelica::arrayLength(fields.clone()) == 1) => {
-            removeSizeOneArraysAndRecords(lookupRecordFieldType((Record::Field::name(fields.borrow()[(1-1) as usize].clone())?).clone(), ty.clone())?)?
+            removeSizeOneArraysAndRecords(lookupRecordFieldType((Record::Field::name(({let __elt = fields.borrow()[(1-1) as usize].clone(); __elt}))?).clone(), ty.clone())?)?
         },
         _ => {
             ty.clone()
@@ -871,7 +871,7 @@ pub fn applyToDims(mut ty: Arc<NFType>, mut func: Arc<dyn ::std::ops::Fn(Arc<Dim
         },
         Deref @ UNTYPED { .. } => {
             for mut i in 1..=metamodelica::arrayLength(var_field!((*ty).dimensions, NFType::UNTYPED).clone()) {
-                {let _arr = var_field!((*ty).dimensions, NFType::UNTYPED).clone(); let _val = func(var_field!((*ty).dimensions, NFType::UNTYPED).borrow()[(i.clone()-1) as usize].clone())?; _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+                {let _arr = var_field!((*ty).dimensions, NFType::UNTYPED).clone(); let _val = func(({let __elt = var_field!((*ty).dimensions, NFType::UNTYPED).borrow()[(i.clone()-1) as usize].clone(); __elt}))?; _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
             }
             ty.clone()
         },
@@ -1450,7 +1450,7 @@ pub fn setRecordFields(mut field_lst: Arc<metamodelica::List<Arc<Record::Field::
 
 pub fn updateRecordFieldsIndexMap(mut fields: metamodelica::Array<Arc<Record::Field::Field>>, mut indexMap: Arc<UnorderedMap::UnorderedMap<ArcStr, i32>>) -> Result<()> {
     for mut i in 1..=metamodelica::arrayLength(fields.clone()) {
-        UnorderedMap::add((Record::Field::name(fields.borrow()[(i.clone()-1) as usize].clone())?).clone(), i.clone(), indexMap.clone())?;
+        UnorderedMap::add((Record::Field::name(({let __elt = fields.borrow()[(i.clone()-1) as usize].clone(); __elt}))?).clone(), i.clone(), indexMap.clone())?;
     }
     Ok(())
 }

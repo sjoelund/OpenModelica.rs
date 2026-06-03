@@ -428,7 +428,7 @@ fn updateDeducedUnits2(mut elt: Arc<DAE::Element>, mut vec: metamodelica::Array<
                     let mut unit: UnitAbsyn::Unit = UnitAbsyn::Unit::UNSPECIFIED;
                     let mut varOpt = (*varOpt).clone();
                     indx = BaseHashTable::get(cr.clone(), ht.clone())?;
-                    let __pa0 = ::match_deref::match_deref! { match &(vec.borrow()[(indx.clone()-1) as usize].clone()) {
+                    let __pa0 = ::match_deref::match_deref! { match &(({let __elt = vec.borrow()[(indx.clone()-1) as usize].clone(); __elt})) {
                         Some(__pa0) => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };

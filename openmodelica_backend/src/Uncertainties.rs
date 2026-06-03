@@ -3339,7 +3339,7 @@ fn eliminateVariablesDAE2(mut ieqns: Arc<metamodelica::List<Arc<BackendDAE::Equa
                         _ => bail!("pattern mismatch"),
                     } };
                     e = __pa0.clone();
-                    varIndexList = m.borrow()[(eqnIndex.clone()-1) as usize].clone();
+                    varIndexList = ({let __elt = m.borrow()[(eqnIndex.clone()-1) as usize].clone(); __elt});
                     let __pa2 = ::match_deref::match_deref! { match &(List::intersectionOnTrue(varIndexList.clone(), elimVarIndexList.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?) {
                         Deref @ metamodelica::List::Cons { head: __pa2, tail: _ } => __pa2.clone(),
                         _ => bail!("pattern mismatch"),

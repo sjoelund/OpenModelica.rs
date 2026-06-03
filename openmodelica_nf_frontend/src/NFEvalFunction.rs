@@ -747,7 +747,7 @@ fn assignArrayElement(mut arrayExp: Arc<Expression::NFExpression>, mut subscript
             if rest_subs.clone().is_empty() {
                 {let _arr = var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone(); _arr.borrow_mut()[(idx.clone()-1) as usize] = value.clone(); _arr};
             } else {
-                {let _arr = var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone(); let _val = assignArrayElement(var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone().borrow()[(idx.clone()-1) as usize].clone(), rest_subs.clone(), value.clone())?; _arr.borrow_mut()[(idx.clone()-1) as usize] = _val; _arr};
+                {let _arr = var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone(); let _val = assignArrayElement(({let __elt = var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone().borrow()[(idx.clone()-1) as usize].clone(); __elt}), rest_subs.clone(), value.clone())?; _arr.borrow_mut()[(idx.clone()-1) as usize] = _val; _arr};
             }
             arrayExp.clone()
         },
@@ -770,7 +770,7 @@ fn assignArrayElement(mut arrayExp: Arc<Expression::NFExpression>, mut subscript
                     sub = metamodelica::Dangerous::arrayGetNoBoundsChecking(subs.clone(), i.clone());
                     val = metamodelica::Dangerous::arrayGetNoBoundsChecking(vals.clone(), i.clone());
                     idx = Expression::toInteger(sub.clone())?;
-                    {let _arr = var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone(); let _val = assignArrayElement(var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone().borrow()[(idx.clone()-1) as usize].clone(), rest_subs.clone(), val.clone())?; _arr.borrow_mut()[(idx.clone()-1) as usize] = _val; _arr};
+                    {let _arr = var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone(); let _val = assignArrayElement(({let __elt = var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone().borrow()[(idx.clone()-1) as usize].clone(); __elt}), rest_subs.clone(), val.clone())?; _arr.borrow_mut()[(idx.clone()-1) as usize] = _val; _arr};
                 }
             }
             arrayExp.clone()

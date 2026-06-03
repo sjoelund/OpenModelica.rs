@@ -562,7 +562,7 @@ pub mod VariableAttributes {
         let mut name: ArcStr = arcstr::literal!("");
         let mut index: i32 = 0;
         (name, index) = attr_tpl.clone();
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*toString(childrenAttr.borrow()[(index.clone()-1) as usize].clone())?); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*toString(({let __elt = childrenAttr.borrow()[(index.clone()-1) as usize].clone(); __elt}))?); ArcStr::from(__mm_s) }).clone();
         Ok(r#str)
     }
 

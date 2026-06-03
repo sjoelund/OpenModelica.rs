@@ -804,7 +804,7 @@ pub fn makeStatefulBoolean(mut b: bool) -> StatefulBoolean {
 }
 
 pub fn getStatefulBoolean(mut sb: StatefulBoolean) -> bool {
-    let mut b: bool = sb.borrow()[(1-1) as usize].clone();
+    let mut b: bool = ({let __elt = sb.borrow()[(1-1) as usize].clone(); __elt});
     b
 }
 

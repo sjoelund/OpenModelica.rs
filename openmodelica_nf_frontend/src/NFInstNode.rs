@@ -200,7 +200,7 @@ pub mod CachedData {
     }
 
     pub fn getFuncCache(mut in_caches: metamodelica::Array<Arc<CachedData>>) -> Result<Arc<CachedData>> {
-        let mut out_cache: Arc<CachedData> = in_caches.clone().borrow()[(1-1) as usize].clone();
+        let mut out_cache: Arc<CachedData> = ({let __elt = in_caches.clone().borrow()[(1-1) as usize].clone(); __elt});
         Ok(out_cache)
     }
 
@@ -210,7 +210,7 @@ pub mod CachedData {
     }
 
     pub fn getPackageCache(mut in_caches: metamodelica::Array<Arc<CachedData>>) -> Result<Arc<CachedData>> {
-        let mut out_cache: Arc<CachedData> = in_caches.clone().borrow()[(2-1) as usize].clone();
+        let mut out_cache: Arc<CachedData> = ({let __elt = in_caches.clone().borrow()[(2-1) as usize].clone(); __elt});
         Ok(out_cache)
     }
 
@@ -2238,7 +2238,7 @@ pub mod InstNode {
         isDiscrete = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ Class::EXPANDED_CLASS { restriction: Deref @ Restriction::TYPE, .. } => {
             exts = ClassTree::getExtends(var_field!((*cls).elements, Class::NFClass::EXPANDED_CLASS).clone());
-            if (metamodelica::arrayLength(exts.clone()) == 1) {isDiscreteClass(exts.borrow()[(1-1) as usize].clone())?} else {false}
+            if (metamodelica::arrayLength(exts.clone()) == 1) {isDiscreteClass(({let __elt = exts.borrow()[(1-1) as usize].clone(); __elt}))?} else {false}
         },
         _ => Type::isDiscrete(Class::getType(cls.clone(), base_node.clone())?)?,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),

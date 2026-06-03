@@ -877,12 +877,12 @@ pub mod DisjointSetForest {
     pub fn find(mut dsf: Arc<DisjointSetForest>, mut index: i32) -> i32 {
         let mut index: i32 = index;
         let mut parent: metamodelica::Array<i32> = Pointer::access(dsf.parent.clone());
-        while index.clone() != parent.borrow()[(index.clone()-1) as usize].clone() {
+        while index.clone() != ({let __elt = parent.borrow()[(index.clone()-1) as usize].clone(); __elt}) {
             {
-                let __cell0 = parent.borrow()[(parent.borrow()[(index.clone()-1) as usize].clone()-1) as usize].clone();
+                let __cell0 = ({let __elt = parent.borrow()[(({let __elt = parent.borrow()[(index.clone()-1) as usize].clone(); __elt})-1) as usize].clone(); __elt});
                 parent.clone().borrow_mut()[(index.clone()-1) as usize] = __cell0;
             }
-            index = parent.borrow()[(index.clone()-1) as usize].clone();
+            index = ({let __elt = parent.borrow()[(index.clone()-1) as usize].clone(); __elt});
         }
         Pointer::update(dsf.parent.clone(), parent.clone());
         index
@@ -903,15 +903,15 @@ pub mod DisjointSetForest {
         let mut maxRank: i32 = 0;
         let mut tied: bool = false;
         root = listHead(roots.clone())?;
-        maxRank = rank.borrow()[(root.clone()-1) as usize].clone();
+        maxRank = ({let __elt = rank.borrow()[(root.clone()-1) as usize].clone(); __elt});
         for mut r in &*listRest(roots.clone())? {
             let mut r = r.clone();
             if r.clone() != root.clone() {
-                if rank.borrow()[(r.clone()-1) as usize].clone() > maxRank.clone() {
+                if ({let __elt = rank.borrow()[(r.clone()-1) as usize].clone(); __elt}) > maxRank.clone() {
                     root = r.clone();
-                    maxRank = rank.borrow()[(root.clone()-1) as usize].clone();
+                    maxRank = ({let __elt = rank.borrow()[(root.clone()-1) as usize].clone(); __elt});
                     tied = false;
-                } else if rank.borrow()[(r.clone()-1) as usize].clone() == maxRank.clone() {
+                } else if ({let __elt = rank.borrow()[(r.clone()-1) as usize].clone(); __elt}) == maxRank.clone() {
                     tied = true;
                 }
             }
@@ -925,7 +925,7 @@ pub mod DisjointSetForest {
         }
         if tied.clone() {
             {
-                let __cell1 = rank.borrow()[(root.clone()-1) as usize].clone() + 1;
+                let __cell1 = ({let __elt = rank.borrow()[(root.clone()-1) as usize].clone(); __elt}) + 1;
                 rank.clone().borrow_mut()[(root.clone()-1) as usize] = __cell1;
             }
         }
@@ -997,8 +997,8 @@ fn partitioningClocked(mut kind: Partition::Kind, mut variables: Arc<VariablePoi
             part_idx = DisjointSetForest::unite(eqn_dsf.clone(), metamodelica::cons(eq_idx.clone(), ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut j in (var_indices.clone()).into_iter().cloned() {
-            if !(var_map.borrow()[(j.clone()-1) as usize].clone() > 0) { continue; }
-            let __x = var_map.borrow()[(j.clone()-1) as usize].clone();
+            if !(({let __elt = var_map.borrow()[(j.clone()-1) as usize].clone(); __elt}) > 0) { continue; }
+            let __x = ({let __elt = var_map.borrow()[(j.clone()-1) as usize].clone(); __elt});
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -1015,7 +1015,7 @@ fn partitioningClocked(mut kind: Partition::Kind, mut variables: Arc<VariablePoi
     marked_vars = metamodelica::arrayFromVec(({
         let mut __acc: Arc<metamodelica::List<bool>> = metamodelica::nil();
         for mut var_idx in (UnorderedMap::valueList(variables.map.clone())).into_iter().cloned() {
-            let __x = var_map.borrow()[(var_idx.clone()-1) as usize].clone() < 0;
+            let __x = ({let __elt = var_map.borrow()[(var_idx.clone()-1) as usize].clone(); __elt}) < 0;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -1053,7 +1053,7 @@ fn partitioningClocked(mut kind: Partition::Kind, mut variables: Arc<VariablePoi
         if var_idx.clone() > 0 {
             var = BVariable::VariablePointers::getVarAt(variables.clone(), var_idx.clone())?;
             name_cref = BVariable::getVarName(var.clone());
-            part_idx = DisjointSetForest::find(eqn_dsf.clone(), var_map.borrow()[(var_idx.clone()-1) as usize].clone());
+            part_idx = DisjointSetForest::find(eqn_dsf.clone(), ({let __elt = var_map.borrow()[(var_idx.clone()-1) as usize].clone(); __elt}));
             UnorderedMap::addUpdate(part_idx.clone(), (std::sync::Arc::new({ let __pe_b1 = name_cref.clone(); let __pe_b2 = ClusterElementType::VARIABLE.clone(); move |__pe_a0| Cluster::addElement(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Option<Arc<Cluster::Cluster>>) -> Result<Arc<Cluster::Cluster>> + 'static>), cluster_map.clone())?;
         }
     }
@@ -1181,15 +1181,15 @@ fn sortClockedPartitions(mut unsorted: Arc<metamodelica::List<Arc<Partition::Par
     let mut partition_order: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
     let mut j: i32 = 0;
     for mut i in 1..=n.clone() {
-        UnorderedMap::add((Partition::Partition::getClocks(partitions.borrow()[(i.clone()-1) as usize].clone())?).0, i.clone(), index_map.clone())?;
+        UnorderedMap::add((Partition::Partition::getClocks(({let __elt = partitions.borrow()[(i.clone()-1) as usize].clone(); __elt}))?).0, i.clone(), index_map.clone())?;
     }
     for mut i in 1..=n.clone() {
-        let __range0 = &*UnorderedSet::toList(Partition::Partition::getClockDependencies(partitions.borrow()[(i.clone()-1) as usize].clone())?);
+        let __range0 = &*UnorderedSet::toList(Partition::Partition::getClockDependencies(({let __elt = partitions.borrow()[(i.clone()-1) as usize].clone(); __elt}))?);
         for mut clock in __range0 {
             let mut clock = clock.clone();
             j = UnorderedMap::getSafe(clock.clone(), index_map.clone(), metamodelica::sourceInfo!())?;
             {
-                let __cell1 = metamodelica::cons(j.clone(), m.borrow()[(i.clone()-1) as usize].clone());
+                let __cell1 = metamodelica::cons(j.clone(), ({let __elt = m.borrow()[(i.clone()-1) as usize].clone(); __elt}));
                 m.clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
             }
         }
@@ -1199,7 +1199,7 @@ fn sortClockedPartitions(mut unsorted: Arc<metamodelica::List<Arc<Partition::Par
         let mut comp = comp.clone();
         sorted = (::match_deref::match_deref! { match &(comp.clone()) {
         Deref @ metamodelica::List::Cons { head: j, tail: Deref @ metamodelica::List::Nil } => {
-            metamodelica::cons(partitions.borrow()[(j.clone()-1) as usize].clone(), sorted.clone())
+            metamodelica::cons(({let __elt = partitions.borrow()[(j.clone()-1) as usize].clone(); __elt}), sorted.clone())
         },
         _ => {
             let mut var_clock_map: Arc<UnorderedMap::UnorderedMap<Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<BClock::BClock>>> = <Arc<UnorderedMap::UnorderedMap<Pointer::Pointer<Arc<Variable::NFVariable>>, Arc<BClock::BClock>>> as ::std::default::Default>::default();
@@ -1217,7 +1217,7 @@ fn sortClockedPartitions(mut unsorted: Arc<metamodelica::List<Arc<Partition::Par
             var_clock_map = UnorderedMap::new((std::sync::Arc::new(BVariable::hash) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<i32> + 'static>), (std::sync::Arc::new(BVariable::equalName) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>, Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), 1);
             for mut i in &*comp.clone() {
                 let mut i = i.clone();
-                part = partitions.borrow()[(i.clone()-1) as usize].clone();
+                part = ({let __elt = partitions.borrow()[(i.clone()-1) as usize].clone(); __elt});
                 for mut var in &*BVariable::VariablePointers::toList(part.unknowns.clone())? {
                     let mut var = var.clone();
                     UnorderedMap::add(var.clone(), (Partition::Partition::getClocks(part.clone())?).0, var_clock_map.clone())?;
@@ -1229,10 +1229,10 @@ fn sortClockedPartitions(mut unsorted: Arc<metamodelica::List<Arc<Partition::Par
             } };
             j = __pa0.clone();
             comp = __pa1.clone();
-            part = partitions.borrow()[(j.clone()-1) as usize].clone();
+            part = ({let __elt = partitions.borrow()[(j.clone()-1) as usize].clone(); __elt});
             for mut i in &*comp.clone() {
                 let mut i = i.clone();
-                part = Partition::Partition::merge(part.clone(), partitions.borrow()[(i.clone()-1) as usize].clone(), false)?;
+                part = Partition::Partition::merge(part.clone(), ({let __elt = partitions.borrow()[(i.clone()-1) as usize].clone(); __elt}), false)?;
             }
             (_, baseClock, _) = Partition::Partition::getClocks(part.clone())?;
             (_, sub_comps) = Causalize::simple(part.unknowns.clone(), part.equations.clone(), Partition::Partition::getKind(part.clone()), NBAdjacency::MatrixStrictness::MATCHING.clone(), Arc::new(crate::NBEquation::Iterator::EMPTY))?;

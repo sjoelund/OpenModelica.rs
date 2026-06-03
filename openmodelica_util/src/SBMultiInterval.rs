@@ -121,9 +121,9 @@ pub fn intersection(mut mi1: Arc<SBMultiInterval>, mut mi2: Arc<SBMultiInterval>
         outMI = newEmpty();
         return Ok(outMI.clone());
     }
-    ints = metamodelica::arrayCreate(mi1.ndim.clone(), mi1.intervals.clone().borrow()[(1-1) as usize].clone());
+    ints = metamodelica::arrayCreate(mi1.ndim.clone(), ({let __elt = mi1.intervals.clone().borrow()[(1-1) as usize].clone(); __elt}));
     for mut i in 1..=metamodelica::arrayLength(ints.clone()) {
-        ires = SBInterval::intersection(mi1.intervals.clone().borrow()[(i.clone()-1) as usize].clone(), mi2.intervals.clone().borrow()[(i.clone()-1) as usize].clone());
+        ires = SBInterval::intersection(({let __elt = mi1.intervals.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), ({let __elt = mi2.intervals.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}));
         if SBInterval::isEmpty(ires.clone()) {
             outMI = newEmpty();
             return Ok(outMI.clone());
@@ -175,7 +175,7 @@ pub fn complement(mut mi1: Arc<SBMultiInterval>, mut mi2: Arc<SBMultiInterval>) 
     diffs = metamodelica::arrayCreate(mi1_size.clone(), dummys.clone());
     for mut i in 1..=mi1_size.clone() {
         {
-            let __cell0 = SBInterval::complement(metamodelica::Dangerous::arrayGetNoBoundsChecking(mi1.intervals.clone(), i.clone()), tmp_mi.intervals.clone().borrow()[(i.clone()-1) as usize].clone())?;
+            let __cell0 = SBInterval::complement(metamodelica::Dangerous::arrayGetNoBoundsChecking(mi1.intervals.clone(), i.clone()), ({let __elt = tmp_mi.intervals.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}))?;
             unsafe { metamodelica::Dangerous::arrayInitSlot(diffs.clone().clone(), i.clone(), __cell0); }
         }
     }
@@ -199,7 +199,7 @@ pub fn crossProd(mut mi1: Arc<SBMultiInterval>, mut mi2: Arc<SBMultiInterval>) -
 pub fn cardinality(mut mi: Arc<SBMultiInterval>) -> i32 {
     let mut card: i32 = 0;
     for mut i in 1..=mi.ndim.clone() {
-        card = card.clone() + SBInterval::cardinality(mi.intervals.borrow()[(i.clone()-1) as usize].clone());
+        card = card.clone() + SBInterval::cardinality(({let __elt = mi.intervals.borrow()[(i.clone()-1) as usize].clone(); __elt}));
     }
     card
 }

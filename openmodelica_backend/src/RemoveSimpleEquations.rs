@@ -1496,13 +1496,13 @@ fn generateSimpleContainters(mut vars1: Arc<metamodelica::List<BackendDAE::Var>>
     (oSeqns, oIndex, oMT) = (::match_deref::match_deref! { match &((vars1.clone(), ilst1.clone(), varskn1.clone(), time1.clone(), vars2.clone(), ilst2.clone(), varskn2.clone(), time2.clone())) {
         (Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varName: cr1, .. }, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: i1, tail: Deref @ metamodelica::List::Nil }, true, true, Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varName: cr2, .. }, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: i2, tail: Deref @ metamodelica::List::Nil }, false, false) => {
             let mut colum: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            colum = iMT.borrow()[(i2.clone()-1) as usize].clone();
+            colum = ({let __elt = iMT.borrow()[(i2.clone()-1) as usize].clone(); __elt});
             {let _arr = iMT.clone(); _arr.borrow_mut()[(i2.clone()-1) as usize] = metamodelica::cons(iIndex.clone(), colum.clone()); _arr};
             (metamodelica::cons(SimpleContainer::TIMEALIAS { cr1: cr2.clone(), negatedCr1: negatedCr2.clone(), i1: i2.clone(), cr2: cr1.clone(), negatedCr2: negatedCr1.clone(), i2: i1.clone(), eqnAttributes: eqnAttributes.clone(), visited: -1 }, iSeqns.clone()), iIndex.clone() + 1, iMT.clone())
         },
         (Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varName: cr1, .. }, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: i1, tail: Deref @ metamodelica::List::Nil }, false, false, Deref @ metamodelica::List::Cons { head: BackendDAE::Var { varName: cr2, .. }, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: i2, tail: Deref @ metamodelica::List::Nil }, true, true) => {
             let mut colum: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            colum = iMT.borrow()[(i1.clone()-1) as usize].clone();
+            colum = ({let __elt = iMT.borrow()[(i1.clone()-1) as usize].clone(); __elt});
             {let _arr = iMT.clone(); _arr.borrow_mut()[(i1.clone()-1) as usize] = metamodelica::cons(iIndex.clone(), colum.clone()); _arr};
             (metamodelica::cons(SimpleContainer::TIMEALIAS { cr1: cr1.clone(), negatedCr1: negatedCr1.clone(), i1: i1.clone(), cr2: cr2.clone(), negatedCr2: negatedCr2.clone(), i2: i2.clone(), eqnAttributes: eqnAttributes.clone(), visited: -1 }, iSeqns.clone()), iIndex.clone() + 1, iMT.clone())
         },
@@ -1530,21 +1530,21 @@ fn generateSimpleContainter(mut v1: BackendDAE::Var, mut negatedCr1: bool, mut i
         (BackendDAE::Var { varName: cr1, .. }, false, BackendDAE::Var { varName: cr2, .. }, false, _) => {
             let mut colum: Arc<metamodelica::List<i32>> = metamodelica::nil();
             checkEqualAlias(intEq(i1.clone(), i2.clone()), v1.clone(), negatedCr1.clone(), v2.clone(), negatedCr2.clone(), eqnAttributes.clone())?;
-            colum = iMT.borrow()[(i1.clone()-1) as usize].clone();
+            colum = ({let __elt = iMT.borrow()[(i1.clone()-1) as usize].clone(); __elt});
             {let _arr = iMT.clone(); _arr.borrow_mut()[(i1.clone()-1) as usize] = metamodelica::cons(iIndex.clone(), colum.clone()); _arr};
-            colum = iMT.borrow()[(i2.clone()-1) as usize].clone();
+            colum = ({let __elt = iMT.borrow()[(i2.clone()-1) as usize].clone(); __elt});
             {let _arr = iMT.clone(); _arr.borrow_mut()[(i2.clone()-1) as usize] = metamodelica::cons(iIndex.clone(), colum.clone()); _arr};
             (metamodelica::cons(SimpleContainer::ALIAS { cr1: cr1.clone(), negatedCr1: negatedCr1.clone(), i1: i1.clone(), cr2: cr2.clone(), negatedCr2: negatedCr2.clone(), i2: i2.clone(), eqnAttributes: eqnAttributes.clone(), visited: -1 }, iSeqns.clone()), iIndex.clone() + 1, iMT.clone())
         },
         (BackendDAE::Var { varName: cr1, .. }, true, BackendDAE::Var { varName: cr2, .. }, false, _) => {
             let mut colum: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            colum = iMT.borrow()[(i2.clone()-1) as usize].clone();
+            colum = ({let __elt = iMT.borrow()[(i2.clone()-1) as usize].clone(); __elt});
             {let _arr = iMT.clone(); _arr.borrow_mut()[(i2.clone()-1) as usize] = metamodelica::cons(iIndex.clone(), colum.clone()); _arr};
             (metamodelica::cons(SimpleContainer::PARAMETERALIAS { unknowncr: cr2.clone(), negatedCr1: negatedCr2.clone(), i1: i2.clone(), paramcr: cr1.clone(), negatedCr2: negatedCr1.clone(), i2: i1.clone(), eqnAttributes: eqnAttributes.clone(), visited: -1 }, iSeqns.clone()), iIndex.clone() + 1, iMT.clone())
         },
         (BackendDAE::Var { varName: cr1, .. }, false, BackendDAE::Var { varName: cr2, .. }, true, _) => {
             let mut colum: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            colum = iMT.borrow()[(i1.clone()-1) as usize].clone();
+            colum = ({let __elt = iMT.borrow()[(i1.clone()-1) as usize].clone(); __elt});
             {let _arr = iMT.clone(); _arr.borrow_mut()[(i1.clone()-1) as usize] = metamodelica::cons(iIndex.clone(), colum.clone()); _arr};
             (metamodelica::cons(SimpleContainer::PARAMETERALIAS { unknowncr: cr1.clone(), negatedCr1: negatedCr1.clone(), i1: i1.clone(), paramcr: cr2.clone(), negatedCr2: negatedCr2.clone(), i2: i2.clone(), eqnAttributes: eqnAttributes.clone(), visited: -1 }, iSeqns.clone()), iIndex.clone() + 1, iMT.clone())
         },
@@ -1885,7 +1885,7 @@ fn constOrAliasAcausal(mut var: BackendDAE::Var, mut i: i32, mut cr: Arc<DAE::Co
                     if Flags::isSet(Flags::DEBUG_ALIAS.clone())? {
                         BackendDump::debugStrCrefStrExpStr((literal!("Const Equation ")).clone(), cr.clone(), (literal!(" = ")).clone(), exp.clone(), (literal!(" found.\n")).clone())?;
                     }
-                    colum = mT.borrow()[(i.clone()-1) as usize].clone();
+                    colum = ({let __elt = mT.borrow()[(i.clone()-1) as usize].clone(); __elt});
                     {let _arr = mT.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = metamodelica::cons(index.clone(), colum.clone()); _arr};
                     Ok((vars.clone(), shared.clone(), eqns.clone(), metamodelica::cons(SimpleContainer::TIMEINDEPENTVAR { cr: cr.clone(), i: i.clone(), exp: exp.clone(), eqnAttributes: eqnAttributes.clone(), visited: -1 }, seqns.clone()), index.clone() + 1, mT.clone(), true))
                 }
@@ -1902,7 +1902,7 @@ fn constOrAliasAcausal(mut var: BackendDAE::Var, mut i: i32, mut cr: Arc<DAE::Co
                     if Flags::isSet(Flags::DEBUG_ALIAS.clone())? {
                         BackendDump::debugStrCrefStrExpStr((literal!("Const Equation (through Ceval, case 1) ")).clone(), cr.clone(), (literal!(" = ")).clone(), exp.clone(), (literal!(" found.\n")).clone())?;
                     }
-                    colum = mT.borrow()[(i.clone()-1) as usize].clone();
+                    colum = ({let __elt = mT.borrow()[(i.clone()-1) as usize].clone(); __elt});
                     {let _arr = mT.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = metamodelica::cons(index.clone(), colum.clone()); _arr};
                     Ok((vars.clone(), shared.clone(), eqns.clone(), metamodelica::cons(SimpleContainer::TIMEINDEPENTVAR { cr: cr.clone(), i: i.clone(), exp: exp2.clone(), eqnAttributes: eqnAttributes.clone(), visited: -1 }, seqns.clone()), index.clone() + 1, mT.clone(), true))
                 }
@@ -1917,7 +1917,7 @@ fn constOrAliasAcausal(mut var: BackendDAE::Var, mut i: i32, mut cr: Arc<DAE::Co
                     if Flags::isSet(Flags::DEBUG_ALIAS.clone())? {
                         BackendDump::debugStrCrefStrExpStr((literal!("Const Equation (through Ceval, case 2) ")).clone(), cr.clone(), (literal!(" = ")).clone(), exp.clone(), (literal!(" found.\n")).clone())?;
                     }
-                    colum = mT.borrow()[(i.clone()-1) as usize].clone();
+                    colum = ({let __elt = mT.borrow()[(i.clone()-1) as usize].clone(); __elt});
                     {let _arr = mT.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = metamodelica::cons(index.clone(), colum.clone()); _arr};
                     Ok((vars.clone(), shared.clone(), eqns.clone(), metamodelica::cons(SimpleContainer::TIMEINDEPENTVAR { cr: cr.clone(), i: i.clone(), exp: exp.clone(), eqnAttributes: eqnAttributes.clone(), visited: -1 }, seqns.clone()), index.clone() + 1, mT.clone(), true))
                 }
@@ -1963,7 +1963,7 @@ fn handleSets(mut containerIdx: i32, mut inMark: i32, mut containerArr: metamode
     let mut mark: i32 = inMark.clone();
     let mut b: bool = false;
     for mut idx in (1..=containerIdx.clone()).rev() {
-        if !(intGt(getVisited(containerArr.borrow()[(idx.clone()-1) as usize].clone())?, 0)) {
+        if !(intGt(getVisited(({let __elt = containerArr.borrow()[(idx.clone()-1) as usize].clone(); __elt}))?, 0)) {
             (rmax, smax, unremovable, r#const, _) = getAlias(list![idx.clone()], None, mark.clone(), containerArr.clone(), iMT.clone(), vars.clone(), unReplaceable.clone(), false, metamodelica::nil(), None, None, None, None)?;
             (vars, eqnslst, shared, repl, b) = handleSet(rmax.clone(), smax.clone(), unremovable.clone(), r#const.clone(), mark.clone() + 1, containerArr.clone(), iMT.clone(), unReplaceable.clone(), vars.clone(), eqnslst.clone(), shared.clone(), repl.clone())?;
             mark = mark.clone() + 2;
@@ -1991,7 +1991,7 @@ fn getAlias(mut rows: Arc<metamodelica::List<i32>>, mut prevVar: Option<i32>, mu
             let mut r#const: Option<i32> = None;
             let mut visited: bool = false;
             let mut cont: bool = false;
-            container = containerArr.borrow()[(r.clone()-1) as usize].clone();
+            container = ({let __elt = containerArr.borrow()[(r.clone()-1) as usize].clone(); __elt});
             visited = isVisited(mark.clone(), container.clone())?;
             (rmax, smax, unremovable, r#const, cont) = getAlias1(visited.clone(), container.clone(), r.clone(), rest.clone(), prevVar.clone(), mark.clone(), containerArr.clone(), iMT.clone(), vars.clone(), unReplaceable.clone(), negate.clone(), stack.clone(), iRmax.clone(), iSmax.clone(), iUnremovable.clone(), iConst.clone())?;
             (rmax.clone(), smax.clone(), unremovable.clone(), r#const.clone(), cont.clone())
@@ -2026,7 +2026,7 @@ fn getAlias1(mut visited: bool, mut containerIn: SimpleContainer, mut currIdx: i
         if let Ok(__v) = (|| -> Result<_> {
             let (true, true, Some(_)) = __mc_input.clone() else { bail!("nomatch") };
             let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-            let SimpleContainer::ALIAS { cr1: __pa0, .. } = (containerArr.borrow()[(currIdx.clone()-1) as usize].clone()) else { bail!("pattern mismatch") };
+            let SimpleContainer::ALIAS { cr1: __pa0, .. } = (({let __elt = containerArr.borrow()[(currIdx.clone()-1) as usize].clone(); __elt})) else { bail!("pattern mismatch") };
             cr = __pa0.clone();
             let true = (Types::isIntegerOrRealOrSubTypeOfEither(ComponentReference::crefLastType(cr.clone())?)?) else { bail!("pattern mismatch") };
             Ok((None, None, None, iUnremovable.clone(), false))
@@ -2034,7 +2034,7 @@ fn getAlias1(mut visited: bool, mut containerIn: SimpleContainer, mut currIdx: i
         if let Ok(__v) = (|| -> Result<_> {
             let (true, true, _) = __mc_input.clone() else { bail!("nomatch") };
             let mut cr: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
-            let SimpleContainer::ALIAS { cr1: __pa0, .. } = (containerArr.borrow()[(currIdx.clone()-1) as usize].clone()) else { bail!("pattern mismatch") };
+            let SimpleContainer::ALIAS { cr1: __pa0, .. } = (({let __elt = containerArr.borrow()[(currIdx.clone()-1) as usize].clone(); __elt})) else { bail!("pattern mismatch") };
             cr = __pa0.clone();
             let true = (Types::isIntegerOrRealOrSubTypeOfEither(ComponentReference::crefLastType(cr.clone())?)?) else { bail!("pattern mismatch") };
             Ok((None, None, None, Some(currIdx.clone()), false))
@@ -2070,7 +2070,7 @@ fn circularEqualityMsg_dispatch(mut stack: Arc<metamodelica::List<i32>>, mut iR:
         if r.clone() == iR.clone() {
             break;
         }
-        let __range0 = &*getVarsNames(simpleeqnsarr.borrow()[(r.clone()-1) as usize].clone())?;
+        let __range0 = &*getVarsNames(({let __elt = simpleeqnsarr.borrow()[(r.clone()-1) as usize].clone(); __elt}))?;
         for mut n in __range0 {
             let mut n = n.clone();
             oMsg = metamodelica::cons((ComponentReferenceBasics::printComponentRefStr(n.clone())?).clone(), oMsg.clone());
@@ -2120,14 +2120,14 @@ fn getAlias2(mut containerIn: SimpleContainer, mut currIdx: i32, mut prevVar: Op
             let mut replaceble1: bool = false;
             let mut neg: bool = false;
             neg = boolOr(negatedCr1.clone(), negatedCr2.clone());
-            adjEqs = List::removeOnTrue(currIdx.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), iMT.borrow()[(i1.clone()-1) as usize].clone())?;
+            adjEqs = List::removeOnTrue(currIdx.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), ({let __elt = iMT.borrow()[(i1.clone()-1) as usize].clone(); __elt}))?;
             v = BackendVariable::getVarAt(vars.clone(), i1.clone())?;
             (replaceable_, replaceble1) = replaceableAlias(v.clone(), unReplaceable.clone())?;
             state = BackendVariable::isStateVar(v.clone()) || BackendVariable::isClockedStateVar(v.clone());
             (rmax, smax, unremovable) = getAlias3(v.clone(), i1.clone(), state.clone(), replaceable_.clone() && replaceble1.clone(), currIdx.clone(), iRmax.clone(), iSmax.clone(), iUnremovable.clone())?;
             neg = if (neg.clone()) {!(negate.clone())} else {negate.clone()};
             (rmax, smax, unremovable, r#const, cont) = getAlias(adjEqs.clone(), Some(i1.clone()), mark.clone(), simpleeqnsarr.clone(), iMT.clone(), vars.clone(), unReplaceable.clone(), neg.clone(), stack.clone(), rmax.clone(), smax.clone(), unremovable.clone(), iConst.clone())?;
-            adjEqs = List::removeOnTrue(currIdx.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), iMT.borrow()[(i2.clone()-1) as usize].clone())?;
+            adjEqs = List::removeOnTrue(currIdx.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), ({let __elt = iMT.borrow()[(i2.clone()-1) as usize].clone(); __elt}))?;
             v = BackendVariable::getVarAt(vars.clone(), i2.clone())?;
             (replaceable_, replaceble1) = replaceableAlias(v.clone(), unReplaceable.clone())?;
             state = BackendVariable::isStateVar(v.clone()) || BackendVariable::isClockedStateVar(v.clone());
@@ -2152,7 +2152,7 @@ fn getAlias2(mut containerIn: SimpleContainer, mut currIdx: i32, mut prevVar: Op
             let mut neg: bool = false;
             i = if (intEq(prevVarIdx.clone(), i1.clone())) {i2.clone()} else {i1.clone()};
             neg = boolOr(negatedCr1.clone(), negatedCr2.clone());
-            adjEqs = List::removeOnTrue(currIdx.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), iMT.borrow()[(i.clone()-1) as usize].clone())?;
+            adjEqs = List::removeOnTrue(currIdx.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), ({let __elt = iMT.borrow()[(i.clone()-1) as usize].clone(); __elt}))?;
             v = BackendVariable::getVarAt(vars.clone(), i.clone())?;
             (replaceable_, replaceble1) = replaceableAlias(v.clone(), unReplaceable.clone())?;
             state = BackendVariable::isStateVar(v.clone()) || BackendVariable::isClockedStateVar(v.clone());
@@ -2325,7 +2325,7 @@ fn handleSet(mut iRmax: Option<(i32, i32)>, mut iSmax: Option<(i32, i32)>, mut i
             let mut repl: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
             let mut vsattr: VarSetAttributes = (false, (0, metamodelica::nil()), metamodelica::nil(), (None, None));
             let mut rows: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            s = simpleeqnsarr.borrow()[(r.clone()-1) as usize].clone();
+            s = ({let __elt = simpleeqnsarr.borrow()[(r.clone()-1) as usize].clone(); __elt});
             let SimpleContainer::PARAMETERALIAS { eqnAttributes: __pa0, paramcr: __pa1, i2: __pa2, negatedCr2: __pa3, i1: __pa4, negatedCr1: __pa5, unknowncr: __pa6, .. } = (s.clone()) else { bail!("pattern mismatch") };
             eqnAttributes = __pa0.clone();
             cr2 = __pa1.clone();
@@ -2345,7 +2345,7 @@ fn handleSet(mut iRmax: Option<(i32, i32)>, mut iSmax: Option<(i32, i32)>, mut i
             pv = BackendVariable::getVarSharedAt(i2.clone(), ishared.clone())?;
             vsattr = addVarSetAttributes(pv.clone(), negated.clone(), mark.clone(), simpleeqnsarr.clone(), EMPTYVARSETATTRIBUTES().clone())?;
             vsattr = if (replaceable_.clone() && replaceble1.clone()) {addVarSetAttributes(v.clone(), negated.clone(), mark.clone(), simpleeqnsarr.clone(), vsattr.clone())?} else {vsattr.clone()};
-            rows = List::removeOnTrue(r.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), iMT.borrow()[(i1.clone()-1) as usize].clone())?;
+            rows = List::removeOnTrue(r.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), ({let __elt = iMT.borrow()[(i1.clone()-1) as usize].clone(); __elt}))?;
             {let _arr = iMT.clone(); _arr.borrow_mut()[(i1.clone()-1) as usize] = metamodelica::nil(); _arr};
             (vars, eqnslst, shared, repl, vsattr) = traverseAliasTree(rows.clone(), i1.clone(), exp.clone(), Some(expcr.clone()), negated.clone(), Some(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) })), mark.clone(), simpleeqnsarr.clone(), iMT.clone(), unReplaceable.clone(), vars.clone(), eqnslst.clone(), shared.clone(), repl.clone(), vsattr.clone())?;
             Ok((vars.clone(), eqnslst.clone(), shared.clone(), repl.clone()))
@@ -2372,7 +2372,7 @@ fn handleSet(mut iRmax: Option<(i32, i32)>, mut iSmax: Option<(i32, i32)>, mut i
             let mut repl: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
             let mut vsattr: VarSetAttributes = (false, (0, metamodelica::nil()), metamodelica::nil(), (None, None));
             let mut rows: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            s = simpleeqnsarr.borrow()[(r.clone()-1) as usize].clone();
+            s = ({let __elt = simpleeqnsarr.borrow()[(r.clone()-1) as usize].clone(); __elt});
             let SimpleContainer::TIMEALIAS { eqnAttributes: __pa0, negatedCr2: __pa1, negatedCr1: __pa2, i1: __pa3, cr1: __pa4, .. } = (s.clone()) else { bail!("pattern mismatch") };
             eqnAttributes = __pa0.clone();
             negatedCr2 = __pa1.clone();
@@ -2389,7 +2389,7 @@ fn handleSet(mut iRmax: Option<(i32, i32)>, mut iSmax: Option<(i32, i32)>, mut i
             (vars, eqnslst, shared, repl) = handleSetVar(replaceable_.clone() && replaceble1.clone(), Some(dexp.clone()), v.clone(), i1.clone(), eqnAttributes.clone(), exp1.clone(), iMT.clone(), iVars.clone(), iEqnslst.clone(), ishared.clone(), iRepl.clone())?;
             expcr = Expression::crefExp(cr1.clone())?;
             vsattr = addVarSetAttributes(v.clone(), negated.clone(), mark.clone(), simpleeqnsarr.clone(), EMPTYVARSETATTRIBUTES().clone())?;
-            rows = List::removeOnTrue(r.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), iMT.borrow()[(i1.clone()-1) as usize].clone())?;
+            rows = List::removeOnTrue(r.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), ({let __elt = iMT.borrow()[(i1.clone()-1) as usize].clone(); __elt}))?;
             {let _arr = iMT.clone(); _arr.borrow_mut()[(i1.clone()-1) as usize] = metamodelica::nil(); _arr};
             (vars, eqnslst, shared, repl, vsattr) = traverseAliasTree(rows.clone(), i1.clone(), exp.clone(), Some(expcr.clone()), negated.clone(), Some(dexp.clone()), mark.clone(), simpleeqnsarr.clone(), iMT.clone(), unReplaceable.clone(), vars.clone(), eqnslst.clone(), shared.clone(), repl.clone(), vsattr.clone())?;
             Ok((vars.clone(), eqnslst.clone(), shared.clone(), repl.clone()))
@@ -2412,7 +2412,7 @@ fn handleSet(mut iRmax: Option<(i32, i32)>, mut iSmax: Option<(i32, i32)>, mut i
             let mut repl: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
             let mut vsattr: VarSetAttributes = (false, (0, metamodelica::nil()), metamodelica::nil(), (None, None));
             let mut rows: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            s = simpleeqnsarr.borrow()[(r.clone()-1) as usize].clone();
+            s = ({let __elt = simpleeqnsarr.borrow()[(r.clone()-1) as usize].clone(); __elt});
             let SimpleContainer::TIMEINDEPENTVAR { eqnAttributes: __pa0, exp: __pa1, i: __pa2, cr: __pa3, .. } = (s.clone()) else { bail!("pattern mismatch") };
             eqnAttributes = __pa0.clone();
             exp = __pa1.clone();
@@ -2429,7 +2429,7 @@ fn handleSet(mut iRmax: Option<(i32, i32)>, mut iSmax: Option<(i32, i32)>, mut i
             repl = if (isState.clone()) {BackendVarTransform::addDerConstRepl(cr.clone(), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), repl.clone())?} else {repl.clone()};
             exp = Expression::crefExp(cr.clone())?;
             vsattr = addVarSetAttributes(v.clone(), false, mark.clone(), simpleeqnsarr.clone(), EMPTYVARSETATTRIBUTES().clone())?;
-            rows = List::removeOnTrue(r.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), iMT.borrow()[(i.clone()-1) as usize].clone())?;
+            rows = List::removeOnTrue(r.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), ({let __elt = iMT.borrow()[(i.clone()-1) as usize].clone(); __elt}))?;
             {let _arr = iMT.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = metamodelica::nil(); _arr};
             (vars, eqnslst, shared, repl, vsattr) = traverseAliasTree(rows.clone(), i.clone(), exp.clone(), None, false, Some(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) })), mark.clone(), simpleeqnsarr.clone(), iMT.clone(), unReplaceable.clone(), vars.clone(), eqnslst.clone(), shared.clone(), repl.clone(), vsattr.clone())?;
             Ok((vars.clone(), eqnslst.clone(), shared.clone(), repl.clone()))
@@ -2453,7 +2453,7 @@ fn handleSet(mut iRmax: Option<(i32, i32)>, mut iSmax: Option<(i32, i32)>, mut i
             let mut repl: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
             let mut vsattr: VarSetAttributes = (false, (0, metamodelica::nil()), metamodelica::nil(), (None, None));
             let mut rows: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            s = simpleeqnsarr.borrow()[(r.clone()-1) as usize].clone();
+            s = ({let __elt = simpleeqnsarr.borrow()[(r.clone()-1) as usize].clone(); __elt});
             let SimpleContainer::ALIAS { eqnAttributes: __pa0, i2: __pa1, i1: __pa2, .. } = (s.clone()) else { bail!("pattern mismatch") };
             eqnAttributes = __pa0.clone();
             i2 = __pa1.clone();
@@ -2470,9 +2470,9 @@ fn handleSet(mut iRmax: Option<(i32, i32)>, mut iSmax: Option<(i32, i32)>, mut i
             repl = if (isState.clone()) {BackendVarTransform::addDerConstRepl(cr.clone(), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }), repl.clone())?} else {repl.clone()};
             exp = Expression::crefExp(cr.clone())?;
             vsattr = addVarSetAttributes(v.clone(), false, mark.clone(), simpleeqnsarr.clone(), EMPTYVARSETATTRIBUTES().clone())?;
-            rows = List::removeOnTrue(r.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), iMT.borrow()[(i2.clone()-1) as usize].clone())?;
+            rows = List::removeOnTrue(r.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), ({let __elt = iMT.borrow()[(i2.clone()-1) as usize].clone(); __elt}))?;
             {let _arr = iMT.clone(); _arr.borrow_mut()[(i2.clone()-1) as usize] = rows.clone(); _arr};
-            rows = List::removeOnTrue(r.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), iMT.borrow()[(i.clone()-1) as usize].clone())?;
+            rows = List::removeOnTrue(r.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), ({let __elt = iMT.borrow()[(i.clone()-1) as usize].clone(); __elt}))?;
             {let _arr = iMT.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = metamodelica::nil(); _arr};
             (vars, eqnslst, shared, repl, vsattr) = traverseAliasTree(rows.clone(), i.clone(), exp.clone(), None, false, Some(Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) })), mark.clone(), simpleeqnsarr.clone(), iMT.clone(), unReplaceable.clone(), vars.clone(), eqnslst.clone(), shared.clone(), repl.clone(), vsattr.clone())?;
             Ok((vars.clone(), eqnslst.clone(), shared.clone(), repl.clone()))
@@ -2495,7 +2495,7 @@ fn handleSet(mut iRmax: Option<(i32, i32)>, mut iSmax: Option<(i32, i32)>, mut i
             exp = Expression::crefExp(cr.clone())?;
             vsattr = addVarSetAttributes(v.clone(), false, mark.clone(), simpleeqnsarr.clone(), EMPTYVARSETATTRIBUTES().clone())?;
             oexp = varStateDerivative(v.clone())?;
-            (vars, eqnslst, shared, repl, vsattr) = traverseAliasTree(iMT.borrow()[(i.clone()-1) as usize].clone(), i.clone(), exp.clone(), None, false, oexp.clone(), mark.clone(), simpleeqnsarr.clone(), iMT.clone(), unReplaceable.clone(), iVars.clone(), iEqnslst.clone(), ishared.clone(), iRepl.clone(), vsattr.clone())?;
+            (vars, eqnslst, shared, repl, vsattr) = traverseAliasTree(({let __elt = iMT.borrow()[(i.clone()-1) as usize].clone(); __elt}), i.clone(), exp.clone(), None, false, oexp.clone(), mark.clone(), simpleeqnsarr.clone(), iMT.clone(), unReplaceable.clone(), iVars.clone(), iEqnslst.clone(), ishared.clone(), iRepl.clone(), vsattr.clone())?;
             {let _arr = iMT.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = metamodelica::nil(); _arr};
             (vars, warnAliasConflicts) = handleVarSetAttributes(vsattr.clone(), v.clone(), vars.clone(), shared.clone())?;
             Ok(((vars.clone(), eqnslst.clone(), shared.clone(), repl.clone()), warnAliasConflicts.clone()))
@@ -2516,7 +2516,7 @@ fn handleSet(mut iRmax: Option<(i32, i32)>, mut iSmax: Option<(i32, i32)>, mut i
             v = __pa1.clone();
             exp = Expression::crefExp(cr.clone())?;
             vsattr = addVarSetAttributes(v.clone(), false, mark.clone(), simpleeqnsarr.clone(), EMPTYVARSETATTRIBUTES().clone())?;
-            (vars, eqnslst, shared, repl, vsattr) = traverseAliasTree(iMT.borrow()[(i.clone()-1) as usize].clone(), i.clone(), exp.clone(), None, false, None, mark.clone(), simpleeqnsarr.clone(), iMT.clone(), unReplaceable.clone(), iVars.clone(), iEqnslst.clone(), ishared.clone(), iRepl.clone(), vsattr.clone())?;
+            (vars, eqnslst, shared, repl, vsattr) = traverseAliasTree(({let __elt = iMT.borrow()[(i.clone()-1) as usize].clone(); __elt}), i.clone(), exp.clone(), None, false, None, mark.clone(), simpleeqnsarr.clone(), iMT.clone(), unReplaceable.clone(), iVars.clone(), iEqnslst.clone(), ishared.clone(), iRepl.clone(), vsattr.clone())?;
             {let _arr = iMT.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = metamodelica::nil(); _arr};
             (vars, warnAliasConflicts) = handleVarSetAttributes(vsattr.clone(), v.clone(), vars.clone(), shared.clone())?;
             Ok(((vars.clone(), eqnslst.clone(), shared.clone(), repl.clone()), warnAliasConflicts.clone()))
@@ -2537,7 +2537,7 @@ fn handleSet(mut iRmax: Option<(i32, i32)>, mut iSmax: Option<(i32, i32)>, mut i
             v = __pa1.clone();
             exp = Expression::crefExp(cr.clone())?;
             vsattr = addVarSetAttributes(v.clone(), false, mark.clone(), simpleeqnsarr.clone(), EMPTYVARSETATTRIBUTES().clone())?;
-            (vars, eqnslst, shared, repl, vsattr) = traverseAliasTree(iMT.borrow()[(i.clone()-1) as usize].clone(), i.clone(), exp.clone(), None, false, None, mark.clone(), simpleeqnsarr.clone(), iMT.clone(), unReplaceable.clone(), iVars.clone(), iEqnslst.clone(), ishared.clone(), iRepl.clone(), vsattr.clone())?;
+            (vars, eqnslst, shared, repl, vsattr) = traverseAliasTree(({let __elt = iMT.borrow()[(i.clone()-1) as usize].clone(); __elt}), i.clone(), exp.clone(), None, false, None, mark.clone(), simpleeqnsarr.clone(), iMT.clone(), unReplaceable.clone(), iVars.clone(), iEqnslst.clone(), ishared.clone(), iRepl.clone(), vsattr.clone())?;
             {let _arr = iMT.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = metamodelica::nil(); _arr};
             (vars, warnAliasConflicts) = handleVarSetAttributes(vsattr.clone(), v.clone(), vars.clone(), shared.clone())?;
             Ok(((vars.clone(), eqnslst.clone(), shared.clone(), repl.clone()), warnAliasConflicts.clone()))
@@ -2668,7 +2668,7 @@ fn traverseAliasTree(mut rows: Arc<metamodelica::List<i32>>, mut ilast: i32, mut
             let mut repl: BackendVarTransform::VariableReplacements = <BackendVarTransform::VariableReplacements as ::std::default::Default>::default();
             let mut s: SimpleContainer = <SimpleContainer as ::std::default::Default>::default();
             let mut vsattr: VarSetAttributes = (false, (0, metamodelica::nil()), metamodelica::nil(), (None, None));
-            s = simpleeqnsarr.borrow()[(r.clone()-1) as usize].clone();
+            s = ({let __elt = simpleeqnsarr.borrow()[(r.clone()-1) as usize].clone(); __elt});
             {let _arr = simpleeqnsarr.clone(); _arr.borrow_mut()[(r.clone()-1) as usize] = setVisited(mark.clone(), s.clone())?; _arr};
             (vars, eqnslst, shared, repl, vsattr) = traverseAliasTree1(s.clone(), r.clone(), ilast.clone(), exp.clone(), optExp.clone(), globalnegate.clone(), derReplaceState.clone(), mark.clone(), simpleeqnsarr.clone(), iMT.clone(), unReplaceable.clone(), iVars.clone(), iEqnslst.clone(), ishared.clone(), iRepl.clone(), iAttributes.clone())?;
             (vars, eqnslst, shared, repl, vsattr) = traverseAliasTree(rest.clone(), ilast.clone(), exp.clone(), optExp.clone(), globalnegate.clone(), derReplaceState.clone(), mark.clone(), simpleeqnsarr.clone(), iMT.clone(), unReplaceable.clone(), vars.clone(), eqnslst.clone(), shared.clone(), repl.clone(), vsattr.clone())?;
@@ -2718,7 +2718,7 @@ fn traverseAliasTree1(mut sc: SimpleContainer, mut r: i32, mut ilast: i32, mut e
             (vars, eqnslst, shared, repl) = handleSetVar(replaceable_.clone() && replaceble1.clone(), derReplacement.clone(), v.clone(), i.clone(), (source.clone(), eqAttr.clone()), exp1.clone(), iMT.clone(), iVars.clone(), iEqnslst.clone(), ishared.clone(), iRepl.clone())?;
             vsattr = if (replaceable_.clone() && replaceble1.clone()) {addVarSetAttributes(v.clone(), globalnegated1.clone(), mark.clone(), simpleeqnsarr.clone(), iAttributes.clone())?} else {iAttributes.clone()};
             crexp = negateExpression(negated.clone(), crexp.clone(), crexp.clone(), (literal!(" ALIAS_2 ")).clone())?;
-            rows = List::removeOnTrue(r.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), iMT.borrow()[(i.clone()-1) as usize].clone())?;
+            rows = List::removeOnTrue(r.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), ({let __elt = iMT.borrow()[(i.clone()-1) as usize].clone(); __elt}))?;
             {let _arr = iMT.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = metamodelica::nil(); _arr};
             (vars, eqnslst, shared, repl, vsattr) = traverseAliasTree(rows.clone(), i.clone(), exp.clone(), Some(crexp.clone()), globalnegated1.clone(), derReplaceState.clone(), mark.clone(), simpleeqnsarr.clone(), iMT.clone(), unReplaceable.clone(), vars.clone(), eqnslst.clone(), shared.clone(), repl.clone(), vsattr.clone())?;
             (vars.clone(), eqnslst.clone(), shared.clone(), repl.clone(), vsattr.clone())

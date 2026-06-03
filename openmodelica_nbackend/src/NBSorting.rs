@@ -190,10 +190,10 @@ pub mod PseudoBucket {
         let mut mode: Arc<Mode::Mode> = Arc::new(<Mode::Mode as ::std::default::Default>::default());
         let mut cref: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
         for mut eqn_scal_idx in 1..=metamodelica::arrayLength(eqn_to_var.clone()) {
-            mode_opt = UnorderedMap::get((eqn_scal_idx.clone(), eqn_to_var.borrow()[(eqn_scal_idx.clone()-1) as usize].clone()), modes.clone())?;
+            mode_opt = UnorderedMap::get((eqn_scal_idx.clone(), ({let __elt = eqn_to_var.borrow()[(eqn_scal_idx.clone()-1) as usize].clone(); __elt})), modes.clone())?;
             if isSome(mode_opt.clone()) {
                 mode = Util::getOption(mode_opt.clone())?;
-                if BEquation::Equation::isRecordOrTupleEquation(BEquation::EquationPointers::getEqnAt(eqns.clone(), mapping.eqn_StA.borrow()[(eqn_scal_idx.clone()-1) as usize].clone())?)? {
+                if BEquation::Equation::isRecordOrTupleEquation(BEquation::EquationPointers::getEqnAt(eqns.clone(), ({let __elt = mapping.eqn_StA.borrow()[(eqn_scal_idx.clone()-1) as usize].clone(); __elt}))?)? {
                     cref = listHead(mode.crefs.clone())?;
                     assign_field!(mode.crefs = metamodelica::nil());
                     addMulti(cref.clone(), eqn_scal_idx.clone(), mode.clone(), buckets.clone())?;
@@ -355,8 +355,8 @@ pub fn tarjanScalar(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mu
     lowlink = arrayCreate(M.clone(), -1);
     onStack = arrayCreate(M.clone(), false);
     for mut var in 1..=N.clone() {
-        eqn = matching.var_to_eqn.borrow()[(var.clone()-1) as usize].clone();
-        if eqn.clone() > 0 && number.borrow()[(eqn.clone()-1) as usize].clone() == -1 {
+        eqn = ({let __elt = matching.var_to_eqn.borrow()[(var.clone()-1) as usize].clone(); __elt});
+        if eqn.clone() > 0 && ({let __elt = number.borrow()[(eqn.clone()-1) as usize].clone(); __elt}) == -1 {
             (stack, index, comps) = strongConnect(m.clone(), matching.var_to_eqn.clone(), eqn.clone(), stack.clone(), index.clone(), number.clone(), lowlink.clone(), onStack.clone(), comps.clone())?;
         }
     }
@@ -410,14 +410,14 @@ pub mod LoopIdentifier {
         li = Arc::new(LoopIdentifier { vars: UnorderedSet::fromList(({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in (scc.clone()).into_iter().cloned() {
-            let __x = mapping.var_StA.borrow()[(matching.eqn_to_var.borrow()[(i.clone()-1) as usize].clone()-1) as usize].clone();
+            let __x = ({let __elt = mapping.var_StA.borrow()[(({let __elt = matching.eqn_to_var.borrow()[(i.clone()-1) as usize].clone(); __elt})-1) as usize].clone(); __elt});
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
     }), std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?, eqns: UnorderedSet::fromList(({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in (scc.clone()).into_iter().cloned() {
-            let __x = mapping.eqn_StA.borrow()[(i.clone()-1) as usize].clone();
+            let __x = ({let __elt = mapping.eqn_StA.borrow()[(i.clone()-1) as usize].clone(); __elt});
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -597,7 +597,7 @@ pub mod SuperNode {
                 var_lst = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut idx in (scc.clone()).into_iter().cloned() {
-            let __x = phase2_matching.eqn_to_var.borrow()[(idx.clone()-1) as usize].clone();
+            let __x = ({let __elt = phase2_matching.eqn_to_var.borrow()[(idx.clone()-1) as usize].clone(); __elt});
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -611,7 +611,7 @@ pub mod SuperNode {
                 var_lst = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut idx in (Value::getEquations(val.clone())?).into_iter().cloned() {
-            let __x = phase2_matching.eqn_to_var.borrow()[(idx.clone()-1) as usize].clone();
+            let __x = ({let __elt = phase2_matching.eqn_to_var.borrow()[(idx.clone()-1) as usize].clone(); __elt});
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -670,7 +670,7 @@ pub mod SuperNode {
         let mut node_comp: Arc<metamodelica::List<Arc<SuperNode>>> = ({
         let mut __acc: Arc<metamodelica::List<Arc<SuperNode>>> = metamodelica::nil();
         for mut i in (comp_indices.clone()).into_iter().cloned() {
-            let __x = super_nodes.borrow()[(i.clone()-1) as usize].clone();
+            let __x = ({let __elt = super_nodes.borrow()[(i.clone()-1) as usize].clone(); __elt});
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -698,7 +698,7 @@ pub mod SuperNode {
             sorted_body_indices = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in (sorted_body_indices.clone()).into_iter().cloned() {
-            let __x = map_back.borrow()[(i.clone()-1) as usize].clone();
+            let __x = ({let __elt = map_back.borrow()[(i.clone()-1) as usize].clone(); __elt});
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -707,8 +707,8 @@ pub mod SuperNode {
                 Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBSorting.SuperNode.collapse")); __mm_s.push_str(&*literal!(" crucially failed for the following Phase II strong component")); __mm_s.push_str(&*literal!(" because the body turned out to still have strong components:\n")); __mm_s.push_str(&*List::toString(node_comp.clone(), (std::sync::Arc::new(toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SuperNode>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("\t")).clone(), (literal!("\n\t")).clone(), (literal!("\n")).clone(), true, 0)?); ArcStr::from(__mm_s) }).clone()])?;
             }
             indep = Array::all(m_local.clone(), std::sync::Arc::new(fnptr!(List::hasOneElement, _)))?;
-            eqn_arr_idx = mapping.eqn_StA.borrow()[(listHead(var_field!((**node).eqn_indices, SuperNode::ARRAY_BUCKET).clone())?-1) as usize].clone();
-            var_arr_idx = mapping.var_StA.borrow()[(matching.eqn_to_var.borrow()[(listHead(var_field!((**node).eqn_indices, SuperNode::ARRAY_BUCKET).clone())?-1) as usize].clone()-1) as usize].clone();
+            eqn_arr_idx = ({let __elt = mapping.eqn_StA.borrow()[(listHead(var_field!((**node).eqn_indices, SuperNode::ARRAY_BUCKET).clone())?-1) as usize].clone(); __elt});
+            var_arr_idx = ({let __elt = mapping.var_StA.borrow()[(({let __elt = matching.eqn_to_var.borrow()[(listHead(var_field!((**node).eqn_indices, SuperNode::ARRAY_BUCKET).clone())?-1) as usize].clone(); __elt})-1) as usize].clone(); __elt});
             StrongComponent::createPseudoSlice(var_arr_idx.clone(), eqn_arr_idx.clone(), var_field!((**node).cref_to_solve, SuperNode::ARRAY_BUCKET).clone(), sorted_body_indices.clone(), matching.eqn_to_var.clone(), eqns.clone(), mapping.clone(), indep.clone())?
         },
         _ if (List::all(node_comp.clone(), (std::sync::Arc::new(fnptr!(isArrayBucket, Arc<SuperNode>)) as std::sync::Arc<dyn ::std::ops::Fn(Arc<SuperNode>) -> Result<bool> + 'static>))?) => {
@@ -728,7 +728,7 @@ pub mod SuperNode {
             sorted_body_indices = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in (sorted_body_indices.clone()).into_iter().cloned() {
-            let __x = map_back.borrow()[(i.clone()-1) as usize].clone();
+            let __x = ({let __elt = map_back.borrow()[(i.clone()-1) as usize].clone(); __elt});
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -762,7 +762,7 @@ pub mod SuperNode {
         {let _arr = m.clone(); let _val = UnorderedSet::unique_list(List::flatten(({
         let mut __acc: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
         for mut idx in (rows_to_merge.clone()).into_iter().cloned() {
-            let __x = m.borrow()[(idx.clone()-1) as usize].clone();
+            let __x = ({let __elt = m.borrow()[(idx.clone()-1) as usize].clone(); __elt});
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -818,14 +818,14 @@ fn strongConnect(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut v
     stack = metamodelica::cons(eqn.clone(), stack.clone());
     for mut eqn2 in &*predecessors(eqn.clone(), m.clone(), var_to_eqn.clone()) {
         let mut eqn2 = eqn2.clone();
-        if number.borrow()[(eqn2.clone()-1) as usize].clone() == -1 {
+        if ({let __elt = number.borrow()[(eqn2.clone()-1) as usize].clone(); __elt}) == -1 {
             (stack, index, comps) = strongConnect(m.clone(), var_to_eqn.clone(), eqn2.clone(), stack.clone(), index.clone(), number.clone(), lowlink.clone(), onStack.clone(), comps.clone())?;
-            {let _arr = lowlink.clone(); let _val = intMin(lowlink.borrow()[(eqn.clone()-1) as usize].clone(), lowlink.borrow()[(eqn2.clone()-1) as usize].clone()); _arr.borrow_mut()[(eqn.clone()-1) as usize] = _val; _arr};
-        } else if onStack.borrow()[(eqn2.clone()-1) as usize].clone() {
-            {let _arr = lowlink.clone(); let _val = intMin(lowlink.borrow()[(eqn.clone()-1) as usize].clone(), number.borrow()[(eqn2.clone()-1) as usize].clone()); _arr.borrow_mut()[(eqn.clone()-1) as usize] = _val; _arr};
+            {let _arr = lowlink.clone(); let _val = intMin(({let __elt = lowlink.borrow()[(eqn.clone()-1) as usize].clone(); __elt}), ({let __elt = lowlink.borrow()[(eqn2.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(eqn.clone()-1) as usize] = _val; _arr};
+        } else if ({let __elt = onStack.borrow()[(eqn2.clone()-1) as usize].clone(); __elt}) {
+            {let _arr = lowlink.clone(); let _val = intMin(({let __elt = lowlink.borrow()[(eqn.clone()-1) as usize].clone(); __elt}), ({let __elt = number.borrow()[(eqn2.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(eqn.clone()-1) as usize] = _val; _arr};
         }
     }
-    if lowlink.borrow()[(eqn.clone()-1) as usize].clone() == number.borrow()[(eqn.clone()-1) as usize].clone() {
+    if ({let __elt = lowlink.borrow()[(eqn.clone()-1) as usize].clone(); __elt}) == ({let __elt = number.borrow()[(eqn.clone()-1) as usize].clone(); __elt}) {
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(stack.clone()) {
             Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
             _ => bail!("pattern mismatch"),
@@ -853,9 +853,9 @@ fn predecessors(mut idx: i32, mut m: metamodelica::Array<Arc<metamodelica::List<
     let mut pre_lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
     pre_lst = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
-        for mut cand in (m.borrow()[(idx.clone()-1) as usize].clone()).into_iter().cloned() {
-            if !(cand.clone() > 0 && mapping.borrow()[(cand.clone()-1) as usize].clone() != idx.clone() && mapping.borrow()[(cand.clone()-1) as usize].clone() > 0) { continue; }
-            let __x = mapping.borrow()[(cand.clone()-1) as usize].clone();
+        for mut cand in (({let __elt = m.borrow()[(idx.clone()-1) as usize].clone(); __elt})).into_iter().cloned() {
+            if !(cand.clone() > 0 && ({let __elt = mapping.borrow()[(cand.clone()-1) as usize].clone(); __elt}) != idx.clone() && ({let __elt = mapping.borrow()[(cand.clone()-1) as usize].clone(); __elt}) > 0) { continue; }
+            let __x = ({let __elt = mapping.borrow()[(cand.clone()-1) as usize].clone(); __elt});
             __acc = cons(__x, __acc);
         }
         __acc.reverse()

@@ -355,9 +355,9 @@ fn evaluateSelectedParameters0(mut i: i32, mut globalKnownVars: BackendDAE::Vari
     let mut mark: i32 = mark;
     let mut v: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
     match '__try0: {
-        let false = (intGt(markarr.borrow()[(i.clone()-1) as usize].clone(), 0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
+        let false = (intGt(({let __elt = markarr.borrow()[(i.clone()-1) as usize].clone(); __elt}), 0)) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
         {let _arr = markarr.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = mark.clone(); _arr};
-        (globalKnownVars, cache, mark, repl, replEvaluate) = unwrap_break_err!(evaluateSelectedParameters1(m.borrow()[(i.clone()-1) as usize].clone(), globalKnownVars.clone(), m.clone(), inIEqns.clone(), cache.clone(), graph.clone(), mark.clone(), markarr.clone(), isInitial.clone(), repl.clone(), replEvaluate.clone()), '__try0);
+        (globalKnownVars, cache, mark, repl, replEvaluate) = unwrap_break_err!(evaluateSelectedParameters1(({let __elt = m.borrow()[(i.clone()-1) as usize].clone(); __elt}), globalKnownVars.clone(), m.clone(), inIEqns.clone(), cache.clone(), graph.clone(), mark.clone(), markarr.clone(), isInitial.clone(), repl.clone(), replEvaluate.clone()), '__try0);
         v = unwrap_break_err!(BackendVariable::getVarAt(globalKnownVars.clone(), i.clone()), '__try0);
         (v, globalKnownVars, cache, mark, repl) = unwrap_break_err!(evaluateFixedAttribute(v.clone(), true, globalKnownVars.clone(), m.clone(), inIEqns.clone(), cache.clone(), graph.clone(), mark.clone(), markarr.clone(), isInitial.clone(), repl.clone()), '__try0);
         (globalKnownVars, repl, replEvaluate, cache) = unwrap_break_err!(evaluateSelectedParameter(v.clone(), i.clone(), globalKnownVars.clone(), inIEqns.clone(), repl.clone(), replEvaluate.clone(), cache.clone(), graph.clone()), '__try0);
@@ -403,9 +403,9 @@ fn evaluateSelectedParameters1(mut iUsed: Arc<metamodelica::List<i32>>, mut glob
                     let mut mark: i32 = mark.clone();
                     let mut repl: BackendVarTransform::VariableReplacements = repl.clone();
                     let mut replEvaluate: BackendVarTransform::VariableReplacements = replEvaluate.clone();
-                    let false = (intGt(markarr.borrow()[(i.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
+                    let false = (intGt(({let __elt = markarr.borrow()[(i.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
                     {let _arr = markarr.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = mark.clone(); _arr};
-                    (globalKnownVars, cache, mark, repl, replEvaluate) = evaluateSelectedParameters1(m.borrow()[(i.clone()-1) as usize].clone(), globalKnownVars.clone(), m.clone(), inIEqns.clone(), cache.clone(), graph.clone(), mark.clone(), markarr.clone(), isInitial.clone(), repl.clone(), replEvaluate.clone())?;
+                    (globalKnownVars, cache, mark, repl, replEvaluate) = evaluateSelectedParameters1(({let __elt = m.borrow()[(i.clone()-1) as usize].clone(); __elt}), globalKnownVars.clone(), m.clone(), inIEqns.clone(), cache.clone(), graph.clone(), mark.clone(), markarr.clone(), isInitial.clone(), repl.clone(), replEvaluate.clone())?;
                     v = BackendVariable::getVarAt(globalKnownVars.clone(), i.clone())?;
                     (v, globalKnownVars, cache, mark, repl) = evaluateFixedAttribute(v.clone(), true, globalKnownVars.clone(), m.clone(), inIEqns.clone(), cache.clone(), graph.clone(), mark.clone(), markarr.clone(), isInitial.clone(), repl.clone())?;
                     (globalKnownVars, cache, repl, replEvaluate) = evaluateParameter(v.clone(), i.clone(), globalKnownVars.clone(), inIEqns.clone(), cache.clone(), graph.clone(), repl.clone(), replEvaluate.clone())?;

@@ -2834,7 +2834,7 @@ pub fn instElementList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut i
         dae_arr = arrayCreate(length.clone(), metamodelica::nil());
         for mut idx in &*element_order.clone() {
             let mut idx = idx.clone();
-            (cache, outEnv, outIH, outStore, dae, outSets, outState, vars, outGraph, fieldDomOpt) = instElement2(cache.clone(), outEnv.clone(), outIH.clone(), outStore.clone(), inMod.clone(), inPrefix.clone(), outState.clone(), el_arr.borrow()[(idx.clone()-1) as usize].clone(), inInstDims.clone(), inImplInst.clone(), inCallingScope.clone(), outGraph.clone(), outSets.clone(), inStopOnError.clone())?;
+            (cache, outEnv, outIH, outStore, dae, outSets, outState, vars, outGraph, fieldDomOpt) = instElement2(cache.clone(), outEnv.clone(), outIH.clone(), outStore.clone(), inMod.clone(), inPrefix.clone(), outState.clone(), ({let __elt = el_arr.borrow()[(idx.clone()-1) as usize].clone(); __elt}), inInstDims.clone(), inImplInst.clone(), inCallingScope.clone(), outGraph.clone(), outSets.clone(), inStopOnError.clone())?;
             {let _arr = var_arr.clone(); _arr.borrow_mut()[(length.clone() - idx.clone() + 1-1) as usize] = vars.clone(); _arr};
             {let _arr = dae_arr.clone(); _arr.borrow_mut()[(length.clone() - idx.clone() + 1-1) as usize] = dae.clone(); _arr};
             if intEq(Flags::getConfigEnum(Flags::GRAMMAR.clone())?, Flags::PDEMODELICA.clone()) {

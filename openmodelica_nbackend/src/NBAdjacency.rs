@@ -155,12 +155,12 @@ pub mod Mapping {
         let mut size: i32 = 0;
         r#str = (StringUtil::headline_4((literal!("Equation Index Mapping (ARR) -> START | SIZE")).clone())).clone();
         for mut i in 1..=metamodelica::arrayLength(mapping.eqn_AtS.clone()) {
-            (start, size) = mapping.eqn_AtS.borrow()[(i.clone()-1) as usize].clone();
+            (start, size) = ({let __elt = mapping.eqn_AtS.borrow()[(i.clone()-1) as usize].clone(); __elt});
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!(")\t")); __mm_s.push_str(&*intString(start.clone())); __mm_s.push_str(&*literal!(" | ")); __mm_s.push_str(&*intString(size.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
         }
         r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*StringUtil::headline_4((literal!("Variable Index Mapping (ARR) -> START | SIZE")).clone())); ArcStr::from(__mm_s) }).clone();
         for mut i in 1..=metamodelica::arrayLength(mapping.var_AtS.clone()) {
-            (start, size) = mapping.var_AtS.borrow()[(i.clone()-1) as usize].clone();
+            (start, size) = ({let __elt = mapping.var_AtS.borrow()[(i.clone()-1) as usize].clone(); __elt});
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!(")\t")); __mm_s.push_str(&*intString(start.clone())); __mm_s.push_str(&*literal!(" | ")); __mm_s.push_str(&*intString(size.clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
         }
         r#str
@@ -251,7 +251,7 @@ pub mod Mapping {
         let mut scal_indices: Arc<metamodelica::List<i32>> = metamodelica::nil();
         let mut start: i32 = 0;
         let mut length: i32 = 0;
-        (start, length) = mapping.eqn_AtS.borrow()[(arr_idx.clone()-1) as usize].clone();
+        (start, length) = ({let __elt = mapping.eqn_AtS.borrow()[(arr_idx.clone()-1) as usize].clone(); __elt});
         scal_indices = if (reverse.clone()) {List::intRange2(start.clone() + length.clone() - 1, start.clone())} else {List::intRange2(start.clone(), start.clone() + length.clone() - 1)};
         scal_indices
     }
@@ -269,7 +269,7 @@ pub mod Mapping {
         let mut scal_indices: Arc<metamodelica::List<i32>> = metamodelica::nil();
         let mut start: i32 = 0;
         let mut length: i32 = 0;
-        (start, length) = mapping.var_AtS.borrow()[(arr_idx.clone()-1) as usize].clone();
+        (start, length) = ({let __elt = mapping.var_AtS.borrow()[(arr_idx.clone()-1) as usize].clone(); __elt});
         scal_indices = ({
         let mut slice: Arc<metamodelica::List<i32>> = metamodelica::nil();
         (::match_deref::match_deref! { match &(subs.clone()) {
@@ -613,7 +613,7 @@ pub mod Matrix {
             let mut dep_map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Dependency::Dependency>>> as ::std::default::Default>::default();
             let mut rep_set: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
             for mut i in 1..=metamodelica::arrayLength(var_field!((*full).equation_names, Matrix::FULL).clone()) {
-                UnorderedMap::add(var_field!((*full).equation_names, Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(), i.clone(), index_map.clone())?;
+                UnorderedMap::add(({let __elt = var_field!((*full).equation_names, Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt}), i.clone(), index_map.clone())?;
             }
             for mut comp in &*comps.clone() {
                 let mut comp = comp.clone();
@@ -625,11 +625,11 @@ pub mod Matrix {
                     eqn_index = UnorderedMap::getSafe(eqn_name.clone(), index_map.clone(), metamodelica::sourceInfo!())?;
                     local_deps = metamodelica::nil();
                     changed = false;
-                    let __range0 = &*UnorderedMap::toList(var_field!((*full).dependencies, Matrix::FULL).borrow()[(eqn_index.clone()-1) as usize].clone());
+                    let __range0 = &*UnorderedMap::toList(({let __elt = var_field!((*full).dependencies, Matrix::FULL).borrow()[(eqn_index.clone()-1) as usize].clone(); __elt}));
                     for mut tpl in __range0 {
                         let mut tpl = tpl.clone();
                         (dep_cref, dep) = tpl.clone();
-                        repeated = UnorderedSet::contains(dep_cref.clone(), var_field!((*full).repetitions, Matrix::FULL).borrow()[(eqn_index.clone()-1) as usize].clone())?;
+                        repeated = UnorderedSet::contains(dep_cref.clone(), ({let __elt = var_field!((*full).repetitions, Matrix::FULL).borrow()[(eqn_index.clone()-1) as usize].clone(); __elt}))?;
                         (inner_deps, changed) = (::match_deref::match_deref! { match &(UnorderedMap::get(dep_cref.clone(), inner_map.clone())?) {
         Some(inner_deps) => (inner_deps.clone(), true),
         _ => (list![dep_cref.clone()], changed.clone()),
@@ -653,8 +653,8 @@ pub mod Matrix {
                                 }
                             }
                         } else {
-                            dep_map = var_field!((*full).dependencies, Matrix::FULL).borrow()[(eqn_index.clone()-1) as usize].clone();
-                            rep_set = var_field!((*full).repetitions, Matrix::FULL).borrow()[(eqn_index.clone()-1) as usize].clone();
+                            dep_map = ({let __elt = var_field!((*full).dependencies, Matrix::FULL).borrow()[(eqn_index.clone()-1) as usize].clone(); __elt});
+                            rep_set = ({let __elt = var_field!((*full).repetitions, Matrix::FULL).borrow()[(eqn_index.clone()-1) as usize].clone(); __elt});
                         }
                         eqn_names = metamodelica::cons(eqn_name.clone(), eqn_names.clone());
                         deps = metamodelica::cons(dep_map.clone(), deps.clone());
@@ -672,7 +672,7 @@ pub mod Matrix {
     }))?;
                             inner_deps = UnorderedSet::unique_list(inner_deps.clone(), (std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
                         } else {
-                            inner_deps = UnorderedMap::keyList(var_field!((*full).dependencies, Matrix::FULL).borrow()[(eqn_index.clone()-1) as usize].clone());
+                            inner_deps = UnorderedMap::keyList(({let __elt = var_field!((*full).dependencies, Matrix::FULL).borrow()[(eqn_index.clone()-1) as usize].clone(); __elt}));
                         }
                         for mut var in &*vars.clone() {
                             let mut var = var.clone();
@@ -726,8 +726,8 @@ pub mod Matrix {
                 (occ, dep, sol, rep) = (var_field!((*full).occurrences, Matrix::FULL).clone(), var_field!((*full).dependencies, Matrix::FULL).clone(), var_field!((*full).solvabilities, Matrix::FULL).clone(), var_field!((*full).repetitions, Matrix::FULL).clone());
                 for mut index in &*UnorderedMap::valueList(eqns_map.clone()) {
                     let mut index = index.clone();
-                    filtered = Solvability::filter(UnorderedSet::toList(occ.borrow()[(index.clone()-1) as usize].clone()), sol.borrow()[(index.clone()-1) as usize].clone(), vars_map.clone(), min.clone(), max.clone())?;
-                    upgradeRow(BEquation::EquationPointers::getEqnAt(eqns.clone(), index.clone())?, index.clone(), filtered.clone(), dep.borrow()[(index.clone()-1) as usize].clone(), rep.borrow()[(index.clone()-1) as usize].clone(), vars_map.clone(), vars_map.clone(), var_field!((*adj).m, Matrix::FINAL).clone(), var_field!((*adj).mapping, Matrix::FINAL).clone(), var_field!((*adj).modes, Matrix::FINAL).clone(), iter.clone())?;
+                    filtered = Solvability::filter(UnorderedSet::toList(({let __elt = occ.borrow()[(index.clone()-1) as usize].clone(); __elt})), ({let __elt = sol.borrow()[(index.clone()-1) as usize].clone(); __elt}), vars_map.clone(), min.clone(), max.clone())?;
+                    upgradeRow(BEquation::EquationPointers::getEqnAt(eqns.clone(), index.clone())?, index.clone(), filtered.clone(), ({let __elt = dep.borrow()[(index.clone()-1) as usize].clone(); __elt}), ({let __elt = rep.borrow()[(index.clone()-1) as usize].clone(); __elt}), vars_map.clone(), vars_map.clone(), var_field!((*adj).m, Matrix::FINAL).clone(), var_field!((*adj).mapping, Matrix::FINAL).clone(), var_field!((*adj).modes, Matrix::FINAL).clone(), iter.clone())?;
                 }
                 assign_variant_field!(adj => Matrix::FINAL; mT = transposeScalar(var_field!((*adj).m, Matrix::FINAL).clone(), metamodelica::arrayLength(var_field!((*adj).mapping, Matrix::FINAL).var_StA.clone()))?);
                 result = adj.clone();
@@ -834,15 +834,15 @@ pub mod Matrix {
             if !(UnorderedMap::isEmpty(vn.clone())) {
                 for mut e in &*UnorderedMap::valueList(eo.clone()) {
                     let mut e = e.clone();
-                    filtered = Solvability::filter(UnorderedSet::toList(var_field!((*full).occurrences, Matrix::FULL).borrow()[(e.clone()-1) as usize].clone()), var_field!((*full).solvabilities, Matrix::FULL).borrow()[(e.clone()-1) as usize].clone(), vn.clone(), 0, rank.clone())?;
-                    upgradeRow(BEquation::EquationPointers::getEqnAt(eqns.clone(), e.clone())?, e.clone(), filtered.clone(), var_field!((*full).dependencies, Matrix::FULL).borrow()[(e.clone()-1) as usize].clone(), var_field!((*full).repetitions, Matrix::FULL).borrow()[(e.clone()-1) as usize].clone(), vn.clone(), vars.map.clone(), var_field!((*adj).m, Matrix::FINAL).clone(), var_field!((*adj).mapping, Matrix::FINAL).clone(), var_field!((*adj).modes, Matrix::FINAL).clone(), Arc::new(crate::NBEquation::Iterator::EMPTY))?;
+                    filtered = Solvability::filter(UnorderedSet::toList(({let __elt = var_field!((*full).occurrences, Matrix::FULL).borrow()[(e.clone()-1) as usize].clone(); __elt})), ({let __elt = var_field!((*full).solvabilities, Matrix::FULL).borrow()[(e.clone()-1) as usize].clone(); __elt}), vn.clone(), 0, rank.clone())?;
+                    upgradeRow(BEquation::EquationPointers::getEqnAt(eqns.clone(), e.clone())?, e.clone(), filtered.clone(), ({let __elt = var_field!((*full).dependencies, Matrix::FULL).borrow()[(e.clone()-1) as usize].clone(); __elt}), ({let __elt = var_field!((*full).repetitions, Matrix::FULL).borrow()[(e.clone()-1) as usize].clone(); __elt}), vn.clone(), vars.map.clone(), var_field!((*adj).m, Matrix::FINAL).clone(), var_field!((*adj).mapping, Matrix::FINAL).clone(), var_field!((*adj).modes, Matrix::FINAL).clone(), Arc::new(crate::NBEquation::Iterator::EMPTY))?;
                 }
             }
             if !(UnorderedMap::isEmpty(en.clone())) {
                 for mut e in &*UnorderedMap::valueList(en.clone()) {
                     let mut e = e.clone();
-                    filtered = Solvability::filter(UnorderedSet::toList(var_field!((*full).occurrences, Matrix::FULL).borrow()[(e.clone()-1) as usize].clone()), var_field!((*full).solvabilities, Matrix::FULL).borrow()[(e.clone()-1) as usize].clone(), v.clone(), 0, rank.clone())?;
-                    upgradeRow(BEquation::EquationPointers::getEqnAt(eqns.clone(), e.clone())?, e.clone(), filtered.clone(), var_field!((*full).dependencies, Matrix::FULL).borrow()[(e.clone()-1) as usize].clone(), var_field!((*full).repetitions, Matrix::FULL).borrow()[(e.clone()-1) as usize].clone(), v.clone(), vars.map.clone(), var_field!((*adj).m, Matrix::FINAL).clone(), var_field!((*adj).mapping, Matrix::FINAL).clone(), var_field!((*adj).modes, Matrix::FINAL).clone(), Arc::new(crate::NBEquation::Iterator::EMPTY))?;
+                    filtered = Solvability::filter(UnorderedSet::toList(({let __elt = var_field!((*full).occurrences, Matrix::FULL).borrow()[(e.clone()-1) as usize].clone(); __elt})), ({let __elt = var_field!((*full).solvabilities, Matrix::FULL).borrow()[(e.clone()-1) as usize].clone(); __elt}), v.clone(), 0, rank.clone())?;
+                    upgradeRow(BEquation::EquationPointers::getEqnAt(eqns.clone(), e.clone())?, e.clone(), filtered.clone(), ({let __elt = var_field!((*full).dependencies, Matrix::FULL).borrow()[(e.clone()-1) as usize].clone(); __elt}), ({let __elt = var_field!((*full).repetitions, Matrix::FULL).borrow()[(e.clone()-1) as usize].clone(); __elt}), v.clone(), vars.map.clone(), var_field!((*adj).m, Matrix::FINAL).clone(), var_field!((*adj).mapping, Matrix::FINAL).clone(), var_field!((*adj).modes, Matrix::FINAL).clone(), Arc::new(crate::NBEquation::Iterator::EMPTY))?;
                 }
             }
             if UnorderedMap::isEmpty(vo.clone()) && UnorderedMap::isEmpty(vn.clone()) {
@@ -918,9 +918,9 @@ pub mod Matrix {
                     let mut e = e.clone();
                     eqn_ptr = BEquation::EquationPointers::getEqnAt(eqns.clone(), e.clone())?;
                     index = UnorderedMap::getSafe(BEquation::Equation::getEqnName(eqn_ptr.clone())?, eqns.map.clone(), metamodelica::sourceInfo!())?;
-                    occ_set = collectDependenciesEquation(Pointer::access(eqn_ptr.clone()), kind.clone(), vn.clone(), var_field!((*full).dependencies, Matrix::FULL).borrow()[(index.clone()-1) as usize].clone(), var_field!((*full).solvabilities, Matrix::FULL).borrow()[(index.clone()-1) as usize].clone(), var_field!((*full).repetitions, Matrix::FULL).borrow()[(index.clone()-1) as usize].clone())?;
+                    occ_set = collectDependenciesEquation(Pointer::access(eqn_ptr.clone()), kind.clone(), vn.clone(), ({let __elt = var_field!((*full).dependencies, Matrix::FULL).borrow()[(index.clone()-1) as usize].clone(); __elt}), ({let __elt = var_field!((*full).solvabilities, Matrix::FULL).borrow()[(index.clone()-1) as usize].clone(); __elt}), ({let __elt = var_field!((*full).repetitions, Matrix::FULL).borrow()[(index.clone()-1) as usize].clone(); __elt}))?;
                     {
-                        let __cell0 = UnorderedSet::union(var_field!((*full).occurrences, Matrix::FULL).borrow()[(index.clone()-1) as usize].clone(), occ_set.clone())?;
+                        let __cell0 = UnorderedSet::union(({let __elt = var_field!((*full).occurrences, Matrix::FULL).borrow()[(index.clone()-1) as usize].clone(); __elt}), occ_set.clone())?;
                         var_field!((*full).occurrences, Matrix::FULL).clone().borrow_mut()[(index.clone()-1) as usize] = __cell0;
                     }
                 }
@@ -930,7 +930,7 @@ pub mod Matrix {
                     let mut e = e.clone();
                     eqn_ptr = BEquation::EquationPointers::getEqnAt(eqns.clone(), e.clone())?;
                     index = UnorderedMap::getSafe(BEquation::Equation::getEqnName(eqn_ptr.clone())?, eqns.map.clone(), metamodelica::sourceInfo!())?;
-                    occ_set = collectDependenciesEquation(Pointer::access(eqn_ptr.clone()), kind.clone(), vars.map.clone(), var_field!((*full).dependencies, Matrix::FULL).borrow()[(index.clone()-1) as usize].clone(), var_field!((*full).solvabilities, Matrix::FULL).borrow()[(index.clone()-1) as usize].clone(), var_field!((*full).repetitions, Matrix::FULL).borrow()[(index.clone()-1) as usize].clone())?;
+                    occ_set = collectDependenciesEquation(Pointer::access(eqn_ptr.clone()), kind.clone(), vars.map.clone(), ({let __elt = var_field!((*full).dependencies, Matrix::FULL).borrow()[(index.clone()-1) as usize].clone(); __elt}), ({let __elt = var_field!((*full).solvabilities, Matrix::FULL).borrow()[(index.clone()-1) as usize].clone(); __elt}), ({let __elt = var_field!((*full).repetitions, Matrix::FULL).borrow()[(index.clone()-1) as usize].clone(); __elt}))?;
                     {
                         let __cell1 = BEquation::Equation::getEqnName(eqn_ptr.clone())?;
                         var_field!((*full).equation_names, Matrix::FULL).clone().borrow_mut()[(index.clone()-1) as usize] = __cell1;
@@ -983,10 +983,10 @@ pub mod Matrix {
                 if !(eqnIsDiscrete.clone() || eqnIsIf.clone()) {
                     residual = BEquation::Equation::getResidualExp(Pointer::access(eqn_ptr.clone()), true)?;
                 }
-                let __range1 = UnorderedSet::toArray(var_field!((*full).occurrences, Matrix::FULL).borrow()[(eqn_idx.clone()-1) as usize].clone()).borrow().iter().cloned().collect::<Vec<_>>();
+                let __range1 = UnorderedSet::toArray(({let __elt = var_field!((*full).occurrences, Matrix::FULL).borrow()[(eqn_idx.clone()-1) as usize].clone(); __elt})).borrow().iter().cloned().collect::<Vec<_>>();
                 for mut var in __range1 {
                     if UnorderedMap::contains(var.clone(), v.clone())? {
-                        sol = UnorderedMap::getSafe(var.clone(), var_field!((*full).solvabilities, Matrix::FULL).borrow()[(eqn_idx.clone()-1) as usize].clone(), metamodelica::sourceInfo!())?;
+                        sol = UnorderedMap::getSafe(var.clone(), ({let __elt = var_field!((*full).solvabilities, Matrix::FULL).borrow()[(eqn_idx.clone()-1) as usize].clone(); __elt}), metamodelica::sourceInfo!())?;
                         if Solvability::rank(sol.clone())? < Solvability::rank(Arc::new(crate::NBAdjacency::Solvability::IMPLICIT))? {
                             if eqnIsDiscrete.clone() || !(BVariable::checkCref(var.clone(), (std::sync::Arc::new({ let __pe_b1 = init.clone(); move |__pe_a0| BVariable::isContinuous(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Variable::NFVariable>>) -> Result<bool> + 'static>), metamodelica::sourceInfo!())?) {
                                 (_, status, _) = Solve::solveSimple(Pointer::access(eqn_ptr.clone()), var.clone())?;
@@ -1008,7 +1008,7 @@ pub mod Matrix {
                                     sol = Arc::new(Solvability::Solvability::EXPLICIT_LINEAR { vars: if (UnorderedSet::isEmpty(var_set.clone())) {None} else {Some(var_set.clone())}, pars: if (UnorderedSet::isEmpty(param_set.clone())) {None} else {Some(param_set.clone())} });
                                 }
                             }
-                            UnorderedMap::add(var.clone(), sol.clone(), var_field!((*full).solvabilities, Matrix::FULL).borrow()[(eqn_idx.clone()-1) as usize].clone())?;
+                            UnorderedMap::add(var.clone(), sol.clone(), ({let __elt = var_field!((*full).solvabilities, Matrix::FULL).borrow()[(eqn_idx.clone()-1) as usize].clone(); __elt}))?;
                         }
                     }
                 }
@@ -1062,12 +1062,12 @@ pub mod Matrix {
                 name = BEquation::Equation::getEqnName(eqn_ptr.clone())?;
                 index_new = UnorderedMap::getSafe(name.clone(), eqns.map.clone(), metamodelica::sourceInfo!())?;
                 index_old = UnorderedMap::getSafe(name.clone(), old_map.clone(), metamodelica::sourceInfo!())?;
-                (old_start, old_size) = var_field!((*adj).mapping, Matrix::FINAL).eqn_AtS.borrow()[(index_old.clone()-1) as usize].clone();
-                (new_start, new_size) = mapping.eqn_AtS.borrow()[(index_new.clone()-1) as usize].clone();
+                (old_start, old_size) = ({let __elt = var_field!((*adj).mapping, Matrix::FINAL).eqn_AtS.borrow()[(index_old.clone()-1) as usize].clone(); __elt});
+                (new_start, new_size) = ({let __elt = mapping.eqn_AtS.borrow()[(index_new.clone()-1) as usize].clone(); __elt});
                 if old_size.clone() == new_size.clone() {
                     for mut i in 0..=old_size.clone() - 1 {
                         {
-                            let __cell0 = var_field!((*adj).m, Matrix::FINAL).borrow()[(old_start.clone() + i.clone()-1) as usize].clone();
+                            let __cell0 = ({let __elt = var_field!((*adj).m, Matrix::FINAL).borrow()[(old_start.clone() + i.clone()-1) as usize].clone(); __elt});
                             m.clone().borrow_mut()[(new_start.clone() + i.clone()-1) as usize] = __cell0;
                         }
                     }
@@ -1080,19 +1080,19 @@ pub mod Matrix {
                     equation_names.clone().borrow_mut()[(index_new.clone()-1) as usize] = __cell1;
                 }
                 {
-                    let __cell2 = var_field!((*full).occurrences, Matrix::FULL).borrow()[(index_old.clone()-1) as usize].clone();
+                    let __cell2 = ({let __elt = var_field!((*full).occurrences, Matrix::FULL).borrow()[(index_old.clone()-1) as usize].clone(); __elt});
                     occurrences.clone().borrow_mut()[(index_new.clone()-1) as usize] = __cell2;
                 }
                 {
-                    let __cell3 = var_field!((*full).dependencies, Matrix::FULL).borrow()[(index_old.clone()-1) as usize].clone();
+                    let __cell3 = ({let __elt = var_field!((*full).dependencies, Matrix::FULL).borrow()[(index_old.clone()-1) as usize].clone(); __elt});
                     dependencies.clone().borrow_mut()[(index_new.clone()-1) as usize] = __cell3;
                 }
                 {
-                    let __cell4 = var_field!((*full).solvabilities, Matrix::FULL).borrow()[(index_old.clone()-1) as usize].clone();
+                    let __cell4 = ({let __elt = var_field!((*full).solvabilities, Matrix::FULL).borrow()[(index_old.clone()-1) as usize].clone(); __elt});
                     solvabilities.clone().borrow_mut()[(index_new.clone()-1) as usize] = __cell4;
                 }
                 {
-                    let __cell5 = var_field!((*full).repetitions, Matrix::FULL).borrow()[(index_old.clone()-1) as usize].clone();
+                    let __cell5 = ({let __elt = var_field!((*full).repetitions, Matrix::FULL).borrow()[(index_old.clone()-1) as usize].clone(); __elt});
                     repetitions.clone().borrow_mut()[(index_new.clone()-1) as usize] = __cell5;
                 }
             }
@@ -1182,7 +1182,7 @@ pub mod Matrix {
         __acc.unwrap_or((-i32::MAX))
     }) + 3;
             for mut i in 1..=metamodelica::arrayLength(names.clone()) {
-                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*complex_sizes.clone().borrow()[(i.clone()-1) as usize].clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(" ")).clone(), length0.clone() - ((complex_sizes.clone().borrow()[(i.clone()-1) as usize].clone()).clone().len() as i32))); __mm_s.push_str(&*literal!(" | ")); __mm_s.push_str(&*types_str.clone().borrow()[(i.clone()-1) as usize].clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length1.clone() - ((types_str.clone().borrow()[(i.clone()-1) as usize].clone()).clone().len() as i32))); __mm_s.push_str(&*names.clone().borrow()[(i.clone()-1) as usize].clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length2.clone() - ((names.clone().borrow()[(i.clone()-1) as usize].clone()).clone().len() as i32))); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*List::toString(UnorderedSet::toList(var_field!((*adj).occurrences, Matrix::FULL).borrow()[(i.clone()-1) as usize].clone()), (std::sync::Arc::new({ let __pe_b1 = var_field!((*adj).dependencies, Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); let __pe_b2 = var_field!((*adj).solvabilities, Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); let __pe_b3 = var_field!((*adj).repetitions, Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); move |__pe_a0| fullString(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*({let __elt = complex_sizes.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(" ")).clone(), length0.clone() - ((({let __elt = complex_sizes.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})).clone().len() as i32))); __mm_s.push_str(&*literal!(" | ")); __mm_s.push_str(&*({let __elt = types_str.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length1.clone() - ((({let __elt = types_str.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})).clone().len() as i32))); __mm_s.push_str(&*({let __elt = names.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length2.clone() - ((({let __elt = names.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})).clone().len() as i32))); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*List::toString(UnorderedSet::toList(({let __elt = var_field!((*adj).occurrences, Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt})), (std::sync::Arc::new({ let __pe_b1 = ({let __elt = var_field!((*adj).dependencies, Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt}); let __pe_b2 = ({let __elt = var_field!((*adj).solvabilities, Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt}); let __pe_b3 = ({let __elt = var_field!((*adj).repetitions, Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt}); move |__pe_a0| fullString(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             }
             r#str.clone()
         },
@@ -1284,7 +1284,7 @@ pub mod Matrix {
         __acc.unwrap_or((-i32::MAX))
     }) + 3;
             for mut i in 1..=metamodelica::arrayLength(names.clone()) {
-                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*complex_sizes.clone().borrow()[(i.clone()-1) as usize].clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(" ")).clone(), length0.clone() - ((complex_sizes.clone().borrow()[(i.clone()-1) as usize].clone()).clone().len() as i32))); __mm_s.push_str(&*literal!(" | ")); __mm_s.push_str(&*types_str.clone().borrow()[(i.clone()-1) as usize].clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length1.clone() - ((types_str.clone().borrow()[(i.clone()-1) as usize].clone()).clone().len() as i32))); __mm_s.push_str(&*names.clone().borrow()[(i.clone()-1) as usize].clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length2.clone() - ((names.clone().borrow()[(i.clone()-1) as usize].clone()).clone().len() as i32))); __mm_s.push_str(&*vars.clone().borrow()[(i.clone()-1) as usize].clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length3.clone() - ((vars.clone().borrow()[(i.clone()-1) as usize].clone()).clone().len() as i32))); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*List::toString(UnorderedMap::keyList(var_field!((*adj).dependencies, Matrix::SPARSITY).borrow()[(i.clone()-1) as usize].clone()), (std::sync::Arc::new({ let __pe_b1 = var_field!((*adj).dependencies, Matrix::SPARSITY).borrow()[(i.clone()-1) as usize].clone(); let __pe_b2 = var_field!((*adj).repetitions, Matrix::SPARSITY).borrow()[(i.clone()-1) as usize].clone(); move |__pe_a0| sparseString(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*({let __elt = complex_sizes.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(" ")).clone(), length0.clone() - ((({let __elt = complex_sizes.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})).clone().len() as i32))); __mm_s.push_str(&*literal!(" | ")); __mm_s.push_str(&*({let __elt = types_str.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length1.clone() - ((({let __elt = types_str.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})).clone().len() as i32))); __mm_s.push_str(&*({let __elt = names.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length2.clone() - ((({let __elt = names.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})).clone().len() as i32))); __mm_s.push_str(&*({let __elt = vars.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length3.clone() - ((({let __elt = vars.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})).clone().len() as i32))); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*List::toString(UnorderedMap::keyList(({let __elt = var_field!((*adj).dependencies, Matrix::SPARSITY).borrow()[(i.clone()-1) as usize].clone(); __elt})), (std::sync::Arc::new({ let __pe_b1 = ({let __elt = var_field!((*adj).dependencies, Matrix::SPARSITY).borrow()[(i.clone()-1) as usize].clone(); __elt}); let __pe_b2 = ({let __elt = var_field!((*adj).repetitions, Matrix::SPARSITY).borrow()[(i.clone()-1) as usize].clone(); __elt}); move |__pe_a0| sparseString(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             }
             r#str.clone()
         },
@@ -1359,7 +1359,7 @@ pub mod Matrix {
         __acc.reverse()
     }).into_iter().cloned().collect());
             for mut i in (1..=metamodelica::arrayLength(names.clone())).rev() {
-                (XX, II, NM, NP, LV, LP, LC, QQ) = Solvability::categorize(UnorderedSet::toList(var_field!((*adj).occurrences, Matrix::FULL).borrow()[(i.clone()-1) as usize].clone()), var_field!((*adj).solvabilities, Matrix::FULL).borrow()[(i.clone()-1) as usize].clone())?;
+                (XX, II, NM, NP, LV, LP, LC, QQ) = Solvability::categorize(UnorderedSet::toList(({let __elt = var_field!((*adj).occurrences, Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt})), ({let __elt = var_field!((*adj).solvabilities, Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt}))?;
                 xx = metamodelica::cons((List::toString(XX.clone(), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("XX ")).clone(), (literal!("{")).clone(), (literal!(",")).clone(), (literal!("}")).clone(), false, 0)?).clone(), xx.clone());
                 ii = metamodelica::cons((List::toString(II.clone(), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("II ")).clone(), (literal!("{")).clone(), (literal!(",")).clone(), (literal!("}")).clone(), false, 0)?).clone(), ii.clone());
                 nm = metamodelica::cons((List::toString(NM.clone(), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("N- ")).clone(), (literal!("{")).clone(), (literal!(",")).clone(), (literal!("}")).clone(), false, 0)?).clone(), nm.clone());
@@ -1458,7 +1458,7 @@ pub mod Matrix {
         __acc.unwrap_or((-i32::MAX))
     });
             for mut i in 1..=metamodelica::arrayLength(names.clone()) {
-                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*types.clone().borrow()[(i.clone()-1) as usize].clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length1.clone() - ((types.clone().borrow()[(i.clone()-1) as usize].clone()).clone().len() as i32))); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*names.clone().borrow()[(i.clone()-1) as usize].clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length2.clone() - ((names.clone().borrow()[(i.clone()-1) as usize].clone()).clone().len() as i32))); __mm_s.push_str(&*LC_.clone().borrow()[(i.clone()-1) as usize].clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length_lc.clone() - ((LC_.clone().borrow()[(i.clone()-1) as usize].clone()).clone().len() as i32))); __mm_s.push_str(&*LP_.clone().borrow()[(i.clone()-1) as usize].clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length_lp.clone() - ((LP_.clone().borrow()[(i.clone()-1) as usize].clone()).clone().len() as i32))); __mm_s.push_str(&*LV_.clone().borrow()[(i.clone()-1) as usize].clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length_lv.clone() - ((LV_.clone().borrow()[(i.clone()-1) as usize].clone()).clone().len() as i32))); __mm_s.push_str(&*NP_.clone().borrow()[(i.clone()-1) as usize].clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length_np.clone() - ((NP_.clone().borrow()[(i.clone()-1) as usize].clone()).clone().len() as i32))); __mm_s.push_str(&*NM_.clone().borrow()[(i.clone()-1) as usize].clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length_nm.clone() - ((NM_.clone().borrow()[(i.clone()-1) as usize].clone()).clone().len() as i32))); __mm_s.push_str(&*II_.clone().borrow()[(i.clone()-1) as usize].clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length_ii.clone() - ((II_.clone().borrow()[(i.clone()-1) as usize].clone()).clone().len() as i32))); __mm_s.push_str(&*XX_.clone().borrow()[(i.clone()-1) as usize].clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length_xx.clone() - ((XX_.clone().borrow()[(i.clone()-1) as usize].clone()).clone().len() as i32))); __mm_s.push_str(&*QQ_.clone().borrow()[(i.clone()-1) as usize].clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length_qq.clone() - ((QQ_.clone().borrow()[(i.clone()-1) as usize].clone()).clone().len() as i32))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*({let __elt = types.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length1.clone() - ((({let __elt = types.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})).clone().len() as i32))); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*({let __elt = names.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length2.clone() - ((({let __elt = names.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})).clone().len() as i32))); __mm_s.push_str(&*({let __elt = LC_.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length_lc.clone() - ((({let __elt = LC_.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})).clone().len() as i32))); __mm_s.push_str(&*({let __elt = LP_.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length_lp.clone() - ((({let __elt = LP_.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})).clone().len() as i32))); __mm_s.push_str(&*({let __elt = LV_.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length_lv.clone() - ((({let __elt = LV_.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})).clone().len() as i32))); __mm_s.push_str(&*({let __elt = NP_.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length_np.clone() - ((({let __elt = NP_.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})).clone().len() as i32))); __mm_s.push_str(&*({let __elt = NM_.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length_nm.clone() - ((({let __elt = NM_.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})).clone().len() as i32))); __mm_s.push_str(&*({let __elt = II_.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length_ii.clone() - ((({let __elt = II_.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})).clone().len() as i32))); __mm_s.push_str(&*({let __elt = XX_.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length_xx.clone() - ((({let __elt = XX_.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})).clone().len() as i32))); __mm_s.push_str(&*({let __elt = QQ_.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length_qq.clone() - ((({let __elt = QQ_.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})).clone().len() as i32))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             }
             r#str.clone()
         },
@@ -1522,7 +1522,7 @@ pub mod Matrix {
         __acc.reverse()
     }).into_iter().cloned().collect());
             for mut i in (1..=metamodelica::arrayLength(names.clone())).rev() {
-                (F, R, E, A, S, K) = Dependency::categorize(UnorderedSet::toList(var_field!((*adj).occurrences, Matrix::FULL).borrow()[(i.clone()-1) as usize].clone()), var_field!((*adj).dependencies, Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(), var_field!((*adj).repetitions, Matrix::FULL).borrow()[(i.clone()-1) as usize].clone())?;
+                (F, R, E, A, S, K) = Dependency::categorize(UnorderedSet::toList(({let __elt = var_field!((*adj).occurrences, Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt})), ({let __elt = var_field!((*adj).dependencies, Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt}), ({let __elt = var_field!((*adj).repetitions, Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt}))?;
                 f = metamodelica::cons((List::toString(F.clone(), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("[!]")).clone(), (literal!("{")).clone(), (literal!(",")).clone(), (literal!("}")).clone(), false, 0)?).clone(), f.clone());
                 r = metamodelica::cons((List::toString(R.clone(), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("[-]")).clone(), (literal!("{")).clone(), (literal!(",")).clone(), (literal!("}")).clone(), false, 0)?).clone(), r.clone());
                 e = metamodelica::cons((List::toString(E.clone(), (std::sync::Arc::new(ComponentRef::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<ArcStr> + 'static>), (literal!("[+]")).clone(), (literal!("{")).clone(), (literal!(",")).clone(), (literal!("}")).clone(), false, 0)?).clone(), e.clone());
@@ -1601,7 +1601,7 @@ pub mod Matrix {
         __acc.unwrap_or((-i32::MAX))
     });
             for mut i in 1..=metamodelica::arrayLength(names.clone()) {
-                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*types.clone().borrow()[(i.clone()-1) as usize].clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length1.clone() - ((types.clone().borrow()[(i.clone()-1) as usize].clone()).clone().len() as i32))); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*names.clone().borrow()[(i.clone()-1) as usize].clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length2.clone() - ((names.clone().borrow()[(i.clone()-1) as usize].clone()).clone().len() as i32))); __mm_s.push_str(&*K_.clone().borrow()[(i.clone()-1) as usize].clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), lengthk.clone() - ((K_.clone().borrow()[(i.clone()-1) as usize].clone()).clone().len() as i32))); __mm_s.push_str(&*S_.clone().borrow()[(i.clone()-1) as usize].clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), lengths.clone() - ((S_.clone().borrow()[(i.clone()-1) as usize].clone()).clone().len() as i32))); __mm_s.push_str(&*A_.clone().borrow()[(i.clone()-1) as usize].clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), lengtha.clone() - ((A_.clone().borrow()[(i.clone()-1) as usize].clone()).clone().len() as i32))); __mm_s.push_str(&*E_.clone().borrow()[(i.clone()-1) as usize].clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), lengthe.clone() - ((E_.clone().borrow()[(i.clone()-1) as usize].clone()).clone().len() as i32))); __mm_s.push_str(&*R_.clone().borrow()[(i.clone()-1) as usize].clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), lengthr.clone() - ((R_.clone().borrow()[(i.clone()-1) as usize].clone()).clone().len() as i32))); __mm_s.push_str(&*F_.clone().borrow()[(i.clone()-1) as usize].clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), lengthf.clone() - ((F_.clone().borrow()[(i.clone()-1) as usize].clone()).clone().len() as i32))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+                r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*({let __elt = types.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length1.clone() - ((({let __elt = types.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})).clone().len() as i32))); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*({let __elt = names.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), length2.clone() - ((({let __elt = names.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})).clone().len() as i32))); __mm_s.push_str(&*({let __elt = K_.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), lengthk.clone() - ((({let __elt = K_.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})).clone().len() as i32))); __mm_s.push_str(&*({let __elt = S_.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), lengths.clone() - ((({let __elt = S_.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})).clone().len() as i32))); __mm_s.push_str(&*({let __elt = A_.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), lengtha.clone() - ((({let __elt = A_.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})).clone().len() as i32))); __mm_s.push_str(&*({let __elt = E_.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), lengthe.clone() - ((({let __elt = E_.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})).clone().len() as i32))); __mm_s.push_str(&*({let __elt = R_.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), lengthr.clone() - ((({let __elt = R_.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})).clone().len() as i32))); __mm_s.push_str(&*({let __elt = F_.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*StringUtil::repeat((literal!(".")).clone(), lengthf.clone() - ((({let __elt = F_.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})).clone().len() as i32))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
             }
             r#str.clone()
         },
@@ -1673,18 +1673,18 @@ pub mod Matrix {
         let mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
         mT = arrayCreate(size.clone(), metamodelica::nil());
         for mut row in 1..=metamodelica::arrayLength(m.clone()) {
-            let __range0 = &*m.borrow()[(row.clone()-1) as usize].clone();
+            let __range0 = &*({let __elt = m.borrow()[(row.clone()-1) as usize].clone(); __elt});
             for mut idx in __range0 {
                 let mut idx = idx.clone();
                 if '__try1: {
                     if idx.clone() > 0 {
                         {
-                            let __cell2 = metamodelica::cons(row.clone(), mT.borrow()[(idx.clone()-1) as usize].clone());
+                            let __cell2 = metamodelica::cons(row.clone(), ({let __elt = mT.borrow()[(idx.clone()-1) as usize].clone(); __elt}));
                             mT.clone().borrow_mut()[(idx.clone()-1) as usize] = __cell2;
                         }
                     } else {
                         {
-                            let __cell3 = metamodelica::cons(-(row.clone()), mT.borrow()[(intAbs(idx.clone())-1) as usize].clone());
+                            let __cell3 = metamodelica::cons(-(row.clone()), ({let __elt = mT.borrow()[(intAbs(idx.clone())-1) as usize].clone(); __elt}));
                             mT.clone().borrow_mut()[(intAbs(idx.clone())-1) as usize] = __cell3;
                         }
                     }
@@ -1696,7 +1696,7 @@ pub mod Matrix {
         }
         for mut row in 1..=metamodelica::arrayLength(mT.clone()) {
             {
-                let __cell4 = List::sort(mT.borrow()[(row.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
+                let __cell4 = List::sort(({let __elt = mT.borrow()[(row.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
                 mT.clone().borrow_mut()[(row.clone()-1) as usize] = __cell4;
             }
         }
@@ -1709,7 +1709,7 @@ pub mod Matrix {
         let mut tmp: ArcStr = arcstr::literal!("");
         for mut row in 1..=metamodelica::arrayLength(m.clone()) {
             tmp = (intString(row.clone())).clone();
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\t(")); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*literal!(")")); __mm_s.push_str(&*StringUtil::repeat((literal!(" ")).clone(), skip.clone() - ((tmp.clone()).clone().len() as i32))); __mm_s.push_str(&*List::toString(m.borrow()[(row.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\t(")); __mm_s.push_str(&*tmp.clone()); __mm_s.push_str(&*literal!(")")); __mm_s.push_str(&*StringUtil::repeat((literal!(" ")).clone(), skip.clone() - ((tmp.clone()).clone().len() as i32))); __mm_s.push_str(&*List::toString(({let __elt = m.borrow()[(row.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
         }
         Ok(r#str)
     }
@@ -1781,7 +1781,7 @@ pub mod Matrix {
         let mut maps: Arc<metamodelica::List<Option<Arc<Iterator::Iterator>>>> = metamodelica::nil();
         match '__try0: {
             if BEquation::Equation::isAlgorithm(eqn_ptr.clone()) || BEquation::Equation::isIfEquation(eqn_ptr.clone()) {
-                (eqn_scal_idx, eqn_size) = mapping.eqn_AtS.borrow()[(eqn_arr_idx.clone()-1) as usize].clone();
+                (eqn_scal_idx, eqn_size) = ({let __elt = mapping.eqn_AtS.borrow()[(eqn_arr_idx.clone()-1) as usize].clone(); __elt});
                 row = unwrap_break_err!(Slice::upgradeRowFull(dependencies.clone(), map.clone(), mapping.clone()), '__try0);
                 for mut i in 0..=eqn_size.clone() - 1 {
                     unwrap_break_err!(updateIntegerRow(m.clone(), eqn_scal_idx.clone() + i.clone(), row.clone()), '__try0);
@@ -1805,7 +1805,7 @@ pub mod Matrix {
     }
 
     fn updateIntegerRow(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut idx: i32, mut row: Arc<metamodelica::List<i32>>) -> Result<()> {
-        {let _arr = m.clone(); let _val = listAppend(row.clone(), m.borrow()[(idx.clone()-1) as usize].clone()); _arr.borrow_mut()[(idx.clone()-1) as usize] = _val; _arr};
+        {let _arr = m.clone(); let _val = listAppend(row.clone(), ({let __elt = m.borrow()[(idx.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(idx.clone()-1) as usize] = _val; _arr};
         Ok(())
     }
 
@@ -1952,7 +1952,7 @@ pub mod Dependency {
             } };
             dep = __pa0.clone();
             if metamodelica::arrayLength(dep.skips.clone()) >= depth.clone() {
-                {let _arr = dep.skips.clone(); let _val = UnorderedSet::unique_list(metamodelica::cons(sk.clone(), dep.skips.borrow()[(depth.clone()-1) as usize].clone()), std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?; _arr.borrow_mut()[(depth.clone()-1) as usize] = _val; _arr};
+                {let _arr = dep.skips.clone(); let _val = UnorderedSet::unique_list(metamodelica::cons(sk.clone(), ({let __elt = dep.skips.borrow()[(depth.clone()-1) as usize].clone(); __elt})), std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?; _arr.borrow_mut()[(depth.clone()-1) as usize] = _val; _arr};
             } else {
                 if Flags::isSet(Flags::FAILTRACE.clone())? {
                     Error::addCompilerWarning(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBAdjacency.Dependency.skip")); __mm_s.push_str(&*literal!(": Cref ")); __mm_s.push_str(&*ComponentRef::toString(cref.clone())?); __mm_s.push_str(&*literal!(" was saved with depth ")); __mm_s.push_str(&*intString(metamodelica::arrayLength(dep.skips.clone()))); __mm_s.push_str(&*literal!(" but depth ")); __mm_s.push_str(&*intString(depth.clone())); __mm_s.push_str(&*literal!(" was requested.")); ArcStr::from(__mm_s) }).clone())?;
@@ -1985,14 +1985,14 @@ pub mod Dependency {
             } else {
                 i = if (reverse.clone()) {metamodelica::arrayLength(dep.skips.clone())} else {1};
                 while rest.clone() > 0 && i.clone() > 0 && i.clone() < metamodelica::arrayLength(dep.skips.clone()) + 1 {
-                    len = (dep.skips.borrow()[(i.clone()-1) as usize].clone().len() as i32);
+                    len = (({let __elt = dep.skips.borrow()[(i.clone()-1) as usize].clone(); __elt}).len() as i32);
                     if len.clone() <= rest.clone() {
                         {let _arr = dep.skips.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = metamodelica::nil(); _arr};
                     } else if len.clone() > 0 {
                         if reverse.clone() {
-                            {let _arr = dep.skips.clone(); let _val = List::firstN(dep.skips.borrow()[(i.clone()-1) as usize].clone(), len.clone() - rest.clone())?; _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+                            {let _arr = dep.skips.clone(); let _val = List::firstN(({let __elt = dep.skips.borrow()[(i.clone()-1) as usize].clone(); __elt}), len.clone() - rest.clone())?; _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
                         } else {
-                            {let _arr = dep.skips.clone(); let _val = List::lastN(dep.skips.borrow()[(i.clone()-1) as usize].clone(), len.clone() - rest.clone())?; _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+                            {let _arr = dep.skips.clone(); let _val = List::lastN(({let __elt = dep.skips.borrow()[(i.clone()-1) as usize].clone(); __elt}), len.clone() - rest.clone())?; _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
                         }
                     }
                     rest = rest.clone() - len.clone();
@@ -2342,7 +2342,7 @@ pub fn collectDependencies(mut exp: Arc<Expression::NFExpression>, mut depth: i3
         Deref @ Expression::ARRAY { literal: false, .. } => {
             let mut set1: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> = <Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>> as ::std::default::Default>::default();
             for mut i in 1..=metamodelica::arrayLength(var_field!((*exp).elements, Expression::NFExpression::ARRAY).clone()) {
-                set1 = collectDependencies(var_field!((*exp).elements, Expression::NFExpression::ARRAY).borrow()[(i.clone()-1) as usize].clone(), depth.clone() + 1, kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?;
+                set1 = collectDependencies(({let __elt = var_field!((*exp).elements, Expression::NFExpression::ARRAY).borrow()[(i.clone()-1) as usize].clone(); __elt}), depth.clone() + 1, kind.clone(), map.clone(), dep_map.clone(), sol_map.clone(), rep_set.clone())?;
                 Dependency::skipList(UnorderedSet::toList(set1.clone()), depth.clone() + 1, i.clone(), dep_map.clone())?;
                 sets = metamodelica::cons(set1.clone(), sets.clone());
             }

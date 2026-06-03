@@ -1419,14 +1419,14 @@ fn dumpRules(mut rules: Arc<ConversionRules::ConversionRules>, mut indent: ArcSt
     for mut i in 1..=metamodelica::arrayLength(keys.clone()) {
         if i.clone() == metamodelica::arrayLength(keys.clone()) {
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("└─")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", (keys.borrow()[(i.clone()-1) as usize].clone()).clone());
+            println!("{}", (({let __elt = keys.borrow()[(i.clone()-1) as usize].clone(); __elt})).clone());
             println!("{}", (literal!("\n")).clone());
-            dumpRules(values.borrow()[(i.clone()-1) as usize].clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone())?;
+            dumpRules(({let __elt = values.borrow()[(i.clone()-1) as usize].clone(); __elt}), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("  ")); ArcStr::from(__mm_s) }).clone())?;
         } else {
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("├─")); ArcStr::from(__mm_s) }).clone());
-            println!("{}", (keys.borrow()[(i.clone()-1) as usize].clone()).clone());
+            println!("{}", (({let __elt = keys.borrow()[(i.clone()-1) as usize].clone(); __elt})).clone());
             println!("{}", (literal!("\n")).clone());
-            dumpRules(values.borrow()[(i.clone()-1) as usize].clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("│ ")); ArcStr::from(__mm_s) }).clone())?;
+            dumpRules(({let __elt = values.borrow()[(i.clone()-1) as usize].clone(); __elt}), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*indent.clone()); __mm_s.push_str(&*literal!("│ ")); ArcStr::from(__mm_s) }).clone())?;
         }
     }
     Ok(())

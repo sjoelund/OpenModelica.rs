@@ -235,7 +235,7 @@ fn updateDebugFlagArray(mut inFlags: metamodelica::Array<bool>, mut inValue: boo
     let mut index: i32 = 0;
     let Flags::DEBUG_FLAG { index: __pa0, .. } = (inFlag.clone()) else { bail!("pattern mismatch") };
     index = __pa0.clone();
-    outOldValue = inFlags.clone().borrow()[(index.clone()-1) as usize].clone();
+    outOldValue = ({let __elt = inFlags.clone().borrow()[(index.clone()-1) as usize].clone(); __elt});
     outFlags = {let _arr = inFlags.clone(); _arr.borrow_mut()[(index.clone()-1) as usize] = inValue.clone(); _arr};
     Ok((outFlags, outOldValue))
 }
@@ -1638,17 +1638,17 @@ pub fn unparseFlags() -> Result<Arc<metamodelica::List<ArcStr>>> {
     }
     for mut f in &*allConfigFlags.clone() {
         let mut f = f.clone();
-        if !(flagDataEq(f.defaultValue.clone(), config_flags.borrow()[(f.index.clone()-1) as usize].clone())?) {
+        if !(flagDataEq(f.defaultValue.clone(), ({let __elt = config_flags.borrow()[(f.index.clone()-1) as usize].clone(); __elt}))?) {
             name = ((match f.shortname.clone() {
         Some(mut name) => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("-")); __mm_s.push_str(&*name.clone()); ArcStr::from(__mm_s) },
         _ => { let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("--")); __mm_s.push_str(&*f.name.clone()); ArcStr::from(__mm_s) },
     })).clone();
-            flagStrings = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!("=")); __mm_s.push_str(&*flagDataString(config_flags.borrow()[(f.index.clone()-1) as usize].clone())?); ArcStr::from(__mm_s) }).clone(), flagStrings.clone());
+            flagStrings = metamodelica::cons(({ let mut __mm_s = String::new(); __mm_s.push_str(&*name.clone()); __mm_s.push_str(&*literal!("=")); __mm_s.push_str(&*flagDataString(({let __elt = config_flags.borrow()[(f.index.clone()-1) as usize].clone(); __elt}))?); ArcStr::from(__mm_s) }).clone(), flagStrings.clone());
         }
     }
     for mut f in &*allDebugFlags.clone() {
         let mut f = f.clone();
-        fvalue = debug_flags.borrow()[(f.index.clone()-1) as usize].clone();
+        fvalue = ({let __elt = debug_flags.borrow()[(f.index.clone()-1) as usize].clone(); __elt});
         if f.default.clone() != fvalue.clone() {
             name = (if (fvalue.clone()) {f.name.clone()} else {{ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("no")); __mm_s.push_str(&*f.name.clone()); ArcStr::from(__mm_s) }}).clone();
             strl = metamodelica::cons((name.clone()).clone(), strl.clone());

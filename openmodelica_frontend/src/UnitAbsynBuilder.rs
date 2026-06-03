@@ -400,7 +400,7 @@ pub fn find(mut index: i32, mut st: UnitAbsyn::Store) -> Result<UnitAbsyn::Unit>
         if let Ok((__v, __wb0)) = (|| -> Result<_> {
             let UnitAbsyn::Store { storeVector: mut vector, numElts: _ } = __mc_input.clone() else { bail!("nomatch") };
             let mut unit: UnitAbsyn::Unit = unit.clone();
-            let __pa0 = ::match_deref::match_deref! { match &(vector.borrow()[(index.clone()-1) as usize].clone()) {
+            let __pa0 = ::match_deref::match_deref! { match &(({let __elt = vector.borrow()[(index.clone()-1) as usize].clone(); __elt})) {
                 Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
@@ -897,7 +897,7 @@ fn createTypeParameterLocations2(mut istore: UnitAbsyn::Store, mut iht: (metamod
             let (UnitAbsyn::Store { storeVector: mut vect, numElts: mut numElts }, mut ht, mut nextElt) = __mc_input.clone() else { bail!("nomatch") };
             let mut unit: UnitAbsyn::Unit = UnitAbsyn::Unit::UNSPECIFIED;
             let mut store: UnitAbsyn::Store = <UnitAbsyn::Store as ::std::default::Default>::default();
-            let __pa0 = ::match_deref::match_deref! { match &(vect.borrow()[(i.clone()-1) as usize].clone()) {
+            let __pa0 = ::match_deref::match_deref! { match &(({let __elt = vect.borrow()[(i.clone()-1) as usize].clone(); __elt})) {
                 Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };

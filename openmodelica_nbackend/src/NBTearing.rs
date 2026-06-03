@@ -341,12 +341,12 @@ fn tearingTraverser(mut partitions: Arc<metamodelica::List<Arc<Partition::Partit
             } };
             full = __pa1.clone();
             for mut i in 1..=metamodelica::arrayLength(strongComponents.clone()) {
-                tmp = strongComponents.borrow()[(i.clone()-1) as usize].clone();
+                tmp = ({let __elt = strongComponents.borrow()[(i.clone()-1) as usize].clone(); __elt});
                 for mut func in &*funcs.clone() {
                     let mut func = func.clone();
                     (tmp, full, idx) = func(tmp.clone(), full.clone(), funcMap.clone(), idx.clone(), part.unknowns.clone(), part.equations.clone(), eq_index.clone(), kind.clone())?;
                 }
-                if !(referenceEq(&*(tmp.clone()),&*(strongComponents.borrow()[(i.clone()-1) as usize].clone()))) {
+                if !(referenceEq(&*(tmp.clone()),&*(({let __elt = strongComponents.borrow()[(i.clone()-1) as usize].clone(); __elt})))) {
                     {let _arr = strongComponents.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = tmp.clone(); _arr};
                 }
             }
@@ -640,10 +640,10 @@ fn guru(mut comp: Arc<StrongComponent::NBStrongComponent>, mut full: Arc<Adjacen
                 while !(UnorderedMap::isEmpty(unsolved_inner_vars.clone())) {
                     for mut i in 1..=nEqn.clone() {
                         var_assigned = false;
-                        if UnorderedMap::contains(var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(), unsolved_equations.clone())? {
+                        if UnorderedMap::contains(({let __elt = var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt}), unsolved_equations.clone())? {
                             solve_opt = None;
                             success = false;
-                            let __range0 = &*UnorderedSet::toList(var_field!((*full).occurrences, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone());
+                            let __range0 = &*UnorderedSet::toList(({let __elt = var_field!((*full).occurrences, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt}));
                             for mut cref in __range0 {
                                 let mut cref = cref.clone();
                                 stripped = ComponentRef::stripSubscriptsAll(cref.clone());
@@ -661,21 +661,21 @@ fn guru(mut comp: Arc<StrongComponent::NBStrongComponent>, mut full: Arc<Adjacen
         (Some(solve_cref), true) => {
             stripped = ComponentRef::stripSubscriptsAll(solve_cref.clone());
             solve_var = UnorderedMap::getSafe(stripped.clone(), unsolved_inner_vars.clone(), metamodelica::sourceInfo!())?;
-            solve_eqn = UnorderedMap::getSafe(var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(), unsolved_equations.clone(), metamodelica::sourceInfo!())?;
+            solve_eqn = UnorderedMap::getSafe(({let __elt = var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt}), unsolved_equations.clone(), metamodelica::sourceInfo!())?;
             inner_comps = metamodelica::cons(StrongComponent::createSliceOrSingle(solve_cref.clone(), solve_var.clone(), solve_eqn.clone())?, inner_comps.clone());
             UnorderedMap::remove(stripped.clone(), unsolved_inner_vars.clone())?;
-            UnorderedMap::remove(var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(), unsolved_equations.clone())?;
+            UnorderedMap::remove(({let __elt = var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt}), unsolved_equations.clone())?;
             var_assigned = true;
             ()
         },
         (Some(solve_cref), false) => (),
         (None, false) => {
-            residuals = metamodelica::cons(UnorderedMap::getSafe(var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(), unsolved_equations.clone(), metamodelica::sourceInfo!())?, residuals.clone());
-            UnorderedMap::remove(var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(), unsolved_equations.clone())?;
+            residuals = metamodelica::cons(UnorderedMap::getSafe(({let __elt = var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt}), unsolved_equations.clone(), metamodelica::sourceInfo!())?, residuals.clone());
+            UnorderedMap::remove(({let __elt = var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt}), unsolved_equations.clone())?;
             ()
         },
         _ => {
-            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBTearing.guru")); __mm_s.push_str(&*literal!(" failed. Impossible result for equation representative: ")); __mm_s.push_str(&*ComponentRef::toString(var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone())?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone()])?;
+            Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBTearing.guru")); __mm_s.push_str(&*literal!(" failed. Impossible result for equation representative: ")); __mm_s.push_str(&*ComponentRef::toString(({let __elt = var_field!((*full).equation_names, Adjacency::Matrix::Matrix::FULL).borrow()[(i.clone()-1) as usize].clone(); __elt}))?); __mm_s.push_str(&*literal!(".")); ArcStr::from(__mm_s) }).clone()])?;
             ()
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -713,7 +713,7 @@ fn checkLinearity(mut full: Arc<Adjacency::Matrix::Matrix>, mut v: Arc<Unordered
     }
 
     fn eqnIsLinear(mut i: i32, mut occ: metamodelica::Array<Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>>, mut sol: metamodelica::Array<Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, Arc<Solvability::Solvability>>>>, mut v: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>) -> Result<bool> {
-        let mut b: bool = UnorderedSet::all(occ.borrow()[(i.clone()-1) as usize].clone(), (std::sync::Arc::new({ let __pe_b1 = v.clone(); let __pe_b2 = sol.borrow()[(i.clone()-1) as usize].clone(); move |__pe_a0| varIsLinear(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
+        let mut b: bool = UnorderedSet::all(({let __elt = occ.borrow()[(i.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new({ let __pe_b1 = v.clone(); let __pe_b2 = ({let __elt = sol.borrow()[(i.clone()-1) as usize].clone(); __elt}); move |__pe_a0| varIsLinear(__pe_a0, __pe_b1.clone(), __pe_b2.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>))?;
         Ok(b)
     }
 

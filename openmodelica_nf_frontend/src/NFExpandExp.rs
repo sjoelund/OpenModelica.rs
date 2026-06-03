@@ -248,7 +248,7 @@ pub fn expandCref4(mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>
                 unsafe { metamodelica::Dangerous::arrayInitSlot(expl.clone(), i.clone(), expandCref4(rest.clone(), metamodelica::cons(idx.clone(), comb.clone()), accum.clone(), restSubs.clone(), cref.clone(), crefType.clone())?) };
                 i = i.clone() + 1;
             }
-            arr_ty = Type::liftArrayLeft(Expression::typeOf(expl.clone().borrow()[(1-1) as usize].clone()), Dimension::fromExpArray(expl.clone()));
+            arr_ty = Type::liftArrayLeft(Expression::typeOf(({let __elt = expl.clone().borrow()[(1-1) as usize].clone(); __elt})), Dimension::fromExpArray(expl.clone()));
             Expression::makeArray(arr_ty.clone(), expl.clone(), false)
         },
         _ => expandCref4(listRest(subs.clone())?, metamodelica::cons(listHead(subs.clone())?, comb.clone()), accum.clone(), restSubs.clone(), cref.clone(), crefType.clone())?,

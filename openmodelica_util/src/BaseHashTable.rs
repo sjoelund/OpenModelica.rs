@@ -140,7 +140,7 @@ pub fn add<Key: Clone + 'static, Value: Clone + 'static>(mut entry: HashEntry<Ke
     keyEqual = __pa4.clone();
     fntpl = __pa5.clone();
     hash_idx = intMod(hashFunc(key.clone())?, bsize.clone()) + 1;
-    indices = hashvec.borrow()[(hash_idx.clone()-1) as usize].clone();
+    indices = ({let __elt = hashvec.borrow()[(hash_idx.clone()-1) as usize].clone(); __elt});
     for mut i in &*indices.clone() {
         let mut i = i.clone();
         (key2, _) = i.clone();
@@ -210,7 +210,7 @@ pub fn addNoUpdCheck<Key: Clone + 'static, Value: Clone + 'static>(mut entry: Ha
             let mut indexes: HashNode<Key> = metamodelica::nil();
             indx = intMod(hashFunc(key.clone())?, bsize.clone()) + 1;
             (varr, newpos) = valueArrayAdd(varr.clone(), v.clone())?;
-            indexes = hashvec.borrow()[(indx.clone()-1) as usize].clone();
+            indexes = ({let __elt = hashvec.borrow()[(indx.clone()-1) as usize].clone(); __elt});
             hashvec = {let _arr = hashvec.clone(); _arr.borrow_mut()[(indx.clone()-1) as usize] = metamodelica::cons((key.clone(), newpos.clone()), indexes.clone()); _arr};
             (hashvec.clone(), varr.clone(), bsize.clone(), fntpl.clone())
         },
@@ -242,7 +242,7 @@ pub fn addUnique<Key: Clone + 'static, Value: Clone + 'static>(mut entry: HashEn
     }.is_ok() { bail!("failure(): body succeeded") }
     indx = intMod(hashFunc(key.clone())?, bsize.clone()) + 1;
     (varr, newpos) = valueArrayAdd(varr.clone(), entry.clone())?;
-    indexes = hashvec.borrow()[(indx.clone()-1) as usize].clone();
+    indexes = ({let __elt = hashvec.borrow()[(indx.clone()-1) as usize].clone(); __elt});
     hashvec = {let _arr = hashvec.clone(); _arr.borrow_mut()[(indx.clone()-1) as usize] = metamodelica::cons((key.clone(), newpos.clone()), indexes.clone()); _arr};
     outHashTable = (hashvec.clone(), varr.clone(), bsize.clone(), fntpl.clone());
     Ok(outHashTable)
@@ -325,7 +325,7 @@ fn hasKeyIndex<Key: Clone + 'static, Value: Clone + 'static>(mut key: Key, mut h
     hashFunc = __pa2.clone();
     keyEqual = __pa3.clone();
     hashindx = intMod(hashFunc(key.clone())?, bsize.clone()) + 1;
-    indexes = hashvec.borrow()[(hashindx.clone()-1) as usize].clone();
+    indexes = ({let __elt = hashvec.borrow()[(hashindx.clone()-1) as usize].clone(); __elt});
     indx = hasKeyIndex2(key.clone(), indexes.clone(), keyEqual.clone())?;
     Ok(indx)
 }
@@ -546,7 +546,7 @@ fn getValueArray<Key: Clone + 'static, Value: Clone + 'static>(mut valueArray: V
     let mut n: i32 = 0;
     (n, _, arr) = valueArray.clone();
     let true = (pos.clone() <= n.clone()) else { bail!("pattern mismatch") };
-    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(arr.clone().borrow()[(pos.clone()-1) as usize].clone()) {
+    let (__pa0, __pa1) = ::match_deref::match_deref! { match &(({let __elt = arr.clone().borrow()[(pos.clone()-1) as usize].clone(); __elt})) {
         Some((__pa0, __pa1)) => (__pa0.clone(), __pa1.clone()),
         _ => bail!("pattern mismatch"),
     } };
@@ -562,7 +562,7 @@ fn valueArrayKeyIndexExists<Key: Clone + 'static, Value: Clone + 'static>(mut va
             false
         },
         ((mut n, _, mut arr), _) => {
-            if (pos.clone() <= n.clone()) {isSome(arr.borrow()[(pos.clone()-1) as usize].clone())} else {false}
+            if (pos.clone() <= n.clone()) {isSome(({let __elt = arr.borrow()[(pos.clone()-1) as usize].clone(); __elt}))} else {false}
         },
     });
     b
@@ -609,7 +609,7 @@ pub fn clear<Key: Clone + 'static, Value: Clone + 'static>(mut ht: HashTable<Key
     hashFunc = __pa5.clone();
     ft = __pa6.clone();
     for mut i in 1..=vs.clone() {
-        let () = (match vae.clone().borrow()[(i.clone()-1) as usize].clone() {
+        let () = (match ({let __elt = vae.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}) {
         Some((mut key, _)) => {
             hash_idx = intMod(hashFunc(key.clone())?, bs.clone()) + 1;
             {let _arr = hv.clone(); _arr.borrow_mut()[(hash_idx.clone()-1) as usize] = metamodelica::nil(); _arr};
@@ -644,7 +644,7 @@ pub fn clearAssumeNoDelete<Key: Clone + 'static, Value: Clone + 'static>(mut ht:
     hashFunc = __pa5.clone();
     ft = __pa6.clone();
     for mut i in 1..=ve.clone() {
-        let () = (match vae.clone().borrow()[(i.clone()-1) as usize].clone() {
+        let () = (match ({let __elt = vae.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}) {
         Some((mut key, _)) => {
             if !(workaroundForBug.clone()) {
                 hash_idx = intMod(hashFunc(key.clone())?, bs.clone()) + 1;
@@ -672,7 +672,7 @@ pub fn clearAssumeNoDelete<Key: Clone + 'static, Value: Clone + 'static>(mut ht:
     }
     if workaroundForBug.clone() {
         for mut i in 1..=metamodelica::arrayLength(hv.clone()) {
-            if !(hv.clone().borrow()[(i.clone()-1) as usize].clone().is_empty()) {
+            if !(({let __elt = hv.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}).is_empty()) {
                 if debug.clone() {
                     println!("{}", (literal!("hv not empty\n")).clone());
                 }

@@ -447,7 +447,7 @@ pub fn applyGRSForLevelFixScheduler(mut iTaskGraphMeta: HpcOmTaskGraph::TaskGrap
             sortedHead = List::sort(head.clone(), (std::sync::Arc::new({ let __pe_b2 = inComps.clone(); let __pe_b3 = exeCosts.clone(); let __pe_b4 = false; move |__pe_a0, __pe_a1| HpcOmTaskGraph::compareTasksByExecTime(__pe_a0, __pe_a1, __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
             sortedHeadArray = metamodelica::arrayFromVec(sortedHead.clone().into_iter().cloned().collect());
             if intGt(metamodelica::arrayLength(sortedHeadArray.clone()), 0) {
-                bigTaskExecTime = HpcOmTaskGraph::getExeCostReqCycles(sortedHeadArray.clone().borrow()[(metamodelica::arrayLength(sortedHeadArray.clone())-1) as usize].clone(), iTaskGraphMeta.clone())?;
+                bigTaskExecTime = HpcOmTaskGraph::getExeCostReqCycles(({let __elt = sortedHeadArray.clone().borrow()[(metamodelica::arrayLength(sortedHeadArray.clone())-1) as usize].clone(); __elt}), iTaskGraphMeta.clone())?;
             } else {
                 bigTaskExecTime = metamodelica::OrderedFloat(0.0_f64);
             }
@@ -477,7 +477,7 @@ pub fn applyGRSForLevelFixSchedulerLevel(mut iTaskGraphMeta: HpcOmTaskGraph::Tas
                     let mut tmpContractedTasks = (*tmpContractedTasks).clone();
                     let true = (intLe(bigTaskIdx.clone(), iCurrentSmallTask.clone())) else { bail!("pattern mismatch") };
                     if !(bigTaskChilds.clone().is_empty()) {
-                        tmpContractedTasks = metamodelica::cons(metamodelica::cons(iSortedLevelTasks.clone().borrow()[(bigTaskIdx.clone()-1) as usize].clone(), bigTaskChilds.clone()), tmpContractedTasks.clone());
+                        tmpContractedTasks = metamodelica::cons(metamodelica::cons(({let __elt = iSortedLevelTasks.clone().borrow()[(bigTaskIdx.clone()-1) as usize].clone(); __elt}), bigTaskChilds.clone()), tmpContractedTasks.clone());
                     }
                     Ok(tmpContractedTasks.clone())
                 }
@@ -491,7 +491,7 @@ pub fn applyGRSForLevelFixSchedulerLevel(mut iTaskGraphMeta: HpcOmTaskGraph::Tas
                     let mut tmpContractedTasks: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = tmpContractedTasks.clone();
                     let true = (HpcOmTaskGraph::isNodeContracted(bigTaskIdx.clone(), iContractedTasks.clone())?) else { bail!("pattern mismatch") };
                     if intGt(bigTaskIdx.clone(), 1) {
-                        mergedGroupExecTime = HpcOmTaskGraph::getExeCostReqCycles(iSortedLevelTasks.clone().borrow()[(bigTaskIdx.clone() - 1-1) as usize].clone(), iTaskGraphMeta.clone())?;
+                        mergedGroupExecTime = HpcOmTaskGraph::getExeCostReqCycles(({let __elt = iSortedLevelTasks.clone().borrow()[(bigTaskIdx.clone() - 1-1) as usize].clone(); __elt}), iTaskGraphMeta.clone())?;
                     } else {
                         mergedGroupExecTime = metamodelica::OrderedFloat(0.0_f64);
                     }
@@ -517,19 +517,19 @@ pub fn applyGRSForLevelFixSchedulerLevel(mut iTaskGraphMeta: HpcOmTaskGraph::Tas
                 ((bigTaskIdx, bigTaskChilds, mergedGroupExecTime), tmpContractedTasks) => {
                     let mut mergedGroupExecTime = (*mergedGroupExecTime).clone();
                     let mut tmpContractedTasks = (*tmpContractedTasks).clone();
-                    mergedGroupExecTime = mergedGroupExecTime.clone() + HpcOmTaskGraph::getExeCostReqCycles(iSortedLevelTasks.clone().borrow()[(iCurrentSmallTask.clone()-1) as usize].clone(), iTaskGraphMeta.clone())?;
+                    mergedGroupExecTime = mergedGroupExecTime.clone() + HpcOmTaskGraph::getExeCostReqCycles(({let __elt = iSortedLevelTasks.clone().borrow()[(iCurrentSmallTask.clone()-1) as usize].clone(); __elt}), iTaskGraphMeta.clone())?;
                     if realGe(mergedGroupExecTime.clone(), metamodelica::OrderedFloat((iCriticalSize.clone()) as f64)) {
                         if !(bigTaskChilds.clone().is_empty()) {
-                            tmpContractedTasks = metamodelica::cons(metamodelica::cons(iSortedLevelTasks.clone().borrow()[(bigTaskIdx.clone()-1) as usize].clone(), bigTaskChilds.clone()), tmpContractedTasks.clone());
+                            tmpContractedTasks = metamodelica::cons(metamodelica::cons(({let __elt = iSortedLevelTasks.clone().borrow()[(bigTaskIdx.clone()-1) as usize].clone(); __elt}), bigTaskChilds.clone()), tmpContractedTasks.clone());
                         }
                         if intGt(bigTaskIdx.clone(), 1) {
-                            mergedGroupExecTime = HpcOmTaskGraph::getExeCostReqCycles(iSortedLevelTasks.clone().borrow()[(bigTaskIdx.clone() - 1-1) as usize].clone(), iTaskGraphMeta.clone())?;
+                            mergedGroupExecTime = HpcOmTaskGraph::getExeCostReqCycles(({let __elt = iSortedLevelTasks.clone().borrow()[(bigTaskIdx.clone() - 1-1) as usize].clone(); __elt}), iTaskGraphMeta.clone())?;
                         } else {
                             mergedGroupExecTime = metamodelica::OrderedFloat(0.0_f64);
                         }
                         tmpContractedTasks = applyGRSForLevelFixSchedulerLevel(iTaskGraphMeta.clone(), iContractedTasks.clone(), iCriticalSize.clone(), iSortedLevelTasks.clone(), iCurrentSmallTask.clone(), (bigTaskIdx.clone() - 1, metamodelica::nil(), mergedGroupExecTime.clone()), tmpContractedTasks.clone())?;
                     } else {
-                        tmpContractedTasks = applyGRSForLevelFixSchedulerLevel(iTaskGraphMeta.clone(), iContractedTasks.clone(), iCriticalSize.clone(), iSortedLevelTasks.clone(), iCurrentSmallTask.clone() + 1, (bigTaskIdx.clone(), metamodelica::cons(iSortedLevelTasks.clone().borrow()[(iCurrentSmallTask.clone()-1) as usize].clone(), bigTaskChilds.clone()), mergedGroupExecTime.clone()), tmpContractedTasks.clone())?;
+                        tmpContractedTasks = applyGRSForLevelFixSchedulerLevel(iTaskGraphMeta.clone(), iContractedTasks.clone(), iCriticalSize.clone(), iSortedLevelTasks.clone(), iCurrentSmallTask.clone() + 1, (bigTaskIdx.clone(), metamodelica::cons(({let __elt = iSortedLevelTasks.clone().borrow()[(iCurrentSmallTask.clone()-1) as usize].clone(); __elt}), bigTaskChilds.clone()), mergedGroupExecTime.clone()), tmpContractedTasks.clone())?;
                     }
                     Ok(tmpContractedTasks.clone())
                 }
@@ -579,10 +579,10 @@ fn GRS_newGraph2(mut origNodes: Arc<metamodelica::List<i32>>, mut removedNodes: 
         Deref @ metamodelica::List::Cons { head: node, tail: rest } => {
             let mut row: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut comps: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            row = origGraph.clone().borrow()[(node.clone()-1) as usize].clone();
+            row = ({let __elt = origGraph.clone().borrow()[(node.clone()-1) as usize].clone(); __elt});
             row = HpcOmTaskGraph::filterContractedNodes(row.clone(), contrTasks.clone())?;
             row = HpcOmTaskGraph::updateContinuousEntriesInList(row.clone(), removedNodes.clone())?;
-            comps = origInComps.clone().borrow()[(node.clone()-1) as usize].clone();
+            comps = ({let __elt = origInComps.clone().borrow()[(node.clone()-1) as usize].clone(); __elt});
             {let _arr = newGraph.clone(); _arr.borrow_mut()[(newNode.clone()-1) as usize] = row.clone(); _arr};
             {let _arr = newInComps.clone(); _arr.borrow_mut()[(newNode.clone()-1) as usize] = comps.clone(); _arr};
             GRS_newGraph2(rest.clone(), removedNodes.clone(), contrTasks.clone(), origGraph.clone(), origInComps.clone(), newGraph.clone(), newInComps.clone(), newNode.clone() + 1)?
@@ -846,7 +846,7 @@ fn checkOdeSystemSize(mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iOd
     actualSize = 0;
     for mut scc in &*sccs.clone() {
         let mut scc = scc.clone();
-        actualSize = actualSize.clone() + (iSccSimEqMapping.clone().borrow()[(scc.clone()-1) as usize].clone().len() as i32);
+        actualSize = actualSize.clone() + (({let __elt = iSccSimEqMapping.clone().borrow()[(scc.clone()-1) as usize].clone(); __elt}).len() as i32);
     }
     targetSize = (List::flatten(iOdeEqs.clone())?.len() as i32);
     oIsCorrect = intEq(targetSize.clone(), actualSize.clone());
@@ -887,10 +887,10 @@ fn checkEquationCount(mut iTaskGraphMeta: HpcOmTaskGraph::TaskGraphMeta, mut iSy
     inCompsIdx = metamodelica::arrayLength(inComps.clone());
     eqCount = 0;
     while intGt(inCompsIdx.clone(), 0) {
-        comps = inComps.clone().borrow()[(inCompsIdx.clone()-1) as usize].clone();
+        comps = ({let __elt = inComps.clone().borrow()[(inCompsIdx.clone()-1) as usize].clone(); __elt});
         for mut comp in &*comps.clone() {
             let mut comp = comp.clone();
-            compEqs = iSccSimEqMapping.clone().borrow()[(comp.clone()-1) as usize].clone();
+            compEqs = ({let __elt = iSccSimEqMapping.clone().borrow()[(comp.clone()-1) as usize].clone(); __elt});
             eqCount = eqCount.clone() + (compEqs.clone().len() as i32);
         }
         inCompsIdx = inCompsIdx.clone() - 1;

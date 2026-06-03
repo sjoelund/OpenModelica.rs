@@ -3608,7 +3608,7 @@ fn lm_170(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
             let mut txt = (*txt).clone();
             x_i0 = Tpl::getIteri_i0(txt.clone())?;
             ret_0 = intAdd(x_i0.clone(), 1);
-            ret_1 = a_threadTasksOde.clone().borrow()[(ret_0.clone()-1) as usize].clone();
+            ret_1 = ({let __elt = a_threadTasksOde.clone().borrow()[(ret_0.clone()-1) as usize].clone(); __elt});
             txt = function_HPCOM_assignThreadLocks(txt.clone(), ret_1.clone(), (literal!("_lockOde")).clone(), x_i0.clone(), (Tpl::textString(a_type.clone())?).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             txt = lm_170(txt.clone(), rest.clone(), a_type.clone(), a_threadTasksOde.clone())?;
@@ -3634,7 +3634,7 @@ fn lm_171(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
             let mut txt = (*txt).clone();
             x_i0 = Tpl::getIteri_i0(txt.clone())?;
             ret_0 = intAdd(x_i0.clone(), 1);
-            ret_1 = a_threadTasksOde.clone().borrow()[(ret_0.clone()-1) as usize].clone();
+            ret_1 = ({let __elt = a_threadTasksOde.clone().borrow()[(ret_0.clone()-1) as usize].clone(); __elt});
             txt = function_HPCOM_releaseThreadLocks(txt.clone(), ret_1.clone(), (literal!("_lockOde")).clone(), x_i0.clone(), (Tpl::textString(a_type.clone())?).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             txt = lm_171(txt.clone(), rest.clone(), a_type.clone(), a_threadTasksOde.clone())?;
@@ -3660,7 +3660,7 @@ fn lm_172(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
             let mut txt = (*txt).clone();
             x_i0 = Tpl::getIteri_i0(txt.clone())?;
             ret_0 = intAdd(x_i0.clone(), 1);
-            ret_1 = a_threadTasksDae.clone().borrow()[(ret_0.clone()-1) as usize].clone();
+            ret_1 = ({let __elt = a_threadTasksDae.clone().borrow()[(ret_0.clone()-1) as usize].clone(); __elt});
             txt = function_HPCOM_assignThreadLocks(txt.clone(), ret_1.clone(), (literal!("_lockDae")).clone(), x_i0.clone(), (Tpl::textString(a_type.clone())?).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             txt = lm_172(txt.clone(), rest.clone(), a_type.clone(), a_threadTasksDae.clone())?;
@@ -3686,7 +3686,7 @@ fn lm_173(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
             let mut txt = (*txt).clone();
             x_i0 = Tpl::getIteri_i0(txt.clone())?;
             ret_0 = intAdd(x_i0.clone(), 1);
-            ret_1 = a_threadTasksDae.clone().borrow()[(ret_0.clone()-1) as usize].clone();
+            ret_1 = ({let __elt = a_threadTasksDae.clone().borrow()[(ret_0.clone()-1) as usize].clone(); __elt});
             txt = function_HPCOM_releaseThreadLocks(txt.clone(), ret_1.clone(), (literal!("_lockDae")).clone(), x_i0.clone(), (Tpl::textString(a_type.clone())?).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             txt = lm_173(txt.clone(), rest.clone(), a_type.clone(), a_threadTasksDae.clone())?;
@@ -3712,7 +3712,7 @@ fn lm_174(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
             let mut txt = (*txt).clone();
             x_i0 = Tpl::getIteri_i0(txt.clone())?;
             ret_0 = intAdd(x_i0.clone(), 1);
-            ret_1 = a_threadTasksZeroFunc.clone().borrow()[(ret_0.clone()-1) as usize].clone();
+            ret_1 = ({let __elt = a_threadTasksZeroFunc.clone().borrow()[(ret_0.clone()-1) as usize].clone(); __elt});
             txt = function_HPCOM_assignThreadLocks(txt.clone(), ret_1.clone(), (literal!("_lockZeroFunc")).clone(), x_i0.clone(), (Tpl::textString(a_type.clone())?).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             txt = lm_174(txt.clone(), rest.clone(), a_type.clone(), a_threadTasksZeroFunc.clone())?;
@@ -3738,7 +3738,7 @@ fn lm_175(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<Arc<metamo
             let mut txt = (*txt).clone();
             x_i0 = Tpl::getIteri_i0(txt.clone())?;
             ret_0 = intAdd(x_i0.clone(), 1);
-            ret_1 = a_threadTasksZeroFunc.clone().borrow()[(ret_0.clone()-1) as usize].clone();
+            ret_1 = ({let __elt = a_threadTasksZeroFunc.clone().borrow()[(ret_0.clone()-1) as usize].clone(); __elt});
             txt = function_HPCOM_releaseThreadLocks(txt.clone(), ret_1.clone(), (literal!("_lockZeroFunc")).clone(), x_i0.clone(), (Tpl::textString(a_type.clone())?).clone())?;
             txt = Tpl::nextIter(txt.clone())?;
             txt = lm_175(txt.clone(), rest.clone(), a_type.clone(), a_threadTasksZeroFunc.clone())?;
@@ -3866,9 +3866,9 @@ fn lm_179(mut in_txt: Tpl::Text, mut in_items: Arc<metamodelica::List<i32>>, mut
             let mut a_extraFuncsDecl = (*a_extraFuncsDecl).clone();
             let mut a_extraFuncs = (*a_extraFuncs).clone();
             let mut a_varDecls = (*a_varDecls).clone();
-            ret_0 = a_odeSchedule_threadTasks.clone().borrow()[(i_threadIdx.clone()-1) as usize].clone();
-            ret_1 = a_daeSchedule_threadTasks.clone().borrow()[(i_threadIdx.clone()-1) as usize].clone();
-            ret_2 = a_zeroFuncSchedule_threadTasks.clone().borrow()[(i_threadIdx.clone()-1) as usize].clone();
+            ret_0 = ({let __elt = a_odeSchedule_threadTasks.clone().borrow()[(i_threadIdx.clone()-1) as usize].clone(); __elt});
+            ret_1 = ({let __elt = a_daeSchedule_threadTasks.clone().borrow()[(i_threadIdx.clone()-1) as usize].clone(); __elt});
+            ret_2 = ({let __elt = a_zeroFuncSchedule_threadTasks.clone().borrow()[(i_threadIdx.clone()-1) as usize].clone(); __elt});
             ret_3 = intSub(i_threadIdx.clone(), 1);
             txt_4 = CodegenCppOMSI::lastIdentOfPath(Tpl::emptyTxt.clone(), a_name.clone())?;
             (txt, a_varDecls, a_extraFuncs, a_extraFuncsDecl, txt_4, a_mainThreadCode) = generateThreadFunc(txt.clone(), a_allEquationsPlusWhen.clone(), ret_0.clone(), ret_1.clone(), ret_2.clone(), (Tpl::textString(a_type.clone())?).clone(), ret_3.clone(), (a_modelNamePrefixStr.clone()).clone(), a_varDecls.clone(), a_simCode.clone(), a_extraFuncs.clone(), a_extraFuncsDecl.clone(), txt_4.clone(), a_mainThreadCode.clone(), a_useFlatArrayNotation.clone())?;

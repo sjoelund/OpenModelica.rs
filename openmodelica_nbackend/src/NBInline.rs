@@ -474,7 +474,7 @@ fn inlineArrayEquation(mut eqn: Arc<Equation::Equation>, mut lhs_elements: metam
     }
     eqns = Pointer::access(new_eqns.clone());
     for mut i in 1..=metamodelica::arrayLength(lhs_elements.clone()) {
-        eqns = createInlinedEquation(eqns.clone(), lhs_elements.borrow()[(i.clone()-1) as usize].clone(), rhs_elements.borrow()[(i.clone()-1) as usize].clone(), attr.clone(), iter.clone(), variables.clone(), set.clone(), index.clone())?;
+        eqns = createInlinedEquation(eqns.clone(), ({let __elt = lhs_elements.borrow()[(i.clone()-1) as usize].clone(); __elt}), ({let __elt = rhs_elements.borrow()[(i.clone()-1) as usize].clone(); __elt}), attr.clone(), iter.clone(), variables.clone(), set.clone(), index.clone())?;
     }
     Pointer::update(new_eqns.clone(), eqns.clone());
     eqn = Arc::new(crate::NBEquation::Equation::DUMMY_EQUATION);
@@ -860,7 +860,7 @@ pub mod InlineRating {
         if metamodelica::arrayLength(dst.input_rating.clone()) == metamodelica::arrayLength(src.input_rating.clone()) {
             for mut i in 1..=metamodelica::arrayLength(dst.input_rating.clone()) {
                 {
-                    let __cell0 = dst.input_rating.borrow()[(i.clone()-1) as usize].clone() + src.input_rating.borrow()[(i.clone()-1) as usize].clone();
+                    let __cell0 = ({let __elt = dst.input_rating.borrow()[(i.clone()-1) as usize].clone(); __elt}) + ({let __elt = src.input_rating.borrow()[(i.clone()-1) as usize].clone(); __elt});
                     dst.input_rating.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
                 }
             }
@@ -876,7 +876,7 @@ pub mod InlineRating {
         let mut ir: Arc<InlineRating> = ir;
         for mut i in 1..=metamodelica::arrayLength(ir.input_rating.clone()) {
             {
-                let __cell0 = i.clone() * ir.input_rating.borrow()[(i.clone()-1) as usize].clone();
+                let __cell0 = i.clone() * ({let __elt = ir.input_rating.borrow()[(i.clone()-1) as usize].clone(); __elt});
                 ir.input_rating.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
             }
         }
@@ -895,8 +895,8 @@ pub mod InlineRating {
         let mut irp: Pointer::Pointer<Arc<InlineRating>> = Pointer::create(Arc::new(InlineRating { input_rating: arrayCreate(metamodelica::arrayLength(dst.input_rating.clone()), 0), constant_rating: src.constant_rating.clone() }));
         if metamodelica::arrayLength(src.input_rating.clone()) == metamodelica::arrayLength(args.clone()) {
             for mut i in 1..=metamodelica::arrayLength(src.input_rating.clone()) {
-                if src.input_rating.borrow()[(i.clone()-1) as usize].clone() != 0 {
-                    Expression::map(args.borrow()[(i.clone()-1) as usize].clone(), (std::sync::Arc::new({ let __pe_b1 = src.input_rating.borrow()[(i.clone()-1) as usize].clone(); let __pe_b2 = irp.clone(); let __pe_b3 = local_map.clone(); move |__pe_a0| addMappedExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
+                if ({let __elt = src.input_rating.borrow()[(i.clone()-1) as usize].clone(); __elt}) != 0 {
+                    Expression::map(({let __elt = args.borrow()[(i.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new({ let __pe_b1 = ({let __elt = src.input_rating.borrow()[(i.clone()-1) as usize].clone(); __elt}); let __pe_b2 = irp.clone(); let __pe_b3 = local_map.clone(); move |__pe_a0| addMappedExp(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>) -> Result<Arc<Expression::NFExpression>> + 'static>))?;
                 }
             }
             dst = add(dst.clone(), Pointer::access(irp.clone()))?;

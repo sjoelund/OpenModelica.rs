@@ -406,7 +406,7 @@ pub fn languageStandardAtMost(mut inStandard: LanguageStandard) -> Result<bool> 
 fn languageStandardInt(mut inStandard: LanguageStandard) -> Result<i32> {
     let mut outValue: i32 = 0;
     let lookup: metamodelica::Array<i32> = metamodelica::Dangerous::listArray(list![10, 20, 30, 31, 32, 33, 34, 35, 36, 1000, 9999]);
-    outValue = lookup.clone().borrow()[(((inStandard.clone()) as i32)-1) as usize].clone();
+    outValue = ({let __elt = lookup.clone().borrow()[(((inStandard.clone()) as i32)-1) as usize].clone(); __elt});
     Ok(outValue)
 }
 
@@ -432,7 +432,7 @@ fn intLanguageStandard(mut inValue: i32) -> Result<LanguageStandard> {
 pub fn languageStandardString(mut inStandard: LanguageStandard) -> Result<ArcStr> {
     let mut outString: ArcStr = arcstr::literal!("");
     let lookup: metamodelica::Array<ArcStr> = metamodelica::Dangerous::listArray(list![(literal!("1.x")).clone(), (literal!("2.x")).clone(), (literal!("3.0")).clone(), (literal!("3.1")).clone(), (literal!("3.2")).clone(), (literal!("3.3")).clone(), (literal!("3.4")).clone(), (literal!("3.5")).clone(), (literal!("3.6")).clone(), (literal!("3.6")).clone(), (literal!("experimental")).clone()]);
-    outString = (lookup.clone().borrow()[(((inStandard.clone()) as i32)-1) as usize].clone()).clone();
+    outString = (({let __elt = lookup.clone().borrow()[(((inStandard.clone()) as i32)-1) as usize].clone(); __elt})).clone();
     Ok(outString)
 }
 

@@ -230,18 +230,18 @@ pub fn getMatches(mut matching: Arc<NBMatching>, mut mapping_opt: Option<Arc<Adj
         eqn_map_matched = UnorderedMap::new((std::sync::Arc::new(Equation::hash) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<i32> + 'static>), (std::sync::Arc::new(Equation::equalName) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>, Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>), 1);
         eqn_map_unmatched = UnorderedMap::new((std::sync::Arc::new(Equation::hash) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>) -> Result<i32> + 'static>), (std::sync::Arc::new(Equation::equalName) as std::sync::Arc<dyn ::std::ops::Fn(Pointer::Pointer<Arc<Equation::Equation>>, Pointer::Pointer<Arc<Equation::Equation>>) -> Result<bool> + 'static>), 1);
         for mut var in 1..=metamodelica::arrayLength(matching.var_to_eqn.clone()) {
-            arr_var = ExpandableArray::get(mapping.var_StA.borrow()[(var.clone()-1) as usize].clone(), variables.varArr.clone())?;
-            (start_idx, _) = mapping.var_AtS.borrow()[(mapping.var_StA.borrow()[(var.clone()-1) as usize].clone()-1) as usize].clone();
-            if matching.var_to_eqn.borrow()[(var.clone()-1) as usize].clone() > 0 {
+            arr_var = ExpandableArray::get(({let __elt = mapping.var_StA.borrow()[(var.clone()-1) as usize].clone(); __elt}), variables.varArr.clone())?;
+            (start_idx, _) = ({let __elt = mapping.var_AtS.borrow()[(({let __elt = mapping.var_StA.borrow()[(var.clone()-1) as usize].clone(); __elt})-1) as usize].clone(); __elt});
+            if ({let __elt = matching.var_to_eqn.borrow()[(var.clone()-1) as usize].clone(); __elt}) > 0 {
                 Slice::addToSliceMap(arr_var.clone(), var.clone() - start_idx.clone(), var_map_matched.clone())?;
             } else {
                 Slice::addToSliceMap(arr_var.clone(), var.clone() - start_idx.clone(), var_map_unmatched.clone())?;
             }
         }
         for mut eqn in 1..=metamodelica::arrayLength(matching.eqn_to_var.clone()) {
-            arr_eqn = ExpandableArray::get(mapping.eqn_StA.borrow()[(eqn.clone()-1) as usize].clone(), equations.eqArr.clone())?;
-            (start_idx, _) = mapping.eqn_AtS.borrow()[(mapping.eqn_StA.borrow()[(eqn.clone()-1) as usize].clone()-1) as usize].clone();
-            if matching.eqn_to_var.borrow()[(eqn.clone()-1) as usize].clone() > 0 {
+            arr_eqn = ExpandableArray::get(({let __elt = mapping.eqn_StA.borrow()[(eqn.clone()-1) as usize].clone(); __elt}), equations.eqArr.clone())?;
+            (start_idx, _) = ({let __elt = mapping.eqn_AtS.borrow()[(({let __elt = mapping.eqn_StA.borrow()[(eqn.clone()-1) as usize].clone(); __elt})-1) as usize].clone(); __elt});
+            if ({let __elt = matching.eqn_to_var.borrow()[(eqn.clone()-1) as usize].clone(); __elt}) > 0 {
                 Slice::addToSliceMap(arr_eqn.clone(), eqn.clone() - start_idx.clone(), eqn_map_matched.clone())?;
             } else {
                 Slice::addToSliceMap(arr_eqn.clone(), eqn.clone() - start_idx.clone(), eqn_map_unmatched.clone())?;
@@ -281,14 +281,14 @@ pub fn getMatches(mut matching: Arc<NBMatching>, mut mapping_opt: Option<Arc<Adj
     });
     } else {
         for mut var in 1..=metamodelica::arrayLength(matching.var_to_eqn.clone()) {
-            if matching.var_to_eqn.borrow()[(var.clone()-1) as usize].clone() > 0 {
+            if ({let __elt = matching.var_to_eqn.borrow()[(var.clone()-1) as usize].clone(); __elt}) > 0 {
                 matched_vars = metamodelica::cons(Arc::new(Slice::NBSlice { t: ExpandableArray::get(var.clone(), variables.varArr.clone())?, indices: metamodelica::nil() }), matched_vars.clone());
             } else {
                 unmatched_vars = metamodelica::cons(Arc::new(Slice::NBSlice { t: ExpandableArray::get(var.clone(), variables.varArr.clone())?, indices: metamodelica::nil() }), unmatched_vars.clone());
             }
         }
         for mut eqn in 1..=metamodelica::arrayLength(matching.eqn_to_var.clone()) {
-            if matching.eqn_to_var.borrow()[(eqn.clone()-1) as usize].clone() > 0 {
+            if ({let __elt = matching.eqn_to_var.borrow()[(eqn.clone()-1) as usize].clone(); __elt}) > 0 {
                 matched_eqns = metamodelica::cons(Arc::new(Slice::NBSlice { t: ExpandableArray::get(eqn.clone(), equations.eqArr.clone())?, indices: metamodelica::nil() }), matched_eqns.clone());
             } else {
                 unmatched_eqns = metamodelica::cons(Arc::new(Slice::NBSlice { t: ExpandableArray::get(eqn.clone(), equations.eqArr.clone())?, indices: metamodelica::nil() }), unmatched_eqns.clone());
@@ -305,7 +305,7 @@ fn toStringSingle(mut mapping: metamodelica::Array<i32>, mut inverse: bool) -> A
     let mut to: ArcStr = if (inverse.clone()) {literal!("var")} else {literal!("eqn")};
     r#str = (StringUtil::headline_4((head.clone()).clone())).clone();
     for mut i in 1..=metamodelica::arrayLength(mapping.clone()) {
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\t")); __mm_s.push_str(&*from.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!(" --> ")); __mm_s.push_str(&*to.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*intString(mapping.borrow()[(i.clone()-1) as usize].clone())); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\t")); __mm_s.push_str(&*from.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!(" --> ")); __mm_s.push_str(&*to.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*intString(({let __elt = mapping.borrow()[(i.clone()-1) as usize].clone(); __elt}))); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
     }
     r#str
 }
@@ -337,10 +337,10 @@ fn scalarMatching(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut 
     }
     eqn_to_var = arrayCreate(nEqns.clone(), -1);
     for mut var in 1..=nVars.clone() {
-        if var_to_eqn.borrow()[(var.clone()-1) as usize].clone() > 0 {
+        if ({let __elt = var_to_eqn.borrow()[(var.clone()-1) as usize].clone(); __elt}) > 0 {
             {
                 let __cell0 = var.clone();
-                eqn_to_var.clone().borrow_mut()[(var_to_eqn.borrow()[(var.clone()-1) as usize].clone()-1) as usize] = __cell0;
+                eqn_to_var.clone().borrow_mut()[(({let __elt = var_to_eqn.borrow()[(var.clone()-1) as usize].clone(); __elt})-1) as usize] = __cell0;
             }
         }
     }
@@ -361,10 +361,10 @@ fn augmentPath(mut eqn: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i
         let __cell0 = true;
         eqn_marks.clone().borrow_mut()[(eqn.clone()-1) as usize] = __cell0;
     }
-    let __range1 = &*m.borrow()[(eqn.clone()-1) as usize].clone();
+    let __range1 = &*({let __elt = m.borrow()[(eqn.clone()-1) as usize].clone(); __elt});
     for mut var in __range1 {
         let mut var = var.clone();
-        if var_to_eqn.borrow()[(var.clone()-1) as usize].clone() <= 0 {
+        if ({let __elt = var_to_eqn.borrow()[(var.clone()-1) as usize].clone(); __elt}) <= 0 {
             pathFound = true;
             {
                 let __cell2 = eqn.clone();
@@ -373,15 +373,15 @@ fn augmentPath(mut eqn: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i
             return (var_to_eqn.clone(), var_marks.clone(), eqn_marks.clone(), pathFound.clone());
         }
     }
-    let __range3 = &*m.borrow()[(eqn.clone()-1) as usize].clone();
+    let __range3 = &*({let __elt = m.borrow()[(eqn.clone()-1) as usize].clone(); __elt});
     for mut var in __range3 {
         let mut var = var.clone();
-        if !(var_marks.borrow()[(var.clone()-1) as usize].clone()) {
+        if !(({let __elt = var_marks.borrow()[(var.clone()-1) as usize].clone(); __elt})) {
             {
                 let __cell4 = true;
                 var_marks.clone().borrow_mut()[(var.clone()-1) as usize] = __cell4;
             }
-            (var_to_eqn, var_marks, eqn_marks, pathFound) = augmentPath(var_to_eqn.borrow()[(var.clone()-1) as usize].clone(), m.clone(), mT.clone(), var_to_eqn.clone(), var_marks.clone(), eqn_marks.clone());
+            (var_to_eqn, var_marks, eqn_marks, pathFound) = augmentPath(({let __elt = var_to_eqn.borrow()[(var.clone()-1) as usize].clone(); __elt}), m.clone(), mT.clone(), var_to_eqn.clone(), var_marks.clone(), eqn_marks.clone());
             if pathFound.clone() {
                 {
                     let __cell5 = eqn.clone();

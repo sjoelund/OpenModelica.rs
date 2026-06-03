@@ -1908,7 +1908,7 @@ pub fn typeSubscriptedArray(mut elements: metamodelica::Array<Arc<NFExpression>>
     let mut e: Arc<NFExpression> = Arc::new(NFExpression::END);
     count = metamodelica::arrayLength(elements.clone());
     if count.clone() > 0 {
-        e = elements.borrow()[(1-1) as usize].clone();
+        e = ({let __elt = elements.borrow()[(1-1) as usize].clone(); __elt});
         ty = typeOf(e.clone());
         literal = literal.clone() && isLiteral(e.clone())?;
     } else {
@@ -1936,7 +1936,7 @@ pub fn applyIndexExpArray(mut exp: Arc<NFExpression>, mut index: Arc<NFExpressio
         expl = __pa0.clone();
         idx = toInteger(index.clone())?;
         if idx.clone() > 0 && idx.clone() <= metamodelica::arrayLength(expl.clone()) {
-            outExp = applySubscripts(restSubscripts.clone(), expl.borrow()[(idx.clone()-1) as usize].clone(), false)?;
+            outExp = applySubscripts(restSubscripts.clone(), ({let __elt = expl.borrow()[(idx.clone()-1) as usize].clone(); __elt}), false)?;
             return Ok(outExp.clone());
         }
     }
@@ -3124,7 +3124,7 @@ pub fn toDAEValueRecord(mut ty: Arc<Type::NFType>, mut path: Arc<Path>, mut args
 pub fn dimensionCount(mut exp: Arc<NFExpression>) -> Result<i32> {
     let mut dimCount: i32 = 0;
     dimCount = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ ARRAY { ty: Deref @ Type::UNKNOWN, .. } => 1 + dimensionCount(var_field!((*exp).elements, NFExpression::ARRAY).clone().borrow()[(1-1) as usize].clone())?,
+        Deref @ ARRAY { ty: Deref @ Type::UNKNOWN, .. } => 1 + dimensionCount(({let __elt = var_field!((*exp).elements, NFExpression::ARRAY).clone().borrow()[(1-1) as usize].clone(); __elt}))?,
         Deref @ ARRAY { .. } => Type::dimensionCount(var_field!((*exp).ty, NFExpression::ARRAY).clone()),
         Deref @ RANGE { .. } => Type::dimensionCount(var_field!((*exp).ty, NFExpression::RANGE).clone()),
         Deref @ SIZE { dimIndex: None, .. } => dimensionCount(var_field!((*exp).exp, NFExpression::SIZE).clone())?,
@@ -4874,7 +4874,7 @@ pub fn containsShallow(mut exp: Arc<NFExpression>, mut func: Arc<dyn ::std::ops:
 pub fn arrayFirstScalar(mut arrayExp: Arc<NFExpression>) -> Result<Arc<NFExpression>> {
     let mut exp: Arc<NFExpression> = Arc::new(NFExpression::END);
     exp = (::match_deref::match_deref! { match &(arrayExp.clone()) {
-        Deref @ ARRAY { .. } => arrayFirstScalar(var_field!((*arrayExp).elements, NFExpression::ARRAY).clone().borrow()[(1-1) as usize].clone())?,
+        Deref @ ARRAY { .. } => arrayFirstScalar(({let __elt = var_field!((*arrayExp).elements, NFExpression::ARRAY).clone().borrow()[(1-1) as usize].clone(); __elt}))?,
         _ => arrayExp.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -4909,7 +4909,7 @@ pub fn arrayAllEqual(mut arrayExp: Arc<NFExpression>) -> Result<bool> {
 pub fn arrayAllEqual2(mut arrayExp: Arc<NFExpression>, mut element: Arc<NFExpression>) -> Result<bool> {
     let mut allEqual: bool = false;
     allEqual = (::match_deref::match_deref! { match &(arrayExp.clone()) {
-        Deref @ ARRAY { .. } if (!(var_field!((*arrayExp).elements, NFExpression::ARRAY).clone().borrow().is_empty()) && isArray(var_field!((*arrayExp).elements, NFExpression::ARRAY).clone().borrow()[(1-1) as usize].clone())) => Array::all(var_field!((*arrayExp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = element.clone(); move |__pe_a0| arrayAllEqual2(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>))?,
+        Deref @ ARRAY { .. } if (!(var_field!((*arrayExp).elements, NFExpression::ARRAY).clone().borrow().is_empty()) && isArray(({let __elt = var_field!((*arrayExp).elements, NFExpression::ARRAY).clone().borrow()[(1-1) as usize].clone(); __elt}))) => Array::all(var_field!((*arrayExp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = element.clone(); move |__pe_a0| arrayAllEqual2(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>))?,
         Deref @ ARRAY { .. } => Array::all(var_field!((*arrayExp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1 = element.clone(); move |__pe_a0| isEqual(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>))?,
         _ => true,
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
@@ -5721,7 +5721,7 @@ pub fn arrayScalarElements_impl(mut exp: Arc<NFExpression>, mut elements: Arc<me
 pub fn arrayScalarElement(mut arrayExp: Arc<NFExpression>) -> Result<Arc<NFExpression>> {
     let mut scalarExp: Arc<NFExpression> = Arc::new(NFExpression::END);
     scalarExp = (::match_deref::match_deref! { match &(arrayExp.clone()) {
-        Deref @ ARRAY { .. } if (metamodelica::arrayLength(var_field!((*arrayExp).elements, NFExpression::ARRAY).clone()) == 1) => var_field!((*arrayExp).elements, NFExpression::ARRAY).clone().borrow()[(1-1) as usize].clone(),
+        Deref @ ARRAY { .. } if (metamodelica::arrayLength(var_field!((*arrayExp).elements, NFExpression::ARRAY).clone()) == 1) => ({let __elt = var_field!((*arrayExp).elements, NFExpression::ARRAY).clone().borrow()[(1-1) as usize].clone(); __elt}),
         _ => bail!("match: no arm matched"),
     } });
     Ok(scalarExp)
@@ -6126,7 +6126,7 @@ pub fn enumIndexExp(mut enumExp: Arc<NFExpression>) -> Result<Arc<NFExpression>>
 pub fn toScalar(mut exp: Arc<NFExpression>) -> Result<Arc<NFExpression>> {
     let mut outExp: Arc<NFExpression> = Arc::new(NFExpression::END);
     outExp = (::match_deref::match_deref! { match &(exp.clone()) {
-        Deref @ ARRAY { .. } if (metamodelica::arrayLength(var_field!((*exp).elements, NFExpression::ARRAY).clone()) == 1) => toScalar(var_field!((*exp).elements, NFExpression::ARRAY).clone().borrow()[(1-1) as usize].clone())?,
+        Deref @ ARRAY { .. } if (metamodelica::arrayLength(var_field!((*exp).elements, NFExpression::ARRAY).clone()) == 1) => toScalar(({let __elt = var_field!((*exp).elements, NFExpression::ARRAY).clone().borrow()[(1-1) as usize].clone(); __elt}))?,
         _ => exp.clone(),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
@@ -6203,7 +6203,7 @@ pub fn recordElement(mut elementName: ArcStr, mut recordExp: Arc<NFExpression>) 
             let mut arr: metamodelica::Array<Arc<NFExpression>> = Default::default();
             index = Class::lookupComponentIndex((elementName.clone()).clone(), InstNode::getClass(node.clone())?)?;
             arr = Array::map(var_field!((*recordExp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b0 = index.clone(); move |__pe_a1| nthRecordElement(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>))?;
-            ty = Type::liftArrayLeft(typeOf(arr.clone().borrow()[(1-1) as usize].clone()), Dimension::fromInteger(metamodelica::arrayLength(arr.clone()), Prefixes::Variability::CONSTANT.clone()));
+            ty = Type::liftArrayLeft(typeOf(({let __elt = arr.clone().borrow()[(1-1) as usize].clone(); __elt})), Dimension::fromInteger(metamodelica::arrayLength(arr.clone()), Prefixes::Variability::CONSTANT.clone()));
             makeArray(ty.clone(), arr.clone(), var_field!((*recordExp).literal, NFExpression::ARRAY).clone())
         },
         Deref @ SUBSCRIPTED_EXP { .. } => {
@@ -6259,7 +6259,7 @@ pub fn nthRecordElement(mut index: i32, mut recordExp: Arc<NFExpression>) -> Res
             let mut ty: Arc<Type::NFType> = Arc::new(Type::ANY);
             let mut arr: metamodelica::Array<Arc<NFExpression>> = Default::default();
             arr = Array::map(var_field!((*recordExp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b0 = index.clone(); move |__pe_a1| nthRecordElement(__pe_b0.clone(), __pe_a1) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>))?;
-            ty = Type::liftArrayLeft(typeOf(arr.clone().borrow()[(1-1) as usize].clone()), listHead(Type::arrayDims(var_field!((*recordExp).ty, NFExpression::ARRAY).clone()))?);
+            ty = Type::liftArrayLeft(typeOf(({let __elt = arr.clone().borrow()[(1-1) as usize].clone(); __elt})), listHead(Type::arrayDims(var_field!((*recordExp).ty, NFExpression::ARRAY).clone()))?);
             makeArray(ty.clone(), arr.clone(), false)
         },
         Deref @ RECORD_ELEMENT { ty: Deref @ Type::ARRAY { elementType: Deref @ Type::COMPLEX { cls: node, .. }, .. }, .. } => {
@@ -6301,7 +6301,7 @@ pub fn getRecordElements(mut exp: Arc<NFExpression>) -> Result<Arc<metamodelica:
     elements = (::match_deref::match_deref! { match &(ty.clone()) {
         Deref @ Type::COMPLEX { complexTy: complexTy @ Deref @ ComplexType::RECORD { .. }, .. } => {
             for mut i in (1..=metamodelica::arrayLength(var_field!((**complexTy).fields, ComplexType::NFComplexType::RECORD).clone())).rev() {
-                elements = metamodelica::cons(recordElement((Record::Field::name(var_field!((**complexTy).fields, ComplexType::NFComplexType::RECORD).borrow()[(i.clone()-1) as usize].clone())?).clone(), exp.clone())?, elements.clone());
+                elements = metamodelica::cons(recordElement((Record::Field::name(({let __elt = var_field!((**complexTy).fields, ComplexType::NFComplexType::RECORD).borrow()[(i.clone()-1) as usize].clone(); __elt}))?).clone(), exp.clone())?, elements.clone());
             }
             elements.clone()
         },
@@ -6661,7 +6661,7 @@ pub fn mapSplitExpressions2(mut exp: Arc<NFExpression>, mut dimSizes: Arc<metamo
             updateMutable(sub_exp.clone(), Arc::new(NFExpression::INTEGER { value: i.clone() }))?;
             unsafe { metamodelica::Dangerous::arrayInitSlot(expl.clone(), i.clone(), mapSplitExpressions2(exp.clone(), rest_dims.clone(), rest_subs.clone(), func.clone())?) };
         }
-        ty = typeOf(if (expl.clone().borrow().is_empty()) {exp.clone()} else {expl.clone().borrow()[(1-1) as usize].clone()});
+        ty = typeOf(if (expl.clone().borrow().is_empty()) {exp.clone()} else {({let __elt = expl.clone().borrow()[(1-1) as usize].clone(); __elt})});
         outExp = makeExpArray(expl.clone(), ty.clone(), Array::all(expl.clone(), (std::sync::Arc::new(isLiteral) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>))?);
     }
     Ok(outExp)
@@ -6699,7 +6699,7 @@ pub fn mapCrefScalars2(mut exp: Arc<NFExpression>, mut mapFn: Arc<dyn ::std::ops
     outExp = (::match_deref::match_deref! { match &(exp.clone()) {
         Deref @ ARRAY { .. } if (!(var_field!((*exp).elements, NFExpression::ARRAY).clone().borrow().is_empty())) => {
             arr = Array::map(var_field!((*exp).elements, NFExpression::ARRAY).clone(), (std::sync::Arc::new({ let __pe_b1: Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<Arc<NFExpression>> + 'static> = mapFn.clone(); move |__pe_a0| mapCrefScalars2(__pe_a0, __pe_b1.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<Arc<NFExpression>> + 'static>))?;
-            ty = typeOf(arr.clone().borrow()[(1-1) as usize].clone());
+            ty = typeOf(({let __elt = arr.clone().borrow()[(1-1) as usize].clone(); __elt}));
             literal = Array::all(arr.clone(), (std::sync::Arc::new(isLiteral) as std::sync::Arc<dyn ::std::ops::Fn(Arc<NFExpression>) -> Result<bool> + 'static>))?;
             makeExpArray(arr.clone(), ty.clone(), literal.clone())
         },
@@ -7216,21 +7216,21 @@ pub fn productOfListExceptSelf(mut arguments: Arc<metamodelica::List<Arc<NFExpre
     res = arrayCreate(n.clone(), makeOne(elTy.clone())?);
     for mut i in 2..=n.clone() {
         {
-            let __cell1 = mmul(pref.borrow()[(i.clone() - 1-1) as usize].clone(), argsArr.borrow()[(i.clone() - 1-1) as usize].clone(), mulOp.clone())?;
+            let __cell1 = mmul(({let __elt = pref.borrow()[(i.clone() - 1-1) as usize].clone(); __elt}), ({let __elt = argsArr.borrow()[(i.clone() - 1-1) as usize].clone(); __elt}), mulOp.clone())?;
             pref.clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
         }
     }
     rightProd = makeOne(elTy.clone())?;
     for mut i in (1..=n.clone()).rev() {
         {
-            let __cell2 = mmul(pref.borrow()[(i.clone()-1) as usize].clone(), rightProd.clone(), mulOp.clone())?;
+            let __cell2 = mmul(({let __elt = pref.borrow()[(i.clone()-1) as usize].clone(); __elt}), rightProd.clone(), mulOp.clone())?;
             res.clone().borrow_mut()[(i.clone()-1) as usize] = __cell2;
         }
-        rightProd = mmul(rightProd.clone(), argsArr.borrow()[(i.clone()-1) as usize].clone(), mulOp.clone())?;
+        rightProd = mmul(rightProd.clone(), ({let __elt = argsArr.borrow()[(i.clone()-1) as usize].clone(); __elt}), mulOp.clone())?;
     }
     products = metamodelica::nil();
     for mut i in (1..=n.clone()).rev() {
-        products = metamodelica::cons(SimplifyExp::simplify(res.borrow()[(i.clone()-1) as usize].clone(), false)?, products.clone());
+        products = metamodelica::cons(SimplifyExp::simplify(({let __elt = res.borrow()[(i.clone()-1) as usize].clone(); __elt}), false)?, products.clone());
     }
     Ok(products)
 }

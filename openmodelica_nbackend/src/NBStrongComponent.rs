@@ -516,12 +516,12 @@ pub fn createPseudoSlice(mut var_arr_idx: i32, mut eqn_arr_idx: i32, mut cref_to
     let mut order: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, EvalOrder>> = <Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, EvalOrder>> as ::std::default::Default>::default();
     var_ptr = BVariable::getVarPointer(cref_to_solve.clone(), metamodelica::sourceInfo!())?;
     eqn_ptr = EquationPointers::getEqnAt(eqns.clone(), eqn_arr_idx.clone())?;
-    (first_var, var_size) = mapping.var_AtS.borrow()[(var_arr_idx.clone()-1) as usize].clone();
-    (first_eqn, eqn_size) = mapping.eqn_AtS.borrow()[(eqn_arr_idx.clone()-1) as usize].clone();
+    (first_var, var_size) = ({let __elt = mapping.var_AtS.borrow()[(var_arr_idx.clone()-1) as usize].clone(); __elt});
+    (first_eqn, eqn_size) = ({let __elt = mapping.eqn_AtS.borrow()[(eqn_arr_idx.clone()-1) as usize].clone(); __elt});
     var_scal_indices = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut e in (eqn_scal_indices.clone()).into_iter().cloned() {
-            let __x = eqn_to_var.borrow()[(e.clone()-1) as usize].clone();
+            let __x = ({let __elt = eqn_to_var.borrow()[(e.clone()-1) as usize].clone(); __elt});
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -567,7 +567,7 @@ pub fn createPseudoEntwined(mut eqn_indices: Arc<metamodelica::List<i32>>, mut e
     let mut entwined_tpl_lst: Arc<metamodelica::List<(Pointer::Pointer<Arc<Equation::Equation>>, i32)>> = metamodelica::nil();
     for mut idx in &*eqn_indices.clone() {
         let mut idx = idx.clone();
-        UnorderedMap::add(mapping.eqn_StA.borrow()[(idx.clone()-1) as usize].clone(), metamodelica::cons(idx.clone(), UnorderedMap::getOrDefault(mapping.eqn_StA.borrow()[(idx.clone()-1) as usize].clone(), elem_map.clone(), metamodelica::nil())?), elem_map.clone())?;
+        UnorderedMap::add(({let __elt = mapping.eqn_StA.borrow()[(idx.clone()-1) as usize].clone(); __elt}), metamodelica::cons(idx.clone(), UnorderedMap::getOrDefault(({let __elt = mapping.eqn_StA.borrow()[(idx.clone()-1) as usize].clone(); __elt}), elem_map.clone(), metamodelica::nil())?), elem_map.clone())?;
     }
     for mut node in &*nodes.clone() {
         let mut node = node.clone();
@@ -583,13 +583,13 @@ pub fn createPseudoEntwined(mut eqn_indices: Arc<metamodelica::List<i32>>, mut e
     for mut tpl in &*UnorderedMap::toList(elem_map.clone()) {
         let mut tpl = tpl.clone();
         (eqn_arr_idx, scal_indices) = tpl.clone();
-        var_arr_idx = mapping.var_StA.borrow()[(eqn_to_var.borrow()[(Util::tuple21(mapping.eqn_AtS.borrow()[(eqn_arr_idx.clone()-1) as usize].clone())-1) as usize].clone()-1) as usize].clone();
+        var_arr_idx = ({let __elt = mapping.var_StA.borrow()[(({let __elt = eqn_to_var.borrow()[(Util::tuple21(({let __elt = mapping.eqn_AtS.borrow()[(eqn_arr_idx.clone()-1) as usize].clone(); __elt}))-1) as usize].clone(); __elt})-1) as usize].clone(); __elt});
         entwined_slices = metamodelica::cons(createPseudoSlice(var_arr_idx.clone(), eqn_arr_idx.clone(), UnorderedMap::getSafe(eqn_arr_idx.clone(), cref_map.clone(), metamodelica::sourceInfo!())?, scal_indices.clone(), eqn_to_var.clone(), eqns.clone(), mapping.clone(), false)?, entwined_slices.clone());
     }
     entwined_tpl_lst = ({
         let mut __acc: Arc<metamodelica::List<(Pointer::Pointer<Arc<Equation::Equation>>, i32)>> = metamodelica::nil();
         for mut idx in (eqn_indices.clone()).into_iter().cloned() {
-            let __x = (EquationPointers::getEqnAt(eqns.clone(), mapping.eqn_StA.borrow()[(idx.clone()-1) as usize].clone())?, idx.clone());
+            let __x = (EquationPointers::getEqnAt(eqns.clone(), ({let __elt = mapping.eqn_StA.borrow()[(idx.clone()-1) as usize].clone(); __elt}))?, idx.clone());
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -615,8 +615,8 @@ pub fn createPseudoEntwinedIndices(mut entwined_indices: metamodelica::Array<Arc
         for mut scal_idx in &*tmp.clone() {
             let mut scal_idx = scal_idx.clone();
             eqn_StA = mapping.eqn_StA.clone();
-            arr_idx = eqn_StA.borrow()[(scal_idx.clone()-1) as usize].clone();
-            (first_idx, _) = mapping.eqn_AtS.borrow()[(arr_idx.clone()-1) as usize].clone();
+            arr_idx = ({let __elt = eqn_StA.borrow()[(scal_idx.clone()-1) as usize].clone(); __elt});
+            (first_idx, _) = ({let __elt = mapping.eqn_AtS.borrow()[(arr_idx.clone()-1) as usize].clone(); __elt});
             flat_tpl_indices = metamodelica::cons((EquationPointers::getEqnAt(eqns.clone(), arr_idx.clone())?, scal_idx.clone() - first_idx.clone()), flat_tpl_indices.clone());
         }
     }
@@ -971,10 +971,10 @@ pub fn collectCrefs(mut comp: Arc<NBStrongComponent>, mut var_rep: Arc<VariableP
         __acc.reverse()
     });
             for mut i in 1..=metamodelica::arrayLength(strict.innerEquations.clone()) {
-                collectCrefs(strict.innerEquations.borrow()[(i.clone()-1) as usize].clone(), var_rep.clone(), eqn_rep.clone(), var_rep_mapping.clone(), eqn_rep_mapping.clone(), map.clone(), set.clone(), jacType.clone())?;
+                collectCrefs(({let __elt = strict.innerEquations.borrow()[(i.clone()-1) as usize].clone(); __elt}), var_rep.clone(), eqn_rep.clone(), var_rep_mapping.clone(), eqn_rep_mapping.clone(), map.clone(), set.clone(), jacType.clone())?;
                 loop_vars = listAppend(({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-        for mut var in (getVariables(strict.innerEquations.borrow()[(i.clone()-1) as usize].clone())?).into_iter().cloned() {
+        for mut var in (getVariables(({let __elt = strict.innerEquations.borrow()[(i.clone()-1) as usize].clone(); __elt}))?).into_iter().cloned() {
             let __x = BVariable::getVarName(var.clone());
             __acc = cons(__x, __acc);
         }
@@ -1272,10 +1272,10 @@ pub fn createPseudoScalar(mut comp_indices: Arc<metamodelica::List<i32>>, mut eq
             let mut eqn: Pointer::Pointer<Arc<Equation::Equation>>;
             let mut var_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Variable::NFVariable>>>>;
             let mut eqn_slice: Arc<Slice::NBSlice<Pointer::Pointer<Arc<Equation::Equation>>>>;
-            var_scal_idx = eqn_to_var.borrow()[(i.clone()-1) as usize].clone();
-            var_arr_idx = mapping.var_StA.borrow()[(var_scal_idx.clone()-1) as usize].clone();
+            var_scal_idx = ({let __elt = eqn_to_var.borrow()[(i.clone()-1) as usize].clone(); __elt});
+            var_arr_idx = ({let __elt = mapping.var_StA.borrow()[(var_scal_idx.clone()-1) as usize].clone(); __elt});
             var = BVariable::VariablePointers::getVarAt(vars.clone(), var_arr_idx.clone())?;
-            eqn = EquationPointers::getEqnAt(eqns.clone(), mapping.eqn_StA.borrow()[(i.clone()-1) as usize].clone())?;
+            eqn = EquationPointers::getEqnAt(eqns.clone(), ({let __elt = mapping.eqn_StA.borrow()[(i.clone()-1) as usize].clone(); __elt}))?;
             if Equation::isForEquation(eqn.clone()) {
                 let (__pa0, __pa1) = ::match_deref::match_deref! { match &(getLoopVarsAndEqns(comp_indices.clone(), eqn_to_var.clone(), mapping.clone(), vars.clone(), eqns.clone())) {
                     Ok((Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil }, Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil })) => (__pa0.clone(), __pa1.clone()),
@@ -1286,7 +1286,7 @@ pub fn createPseudoScalar(mut comp_indices: Arc<metamodelica::List<i32>>, mut eq
                 } };
                 var_slice = __pa0.clone();
                 eqn_slice = __pa1.clone();
-                comp = Arc::new(NBStrongComponent::SLICED_COMPONENT { var_cref: BVariable::VariablePointers::varSlice(vars.clone(), var_scal_idx.clone(), mapping.var_StA.borrow()[(var_scal_idx.clone()-1) as usize].clone(), mapping.clone(), true)?, var: var_slice.clone(), eqn: eqn_slice.clone(), status: Solve::Status::UNPROCESSED.clone() });
+                comp = Arc::new(NBStrongComponent::SLICED_COMPONENT { var_cref: BVariable::VariablePointers::varSlice(vars.clone(), var_scal_idx.clone(), ({let __elt = mapping.var_StA.borrow()[(var_scal_idx.clone()-1) as usize].clone(); __elt}), mapping.clone(), true)?, var: var_slice.clone(), eqn: eqn_slice.clone(), status: Solve::Status::UNPROCESSED.clone() });
             } else if Equation::isCompound(eqn.clone()) {
                 comp = Arc::new(NBStrongComponent::MULTI_COMPONENT { vars: list![Arc::new(Slice::NBSlice { t: var.clone(), indices: metamodelica::nil() })], eqn: Arc::new(Slice::NBSlice { t: eqn.clone(), indices: metamodelica::nil() }), status: Solve::Status::UNPROCESSED.clone() });
             } else {
@@ -1299,7 +1299,7 @@ pub fn createPseudoScalar(mut comp_indices: Arc<metamodelica::List<i32>>, mut eq
                 } };
                 var_slice = __pa4.clone();
                 eqn_slice = __pa5.clone();
-                comp = createSliceOrSingle(BVariable::VariablePointers::varSlice(vars.clone(), var_scal_idx.clone(), mapping.var_StA.borrow()[(var_scal_idx.clone()-1) as usize].clone(), mapping.clone(), true)?, var_slice.clone(), eqn_slice.clone())?;
+                comp = createSliceOrSingle(BVariable::VariablePointers::varSlice(vars.clone(), var_scal_idx.clone(), ({let __elt = mapping.var_StA.borrow()[(var_scal_idx.clone()-1) as usize].clone(); __elt}), mapping.clone(), true)?, var_slice.clone(), eqn_slice.clone())?;
             }
             comp.clone()
         },
@@ -1362,9 +1362,9 @@ fn getLoopVarsAndEqns(mut comp_indices: Arc<metamodelica::List<i32>>, mut eqn_to
     let mut eqn_map: Arc<UnorderedMap::UnorderedMap<i32, Arc<metamodelica::List<i32>>>> = UnorderedMap::new(std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), len_comps.clone());
     for mut eqn_idx in &*comp_indices.clone() {
         let mut eqn_idx = eqn_idx.clone();
-        var_idx = eqn_to_var.borrow()[(eqn_idx.clone()-1) as usize].clone();
-        var_arr_idx = mapping.var_StA.borrow()[(var_idx.clone()-1) as usize].clone();
-        eqn_arr_idx = mapping.eqn_StA.borrow()[(eqn_idx.clone()-1) as usize].clone();
+        var_idx = ({let __elt = eqn_to_var.borrow()[(eqn_idx.clone()-1) as usize].clone(); __elt});
+        var_arr_idx = ({let __elt = mapping.var_StA.borrow()[(var_idx.clone()-1) as usize].clone(); __elt});
+        eqn_arr_idx = ({let __elt = mapping.eqn_StA.borrow()[(eqn_idx.clone()-1) as usize].clone(); __elt});
         idx_lst = UnorderedMap::getOrDefault(var_arr_idx.clone(), var_map.clone(), metamodelica::nil())?;
         UnorderedMap::add(var_arr_idx.clone(), metamodelica::cons(var_idx.clone(), idx_lst.clone()), var_map.clone())?;
         idx_lst = UnorderedMap::getOrDefault(eqn_arr_idx.clone(), eqn_map.clone(), metamodelica::nil())?;
@@ -1373,7 +1373,7 @@ fn getLoopVarsAndEqns(mut comp_indices: Arc<metamodelica::List<i32>>, mut eqn_to
     for mut tpl in &*UnorderedMap::toList(var_map.clone()) {
         let mut tpl = tpl.clone();
         (var_arr_idx, idx_lst) = tpl.clone();
-        (var_scal_idx, _) = mapping.var_AtS.borrow()[(var_arr_idx.clone()-1) as usize].clone();
+        (var_scal_idx, _) = ({let __elt = mapping.var_AtS.borrow()[(var_arr_idx.clone()-1) as usize].clone(); __elt});
         var = BVariable::VariablePointers::getVarAt(vars.clone(), var_arr_idx.clone())?;
         idx_lst = if ((idx_lst.clone().len() as i32) == BVariable::size(var.clone(), false)?) {metamodelica::nil()} else {({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -1388,7 +1388,7 @@ fn getLoopVarsAndEqns(mut comp_indices: Arc<metamodelica::List<i32>>, mut eqn_to
     for mut tpl in &*UnorderedMap::toList(eqn_map.clone()) {
         let mut tpl = tpl.clone();
         (eqn_arr_idx, idx_lst) = tpl.clone();
-        (eqn_scal_idx, _) = mapping.eqn_AtS.borrow()[(eqn_arr_idx.clone()-1) as usize].clone();
+        (eqn_scal_idx, _) = ({let __elt = mapping.eqn_AtS.borrow()[(eqn_arr_idx.clone()-1) as usize].clone(); __elt});
         eqn = EquationPointers::getEqnAt(eqns.clone(), eqn_arr_idx.clone())?;
         idx_lst = if ((idx_lst.clone().len() as i32) == Equation::size(eqn.clone(), false)?) {metamodelica::nil()} else {({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();

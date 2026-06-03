@@ -8121,7 +8121,7 @@ fn fillDefaultSlot(mut inSlot: Slot, mut inSlotArray: metamodelica::Array<Slot>,
             (arg.clone(), inSlot.clone())
         },
         Slot { idx, defaultArg: Deref @ DAE::FuncArg { defaultBinding: Some(_), .. }, slotFilled: false, .. } => {
-            fillDefaultSlot2(inSlotArray.borrow()[(idx.clone()-1) as usize].clone(), inSlotArray.clone(), inInfo.clone())?
+            fillDefaultSlot2(({let __elt = inSlotArray.borrow()[(idx.clone()-1) as usize].clone(); __elt}), inSlotArray.clone(), inInfo.clone())?
         },
         Slot { defaultArg: Deref @ DAE::FuncArg { name: id, .. }, .. } => {
             Error::addSourceMessage(Error::UNFILLED_SLOT.clone(), list![(id.clone()).clone()], inInfo.clone())?;

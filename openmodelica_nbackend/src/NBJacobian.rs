@@ -463,8 +463,8 @@ pub mod SparsityPattern {
                 UnorderedSet::add(cref.clone(), set.clone())?;
             }
             for mut i in 1..=metamodelica::arrayLength(comps.clone()) {
-                if !(StrongComponent::isDiscrete(comps.borrow()[(i.clone()-1) as usize].clone())?) {
-                    StrongComponent::collectCrefs(comps.borrow()[(i.clone()-1) as usize].clone(), seedCandidates.clone(), partialCandidates.clone(), seed_mapping.clone(), partial_mapping.clone(), map.clone(), set.clone(), jacType.clone())?;
+                if !(StrongComponent::isDiscrete(({let __elt = comps.borrow()[(i.clone()-1) as usize].clone(); __elt}))?) {
+                    StrongComponent::collectCrefs(({let __elt = comps.borrow()[(i.clone()-1) as usize].clone(); __elt}), seedCandidates.clone(), partialCandidates.clone(), seed_mapping.clone(), partial_mapping.clone(), map.clone(), set.clone(), jacType.clone())?;
                 }
             }
             for mut cref in &*partial_vars.clone().reverse() {
@@ -560,10 +560,10 @@ pub mod SparsityColoring {
             r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("\n<empty sparsity pattern>\n")); ArcStr::from(__mm_s) }).clone();
         }
         for mut i in 1..=metamodelica::arrayLength(sparsityColoring.cols.clone()) {
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("Column Color (")); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!(")\n")); __mm_s.push_str(&*literal!("  - Column: ")); __mm_s.push_str(&*ComponentRef::listToString(sparsityColoring.cols.borrow()[(i.clone()-1) as usize].clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("Column Color (")); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!(")\n")); __mm_s.push_str(&*literal!("  - Column: ")); __mm_s.push_str(&*ComponentRef::listToString(({let __elt = sparsityColoring.cols.borrow()[(i.clone()-1) as usize].clone(); __elt}))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
         }
         for mut i in 1..=metamodelica::arrayLength(sparsityColoring.rows.clone()) {
-            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("Row Color (")); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!(")\n")); __mm_s.push_str(&*literal!("  - Row:    ")); __mm_s.push_str(&*ComponentRef::listToString(sparsityColoring.rows.borrow()[(i.clone()-1) as usize].clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
+            r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!("Row Color (")); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!(")\n")); __mm_s.push_str(&*literal!("  - Row:    ")); __mm_s.push_str(&*ComponentRef::listToString(({let __elt = sparsityColoring.rows.borrow()[(i.clone()-1) as usize].clone(); __elt}))?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone();
         }
         Ok(r#str)
     }
@@ -591,7 +591,7 @@ pub mod SparsityColoring {
             if UnorderedMap::contains(cref.clone(), seed_indices.clone())? {
                 indices = list![UnorderedMap::getSafe(cref.clone(), seed_indices.clone(), metamodelica::sourceInfo!())?];
             } else if UnorderedMap::contains(cref.clone(), partial_indices.clone())? {
-                indices = rows.borrow()[(UnorderedMap::getSafe(cref.clone(), partial_indices.clone(), metamodelica::sourceInfo!())?-1) as usize].clone();
+                indices = ({let __elt = rows.borrow()[(UnorderedMap::getSafe(cref.clone(), partial_indices.clone(), metamodelica::sourceInfo!())?-1) as usize].clone(); __elt});
             } else {
                 Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBJacobian.SparsityColoring.PartialD2ColoringAlgC.getIndices")); __mm_s.push_str(&*literal!(" failed because cref ")); __mm_s.push_str(&*ComponentRef::toString(cref.clone())?); __mm_s.push_str(&*literal!(" is neither a seed nor a partial candidate!")); ArcStr::from(__mm_s) }).clone()])?;
                 bail!("fail");
@@ -633,10 +633,10 @@ pub mod SparsityColoring {
         seed_indices = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), Util::nextPrime(sizeCols.clone()));
         partial_indices = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), Util::nextPrime(sizeRows.clone()));
         for mut i in 1..=sizeCols.clone() {
-            UnorderedMap::add(seeds.borrow()[(i.clone()-1) as usize].clone(), i.clone(), seed_indices.clone())?;
+            UnorderedMap::add(({let __elt = seeds.borrow()[(i.clone()-1) as usize].clone(); __elt}), i.clone(), seed_indices.clone())?;
         }
         for mut i in 1..=sizeRows.clone() {
-            UnorderedMap::add(partials.borrow()[(i.clone()-1) as usize].clone(), i.clone(), partial_indices.clone())?;
+            UnorderedMap::add(({let __elt = partials.borrow()[(i.clone()-1) as usize].clone(); __elt}), i.clone(), partial_indices.clone())?;
         }
         cols = arrayCreate(sizeCols.clone(), metamodelica::nil());
         rows = arrayCreate(sizeRows.clone(), metamodelica::nil());
@@ -676,8 +676,8 @@ pub mod SparsityColoring {
             {
                 let __cell2 = ({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-        for mut idx in (colored_cols.borrow()[(i.clone()-1) as usize].clone()).into_iter().cloned() {
-            let __x = seeds.borrow()[(idx.clone()-1) as usize].clone();
+        for mut idx in (({let __elt = colored_cols.borrow()[(i.clone()-1) as usize].clone(); __elt})).into_iter().cloned() {
+            let __x = ({let __elt = seeds.borrow()[(idx.clone()-1) as usize].clone(); __elt});
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -691,8 +691,8 @@ pub mod SparsityColoring {
             {
                 let __cell3 = ({
         let mut __acc: Arc<metamodelica::List<Arc<ComponentRef::NFComponentRef>>> = metamodelica::nil();
-        for mut idx in (colored_rows.borrow()[(i.clone()-1) as usize].clone()).into_iter().cloned() {
-            let __x = partials.borrow()[(idx.clone()-1) as usize].clone();
+        for mut idx in (({let __elt = colored_rows.borrow()[(i.clone()-1) as usize].clone(); __elt})).into_iter().cloned() {
+            let __x = ({let __elt = partials.borrow()[(idx.clone()-1) as usize].clone(); __elt});
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -737,19 +737,19 @@ pub mod SparsityColoring {
         let mut neigh: Arc<ComponentRef::NFComponentRef> = Arc::new(ComponentRef::EMPTY);
         index_lookup = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), Util::nextPrime(n.clone()));
         for mut i in 1..=n.clone() {
-            UnorderedMap::add(nodes.borrow()[(i.clone()-1) as usize].clone(), i.clone(), index_lookup.clone())?;
+            UnorderedMap::add(({let __elt = nodes.borrow()[(i.clone()-1) as usize].clone(); __elt}), i.clone(), index_lookup.clone())?;
         }
         coloring = arrayCreate(n.clone(), 0);
         forbidden_colors = arrayCreate(n.clone(), 0);
         color_exists = arrayCreate(n.clone(), false);
         groups = arrayCreate(n.clone(), metamodelica::nil());
         for mut i in 1..=n.clone() {
-            node = nodes.borrow()[(i.clone()-1) as usize].clone();
+            node = ({let __elt = nodes.borrow()[(i.clone()-1) as usize].clone(); __elt});
             for mut mid in &*UnorderedMap::getSafe(node.clone(), map.clone(), metamodelica::sourceInfo!())? {
                 let mut mid = mid.clone();
                 for mut neigh in &*UnorderedMap::getSafe(mid.clone(), map.clone(), metamodelica::sourceInfo!())? {
                     let mut neigh = neigh.clone();
-                    color = coloring.borrow()[(UnorderedMap::getSafe(neigh.clone(), index_lookup.clone(), metamodelica::sourceInfo!())?-1) as usize].clone();
+                    color = ({let __elt = coloring.borrow()[(UnorderedMap::getSafe(neigh.clone(), index_lookup.clone(), metamodelica::sourceInfo!())?-1) as usize].clone(); __elt});
                     if color.clone() > 0 {
                         {
                             let __cell0 = i.clone();
@@ -759,7 +759,7 @@ pub mod SparsityColoring {
                 }
             }
             color = 1;
-            while forbidden_colors.borrow()[(color.clone()-1) as usize].clone() == i.clone() {
+            while ({let __elt = forbidden_colors.borrow()[(color.clone()-1) as usize].clone(); __elt}) == i.clone() {
                 color = color.clone() + 1;
             }
             {
@@ -771,14 +771,14 @@ pub mod SparsityColoring {
                 color_exists.clone().borrow_mut()[(color.clone()-1) as usize] = __cell2;
             }
             {
-                let __cell3 = metamodelica::cons(node.clone(), groups.borrow()[(color.clone()-1) as usize].clone());
+                let __cell3 = metamodelica::cons(node.clone(), ({let __elt = groups.borrow()[(color.clone()-1) as usize].clone(); __elt}));
                 groups.clone().borrow_mut()[(color.clone()-1) as usize] = __cell3;
             }
         }
         groups_lst = metamodelica::nil();
         for mut i in (1..=metamodelica::arrayLength(color_exists.clone())).rev() {
-            if color_exists.borrow()[(i.clone()-1) as usize].clone() {
-                groups_lst = metamodelica::cons(groups.borrow()[(i.clone()-1) as usize].clone(), groups_lst.clone());
+            if ({let __elt = color_exists.borrow()[(i.clone()-1) as usize].clone(); __elt}) {
+                groups_lst = metamodelica::cons(({let __elt = groups.borrow()[(i.clone()-1) as usize].clone(); __elt}), groups_lst.clone());
             }
         }
         Ok(groups_lst)
@@ -799,7 +799,7 @@ pub mod SparsityColoring {
         cref_lookup = metamodelica::arrayFromVec(sparsityPattern.seed_vars.clone().into_iter().cloned().collect());
         index_lookup = UnorderedMap::new((std::sync::Arc::new(ComponentRef::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>) -> Result<i32> + 'static>), (std::sync::Arc::new(ComponentRef::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ComponentRef::NFComponentRef>, Arc<ComponentRef::NFComponentRef>) -> Result<bool> + 'static>), Util::nextPrime((sparsityPattern.seed_vars.clone().len() as i32)));
         for mut i in 1..=metamodelica::arrayLength(cref_lookup.clone()) {
-            UnorderedMap::add(cref_lookup.borrow()[(i.clone()-1) as usize].clone(), i.clone(), index_lookup.clone())?;
+            UnorderedMap::add(({let __elt = cref_lookup.borrow()[(i.clone()-1) as usize].clone(); __elt}), i.clone(), index_lookup.clone())?;
         }
         coloring = arrayCreate(metamodelica::arrayLength(cref_lookup.clone()), 0);
         forbidden_colors = arrayCreate(metamodelica::arrayLength(cref_lookup.clone()), 0);
@@ -807,12 +807,12 @@ pub mod SparsityColoring {
         col_coloring = arrayCreate(metamodelica::arrayLength(cref_lookup.clone()), metamodelica::nil());
         row_coloring = arrayCreate(metamodelica::arrayLength(cref_lookup.clone()), metamodelica::nil());
         for mut i in 1..=metamodelica::arrayLength(cref_lookup.clone()) {
-            let __range0 = &*UnorderedMap::getSafe(cref_lookup.borrow()[(i.clone()-1) as usize].clone(), map.clone(), metamodelica::sourceInfo!())?;
+            let __range0 = &*UnorderedMap::getSafe(({let __elt = cref_lookup.borrow()[(i.clone()-1) as usize].clone(); __elt}), map.clone(), metamodelica::sourceInfo!())?;
             for mut row_var in __range0 {
                 let mut row_var = row_var.clone();
                 for mut col_var in &*UnorderedMap::getSafe(row_var.clone(), map.clone(), metamodelica::sourceInfo!())? {
                     let mut col_var = col_var.clone();
-                    color = coloring.borrow()[(UnorderedMap::getSafe(col_var.clone(), index_lookup.clone(), metamodelica::sourceInfo!())?-1) as usize].clone();
+                    color = ({let __elt = coloring.borrow()[(UnorderedMap::getSafe(col_var.clone(), index_lookup.clone(), metamodelica::sourceInfo!())?-1) as usize].clone(); __elt});
                     if color.clone() > 0 {
                         {
                             let __cell1 = i.clone();
@@ -822,7 +822,7 @@ pub mod SparsityColoring {
                 }
             }
             color = 1;
-            while forbidden_colors.borrow()[(color.clone()-1) as usize].clone() == i.clone() {
+            while ({let __elt = forbidden_colors.borrow()[(color.clone()-1) as usize].clone(); __elt}) == i.clone() {
                 color = color.clone() + 1;
             }
             {
@@ -830,7 +830,7 @@ pub mod SparsityColoring {
                 coloring.clone().borrow_mut()[(i.clone()-1) as usize] = __cell2;
             }
             {
-                let __cell3 = listAppend(row_coloring.borrow()[(color.clone()-1) as usize].clone(), UnorderedMap::getSafe(cref_lookup.borrow()[(i.clone()-1) as usize].clone(), map.clone(), metamodelica::sourceInfo!())?);
+                let __cell3 = listAppend(({let __elt = row_coloring.borrow()[(color.clone()-1) as usize].clone(); __elt}), UnorderedMap::getSafe(({let __elt = cref_lookup.borrow()[(i.clone()-1) as usize].clone(); __elt}), map.clone(), metamodelica::sourceInfo!())?);
                 row_coloring.clone().borrow_mut()[(color.clone()-1) as usize] = __cell3;
             }
             {
@@ -840,14 +840,14 @@ pub mod SparsityColoring {
         }
         for mut i in 1..=metamodelica::arrayLength(coloring.clone()) {
             {
-                let __cell5 = metamodelica::cons(cref_lookup.borrow()[(i.clone()-1) as usize].clone(), col_coloring.borrow()[(coloring.borrow()[(i.clone()-1) as usize].clone()-1) as usize].clone());
-                col_coloring.clone().borrow_mut()[(coloring.borrow()[(i.clone()-1) as usize].clone()-1) as usize] = __cell5;
+                let __cell5 = metamodelica::cons(({let __elt = cref_lookup.borrow()[(i.clone()-1) as usize].clone(); __elt}), ({let __elt = col_coloring.borrow()[(({let __elt = coloring.borrow()[(i.clone()-1) as usize].clone(); __elt})-1) as usize].clone(); __elt}));
+                col_coloring.clone().borrow_mut()[(({let __elt = coloring.borrow()[(i.clone()-1) as usize].clone(); __elt})-1) as usize] = __cell5;
             }
         }
         for mut i in (1..=metamodelica::arrayLength(color_exists.clone())).rev() {
-            if color_exists.borrow()[(i.clone()-1) as usize].clone() {
-                cols_lst = metamodelica::cons(col_coloring.borrow()[(i.clone()-1) as usize].clone(), cols_lst.clone());
-                rows_lst = metamodelica::cons(row_coloring.borrow()[(i.clone()-1) as usize].clone(), rows_lst.clone());
+            if ({let __elt = color_exists.borrow()[(i.clone()-1) as usize].clone(); __elt}) {
+                cols_lst = metamodelica::cons(({let __elt = col_coloring.borrow()[(i.clone()-1) as usize].clone(); __elt}), cols_lst.clone());
+                rows_lst = metamodelica::cons(({let __elt = row_coloring.borrow()[(i.clone()-1) as usize].clone(); __elt}), rows_lst.clone());
             }
         }
         sparsityColoring = Arc::new(SparsityColoring { cols: metamodelica::arrayFromVec(cols_lst.clone().into_iter().cloned().collect()), rows: metamodelica::arrayFromVec(rows_lst.clone().into_iter().cloned().collect()) });
@@ -865,13 +865,13 @@ pub mod SparsityColoring {
         coloring_out = Arc::new(SparsityColoring { cols: cols_big.clone(), rows: rows_big.clone() });
         for mut i in 1..=metamodelica::arrayLength(cols_small.clone()) {
             {
-                let __cell0 = listAppend(coloring_out.cols.borrow()[(i.clone()-1) as usize].clone(), cols_small.borrow()[(i.clone()-1) as usize].clone());
+                let __cell0 = listAppend(({let __elt = coloring_out.cols.borrow()[(i.clone()-1) as usize].clone(); __elt}), ({let __elt = cols_small.borrow()[(i.clone()-1) as usize].clone(); __elt}));
                 coloring_out.cols.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
             }
         }
         for mut i in 1..=metamodelica::arrayLength(rows_small.clone()) {
             {
-                let __cell1 = listAppend(coloring_out.rows.borrow()[(i.clone()-1) as usize].clone(), rows_small.borrow()[(i.clone()-1) as usize].clone());
+                let __cell1 = listAppend(({let __elt = coloring_out.rows.borrow()[(i.clone()-1) as usize].clone(); __elt}), ({let __elt = rows_small.borrow()[(i.clone()-1) as usize].clone(); __elt}));
                 coloring_out.rows.clone().borrow_mut()[(i.clone()-1) as usize] = __cell1;
             }
         }
@@ -1013,7 +1013,7 @@ fn partJacobian(mut part: Arc<Partition::Partition::Partition>, mut funcMap: Arc
         Some(mut comps) => {
             let mut tmp: Arc<StrongComponent::NBStrongComponent> = Arc::new(<StrongComponent::NBStrongComponent as ::std::default::Default>::default());
             for mut i in 1..=metamodelica::arrayLength(comps.clone()) {
-                (tmp, updated) = compJacobian(comps.borrow()[(i.clone()-1) as usize].clone(), part.adjacencyMatrix.clone(), funcMap.clone(), kind.clone())?;
+                (tmp, updated) = compJacobian(({let __elt = comps.borrow()[(i.clone()-1) as usize].clone(); __elt}), part.adjacencyMatrix.clone(), funcMap.clone(), kind.clone())?;
                 if updated.clone() {
                     {let _arr = comps.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = tmp.clone(); _arr};
                 }

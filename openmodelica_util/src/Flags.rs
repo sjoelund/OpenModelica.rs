@@ -950,7 +950,7 @@ pub fn isSet(mut inFlag: DebugFlag) -> Result<bool> {
     flags = getFlags(true);
     let Flag::FLAGS { debugFlags: __pa1, .. } = (flags.clone()) else { bail!("pattern mismatch") };
     debug_flags = __pa1.clone();
-    outValue = debug_flags.clone().borrow()[(index.clone()-1) as usize].clone();
+    outValue = ({let __elt = debug_flags.clone().borrow()[(index.clone()-1) as usize].clone(); __elt});
     Ok(outValue)
 }
 
@@ -979,7 +979,7 @@ pub fn getConfigValue(mut inFlag: ConfigFlag) -> Result<FlagData> {
     flags = getFlags(true);
     let Flag::FLAGS { configFlags: __pa2, .. } = (flags.clone()) else { bail!("pattern mismatch") };
     config_flags = __pa2.clone();
-    outValue = config_flags.clone().borrow()[(index.clone()-1) as usize].clone();
+    outValue = ({let __elt = config_flags.clone().borrow()[(index.clone()-1) as usize].clone(); __elt});
     Ok(outValue)
 }
 

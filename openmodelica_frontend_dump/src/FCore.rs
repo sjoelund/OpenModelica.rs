@@ -313,7 +313,7 @@ pub mod RefTree {
 
     pub fn valueStr(mut inValue: Value) -> Result<ArcStr> {
         let mut outString: ArcStr = arcstr::literal!("");
-        let Node { name: __pa0, .. } = (inValue.clone().borrow()[(1-1) as usize].clone()) else { bail!("pattern mismatch") };
+        let Node { name: __pa0, .. } = (({let __elt = inValue.clone().borrow()[(1-1) as usize].clone(); __elt})) else { bail!("pattern mismatch") };
         outString = __pa0.clone();
         Ok(outString)
     }

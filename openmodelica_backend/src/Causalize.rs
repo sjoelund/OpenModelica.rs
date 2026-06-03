@@ -159,7 +159,7 @@ fn freeStateAssignments(mut inVar: BackendDAE::Var, mut inTpl: (i32, metamodelic
     (outVar, outTpl) = (match (inVar.clone(), inTpl.clone()) {
         (mut var @ BackendDAE::Var { varKind: BackendDAE::VarKind::STATE { .. }, .. }, (mut index, mut ass1, mut ass2)) => {
             let mut e: i32 = 0;
-            e = ass1.borrow()[(index.clone()-1) as usize].clone();
+            e = ({let __elt = ass1.borrow()[(index.clone()-1) as usize].clone(); __elt});
             ass1 = {let _arr = ass1.clone(); _arr.borrow_mut()[(index.clone()-1) as usize] = -1; _arr};
             ass2 = {let _arr = ass2.clone(); _arr.borrow_mut()[(e.clone()-1) as usize] = -1; _arr};
             (var.clone(), (index.clone() + 1, ass1.clone(), ass2.clone()))
@@ -210,7 +210,7 @@ fn getAssignedVars(mut e: i32, mut ass: metamodelica::Array<i32>, mut iAcc: Arc<
     let mut oAcc: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut i: i32 = 0;
     let mut b: bool = false;
-    i = ass.borrow()[(e.clone()-1) as usize].clone();
+    i = ({let __elt = ass.borrow()[(e.clone()-1) as usize].clone(); __elt});
     b = intGt(i.clone(), 0);
     oAcc = List::consOnTrue(b.clone(), i.clone(), iAcc.clone());
     oAcc

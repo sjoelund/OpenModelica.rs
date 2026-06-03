@@ -2899,12 +2899,12 @@ fn parseTreeEq(mut t1: Arc<ParseTree>, mut t2: Arc<ParseTree>, mut diffSubtreeWo
         return Ok(b.clone());
     }
     for mut i in 1..=len1.clone() {
-        if !(modelicaDiffTokenEq(diffSubtreeWorkArray1.borrow()[(i.clone()-1) as usize].clone(), diffSubtreeWorkArray2.borrow()[(i.clone()-1) as usize].clone())?) {
+        if !(modelicaDiffTokenEq(({let __elt = diffSubtreeWorkArray1.borrow()[(i.clone()-1) as usize].clone(); __elt}), ({let __elt = diffSubtreeWorkArray2.borrow()[(i.clone()-1) as usize].clone(); __elt}))?) {
             return Ok(b.clone());
         }
     }
     for mut i in 1..=commentLen1.clone() {
-        if !(modelicaDiffTokenEq(diffSubtreeWorkArray1.borrow()[(metamodelica::arrayLength(diffSubtreeWorkArray1.clone()) - (i.clone() - 1)-1) as usize].clone(), diffSubtreeWorkArray2.borrow()[(metamodelica::arrayLength(diffSubtreeWorkArray2.clone()) - (i.clone() - 1)-1) as usize].clone())?) {
+        if !(modelicaDiffTokenEq(({let __elt = diffSubtreeWorkArray1.borrow()[(metamodelica::arrayLength(diffSubtreeWorkArray1.clone()) - (i.clone() - 1)-1) as usize].clone(); __elt}), ({let __elt = diffSubtreeWorkArray2.borrow()[(metamodelica::arrayLength(diffSubtreeWorkArray2.clone()) - (i.clone() - 1)-1) as usize].clone(); __elt}))?) {
             return Ok(b.clone());
         }
     }

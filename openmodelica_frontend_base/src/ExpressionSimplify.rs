@@ -2011,7 +2011,7 @@ fn simplifyBuiltinCalls(mut exp: Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> {
         Deref @ metamodelica::List::Cons { head: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Nil }, tail: Deref @ metamodelica::List::Nil } => e.clone(),
         _ => {
                     marr = metamodelica::arrayFromVec(List::map(mexpl.clone(), Arc::new(fnptr!(listArray, Arc<metamodelica::List<Arc<DAE::Exp>>>)))?.into_iter().cloned().collect());
-                    let true = (metamodelica::arrayLength(marr.clone()) == metamodelica::arrayLength(marr.clone().borrow()[(1-1) as usize].clone())) else { bail!("pattern mismatch") };
+                    let true = (metamodelica::arrayLength(marr.clone()) == metamodelica::arrayLength(({let __elt = marr.clone().borrow()[(1-1) as usize].clone(); __elt}))) else { bail!("pattern mismatch") };
                     let true = (metamodelica::arrayLength(marr.clone()) > 1) else { bail!("pattern mismatch") };
                     simplifySymmetric(marr.clone(), metamodelica::arrayLength(marr.clone()) - 1, metamodelica::arrayLength(marr.clone()))?;
                     mexpl = List::mapArray(marr.clone(), Arc::new(fnptr!(arrayList, metamodelica::Array<Arc<DAE::Exp>>)))?;
@@ -2190,9 +2190,9 @@ fn simplifySymmetric(mut marr: metamodelica::Array<metamodelica::Array<Arc<DAE::
             let mut v1: metamodelica::Array<Arc<DAE::Exp>> = Default::default();
             let mut v2: metamodelica::Array<Arc<DAE::Exp>> = Default::default();
             let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-            v1 = marr.clone().borrow()[(i1.clone()-1) as usize].clone();
-            v2 = marr.clone().borrow()[(i2.clone()-1) as usize].clone();
-            exp = v1.clone().borrow()[(i2.clone()-1) as usize].clone();
+            v1 = ({let __elt = marr.clone().borrow()[(i1.clone()-1) as usize].clone(); __elt});
+            v2 = ({let __elt = marr.clone().borrow()[(i2.clone()-1) as usize].clone(); __elt});
+            exp = ({let __elt = v1.clone().borrow()[(i2.clone()-1) as usize].clone(); __elt});
             {let _arr = v2.clone(); _arr.borrow_mut()[(i1.clone()-1) as usize] = exp.clone(); _arr};
             simplifySymmetric(marr.clone(), if (i1.clone() == 1) {i2.clone() - 2} else {i1.clone() - 1}, if (i1.clone() == 1) {i2.clone() - 1} else {i2.clone()})?;
             ()

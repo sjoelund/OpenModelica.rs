@@ -1272,7 +1272,7 @@ fn add(mut entry: (Arc<DAE::ComponentRef>, InstInner), mut hashTable: InstHierar
                     indx = intMod(hval.clone(), bsize.clone());
                     newpos = valueArrayLength(varr.clone())?;
                     varr_1 = valueArrayAdd(varr.clone(), v.clone())?;
-                    indexes = hashvec.borrow()[(indx.clone() + 1-1) as usize].clone();
+                    indexes = ({let __elt = hashvec.borrow()[(indx.clone() + 1-1) as usize].clone(); __elt});
                     hashvec_1 = {let _arr = hashvec.clone(); _arr.borrow_mut()[(indx.clone() + 1-1) as usize] = metamodelica::cons((key.clone(), newpos.clone()), indexes.clone()); _arr};
                     n_1 = valueArrayLength(varr_1.clone())?;
                     Ok(InstHierarchyHashTable { hashTable: hashvec_1.clone(), valueArr: varr_1.clone(), bucketSize: bsize.clone(), numberOfEntries: n_1.clone() })
@@ -1324,7 +1324,7 @@ fn get1(mut key: Key, mut hashTable: InstHierarchyHashTable) -> Result<(Value, i
             let mut k: Key = Arc::new(DAE::ComponentRef::WILD);
             hval = hashFunc(key.clone())?;
             hashindx = intMod(hval.clone(), bsize.clone());
-            indexes = hashvec.borrow()[(hashindx.clone() + 1-1) as usize].clone();
+            indexes = ({let __elt = hashvec.borrow()[(hashindx.clone() + 1-1) as usize].clone(); __elt});
             indx = get2(key.clone(), indexes.clone())?;
             (k, v) = valueArrayNth(varr.clone(), indx.clone())?;
             let true = (keyEqual(k.clone(), key.clone())?) else { bail!("pattern mismatch") };
@@ -1384,7 +1384,7 @@ fn valueArrayList(mut valueArray: ValueArray) -> Result<Arc<metamodelica::List<(
         if let Ok(__v) = (|| -> Result<_> {
             let ValueArray { valueArray: mut arr, numberOfElements: 1 } = __mc_input.clone() else { bail!("nomatch") };
             let mut elt: (Arc<DAE::ComponentRef>, InstInner) = (Arc::new(DAE::ComponentRef::WILD), <InstInner as ::std::default::Default>::default());
-            let __pa0 = ::match_deref::match_deref! { match &(arr.borrow()[(0 + 1-1) as usize].clone()) {
+            let __pa0 = ::match_deref::match_deref! { match &(({let __elt = arr.borrow()[(0 + 1-1) as usize].clone(); __elt})) {
                 Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
@@ -1412,7 +1412,7 @@ fn valueArrayList2(mut inVarOptionArray1: metamodelica::Array<Option<(Arc<DAE::C
             let (mut arr, mut pos, mut lastpos) = __mc_input.clone() else { bail!("nomatch") };
             if !((pos.clone() == lastpos.clone())) { bail!("guard") }
             let mut v: (Arc<DAE::ComponentRef>, InstInner) = (Arc::new(DAE::ComponentRef::WILD), <InstInner as ::std::default::Default>::default());
-            let __pa0 = ::match_deref::match_deref! { match &(arr.borrow()[(pos.clone() + 1-1) as usize].clone()) {
+            let __pa0 = ::match_deref::match_deref! { match &(({let __elt = arr.borrow()[(pos.clone() + 1-1) as usize].clone(); __elt})) {
                 Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
@@ -1425,7 +1425,7 @@ fn valueArrayList2(mut inVarOptionArray1: metamodelica::Array<Option<(Arc<DAE::C
             let mut pos_1: i32 = 0;
             let mut res: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, InstInner)>> = metamodelica::nil();
             pos_1 = pos.clone() + 1;
-            let __pa0 = ::match_deref::match_deref! { match &(arr.borrow()[(pos.clone() + 1-1) as usize].clone()) {
+            let __pa0 = ::match_deref::match_deref! { match &(({let __elt = arr.borrow()[(pos.clone() + 1-1) as usize].clone(); __elt})) {
                 Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
@@ -1438,7 +1438,7 @@ fn valueArrayList2(mut inVarOptionArray1: metamodelica::Array<Option<(Arc<DAE::C
             let mut pos_1: i32 = 0;
             let mut res: Arc<metamodelica::List<(Arc<DAE::ComponentRef>, InstInner)>> = metamodelica::nil();
             pos_1 = pos.clone() + 1;
-            ::match_deref::match_deref! { match &(arr.borrow()[(pos.clone() + 1-1) as usize].clone()) {
+            ::match_deref::match_deref! { match &(({let __elt = arr.borrow()[(pos.clone() + 1-1) as usize].clone(); __elt})) {
                 None => (),
                 _ => bail!("pattern mismatch"),
             } };
@@ -1553,7 +1553,7 @@ fn valueArrayNth(mut valueArray: ValueArray, mut pos: i32) -> Result<(Key, Value
             let mut k: Key = Arc::new(DAE::ComponentRef::WILD);
             let mut v: Value = <InstInner as ::std::default::Default>::default();
             let true = (pos.clone() < n.clone()) else { bail!("pattern mismatch") };
-            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(arr.borrow()[(pos.clone() + 1-1) as usize].clone()) {
+            let (__pa0, __pa1) = ::match_deref::match_deref! { match &(({let __elt = arr.borrow()[(pos.clone() + 1-1) as usize].clone(); __elt})) {
                 Some((__pa0, __pa1)) => (__pa0.clone(), __pa1.clone()),
                 _ => bail!("pattern mismatch"),
             } };

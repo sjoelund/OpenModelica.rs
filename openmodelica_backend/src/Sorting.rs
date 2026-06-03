@@ -60,8 +60,8 @@ pub fn Tarjan(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut ass1
     lowlink = arrayCreate(N.clone(), -1);
     onStack = arrayCreate(N.clone(), false);
     for mut var in 1..=metamodelica::arrayLength(ass1.clone()) {
-        eqn = ass1.borrow()[(var.clone()-1) as usize].clone();
-        if eqn.clone() > 0 && number.borrow()[(eqn.clone()-1) as usize].clone() == -1 {
+        eqn = ({let __elt = ass1.borrow()[(var.clone()-1) as usize].clone(); __elt});
+        if eqn.clone() > 0 && ({let __elt = number.borrow()[(eqn.clone()-1) as usize].clone(); __elt}) == -1 {
             (stack, index, outComponents) = StrongConnect(m.clone(), ass1.clone(), eqn.clone(), stack.clone(), index.clone(), number.clone(), lowlink.clone(), onStack.clone(), outComponents.clone())?;
         }
     }
@@ -85,14 +85,14 @@ fn StrongConnect(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut a
     outStack = metamodelica::cons(eqn.clone(), outStack.clone());
     for mut eqn2 in &*Matching::incomingEquations(eqn.clone(), m.clone(), ass1.clone()) {
         let mut eqn2 = eqn2.clone();
-        if number.borrow()[(eqn2.clone()-1) as usize].clone() == -1 {
+        if ({let __elt = number.borrow()[(eqn2.clone()-1) as usize].clone(); __elt}) == -1 {
             (outStack, outIndex, outComponents) = StrongConnect(m.clone(), ass1.clone(), eqn2.clone(), outStack.clone(), outIndex.clone(), number.clone(), lowlink.clone(), onStack.clone(), outComponents.clone())?;
-            {let _arr = lowlink.clone(); let _val = intMin(lowlink.borrow()[(eqn.clone()-1) as usize].clone(), lowlink.borrow()[(eqn2.clone()-1) as usize].clone()); _arr.borrow_mut()[(eqn.clone()-1) as usize] = _val; _arr};
-        } else if onStack.borrow()[(eqn2.clone()-1) as usize].clone() {
-            {let _arr = lowlink.clone(); let _val = intMin(lowlink.borrow()[(eqn.clone()-1) as usize].clone(), number.borrow()[(eqn2.clone()-1) as usize].clone()); _arr.borrow_mut()[(eqn.clone()-1) as usize] = _val; _arr};
+            {let _arr = lowlink.clone(); let _val = intMin(({let __elt = lowlink.borrow()[(eqn.clone()-1) as usize].clone(); __elt}), ({let __elt = lowlink.borrow()[(eqn2.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(eqn.clone()-1) as usize] = _val; _arr};
+        } else if ({let __elt = onStack.borrow()[(eqn2.clone()-1) as usize].clone(); __elt}) {
+            {let _arr = lowlink.clone(); let _val = intMin(({let __elt = lowlink.borrow()[(eqn.clone()-1) as usize].clone(); __elt}), ({let __elt = number.borrow()[(eqn2.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(eqn.clone()-1) as usize] = _val; _arr};
         }
     }
-    if lowlink.borrow()[(eqn.clone()-1) as usize].clone() == number.borrow()[(eqn.clone()-1) as usize].clone() {
+    if ({let __elt = lowlink.borrow()[(eqn.clone()-1) as usize].clone(); __elt}) == ({let __elt = number.borrow()[(eqn.clone()-1) as usize].clone(); __elt}) {
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(outStack.clone()) {
             Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
             _ => bail!("pattern mismatch"),
@@ -128,7 +128,7 @@ pub fn TarjanTransposed(mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>
     lowlink = arrayCreate(N.clone(), -1);
     onStack = arrayCreate(N.clone(), false);
     for mut eqn in 1..=N.clone() {
-        if number.borrow()[(eqn.clone()-1) as usize].clone() == -1 && ass2.borrow()[(eqn.clone()-1) as usize].clone() > 0 {
+        if ({let __elt = number.borrow()[(eqn.clone()-1) as usize].clone(); __elt}) == -1 && ({let __elt = ass2.borrow()[(eqn.clone()-1) as usize].clone(); __elt}) > 0 {
             (stack, index, outComponents) = StrongConnectTransposed(mT.clone(), ass2.clone(), eqn.clone(), stack.clone(), index.clone(), number.clone(), lowlink.clone(), onStack.clone(), outComponents.clone())?;
         }
     }
@@ -147,22 +147,22 @@ fn StrongConnectTransposed(mut mT: metamodelica::Array<Arc<metamodelica::List<i3
     {let _arr = onStack.clone(); _arr.borrow_mut()[(eqn.clone()-1) as usize] = true; _arr};
     outIndex = outIndex.clone() + 1;
     outStack = metamodelica::cons(eqn.clone(), outStack.clone());
-    var = ass2.borrow()[(eqn.clone()-1) as usize].clone();
+    var = ({let __elt = ass2.borrow()[(eqn.clone()-1) as usize].clone(); __elt});
     if var.clone() > 0 {
-        let __range0 = &*mT.borrow()[(var.clone()-1) as usize].clone();
+        let __range0 = &*({let __elt = mT.borrow()[(var.clone()-1) as usize].clone(); __elt});
         for mut eqn2 in __range0 {
             let mut eqn2 = eqn2.clone();
             if eqn2.clone() > 0 && eqn2.clone() != eqn.clone() {
-                if number.borrow()[(eqn2.clone()-1) as usize].clone() == -1 {
+                if ({let __elt = number.borrow()[(eqn2.clone()-1) as usize].clone(); __elt}) == -1 {
                     (outStack, outIndex, outComponents) = StrongConnectTransposed(mT.clone(), ass2.clone(), eqn2.clone(), outStack.clone(), outIndex.clone(), number.clone(), lowlink.clone(), onStack.clone(), outComponents.clone())?;
-                    {let _arr = lowlink.clone(); let _val = intMin(lowlink.borrow()[(eqn.clone()-1) as usize].clone(), lowlink.borrow()[(eqn2.clone()-1) as usize].clone()); _arr.borrow_mut()[(eqn.clone()-1) as usize] = _val; _arr};
-                } else if onStack.borrow()[(eqn2.clone()-1) as usize].clone() {
-                    {let _arr = lowlink.clone(); let _val = intMin(lowlink.borrow()[(eqn.clone()-1) as usize].clone(), number.borrow()[(eqn2.clone()-1) as usize].clone()); _arr.borrow_mut()[(eqn.clone()-1) as usize] = _val; _arr};
+                    {let _arr = lowlink.clone(); let _val = intMin(({let __elt = lowlink.borrow()[(eqn.clone()-1) as usize].clone(); __elt}), ({let __elt = lowlink.borrow()[(eqn2.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(eqn.clone()-1) as usize] = _val; _arr};
+                } else if ({let __elt = onStack.borrow()[(eqn2.clone()-1) as usize].clone(); __elt}) {
+                    {let _arr = lowlink.clone(); let _val = intMin(({let __elt = lowlink.borrow()[(eqn.clone()-1) as usize].clone(); __elt}), ({let __elt = number.borrow()[(eqn2.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(eqn.clone()-1) as usize] = _val; _arr};
                 }
             }
         }
     }
-    if lowlink.borrow()[(eqn.clone()-1) as usize].clone() == number.borrow()[(eqn.clone()-1) as usize].clone() {
+    if ({let __elt = lowlink.borrow()[(eqn.clone()-1) as usize].clone(); __elt}) == ({let __elt = number.borrow()[(eqn.clone()-1) as usize].clone(); __elt}) {
         let (__pa1, __pa2) = ::match_deref::match_deref! { match &(outStack.clone()) {
             Deref @ metamodelica::List::Cons { head: __pa1, tail: __pa2 } => (__pa1.clone(), __pa2.clone()),
             _ => bail!("pattern mismatch"),

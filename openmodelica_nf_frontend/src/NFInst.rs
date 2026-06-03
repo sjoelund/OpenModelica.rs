@@ -1939,7 +1939,7 @@ pub fn instExpressions(mut node: Arc<InstNode::InstNode>, mut scope: Arc<InstNod
                 instExpressions(ext.clone(), ext.clone(), sections.clone(), connectBreaks.clone(), context.clone(), settings.clone())?;
             }
             if metamodelica::arrayLength(exts.clone()) == 1 {
-                ty = Arc::new(Type::NFType::COMPLEX { cls: node.clone(), complexTy: Arc::new(ComplexType::NFComplexType::EXTENDS_TYPE { baseClass: exts.borrow()[(1-1) as usize].clone() }) });
+                ty = Arc::new(Type::NFType::COMPLEX { cls: node.clone(), complexTy: Arc::new(ComplexType::NFComplexType::EXTENDS_TYPE { baseClass: ({let __elt = exts.borrow()[(1-1) as usize].clone(); __elt}) }) });
             } else if SCodeUtil::hasBooleanNamedAnnotationInClass(InstNode::definition(node.clone())?, (literal!("__OpenModelica_builtinType")).clone())? {
                 ty = Arc::new(Type::NFType::COMPLEX { cls: node.clone(), complexTy: Arc::new(crate::NFComplexType::CLASS) });
             } else {
@@ -1982,7 +1982,7 @@ pub fn instExpressions(mut node: Arc<InstNode::InstNode>, mut scope: Arc<InstNod
             info = InstNode::info(node.clone())?;
             for mut i in 1..=metamodelica::arrayLength(dims.clone()) {
                 {
-                    let __cell0 = instDimension(dims.borrow()[(i.clone()-1) as usize].clone(), context.clone(), settings.clone(), info.clone())?;
+                    let __cell0 = instDimension(({let __elt = dims.borrow()[(i.clone()-1) as usize].clone(); __elt}), context.clone(), settings.clone(), info.clone())?;
                     dims.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
                 }
             }
@@ -2104,7 +2104,7 @@ pub fn instComponentExpressions(mut component: Arc<InstNode::InstNode>, mut cont
             }
             for mut i in 1..=metamodelica::arrayLength(dims.clone()) {
                 {
-                    let __cell0 = instDimension(dims.borrow()[(i.clone()-1) as usize].clone(), context.clone(), settings.clone(), var_field!((*c).info, Component::NFComponent::COMPONENT).clone())?;
+                    let __cell0 = instDimension(({let __elt = dims.borrow()[(i.clone()-1) as usize].clone(); __elt}), context.clone(), settings.clone(), var_field!((*c).info, Component::NFComponent::COMPONENT).clone())?;
                     dims.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
                 }
             }

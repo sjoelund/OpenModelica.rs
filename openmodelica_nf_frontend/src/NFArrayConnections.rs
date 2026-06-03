@@ -585,10 +585,10 @@ fn generateForLoop(mut connects: Arc<metamodelica::List<Arc<Equation::NFEquation
     let mut equations: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = equations;
     let mut body: Arc<metamodelica::List<Arc<Equation::NFEquation>>> = connects.clone();
     for mut i in (1..=metamodelica::arrayLength(iterators.clone())).rev() {
-        if Expression::isInteger(ranges.borrow()[(i.clone()-1) as usize].clone()) {
-            body = Equation::replaceIteratorList(body.clone(), iterators.borrow()[(i.clone()-1) as usize].clone(), ranges.borrow()[(i.clone()-1) as usize].clone())?;
+        if Expression::isInteger(({let __elt = ranges.borrow()[(i.clone()-1) as usize].clone(); __elt})) {
+            body = Equation::replaceIteratorList(body.clone(), ({let __elt = iterators.borrow()[(i.clone()-1) as usize].clone(); __elt}), ({let __elt = ranges.borrow()[(i.clone()-1) as usize].clone(); __elt}))?;
         } else {
-            body = list![Arc::new(Equation::NFEquation::FOR { iterator: iterators.borrow()[(i.clone()-1) as usize].clone(), range: Some(ranges.borrow()[(i.clone()-1) as usize].clone()), body: body.clone(), scope: Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), source: DAE::emptyElementSource().clone() })];
+            body = list![Arc::new(Equation::NFEquation::FOR { iterator: ({let __elt = iterators.borrow()[(i.clone()-1) as usize].clone(); __elt}), range: Some(({let __elt = ranges.borrow()[(i.clone()-1) as usize].clone(); __elt})), body: body.clone(), scope: Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), source: DAE::emptyElementSource().clone() })];
         }
     }
     equations = List::append_reverse(body.clone(), equations.clone());
@@ -636,10 +636,10 @@ fn applyOffset(mut mi: Arc<SBMultiInterval::SBMultiInterval>, mut off: metamodel
         outMI = SBMultiInterval::newEmpty();
     } else {
         ints = SBMultiInterval::intervals(mi.clone());
-        res = metamodelica::arrayCreate(metamodelica::arrayLength(ints.clone()), ints.borrow()[(1-1) as usize].clone());
+        res = metamodelica::arrayCreate(metamodelica::arrayLength(ints.clone()), ({let __elt = ints.borrow()[(1-1) as usize].clone(); __elt}));
         for mut j in 1..=metamodelica::arrayLength(ints.clone()) {
-            i = ints.borrow()[(j.clone()-1) as usize].clone();
-            o = off.borrow()[(j.clone()-1) as usize].clone();
+            i = ({let __elt = ints.borrow()[(j.clone()-1) as usize].clone(); __elt});
+            o = ({let __elt = off.borrow()[(j.clone()-1) as usize].clone(); __elt});
             {
                 let __cell0 = SBInterval::new(SBInterval::lowerBound(i.clone()) - o.clone() + 1, SBInterval::stepValue(i.clone()), SBInterval::upperBound(i.clone()) - o.clone() + 1);
                 unsafe { metamodelica::Dangerous::arrayInitSlot(res.clone().clone(), j.clone(), __cell0); }
@@ -689,11 +689,11 @@ fn transMulti(mut mi1: Arc<SBMultiInterval::SBMultiInterval>, mut mi2: Arc<SBMul
     ints1 = SBMultiInterval::intervals(mi1.clone());
     ints2 = SBMultiInterval::intervals(mi2.clone());
     for mut i in 1..=metamodelica::arrayLength(ints1.clone()) {
-        i1 = ints1.borrow()[(i.clone()-1) as usize].clone();
-        i2 = ints2.borrow()[(i.clone()-1) as usize].clone();
+        i1 = ({let __elt = ints1.borrow()[(i.clone()-1) as usize].clone(); __elt});
+        i2 = ({let __elt = ints2.borrow()[(i.clone()-1) as usize].clone(); __elt});
         i1_sz = SBInterval::size(i1.clone());
         i2_sz = SBInterval::size(i2.clone());
-        x = Expression::fromCref(ComponentRef::makeIterator(iterators.borrow()[(i.clone()-1) as usize].clone(), Arc::new(crate::NFType::INTEGER))?, false)?;
+        x = Expression::fromCref(ComponentRef::makeIterator(({let __elt = iterators.borrow()[(i.clone()-1) as usize].clone(); __elt}), Arc::new(crate::NFType::INTEGER))?, false)?;
         if i1_sz.clone() == i2_sz.clone() {
             m_int = intDiv(SBInterval::stepValue(i2.clone()), SBInterval::stepValue(i1.clone()));
             m = Arc::new(Expression::NFExpression::INTEGER { value: m_int.clone() });

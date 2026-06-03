@@ -268,8 +268,8 @@ pub fn printBasePartitions(mut basePartitions: metamodelica::Array<BackendDAE::B
     let mut clkExpStr: ArcStr = arcstr::literal!("");
     let mut nSubClocksStr: ArcStr = arcstr::literal!("");
     for mut i in 1..=metamodelica::arrayLength(basePartitions.clone()) {
-        clkExpStr = (Tpl::tplString2((std::sync::Arc::new(ExpressionDumpTpl::dumpClockKind) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<DAE::ClockKind>, ArcStr) -> Result<Tpl::Text> + 'static>), basePartitions.borrow()[(i.clone()-1) as usize].clock.clone(), (literal!("")).clone())?).clone();
-        nSubClocksStr = (intString(basePartitions.borrow()[(i.clone()-1) as usize].nSubClocks.clone())).clone();
+        clkExpStr = (Tpl::tplString2((std::sync::Arc::new(ExpressionDumpTpl::dumpClockKind) as std::sync::Arc<dyn ::std::ops::Fn(Tpl::Text, Arc<DAE::ClockKind>, ArcStr) -> Result<Tpl::Text> + 'static>), ({let __elt = basePartitions.borrow()[(i.clone()-1) as usize].clock.clone(); __elt}), (literal!("")).clone())?).clone();
+        nSubClocksStr = (intString(({let __elt = basePartitions.borrow()[(i.clone()-1) as usize].nSubClocks.clone(); __elt}))).clone();
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*clkExpStr.clone()); __mm_s.push_str(&*literal!("[")); __mm_s.push_str(&*nSubClocksStr.clone()); __mm_s.push_str(&*literal!("]")); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     Ok(())
@@ -279,8 +279,8 @@ pub fn printSubPartitions(mut subPartitions: metamodelica::Array<BackendDAE::Sub
     let mut subClockStr: ArcStr = arcstr::literal!("");
     let mut eventStr: ArcStr = arcstr::literal!("");
     for mut i in 1..=metamodelica::arrayLength(subPartitions.clone()) {
-        subClockStr = (subClockString(subPartitions.borrow()[(i.clone()-1) as usize].clock.clone())?).clone();
-        eventStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("event(")); __mm_s.push_str(&*boolString(subPartitions.borrow()[(i.clone()-1) as usize].holdEvents.clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
+        subClockStr = (subClockString(({let __elt = subPartitions.borrow()[(i.clone()-1) as usize].clock.clone(); __elt}))?).clone();
+        eventStr = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("event(")); __mm_s.push_str(&*boolString(({let __elt = subPartitions.borrow()[(i.clone()-1) as usize].holdEvents.clone(); __elt}))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*subClockStr.clone()); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*eventStr.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
     }
     Ok(())
@@ -1339,7 +1339,7 @@ fn dumpComponentsAdvanced3(mut inIntegerLst: Arc<metamodelica::List<i32>>, mut v
             let mut c: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
             let mut b: bool = false;
-            v = v2.borrow()[(i.clone()-1) as usize].clone();
+            v = ({let __elt = v2.borrow()[(i.clone()-1) as usize].clone(); __elt});
             var = BackendVariable::getVarAt(vars.clone(), v.clone())?;
             c = BackendVariable::varCref(var.clone())?;
             b = BackendVariable::isStateVar(var.clone());
@@ -1357,7 +1357,7 @@ fn dumpComponentsAdvanced3(mut inIntegerLst: Arc<metamodelica::List<i32>>, mut v
             let mut c: Arc<DAE::ComponentRef> = Arc::new(DAE::ComponentRef::WILD);
             let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
             let mut b: bool = false;
-            v = v2.borrow()[(i.clone()-1) as usize].clone();
+            v = ({let __elt = v2.borrow()[(i.clone()-1) as usize].clone(); __elt});
             var = BackendVariable::getVarAt(vars.clone(), v.clone())?;
             c = BackendVariable::varCref(var.clone())?;
             b = BackendVariable::isStateVar(var.clone());
@@ -3073,7 +3073,7 @@ fn dumpMatching2(mut v: metamodelica::Array<i32>, mut i: i32, mut len: i32) -> R
             let mut s2: ArcStr = arcstr::literal!("");
             let true = (intLe(i.clone(), len.clone())) else { bail!("pattern mismatch") };
             s = (intString(i.clone())).clone();
-            eqn = v.borrow()[(i.clone()-1) as usize].clone();
+            eqn = ({let __elt = v.borrow()[(i.clone()-1) as usize].clone(); __elt});
             s2 = (intString(eqn.clone())).clone();
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("var ")); __mm_s.push_str(&*s.clone()); __mm_s.push_str(&*literal!(" is solved in eqn ")); __mm_s.push_str(&*s2.clone()); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
             dumpMatching2(v.clone(), i.clone() + 1, len.clone())?;
@@ -4295,13 +4295,13 @@ fn addNodeToDAG(mut nodeIdx: i32, mut graphIn: metamodelica::Array<Arc<metamodel
     let HpcOmTaskGraph::TASKGRAPHMETA { compDescs: __pa0, inComps: __pa1, .. } = (metaIn.clone()) else { bail!("pattern mismatch") };
     compDescs = __pa0.clone();
     inComps = __pa1.clone();
-    nodeDesc = (compDescs.clone().borrow()[(nodeIdx.clone()-1) as usize].clone()).clone();
+    nodeDesc = (({let __elt = compDescs.clone().borrow()[(nodeIdx.clone()-1) as usize].clone(); __elt})).clone();
     nodeString = (intString(nodeIdx.clone())).clone();
-    compName = stringDelimitList(List::map(inComps.clone().borrow()[(nodeIdx.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone());
+    compName = stringDelimitList(List::map(({let __elt = inComps.clone().borrow()[(nodeIdx.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(intString, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<ArcStr> + 'static>))?, (literal!(",")).clone());
     nameAttIdx = (atts.clone()).get(1)?;
     nodeLabel = GraphML::NodeLabel::NODELABEL_INTERNAL { text: (nodeString.clone()).clone(), backgroundColor: None, fontStyle: openmodelica_susan::GraphML::FontStyle::FONTPLAIN };
     (tmpGraph, _) = GraphML::addNode(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Node")); __mm_s.push_str(&*intString(nodeIdx.clone())); ArcStr::from(__mm_s) }).clone(), (arcstr::literal!(GraphML::COLOR_ORANGE)).clone(), GraphML::BORDERWIDTH_STANDARD.clone(), list![nodeLabel.clone()], openmodelica_susan::GraphML::ShapeType::RECTANGLE, Some((nodeDesc.clone()).clone()), list![(nameAttIdx.clone(), compName.clone())], graphIdx.clone(), graphInfoIn.clone())?;
-    childNodes = graphIn.clone().borrow()[(nodeIdx.clone()-1) as usize].clone();
+    childNodes = ({let __elt = graphIn.clone().borrow()[(nodeIdx.clone()-1) as usize].clone(); __elt});
     graphInfoOut = List::fold1(childNodes.clone(), (std::sync::Arc::new(addDirectedEdge) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32, GraphML::GraphInfo) -> Result<GraphML::GraphInfo> + 'static>), nodeIdx.clone(), tmpGraph.clone())?;
     Ok(graphInfoOut)
 }
@@ -4383,7 +4383,7 @@ fn addEqNodeToGraph(mut indx: i32, mut eqs: Arc<ExpandableArray::ExpandableArray
 fn addEdgeToGraph(mut eqIdx: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut graphInfoIn: GraphML::GraphInfo) -> Result<GraphML::GraphInfo> {
     let mut graphInfoOut: GraphML::GraphInfo = <GraphML::GraphInfo as ::std::default::Default>::default();
     let mut varLst: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    varLst = m.clone().borrow()[(eqIdx.clone()-1) as usize].clone();
+    varLst = ({let __elt = m.clone().borrow()[(eqIdx.clone()-1) as usize].clone(); __elt});
     graphInfoOut = List::fold1(varLst.clone(), (std::sync::Arc::new(addEdgeToGraph2) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32, GraphML::GraphInfo) -> Result<GraphML::GraphInfo> + 'static>), eqIdx.clone(), graphInfoIn.clone())?;
     Ok(graphInfoOut)
 }
@@ -4527,7 +4527,7 @@ pub fn dumpBackendDAEBipartiteGraph(mut dae: Arc<BackendDAE::BackendDAE>, mut fi
             order = order.clone() + 1;
         }
         for mut eqIdx in 1..=metamodelica::arrayLength(m.clone()) {
-            let __range23 = &*m.clone().borrow()[(eqIdx.clone()-1) as usize].clone();
+            let __range23 = &*({let __elt = m.clone().borrow()[(eqIdx.clone()-1) as usize].clone(); __elt});
             for mut varIdx in __range23 {
                 let mut varIdx = varIdx.clone();
                 if intLe(varIdx.clone(), 0) {
@@ -4536,7 +4536,7 @@ pub fn dumpBackendDAEBipartiteGraph(mut dae: Arc<BackendDAE::BackendDAE>, mut fi
                     lineType = openmodelica_susan::GraphML::LineType::LINE;
                 }
                 varIdx = intAbs(varIdx.clone());
-                lineWidth = if (intEq(varIdx.clone(), ass2.borrow()[(eqIdx.clone()-1) as usize].clone())) {GraphML::LINEWIDTH_BOLD.clone()} else {GraphML::LINEWIDTH_STANDARD.clone()};
+                lineWidth = if (intEq(varIdx.clone(), ({let __elt = ass2.borrow()[(eqIdx.clone()-1) as usize].clone(); __elt}))) {GraphML::LINEWIDTH_BOLD.clone()} else {GraphML::LINEWIDTH_STANDARD.clone()};
                 (graphInfo, _) = GraphML::addEdge(({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Edge_")); __mm_s.push_str(&*intString(sysIdx.clone())); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(eqIdx.clone())); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(varIdx.clone())); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("V_")); __mm_s.push_str(&*intString(sysIdx.clone())); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(varIdx.clone())); ArcStr::from(__mm_s) }).clone(), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("E_")); __mm_s.push_str(&*intString(sysIdx.clone())); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(eqIdx.clone())); ArcStr::from(__mm_s) }).clone(), (arcstr::literal!(GraphML::COLOR_BLACK)).clone(), lineType.clone(), lineWidth.clone(), false, metamodelica::nil(), (openmodelica_susan::GraphML::ArrowType::ARROWNONE, openmodelica_susan::GraphML::ArrowType::ARROWNONE), metamodelica::nil(), graphInfo.clone())?;
             }
         }
@@ -4615,8 +4615,8 @@ pub fn constraintEquationString(mut constraints: metamodelica::Array<Arc<metamod
     let mut i: i32 = 0;
     let mut s1: ArcStr = arcstr::literal!("");
     for mut i in 1..=metamodelica::arrayLength(constraints.clone()) {
-        s1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(List::map(constraints.clone().borrow()[(i.clone()-1) as usize].clone(), (std::sync::Arc::new(equationString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n------------------\n")); ArcStr::from(__mm_s) }).clone();
-        if constraints.clone().borrow()[(i.clone()-1) as usize].clone().is_empty() {
+        s1 = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*stringDelimitList(List::map(({let __elt = constraints.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(equationString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<BackendDAE::Equation>) -> Result<ArcStr> + 'static>))?, (literal!("\n")).clone())); __mm_s.push_str(&*literal!("\n------------------\n")); ArcStr::from(__mm_s) }).clone();
+        if ({let __elt = constraints.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}).is_empty() {
             s1 = (literal!("empty Constraints\n")).clone();
         }
         s = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("eq ")); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!(": ")); __mm_s.push_str(&*s1.clone()); __mm_s.push_str(&*s.clone()); ArcStr::from(__mm_s) }).clone();

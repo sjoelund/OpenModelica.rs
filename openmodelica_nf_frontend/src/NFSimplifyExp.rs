@@ -1409,7 +1409,7 @@ pub fn simplifySubscriptedExp(mut subscriptedExp: Arc<Expression::NFExpression>)
     if !(split.clone()) && !(List::all(subs.clone(), (std::sync::Arc::new(Subscript::isLiteral) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>) -> Result<bool> + 'static>))?) && Type::isScalar(ty.clone()) {
         while !(subs.clone().is_empty()) && Expression::isArray(subscriptedExp.clone()) && !(Expression::isEmptyArray(subscriptedExp.clone())) && Array::allEqual(Expression::arrayElements(subscriptedExp.clone())?, (std::sync::Arc::new(Expression::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Expression::NFExpression>, Arc<Expression::NFExpression>) -> Result<bool> + 'static>))? {
             subs = listRest(subs.clone())?;
-            subscriptedExp = Expression::arrayElements(subscriptedExp.clone())?.borrow()[(1-1) as usize].clone();
+            subscriptedExp = ({let __elt = Expression::arrayElements(subscriptedExp.clone())?.borrow()[(1-1) as usize].clone(); __elt});
         }
         if subs.clone().is_empty() {
             return Ok(subscriptedExp.clone());

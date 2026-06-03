@@ -1159,7 +1159,7 @@ fn varEqns(mut v: i32, mut pos: i32, mut mT: metamodelica::Array<Arc<metamodelic
     let mut outVarEqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut vareqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut vareqns1: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    vareqns = mT.borrow()[(intAbs(v.clone())-1) as usize].clone();
+    vareqns = ({let __elt = mT.borrow()[(intAbs(v.clone())-1) as usize].clone(); __elt});
     vareqns1 = List::map(vareqns.clone(), Arc::new(fnptr!(intAbs, i32)))?;
     outVarEqns = List::removeOnTrue(intAbs(pos.clone()), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), vareqns1.clone())?;
     Ok(outVarEqns)
@@ -3646,7 +3646,7 @@ fn semiLinearOptimize2(mut saLst: Arc<metamodelica::List<Arc<DAE::Exp>>>, mut iH
                     let mut source1: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
                     let mut eqAttr: BackendDAE::EquationAttributes = <BackendDAE::EquationAttributes as ::std::default::Default>::default();
                     i1 = BaseHashTable::get(sa.clone(), iHt.clone())?;
-                    let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7) = ::match_deref::match_deref! { match &(IEqnsarray.borrow()[(i1.clone()-1) as usize].clone()) {
+                    let (__pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7) = ::match_deref::match_deref! { match &(({let __elt = IEqnsarray.borrow()[(i1.clone()-1) as usize].clone(); __elt})) {
                         (Deref @ BackendDAE::Equation::EQUATION { attr: __pa0, source: __pa1, scalar: Deref @ DAE::Exp::CALL { attr: __pa2, expLst: Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: __pa4, tail: Deref @ metamodelica::List::Nil } } }, path: __pa5 }, exp: __pa6 }, __pa7) => (__pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -3717,7 +3717,7 @@ fn semiLinearOptimize3(mut exp: Arc<DAE::Exp>, mut isource: Arc<DAE::ElementSour
                     let mut source: Arc<DAE::ElementSource> = Arc::new(<DAE::ElementSource as ::std::default::Default>::default());
                     let mut oAcc: Arc<metamodelica::List<(Arc<DAE::Exp>, i32, Arc<DAE::ElementSource>)>> = oAcc.clone();
                     i = BaseHashTable::get(exp.clone(), iHt.clone())?;
-                    let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(IEqnsarray.borrow()[(i.clone()-1) as usize].clone()) {
+                    let (__pa0, __pa1, __pa2) = ::match_deref::match_deref! { match &(({let __elt = IEqnsarray.borrow()[(i.clone()-1) as usize].clone(); __elt})) {
                         (Deref @ BackendDAE::Equation::EQUATION { source: __pa0, scalar: Deref @ DAE::Exp::CALL { expLst: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: _, tail: Deref @ metamodelica::List::Cons { head: __pa1, tail: Deref @ metamodelica::List::Nil } } }, .. }, .. }, __pa2) => (__pa0.clone(), __pa1.clone(), __pa2.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -3790,7 +3790,7 @@ fn semiLinearSort(mut eqnslst: Arc<metamodelica::List<(Arc<BackendDAE::Equation>
                     let mut eqns: Arc<metamodelica::List<(Arc<BackendDAE::Equation>, i32)>> = metamodelica::nil();
                     let mut eqnsarray: metamodelica::Array<Arc<metamodelica::List<(Arc<BackendDAE::Equation>, i32)>>> = Default::default();
                     i = BaseHashTable::get(y.clone(), iHt.clone())?;
-                    eqns = iEqnsarray.borrow()[(i.clone()-1) as usize].clone();
+                    eqns = ({let __elt = iEqnsarray.borrow()[(i.clone()-1) as usize].clone(); __elt});
                     eqnsarray = {let _arr = iEqnsarray.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = metamodelica::cons((eqn.clone(), index.clone()), eqns.clone()); _arr};
                     Ok(semiLinearSort(rest.clone(), iHt.clone(), size.clone(), eqnsarray.clone())?)
                 }
@@ -3862,7 +3862,7 @@ fn semiLinearSort2(mut eqnslst: Arc<metamodelica::List<(Arc<BackendDAE::Equation
                     let mut eqns: Arc<metamodelica::List<(Arc<BackendDAE::Equation>, i32)>> = metamodelica::nil();
                     let mut eqnsarray: metamodelica::Array<Arc<metamodelica::List<(Arc<BackendDAE::Equation>, i32)>>> = Default::default();
                     i = BaseHashTable::get(x.clone(), iHt.clone())?;
-                    eqns = iEqnsarray.borrow()[(i.clone()-1) as usize].clone();
+                    eqns = ({let __elt = iEqnsarray.borrow()[(i.clone()-1) as usize].clone(); __elt});
                     eqnsarray = {let _arr = iEqnsarray.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = metamodelica::cons((eqn.clone(), index.clone()), eqns.clone()); _arr};
                     (i, eqnsarray) = semiLinearSort2(rest.clone(), iHt.clone(), size.clone(), eqnsarray.clone())?;
                     Ok((i.clone(), eqnsarray.clone()))
@@ -4898,7 +4898,7 @@ pub fn sortEqnsVars(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<Backen
             tplIndexWeight = ({
         let mut __acc: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
         for mut i in (1..=nv.clone()).into_iter() {
-            let __x = (i.clone(), w_vars.borrow()[(i.clone()-1) as usize].clone());
+            let __x = (i.clone(), ({let __elt = w_vars.borrow()[(i.clone()-1) as usize].clone(); __elt}));
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -4917,7 +4917,7 @@ pub fn sortEqnsVars(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<Arc<Backen
             tplIndexWeight = ({
         let mut __acc: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
         for mut i in (1..=ne.clone()).into_iter() {
-            let __x = (i.clone(), w_eqns.borrow()[(i.clone()-1) as usize].clone());
+            let __x = (i.clone(), ({let __elt = w_eqns.borrow()[(i.clone()-1) as usize].clone(); __elt}));
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -4972,7 +4972,7 @@ fn sortEqnsVarsWeights(mut inW: metamodelica::Array<i32>, mut n: i32, mut m: met
     let mut i: i32 = 0;
     for mut i in 1..=n.clone() {
         {
-            let __cell0 = (m.borrow()[(i.clone()-1) as usize].clone().len() as i32);
+            let __cell0 = (({let __elt = m.borrow()[(i.clone()-1) as usize].clone(); __elt}).len() as i32);
             outW.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
         }
     }
@@ -6783,7 +6783,7 @@ pub fn evaluateOutputsOnly(mut daeIn: Arc<BackendDAE::BackendDAE>) -> Result<Arc
 
 fn stateVarIsNotVisited(mut idx: i32, mut varArr: metamodelica::Array<i32>) -> Result<bool> {
     let mut b: bool = false;
-    b = intLt(varArr.clone().borrow()[(idx.clone()-1) as usize].clone(), 0);
+    b = intLt(({let __elt = varArr.clone().borrow()[(idx.clone()-1) as usize].clone(); __elt}), 0);
     Ok(b)
 }
 

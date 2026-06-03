@@ -135,7 +135,7 @@ pub fn findTrueIndices(mut arr: metamodelica::Array<bool>) -> Arc<metamodelica::
     let mut indices: Arc<metamodelica::List<i32>> = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in ((1..=metamodelica::arrayLength(arr.clone())).rev()).into_iter() {
-            if !(arr.borrow()[(i.clone()-1) as usize].clone()) { continue; }
+            if !(({let __elt = arr.borrow()[(i.clone()-1) as usize].clone(); __elt})) { continue; }
             let __x = i.clone();
             __acc = cons(__x, __acc);
         }
@@ -397,7 +397,7 @@ pub fn getLocalSystem(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, 
             let __cell0 = i.clone();
             map_back.clone().borrow_mut()[(j.clone()-1) as usize] = __cell0;
         }
-        UnorderedMap::addUnique(matching.eqn_to_var.borrow()[(i.clone()-1) as usize].clone(), j.clone(), var_loc.clone())?;
+        UnorderedMap::addUnique(({let __elt = matching.eqn_to_var.borrow()[(i.clone()-1) as usize].clone(); __elt}), j.clone(), var_loc.clone())?;
         {
             let __cell1 = j.clone();
             eqn_to_var.clone().borrow_mut()[(j.clone()-1) as usize] = __cell1;
@@ -412,7 +412,7 @@ pub fn getLocalSystem(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, 
     m_loc = arrayCreate(N.clone(), metamodelica::nil());
     for mut j in 1..=N.clone() {
         {
-            let __cell3 = UnorderedMap::getList(m.borrow()[(map_back.borrow()[(j.clone()-1) as usize].clone()-1) as usize].clone(), var_loc.clone())?;
+            let __cell3 = UnorderedMap::getList(({let __elt = m.borrow()[(({let __elt = map_back.borrow()[(j.clone()-1) as usize].clone(); __elt})-1) as usize].clone(); __elt}), var_loc.clone())?;
             m_loc.clone().borrow_mut()[(j.clone()-1) as usize] = __cell3;
         }
     }

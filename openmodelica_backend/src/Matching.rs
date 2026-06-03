@@ -123,8 +123,8 @@ pub fn ContinueMatching(mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>
     eMarkIx = arrayCreate(nEqns.clone(), 0);
     i = 1;
     while i.clone() <= nEqns.clone() {
-        j = ass2.borrow()[(i.clone()-1) as usize].clone();
-        if !(j.clone() > 0 && ass1.borrow()[(j.clone()-1) as usize].clone() == i.clone()) {
+        j = ({let __elt = ass2.borrow()[(i.clone()-1) as usize].clone(); __elt});
+        if !(j.clone() > 0 && ({let __elt = ass1.borrow()[(j.clone()-1) as usize].clone(); __elt}) == i.clone()) {
             clearArrayWithKnownSetIndexes(eMark.clone(), eMarkIx.clone(), eMarkN.clone())?;
             clearArrayWithKnownSetIndexes(vMark.clone(), vMarkIx.clone(), vMarkN.clone())?;
             (success, eMarkN, vMarkN) = BBPathFound(i.clone(), m.clone(), eMark.clone(), vMark.clone(), ass1.clone(), ass2.clone(), eMarkIx.clone(), vMarkIx.clone(), 0, 0)?;
@@ -174,8 +174,8 @@ pub fn BBMatching(mut inSys: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Backen
     eMarkIx = arrayCreate(nEqns.clone(), 0);
     i = 1;
     while i.clone() <= nEqns.clone() && success.clone() {
-        j = ass2.borrow()[(i.clone()-1) as usize].clone();
-        if j.clone() > 0 && ass1.borrow()[(j.clone()-1) as usize].clone() == i.clone() {
+        j = ({let __elt = ass2.borrow()[(i.clone()-1) as usize].clone(); __elt});
+        if j.clone() > 0 && ({let __elt = ass1.borrow()[(j.clone()-1) as usize].clone(); __elt}) == i.clone() {
             success = true;
         } else {
             clearArrayWithKnownSetIndexes(eMark.clone(), eMarkIx.clone(), eMarkN.clone())?;
@@ -184,7 +184,7 @@ pub fn BBMatching(mut inSys: Arc<BackendDAE::EqSystem>, mut inShared: Arc<Backen
             if !(success.clone()) {
                 mEqns = metamodelica::nil();
                 for mut j in 1..=nEqns.clone() {
-                    if eMark.borrow()[(j.clone()-1) as usize].clone() {
+                    if ({let __elt = eMark.borrow()[(j.clone()-1) as usize].clone(); __elt}) {
                         mEqns = metamodelica::cons(j.clone(), mEqns.clone());
                     }
                 }
@@ -212,30 +212,30 @@ fn BBPathFound(mut i: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32
     let mut success: bool = false;
     let mut eMarkN: i32 = eMarkN;
     let mut vMarkN: i32 = vMarkN;
-    if eMark.clone().borrow()[(i.clone()-1) as usize].clone() {
+    if ({let __elt = eMark.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}) {
         return Ok((success.clone(), eMarkN.clone(), vMarkN.clone()));
     }
     {let _arr = eMark.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = true; _arr};
     eMarkN = eMarkN.clone() + 1;
     {let _arr = eMarkIx.clone(); _arr.borrow_mut()[(eMarkN.clone()-1) as usize] = i.clone(); _arr};
-    let __range0 = &*m.borrow()[(i.clone()-1) as usize].clone();
+    let __range0 = &*({let __elt = m.borrow()[(i.clone()-1) as usize].clone(); __elt});
     for mut j in __range0 {
         let mut j = j.clone();
-        if j.clone() > 0 && ass1.borrow()[(j.clone()-1) as usize].clone() <= 0 {
+        if j.clone() > 0 && ({let __elt = ass1.borrow()[(j.clone()-1) as usize].clone(); __elt}) <= 0 {
             success = true;
             {let _arr = ass1.clone(); _arr.borrow_mut()[(j.clone()-1) as usize] = i.clone(); _arr};
             {let _arr = ass2.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = j.clone(); _arr};
             return Ok((success.clone(), eMarkN.clone(), vMarkN.clone()));
         }
     }
-    let __range1 = &*m.borrow()[(i.clone()-1) as usize].clone();
+    let __range1 = &*({let __elt = m.borrow()[(i.clone()-1) as usize].clone(); __elt});
     for mut j in __range1 {
         let mut j = j.clone();
-        if j.clone() > 0 && !(vMark.borrow()[(j.clone()-1) as usize].clone()) {
+        if j.clone() > 0 && !(({let __elt = vMark.borrow()[(j.clone()-1) as usize].clone(); __elt})) {
             {let _arr = vMark.clone(); _arr.borrow_mut()[(j.clone()-1) as usize] = true; _arr};
             vMarkN = vMarkN.clone() + 1;
             {let _arr = vMarkIx.clone(); _arr.borrow_mut()[(vMarkN.clone()-1) as usize] = j.clone(); _arr};
-            (success, eMarkN, vMarkN) = BBPathFound(ass1.borrow()[(j.clone()-1) as usize].clone(), m.clone(), eMark.clone(), vMark.clone(), ass1.clone(), ass2.clone(), eMarkIx.clone(), vMarkIx.clone(), eMarkN.clone(), vMarkN.clone())?;
+            (success, eMarkN, vMarkN) = BBPathFound(({let __elt = ass1.borrow()[(j.clone()-1) as usize].clone(); __elt}), m.clone(), eMark.clone(), vMark.clone(), ass1.clone(), ass2.clone(), eMarkIx.clone(), vMarkIx.clone(), eMarkN.clone(), vMarkN.clone())?;
             if success.clone() {
                 {let _arr = ass1.clone(); _arr.borrow_mut()[(j.clone()-1) as usize] = i.clone(); _arr};
                 {let _arr = ass2.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = j.clone(); _arr};
@@ -252,7 +252,7 @@ fn BBCheapMatching(mut nEqns: i32, mut m: metamodelica::Array<Arc<metamodelica::
     let mut success: bool = false;
     let mut vars: Arc<metamodelica::List<i32>> = metamodelica::nil();
     for mut i in 1..=nEqns.clone() {
-        vars = m.borrow()[(i.clone()-1) as usize].clone();
+        vars = ({let __elt = m.borrow()[(i.clone()-1) as usize].clone(); __elt});
         while !(success.clone()) && !(vars.clone().is_empty()) {
             let (__pa0, __pa1) = ::match_deref::match_deref! { match &(vars.clone()) {
                 Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
@@ -260,7 +260,7 @@ fn BBCheapMatching(mut nEqns: i32, mut m: metamodelica::Array<Arc<metamodelica::
             } };
             j = __pa0.clone();
             vars = __pa1.clone();
-            if j.clone() > 0 && ass1.borrow()[(j.clone()-1) as usize].clone() <= 0 {
+            if j.clone() > 0 && ({let __elt = ass1.borrow()[(j.clone()-1) as usize].clone(); __elt}) <= 0 {
                 success = true;
                 {let _arr = ass1.clone(); _arr.borrow_mut()[(j.clone()-1) as usize] = i.clone(); _arr};
                 {let _arr = ass2.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = j.clone(); _arr};
@@ -276,11 +276,11 @@ pub fn invertMatching(mut inAss: metamodelica::Array<i32>) -> metamodelica::Arra
     let mut j: i32 = 0;
     outAss = arrayCreate(N.clone(), -1);
     for mut i in 1..=N.clone() {
-        j = inAss.borrow()[(i.clone()-1) as usize].clone();
+        j = ({let __elt = inAss.borrow()[(i.clone()-1) as usize].clone(); __elt});
         if j.clone() > 0 {
             {
                 let __cell0 = i.clone();
-                outAss.clone().borrow_mut()[(inAss.borrow()[(i.clone()-1) as usize].clone()-1) as usize] = __cell0;
+                outAss.clone().borrow_mut()[(({let __elt = inAss.borrow()[(i.clone()-1) as usize].clone(); __elt})-1) as usize] = __cell0;
             }
         }
     }
@@ -390,7 +390,7 @@ fn DFSLH2(mut isyst: Arc<BackendDAE::EqSystem>, mut ishared: Arc<BackendDAE::Sha
                     let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
                     let mut syst = (*syst).clone();
                     i_1 = i.clone() + 1;
-                    let true = (intGt(ass2.borrow()[(i.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
+                    let true = (intGt(({let __elt = ass2.borrow()[(i.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
                     (ass1_2, ass2_2, syst, shared, arg) = DFSLH2(syst.clone(), ishared.clone(), nv.clone(), nf.clone(), i_1.clone(), emark.clone(), vmark.clone(), ass1.clone(), ass2.clone(), match_opts.clone(), sssHandler.clone(), inArg.clone())?;
                     Ok((ass1_2.clone(), ass2_2.clone(), syst.clone(), shared.clone(), arg.clone()))
                 }
@@ -511,7 +511,7 @@ fn assignFirstUnassigned(mut i: i32, mut inIntegerLst2: Arc<metamodelica::List<i
                 Deref @ metamodelica::List::Cons { head: v, tail: _ } => {
                     let mut ass1_1: metamodelica::Array<i32> = Default::default();
                     let mut ass2_1: metamodelica::Array<i32> = Default::default();
-                    let false = (intGt(ass1.borrow()[(v.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
+                    let false = (intGt(({let __elt = ass1.borrow()[(v.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
                     ass1_1 = {let _arr = ass1.clone(); _arr.borrow_mut()[(v.clone()-1) as usize] = i.clone(); _arr};
                     ass2_1 = {let _arr = ass2.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = v.clone(); _arr};
                     Ok((ass1_1.clone(), ass2_1.clone()))
@@ -551,7 +551,7 @@ fn isNotVMarked(mut i: i32, mut inTpl: (i32, metamodelica::Array<i32>)) -> bool 
     let mut imark: i32 = 0;
     let mut vmark: metamodelica::Array<i32> = Default::default();
     (imark, vmark) = inTpl.clone();
-    outB = !(intEq(imark.clone(), vmark.borrow()[(i.clone()-1) as usize].clone()));
+    outB = !(intEq(imark.clone(), ({let __elt = vmark.borrow()[(i.clone()-1) as usize].clone(); __elt})));
     outB
 }
 
@@ -569,7 +569,7 @@ fn forallUnmarkedVarsInEqnBody(mut m: metamodelica::Array<Arc<metamodelica::List
                     let mut ass1_2: metamodelica::Array<i32> = Default::default();
                     let mut ass2_2: metamodelica::Array<i32> = Default::default();
                     {let _arr = vmark.clone(); _arr.borrow_mut()[(v.clone()-1) as usize] = imark.clone(); _arr};
-                    assarg = ass1.borrow()[(v.clone()-1) as usize].clone();
+                    assarg = ({let __elt = ass1.borrow()[(v.clone()-1) as usize].clone(); __elt});
                     (ass1_1, ass2_1) = pathFound(m.clone(), mt.clone(), assarg.clone(), imark.clone(), emark.clone(), vmark.clone(), ass1.clone(), ass2.clone())?;
                     ass1_2 = {let _arr = ass1_1.clone(); _arr.borrow_mut()[(v.clone()-1) as usize] = i.clone(); _arr};
                     ass2_2 = {let _arr = ass2_1.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = v.clone(); _arr};
@@ -693,7 +693,7 @@ fn BFSB1(mut i: i32, mut rowmark: i32, mut nv: i32, mut ne: i32, mut m: metamode
             let mut ass2_2: metamodelica::Array<i32> = Default::default();
             let mut rowmarks1: metamodelica::Array<i32> = Default::default();
             let mut parentcolum1: metamodelica::Array<i32> = Default::default();
-            let false = (intGt(ass1.borrow()[(i.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
+            let false = (intGt(({let __elt = ass1.borrow()[(i.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
             visitedcolums = BFSBphase(list![i.clone()], rowmark.clone(), i.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), parentcolum.clone(), ass1.clone(), ass2.clone(), metamodelica::nil(), metamodelica::nil())?;
             let (__pa0, __pa3, __pa1, __pa2, __pa4, __pa5, __pa6, __pa7, __pa8, __pa9) = ::match_deref::match_deref! { match &(reduceIndexifNecessary(visitedcolums.clone(), i.clone(), isyst.clone(), ishared.clone(), nv.clone(), ne.clone(), ass1.clone(), ass2.clone(), inMatchingOptions.clone(), sssHandler.clone(), inArg.clone())?) {
                 (_, __pa0, __pa3 @ Deref @ BackendDAE::EqSystem { mT: Some(__pa1), m: Some(__pa2), .. }, __pa4, __pa5, __pa6, __pa7, __pa8, __pa9) => (__pa0.clone(), __pa3.clone(), __pa1.clone(), __pa2.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone()),
@@ -721,7 +721,7 @@ fn BFSB1(mut i: i32, mut rowmark: i32, mut nv: i32, mut ne: i32, mut m: metamode
             let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
             let mut ass1_1: metamodelica::Array<i32> = Default::default();
             let mut ass2_1: metamodelica::Array<i32> = Default::default();
-            let true = (intGt(ass1.borrow()[(i.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
+            let true = (intGt(({let __elt = ass1.borrow()[(i.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
             (ass1_1, ass2_1, syst, shared, arg) = BFSB1(i.clone() + 1, rowmark.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), parentcolum.clone(), ass1.clone(), ass2.clone(), isyst.clone(), ishared.clone(), inMatchingOptions.clone(), sssHandler.clone(), inArg.clone())?;
             Ok((ass1_1.clone(), ass2_1.clone(), syst.clone(), shared.clone(), arg.clone()))
         })() { break 'mc __v; }
@@ -750,7 +750,7 @@ fn BFSBphase(mut queue: Arc<metamodelica::List<i32>>, mut rowmark: i32, mut i: i
             let mut queue1: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut rows: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut b: bool = false;
-            rows = List::select(m.borrow()[(c.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
+            rows = List::select(({let __elt = m.borrow()[(c.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
             (queue1, b) = BFSBtraverseRows(rows.clone(), nextQueue.clone(), rowmark.clone(), i.clone(), c.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), parentcolum.clone(), ass1.clone(), ass2.clone())?;
             BFSBphase1(b.clone(), rest.clone(), rowmark.clone(), i.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), parentcolum.clone(), ass1.clone(), ass2.clone(), queue1.clone(), metamodelica::cons(c.clone(), inVisitedColums.clone()))?
         },
@@ -792,7 +792,7 @@ fn BFSBtraverseRows(mut rows: Arc<metamodelica::List<i32>>, mut queue: Arc<metam
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: r, tail: _ } => {
-                    let true = (intLt(ass2.borrow()[(r.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
+                    let true = (intLt(({let __elt = ass2.borrow()[(r.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
                     BFSBreasign(i.clone(), c.clone(), parentcolum.clone(), r.clone(), ass1.clone(), ass2.clone())?;
                     Ok((metamodelica::nil(), true))
                 }
@@ -806,9 +806,9 @@ fn BFSBtraverseRows(mut rows: Arc<metamodelica::List<i32>>, mut queue: Arc<metam
                     let mut queue2: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut rc: i32 = 0;
                     let mut b: bool = false;
-                    rc = ass2.borrow()[(r.clone()-1) as usize].clone();
+                    rc = ({let __elt = ass2.borrow()[(r.clone()-1) as usize].clone(); __elt});
                     let false = (intLt(rc.clone(), 0)) else { bail!("pattern mismatch") };
-                    queue1 = BFSBenque(queue.clone(), rowmark.clone(), c.clone(), rc.clone(), r.clone(), intLt(rowmarks.borrow()[(r.clone()-1) as usize].clone(), rowmark.clone()), rowmarks.clone(), parentcolum.clone())?;
+                    queue1 = BFSBenque(queue.clone(), rowmark.clone(), c.clone(), rc.clone(), r.clone(), intLt(({let __elt = rowmarks.borrow()[(r.clone()-1) as usize].clone(); __elt}), rowmark.clone()), rowmarks.clone(), parentcolum.clone())?;
                     (queue2, b) = BFSBtraverseRows(rest.clone(), queue1.clone(), rowmark.clone(), i.clone(), c.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), parentcolum.clone(), ass1.clone(), ass2.clone())?;
                     Ok((queue2.clone(), b.clone()))
                 }
@@ -842,10 +842,10 @@ fn BFSBreasign(mut i: i32, mut c: i32, mut parentcolum: metamodelica::Array<i32>
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
             let mut r: i32 = 0;
-            r = ass1.borrow()[(c.clone()-1) as usize].clone();
+            r = ({let __elt = ass1.borrow()[(c.clone()-1) as usize].clone(); __elt});
             {let _arr = ass1.clone(); _arr.borrow_mut()[(c.clone()-1) as usize] = l.clone(); _arr};
             {let _arr = ass2.clone(); _arr.borrow_mut()[(l.clone()-1) as usize] = c.clone(); _arr};
-            BFSBreasign(i.clone(), parentcolum.borrow()[(r.clone()-1) as usize].clone(), parentcolum.clone(), r.clone(), ass1.clone(), ass2.clone())?;
+            BFSBreasign(i.clone(), ({let __elt = parentcolum.borrow()[(r.clone()-1) as usize].clone(); __elt}), parentcolum.clone(), r.clone(), ass1.clone(), ass2.clone())?;
             Ok(())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -971,7 +971,7 @@ fn DFSB1(mut i: i32, mut rowmark: i32, mut nv: i32, mut ne: i32, mut m: metamode
             let mut ass2_1: metamodelica::Array<i32> = Default::default();
             let mut ass2_2: metamodelica::Array<i32> = Default::default();
             let mut rowmarks1: metamodelica::Array<i32> = Default::default();
-            let false = (intGt(ass1.borrow()[(i.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
+            let false = (intGt(({let __elt = ass1.borrow()[(i.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
             visitedcolums = DFSBphase(list![i.clone()], rowmark.clone(), i.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), ass1.clone(), ass2.clone(), list![i.clone()])?;
             let (__pa0, __pa3, __pa1, __pa2, __pa4, __pa5, __pa6, __pa7, __pa8, __pa9) = ::match_deref::match_deref! { match &(reduceIndexifNecessary(visitedcolums.clone(), i.clone(), isyst.clone(), ishared.clone(), nv.clone(), ne.clone(), ass1.clone(), ass2.clone(), inMatchingOptions.clone(), sssHandler.clone(), inArg.clone())?) {
                 (_, __pa0, __pa3 @ Deref @ BackendDAE::EqSystem { mT: Some(__pa1), m: Some(__pa2), .. }, __pa4, __pa5, __pa6, __pa7, __pa8, __pa9) => (__pa0.clone(), __pa3.clone(), __pa1.clone(), __pa2.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone()),
@@ -998,7 +998,7 @@ fn DFSB1(mut i: i32, mut rowmark: i32, mut nv: i32, mut ne: i32, mut m: metamode
             let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
             let mut ass1_1: metamodelica::Array<i32> = Default::default();
             let mut ass2_1: metamodelica::Array<i32> = Default::default();
-            let true = (intGt(ass1.borrow()[(i.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
+            let true = (intGt(({let __elt = ass1.borrow()[(i.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
             (ass1_1, ass2_1, syst, shared, arg) = DFSB1(i.clone() + 1, rowmark.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), ass1.clone(), ass2.clone(), isyst.clone(), ishared.clone(), inMatchingOptions.clone(), sssHandler.clone(), inArg.clone())?;
             Ok((ass1_1.clone(), ass2_1.clone(), syst.clone(), shared.clone(), arg.clone()))
         })() { break 'mc __v; }
@@ -1020,7 +1020,7 @@ fn DFSBphase(mut stack: Arc<metamodelica::List<i32>>, mut i: i32, mut c: i32, mu
         },
         _ => {
             let mut rows: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            rows = List::select(m.borrow()[(c.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
+            rows = List::select(({let __elt = m.borrow()[(c.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
             DFSBtraverseRows(rows.clone(), stack.clone(), i.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), ass1.clone(), ass2.clone(), inVisitedColums.clone())?
         },
         _ => {
@@ -1049,7 +1049,7 @@ fn DFSBtraverseRows(mut rows: Arc<metamodelica::List<i32>>, mut stack: Arc<metam
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: r, tail: _ } => {
-                    let true = (intLt(ass2.borrow()[(r.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
+                    let true = (intLt(({let __elt = ass2.borrow()[(r.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
                     DFSBreasign(stack.clone(), r.clone(), ass1.clone(), ass2.clone())?;
                     Ok(metamodelica::nil())
                 }
@@ -1061,9 +1061,9 @@ fn DFSBtraverseRows(mut rows: Arc<metamodelica::List<i32>>, mut stack: Arc<metam
                 Deref @ metamodelica::List::Cons { head: r, tail: rest } => {
                     let mut visitedColums: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut rc: i32 = 0;
-                    rc = ass2.borrow()[(r.clone()-1) as usize].clone();
+                    rc = ({let __elt = ass2.borrow()[(r.clone()-1) as usize].clone(); __elt});
                     let false = (intLt(rc.clone(), 0)) else { bail!("pattern mismatch") };
-                    let true = (intLt(rowmarks.borrow()[(r.clone()-1) as usize].clone(), i.clone())) else { bail!("pattern mismatch") };
+                    let true = (intLt(({let __elt = rowmarks.borrow()[(r.clone()-1) as usize].clone(); __elt}), i.clone())) else { bail!("pattern mismatch") };
                     {let _arr = rowmarks.clone(); _arr.borrow_mut()[(r.clone()-1) as usize] = i.clone(); _arr};
                     visitedColums = DFSBphase(metamodelica::cons(rc.clone(), stack.clone()), i.clone(), rc.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), ass1.clone(), ass2.clone(), metamodelica::cons(rc.clone(), inVisitedColums.clone()))?;
                     Ok(DFSBtraverseRows1(rest.clone(), stack.clone(), i.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), ass1.clone(), ass2.clone(), visitedColums.clone())?)
@@ -1110,7 +1110,7 @@ fn DFSBreasign(mut stack: Arc<metamodelica::List<i32>>, mut r: i32, mut ass1: me
         },
         Deref @ metamodelica::List::Cons { head: c, tail: rest } => {
             let mut rc: i32 = 0;
-            rc = ass1.borrow()[(c.clone()-1) as usize].clone();
+            rc = ({let __elt = ass1.borrow()[(c.clone()-1) as usize].clone(); __elt});
             {let _arr = ass1.clone(); _arr.borrow_mut()[(c.clone()-1) as usize] = r.clone(); _arr};
             {let _arr = ass2.clone(); _arr.borrow_mut()[(r.clone()-1) as usize] = c.clone(); _arr};
             DFSBreasign(rest.clone(), rc.clone(), ass1.clone(), ass2.clone())?;
@@ -1221,7 +1221,7 @@ fn MC21A1(mut i: i32, mut rowmark: i32, mut nv: i32, mut ne: i32, mut m: metamod
             let mut ass2_2: metamodelica::Array<i32> = Default::default();
             let mut rowmarks1: metamodelica::Array<i32> = Default::default();
             let mut lookahead1: metamodelica::Array<i32> = Default::default();
-            let false = (intGt(ass1.borrow()[(i.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
+            let false = (intGt(({let __elt = ass1.borrow()[(i.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
             visitedcolums = MC21Aphase(list![i.clone()], rowmark.clone(), i.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), lookahead.clone(), ass1.clone(), ass2.clone(), list![i.clone()])?;
             let (__pa0, __pa1, __pa4, __pa2, __pa3, __pa5, __pa6, __pa7, __pa8, __pa9, __pa10) = ::match_deref::match_deref! { match &(reduceIndexifNecessary(visitedcolums.clone(), i.clone(), isyst.clone(), ishared.clone(), nv.clone(), ne.clone(), ass1.clone(), ass2.clone(), inMatchingOptions.clone(), sssHandler.clone(), inArg.clone())?) {
                 (__pa0, __pa1, __pa4 @ Deref @ BackendDAE::EqSystem { mT: Some(__pa2), m: Some(__pa3), .. }, __pa5, __pa6, __pa7, __pa8, __pa9, __pa10) => (__pa0.clone(), __pa1.clone(), __pa4.clone(), __pa2.clone(), __pa3.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa8.clone(), __pa9.clone(), __pa10.clone()),
@@ -1249,7 +1249,7 @@ fn MC21A1(mut i: i32, mut rowmark: i32, mut nv: i32, mut ne: i32, mut m: metamod
             let mut shared: Arc<BackendDAE::Shared> = Arc::new(<BackendDAE::Shared as ::std::default::Default>::default());
             let mut ass1_1: metamodelica::Array<i32> = Default::default();
             let mut ass2_1: metamodelica::Array<i32> = Default::default();
-            let true = (intGt(ass1.borrow()[(i.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
+            let true = (intGt(({let __elt = ass1.borrow()[(i.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
             (ass1_1, ass2_1, syst, shared, arg) = MC21A1(i.clone() + 1, rowmark.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), lookahead.clone(), ass1.clone(), ass2.clone(), isyst.clone(), ishared.clone(), inMatchingOptions.clone(), sssHandler.clone(), inArg.clone())?;
             Ok((ass1_1.clone(), ass2_1.clone(), syst.clone(), shared.clone(), arg.clone()))
         })() { break 'mc __v; }
@@ -1317,8 +1317,8 @@ fn MC21Aphase(mut stack: Arc<metamodelica::List<i32>>, mut i: i32, mut c: i32, m
         _ => {
             let mut rows: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut b: bool = false;
-            rows = List::select(m.borrow()[(c.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
-            b = intLt(lookahead.borrow()[(c.clone()-1) as usize].clone(), (rows.clone().len() as i32));
+            rows = List::select(({let __elt = m.borrow()[(c.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
+            b = intLt(({let __elt = lookahead.borrow()[(c.clone()-1) as usize].clone(); __elt}), (rows.clone().len() as i32));
             MC21Achecklookahead(b.clone(), rows.clone(), stack.clone(), i.clone(), c.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), lookahead.clone(), ass1.clone(), ass2.clone(), inVisitedColums.clone())?
         },
         _ => {
@@ -1357,7 +1357,7 @@ fn MC21AtraverseRowsUnmatched(mut rows: Arc<metamodelica::List<i32>>, mut rows1:
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: r, tail: _ } => {
-                    let true = (intLt(ass2.borrow()[(r.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
+                    let true = (intLt(({let __elt = ass2.borrow()[(r.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
                     DFSBreasign(stack.clone(), r.clone(), ass1.clone(), ass2.clone())?;
                     Ok(metamodelica::nil())
                 }
@@ -1396,9 +1396,9 @@ fn MC21AtraverseRows(mut rows: Arc<metamodelica::List<i32>>, mut stack: Arc<meta
                 Deref @ metamodelica::List::Cons { head: r, tail: rest } => {
                     let mut visitedColums: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut rc: i32 = 0;
-                    rc = ass2.borrow()[(r.clone()-1) as usize].clone();
+                    rc = ({let __elt = ass2.borrow()[(r.clone()-1) as usize].clone(); __elt});
                     let false = (intLt(rc.clone(), 0)) else { bail!("pattern mismatch") };
-                    let true = (intLt(rowmarks.borrow()[(r.clone()-1) as usize].clone(), i.clone())) else { bail!("pattern mismatch") };
+                    let true = (intLt(({let __elt = rowmarks.borrow()[(r.clone()-1) as usize].clone(); __elt}), i.clone())) else { bail!("pattern mismatch") };
                     {let _arr = rowmarks.clone(); _arr.borrow_mut()[(r.clone()-1) as usize] = i.clone(); _arr};
                     visitedColums = MC21Aphase(metamodelica::cons(rc.clone(), stack.clone()), i.clone(), rc.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), lookahead.clone(), ass1.clone(), ass2.clone(), metamodelica::cons(rc.clone(), inVisitedColums.clone()))?;
                     Ok(MC21AtraverseRows1(rest.clone(), stack.clone(), i.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), lookahead.clone(), ass1.clone(), ass2.clone(), visitedColums.clone())?)
@@ -1620,7 +1620,7 @@ fn PFaugmentmatching(mut i: i32, mut U: Arc<metamodelica::List<i32>>, mut nv: i3
                 Deref @ metamodelica::List::Cons { head: c, tail: rest } => {
                     let mut unmatched: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut i_1: i32 = 0;
-                    let true = (intGt(ass1.borrow()[(c.clone()-1) as usize].clone(), -1)) else { bail!("pattern mismatch") };
+                    let true = (intGt(({let __elt = ass1.borrow()[(c.clone()-1) as usize].clone(); __elt}), -1)) else { bail!("pattern mismatch") };
                     (i_1, unmatched) = PFaugmentmatching(i.clone(), rest.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), lookahead.clone(), ass1.clone(), ass2.clone(), previousUnmatched.clone(), unMatched.clone())?;
                     Ok((i_1.clone(), unmatched.clone()))
                 }
@@ -1664,8 +1664,8 @@ fn PFphase(mut stack: Arc<metamodelica::List<i32>>, mut i: i32, mut c: i32, mut 
         _ => {
             let mut rows: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut b: bool = false;
-            rows = List::select(m.borrow()[(c.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
-            b = intLt(lookahead.borrow()[(c.clone()-1) as usize].clone(), (rows.clone().len() as i32));
+            rows = List::select(({let __elt = m.borrow()[(c.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
+            b = intLt(({let __elt = lookahead.borrow()[(c.clone()-1) as usize].clone(); __elt}), (rows.clone().len() as i32));
             PFchecklookahead(b.clone(), rows.clone(), stack.clone(), i.clone(), c.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), lookahead.clone(), ass1.clone(), ass2.clone())?
         },
         _ => {
@@ -1704,7 +1704,7 @@ fn PFtraverseRowsUnmatched(mut rows: Arc<metamodelica::List<i32>>, mut rows1: Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: r, tail: _ } => {
-                    let true = (intLt(ass2.borrow()[(r.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
+                    let true = (intLt(({let __elt = ass2.borrow()[(r.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
                     DFSBreasign(stack.clone(), r.clone(), ass1.clone(), ass2.clone())?;
                     Ok(true)
                 }
@@ -1743,9 +1743,9 @@ fn PFtraverseRows(mut rows: Arc<metamodelica::List<i32>>, mut stack: Arc<metamod
                 Deref @ metamodelica::List::Cons { head: r, tail: rest } => {
                     let mut rc: i32 = 0;
                     let mut b: bool = false;
-                    rc = ass2.borrow()[(r.clone()-1) as usize].clone();
+                    rc = ({let __elt = ass2.borrow()[(r.clone()-1) as usize].clone(); __elt});
                     let false = (intLt(rc.clone(), 0)) else { bail!("pattern mismatch") };
-                    let false = (intEq(rowmarks.borrow()[(r.clone()-1) as usize].clone(), i.clone())) else { bail!("pattern mismatch") };
+                    let false = (intEq(({let __elt = rowmarks.borrow()[(r.clone()-1) as usize].clone(); __elt}), i.clone())) else { bail!("pattern mismatch") };
                     {let _arr = rowmarks.clone(); _arr.borrow_mut()[(r.clone()-1) as usize] = i.clone(); _arr};
                     b = PFphase(metamodelica::cons(rc.clone(), stack.clone()), i.clone(), rc.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), lookahead.clone(), ass1.clone(), ass2.clone())?;
                     Ok(PFtraverseRows1(rest.clone(), stack.clone(), i.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), lookahead.clone(), ass1.clone(), ass2.clone(), b.clone())?)
@@ -1922,7 +1922,7 @@ fn PFPlusaugmentmatching(mut i: i32, mut U: Arc<metamodelica::List<i32>>, mut nv
                 Deref @ metamodelica::List::Cons { head: c, tail: rest } => {
                     let mut unmatched: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut i_1: i32 = 0;
-                    let true = (intGt(ass1.borrow()[(c.clone()-1) as usize].clone(), -1)) else { bail!("pattern mismatch") };
+                    let true = (intGt(({let __elt = ass1.borrow()[(c.clone()-1) as usize].clone(); __elt}), -1)) else { bail!("pattern mismatch") };
                     (i_1, unmatched) = PFPlusaugmentmatching(i.clone(), rest.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), lookahead.clone(), ass1.clone(), ass2.clone(), previousUnmatched.clone(), unMatched.clone(), reverseRows.clone())?;
                     Ok((i_1.clone(), unmatched.clone()))
                 }
@@ -1966,15 +1966,15 @@ fn PFPlusphase(mut stack: Arc<metamodelica::List<i32>>, mut i: i32, mut c: i32, 
         (_, false) => {
             let mut rows: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut b: bool = false;
-            rows = List::select(m.borrow()[(c.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
-            b = intLt(lookahead.borrow()[(c.clone()-1) as usize].clone(), (rows.clone().len() as i32));
+            rows = List::select(({let __elt = m.borrow()[(c.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
+            b = intLt(({let __elt = lookahead.borrow()[(c.clone()-1) as usize].clone(); __elt}), (rows.clone().len() as i32));
             PFPluschecklookahead(b.clone(), rows.clone(), stack.clone(), i.clone(), c.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), lookahead.clone(), ass1.clone(), ass2.clone(), reverseRows.clone())?
         },
         (_, true) => {
             let mut rows: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut b: bool = false;
-            rows = List::select(m.borrow()[(c.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
-            b = intLt(lookahead.borrow()[(c.clone()-1) as usize].clone(), (rows.clone().len() as i32));
+            rows = List::select(({let __elt = m.borrow()[(c.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
+            b = intLt(({let __elt = lookahead.borrow()[(c.clone()-1) as usize].clone(); __elt}), (rows.clone().len() as i32));
             PFPluschecklookahead(b.clone(), rows.clone().reverse(), stack.clone(), i.clone(), c.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), lookahead.clone(), ass1.clone(), ass2.clone(), reverseRows.clone())?
         },
         _ => {
@@ -2013,7 +2013,7 @@ fn PFPlustraverseRowsUnmatched(mut rows: Arc<metamodelica::List<i32>>, mut rows1
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: r, tail: _ } => {
-                    let true = (intLt(ass2.borrow()[(r.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
+                    let true = (intLt(({let __elt = ass2.borrow()[(r.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
                     DFSBreasign(stack.clone(), r.clone(), ass1.clone(), ass2.clone())?;
                     Ok(true)
                 }
@@ -2052,9 +2052,9 @@ fn PFPlustraverseRows(mut rows: Arc<metamodelica::List<i32>>, mut stack: Arc<met
                 Deref @ metamodelica::List::Cons { head: r, tail: rest } => {
                     let mut rc: i32 = 0;
                     let mut b: bool = false;
-                    rc = ass2.borrow()[(r.clone()-1) as usize].clone();
+                    rc = ({let __elt = ass2.borrow()[(r.clone()-1) as usize].clone(); __elt});
                     let false = (intLt(rc.clone(), 0)) else { bail!("pattern mismatch") };
-                    let false = (intEq(rowmarks.borrow()[(r.clone()-1) as usize].clone(), i.clone())) else { bail!("pattern mismatch") };
+                    let false = (intEq(({let __elt = rowmarks.borrow()[(r.clone()-1) as usize].clone(); __elt}), i.clone())) else { bail!("pattern mismatch") };
                     {let _arr = rowmarks.clone(); _arr.borrow_mut()[(r.clone()-1) as usize] = i.clone(); _arr};
                     b = PFPlusphase(metamodelica::cons(rc.clone(), stack.clone()), i.clone(), rc.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), lookahead.clone(), ass1.clone(), ass2.clone(), reverseRows.clone())?;
                     Ok(PFPlustraverseRows1(rest.clone(), stack.clone(), i.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), lookahead.clone(), ass1.clone(), ass2.clone(), b.clone(), reverseRows.clone())?)
@@ -2321,7 +2321,7 @@ fn HKgetUnmatched(mut U: Arc<metamodelica::List<i32>>, mut ass1: metamodelica::A
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: c, tail: rest } => {
-                    let true = (intGt(ass1.borrow()[(c.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
+                    let true = (intGt(({let __elt = ass1.borrow()[(c.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
                     Ok(HKgetUnmatched(rest.clone(), ass1.clone(), inUnmatched.clone())?)
                 }
                 _ => bail!("nomatch"),
@@ -2392,7 +2392,7 @@ fn HKBFSBphase(mut queue: Arc<metamodelica::List<i32>>, mut i: i32, mut l: i32, 
             let mut rows: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
             let mut b: bool = false;
             let mut ll: Option<i32> = None;
-            cr = List::select(m.borrow()[(c.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
+            cr = List::select(({let __elt = m.borrow()[(c.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
             {let _arr = level.clone(); _arr.borrow_mut()[(c.clone()-1) as usize] = l.clone(); _arr};
             (queue2, rows, b) = HKBFStraverseRows(cr.clone(), metamodelica::nil(), i.clone(), l.clone(), m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), inRows.clone(), false)?;
             queue2 = listAppend(queue1.clone(), queue2.clone());
@@ -2450,7 +2450,7 @@ fn HKBFStraverseRows(mut rows: Arc<metamodelica::List<i32>>, mut queue: Arc<meta
                     let mut queue1: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut rowstpl: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
                     let mut b: bool = false;
-                    let false = (intLt(rowmarks.borrow()[(r.clone()-1) as usize].clone(), i.clone())) else { bail!("pattern mismatch") };
+                    let false = (intLt(({let __elt = rowmarks.borrow()[(r.clone()-1) as usize].clone(); __elt}), i.clone())) else { bail!("pattern mismatch") };
                     (queue1, rowstpl, b) = HKBFStraverseRows(rest.clone(), queue.clone(), i.clone(), l.clone(), m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), inRows.clone(), inunmarowFound.clone())?;
                     Ok((queue1.clone(), rowstpl.clone(), b.clone()))
                 }
@@ -2463,7 +2463,7 @@ fn HKBFStraverseRows(mut rows: Arc<metamodelica::List<i32>>, mut queue: Arc<meta
                     let mut queue1: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut rowstpl: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
                     let mut b: bool = false;
-                    let true = (intLt(ass2.borrow()[(r.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
+                    let true = (intLt(({let __elt = ass2.borrow()[(r.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
                     {let _arr = rowmarks.clone(); _arr.borrow_mut()[(r.clone()-1) as usize] = i.clone(); _arr};
                     (queue1, rowstpl, b) = HKBFStraverseRows(rest.clone(), queue.clone(), i.clone(), l.clone(), m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), metamodelica::cons((r.clone(), l.clone()), inRows.clone()), true)?;
                     Ok((queue1.clone(), rowstpl.clone(), b.clone()))
@@ -2478,7 +2478,7 @@ fn HKBFStraverseRows(mut rows: Arc<metamodelica::List<i32>>, mut queue: Arc<meta
                     let mut rowstpl: Arc<metamodelica::List<(i32, i32)>> = metamodelica::nil();
                     let mut rc: i32 = 0;
                     let mut b: bool = false;
-                    rc = ass2.borrow()[(r.clone()-1) as usize].clone();
+                    rc = ({let __elt = ass2.borrow()[(r.clone()-1) as usize].clone(); __elt});
                     let false = (intLt(rc.clone(), 0)) else { bail!("pattern mismatch") };
                     {let _arr = rowmarks.clone(); _arr.borrow_mut()[(r.clone()-1) as usize] = i.clone(); _arr};
                     (queue1, rowstpl, b) = HKBFStraverseRows(rest.clone(), metamodelica::cons(rc.clone(), queue.clone()), i.clone(), l.clone(), m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), inRows.clone(), inunmarowFound.clone())?;
@@ -2533,7 +2533,7 @@ fn HKDFSphase(mut stack: Arc<metamodelica::List<i32>>, mut i: i32, mut r: i32, m
         },
         _ => {
             let mut collums: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            collums = List::select(mT.borrow()[(r.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
+            collums = List::select(({let __elt = mT.borrow()[(r.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
             HKDFStraverseCollums(collums.clone(), stack.clone(), i.clone(), l.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), collummarks.clone(), level.clone(), ass1.clone(), ass2.clone(), inMatched.clone())?
         },
         _ => {
@@ -2562,7 +2562,7 @@ fn HKDFStraverseCollums(mut collums: Arc<metamodelica::List<i32>>, mut stack: Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: c, tail: rest } => {
-                    let false = (intEq(level.borrow()[(c.clone()-1) as usize].clone(), l.clone())) else { bail!("pattern mismatch") };
+                    let false = (intEq(({let __elt = level.borrow()[(c.clone()-1) as usize].clone(); __elt}), l.clone())) else { bail!("pattern mismatch") };
                     Ok(HKDFStraverseCollums(rest.clone(), stack.clone(), i.clone(), l.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), collummarks.clone(), level.clone(), ass1.clone(), ass2.clone(), inMatched.clone())?)
                 }
                 _ => bail!("nomatch"),
@@ -2571,9 +2571,9 @@ fn HKDFStraverseCollums(mut collums: Arc<metamodelica::List<i32>>, mut stack: Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: c, tail: _ } => {
-                    let true = (intEq(level.borrow()[(c.clone()-1) as usize].clone(), l.clone())) else { bail!("pattern mismatch") };
-                    let true = (intLt(collummarks.borrow()[(c.clone()-1) as usize].clone(), i.clone())) else { bail!("pattern mismatch") };
-                    let true = (intLt(ass1.borrow()[(c.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
+                    let true = (intEq(({let __elt = level.borrow()[(c.clone()-1) as usize].clone(); __elt}), l.clone())) else { bail!("pattern mismatch") };
+                    let true = (intLt(({let __elt = collummarks.borrow()[(c.clone()-1) as usize].clone(); __elt}), i.clone())) else { bail!("pattern mismatch") };
+                    let true = (intLt(({let __elt = ass1.borrow()[(c.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
                     HKDFSreasign(stack.clone(), c.clone(), ass1.clone(), ass2.clone())?;
                     Ok(true)
                 }
@@ -2585,9 +2585,9 @@ fn HKDFStraverseCollums(mut collums: Arc<metamodelica::List<i32>>, mut stack: Ar
                 Deref @ metamodelica::List::Cons { head: c, tail: rest } => {
                     let mut r: i32 = 0;
                     let mut b: bool = false;
-                    let true = (intEq(level.borrow()[(c.clone()-1) as usize].clone(), l.clone())) else { bail!("pattern mismatch") };
-                    let true = (intLt(collummarks.borrow()[(c.clone()-1) as usize].clone(), i.clone())) else { bail!("pattern mismatch") };
-                    r = ass1.borrow()[(c.clone()-1) as usize].clone();
+                    let true = (intEq(({let __elt = level.borrow()[(c.clone()-1) as usize].clone(); __elt}), l.clone())) else { bail!("pattern mismatch") };
+                    let true = (intLt(({let __elt = collummarks.borrow()[(c.clone()-1) as usize].clone(); __elt}), i.clone())) else { bail!("pattern mismatch") };
+                    r = ({let __elt = ass1.borrow()[(c.clone()-1) as usize].clone(); __elt});
                     let false = (intLt(r.clone(), 0)) else { bail!("pattern mismatch") };
                     {let _arr = collummarks.clone(); _arr.borrow_mut()[(c.clone()-1) as usize] = i.clone(); _arr};
                     b = HKDFSphase(metamodelica::cons(r.clone(), stack.clone()), i.clone(), r.clone(), l.clone() - 1, nv.clone(), ne.clone(), m.clone(), mT.clone(), collummarks.clone(), level.clone(), ass1.clone(), ass2.clone(), inMatched.clone())?;
@@ -2599,8 +2599,8 @@ fn HKDFStraverseCollums(mut collums: Arc<metamodelica::List<i32>>, mut stack: Ar
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: c, tail: rest } => {
-                    let true = (intEq(level.borrow()[(c.clone()-1) as usize].clone(), l.clone())) else { bail!("pattern mismatch") };
-                    let false = (intLt(collummarks.borrow()[(c.clone()-1) as usize].clone(), i.clone())) else { bail!("pattern mismatch") };
+                    let true = (intEq(({let __elt = level.borrow()[(c.clone()-1) as usize].clone(); __elt}), l.clone())) else { bail!("pattern mismatch") };
+                    let false = (intLt(({let __elt = collummarks.borrow()[(c.clone()-1) as usize].clone(); __elt}), i.clone())) else { bail!("pattern mismatch") };
                     Ok(HKDFStraverseCollums(rest.clone(), stack.clone(), i.clone(), l.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), collummarks.clone(), level.clone(), ass1.clone(), ass2.clone(), inMatched.clone())?)
                 }
                 _ => bail!("nomatch"),
@@ -2636,7 +2636,7 @@ fn HKDFSreasign(mut stack: Arc<metamodelica::List<i32>>, mut c: i32, mut ass1: m
         },
         Deref @ metamodelica::List::Cons { head: r, tail: rest } => {
             let mut cr: i32 = 0;
-            cr = ass2.borrow()[(r.clone()-1) as usize].clone();
+            cr = ({let __elt = ass2.borrow()[(r.clone()-1) as usize].clone(); __elt});
             {let _arr = ass1.clone(); _arr.borrow_mut()[(c.clone()-1) as usize] = r.clone(); _arr};
             {let _arr = ass2.clone(); _arr.borrow_mut()[(r.clone()-1) as usize] = c.clone(); _arr};
             HKDFSreasign(rest.clone(), cr.clone(), ass1.clone(), ass2.clone())?;
@@ -2840,7 +2840,7 @@ fn HKDWDFSphase(mut stack: Arc<metamodelica::List<i32>>, mut i: i32, mut r: i32,
         },
         _ => {
             let mut collums: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            collums = List::select(mT.borrow()[(r.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
+            collums = List::select(({let __elt = mT.borrow()[(r.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
             HKDWDFStraverseCollums(collums.clone(), stack.clone(), i.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), collummarks.clone(), ass1.clone(), ass2.clone(), inMatched.clone())?
         },
         _ => {
@@ -2869,8 +2869,8 @@ fn HKDWDFStraverseCollums(mut collums: Arc<metamodelica::List<i32>>, mut stack: 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: c, tail: _ } => {
-                    let true = (intLt(collummarks.borrow()[(c.clone()-1) as usize].clone(), i.clone())) else { bail!("pattern mismatch") };
-                    let true = (intLt(ass1.borrow()[(c.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
+                    let true = (intLt(({let __elt = collummarks.borrow()[(c.clone()-1) as usize].clone(); __elt}), i.clone())) else { bail!("pattern mismatch") };
+                    let true = (intLt(({let __elt = ass1.borrow()[(c.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
                     HKDFSreasign(stack.clone(), c.clone(), ass1.clone(), ass2.clone())?;
                     Ok(true)
                 }
@@ -2882,8 +2882,8 @@ fn HKDWDFStraverseCollums(mut collums: Arc<metamodelica::List<i32>>, mut stack: 
                 Deref @ metamodelica::List::Cons { head: c, tail: rest } => {
                     let mut r: i32 = 0;
                     let mut b: bool = false;
-                    let true = (intLt(collummarks.borrow()[(c.clone()-1) as usize].clone(), i.clone())) else { bail!("pattern mismatch") };
-                    r = ass1.borrow()[(c.clone()-1) as usize].clone();
+                    let true = (intLt(({let __elt = collummarks.borrow()[(c.clone()-1) as usize].clone(); __elt}), i.clone())) else { bail!("pattern mismatch") };
+                    r = ({let __elt = ass1.borrow()[(c.clone()-1) as usize].clone(); __elt});
                     let false = (intLt(r.clone(), 0)) else { bail!("pattern mismatch") };
                     {let _arr = collummarks.clone(); _arr.borrow_mut()[(c.clone()-1) as usize] = i.clone(); _arr};
                     b = HKDWDFSphase(metamodelica::cons(r.clone(), stack.clone()), i.clone(), r.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), collummarks.clone(), ass1.clone(), ass2.clone(), inMatched.clone())?;
@@ -2895,7 +2895,7 @@ fn HKDWDFStraverseCollums(mut collums: Arc<metamodelica::List<i32>>, mut stack: 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: c, tail: rest } => {
-                    let false = (intLt(collummarks.borrow()[(c.clone()-1) as usize].clone(), i.clone())) else { bail!("pattern mismatch") };
+                    let false = (intLt(({let __elt = collummarks.borrow()[(c.clone()-1) as usize].clone(); __elt}), i.clone())) else { bail!("pattern mismatch") };
                     Ok(HKDWDFStraverseCollums(rest.clone(), stack.clone(), i.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), collummarks.clone(), ass1.clone(), ass2.clone(), inMatched.clone())?)
                 }
                 _ => bail!("nomatch"),
@@ -3121,7 +3121,7 @@ fn ABMPphase1(mut U: Arc<metamodelica::List<i32>>, mut unmatchedRows: Arc<metamo
         Deref @ metamodelica::List::Cons { head: r, tail: _ } => {
             let mut unmatched: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut L: i32 = 0;
-            L = level.borrow()[(r.clone()-1) as usize].clone();
+            L = ({let __elt = level.borrow()[(r.clone()-1) as usize].clone(); __elt});
             ABMPDFS(unmatchedRows.clone(), 0, L.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), level.clone(), colptrs.clone(), ass1.clone(), ass2.clone(), metamodelica::nil())?;
             unmatched = HKgetUnmatched(U.clone(), ass1.clone(), metamodelica::nil())?;
             ABMPphase2(unmatched.clone(), i.clone(), L.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), level.clone(), colptrs.clone(), lim.clone(), ass1.clone(), ass2.clone())?
@@ -3197,7 +3197,7 @@ fn ABMPBFSphase(mut queue: Arc<metamodelica::List<i32>>, mut i: i32, mut L: i32,
             let mut rows: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut queue1: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut unmatched: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            rows = List::select(m.borrow()[(c.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
+            rows = List::select(({let __elt = m.borrow()[(c.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
             (queue1, unmatched) = ABMPBFStraverseRows(rows.clone(), i.clone(), L.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), nextqueue.clone(), unMatched.clone())?;
             ABMPBFSphase(rest.clone(), i.clone(), L.clone(), lim.clone(), lim1.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), queue1.clone(), unmatched.clone())?
         },
@@ -3241,8 +3241,8 @@ fn ABMPBFStraverseRows(mut rows: Arc<metamodelica::List<i32>>, mut i: i32, mut L
                 Deref @ metamodelica::List::Cons { head: r, tail: rest } => {
                     let mut queue1: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut unmatched: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    let false = (intEq(rowmarks.borrow()[(r.clone()-1) as usize].clone(), i.clone())) else { bail!("pattern mismatch") };
-                    let true = (intLt(ass2.borrow()[(r.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
+                    let false = (intEq(({let __elt = rowmarks.borrow()[(r.clone()-1) as usize].clone(); __elt}), i.clone())) else { bail!("pattern mismatch") };
+                    let true = (intLt(({let __elt = ass2.borrow()[(r.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
                     {let _arr = level.clone(); _arr.borrow_mut()[(r.clone()-1) as usize] = L.clone(); _arr};
                     {let _arr = rowmarks.clone(); _arr.borrow_mut()[(r.clone()-1) as usize] = i.clone(); _arr};
                     (queue1, unmatched) = ABMPBFStraverseRows(rest.clone(), i.clone(), L.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), queue.clone(), metamodelica::cons(r.clone(), unMatched.clone()))?;
@@ -3257,8 +3257,8 @@ fn ABMPBFStraverseRows(mut rows: Arc<metamodelica::List<i32>>, mut i: i32, mut L
                     let mut queue1: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut unmatched: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut rc: i32 = 0;
-                    let false = (intEq(rowmarks.borrow()[(r.clone()-1) as usize].clone(), i.clone())) else { bail!("pattern mismatch") };
-                    rc = ass2.borrow()[(r.clone()-1) as usize].clone();
+                    let false = (intEq(({let __elt = rowmarks.borrow()[(r.clone()-1) as usize].clone(); __elt}), i.clone())) else { bail!("pattern mismatch") };
+                    rc = ({let __elt = ass2.borrow()[(r.clone()-1) as usize].clone(); __elt});
                     let false = (intLt(rc.clone(), 0)) else { bail!("pattern mismatch") };
                     {let _arr = rowmarks.clone(); _arr.borrow_mut()[(r.clone()-1) as usize] = i.clone(); _arr};
                     (queue1, unmatched) = ABMPBFStraverseRows(rest.clone(), i.clone(), L.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), metamodelica::cons(rc.clone(), queue.clone()), unMatched.clone())?;
@@ -3272,7 +3272,7 @@ fn ABMPBFStraverseRows(mut rows: Arc<metamodelica::List<i32>>, mut i: i32, mut L
                 Deref @ metamodelica::List::Cons { head: r, tail: rest } => {
                     let mut queue1: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut unmatched: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    let true = (intEq(rowmarks.borrow()[(r.clone()-1) as usize].clone(), i.clone())) else { bail!("pattern mismatch") };
+                    let true = (intEq(({let __elt = rowmarks.borrow()[(r.clone()-1) as usize].clone(); __elt}), i.clone())) else { bail!("pattern mismatch") };
                     (queue1, unmatched) = ABMPBFStraverseRows(rest.clone(), i.clone(), L.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), rowmarks.clone(), level.clone(), ass1.clone(), ass2.clone(), queue.clone(), unMatched.clone())?;
                     Ok((queue1.clone(), unmatched.clone()))
                 }
@@ -3377,8 +3377,8 @@ fn ABMPDFS1(mut inMatched: bool, mut r: i32, mut unmatchedRows: Arc<metamodelica
                 (true, Deref @ metamodelica::List::Cons { head: r1, tail: _ }, Deref @ metamodelica::List::Cons { head: r2, tail: Deref @ metamodelica::List::Nil }) => {
                     let mut l: i32 = 0;
                     let false = (intGt(50 * L.clone(), (unmatchedRows.clone().len() as i32) + (unMatched.clone().len() as i32))) else { bail!("pattern mismatch") };
-                    let false = (intEq(L.clone(), level.borrow()[(r1.clone()-1) as usize].clone())) else { bail!("pattern mismatch") };
-                    l = level.borrow()[(r2.clone()-1) as usize].clone();
+                    let false = (intEq(L.clone(), ({let __elt = level.borrow()[(r1.clone()-1) as usize].clone(); __elt}))) else { bail!("pattern mismatch") };
+                    l = ({let __elt = level.borrow()[(r2.clone()-1) as usize].clone(); __elt});
                     ABMPDFS(metamodelica::cons(r2.clone(), unmatchedRows.clone()), i.clone(), l.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), level.clone(), colptrs.clone(), ass1.clone(), ass2.clone(), metamodelica::nil())?;
                     Ok(())
                 }
@@ -3392,14 +3392,14 @@ fn ABMPDFS1(mut inMatched: bool, mut r: i32, mut unmatchedRows: Arc<metamodelica
                     let mut r2: i32 = 0;
                     let mut l: i32 = 0;
                     let false = (intGt(50 * L.clone(), (unmatchedRows.clone().len() as i32) + (unMatched.clone().len() as i32))) else { bail!("pattern mismatch") };
-                    let false = (intEq(L.clone(), level.borrow()[(r1.clone()-1) as usize].clone())) else { bail!("pattern mismatch") };
+                    let false = (intEq(L.clone(), ({let __elt = level.borrow()[(r1.clone()-1) as usize].clone(); __elt}))) else { bail!("pattern mismatch") };
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(unMatched.clone().reverse()) {
                         Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
                     r2 = __pa0.clone();
                     unmatched = __pa1.clone();
-                    l = level.borrow()[(r2.clone()-1) as usize].clone();
+                    l = ({let __elt = level.borrow()[(r2.clone()-1) as usize].clone(); __elt});
                     unmatched = listAppend(unmatched.clone(), metamodelica::cons(r2.clone(), unmatchedRows.clone()));
                     ABMPDFS(unmatchedRows.clone(), i.clone(), l.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), level.clone(), colptrs.clone(), ass1.clone(), ass2.clone(), metamodelica::nil())?;
                     Ok(())
@@ -3411,8 +3411,8 @@ fn ABMPDFS1(mut inMatched: bool, mut r: i32, mut unmatchedRows: Arc<metamodelica
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ metamodelica::List::Cons { head: r1, tail: _ }, Deref @ metamodelica::List::Nil) => {
                     let mut l: i32 = 0;
-                    let false = (intEq(L.clone(), level.borrow()[(r1.clone()-1) as usize].clone())) else { bail!("pattern mismatch") };
-                    l = level.borrow()[(r.clone()-1) as usize].clone();
+                    let false = (intEq(L.clone(), ({let __elt = level.borrow()[(r1.clone()-1) as usize].clone(); __elt}))) else { bail!("pattern mismatch") };
+                    l = ({let __elt = level.borrow()[(r.clone()-1) as usize].clone(); __elt});
                     ABMPDFS(unmatchedRows.clone(), i.clone(), l.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), level.clone(), colptrs.clone(), ass1.clone(), ass2.clone(), metamodelica::nil())?;
                     Ok(())
                 }
@@ -3425,14 +3425,14 @@ fn ABMPDFS1(mut inMatched: bool, mut r: i32, mut unmatchedRows: Arc<metamodelica
                     let mut unmatched: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut r2: i32 = 0;
                     let mut l: i32 = 0;
-                    let false = (intEq(L.clone(), level.borrow()[(r1.clone()-1) as usize].clone())) else { bail!("pattern mismatch") };
+                    let false = (intEq(L.clone(), ({let __elt = level.borrow()[(r1.clone()-1) as usize].clone(); __elt}))) else { bail!("pattern mismatch") };
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(unMatched.clone().reverse()) {
                         Deref @ metamodelica::List::Cons { head: __pa0, tail: __pa1 } => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
                     r2 = __pa0.clone();
                     unmatched = __pa1.clone();
-                    l = level.borrow()[(r2.clone()-1) as usize].clone();
+                    l = ({let __elt = level.borrow()[(r2.clone()-1) as usize].clone(); __elt});
                     unmatched = listAppend(metamodelica::cons(r2.clone(), unmatched.clone()), unmatchedRows.clone());
                     ABMPDFS(unmatched.clone(), i.clone(), l.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), level.clone(), colptrs.clone(), ass1.clone(), ass2.clone(), metamodelica::nil())?;
                     Ok(())
@@ -3443,7 +3443,7 @@ fn ABMPDFS1(mut inMatched: bool, mut r: i32, mut unmatchedRows: Arc<metamodelica
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, Deref @ metamodelica::List::Cons { head: r1, tail: _ }, _) => {
-                    let true = (intEq(L.clone(), level.borrow()[(r1.clone()-1) as usize].clone())) else { bail!("pattern mismatch") };
+                    let true = (intEq(L.clone(), ({let __elt = level.borrow()[(r1.clone()-1) as usize].clone(); __elt}))) else { bail!("pattern mismatch") };
                     ABMPDFS(unmatchedRows.clone(), i.clone(), L.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), level.clone(), colptrs.clone(), ass1.clone(), ass2.clone(), unMatched.clone())?;
                     Ok(())
                 }
@@ -3476,9 +3476,9 @@ fn ABMPDFSphase(mut stack: Arc<metamodelica::List<i32>>, mut i: i32, mut r: i32,
             let mut desL: i32 = 0;
             let mut i_1: i32 = 0;
             let mut b: bool = false;
-            collums = List::select(mT.borrow()[(r.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
-            collums = List::stripN(collums.clone(), colptrs.borrow()[(r.clone()-1) as usize].clone())?;
-            desL = level.borrow()[(r.clone()-1) as usize].clone() - 2;
+            collums = List::select(({let __elt = mT.borrow()[(r.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
+            collums = List::stripN(collums.clone(), ({let __elt = colptrs.borrow()[(r.clone()-1) as usize].clone(); __elt}))?;
+            desL = ({let __elt = level.borrow()[(r.clone()-1) as usize].clone(); __elt}) - 2;
             (i_1, b) = ABMPDFStraverseCollums(collums.clone(), 1, stack.clone(), r.clone(), i.clone(), desL.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), level.clone(), colptrs.clone(), ass1.clone(), ass2.clone())?;
             (i_1.clone(), b.clone())
         },
@@ -3499,7 +3499,7 @@ fn ABMPDFStraverseCollums(mut collums: Arc<metamodelica::List<i32>>, mut counter
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Nil => {
-                    {let _arr = level.clone(); let _val = level.borrow()[(r.clone()-1) as usize].clone() + 2; _arr.borrow_mut()[(r.clone()-1) as usize] = _val; _arr};
+                    {let _arr = level.clone(); let _val = ({let __elt = level.borrow()[(r.clone()-1) as usize].clone(); __elt}) + 2; _arr.borrow_mut()[(r.clone()-1) as usize] = _val; _arr};
                     {let _arr = colptrs.clone(); _arr.borrow_mut()[(r.clone()-1) as usize] = 0; _arr};
                     Ok((i.clone() + 1, false))
                 }
@@ -3509,7 +3509,7 @@ fn ABMPDFStraverseCollums(mut collums: Arc<metamodelica::List<i32>>, mut counter
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: c, tail: _ } => {
-                    let true = (intLt(ass1.borrow()[(c.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
+                    let true = (intLt(({let __elt = ass1.borrow()[(c.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
                     {let _arr = colptrs.clone(); _arr.borrow_mut()[(r.clone()-1) as usize] = counter.clone(); _arr};
                     HKDFSreasign(stack.clone(), c.clone(), ass1.clone(), ass2.clone())?;
                     Ok((i.clone(), true))
@@ -3523,8 +3523,8 @@ fn ABMPDFStraverseCollums(mut collums: Arc<metamodelica::List<i32>>, mut counter
                     let mut rc: i32 = 0;
                     let mut i_1: i32 = 0;
                     let mut b: bool = false;
-                    let true = (intEq(level.borrow()[(c.clone()-1) as usize].clone(), desL.clone())) else { bail!("pattern mismatch") };
-                    rc = ass1.borrow()[(c.clone()-1) as usize].clone();
+                    let true = (intEq(({let __elt = level.borrow()[(c.clone()-1) as usize].clone(); __elt}), desL.clone())) else { bail!("pattern mismatch") };
+                    rc = ({let __elt = ass1.borrow()[(c.clone()-1) as usize].clone(); __elt});
                     let true = (intGt(rc.clone(), 0)) else { bail!("pattern mismatch") };
                     {let _arr = colptrs.clone(); _arr.borrow_mut()[(r.clone()-1) as usize] = counter.clone(); _arr};
                     (i_1, b) = ABMPDFSphase(metamodelica::cons(rc.clone(), stack.clone()), i.clone(), rc.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), level.clone(), colptrs.clone(), ass1.clone(), ass2.clone())?;
@@ -3808,7 +3808,7 @@ fn PR_Global_Relabel_init_r_label(mut i: i32, mut nv: i32, mut max: i32, mut r_l
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let false = (intGt(i.clone(), nv.clone())) else { bail!("pattern mismatch") };
-                    let false = (intGt(ass2.borrow()[(i.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
+                    let false = (intGt(({let __elt = ass2.borrow()[(i.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
                     {let _arr = r_label.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = 0; _arr};
                     Ok(PR_Global_Relabel_init_r_label(i.clone() + 1, nv.clone(), max.clone(), r_label.clone(), ass2.clone(), metamodelica::cons(i.clone(), inQueue.clone()))?)
                 }
@@ -3854,7 +3854,7 @@ fn PR_Global_Relabel1(mut queue: Arc<metamodelica::List<i32>>, mut l_label: meta
                 (Deref @ metamodelica::List::Cons { head: r, tail: rest }, _) => {
                     let mut collums: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut queue1: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    collums = List::select(mT.borrow()[(r.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
+                    collums = List::select(({let __elt = mT.borrow()[(r.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
                     queue1 = PR_Global_Relabel_traverseCollums(collums.clone(), max.clone(), r.clone(), l_label.clone(), r_label.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), ass1.clone(), ass2.clone(), nextqueue.clone())?;
                     PR_Global_Relabel1(rest.clone(), l_label.clone(), r_label.clone(), max.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), ass1.clone(), ass2.clone(), queue1.clone())?;
                     Ok(())
@@ -3885,12 +3885,12 @@ fn PR_Global_Relabel_traverseCollums(mut collums: Arc<metamodelica::List<i32>>, 
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: c, tail: rest } => {
                     let mut rc: i32 = 0;
-                    let true = (intEq(l_label.borrow()[(c.clone()-1) as usize].clone(), max.clone())) else { bail!("pattern mismatch") };
-                    {let _arr = l_label.clone(); let _val = r_label.borrow()[(r.clone()-1) as usize].clone() + 1; _arr.borrow_mut()[(c.clone()-1) as usize] = _val; _arr};
-                    rc = ass1.borrow()[(c.clone()-1) as usize].clone();
+                    let true = (intEq(({let __elt = l_label.borrow()[(c.clone()-1) as usize].clone(); __elt}), max.clone())) else { bail!("pattern mismatch") };
+                    {let _arr = l_label.clone(); let _val = ({let __elt = r_label.borrow()[(r.clone()-1) as usize].clone(); __elt}) + 1; _arr.borrow_mut()[(c.clone()-1) as usize] = _val; _arr};
+                    rc = ({let __elt = ass1.borrow()[(c.clone()-1) as usize].clone(); __elt});
                     let true = (intGt(rc.clone(), -1)) else { bail!("pattern mismatch") };
-                    let true = (intEq(r_label.borrow()[(rc.clone()-1) as usize].clone(), max.clone())) else { bail!("pattern mismatch") };
-                    {let _arr = r_label.clone(); let _val = l_label.borrow()[(c.clone()-1) as usize].clone() + 1; _arr.borrow_mut()[(rc.clone()-1) as usize] = _val; _arr};
+                    let true = (intEq(({let __elt = r_label.borrow()[(rc.clone()-1) as usize].clone(); __elt}), max.clone())) else { bail!("pattern mismatch") };
+                    {let _arr = r_label.clone(); let _val = ({let __elt = l_label.borrow()[(c.clone()-1) as usize].clone(); __elt}) + 1; _arr.borrow_mut()[(rc.clone()-1) as usize] = _val; _arr};
                     Ok(PR_Global_Relabel_traverseCollums(rest.clone(), max.clone(), r.clone(), l_label.clone(), r_label.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), ass1.clone(), ass2.clone(), metamodelica::cons(rc.clone(), nextqueue.clone()))?)
                 }
                 _ => bail!("nomatch"),
@@ -3956,7 +3956,7 @@ fn PR_FIFO_FAIRphase(mut relabels: i32, mut U: Arc<metamodelica::List<i32>>, mut
                     let mut min_label: i32 = 0;
                     let mut rlcount: i32 = 0;
                     let mut minvertex: i32 = 0;
-                    (rlcount, min_label, minvertex) = PR_FIFO_FAIRphase1(intLt(l_label.borrow()[(c.clone()-1) as usize].clone(), max.clone()), relabels.clone() + 1, c.clone(), min_vertex.clone(), max.clone(), max.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), l_label.clone(), r_label.clone(), ass1.clone(), ass2.clone())?;
+                    (rlcount, min_label, minvertex) = PR_FIFO_FAIRphase1(intLt(({let __elt = l_label.borrow()[(c.clone()-1) as usize].clone(); __elt}), max.clone()), relabels.clone() + 1, c.clone(), min_vertex.clone(), max.clone(), max.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), l_label.clone(), r_label.clone(), ass1.clone(), ass2.clone())?;
                     queue = PR_FIFO_FAIRrelabel(c.clone(), minvertex.clone(), min_label.clone(), max.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), l_label.clone(), r_label.clone(), ass1.clone(), ass2.clone(), nextqueue.clone())?;
                     PR_FIFO_FAIRphase(rlcount.clone(), rest.clone(), max.clone(), minvertex.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), l_label.clone(), r_label.clone(), ass1.clone(), ass2.clone(), queue.clone())?;
                     Ok(())
@@ -3979,7 +3979,7 @@ fn PR_FIFO_FAIRphase1(mut b: bool, mut relabels: i32, mut max_vertex: i32, mut m
             let mut minlab: i32 = 0;
             let mut minvert: i32 = 0;
             let mut tmp: i32 = 0;
-            tmp = intMod(l_label.borrow()[(max_vertex.clone()-1) as usize].clone(), 4);
+            tmp = intMod(({let __elt = l_label.borrow()[(max_vertex.clone()-1) as usize].clone(); __elt}), 4);
             (rel, minlab, minvert) = PR_FIFO_FAIRphase2(intEq(tmp.clone(), 1), relabels.clone(), max_vertex.clone(), min_vertec.clone(), min_label.clone(), max.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), l_label.clone(), r_label.clone(), ass1.clone(), ass2.clone())?;
             (rel.clone(), minlab.clone(), minvert.clone())
         },
@@ -4000,7 +4000,7 @@ fn PR_FIFO_FAIRphase2(mut b: bool, mut relabels: i32, mut max_vertex: i32, mut m
             let mut rel: i32 = 0;
             let mut minlab: i32 = 0;
             let mut minvert: i32 = 0;
-            rows = List::select(m.borrow()[(max_vertex.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
+            rows = List::select(({let __elt = m.borrow()[(max_vertex.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
             (rel, minlab, minvert) = PR_FIFO_FAIRphase_traverseRows(rows.clone(), relabels.clone(), max_vertex.clone(), min_vertec.clone(), min_label.clone(), max.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), l_label.clone(), r_label.clone(), ass1.clone(), ass2.clone())?;
             (rel.clone(), minlab.clone(), minvert.clone())
         },
@@ -4009,7 +4009,7 @@ fn PR_FIFO_FAIRphase2(mut b: bool, mut relabels: i32, mut max_vertex: i32, mut m
             let mut rel: i32 = 0;
             let mut minlab: i32 = 0;
             let mut minvert: i32 = 0;
-            rows = List::select(m.borrow()[(max_vertex.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
+            rows = List::select(({let __elt = m.borrow()[(max_vertex.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
             rows = rows.clone().reverse();
             (rel, minlab, minvert) = PR_FIFO_FAIRphase_traverseRows(rows.clone(), relabels.clone(), max_vertex.clone(), min_vertec.clone(), min_label.clone(), max.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), l_label.clone(), r_label.clone(), ass1.clone(), ass2.clone())?;
             (rel.clone(), minlab.clone(), minvert.clone())
@@ -4037,10 +4037,10 @@ fn PR_FIFO_FAIRphase_traverseRows(mut rows: Arc<metamodelica::List<i32>>, mut re
                 Deref @ metamodelica::List::Cons { head: r, tail: _ } => {
                     let mut minlabel: i32 = 0;
                     let mut minvertex: i32 = 0;
-                    let true = (intLt(r_label.borrow()[(r.clone()-1) as usize].clone(), min_label.clone())) else { bail!("pattern mismatch") };
-                    minlabel = r_label.borrow()[(r.clone()-1) as usize].clone();
+                    let true = (intLt(({let __elt = r_label.borrow()[(r.clone()-1) as usize].clone(); __elt}), min_label.clone())) else { bail!("pattern mismatch") };
+                    minlabel = ({let __elt = r_label.borrow()[(r.clone()-1) as usize].clone(); __elt});
                     minvertex = r.clone();
-                    let true = (intEq(r_label.borrow()[(minvertex.clone()-1) as usize].clone(), l_label.borrow()[(max_vertex.clone()-1) as usize].clone() - 1)) else { bail!("pattern mismatch") };
+                    let true = (intEq(({let __elt = r_label.borrow()[(minvertex.clone()-1) as usize].clone(); __elt}), ({let __elt = l_label.borrow()[(max_vertex.clone()-1) as usize].clone(); __elt}) - 1)) else { bail!("pattern mismatch") };
                     Ok((relabels.clone() - 1, minlabel.clone(), minvertex.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -4052,10 +4052,10 @@ fn PR_FIFO_FAIRphase_traverseRows(mut rows: Arc<metamodelica::List<i32>>, mut re
                     let mut minlabel: i32 = 0;
                     let mut minvertex: i32 = 0;
                     let mut rel: i32 = 0;
-                    let true = (intLt(r_label.borrow()[(r.clone()-1) as usize].clone(), min_label.clone())) else { bail!("pattern mismatch") };
-                    minlabel = r_label.borrow()[(r.clone()-1) as usize].clone();
+                    let true = (intLt(({let __elt = r_label.borrow()[(r.clone()-1) as usize].clone(); __elt}), min_label.clone())) else { bail!("pattern mismatch") };
+                    minlabel = ({let __elt = r_label.borrow()[(r.clone()-1) as usize].clone(); __elt});
                     minvertex = r.clone();
-                    let false = (intEq(r_label.borrow()[(minvertex.clone()-1) as usize].clone(), l_label.borrow()[(max_vertex.clone()-1) as usize].clone() - 1)) else { bail!("pattern mismatch") };
+                    let false = (intEq(({let __elt = r_label.borrow()[(minvertex.clone()-1) as usize].clone(); __elt}), ({let __elt = l_label.borrow()[(max_vertex.clone()-1) as usize].clone(); __elt}) - 1)) else { bail!("pattern mismatch") };
                     (rel, minlabel, minvertex) = PR_FIFO_FAIRphase_traverseRows(rest.clone(), relabels.clone(), max_vertex.clone(), minvertex.clone(), minlabel.clone(), max.clone(), nv.clone(), ne.clone(), m.clone(), mT.clone(), l_label.clone(), r_label.clone(), ass1.clone(), ass2.clone())?;
                     Ok((rel.clone(), minlabel.clone(), minvertex.clone()))
                 }
@@ -4096,7 +4096,7 @@ fn PR_FIFO_FAIRrelabel(mut max_vertex: i32, mut min_vertex: i32, mut min_label: 
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let true = (intLt(min_label.clone(), max.clone())) else { bail!("pattern mismatch") };
-                    let true = (intLt(ass2.borrow()[(min_vertex.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
+                    let true = (intLt(({let __elt = ass2.borrow()[(min_vertex.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
                     {let _arr = ass2.clone(); _arr.borrow_mut()[(min_vertex.clone()-1) as usize] = max_vertex.clone(); _arr};
                     {let _arr = ass1.clone(); _arr.borrow_mut()[(max_vertex.clone()-1) as usize] = min_vertex.clone(); _arr};
                     {let _arr = r_label.clone(); _arr.borrow_mut()[(min_vertex.clone()-1) as usize] = min_label.clone() + 2; _arr};
@@ -4110,8 +4110,8 @@ fn PR_FIFO_FAIRrelabel(mut max_vertex: i32, mut min_vertex: i32, mut min_label: 
                 _ => {
                     let mut next_vertex: i32 = 0;
                     let true = (intLt(min_label.clone(), max.clone())) else { bail!("pattern mismatch") };
-                    let false = (intLt(ass2.borrow()[(min_vertex.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
-                    next_vertex = ass2.borrow()[(min_vertex.clone()-1) as usize].clone();
+                    let false = (intLt(({let __elt = ass2.borrow()[(min_vertex.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
+                    next_vertex = ({let __elt = ass2.borrow()[(min_vertex.clone()-1) as usize].clone(); __elt});
                     {let _arr = ass2.clone(); _arr.borrow_mut()[(min_vertex.clone()-1) as usize] = max_vertex.clone(); _arr};
                     {let _arr = ass1.clone(); _arr.borrow_mut()[(max_vertex.clone()-1) as usize] = min_vertex.clone(); _arr};
                     {let _arr = ass1.clone(); _arr.borrow_mut()[(next_vertex.clone()-1) as usize] = -1; _arr};
@@ -4175,7 +4175,7 @@ fn cheapmatching(mut i: i32, mut nv: i32, mut ne: i32, mut m: metamodelica::Arra
             ::match_deref::match_deref! { match &__mc_input {
                 _ => {
                     let mut rows: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    rows = List::select(m.borrow()[(i.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
+                    rows = List::select(({let __elt = m.borrow()[(i.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
                     cheapmatching1(rows.clone(), i.clone(), ass1.clone(), ass2.clone())?;
                     Ok(cheapmatching(i.clone() + 1, nv.clone(), ne.clone(), m.clone(), mT.clone(), ass1.clone(), ass2.clone(), inUnMatched.clone())?)
                 }
@@ -4210,7 +4210,7 @@ fn cheapmatching1(mut rows: Arc<metamodelica::List<i32>>, mut c: i32, mut ass1: 
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: r, tail: _ } => {
-                    let true = (intLt(ass2.borrow()[(r.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
+                    let true = (intLt(({let __elt = ass2.borrow()[(r.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
                     {let _arr = ass1.clone(); _arr.borrow_mut()[(c.clone()-1) as usize] = r.clone(); _arr};
                     {let _arr = ass2.clone(); _arr.borrow_mut()[(r.clone()-1) as usize] = c.clone(); _arr};
                     Ok(())
@@ -4265,8 +4265,8 @@ fn ks_rand_cheapmatching1(mut i: i32, mut ne: i32, mut onecolums: Arc<metamodeli
             let mut c: i32 = 0;
             let mut b: bool = false;
             ks_rand_match(onerows.clone(), onecolums.clone(), row_degrees.clone(), col_degrees.clone(), mT.clone(), m.clone(), ass2.clone(), ass1.clone())?;
-            c = randarr.borrow()[(i.clone()-1) as usize].clone();
-            b = intLt(ass1.borrow()[(c.clone()-1) as usize].clone(), 0) && intGt(col_degrees.borrow()[(c.clone()-1) as usize].clone(), 0);
+            c = ({let __elt = randarr.borrow()[(i.clone()-1) as usize].clone(); __elt});
+            b = intLt(({let __elt = ass1.borrow()[(c.clone()-1) as usize].clone(); __elt}), 0) && intGt(({let __elt = col_degrees.borrow()[(c.clone()-1) as usize].clone(); __elt}), 0);
             (onecolums1, onerows1) = ks_rand_cheapmatching2(b.clone(), c.clone(), col_degrees.clone(), row_degrees.clone(), randarr.clone(), m.clone(), mT.clone(), ass1.clone(), ass2.clone())?;
             ks_rand_cheapmatching1(i.clone() + 1, ne.clone(), onecolums1.clone(), onerows1.clone(), col_degrees.clone(), row_degrees.clone(), randarr.clone(), m.clone(), mT.clone(), ass1.clone(), ass2.clone())?;
             Ok(())
@@ -4286,11 +4286,11 @@ fn ks_rand_cheapmatching2(mut b: bool, mut c: i32, mut col_degrees: metamodelica
             let mut lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut e_id: i32 = 0;
             let mut r: i32 = 0;
-            e_id = ((realMod(System::realRand(), intReal(col_degrees.borrow()[(c.clone()-1) as usize].clone()))).0 as i32);
-            lst = List::select(m.borrow()[(c.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
+            e_id = ((realMod(System::realRand(), intReal(({let __elt = col_degrees.borrow()[(c.clone()-1) as usize].clone(); __elt})))).0 as i32);
+            lst = List::select(({let __elt = m.borrow()[(c.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
             (rlst, r) = ks_rand_cheapmatching3(e_id.clone(), lst.clone(), row_degrees.clone(), c.clone(), ass1.clone(), ass2.clone(), metamodelica::nil(), 0)?;
-            lst = List::select(mT.borrow()[(r.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
-            clst = ks_rand_cheapmatching4(lst.clone(), row_degrees.borrow()[(r.clone()-1) as usize].clone(), col_degrees.clone(), ass1.clone(), metamodelica::nil())?;
+            lst = List::select(({let __elt = mT.borrow()[(r.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
+            clst = ks_rand_cheapmatching4(lst.clone(), ({let __elt = row_degrees.borrow()[(r.clone()-1) as usize].clone(); __elt}), col_degrees.clone(), ass1.clone(), metamodelica::nil())?;
             (clst.clone(), rlst.clone())
         },
         _ => {
@@ -4317,7 +4317,7 @@ fn ks_rand_cheapmatching3(mut e_id: i32, mut rows: Arc<metamodelica::List<i32>>,
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: r, tail: rest } => {
                     let mut stack: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    let true = (intLt(ass2.borrow()[(r.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
+                    let true = (intLt(({let __elt = ass2.borrow()[(r.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
                     let true = (intEq(e_id.clone(), 0)) else { bail!("pattern mismatch") };
                     {let _arr = ass1.clone(); _arr.borrow_mut()[(c.clone()-1) as usize] = r.clone(); _arr};
                     {let _arr = ass2.clone(); _arr.borrow_mut()[(r.clone()-1) as usize] = c.clone(); _arr};
@@ -4333,9 +4333,9 @@ fn ks_rand_cheapmatching3(mut e_id: i32, mut rows: Arc<metamodelica::List<i32>>,
                     let mut stack: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut statck1: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut r_1: i32 = 0;
-                    let true = (intLt(ass2.borrow()[(r.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
-                    {let _arr = row_degrees.clone(); let _val = row_degrees.borrow()[(r.clone()-1) as usize].clone() - 1; _arr.borrow_mut()[(r.clone()-1) as usize] = _val; _arr};
-                    stack = List::consOnTrue(intEq(row_degrees.borrow()[(r.clone()-1) as usize].clone(), 1), r.clone(), onerows.clone());
+                    let true = (intLt(({let __elt = ass2.borrow()[(r.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
+                    {let _arr = row_degrees.clone(); let _val = ({let __elt = row_degrees.borrow()[(r.clone()-1) as usize].clone(); __elt}) - 1; _arr.borrow_mut()[(r.clone()-1) as usize] = _val; _arr};
+                    stack = List::consOnTrue(intEq(({let __elt = row_degrees.borrow()[(r.clone()-1) as usize].clone(); __elt}), 1), r.clone(), onerows.clone());
                     (statck1, r_1) = ks_rand_cheapmatching3(e_id.clone() - 1, rest.clone(), row_degrees.clone(), c.clone(), ass1.clone(), ass2.clone(), stack.clone(), r.clone())?;
                     Ok((statck1.clone(), r_1.clone()))
                 }
@@ -4385,9 +4385,9 @@ fn ks_rand_cheapmatching4(mut cols: Arc<metamodelica::List<i32>>, mut count: i32
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: c, tail: rest } => {
                     let mut stack: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    let true = (intLt(ass1.borrow()[(c.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
-                    {let _arr = col_degrees.clone(); let _val = col_degrees.borrow()[(c.clone()-1) as usize].clone() - 1; _arr.borrow_mut()[(c.clone()-1) as usize] = _val; _arr};
-                    stack = List::consOnTrue(intEq(col_degrees.borrow()[(c.clone()-1) as usize].clone(), 1), c.clone(), inStack.clone());
+                    let true = (intLt(({let __elt = ass1.borrow()[(c.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
+                    {let _arr = col_degrees.clone(); let _val = ({let __elt = col_degrees.borrow()[(c.clone()-1) as usize].clone(); __elt}) - 1; _arr.borrow_mut()[(c.clone()-1) as usize] = _val; _arr};
+                    stack = List::consOnTrue(intEq(({let __elt = col_degrees.borrow()[(c.clone()-1) as usize].clone(); __elt}), 1), c.clone(), inStack.clone());
                     Ok(ks_rand_cheapmatching4(rest.clone(), count.clone() - 1, col_degrees.clone(), ass1.clone(), stack.clone())?)
                 }
                 _ => bail!("nomatch"),
@@ -4416,7 +4416,7 @@ fn getOneRows(mut n: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>
             let mut lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut onerows: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut l: i32 = 0;
-            lst = List::select(m.borrow()[(n.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
+            lst = List::select(({let __elt = m.borrow()[(n.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
             l = (lst.clone().len() as i32);
             {let _arr = degrees.clone(); _arr.borrow_mut()[(n.clone()-1) as usize] = l.clone(); _arr};
             onerows = List::consOnTrue(intEq(l.clone(), 1), n.clone(), inOneRows.clone());
@@ -4435,8 +4435,8 @@ fn setrandArray(mut n: i32, mut randarr: metamodelica::Array<i32>) -> Result<()>
             let mut z: i32 = 0;
             let mut tmp: i32 = 0;
             z = ((realMod(System::realRand(), intReal(n.clone()))).0 as i32) + 1;
-            tmp = randarr.borrow()[(n.clone()-1) as usize].clone();
-            {let _arr = randarr.clone(); let _val = randarr.borrow()[(z.clone()-1) as usize].clone(); _arr.borrow_mut()[(n.clone()-1) as usize] = _val; _arr};
+            tmp = ({let __elt = randarr.borrow()[(n.clone()-1) as usize].clone(); __elt});
+            {let _arr = randarr.clone(); let _val = ({let __elt = randarr.borrow()[(z.clone()-1) as usize].clone(); __elt}); _arr.borrow_mut()[(n.clone()-1) as usize] = _val; _arr};
             {let _arr = randarr.clone(); _arr.borrow_mut()[(z.clone()-1) as usize] = tmp.clone(); _arr};
             setrandArray(n.clone() - 1, randarr.clone())?;
             ()
@@ -4461,9 +4461,9 @@ fn ks_rand_match(mut stack1: Arc<metamodelica::List<i32>>, mut stack2: Arc<metam
                 (Deref @ metamodelica::List::Cons { head: e, tail: rest }, Deref @ metamodelica::List::Nil) => {
                     let mut lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut stack: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    let true = (intEq(degrees1.borrow()[(e.clone()-1) as usize].clone(), 1)) else { bail!("pattern mismatch") };
-                    let true = (intLt(ass1.borrow()[(e.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
-                    lst = List::select(m1.borrow()[(e.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
+                    let true = (intEq(({let __elt = degrees1.borrow()[(e.clone()-1) as usize].clone(); __elt}), 1)) else { bail!("pattern mismatch") };
+                    let true = (intLt(({let __elt = ass1.borrow()[(e.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
+                    lst = List::select(({let __elt = m1.borrow()[(e.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
                     stack = ks_rand_match1(e.clone(), lst.clone(), rest.clone(), degrees1.clone(), degrees2.clone(), m2.clone(), ass1.clone(), ass2.clone())?;
                     ks_rand_match(stack.clone(), metamodelica::nil(), degrees1.clone(), degrees2.clone(), m1.clone(), m2.clone(), ass1.clone(), ass2.clone())?;
                     Ok(())
@@ -4485,9 +4485,9 @@ fn ks_rand_match(mut stack1: Arc<metamodelica::List<i32>>, mut stack2: Arc<metam
                 (Deref @ metamodelica::List::Nil, Deref @ metamodelica::List::Cons { head: e, tail: rest }) => {
                     let mut lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut stack: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    let true = (intEq(degrees2.borrow()[(e.clone()-1) as usize].clone(), 1)) else { bail!("pattern mismatch") };
-                    let true = (intLt(ass2.borrow()[(e.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
-                    lst = List::select(m2.borrow()[(e.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
+                    let true = (intEq(({let __elt = degrees2.borrow()[(e.clone()-1) as usize].clone(); __elt}), 1)) else { bail!("pattern mismatch") };
+                    let true = (intLt(({let __elt = ass2.borrow()[(e.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
+                    lst = List::select(({let __elt = m2.borrow()[(e.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
                     stack = ks_rand_match1(e.clone(), lst.clone(), rest.clone(), degrees2.clone(), degrees1.clone(), m1.clone(), ass2.clone(), ass1.clone())?;
                     ks_rand_match(stack.clone(), metamodelica::nil(), degrees2.clone(), degrees1.clone(), m2.clone(), m1.clone(), ass2.clone(), ass1.clone())?;
                     Ok(())
@@ -4509,9 +4509,9 @@ fn ks_rand_match(mut stack1: Arc<metamodelica::List<i32>>, mut stack2: Arc<metam
                 (Deref @ metamodelica::List::Cons { head: e, tail: rest }, _) => {
                     let mut lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
                     let mut stack: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    let true = (intEq(degrees1.borrow()[(e.clone()-1) as usize].clone(), 1)) else { bail!("pattern mismatch") };
-                    let true = (intLt(ass1.borrow()[(e.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
-                    lst = List::select(m1.borrow()[(e.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
+                    let true = (intEq(({let __elt = degrees1.borrow()[(e.clone()-1) as usize].clone(); __elt}), 1)) else { bail!("pattern mismatch") };
+                    let true = (intLt(({let __elt = ass1.borrow()[(e.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
+                    lst = List::select(({let __elt = m1.borrow()[(e.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
                     stack = ks_rand_match1(e.clone(), lst.clone(), rest.clone(), degrees1.clone(), degrees2.clone(), m2.clone(), ass1.clone(), ass2.clone())?;
                     ks_rand_match(stack2.clone(), stack.clone(), degrees2.clone(), degrees1.clone(), m2.clone(), m1.clone(), ass2.clone(), ass1.clone())?;
                     Ok(())
@@ -4551,8 +4551,8 @@ fn ks_rand_match1(mut i: i32, mut entries: Arc<metamodelica::List<i32>>, mut sta
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: e, tail: _ } => {
                     let mut lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    let true = (intLt(ass2.borrow()[(e.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
-                    lst = List::select(adjacency.borrow()[(e.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
+                    let true = (intLt(({let __elt = ass2.borrow()[(e.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
+                    lst = List::select(({let __elt = adjacency.borrow()[(e.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
                     {let _arr = ass1.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = e.clone(); _arr};
                     {let _arr = ass2.clone(); _arr.borrow_mut()[(e.clone()-1) as usize] = i.clone(); _arr};
                     Ok(ks_rand_match_degree(lst.clone(), degrees1.clone(), ass1.clone(), stack.clone())?)
@@ -4591,9 +4591,9 @@ fn ks_rand_match_degree(mut entries: Arc<metamodelica::List<i32>>, mut degrees: 
             ::match_deref::match_deref! { match &__mc_input {
                 Deref @ metamodelica::List::Cons { head: e, tail: rest } => {
                     let mut stack: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    let true = (intLt(ass.borrow()[(e.clone()-1) as usize].clone(), 0)) else { bail!("pattern mismatch") };
-                    {let _arr = degrees.clone(); let _val = degrees.borrow()[(e.clone()-1) as usize].clone() - 1; _arr.borrow_mut()[(e.clone()-1) as usize] = _val; _arr};
-                    stack = List::consOnTrue(intEq(degrees.borrow()[(e.clone()-1) as usize].clone(), 1), e.clone(), inStack.clone());
+                    let true = (intLt(({let __elt = ass.borrow()[(e.clone()-1) as usize].clone(); __elt}), 0)) else { bail!("pattern mismatch") };
+                    {let _arr = degrees.clone(); let _val = ({let __elt = degrees.borrow()[(e.clone()-1) as usize].clone(); __elt}) - 1; _arr.borrow_mut()[(e.clone()-1) as usize] = _val; _arr};
+                    stack = List::consOnTrue(intEq(({let __elt = degrees.borrow()[(e.clone()-1) as usize].clone(); __elt}), 1), e.clone(), inStack.clone());
                     Ok(ks_rand_match_degree(rest.clone(), degrees.clone(), ass.clone(), stack.clone())?)
                 }
                 _ => bail!("nomatch"),
@@ -5246,7 +5246,7 @@ fn sanityCheckArtificialStates(mut syst: Arc<BackendDAE::EqSystem>, mut shared: 
     for mut eqn in &*flat_eqns.clone() {
         let mut eqn = eqn.clone();
         if '__try3: {
-            equations = metamodelica::cons(unwrap_break_err!(BackendEquation::get(syst.orderedEqs.clone(), scalarToArrayMap.borrow()[(eqn.clone()-1) as usize].clone()), '__try3), equations.clone());
+            equations = metamodelica::cons(unwrap_break_err!(BackendEquation::get(syst.orderedEqs.clone(), ({let __elt = scalarToArrayMap.borrow()[(eqn.clone()-1) as usize].clone(); __elt})), '__try3), equations.clone());
             Ok::<(), anyhow::Error>(())
         }.is_err() {
         }
@@ -5353,16 +5353,16 @@ fn removeEdgesToDiscreteEquations(mut m: metamodelica::Array<Arc<metamodelica::L
         if isDiscrete.clone() {
             varLst = BackendEquation::equationVars(eq.clone(), vars.clone())?;
             varIdxs = BackendVariable::getVarIndexFromVars(varLst.clone(), vars.clone());
-            eqIdxs = eqIdxArray.borrow()[(idx.clone()-1) as usize].clone();
+            eqIdxs = ({let __elt = eqIdxArray.borrow()[(idx.clone()-1) as usize].clone(); __elt});
             for mut e in &*eqIdxs.clone() {
                 let mut e = e.clone();
-                row = m.borrow()[(e.clone()-1) as usize].clone();
+                row = ({let __elt = m.borrow()[(e.clone()-1) as usize].clone(); __elt});
                 row = UnorderedSet::difference_list(row.clone(), varIdxs.clone(), std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
                 {let _arr = m.clone(); _arr.borrow_mut()[(e.clone()-1) as usize] = row.clone(); _arr};
             }
             for mut varIdx in &*varIdxs.clone() {
                 let mut varIdx = varIdx.clone();
-                row = mt.borrow()[(varIdx.clone()-1) as usize].clone();
+                row = ({let __elt = mt.borrow()[(varIdx.clone()-1) as usize].clone(); __elt});
                 row = UnorderedSet::difference_list(row.clone(), eqIdxs.clone(), std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
                 {let _arr = mt.clone(); _arr.borrow_mut()[(varIdx.clone()-1) as usize] = row.clone(); _arr};
             }
@@ -5395,12 +5395,12 @@ fn removeEdgesForNoDerivativeFunctionInputs(mut m: metamodelica::Array<Arc<metam
         (hasNoDerAnno, noDerInputs) = BackendDAEUtil::isFuncCallWithNoDerAnnotation(eq.clone(), functionTree.clone())?;
         if hasNoDerAnno.clone() {
             (_, varIdxs) = BackendVariable::getVarLst(noDerInputs.clone(), vars.clone());
-            row = m.borrow()[(idx.clone()-1) as usize].clone();
+            row = ({let __elt = m.borrow()[(idx.clone()-1) as usize].clone(); __elt});
             row = UnorderedSet::difference_list(row.clone(), varIdxs.clone(), std::sync::Arc::new(fnptr!(Util::id, _)), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
             {let _arr = m.clone(); _arr.borrow_mut()[(idx.clone()-1) as usize] = row.clone(); _arr};
             for mut varIdx in &*varIdxs.clone() {
                 let mut varIdx = varIdx.clone();
-                row = mt.clone().borrow()[(varIdx.clone()-1) as usize].clone();
+                row = ({let __elt = mt.clone().borrow()[(varIdx.clone()-1) as usize].clone(); __elt});
                 (row, _) = List::deleteMemberOnTrue(idx.clone(), row.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
                 {let _arr = mt.clone(); _arr.borrow_mut()[(varIdx.clone()-1) as usize] = row.clone(); _arr};
             }
@@ -5415,7 +5415,7 @@ fn removeEdgesForNoDerivativeFunctionInputs(mut m: metamodelica::Array<Arc<metam
 fn countadjacencyMatrixEntries(mut n: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> i32 {
     let mut outCount: i32 = 0;
     for mut i in 1..=n.clone() {
-        let __range0 = &*m.borrow()[(i.clone()-1) as usize].clone();
+        let __range0 = &*({let __elt = m.borrow()[(i.clone()-1) as usize].clone(); __elt});
         for mut e in __range0 {
             let mut e = e.clone();
             if intGt(e.clone(), 0) {
@@ -5440,10 +5440,10 @@ pub fn matchingExternalsetAdjacencyMatrix(mut nv: i32, mut ne: i32, mut m: metam
 pub fn reachableEquations(mut eqn: i32, mut mT: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut ass2: metamodelica::Array<i32>) -> Arc<metamodelica::List<i32>> {
     let mut outEqNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut var: i32 = 0;
-    var = ass2.borrow()[(eqn.clone()-1) as usize].clone();
+    var = ({let __elt = ass2.borrow()[(eqn.clone()-1) as usize].clone(); __elt});
     outEqNodes = if (var.clone() > 0) {({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
-        for mut e in (mT.borrow()[(var.clone()-1) as usize].clone()).into_iter().cloned() {
+        for mut e in (({let __elt = mT.borrow()[(var.clone()-1) as usize].clone(); __elt})).into_iter().cloned() {
             if !(e.clone() > 0 && e.clone() != eqn.clone()) { continue; }
             let __x = e.clone();
             __acc = cons(__x, __acc);
@@ -5457,9 +5457,9 @@ pub fn incomingEquations(mut eqn: i32, mut m: metamodelica::Array<Arc<metamodeli
     let mut outEqNodes: Arc<metamodelica::List<i32>> = metamodelica::nil();
     outEqNodes = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
-        for mut var in (m.borrow()[(eqn.clone()-1) as usize].clone()).into_iter().cloned() {
-            if !(var.clone() > 0 && ass1.borrow()[(var.clone()-1) as usize].clone() != eqn.clone() && ass1.borrow()[(var.clone()-1) as usize].clone() > 0) { continue; }
-            let __x = ass1.borrow()[(var.clone()-1) as usize].clone();
+        for mut var in (({let __elt = m.borrow()[(eqn.clone()-1) as usize].clone(); __elt})).into_iter().cloned() {
+            if !(var.clone() > 0 && ({let __elt = ass1.borrow()[(var.clone()-1) as usize].clone(); __elt}) != eqn.clone() && ({let __elt = ass1.borrow()[(var.clone()-1) as usize].clone(); __elt}) > 0) { continue; }
+            let __x = ({let __elt = ass1.borrow()[(var.clone()-1) as usize].clone(); __elt});
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -5469,13 +5469,13 @@ pub fn incomingEquations(mut eqn: i32, mut m: metamodelica::Array<Arc<metamodeli
 
 pub fn isAssigned(mut ass: metamodelica::Array<i32>, mut i: i32) -> bool {
     let mut b: bool = false;
-    b = intGt(ass.borrow()[(intAbs(i.clone())-1) as usize].clone(), 0);
+    b = intGt(({let __elt = ass.borrow()[(intAbs(i.clone())-1) as usize].clone(); __elt}), 0);
     b
 }
 
 pub fn isUnAssigned(mut ass: metamodelica::Array<i32>, mut i: i32) -> bool {
     let mut b: bool = false;
-    b = intLt(ass.borrow()[(intAbs(i.clone())-1) as usize].clone(), 1);
+    b = intLt(({let __elt = ass.borrow()[(intAbs(i.clone())-1) as usize].clone(); __elt}), 1);
     b
 }
 
@@ -5487,7 +5487,7 @@ pub fn getMarked(mut ne: i32, mut mark: i32, mut markArr: metamodelica::Array<i3
         },
         _ => {
             let mut marked: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            marked = List::consOnTrue(intEq(markArr.borrow()[(ne.clone()-1) as usize].clone(), mark.clone()), ne.clone(), iMarked.clone());
+            marked = List::consOnTrue(intEq(({let __elt = markArr.borrow()[(ne.clone()-1) as usize].clone(); __elt}), mark.clone()), ne.clone(), iMarked.clone());
             tailcall::call!{ getMarked(ne.clone() - 1, mark.clone(), markArr.clone(), marked.clone()) }
         },
     }
@@ -5501,7 +5501,7 @@ pub fn getUnassigned(mut ne: i32, mut ass: metamodelica::Array<i32>, mut inUnass
         },
         _ => {
             let mut unassigned: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            unassigned = List::consOnTrue(intLt(ass.borrow()[(ne.clone()-1) as usize].clone(), 1), ne.clone(), inUnassigned.clone());
+            unassigned = List::consOnTrue(intLt(({let __elt = ass.borrow()[(ne.clone()-1) as usize].clone(); __elt}), 1), ne.clone(), inUnassigned.clone());
             tailcall::call!{ getUnassigned(ne.clone() - 1, ass.clone(), unassigned.clone()) }
         },
     }
@@ -5511,7 +5511,7 @@ pub fn getUnassigned(mut ne: i32, mut ass: metamodelica::Array<i32>, mut inUnass
 pub fn anyUnassigned(mut ne: i32, mut ass: metamodelica::Array<i32>) -> bool {
     match ne.clone() {
         0 => false,
-        _ if (intLt(ass.borrow()[(ne.clone()-1) as usize].clone(), 1)) => true,
+        _ if (intLt(({let __elt = ass.borrow()[(ne.clone()-1) as usize].clone(); __elt}), 1)) => true,
         _ => tailcall::call!{ anyUnassigned(ne.clone() - 1, ass.clone()) },
     }
 }
@@ -5521,7 +5521,7 @@ pub fn getAssignedArray(mut ass: metamodelica::Array<i32>) -> Result<metamodelic
     let mut N: i32 = metamodelica::arrayLength(ass.clone());
     outIsAssigned = arrayCreate(N.clone(), false);
     for mut i in 1..=N.clone() {
-        if ass.borrow()[(i.clone()-1) as usize].clone() > 0 {
+        if ({let __elt = ass.borrow()[(i.clone()-1) as usize].clone(); __elt}) > 0 {
             {let _arr = outIsAssigned.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = true; _arr};
         }
     }
@@ -5536,7 +5536,7 @@ pub fn getAssigned(mut ne: i32, mut ass: metamodelica::Array<i32>, mut inAssigne
         },
         _ => {
             let mut assigned: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            assigned = List::consOnTrue(intGt(ass.borrow()[(ne.clone()-1) as usize].clone(), 0), ne.clone(), inAssigned.clone());
+            assigned = List::consOnTrue(intGt(({let __elt = ass.borrow()[(ne.clone()-1) as usize].clone(); __elt}), 0), ne.clone(), inAssigned.clone());
             tailcall::call!{ getAssigned(ne.clone() - 1, ass.clone(), assigned.clone()) }
         },
     }
@@ -5571,7 +5571,7 @@ fn removeEmptySubsets(mut index: i32, mut length: i32, mut subsets: metamodelica
         _ if (intLe(index.clone(), length.clone())) => {
             let mut eqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut acc: Arc<metamodelica::List<Arc<metamodelica::List<i32>>>> = metamodelica::nil();
-            eqns = subsets.borrow()[(index.clone()-1) as usize].clone();
+            eqns = ({let __elt = subsets.borrow()[(index.clone()-1) as usize].clone(); __elt});
             acc = appendNonEmpty(eqns.clone(), iAcc.clone());
             removeEmptySubsets(index.clone() + 1, length.clone(), subsets.clone(), acc.clone())
         },
@@ -5601,11 +5601,11 @@ fn getEqnsforIndexReduction1(mut U: Arc<metamodelica::List<i32>>, mut m: metamod
         Deref @ metamodelica::List::Nil => {
             inSubsets.clone()
         },
-        Deref @ metamodelica::List::Cons { head: e, tail: rest } if (!(intGt(colummarks.borrow()[(e.clone()-1) as usize].clone(), 0))) => {
+        Deref @ metamodelica::List::Cons { head: e, tail: rest } if (!(intGt(({let __elt = colummarks.borrow()[(e.clone()-1) as usize].clone(); __elt}), 0))) => {
             let mut eqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut e1: i32 = 0;
-            e1 = mapIncRowEqn.borrow()[(e.clone()-1) as usize].clone();
-            eqns = mapEqnIncRow.borrow()[(e1.clone()-1) as usize].clone();
+            e1 = ({let __elt = mapIncRowEqn.borrow()[(e.clone()-1) as usize].clone(); __elt});
+            eqns = ({let __elt = mapEqnIncRow.borrow()[(e1.clone()-1) as usize].clone(); __elt});
             List::fold1r(eqns.clone(), Arc::new(arrayUpdate.clone()), mark.clone(), colummarks.clone())?;
             eqns = getEqnsforIndexReductionphase(eqns.clone(), m.clone(), mT.clone(), mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubsets.clone(), eqns.clone())?;
             Array::appendToElement(mark.clone(), eqns.clone(), inSubsets.clone())?;
@@ -5630,7 +5630,7 @@ fn getEqnsforIndexReductionphase(mut elst: Arc<metamodelica::List<i32>>, mut m: 
         Deref @ metamodelica::List::Cons { head: e, tail: rest } => {
             let mut rows: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut eqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
-            rows = List::select(m.borrow()[(e.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
+            rows = List::select(({let __elt = m.borrow()[(e.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
             eqns = getEqnsforIndexReductiontraverseRows(rows.clone(), metamodelica::nil(), m.clone(), mT.clone(), mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubsets.clone(), inEqns.clone())?;
             getEqnsforIndexReductionphase(rest.clone(), m.clone(), mT.clone(), mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubsets.clone(), eqns.clone())?
         },
@@ -5659,15 +5659,15 @@ fn getEqnsforIndexReductiontraverseRows(mut rows: Arc<metamodelica::List<i32>>, 
             let mut eqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut rc: i32 = 0;
             let mut e: i32 = 0;
-            rc = ass2.borrow()[(r.clone()-1) as usize].clone();
-            if List::exist1(mT.borrow()[(r.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), rc.clone())? && intGt(rc.clone(), 0) && !(intEq(colummarks.borrow()[(rc.clone()-1) as usize].clone(), mark.clone())) {
-                if intGt(colummarks.borrow()[(rc.clone()-1) as usize].clone(), 0) {
-                    mergeSubsets(mark.clone(), colummarks.borrow()[(rc.clone()-1) as usize].clone(), inSubsets.clone(), colummarks.clone())?;
+            rc = ({let __elt = ass2.borrow()[(r.clone()-1) as usize].clone(); __elt});
+            if List::exist1(({let __elt = mT.borrow()[(r.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), rc.clone())? && intGt(rc.clone(), 0) && !(intEq(({let __elt = colummarks.borrow()[(rc.clone()-1) as usize].clone(); __elt}), mark.clone())) {
+                if intGt(({let __elt = colummarks.borrow()[(rc.clone()-1) as usize].clone(); __elt}), 0) {
+                    mergeSubsets(mark.clone(), ({let __elt = colummarks.borrow()[(rc.clone()-1) as usize].clone(); __elt}), inSubsets.clone(), colummarks.clone())?;
                     nextqueue = nextColums.clone();
                     queue = inEqns.clone();
                 } else {
-                    e = mapIncRowEqn.borrow()[(rc.clone()-1) as usize].clone();
-                    eqns = mapEqnIncRow.borrow()[(e.clone()-1) as usize].clone();
+                    e = ({let __elt = mapIncRowEqn.borrow()[(rc.clone()-1) as usize].clone(); __elt});
+                    eqns = ({let __elt = mapEqnIncRow.borrow()[(e.clone()-1) as usize].clone(); __elt});
                     List::fold1r(eqns.clone(), Arc::new(arrayUpdate.clone()), mark.clone(), colummarks.clone())?;
                     nextqueue = listAppend(nextColums.clone(), eqns.clone());
                     queue = listAppend(inEqns.clone(), eqns.clone());
@@ -5685,7 +5685,7 @@ fn getEqnsforIndexReductiontraverseRows(mut rows: Arc<metamodelica::List<i32>>, 
 
 fn mergeSubsets(mut mark: i32, mut markColum: i32, mut inSubsets: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut colummarks: metamodelica::Array<i32>) -> Result<()> {
     let mut eqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    eqns = inSubsets.borrow()[(markColum.clone()-1) as usize].clone();
+    eqns = ({let __elt = inSubsets.borrow()[(markColum.clone()-1) as usize].clone(); __elt});
     Array::appendToElement(mark.clone(), eqns.clone(), inSubsets.clone())?;
     {let _arr = inSubsets.clone(); _arr.borrow_mut()[(markColum.clone()-1) as usize] = metamodelica::nil(); _arr};
     List::fold1r(eqns.clone(), Arc::new(arrayUpdate.clone()), mark.clone(), colummarks.clone())?;
@@ -5802,7 +5802,7 @@ fn checkAssignment(mut indx: i32, mut ne: i32, mut ass1: metamodelica::Array<i32
                 _ => {
                     let mut r: i32 = 0;
                     let mut unassigned: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    r = ass1.borrow()[(indx.clone()-1) as usize].clone();
+                    r = ({let __elt = ass1.borrow()[(indx.clone()-1) as usize].clone(); __elt});
                     unassigned = List::consOnTrue(intLt(r.clone(), 0), indx.clone(), inUnassigned.clone());
                     Ok(checkAssignment(indx.clone() + 1, ne.clone(), ass1.clone(), ass2.clone(), unassigned.clone())?)
                 }
@@ -6022,7 +6022,7 @@ fn randSortSystem1<Type_a: Clone + 'static, Type_b: Clone + 'static>(mut index: 
         _ => {
             let mut tb: Type_b;
             let mut ta: Type_a;
-            tb = get(oldTypeA.clone(), randarr.borrow()[(index.clone()-1) as usize].clone() + offset.clone())?;
+            tb = get(oldTypeA.clone(), ({let __elt = randarr.borrow()[(index.clone()-1) as usize].clone(); __elt}) + offset.clone())?;
             ta = set(tb.clone(), newTypeA.clone())?;
             randSortSystem1(index.clone() - 1, offset.clone(), randarr.clone(), oldTypeA.clone(), ta.clone(), get.clone(), set.clone())?
         },
@@ -6059,7 +6059,7 @@ fn getAssignedVars(mut e: i32, mut ass: metamodelica::Array<i32>, mut iAcc: Arc<
     let mut oAcc: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut i: i32 = 0;
     let mut b: bool = false;
-    i = ass.borrow()[(e.clone()-1) as usize].clone();
+    i = ({let __elt = ass.borrow()[(e.clone()-1) as usize].clone(); __elt});
     b = intGt(i.clone(), 0);
     oAcc = List::consOnTrue(b.clone(), i.clone(), iAcc.clone());
     oAcc
@@ -6079,10 +6079,10 @@ fn clearArrayWithKnownSetIndexes(mut arr: metamodelica::Array<bool>, mut arrIx: 
     }
     if debug.clone() {
         for mut e in 1..=metamodelica::arrayLength(arr.clone()) {
-            Error::assertion(!(arr.clone().borrow()[(e.clone()-1) as usize].clone()), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("clearArrayWithKnownSetIndexes failed: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", e.clone()))); __mm_s.push_str(&*literal!(" n=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", n.clone()))); __mm_s.push_str(&*literal!(" ixs=")); __mm_s.push_str(&*stringDelimitList(({
+            Error::assertion(!(({let __elt = arr.clone().borrow()[(e.clone()-1) as usize].clone(); __elt})), ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("clearArrayWithKnownSetIndexes failed: ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", e.clone()))); __mm_s.push_str(&*literal!(" n=")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", n.clone()))); __mm_s.push_str(&*literal!(" ixs=")); __mm_s.push_str(&*stringDelimitList(({
         let mut __acc: Arc<metamodelica::List<_>> = metamodelica::nil();
         for mut i in (1..=n.clone()).into_iter() {
-            let __x = ArcStr::from(::std::format!("{}", arrIx.clone().borrow()[(i.clone()-1) as usize].clone()));
+            let __x = ArcStr::from(::std::format!("{}", ({let __elt = arrIx.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})));
             __acc = cons(__x, __acc);
         }
         __acc.reverse()

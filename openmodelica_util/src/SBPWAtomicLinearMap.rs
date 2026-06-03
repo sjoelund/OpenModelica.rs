@@ -173,11 +173,11 @@ pub fn image(mut map: Arc<SBPWAtomicLinearMap>, mut set: Arc<SBAtomicSet::SBAtom
     }
     gains = SBLinearMap::gain(map.lmap.clone());
     offsets = SBLinearMap::offset(map.lmap.clone());
-    res = metamodelica::arrayCreate(metamodelica::arrayLength(inters.clone()), inters.borrow()[(1-1) as usize].clone());
+    res = metamodelica::arrayCreate(metamodelica::arrayLength(inters.clone()), ({let __elt = inters.borrow()[(1-1) as usize].clone(); __elt}));
     for mut i in 1..=metamodelica::arrayLength(inters.clone()) {
         int = metamodelica::Dangerous::arrayGetNoBoundsChecking(inters.clone(), i.clone());
-        gain = gains.borrow()[(i.clone()-1) as usize].clone();
-        offset = offsets.borrow()[(i.clone()-1) as usize].clone();
+        gain = ({let __elt = gains.borrow()[(i.clone()-1) as usize].clone(); __elt});
+        offset = ({let __elt = offsets.borrow()[(i.clone()-1) as usize].clone(); __elt});
         tmp_lo = metamodelica::OrderedFloat((SBInterval::lowerBound(int.clone())) as f64) * gain.clone() + offset.clone();
         tmp_step = metamodelica::OrderedFloat((SBInterval::stepValue(int.clone())) as f64) * gain.clone();
         tmp_hi = metamodelica::OrderedFloat((SBInterval::upperBound(int.clone())) as f64) * gain.clone() + offset.clone();
@@ -226,7 +226,7 @@ pub fn toString(mut map: Arc<SBPWAtomicLinearMap>) -> ArcStr {
     o = SBLinearMap::offset(map.lmap.clone());
     ints = SBMultiInterval::intervals(SBAtomicSet::aset(map.dom.clone()));
     for mut i in (1..=metamodelica::arrayLength(ints.clone())).rev() {
-        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*SBInterval::toString(ints.borrow()[(i.clone()-1) as usize].clone())); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", g.borrow()[(i.clone()-1) as usize].clone()))); __mm_s.push_str(&*literal!(" * x + ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", o.borrow()[(i.clone()-1) as usize].clone()))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
+        r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*SBInterval::toString(({let __elt = ints.borrow()[(i.clone()-1) as usize].clone(); __elt}))); __mm_s.push_str(&*literal!(", ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", ({let __elt = g.borrow()[(i.clone()-1) as usize].clone(); __elt})))); __mm_s.push_str(&*literal!(" * x + ")); __mm_s.push_str(&*ArcStr::from(::std::format!("{}", ({let __elt = o.borrow()[(i.clone()-1) as usize].clone(); __elt})))); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
         strl = metamodelica::cons((r#str.clone()).clone(), strl.clone());
     }
     r#str = stringDelimitList(strl.clone(), (literal!("x")).clone());

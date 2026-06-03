@@ -325,7 +325,7 @@ fn setBindingForProtectedVars1(mut varIn: BackendDAE::Var, mut tplIn: (i32, meta
                     let mut var: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
                     let mut exp1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut exp2: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    eq = BackendEquation::get(eqs.clone(), ass1.clone().borrow()[(idx.clone()-1) as usize].clone())?;
+                    eq = BackendEquation::get(eqs.clone(), ({let __elt = ass1.clone().borrow()[(idx.clone()-1) as usize].clone(); __elt}))?;
                     let (__pa0, __pa1) = ::match_deref::match_deref! { match &(eq.clone()) {
                         Deref @ BackendDAE::Equation::EQUATION { scalar: __pa0, exp: __pa1, .. } => (__pa0.clone(), __pa1.clone()),
                         _ => bail!("pattern mismatch"),
@@ -569,7 +569,7 @@ fn fillShapeObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, m
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut T0: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
-                    T0 = var_field!(vis.T, Visualization::SHAPE).clone().borrow()[(pos.clone()-1) as usize].clone();
+                    T0 = ({let __elt = var_field!(vis.T, Visualization::SHAPE).clone().borrow()[(pos.clone()-1) as usize].clone(); __elt});
                     T0 = List::replaceAt(exp.clone(), pos1.clone(), T0.clone())?;
                     {let _arr = var_field!(vis.T, Visualization::SHAPE).clone(); _arr.borrow_mut()[(pos.clone()-1) as usize] = T0.clone(); _arr};
                     Ok(())
@@ -720,7 +720,7 @@ fn fillVectorObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var, 
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut T0: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
-                    T0 = var_field!(vis.T, Visualization::VECTOR).clone().borrow()[(pos.clone()-1) as usize].clone();
+                    T0 = ({let __elt = var_field!(vis.T, Visualization::VECTOR).clone().borrow()[(pos.clone()-1) as usize].clone(); __elt});
                     T0 = List::replaceAt(exp.clone(), pos1.clone(), T0.clone())?;
                     {let _arr = var_field!(vis.T, Visualization::VECTOR).clone(); _arr.borrow_mut()[(pos.clone()-1) as usize] = T0.clone(); _arr};
                     Ok(())
@@ -836,7 +836,7 @@ fn fillSurfaceObject(mut cref: Arc<DAE::ComponentRef>, mut var: BackendDAE::Var,
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut T0: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
                     exp = getVariableBinding(var.clone(), storeProtectedCrefs.clone())?;
-                    T0 = var_field!(vis.T, Visualization::SURFACE).clone().borrow()[(pos.clone()-1) as usize].clone();
+                    T0 = ({let __elt = var_field!(vis.T, Visualization::SURFACE).clone().borrow()[(pos.clone()-1) as usize].clone(); __elt});
                     T0 = List::replaceAt(exp.clone(), pos1.clone(), T0.clone())?;
                     {let _arr = var_field!(vis.T, Visualization::SURFACE).clone(); _arr.borrow_mut()[(pos.clone()-1) as usize] = T0.clone(); _arr};
                     Ok(())

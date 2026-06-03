@@ -2697,7 +2697,7 @@ pub fn differentiateMultaryMultiplicationArgs(mut arguments: Arc<metamodelica::L
         } else {
             for mut i in 1..=metamodelica::arrayLength(diff_lists.clone()) {
                 {
-                    let __cell0 = if (i.clone() == idx.clone()) {metamodelica::cons(diff_arg.clone(), diff_lists.borrow()[(i.clone()-1) as usize].clone())} else {metamodelica::cons(arg.clone(), diff_lists.borrow()[(i.clone()-1) as usize].clone())};
+                    let __cell0 = if (i.clone() == idx.clone()) {metamodelica::cons(diff_arg.clone(), ({let __elt = diff_lists.borrow()[(i.clone()-1) as usize].clone(); __elt}))} else {metamodelica::cons(arg.clone(), ({let __elt = diff_lists.borrow()[(i.clone()-1) as usize].clone(); __elt}))};
                     diff_lists.clone().borrow_mut()[(i.clone()-1) as usize] = __cell0;
                 }
             }
@@ -2706,7 +2706,7 @@ pub fn differentiateMultaryMultiplicationArgs(mut arguments: Arc<metamodelica::L
     }
     if !(isReverse.clone()) {
         for mut i in (1..=metamodelica::arrayLength(diff_lists.clone())).rev() {
-            new_arguments = metamodelica::cons(Arc::new(Expression::NFExpression::MULTARY { arguments: diff_lists.borrow()[(i.clone()-1) as usize].clone().reverse(), inv_arguments: metamodelica::nil(), operator: operator.clone() }), new_arguments.clone());
+            new_arguments = metamodelica::cons(Arc::new(Expression::NFExpression::MULTARY { arguments: ({let __elt = diff_lists.borrow()[(i.clone()-1) as usize].clone(); __elt}).reverse(), inv_arguments: metamodelica::nil(), operator: operator.clone() }), new_arguments.clone());
         }
     }
     Ok((new_arguments, diffArguments))

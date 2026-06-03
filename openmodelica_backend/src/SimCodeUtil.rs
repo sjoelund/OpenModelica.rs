@@ -889,7 +889,7 @@ fn translateClockedEquations(mut inSysts: Arc<metamodelica::List<Arc<BackendDAE:
         } };
         comps = __pa1.clone();
         ass1 = __pa2.clone();
-        subPartition = inShared.partitionsInfo.subPartitions.borrow()[(subPartIdx.clone()-1) as usize].clone();
+        subPartition = ({let __elt = inShared.partitionsInfo.subPartitions.borrow()[(subPartIdx.clone()-1) as usize].clone(); __elt});
         (syst, _, _) = BackendDAEUtil::getAdjacencyMatrixfromOption(syst.clone(), openmodelica_backend_types::BackendDAE::IndexType::ABSOLUTE, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(inShared.clone()))?;
         stateeqnsmark = arrayCreate(BackendDAEUtil::equationArraySizeDAE(syst.clone()), 0);
         stateeqnsmark = BackendDAEUtil::markStateEquations(syst.clone(), stateeqnsmark.clone(), ass1.clone())?;
@@ -912,9 +912,9 @@ fn translateClockedEquations(mut inSysts: Arc<metamodelica::List<Arc<BackendDAE:
         for mut i in 1..=BackendVariable::varsSize(syst.orderedVars.clone()) {
             var = BackendVariable::getVarAt(syst.orderedVars.clone(), i.clone())?;
             simVar = dlowvarToSimvar(var.clone(), Some(inShared.aliasVars.clone()), inShared.globalKnownVars.clone(), None)?;
-            prevClockedVars = metamodelica::cons((simVar.clone(), isPrevVar.borrow()[(i.clone()-1) as usize].clone()), prevClockedVars.clone());
+            prevClockedVars = metamodelica::cons((simVar.clone(), ({let __elt = isPrevVar.borrow()[(i.clone()-1) as usize].clone(); __elt})), prevClockedVars.clone());
             clockedVars = metamodelica::cons(simVar.clone(), clockedVars.clone());
-            if isPrevVar.borrow()[(i.clone()-1) as usize].clone() {
+            if ({let __elt = isPrevVar.borrow()[(i.clone()-1) as usize].clone(); __elt}) {
                 cr = simVar.name.clone();
                 simVar.name = ComponentReference::crefPrefixPrevious(cr.clone());
                 clockedVars = metamodelica::cons(simVar.clone(), clockedVars.clone());
@@ -925,7 +925,7 @@ fn translateClockedEquations(mut inSysts: Arc<metamodelica::List<Arc<BackendDAE:
         }
         GCExt::free(isPrevVar.clone());
         simSubPartition = SimCode::SubPartition { vars: prevClockedVars.clone(), equations: equations.clone(), removedEquations: removedEquations.clone(), subClock: subPartition.clock.clone(), holdEvents: subPartition.holdEvents.clone() };
-        assert!(isNone(simSubPartitions.borrow()[(subPartIdx.clone()-1) as usize].clone()), "{}", &*(literal!("SimCodeUtil.translateClockedEquations failed")).clone());
+        assert!(isNone(({let __elt = simSubPartitions.borrow()[(subPartIdx.clone()-1) as usize].clone(); __elt})), "{}", &*(literal!("SimCodeUtil.translateClockedEquations failed")).clone());
         {let _arr = simSubPartitions.clone(); _arr.borrow_mut()[(subPartIdx.clone()-1) as usize] = Some(simSubPartition.clone()); _arr};
     }
     outPartitions = createClockedSimPartitions(inShared.partitionsInfo.basePartitions.clone(), simSubPartitions.clone())?;
@@ -939,7 +939,7 @@ fn createClockedSimPartitions(mut basePartitions: metamodelica::Array<BackendDAE
     let mut basePartition: BackendDAE::BasePartition = <BackendDAE::BasePartition as ::std::default::Default>::default();
     let mut simSubPartitions: Arc<metamodelica::List<SimCode::SubPartition>> = metamodelica::nil();
     for mut i in 1..=metamodelica::arrayLength(basePartitions.clone()) {
-        basePartition = basePartitions.borrow()[(i.clone()-1) as usize].clone();
+        basePartition = ({let __elt = basePartitions.borrow()[(i.clone()-1) as usize].clone(); __elt});
         if basePartition.nSubClocks.clone() > 0 {
             simSubPartitions = List::map(Array::getRange(off.clone(), off.clone() + basePartition.nSubClocks.clone() - 1, subPartitions.clone())?, (std::sync::Arc::new(Util::getOption) as std::sync::Arc<dyn ::std::ops::Fn(_) -> Result<_> + 'static>))?;
             simSubPartitions = simSubPartitions.clone().reverse();
@@ -1039,7 +1039,7 @@ fn addTempVars(mut simVars: metamodelica::Array<Arc<metamodelica::List<SimCodeVa
         _ => ((SimVarsIndex::alg.clone()) as i32),
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-        {let _arr = simVars.clone(); let _val = metamodelica::cons(e.clone(), simVars.borrow()[(ix.clone()-1) as usize].clone()); _arr.borrow_mut()[(ix.clone()-1) as usize] = _val; _arr};
+        {let _arr = simVars.clone(); let _val = metamodelica::cons(e.clone(), ({let __elt = simVars.borrow()[(ix.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(ix.clone()-1) as usize] = _val; _arr};
     }
     Ok(())
 }
@@ -1123,12 +1123,12 @@ fn setSystemIndexMap(mut inEqn: Arc<SimCode::SimEqSystem>, mut inSysIndexMap: me
             let mut simEq = (*simEq).clone();
             let mut alternativeTearingL = (*alternativeTearingL).clone();
             let mut lSystem = (*lSystem).clone();
-            sysIndex = inSysIndexMap.borrow()[(lSystem.index.clone()-1) as usize].clone();
+            sysIndex = ({let __elt = inSysIndexMap.borrow()[(lSystem.index.clone()-1) as usize].clone(); __elt});
             assign_field!(lSystem.indexLinearSystem = sysIndex.clone());
             assign_variant_field!(simEq => SimCode::SimEqSystem::SES_LINEAR; lSystem = lSystem.clone());
             if isSome(alternativeTearingL.clone()) {
                 lSystem = Util::getOption(alternativeTearingL.clone())?;
-                sysIndex = inSysIndexMap.borrow()[(lSystem.index.clone()-1) as usize].clone();
+                sysIndex = ({let __elt = inSysIndexMap.borrow()[(lSystem.index.clone()-1) as usize].clone(); __elt});
                 assign_field!(lSystem.indexLinearSystem = sysIndex.clone());
                 alternativeTearingL = Some(lSystem.clone());
                 assign_variant_field!(simEq => SimCode::SimEqSystem::SES_LINEAR; alternativeTearing = alternativeTearingL.clone());
@@ -1140,12 +1140,12 @@ fn setSystemIndexMap(mut inEqn: Arc<SimCode::SimEqSystem>, mut inSysIndexMap: me
             let mut simEq = (*simEq).clone();
             let mut alternativeTearingNL = (*alternativeTearingNL).clone();
             let mut nlSystem = (*nlSystem).clone();
-            sysIndex = inSysIndexMap.borrow()[(nlSystem.index.clone()-1) as usize].clone();
+            sysIndex = ({let __elt = inSysIndexMap.borrow()[(nlSystem.index.clone()-1) as usize].clone(); __elt});
             assign_field!(nlSystem.indexNonLinearSystem = sysIndex.clone());
             assign_variant_field!(simEq => SimCode::SimEqSystem::SES_NONLINEAR; nlSystem = nlSystem.clone());
             if isSome(alternativeTearingNL.clone()) {
                 nlSystem = Util::getOption(alternativeTearingNL.clone())?;
-                sysIndex = inSysIndexMap.borrow()[(nlSystem.index.clone()-1) as usize].clone();
+                sysIndex = ({let __elt = inSysIndexMap.borrow()[(nlSystem.index.clone()-1) as usize].clone(); __elt});
                 assign_field!(nlSystem.indexNonLinearSystem = sysIndex.clone());
                 alternativeTearingNL = Some(nlSystem.clone());
                 assign_variant_field!(simEq => SimCode::SimEqSystem::SES_NONLINEAR; alternativeTearing = alternativeTearingNL.clone());
@@ -1156,7 +1156,7 @@ fn setSystemIndexMap(mut inEqn: Arc<SimCode::SimEqSystem>, mut inSysIndexMap: me
             let mut sysIndex: i32 = 0;
             let mut simEq = (*simEq).clone();
             let mut cont = (*cont).clone();
-            sysIndex = inSysIndexMap.borrow()[(var_field!((*simEq).index, SimCode::SimEqSystem::SES_MIXED).clone()-1) as usize].clone();
+            sysIndex = ({let __elt = inSysIndexMap.borrow()[(var_field!((*simEq).index, SimCode::SimEqSystem::SES_MIXED).clone()-1) as usize].clone(); __elt});
             cont = setSystemIndexMap(cont.clone(), inSysIndexMap.clone())?;
             assign_variant_field!(simEq => SimCode::SimEqSystem::SES_MIXED;
                 cont = cont.clone(),
@@ -7837,12 +7837,12 @@ fn preCalculateStartValues1(mut eqIndexes: Arc<metamodelica::List<i32>>, mut m: 
         eqIdx = __pa0.clone();
         rest = __pa1.clone();
         if '__try2: {
-            let __pa3 = ::match_deref::match_deref! { match &(m.clone().borrow()[(eqIdx.clone()-1) as usize].clone()) {
+            let __pa3 = ::match_deref::match_deref! { match &(({let __elt = m.clone().borrow()[(eqIdx.clone()-1) as usize].clone(); __elt})) {
                 Deref @ metamodelica::List::Cons { head: __pa3, tail: Deref @ metamodelica::List::Nil } => __pa3.clone(),
                 _ => break '__try2 Err::<_, _>(anyhow::anyhow!("pattern mismatch")),
             } };
             varIdx0 = __pa3.clone();
-            varIdx = varMap.clone().borrow()[(intAbs(varIdx0.clone())-1) as usize].clone();
+            varIdx = ({let __elt = varMap.clone().borrow()[(intAbs(varIdx0.clone())-1) as usize].clone(); __elt});
             var = unwrap_break_err!(BackendVariable::getVarAt(varArr.clone(), varIdx.clone()), '__try2);
             cref = unwrap_break_err!(BackendVariable::varCref(var.clone()), '__try2);
             eq = unwrap_break_err!(BackendEquation::get(eqs.clone(), eqIdx.clone()), '__try2);
@@ -7856,7 +7856,7 @@ fn preCalculateStartValues1(mut eqIndexes: Arc<metamodelica::List<i32>>, mut m: 
             let true = (Expression::isScalarConst(rhs.clone())) else { break '__try2 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
             var = unwrap_break_err!(BackendVariable::setVarStartValue(var.clone(), rhs.clone()), '__try2);
             varArr = unwrap_break_err!(BackendVariable::setVarAt(varArr.clone(), varIdx.clone(), var.clone()), '__try2);
-            newEqIdcs = mT.clone().borrow()[(varIdx0.clone()-1) as usize].clone();
+            newEqIdcs = ({let __elt = mT.clone().borrow()[(varIdx0.clone()-1) as usize].clone(); __elt});
             (newEqIdcs, _) = unwrap_break_err!(List::deleteMemberOnTrue(eqIdx.clone(), newEqIdcs.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>)), '__try2);
             workList = List::append_reverse(newEqIdcs.clone(), workList.clone());
             eqLst = unwrap_break_err!(List::map1r(newEqIdcs.clone(), (std::sync::Arc::new(BackendEquation::get) as std::sync::Arc<dyn ::std::ops::Fn(Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>>, i32) -> Result<Arc<BackendDAE::Equation>> + 'static>), eqs.clone()), '__try2);
@@ -12352,9 +12352,9 @@ fn getVarIndexInfosByMapping(mut iVarToArrayIndexMapping: (metamodelica::Array<A
                 idx = convertIndexToColumnMajor(idx.clone(), arrayDimensionsReverse.clone())?;
             }
             if isContiguous.clone() {
-                idx = varIndices.clone().borrow()[(1-1) as usize].clone() + idx.clone() - 1;
+                idx = ({let __elt = varIndices.clone().borrow()[(1-1) as usize].clone(); __elt}) + idx.clone() - 1;
             } else {
-                idx = varIndices.clone().borrow()[(idx.clone()-1) as usize].clone();
+                idx = ({let __elt = varIndices.clone().borrow()[(idx.clone()-1) as usize].clone(); __elt});
             }
             if intLt(idx.clone(), 0) {
                 tmpVarIndexListNew = metamodelica::cons((intString(intMul(idx.clone(), -1) - 1)).clone(), tmpVarIndexListNew.clone());
@@ -12417,7 +12417,7 @@ pub fn isVarIndexListConsecutive(mut iVarToArrayIndexMapping: (metamodelica::Arr
         (_, varIndices) = BaseHashTable::get(varName.clone(), iVarToArrayIndexMapping.clone())?;
         arraySize = metamodelica::arrayLength(varIndices.clone());
         for mut arrayIdx in 0..=arraySize.clone() - 1 {
-            idx = varIndices.clone().borrow()[(arraySize.clone() - arrayIdx.clone()-1) as usize].clone();
+            idx = ({let __elt = varIndices.clone().borrow()[(arraySize.clone() - arrayIdx.clone()-1) as usize].clone(); __elt});
             if intLt(idx.clone(), 0) {
                 if intEq(currentIndex.clone(), -1) {
                     currentIndex = intMul(idx.clone(), -1) - 1;
@@ -12708,11 +12708,11 @@ fn setUpEqTree(mut beq: i32, mut m: metamodelica::Array<Arc<metamodelica::List<i
     let mut assVar: i32 = 0;
     let mut preEqs: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut depVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    assVar = eqMatch.clone().borrow()[(beq.clone()-1) as usize].clone();
-    depVars = m.clone().borrow()[(beq.clone()-1) as usize].clone();
+    assVar = ({let __elt = eqMatch.clone().borrow()[(beq.clone()-1) as usize].clone(); __elt});
+    depVars = ({let __elt = m.clone().borrow()[(beq.clone()-1) as usize].clone(); __elt});
     depVars = List::filter1OnTrue(depVars.clone(), (std::sync::Arc::new(fnptr!(setUpEqTree_Help, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), assVar.clone())?;
     preEqs = List::map1(depVars.clone(), (std::sync::Arc::new(Array::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), varMatch.clone())?;
-    {let _arr = treeIn.clone(); let _val = listAppend(treeIn.borrow()[(beq.clone()-1) as usize].clone(), preEqs.clone()); _arr.borrow_mut()[(beq.clone()-1) as usize] = _val; _arr};
+    {let _arr = treeIn.clone(); let _val = listAppend(({let __elt = treeIn.borrow()[(beq.clone()-1) as usize].clone(); __elt}), preEqs.clone()); _arr.borrow_mut()[(beq.clone()-1) as usize] = _val; _arr};
     treeOut = treeIn.clone();
     Ok(treeOut)
 }
@@ -12744,7 +12744,7 @@ fn appendAdjacencyMatrices(mut tplIn: (i32, i32, metamodelica::Array<Arc<metamod
 fn updateInAdjacencyMatrix(mut idx: i32, mut offset: i32, mut mAppend: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mIn: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> {
     let mut mOut: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
     let mut entry: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    entry = mAppend.clone().borrow()[(idx.clone()-1) as usize].clone();
+    entry = ({let __elt = mAppend.clone().borrow()[(idx.clone()-1) as usize].clone(); __elt});
     mOut = {let _arr = mIn.clone(); _arr.borrow_mut()[(idx.clone() + offset.clone()-1) as usize] = entry.clone(); _arr};
     Ok(mOut)
 }
@@ -12752,7 +12752,7 @@ fn updateInAdjacencyMatrix(mut idx: i32, mut offset: i32, mut mAppend: metamodel
 fn updateInMatching(mut idx: i32, mut offset: i32, mut matchingAppend: metamodelica::Array<i32>, mut matchingIn: metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> {
     let mut matchingOut: metamodelica::Array<i32> = Default::default();
     let mut entry: i32 = 0;
-    entry = matchingAppend.clone().borrow()[(idx.clone()-1) as usize].clone();
+    entry = ({let __elt = matchingAppend.clone().borrow()[(idx.clone()-1) as usize].clone(); __elt});
     matchingOut = {let _arr = matchingIn.clone(); _arr.borrow_mut()[(idx.clone() + offset.clone()-1) as usize] = entry.clone(); _arr};
     Ok(matchingOut)
 }
@@ -13000,7 +13000,7 @@ pub fn getSimEqsOfSimVar(mut simVar: i32, mut map: SimCode::BackendMapping, mut 
     mt = __pa2.clone();
     m = __pa3.clone();
     bVar = getBackendVarForSimVar(simVar.clone(), map.clone())?;
-    bEqs = mt.clone().borrow()[(bVar.clone()-1) as usize].clone();
+    bEqs = ({let __elt = mt.clone().borrow()[(bVar.clone()-1) as usize].clone(); __elt});
     bEqs = if (intEq(opt.clone(), 2)) {List::filter1OnTrue(bEqs.clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0)?} else {bEqs.clone()};
     bEqs = if (intEq(opt.clone(), 3)) {List::filter1OnTrue(bEqs.clone(), (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0)?} else {bEqs.clone()};
     if !(List::isMemberOnTrue(opt.clone(), list![1, 2, 3], (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?) {
@@ -13073,7 +13073,7 @@ pub fn getReqSimEqsForSimVar(mut simVar: i32, mut map: SimCode::BackendMapping) 
     mt = __pa3.clone();
     m = __pa4.clone();
     bVar = getBackendVarForSimVar(simVar.clone(), map.clone())?;
-    bEq = varMatch.clone().borrow()[(bVar.clone()-1) as usize].clone();
+    bEq = ({let __elt = varMatch.clone().borrow()[(bVar.clone()-1) as usize].clone(); __elt});
     beqs = collectReqSimEqs(bEq.clone(), tree.clone(), metamodelica::nil())?;
     simEqs = List::map1(beqs.clone(), (std::sync::Arc::new(getSimEqsForBackendEqs) as std::sync::Arc<dyn ::std::ops::Fn(i32, SimCode::BackendMapping) -> Result<i32> + 'static>), map.clone())?;
     simEqs = List::unique(simEqs.clone());
@@ -13088,7 +13088,7 @@ pub fn getAssignedSimEqSysIdx(mut simVarIdx: i32, mut map: SimCode::BackendMappi
     bVarIdx = getBackendVarForSimVar(simVarIdx.clone(), map.clone())?;
     let SimCode::BACKENDMAPPING { varMatch: __pa0, .. } = (map.clone()) else { bail!("pattern mismatch") };
     varMatch = __pa0.clone();
-    bEqIdx = varMatch.clone().borrow()[(bVarIdx.clone()-1) as usize].clone();
+    bEqIdx = ({let __elt = varMatch.clone().borrow()[(bVarIdx.clone()-1) as usize].clone(); __elt});
     simEqSysIdx = getSimEqsForBackendEqs(bEqIdx.clone(), map.clone())?;
     Ok(simEqSysIdx)
 }
@@ -13097,7 +13097,7 @@ fn collectReqSimEqs(mut eq: i32, mut tree: metamodelica::Array<Arc<metamodelica:
     let mut eqsOut: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut preEqs: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut reqEqs: Arc<metamodelica::List<i32>> = metamodelica::nil();
-    preEqs = tree.clone().borrow()[(eq.clone()-1) as usize].clone();
+    preEqs = ({let __elt = tree.clone().borrow()[(eq.clone()-1) as usize].clone(); __elt});
     (_, preEqs, _) = List::intersection1OnTrue(preEqs.clone(), eqsIn.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
     reqEqs = listAppend(preEqs.clone(), eqsIn.clone());
     eqsOut = List::fold1(preEqs.clone(), (std::sync::Arc::new(collectReqSimEqs) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<Arc<metamodelica::List<i32>>>, Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), tree.clone(), reqEqs.clone())?;
@@ -14684,7 +14684,7 @@ fn getHighestDerivation(mut inDAE: Arc<BackendDAE::BackendDAE>) -> Result<i32> {
 }
 
 fn getHighestDerivationVisit(mut i: i32, mut ders: metamodelica::Array<i32>, mut depth: metamodelica::Array<i32>) -> Result<i32> {
-    let mut d: i32 = depth.clone().borrow()[(i.clone()-1) as usize].clone();
+    let mut d: i32 = ({let __elt = depth.clone().borrow()[(i.clone()-1) as usize].clone(); __elt});
     if d.clone() >= 0 {
         return Ok(d.clone());
     } else if d.clone() == -2 {
@@ -14692,7 +14692,7 @@ fn getHighestDerivationVisit(mut i: i32, mut ders: metamodelica::Array<i32>, mut
         return Ok(d.clone());
     }
     {let _arr = depth.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = -2; _arr};
-    d = getHighestDerivationVisit(ders.clone().borrow()[(i.clone()-1) as usize].clone(), ders.clone(), depth.clone())?;
+    d = getHighestDerivationVisit(({let __elt = ders.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), ders.clone(), depth.clone())?;
     {let _arr = depth.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = d.clone(); _arr};
     Ok(d)
 }
@@ -14949,7 +14949,7 @@ pub fn getInputIndex(mut var: SimCodeVar::SimVar) -> Result<i32> {
     let mut inputIndex: i32 = 0;
     let mut v: metamodelica::Array<i32> = Default::default();
     inputIndex = (match var.clone() {
-        SimCodeVar::SimVar { inputIndex: Some(mut v), .. } if (metamodelica::arrayLength(v.clone()) == 1) => v.clone().borrow()[(1-1) as usize].clone(),
+        SimCodeVar::SimVar { inputIndex: Some(mut v), .. } if (metamodelica::arrayLength(v.clone()) == 1) => ({let __elt = v.clone().borrow()[(1-1) as usize].clone(); __elt}),
         SimCodeVar::SimVar { inputIndex: Some(_), .. } => {
             Error::addInternalError((literal!("Failed to SimCodeUtil.getInputIndex of variable")).clone(), metamodelica::sourceInfo!())?;
             bail!("fail")

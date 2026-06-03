@@ -1994,7 +1994,7 @@ pub mod VariablePointers {
             r#str = (StringUtil::headline_4(({ let mut __mm_s = String::new(); __mm_s.push_str(&*r#str.clone()); __mm_s.push_str(&*literal!(" Variables (")); __mm_s.push_str(&*intString(numberOfElements.clone())); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*intString(scalarSize(variables.clone(), true)?)); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone())).clone();
             for mut i in 1..=numberOfElements.clone() {
                 if useMapping.clone() {
-                    (scal_start, _) = mapping.borrow()[(i.clone()-1) as usize].clone();
+                    (scal_start, _) = ({let __elt = mapping.borrow()[(i.clone()-1) as usize].clone(); __elt});
                     index = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!("|")); __mm_s.push_str(&*intString(scal_start.clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
                 } else {
                     index = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*intString(i.clone())); __mm_s.push_str(&*literal!(")")); ArcStr::from(__mm_s) }).clone();
@@ -2360,7 +2360,7 @@ pub mod VariablePointers {
         let mut sizes: Arc<metamodelica::List<i32>> = metamodelica::nil();
         let mut vals: Arc<metamodelica::List<i32>> = metamodelica::nil();
         let mut subs: Arc<metamodelica::List<Arc<Subscript::NFSubscript>>> = metamodelica::nil();
-        (start, _) = mapping.var_AtS.borrow()[(arr.clone()-1) as usize].clone();
+        (start, _) = ({let __elt = mapping.var_AtS.borrow()[(arr.clone()-1) as usize].clone(); __elt});
         var = getVarAt(vars.clone(), arr.clone())?;
         let (__pa0, __pa1) = ::match_deref::match_deref! { match &(Pointer::access(var.clone())) {
             Deref @ Variable::VARIABLE { ty: __pa0, name: __pa1, .. } => (__pa0.clone(), __pa1.clone()),

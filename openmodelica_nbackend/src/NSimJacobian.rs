@@ -272,7 +272,7 @@ pub mod SimJacobian {
             sim_map = indices.generic_call_map.clone();
             indices.generic_call_map = UnorderedMap::new((std::sync::Arc::new(SimCode::Identifier::hash) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Identifier::Identifier>) -> Result<i32> + 'static>), (std::sync::Arc::new(SimCode::Identifier::isEqual) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Identifier::Identifier>, Arc<Identifier::Identifier>) -> Result<bool> + 'static>), 1);
             for mut i in (1..=metamodelica::arrayLength(var_field!((*jacobian).comps, BackendDAE::NBackendDAE::JACOBIAN).clone())).rev() {
-                (columnEqn, indices, _) = SimStrongComponent::Block::fromStrongComponent(var_field!((*jacobian).comps, BackendDAE::NBackendDAE::JACOBIAN).borrow()[(i.clone()-1) as usize].clone(), indices.clone(), Partition::Kind::JAC.clone(), dummy_sim_map.clone(), dummy_eqn_map.clone())?;
+                (columnEqn, indices, _) = SimStrongComponent::Block::fromStrongComponent(({let __elt = var_field!((*jacobian).comps, BackendDAE::NBackendDAE::JACOBIAN).borrow()[(i.clone()-1) as usize].clone(); __elt}), indices.clone(), Partition::Kind::JAC.clone(), dummy_sim_map.clone(), dummy_eqn_map.clone())?;
                 columnEqns = metamodelica::cons(columnEqn.clone(), columnEqns.clone());
             }
             generic_loop_calls = ({

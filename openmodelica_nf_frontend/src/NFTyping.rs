@@ -527,7 +527,7 @@ pub fn typeDimensions(mut dimensions: metamodelica::Array<Arc<Dimension::NFDimen
 }
 
 pub fn typeDimension(mut dimensions: metamodelica::Array<Arc<Dimension::NFDimension>>, mut index: i32, mut component: Arc<InstNode::InstNode>, mut binding: Arc<Binding::NFBinding>, mut context: i32, mut info: SourceInfo) -> Result<Arc<Dimension::NFDimension>> {
-    let mut dimension: Arc<Dimension::NFDimension> = dimensions.borrow()[(index.clone()-1) as usize].clone();
+    let mut dimension: Arc<Dimension::NFDimension> = ({let __elt = dimensions.borrow()[(index.clone()-1) as usize].clone(); __elt});
     dimension = (::match_deref::match_deref! { match &(dimension.clone()) {
         Deref @ Dimension::UNTYPED { isProcessing: true, .. } => {
             let mut dim: Arc<Dimension::NFDimension> = Arc::new(Dimension::BOOLEAN);
@@ -1447,7 +1447,7 @@ pub fn typeArrayDim2(mut arrayExp: Arc<Expression::NFExpression>, mut dimIndex: 
     let mut error: Arc<TypingError::TypingError> = Arc::new(TypingError::NO_ERROR);
     (dim, error) = (::match_deref::match_deref! { match &((arrayExp.clone(), dimIndex.clone())) {
         (Deref @ Expression::ARRAY { .. }, 1) => (Dimension::fromExpArray(var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone()), Arc::new(crate::NFTyping::TypingError::NO_ERROR)),
-        (Deref @ Expression::ARRAY { .. }, _) => typeArrayDim2(var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone().borrow()[(1-1) as usize].clone(), dimIndex.clone() - 1, dimCount.clone() + 1)?,
+        (Deref @ Expression::ARRAY { .. }, _) => typeArrayDim2(({let __elt = var_field!((*arrayExp).elements, Expression::NFExpression::ARRAY).clone().borrow()[(1-1) as usize].clone(); __elt}), dimIndex.clone() - 1, dimCount.clone() + 1)?,
         _ => {
             dim = Arc::new(crate::NFDimension::UNKNOWN);
             error = Arc::new(TypingError::TypingError::OUT_OF_BOUNDS { upperBound: dimCount.clone() });
@@ -1771,11 +1771,11 @@ pub fn typeArray(mut elements: metamodelica::Array<Arc<Expression::NFExpression>
     next_context = InstContext::set(context.clone(), InstContext::SUBEXPRESSION.clone());
     array_len = metamodelica::arrayLength(elements.clone());
     if array_len.clone() > 0 {
-        (exp, ty1, variability, purity) = typeExp(elements.clone().borrow()[(1-1) as usize].clone(), next_context.clone(), info.clone(), false)?;
+        (exp, ty1, variability, purity) = typeExp(({let __elt = elements.clone().borrow()[(1-1) as usize].clone(); __elt}), next_context.clone(), info.clone(), false)?;
         expl = metamodelica::cons(exp.clone(), expl.clone());
         tys = metamodelica::cons(ty1.clone(), tys.clone());
         for mut i in 2..=array_len.clone() {
-            (exp, ty2, var, pur) = typeExp(elements.clone().borrow()[(i.clone()-1) as usize].clone(), next_context.clone(), info.clone(), false)?;
+            (exp, ty2, var, pur) = typeExp(({let __elt = elements.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), next_context.clone(), info.clone(), false)?;
             variability = Prefixes::variabilityMax(var.clone(), variability.clone());
             purity = Prefixes::purityMin(pur.clone(), purity.clone());
             (_, ty3, mk) = TypeCheck::matchTypes(ty2.clone(), ty1.clone(), exp.clone(), TypeCheck::IGNORE_DIMENSIONS_IN_RECORDS.clone())?;

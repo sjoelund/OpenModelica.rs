@@ -201,7 +201,7 @@ pub fn collectRecordParams(mut recNode: Arc<InstNode::InstNode>) -> Result<(Arc<
     let () = (::match_deref::match_deref! { match &(tree.clone()) {
         Deref @ ClassTree::FLAT_TREE { components: comps, .. } => {
             for mut i in (1..=metamodelica::arrayLength(comps.clone())).rev() {
-                comp = comps.borrow()[(i.clone()-1) as usize].clone();
+                comp = ({let __elt = comps.borrow()[(i.clone()-1) as usize].clone(); __elt});
                 (inputs, locals) = collectRecordParam(comp.clone(), inputs.clone(), locals.clone())?;
                 allParams = metamodelica::cons(comp.clone(), allParams.clone());
             }
@@ -209,7 +209,7 @@ pub fn collectRecordParams(mut recNode: Arc<InstNode::InstNode>) -> Result<(Arc<
         },
         Deref @ ClassTree::INSTANTIATED_TREE { components: pcomps, .. } => {
             for mut i in (1..=metamodelica::arrayLength(pcomps.clone())).rev() {
-                comp = Mutable::access(pcomps.borrow()[(i.clone()-1) as usize].clone());
+                comp = Mutable::access(({let __elt = pcomps.borrow()[(i.clone()-1) as usize].clone(); __elt}));
                 (inputs, locals) = collectRecordParam(comp.clone(), inputs.clone(), locals.clone())?;
                 allParams = metamodelica::cons(comp.clone(), allParams.clone());
             }

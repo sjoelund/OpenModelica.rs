@@ -123,7 +123,7 @@ pub fn add<Key: Clone + 'static>(mut entry: Key, mut hashSet: HashSet<Key>) -> R
                 indx = intMod(hashFunc(key.clone())?, bsize.clone());
                 newpos = valueArrayLength(varr.clone());
                 varr = valueArrayAdd(varr.clone(), key.clone())?;
-                indexes = hashvec.borrow()[(indx.clone() + 1-1) as usize].clone();
+                indexes = ({let __elt = hashvec.borrow()[(indx.clone() + 1-1) as usize].clone(); __elt});
                 hashvec = {let _arr = hashvec.clone(); _arr.borrow_mut()[(indx.clone() + 1-1) as usize] = metamodelica::cons((key.clone(), newpos.clone()), indexes.clone()); _arr};
                 n = valueArrayLength(varr.clone());
             }
@@ -160,7 +160,7 @@ pub fn addNoUpdCheck<Key: Clone + 'static>(mut entry: Key, mut hashSet: HashSet<
             indx = intMod(hashFunc(key.clone())?, bsize.clone());
             newpos = valueArrayLength(varr.clone());
             varr_1 = valueArrayAdd(varr.clone(), key.clone())?;
-            indexes = hashvec.borrow()[(indx.clone() + 1-1) as usize].clone();
+            indexes = ({let __elt = hashvec.borrow()[(indx.clone() + 1-1) as usize].clone(); __elt});
             hashvec_1 = {let _arr = hashvec.clone(); _arr.borrow_mut()[(indx.clone() + 1-1) as usize] = metamodelica::cons((key.clone(), newpos.clone()), indexes.clone()); _arr};
             n_1 = valueArrayLength(varr_1.clone());
             (hashvec_1.clone(), varr_1.clone(), bsize.clone(), n_1.clone(), fntpl.clone())
@@ -182,7 +182,7 @@ pub fn addUnique<Key: Clone + 'static>(mut key: Key, mut hashSet: HashSet<Key>) 
             indx = intMod(hashFunc(key.clone())?, bsize.clone());
             newpos = valueArrayLength(varr.clone());
             varr_1 = valueArrayAdd(varr.clone(), key.clone())?;
-            indexes = hashvec.borrow()[(indx.clone() + 1-1) as usize].clone();
+            indexes = ({let __elt = hashvec.borrow()[(indx.clone() + 1-1) as usize].clone(); __elt});
             hashvec_1 = {let _arr = hashvec.clone(); _arr.borrow_mut()[(indx.clone() + 1-1) as usize] = metamodelica::cons((key.clone(), newpos.clone()), indexes.clone()); _arr};
             n_1 = valueArrayLength(varr_1.clone());
             (hashvec_1.clone(), varr_1.clone(), bsize.clone(), n_1.clone(), fntpl.clone())
@@ -255,7 +255,7 @@ fn get1<Key: Clone + 'static>(mut key: Key, mut hashSet: HashSet<Key>) -> Result
             let mut k: Option<Key> = None;
             let mut b: bool = false;
             hashindx = intMod(hashFunc(key.clone())?, bsize.clone());
-            indexes = hashvec.borrow()[(hashindx.clone() + 1-1) as usize].clone();
+            indexes = ({let __elt = hashvec.borrow()[(hashindx.clone() + 1-1) as usize].clone(); __elt});
             (indx, b) = get2(key.clone(), indexes.clone(), keyEqual.clone())?;
             k = if (b.clone()) {valueArrayNthT(varr.clone(), indx.clone())?} else {None};
             (k.clone(), indx.clone())
@@ -318,8 +318,8 @@ pub fn valueArrayList<Key: Clone + 'static>(mut inValueArray: ValueArray<Key>) -
     let mut e: Key;
     (size, _, arr) = inValueArray.clone();
     for mut i in 1..=size.clone() {
-        if isSome(arr.borrow()[(i.clone()-1) as usize].clone()) {
-            let __pa0 = ::match_deref::match_deref! { match &(arr.borrow()[(i.clone()-1) as usize].clone()) {
+        if isSome(({let __elt = arr.borrow()[(i.clone()-1) as usize].clone(); __elt})) {
+            let __pa0 = ::match_deref::match_deref! { match &(({let __elt = arr.borrow()[(i.clone()-1) as usize].clone(); __elt})) {
                 Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
@@ -399,7 +399,7 @@ pub fn valueArrayNth<Key: Clone + 'static>(mut valueArray: ValueArray<Key>, mut 
     key = (match valueArray.clone() {
         (mut n, _, mut arr) if (pos.clone() <= n.clone()) => {
             let mut k: Key;
-            let __pa0 = ::match_deref::match_deref! { match &(arr.borrow()[(pos.clone() + 1-1) as usize].clone()) {
+            let __pa0 = ::match_deref::match_deref! { match &(({let __elt = arr.borrow()[(pos.clone() + 1-1) as usize].clone(); __elt})) {
                 Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
             } };
@@ -415,7 +415,7 @@ fn valueArrayNthT<Key: Clone + 'static>(mut valueArray: ValueArray<Key>, mut pos
     let mut key: Option<Key> = None;
     key = (match valueArray.clone() {
         (mut n, _, mut arr) if (pos.clone() <= n.clone()) => {
-            arr.borrow()[(pos.clone() + 1-1) as usize].clone()
+            ({let __elt = arr.borrow()[(pos.clone() + 1-1) as usize].clone(); __elt})
         },
         _ => bail!("match: no arm matched"),
     });

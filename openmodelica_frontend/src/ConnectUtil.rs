@@ -1265,7 +1265,7 @@ fn setArrayAddConnections(mut connections: Arc<metamodelica::List<(i32, i32)>>, 
     graph = arrayCreate(setCount.clone(), metamodelica::nil());
     graph = List::fold(connections.clone(), (std::sync::Arc::new(addConnectionToGraph) as std::sync::Arc<dyn ::std::ops::Fn((i32, i32), metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<i32>>>> + 'static>), graph.clone())?;
     for mut i in 1..=metamodelica::arrayLength(graph.clone()) {
-        (sets, graph) = setArrayAddConnection(i.clone(), graph.borrow()[(i.clone()-1) as usize].clone(), sets.clone(), graph.clone())?;
+        (sets, graph) = setArrayAddConnection(i.clone(), ({let __elt = graph.borrow()[(i.clone()-1) as usize].clone(); __elt}), sets.clone(), graph.clone())?;
     }
     Ok(sets)
 }
@@ -1277,9 +1277,9 @@ fn addConnectionToGraph(mut connection: (i32, i32), mut graph: SetGraph) -> Resu
     let mut node1: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut node2: Arc<metamodelica::List<i32>> = metamodelica::nil();
     (set1, set2) = connection.clone();
-    node1 = graph.clone().borrow()[(set1.clone()-1) as usize].clone();
+    node1 = ({let __elt = graph.clone().borrow()[(set1.clone()-1) as usize].clone(); __elt});
     graph = {let _arr = graph.clone(); _arr.borrow_mut()[(set1.clone()-1) as usize] = metamodelica::cons(set2.clone(), node1.clone()); _arr};
-    node2 = graph.clone().borrow()[(set2.clone()-1) as usize].clone();
+    node2 = ({let __elt = graph.clone().borrow()[(set2.clone()-1) as usize].clone(); __elt});
     graph = {let _arr = graph.clone(); _arr.borrow_mut()[(set2.clone()-1) as usize] = metamodelica::cons(set1.clone(), node2.clone()); _arr};
     Ok(graph)
 }
@@ -1292,7 +1292,7 @@ fn setArrayAddConnection(mut set: i32, mut edges: Arc<metamodelica::List<i32>>, 
         let mut e = e.clone();
         if e.clone() != set.clone() {
             sets = setArrayAddConnection2(e.clone(), set.clone(), sets.clone())?;
-            edge_lst = graph.borrow()[(e.clone()-1) as usize].clone();
+            edge_lst = ({let __elt = graph.borrow()[(e.clone()-1) as usize].clone(); __elt});
             {
                 let __cell0 = metamodelica::nil();
                 graph.clone().borrow_mut()[(e.clone()-1) as usize] = __cell0;
@@ -1306,7 +1306,7 @@ fn setArrayAddConnection(mut set: i32, mut edges: Arc<metamodelica::List<i32>>, 
 fn setArrayAddConnection2(mut setPointer: i32, mut setPointee: i32, mut sets: metamodelica::Array<Set>) -> Result<metamodelica::Array<Set>> {
     let mut sets: metamodelica::Array<Set> = sets;
     let mut set: Set = <Set as ::std::default::Default>::default();
-    set = sets.borrow()[(setPointee.clone()-1) as usize].clone();
+    set = ({let __elt = sets.borrow()[(setPointee.clone()-1) as usize].clone(); __elt});
     sets = (match set.clone() {
         DAE::Connect::Set::SET { .. } => {let _arr = sets.clone(); _arr.borrow_mut()[(setPointer.clone()-1) as usize] = Set::SET_POINTER { index: setPointee.clone() }; _arr},
         DAE::Connect::Set::SET_POINTER { .. } => setArrayAddConnection2(setPointer.clone(), var_field!(set.index, Set::SET_POINTER).clone(), sets.clone())?,
@@ -1410,7 +1410,7 @@ fn setArrayUpdate(mut sets: metamodelica::Array<Set>, mut index: i32, mut elemen
     let mut sets: metamodelica::Array<Set> = sets;
     let mut set: Set = <Set as ::std::default::Default>::default();
     let mut el: Arc<metamodelica::List<ConnectorElement>> = metamodelica::nil();
-    set = sets.borrow()[(index.clone()-1) as usize].clone();
+    set = ({let __elt = sets.borrow()[(index.clone()-1) as usize].clone(); __elt});
     sets = (match (set.clone(), element.clone()) {
         (DAE::Connect::Set::SET { .. }, ConnectorElement { .. }) => {
             if Config::orderConnections()? && isEquType(element.ty.clone()) {
@@ -1434,7 +1434,7 @@ fn equSetElementLess(mut element1: ConnectorElement, mut element2: ConnectorElem
 
 fn setArrayGet(mut setArray: metamodelica::Array<Set>, mut index: i32) -> Result<Set> {
     let mut set: Set = <Set as ::std::default::Default>::default();
-    set = setArray.borrow()[(index.clone()-1) as usize].clone();
+    set = ({let __elt = setArray.borrow()[(index.clone()-1) as usize].clone(); __elt});
     set = (match set.clone() {
         DAE::Connect::Set::SET { .. } => set.clone(),
         DAE::Connect::Set::SET_POINTER { .. } => setArrayGet(setArray.clone(), var_field!(set.index, Set::SET_POINTER).clone())?,

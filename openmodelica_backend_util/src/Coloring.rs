@@ -120,7 +120,7 @@ pub fn createColoring(mut sparseArray: metamodelica::Array<Arc<metamodelica::Lis
 fn createBipartiteGraph(mut inNode: i32, mut inSparsePattern: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> Result<Arc<metamodelica::List<i32>>> {
     let mut outEdges: Arc<metamodelica::List<i32>> = metamodelica::nil();
     if inNode.clone() >= 1 && inNode.clone() <= metamodelica::arrayLength(inSparsePattern.clone()) {
-        outEdges = inSparsePattern.clone().borrow()[(inNode.clone()-1) as usize].clone();
+        outEdges = ({let __elt = inSparsePattern.clone().borrow()[(inNode.clone()-1) as usize].clone(); __elt});
     } else {
         outEdges = metamodelica::nil();
     }
@@ -131,8 +131,8 @@ fn mapIndexColors(mut inColors: metamodelica::Array<i32>, mut inMaxIndex: i32, m
     let mut index: i32 = 0;
     match '__try0: {
         for mut i in 1..=inMaxIndex.clone() {
-            index = inColors.clone().borrow()[(i.clone()-1) as usize].clone();
-            {let _arr = inArray.clone(); let _val = metamodelica::cons(i.clone(), inArray.clone().borrow()[(index.clone()-1) as usize].clone()); _arr.borrow_mut()[(index.clone()-1) as usize] = _val; _arr};
+            index = ({let __elt = inColors.clone().borrow()[(i.clone()-1) as usize].clone(); __elt});
+            {let _arr = inArray.clone(); let _val = metamodelica::cons(i.clone(), ({let __elt = inArray.clone().borrow()[(index.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(index.clone()-1) as usize] = _val; _arr};
         }
         Ok::<(), anyhow::Error>(())
     } {

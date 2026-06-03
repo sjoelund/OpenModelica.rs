@@ -748,12 +748,12 @@ fn selectInitializationVariablesDAE(mut dae: Arc<BackendDAE::BackendDAE>) -> Res
             bindExp = BackendVariable::varBindExpStartValueNoFail(v.clone())?;
             crefs = Expression::getAllCrefsExpanded(bindExp.clone())?;
             let () = (::match_deref::match_deref! { match &(v.clone()) {
-        BackendDAE::Var { varKind: BackendDAE::VarKind::PARAM { .. }, .. } if (0 == secondary.borrow()[(i.clone()-1) as usize].clone() && BaseHashSet::hasAll(crefs.clone(), hs.clone())?) => {
+        BackendDAE::Var { varKind: BackendDAE::VarKind::PARAM { .. }, .. } if (0 == ({let __elt = secondary.borrow()[(i.clone()-1) as usize].clone(); __elt}) && BaseHashSet::hasAll(crefs.clone(), hs.clone())?) => {
             outAllPrimaryParameters = metamodelica::cons(v.clone(), outAllPrimaryParameters.clone());
             hs = BaseHashSet::add(BackendVariable::varCref(v.clone())?, hs.clone())?;
             ()
         },
-        BackendDAE::Var { bindExp: Some(bindExp), varKind: BackendDAE::VarKind::EXTOBJ { .. }, .. } if (0 == secondary.borrow()[(i.clone()-1) as usize].clone() && BaseHashSet::hasAll(crefs.clone(), hs.clone())?) => {
+        BackendDAE::Var { bindExp: Some(bindExp), varKind: BackendDAE::VarKind::EXTOBJ { .. }, .. } if (0 == ({let __elt = secondary.borrow()[(i.clone()-1) as usize].clone(); __elt}) && BaseHashSet::hasAll(crefs.clone(), hs.clone())?) => {
             outAllPrimaryParameters = metamodelica::cons(v.clone(), outAllPrimaryParameters.clone());
             v = BackendVariable::setVarFixed(v.clone(), true)?;
             outGlobalKnownVars = BackendVariable::addVar(v.clone(), outGlobalKnownVars.clone())?;
@@ -767,7 +767,7 @@ fn selectInitializationVariablesDAE(mut dae: Arc<BackendDAE::BackendDAE>) -> Res
             outGlobalKnownVars = BackendVariable::addVar(v.clone(), outGlobalKnownVars.clone())?;
             ()
         },
-        _ if (BackendVariable::isVarAlg(v.clone()) && 0 == secondary.borrow()[(i.clone()-1) as usize].clone() && BaseHashSet::hasAll(crefs.clone(), hs.clone())?) => {
+        _ if (BackendVariable::isVarAlg(v.clone()) && 0 == ({let __elt = secondary.borrow()[(i.clone()-1) as usize].clone(); __elt}) && BaseHashSet::hasAll(crefs.clone(), hs.clone())?) => {
             otherVariables = BackendVariable::addVar(v.clone(), otherVariables.clone())?;
             v = BackendVariable::setVarFixed(v.clone(), true)?;
             v = BackendVariable::setVarFinal(v.clone(), true)?;
@@ -862,7 +862,7 @@ fn selectSecondaryParameters(mut inOrdering: Arc<metamodelica::List<i32>>, mut i
             let mut secondaryParams: metamodelica::Array<i32> = Default::default();
             let mut param: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
             param = BackendVariable::getVarAt(inParameters.clone(), i.clone())?;
-            secondaryParams = if (if (BackendVariable::isVarAlg(param.clone())) {false} else {!(BackendVariable::varFixed(param.clone()))} || 1 == inSecondaryParams.borrow()[(i.clone()-1) as usize].clone()) {List::fold(inM.borrow()[(i.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(markIndex, i32, metamodelica::Array<i32>)) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> + 'static>), inSecondaryParams.clone())?} else {inSecondaryParams.clone()};
+            secondaryParams = if (if (BackendVariable::isVarAlg(param.clone())) {false} else {!(BackendVariable::varFixed(param.clone()))} || 1 == ({let __elt = inSecondaryParams.borrow()[(i.clone()-1) as usize].clone(); __elt})) {List::fold(({let __elt = inM.borrow()[(i.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(markIndex, i32, metamodelica::Array<i32>)) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> + 'static>), inSecondaryParams.clone())?} else {inSecondaryParams.clone()};
             secondaryParams = selectSecondaryParameters(rest.clone(), inParameters.clone(), inM.clone(), secondaryParams.clone())?;
             secondaryParams.clone()
         },
@@ -1037,7 +1037,7 @@ fn preBalanceInitialSystem2(mut n: i32, mut mt: metamodelica::Array<Arc<metamode
     let mut r#str: ArcStr = arcstr::literal!("");
     let mut err_str: ArcStr = literal!(" with unknown reason.");
     match '__try0: {
-        row = mt.borrow()[(n.clone()-1) as usize].clone();
+        row = ({let __elt = mt.borrow()[(n.clone()-1) as usize].clone(); __elt});
         if row.clone().is_empty() {
             outB = true;
             var = unwrap_break_err!(BackendVariable::getVarAt(inVars.clone(), n.clone()), '__try0);
@@ -1155,7 +1155,7 @@ fn balanceInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared:
         unfixedVars = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in (1..=metamodelica::arrayLength(var_to_eqn.clone())).into_iter() {
-            if !(var_to_eqn.borrow()[(i.clone()-1) as usize].clone() < 0) { continue; }
+            if !(({let __elt = var_to_eqn.borrow()[(i.clone()-1) as usize].clone(); __elt}) < 0) { continue; }
             let __x = i.clone();
             __acc = cons(__x, __acc);
         }
@@ -1164,7 +1164,7 @@ fn balanceInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared:
         redundantEqns = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in (1..=metamodelica::arrayLength(eqn_to_var.clone())).into_iter() {
-            if !(eqn_to_var.borrow()[(i.clone()-1) as usize].clone() < 0) { continue; }
+            if !(({let __elt = eqn_to_var.borrow()[(i.clone()-1) as usize].clone(); __elt}) < 0) { continue; }
             let __x = i.clone();
             __acc = cons(__x, __acc);
         }
@@ -1176,7 +1176,7 @@ fn balanceInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared:
             redundantEqns = List::unique(({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in (redundantEqns.clone()).into_iter().cloned() {
-            let __x = scal_to_arr.borrow()[(i.clone()-1) as usize].clone();
+            let __x = ({let __elt = scal_to_arr.borrow()[(i.clone()-1) as usize].clone(); __elt});
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -1213,7 +1213,7 @@ fn balanceInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared:
                 unfixedVars = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in (1..=metamodelica::arrayLength(var_to_eqn.clone())).into_iter() {
-            if !(var_to_eqn.borrow()[(i.clone()-1) as usize].clone() < 0) { continue; }
+            if !(({let __elt = var_to_eqn.borrow()[(i.clone()-1) as usize].clone(); __elt}) < 0) { continue; }
             let __x = i.clone();
             __acc = cons(__x, __acc);
         }
@@ -1222,7 +1222,7 @@ fn balanceInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared:
                 redundantEqns = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in (1..=metamodelica::arrayLength(eqn_to_var.clone())).into_iter() {
-            if !(eqn_to_var.borrow()[(i.clone()-1) as usize].clone() < 0) { continue; }
+            if !(({let __elt = eqn_to_var.borrow()[(i.clone()-1) as usize].clone(); __elt}) < 0) { continue; }
             let __x = i.clone();
             __acc = cons(__x, __acc);
         }
@@ -1231,7 +1231,7 @@ fn balanceInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared:
                 redundantEqns = List::unique(({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in (redundantEqns.clone()).into_iter().cloned() {
-            let __x = scal_to_arr.borrow()[(i.clone()-1) as usize].clone();
+            let __x = ({let __elt = scal_to_arr.borrow()[(i.clone()-1) as usize].clone(); __elt});
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -1385,7 +1385,7 @@ fn fixInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc
         overDetIndex = (({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in (1..=metamodelica::arrayLength(ass1.clone())).into_iter() {
-            if !(ass1.borrow()[(i.clone()-1) as usize].clone() < 0) { continue; }
+            if !(({let __elt = ass1.borrow()[(i.clone()-1) as usize].clone(); __elt}) < 0) { continue; }
             let __x = i.clone();
             __acc = cons(__x, __acc);
         }
@@ -1394,7 +1394,7 @@ fn fixInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc
         underDetIndex = (({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in (1..=metamodelica::arrayLength(ass2.clone())).into_iter() {
-            if !(ass2.borrow()[(i.clone()-1) as usize].clone() < 0) { continue; }
+            if !(({let __elt = ass2.borrow()[(i.clone()-1) as usize].clone(); __elt}) < 0) { continue; }
             let __x = i.clone();
             __acc = cons(__x, __acc);
         }
@@ -1403,7 +1403,7 @@ fn fixInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc
         singular_eqns_idx = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in (1..=metamodelica::arrayLength(mapIncRowEqn.clone())).into_iter() {
-            if !(eMarks.borrow()[(i.clone()-1) as usize].clone()) { continue; }
+            if !(({let __elt = eMarks.borrow()[(i.clone()-1) as usize].clone(); __elt})) { continue; }
             let __x = i.clone();
             __acc = cons(__x, __acc);
         }
@@ -1412,7 +1412,7 @@ fn fixInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc
         singular_vars_idx = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in (1..=BackendVariable::varsSize(syst.orderedVars.clone())).into_iter() {
-            if !(vMarks.borrow()[(i.clone()-1) as usize].clone()) { continue; }
+            if !(({let __elt = vMarks.borrow()[(i.clone()-1) as usize].clone(); __elt})) { continue; }
             let __x = i.clone();
             __acc = cons(__x, __acc);
         }
@@ -1422,7 +1422,7 @@ fn fixInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc
         singular_eqns_idx = List::uniqueOnTrue(({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut i in (singular_eqns_idx.clone()).into_iter().cloned() {
-            let __x = mapIncRowEqn.borrow()[(i.clone()-1) as usize].clone();
+            let __x = ({let __elt = mapIncRowEqn.borrow()[(i.clone()-1) as usize].clone(); __elt});
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -1434,7 +1434,7 @@ fn fixInitialSystem(mut inEqSystem: Arc<BackendDAE::EqSystem>, mut inShared: Arc
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n---- involved set eqns (")); __mm_s.push_str(&*intString(scalarEqnSize.clone())); __mm_s.push_str(&*literal!("/")); __mm_s.push_str(&*intString((singular_eqns_idx.clone().len() as i32))); __mm_s.push_str(&*literal!("):\n")); ArcStr::from(__mm_s) }).clone());
         for mut eqn in &*singular_eqns_idx.clone() {
             let mut eqn = eqn.clone();
-            eq = BackendEquation::get(syst.orderedEqs.clone(), mapIncRowEqn.borrow()[(eqn.clone()-1) as usize].clone())?;
+            eq = BackendEquation::get(syst.orderedEqs.clone(), ({let __elt = mapIncRowEqn.borrow()[(eqn.clone()-1) as usize].clone(); __elt}))?;
             println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("  ")); __mm_s.push_str(&*intString(eqn.clone())); __mm_s.push_str(&*literal!("(")); __mm_s.push_str(&*intString(BackendEquation::equationSize(eq.clone())?)); __mm_s.push_str(&*literal!("):\t")); __mm_s.push_str(&*BackendDump::equationString(eq.clone())?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone());
         }
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n---- involved set vars (")); __mm_s.push_str(&*intString((singular_vars_idx.clone().len() as i32))); __mm_s.push_str(&*literal!("):\n")); ArcStr::from(__mm_s) }).clone());
@@ -1508,7 +1508,7 @@ fn fixOverDeterminedSystem(mut inM: metamodelica::Array<Arc<metamodelica::List<i
 fn squareAdjacencyMatrix2(mut inPos: i32, mut inRange: Arc<metamodelica::List<i32>>, mut inM: metamodelica::Array<Arc<metamodelica::List<i32>>>) -> metamodelica::Array<Arc<metamodelica::List<i32>>> {
     let mut outM: metamodelica::Array<Arc<metamodelica::List<i32>>> = inM.clone();
     {
-        let __cell0 = listAppend(inM.borrow()[(inPos.clone()-1) as usize].clone(), inRange.clone());
+        let __cell0 = listAppend(({let __elt = inM.borrow()[(inPos.clone()-1) as usize].clone(); __elt}), inRange.clone());
         outM.clone().borrow_mut()[(inPos.clone()-1) as usize] = __cell0;
     }
     outM
@@ -1679,7 +1679,7 @@ fn splitStrongComponents(mut inComps: Arc<metamodelica::List<Arc<metamodelica::L
 
 fn mapIndex(mut inIndex: i32, mut inMapping: metamodelica::Array<i32>) -> i32 {
     let mut outIndex: i32 = 0;
-    outIndex = inMapping.borrow()[(inIndex.clone()-1) as usize].clone();
+    outIndex = ({let __elt = inMapping.borrow()[(inIndex.clone()-1) as usize].clone(); __elt});
     outIndex
 }
 
@@ -1701,7 +1701,7 @@ fn compsMarker(mut inUnassignedEqn: i32, mut inVecVarToEq: metamodelica::Array<i
     let mut markedEqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
     match '__try0: {
         let false = (listMember(inUnassignedEqn.clone(), inLoopListComps.clone())) else { break '__try0 Err::<_, _>(anyhow::anyhow!("pattern mismatch")) };
-        varList = inM.borrow()[(inUnassignedEqn.clone()-1) as usize].clone();
+        varList = ({let __elt = inM.borrow()[(inUnassignedEqn.clone()-1) as usize].clone(); __elt});
         markedEqns = unwrap_break_err!(compsMarker2(varList.clone(), inVecVarToEq.clone(), inM.clone(), inFlatComps.clone(), metamodelica::nil(), inLoopListComps.clone()), '__try0);
         outMarkedEqns = unwrap_break_err!(downCompsMarker(inFlatComps.clone().reverse(), inVecVarToEq.clone(), inM.clone(), inFlatComps.clone(), markedEqns.clone(), inLoopListComps.clone()), '__try0);
         Ok::<_, anyhow::Error>((markedEqns.clone(), outMarkedEqns.clone(), varList.clone()))
@@ -1738,7 +1738,7 @@ fn compsMarker2(mut inVarList: Arc<metamodelica::List<i32>>, mut inVecVarToEq: m
                 Deref @ metamodelica::List::Cons { head: indexVar, tail: var_list2 } => {
                     let mut indexEq: i32 = 0;
                     let mut markedEqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    indexEq = inVecVarToEq.borrow()[(indexVar.clone()-1) as usize].clone();
+                    indexEq = ({let __elt = inVecVarToEq.borrow()[(indexVar.clone()-1) as usize].clone(); __elt});
                     let false = (listMember(indexEq.clone(), inLoopListComps.clone())) else { bail!("pattern mismatch") };
                     let false = (listMember(indexEq.clone(), inMarkedEqns.clone())) else { bail!("pattern mismatch") };
                     markedEqns = compsMarker2(var_list2.clone(), inVecVarToEq.clone(), inM.clone(), inFlatComps.clone(), inMarkedEqns.clone(), inLoopListComps.clone())?;
@@ -1752,7 +1752,7 @@ fn compsMarker2(mut inVarList: Arc<metamodelica::List<i32>>, mut inVecVarToEq: m
                 Deref @ metamodelica::List::Cons { head: indexVar, tail: var_list2 } => {
                     let mut indexEq: i32 = 0;
                     let mut markedEqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
-                    indexEq = inVecVarToEq.borrow()[(indexVar.clone()-1) as usize].clone();
+                    indexEq = ({let __elt = inVecVarToEq.borrow()[(indexVar.clone()-1) as usize].clone(); __elt});
                     let false = (listMember(indexEq.clone(), inLoopListComps.clone())) else { bail!("pattern mismatch") };
                     let true = (listMember(indexEq.clone(), inMarkedEqns.clone())) else { bail!("pattern mismatch") };
                     markedEqns = compsMarker2(var_list2.clone(), inVecVarToEq.clone(), inM.clone(), inFlatComps.clone(), inMarkedEqns.clone(), inLoopListComps.clone())?;
@@ -1780,7 +1780,7 @@ fn downCompsMarker(mut unassignedEqns: Arc<metamodelica::List<i32>>, mut vecVarT
     for mut indexUnassigned in &*unassignedEqns.clone() {
         let mut indexUnassigned = indexUnassigned.clone();
         if listMember(indexUnassigned.clone(), inMarkedEqns.clone()) {
-            inMarkedEqns = compsMarker2(m.borrow()[(indexUnassigned.clone()-1) as usize].clone(), vecVarToEq.clone(), m.clone(), flatComps.clone(), inMarkedEqns.clone(), inLoopListComps.clone())?;
+            inMarkedEqns = compsMarker2(({let __elt = m.borrow()[(indexUnassigned.clone()-1) as usize].clone(); __elt}), vecVarToEq.clone(), m.clone(), flatComps.clone(), inMarkedEqns.clone(), inLoopListComps.clone())?;
         }
     }
     Ok(inMarkedEqns)
@@ -1814,10 +1814,10 @@ fn setupVarReplacements(mut inMarkedEqns: Arc<metamodelica::List<i32>>, mut inEq
                     let mut exp: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut exp1: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
                     let mut x: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
-                    indexVar = inVecEqToVar.borrow()[(markedEqn.clone()-1) as usize].clone();
-                    let true = (isVarExplicitSolvable(inME.borrow()[(markedEqn.clone()-1) as usize].clone(), indexVar.clone())) else { bail!("pattern mismatch") };
+                    indexVar = ({let __elt = inVecEqToVar.borrow()[(markedEqn.clone()-1) as usize].clone(); __elt});
+                    let true = (isVarExplicitSolvable(({let __elt = inME.borrow()[(markedEqn.clone()-1) as usize].clone(); __elt}), indexVar.clone())) else { bail!("pattern mismatch") };
                     var = BackendVariable::getVarAt(inVars.clone(), indexVar.clone())?;
-                    indexEq = inMapIncRowEqn.borrow()[(markedEqn.clone()-1) as usize].clone();
+                    indexEq = ({let __elt = inMapIncRowEqn.borrow()[(markedEqn.clone()-1) as usize].clone(); __elt});
                     eqn = BackendEquation::get(inEqns.clone(), indexEq.clone())?;
                     cref = BackendVariable::varCref(var.clone())?;
                     type_ = BackendVariable::varType(var.clone())?;
@@ -1975,7 +1975,7 @@ fn getConsistentEquation(mut inUnassignedEqn: i32, mut inEqns: Arc<ExpandableArr
             funcs = BackendDAEUtil::getFunctions(shared.clone())?;
             system = BackendDAEUtil::createEqSystem(vars.clone(), eqns.clone(), metamodelica::nil(), openmodelica_backend_types::BackendDAE::BaseClockPartitionKind::UNKNOWN_PARTITION, BackendEquation::emptyEqns());
             (m, _) = BackendDAEUtil::adjacencyMatrix(system.clone(), openmodelica_backend_types::BackendDAE::IndexType::NORMAL, Some(funcs.clone()), BackendDAEUtil::isInitializationDAE(shared.clone()))?;
-            listVar = m.borrow()[(inUnassignedEqn.clone()-1) as usize].clone();
+            listVar = ({let __elt = m.borrow()[(inUnassignedEqn.clone()-1) as usize].clone(); __elt});
             let false = (listVar.clone().is_empty()) else { bail!("pattern mismatch") };
             BackendEquation::get(inEqnsOrig.clone(), inUnassignedEqn.clone())?;
             Error::addCompilerNotification((literal!("It was not possible to check the given initialization system for consistency symbolically, because the relevant equations are part of an algebraic loop. This is not supported yet.")).clone())?;
@@ -2197,7 +2197,7 @@ fn collectInitialStateSets(mut stateSets: Arc<metamodelica::List<BackendDAE::Sta
         if Flags::isSet(Flags::BLT_DUMP.clone())? || Flags::isSet(Flags::INITIALIZATION.clone())? {
             BackendDump::dumpEquationList(list![eqn.clone()], (literal!("initial state selection equation generated:")).clone())?;
         }
-        if metamodelica::arrayLength(stateSetFixCounts.clone()) >= stateSet.index.clone() && stateSetFixCounts.clone().borrow()[(stateSet.index.clone()-1) as usize].clone() > 0 {
+        if metamodelica::arrayLength(stateSetFixCounts.clone()) >= stateSet.index.clone() && ({let __elt = stateSetFixCounts.clone().borrow()[(stateSet.index.clone()-1) as usize].clone(); __elt}) > 0 {
             unfixedStates = metamodelica::nil();
             for mut state in &*stateSet.statescandidates.clone() {
                 let mut state = state.clone();
@@ -2205,7 +2205,7 @@ fn collectInitialStateSets(mut stateSets: Arc<metamodelica::List<BackendDAE::Sta
                     unfixedStates = metamodelica::cons(state.clone(), unfixedStates.clone());
                 }
             }
-            toFix = stateSetFixCounts.clone().borrow()[(stateSet.index.clone()-1) as usize].clone();
+            toFix = ({let __elt = stateSetFixCounts.clone().borrow()[(stateSet.index.clone()-1) as usize].clone(); __elt});
             statesToFix = metamodelica::nil();
             statesToFix = SymbolicJacobian::getFixedStatesForSelfdependentSets(stateSet.clone(), unfixedStates.clone(), toFix.clone())?;
             for mut state in &*statesToFix.clone() {
@@ -2288,7 +2288,7 @@ fn collectInitialVars(mut inVar: BackendDAE::Var, mut inTpl: (BackendDAE::Variab
                             stateSetSplit = __pa1.clone();
                             stateSetIdxString = substring((stateSetIdxString.clone()).clone(), 10, ((stateSetIdxString.clone()).clone().len() as i32))?;
                             stateSetIdx = stringInt((stateSetIdxString.clone()).clone())?;
-                            {let _arr = stateSetFixCounts.clone(); let _val = stateSetFixCounts.clone().borrow()[(stateSetIdx.clone()-1) as usize].clone() + 1; _arr.borrow_mut()[(stateSetIdx.clone()-1) as usize] = _val; _arr};
+                            {let _arr = stateSetFixCounts.clone(); let _val = ({let __elt = stateSetFixCounts.clone().borrow()[(stateSetIdx.clone()-1) as usize].clone(); __elt}) + 1; _arr.borrow_mut()[(stateSetIdx.clone()-1) as usize] = _val; _arr};
                         } else {
                             if Expression::isConstValue(startExp.clone())? {
                                         eqn = Arc::new(BackendDAE::Equation::EQUATION { exp: crefExp.clone(), scalar: Expression::crefExp(startCR.clone())?, source: DAE::emptyElementSource().clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_INITIAL.clone() });

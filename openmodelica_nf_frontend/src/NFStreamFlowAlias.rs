@@ -726,7 +726,7 @@ pub fn extractSets(mut sets: Sets) -> (metamodelica::Array<Arc<metamodelica::Lis
     let mut e: Entry = Arc::new(<FlowAlias::FlowAlias as ::std::default::Default>::default());
     nodes = sets.nodes.clone();
     for mut i in 1..=sets.nodeCount.clone() {
-        if nodes.borrow()[(i.clone()-1) as usize].clone() < 0 {
+        if ({let __elt = nodes.borrow()[(i.clone()-1) as usize].clone(); __elt}) < 0 {
             set_idx = set_idx.clone() + 1;
             {
                 let __cell0 = -(set_idx.clone());
@@ -738,13 +738,13 @@ pub fn extractSets(mut sets: Sets) -> (metamodelica::Array<Arc<metamodelica::Lis
     entries = UnorderedMap::toArray(sets.elements.clone());
     for mut i in (1..=metamodelica::arrayLength(entries.clone())).rev() {
         (e, idx) = metamodelica::Dangerous::arrayGetNoBoundsChecking(entries.clone(), i.clone());
-        set_idx = nodes.borrow()[(idx.clone()-1) as usize].clone();
+        set_idx = ({let __elt = nodes.borrow()[(idx.clone()-1) as usize].clone(); __elt});
         while set_idx.clone() > 0 {
-            set_idx = nodes.borrow()[(set_idx.clone()-1) as usize].clone();
+            set_idx = ({let __elt = nodes.borrow()[(set_idx.clone()-1) as usize].clone(); __elt});
         }
         set_idx = -(set_idx.clone());
         {
-            let __cell1 = metamodelica::cons(e.clone(), setsArray.borrow()[(set_idx.clone()-1) as usize].clone());
+            let __cell1 = metamodelica::cons(e.clone(), ({let __elt = setsArray.borrow()[(set_idx.clone()-1) as usize].clone(); __elt}));
             setsArray.clone().borrow_mut()[(set_idx.clone()-1) as usize] = __cell1;
         }
     }
@@ -771,17 +771,17 @@ pub fn find(mut entry: Entry, mut sets: Sets) -> Result<(Sets, i32)> {
 
 pub fn findRoot(mut nodeIndex: i32, mut nodes: metamodelica::Array<i32>) -> Result<i32> {
     let mut rootIndex: i32 = nodeIndex.clone();
-    let mut parent: i32 = nodes.borrow()[(nodeIndex.clone()-1) as usize].clone();
+    let mut parent: i32 = ({let __elt = nodes.borrow()[(nodeIndex.clone()-1) as usize].clone(); __elt});
     let mut idx: i32 = nodeIndex.clone();
     while parent.clone() > 0 {
         rootIndex = parent.clone();
-        parent = nodes.borrow()[(parent.clone()-1) as usize].clone();
+        parent = ({let __elt = nodes.borrow()[(parent.clone()-1) as usize].clone(); __elt});
     }
-    parent = nodes.borrow()[(nodeIndex.clone()-1) as usize].clone();
+    parent = ({let __elt = nodes.borrow()[(nodeIndex.clone()-1) as usize].clone(); __elt});
     while parent.clone() > 0 {
         {let _arr = nodes.clone(); _arr.borrow_mut()[(idx.clone()-1) as usize] = rootIndex.clone(); _arr};
         idx = parent.clone();
-        parent = nodes.borrow()[(parent.clone()-1) as usize].clone();
+        parent = ({let __elt = nodes.borrow()[(parent.clone()-1) as usize].clone(); __elt});
     }
     Ok(rootIndex)
 }
@@ -799,7 +799,7 @@ pub fn findSetArrayIndex(mut entry: Entry, mut sets: Sets) -> Result<i32> {
     let mut set: i32 = 0;
     set = UnorderedMap::getOrFail(entry.clone(), sets.elements.clone())?;
     while set.clone() > 0 {
-        set = sets.nodes.borrow()[(set.clone()-1) as usize].clone();
+        set = ({let __elt = sets.nodes.borrow()[(set.clone()-1) as usize].clone(); __elt});
     }
     set = -(set.clone());
     Ok(set)
@@ -842,7 +842,7 @@ pub fn printSets(mut sets: Sets) -> Result<()> {
         println!("{}", (literal!("]")).clone());
         println!("{}", (EntryString(e.clone())?).clone());
         println!("{}", (literal!(" -> ")).clone());
-        println!("{}", ArcStr::from(::std::format!("{}", nodes.borrow()[(i.clone()-1) as usize].clone())));
+        println!("{}", ArcStr::from(::std::format!("{}", ({let __elt = nodes.borrow()[(i.clone()-1) as usize].clone(); __elt}))));
         println!("{}", (literal!("\n")).clone());
     }
     Ok(())
@@ -853,14 +853,14 @@ pub fn union(mut set1: i32, mut set2: i32, mut sets: Sets) -> Result<Sets> {
     let mut rank1: i32 = 0;
     let mut rank2: i32 = 0;
     if set1.clone() != set2.clone() {
-        rank1 = sets.nodes.borrow()[(set1.clone()-1) as usize].clone();
-        rank2 = sets.nodes.borrow()[(set2.clone()-1) as usize].clone();
+        rank1 = ({let __elt = sets.nodes.borrow()[(set1.clone()-1) as usize].clone(); __elt});
+        rank2 = ({let __elt = sets.nodes.borrow()[(set2.clone()-1) as usize].clone(); __elt});
         if rank1.clone() > rank2.clone() {
             {let _arr = sets.nodes.clone(); _arr.borrow_mut()[(set2.clone()-1) as usize] = set1.clone(); _arr};
         } else if rank1.clone() < rank2.clone() {
             {let _arr = sets.nodes.clone(); _arr.borrow_mut()[(set1.clone()-1) as usize] = set2.clone(); _arr};
         } else {
-            {let _arr = sets.nodes.clone(); let _val = sets.nodes.borrow()[(set1.clone()-1) as usize].clone() - 1; _arr.borrow_mut()[(set1.clone()-1) as usize] = _val; _arr};
+            {let _arr = sets.nodes.clone(); let _val = ({let __elt = sets.nodes.borrow()[(set1.clone()-1) as usize].clone(); __elt}) - 1; _arr.borrow_mut()[(set1.clone()-1) as usize] = _val; _arr};
             {let _arr = sets.nodes.clone(); _arr.borrow_mut()[(set2.clone()-1) as usize] = set1.clone(); _arr};
         }
     }

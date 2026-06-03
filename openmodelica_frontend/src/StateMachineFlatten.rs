@@ -366,7 +366,7 @@ fn elabXInStateOps(mut inFlatSmSemantics: FlatSmSemantics, mut inEnclosingStateC
         reset = __pa14.clone();
         synchronize = __pa15.clone();
         priority = __pa16.clone();
-        let __pa17 = ::match_deref::match_deref! { match &(smComps.clone().borrow()[(from.clone()-1) as usize].clone()) {
+        let __pa17 = ::match_deref::match_deref! { match &(({let __elt = smComps.clone().borrow()[(from.clone()-1) as usize].clone(); __elt})) {
             Deref @ DAE::Element::SM_COMP { componentRef: __pa17, .. } => __pa17.clone(),
             _ => bail!("pattern mismatch"),
         } };
@@ -379,7 +379,7 @@ fn elabXInStateOps(mut inFlatSmSemantics: FlatSmSemantics, mut inEnclosingStateC
             Error::addCompilerError((literal!("Found 'ticksInState()' within a state of an hierarchical state machine.")).clone())?;
             bail!("fail");
         }
-        smeqsElab = if (found.clone()) {List::map5(smeqs.clone(), (std::sync::Arc::new(smeqsSubsXInState) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, Arc<DAE::Element>, i32, i32, Arc<DAE::Exp>, ArcStr) -> Result<Arc<DAE::Element>> + 'static>), smComps.clone().borrow()[(1-1) as usize].clone(), i.clone(), (t.clone().len() as i32), substTickExp.clone(), (literal!("ticksInState")).clone())?} else {smeqs.clone()};
+        smeqsElab = if (found.clone()) {List::map5(smeqs.clone(), (std::sync::Arc::new(smeqsSubsXInState) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, Arc<DAE::Element>, i32, i32, Arc<DAE::Exp>, ArcStr) -> Result<Arc<DAE::Element>> + 'static>), ({let __elt = smComps.clone().borrow()[(1-1) as usize].clone(); __elt}), i.clone(), (t.clone().len() as i32), substTickExp.clone(), (literal!("ticksInState")).clone())?} else {smeqs.clone()};
         smeqs = smeqsElab.clone();
         substTimeExp = Arc::new(DAE::Exp::CREF { componentRef: qCref((literal!("$timeInState")).clone(), DAE::T_REAL_DEFAULT().clone(), metamodelica::nil(), stateRef.clone())?, ty: DAE::T_REAL_DEFAULT().clone() });
         let (__pa20, (_, _, __pa21)) = Expression::traverseExpTopDown(c2.clone(), (std::sync::Arc::new(fnptr!(traversingSubsXInState, Arc<DAE::Exp>, (ArcStr, Arc<DAE::Exp>, bool))) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, (ArcStr, Arc<DAE::Exp>, bool)) -> Result<(Arc<DAE::Exp>, bool, (ArcStr, Arc<DAE::Exp>, bool))> + 'static>), (literal!("timeInState"), substTimeExp.clone(), false))?;
@@ -389,7 +389,7 @@ fn elabXInStateOps(mut inFlatSmSemantics: FlatSmSemantics, mut inEnclosingStateC
             Error::addCompilerError((literal!("Found 'timeInState()' within a state of an hierarchical state machine.")).clone())?;
             bail!("fail");
         }
-        smeqsElab = if (found.clone()) {List::map5(smeqs.clone(), (std::sync::Arc::new(smeqsSubsXInState) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, Arc<DAE::Element>, i32, i32, Arc<DAE::Exp>, ArcStr) -> Result<Arc<DAE::Element>> + 'static>), smComps.clone().borrow()[(1-1) as usize].clone(), i.clone(), (t.clone().len() as i32), substTimeExp.clone(), (literal!("timeInState")).clone())?} else {smeqs.clone()};
+        smeqsElab = if (found.clone()) {List::map5(smeqs.clone(), (std::sync::Arc::new(smeqsSubsXInState) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Element>, Arc<DAE::Element>, i32, i32, Arc<DAE::Exp>, ArcStr) -> Result<Arc<DAE::Element>> + 'static>), ({let __elt = smComps.clone().borrow()[(1-1) as usize].clone(); __elt}), i.clone(), (t.clone().len() as i32), substTimeExp.clone(), (literal!("timeInState")).clone())?} else {smeqs.clone()};
         smeqs = smeqsElab.clone();
         tElab = metamodelica::cons(Transition { from: from.clone(), to: to.clone(), condition: c4.clone(), immediate: immediate.clone(), reset: reset.clone(), synchronize: synchronize.clone(), priority: priority.clone() }, tElab.clone());
         cElab = metamodelica::cons(c4.clone(), cElab.clone());
@@ -742,7 +742,7 @@ fn createResetEquationCT(mut inLHSCref: Arc<DAE::ComponentRef>, mut inLHSty: Arc
     let mut tArrayBool: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
     let FlatSmSemantics { smComps: __pa0, .. } = (inEnclosingFlatSmSemantics.clone()) else { bail!("pattern mismatch") };
     enclosingFlatSMComps = __pa0.clone();
-    let __pa1 = ::match_deref::match_deref! { match &(enclosingFlatSMComps.clone().borrow()[(1-1) as usize].clone()) {
+    let __pa1 = ::match_deref::match_deref! { match &(({let __elt = enclosingFlatSMComps.clone().borrow()[(1-1) as usize].clone(); __elt})) {
         Deref @ DAE::Element::SM_COMP { componentRef: __pa1, .. } => __pa1.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -828,7 +828,7 @@ fn createResetEquation(mut inLHSCref: Arc<DAE::ComponentRef>, mut inLHSty: Arc<D
     let mut callAttributes: Arc<DAE::CallAttributes> = Arc::new(<DAE::CallAttributes as ::std::default::Default>::default());
     let FlatSmSemantics { smComps: __pa0, .. } = (inEnclosingFlatSmSemantics.clone()) else { bail!("pattern mismatch") };
     enclosingFlatSMComps = __pa0.clone();
-    let __pa1 = ::match_deref::match_deref! { match &(enclosingFlatSMComps.clone().borrow()[(1-1) as usize].clone()) {
+    let __pa1 = ::match_deref::match_deref! { match &(({let __elt = enclosingFlatSMComps.clone().borrow()[(1-1) as usize].clone(); __elt})) {
         Deref @ DAE::Element::SM_COMP { componentRef: __pa1, .. } => __pa1.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -1081,7 +1081,7 @@ fn addPropagationEquations(mut inFlatSmSemantics: FlatSmSemantics, mut inEnclosi
     t = __pa4.clone();
     smComps = __pa5.clone();
     ident = __pa6.clone();
-    let __pa7 = ::match_deref::match_deref! { match &(smComps.clone().borrow()[(1-1) as usize].clone()) {
+    let __pa7 = ::match_deref::match_deref! { match &(({let __elt = smComps.clone().borrow()[(1-1) as usize].clone(); __elt})) {
         Deref @ DAE::Element::SM_COMP { componentRef: __pa7, .. } => __pa7.clone(),
         _ => bail!("pattern mismatch"),
     } };
@@ -1103,7 +1103,7 @@ fn addPropagationEquations(mut inFlatSmSemantics: FlatSmSemantics, mut inEnclosi
         enclosingFlatSMSemantics = Util::getOption(inEnclosingFlatSmSemanticsOption.clone())?;
         let FlatSmSemantics { smComps: __pa8, .. } = (enclosingFlatSMSemantics.clone()) else { bail!("pattern mismatch") };
         enclosingFlatSMComps = __pa8.clone();
-        let __pa9 = ::match_deref::match_deref! { match &(enclosingFlatSMComps.clone().borrow()[(1-1) as usize].clone()) {
+        let __pa9 = ::match_deref::match_deref! { match &(({let __elt = enclosingFlatSMComps.clone().borrow()[(1-1) as usize].clone(); __elt})) {
             Deref @ DAE::Element::SM_COMP { componentRef: __pa9, .. } => __pa9.clone(),
             _ => bail!("pattern mismatch"),
         } };
@@ -1124,7 +1124,7 @@ fn addPropagationEquations(mut inFlatSmSemantics: FlatSmSemantics, mut inEnclosi
         peqs = metamodelica::cons(Arc::new(DAE::Element::EQUATION { exp: Arc::new(DAE::Exp::CREF { componentRef: activeRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() }), scalar: rhs.clone(), source: DAE::emptyElementSource().clone() }), peqs.clone());
     }
     for mut i in 1..=metamodelica::arrayLength(smComps.clone()) {
-        let __pa10 = ::match_deref::match_deref! { match &(smComps.clone().borrow()[(i.clone()-1) as usize].clone()) {
+        let __pa10 = ::match_deref::match_deref! { match &(({let __elt = smComps.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})) {
             Deref @ DAE::Element::SM_COMP { componentRef: __pa10, .. } => __pa10.clone(),
             _ => bail!("pattern mismatch"),
         } };
@@ -1385,29 +1385,29 @@ fn basicFlatSmSemantics(mut ident: ArcStr, mut q: Arc<metamodelica::List<Arc<DAE
         synchronize = __pa5.clone();
         priority = __pa6.clone();
         tFromRefs = {let _arr = tFromRefs.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = qCref((literal!("tFrom")).clone(), tArrayInteger.clone(), list![Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: i.clone() }) })], preRef.clone())?; _arr};
-        tFromVars = {let _arr = tFromVars.clone(); let _val = createVarWithDefaults(tFromRefs.clone().borrow()[(i.clone()-1) as usize].clone(), openmodelica_frontend_types::DAE::VarKind::PARAM, DAE::T_INTEGER_DEFAULT().clone(), tDims.clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
-        tFromVars = {let _arr = tFromVars.clone(); let _val = DAEUtil::setElementVarBinding(tFromVars.clone().borrow()[(i.clone()-1) as usize].clone(), Some(Arc::new(DAE::Exp::ICONST { integer: from.clone() }))); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
-        knowns = metamodelica::cons(tFromVars.clone().borrow()[(i.clone()-1) as usize].clone(), knowns.clone());
+        tFromVars = {let _arr = tFromVars.clone(); let _val = createVarWithDefaults(({let __elt = tFromRefs.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), openmodelica_frontend_types::DAE::VarKind::PARAM, DAE::T_INTEGER_DEFAULT().clone(), tDims.clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+        tFromVars = {let _arr = tFromVars.clone(); let _val = DAEUtil::setElementVarBinding(({let __elt = tFromVars.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), Some(Arc::new(DAE::Exp::ICONST { integer: from.clone() }))); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+        knowns = metamodelica::cons(({let __elt = tFromVars.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), knowns.clone());
         tToRefs = {let _arr = tToRefs.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = qCref((literal!("tTo")).clone(), tArrayInteger.clone(), list![Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: i.clone() }) })], preRef.clone())?; _arr};
-        tToVars = {let _arr = tToVars.clone(); let _val = createVarWithDefaults(tToRefs.clone().borrow()[(i.clone()-1) as usize].clone(), openmodelica_frontend_types::DAE::VarKind::PARAM, DAE::T_INTEGER_DEFAULT().clone(), tDims.clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
-        tToVars = {let _arr = tToVars.clone(); let _val = DAEUtil::setElementVarBinding(tToVars.clone().borrow()[(i.clone()-1) as usize].clone(), Some(Arc::new(DAE::Exp::ICONST { integer: to.clone() }))); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
-        knowns = metamodelica::cons(tToVars.clone().borrow()[(i.clone()-1) as usize].clone(), knowns.clone());
+        tToVars = {let _arr = tToVars.clone(); let _val = createVarWithDefaults(({let __elt = tToRefs.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), openmodelica_frontend_types::DAE::VarKind::PARAM, DAE::T_INTEGER_DEFAULT().clone(), tDims.clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+        tToVars = {let _arr = tToVars.clone(); let _val = DAEUtil::setElementVarBinding(({let __elt = tToVars.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), Some(Arc::new(DAE::Exp::ICONST { integer: to.clone() }))); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+        knowns = metamodelica::cons(({let __elt = tToVars.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), knowns.clone());
         tImmediateRefs = {let _arr = tImmediateRefs.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = qCref((literal!("tImmediate")).clone(), tArrayBool.clone(), list![Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: i.clone() }) })], preRef.clone())?; _arr};
-        tImmediateVars = {let _arr = tImmediateVars.clone(); let _val = createVarWithDefaults(tImmediateRefs.clone().borrow()[(i.clone()-1) as usize].clone(), openmodelica_frontend_types::DAE::VarKind::PARAM, DAE::T_BOOL_DEFAULT().clone(), tDims.clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
-        tImmediateVars = {let _arr = tImmediateVars.clone(); let _val = DAEUtil::setElementVarBinding(tImmediateVars.clone().borrow()[(i.clone()-1) as usize].clone(), Some(Arc::new(DAE::Exp::BCONST { bool: immediate.clone() }))); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
-        knowns = metamodelica::cons(tImmediateVars.clone().borrow()[(i.clone()-1) as usize].clone(), knowns.clone());
+        tImmediateVars = {let _arr = tImmediateVars.clone(); let _val = createVarWithDefaults(({let __elt = tImmediateRefs.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), openmodelica_frontend_types::DAE::VarKind::PARAM, DAE::T_BOOL_DEFAULT().clone(), tDims.clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+        tImmediateVars = {let _arr = tImmediateVars.clone(); let _val = DAEUtil::setElementVarBinding(({let __elt = tImmediateVars.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), Some(Arc::new(DAE::Exp::BCONST { bool: immediate.clone() }))); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+        knowns = metamodelica::cons(({let __elt = tImmediateVars.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), knowns.clone());
         tResetRefs = {let _arr = tResetRefs.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = qCref((literal!("tReset")).clone(), tArrayBool.clone(), list![Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: i.clone() }) })], preRef.clone())?; _arr};
-        tResetVars = {let _arr = tResetVars.clone(); let _val = createVarWithDefaults(tResetRefs.clone().borrow()[(i.clone()-1) as usize].clone(), openmodelica_frontend_types::DAE::VarKind::PARAM, DAE::T_BOOL_DEFAULT().clone(), tDims.clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
-        tResetVars = {let _arr = tResetVars.clone(); let _val = DAEUtil::setElementVarBinding(tResetVars.clone().borrow()[(i.clone()-1) as usize].clone(), Some(Arc::new(DAE::Exp::BCONST { bool: reset.clone() }))); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
-        knowns = metamodelica::cons(tResetVars.clone().borrow()[(i.clone()-1) as usize].clone(), knowns.clone());
+        tResetVars = {let _arr = tResetVars.clone(); let _val = createVarWithDefaults(({let __elt = tResetRefs.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), openmodelica_frontend_types::DAE::VarKind::PARAM, DAE::T_BOOL_DEFAULT().clone(), tDims.clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+        tResetVars = {let _arr = tResetVars.clone(); let _val = DAEUtil::setElementVarBinding(({let __elt = tResetVars.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), Some(Arc::new(DAE::Exp::BCONST { bool: reset.clone() }))); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+        knowns = metamodelica::cons(({let __elt = tResetVars.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), knowns.clone());
         tSynchronizeRefs = {let _arr = tSynchronizeRefs.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = qCref((literal!("tSynchronize")).clone(), tArrayBool.clone(), list![Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: i.clone() }) })], preRef.clone())?; _arr};
-        tSynchronizeVars = {let _arr = tSynchronizeVars.clone(); let _val = createVarWithDefaults(tSynchronizeRefs.clone().borrow()[(i.clone()-1) as usize].clone(), openmodelica_frontend_types::DAE::VarKind::PARAM, DAE::T_BOOL_DEFAULT().clone(), tDims.clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
-        tSynchronizeVars = {let _arr = tSynchronizeVars.clone(); let _val = DAEUtil::setElementVarBinding(tSynchronizeVars.clone().borrow()[(i.clone()-1) as usize].clone(), Some(Arc::new(DAE::Exp::BCONST { bool: synchronize.clone() }))); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
-        knowns = metamodelica::cons(tSynchronizeVars.clone().borrow()[(i.clone()-1) as usize].clone(), knowns.clone());
+        tSynchronizeVars = {let _arr = tSynchronizeVars.clone(); let _val = createVarWithDefaults(({let __elt = tSynchronizeRefs.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), openmodelica_frontend_types::DAE::VarKind::PARAM, DAE::T_BOOL_DEFAULT().clone(), tDims.clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+        tSynchronizeVars = {let _arr = tSynchronizeVars.clone(); let _val = DAEUtil::setElementVarBinding(({let __elt = tSynchronizeVars.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), Some(Arc::new(DAE::Exp::BCONST { bool: synchronize.clone() }))); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+        knowns = metamodelica::cons(({let __elt = tSynchronizeVars.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), knowns.clone());
         tPriorityRefs = {let _arr = tPriorityRefs.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = qCref((literal!("tPriority")).clone(), tArrayInteger.clone(), list![Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: i.clone() }) })], preRef.clone())?; _arr};
-        tPriorityVars = {let _arr = tPriorityVars.clone(); let _val = createVarWithDefaults(tPriorityRefs.clone().borrow()[(i.clone()-1) as usize].clone(), openmodelica_frontend_types::DAE::VarKind::PARAM, DAE::T_INTEGER_DEFAULT().clone(), tDims.clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
-        tPriorityVars = {let _arr = tPriorityVars.clone(); let _val = DAEUtil::setElementVarBinding(tPriorityVars.clone().borrow()[(i.clone()-1) as usize].clone(), Some(Arc::new(DAE::Exp::ICONST { integer: priority.clone() }))); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
-        knowns = metamodelica::cons(tPriorityVars.clone().borrow()[(i.clone()-1) as usize].clone(), knowns.clone());
+        tPriorityVars = {let _arr = tPriorityVars.clone(); let _val = createVarWithDefaults(({let __elt = tPriorityRefs.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), openmodelica_frontend_types::DAE::VarKind::PARAM, DAE::T_INTEGER_DEFAULT().clone(), tDims.clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+        tPriorityVars = {let _arr = tPriorityVars.clone(); let _val = DAEUtil::setElementVarBinding(({let __elt = tPriorityVars.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), Some(Arc::new(DAE::Exp::ICONST { integer: priority.clone() }))); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+        knowns = metamodelica::cons(({let __elt = tPriorityVars.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), knowns.clone());
     }
     cRefs = arrayCreate(nTransitions.clone(), ComponentReference::makeDummyCref());
     cImmediateRefs = arrayCreate(nTransitions.clone(), ComponentReference::makeDummyCref());
@@ -1419,10 +1419,10 @@ fn basicFlatSmSemantics(mut ident: ArcStr, mut q: Arc<metamodelica::List<Arc<DAE
         i = i.clone() + 1;
         cRefs = {let _arr = cRefs.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = qCref((literal!("c")).clone(), tArrayBool.clone(), list![Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: i.clone() }) })], preRef.clone())?; _arr};
         cImmediateRefs = {let _arr = cImmediateRefs.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = qCref((literal!("cImmediate")).clone(), tArrayBool.clone(), list![Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: i.clone() }) })], preRef.clone())?; _arr};
-        cVars = {let _arr = cVars.clone(); let _val = createVarWithDefaults(cRefs.clone().borrow()[(i.clone()-1) as usize].clone(), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_BOOL_DEFAULT().clone(), tDims.clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
-        cImmediateVars = {let _arr = cImmediateVars.clone(); let _val = createVarWithStartValue(cImmediateRefs.clone().borrow()[(i.clone()-1) as usize].clone(), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_BOOL_DEFAULT().clone(), Arc::new(DAE::Exp::BCONST { bool: false }), tDims.clone())?; _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
-        vars = metamodelica::cons(cVars.clone().borrow()[(i.clone()-1) as usize].clone(), vars.clone());
-        vars = metamodelica::cons(cImmediateVars.clone().borrow()[(i.clone()-1) as usize].clone(), vars.clone());
+        cVars = {let _arr = cVars.clone(); let _val = createVarWithDefaults(({let __elt = cRefs.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_BOOL_DEFAULT().clone(), tDims.clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+        cImmediateVars = {let _arr = cImmediateVars.clone(); let _val = createVarWithStartValue(({let __elt = cImmediateRefs.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_BOOL_DEFAULT().clone(), Arc::new(DAE::Exp::BCONST { bool: false }), tDims.clone())?; _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+        vars = metamodelica::cons(({let __elt = cVars.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), vars.clone());
+        vars = metamodelica::cons(({let __elt = cImmediateVars.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), vars.clone());
     }
     activeRef = qCref((literal!("active")).clone(), DAE::T_BOOL_DEFAULT().clone(), metamodelica::nil(), preRef.clone())?;
     activeVar = createVarWithDefaults(activeRef.clone(), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_BOOL_DEFAULT().clone(), metamodelica::nil());
@@ -1457,22 +1457,22 @@ fn basicFlatSmSemantics(mut ident: ArcStr, mut q: Arc<metamodelica::List<Arc<DAE
     activeResetStatesVars = arrayCreate(nStates.clone(), defaultBoolVar.clone());
     for mut i in 1..=nStates.clone() {
         activeResetStatesRefs = {let _arr = activeResetStatesRefs.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = qCref((literal!("activeResetStates")).clone(), nStatesArrayBool.clone(), list![Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: i.clone() }) })], preRef.clone())?; _arr};
-        activeResetStatesVars = {let _arr = activeResetStatesVars.clone(); let _val = createVarWithDefaults(activeResetStatesRefs.clone().borrow()[(i.clone()-1) as usize].clone(), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_BOOL_DEFAULT().clone(), nStatesDims.clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
-        vars = metamodelica::cons(activeResetStatesVars.clone().borrow()[(i.clone()-1) as usize].clone(), vars.clone());
+        activeResetStatesVars = {let _arr = activeResetStatesVars.clone(); let _val = createVarWithDefaults(({let __elt = activeResetStatesRefs.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_BOOL_DEFAULT().clone(), nStatesDims.clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+        vars = metamodelica::cons(({let __elt = activeResetStatesVars.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), vars.clone());
     }
     nextResetStatesRefs = arrayCreate(nStates.clone(), ComponentReference::makeDummyCref());
     nextResetStatesVars = arrayCreate(nStates.clone(), defaultBoolVar.clone());
     for mut i in 1..=nStates.clone() {
         nextResetStatesRefs = {let _arr = nextResetStatesRefs.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = qCref((literal!("nextResetStates")).clone(), nStatesArrayBool.clone(), list![Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: i.clone() }) })], preRef.clone())?; _arr};
-        nextResetStatesVars = {let _arr = nextResetStatesVars.clone(); let _val = createVarWithStartValue(nextResetStatesRefs.clone().borrow()[(i.clone()-1) as usize].clone(), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_BOOL_DEFAULT().clone(), Arc::new(DAE::Exp::BCONST { bool: false }), nStatesDims.clone())?; _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
-        vars = metamodelica::cons(nextResetStatesVars.clone().borrow()[(i.clone()-1) as usize].clone(), vars.clone());
+        nextResetStatesVars = {let _arr = nextResetStatesVars.clone(); let _val = createVarWithStartValue(({let __elt = nextResetStatesRefs.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_BOOL_DEFAULT().clone(), Arc::new(DAE::Exp::BCONST { bool: false }), nStatesDims.clone())?; _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+        vars = metamodelica::cons(({let __elt = nextResetStatesVars.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), vars.clone());
     }
     finalStatesRefs = arrayCreate(nStates.clone(), ComponentReference::makeDummyCref());
     finalStatesVars = arrayCreate(nStates.clone(), defaultBoolVar.clone());
     for mut i in 1..=nStates.clone() {
         finalStatesRefs = {let _arr = finalStatesRefs.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = qCref((literal!("finalStates")).clone(), nStatesArrayBool.clone(), list![Arc::new(DAE::Subscript::INDEX { exp: Arc::new(DAE::Exp::ICONST { integer: i.clone() }) })], preRef.clone())?; _arr};
-        finalStatesVars = {let _arr = finalStatesVars.clone(); let _val = createVarWithDefaults(finalStatesRefs.clone().borrow()[(i.clone()-1) as usize].clone(), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_BOOL_DEFAULT().clone(), nStatesDims.clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
-        vars = metamodelica::cons(finalStatesVars.clone().borrow()[(i.clone()-1) as usize].clone(), vars.clone());
+        finalStatesVars = {let _arr = finalStatesVars.clone(); let _val = createVarWithDefaults(({let __elt = finalStatesRefs.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_BOOL_DEFAULT().clone(), nStatesDims.clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+        vars = metamodelica::cons(({let __elt = finalStatesVars.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), vars.clone());
     }
     stateMachineInFinalStateRef = qCref((literal!("stateMachineInFinalState")).clone(), DAE::T_BOOL_DEFAULT().clone(), metamodelica::nil(), preRef.clone())?;
     stateMachineInFinalStateVar = createVarWithDefaults(stateMachineInFinalStateRef.clone(), openmodelica_frontend_types::DAE::VarKind::DISCRETE, DAE::T_BOOL_DEFAULT().clone(), metamodelica::nil());
@@ -1482,10 +1482,10 @@ fn basicFlatSmSemantics(mut ident: ArcStr, mut q: Arc<metamodelica::List<Arc<DAE
     for mut cExp in &*cExps.clone() {
         let mut cExp = cExp.clone();
         i = i.clone() + 1;
-        exp = Arc::new(DAE::Exp::CREF { componentRef: cImmediateRefs.clone().borrow()[(i.clone()-1) as usize].clone(), ty: DAE::T_BOOL_DEFAULT().clone() });
+        exp = Arc::new(DAE::Exp::CREF { componentRef: ({let __elt = cImmediateRefs.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), ty: DAE::T_BOOL_DEFAULT().clone() });
         eqs = metamodelica::cons(Arc::new(DAE::Element::EQUATION { exp: exp.clone(), scalar: cExp.clone(), source: DAE::emptyElementSource().clone() }), eqs.clone());
-        exp1 = Arc::new(DAE::Exp::CREF { componentRef: cRefs.clone().borrow()[(i.clone()-1) as usize].clone(), ty: DAE::T_BOOL_DEFAULT().clone() });
-        let __pa7 = ::match_deref::match_deref! { match &(tImmediateVars.clone().borrow()[(i.clone()-1) as usize].clone()) {
+        exp1 = Arc::new(DAE::Exp::CREF { componentRef: ({let __elt = cRefs.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), ty: DAE::T_BOOL_DEFAULT().clone() });
+        let __pa7 = ::match_deref::match_deref! { match &(({let __elt = tImmediateVars.clone().borrow()[(i.clone()-1) as usize].clone(); __elt})) {
             Deref @ DAE::Element::VAR { binding: __pa7, .. } => __pa7.clone(),
             _ => bail!("pattern mismatch"),
         } };
@@ -1510,8 +1510,8 @@ fn basicFlatSmSemantics(mut ident: ArcStr, mut q: Arc<metamodelica::List<Arc<DAE
     exp = Arc::new(DAE::Exp::CREF { componentRef: firedRef.clone(), ty: DAE::T_INTEGER_DEFAULT().clone() });
     expLst = metamodelica::nil();
     for mut i in 1..=nTransitions.clone() {
-        expCond = Arc::new(DAE::Exp::RELATION { exp1: Arc::new(DAE::Exp::CREF { componentRef: tFromRefs.clone().borrow()[(i.clone()-1) as usize].clone(), ty: DAE::T_INTEGER_DEFAULT().clone() }), operator: DAE::Operator::EQUAL { ty: DAE::T_INTEGER_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::CREF { componentRef: selectedStateRef.clone(), ty: DAE::T_INTEGER_DEFAULT().clone() }), index: -1, optionExpisASUB: None });
-        expThen = Arc::new(DAE::Exp::CREF { componentRef: cRefs.clone().borrow()[(i.clone()-1) as usize].clone(), ty: DAE::T_BOOL_DEFAULT().clone() });
+        expCond = Arc::new(DAE::Exp::RELATION { exp1: Arc::new(DAE::Exp::CREF { componentRef: ({let __elt = tFromRefs.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), ty: DAE::T_INTEGER_DEFAULT().clone() }), operator: DAE::Operator::EQUAL { ty: DAE::T_INTEGER_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::CREF { componentRef: selectedStateRef.clone(), ty: DAE::T_INTEGER_DEFAULT().clone() }), index: -1, optionExpisASUB: None });
+        expThen = Arc::new(DAE::Exp::CREF { componentRef: ({let __elt = cRefs.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), ty: DAE::T_BOOL_DEFAULT().clone() });
         expElse = Arc::new(DAE::Exp::BCONST { bool: false });
         expIf = Arc::new(DAE::Exp::IFEXP { expCond: expCond.clone(), expThen: expThen.clone(), expElse: expElse.clone() });
         expLst = metamodelica::cons(Arc::new(DAE::Exp::IFEXP { expCond: expIf.clone(), expThen: Arc::new(DAE::Exp::ICONST { integer: i.clone() }), expElse: Arc::new(DAE::Exp::ICONST { integer: 0 }) }), expLst.clone());
@@ -1552,27 +1552,27 @@ fn basicFlatSmSemantics(mut ident: ArcStr, mut q: Arc<metamodelica::List<Arc<DAE
     nextResetEqn = Arc::new(DAE::Element::EQUATION { exp: exp.clone(), scalar: rhs.clone(), source: DAE::emptyElementSource().clone() });
     eqs = metamodelica::cons(nextResetEqn.clone(), eqs.clone());
     for mut i in 1..=nStates.clone() {
-        exp = Arc::new(DAE::Exp::CREF { componentRef: activeResetStatesRefs.clone().borrow()[(i.clone()-1) as usize].clone(), ty: DAE::T_BOOL_DEFAULT().clone() });
+        exp = Arc::new(DAE::Exp::CREF { componentRef: ({let __elt = activeResetStatesRefs.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), ty: DAE::T_BOOL_DEFAULT().clone() });
         expCond = Arc::new(DAE::Exp::CREF { componentRef: resetRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() });
         expThen = Arc::new(DAE::Exp::BCONST { bool: true });
-        expElse = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("previous")).clone() }), expLst: list![Arc::new(DAE::Exp::CREF { componentRef: nextResetStatesRefs.clone().borrow()[(i.clone()-1) as usize].clone(), ty: DAE::T_BOOL_DEFAULT().clone() })], attr: DAE::callAttrBuiltinImpureBool().clone() });
+        expElse = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("previous")).clone() }), expLst: list![Arc::new(DAE::Exp::CREF { componentRef: ({let __elt = nextResetStatesRefs.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), ty: DAE::T_BOOL_DEFAULT().clone() })], attr: DAE::callAttrBuiltinImpureBool().clone() });
         rhs = Arc::new(DAE::Exp::IFEXP { expCond: expCond.clone(), expThen: expThen.clone(), expElse: expElse.clone() });
         eqs = metamodelica::cons(Arc::new(DAE::Element::EQUATION { exp: exp.clone(), scalar: rhs.clone(), source: DAE::emptyElementSource().clone() }), eqs.clone());
     }
     for mut i in 1..=nStates.clone() {
-        exp = Arc::new(DAE::Exp::CREF { componentRef: nextResetStatesRefs.clone().borrow()[(i.clone()-1) as usize].clone(), ty: DAE::T_BOOL_DEFAULT().clone() });
+        exp = Arc::new(DAE::Exp::CREF { componentRef: ({let __elt = nextResetStatesRefs.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), ty: DAE::T_BOOL_DEFAULT().clone() });
         expCond = Arc::new(DAE::Exp::CREF { componentRef: activeRef.clone(), ty: DAE::T_BOOL_DEFAULT().clone() });
         exp1 = Arc::new(DAE::Exp::RELATION { exp1: Arc::new(DAE::Exp::CREF { componentRef: activeStateRef.clone(), ty: DAE::T_INTEGER_DEFAULT().clone() }), operator: DAE::Operator::EQUAL { ty: DAE::T_INTEGER_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::ICONST { integer: i.clone() }), index: -1, optionExpisASUB: None });
-        expThen = Arc::new(DAE::Exp::IFEXP { expCond: exp1.clone(), expThen: Arc::new(DAE::Exp::BCONST { bool: false }), expElse: Arc::new(DAE::Exp::CREF { componentRef: activeResetStatesRefs.clone().borrow()[(i.clone()-1) as usize].clone(), ty: DAE::T_BOOL_DEFAULT().clone() }) });
-        expElse = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("previous")).clone() }), expLst: list![Arc::new(DAE::Exp::CREF { componentRef: nextResetStatesRefs.clone().borrow()[(i.clone()-1) as usize].clone(), ty: DAE::T_BOOL_DEFAULT().clone() })], attr: DAE::callAttrBuiltinImpureBool().clone() });
+        expThen = Arc::new(DAE::Exp::IFEXP { expCond: exp1.clone(), expThen: Arc::new(DAE::Exp::BCONST { bool: false }), expElse: Arc::new(DAE::Exp::CREF { componentRef: ({let __elt = activeResetStatesRefs.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), ty: DAE::T_BOOL_DEFAULT().clone() }) });
+        expElse = Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("previous")).clone() }), expLst: list![Arc::new(DAE::Exp::CREF { componentRef: ({let __elt = nextResetStatesRefs.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), ty: DAE::T_BOOL_DEFAULT().clone() })], attr: DAE::callAttrBuiltinImpureBool().clone() });
         rhs = Arc::new(DAE::Exp::IFEXP { expCond: expCond.clone(), expThen: expThen.clone(), expElse: expElse.clone() });
         eqs = metamodelica::cons(Arc::new(DAE::Element::EQUATION { exp: exp.clone(), scalar: rhs.clone(), source: DAE::emptyElementSource().clone() }), eqs.clone());
     }
     for mut i in 1..=nStates.clone() {
-        exp = Arc::new(DAE::Exp::CREF { componentRef: finalStatesRefs.clone().borrow()[(i.clone()-1) as usize].clone(), ty: DAE::T_BOOL_DEFAULT().clone() });
+        exp = Arc::new(DAE::Exp::CREF { componentRef: ({let __elt = finalStatesRefs.clone().borrow()[(i.clone()-1) as usize].clone(); __elt}), ty: DAE::T_BOOL_DEFAULT().clone() });
         expLst = metamodelica::nil();
         for mut j in 1..=nTransitions.clone() {
-            expCond = Arc::new(DAE::Exp::RELATION { exp1: Arc::new(DAE::Exp::CREF { componentRef: tFromRefs.clone().borrow()[(j.clone()-1) as usize].clone(), ty: DAE::T_INTEGER_DEFAULT().clone() }), operator: DAE::Operator::EQUAL { ty: DAE::T_INTEGER_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::ICONST { integer: i.clone() }), index: -1, optionExpisASUB: None });
+            expCond = Arc::new(DAE::Exp::RELATION { exp1: Arc::new(DAE::Exp::CREF { componentRef: ({let __elt = tFromRefs.clone().borrow()[(j.clone()-1) as usize].clone(); __elt}), ty: DAE::T_INTEGER_DEFAULT().clone() }), operator: DAE::Operator::EQUAL { ty: DAE::T_INTEGER_DEFAULT().clone() }, exp2: Arc::new(DAE::Exp::ICONST { integer: i.clone() }), index: -1, optionExpisASUB: None });
             expLst = metamodelica::cons(Arc::new(DAE::Exp::IFEXP { expCond: expCond.clone(), expThen: Arc::new(DAE::Exp::ICONST { integer: 1 }), expElse: Arc::new(DAE::Exp::ICONST { integer: 0 }) }), expLst.clone());
         }
         exp1 = if ((expLst.clone().len() as i32) > 1) {Arc::new(DAE::Exp::CALL { path: Arc::new(Absyn::Path::IDENT { name: (literal!("max")).clone() }), expLst: list![Expression::makeScalarArray(expLst.clone(), DAE::T_INTEGER_DEFAULT().clone())], attr: DAE::callAttrBuiltinInteger().clone() })} else {listHead(expLst.clone())?};

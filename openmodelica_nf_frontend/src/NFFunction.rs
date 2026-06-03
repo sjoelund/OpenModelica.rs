@@ -979,7 +979,7 @@ pub mod Function {
                 annMod = SCodeUtil::prependSubModToMod(FunctionDerivative::toSubMod(derivative.clone())?, annMod.clone())?;
             }
             for mut i in (1..=metamodelica::arrayLength(r#fn.inverses.clone())).rev() {
-                annMod = SCodeUtil::prependSubModToMod(FunctionInverse::toSubMod(r#fn.inverses.borrow()[(i.clone()-1) as usize].clone())?, annMod.clone())?;
+                annMod = SCodeUtil::prependSubModToMod(FunctionInverse::toSubMod(({let __elt = r#fn.inverses.borrow()[(i.clone()-1) as usize].clone(); __elt}))?, annMod.clone())?;
             }
             if !(SCodeUtil::emptyModOrEquality(annMod.clone())) {
                 cmt = Arc::new(SCode::Comment { annotation_: Some(Arc::new(SCode::Annotation { modification: annMod.clone() })), comment: None });
@@ -1045,7 +1045,7 @@ pub mod Function {
         slots_arr = metamodelica::arrayFromVec(slots.clone().into_iter().cloned().collect());
         for mut arg in &*args.clone() {
             let mut arg = arg.clone();
-            slot = slots_arr.borrow()[(index.clone()-1) as usize].clone();
+            slot = ({let __elt = slots_arr.borrow()[(index.clone()-1) as usize].clone(); __elt});
             if !(Slot::positional(slot.clone())) {
                 matching = false;
                 return Ok((args.clone(), matching.clone()));
@@ -1071,7 +1071,7 @@ pub mod Function {
         let mut s: Arc<Slot::Slot> = Arc::new(<Slot::Slot as ::std::default::Default>::default());
         let mut arg_name: ArcStr = arcstr::literal!("");
         for mut i in (1..=metamodelica::arrayLength(slots.clone())).rev() {
-            s = slots.borrow()[(i.clone()-1) as usize].clone();
+            s = ({let __elt = slots.borrow()[(i.clone()-1) as usize].clone(); __elt});
             let __pa0 = ::match_deref::match_deref! { match &(arg.name.clone()) {
                 Some(__pa0) => __pa0.clone(),
                 _ => bail!("pattern mismatch"),
@@ -2124,7 +2124,7 @@ pub mod Function {
         let () = (::match_deref::match_deref! { match &(cls.clone()) {
         Deref @ Class::INSTANCED_CLASS { elements: Deref @ ClassTree::FLAT_TREE { components: comps, .. }, .. } => {
             for mut i in (1..=metamodelica::arrayLength(comps.clone())).rev() {
-                n = comps.borrow()[(i.clone()-1) as usize].clone();
+                n = ({let __elt = comps.borrow()[(i.clone()-1) as usize].clone(); __elt});
                 check_vis = !(Flags::getConfigBool(Flags::BASE_MODELICA.clone())?);
                 let () = (match paramDirection(n.clone(), check_vis.clone())? {
         Prefixes::Direction::INPUT => {

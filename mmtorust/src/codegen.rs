@@ -6117,7 +6117,9 @@ fn emit_const_str_operand<'a>(exp: &TypedExp, ctx: &mut GenCtx, top_level: &'a B
             let NodeKind::Component(comp) = &node.kind else { return None };
             if comp.variability != Absyn::Variability::CONST { return None; }
             if node.ty != Ty::Str { return None; }
-            Some(emit_var(name, segments, ty, ctx, top_level))
+            // No borrow guard possible: the match guard above requires all
+            // segments to be subscript-free.
+            Some(emit_var(name, segments, ty, ctx, top_level).0)
         }
         TypedExp::If { cond, then_, elseif, else_, .. } => {
             // Lower to a Rust `if … else if … else` chain so the condition
@@ -6357,7 +6359,7 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
             }).unzip();
             let name: &String = owned_name.as_ref().unwrap_or(name);
             let segments: &Vec<CrefSegment> = owned_segments.as_ref().unwrap_or(segments);
-            let mut var_str = emit_var(name, segments, ty, ctx, top_level);
+            let (mut var_str, has_borrow_guard) = emit_var(name, segments, ty, ctx, top_level);
             // If this reference resolves to a `pub const fn` / `pub fn` getter
             // emitted by `emit_node` for a non-Sync constant (see
             // `collect_const_fn_getters` + the const-emittable/non-Sync branch),
@@ -6573,7 +6575,7 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
             // construct rather than the runtime function. Remap such names
             // to their qualified runtime path before fnptr! wrapping.
             let var_str = remap_shadowed_builtin_path(&var_str, resolved_fn_qname.as_deref());
-            match effective_ty {
+            let emitted = match effective_ty {
                 // Infallible concrete function used as a value. Wrap with
                 // `fnptr!(path, ArgTy1, …)` so the closure satisfies the
                 // surrounding `Result<T>`-returning slot (see the macro
@@ -6860,6 +6862,21 @@ fn emit_exp<'a>(exp: &TypedExp, is_const: bool, ctx: &mut GenCtx, top_level: &'a
                 Ty::Str if is_const_str_cref(name, segments, ctx, top_level) =>
                     format!("arcstr::literal!({var_str})"),
                 _ => format!("{var_str}.clone()"),
+            };
+            // `emit_var` reported an inline `RefCell::borrow()` guard (an
+            // Array subscript). Scope the finished rvalue in a block so the
+            // guard drops here instead of living to the end of the enclosing
+            // statement, where it would collide with a `borrow_mut()` of the
+            // same array further along (e.g. `f(arr[i], arr)` where `f`
+            // updates `arr` — seen in Static.fillDefaultSlot). Skipped in
+            // const context, where no `RefCell` access can occur anyway.
+            // Parenthesised so the block stays an expression even when
+            // directly followed by a binary operator (`{..} == 0` would
+            // otherwise parse as a block statement).
+            if has_borrow_guard && !is_const {
+                format!("({{let __elt = {emitted}; __elt}})")
+            } else {
+                emitted
             }
         }
 
@@ -8921,11 +8938,20 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
         },
         "arrayGet" => {
             // `arr` is `metamodelica::Array<T>` = `Rc<RefCell<Vec<T>>>`.
-            // `.borrow()` returns a `Ref<Vec<T>>` whose lifetime extends to the end
-            // of the enclosing expression, so the inline index + clone is sound.
+            // The `Ref` guard returned by `.borrow()` is a temporary; emitted
+            // inline in a larger expression (e.g. as a call argument) it would
+            // live until the end of the enclosing statement, and a
+            // `borrow_mut()` of the same array inside the callee would panic
+            // with "RefCell already borrowed" (seen in Static.fillDefaultSlot,
+            // which passes `arrayGet(arr, i)` to a function that updates
+            // `arr`). Scope the borrow in a block so the guard drops as soon
+            // as the element has been cloned.
             let arg1 = args.first().map(|a| emit_builtin_call_arg(func, 0, a, is_const, ctx, top_level)).unwrap_or_default();
             let arg2 = args.get(1).map(|a| emit_builtin_call_arg_raw(func, 1, a, is_const, ctx, top_level)).unwrap_or_default();
-            Ok(format!("{}.borrow()[({}-1) as usize].clone()", arg1, arg2))
+            // Parenthesised so the block is unambiguously an *expression*:
+            // a bare `{..}` followed by a binary operator (`{..} == 0`)
+            // parses as a block statement plus a dangling operator.
+            Ok(format!("({{let __elt = {}.borrow()[({}-1) as usize].clone(); __elt}})", arg1, arg2))
         },
         // The `*NoBoundsChecking` builtins are genuinely distinct functions
         // (truly unchecked `get_unchecked` access), not aliases of the
@@ -9355,13 +9381,23 @@ fn emit_builtin_call<'a>(func: &str, args: &[TypedExp], is_const: bool, ctx: &mu
 }
 
 /// Emit a variable reference, handling subscripts and the package/field boundary.
+///
+/// The second tuple element reports whether the emitted expression contains an
+/// inline `RefCell::borrow()` guard from subscripting an `Array<T>`
+/// (= `Rc<RefCell<Vec<T>>>`). Such a guard is a temporary that lives until the
+/// end of the enclosing *statement*; if the expression is e.g. a call argument
+/// and the callee takes a `borrow_mut()` on the same array, the program panics
+/// at runtime with "RefCell already borrowed". The caller (the `Var` arm of
+/// [`emit_exp`]) must scope the finished rvalue in a block
+/// (`{let __elt = <expr>; __elt}`) so the guard drops immediately.
 fn emit_var<'a>(
     name: &str,
     segments: &[CrefSegment],
     _ty: &Ty,
     ctx: &mut GenCtx,
     top_level: &'a BTreeMap<String, NameNode<'a>>,
-) -> String {
+) -> (String, bool) {
+    let mut has_borrow_guard = false;
 
     // If segments is empty but name has dots, it means the name contains the whole path.
     // We should split it into segments so we can resolve the package/field boundary.
@@ -9396,6 +9432,7 @@ fn emit_var<'a>(
         if !real_segments[0].subscripts.is_empty() {
             if matches!(ctx.fn_env_vars.get(&real_segments[0].name), Some(Ty::Array(_))) {
                 base = format!("{base}.borrow()");
+                has_borrow_guard = true;
             }
             for sub in &real_segments[0].subscripts {
                 base = format!("{}[({}-1) as usize]", base, emit_exp(sub, false, ctx, top_level));
@@ -9409,9 +9446,13 @@ fn emit_var<'a>(
         let only_name = if real_segments.is_empty() { name_str.clone() } else { real_segments[0].name.clone() };
         if !only_name.contains('.') {
             if real_segments.is_empty() && only_name == "child" {
-                return "node".to_owned();
+                return ("node".to_owned(), false);
             }
-            return if real_segments.is_empty() { escape_ident(&only_name) } else { base_name };
+            return if real_segments.is_empty() {
+                (escape_ident(&only_name), false)
+            } else {
+                (base_name, has_borrow_guard)
+            };
         }
     }
 
@@ -9432,7 +9473,7 @@ fn emit_var<'a>(
     } else {
         let shortened = ctx.shorten(&pkg_dotted);
         if shortened == "List::Nil" {
-            return "metamodelica::nil()".to_owned();
+            return ("metamodelica::nil()".to_owned(), false);
         }
         // Apply subscripts from the last package segment.
         //
@@ -9453,6 +9494,10 @@ fn emit_var<'a>(
                 let mut b = escape_ident(&shortened);
                 if is_array_const {
                     b = format!("{b}.borrow()");
+                    // Array-typed constants may be `StaticArray` (whose
+                    // `borrow()` returns a plain `&Vec`, no guard), but
+                    // scoping the read is harmless there, so flag both.
+                    has_borrow_guard = true;
                 }
                 for sub in &last_seg.subscripts {
                     b = format!("{}[({}-1) as usize]", b, emit_exp(sub, false, ctx, top_level));
@@ -9573,6 +9618,7 @@ fn emit_var<'a>(
                 // `Index` (E0608).
                 if matches!(field_ty, Ty::Array(_)) {
                     res = format!("{res}.borrow()");
+                    has_borrow_guard = true;
                 }
                 for sub in &first.subscripts {
                     res = format!("{}[({}-1) as usize]", res, emit_exp(sub, false, ctx, top_level));
@@ -9598,6 +9644,7 @@ fn emit_var<'a>(
         res = format!("{}.{}", res, escape_ident(&seg.name));
         if !seg.subscripts.is_empty() && matches!(field_ty, Ty::Array(_)) {
             res = format!("{res}.borrow()");
+            has_borrow_guard = true;
         }
         for sub in &seg.subscripts {
             res = format!("{}[({}-1) as usize]", res, emit_exp(sub, false, ctx, top_level));
@@ -9610,7 +9657,7 @@ fn emit_var<'a>(
             };
         }
     }
-    res
+    (res, has_borrow_guard)
 }
 
 /// Look up the Rust type of a field on a record-shaped Modelica type. Used by

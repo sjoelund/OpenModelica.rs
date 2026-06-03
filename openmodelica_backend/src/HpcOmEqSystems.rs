@@ -400,8 +400,8 @@ fn replaceIndecesInComp(mut comp: Arc<BackendDAE::StrongComponent>, mut eqMap: m
         Deref @ BackendDAE::StrongComponent::SINGLEEQUATION { var, eqn } => {
             let mut var = (*var).clone();
             let mut eqn = (*eqn).clone();
-            eqn = eqMap.clone().borrow()[(eqn.clone()-1) as usize].clone();
-            var = varMap.clone().borrow()[(var.clone()-1) as usize].clone();
+            eqn = ({let __elt = eqMap.clone().borrow()[(eqn.clone()-1) as usize].clone(); __elt});
+            var = ({let __elt = varMap.clone().borrow()[(var.clone()-1) as usize].clone(); __elt});
             Arc::new(BackendDAE::StrongComponent::SINGLEEQUATION { eqn: eqn.clone(), var: var.clone() })
         },
         _ => {
@@ -616,7 +616,7 @@ fn simplifyNewEquations1(mut eqIdx: i32, mut eqArr: Arc<ExpandableArray::Expanda
                     let mut eqLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
                     let mut resEqLst: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
                     (eqIdcs, varIdcs, resEqLst) = tplIn.clone();
-                    let __pa0 = ::match_deref::match_deref! { match &(m.clone().borrow()[(eqIdx.clone()-1) as usize].clone()) {
+                    let __pa0 = ::match_deref::match_deref! { match &(({let __elt = m.clone().borrow()[(eqIdx.clone()-1) as usize].clone(); __elt})) {
                         Deref @ metamodelica::List::Cons { head: __pa0, tail: Deref @ metamodelica::List::Nil } => __pa0.clone(),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -635,7 +635,7 @@ fn simplifyNewEquations1(mut eqIdx: i32, mut eqArr: Arc<ExpandableArray::Expanda
                     (rhs, _) = ExpressionSimplify::simplify(rhs.clone())?;
                     repl = BackendVarTransform::emptyReplacements();
                     repl = BackendVarTransform::addReplacement(repl.clone(), varCref.clone(), rhs.clone(), None)?;
-                    updEqIdcs = mt.clone().borrow()[(varIdx.clone()-1) as usize].clone();
+                    updEqIdcs = ({let __elt = mt.clone().borrow()[(varIdx.clone()-1) as usize].clone(); __elt});
                     eqLst = BackendEquation::getList(updEqIdcs.clone(), eqArr.clone())?;
                     (eqLst, _) = BackendVarTransform::replaceEquations(eqLst.clone(), repl.clone(), None)?;
                     (resEqLst, _) = BackendVarTransform::replaceEquations(resEqLst.clone(), repl.clone(), None)?;
@@ -768,7 +768,7 @@ fn updateMatching(mut idx: i32, mut offsetTpl: (i32, i32), mut matching2: (metam
     (ass12, ass22) = matching2.clone();
     (ass11, ass21) = matching1In.clone();
     eqValue = idx.clone() + eqOffset.clone();
-    varValue = ass22.clone().borrow()[(idx.clone()-1) as usize].clone() + varOffset.clone();
+    varValue = ({let __elt = ass22.clone().borrow()[(idx.clone()-1) as usize].clone(); __elt}) + varOffset.clone();
     ass11 = {let _arr = ass11.clone(); _arr.borrow_mut()[(varValue.clone()-1) as usize] = eqValue.clone(); _arr};
     ass21 = {let _arr = ass21.clone(); _arr.borrow_mut()[(eqValue.clone()-1) as usize] = varValue.clone(); _arr};
     matching1Out = (ass11.clone(), ass21.clone());
@@ -1156,14 +1156,14 @@ fn getTornSystemCoefficients1(mut resIdxLst: Arc<metamodelica::List<i32>>, mut i
                     a_ii = BackendDAE::Var { varName: aCRef.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: ty.clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
                     a_ii = BackendVariable::setVarStartValue(a_ii.clone(), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }))?;
                     lhs = varExp(a_ii.clone())?;
-                    rhs = (h_iArr.clone().borrow()[(iIdx.clone() + 1-1) as usize].clone()).get(resIdx.clone())?;
+                    rhs = (({let __elt = h_iArr.clone().borrow()[(iIdx.clone() + 1-1) as usize].clone(); __elt})).get(resIdx.clone())?;
                     (rhs, _) = ExpressionSimplify::simplify(rhs.clone())?;
                     hs_ii = Arc::new(BackendDAE::Equation::EQUATION { exp: lhs.clone(), scalar: rhs.clone(), source: DAE::emptyElementSource().clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_DYNAMIC.clone() });
-                    hs_iTmp = hs_iArrIn.clone().borrow()[(iIdx.clone() + 1-1) as usize].clone();
+                    hs_iTmp = ({let __elt = hs_iArrIn.clone().borrow()[(iIdx.clone() + 1-1) as usize].clone(); __elt});
                     hs_iTmp = metamodelica::cons(hs_ii.clone(), hs_iTmp.clone());
                     hs_iArrTmp = {let _arr = hs_iArrIn.clone(); _arr.borrow_mut()[(iIdx.clone() + 1-1) as usize] = hs_iTmp.clone(); _arr};
                     a_iArrTmp = a_iArrIn.clone();
-                    a_iTmp = a_iArrIn.clone().borrow()[(iIdx.clone() + 1-1) as usize].clone();
+                    a_iTmp = ({let __elt = a_iArrIn.clone().borrow()[(iIdx.clone() + 1-1) as usize].clone(); __elt});
                     a_iTmp = metamodelica::cons(a_ii.clone(), a_iTmp.clone());
                     a_iArrTmp = {let _arr = a_iArrIn.clone(); _arr.borrow_mut()[(iIdx.clone() + 1-1) as usize] = a_iTmp.clone(); _arr};
                     (hs_iArrTmp, a_iArrTmp) = getTornSystemCoefficients1(resIdxRest.clone(), iIdx.clone(), h_iArr.clone(), hs_iArrTmp.clone(), a_iArrTmp.clone(), tornSysIdx.clone())?;
@@ -1195,19 +1195,19 @@ fn getTornSystemCoefficients1(mut resIdxLst: Arc<metamodelica::List<i32>>, mut i
                     aCRef = ComponentReferenceBasics::makeCrefIdent((aName.clone()).clone(), ty.clone(), metamodelica::nil());
                     a_ii = BackendDAE::Var { varName: aCRef.clone(), varKind: openmodelica_backend_types::BackendDAE::VarKind::VARIABLE, varDirection: openmodelica_frontend_types::DAE::VarDirection::BIDIR, varParallelism: openmodelica_frontend_types::DAE::VarParallelism::NON_PARALLEL, varType: ty.clone(), bindExp: None, tplExp: None, arryDim: metamodelica::nil(), source: DAE::emptyElementSource().clone(), values: None, tearingSelectOption: None, hideResult: None, comment: None, connectorType: Arc::new(openmodelica_frontend_types::DAE::ConnectorType::NON_CONNECTOR), innerOuter: openmodelica_frontend_types::DAE::VarInnerOuter::NOT_INNER_OUTER, unreplaceable: false, initNonlinear: false, encrypted: false };
                     a_ii = BackendVariable::setVarStartValue(a_ii.clone(), Arc::new(DAE::Exp::RCONST { real: metamodelica::OrderedFloat(0.0_f64) }))?;
-                    d_lst = a_iArrIn.clone().borrow()[(1-1) as usize].clone();
+                    d_lst = ({let __elt = a_iArrIn.clone().borrow()[(1-1) as usize].clone(); __elt});
                     dVar = (d_lst.clone()).get(resIdx.clone())?;
                     dExp = varExp(dVar.clone())?;
                     lhs = varExp(a_ii.clone())?;
-                    rhs = (h_iArr.clone().borrow()[(iIdx.clone() + 1-1) as usize].clone()).get(resIdx.clone())?;
+                    rhs = (({let __elt = h_iArr.clone().borrow()[(iIdx.clone() + 1-1) as usize].clone(); __elt})).get(resIdx.clone())?;
                     rhs = Arc::new(DAE::Exp::BINARY { exp1: rhs.clone(), operator: DAE::Operator::SUB { ty: ty.clone() }, exp2: dExp.clone() });
                     (rhs, _) = ExpressionSimplify::simplify(rhs.clone())?;
                     hs_ii = Arc::new(BackendDAE::Equation::EQUATION { exp: lhs.clone(), scalar: rhs.clone(), source: DAE::emptyElementSource().clone(), attr: BackendDAE::EQ_ATTR_DEFAULT_DYNAMIC.clone() });
-                    hs_iTmp = hs_iArrIn.clone().borrow()[(iIdx.clone() + 1-1) as usize].clone();
+                    hs_iTmp = ({let __elt = hs_iArrIn.clone().borrow()[(iIdx.clone() + 1-1) as usize].clone(); __elt});
                     hs_iTmp = metamodelica::cons(hs_ii.clone(), hs_iTmp.clone());
                     hs_iArrTmp = {let _arr = hs_iArrIn.clone(); _arr.borrow_mut()[(iIdx.clone() + 1-1) as usize] = hs_iTmp.clone(); _arr};
                     a_iArrTmp = a_iArrIn.clone();
-                    a_iTmp = a_iArrIn.clone().borrow()[(iIdx.clone() + 1-1) as usize].clone();
+                    a_iTmp = ({let __elt = a_iArrIn.clone().borrow()[(iIdx.clone() + 1-1) as usize].clone(); __elt});
                     a_iTmp = metamodelica::cons(a_ii.clone(), a_iTmp.clone());
                     a_iArrTmp = {let _arr = a_iArrIn.clone(); _arr.borrow_mut()[(iIdx.clone() + 1-1) as usize] = a_iTmp.clone(); _arr};
                     (hs_iArrTmp, a_iArrTmp) = getTornSystemCoefficients1(resIdxRest.clone(), iIdx.clone(), h_iArr.clone(), hs_iArrTmp.clone(), a_iArrTmp.clone(), tornSysIdx.clone())?;
@@ -1260,7 +1260,7 @@ fn getResidualExpressions1(mut i: i32, mut resExpsIn: Arc<metamodelica::List<Arc
             let mut h_i: Arc<metamodelica::List<Arc<DAE::Exp>>> = h_i.clone();
             let mut h_iArr: metamodelica::Array<Arc<metamodelica::List<Arc<DAE::Exp>>>> = h_iArr.clone();
             let mut repl: BackendVarTransform::VariableReplacements = repl.clone();
-            repl = replArr.clone().borrow()[(i.clone() + 1-1) as usize].clone();
+            repl = ({let __elt = replArr.clone().borrow()[(i.clone() + 1-1) as usize].clone(); __elt});
             (h_i, _) = BackendVarTransform::replaceExpList1(resExpsIn.clone(), repl.clone(), None)?;
             h_iArr = {let _arr = h_iArrIn.clone(); _arr.borrow_mut()[(i.clone() + 1-1) as usize] = h_i.clone(); _arr};
             Ok(h_iArr.clone())
@@ -1734,7 +1734,7 @@ fn generateCramerEqs(mut varIdcs: Arc<metamodelica::List<i32>>, mut dim: i32, mu
                     let mut xEq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
                     let mut xVar: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
                     let true = (intNe(varIdx.clone(), 1)) else { bail!("pattern mismatch") };
-                    xVar = vectorX.clone().borrow()[(varIdx.clone()-1) as usize].clone();
+                    xVar = ({let __elt = vectorX.clone().borrow()[(varIdx.clone()-1) as usize].clone(); __elt});
                     xExp = BackendVariable::varExp(xVar.clone())?;
                     ty = Expression::r#typeof(xExp.clone())?;
                     detAexp = makeDetExp(varIdx.clone() - 1, (literal!("a")).clone(), 1, 1, ty.clone())?;
@@ -1774,13 +1774,13 @@ fn generateCramerEqs(mut varIdcs: Arc<metamodelica::List<i32>>, mut dim: i32, mu
                     let mut xEq: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
                     let mut xVar: BackendDAE::Var = <BackendDAE::Var as ::std::default::Default>::default();
                     varIdx = 1;
-                    xVar = vectorX.clone().borrow()[(varIdx.clone()-1) as usize].clone();
+                    xVar = ({let __elt = vectorX.clone().borrow()[(varIdx.clone()-1) as usize].clone(); __elt});
                     xExp = BackendVariable::varExp(xVar.clone())?;
                     ty = Expression::r#typeof(xExp.clone())?;
-                    detAexp = (matrixA.clone().borrow()[(1-1) as usize].clone()).get(1)?;
+                    detAexp = (({let __elt = matrixA.clone().borrow()[(1-1) as usize].clone(); __elt})).get(1)?;
                     rangeX = List::intRange2(2, dim.clone());
-                    detAiexp = vectorB.clone().borrow()[(1-1) as usize].clone();
-                    detAiExpLst = List::map1(rangeX.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), matrixA.clone().borrow()[(1-1) as usize].clone())?;
+                    detAiexp = ({let __elt = vectorB.clone().borrow()[(1-1) as usize].clone(); __elt});
+                    detAiExpLst = List::map1(rangeX.clone(), std::sync::Arc::new(fnptr!(List::getIndexFirst, i32, _)), ({let __elt = matrixA.clone().borrow()[(1-1) as usize].clone(); __elt}))?;
                     xLst = List::map(List::map1(rangeX.clone(), (std::sync::Arc::new(Array::getIndexFirst) as std::sync::Arc<dyn ::std::ops::Fn(i32, _) -> Result<_> + 'static>), vectorX.clone())?, (std::sync::Arc::new(BackendVariable::varExp) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<Arc<DAE::Exp>> + 'static>))?;
                     detAiExpLst = List::threadMap(xLst.clone(), detAiExpLst.clone(), (std::sync::Arc::new({ let __pe_b1 = DAE::Operator::MUL { ty: ty.clone() }; move |__pe_a0, __pe_a2| Ok(Expression::makeBinaryExp(__pe_a0, __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>))?;
                     detAiexp = List::foldr(detAiExpLst.clone(), (std::sync::Arc::new({ let __pe_b1 = DAE::Operator::SUB { ty: ty.clone() }; move |__pe_a0, __pe_a2| Ok(Expression::makeBinaryExp(__pe_a0, __pe_b1.clone(), __pe_a2)) }) as std::sync::Arc<dyn ::std::ops::Fn(Arc<DAE::Exp>, Arc<DAE::Exp>) -> Result<Arc<DAE::Exp>> + 'static>), detAiexp.clone())?;
@@ -1858,10 +1858,10 @@ fn getNewChioEntry(mut col: i32, mut row: i32, mut syst: EqSys, mut iter: i32, m
     matrixA = __pa2.clone();
     dim = __pa3.clone();
     (matrixB, vecAi, addEqs, addVars) = foldIn.clone();
-    a11 = (matrixA.clone().borrow()[(1-1) as usize].clone()).get(1)?;
-    ar1 = (matrixA.clone().borrow()[(row.clone()-1) as usize].clone()).get(1)?;
-    a1c = (matrixA.clone().borrow()[(1-1) as usize].clone()).get(col.clone())?;
-    arc = (matrixA.clone().borrow()[(row.clone()-1) as usize].clone()).get(col.clone())?;
+    a11 = (({let __elt = matrixA.clone().borrow()[(1-1) as usize].clone(); __elt})).get(1)?;
+    ar1 = (({let __elt = matrixA.clone().borrow()[(row.clone()-1) as usize].clone(); __elt})).get(1)?;
+    a1c = (({let __elt = matrixA.clone().borrow()[(1-1) as usize].clone(); __elt})).get(col.clone())?;
+    arc = (({let __elt = matrixA.clone().borrow()[(row.clone()-1) as usize].clone(); __elt})).get(col.clone())?;
     ty = Expression::r#typeof(a11.clone())?;
     detExp = Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: a11.clone(), operator: DAE::Operator::MUL { ty: ty.clone() }, exp2: arc.clone() }), operator: DAE::Operator::SUB { ty: ty.clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: ar1.clone(), operator: DAE::Operator::MUL { ty: ty.clone() }, exp2: a1c.clone() }) });
     (detExp, _) = ExpressionSimplify::simplify(detExp.clone())?;
@@ -1874,8 +1874,8 @@ fn getNewChioEntry(mut col: i32, mut row: i32, mut syst: EqSys, mut iter: i32, m
     addEqs = metamodelica::cons(detAeq.clone(), addEqs.clone());
     addVars = metamodelica::cons(detAVar.clone(), addVars.clone());
     if col.clone() == dim.clone() {
-        b1 = vectorB.clone().borrow()[(1-1) as usize].clone();
-        br = vectorB.clone().borrow()[(row.clone()-1) as usize].clone();
+        b1 = ({let __elt = vectorB.clone().borrow()[(1-1) as usize].clone(); __elt});
+        br = ({let __elt = vectorB.clone().borrow()[(row.clone()-1) as usize].clone(); __elt});
         detExp = Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: a11.clone(), operator: DAE::Operator::MUL { ty: ty.clone() }, exp2: br.clone() }), operator: DAE::Operator::SUB { ty: ty.clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: ar1.clone(), operator: DAE::Operator::MUL { ty: ty.clone() }, exp2: b1.clone() }) });
         (detExp, _) = ExpressionSimplify::simplify(detExp.clone())?;
         detVarName = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("$det_b")); __mm_s.push_str(&*intString(iter.clone())); __mm_s.push_str(&*literal!("__")); __mm_s.push_str(&*intString(row.clone() - 1)); __mm_s.push_str(&*literal!("_")); __mm_s.push_str(&*intString(col.clone() - 1)); ArcStr::from(__mm_s) }).clone();
@@ -1998,10 +1998,10 @@ fn determinant(mut matrix: metamodelica::Array<Arc<metamodelica::List<Arc<DAE::E
             let mut det: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let true = (metamodelica::arrayLength(matrix.clone()) == 2) else { bail!("pattern mismatch") };
-            a11 = (matrix.clone().borrow()[(1-1) as usize].clone()).get(1)?;
-            a12 = (matrix.clone().borrow()[(1-1) as usize].clone()).get(2)?;
-            a21 = (matrix.clone().borrow()[(2-1) as usize].clone()).get(1)?;
-            a22 = (matrix.clone().borrow()[(2-1) as usize].clone()).get(2)?;
+            a11 = (({let __elt = matrix.clone().borrow()[(1-1) as usize].clone(); __elt})).get(1)?;
+            a12 = (({let __elt = matrix.clone().borrow()[(1-1) as usize].clone(); __elt})).get(2)?;
+            a21 = (({let __elt = matrix.clone().borrow()[(2-1) as usize].clone(); __elt})).get(1)?;
+            a22 = (({let __elt = matrix.clone().borrow()[(2-1) as usize].clone(); __elt})).get(2)?;
             ty = Expression::r#typeof(a11.clone())?;
             det = Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: a11.clone(), operator: DAE::Operator::MUL { ty: ty.clone() }, exp2: a22.clone() }), operator: DAE::Operator::SUB { ty: ty.clone() }, exp2: Arc::new(DAE::Exp::BINARY { exp1: a12.clone(), operator: DAE::Operator::MUL { ty: ty.clone() }, exp2: a21.clone() }) });
             (det, _) = ExpressionSimplify::simplify(det.clone())?;
@@ -2027,15 +2027,15 @@ fn determinant(mut matrix: metamodelica::Array<Arc<metamodelica::List<Arc<DAE::E
             let mut det: Arc<DAE::Exp> = Arc::new(<DAE::Exp as ::std::default::Default>::default());
             let mut ty: Arc<DAE::Type> = Arc::new(DAE::Type::T_NORETCALL);
             let true = (metamodelica::arrayLength(matrix.clone()) == 3) else { bail!("pattern mismatch") };
-            a11 = (matrix.clone().borrow()[(1-1) as usize].clone()).get(1)?;
-            a12 = (matrix.clone().borrow()[(1-1) as usize].clone()).get(2)?;
-            a13 = (matrix.clone().borrow()[(1-1) as usize].clone()).get(3)?;
-            a21 = (matrix.clone().borrow()[(2-1) as usize].clone()).get(1)?;
-            a22 = (matrix.clone().borrow()[(2-1) as usize].clone()).get(2)?;
-            a23 = (matrix.clone().borrow()[(2-1) as usize].clone()).get(3)?;
-            a31 = (matrix.clone().borrow()[(3-1) as usize].clone()).get(1)?;
-            a32 = (matrix.clone().borrow()[(3-1) as usize].clone()).get(2)?;
-            a33 = (matrix.clone().borrow()[(3-1) as usize].clone()).get(3)?;
+            a11 = (({let __elt = matrix.clone().borrow()[(1-1) as usize].clone(); __elt})).get(1)?;
+            a12 = (({let __elt = matrix.clone().borrow()[(1-1) as usize].clone(); __elt})).get(2)?;
+            a13 = (({let __elt = matrix.clone().borrow()[(1-1) as usize].clone(); __elt})).get(3)?;
+            a21 = (({let __elt = matrix.clone().borrow()[(2-1) as usize].clone(); __elt})).get(1)?;
+            a22 = (({let __elt = matrix.clone().borrow()[(2-1) as usize].clone(); __elt})).get(2)?;
+            a23 = (({let __elt = matrix.clone().borrow()[(2-1) as usize].clone(); __elt})).get(3)?;
+            a31 = (({let __elt = matrix.clone().borrow()[(3-1) as usize].clone(); __elt})).get(1)?;
+            a32 = (({let __elt = matrix.clone().borrow()[(3-1) as usize].clone(); __elt})).get(2)?;
+            a33 = (({let __elt = matrix.clone().borrow()[(3-1) as usize].clone(); __elt})).get(3)?;
             ty = Expression::r#typeof(a11.clone())?;
             s1 = Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: a11.clone(), operator: DAE::Operator::MUL { ty: ty.clone() }, exp2: a22.clone() }), operator: DAE::Operator::MUL { ty: ty.clone() }, exp2: a33.clone() });
             s2 = Arc::new(DAE::Exp::BINARY { exp1: Arc::new(DAE::Exp::BINARY { exp1: a12.clone(), operator: DAE::Operator::MUL { ty: ty.clone() }, exp2: a23.clone() }), operator: DAE::Operator::MUL { ty: ty.clone() }, exp2: a31.clone() });
@@ -2098,7 +2098,7 @@ fn transposeMatrix(mut matrixIn: metamodelica::Array<Arc<metamodelica::List<Arc<
 fn transposeMatrix1(mut idx: i32, mut matrixOrig: metamodelica::Array<Arc<metamodelica::List<Arc<DAE::Exp>>>>, mut matrixIn: metamodelica::Array<Arc<metamodelica::List<Arc<DAE::Exp>>>>) -> Result<metamodelica::Array<Arc<metamodelica::List<Arc<DAE::Exp>>>>> {
     let mut matrixOut: metamodelica::Array<Arc<metamodelica::List<Arc<DAE::Exp>>>> = Default::default();
     let mut row: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
-    row = matrixOrig.clone().borrow()[(idx.clone()-1) as usize].clone();
+    row = ({let __elt = matrixOrig.clone().borrow()[(idx.clone()-1) as usize].clone(); __elt});
     matrixOut = List::threadFold(List::intRange(metamodelica::arrayLength(matrixOrig.clone())), row.clone(), (std::sync::Arc::new(Array::consToElement) as std::sync::Arc<dyn ::std::ops::Fn(i32, _, _) -> Result<_> + 'static>), matrixIn.clone())?;
     Ok(matrixOut)
 }
@@ -2343,7 +2343,7 @@ fn pts_traverseCompsAndParallelize(mut inComps: Arc<metamodelica::List<Arc<Backe
                     (graph, meta) = HpcOmTaskGraph::getEmptyTaskGraph(numEqs.clone(), numEqs.clone(), numVars.clone());
                     graph = buildMatchedGraphForTornSystem(1, eqIdcsSys.clone(), varIdcLstSys.clone(), m.clone(), mT.clone(), graph.clone())?;
                     meta = buildTaskgraphMetaForTornSystem(graph.clone(), otherEqLst.clone(), otherVarLst.clone(), meta.clone())?;
-                    simEqSysIdcs = sccSimEqMapping.clone().borrow()[(compIdxIn.clone()-1) as usize].clone();
+                    simEqSysIdcs = ({let __elt = sccSimEqMapping.clone().borrow()[(compIdxIn.clone()-1) as usize].clone(); __elt});
                     resSimEqSysIdcs = List::map1r(List::intRange(numResEqs.clone()), (std::sync::Arc::new(fnptr!(intSub, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), listHead(simEqSysIdcs.clone())?)?;
                     otherSimEqSysIdcs = List::map1r(List::intRange2(numResEqs.clone() + 1, numResEqs.clone() + numEqs.clone()), (std::sync::Arc::new(fnptr!(intSub, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<i32> + 'static>), listHead(simEqSysIdcs.clone())?)?;
                     otherSimEqMapping = metamodelica::arrayFromVec(List::map(otherSimEqSysIdcs.clone(), std::sync::Arc::new(fnptr!(List::create, _)))?.into_iter().cloned().collect());

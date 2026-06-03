@@ -1347,11 +1347,11 @@ pub fn getCurrentComponent() -> Result<(ArcStr, i32, i32, i32, i32, bool, ArcStr
     r#str = ((match tpl.clone() {
         None => literal!(""),
         Some((mut astr, mut ainfo, mut afunc)) => {
-            r#str = (astr.clone().borrow()[(1-1) as usize].clone()).clone();
+            r#str = (({let __elt = astr.clone().borrow()[(1-1) as usize].clone(); __elt})).clone();
             if r#str.clone() != literal!("") {
-                func = afunc.clone().borrow()[(1-1) as usize].clone();
+                func = ({let __elt = afunc.clone().borrow()[(1-1) as usize].clone(); __elt});
                 r#str = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("Variable ")); __mm_s.push_str(&*func((r#str.clone()).clone())?); __mm_s.push_str(&*literal!(": ")); ArcStr::from(__mm_s) }).clone();
-                info = ainfo.clone().borrow()[(1-1) as usize].clone();
+                info = ({let __elt = ainfo.clone().borrow()[(1-1) as usize].clone(); __elt});
                 sline = info.lineNumberStart.clone();
                 scol = info.columnNumberStart.clone();
                 eline = info.lineNumberEnd.clone();

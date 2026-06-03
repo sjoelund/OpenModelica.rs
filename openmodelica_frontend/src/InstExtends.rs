@@ -245,7 +245,7 @@ fn instExtendsList(mut inCache: FCore::Cache, mut inEnv: FCore::Graph, mut inIH:
                         outNormalAlgs = List::unionAppendListOnTrue(alg1.clone().reverse(), outNormalAlgs.clone(), std::sync::Arc::new(fnptr!(valueEq, _, _)))?;
                         outInitialAlgs = List::unionAppendListOnTrue(ialg1.clone().reverse(), outInitialAlgs.clone(), std::sync::Arc::new(fnptr!(valueEq, _, _)))?;
                     }
-                    outCache = cacheArr.clone().borrow()[(1-1) as usize].clone();
+                    outCache = ({let __elt = cacheArr.clone().borrow()[(1-1) as usize].clone(); __elt});
                     Ok(((), outCache.clone(), outComments.clone(), outElements.clone(), outIH.clone(), outInitialAlgs.clone(), outInitialEqs.clone(), outMod.clone(), outNormalAlgs.clone(), outNormalEqs.clone()))
                 }
                 _ => bail!("nomatch"),
@@ -955,7 +955,7 @@ fn fixElement(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::
                     let mut elt2: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
                     let mut attr: SCode::Attributes = <SCode::Attributes as ::std::default::Default>::default();
                     let mut env = (*env).clone();
-                    let (__pa8, __pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7, __pa9) = ::match_deref::match_deref! { match &(Lookup::lookupIdentLocal(inCache.clone().borrow()[(1-1) as usize].clone(), env.clone(), (var_field!((**elt).name, SCode::Element::COMPONENT).clone()).clone())?) {
+                    let (__pa8, __pa0, __pa1, __pa2, __pa3, __pa4, __pa5, __pa6, __pa7, __pa9) = ::match_deref::match_deref! { match &(Lookup::lookupIdentLocal(({let __elt = inCache.clone().borrow()[(1-1) as usize].clone(); __elt}), env.clone(), (var_field!((**elt).name, SCode::Element::COMPONENT).clone()).clone())?) {
                         (_, _, __pa8 @ Deref @ SCode::Element::COMPONENT { name: __pa0, prefixes: __pa1, attributes: __pa2 @ SCode::Attributes { .. }, typeSpec: __pa3, modifications: __pa4, comment: __pa5, condition: __pa6, info: __pa7 }, _, _, __pa9) => (__pa8.clone(), __pa0.clone(), __pa1.clone(), __pa2.clone(), __pa3.clone(), __pa4.clone(), __pa5.clone(), __pa6.clone(), __pa7.clone(), __pa9.clone()),
                         _ => bail!("pattern mismatch"),
                     } };
@@ -1613,7 +1613,7 @@ fn fixPath(mut inCache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Gra
                 _ => {
                     let mut path: Arc<Absyn::Path> = Arc::new(<Absyn::Path as ::std::default::Default>::default());
                     let mut cache: FCore::Cache = FCore::Cache::NO_CACHE;
-                    (cache, path) = Inst::makeFullyQualified(inCache.clone().borrow()[(1-1) as usize].clone(), inEnv.clone(), inPath.clone())?;
+                    (cache, path) = Inst::makeFullyQualified(({let __elt = inCache.clone().borrow()[(1-1) as usize].clone(); __elt}), inEnv.clone(), inPath.clone())?;
                     path = FGraph::pathStripGraphScopePrefix(path.clone(), inEnv.clone(), false)?;
                     {let _arr = inCache.clone(); _arr.borrow_mut()[(1-1) as usize] = cache.clone(); _arr};
                     Ok(path.clone())
@@ -1694,7 +1694,7 @@ fn fixCref(mut cache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Graph
                     let mut denv: FCore::Graph = <FCore::Graph as ::std::default::Default>::default();
                     let mut cref = (*cref).clone();
                     id = (AbsynUtil::crefFirstIdent(cref.clone())?).clone();
-                    (denv, id) = lookupVarNoErrorMessage(cache.clone().borrow()[(1-1) as usize].clone(), env.clone(), (id.clone()).clone())?;
+                    (denv, id) = lookupVarNoErrorMessage(({let __elt = cache.clone().borrow()[(1-1) as usize].clone(); __elt}), env.clone(), (id.clone()).clone())?;
                     denv = FGraph::openScope(denv.clone(), openmodelica_frontend_types::SCode::Encapsulated::ENCAPSULATED, (id.clone()).clone(), None)?;
                     cref = AbsynUtil::crefReplaceFirstIdent(cref.clone(), FGraph::getGraphName(denv.clone())?)?;
                     cref = FGraph::crefStripGraphScopePrefix(cref.clone(), env.clone(), false)?;
@@ -1712,7 +1712,7 @@ fn fixCref(mut cache: metamodelica::Array<FCore::Cache>, mut inEnv: FCore::Graph
                     let mut c: Arc<SCode::Element> = Arc::new(<SCode::Element as ::std::default::Default>::default());
                     let mut cref = (*cref).clone();
                     id = (AbsynUtil::crefFirstIdent(cref.clone())?).clone();
-                    (_, c, denv) = Lookup::lookupClassIdent(cache.clone().borrow()[(1-1) as usize].clone(), env.clone(), (id.clone()).clone(), None)?;
+                    (_, c, denv) = Lookup::lookupClassIdent(({let __elt = cache.clone().borrow()[(1-1) as usize].clone(); __elt}), env.clone(), (id.clone()).clone(), None)?;
                     id = (SCodeUtil::getElementName(c.clone())?).clone();
                     denv = FGraph::openScope(denv.clone(), openmodelica_frontend_types::SCode::Encapsulated::ENCAPSULATED, (id.clone()).clone(), None)?;
                     cref = AbsynUtil::crefReplaceFirstIdent(cref.clone(), FGraph::getGraphName(denv.clone())?)?;

@@ -219,13 +219,13 @@ pub fn toList<T: Clone + 'static>(mut exarray: Arc<ExpandableArray<T>>) -> Resul
     if numberOfElements.clone() == 0 {
         listT = metamodelica::nil();
     } else if lastUsedIndex.clone() == 1 {
-        listT = list![Util::getOption(data.borrow()[(1-1) as usize].clone())?];
+        listT = list![Util::getOption(({let __elt = data.borrow()[(1-1) as usize].clone(); __elt}))?];
     } else {
         listT = ({
         let mut __acc: Arc<metamodelica::List<_>> = metamodelica::nil();
         for mut i in (1..=lastUsedIndex.clone()).into_iter() {
-            if !(isSome(data.borrow()[(i.clone()-1) as usize].clone())) { continue; }
-            let __x = Util::getOption(data.borrow()[(i.clone()-1) as usize].clone())?;
+            if !(isSome(({let __elt = data.borrow()[(i.clone()-1) as usize].clone(); __elt}))) { continue; }
+            let __x = Util::getOption(({let __elt = data.borrow()[(i.clone()-1) as usize].clone(); __elt}))?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()

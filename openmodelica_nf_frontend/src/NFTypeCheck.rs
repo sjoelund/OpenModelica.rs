@@ -529,7 +529,7 @@ fn checkOverloadedBinaryScalarArray2(mut exp1: Arc<Expression::NFExpression>, mu
                 e2 = metamodelica::Dangerous::arrayGetNoBoundsChecking(var_field!((*exp2).elements, Expression::NFExpression::ARRAY).clone(), i.clone());
                 unsafe { metamodelica::Dangerous::arrayInitSlot(arr.clone(), i.clone(), (checkOverloadedBinaryScalarArray2(exp1.clone(), type1.clone(), var1.clone(), op.clone(), e2.clone(), ty.clone(), var2.clone(), candidates.clone(), context.clone(), info.clone())?).0) };
             }
-            outType = Type::setArrayElementType(var_field!((*exp2).ty, Expression::NFExpression::ARRAY).clone(), Expression::typeOf(arr.borrow()[(1-1) as usize].clone()));
+            outType = Type::setArrayElementType(var_field!((*exp2).ty, Expression::NFExpression::ARRAY).clone(), Expression::typeOf(({let __elt = arr.borrow()[(1-1) as usize].clone(); __elt})));
             (Expression::makeArray(outType.clone(), arr.clone(), false), outType.clone())
         },
         _ => matchOverloadedBinaryOperator(exp1.clone(), type1.clone(), var1.clone(), op.clone(), exp2.clone(), type2.clone(), var2.clone(), candidates.clone(), context.clone(), info.clone(), true)?,
@@ -577,7 +577,7 @@ fn checkOverloadedBinaryArrayScalar2(mut exp1: Arc<Expression::NFExpression>, mu
                 e1 = metamodelica::Dangerous::arrayGetNoBoundsChecking(var_field!((*exp1).elements, Expression::NFExpression::ARRAY).clone(), i.clone());
                 unsafe { metamodelica::Dangerous::arrayInitSlot(arr.clone(), i.clone(), (checkOverloadedBinaryArrayScalar2(e1.clone(), ty.clone(), var1.clone(), op.clone(), exp2.clone(), type2.clone(), var2.clone(), candidates.clone(), context.clone(), info.clone())?).0) };
             }
-            outType = Type::setArrayElementType(var_field!((*exp1).ty, Expression::NFExpression::ARRAY).clone(), Expression::typeOf(arr.borrow()[(1-1) as usize].clone()));
+            outType = Type::setArrayElementType(var_field!((*exp1).ty, Expression::NFExpression::ARRAY).clone(), Expression::typeOf(({let __elt = arr.borrow()[(1-1) as usize].clone(); __elt})));
             (Expression::makeArray(outType.clone(), arr.clone(), false), outType.clone())
         },
         _ => matchOverloadedBinaryOperator(exp1.clone(), type1.clone(), var1.clone(), op.clone(), exp2.clone(), type2.clone(), var2.clone(), candidates.clone(), context.clone(), info.clone(), true)?,
@@ -1433,10 +1433,10 @@ pub fn matchComplexTypes(mut actualType: Arc<Type::NFType>, mut expectedType: Ar
             elem_arr = metamodelica::arrayCreate(metamodelica::arrayLength(comps1.clone()), Arc::new(Expression::NFExpression::INTEGER { value: 0 }));
             dims = Type::arrayDims(Expression::typeOf(expression.clone()));
             for mut i in (1..=metamodelica::arrayLength(comps1.clone())).rev() {
-                ty = Component::getType(InstNode::component(comps1.borrow()[(i.clone()-1) as usize].clone())?)?;
+                ty = Component::getType(InstNode::component(({let __elt = comps1.borrow()[(i.clone()-1) as usize].clone(); __elt}))?)?;
                 ty = Type::liftArrayRightList(ty.clone(), dims.clone());
                 {
-                    let __cell0 = Arc::new(Expression::NFExpression::RECORD_ELEMENT { recordExp: expression.clone(), index: i.clone(), fieldName: (InstNode::name(comps1.borrow()[(i.clone()-1) as usize].clone())?).clone(), ty: ty.clone() });
+                    let __cell0 = Arc::new(Expression::NFExpression::RECORD_ELEMENT { recordExp: expression.clone(), index: i.clone(), fieldName: (InstNode::name(({let __elt = comps1.borrow()[(i.clone()-1) as usize].clone(); __elt}))?).clone(), ty: ty.clone() });
                     unsafe { metamodelica::Dangerous::arrayInitSlot(elem_arr.clone().clone(), i.clone(), __cell0); }
                 }
             }
@@ -1474,9 +1474,9 @@ pub fn matchComplexComponents(mut actualComponents: metamodelica::Array<Arc<Inst
         return Ok((matchedExpressions.clone(), matchKind.clone()));
     }
     for mut i in 1..=metamodelica::arrayLength(actualComponents.clone()) {
-        enode = expectedComponents.borrow()[(i.clone()-1) as usize].clone();
+        enode = ({let __elt = expectedComponents.borrow()[(i.clone()-1) as usize].clone(); __elt});
         ecomp = InstNode::component(enode.clone())?;
-        anode = actualComponents.borrow()[(i.clone()-1) as usize].clone();
+        anode = ({let __elt = actualComponents.borrow()[(i.clone()-1) as usize].clone(); __elt});
         if InstNode::name(anode.clone())? == InstNode::name(enode.clone())? {
             idx = i.clone();
         } else {
@@ -1486,13 +1486,13 @@ pub fn matchComplexComponents(mut actualComponents: metamodelica::Array<Arc<Inst
                 matchKind = MatchKind::NOT_COMPATIBLE.clone();
                 return Ok((matchedExpressions.clone(), matchKind.clone()));
             }
-            anode = actualComponents.borrow()[(idx.clone()-1) as usize].clone();
+            anode = ({let __elt = actualComponents.borrow()[(idx.clone()-1) as usize].clone(); __elt});
         }
         if i.clone() != idx.clone() {
             matchKind = MatchKind::CAST.clone();
         }
         acomp = InstNode::component(anode.clone())?;
-        e = expressions.borrow()[(idx.clone()-1) as usize].clone();
+        e = ({let __elt = expressions.borrow()[(idx.clone()-1) as usize].clone(); __elt});
         (e, _, mk) = matchTypes(Component::getType(acomp.clone())?, Component::getType(ecomp.clone())?, e.clone(), options.clone())?;
         matchedExpressions = metamodelica::cons(e.clone(), matchedExpressions.clone());
         if mk.clone() == MatchKind::CAST.clone() {

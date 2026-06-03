@@ -179,7 +179,7 @@ fn getChangedEqnsAndLowest(mut index: i32, mut ass2: metamodelica::Array<i32>, m
     let mut oAcc: Arc<metamodelica::List<i32>> = iAcc.clone();
     let mut oLowest: i32 = iLowest.clone();
     for mut i in (1..=index.clone()).rev() {
-        oAcc = List::consOnTrue(intLt(ass2.borrow()[(i.clone()-1) as usize].clone(), 1), i.clone(), oAcc.clone());
+        oAcc = List::consOnTrue(intLt(({let __elt = ass2.borrow()[(i.clone()-1) as usize].clone(); __elt}), 1), i.clone(), oAcc.clone());
         oLowest = i.clone();
     }
     (oAcc, oLowest)
@@ -411,9 +411,9 @@ fn unassignedContinuesEqns(mut eindx: i32, mut vars: BackendDAE::Variables, mut 
                     let mut unassignedEqns = (*unassignedEqns).clone();
                     let mut eqnsLst = (*eqnsLst).clone();
                     let mut discEqns = (*discEqns).clone();
-                    vindx = ass2.borrow()[(eindx.clone()-1) as usize].clone();
+                    vindx = ({let __elt = ass2.borrow()[(eindx.clone()-1) as usize].clone(); __elt});
                     ba = intLt(vindx.clone(), 1);
-                    varlst = m.borrow()[(eindx.clone()-1) as usize].clone();
+                    varlst = ({let __elt = m.borrow()[(eindx.clone()-1) as usize].clone(); __elt});
                     varlst = List::map(varlst.clone(), Arc::new(fnptr!(intAbs, i32)))?;
                     vlst = List::map1r(varlst.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), vars.clone())?;
                     b = List::all(vlst.clone(), (std::sync::Arc::new(fnptr!(BackendVariable::isVarDiscrete, BackendDAE::Var)) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Var) -> Result<bool> + 'static>))?;
@@ -429,7 +429,7 @@ fn unassignedContinuesEqns(mut eindx: i32, mut vars: BackendDAE::Variables, mut 
             ::match_deref::match_deref! { match &__mc_input {
                 (unassignedEqns, eqnsLst, discEqns) => {
                     let mut vindx: i32 = 0;
-                    vindx = ass2.borrow()[(eindx.clone()-1) as usize].clone();
+                    vindx = ({let __elt = ass2.borrow()[(eindx.clone()-1) as usize].clone(); __elt});
                     let false = (intGt(vindx.clone(), 0)) else { bail!("pattern mismatch") };
                     Ok((metamodelica::cons(eindx.clone(), unassignedEqns.clone()), metamodelica::cons(eindx.clone(), eqnsLst.clone()), discEqns.clone()))
                 }
@@ -448,7 +448,7 @@ fn statesInEquations(mut eindx: i32, mut inTpl: (metamodelica::Array<Arc<metamod
     let mut statemark: metamodelica::Array<i32> = Default::default();
     let mut mark: i32 = 0;
     (m, statemark, mark) = inTpl.clone();
-    vars = List::removeOnTrue(0, (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), m.borrow()[(eindx.clone()-1) as usize].clone())?;
+    vars = List::removeOnTrue(0, (std::sync::Arc::new(fnptr!(intLt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), ({let __elt = m.borrow()[(eindx.clone()-1) as usize].clone(); __elt}))?;
     vars = List::map(vars.clone(), Arc::new(fnptr!(intAbs, i32)))?;
     vars = List::removeOnTrue((statemark.clone(), mark.clone()), (std::sync::Arc::new(fnptr!(isMarked, (metamodelica::Array<i32>, i32), i32)) as std::sync::Arc<dyn ::std::ops::Fn((metamodelica::Array<i32>, i32), i32) -> Result<bool> + 'static>), vars.clone())?;
     List::fold1(vars.clone(), (std::sync::Arc::new(markTrue) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32, metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> + 'static>), mark.clone(), statemark.clone())?;
@@ -461,7 +461,7 @@ fn isMarked(mut ass: (metamodelica::Array<i32>, i32), mut indx: i32) -> bool {
     let mut arr: metamodelica::Array<i32> = Default::default();
     let mut mark: i32 = 0;
     (arr, mark) = ass.clone();
-    b = intEq(arr.borrow()[(intAbs(indx.clone())-1) as usize].clone(), mark.clone());
+    b = intEq(({let __elt = arr.borrow()[(intAbs(indx.clone())-1) as usize].clone(); __elt}), mark.clone());
     b
 }
 
@@ -550,7 +550,7 @@ fn collectVarEqns(mut varIdcsIn: Arc<metamodelica::List<i32>>, mut mT: metamodel
     for mut varIdx in &*varIdcsIn.clone() {
         let mut varIdx = varIdx.clone();
         if intLt(varIdx.clone(), numVars.clone()) {
-            eqIdcs = List::map(mT.borrow()[(varIdx.clone()-1) as usize].clone(), Arc::new(fnptr!(intAbs, i32)))?;
+            eqIdcs = List::map(({let __elt = mT.borrow()[(varIdx.clone()-1) as usize].clone(); __elt}), Arc::new(fnptr!(intAbs, i32)))?;
             eqIdcsOut = listAppend(eqIdcs.clone(), eqIdcsOut.clone());
         }
     }
@@ -761,7 +761,7 @@ fn statesWithUnusedDerivative(mut state: i32, mut mt: metamodelica::Array<Arc<me
         let __mc_input = state.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            let true = (List::all(mt.borrow()[(state.clone()-1) as usize].clone(), (std::sync::Arc::new({ let __pe_b1 = 0; move |__pe_a0| Ok(intLt(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
+            let true = (List::all(({let __elt = mt.borrow()[(state.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new({ let __pe_b1 = 0; move |__pe_a0| Ok(intLt(__pe_a0, __pe_b1.clone())) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?) else { bail!("pattern mismatch") };
             Ok(metamodelica::cons(state.clone(), iAcc.clone()))
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -1333,7 +1333,7 @@ fn countOrgEqns(mut inOrgEqns: metamodelica::Array<Arc<metamodelica::List<Arc<Ba
     let mut e: i32 = 0;
     numEqs = metamodelica::arrayLength(inOrgEqns.clone());
     for mut e in 1..=numEqs.clone() {
-        orgeqns = inOrgEqns.clone().borrow()[(e.clone()-1) as usize].clone();
+        orgeqns = ({let __elt = inOrgEqns.clone().borrow()[(e.clone()-1) as usize].clone(); __elt});
         size = BackendEquation::equationLstSize(orgeqns.clone())?;
         oCount = oCount.clone() + size.clone();
     }
@@ -1348,7 +1348,7 @@ fn inlineOrgEqns(mut inOrgEqns: metamodelica::Array<Arc<metamodelica::List<Arc<B
     outOrgEqns = inOrgEqns.clone();
     numEqs = metamodelica::arrayLength(inOrgEqns.clone());
     for mut e in 1..=numEqs.clone() {
-        orgeqns = inOrgEqns.clone().borrow()[(e.clone()-1) as usize].clone();
+        orgeqns = ({let __elt = inOrgEqns.clone().borrow()[(e.clone()-1) as usize].clone(); __elt});
         (orgeqns, _) = BackendInline::inlineEqs(orgeqns.clone(), inA.clone(), metamodelica::nil(), false)?;
         {let _arr = outOrgEqns.clone(); _arr.borrow_mut()[(e.clone()-1) as usize] = orgeqns.clone(); _arr};
     }
@@ -1971,7 +1971,7 @@ fn selectStatesWork1(mut nfreeStates: i32, mut statecandidates: Arc<metamodelica
                     unassigned = ({
         let mut __acc: Arc<metamodelica::List<i32>> = metamodelica::nil();
         for mut unassigned_eq in (unassigned.clone()).into_iter().cloned() {
-            let __x = mapIncRowEqn.borrow()[(unassigned_eq.clone()-1) as usize].clone();
+            let __x = ({let __elt = mapIncRowEqn.borrow()[(unassigned_eq.clone()-1) as usize].clone(); __elt});
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -2093,13 +2093,13 @@ fn forceStateSelectNever(mut vec_old1: metamodelica::Array<i32>, mut vec_old2: m
                     let mut tpl = tpl.clone();
                     (never_i, eq_i) = tpl.clone();
                     {
-                        let __cell1 = vec_res1.borrow()[(eq_i.clone()-1) as usize].clone();
+                        let __cell1 = ({let __elt = vec_res1.borrow()[(eq_i.clone()-1) as usize].clone(); __elt});
                         vec1.clone().borrow_mut()[(never_i.clone()-1) as usize] = __cell1;
                     }
-                    old_i = vec2.borrow()[(vec_res1.borrow()[(eq_i.clone()-1) as usize].clone()-1) as usize].clone();
+                    old_i = ({let __elt = vec2.borrow()[(({let __elt = vec_res1.borrow()[(eq_i.clone()-1) as usize].clone(); __elt})-1) as usize].clone(); __elt});
                     {
                         let __cell2 = never_i.clone();
-                        vec2.clone().borrow_mut()[(vec_res1.borrow()[(eq_i.clone()-1) as usize].clone()-1) as usize] = __cell2;
+                        vec2.clone().borrow_mut()[(({let __elt = vec_res1.borrow()[(eq_i.clone()-1) as usize].clone(); __elt})-1) as usize] = __cell2;
                     }
                     if !(intEq(old_i.clone(), -1)) {
                         {
@@ -2228,7 +2228,7 @@ fn getAdjacencyMatrixSelectStates(mut nEqns: i32, mut m: metamodelica::Array<Arc
     let mut row: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut negrow: Arc<metamodelica::List<i32>> = metamodelica::nil();
     for mut i in (1..=nEqns.clone()).rev() {
-        row = mo.borrow()[(i.clone()-1) as usize].clone();
+        row = ({let __elt = mo.borrow()[(i.clone()-1) as usize].clone(); __elt});
         row = List::map1(row.clone(), (std::sync::Arc::new(fnptr!(replaceStateIndex, i32, metamodelica::Array<i32>)) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<i32>) -> Result<i32> + 'static>), stateindexs.clone())?;
         {let _arr = m.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = row.clone(); _arr};
         (row, negrow) = List::split1OnTrue(row.clone(), (std::sync::Arc::new(fnptr!(intGt, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), 0)?;
@@ -2246,7 +2246,7 @@ fn replaceStateIndex(mut iR: i32, mut stateindexs: metamodelica::Array<i32>) -> 
     oR = iR.clone();
     if !(intGt(iR.clone(), 0)) {
         r = intAbs(iR.clone());
-        s = stateindexs.borrow()[(r.clone()-1) as usize].clone();
+        s = ({let __elt = stateindexs.borrow()[(r.clone()-1) as usize].clone(); __elt});
         if intGt(s.clone(), 0) {
             oR = s.clone();
         }
@@ -2312,11 +2312,11 @@ fn partitionSystem1(mut index: i32, mut m: metamodelica::Array<Arc<metamodelica:
         0 => {
             iNSystems.clone() - 1
         },
-        _ if (!(intGt(rowmarkarr.borrow()[(index.clone()-1) as usize].clone(), 0))) => {
+        _ if (!(intGt(({let __elt = rowmarkarr.borrow()[(index.clone()-1) as usize].clone(); __elt}), 0))) => {
             let mut rows: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut nsystems: i32 = 0;
             {let _arr = rowmarkarr.clone(); _arr.borrow_mut()[(index.clone()-1) as usize] = iNSystems.clone(); _arr};
-            rows = List::select(m.borrow()[(index.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
+            rows = List::select(({let __elt = m.borrow()[(index.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
             nsystems = partitionSystemstraverseRows(rows.clone(), metamodelica::nil(), m.clone(), mT.clone(), rowmarkarr.clone(), collmarkarr.clone(), iNSystems.clone())?;
             partitionSystem1(index.clone() - 1, m.clone(), mT.clone(), rowmarkarr.clone(), collmarkarr.clone(), nsystems.clone())?
         },
@@ -2338,11 +2338,11 @@ fn partitionSystemstraverseRows(mut iRows: Arc<metamodelica::List<i32>>, mut iQu
         (Deref @ metamodelica::List::Nil, _) => {
             partitionSystemstraverseRows(iQueue.clone(), metamodelica::nil(), m.clone(), mT.clone(), rowmarkarr.clone(), collmarkarr.clone(), iNSystems.clone())?
         },
-        (Deref @ metamodelica::List::Cons { head: r, tail: rest }, _) if (!(intGt(collmarkarr.borrow()[(r.clone()-1) as usize].clone(), 0))) => {
+        (Deref @ metamodelica::List::Cons { head: r, tail: rest }, _) if (!(intGt(({let __elt = collmarkarr.borrow()[(r.clone()-1) as usize].clone(); __elt}), 0))) => {
             let mut colls: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut rows: Arc<metamodelica::List<i32>> = metamodelica::nil();
             {let _arr = collmarkarr.clone(); _arr.borrow_mut()[(r.clone()-1) as usize] = iNSystems.clone(); _arr};
-            colls = List::select(mT.borrow()[(r.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
+            colls = List::select(({let __elt = mT.borrow()[(r.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
             colls = List::select1r(colls.clone(), (std::sync::Arc::new(fnptr!(Matching::isUnAssigned, metamodelica::Array<i32>, i32)) as std::sync::Arc<dyn ::std::ops::Fn(metamodelica::Array<i32>, i32) -> Result<bool> + 'static>), rowmarkarr.clone())?;
             List::fold1(colls.clone(), (std::sync::Arc::new(markTrue) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32, metamodelica::Array<i32>) -> Result<metamodelica::Array<i32>> + 'static>), iNSystems.clone(), rowmarkarr.clone())?;
             rows = List::flatten(List::map1r(colls.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), m.clone())?)?;
@@ -2366,7 +2366,7 @@ fn partitionSystemSplitt(mut index: i32, mut rowmarkarr: metamodelica::Array<i32
         _ => {
             let mut i: i32 = 0;
             let mut arr: metamodelica::Array<Arc<metamodelica::List<i32>>> = Default::default();
-            i = rowmarkarr.borrow()[(index.clone()-1) as usize].clone();
+            i = ({let __elt = rowmarkarr.borrow()[(index.clone()-1) as usize].clone(); __elt});
             arr = Array::consToElement(i.clone(), index.clone(), systsarr.clone())?;
             partitionSystemSplitt(index.clone() - 1, rowmarkarr.clone(), arr.clone())?
         },
@@ -2480,7 +2480,7 @@ fn getSetSystem(mut iEqns: Arc<metamodelica::List<i32>>, mut inMapEqnIncRow: met
         Deref @ metamodelica::List::Nil => {
             (iEqnsLst.clone(), iVarsLst.clone(), iAss1.clone(), iAss2.clone(), iEqnsArr.clone())
         },
-        Deref @ metamodelica::List::Cons { head: e, tail: rest } if (flag.borrow()[(e.clone()-1) as usize].clone() && intGt(vec1.borrow()[(e.clone()-1) as usize].clone(), 0)) => {
+        Deref @ metamodelica::List::Cons { head: e, tail: rest } if (({let __elt = flag.borrow()[(e.clone()-1) as usize].clone(); __elt}) && intGt(({let __elt = vec1.borrow()[(e.clone()-1) as usize].clone(); __elt}), 0)) => {
             let mut e1: i32 = 0;
             let mut eqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut vindx: Arc<metamodelica::List<i32>> = metamodelica::nil();
@@ -2490,10 +2490,10 @@ fn getSetSystem(mut iEqns: Arc<metamodelica::List<i32>>, mut inMapEqnIncRow: met
             let mut eqn: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
             let mut varlst: Arc<metamodelica::List<BackendDAE::Var>> = metamodelica::nil();
             let mut eqnarr: Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> = <Arc<ExpandableArray::ExpandableArray<Arc<BackendDAE::Equation>>> as ::std::default::Default>::default();
-            e1 = inMapIncRowEqn.borrow()[(e.clone()-1) as usize].clone();
+            e1 = ({let __elt = inMapIncRowEqn.borrow()[(e.clone()-1) as usize].clone(); __elt});
             eqn = BackendEquation::get(iEqnsArr.clone(), e1.clone())?;
             eqnarr = BackendEquation::delete(e1.clone(), iEqnsArr.clone())?;
-            eqns = inMapEqnIncRow.borrow()[(e1.clone()-1) as usize].clone();
+            eqns = ({let __elt = inMapEqnIncRow.borrow()[(e1.clone()-1) as usize].clone(); __elt});
             List::fold1r(eqns.clone(), Arc::new(arrayUpdate.clone()), false, flag.clone())?;
             vindx = List::map1r(eqns.clone(), (std::sync::Arc::new(arrayGet) as std::sync::Arc<dyn ::std::ops::Fn(_, i32) -> Result<_> + 'static>), vec1.clone())?;
             varlst = listAppend(List::map1r(vindx.clone(), (std::sync::Arc::new(BackendVariable::getVarAt) as std::sync::Arc<dyn ::std::ops::Fn(BackendDAE::Variables, i32) -> Result<BackendDAE::Var> + 'static>), iVars.clone())?, iVarsLst.clone());
@@ -2517,7 +2517,7 @@ fn getSetSystem(mut iEqns: Arc<metamodelica::List<i32>>, mut inMapEqnIncRow: met
 
 fn getSetStates(mut e: i32, mut flag: metamodelica::Array<bool>, mut inM: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut vec2: metamodelica::Array<i32>, mut iStates: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)) -> Result<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)> {
     let mut oStates: (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>) = (metamodelica::nil(), metamodelica::nil());
-    oStates = List::fold3(inM.borrow()[(e.clone()-1) as usize].clone(), (std::sync::Arc::new(getSetEqnStates) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<bool>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)) -> Result<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)> + 'static>), flag.clone(), inM.clone(), vec2.clone(), iStates.clone())?;
+    oStates = List::fold3(({let __elt = inM.borrow()[(e.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(getSetEqnStates) as std::sync::Arc<dyn ::std::ops::Fn(i32, metamodelica::Array<bool>, metamodelica::Array<Arc<metamodelica::List<i32>>>, metamodelica::Array<i32>, (Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)) -> Result<(Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>)> + 'static>), flag.clone(), inM.clone(), vec2.clone(), iStates.clone())?;
     Ok(oStates)
 }
 
@@ -2526,8 +2526,8 @@ fn getSetEqnStates(mut v: i32, mut flag: metamodelica::Array<bool>, mut inM: met
     let mut states: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut dstates: Arc<metamodelica::List<i32>> = metamodelica::nil();
     (states, dstates) = iStates.clone();
-    states = List::consOnTrue(intLt(vec2.borrow()[(v.clone()-1) as usize].clone(), 1) && flag.borrow()[(v.clone()-1) as usize].clone(), v.clone(), states.clone());
-    dstates = List::consOnTrue(intGt(vec2.borrow()[(v.clone()-1) as usize].clone(), 0) && flag.borrow()[(v.clone()-1) as usize].clone(), v.clone(), dstates.clone());
+    states = List::consOnTrue(intLt(({let __elt = vec2.borrow()[(v.clone()-1) as usize].clone(); __elt}), 1) && ({let __elt = flag.borrow()[(v.clone()-1) as usize].clone(); __elt}), v.clone(), states.clone());
+    dstates = List::consOnTrue(intGt(({let __elt = vec2.borrow()[(v.clone()-1) as usize].clone(); __elt}), 0) && ({let __elt = flag.borrow()[(v.clone()-1) as usize].clone(); __elt}), v.clone(), dstates.clone());
     {let _arr = flag.clone(); _arr.borrow_mut()[(v.clone()-1) as usize] = false; _arr};
     oStates = (states.clone(), dstates.clone());
     Ok(oStates)
@@ -2557,12 +2557,12 @@ fn getEqnsforDynamicStateSelection1(mut U: Arc<metamodelica::List<i32>>, mut m: 
         Deref @ metamodelica::List::Nil => {
             inSubset.clone()
         },
-        Deref @ metamodelica::List::Cons { head: e, tail: rest } if (intEq(colummarks.borrow()[(e.clone()-1) as usize].clone(), 0)) => {
+        Deref @ metamodelica::List::Cons { head: e, tail: rest } if (intEq(({let __elt = colummarks.borrow()[(e.clone()-1) as usize].clone(); __elt}), 0)) => {
             let mut eqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut set: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut e1: i32 = 0;
-            e1 = mapIncRowEqn.borrow()[(e.clone()-1) as usize].clone();
-            eqns = mapEqnIncRow.borrow()[(e1.clone()-1) as usize].clone();
+            e1 = ({let __elt = mapIncRowEqn.borrow()[(e.clone()-1) as usize].clone(); __elt});
+            eqns = ({let __elt = mapEqnIncRow.borrow()[(e1.clone()-1) as usize].clone(); __elt});
             List::fold1r(eqns.clone(), Arc::new(arrayUpdate.clone()), mark.clone(), colummarks.clone())?;
             (set, _) = getEqnsforDynamicStateSelectionPhase(eqns.clone(), m.clone(), mT.clone(), mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubset.clone(), false)?;
             getEqnsforDynamicStateSelection1(rest.clone(), m.clone(), mT.clone(), mark.clone() + 1, colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), set.clone())?
@@ -2586,11 +2586,11 @@ fn getEqnsforDynamicStateSelectionPhase(mut elst: Arc<metamodelica::List<i32>>, 
             let mut rows: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut set: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut found: bool = false;
-            rows = List::select(m.borrow()[(e.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
-            rows = List::removeOnTrue(ass1.borrow()[(e.clone()-1) as usize].clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), rows.clone())?;
+            rows = List::select(({let __elt = m.borrow()[(e.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(Util::intPositive, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
+            rows = List::removeOnTrue(({let __elt = ass1.borrow()[(e.clone()-1) as usize].clone(); __elt}), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>), rows.clone())?;
             (set, found) = getEqnsforDynamicStateSelectionRows(rows.clone(), m.clone(), mT.clone(), mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubset.clone(), false)?;
             set = List::consOnTrue(found.clone(), e.clone(), set.clone());
-            {let _arr = colummarks.clone(); let _val = if (found.clone()) {mark.clone()} else {colummarks.borrow()[(e.clone()-1) as usize].clone()}; _arr.borrow_mut()[(e.clone()-1) as usize] = _val; _arr};
+            {let _arr = colummarks.clone(); let _val = if (found.clone()) {mark.clone()} else {({let __elt = colummarks.borrow()[(e.clone()-1) as usize].clone(); __elt})}; _arr.borrow_mut()[(e.clone()-1) as usize] = _val; _arr};
             (set, found) = getEqnsforDynamicStateSelectionPhase(rest.clone(), m.clone(), mT.clone(), mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), set.clone(), found.clone() || iFound.clone())?;
             (set.clone(), found.clone())
         },
@@ -2606,21 +2606,21 @@ fn getEqnsforDynamicStateSelectionRows(mut rows: Arc<metamodelica::List<i32>>, m
         Deref @ metamodelica::List::Nil => {
             (inSubset.clone(), iFound.clone())
         },
-        Deref @ metamodelica::List::Cons { head: r, tail: rest } if (!(intGt(ass2.borrow()[(r.clone()-1) as usize].clone(), 0))) => {
+        Deref @ metamodelica::List::Cons { head: r, tail: rest } if (!(intGt(({let __elt = ass2.borrow()[(r.clone()-1) as usize].clone(); __elt}), 0))) => {
             let mut set: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut b: bool = false;
             (set, b) = getEqnsforDynamicStateSelectionRows(rest.clone(), m.clone(), mT.clone(), mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubset.clone(), true)?;
             (set.clone(), b.clone())
         },
-        Deref @ metamodelica::List::Cons { head: r, tail: rest } if (intGt(ass2.borrow()[(r.clone()-1) as usize].clone(), 0) && intEq(colummarks.borrow()[(ass2.borrow()[(r.clone()-1) as usize].clone()-1) as usize].clone(), 0)) => {
+        Deref @ metamodelica::List::Cons { head: r, tail: rest } if (intGt(({let __elt = ass2.borrow()[(r.clone()-1) as usize].clone(); __elt}), 0) && intEq(({let __elt = colummarks.borrow()[(({let __elt = ass2.borrow()[(r.clone()-1) as usize].clone(); __elt})-1) as usize].clone(); __elt}), 0)) => {
             let mut set: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut eqns: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut rc: i32 = 0;
             let mut e: i32 = 0;
             let mut b: bool = false;
-            rc = ass2.borrow()[(r.clone()-1) as usize].clone();
-            e = mapIncRowEqn.borrow()[(rc.clone()-1) as usize].clone();
-            eqns = mapEqnIncRow.borrow()[(e.clone()-1) as usize].clone();
+            rc = ({let __elt = ass2.borrow()[(r.clone()-1) as usize].clone(); __elt});
+            e = ({let __elt = mapIncRowEqn.borrow()[(rc.clone()-1) as usize].clone(); __elt});
+            eqns = ({let __elt = mapEqnIncRow.borrow()[(e.clone()-1) as usize].clone(); __elt});
             List::fold1r(eqns.clone(), Arc::new(arrayUpdate.clone()), if (iFound.clone()) {mark.clone()} else {-(mark.clone())}, colummarks.clone())?;
             (set, b) = getEqnsforDynamicStateSelectionPhase(eqns.clone(), m.clone(), mT.clone(), mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubset.clone(), false)?;
             eqns = if (b.clone() && !(iFound.clone())) {eqns.clone()} else {metamodelica::nil()};
@@ -2628,12 +2628,12 @@ fn getEqnsforDynamicStateSelectionRows(mut rows: Arc<metamodelica::List<i32>>, m
             (set, b) = getEqnsforDynamicStateSelectionRows(rest.clone(), m.clone(), mT.clone(), mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), set.clone(), b.clone() || iFound.clone())?;
             (set.clone(), b.clone())
         },
-        Deref @ metamodelica::List::Cons { head: r, tail: rest } if (intGt(ass2.borrow()[(r.clone()-1) as usize].clone(), 0)) => {
+        Deref @ metamodelica::List::Cons { head: r, tail: rest } if (intGt(({let __elt = ass2.borrow()[(r.clone()-1) as usize].clone(); __elt}), 0)) => {
             let mut set: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut rc: i32 = 0;
             let mut b: bool = false;
-            rc = ass2.borrow()[(r.clone()-1) as usize].clone();
-            b = intGt(colummarks.borrow()[(rc.clone()-1) as usize].clone(), 0);
+            rc = ({let __elt = ass2.borrow()[(r.clone()-1) as usize].clone(); __elt});
+            b = intGt(({let __elt = colummarks.borrow()[(rc.clone()-1) as usize].clone(); __elt}), 0);
             (set, b) = getEqnsforDynamicStateSelectionRows(rest.clone(), m.clone(), mT.clone(), mark.clone(), colummarks.clone(), ass1.clone(), ass2.clone(), mapEqnIncRow.clone(), mapIncRowEqn.clone(), inSubset.clone(), b.clone() || iFound.clone())?;
             (set.clone(), b.clone())
         },
@@ -2651,7 +2651,7 @@ fn removeFirstOrgEqns(mut inOrgEqns: metamodelica::Array<Arc<metamodelica::List<
     outOrgEqns = inOrgEqns.clone();
     numEqs = metamodelica::arrayLength(inOrgEqns.clone());
     for mut e in 1..=numEqs.clone() {
-        orgeqns = outOrgEqns.clone().borrow()[(e.clone()-1) as usize].clone();
+        orgeqns = ({let __elt = outOrgEqns.clone().borrow()[(e.clone()-1) as usize].clone(); __elt});
         if !(orgeqns.clone().is_empty()) {
             (outEqnsLst, orgeqns) = (::match_deref::match_deref! { match &(orgeqns.clone()) {
         Deref @ metamodelica::List::Cons { head: eqn, tail: Deref @ metamodelica::List::Nil } => {
@@ -2697,13 +2697,13 @@ fn sortStateCandidatesVars(mut inVars: BackendDAE::Variables, mut allVars: Backe
         }
         if Flags::isSet(Flags::DUMMY_SELECT.clone())? {
             varCref = BackendVariable::varCref(v.clone())?;
-            BackendDump::debugStrCrefStrRealStrRealStrRealStr((literal!("Calc Prio for ")).clone(), varCref.clone(), (literal!("\n Prio StateSelect : ")).clone(), prio1.clone(), (literal!("\n Prio Heuristik : ")).clone(), prio2.clone(), (literal!("\n ### Prio Result : ")).clone(), prio.borrow()[(idx.clone()-1) as usize].clone(), (literal!("\n")).clone())?;
+            BackendDump::debugStrCrefStrRealStrRealStrRealStr((literal!("Calc Prio for ")).clone(), varCref.clone(), (literal!("\n Prio StateSelect : ")).clone(), prio1.clone(), (literal!("\n Prio Heuristik : ")).clone(), prio2.clone(), (literal!("\n ### Prio Result : ")).clone(), ({let __elt = prio.borrow()[(idx.clone()-1) as usize].clone(); __elt}), (literal!("\n")).clone())?;
         }
     }
     prioTuples = ({
         let mut __acc: Arc<metamodelica::List<(i32, metamodelica::Real)>> = metamodelica::nil();
         for mut idx in ((1..=varsize.clone()).rev()).into_iter() {
-            let __x = (index.borrow()[(idx.clone()-1) as usize].clone(), prio.borrow()[(idx.clone()-1) as usize].clone());
+            let __x = (({let __elt = index.borrow()[(idx.clone()-1) as usize].clone(); __elt}), ({let __elt = prio.borrow()[(idx.clone()-1) as usize].clone(); __elt}));
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -2795,7 +2795,7 @@ fn varStateSelectHeuristicPrio5(mut v: BackendDAE::Var, mut index: i32, mut om: 
         Some(mut m) => {
             let mut row: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut n: metamodelica::Real = metamodelica::OrderedFloat(0.0_f64);
-            row = m.borrow()[(index.clone()-1) as usize].clone();
+            row = ({let __elt = m.borrow()[(index.clone()-1) as usize].clone(); __elt});
             n = intReal(metamodelica::arrayLength(m.clone())) + metamodelica::OrderedFloat(1.0_f64);
             n = intReal((row.clone().len() as i32)) / n.clone();
             metamodelica::OrderedFloat(0.3_f64) * n.clone()
@@ -3032,7 +3032,7 @@ fn adjacencyMatrixElementfromEnhancedPartial(mut iRow: Arc<metamodelica::List<(i
     let mut ass: metamodelica::Array<i32> = Default::default();
     let mut so: BackendDAE::StateOrder = BackendDAE::StateOrder::NOSTATEORDER;
     (vars, neverVars, ass, so) = varsAssTpl.clone();
-    if intEq(ass.borrow()[(index.clone()-1) as usize].clone(), -1) || !(BackendVariable::varStateSelectNever(BackendVariable::getVarAt(vars.clone(), ass.borrow()[(index.clone()-1) as usize].clone())?)) {
+    if intEq(({let __elt = ass.borrow()[(index.clone()-1) as usize].clone(); __elt}), -1) || !(BackendVariable::varStateSelectNever(BackendVariable::getVarAt(vars.clone(), ({let __elt = ass.borrow()[(index.clone()-1) as usize].clone(); __elt}))?)) {
         oRow = List::fold1(iRow.clone(), (std::sync::Arc::new(adjacencyMatrixElementElementfromEnhanced) as std::sync::Arc<dyn ::std::ops::Fn((i32, BackendDAE::Solvability, Arc<metamodelica::List<Arc<DAE::Constraint>>>), (BackendDAE::Variables, BackendDAE::StateOrder), Arc<metamodelica::List<i32>>) -> Result<Arc<metamodelica::List<i32>>> + 'static>), (neverVars.clone(), so.clone()), metamodelica::nil())?;
         oRow = List::map(oRow.clone(), Arc::new(fnptr!(intAbs, i32)))?;
         oRow = oRow.clone().reverse();
@@ -3098,7 +3098,7 @@ fn checkAssignment(mut index: i32, mut len: i32, mut ass: metamodelica::Array<i3
     for mut indx in index.clone()..=len.clone() {
         let BackendDAE::VAR { varName: __pa0, .. } = (BackendVariable::getVarAt(vars.clone(), indx.clone())?) else { bail!("pattern mismatch") };
         cr = __pa0.clone();
-        if intGt(ass.borrow()[(indx.clone()-1) as usize].clone(), 0) {
+        if intGt(({let __elt = ass.borrow()[(indx.clone()-1) as usize].clone(); __elt}), 0) {
             outAssigned = metamodelica::cons((cr.clone(), indx.clone()), outAssigned.clone());
         } else {
             outUnassigned = metamodelica::cons((cr.clone(), indx.clone()), outUnassigned.clone());
@@ -3200,7 +3200,7 @@ fn setHigerDerivativeAssignment(mut inTpl: (i32, i32), mut ass1: metamodelica::A
     let mut j: i32 = 0;
     let mut e: i32 = 0;
     (i, j) = inTpl.clone();
-    e = ass1.borrow()[(i.clone()-1) as usize].clone();
+    e = ({let __elt = ass1.borrow()[(i.clone()-1) as usize].clone(); __elt});
     {let _arr = ass1.clone(); _arr.borrow_mut()[(i.clone()-1) as usize] = -1; _arr};
     {let _arr = ass1.clone(); _arr.borrow_mut()[(j.clone()-1) as usize] = e.clone(); _arr};
     {let _arr = ass2.clone(); _arr.borrow_mut()[(e.clone()-1) as usize] = j.clone(); _arr};
@@ -4003,7 +4003,7 @@ fn addOrgEqn(mut e: i32, mut inEqn: Arc<BackendDAE::Equation>, mut inOrgEqns: me
     let mut outOrgEqns: metamodelica::Array<Arc<metamodelica::List<Arc<BackendDAE::Equation>>>> = Default::default();
     let mut eqs: Arc<metamodelica::List<Arc<BackendDAE::Equation>>> = metamodelica::nil();
     outOrgEqns = inOrgEqns.clone();
-    eqs = inOrgEqns.clone().borrow()[(e.clone()-1) as usize].clone();
+    eqs = ({let __elt = inOrgEqns.clone().borrow()[(e.clone()-1) as usize].clone(); __elt});
     eqs = metamodelica::cons(inEqn.clone(), eqs.clone());
     {let _arr = outOrgEqns.clone(); _arr.borrow_mut()[(e.clone()-1) as usize] = eqs.clone(); _arr};
     Ok(outOrgEqns)

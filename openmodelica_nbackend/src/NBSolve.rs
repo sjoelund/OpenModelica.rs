@@ -462,7 +462,7 @@ pub fn solveStrongComponent(mut comp: Arc<StrongComponent::NBStrongComponent>, m
             let mut err_str: ArcStr = arcstr::literal!("");
             let mut strict = (*strict).clone();
             for mut index in (1..=metamodelica::arrayLength(strict.innerEquations.clone())).rev() {
-                (tmp, implicit_index) = unwrap_break_err!(solveStrongComponent(strict.innerEquations.borrow()[(index.clone()-1) as usize].clone(), funcMap.clone(), kind.clone(), implicit_index.clone(), slicing_map.clone(), varData.clone(), eqData.clone()), '__try0);
+                (tmp, implicit_index) = unwrap_break_err!(solveStrongComponent(({let __elt = strict.innerEquations.borrow()[(index.clone()-1) as usize].clone(); __elt}), funcMap.clone(), kind.clone(), implicit_index.clone(), slicing_map.clone(), varData.clone(), eqData.clone()), '__try0);
                 inner_comps = listAppend(tmp.clone(), inner_comps.clone());
                 for mut elem in &*tmp.clone() {
                     let mut elem = elem.clone();

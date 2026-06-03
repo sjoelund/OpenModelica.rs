@@ -933,7 +933,7 @@ fn consume(mut cp: i32, mut tokens: Arc<metamodelica::List<Token>>, mut fileCont
     lineNrStart = inLineNrStart.clone();
     buffer = inBuffer.clone();
     states = inStates.clone();
-    baseCond = LexTable::yy_base.borrow()[(mm_currSt.clone()-1) as usize].clone();
+    baseCond = ({let __elt = LexTable::yy_base.borrow()[(mm_currSt.clone()-1) as usize].clone(); __elt});
     if debug.clone() == true {
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nPROGRAM:{")); __mm_s.push_str(&*intString(cp.clone())); __mm_s.push_str(&*literal!("} ")); ArcStr::from(__mm_s) }).clone());
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\nBUFFER:{")); __mm_s.push_str(&*intString(buffer.clone())); __mm_s.push_str(&*literal!("} ")); ArcStr::from(__mm_s) }).clone());
@@ -950,7 +950,7 @@ fn consume(mut cp: i32, mut tokens: Arc<metamodelica::List<Token>>, mut fileCont
     if debug.clone() == true {
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n[Reading:'")); __mm_s.push_str(&*intStringChar(cp.clone())); __mm_s.push_str(&*literal!("' at p:")); __mm_s.push_str(&*intString(mm_pos.clone() - 1)); __mm_s.push_str(&*literal!(" line:")); __mm_s.push_str(&*intString(mm_linenr.clone())); __mm_s.push_str(&*literal!(" rPos:")); __mm_s.push_str(&*intString(mm_sPos.clone())); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone());
     }
-    c = LexTable::yy_ec.borrow()[(cp.clone()-1) as usize].clone();
+    c = ({let __elt = LexTable::yy_ec.borrow()[(cp.clone()-1) as usize].clone(); __elt});
     if debug.clone() == true {
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" evalState Before[c")); __mm_s.push_str(&*intString(c.clone())); __mm_s.push_str(&*literal!(",s")); __mm_s.push_str(&*intString(mm_currSt.clone())); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone());
     }
@@ -959,16 +959,16 @@ fn consume(mut cp: i32, mut tokens: Arc<metamodelica::List<Token>>, mut fileCont
         println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" After[c")); __mm_s.push_str(&*intString(c.clone())); __mm_s.push_str(&*literal!(",s")); __mm_s.push_str(&*intString(mm_currSt.clone())); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone());
     }
     if mm_currSt.clone() > 0 {
-        mm_currSt = LexTable::yy_base.borrow()[(mm_currSt.clone()-1) as usize].clone();
-        mm_currSt = LexTable::yy_nxt.borrow()[(mm_currSt.clone() + c.clone()-1) as usize].clone();
+        mm_currSt = ({let __elt = LexTable::yy_base.borrow()[(mm_currSt.clone()-1) as usize].clone(); __elt});
+        mm_currSt = ({let __elt = LexTable::yy_nxt.borrow()[(mm_currSt.clone() + c.clone()-1) as usize].clone(); __elt});
     } else {
-        mm_currSt = LexTable::yy_nxt.borrow()[(c.clone()-1) as usize].clone();
+        mm_currSt = ({let __elt = LexTable::yy_nxt.borrow()[(c.clone()-1) as usize].clone(); __elt});
     }
     states = metamodelica::cons(mm_currSt.clone(), states.clone());
-    baseCond = LexTable::yy_base.borrow()[(mm_currSt.clone()-1) as usize].clone();
+    baseCond = ({let __elt = LexTable::yy_base.borrow()[(mm_currSt.clone()-1) as usize].clone(); __elt});
     if baseCond.clone() == LexTable::yy_finish.clone() {
         if debug.clone() == true {
-            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n[RESTORE=")); __mm_s.push_str(&*intString(LexTable::yy_accept.borrow()[(mm_currSt.clone()-1) as usize].clone())); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone());
+            println!("{}", ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("\n[RESTORE=")); __mm_s.push_str(&*intString(({let __elt = LexTable::yy_accept.borrow()[(mm_currSt.clone()-1) as usize].clone(); __elt}))); __mm_s.push_str(&*literal!("]")); ArcStr::from(__mm_s) }).clone());
         }
         (act, mm_currSt, mm_pos, mm_sPos, mm_linenr, buffer, bkBuffer, states) = findRule((fileContents.clone()).clone(), mm_currSt.clone(), mm_pos.clone(), mm_sPos.clone(), mm_ePos.clone(), mm_linenr.clone(), buffer.clone(), bkBuffer.clone(), states.clone())?;
         if debug.clone() == true {
@@ -1021,16 +1021,16 @@ fn findRule(mut fileContents: ArcStr, mut currSt: i32, mut pos: i32, mut sPos: i
     bkBuffer = inBkBuffer.clone();
     states = inStates.clone();
     stCmp = (states.clone()).get(1)?;
-    lp = LexTable::yy_accept.borrow()[(stCmp.clone()-1) as usize].clone();
-    lp1 = LexTable::yy_accept.borrow()[(stCmp.clone() + 1-1) as usize].clone();
+    lp = ({let __elt = LexTable::yy_accept.borrow()[(stCmp.clone()-1) as usize].clone(); __elt});
+    lp1 = ({let __elt = LexTable::yy_accept.borrow()[(stCmp.clone() + 1-1) as usize].clone(); __elt});
     st = intGt(lp.clone(), 0) && intLt(lp.clone(), lp1.clone());
     if st.clone() {
         if debug.clone() {
             checkArrayModelica(LexTable::yy_accept.clone(), stCmp.clone(), metamodelica::sourceInfo!())?;
             checkArrayModelica(LexTable::yy_acclist.clone(), lp.clone(), metamodelica::sourceInfo!())?;
         }
-        lp = LexTable::yy_accept.borrow()[(stCmp.clone()-1) as usize].clone();
-        action = LexTable::yy_acclist.borrow()[(lp.clone()-1) as usize].clone();
+        lp = ({let __elt = LexTable::yy_accept.borrow()[(stCmp.clone()-1) as usize].clone(); __elt});
+        action = ({let __elt = LexTable::yy_acclist.borrow()[(lp.clone()-1) as usize].clone(); __elt});
     } else {
         cp = stringGet((fileContents.clone()).clone(),mm_pos.clone() - 1)?;
         buffer = buffer.clone() - 1;
@@ -1060,14 +1060,14 @@ fn evalState(mut cState: i32, mut c: i32) -> (i32, i32) {
     let mut val: i32 = 0;
     let mut val2: i32 = 0;
     let mut chk: i32 = 0;
-    chk = LexTable::yy_base.borrow()[(cState1.clone()-1) as usize].clone();
+    chk = ({let __elt = LexTable::yy_base.borrow()[(cState1.clone()-1) as usize].clone(); __elt});
     chk = chk.clone() + c1.clone();
-    val = LexTable::yy_chk.borrow()[(chk.clone()-1) as usize].clone();
-    val2 = LexTable::yy_base.borrow()[(cState1.clone()-1) as usize].clone() + c1.clone();
+    val = ({let __elt = LexTable::yy_chk.borrow()[(chk.clone()-1) as usize].clone(); __elt});
+    val2 = ({let __elt = LexTable::yy_base.borrow()[(cState1.clone()-1) as usize].clone(); __elt}) + c1.clone();
     if cState1.clone() != val.clone() {
-        cState1 = LexTable::yy_def.borrow()[(cState1.clone()-1) as usize].clone();
+        cState1 = ({let __elt = LexTable::yy_def.borrow()[(cState1.clone()-1) as usize].clone(); __elt});
         if cState1.clone() >= LexTable::yy_limit.clone() {
-            c1 = LexTable::yy_meta.borrow()[(c1.clone()-1) as usize].clone();
+            c1 = ({let __elt = LexTable::yy_meta.borrow()[(c1.clone()-1) as usize].clone(); __elt});
         }
         if cState1.clone() > 0 {
             (cState1, c1) = evalState(cState1.clone(), c1.clone());

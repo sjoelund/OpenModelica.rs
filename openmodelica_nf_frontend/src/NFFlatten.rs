@@ -1603,8 +1603,8 @@ fn splitRecordCref(mut exp: Arc<Expression::NFExpression>) -> Result<Arc<Express
             comps = ClassTree::getComponents(Class::classTree(InstNode::getClass(cls.clone())?)?)?;
             fields = metamodelica::nil();
             for mut i in (1..=metamodelica::arrayLength(comps.clone())).rev() {
-                ty = InstNode::getType(comps.borrow()[(i.clone()-1) as usize].clone())?;
-                field_cr = ComponentRef::prefixCref(comps.borrow()[(i.clone()-1) as usize].clone(), ty.clone(), metamodelica::nil(), cr.clone());
+                ty = InstNode::getType(({let __elt = comps.borrow()[(i.clone()-1) as usize].clone(); __elt}))?;
+                field_cr = ComponentRef::prefixCref(({let __elt = comps.borrow()[(i.clone()-1) as usize].clone(); __elt}), ty.clone(), metamodelica::nil(), cr.clone());
                 field_cr = flattenCref(field_cr.clone(), Arc::new(Prefix::Prefix::PREFIX { root: Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE), prefix: cr.clone() }), Absyn::dummyInfo.clone())?;
                 fields = metamodelica::cons(Expression::fromCref(field_cr.clone(), false)?, fields.clone());
             }

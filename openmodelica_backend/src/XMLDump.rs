@@ -783,12 +783,12 @@ fn dumpCrefIdxLstArr(mut crefIdxLstArr: metamodelica::Array<Arc<metamodelica::Li
         let __mc_input = inInteger.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            if !((crefIdxLstArr.borrow()[(inInteger.clone()-1) as usize].clone().is_empty())) { bail!("guard") }
+            if !((({let __elt = crefIdxLstArr.borrow()[(inInteger.clone()-1) as usize].clone(); __elt}).is_empty())) { bail!("guard") }
             Ok(())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            dumpCrefIdxLst(crefIdxLstArr.borrow()[(inInteger.clone()-1) as usize].clone(), (Content.clone()).clone())?;
+            dumpCrefIdxLst(({let __elt = crefIdxLstArr.borrow()[(inInteger.clone()-1) as usize].clone(); __elt}), (Content.clone()).clone())?;
             Ok(())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -3174,7 +3174,7 @@ fn dumpVarsAdditionalInfo(mut crefIdxLstArr: metamodelica::Array<Arc<metamodelic
         let __mc_input = i.clone();
         if let Ok(__v) = (|| -> Result<_> {
             let _ = __mc_input.clone() else { bail!("nomatch") };
-            if !((crefIdxLstArr.borrow()[(1-1) as usize].clone().is_empty())) { bail!("guard") }
+            if !((({let __elt = crefIdxLstArr.borrow()[(1-1) as usize].clone(); __elt}).is_empty())) { bail!("guard") }
             Ok(())
         })() { break 'mc __v; }
         if let Ok(__v) = (|| -> Result<_> {
@@ -3210,7 +3210,7 @@ fn dumpVars(mut vars: Arc<metamodelica::List<BackendDAE::Var>>, mut crefIdxLstAr
         if let Ok(__v) = (|| -> Result<_> {
             ::match_deref::match_deref! { match &__mc_input {
                 (_, addMMLCode) => {
-                    if !((!(crefIdxLstArr.borrow()[(1-1) as usize].clone().is_empty()))) { bail!("guard") }
+                    if !((!(({let __elt = crefIdxLstArr.borrow()[(1-1) as usize].clone(); __elt}).is_empty()))) { bail!("guard") }
                     let mut len: i32 = 0;
                     len = (vars.clone().len() as i32);
                     dumpStrOpenTagAttr((Content.clone()).clone(), (arcstr::literal!(DIMENSION)).clone(), (intString(len.clone())).clone())?;

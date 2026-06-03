@@ -696,7 +696,7 @@ pub fn getInheritedClasses(mut classPath: Arc<Path>, mut program: Absyn::Program
             ({
         let mut __acc: Arc<metamodelica::List<Arc<Path>>> = metamodelica::nil();
         for mut i in (start_idx.clone()..=metamodelica::arrayLength(exts.clone())).into_iter() {
-            let __x = InstNode::fullPath(exts.borrow()[(i.clone()-1) as usize].clone(), true)?;
+            let __x = InstNode::fullPath(({let __elt = exts.borrow()[(i.clone()-1) as usize].clone(); __elt}), true)?;
             __acc = cons(__x, __acc);
         }
         __acc.reverse()
@@ -746,7 +746,7 @@ pub fn getNthInheritedClass(mut classPath: Arc<Path>, mut index: i32, mut progra
         result = ValuesMake::makeBoolean(false);
         return Ok(result.clone());
     }
-    result = ValuesMake::makeCodeTypeName(InstNode::fullPath(exts.borrow()[(index.clone()-1) as usize].clone(), true)?);
+    result = ValuesMake::makeCodeTypeName(InstNode::fullPath(({let __elt = exts.borrow()[(index.clone()-1) as usize].clone(); __elt}), true)?);
     Ok(result)
 }
 
@@ -959,21 +959,21 @@ pub fn buildInstanceTreeElements(mut classDefinition: Arc<SCode::Element>, mut c
         let mut e = e.clone();
         elements = (::match_deref::match_deref! { match &(e.clone()) {
         Deref @ SCode::Element::EXTENDS { .. } => {
-            tree = buildInstanceTree(exts.borrow()[(ext_index.clone()-1) as usize].clone(), true)?;
+            tree = buildInstanceTree(({let __elt = exts.borrow()[(ext_index.clone()-1) as usize].clone(); __elt}), true)?;
             ext_index = ext_index.clone() + 1;
             metamodelica::cons(tree.clone(), elements.clone())
         },
         Deref @ SCode::Element::CLASS { .. } if (SCodeUtil::isElementReplaceable(e.clone())?) => {
-            while InstNode::name(Mutable::access(clss.borrow()[(cls_index.clone()-1) as usize].clone()))? != var_field!((*e).name, SCode::Element::CLASS).clone() {
+            while InstNode::name(Mutable::access(({let __elt = clss.borrow()[(cls_index.clone()-1) as usize].clone(); __elt})))? != var_field!((*e).name, SCode::Element::CLASS).clone() {
                 cls_index = cls_index.clone() + 1;
             }
-            tree = Arc::new(InstanceTree::CLASS { node: Mutable::access(clss.borrow()[(cls_index.clone()-1) as usize].clone()), elements: metamodelica::nil(), isExtends: false });
+            tree = Arc::new(InstanceTree::CLASS { node: Mutable::access(({let __elt = clss.borrow()[(cls_index.clone()-1) as usize].clone(); __elt})), elements: metamodelica::nil(), isExtends: false });
             cls_index = cls_index.clone() + 1;
             metamodelica::cons(tree.clone(), elements.clone())
         },
         Deref @ SCode::Element::COMPONENT { .. } => {
             loop {
-                node = Mutable::access(comps.borrow()[(comp_index.clone()-1) as usize].clone());
+                node = Mutable::access(({let __elt = comps.borrow()[(comp_index.clone()-1) as usize].clone(); __elt}));
                 if InstNode::name(node.clone())? == var_field!((*e).name, SCode::Element::COMPONENT).clone() && !(InstNode::isGeneratedInner(node.clone())) {
                     break;
                 }
@@ -1014,8 +1014,8 @@ pub fn buildInstanceTreeGeneratedInners(mut classTree: Arc<ClassTree::ClassTree>
     } };
     comps = __pa0.clone();
     for mut i in (1..=metamodelica::arrayLength(comps.clone())).rev() {
-        if InstNode::isGeneratedInner(Mutable::access(comps.borrow()[(i.clone()-1) as usize].clone())) {
-            elems = metamodelica::cons(buildInstanceTreeComponent(Mutable::access(comps.borrow()[(i.clone()-1) as usize].clone()))?, elems.clone());
+        if InstNode::isGeneratedInner(Mutable::access(({let __elt = comps.borrow()[(i.clone()-1) as usize].clone(); __elt}))) {
+            elems = metamodelica::cons(buildInstanceTreeComponent(Mutable::access(({let __elt = comps.borrow()[(i.clone()-1) as usize].clone(); __elt})))?, elems.clone());
         } else {
             break;
         }
@@ -1381,7 +1381,7 @@ pub fn dumpJSONEnumType(mut tree: Arc<InstanceTree>, mut enumNode: Arc<InstNode:
 pub fn dumpJSONEnumTypeLiterals(mut literals: metamodelica::Array<Arc<InstNode::InstNode>>, mut scope: Arc<InstNode::InstNode>, mut json: Arc<JSON::JSON>) -> Result<Arc<JSON::JSON>> {
     let mut json: Arc<JSON::JSON> = json;
     for mut i in 6..=metamodelica::arrayLength(literals.clone()) {
-        json = JSON::addElement(dumpJSONEnumTypeLiteral(literals.borrow()[(i.clone()-1) as usize].clone(), scope.clone())?, json.clone())?;
+        json = JSON::addElement(dumpJSONEnumTypeLiteral(({let __elt = literals.borrow()[(i.clone()-1) as usize].clone(); __elt}), scope.clone())?, json.clone())?;
     }
     Ok(json)
 }

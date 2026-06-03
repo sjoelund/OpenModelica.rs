@@ -222,7 +222,7 @@ pub mod ClassTree {
             }
             imports = metamodelica::arrayFromVec(init_imports.clone().into_iter().cloned().collect());
             for mut i in (1..=metamodelica::arrayLength(imports.clone())).rev() {
-                ltree = addImport(imports.borrow()[(i.clone()-1) as usize].clone(), i.clone(), ltree.clone(), imports.clone())?;
+                ltree = addImport(({let __elt = imports.borrow()[(i.clone()-1) as usize].clone(); __elt}), i.clone(), ltree.clone(), imports.clone())?;
             }
             assign_variant_field!(tree => ClassTree::PARTIAL_TREE;
                 imports = imports.clone(),
@@ -343,7 +343,7 @@ pub mod ClassTree {
         },
         Deref @ InstNode::REF_NODE { .. } => {
             ext_idxs = metamodelica::cons((cls_idx.clone() - 1, comp_idx.clone() - 1), ext_idxs.clone());
-            (cls_idx, comp_idx) = countInheritedElements(exts.borrow()[(var_field!((*c).index, InstNode::InstNode::REF_NODE).clone()-1) as usize].clone(), cls_idx.clone(), comp_idx.clone())?;
+            (cls_idx, comp_idx) = countInheritedElements(({let __elt = exts.borrow()[(var_field!((*c).index, InstNode::InstNode::REF_NODE).clone()-1) as usize].clone(); __elt}), cls_idx.clone(), comp_idx.clone())?;
             ()
         },
         _ => {
@@ -426,7 +426,7 @@ pub mod ClassTree {
             compCount = metamodelica::arrayLength(old_comps.clone()) - metamodelica::arrayLength(exts.clone());
             exts = metamodelica::arrayFromVec(exts.clone().borrow().clone());
             for mut i in 1..=metamodelica::arrayLength(exts.clone()) {
-                node = exts.borrow()[(i.clone()-1) as usize].clone();
+                node = ({let __elt = exts.borrow()[(i.clone()-1) as usize].clone(); __elt});
                 let (__pa6, __pa7) = ::match_deref::match_deref! { match &(InstNode::nodeType(node.clone())?) {
                     Deref @ InstNodeType::BASE_CLASS { ty: __pa6, definition: __pa7, .. } => (__pa6.clone(), __pa7.clone()),
                     _ => bail!("pattern mismatch"),
@@ -496,7 +496,7 @@ pub mod ClassTree {
             ()
         },
         Deref @ InstNode::REF_NODE { .. } => {
-            comp_idx = instExtendsComps(exts.borrow()[(var_field!((*c).index, InstNode::InstNode::REF_NODE).clone()-1) as usize].clone(), comps.clone(), comp_idx.clone())?;
+            comp_idx = instExtendsComps(({let __elt = exts.borrow()[(var_field!((*c).index, InstNode::InstNode::REF_NODE).clone()-1) as usize].clone(); __elt}), comps.clone(), comp_idx.clone())?;
             ()
         },
         _ => bail!("match: no arm matched"),
@@ -821,10 +821,10 @@ pub mod ClassTree {
     pub fn nthComponent(mut index: i32, mut tree: Arc<ClassTree>) -> Result<Arc<InstNode::InstNode>> {
         let mut component: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
         component = (::match_deref::match_deref! { match &(tree.clone()) {
-        Deref @ PARTIAL_TREE { .. } => var_field!((*tree).components, ClassTree::PARTIAL_TREE).clone().borrow()[(index.clone()-1) as usize].clone(),
-        Deref @ EXPANDED_TREE { .. } => var_field!((*tree).components, ClassTree::EXPANDED_TREE).clone().borrow()[(index.clone()-1) as usize].clone(),
-        Deref @ INSTANTIATED_TREE { .. } => Mutable::access(var_field!((*tree).components, ClassTree::INSTANTIATED_TREE).clone().borrow()[(index.clone()-1) as usize].clone()),
-        Deref @ FLAT_TREE { .. } => var_field!((*tree).components, ClassTree::FLAT_TREE).clone().borrow()[(index.clone()-1) as usize].clone(),
+        Deref @ PARTIAL_TREE { .. } => ({let __elt = var_field!((*tree).components, ClassTree::PARTIAL_TREE).clone().borrow()[(index.clone()-1) as usize].clone(); __elt}),
+        Deref @ EXPANDED_TREE { .. } => ({let __elt = var_field!((*tree).components, ClassTree::EXPANDED_TREE).clone().borrow()[(index.clone()-1) as usize].clone(); __elt}),
+        Deref @ INSTANTIATED_TREE { .. } => Mutable::access(({let __elt = var_field!((*tree).components, ClassTree::INSTANTIATED_TREE).clone().borrow()[(index.clone()-1) as usize].clone(); __elt})),
+        Deref @ FLAT_TREE { .. } => ({let __elt = var_field!((*tree).components, ClassTree::FLAT_TREE).clone().borrow()[(index.clone()-1) as usize].clone(); __elt}),
         _ => bail!("match: no arm matched"),
     } });
         Ok(component)
@@ -1200,7 +1200,7 @@ pub mod ClassTree {
         let mut components: Arc<metamodelica::List<Arc<InstNode::InstNode>>> = components;
         let () = (::match_deref::match_deref! { match &(entry.clone()) {
         Deref @ LookupTree::Entry::COMPONENT { .. } => {
-            components = metamodelica::cons(comps.borrow()[(var_field!((*entry).index, LookupTree::Entry::Entry::COMPONENT).clone()-1) as usize].clone(), components.clone());
+            components = metamodelica::cons(({let __elt = comps.borrow()[(var_field!((*entry).index, LookupTree::Entry::Entry::COMPONENT).clone()-1) as usize].clone(); __elt}), components.clone());
             ()
         },
         _ => (),
@@ -1343,7 +1343,7 @@ pub mod ClassTree {
             comp_count = metamodelica::arrayLength(ext_comps.clone());
             if comp_count.clone() > 0 {
                 for mut i in index.clone()..=index.clone() + comp_count.clone() - 1 {
-                    {let _arr = comps.clone(); let _val = Mutable::create(ext_comps.borrow()[(i.clone()-1) as usize].clone()); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
+                    {let _arr = comps.clone(); let _val = Mutable::create(({let __elt = ext_comps.borrow()[(i.clone()-1) as usize].clone(); __elt})); _arr.borrow_mut()[(i.clone()-1) as usize] = _val; _arr};
                 }
                 index = index.clone() + comp_count.clone();
             }
@@ -1449,7 +1449,7 @@ pub mod ClassTree {
                 i = (::match_deref::match_deref! { match &(c.clone()) {
         Deref @ InstNode::COMPONENT_NODE { .. } => i.clone() + 1,
         Deref @ InstNode::REF_NODE { .. } => {
-            (_, i) = countInheritedElements(exts.borrow()[(var_field!((*c).index, InstNode::InstNode::REF_NODE).clone()-1) as usize].clone(), 0, i.clone())?;
+            (_, i) = countInheritedElements(({let __elt = exts.borrow()[(var_field!((*c).index, InstNode::InstNode::REF_NODE).clone()-1) as usize].clone(); __elt}), 0, i.clone())?;
             i.clone()
         },
         _ => bail!("match: no arm matched"),
@@ -1490,8 +1490,8 @@ pub mod ClassTree {
         (Deref @ LookupTree::Entry::IMPORT { .. }, Deref @ LookupTree::Entry::IMPORT { .. }) => {
             let mut imp1: Arc<Import::NFImport> = Arc::new(<Import::NFImport as ::std::default::Default>::default());
             let mut imp2: Arc<Import::NFImport> = Arc::new(<Import::NFImport as ::std::default::Default>::default());
-            imp1 = imports.borrow()[(var_field!((*newEntry).index, LookupTree::Entry::Entry::IMPORT).clone()-1) as usize].clone();
-            imp2 = imports.borrow()[(var_field!((*oldEntry).index, LookupTree::Entry::Entry::IMPORT).clone()-1) as usize].clone();
+            imp1 = ({let __elt = imports.borrow()[(var_field!((*newEntry).index, LookupTree::Entry::Entry::IMPORT).clone()-1) as usize].clone(); __elt});
+            imp2 = ({let __elt = imports.borrow()[(var_field!((*oldEntry).index, LookupTree::Entry::Entry::IMPORT).clone()-1) as usize].clone(); __elt});
             entry = (::match_deref::match_deref! { match &((imp1.clone(), imp2.clone())) {
         (Deref @ Import::UNRESOLVED_IMPORT { .. }, Deref @ Import::UNRESOLVED_IMPORT { .. }) => {
             {let _arr = imports.clone(); _arr.borrow_mut()[(var_field!((*oldEntry).index, LookupTree::Entry::Entry::IMPORT).clone()-1) as usize] = Arc::new(Import::NFImport::CONFLICTING_IMPORT { imp1: imp1.clone(), imp2: imp2.clone() }); _arr};
@@ -1549,7 +1549,7 @@ pub mod ClassTree {
                 _ => bail!("pattern mismatch"),
             } };
             elems = __pa0.clone();
-            elems.clone().borrow()[(var_field!((*entry).index, LookupTree::Entry::Entry::CLASS).clone()-1) as usize].clone()
+            ({let __elt = elems.clone().borrow()[(var_field!((*entry).index, LookupTree::Entry::Entry::CLASS).clone()-1) as usize].clone(); __elt})
         },
         Deref @ LookupTree::Entry::COMPONENT { .. } => {
             let __pa0 = ::match_deref::match_deref! { match &(tree.clone()) {
@@ -1557,7 +1557,7 @@ pub mod ClassTree {
                 _ => bail!("pattern mismatch"),
             } };
             elems = __pa0.clone();
-            elems.clone().borrow()[(var_field!((*entry).index, LookupTree::Entry::Entry::COMPONENT).clone()-1) as usize].clone()
+            ({let __elt = elems.clone().borrow()[(var_field!((*entry).index, LookupTree::Entry::Entry::COMPONENT).clone()-1) as usize].clone(); __elt})
         },
         _ => bail!("match: no arm matched"),
     } });
@@ -1579,10 +1579,10 @@ pub mod ClassTree {
     fn resolveClass(mut index: i32, mut tree: Arc<ClassTree>) -> Result<Arc<InstNode::InstNode>> {
         let mut element: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
         element = (::match_deref::match_deref! { match &(tree.clone()) {
-        Deref @ PARTIAL_TREE { .. } => var_field!((*tree).classes, ClassTree::PARTIAL_TREE).clone().borrow()[(index.clone()-1) as usize].clone(),
-        Deref @ EXPANDED_TREE { .. } => var_field!((*tree).classes, ClassTree::EXPANDED_TREE).clone().borrow()[(index.clone()-1) as usize].clone(),
-        Deref @ INSTANTIATED_TREE { .. } => Mutable::access(var_field!((*tree).classes, ClassTree::INSTANTIATED_TREE).clone().borrow()[(index.clone()-1) as usize].clone()),
-        Deref @ FLAT_TREE { .. } => var_field!((*tree).classes, ClassTree::FLAT_TREE).clone().borrow()[(index.clone()-1) as usize].clone(),
+        Deref @ PARTIAL_TREE { .. } => ({let __elt = var_field!((*tree).classes, ClassTree::PARTIAL_TREE).clone().borrow()[(index.clone()-1) as usize].clone(); __elt}),
+        Deref @ EXPANDED_TREE { .. } => ({let __elt = var_field!((*tree).classes, ClassTree::EXPANDED_TREE).clone().borrow()[(index.clone()-1) as usize].clone(); __elt}),
+        Deref @ INSTANTIATED_TREE { .. } => Mutable::access(({let __elt = var_field!((*tree).classes, ClassTree::INSTANTIATED_TREE).clone().borrow()[(index.clone()-1) as usize].clone(); __elt})),
+        Deref @ FLAT_TREE { .. } => ({let __elt = var_field!((*tree).classes, ClassTree::FLAT_TREE).clone().borrow()[(index.clone()-1) as usize].clone(); __elt}),
         _ => bail!("match: no arm matched"),
     } });
         Ok(element)
@@ -1591,8 +1591,8 @@ pub mod ClassTree {
     fn resolveComponent(mut index: i32, mut tree: Arc<ClassTree>) -> Result<Arc<InstNode::InstNode>> {
         let mut element: Arc<InstNode::InstNode> = Arc::new(InstNode::EMPTY_NODE);
         element = (::match_deref::match_deref! { match &(tree.clone()) {
-        Deref @ INSTANTIATED_TREE { .. } => Mutable::access(var_field!((*tree).components, ClassTree::INSTANTIATED_TREE).clone().borrow()[(index.clone()-1) as usize].clone()),
-        Deref @ FLAT_TREE { .. } => var_field!((*tree).components, ClassTree::FLAT_TREE).clone().borrow()[(index.clone()-1) as usize].clone(),
+        Deref @ INSTANTIATED_TREE { .. } => Mutable::access(({let __elt = var_field!((*tree).components, ClassTree::INSTANTIATED_TREE).clone().borrow()[(index.clone()-1) as usize].clone(); __elt})),
+        Deref @ FLAT_TREE { .. } => ({let __elt = var_field!((*tree).components, ClassTree::FLAT_TREE).clone().borrow()[(index.clone()-1) as usize].clone(); __elt}),
         _ => bail!("match: no arm matched"),
     } });
         Ok(element)
@@ -1610,7 +1610,7 @@ pub mod ClassTree {
         Deref @ FLAT_TREE { .. } => var_field!((*tree).imports, ClassTree::FLAT_TREE).clone(),
         _ => bail!("match: no arm matched"),
     } });
-        (element, changed, imp) = Import::resolve(imports.borrow()[(index.clone()-1) as usize].clone())?;
+        (element, changed, imp) = Import::resolve(({let __elt = imports.borrow()[(index.clone()-1) as usize].clone(); __elt}))?;
         if changed.clone() {
             {let _arr = imports.clone(); _arr.borrow_mut()[(index.clone()-1) as usize] = imp.clone(); _arr};
         }
@@ -2065,8 +2065,8 @@ pub mod ClassTree {
         },
         _ => unreachable!("match_deref! exhaustiveness placeholder"),
     } });
-                checkIsBreakable(Mutable::access(components.borrow()[(index.clone()-1) as usize].clone()), node.clone(), info.clone())?;
-                Mutable::update(components.borrow()[(index.clone()-1) as usize].clone(), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE));
+                checkIsBreakable(Mutable::access(({let __elt = components.borrow()[(index.clone()-1) as usize].clone(); __elt})), node.clone(), info.clone())?;
+                Mutable::update(({let __elt = components.borrow()[(index.clone()-1) as usize].clone(); __elt}), Arc::new(crate::NFInstNode::InstNode::EMPTY_NODE));
             }
         }
         Ok(())
