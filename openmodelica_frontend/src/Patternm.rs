@@ -47,7 +47,6 @@ use crate::Algorithm;
 use crate::Ceval;
 use crate::ComponentReference;
 use crate::ConnectionGraph;
-use crate::DAEUtil;
 use crate::Expression;
 use crate::FGraph;
 use crate::InnerOuter;

@@ -46,14 +46,12 @@ use arcstr::{ArcStr, literal, format};
 use crate::HashTableCrefSimVar;
 use crate::SimCodeVar;
 use openmodelica_ast::Absyn;
-use openmodelica_ast_collections::HashTableStringToPath;
 use openmodelica_frontend_dump::AbsynUtil;
 use openmodelica_frontend_dump::ComponentReferenceBasics;
 use openmodelica_frontend_dump::ExpressionBasics;
 use openmodelica_frontend_dump::TypesDump;
 use openmodelica_frontend_types::DAE;
 use openmodelica_frontend_types::SCode;
-use openmodelica_util::BaseHashTable;
 use openmodelica_util::Error;
 use openmodelica_util_datatypes_basic::List;
 

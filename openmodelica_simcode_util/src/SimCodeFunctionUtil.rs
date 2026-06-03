@@ -3158,7 +3158,7 @@ pub fn createMakefileParams(mut includes: Arc<metamodelica::List<ArcStr>>, mut l
     cflags = (if (stringEq((Config::simCodeTarget()?).clone(), (literal!("JavaScript")).clone())) {literal!("-Os -Wno-warn-absolute-paths")} else {cflags.clone()}).clone();
     ldflags = (System::getLDFlags()).clone();
     if Flags::getConfigBool(Flags::PARMODAUTO.clone())? {
-        ldflags = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" -lParModelicaAuto -ltbb_static ")); __mm_s.push_str(&*ldflags.clone()); ArcStr::from(__mm_s) }).clone();
+        ldflags = ({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*arcstr::literal!(Autoconf::parModelicaAutoLibs)); __mm_s.push_str(&*literal!(" ")); __mm_s.push_str(&*ldflags.clone()); ArcStr::from(__mm_s) }).clone();
     }
     rtlibs = (if (isFunction.clone()) {arcstr::literal!(Autoconf::ldflags_runtime)} else {if (isFMU.clone()) {arcstr::literal!(Autoconf::ldflags_runtime_fmu)} else {arcstr::literal!(Autoconf::ldflags_runtime_sim)}}).clone();
     platform = (System::modelicaPlatform()).clone();

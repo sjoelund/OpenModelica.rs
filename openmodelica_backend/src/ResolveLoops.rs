@@ -1192,6 +1192,7 @@ fn resolveClosedLoop2(mut eq: Arc<BackendDAE::Equation>, mut loopIn: Arc<metamod
             let mut adjVars2: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut posVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut negVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
+            let mut nonUnitVars: Arc<metamodelica::List<i32>> = metamodelica::nil();
             let mut adjCrefs: Arc<metamodelica::List<Arc<DAE::ComponentRef>>> = metamodelica::nil();
             let mut eq2: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
             let mut eq3: Arc<BackendDAE::Equation> = Arc::new(BackendDAE::Equation::DUMMY_EQUATION);
@@ -1201,6 +1202,7 @@ fn resolveClosedLoop2(mut eq: Arc<BackendDAE::Equation>, mut loopIn: Arc<metamod
             adjVars1 = m_row.clone();
             adjVars2 = m.clone().borrow()[(eqIdx2.clone()-1) as usize].clone();
             (adjVars, adjVars1, adjVars2) = List::intersection1OnTrue(adjVars1.clone(), adjVars2.clone(), (std::sync::Arc::new(fnptr!(intEq, i32, i32)) as std::sync::Arc<dyn ::std::ops::Fn(i32, i32) -> Result<bool> + 'static>))?;
+            (adjVars, nonUnitVars) = List::splitOnTrue(adjVars.clone(), (std::sync::Arc::new({ let __pe_b1 = varMap.clone(); let __pe_b2 = daeVarsIn.clone(); let __pe_b3 = eq.clone(); let __pe_b4 = eq2.clone(); move |__pe_a0| varIsUnitCoeff(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
             (posVars, negVars) = List::splitOnTrue(adjVars.clone(), (std::sync::Arc::new({ let __pe_b1 = varMap.clone(); let __pe_b2 = daeVarsIn.clone(); let __pe_b3 = eq.clone(); let __pe_b4 = eq2.clone(); move |__pe_a0| varSign(__pe_a0, __pe_b1.clone(), __pe_b2.clone(), __pe_b3.clone(), __pe_b4.clone()) }) as std::sync::Arc<dyn ::std::ops::Fn(i32) -> Result<bool> + 'static>))?;
             algSign = (posVars.clone().len() as i32) > (negVars.clone().len() as i32);
             adjCrefs = ({
@@ -1211,7 +1213,7 @@ fn resolveClosedLoop2(mut eq: Arc<BackendDAE::Equation>, mut loopIn: Arc<metamod
         }
         __acc.reverse()
     });
-            m_row = List::flatten(list![adjVars1.clone(), adjVars2.clone(), if (algSign.clone()) {negVars.clone()} else {posVars.clone()}])?;
+            m_row = List::flatten(list![adjVars1.clone(), adjVars2.clone(), nonUnitVars.clone(), if (algSign.clone()) {negVars.clone()} else {posVars.clone()}])?;
             replacements = BackendVarTransform::emptyReplacementsSized((adjCrefs.clone().len() as i32));
             replacements = BackendVarTransform::addReplacements(replacements.clone(), adjCrefs.clone(), ({
         let mut __acc: Arc<metamodelica::List<Arc<DAE::Exp>>> = metamodelica::nil();
@@ -1254,6 +1256,55 @@ fn varSign(mut index: i32, mut varMap: metamodelica::Array<i32>, mut daeVarsIn: 
     let mut cref: Arc<DAE::ComponentRef> = crefFromIndex(index.clone(), varMap.clone(), daeVarsIn.clone())?;
     algSign = CRefIsPosOnRHS(cref.clone(), eq1.clone())? != CRefIsPosOnRHS(cref.clone(), eq2.clone())?;
     Ok(algSign)
+}
+
+fn varIsUnitCoeff(mut index: i32, mut varMap: metamodelica::Array<i32>, mut daeVarsIn: BackendDAE::Variables, mut eq1: Arc<BackendDAE::Equation>, mut eq2: Arc<BackendDAE::Equation>) -> Result<bool> {
+    let mut isUnit: bool = false;
+    let mut cref: Arc<DAE::ComponentRef> = crefFromIndex(index.clone(), varMap.clone(), daeVarsIn.clone())?;
+    isUnit = crefHasUnitCoeff(cref.clone(), eq1.clone())? && crefHasUnitCoeff(cref.clone(), eq2.clone())?;
+    Ok(isUnit)
+}
+
+fn crefHasUnitCoeff(mut cref: Arc<DAE::ComponentRef>, mut eq: Arc<BackendDAE::Equation>) -> Result<bool> {
+    let mut isUnit: bool = false;
+    isUnit = (::match_deref::match_deref! { match &(eq.clone()) {
+        Deref @ BackendDAE::Equation::EQUATION { scalar: e2, exp: e1, .. } => {
+            crefUnitCoeffInExp(e1.clone(), cref.clone())? && crefUnitCoeffInExp(e2.clone(), cref.clone())?
+        },
+        _ => {
+            true
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    Ok(isUnit)
+}
+
+// NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,
+// and the tailcall rewriter cannot see arms hidden behind the macro's `Deref @` patterns.
+fn crefUnitCoeffInExp(mut exp: Arc<DAE::Exp>, mut cref: Arc<DAE::ComponentRef>) -> Result<bool> {
+    let mut isUnit: bool = false;
+    isUnit = (::match_deref::match_deref! { match &(exp.clone()) {
+        Deref @ DAE::Exp::BINARY { exp2: e2, operator: DAE::Operator::ADD { .. }, exp1: e1 } => {
+            crefUnitCoeffInExp(e1.clone(), cref.clone())? && crefUnitCoeffInExp(e2.clone(), cref.clone())?
+        },
+        Deref @ DAE::Exp::BINARY { exp2: e2, operator: DAE::Operator::SUB { .. }, exp1: e1 } => {
+            crefUnitCoeffInExp(e1.clone(), cref.clone())? && crefUnitCoeffInExp(e2.clone(), cref.clone())?
+        },
+        Deref @ DAE::Exp::UNARY { exp: e1, .. } => {
+            crefUnitCoeffInExp(e1.clone(), cref.clone())?
+        },
+        Deref @ DAE::Exp::BINARY { exp2: e2, operator: DAE::Operator::MUL { .. }, exp1: Deref @ DAE::Exp::CREF { componentRef: c, .. } } => {
+            !(ComponentReferenceBasics::crefEqualNoStringCompare(cref.clone(), c.clone())?) || Expression::isOne(e2.clone()) || Expression::isConstMinusOne(e2.clone())
+        },
+        Deref @ DAE::Exp::BINARY { exp2: Deref @ DAE::Exp::CREF { componentRef: c, .. }, operator: DAE::Operator::MUL { .. }, exp1: e1 } => {
+            !(ComponentReferenceBasics::crefEqualNoStringCompare(cref.clone(), c.clone())?) || Expression::isOne(e1.clone()) || Expression::isConstMinusOne(e1.clone())
+        },
+        _ => {
+            true
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    Ok(isUnit)
 }
 
 // NOTE: #[tailcall::tailcall] disabled: function body contains a `match_deref!{…}` match,

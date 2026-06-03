@@ -64,7 +64,6 @@ use openmodelica_frontend_dump::ComponentReferenceBasics;
 use openmodelica_frontend_types::DAE;
 use openmodelica_frontend_types::SCode;
 use openmodelica_program_util::ProgramUtil;
-use openmodelica_simcode_types::SimCode;
 use openmodelica_util::Error;
 use openmodelica_util::ExpandableArray;
 use openmodelica_util::Flags;

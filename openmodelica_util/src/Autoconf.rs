@@ -45,6 +45,9 @@ pub const ldflags_runtime_fmu: &'static str = " -Wl,--no-as-needed -Wl,--disable
 
 pub const ldflags_runtime_fmu_static: &'static str = " -Wl,-Bstatic -lSimulationRuntimeFMI  -Wl,--no-as-needed -Wl,--disable-new-dtags -lopenblas -Wl,-Bdynamic -lryu -lm -lpthread -rdynamic  -Wl,--no-undefined";
 
+// Libraries linked into generated simulation code when --parmodauto (ParModelica auto) is enabled.
+pub const parModelicaAutoLibs: &'static str = "@PARMODELICAAUTO_LDFLAGS@";
+
 pub const corbaLibs: &'static str = "";
 
 pub const hwloc: &'static str = if 0 == 1 { "-lhwloc" } else { "" };

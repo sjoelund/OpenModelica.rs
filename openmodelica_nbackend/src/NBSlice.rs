@@ -62,6 +62,7 @@ use openmodelica_nf_frontend::NFComponentRef as ComponentRef;
 use openmodelica_nf_frontend::NFDimension as Dimension;
 use openmodelica_nf_frontend::NFExpression as Expression;
 use openmodelica_nf_frontend::NFOperator as Operator;
+use openmodelica_nf_frontend::NFPrefixes::Variability;
 use openmodelica_nf_frontend::NFSimplifyExp as SimplifyExp;
 use openmodelica_nf_frontend::NFSubscript as Subscript;
 use openmodelica_nf_frontend::NFType as Type;
@@ -242,7 +243,7 @@ pub fn getContinuous(mut cref: Arc<ComponentRef::NFComponentRef>, mut acc: Arc<U
 pub fn getSliceCandidates(mut cref: Arc<ComponentRef::NFComponentRef>, mut acc: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut name: Arc<ComponentRef::NFComponentRef>) -> Result<Arc<ComponentRef::NFComponentRef>> {
     let mut cref: Arc<ComponentRef::NFComponentRef> = cref;
     let mut checkCref: Arc<ComponentRef::NFComponentRef> = ComponentRef::stripSubscriptsAll(cref.clone());
-    if ComponentRef::isEqual(name.clone(), checkCref.clone())? || ComponentRef::isEqualRecordChild(name.clone(), checkCref.clone())? {
+    if ComponentRef::isEqual(name.clone(), checkCref.clone())? || ComponentRef::isEqual(name.clone(), cref.clone())? || ComponentRef::isEqualRecordChild(name.clone(), checkCref.clone())? {
         UnorderedSet::add(cref.clone(), acc.clone())?;
     }
     Ok(cref)
@@ -1421,6 +1422,7 @@ fn resolveMixed(mut cref: Arc<ComponentRef::NFComponentRef>, mut original_cref: 
     let mut scal_lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
     let mut size_comp: i32 = 0;
     let mut eq_reg: Arc<metamodelica::List<bool>> = metamodelica::nil();
+    let mut lst: Arc<metamodelica::List<(Arc<Dimension::NFDimension>, bool)>> = metamodelica::nil();
     subs = ComponentRef::subscriptsAllWithWholeFlat(cref.clone())?;
     dims = Type::arrayDims(ComponentRef::getSubscriptedType(cref.clone(), false)?);
     eq_dims = Type::arrayDims(ty.clone());
@@ -1446,24 +1448,36 @@ fn resolveMixed(mut cref: Arc<ComponentRef::NFComponentRef>, mut original_cref: 
         size_comp = List::compareLength(eq_dims.clone(), regulars.clone())?;
         if size_comp.clone() > 0 {
             eq_reg = listAppend(regulars.clone(), List::fill(false, (eq_dims.clone().len() as i32) - (regulars.clone().len() as i32)));
+            lst = List::zip(eq_dims.clone(), eq_reg.clone());
         } else if size_comp.clone() < 0 {
-            eq_reg = List::filterOnTrue(regulars.clone(), std::sync::Arc::new(fnptr!(Util::id, _)))?;
-            size_comp = List::compareLength(eq_dims.clone(), eq_reg.clone())?;
-            if size_comp.clone() > 0 {
-                eq_reg = listAppend(eq_reg.clone(), List::fill(false, (eq_dims.clone().len() as i32) - (eq_reg.clone().len() as i32)));
-            } else if size_comp.clone() < 0 {
-                eq_reg = List::firstN(eq_reg.clone(), (eq_dims.clone().len() as i32))?;
-            }
+            lst = resolveMixedDimensions(eq_dims.clone(), regulars.clone(), metamodelica::nil())?;
         } else {
-            eq_reg = regulars.clone();
+            lst = List::zip(eq_dims.clone(), regulars.clone());
         }
         key = arrayCreate((subs.clone().len() as i32), 0);
-        resolveEquationDimensions(List::zip(eq_dims.clone(), eq_reg.clone()), regulars.clone(), map2.clone(), key.clone(), m.clone(), modes.clone(), Mode::create(eqn_name.clone(), list![original_cref.clone()], false)?, Pointer::create(skip_idx.clone()), 1)?;
+        resolveEquationDimensions(lst.clone(), map2.clone(), key.clone(), m.clone(), modes.clone(), Mode::create(eqn_name.clone(), list![original_cref.clone()], false)?, Pointer::create(skip_idx.clone()), 1)?;
     } else {
         Error::addMessage(Error::INTERNAL_ERROR.clone(), list![({ let mut __mm_s = String::new(); __mm_s.push_str(&*literal!("NBSlice.resolveMixed")); __mm_s.push_str(&*literal!(" failed because subscripts, dimensions and dependencies were not of equal length.\n")); __mm_s.push_str(&*literal!("variable subscripts(")); __mm_s.push_str(&*intString((subs.clone().len() as i32))); __mm_s.push_str(&*literal!("): ")); __mm_s.push_str(&*List::toString(subs.clone(), (std::sync::Arc::new(Subscript::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Subscript::NFSubscript>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("variable dimensions(")); __mm_s.push_str(&*intString((dims.clone().len() as i32))); __mm_s.push_str(&*literal!("): ")); __mm_s.push_str(&*List::toString(dims.clone(), (std::sync::Arc::new(Dimension::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("equation dimensions(")); __mm_s.push_str(&*intString((eq_dims.clone().len() as i32))); __mm_s.push_str(&*literal!("): ")); __mm_s.push_str(&*List::toString(eq_dims.clone(), (std::sync::Arc::new(Dimension::toString) as std::sync::Arc<dyn ::std::ops::Fn(Arc<Dimension::NFDimension>) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); __mm_s.push_str(&*literal!("variable dependencies(")); __mm_s.push_str(&*intString((regulars.clone().len() as i32))); __mm_s.push_str(&*literal!("): ")); __mm_s.push_str(&*List::toString(regulars.clone(), (std::sync::Arc::new(fnptr!(boolString, bool)) as std::sync::Arc<dyn ::std::ops::Fn(bool) -> Result<ArcStr> + 'static>), (literal!("")).clone(), (literal!("{")).clone(), (literal!(", ")).clone(), (literal!("}")).clone(), true, 0)?); __mm_s.push_str(&*literal!("\n")); ArcStr::from(__mm_s) }).clone()])?;
         bail!("fail");
     }
     Ok(())
+}
+
+fn resolveMixedDimensions(mut eq_dims: Arc<metamodelica::List<Arc<Dimension::NFDimension>>>, mut regulars: Arc<metamodelica::List<bool>>, mut lst: Arc<metamodelica::List<(Arc<Dimension::NFDimension>, bool)>>) -> Result<Arc<metamodelica::List<(Arc<Dimension::NFDimension>, bool)>>> {
+    let mut lst: Arc<metamodelica::List<(Arc<Dimension::NFDimension>, bool)>> = lst;
+    lst = (::match_deref::match_deref! { match &((eq_dims.clone(), regulars.clone())) {
+        (_, Deref @ metamodelica::List::Cons { head: false, tail: rest_reg }) => {
+            metamodelica::cons((Dimension::fromExp(Arc::new(Expression::NFExpression::INTEGER { value: 1 }), Variability::CONSTANT.clone())?, false), resolveMixedDimensions(eq_dims.clone(), rest_reg.clone(), metamodelica::nil())?)
+        },
+        (Deref @ metamodelica::List::Cons { head: dim, tail: rest_dim }, Deref @ metamodelica::List::Cons { head: true, tail: rest_reg }) => {
+            metamodelica::cons((dim.clone(), true), resolveMixedDimensions(rest_dim.clone(), rest_reg.clone(), metamodelica::nil())?)
+        },
+        _ => {
+            metamodelica::nil()
+        },
+        _ => unreachable!("match_deref! exhaustiveness placeholder"),
+    } });
+    Ok(lst)
 }
 
 fn resolveAllReduced(mut cref: Arc<ComponentRef::NFComponentRef>, mut original_cref: Arc<ComponentRef::NFComponentRef>, mut eqn_name: Arc<ComponentRef::NFComponentRef>, mut skip_idx: i32, mut size: i32, mut iter_size: i32, mut frames: Arc<metamodelica::List<(Arc<ComponentRef::NFComponentRef>, Arc<Expression::NFExpression>, Option<Arc<Iterator::Iterator>>)>>, mut rep: Arc<UnorderedSet::UnorderedSet<Arc<ComponentRef::NFComponentRef>>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<ComponentRef::NFComponentRef>, i32>>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut mapping: Arc<Mapping::Mapping>, mut modes: Arc<UnorderedMap::UnorderedMap<(i32, i32), Arc<Mode::Mode>>>) -> Result<()> {
@@ -1502,9 +1516,9 @@ fn resolveAllReduced(mut cref: Arc<ComponentRef::NFComponentRef>, mut original_c
     Ok(())
 }
 
-fn resolveEquationDimensions(mut lst: Arc<metamodelica::List<(Arc<Dimension::NFDimension>, bool)>>, mut regulars: Arc<metamodelica::List<bool>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>>>, mut key: metamodelica::Array<i32>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut modes: Arc<UnorderedMap::UnorderedMap<(i32, i32), Arc<Mode::Mode>>>, mut mode: Arc<Mode::Mode>, mut eqn_idx_ptr: Pointer::Pointer<i32>, mut index: i32) -> Result<()> {
-    let () = (::match_deref::match_deref! { match &((lst.clone(), regulars.clone())) {
-        (Deref @ metamodelica::List::Nil, _) => {
+fn resolveEquationDimensions(mut lst: Arc<metamodelica::List<(Arc<Dimension::NFDimension>, bool)>>, mut map: Arc<UnorderedMap::UnorderedMap<Arc<metamodelica::List<i32>>, Arc<metamodelica::List<i32>>>>, mut key: metamodelica::Array<i32>, mut m: metamodelica::Array<Arc<metamodelica::List<i32>>>, mut modes: Arc<UnorderedMap::UnorderedMap<(i32, i32), Arc<Mode::Mode>>>, mut mode: Arc<Mode::Mode>, mut eqn_idx_ptr: Pointer::Pointer<i32>, mut index: i32) -> Result<()> {
+    let () = (::match_deref::match_deref! { match &(lst.clone()) {
+        Deref @ metamodelica::List::Nil => {
             let mut eqn_idx: i32 = 0;
             let mut scal_lst: Arc<metamodelica::List<i32>> = metamodelica::nil();
             eqn_idx = Pointer::access(eqn_idx_ptr.clone());
@@ -1516,20 +1530,16 @@ fn resolveEquationDimensions(mut lst: Arc<metamodelica::List<(Arc<Dimension::NFD
             Pointer::update(eqn_idx_ptr.clone(), eqn_idx.clone() + 1);
             ()
         },
-        (_, Deref @ metamodelica::List::Cons { head: false, tail: rest_reg }) => {
-            resolveEquationDimensions(lst.clone(), rest_reg.clone(), map.clone(), key.clone(), m.clone(), modes.clone(), mode.clone(), eqn_idx_ptr.clone(), index.clone() + 1)?;
-            ()
-        },
-        (Deref @ metamodelica::List::Cons { head: (dim, false), tail: rest }, Deref @ metamodelica::List::Cons { head: _, tail: rest_reg }) => {
+        Deref @ metamodelica::List::Cons { head: (dim, false), tail: rest } => {
             for mut i in 1..=Dimension::size(dim.clone(), true)? {
-                resolveEquationDimensions(rest.clone(), rest_reg.clone(), map.clone(), key.clone(), m.clone(), modes.clone(), mode.clone(), eqn_idx_ptr.clone(), index.clone() + 1)?;
+                resolveEquationDimensions(rest.clone(), map.clone(), key.clone(), m.clone(), modes.clone(), mode.clone(), eqn_idx_ptr.clone(), index.clone() + 1)?;
             }
             ()
         },
-        (Deref @ metamodelica::List::Cons { head: (dim, true), tail: rest }, Deref @ metamodelica::List::Cons { head: _, tail: rest_reg }) => {
+        Deref @ metamodelica::List::Cons { head: (dim, true), tail: rest } => {
             for mut i in 1..=Dimension::size(dim.clone(), true)? {
                 {let _arr = key.clone(); _arr.borrow_mut()[(index.clone()-1) as usize] = i.clone(); _arr};
-                resolveEquationDimensions(rest.clone(), rest_reg.clone(), map.clone(), key.clone(), m.clone(), modes.clone(), mode.clone(), eqn_idx_ptr.clone(), index.clone() + 1)?;
+                resolveEquationDimensions(rest.clone(), map.clone(), key.clone(), m.clone(), modes.clone(), mode.clone(), eqn_idx_ptr.clone(), index.clone() + 1)?;
             }
             ()
         },

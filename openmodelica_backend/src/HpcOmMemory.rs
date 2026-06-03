@@ -61,7 +61,6 @@ use openmodelica_frontend_types::DAE;
 use openmodelica_simcode_types::HpcOmSimCode;
 use openmodelica_simcode_types::SimCode;
 use openmodelica_simcode_types::SimCodeVar;
-use openmodelica_simcode_util::SimCodeFunctionUtil;
 use openmodelica_simcode_util::SimCodeUtilShared;
 use openmodelica_susan::GraphML;
 use openmodelica_util::BaseHashTable;
